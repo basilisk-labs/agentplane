@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-import { buildExecutionProfile, defaultConfig } from "@agentplaneorg/core";
+import { buildExecutionProfile, defaultConfig } from "@agentplaneorg/core/config";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";

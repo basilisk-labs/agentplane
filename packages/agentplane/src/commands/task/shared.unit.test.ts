@@ -1,4 +1,4 @@
-import { defaultConfig, type AgentplaneConfig } from "@agentplaneorg/core";
+import { defaultConfig, type AgentplaneConfig } from "@agentplaneorg/core/config";
 import { describe, expect, it, vi } from "vitest";
 
 import type { TaskData, TaskEvent } from "../../backends/task-backend.js";

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { defaultConfig, type AgentplaneConfig } from "@agentplaneorg/core";
+import { defaultConfig, type AgentplaneConfig } from "@agentplaneorg/core/config";
 
 import type { CliError } from "../../../shared/errors.js";
 import { captureStdIO } from "@agentplane/testkit";

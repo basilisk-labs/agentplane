@@ -1,4 +1,4 @@
-import { defaultConfig, validateConfig } from "@agentplaneorg/core";
+import { defaultConfig, validateConfig } from "@agentplaneorg/core/config";
 import { describe, expect, it } from "vitest";
 
 import {
