@@ -26,7 +26,7 @@ type RedmineCachePort = {
   writeTask: (task: TaskData, opts?: TaskWriteOptions) => Promise<void>;
 };
 
-export type RedmineCacheDocContext = {
+type RedmineCacheDocContext = {
   cache: RedmineCachePort | null;
   customFields: Record<string, unknown>;
   ownerAgent: string;

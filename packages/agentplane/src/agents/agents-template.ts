@@ -19,7 +19,7 @@ type Heading = { index: number; level: number; title: string };
 export type WorkflowMode = "direct" | "branch_pr";
 
 type AgentTemplate = { fileName: string; contents: string };
-export type PolicyTemplate = { relativePath: string; contents: string };
+type PolicyTemplate = { relativePath: string; contents: string };
 
 let agentTemplatesCache: Promise<AgentTemplate[]> | null = null;
 const policyGatewayTemplateCache = new Map<PolicyGatewayFlavor, Promise<string>>();
