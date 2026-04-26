@@ -5,19 +5,6 @@ import path from "node:path";
 import { afterEach, beforeEach, vi } from "vitest";
 
 import {
-  cmdRecipeAddParsed,
-  cmdRecipeCachePruneParsed,
-  cmdRecipeDetachParsed,
-  cmdRecipeExplainParsed,
-  cmdRecipeInfoParsed,
-  cmdRecipeInstall,
-  cmdRecipeListParsed,
-  cmdRecipeListRemoteParsed,
-  cmdRecipeRemoveParsed,
-  cmdRecipeUpdateParsed,
-  hashRecipeTree,
-} from "../../agentplane/src/commands/recipes.js";
-import {
   cmdScenarioInfoParsed,
   cmdScenarioListParsed,
   cmdScenarioRunParsed,
@@ -36,6 +23,17 @@ import { recipesListSpec } from "../../agentplane/src/commands/recipes/list.comm
 import { recipesDetachSpec } from "../../agentplane/src/commands/recipes/detach.command.js";
 import { recipesRemoveSpec } from "../../agentplane/src/commands/recipes/remove.command.js";
 import { recipesUpdateSpec } from "../../agentplane/src/commands/recipes/update.command.js";
+import { cmdRecipeAddParsed } from "../../agentplane/src/commands/recipes/impl/commands/add.js";
+import { cmdRecipeCachePruneParsed } from "../../agentplane/src/commands/recipes/impl/commands/cache-prune.js";
+import { cmdRecipeDetachParsed } from "../../agentplane/src/commands/recipes/impl/commands/detach.js";
+import { cmdRecipeExplainParsed } from "../../agentplane/src/commands/recipes/impl/commands/explain.js";
+import { cmdRecipeInfoParsed } from "../../agentplane/src/commands/recipes/impl/commands/info.js";
+import { cmdRecipeInstall } from "../../agentplane/src/commands/recipes/impl/commands/install.js";
+import { cmdRecipeListParsed } from "../../agentplane/src/commands/recipes/impl/commands/list.js";
+import { cmdRecipeListRemoteParsed } from "../../agentplane/src/commands/recipes/impl/commands/list-remote.js";
+import { cmdRecipeRemoveParsed } from "../../agentplane/src/commands/recipes/impl/commands/remove.js";
+import { cmdRecipeUpdateParsed } from "../../agentplane/src/commands/recipes/impl/commands/update.js";
+import { hashRecipeTree } from "../../agentplane/src/commands/recipes/impl/project-recipe-state.js";
 import { scenarioInfoSpec } from "../../agentplane/src/commands/scenario/info.command.js";
 import { scenarioListSpec } from "../../agentplane/src/commands/scenario/list.command.js";
 import { scenarioRunSpec } from "../../agentplane/src/commands/scenario/run.command.js";

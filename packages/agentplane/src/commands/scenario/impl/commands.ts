@@ -4,7 +4,7 @@ import { resolveProject } from "@agentplaneorg/core/project";
 import { mapCoreError } from "../../../cli/error-map.js";
 import { createCliEmitter, emptyStateMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
-import { listResolvedRecipeScenarios } from "../../recipes.js";
+import { listResolvedRecipeScenarios } from "../../recipes/impl/resolver.js";
 import {
   assertScenarioCompatibility,
   readValidatedScenarioDefinition,
