@@ -1,10 +1,11 @@
 ---
 id: "202604260755-D9VQVH"
 title: "Remove internal test and shim cleanup"
-status: "DOING"
+result_summary: "Removed internal testing/shim surfaces without behavior changes."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-26T08:04:58.714Z"
   updated_by: "CODER"
   note: "Removed internal testing and shim surfaces; verification passed."
-commit: null
+commit:
+  hash: "a132513192556eeb1c029bcbc9e1a78d371fb5ce"
+  message: "✅ D9VQVH code: done"
 comments:
   -
     author: "CODER"
     body: "Start: Remove low-signal internal test and shim surfaces in the current direct checkout, keeping behavior unchanged and verifying with focused imports plus type/check coverage."
+  -
+    author: "CODER"
+    body: "Verified: Removed obsolete internal testing and shim surfaces, moved remaining consumers to owned modules or testkit, and verified with typecheck, knip, focused tests, formatting, bootstrap, and doctor."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Removed internal testing and shim surfaces; verification passed."
+  -
+    type: "status"
+    at: "2026-04-26T08:05:33.749Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Removed obsolete internal testing and shim surfaces, moved remaining consumers to owned modules or testkit, and verified with typecheck, knip, focused tests, formatting, bootstrap, and doctor."
 doc_version: 3
-doc_updated_at: "2026-04-26T08:04:58.724Z"
+doc_updated_at: "2026-04-26T08:05:33.750Z"
 doc_updated_by: "CODER"
 description: "Remove low-signal shim files and internal testing helper leaks by moving call sites to direct owner modules or testkit-owned helpers."
 sections:
