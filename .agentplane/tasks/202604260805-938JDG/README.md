@@ -1,10 +1,11 @@
 ---
 id: "202604260805-938JDG"
 title: "Convert Knip baseline to JSON allowlist"
-status: "DOING"
+result_summary: "Knip baseline is now a named JSON allowlist."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-26T08:10:08.372Z"
   updated_by: "CODER"
   note: "Converted Knip baseline to named JSON allowlist and added script regression coverage."
-commit: null
+commit:
+  hash: "9999f90e737d2c5a32cdb9064cd3e624aa8c0f78"
+  message: "✅ 938JDG code: done"
 comments:
   -
     author: "CODER"
     body: "Start: Convert the Knip guard from scalar totals to a concrete JSON allowlist so new unused files, exports, and types are review-visible in CI."
+  -
+    author: "CODER"
+    body: "Verified: Converted Knip to a concrete JSON allowlist with named drift reporting, added regression coverage, and verified knip, typecheck, formatting, diff check, and doctor."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Converted Knip baseline to named JSON allowlist and added script regression coverage."
+  -
+    type: "status"
+    at: "2026-04-26T08:10:17.924Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Converted Knip to a concrete JSON allowlist with named drift reporting, added regression coverage, and verified knip, typecheck, formatting, diff check, and doctor."
 doc_version: 3
-doc_updated_at: "2026-04-26T08:10:08.380Z"
+doc_updated_at: "2026-04-26T08:10:17.926Z"
 doc_updated_by: "CODER"
 description: "Replace scalar Knip unused-code baseline limits with a committed JSON baseline that records concrete unused files, exports, and types for reviewable drift."
 sections:
