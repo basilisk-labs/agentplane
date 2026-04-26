@@ -35,106 +35,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-runtime.ts",
-      "exports": [
-        {
-          "name": "appendRedmineBackendCommentNotes",
-          "line": 9,
-          "col": 3
-        },
-        {
-          "name": "appendRedmineBackendCustomField",
-          "line": 10,
-          "col": 3
-        },
-        {
-          "name": "assertRedmineExpectedRevision",
-          "line": 23,
-          "col": 3
-        },
-        {
-          "name": "assertRedmineExpectedRevisionSupported",
-          "line": 24,
-          "col": 3
-        },
-        {
-          "name": "cacheRedmineTask",
-          "line": 25,
-          "col": 3
-        },
-        {
-          "name": "coerceRedmineBackendDocVersion",
-          "line": 26,
-          "col": 3
-        },
-        {
-          "name": "diffRedmineBackendTasks",
-          "line": 11,
-          "col": 3
-        },
-        {
-          "name": "ensureRedmineDocMetadata",
-          "line": 27,
-          "col": 3
-        },
-        {
-          "name": "findRedmineIssueByTaskId",
-          "line": 12,
-          "col": 3
-        },
-        {
-          "name": "listRedmineRemoteTasks",
-          "line": 13,
-          "col": 3
-        },
-        {
-          "name": "maybeParseRedmineBackendJson",
-          "line": 14,
-          "col": 3
-        },
-        {
-          "name": "normalizeRedmineBackendComments",
-          "line": 15,
-          "col": 3
-        },
-        {
-          "name": "redmineBackendCustomFieldValue",
-          "line": 16,
-          "col": 3
-        },
-        {
-          "name": "redmineBackendTasksDiffer",
-          "line": 17,
-          "col": 3
-        },
-        {
-          "name": "redmineIssueToTask",
-          "line": 18,
-          "col": 3
-        },
-        {
-          "name": "redmineTaskIdFieldId",
-          "line": 28,
-          "col": 3
-        },
-        {
-          "name": "redmineTaskToIssuePayload",
-          "line": 19,
-          "col": 3
-        },
-        {
-          "name": "requestRedmineBackendJson",
-          "line": 20,
-          "col": 3
-        },
-        {
-          "name": "setRedmineIssueCustomField",
-          "line": 29,
-          "col": 3
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/backends/task-backend/redmine/backend-sync.ts",
       "exports": [
         {
@@ -3451,10 +3351,10 @@
   ],
   "counts": {
     "files": 5,
-    "exports": 230,
+    "exports": 211,
     "types": 288,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 523
+    "total": 504
   }
 }

@@ -26,9 +26,9 @@ import {
   createRedmineCacheDocContext,
   createRedmineReportContext,
   createRedmineSyncContext,
-  redmineBackendRuntimeMethods,
   type RedmineBackendRuntimeHost,
-} from "./redmine/backend-runtime.js";
+} from "./redmine/runtime-context.js";
+import { redmineBackendRuntimeMethods } from "./redmine/runtime-methods.js";
 import { readRedmineEnv } from "./redmine/env.js";
 import {
   BackendError,
