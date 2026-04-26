@@ -1,10 +1,11 @@
 ---
 id: "202604261434-5YNB9V"
 title: "Remove recipes command barrel"
-status: "DOING"
+result_summary: "Removed recipes command barrel layers and reduced Knip baseline total to 452."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-26T14:38:04.676Z"
   updated_by: "CODER"
   note: "Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: node scripts/check-knip-baseline.mjs; Result: pass; Evidence: baseline OK total=452. Command: focused recipes/scenario/runner/testkit vitest; Result: pass; Evidence: 8 files, 39 tests passed across focused batches. Command: bun run format:check and git diff --check; Result: pass. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime ready."
-commit: null
+commit:
+  hash: "86156570f390da1109399a9907c117a35ae5fcca"
+  message: "🚧 5YNB9V task: remove recipes command barrel"
 comments:
   -
     author: "CODER"
     body: "Start: Removing the internal recipes command barrel by migrating current workspace consumers to direct imports, then refreshing Knip and validating recipes/runner/testkit coverage."
+  -
+    author: "CODER"
+    body: "Verified: Recipes command barrels removed, workspace consumers now import direct recipe implementation modules, Knip baseline total reduced from 504 to 452, and local code checks passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: node scripts/check-knip-baseline.mjs; Result: pass; Evidence: baseline OK total=452. Command: focused recipes/scenario/runner/testkit vitest; Result: pass; Evidence: 8 files, 39 tests passed across focused batches. Command: bun run format:check and git diff --check; Result: pass. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime ready."
+  -
+    type: "status"
+    at: "2026-04-26T14:38:24.111Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Recipes command barrels removed, workspace consumers now import direct recipe implementation modules, Knip baseline total reduced from 504 to 452, and local code checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-26T14:38:04.679Z"
+doc_updated_at: "2026-04-26T14:38:24.111Z"
 doc_updated_by: "CODER"
 description: "Replace the internal commands/recipes.ts barrel with direct imports from its current workspace callsites, delete the barrel, and refresh the Knip baseline."
 sections:
