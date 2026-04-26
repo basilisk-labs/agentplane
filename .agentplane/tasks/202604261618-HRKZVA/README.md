@@ -1,10 +1,11 @@
 ---
 id: "202604261618-HRKZVA"
 title: "Prune bootstrap guide exports"
-status: "DOING"
+result_summary: "Pruned bootstrap guide export surface and reduced Knip baseline total to 434."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-26T16:22:19.380Z"
   updated_by: "CODER"
   note: "Command: bun run typecheck; Result: pass after bootstrap rerun; Evidence: tsc -b exited 0. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: node scripts/check-knip-baseline.mjs; Result: pass; Evidence: baseline OK total=434. Command: node scripts/check-agent-bootstrap-fresh.mjs; Result: pass after framework bootstrap; Evidence: bootstrap docs and startup command blocks aligned. Command: focused command-guide vitest; Result: pass; Evidence: 2 files, 13 tests passed. Command: bun run format:check and git diff --check; Result: pass. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime ready."
-commit: null
+commit:
+  hash: "ed51097d538f6bc9777a21c17ac5b260e09515b2"
+  message: "🚧 HRKZVA task: prune bootstrap guide exports"
 comments:
   -
     author: "CODER"
     body: "Start: Pruning unused bootstrap-guide exports while preserving generated bootstrap docs and command-guide runtime output, then refreshing Knip and validating docs freshness."
+  -
+    author: "CODER"
+    body: "Verified: Unused bootstrap-guide exports were made module-local while dynamic docs freshness exports stayed public, Knip baseline total reduced from 440 to 434, and local docs/code checks passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run typecheck; Result: pass after bootstrap rerun; Evidence: tsc -b exited 0. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: node scripts/check-knip-baseline.mjs; Result: pass; Evidence: baseline OK total=434. Command: node scripts/check-agent-bootstrap-fresh.mjs; Result: pass after framework bootstrap; Evidence: bootstrap docs and startup command blocks aligned. Command: focused command-guide vitest; Result: pass; Evidence: 2 files, 13 tests passed. Command: bun run format:check and git diff --check; Result: pass. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime ready."
+  -
+    type: "status"
+    at: "2026-04-26T16:22:30.933Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Unused bootstrap-guide exports were made module-local while dynamic docs freshness exports stayed public, Knip baseline total reduced from 440 to 434, and local docs/code checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-26T16:22:19.383Z"
+doc_updated_at: "2026-04-26T16:22:30.933Z"
 doc_updated_by: "CODER"
 description: "Make unused bootstrap-guide constants, helper functions, and types module-local while preserving the generated docs renderer and quickstart imports, then refresh the Knip baseline."
 sections:
