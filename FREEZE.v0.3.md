@@ -23,10 +23,19 @@ The v0.3 surface is defined by these artifacts:
 - Config schema implementation in `packages/core/src/config/schema.impl.ts`.
 - Public config/schema re-exports through `@agentplaneorg/core/config` and
   `@agentplaneorg/core/schemas`.
+- Private repository-local schema/example contracts in `packages/spec/schemas/**`
+  and `packages/spec/examples/**` (`@agentplane/spec@0.0.0`,
+  `private: true`). This is frozen as an internal compatibility input for v0.3
+  projects, not as a published npm package surface.
 
 Compatibility rule for `0.3.x`: public CLI names, `.agentplane/` task document
 shape, and config fields are stable unless a later `0.3.x` task records a
 targeted compatibility exception and verifies the migration path.
+
+`@agentplane/spec` compatibility rule for `0.3.x`: schema/example changes must
+be treated as compatibility-sensitive repository changes. Publishing or
+versioning that package as public API is out of scope for this freeze artifact
+and requires a separate package-boundary decision.
 
 ## Command Surface
 
