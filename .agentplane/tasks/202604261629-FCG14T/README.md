@@ -1,10 +1,11 @@
 ---
 id: "202604261629-FCG14T"
 title: "Remove release preflight barrel"
-status: "DOING"
+result_summary: "Removed release preflight barrel and reduced Knip baseline total from 434 to 428."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -57,11 +58,16 @@ verification:
     Result: pass
     Evidence: Framework dev runtime is ready.
     Scope: repo-local CLI/runtime after source deletion.
-commit: null
+commit:
+  hash: "0a1de6deb140028b66ffd490de4098f69911939b"
+  message: "🚧 FCG14T task: remove release preflight barrel"
 comments:
   -
     author: "CODER"
     body: "Start: Remove the release preflight barrel by rewriting internal imports to direct preflight modules, then refresh Knip and run the declared release-focused verification."
+  -
+    author: "CODER"
+    body: "Verified: Removed the release preflight barrel, rewired internal imports to direct preflight modules, refreshed Knip baseline to total 428, and passed release-focused tests plus typecheck, lint, Knip, format, diff check, and framework bootstrap."
 events:
   -
     type: "status"
@@ -110,8 +116,15 @@ events:
       Result: pass
       Evidence: Framework dev runtime is ready.
       Scope: repo-local CLI/runtime after source deletion.
+  -
+    type: "status"
+    at: "2026-04-26T16:32:05.086Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Removed the release preflight barrel, rewired internal imports to direct preflight modules, refreshed Knip baseline to total 428, and passed release-focused tests plus typecheck, lint, Knip, format, diff check, and framework bootstrap."
 doc_version: 3
-doc_updated_at: "2026-04-26T16:31:33.700Z"
+doc_updated_at: "2026-04-26T16:32:05.087Z"
 doc_updated_by: "CODER"
 description: "Replace internal imports from commands/release/apply.preflight.ts with direct module imports, remove the barrel, and refresh the Knip baseline."
 sections:
