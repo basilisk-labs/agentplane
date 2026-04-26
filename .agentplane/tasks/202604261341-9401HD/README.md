@@ -1,10 +1,11 @@
 ---
 id: "202604261341-9401HD"
 title: "Ratchet oversized test baseline down"
-status: "DOING"
+result_summary: "Oversized test baseline total lowered from 18232 to 18227 lines."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-26T13:42:39.055Z"
   updated_by: "CODER"
   note: "Ratchet oversized test baseline down to current line counts."
-commit: null
+commit:
+  hash: "111dfe86afe1b243eb85f8bf62d712bab09656ba"
+  message: "✅ 9401HD meta: done"
 comments:
   -
     author: "CODER"
     body: "Start: ratchet oversized test baseline down after current line-count reduction."
+  -
+    author: "CODER"
+    body: "Verified: oversized test baseline ratcheted down and guard passes."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Ratchet oversized test baseline down to current line counts."
+  -
+    type: "status"
+    at: "2026-04-26T13:42:58.172Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: oversized test baseline ratcheted down and guard passes."
 doc_version: 3
-doc_updated_at: "2026-04-26T13:42:39.068Z"
+doc_updated_at: "2026-04-26T13:42:58.174Z"
 doc_updated_by: "CODER"
 description: "Update the oversized test baseline after import compaction reduced current oversized test line counts."
 sections:
