@@ -1,10 +1,11 @@
 ---
 id: "202604261611-V3TYHZ"
 title: "Remove run-cli core command barrel"
-status: "DOING"
+result_summary: "Removed run-cli core command barrel and reduced Knip baseline total to 440."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-26T16:13:25.999Z"
   updated_by: "CODER"
   note: "Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: node scripts/check-knip-baseline.mjs; Result: pass; Evidence: baseline OK total=440. Command: focused core command vitest; Result: pass; Evidence: 3 files, 12 tests passed. Command: bun run format:check and git diff --check; Result: pass. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime ready."
-commit: null
+commit:
+  hash: "fdefcc249f79f1cba104978fa0672e86bd0f0a2e"
+  message: "🚧 V3TYHZ task: remove run-cli core barrel"
 comments:
   -
     author: "CODER"
     body: "Start: Removing the unused run-cli core command barrel by migrating its unit-test imports to direct modules, then refreshing Knip and validating core command coverage."
+  -
+    author: "CODER"
+    body: "Verified: Removed unused run-cli core command barrel, migrated unit-test imports to direct core modules, reduced Knip baseline total from 452 to 440, and local code checks passed."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Command: bun run lint:core; Result: pass; Evidence: eslint exited 0. Command: node scripts/check-knip-baseline.mjs; Result: pass; Evidence: baseline OK total=440. Command: focused core command vitest; Result: pass; Evidence: 3 files, 12 tests passed. Command: bun run format:check and git diff --check; Result: pass. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime ready."
+  -
+    type: "status"
+    at: "2026-04-26T16:13:38.015Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Removed unused run-cli core command barrel, migrated unit-test imports to direct core modules, reduced Knip baseline total from 452 to 440, and local code checks passed."
 doc_version: 3
-doc_updated_at: "2026-04-26T16:13:26.002Z"
+doc_updated_at: "2026-04-26T16:13:38.015Z"
 doc_updated_by: "CODER"
 description: "Replace unit-test imports from cli/run-cli/commands/core.ts with direct module imports, delete the unused barrel, and refresh the Knip baseline."
 sections:
