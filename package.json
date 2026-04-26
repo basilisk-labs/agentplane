@@ -78,7 +78,7 @@
     "workflow:github-protection:check": "node scripts/check-github-protection-contract.mjs",
     "framework:dev:bootstrap": "node scripts/bootstrap-framework-dev.mjs",
     "bench:cli:cold": "node scripts/measure-cli-cold-path.mjs",
-    "bench:cli:cold:check": "node scripts/check-cli-cold-baseline.mjs --warmups 1 --attempts 2",
+    "bench:cli:cold:check": "node scripts/check-cli-cold-baseline.mjs --warmups 2 --attempts 5",
     "runner:codex:approval-probe": "bun scripts/run-runner-codex-approval-probe.mjs",
     "runner:codex:smoke": "bun scripts/run-runner-codex-smoke.mjs",
     "docs:cli:generate": "node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx",
