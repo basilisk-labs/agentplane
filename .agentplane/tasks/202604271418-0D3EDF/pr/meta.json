@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604271418-0D3EDF/preserve-merge-history",
+  "created_at": "2026-04-27T14:18:58.754Z",
+  "head_sha": "0662769ce92f2ee3239746a6fa94af663f7c875e",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604271418-0D3EDF",
+  "updated_at": "2026-04-27T14:18:58.754Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
