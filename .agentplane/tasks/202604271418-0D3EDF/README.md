@@ -1,10 +1,11 @@
 ---
 id: "202604271418-0D3EDF"
 title: "Preserve branch_pr merge history by default"
-status: "DOING"
+result_summary: "Merged via PR #539."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-27T14:28:57.713Z"
   updated_by: "CODER"
   note: "Default branch_pr integrate now preserves branch history with merge commits; squash remains explicit opt-in."
-commit: null
+commit:
+  hash: "0e0bcbdabf3f79be6a7603013640bffba55db480"
+  message: "Merge pull request #539 from basilisk-labs/task/202604271418-0D3EDF/preserve-merge-history"
 comments:
   -
     author: "CODER"
     body: "Start: change branch_pr merge defaults and guidance so task branch history is preserved by default, while squash remains an explicit opt-in strategy."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #539 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Default branch_pr integrate now preserves branch history with merge commits; squash remains explicit opt-in."
+  -
+    type: "status"
+    at: "2026-04-27T14:34:02.519Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #539 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-27T14:29:19.810Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-27T14:34:02.523Z"
+doc_updated_by: "INTEGRATOR"
 description: "Change branch_pr integrate policy, CLI defaults, and prompt/help text so merge commits preserve task branch history by default, while squash remains an explicit opt-in strategy. Update tests and docs/policy references accordingly."
 sections:
   Summary: |-
