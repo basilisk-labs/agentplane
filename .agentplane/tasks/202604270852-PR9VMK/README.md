@@ -4,7 +4,7 @@ title: "Introduce branch_pr lifecycle context resolver"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,10 +21,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-27T09:27:22.852Z"
+  updated_by: "CODER"
+  note: "Verified branch_pr lifecycle context resolver extraction: focused work-start/integrate tests passed, prepare unit tests passed under Vitest, typecheck passed, prettier/eslint passed on touched files. The original Verify Step glob for packages/agentplane/src/commands/pr-flow* does not match existing test files under zsh/bun, so equivalent current test paths were used."
 commit: null
 comments:
   -
@@ -38,8 +38,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement shared branch_pr lifecycle context resolver in a task worktree, keeping command behavior compatible and verification focused on branch/worktree/PR route invariants."
+  -
+    type: "verify"
+    at: "2026-04-27T09:27:22.852Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified branch_pr lifecycle context resolver extraction: focused work-start/integrate tests passed, prepare unit tests passed under Vitest, typecheck passed, prettier/eslint passed on touched files. The original Verify Step glob for packages/agentplane/src/commands/pr-flow* does not match existing test files under zsh/bun, so equivalent current test paths were used."
 doc_version: 3
-doc_updated_at: "2026-04-27T09:15:52.180Z"
+doc_updated_at: "2026-04-27T09:27:22.868Z"
 doc_updated_by: "CODER"
 description: "Create a shared resolver for branch_pr task route context: base checkout, task branch, worktree path, PR artifact paths, head SHA, freshness state, and allowed mutation route. Keep behavior-compatible and wire only low-risk consumers if needed for validation."
 sections:
@@ -58,6 +64,14 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-27T09:27:22.852Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified branch_pr lifecycle context resolver extraction: focused work-start/integrate tests passed, prepare unit tests passed under Vitest, typecheck passed, prettier/eslint passed on touched files. The original Verify Step glob for packages/agentplane/src/commands/pr-flow* does not match existing test files under zsh/bun, so equivalent current test paths were used.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-27T09:15:52.180Z, excerpt_hash=sha256:87e9ca8117b97b9a00539702f8b59ff89f792353bd43bc845415d2d564f6215a
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -90,6 +104,14 @@ Create a shared resolver for branch_pr task route context: base checkout, task b
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-27T09:27:22.852Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified branch_pr lifecycle context resolver extraction: focused work-start/integrate tests passed, prepare unit tests passed under Vitest, typecheck passed, prettier/eslint passed on touched files. The original Verify Step glob for packages/agentplane/src/commands/pr-flow* does not match existing test files under zsh/bun, so equivalent current test paths were used.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-27T09:15:52.180Z, excerpt_hash=sha256:87e9ca8117b97b9a00539702f8b59ff89f792353bd43bc845415d2d564f6215a
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
