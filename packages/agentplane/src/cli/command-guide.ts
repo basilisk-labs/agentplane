@@ -89,7 +89,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "INTEGRATOR",
     lines: [
       SHARED_STARTUP_NOTE,
-      `- branch_pr: require a green hosted PR gate first (${BRANCH_PR_HOSTED_GATE_GUIDANCE}), then run \`agentplane pr check <task-id>\` -> \`agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify\` -> \`agentplane finish <task-id> --commit <git-rev> --author INTEGRATOR --body "Verified: ..." --result "..." --close-commit\` on the base branch.`,
+      `- branch_pr: require a green hosted PR gate first (${BRANCH_PR_HOSTED_GATE_GUIDANCE}), then run \`agentplane pr check <task-id>\` -> \`agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify\` -> \`agentplane finish <task-id> --commit <git-rev> --author INTEGRATOR --body "Verified: ..." --result "..." --close-commit\` on the base branch. The default integrate strategy is \`merge\` so task branch commits stay in history; pass \`--merge-strategy squash\` only when intentionally compacting history.`,
       "- branch_pr hosted shortcut: if GitHub merges the task PR directly, `Task Hosted Close` pushes the deterministic closure branch automatically and opens the follow-up closure PR when organization policy allows Actions PR creation; otherwise it leaves a manual PR link on the merged task PR. Pull the updated base branch after that closure PR merges instead of creating a local finish-only tail commit.",
       `- direct: the task owner normally closes with \`${COMMAND_SNIPPETS.core.finishTask}\` plus \`--result "..." \`.`,
       "- For branch-level flags and branch/base diagnostics, use `agentplane help work start`, `agentplane help integrate`, and `agentplane help branch base`.",

@@ -75,7 +75,7 @@ agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "...
 agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
 agentplane pr update <task-id>
-agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
+agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 ```
 
