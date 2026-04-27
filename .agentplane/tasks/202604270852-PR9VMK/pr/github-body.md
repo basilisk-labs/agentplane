@@ -12,7 +12,7 @@ Create a shared resolver for branch_pr task route context: base checkout, task b
 ## Verification
 
 - State: ok
-- Note: Verified branch_pr lifecycle context resolver extraction: focused work-start/integrate tests passed, prepare unit tests passed under Vitest, typecheck passed, prettier/eslint passed on touched files. The original Verify Step glob for packages/agentplane/src/commands/pr-flow* does not match existing test files under zsh/bun, so equivalent current test paths were used.
+- Note: Verified after correcting task Verify Steps to existing test paths: work-start/integrate Bun tests passed, prepare Vitest test passed, typecheck passed, Prettier and ESLint passed on touched files.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes

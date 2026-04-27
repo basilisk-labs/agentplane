@@ -18,15 +18,15 @@ Create a shared resolver for branch_pr task route context: base checkout, task b
 
 ### Plan
 
-1. Run `bun test packages/agentplane/src/commands/pr-flow* packages/agentplane/src/commands/branch/work-start*`. Expected: it succeeds and confirms the requested outcome for this task.
-2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.
-3. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+1. Run `bun test packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts`. Expected: it succeeds and confirms work-start and branch_pr integrate behavior remain compatible.
+2. Run `bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts`. Expected: it succeeds and confirms prepare-time branch_pr route validation remains compatible.
+3. Run `bun run typecheck`. Expected: it succeeds.
+4. Run Prettier and ESLint on touched files. Expected: both succeed.
 
 ### Current Status
 
 - State: ok
-- Note: Verified branch_pr lifecycle context resolver extraction: focused work-start/integrate tests passed, prepare unit tests passed under Vitest, typecheck passed, prettier/eslint passed on touched files. The original Verify Step glob for packages/agentplane/src/commands/pr-flow* does not match existing test files under zsh/bun, so equivalent current test paths were used.
+- Note: Verified after correcting task Verify Steps to existing test paths: work-start/integrate Bun tests passed, prepare Vitest test passed, typecheck passed, Prettier and ESLint passed on touched files.
 
 ## Risks
 
