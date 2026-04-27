@@ -22,9 +22,9 @@ Create a shared resolver for branch_pr task route context: base checkout, task b
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-27T09:15:52.366Z
+- Updated: 2026-04-27T09:26:55.422Z
 - Branch: task/202604270852-PR9VMK/branch-pr-context-resolver
-- Head: a6f7871c4b9e
+- Head: 0777f4410a3a
 
 ```text
  .agentplane/WORKFLOW.md                            |   4 +-
@@ -38,9 +38,12 @@ Create a shared resolver for branch_pr task route context: base checkout, task b
  .agentplane/tasks/202604270854-N1QDXW/README.md    |  91 ++++++++++++
  .agentplane/tasks/202604270855-5AVFXS/README.md    |  92 ++++++++++++
  .agentplane/workflows/last-known-good.md           |   4 +-
+ .../agentplane/src/commands/branch/work-start.ts   |  35 ++---
+ .../src/commands/pr/integrate/internal/prepare.ts  |  86 +++--------
+ .../src/commands/shared/branch-pr-context.ts       | 109 ++++++++++++++
  .../task/hosted-merge-sync/local-branch.ts         |   5 +-
  packages/core/src/git/git-client.ts                |   6 +
- 13 files changed, 810 insertions(+), 6 deletions(-)
+ 16 files changed, 955 insertions(+), 91 deletions(-)
 ```
 
 </details>

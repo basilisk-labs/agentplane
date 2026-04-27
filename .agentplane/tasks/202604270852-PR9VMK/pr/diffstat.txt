@@ -9,6 +9,9 @@
  .agentplane/tasks/202604270854-N1QDXW/README.md    |  91 ++++++++++++
  .agentplane/tasks/202604270855-5AVFXS/README.md    |  92 ++++++++++++
  .agentplane/workflows/last-known-good.md           |   4 +-
+ .../agentplane/src/commands/branch/work-start.ts   |  35 ++---
+ .../src/commands/pr/integrate/internal/prepare.ts  |  86 +++--------
+ .../src/commands/shared/branch-pr-context.ts       | 109 ++++++++++++++
  .../task/hosted-merge-sync/local-branch.ts         |   5 +-
  packages/core/src/git/git-client.ts                |   6 +
- 13 files changed, 810 insertions(+), 6 deletions(-)
+ 16 files changed, 955 insertions(+), 91 deletions(-)
