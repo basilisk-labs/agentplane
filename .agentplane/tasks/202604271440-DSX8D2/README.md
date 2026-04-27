@@ -1,10 +1,11 @@
 ---
 id: "202604271440-DSX8D2"
 title: "Align docs with current branch_pr runtime"
-status: "DOING"
+result_summary: "Merged via PR #541."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-27T14:51:27.468Z"
   updated_by: "DOCS"
   note: "Docs aligned with current branch_pr runtime; stale intermediate/legacy public docs removed; docs/site/cli/routing/doctor checks passed."
-commit: null
+commit:
+  hash: "90581cd6c25085ada918e717033776d4411b45c0"
+  message: "Merge PR #541: DSX8D2 docs current runtime"
 comments:
   -
     author: "DOCS"
     body: "Start: audit public and repository documentation for stale legacy or intermediate workflow data, then align docs with the current branch_pr runtime."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #541 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Docs aligned with current branch_pr runtime; stale intermediate/legacy public docs removed; docs/site/cli/routing/doctor checks passed."
+  -
+    type: "status"
+    at: "2026-04-27T14:55:20.048Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #541 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-27T14:51:27.473Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-04-27T14:55:20.053Z"
+doc_updated_by: "INTEGRATOR"
 description: "Audit public and repository documentation for intermediate or legacy workflow data, remove stale references, and align docs with the current code and branch_pr merge-preserving runtime."
 sections:
   Summary: |-
