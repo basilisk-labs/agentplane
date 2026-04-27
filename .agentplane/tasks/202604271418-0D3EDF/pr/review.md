@@ -26,8 +26,8 @@ Change branch_pr integrate policy, CLI defaults, and prompt/help text so merge c
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Default branch_pr integrate now preserves branch history with merge commits; squash remains explicit opt-in.
 
 ## Risks
 

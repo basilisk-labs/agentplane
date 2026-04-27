@@ -11,8 +11,8 @@ Change branch_pr integrate policy, CLI defaults, and prompt/help text so merge c
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Default branch_pr integrate now preserves branch history with merge commits; squash remains explicit opt-in.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes

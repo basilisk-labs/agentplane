@@ -4,7 +4,7 @@ title: "Preserve branch_pr merge history by default"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-27T14:28:57.713Z"
+  updated_by: "CODER"
+  note: "Default branch_pr integrate now preserves branch history with merge commits; squash remains explicit opt-in."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: change branch_pr merge defaults and guidance so task branch history is preserved by default, while squash remains an explicit opt-in strategy."
+  -
+    type: "verify"
+    at: "2026-04-27T14:28:57.713Z"
+    author: "CODER"
+    state: "ok"
+    note: "Default branch_pr integrate now preserves branch history with merge commits; squash remains explicit opt-in."
 doc_version: 3
-doc_updated_at: "2026-04-27T14:18:58.717Z"
+doc_updated_at: "2026-04-27T14:29:19.810Z"
 doc_updated_by: "CODER"
 description: "Change branch_pr integrate policy, CLI defaults, and prompt/help text so merge commits preserve task branch history by default, while squash remains an explicit opt-in strategy. Update tests and docs/policy references accordingly."
 sections:
@@ -57,11 +63,19 @@ sections:
     5. Run Prettier/ESLint on touched source and policy/doc files. Expected: both succeed.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-27T14:28:57.713Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Default branch_pr integrate now preserves branch history with merge commits; squash remains explicit opt-in.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-27T14:18:58.717Z, excerpt_hash=sha256:0ab8df6ce74f0cca722a24ed2ac8c1ea2faacd477b85751dac52e884b2688625
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: "No task-local findings."
 id_source: "generated"
 ---
 ## Summary
@@ -90,6 +104,14 @@ Change branch_pr integrate policy, CLI defaults, and prompt/help text so merge c
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-27T14:28:57.713Z — VERIFY — ok
+
+By: CODER
+
+Note: Default branch_pr integrate now preserves branch history with merge commits; squash remains explicit opt-in.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-27T14:18:58.717Z, excerpt_hash=sha256:0ab8df6ce74f0cca722a24ed2ac8c1ea2faacd477b85751dac52e884b2688625
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -98,3 +120,5 @@ Change branch_pr integrate policy, CLI defaults, and prompt/help text so merge c
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+No task-local findings.
