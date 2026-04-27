@@ -3,13 +3,16 @@ import path from "node:path";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
-import { exitCodeForError } from "../../cli/exit-codes.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";
 import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
 import { isPathWithin } from "../shared/path.js";
+import {
+  ensureBranchPrBaseCheckout,
+  resolveBranchPrLifecycleContext,
+} from "../shared/branch-pr-context.js";
 import {
   loadBackendTask,
   loadCommandContext,
@@ -25,7 +28,7 @@ import {
   readDirectWorkLock,
   writeDirectWorkLock,
 } from "./work-start.direct.js";
-import { ensureCurrentBaseBranch, resolveBaseBranch } from "./work-start.git.js";
+import { ensureCurrentBaseBranch } from "./work-start.git.js";
 import { materializeHookShimForWorktree } from "./work-start.hook-shim.js";
 import {
   materializeLocalBackendReadmesForWorktree,
@@ -107,26 +110,20 @@ export async function cmdWorkStart(opts: {
 
     let baseRef = currentBranch;
     if (mode === "branch_pr") {
-      const baseBranch = await resolveBaseBranch({
+      const lifecycleContext = await resolveBranchPrLifecycleContext({
         cwd: opts.cwd,
         rootOverride: opts.rootOverride ?? null,
-        cliBaseOpt: null,
-        mode,
+        gitRoot: resolved.gitRoot,
+        workflowMode: mode,
+        missingBaseMessage: "Base branch could not be resolved (use `agentplane branch base set`).",
       });
-      if (!baseBranch) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: "Base branch could not be resolved (use `agentplane branch base set`).",
-        });
-      }
-      if (currentBranch !== baseBranch) {
-        throw new CliError({
-          exitCode: exitCodeForError("E_GIT"),
-          code: "E_GIT",
-          message: `work start must be run on base branch ${baseBranch} (current: ${currentBranch})`,
-        });
-      }
+      const { baseBranch } = lifecycleContext;
+      await ensureBranchPrBaseCheckout({
+        context: lifecycleContext,
+        gitRoot: resolved.gitRoot,
+        command: "work start",
+        mismatchMessage: `work start must be run on base branch ${baseBranch} (current: ${currentBranch})`,
+      });
       await ensureCurrentBaseBranch(resolved.gitRoot, baseBranch);
       baseRef = baseBranch;
     }

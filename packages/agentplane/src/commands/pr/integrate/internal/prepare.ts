@@ -1,15 +1,18 @@
 import path from "node:path";
 import { readFile } from "node:fs/promises";
-import { resolveBaseBranch, gitDiffNames, findWorktreeForBranch } from "@agentplaneorg/core/git";
+import { findWorktreeForBranch, gitDiffNames } from "@agentplaneorg/core/git";
 import type { TaskData } from "../../../../backends/task-backend.js";
 
 import { fileExists } from "../../../../cli/fs-utils.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
-import { unknownEntityMessage, workflowModeMessage } from "../../../../cli/output.js";
-import { withDiagnosticContext } from "../../../shared/diagnostics.js";
+import { unknownEntityMessage } from "../../../../cli/output.js";
 import { CliError } from "../../../../shared/errors.js";
 import { ensureGitClean } from "../../../guard/index.js";
-import { gitBranchExists, gitCurrentBranch, gitRevParse } from "../../../shared/git-ops.js";
+import { gitBranchExists, gitRevParse } from "../../../shared/git-ops.js";
+import {
+  ensureBranchPrBaseCheckout,
+  resolveBranchPrLifecycleContext,
+} from "../../../shared/branch-pr-context.js";
 import {
   loadCommandContext,
   loadTaskFromContext,
@@ -75,14 +78,6 @@ export async function prepareIntegrate(opts: {
   const resolved = ctx.resolvedProject;
   const loadedConfig = ctx.config;
 
-  if (loadedConfig.workflow_mode !== "branch_pr") {
-    throw new CliError({
-      exitCode: exitCodeForError("E_USAGE"),
-      code: "E_USAGE",
-      message: workflowModeMessage(loadedConfig.workflow_mode, "branch_pr"),
-    });
-  }
-
   await ensureGitClean({ cwd: opts.cwd, rootOverride: opts.rootOverride });
 
   if (opts.base?.trim().length === 0) {
@@ -93,21 +88,16 @@ export async function prepareIntegrate(opts: {
     });
   }
 
-  const baseBranch = await resolveBaseBranch({
+  const lifecycleContext = await resolveBranchPrLifecycleContext({
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
+    gitRoot: resolved.gitRoot,
+    workflowMode: loadedConfig.workflow_mode,
     cliBaseOpt: opts.base ?? null,
-    mode: loadedConfig.workflow_mode,
+    missingBaseMessage:
+      "Base branch could not be resolved (use `agentplane branch base set` or --base).",
   });
-  if (!baseBranch) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_USAGE"),
-      code: "E_USAGE",
-      message: "Base branch could not be resolved (use `agentplane branch base set` or --base).",
-    });
-  }
-
-  const currentBranch = await gitCurrentBranch(resolved.gitRoot);
+  const { baseBranch, currentBranch } = lifecycleContext;
 
   const { prDir, metaPath, diffstatPath, verifyLogPath } = await resolvePrPaths({
     ctx,
@@ -143,49 +133,13 @@ export async function prepareIntegrate(opts: {
     });
   }
 
-  if (currentBranch !== baseBranch) {
-    if (currentBranch === branch) {
-      const baseWorktreePath = await findWorktreeForBranch(resolved.gitRoot, baseBranch);
-      const rerunCommand =
-        baseWorktreePath && baseWorktreePath.trim().length > 0
-          ? `agentplane integrate ${opts.taskId} --branch ${branch} --root ${baseWorktreePath}`
-          : `git checkout ${baseBranch} && agentplane integrate ${opts.taskId} --branch ${branch}`;
-      throw new CliError({
-        exitCode: exitCodeForError("E_GIT"),
-        code: "E_GIT",
-        message:
-          `integrate must run from the ${baseBranch} base checkout, not from task branch ${branch}. ` +
-          `Rerun it against the base checkout after leaving this task worktree.`,
-        context: withDiagnosticContext(
-          {
-            command: "integrate",
-            task_id: opts.taskId,
-            branch,
-            base_branch: baseBranch,
-            current_branch: currentBranch,
-            ...(baseWorktreePath ? { base_worktree_path: baseWorktreePath } : {}),
-            reason_code: "integrate_base_checkout_required",
-          },
-          {
-            state: `integrate was invoked from task branch ${branch} instead of base branch ${baseBranch}`,
-            likelyCause:
-              "the operator is inside the task worktree, but branch_pr integrate is only valid from the registered base checkout",
-            hint: "Use the base checkout/worktree for the resolved base branch, not the task branch worktree, when running integrate.",
-            nextAction: {
-              command: rerunCommand,
-              reason: "rerun integrate against the base checkout route",
-              reasonCode: "integrate_base_checkout_required",
-            },
-          },
-        ),
-      });
-    }
-    throw new CliError({
-      exitCode: exitCodeForError("E_GIT"),
-      code: "E_GIT",
-      message: `integrate must run on base branch ${baseBranch} (current: ${currentBranch})`,
-    });
-  }
+  await ensureBranchPrBaseCheckout({
+    context: lifecycleContext,
+    gitRoot: resolved.gitRoot,
+    command: "integrate",
+    taskId: opts.taskId,
+    taskBranch: branch,
+  });
 
   await ensureCommittedPrArtifactsOnBranch({
     resolved,

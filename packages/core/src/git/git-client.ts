@@ -133,6 +133,12 @@ export async function gitIsAncestor(
   } catch (err) {
     const code = (err as { code?: number | string } | null)?.code;
     if (code === 1) return false;
+    if (
+      code === 128 &&
+      String((err as { stderr?: string } | null)?.stderr ?? "").includes("Not a valid commit name")
+    ) {
+      return false;
+    }
     throw err;
   }
 }
