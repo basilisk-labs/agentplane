@@ -19,7 +19,7 @@ function hasTaskVerificationForLocalSync(opts: {
 
 async function gitRefExists(opts: { cwd: string; ref: string }): Promise<boolean> {
   try {
-    await execFileAsync("git", ["rev-parse", "--verify", "--quiet", opts.ref], {
+    await execFileAsync("git", ["cat-file", "-e", `${opts.ref}^{commit}`], {
       cwd: opts.cwd,
       env: process.env,
     });
@@ -89,6 +89,9 @@ export async function findLocallyShippedBranchPrTasks(opts: {
     const commitHash =
       task.commit?.hash?.trim() ?? meta?.merge_commit?.trim() ?? meta?.head_sha?.trim() ?? "";
     if (!commitHash) continue;
+    if (!(await gitRefExists({ cwd: opts.ctx.resolvedProject.gitRoot, ref: commitHash }))) {
+      continue;
+    }
 
     const base = await resolveSyncBaseBranch({ ctx: opts.ctx, meta });
     if (!base) continue;
