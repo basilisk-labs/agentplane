@@ -87,12 +87,6 @@ agentplane init \
   --yes
 ```
 
-Legacy aliases still work and are mapped automatically:
-
-- `vibecoder -> light`
-- `manager -> normal`
-- `developer|enterprise -> full-harness`
-
 You can switch profile later without re-running init:
 
 ```bash
@@ -183,10 +177,10 @@ agentplane upgrade --dry-run
 agentplane upgrade --agent
 ```
 
-`--dry-run` is the preview path. `--agent` keeps the older review-plan mode without writes.
+`--dry-run` is the preview path.
 
-If a legacy project ends up with a new gateway but missing policy modules after upgrade, use the
-[Legacy upgrade recovery](../help/legacy-upgrade-recovery) runbook.
+If an older project ends up with a new gateway but missing policy modules after upgrade, use the
+[Upgrade recovery](../help/legacy-upgrade-recovery) runbook.
 
 If `agentplane doctor` reports that active tasks still use legacy README v2 docs or that the
 workspace is in an active v2/v3 mixed state after an upgrade, normalize task docs before
