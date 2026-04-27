@@ -1,10 +1,11 @@
 ---
 id: "202604270744-R33QS8"
 title: "Switch workflow to branch_pr and audit task lifecycle"
-status: "DOING"
+result_summary: "workflow_mode=branch_pr; diagnostics hardened; lifecycle optimization findings recorded; verification passed"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-04-27T07:55:47.541Z"
   updated_by: "CODER"
   note: "Command: agentplane config show | rg '\"workflow_mode\"|branch_pr'; Result: pass; Evidence: workflow_mode is branch_pr. Scope: config switch. Command: agentplane branch base get; Result: pass; Evidence: base resolves to main. Scope: branch_pr route. Command: PATH=/Users/densmirnov/.bun/bin:/Users/densmirnov/.local/share/solana/install/active_release/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pkg/env/active/bin:/opt/pmk/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Users/densmirnov/.codex/tmp/arg0/codex-arg0zEDApF:/Applications/Codex.app/Contents/Resources:/Users/densmirnov/.foundry/bin:/Users/densmirnov/.orbstack/bin:/Applications/Obsidian.app/Contents/MacOS bun x eslint packages/core/src/git/git-client.ts packages/agentplane/src/commands/task/hosted-merge-sync/local-branch.ts; Result: pass. Scope: touched code. Command: PATH=/Users/densmirnov/.bun/bin:/Users/densmirnov/.local/share/solana/install/active_release/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pkg/env/active/bin:/opt/pmk/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Users/densmirnov/.codex/tmp/arg0/codex-arg0zEDApF:/Applications/Codex.app/Contents/Resources:/Users/densmirnov/.foundry/bin:/Users/densmirnov/.orbstack/bin:/Applications/Obsidian.app/Contents/MacOS bun test packages/agentplane/src/commands/doctor.command.runtime.test.ts packages/agentplane/src/commands/doctor.command.task-docs.test.ts; Result: pass; Evidence: 25 pass, 0 fail. Scope: doctor/runtime diagnostics. Command: agentplane doctor; Result: pass; Evidence: errors=0 warnings=0 info=8. Scope: branch_pr lifecycle diagnostic path. Command: node .agentplane/policy/check-routing.mjs && git diff --check; Result: pass. Scope: policy routing and whitespace."
-commit: null
+commit:
+  hash: "b84b8a6fc10aee1ece5b76bc1400eb8345969239"
+  message: "🚧 R33QS8 task: sync branch_pr workflow artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: switch workflow_mode from direct to branch_pr through the CLI, then inspect lifecycle implementation surfaces for concrete error-reduction opportunities without widening into code refactors."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: switched repository workflow_mode to branch_pr, synchronized generated workflow artifacts, hardened branch_pr diagnostics against missing historical commit objects, and recorded lifecycle optimization findings with passing local verification."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: agentplane config show | rg '\"workflow_mode\"|branch_pr'; Result: pass; Evidence: workflow_mode is branch_pr. Scope: config switch. Command: agentplane branch base get; Result: pass; Evidence: base resolves to main. Scope: branch_pr route. Command: PATH=/Users/densmirnov/.bun/bin:/Users/densmirnov/.local/share/solana/install/active_release/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pkg/env/active/bin:/opt/pmk/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Users/densmirnov/.codex/tmp/arg0/codex-arg0zEDApF:/Applications/Codex.app/Contents/Resources:/Users/densmirnov/.foundry/bin:/Users/densmirnov/.orbstack/bin:/Applications/Obsidian.app/Contents/MacOS bun x eslint packages/core/src/git/git-client.ts packages/agentplane/src/commands/task/hosted-merge-sync/local-branch.ts; Result: pass. Scope: touched code. Command: PATH=/Users/densmirnov/.bun/bin:/Users/densmirnov/.local/share/solana/install/active_release/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pkg/env/active/bin:/opt/pmk/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Users/densmirnov/.codex/tmp/arg0/codex-arg0zEDApF:/Applications/Codex.app/Contents/Resources:/Users/densmirnov/.foundry/bin:/Users/densmirnov/.orbstack/bin:/Applications/Obsidian.app/Contents/MacOS bun test packages/agentplane/src/commands/doctor.command.runtime.test.ts packages/agentplane/src/commands/doctor.command.task-docs.test.ts; Result: pass; Evidence: 25 pass, 0 fail. Scope: doctor/runtime diagnostics. Command: agentplane doctor; Result: pass; Evidence: errors=0 warnings=0 info=8. Scope: branch_pr lifecycle diagnostic path. Command: node .agentplane/policy/check-routing.mjs && git diff --check; Result: pass. Scope: policy routing and whitespace."
+  -
+    type: "status"
+    at: "2026-04-27T07:56:57.362Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: switched repository workflow_mode to branch_pr, synchronized generated workflow artifacts, hardened branch_pr diagnostics against missing historical commit objects, and recorded lifecycle optimization findings with passing local verification."
 doc_version: 3
-doc_updated_at: "2026-04-27T07:55:47.547Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-27T07:56:57.363Z"
+doc_updated_by: "INTEGRATOR"
 description: "Switch repository workflow_mode from direct to branch_pr, then analyze task lifecycle code paths for optimization opportunities that reduce potential errors."
 sections:
   Summary: |-
