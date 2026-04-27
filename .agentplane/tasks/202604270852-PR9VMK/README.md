@@ -1,10 +1,11 @@
 ---
 id: "202604270852-PR9VMK"
 title: "Introduce branch_pr lifecycle context resolver"
-status: "DOING"
+result_summary: "Merged via PR #537."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-27T09:28:39.215Z"
   updated_by: "CODER"
   note: "Verified after correcting task Verify Steps to existing test paths: work-start/integrate Bun tests passed, prepare Vitest test passed, typecheck passed, Prettier and ESLint passed on touched files."
-commit: null
+commit:
+  hash: "4124d627dc429a24455cd914273506a8e12c61c8"
+  message: "✨ PR9VMK task: add branch_pr lifecycle context resolver"
 comments:
   -
     author: "CODER"
     body: "Start: implement shared branch_pr lifecycle context resolver in a task worktree, keeping command behavior compatible and verification focused on branch/worktree/PR route invariants."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #537 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified after correcting task Verify Steps to existing test paths: work-start/integrate Bun tests passed, prepare Vitest test passed, typecheck passed, Prettier and ESLint passed on touched files."
+  -
+    type: "status"
+    at: "2026-04-27T09:33:01.014Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #537 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-27T09:28:39.221Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-27T09:33:01.020Z"
+doc_updated_by: "INTEGRATOR"
 description: "Create a shared resolver for branch_pr task route context: base checkout, task branch, worktree path, PR artifact paths, head SHA, freshness state, and allowed mutation route. Keep behavior-compatible and wire only low-risk consumers if needed for validation."
 sections:
   Summary: |-

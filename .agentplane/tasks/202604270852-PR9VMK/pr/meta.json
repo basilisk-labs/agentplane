@@ -2,12 +2,16 @@
   "base": "main",
   "branch": "task/202604270852-PR9VMK/branch-pr-context-resolver",
   "created_at": "2026-04-27T09:15:52.366Z",
-  "head_sha": "0777f4410a3af6e65c9eb9426305748c3f047e14",
+  "head_sha": "104b4ffb02ac634cd095118232f7b379c9e45f18",
   "last_verified_at": "2026-04-27T09:28:39.215Z",
   "last_verified_sha": "0777f4410a3af6e65c9eb9426305748c3f047e14",
+  "merge_commit": "4124d627dc429a24455cd914273506a8e12c61c8",
+  "merge_strategy": "squash",
+  "merged_at": "2026-04-27T09:32:21Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604270852-PR9VMK",
-  "updated_at": "2026-04-27T09:26:55.422Z",
+  "updated_at": "2026-04-27T09:32:21Z",
   "verify": {
     "status": "pass"
   }
