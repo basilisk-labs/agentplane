@@ -28,11 +28,13 @@ agentplane pr update <task-id>
 git push -u origin task/<task-id>/<slug>
 gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
 bun run workflow:wait-remote-checks
-agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
+agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <git-rev> --close-commit
 ```
 
 `direct` remains supported, but in this repository it is an explicit alternative rather than the default guarded path.
+`agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass
+`--merge-strategy squash` only when compacting history is intentional.
 
 ## Default direct path
 

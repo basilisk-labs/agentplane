@@ -29,11 +29,13 @@ git push -u origin task/<task-id>/<slug>
 gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
 bun run workflow:wait-remote-checks
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
-agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
+agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 ```
 
 `direct` remains supported, but here it is an explicit alternative rather than the default guarded route.
+`agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass
+`--merge-strategy squash` only when compacting history is intentional.
 
 ## Minimal direct lifecycle
 
@@ -184,7 +186,7 @@ sequenceDiagram
   CLI->>B: Update PR artifacts + handoff notes
   G-->>E: Required checks green
   I->>CLI: pr check / integrate
-  CLI->>G: Merge to base (squash)
+  CLI->>G: Merge to base (merge commit by default)
   CLI->>B: Refresh diffstat + README summary
   I->>CLI: finish <task-id> --author <id> --body <text> --result <one-line>
   CLI->>B: Close task + store commit metadata

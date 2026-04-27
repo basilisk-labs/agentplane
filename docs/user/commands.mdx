@@ -179,11 +179,11 @@ agentplane pr update <task-id>
 git push -u origin task/<task-id>/<slug>
 gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
 bun run workflow:wait-remote-checks
-agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
+agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <git-rev> --close-commit
 ```
 
-`agentplane pr ...` manages local PR artifacts under `.agentplane/tasks/<task-id>/pr/`, including `review.md`, `github-title.txt`, and `github-body.md`. Hosted GitHub PR creation still uses `gh pr create`, but the title/body should come from those derived files rather than `--fill`. The canonical required-check wait step is `bun run workflow:wait-remote-checks`, which delegates to `gh pr checks --watch --required --fail-fast`.
+`agentplane pr ...` manages local PR artifacts under `.agentplane/tasks/<task-id>/pr/`, including `review.md`, `github-title.txt`, and `github-body.md`. Hosted GitHub PR creation still uses `gh pr create`, but the title/body should come from those derived files rather than `--fill`. The canonical required-check wait step is `bun run workflow:wait-remote-checks`, which delegates to `gh pr checks --watch --required --fail-fast`. `agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass `--merge-strategy squash` only when compacting history is intentional.
 
 GitHub protection audit for this repository:
 

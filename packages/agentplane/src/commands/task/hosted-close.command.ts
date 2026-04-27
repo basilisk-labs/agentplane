@@ -120,7 +120,7 @@ async function closeHostedTask(opts: {
     meta,
     branch: target.branch,
     base: target.mergedPr.baseRefName ?? meta.base ?? "main",
-    mergeStrategy: meta.merge_strategy ?? "squash",
+    mergeStrategy: meta.merge_strategy ?? "merge",
     mergeHash: target.mergedPr.mergeCommit.oid,
     branchHeadSha: target.mergedPr.headRefOid ?? meta.head_sha ?? target.mergedPr.mergeCommit.oid,
     at: target.mergedPr.mergedAt ?? new Date().toISOString(),

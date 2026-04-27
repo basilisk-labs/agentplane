@@ -22,7 +22,7 @@ agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
 agentplane pr update <task-id>
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
-agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify
+agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 ```
 
@@ -33,6 +33,7 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
 - MUST run `task plan approve` then `task start-ready` as `Step 1 -> wait -> Step 2` (never parallel).
 - In `branch_pr`, `task start-ready`, `pr open`, `pr update`, and verification commands SHOULD be run from the task worktree created by `work start`.
 - `pr open` without `--sync-only` SHOULD complete in one pass: sync local artifacts, auto-publish the task branch to `origin` when it has no upstream yet, then create/link the remote GitHub PR.
+- `integrate` defaults to the `merge` strategy so task branch commits stay in base history. Use `--merge-strategy squash` only when intentionally compacting branch history.
 - `task start-ready` MAY surface targeted incident advice for analogous scope/tags; follow it before widening scope.
 - Keep structured resolved external findings in the task README; mark reusable ones with `Fixability: external` (or `IncidentExternal: true`) and let base-branch `finish` or `agentplane incidents collect <task-id>` promote them into `.agentplane/policy/incidents.md`, using optional `Incident*` fields only when the inferred scope/advice needs refinement. Plain `Findings` text remains task-local and does not update the shared incident registry.
 - MUST stop and request re-approval on material drift.

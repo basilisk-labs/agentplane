@@ -1,0 +1,46 @@
+## Summary
+
+Preserve branch_pr merge history by default
+
+Change branch_pr integrate policy, CLI defaults, and prompt/help text so merge commits preserve task branch history by default, while squash remains an explicit opt-in strategy. Update tests and docs/policy references accordingly.
+
+## Scope
+
+- In scope: Change branch_pr integrate policy, CLI defaults, and prompt/help text so merge commits preserve task branch history by default, while squash remains an explicit opt-in strategy. Update tests and docs/policy references accordingly.
+- Out of scope: unrelated refactors not required for "Preserve branch_pr merge history by default".
+
+## Verification
+
+- State: ok
+- Note: Default branch_pr integrate now preserves branch history with merge commits; squash remains explicit opt-in.
+- Full verification checklist lives in local review.md.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-04-27T14:30:15.201Z
+- Branch: task/202604271418-0D3EDF/preserve-merge-history
+- Head: 4c59410b5887
+
+```text
+ .agentplane/policy/workflow.branch_pr.md           |  3 +-
+ docs/user/branching-and-pr-artifacts.mdx           |  4 ++-
+ docs/user/cli-reference.generated.mdx              |  2 +-
+ docs/user/commands.mdx                             |  4 +--
+ docs/user/task-lifecycle.mdx                       |  6 ++--
+ docs/user/workflow.mdx                             |  4 ++-
+ packages/agentplane/assets/AGENTS.md               |  2 +-
+ .../agentplane/assets/policy/workflow.branch_pr.md |  3 +-
+ packages/agentplane/src/cli/command-guide.test.ts  | 10 ++++++
+ packages/agentplane/src/cli/command-guide.ts       |  2 +-
+ ...n-cli.core.pr-flow.integrate-strategies.test.ts | 42 +++++++++++++++-------
+ packages/agentplane/src/commands/integrate.spec.ts |  7 ++--
+ .../src/commands/task/hosted-close.command.ts      |  2 +-
+ 13 files changed, 63 insertions(+), 28 deletions(-)
+```
+
+</details>

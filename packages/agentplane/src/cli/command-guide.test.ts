@@ -28,6 +28,16 @@ describe("command-guide", () => {
     expect(roles).toContain("CODER");
   });
 
+  it("documents merge-preserving branch_pr integration by default", () => {
+    const text = renderRoleTyped("integrator");
+    expect(text).toContain(
+      "agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify",
+    );
+    expect(text).toContain("default integrate strategy is `merge`");
+    expect(text).toContain("--merge-strategy squash");
+    expect(text).not.toContain("--merge-strategy squash --run-verify");
+  });
+
   it("renders role blocks case-insensitively", () => {
     const text = renderRoleTyped("coder");
     expect(text).toContain("### CODER");

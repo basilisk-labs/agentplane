@@ -153,7 +153,16 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
+      const code = await runCli([
+        "integrate",
+        taskId,
+        "--branch",
+        branch,
+        "--merge-strategy",
+        "squash",
+        "--root",
+        root,
+      ]);
       expect(code).toBe(0);
     } finally {
       io.restore();
@@ -249,7 +258,16 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
+      const code = await runCli([
+        "integrate",
+        taskId,
+        "--branch",
+        branch,
+        "--merge-strategy",
+        "squash",
+        "--root",
+        root,
+      ]);
       expect(code).toBe(0);
     } finally {
       io.restore();
@@ -357,7 +375,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
   );
 
   it(
-    "integrate supports merge strategy",
+    "integrate defaults to merge strategy",
     async () => {
       const root = await mkGitRepoRootWithBranch("main");
       await configureGitUser(root);
@@ -415,16 +433,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
 
       const io = captureStdIO();
       try {
-        const code = await runCli([
-          "integrate",
-          taskId,
-          "--branch",
-          branch,
-          "--merge-strategy",
-          "merge",
-          "--root",
-          root,
-        ]);
+        const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
         expect(code).toBe(0);
         expect(io.stdout).toContain("✅ integrate");
       } finally {
@@ -432,6 +441,13 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       }
 
       expect(await gitBranchExists(root, branch)).toBe(false);
+      const { stdout: logOut } = await execFileAsync("git", ["log", "--oneline", "--max-count=20"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      expect(logOut).toContain(`${taskId} add feature`);
+      expect(logOut).toContain("integrate:");
+      expect(logOut).toContain("Merge strategy integrate");
     },
     INTEGRATE_REBASE_TIMEOUT_MS,
   );
