@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604270852-PR9VMK/branch-pr-context-resolver",
+  "created_at": "2026-04-27T09:15:52.366Z",
+  "head_sha": "a6f7871c4b9e0cd3160830f59ee9ac27a143ebcf",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604270852-PR9VMK",
+  "updated_at": "2026-04-27T09:15:52.366Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

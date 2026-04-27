@@ -1,10 +1,10 @@
 ---
 id: "202604270852-PR9VMK"
 title: "Introduce branch_pr lifecycle context resolver"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +26,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: implement shared branch_pr lifecycle context resolver in a task worktree, keeping command behavior compatible and verification focused on branch/worktree/PR route invariants."
+events:
+  -
+    type: "status"
+    at: "2026-04-27T09:15:52.150Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: implement shared branch_pr lifecycle context resolver in a task worktree, keeping command behavior compatible and verification focused on branch/worktree/PR route invariants."
 doc_version: 3
-doc_updated_at: "2026-04-27T08:55:27.626Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-27T09:15:52.180Z"
+doc_updated_by: "CODER"
 description: "Create a shared resolver for branch_pr task route context: base checkout, task branch, worktree path, PR artifact paths, head SHA, freshness state, and allowed mutation route. Keep behavior-compatible and wire only low-risk consumers if needed for validation."
 sections:
   Summary: |-

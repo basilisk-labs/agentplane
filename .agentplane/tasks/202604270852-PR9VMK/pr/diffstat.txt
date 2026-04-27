@@ -1,0 +1,14 @@
+ .agentplane/WORKFLOW.md                            |   4 +-
+ .agentplane/config.json                            |   2 +-
+ .agentplane/tasks/202604270744-R33QS8/README.md    | 161 +++++++++++++++++++++
+ .agentplane/tasks/202604270852-3FX0AN/README.md    |  91 ++++++++++++
+ .agentplane/tasks/202604270853-8D0EH8/README.md    |  91 ++++++++++++
+ .agentplane/tasks/202604270853-ZDBDWP/README.md    |  90 ++++++++++++
+ .agentplane/tasks/202604270854-D9N9B2/README.md    |  90 ++++++++++++
+ .agentplane/tasks/202604270854-ECZV49/README.md    |  89 ++++++++++++
+ .agentplane/tasks/202604270854-N1QDXW/README.md    |  91 ++++++++++++
+ .agentplane/tasks/202604270855-5AVFXS/README.md    |  92 ++++++++++++
+ .agentplane/workflows/last-known-good.md           |   4 +-
+ .../task/hosted-merge-sync/local-branch.ts         |   5 +-
+ packages/core/src/git/git-client.ts                |   6 +
+ 13 files changed, 810 insertions(+), 6 deletions(-)
