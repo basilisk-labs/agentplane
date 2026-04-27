@@ -5,63 +5,28 @@ description: "Important workflow and policy changes, with upgrade guidance."
 
 ## Summary
 
-Agent Plane is now driven by the Node CLI `agentplane` with repository state under `.agentplane/`.
+Current AgentPlane repositories are driven by the Node CLI `agentplane` with repository state under
+`.agentplane/`. This page records active compatibility boundaries that matter for current upgrades.
 
-## Key changes
+## Current compatibility boundaries
 
-1. State directory is `.agentplane/`.
-2. Initialization and upgrades are done through `agentplane init` and `agentplane upgrade`.
-3. Task policy moved to primary-tag model:
-   - `tasks.tags.primary_allowlist`
-   - `tasks.verify.require_steps_for_primary`
-   - `tasks.verify.require_verification_for_primary`
-4. Comment-driven status commits are now limited to major transitions and use subject format:
-   - `<emoji> <suffix> <primary>: <status>`
-5. Redmine backend is env-first for credentials and field IDs.
+1. Repository state lives under `.agentplane/`; root-level legacy workflow files are not read as
+   fallbacks.
+2. Initialization and framework upgrades run through `agentplane init` and `agentplane upgrade`.
+3. New task READMEs use `doc_version=3`; use `agentplane task migrate-doc --all` only when
+   `agentplane doctor` reports active v2/v3 migration drift after an upgrade.
+4. `branch_pr` integrates task branches with merge commits by default so branch history is
+   preserved. Use `--merge-strategy squash` only when compacting history is intentional.
+5. `direct` remains supported, but protected-base repositories should use hosted PR merge and
+   hosted close automation for `branch_pr` work.
+6. Redmine backend configuration is env-first for credentials and field IDs.
 
-## Planned v0.4: prompt assembly
+## Upgrade checklist
 
-AgentPlane v0.4 is planned to make prompt files compiled outputs from a named module graph.
-
-This is a breaking model change for projects and recipes that treat `AGENTS.md`,
-`.agentplane/policy/**`, or `.agentplane/agents/**` as manually edited source files.
-
-Target v0.4 behavior:
-
-1. `AGENTS.md` or `CLAUDE.md` remains the repository entrypoint.
-2. Additional policy, recipe, and role files are still loaded only when gateway load rules, role
-   activation, workflow mode, task phase, or recipe bindings require them.
-3. Framework base modules, active recipe mutations, and repo-local overrides are resolved into a
-   compiled prompt filesystem.
-4. `AGENTS.md`, `.agentplane/policy/**`, and `.agentplane/agents/**` become compiled
-   compatibility outputs.
-5. Recipes may provide modules for gateway sections, policy rules, agent profiles, validators,
-   templates, and runner context.
-6. Recipe modules are downloaded into the global cache first, then vendored into a project before
-   they can affect that project's prompt graph.
-7. Manual edits to compiled prompt files are treated as drift unless they are recorded as repo-local
-   modules or overrides.
-
-Migration guidance:
-
-1. Move durable local policy changes out of generated prompt files and into explicit repo-local
-   modules or sanctioned policy override surfaces.
-2. Treat recipe installation as two phases: global cache under `AGENTPLANE_HOME` and project-local
-   activation under `.agentplane/recipes/`.
-3. Rebuild prompt artifacts after enabling, disabling, updating, or removing recipe modules.
-4. Inspect generated prompt manifests before accepting an upgrade when recipe behavior changes.
-5. Keep `AGENTS.md` compact; put recipe-specific detail behind lazy load rules instead of copying
-   full recipe text into the entrypoint.
-
-See [Prompt assembly system](../developer/prompt-assembly-system) for the target module, binding,
-mutation, and provenance model.
-
-## Migration checklist
-
-1. Install/update CLI and run `agentplane init` in repo root.
-2. Review `.agentplane/config.json` and move verify policy to primary-tag keys.
-3. If using Redmine, populate `.env` from `.env.example` and verify custom field IDs.
-4. Regenerate docs or scripts that relied on legacy commit subject assumptions.
+1. Install or update the CLI and run `agentplane upgrade`.
+2. Run `agentplane doctor`.
+3. If doctor reports active task README migration drift, run `agentplane task migrate-doc --all`.
+4. Regenerate generated docs only when command specs changed.
 
 ## Notes
 

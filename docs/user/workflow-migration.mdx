@@ -1,6 +1,6 @@
 ---
-title: "Workflow Migration"
-description: "How to migrate existing repositories to strict .agentplane/WORKFLOW.md enforcement, with rollout and rollback policy."
+title: "Workflow contract recovery"
+description: "How to repair .agentplane/WORKFLOW.md and its last-known-good snapshot."
 ---
 
 ## Target state
@@ -11,58 +11,33 @@ Each repository should have:
 - `.agentplane/workflows/last-known-good.md` snapshot.
 - `agentplane doctor` passing without `ERROR`.
 
-## Migration steps (existing repository)
+## Repair steps
 
-1. Initialize missing workflow artifacts:
+1. Validate the candidate contract:
 
 ```bash
-agentplane workflow build --validate
+agentplane workflow build --validate --dry-run
 ```
 
-2. Run health checks and apply safe autofixes:
+2. Apply safe doctor fixes:
 
 ```bash
 agentplane doctor --fix
 agentplane doctor
 ```
 
-3. Verify preflight gate:
+3. Rebuild the active workflow contract when needed:
 
 ```bash
-agentplane preflight --json --mode full
+agentplane workflow build --validate
 ```
 
-4. If workflow was corrupted, recover deterministically:
+4. If the active workflow was corrupted, restore from the snapshot:
 
 ```bash
 agentplane workflow restore
 agentplane doctor
 ```
-
-## Rollout policy
-
-1. **Internal phase**
-
-- Enable workflow gates in CI for framework repository only.
-- Track error codes (`WF_*`) and fix migration gaps.
-
-2. **Opt-in phase**
-
-- Enable CI workflow gate per repository.
-- Keep emergency kill-switch available.
-
-3. **Default-on phase**
-
-- Keep workflow gates enabled globally.
-- Allow kill-switch only for incident response with documented expiry.
-
-## Rollback criteria
-
-Trigger rollback if any of these occurs:
-
-- Reproducible false-positive `WF_*` diagnostics blocking healthy repos.
-- Restore path (`workflow restore`) fails for valid snapshots.
-- CI gate causes systemic failures across unaffected repositories.
 
 ## Kill-switch (emergency only)
 
@@ -76,11 +51,6 @@ Effects:
 
 - `agentplane preflight` skips workflow validation.
 - `agentplane doctor` skips workflow contract checks.
-- Core CI workflow-contract gate is skipped when this env is set to `off`.
-
-Validation:
-
-- Covered by CLI tests for preflight and doctor flows.
 
 Recovery:
 

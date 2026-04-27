@@ -7,7 +7,7 @@ Page text lives in the Markdown and MDX files under this directory.
 
 `website/` is the site shell that renders and deploys the public docs. It owns sidebar wiring, routing, layout, and presentation. It does not define canonical page content.
 
-`docs/docs.json` is the docs navigation manifest for the docs tree. Keep it in sync when the docs structure changes so downstream docs tooling and the published navigation model stay aligned.
+`website/sidebars.ts` is the active navigation manifest for the public docs site.
 
 Docs are organized into an agent-first navigation model on top of `docs/user/`, `docs/developer/`, and `docs/help/`:
 
@@ -25,7 +25,6 @@ Canonical docs ownership and section boundaries are defined in:
 When adding or moving pages, update these files together:
 
 - `docs/index.mdx`
-- `docs/docs.json`
 - `docs/README.md`
 - `website/sidebars.ts`
 - `website/docusaurus.config.ts`

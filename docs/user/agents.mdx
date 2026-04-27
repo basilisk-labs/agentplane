@@ -29,7 +29,7 @@ Bundled agent profiles are intentionally narrow overlays, not a second policy ga
 - Each profile should own one clear decision boundary and one dominant deliverable type.
 - Profiles should prefer explicit assumptions, stop conditions, and escalation rules over long narrative guidance.
 - Outputs should be evidence-oriented: changed files, checks run, remaining risks, and follow-up boundaries.
-- Task-local observations belong in task `## Findings` (or legacy `## Notes` on v2 tasks); reusable external ones can be promoted into `.agentplane/policy/incidents.md` by recording `Observation` / `Impact` / `Resolution` plus `Fixability: external` (or `IncidentExternal: true`), with optional `Incident*` overrides when the inferred advice needs refinement.
+- Task-local observations belong in task `## Findings`; reusable external ones can be promoted into `.agentplane/policy/incidents.md` by recording `Observation` / `Impact` / `Resolution` plus `Fixability: external` (or `IncidentExternal: true`), with optional `Incident*` overrides when the inferred advice needs refinement.
 - When a profile conflicts with `AGENTS.md`, CLI enforcement, or policy modules, the higher-priority source wins.
 
 ## Startup path
@@ -100,4 +100,4 @@ Use this order when an agent enters a repository:
 - Role command guidance is available via `agentplane role <ROLE>` and is derived from the installed profile when one exists.
 - The canonical installed startup path lives in `agentplane quickstart`; [Agent bootstrap](agent-bootstrap.generated) is the docs-site expansion of the same flow.
 - For policy details, read `AGENTS.md`.
-- For task artifacts, keep `Verify Steps` as the acceptance contract, use `## Findings` on README v3 tasks, and treat `## Notes` as legacy v2 compatibility until the workspace is migrated with `agentplane task migrate-doc --all`.
+- For task artifacts, keep `Verify Steps` as the acceptance contract and use `## Findings` for task-local observations.

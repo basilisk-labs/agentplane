@@ -14,8 +14,7 @@ Recipes v1 use a vendor-based lifecycle:
 
 After vendoring, runtime reads recipes only from the project-local vendor store.
 
-This page documents the active `0.3.23` recipe contract. Deferred prompt-assembly ideas are not
-part of the active runtime contract and should not be treated as current recipe behavior.
+This page documents the active v0.3 recipe contract.
 
 The repository-level docs inventory (`docs/recipes-inventory.json`) is a generated projection sourced
 from `agentplane-recipes/index.json` plus the checked-in recipe manifests under
@@ -54,13 +53,11 @@ First-class sections include `compatibility`, `overlay`, `skills`, `tools`, `age
 
 Contract notes:
 
-- `agents/` and `skills/` are markdown-first assets. Their content must survive compilation without being reduced to legacy JSON stubs.
+- `agents/` and `skills/` are markdown-first assets. Their content must survive packaging without
+  being reduced to JSON stubs.
 - `tools/` remain structured manifests plus executable content where required.
 - `scenarios/` are recipe-owned assets, not a separate top-level package kind.
 - Public scenario descriptors must be sufficient for resolver-driven selection without reading unrelated internal files.
-
-Deferred prompt-assembly work may revisit recipe-owned prompt modules later, but that is outside the
-active `0.3` contract and should not appear in current operational guidance.
 
 ## CLI surface
 

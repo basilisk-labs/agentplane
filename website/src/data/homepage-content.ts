@@ -244,7 +244,7 @@ export const homepageContent = {
         links: [
           { label: "Setup", to: "/docs/user/setup" },
           { label: "Troubleshooting", to: "/docs/help/troubleshooting-by-symptom" },
-          { label: "Legacy upgrade recovery", to: "/docs/help/legacy-upgrade-recovery" },
+          { label: "Upgrade recovery", to: "/docs/help/legacy-upgrade-recovery" },
         ],
       },
       {
