@@ -16,7 +16,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
-import { defaultConfig, extractTaskSuffix, ResolvedProject } from "@agentplaneorg/core";
+import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
 import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";

@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-import { defaultConfig, saveConfig } from "@agentplaneorg/core";
+import { defaultConfig, saveConfig } from "@agentplaneorg/core/config";
 import { describe, expect, it } from "vitest";
 
 import { DEFAULT_WORKFLOW_TEMPLATE } from "./build.js";

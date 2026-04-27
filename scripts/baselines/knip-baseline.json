@@ -35,183 +35,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/agents/agents-template.ts",
-      "types": [
-        {
-          "name": "PolicyTemplate",
-          "line": 22,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/backends/task-backend/local-backend-state.ts",
-      "exports": [
-        {
-          "name": "toTaskDocMutationComments",
-          "line": 39,
-          "col": 17
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-cache-doc.ts",
-      "types": [
-        {
-          "name": "RedmineCacheDocContext",
-          "line": 29,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-report.ts",
-      "types": [
-        {
-          "name": "RedmineReportContext",
-          "line": 10,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-runtime.ts",
-      "exports": [
-        {
-          "name": "appendRedmineBackendCommentNotes",
-          "line": 9,
-          "col": 3
-        },
-        {
-          "name": "appendRedmineBackendCustomField",
-          "line": 10,
-          "col": 3
-        },
-        {
-          "name": "assertRedmineExpectedRevision",
-          "line": 23,
-          "col": 3
-        },
-        {
-          "name": "assertRedmineExpectedRevisionSupported",
-          "line": 24,
-          "col": 3
-        },
-        {
-          "name": "cacheRedmineTask",
-          "line": 25,
-          "col": 3
-        },
-        {
-          "name": "coerceRedmineBackendDocVersion",
-          "line": 26,
-          "col": 3
-        },
-        {
-          "name": "diffRedmineBackendTasks",
-          "line": 11,
-          "col": 3
-        },
-        {
-          "name": "ensureRedmineDocMetadata",
-          "line": 27,
-          "col": 3
-        },
-        {
-          "name": "findRedmineIssueByTaskId",
-          "line": 12,
-          "col": 3
-        },
-        {
-          "name": "listRedmineRemoteTasks",
-          "line": 13,
-          "col": 3
-        },
-        {
-          "name": "maybeParseRedmineBackendJson",
-          "line": 14,
-          "col": 3
-        },
-        {
-          "name": "normalizeRedmineBackendComments",
-          "line": 15,
-          "col": 3
-        },
-        {
-          "name": "redmineBackendCustomFieldValue",
-          "line": 16,
-          "col": 3
-        },
-        {
-          "name": "redmineBackendTasksDiffer",
-          "line": 17,
-          "col": 3
-        },
-        {
-          "name": "redmineIssueToTask",
-          "line": 18,
-          "col": 3
-        },
-        {
-          "name": "redmineTaskIdFieldId",
-          "line": 28,
-          "col": 3
-        },
-        {
-          "name": "redmineTaskToIssuePayload",
-          "line": 19,
-          "col": 3
-        },
-        {
-          "name": "requestRedmineBackendJson",
-          "line": 20,
-          "col": 3
-        },
-        {
-          "name": "setRedmineIssueCustomField",
-          "line": 29,
-          "col": 3
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-sync.ts",
-      "exports": [
-        {
-          "name": "handleRedmineConflict",
-          "line": 10,
-          "col": 3
-        },
-        {
-          "name": "inferRedmineStatusIdForTaskStatus",
-          "line": 5,
-          "col": 3
-        },
-        {
-          "name": "loadRedmineInferredStatusByTaskStatus",
-          "line": 6,
-          "col": 3
-        },
-        {
-          "name": "selectRedmineInferredStatus",
-          "line": 7,
-          "col": 3
-        },
-        {
-          "name": "syncPushRedmine",
-          "line": 12,
-          "col": 3
-        }
-      ],
-      "types": [
-        {
-          "name": "RedmineSyncContext",
-          "line": 1,
-          "col": 15
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/backends/task-backend/redmine/backend-sync/status.ts",
       "exports": [
         {
@@ -334,46 +157,14 @@
           "col": 14
         },
         {
-          "name": "AGENT_BOOTSTRAP_RUNTIME_SURFACE",
-          "line": 4,
-          "col": 14
-        },
-        {
           "name": "BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS",
-          "line": 29,
-          "col": 14
-        },
-        {
-          "name": "BOOTSTRAP_RECOVERY_COMMANDS",
-          "line": 46,
-          "col": 14
-        },
-        {
-          "name": "BOOTSTRAP_SECTIONS",
-          "line": 52,
+          "line": 28,
           "col": 14
         },
         {
           "name": "BOOTSTRAP_VERIFICATION_COMMANDS",
-          "line": 37,
+          "line": 36,
           "col": 14
-        },
-        {
-          "name": "renderBootstrapReferenceLine",
-          "line": 102,
-          "col": 17
-        },
-        {
-          "name": "renderBootstrapSectionLines",
-          "line": 106,
-          "col": 17
-        }
-      ],
-      "types": [
-        {
-          "name": "BootstrapSection",
-          "line": 8,
-          "col": 13
         }
       ]
     },
@@ -506,71 +297,6 @@
           "name": "CommandModule",
           "line": 36,
           "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/cli/run-cli/commands/core.ts",
-      "exports": [
-        {
-          "name": "agentsSpec",
-          "line": 1,
-          "col": 10
-        },
-        {
-          "name": "codexPluginInstallSpec",
-          "line": 3,
-          "col": 3
-        },
-        {
-          "name": "codexPluginSpec",
-          "line": 4,
-          "col": 3
-        },
-        {
-          "name": "codexSpec",
-          "line": 5,
-          "col": 3
-        },
-        {
-          "name": "makeRunCodexPluginInstallHandler",
-          "line": 6,
-          "col": 3
-        },
-        {
-          "name": "preflightSpec",
-          "line": 10,
-          "col": 10
-        },
-        {
-          "name": "quickstartSpec",
-          "line": 11,
-          "col": 10
-        },
-        {
-          "name": "roleSpec",
-          "line": 12,
-          "col": 10
-        },
-        {
-          "name": "runCodex",
-          "line": 7,
-          "col": 3
-        },
-        {
-          "name": "runCodexPlugin",
-          "line": 8,
-          "col": 3
-        },
-        {
-          "name": "runPreflight",
-          "line": 10,
-          "col": 25
-        },
-        {
-          "name": "runQuickstart",
-          "line": 11,
-          "col": 26
         }
       ]
     },
@@ -774,53 +500,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/commands/incidents/shared.ts",
-      "exports": [
-        {
-          "name": "formatIncidentCollectionIssues",
-          "line": 142,
-          "col": 17
-        },
-        {
-          "name": "incidentRegistryAssetPath",
-          "line": 54,
-          "col": 17
-        },
-        {
-          "name": "incidentRegistryPath",
-          "line": 50,
-          "col": 17
-        },
-        {
-          "name": "INCIDENTS_POLICY_ASSET_PATH",
-          "line": 28,
-          "col": 3
-        },
-        {
-          "name": "INCIDENTS_POLICY_PATH",
-          "line": 29,
-          "col": 3
-        },
-        {
-          "name": "loadTaskIncidents",
-          "line": 111,
-          "col": 23
-        },
-        {
-          "name": "renderIncidentCollectionOutcome",
-          "line": 236,
-          "col": 17
-        }
-      ],
-      "types": [
-        {
-          "name": "LoadedTaskIncidents",
-          "line": 33,
-          "col": 13
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/commands/pr/internal/freshness.ts",
       "types": [
         {
@@ -935,263 +614,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/commands/recipes.ts",
-      "exports": [
-        {
-          "name": "cmdRecipeActiveParsed",
-          "line": 81,
-          "col": 3
-        },
-        {
-          "name": "cmdRecipeExplainActiveParsed",
-          "line": 85,
-          "col": 3
-        },
-        {
-          "name": "collectRecipeScenarioDetails",
-          "line": 65,
-          "col": 3
-        },
-        {
-          "name": "compileProjectOverlayArtifacts",
-          "line": 43,
-          "col": 3
-        },
-        {
-          "name": "inspectProjectRecipe",
-          "line": 40,
-          "col": 26
-        },
-        {
-          "name": "normalizeResolvedRecipeRunProfile",
-          "line": 74,
-          "col": 3
-        },
-        {
-          "name": "normalizeScenarioToolStep",
-          "line": 66,
-          "col": 3
-        },
-        {
-          "name": "readActiveRecipeIds",
-          "line": 44,
-          "col": 3
-        },
-        {
-          "name": "readInstalledRecipesFile",
-          "line": 32,
-          "col": 10
-        },
-        {
-          "name": "readProjectRecipesRegistry",
-          "line": 35,
-          "col": 3
-        },
-        {
-          "name": "readRecipeManifest",
-          "line": 30,
-          "col": 10
-        },
-        {
-          "name": "readScenarioIndex",
-          "line": 68,
-          "col": 3
-        },
-        {
-          "name": "RECIPE_RUNS_DIR_NAME",
-          "line": 5,
-          "col": 3
-        },
-        {
-          "name": "RECIPES_DIR_NAME",
-          "line": 2,
-          "col": 3
-        },
-        {
-          "name": "RECIPES_SCENARIOS_DIR_NAME",
-          "line": 3,
-          "col": 3
-        },
-        {
-          "name": "RECIPES_SCENARIOS_INDEX_NAME",
-          "line": 4,
-          "col": 3
-        },
-        {
-          "name": "refreshProjectOverlayArtifacts",
-          "line": 47,
-          "col": 3
-        },
-        {
-          "name": "removeProjectRecipeRegistryEntry",
-          "line": 36,
-          "col": 3
-        },
-        {
-          "name": "resolveInstalledRecipeDir",
-          "line": 53,
-          "col": 3
-        },
-        {
-          "name": "resolveInstalledRecipesPath",
-          "line": 54,
-          "col": 3
-        },
-        {
-          "name": "resolveProjectInstalledRecipeDir",
-          "line": 55,
-          "col": 3
-        },
-        {
-          "name": "resolveProjectOverlayBundlePath",
-          "line": 56,
-          "col": 3
-        },
-        {
-          "name": "resolveProjectRecipeAssetsPath",
-          "line": 57,
-          "col": 3
-        },
-        {
-          "name": "resolveProjectRecipesCacheDir",
-          "line": 59,
-          "col": 3
-        },
-        {
-          "name": "resolveProjectRecipesDir",
-          "line": 58,
-          "col": 3
-        },
-        {
-          "name": "resolveProjectRecipesPackagesDir",
-          "line": 52,
-          "col": 3
-        },
-        {
-          "name": "resolveProjectRecipesRegistryPath",
-          "line": 60,
-          "col": 3
-        },
-        {
-          "name": "resolveProjectVendoredRecipeDir",
-          "line": 61,
-          "col": 3
-        },
-        {
-          "name": "resolveRecipeCompatibility",
-          "line": 75,
-          "col": 3
-        },
-        {
-          "name": "setRecipeActive",
-          "line": 48,
-          "col": 3
-        },
-        {
-          "name": "upsertProjectRecipeRegistryEntry",
-          "line": 37,
-          "col": 3
-        },
-        {
-          "name": "validateRecipeManifest",
-          "line": 30,
-          "col": 30
-        },
-        {
-          "name": "writeProjectRecipesRegistry",
-          "line": 38,
-          "col": 3
-        }
-      ],
-      "types": [
-        {
-          "name": "CompiledOverlayBundle",
-          "line": 11,
-          "col": 3
-        },
-        {
-          "name": "CompiledRecipeAssetEntry",
-          "line": 9,
-          "col": 3
-        },
-        {
-          "name": "CompiledRecipeAssetRegistry",
-          "line": 10,
-          "col": 3
-        },
-        {
-          "name": "ProjectOverlayManifestV2",
-          "line": 18,
-          "col": 3
-        },
-        {
-          "name": "RecipeCachePruneFlags",
-          "line": 26,
-          "col": 3
-        },
-        {
-          "name": "RecipeConflictMode",
-          "line": 12,
-          "col": 3
-        },
-        {
-          "name": "RecipeInstallSource",
-          "line": 13,
-          "col": 3
-        },
-        {
-          "name": "RecipeKind",
-          "line": 14,
-          "col": 3
-        },
-        {
-          "name": "RecipeListFlags",
-          "line": 27,
-          "col": 3
-        },
-        {
-          "name": "RecipeListRemoteFlags",
-          "line": 28,
-          "col": 3
-        },
-        {
-          "name": "RecipeResolverCompatibility",
-          "line": 15,
-          "col": 3
-        },
-        {
-          "name": "RecipeResolverCompatibilityFailure",
-          "line": 16,
-          "col": 3
-        },
-        {
-          "name": "RecipeResolverContext",
-          "line": 17,
-          "col": 3
-        },
-        {
-          "name": "ResolvedRecipeRunProfile",
-          "line": 20,
-          "col": 3
-        },
-        {
-          "name": "ResolvedRecipeScenario",
-          "line": 21,
-          "col": 3
-        },
-        {
-          "name": "ResolvedRecipeScenarioSelection",
-          "line": 22,
-          "col": 3
-        },
-        {
-          "name": "ResolveRecipeScenarioSelectionFlags",
-          "line": 19,
-          "col": 3
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/commands/recipes/impl/apply.ts",
       "exports": [
         {
@@ -1203,21 +625,6 @@
           "name": "applyRecipeScenarios",
           "line": 160,
           "col": 23
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/recipes/impl/commands.ts",
-      "exports": [
-        {
-          "name": "cmdRecipeActiveParsed",
-          "line": 7,
-          "col": 10
-        },
-        {
-          "name": "cmdRecipeExplainActiveParsed",
-          "line": 8,
-          "col": 10
         }
       ]
     },
@@ -1576,12 +983,12 @@
       "exports": [
         {
           "name": "assertReleaseBumpApproved",
-          "line": 73,
+          "line": 72,
           "col": 17
         },
         {
           "name": "runPushPreflight",
-          "line": 21,
+          "line": 20,
           "col": 23
         }
       ]
@@ -1591,7 +998,7 @@
       "exports": [
         {
           "name": "resolveReleasePlanInputs",
-          "line": 26,
+          "line": 24,
           "col": 23
         }
       ]
@@ -1623,43 +1030,6 @@
           "name": "readJsonFile",
           "line": 18,
           "col": 23
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/release/apply.preflight.ts",
-      "exports": [
-        {
-          "name": "findLatestPlanDir",
-          "line": 3,
-          "col": 3
-        },
-        {
-          "name": "parseVersionPlan",
-          "line": 5,
-          "col": 3
-        },
-        {
-          "name": "readAgentplaneDependencyVersion",
-          "line": 9,
-          "col": 3
-        },
-        {
-          "name": "readJsonFile",
-          "line": 6,
-          "col": 3
-        },
-        {
-          "name": "releasePushDescription",
-          "line": 21,
-          "col": 3
-        }
-      ],
-      "types": [
-        {
-          "name": "ReleaseCommandLabel",
-          "line": 22,
-          "col": 8
         }
       ]
     },
@@ -2544,38 +1914,6 @@
           "name": "SupervisedRunnerBaseResultInput",
           "line": 34,
           "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/runner/adapters/index.ts",
-      "exports": [
-        {
-          "name": "CodexRunnerAdapter",
-          "line": 18,
-          "col": 10
-        },
-        {
-          "name": "CustomRunnerAdapter",
-          "line": 19,
-          "col": 10
-        },
-        {
-          "name": "runnerAdapterFailureResult",
-          "line": 21,
-          "col": 10
-        },
-        {
-          "name": "runnerAdapterSuccessResult",
-          "line": 21,
-          "col": 38
-        }
-      ],
-      "types": [
-        {
-          "name": "RunnerAdapter",
-          "line": 20,
-          "col": 15
         }
       ]
     },
@@ -3491,10 +2829,10 @@
   ],
   "counts": {
     "files": 5,
-    "exports": 231,
-    "types": 291,
+    "exports": 138,
+    "types": 266,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 527
+    "total": 409
   }
 }

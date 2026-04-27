@@ -24,13 +24,9 @@ import {
   normalizeTaskDocVersion,
 } from "../task/shared.js";
 import type { CommandContext } from "../shared/task-backend.js";
-export {
-  INCIDENTS_POLICY_ASSET_PATH,
-  INCIDENTS_POLICY_PATH,
-} from "../../runtime/incidents/index.js";
 const INCIDENTS_POLICY_LINE_BUDGET = 100;
 
-export type LoadedTaskIncidents = {
+type LoadedTaskIncidents = {
   task: TaskData;
   findings: string;
   scope: string | null;
@@ -47,11 +43,11 @@ async function readTextIfExists(filePath: string): Promise<string | null> {
   }
 }
 
-export function incidentRegistryPath(ctx: CommandContext): string {
+function incidentRegistryPath(ctx: CommandContext): string {
   return path.join(ctx.resolvedProject.gitRoot, INCIDENTS_POLICY_PATH);
 }
 
-export function incidentRegistryAssetPath(ctx: CommandContext): string {
+function incidentRegistryAssetPath(ctx: CommandContext): string {
   return path.join(ctx.resolvedProject.gitRoot, INCIDENTS_POLICY_ASSET_PATH);
 }
 
@@ -108,7 +104,7 @@ export async function loadIncidentRegistry(ctx: CommandContext): Promise<{
   };
 }
 
-export async function loadTaskIncidents(
+async function loadTaskIncidents(
   ctx: CommandContext,
   taskId: string,
   taskOverride?: TaskData | null,
@@ -139,10 +135,7 @@ export async function loadTaskIncidents(
   };
 }
 
-export function formatIncidentCollectionIssues(
-  taskId: string,
-  plan: IncidentCollectionPlan,
-): string {
+function formatIncidentCollectionIssues(taskId: string, plan: IncidentCollectionPlan): string {
   const issueLines = plan.issues.map((issue) => {
     const scope = issue.candidate.incidentScope ?? issue.candidate.observation;
     return `line ${issue.candidate.line}: ${scope} -> missing ${issue.missingFields.join(", ")}`;
@@ -233,7 +226,7 @@ export async function inspectTaskIncidents(opts: {
   return { loaded, registryPath, registryPaths, registryText, registry, plan };
 }
 
-export function renderIncidentCollectionOutcome(promotedCount: number): string {
+function renderIncidentCollectionOutcome(promotedCount: number): string {
   return promotedCount > 0
     ? `incident registry updated (${promotedCount} promoted)`
     : "incident registry unchanged (no promotable external findings)";

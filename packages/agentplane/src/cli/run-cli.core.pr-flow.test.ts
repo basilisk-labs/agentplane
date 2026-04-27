@@ -17,12 +17,9 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
-import {
-  defaultConfig,
-  extractTaskSuffix,
-  validateCommitSubject,
-  ResolvedProject,
-} from "@agentplaneorg/core";
+import { extractTaskSuffix, validateCommitSubject } from "@agentplaneorg/core/commit";
+import { defaultConfig } from "@agentplaneorg/core/config";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";

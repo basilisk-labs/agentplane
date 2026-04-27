@@ -6,17 +6,15 @@ import { resolveProject } from "@agentplaneorg/core/project";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
 import { withDiagnosticContext } from "../../shared/diagnostics.js";
+import { ensureCleanTrackedTree, ensureTagDoesNotExist } from "../apply.preflight.git.js";
+import { fileExists, loadReleasePlan } from "../apply.preflight.plan.js";
 import {
-  ensureCleanTrackedTree,
-  ensureTagDoesNotExist,
-  fileExists,
-  loadReleasePlan,
   readCoreDependencyVersion,
   readOptionalAgentplaneDependencyVersion,
   readPackageVersion,
   readRecipesDependencyVersion,
   validateReleaseNotes,
-} from "../apply.preflight.js";
+} from "../apply.preflight.package.js";
 import type {
   ReleaseCommandRouteResolver,
   ReleaseCommandState,

@@ -1,4 +1,5 @@
-import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core/config";
+import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";

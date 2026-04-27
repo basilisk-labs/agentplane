@@ -8,7 +8,7 @@ import {
   buildRecipeResolverContext,
   listResolvedRecipeScenarios,
   resolveRecipeScenarioSelection,
-} from "./recipes.js";
+} from "./recipes/impl/resolver.js";
 import {
   baseRecipeEntry,
   baseRecipeManifest,

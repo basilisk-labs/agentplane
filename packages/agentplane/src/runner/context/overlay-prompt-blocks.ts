@@ -3,7 +3,7 @@ import path from "node:path";
 import { matchOverlayWhen } from "@agentplaneorg/recipes";
 
 import { fileExists } from "../../cli/fs-utils.js";
-import { readProjectOverlayBundle } from "../../commands/recipes.js";
+import { readProjectOverlayBundle } from "../../commands/recipes/impl/overlay-project.js";
 import type { RunnerPromptBlock, RunnerTaskContext } from "../types.js";
 import { normalizeText, OVERLAY_PROMPT_PRIORITIES } from "./prompt-block-shared.js";
 
