@@ -1,0 +1,22 @@
+ docs/README.md                                     |   3 +-
+ docs/developer/blog-post-draft-v0.2.25.mdx         |  18 -
+ docs/developer/blog-redesign-plan.mdx              |  59 ---
+ docs/developer/contributing.mdx                    |   1 -
+ .../documentation-information-architecture.mdx     |  41 +-
+ docs/developer/prompt-assembly-system.mdx          | 590 ---------------------
+ docs/developer/recipes-how-it-works.mdx            |   3 -
+ docs/developer/recipes-spec.mdx                    |   9 +-
+ docs/developer/release-process-architecture.mdx    | 423 ---------------
+ docs/docs.json                                     |  72 ---
+ docs/help/legacy-upgrade-recovery.mdx              |   2 +-
+ docs/help/troubleshooting-by-symptom.mdx           |   2 +-
+ docs/index.mdx                                     |  24 +-
+ docs/user/agents.mdx                               |   4 +-
+ docs/user/breaking-changes.mdx                     |  79 +--
+ docs/user/setup.mdx                                |  12 +-
+ docs/user/task-lifecycle.mdx                       |   7 -
+ docs/user/workflow-migration.mdx                   |  48 +-
+ docs/user/workflow.mdx                             |   5 +-
+ website/sidebars.ts                                |   3 -
+ website/src/data/homepage-content.ts               |   2 +-
+ 21 files changed, 75 insertions(+), 1332 deletions(-)
