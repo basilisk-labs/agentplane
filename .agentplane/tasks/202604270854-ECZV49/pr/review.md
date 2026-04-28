@@ -46,12 +46,14 @@ Replace high-value direct stdout/stderr writes with the shared CLI emitter or st
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-28T06:44:30.032Z
+- Updated: 2026-04-28T06:48:21.240Z
 - Branch: task/202604270854-ECZV49/normalize-resume-context-output
-- Head: 1508e5567601
+- Head: d8aaf8f4a95e
 
 ```text
-No changes detected.
+ .../agentplane/src/commands/task/close-shared.ts   |  2 +-
+ .../src/commands/task/resume-context.command.ts    | 50 +++++++++++++---------
+ 2 files changed, 31 insertions(+), 21 deletions(-)
 ```
 
 </details>
