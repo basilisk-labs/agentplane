@@ -22,12 +22,14 @@ Extract reusable branch_pr fixture builders for git repos, task READMEs, PR meta
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-28T06:52:43.384Z
+- Updated: 2026-04-28T06:55:38.412Z
 - Branch: task/202604270854-N1QDXW/branch-pr-testkit-fixtures
-- Head: 7e8413158398
+- Head: 8a0ecc3c977f
 
 ```text
-No changes detected.
+ .../cli/run-cli.core.pr-flow.pr-lifecycle.test.ts  | 19 +++++------
+ packages/testkit/src/cli-core-pr-flow.ts           | 37 ++++++++++++++++++++++
+ 2 files changed, 47 insertions(+), 9 deletions(-)
 ```
 
 </details>
