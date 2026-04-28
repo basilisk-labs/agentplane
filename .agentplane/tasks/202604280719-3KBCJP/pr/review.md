@@ -45,12 +45,13 @@ Prepare and publish patch release v0.3.29 from the current branch_pr main state,
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-28T09:04:23.344Z
+- Updated: 2026-04-28T09:06:38.982Z
 - Branch: task/202604280719-3KBCJP/release-v0-3-29
-- Head: 94a72018078c
+- Head: e72702c145b0
 
 ```text
  .agentplane/config.json                            |   2 +-
+ FREEZE.v0.3.md                                     |   4 +-
  docs/reference/generated-reference.mdx             |   6 +-
  docs/releases/v0.3.29.md                           | 118 +++++++++++++++++++++
  packages/agentplane/package.json                   |   6 +-
@@ -64,7 +65,7 @@ Prepare and publish patch release v0.3.29 from the current branch_pr main state,
  scripts/generate-scripts-readme.mjs                |  17 +--
  scripts/oversized-test-baseline.json               |   4 +-
  tsconfig.base.json                                 |   2 +-
- 14 files changed, 152 insertions(+), 29 deletions(-)
+ 15 files changed, 154 insertions(+), 31 deletions(-)
 ```
 
 </details>
