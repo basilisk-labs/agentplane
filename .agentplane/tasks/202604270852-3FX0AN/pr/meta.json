@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-28T05:12:13Z",
   "base": "main",
   "branch": "task/202604270852-3FX0AN/type-pr-artifact-state",
   "created_at": "2026-04-28T05:02:02.639Z",
-  "head_sha": "aaaccf52bae1d13aa445f7623fdb5d1a456b7d1c",
+  "head_sha": "e013cef3190ca92e6fa60af44b52418a1444e2b2",
   "last_verified_at": "2026-04-28T05:09:15.133Z",
   "last_verified_sha": "23deb0b2007ab8dd8dad61c53b38ef3a5b3389eb",
+  "merge_commit": "fbbf6972b51f7c37c722ec18e9551e3bd819534a",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-28T05:12:13Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604270852-3FX0AN",
-  "updated_at": "2026-04-28T05:09:23.356Z",
+  "updated_at": "2026-04-28T05:12:13Z",
   "verify": {
     "status": "pass"
   }
