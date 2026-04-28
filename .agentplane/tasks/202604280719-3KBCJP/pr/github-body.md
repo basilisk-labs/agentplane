@@ -22,14 +22,15 @@ Prepare and publish patch release v0.3.29 from the current branch_pr main state,
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-28T07:25:42.993Z
+- Updated: 2026-04-28T07:28:55.556Z
 - Branch: task/202604280719-3KBCJP/release-v0-3-29
-- Head: c1c621021cbf
+- Head: 54bfd3cda9d8
 
 ```text
  .../cli/run-cli.core.pr-flow.integrate-strategies.test.ts    | 12 ++++++++----
+ scripts/oversized-test-baseline.json                         |  4 ++--
  tsconfig.base.json                                           |  2 +-
- 2 files changed, 9 insertions(+), 5 deletions(-)
+ 3 files changed, 11 insertions(+), 7 deletions(-)
 ```
 
 </details>
