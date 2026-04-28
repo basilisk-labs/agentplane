@@ -1,10 +1,10 @@
 ---
 id: "202604270853-8D0EH8"
 title: "Make branch_pr pr open transactional"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +22,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-28T05:21:22.315Z"
+  updated_by: "CODER"
+  note: "pr open partial push/create failures now persist explicit remote_failed or remote_staged artifact state; focused PR open tests and typecheck passed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Make pr open transactional by persisting explicit remote staged or failed state for partial push and remote PR creation paths, then verify focused PR open tests and typecheck."
+events:
+  -
+    type: "status"
+    at: "2026-04-28T05:15:30.084Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Make pr open transactional by persisting explicit remote staged or failed state for partial push and remote PR creation paths, then verify focused PR open tests and typecheck."
+  -
+    type: "verify"
+    at: "2026-04-28T05:21:22.315Z"
+    author: "CODER"
+    state: "ok"
+    note: "pr open partial push/create failures now persist explicit remote_failed or remote_staged artifact state; focused PR open tests and typecheck passed."
 doc_version: 3
-doc_updated_at: "2026-04-27T08:56:29.743Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-28T05:21:22.319Z"
+doc_updated_by: "CODER"
 description: "Refactor pr open so local artifacts, branch push/linking, and remote PR creation use an explicit planned outcome. Persist unambiguous staged or failed remote state instead of leaving fresh-looking local artifacts after partial failure."
 sections:
   Summary: |-
@@ -49,11 +65,24 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-28T05:21:22.315Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: pr open partial push/create failures now persist explicit remote_failed or remote_staged artifact state; focused PR open tests and typecheck passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T05:21:20.430Z, excerpt_hash=sha256:43ff50609419c9bec17d4791024e1b960eae60c853e76cbc677f7637d3c796cc
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    Verification evidence:
+    - pr open now records remote_failed in pr/meta.json when branch publication fails before remote PR creation.
+    - Remote PR creation failures now render a remote PR creation failed message and persist artifact_state=remote_failed.
+    - Local staged cases still persist artifact_state=remote_staged, and existing matching remote-head reuse remains covered.
+    - Checks passed: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts packages/agentplane/src/commands/pr/internal; bun run typecheck; git diff --check.
 id_source: "generated"
 ---
 ## Summary
@@ -81,6 +110,14 @@ Refactor pr open so local artifacts, branch push/linking, and remote PR creation
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-28T05:21:22.315Z — VERIFY — ok
+
+By: CODER
+
+Note: pr open partial push/create failures now persist explicit remote_failed or remote_staged artifact state; focused PR open tests and typecheck passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T05:21:20.430Z, excerpt_hash=sha256:43ff50609419c9bec17d4791024e1b960eae60c853e76cbc677f7637d3c796cc
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -89,3 +126,9 @@ Refactor pr open so local artifacts, branch push/linking, and remote PR creation
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+Verification evidence:
+- pr open now records remote_failed in pr/meta.json when branch publication fails before remote PR creation.
+- Remote PR creation failures now render a remote PR creation failed message and persist artifact_state=remote_failed.
+- Local staged cases still persist artifact_state=remote_staged, and existing matching remote-head reuse remains covered.
+- Checks passed: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts packages/agentplane/src/commands/pr/internal; bun run typecheck; git diff --check.

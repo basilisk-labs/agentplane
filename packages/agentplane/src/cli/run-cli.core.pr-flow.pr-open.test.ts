@@ -114,9 +114,16 @@ describe("runCli pr open flow", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () 
 
     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
     const metaRaw = await readFile(path.join(prDir, "meta.json"), "utf8");
-    const meta = JSON.parse(metaRaw) as { task_id?: string; branch?: string };
+    const meta = JSON.parse(metaRaw) as {
+      task_id?: string;
+      branch?: string;
+      artifact_state?: string;
+      artifact_state_reason?: string;
+    };
     expect(meta.task_id).toBe(taskId);
     expect(meta.branch).toBe(`task/${taskId}/pr-open`);
+    expect(meta.artifact_state).toBe("remote_staged");
+    expect(meta.artifact_state_reason).toBe("GitHub origin repo unavailable");
     expect(await readFile(path.join(prDir, "review.md"), "utf8")).toContain("## Scope");
     await readFile(path.join(prDir, "diffstat.txt"), "utf8");
     expect(await readFile(path.join(prDir, "notes.jsonl"), "utf8")).toBe("");
@@ -314,6 +321,186 @@ describe("runCli pr open flow", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () 
           args.includes("POST"),
       ),
     ).toBe(true);
+  });
+
+  it("pr open marks remote creation failures explicitly in pr metadata", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await configurePushableOrigin(root);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open remote creation failure",
+        "--description",
+        "PR open should persist a failed remote creation state when GitHub rejects PR creation.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/remote-create-failure`;
+    const { fakeBin } = await installFakeGhPrApi({
+      scenarioName: "open-create-failure",
+      branch,
+      createResponse: {},
+      createError: "HTTP 403: GitHub auth unavailable",
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("remote PR creation failed");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+    }
+
+    const meta = JSON.parse(
+      await readFile(path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"), "utf8"),
+    ) as { artifact_state?: string; artifact_state_reason?: string };
+    expect(meta.artifact_state).toBe("remote_failed");
+    expect(meta.artifact_state_reason).toBe("GitHub auth or permissions unavailable");
+  });
+
+  it("pr open marks push failures explicitly before returning an error", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const publishRemotePath = await mkdtemp(
+      path.join(os.tmpdir(), "agentplane-pr-open-push-fail-remote-"),
+    );
+    await execFileAsync("git", ["init", "--bare", publishRemotePath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["remote", "set-url", "--push", "origin", publishRemotePath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open push failure",
+        "--description",
+        "PR open should mark remote failure when publishing the task branch fails.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/push-failure`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
+
+    const fakeGitBin = await mkdtemp(path.join(os.tmpdir(), "agentplane-pr-open-push-fail-"));
+    const { stdout: realGitStdout } = await execFileAsync("which", ["git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const fakeGitPath = path.join(fakeGitBin, "git");
+    await writeFile(
+      fakeGitPath,
+      [
+        "#!/usr/bin/env node",
+        "const { spawnSync } = require('node:child_process');",
+        `const realGit = ${JSON.stringify(realGitStdout.trim())};`,
+        "const args = process.argv.slice(2);",
+        "if (args[0] === 'push' && args.includes('--no-verify')) {",
+        "  console.error('simulated task branch publish failure');",
+        "  process.exit(1);",
+        "}",
+        "const result = spawnSync(realGit, args, { stdio: 'inherit', env: process.env });",
+        "if (result.error) throw result.error;",
+        "process.exit(result.status ?? 1);",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    await chmod(fakeGitPath, 0o755);
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeGitBin}${path.delimiter}${originalPath ?? ""}`;
+
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(5);
+    } finally {
+      process.env.PATH = originalPath;
+    }
+
+    const meta = JSON.parse(
+      await readFile(path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"), "utf8"),
+    ) as { artifact_state?: string; artifact_state_reason?: string };
+    expect(meta.artifact_state).toBe("remote_failed");
+    expect(meta.artifact_state_reason).toContain("simulated task branch publish failure");
   });
 
   it("pr open creates a remote GitHub PR on the first pass after packet materialization", async () => {
@@ -776,7 +963,12 @@ describe("runCli pr open flow", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () 
         "#!/usr/bin/env node",
         "const { spawnSync } = require('node:child_process');",
         `const realGit = ${JSON.stringify(realGit)};`,
+        `const publishRemote = ${JSON.stringify(publishRemotePath)};`,
         "const args = process.argv.slice(2);",
+        "if (args[0] === 'remote' && args[1] === 'get-url' && args[2] === '--push' && args[3] === 'origin') {",
+        "  console.log(publishRemote);",
+        "  process.exit(0);",
+        "}",
         "if (args[0] === 'push' && args.includes('--no-verify')) {",
         "  console.error('simulated push failure for published-branch regression');",
         "  process.exit(1);",

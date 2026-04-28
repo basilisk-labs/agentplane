@@ -127,7 +127,10 @@ export async function runPrOpenSync(
       );
       openOutcome = linkedExistingOutcome ?? {
         action: "staged",
-        message: `local PR artifacts synced; remote PR creation staged (${createdGithubPr.stagedReason ?? "remote creation unavailable"})`,
+        message:
+          artifactState === "remote_failed"
+            ? `local PR artifacts synced; remote PR creation failed (${createdGithubPr.stagedReason ?? "remote creation unavailable"})`
+            : `local PR artifacts synced; remote PR creation staged (${createdGithubPr.stagedReason ?? "remote creation unavailable"})`,
         artifactState,
       };
     }

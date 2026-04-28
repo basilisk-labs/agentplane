@@ -1,12 +1,15 @@
 import path from "node:path";
+import { readFile } from "node:fs/promises";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";
 import { gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
+import { parsePrMeta, withPrArtifactLifecycleState } from "../shared/pr-meta.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import { maybeAutoCommitTaskPrArtifacts } from "./internal/auto-commit.js";
@@ -23,6 +26,36 @@ function prOpenOutcomeDetails(
       : `linked to GitHub PR #${meta.pr_number}`;
   }
   return "local PR artifacts synced; remote PR creation staged";
+}
+
+function summarizePrOpenFailure(err: unknown): string {
+  const stderr =
+    typeof (err as { stderr?: unknown } | null)?.stderr === "string"
+      ? String((err as { stderr?: unknown }).stderr).trim()
+      : "";
+  const stdout =
+    typeof (err as { stdout?: unknown } | null)?.stdout === "string"
+      ? String((err as { stdout?: unknown }).stdout).trim()
+      : "";
+  const message = err instanceof Error ? err.message.trim() : String(err).trim();
+  return stderr || stdout || message || "unknown failure";
+}
+
+async function persistPrOpenRemoteFailure(opts: {
+  taskId: string;
+  prDir: string;
+  reason: string;
+}): Promise<void> {
+  const metaPath = path.join(opts.prDir, "meta.json");
+  const currentMeta = parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId);
+  await writeJsonStableIfChanged(
+    metaPath,
+    withPrArtifactLifecycleState(
+      currentMeta,
+      { kind: "remote_failed", reason: opts.reason },
+      new Date().toISOString(),
+    ),
+  );
 }
 
 async function gitResolveBranchHead(gitRoot: string, branch: string): Promise<string | null> {
@@ -214,10 +247,24 @@ export async function cmdPrOpen(opts: {
     }
 
     if (!opts.syncOnly && initialSync.meta.branch) {
-      await pushTaskBranchUpstreamIfConfigured({
-        gitRoot: commandCtx.resolvedProject.gitRoot,
-        branch: initialSync.meta.branch,
-      });
+      try {
+        await pushTaskBranchUpstreamIfConfigured({
+          gitRoot: commandCtx.resolvedProject.gitRoot,
+          branch: initialSync.meta.branch,
+        });
+      } catch (err) {
+        const reason = `task branch push failed: ${summarizePrOpenFailure(err)}`;
+        await persistPrOpenRemoteFailure({
+          taskId: opts.taskId,
+          prDir: initialSync.prDir,
+          reason,
+        });
+        throw new CliError({
+          exitCode: exitCodeForError("E_GIT"),
+          code: "E_GIT",
+          message: `Unable to publish task branch for GitHub PR creation. PR artifacts were marked remote_failed (${reason}).`,
+        });
+      }
     }
 
     const { meta, prDir, resolved, openOutcome } = opts.syncOnly
