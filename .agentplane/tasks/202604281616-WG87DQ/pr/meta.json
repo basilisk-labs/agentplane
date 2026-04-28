@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-28T16:40:32Z",
   "base": "main",
   "branch": "task/202604281616-WG87DQ/close-verification-reconcile",
   "created_at": "2026-04-28T16:17:24.671Z",
-  "head_sha": "b07c53a21661c1724ef48769e980777c1a3c92eb",
+  "head_sha": "e2e82d8acc2b35b53d771cc6dc633b131fd00fd6",
   "last_verified_at": "2026-04-28T16:35:09.732Z",
   "last_verified_sha": "b07c53a21661c1724ef48769e980777c1a3c92eb",
+  "merge_commit": "c02ef92ed56395dac0eb195fcc1dbb6200f20efc",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-28T16:40:32Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604281616-WG87DQ",
-  "updated_at": "2026-04-28T16:28:20.464Z",
+  "updated_at": "2026-04-28T16:40:32Z",
   "verify": {
     "status": "pass"
   }
