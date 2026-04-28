@@ -5,6 +5,7 @@ import {
   PR_FLOW_INTEGRATION_TIMEOUT_MS,
   PR_FLOW_LONG_TIMEOUT_MS,
   approveTaskPlan,
+  branchPrArtifactFixture,
   captureStdIO,
   chmod,
   cleanGitEnv,
@@ -115,17 +116,17 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
       io.restore();
     }
 
-    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
-    const meta = JSON.parse(await readFile(path.join(prDir, "meta.json"), "utf8")) as {
+    const pr = branchPrArtifactFixture(root, taskId);
+    const meta = await pr.readMeta<{
       branch?: string;
-    };
+    }>();
     expect(meta.branch).toBe(`task/${taskId}/start-ready-auto`);
-    expect(await readFile(path.join(prDir, "review.md"), "utf8")).toContain("BEGIN AUTO SUMMARY");
-    await readFile(path.join(prDir, "diffstat.txt"), "utf8");
-    await readFile(path.join(prDir, "notes.jsonl"), "utf8");
-    await readFile(path.join(prDir, "verify.log"), "utf8");
-    await readFile(path.join(prDir, "github-title.txt"), "utf8");
-    await readFile(path.join(prDir, "github-body.md"), "utf8");
+    expect(await pr.readReview()).toContain("BEGIN AUTO SUMMARY");
+    await readFile(pr.diffstatPath, "utf8");
+    await readFile(pr.notesPath, "utf8");
+    await readFile(pr.verifyLogPath, "utf8");
+    await readFile(pr.githubTitlePath, "utf8");
+    await pr.readGithubBody();
   });
 
   it("task set-status --commit-from-comment refreshes branch_pr PR head_sha after the commit", async () => {

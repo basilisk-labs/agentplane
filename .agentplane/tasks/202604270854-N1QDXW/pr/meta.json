@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604270854-N1QDXW/branch-pr-testkit-fixtures",
+  "created_at": "2026-04-28T06:52:43.384Z",
+  "head_sha": "7e8413158398bdabeb3cf5e70f518f8f4e67f7e0",
+  "last_verified_at": "2026-04-28T06:55:28.431Z",
+  "last_verified_sha": "7e8413158398bdabeb3cf5e70f518f8f4e67f7e0",
+  "schema_version": 1,
+  "task_id": "202604270854-N1QDXW",
+  "updated_at": "2026-04-28T06:52:43.384Z",
+  "verify": {
+    "status": "pass"
+  }
+}

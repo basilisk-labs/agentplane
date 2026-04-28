@@ -1,10 +1,10 @@
 ---
 id: "202604270854-N1QDXW"
 title: "Extract branch_pr testkit fixture builders"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +22,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-28T06:55:28.431Z"
+  updated_by: "CODER"
+  note: "Command: bun run test:project -- testkit packages/testkit; Result: pass, 3 files and 4 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts; Result: pass, 1 file and 8 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: extracted branchPrArtifactFixture into testkit cli-core PR-flow helpers and migrated a representative PR lifecycle artifact assertion slice."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: extract a branch_pr PR artifact fixture helper into testkit and migrate a representative PR lifecycle test slice to prove the boundary."
+events:
+  -
+    type: "status"
+    at: "2026-04-28T06:52:43.318Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: extract a branch_pr PR artifact fixture helper into testkit and migrate a representative PR lifecycle test slice to prove the boundary."
+  -
+    type: "verify"
+    at: "2026-04-28T06:55:28.431Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run test:project -- testkit packages/testkit; Result: pass, 3 files and 4 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts; Result: pass, 1 file and 8 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: extracted branchPrArtifactFixture into testkit cli-core PR-flow helpers and migrated a representative PR lifecycle artifact assertion slice."
 doc_version: 3
-doc_updated_at: "2026-04-27T08:56:37.679Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-28T06:55:28.435Z"
+doc_updated_by: "CODER"
 description: "Extract reusable branch_pr fixture builders for git repos, task READMEs, PR meta artifacts, verify logs, worktrees, and hosted-close state to reduce duplication across large CLI and command test suites."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-28T06:55:28.431Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run test:project -- testkit packages/testkit; Result: pass, 3 files and 4 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts; Result: pass, 1 file and 8 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: extracted branchPrArtifactFixture into testkit cli-core PR-flow helpers and migrated a representative PR lifecycle artifact assertion slice.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T06:52:43.318Z, excerpt_hash=sha256:f808c3eb4d5bc82ed2865c87beacbb547574fc59a2f76febb097ff1efe207670
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -81,6 +105,14 @@ Extract reusable branch_pr fixture builders for git repos, task READMEs, PR meta
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-28T06:55:28.431Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run test:project -- testkit packages/testkit; Result: pass, 3 files and 4 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts; Result: pass, 1 file and 8 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: extracted branchPrArtifactFixture into testkit cli-core PR-flow helpers and migrated a representative PR lifecycle artifact assertion slice.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T06:52:43.318Z, excerpt_hash=sha256:f808c3eb4d5bc82ed2865c87beacbb547574fc59a2f76febb097ff1efe207670
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
