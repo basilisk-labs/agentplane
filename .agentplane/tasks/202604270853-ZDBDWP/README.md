@@ -1,10 +1,10 @@
 ---
 id: "202604270853-ZDBDWP"
 title: "Unify lifecycle mutations through transition service"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -21,16 +21,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-28T05:34:03.518Z"
+  updated_by: "CODER"
+  note: "Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts; Result: pass, 3 files and 15 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.lifecycle*.test.ts; Result: pass, 12 files and 63 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: shared lifecycle close transition command path."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Unifying lifecycle mutation execution through shared transition command surfaces for task close, finish, verify, and hosted closure paths."
+events:
+  -
+    type: "status"
+    at: "2026-04-28T05:27:20.267Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Unifying lifecycle mutation execution through shared transition command surfaces for task close, finish, verify, and hosted closure paths."
+  -
+    type: "verify"
+    at: "2026-04-28T05:34:03.518Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts; Result: pass, 3 files and 15 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.lifecycle*.test.ts; Result: pass, 12 files and 63 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: shared lifecycle close transition command path."
 doc_version: 3
-doc_updated_at: "2026-04-27T08:56:34.199Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-28T05:34:03.522Z"
+doc_updated_by: "CODER"
 description: "Move remaining task lifecycle mutation paths toward the shared workflow transition service so finish, verify rework, close flows, and hosted closure share the same state transition and doc side-effect rules."
 sections:
   Summary: |-
@@ -48,6 +64,14 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-28T05:34:03.518Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts; Result: pass, 3 files and 15 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.lifecycle*.test.ts; Result: pass, 12 files and 63 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: shared lifecycle close transition command path.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T05:27:20.283Z, excerpt_hash=sha256:b131f0b729f58d1ba2dc944b7e3b3305de6eb247fb5e443ec4c2f96dd6b19bdf
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -80,6 +104,14 @@ Move remaining task lifecycle mutation paths toward the shared workflow transiti
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-28T05:34:03.518Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts; Result: pass, 3 files and 15 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.lifecycle*.test.ts; Result: pass, 12 files and 63 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: shared lifecycle close transition command path.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T05:27:20.283Z, excerpt_hash=sha256:b131f0b729f58d1ba2dc944b7e3b3305de6eb247fb5e443ec4c2f96dd6b19bdf
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
