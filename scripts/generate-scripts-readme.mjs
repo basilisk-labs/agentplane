@@ -140,6 +140,11 @@ async function loadScripts() {
     .toSorted((left, right) => left.name.localeCompare(right.name));
 }
 
+async function generateScriptsReadmeText() {
+  const scripts = await loadScripts();
+  return format(buildReadme(scripts), { parser: "markdown" });
+}
+
 async function runGenerateScriptsReadme(argv) {
   const { flags } = parseScriptArgs(argv, {
     valueFlags: ["out"],
@@ -148,15 +153,10 @@ async function runGenerateScriptsReadme(argv) {
   const outPath = flags.out ? path.resolve(ROOT, flags.out) : DEFAULT_OUT_PATH;
   const check = flags.check === true;
 
-  const generateText = async () => {
-    const scripts = await loadScripts();
-    return format(buildReadme(scripts), { parser: "markdown" });
-  };
-
   if (check) {
     await checkGeneratedTextArtifactFresh({
       outputPath: outPath,
-      generateText,
+      generateText: generateScriptsReadmeText,
       missingMessage:
         "scripts/README.md is missing. Regenerate with: bun run docs:scripts:generate",
       staleMessage: "scripts/README.md is stale. Regenerate with: bun run docs:scripts:generate",
@@ -165,7 +165,10 @@ async function runGenerateScriptsReadme(argv) {
     return;
   }
 
-  await writeGeneratedTextArtifact({ outputPath: outPath, generateText });
+  await writeGeneratedTextArtifact({
+    outputPath: outPath,
+    generateText: generateScriptsReadmeText,
+  });
   process.stdout.write(`generated: ${path.relative(ROOT, outPath).split(path.sep).join("/")}\n`);
 }
 
