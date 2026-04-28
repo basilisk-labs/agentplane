@@ -1,10 +1,11 @@
 ---
 id: "202604280719-3KBCJP"
 title: "Release v0.3.29"
-status: "DOING"
+result_summary: "Merged via PR #557."
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "a4aa33ce12fedb462fdbb69d48a639101382ddd0"
+  message: "Merge pull request #557 from basilisk-labs/task/202604280719-3KBCJP/release-v0-3-29"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: Preparing v0.3.29 release candidate from the approved branch_pr release plan, including notes, version bump, prepublish verification, PR publication, protected main integration, and release evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #557 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Preparing v0.3.29 release candidate from the approved branch_pr release plan, including notes, version bump, prepublish verification, PR publication, protected main integration, and release evidence."
+  -
+    type: "status"
+    at: "2026-04-28T09:44:28.026Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #557 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-28T07:20:13.158Z"
+doc_updated_at: "2026-04-28T09:44:28.031Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare and publish patch release v0.3.29 from the current branch_pr main state, including release plan, notes, candidate branch, verification, merge to main, and publication evidence."
 sections:
