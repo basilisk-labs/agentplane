@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-28T09:43:55Z",
   "base": "main",
   "branch": "task/202604280719-3KBCJP/release-v0-3-29",
   "created_at": "2026-04-28T07:20:13.221Z",
-  "head_sha": "e72702c145b0646efd3d55b3b98af5a1309b2f53",
+  "head_sha": "9c52ea952531b8839f58ef327e367d3ac2754cf8",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "a4aa33ce12fedb462fdbb69d48a639101382ddd0",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-28T09:43:55Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604280719-3KBCJP",
-  "updated_at": "2026-04-28T09:06:38.982Z",
+  "updated_at": "2026-04-28T09:43:55Z",
   "verify": {
     "status": "skipped"
   }
