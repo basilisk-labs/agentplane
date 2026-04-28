@@ -127,6 +127,37 @@ export async function executeHostedClosePrPlan(
     };
   }
 
+  const mergedQuery = new URLSearchParams({
+    state: "closed",
+    head: `${owner}:${plan.closeBranch}`,
+  });
+  mergedQuery.set("base", plan.baseBranch);
+  const merged = await runGhApiJson<GithubPullRequestRecord[]>(plan.gitRoot, [
+    `repos/${plan.repo}/pulls?${mergedQuery.toString()}`,
+  ]);
+  const mergedPr =
+    Array.isArray(merged) && merged.length > 0
+      ? (merged.find(
+          (record) =>
+            typeof record.merged_at === "string" &&
+            record.merged_at.trim().length > 0 &&
+            record.head?.ref?.trim() === plan.closeBranch &&
+            record.base?.ref?.trim() === plan.baseBranch,
+        ) ?? null)
+      : null;
+  const mergedNumber = Number(mergedPr?.number ?? 0);
+  if (Number.isInteger(mergedNumber) && mergedNumber > 0) {
+    return {
+      notices,
+      outcome: {
+        kind: "already-merged-pr",
+        taskId: plan.taskId,
+        prNumber: mergedNumber,
+        prUrl: mergedPr?.html_url ?? null,
+      },
+    };
+  }
+
   const created = await runGhApiJson<GithubPullRequestRecord>(plan.gitRoot, [
     `repos/${plan.repo}/pulls`,
     "-X",

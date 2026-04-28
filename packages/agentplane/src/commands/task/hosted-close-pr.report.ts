@@ -53,6 +53,18 @@ export function reportHostedClosePrExecutionResult(result: HostedClosePrExecutio
       );
       return;
     }
+    case "already-merged-pr": {
+      output.info(
+        normalizeGithubPrLink(result.outcome.prNumber, result.outcome.prUrl, "linked to") +
+          "; already merged, no follow-up PR needed",
+      );
+      output.success(
+        "task hosted-close-pr",
+        result.outcome.taskId,
+        `hosted close already merged in PR #${result.outcome.prNumber}; skipped follow-up PR`,
+      );
+      return;
+    }
     case "existing-pr": {
       output.success(
         "task hosted-close-pr",

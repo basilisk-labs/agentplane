@@ -31,6 +31,7 @@ async function installFakeGhHostedClosePr(opts: {
   branch: string;
   existingResponse: object[];
   mergedResponse?: object[];
+  closeMergedResponse?: object[];
   commitPullsResponse?: object[];
   createResponse: object;
   allowCreate: boolean;
@@ -56,6 +57,7 @@ async function installFakeGhHostedClosePr(opts: {
       `const expectedHead = ${JSON.stringify(`example:${opts.branch}`)};`,
       `const existingResponse = ${JSON.stringify(opts.existingResponse)};`,
       `const mergedResponse = ${JSON.stringify(opts.mergedResponse ?? [])};`,
+      `const closeMergedResponse = ${JSON.stringify(opts.closeMergedResponse ?? [])};`,
       `const commitPullsResponse = ${JSON.stringify(opts.commitPullsResponse ?? [])};`,
       `const createResponse = ${JSON.stringify(opts.createResponse)};`,
       `const allowCreate = ${JSON.stringify(opts.allowCreate)};`,
@@ -68,7 +70,7 @@ async function installFakeGhHostedClosePr(opts: {
       "  process.exit(0);",
       "}",
       'if (route === "repos/example/repo/pulls" && method === "GET" && params.get("state") === "closed") {',
-      "  console.log(JSON.stringify(mergedResponse));",
+      "  console.log(JSON.stringify(params.get('head') === expectedHead ? closeMergedResponse : mergedResponse));",
       "  process.exit(0);",
       "}",
       'if (route.startsWith("repos/example/repo/commits/") && route.endsWith("/pulls") && method === "GET") {',
@@ -311,6 +313,206 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
 
     const firstLog = await readFile(firstGh.logPath, "utf8");
     expect(firstLog).not.toContain('"POST"');
+  }, 240_000);
+
+  it("task hosted-close-pr skips opening a duplicate when the close branch PR is already merged remotely", async () => {
+    const root = await writeAndConfigureRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+    await mkdir(path.join(root, "packages", "agentplane", "assets", "policy"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(root, ".agentplane", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "packages", "agentplane", "assets", "policy", "incidents.md"),
+      createIncidentRegistrySkeleton(),
+      "utf8",
+    );
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "--no-verify", "-m", "seed"], { cwd: root });
+    const { stdout: baseBranchStdout } = await execFileAsync(
+      "git",
+      ["rev-parse", "--abbrev-ref", "HEAD"],
+      { cwd: root },
+    );
+    const baseBranch = baseBranchStdout.trim();
+
+    const taskId = "202604091258-DPCT5S";
+    const branch = `task/${taskId}/duplicate-close-pr`;
+    expect(
+      await runCliSilent([
+        "task",
+        "add",
+        taskId,
+        "--title",
+        "Duplicate hosted close PR helper",
+        "--description",
+        "Avoid opening a second hosted closure PR when the first one already merged",
+        "--priority",
+        "high",
+        "--owner",
+        "CODER",
+        "--tag",
+        "workflow",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    expect(
+      await runCliSilent([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Verify Steps",
+        "--text",
+        "1. Run task hosted-close-pr after the close branch PR has already merged remotely.",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    await approveTaskPlan(root, taskId);
+    expect(
+      await runCliSilent([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: verify hosted-close-pr skips duplicate remote close PR creation.",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    await recordVerificationOk(root, taskId);
+    expect(
+      await runCliSilent([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--sync-only",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    const touchedFile = path.join(root, "src", "duplicate-close-pr.ts");
+    await mkdir(path.dirname(touchedFile), { recursive: true });
+    await writeFile(touchedFile, "export const duplicateClosePr = true;\n", "utf8");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "--no-verify", "-m", "feat: duplicate close fixture"], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["merge", "--no-ff", branch, "-m", "Merge duplicate close fixture"],
+      {
+        cwd: root,
+      },
+    );
+    const { stdout: mergeHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const mergeSha = mergeHeadStdout.trim();
+
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const meta = JSON.parse(await readFile(metaPath, "utf8")) as Record<string, unknown>;
+    await writeFile(
+      metaPath,
+      `${JSON.stringify(
+        {
+          ...meta,
+          status: "MERGED",
+          branch,
+          base: baseBranch,
+          pr_number: 98,
+          merge_commit: mergeSha,
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    const closureBranch = `task-close/${taskId}/${mergeSha.slice(0, 12)}`;
+    const bareOrigin = await mkdtemp(
+      path.join(tmpdir(), "agentplane-hosted-close-pr-duplicate-origin-"),
+    );
+    await execFileAsync("git", ["init", "--bare", bareOrigin], { cwd: root });
+    await execFileAsync("git", ["remote", "add", "origin", bareOrigin], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["push", "--no-verify", "origin", `HEAD:refs/heads/${closureBranch}`],
+      { cwd: root },
+    );
+
+    const fakeGh = await installFakeGhHostedClosePr({
+      scenarioName: "duplicate-merged-close",
+      branch: closureBranch,
+      existingResponse: [],
+      mergedResponse: [],
+      closeMergedResponse: [
+        {
+          number: 905,
+          html_url: "https://github.com/example/repo/pull/905",
+          state: "closed",
+          merged_at: "2026-04-09T12:59:00.000Z",
+          merge_commit_sha: "close-merge-sha",
+          head: { ref: closureBranch },
+          base: { ref: baseBranch },
+        },
+      ],
+      createResponse: {
+        number: 906,
+        html_url: "https://github.com/example/repo/pull/906",
+        state: "open",
+        merged_at: null,
+      },
+      allowCreate: false,
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeGh.fakeBin}${path.delimiter}${originalPath ?? ""}`;
+    process.env.AGENTPLANE_GH_LOG = fakeGh.logPath;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "hosted-close-pr",
+        taskId,
+        "--repo",
+        "example/repo",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("hosted close already merged in PR #905");
+      expect(io.stdout).toContain("skipped follow-up PR");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      delete process.env.AGENTPLANE_GH_LOG;
+    }
+
+    const log = await readFile(fakeGh.logPath, "utf8");
+    expect(log).toContain(
+      `"repos/example/repo/pulls?state=closed&head=example%3A${closureBranch.replaceAll("/", "%2F")}&base=${baseBranch}"`,
+    );
+    expect(log).not.toContain('"POST"');
   }, 240_000);
 
   it("task hosted-close-pr recovers merge metadata from GitHub when base pr meta is stale", async () => {
