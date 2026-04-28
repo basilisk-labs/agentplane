@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604280719-3KBCJP/release-v0-3-29",
+  "created_at": "2026-04-28T07:20:13.221Z",
+  "head_sha": "ccb35c83990b85b7207b0d57e8e460c79bc70991",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604280719-3KBCJP",
+  "updated_at": "2026-04-28T07:24:18.990Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
