@@ -1,10 +1,10 @@
 ---
 id: "202604270854-ECZV49"
 title: "Normalize remaining direct stdio output surfaces"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-28T06:47:53.475Z"
+  updated_by: "CODER"
+  note: "Command: bun run lint:core; Result: pass. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts; Result: pass, 2 files and 43 tests. Command: bun run test:project -- agentplane packages/agentplane/src/commands/doctor.command.runtime.test.ts; Result: pass, 1 file and 16 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: resume-context output now routes through shared CLI emitter; close-shared async lint regression fixed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: normalize the lifecycle-adjacent task resume-context direct stdout surface through the shared CLI emitter while preserving exact output semantics."
+events:
+  -
+    type: "status"
+    at: "2026-04-28T06:44:29.930Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: normalize the lifecycle-adjacent task resume-context direct stdout surface through the shared CLI emitter while preserving exact output semantics."
+  -
+    type: "verify"
+    at: "2026-04-28T06:47:53.475Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run lint:core; Result: pass. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts; Result: pass, 2 files and 43 tests. Command: bun run test:project -- agentplane packages/agentplane/src/commands/doctor.command.runtime.test.ts; Result: pass, 1 file and 16 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: resume-context output now routes through shared CLI emitter; close-shared async lint regression fixed."
 doc_version: 3
-doc_updated_at: "2026-04-27T08:56:41.232Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-28T06:47:53.479Z"
+doc_updated_by: "CODER"
 description: "Replace high-value direct stdout/stderr writes with the shared CLI emitter or structured output helpers in lifecycle-adjacent commands, starting from resume context, upgrade, doctor, hook, and task command surfaces."
 sections:
   Summary: |-
@@ -47,6 +63,14 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-28T06:47:53.475Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run lint:core; Result: pass. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts; Result: pass, 2 files and 43 tests. Command: bun run test:project -- agentplane packages/agentplane/src/commands/doctor.command.runtime.test.ts; Result: pass, 1 file and 16 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: resume-context output now routes through shared CLI emitter; close-shared async lint regression fixed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T06:44:29.930Z, excerpt_hash=sha256:b9eac63131ccf1e12f8eaf78d6f059b7f7d7a9f479f9fc3b87a1e0e43e51d9e1
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -79,6 +103,14 @@ Replace high-value direct stdout/stderr writes with the shared CLI emitter or st
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-28T06:47:53.475Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run lint:core; Result: pass. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts; Result: pass, 2 files and 43 tests. Command: bun run test:project -- agentplane packages/agentplane/src/commands/doctor.command.runtime.test.ts; Result: pass, 1 file and 16 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: resume-context output now routes through shared CLI emitter; close-shared async lint regression fixed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T06:44:29.930Z, excerpt_hash=sha256:b9eac63131ccf1e12f8eaf78d6f059b7f7d7a9f479f9fc3b87a1e0e43e51d9e1
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

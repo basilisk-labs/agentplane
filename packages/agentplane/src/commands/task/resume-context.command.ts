@@ -1,5 +1,5 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
-import { infoMessage } from "../../cli/output.js";
+import { createCliEmitter, infoMessage } from "../../cli/output.js";
 
 import { buildTaskResumeContext } from "./handoff.shared.js";
 
@@ -33,6 +33,7 @@ export const taskResumeContextSpec: CommandSpec<TaskResumeContextParsed> = {
 };
 
 export const runTaskResumeContext = async (ctx: CommandCtx, parsed: TaskResumeContextParsed) => {
+  const output = createCliEmitter();
   const resume = await buildTaskResumeContext({
     cwd: ctx.cwd,
     rootOverride: ctx.rootOverride ?? null,
@@ -40,29 +41,38 @@ export const runTaskResumeContext = async (ctx: CommandCtx, parsed: TaskResumeCo
     run_id: parsed.runId,
   });
   if (parsed.json) {
-    process.stdout.write(`${JSON.stringify(resume, null, 2)}\n`);
+    output.json(resume);
     return 0;
   }
-  process.stdout.write(`${infoMessage(`task resume-context: ${parsed.taskId}`)}\n`);
-  process.stdout.write(`task_status: ${resume.task_status}\n`);
-  process.stdout.write(`branch: ${resume.branch ?? "<unknown>"}\n`);
-  process.stdout.write(`base_branch: ${resume.base_branch ?? "<unknown>"}\n`);
-  process.stdout.write(`head_sha: ${resume.head_sha ?? "<unknown>"}\n`);
-  if (resume.pr_branch) process.stdout.write(`pr_branch: ${resume.pr_branch}\n`);
-  process.stdout.write(`runner_status: ${resume.runner.status ?? "none"}\n`);
-  process.stdout.write(`runner_next_action: ${resume.runner.next_action ?? "none"}\n`);
-  if (resume.runner.next_command)
-    process.stdout.write(`runner_next_command: ${resume.runner.next_command}\n`);
-  if (resume.runner.resume_command)
-    process.stdout.write(`runner_resume_command: ${resume.runner.resume_command}\n`);
-  if (resume.runner.retry_command)
-    process.stdout.write(`runner_retry_command: ${resume.runner.retry_command}\n`);
+  output.report(
+    [
+      { label: "task_status", value: resume.task_status },
+      { label: "branch", value: resume.branch ?? "<unknown>" },
+      { label: "base_branch", value: resume.base_branch ?? "<unknown>" },
+      { label: "head_sha", value: resume.head_sha ?? "<unknown>" },
+      ...(resume.pr_branch ? [{ label: "pr_branch", value: resume.pr_branch }] : []),
+      { label: "runner_status", value: resume.runner.status ?? "none" },
+      { label: "runner_next_action", value: resume.runner.next_action ?? "none" },
+      ...(resume.runner.next_command
+        ? [{ label: "runner_next_command", value: resume.runner.next_command }]
+        : []),
+      ...(resume.runner.resume_command
+        ? [{ label: "runner_resume_command", value: resume.runner.resume_command }]
+        : []),
+      ...(resume.runner.retry_command
+        ? [{ label: "runner_retry_command", value: resume.runner.retry_command }]
+        : []),
+    ],
+    { header: infoMessage(`task resume-context: ${parsed.taskId}`) },
+  );
   if (resume.latest_handoff) {
-    process.stdout.write(`handoff_from: ${resume.latest_handoff.from_role}\n`);
-    process.stdout.write(`handoff_to: ${resume.latest_handoff.to_role ?? "unassigned"}\n`);
-    process.stdout.write(`handoff_reason: ${resume.latest_handoff.reason}\n`);
+    output.report([
+      { label: "handoff_from", value: resume.latest_handoff.from_role },
+      { label: "handoff_to", value: resume.latest_handoff.to_role ?? "unassigned" },
+      { label: "handoff_reason", value: resume.latest_handoff.reason },
+    ]);
   } else {
-    process.stdout.write("handoff: none\n");
+    output.line("handoff: none");
   }
   return 0;
 };

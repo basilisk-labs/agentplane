@@ -1,0 +1,3 @@
+ .../agentplane/src/commands/task/close-shared.ts   |  2 +-
+ .../src/commands/task/resume-context.command.ts    | 50 +++++++++++++---------
+ 2 files changed, 31 insertions(+), 21 deletions(-)

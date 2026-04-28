@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604270854-ECZV49/normalize-resume-context-output",
+  "created_at": "2026-04-28T06:44:30.032Z",
+  "head_sha": "d8aaf8f4a95ecaa1545466e9c0c65ba59df77276",
+  "last_verified_at": "2026-04-28T06:47:53.475Z",
+  "last_verified_sha": "1508e5567601602eda72f6c965d3c60d75c43748",
+  "schema_version": 1,
+  "task_id": "202604270854-ECZV49",
+  "updated_at": "2026-04-28T06:48:21.240Z",
+  "verify": {
+    "status": "pass"
+  }
+}
