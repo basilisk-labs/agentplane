@@ -1,10 +1,11 @@
 ---
 id: "202604270853-8D0EH8"
 title: "Make branch_pr pr open transactional"
-status: "DOING"
+result_summary: "Merged via PR #545."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-28T05:21:22.315Z"
   updated_by: "CODER"
   note: "pr open partial push/create failures now persist explicit remote_failed or remote_staged artifact state; focused PR open tests and typecheck passed."
-commit: null
+commit:
+  hash: "a2d2d6c430552a84872e1e896e8db77031a35ac3"
+  message: "Merge PR #545: 8D0EH8 transactional pr open"
 comments:
   -
     author: "CODER"
     body: "Start: Make pr open transactional by persisting explicit remote staged or failed state for partial push and remote PR creation paths, then verify focused PR open tests and typecheck."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #545 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "pr open partial push/create failures now persist explicit remote_failed or remote_staged artifact state; focused PR open tests and typecheck passed."
+  -
+    type: "status"
+    at: "2026-04-28T05:24:27.432Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #545 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-28T05:21:22.319Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-28T05:24:27.437Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refactor pr open so local artifacts, branch push/linking, and remote PR creation use an explicit planned outcome. Persist unambiguous staged or failed remote state instead of leaving fresh-looking local artifacts after partial failure."
 sections:
   Summary: |-

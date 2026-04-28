@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-28T05:23:43Z",
   "base": "main",
   "branch": "task/202604270853-8D0EH8/pr-open-transactional",
   "created_at": "2026-04-28T05:15:30.213Z",
-  "head_sha": "72d465178a7d841889b8e39a9ce924af9e0b0e80",
+  "head_sha": "129f7df1352f43b07e8cd86d23e7bfcf3c29a582",
   "last_verified_at": "2026-04-28T05:21:22.315Z",
   "last_verified_sha": "cff117aecad6e6d2ac3bb0c760b6cdec2f19441f",
+  "merge_commit": "a2d2d6c430552a84872e1e896e8db77031a35ac3",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-28T05:23:43Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604270853-8D0EH8",
-  "updated_at": "2026-04-28T05:21:31.636Z",
+  "updated_at": "2026-04-28T05:23:43Z",
   "verify": {
     "status": "pass"
   }
