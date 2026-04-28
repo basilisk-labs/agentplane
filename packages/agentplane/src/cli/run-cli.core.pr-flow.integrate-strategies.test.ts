@@ -441,10 +441,14 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       }
 
       expect(await gitBranchExists(root, branch)).toBe(false);
-      const { stdout: logOut } = await execFileAsync("git", ["log", "--oneline", "--max-count=20"], {
-        cwd: root,
-        env: cleanGitEnv(),
-      });
+      const { stdout: logOut } = await execFileAsync(
+        "git",
+        ["log", "--oneline", "--max-count=20"],
+        {
+          cwd: root,
+          env: cleanGitEnv(),
+        },
+      );
       expect(logOut).toContain(`${taskId} add feature`);
       expect(logOut).toContain("integrate:");
       expect(logOut).toContain("Merge strategy integrate");
