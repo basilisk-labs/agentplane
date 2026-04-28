@@ -40,6 +40,18 @@
       "type": "string",
       "enum": ["OPEN", "CLOSED", "MERGED"]
     },
+    "artifact_state": {
+      "type": "string",
+      "enum": ["open", "merged", "handoff", "remote_staged", "remote_failed"]
+    },
+    "artifact_state_reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_state_updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
     "merge_strategy": {
       "type": "string",
       "enum": ["squash", "merge", "rebase"]

@@ -6,11 +6,13 @@ import {
   buildIntegratedPrMeta,
   buildUpdatedPrMeta,
   buildVerifiedPrMeta,
+  derivePrArtifactLifecycleState,
   parsePrMetaForwardCompatible,
   parsePrMeta,
   resolvePrArtifactHeadSha,
   resolveShellInvocation,
   runShellCommand,
+  withPrArtifactLifecycleState,
 } from "./pr-meta.js";
 
 describe("pr-meta shell invocations", () => {
@@ -103,6 +105,9 @@ describe("pr-meta shell invocations", () => {
           verify: { status: "pass" },
           base: "main",
           head_sha: "deadbeef",
+          artifact_state: "remote_staged",
+          artifact_state_reason: "task branch is not published",
+          artifact_state_updated_at: "2026-01-28T00:00:00Z",
         }),
         "202601010101-ABCDE",
       ),
@@ -116,8 +121,48 @@ describe("pr-meta shell invocations", () => {
         verify: { status: "pass" },
         base: "main",
         head_sha: "deadbeef",
+        artifact_state: "remote_staged",
+        artifact_state_reason: "task branch is not published",
+        artifact_state_updated_at: "2026-01-28T00:00:00Z",
       }),
     );
+  });
+
+  it("derives explicit branch_pr artifact lifecycle states from typed metadata", () => {
+    const baseMeta = {
+      schema_version: 1 as const,
+      task_id: "202601010101-ABCDE",
+      branch: "task/202601010101-ABCDE/example",
+      created_at: "2026-01-27T00:00:00Z",
+      updated_at: "2026-01-27T00:00:00Z",
+      verify: { status: "skipped" as const },
+    };
+
+    expect(
+      derivePrArtifactLifecycleState(
+        withPrArtifactLifecycleState(
+          baseMeta,
+          { kind: "remote_failed", reason: "GitHub auth or permissions unavailable" },
+          "2026-01-28T00:00:00Z",
+        ),
+      ),
+    ).toEqual({
+      kind: "remote_failed",
+      reason: "GitHub auth or permissions unavailable",
+    });
+
+    expect(
+      derivePrArtifactLifecycleState(
+        withPrArtifactLifecycleState(
+          baseMeta,
+          { kind: "handoff", reason: "Protected base main requires GitHub pull-request merges." },
+          "2026-01-28T00:00:00Z",
+        ),
+      ),
+    ).toEqual({
+      kind: "handoff",
+      reason: "Protected base main requires GitHub pull-request merges.",
+    });
   });
 
   it("builds typed merged PR metadata without record casts", () => {
@@ -145,6 +190,7 @@ describe("pr-meta shell invocations", () => {
       expect.objectContaining({
         base: "main",
         status: "MERGED",
+        artifact_state: "merged",
         merge_strategy: "squash",
         merge_commit: "deadbeef",
         head_sha: "deadbeef",

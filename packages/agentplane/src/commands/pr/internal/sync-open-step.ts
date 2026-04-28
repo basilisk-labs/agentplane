@@ -1,6 +1,11 @@
 import { fileExists } from "../../../cli/fs-utils.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../../shared/write-if-changed.js";
-import { buildObservedGithubPrMeta, buildOpenedPrMeta, type PrMeta } from "../../shared/pr-meta.js";
+import {
+  buildObservedGithubPrMeta,
+  buildOpenedPrMeta,
+  type PrMeta,
+  withPrArtifactLifecycleState,
+} from "../../shared/pr-meta.js";
 import {
   buildGithubPrTitle,
   renderGithubPrBody,
@@ -77,11 +82,13 @@ export async function runPrOpenSync(
     openOutcome = {
       action: "linked-existing",
       message: formatGithubPrLink(observedGithubPr.prNumber, observedGithubPr.prUrl, "linked to"),
+      artifactState: "open",
     };
   } else if (opts.remoteMode === "sync-only") {
     openOutcome = linkedExistingOutcome ?? {
       action: "sync-only",
       message: "local PR artifacts synced; remote PR creation skipped (--sync-only)",
+      artifactState: "open",
     };
   } else {
     const createdGithubPr = await tryCreateGithubPr({
@@ -106,11 +113,22 @@ export async function runPrOpenSync(
           createdGithubPr.observed.prUrl,
           "created",
         ),
+        artifactState: "open",
       };
     } else {
+      const artifactState = createdGithubPr.artifactState ?? "remote_staged";
+      nextMeta = withPrArtifactLifecycleState(
+        nextMeta,
+        {
+          kind: artifactState,
+          reason: createdGithubPr.stagedReason ?? "remote PR creation unavailable",
+        },
+        common.now,
+      );
       openOutcome = linkedExistingOutcome ?? {
         action: "staged",
         message: `local PR artifacts synced; remote PR creation staged (${createdGithubPr.stagedReason ?? "remote creation unavailable"})`,
+        artifactState,
       };
     }
   }

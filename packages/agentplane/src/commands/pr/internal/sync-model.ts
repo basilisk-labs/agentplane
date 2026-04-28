@@ -7,6 +7,7 @@ export type PrRemoteMode = "auto" | "sync-only";
 export type PrOpenOutcome = {
   action: "linked-existing" | "created" | "sync-only" | "staged";
   message: string;
+  artifactState?: "open" | "remote_staged" | "remote_failed";
 };
 
 export type PrSyncResolved = { gitRoot: string };

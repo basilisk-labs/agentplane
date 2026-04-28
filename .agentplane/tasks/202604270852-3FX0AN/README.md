@@ -1,10 +1,10 @@
 ---
 id: "202604270852-3FX0AN"
 title: "Type branch_pr PR artifact state"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +22,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-28T05:09:15.133Z"
+  updated_by: "CODER"
+  note: "Typed branch_pr PR artifact state model implemented and validated with focused PR flow tests, schema check, typecheck, and diff check."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Implement typed branch_pr PR artifact state on a dedicated task worktree and verify with focused PR artifact tests plus typecheck."
+events:
+  -
+    type: "status"
+    at: "2026-04-28T05:02:02.592Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Implement typed branch_pr PR artifact state on a dedicated task worktree and verify with focused PR artifact tests plus typecheck."
+  -
+    type: "verify"
+    at: "2026-04-28T05:09:15.133Z"
+    author: "CODER"
+    state: "ok"
+    note: "Typed branch_pr PR artifact state model implemented and validated with focused PR flow tests, schema check, typecheck, and diff check."
 doc_version: 3
-doc_updated_at: "2026-04-27T08:56:20.653Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-28T05:09:15.138Z"
+doc_updated_by: "CODER"
 description: "Define and validate a typed PR artifact state model for branch_pr meta artifacts, covering open, merged, handoff, staged remote, and remote failure states without Record<string, unknown> drift on lifecycle-critical paths."
 sections:
   Summary: |-
@@ -49,11 +65,24 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-28T05:09:15.133Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Typed branch_pr PR artifact state model implemented and validated with focused PR flow tests, schema check, typecheck, and diff check.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T05:09:11.714Z, excerpt_hash=sha256:c102605c175f7ddf77fa97b60460bc020ff4bd52914b03d428077d5b1f3e9456
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    Verification evidence:
+    - Implemented explicit typed PR artifact lifecycle helpers for open, merged, handoff, remote_staged, and remote_failed states.
+    - Added schema-backed artifact_state fields to pr/meta.json and synced rendered schemas.
+    - Preserved existing pr open idempotency by deriving ordinary open state without forcing a persisted timestamp churn.
+    - Checks passed: bun test packages/agentplane/src/commands/pr/internal packages/agentplane/src/commands/pr-flow*; focused PR flow suite covering packages/agentplane/src/commands/pr/internal, shared/pr-meta.test.ts, and run-cli.core.pr-flow*.test.ts; bun run schemas:check; bun run typecheck; git diff --check.
 id_source: "generated"
 ---
 ## Summary
@@ -81,6 +110,14 @@ Define and validate a typed PR artifact state model for branch_pr meta artifacts
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-28T05:09:15.133Z — VERIFY — ok
+
+By: CODER
+
+Note: Typed branch_pr PR artifact state model implemented and validated with focused PR flow tests, schema check, typecheck, and diff check.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T05:09:11.714Z, excerpt_hash=sha256:c102605c175f7ddf77fa97b60460bc020ff4bd52914b03d428077d5b1f3e9456
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -89,3 +126,9 @@ Define and validate a typed PR artifact state model for branch_pr meta artifacts
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+Verification evidence:
+- Implemented explicit typed PR artifact lifecycle helpers for open, merged, handoff, remote_staged, and remote_failed states.
+- Added schema-backed artifact_state fields to pr/meta.json and synced rendered schemas.
+- Preserved existing pr open idempotency by deriving ordinary open state without forcing a persisted timestamp churn.
+- Checks passed: bun test packages/agentplane/src/commands/pr/internal packages/agentplane/src/commands/pr-flow*; focused PR flow suite covering packages/agentplane/src/commands/pr/internal, shared/pr-meta.test.ts, and run-cli.core.pr-flow*.test.ts; bun run schemas:check; bun run typecheck; git diff --check.

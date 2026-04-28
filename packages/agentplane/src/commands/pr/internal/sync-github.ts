@@ -188,14 +188,23 @@ export async function tryCreateGithubPr(opts: {
 }): Promise<{
   observed: ObservedGithubPr | null;
   stagedReason: string | null;
+  artifactState: "remote_staged" | "remote_failed" | null;
 }> {
   const repo = await resolveGithubRepoFromOrigin(opts.gitRoot);
   if (!repo) {
-    return { observed: null, stagedReason: "GitHub origin repo unavailable" };
+    return {
+      observed: null,
+      stagedReason: "GitHub origin repo unavailable",
+      artifactState: "remote_staged",
+    };
   }
   const baseBranch = opts.baseBranch?.trim() ?? "";
   if (!baseBranch) {
-    return { observed: null, stagedReason: "base branch unresolved" };
+    return {
+      observed: null,
+      stagedReason: "base branch unresolved",
+      artifactState: "remote_staged",
+    };
   }
   try {
     const { stdout } = await withGhTransportRetry(
@@ -227,11 +236,20 @@ export async function tryCreateGithubPr(opts: {
     return {
       observed: normalizeObservedGithubPr(JSON.parse(stdout) as GithubPullLookupRecord),
       stagedReason: null,
+      artifactState: null,
     };
   } catch (err) {
     if (isMissingRemoteHeadCreateError(err)) {
-      return { observed: null, stagedReason: formatUnpublishedRemoteHeadReason(opts.branch) };
+      return {
+        observed: null,
+        stagedReason: formatUnpublishedRemoteHeadReason(opts.branch),
+        artifactState: "remote_staged",
+      };
     }
-    return { observed: null, stagedReason: summarizeGithubPrCreateFailure(err) };
+    return {
+      observed: null,
+      stagedReason: summarizeGithubPrCreateFailure(err),
+      artifactState: "remote_failed",
+    };
   }
 }
