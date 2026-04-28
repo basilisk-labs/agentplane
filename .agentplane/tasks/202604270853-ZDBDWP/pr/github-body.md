@@ -22,12 +22,14 @@ Move remaining task lifecycle mutation paths toward the shared workflow transiti
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-28T05:27:20.334Z
+- Updated: 2026-04-28T05:34:25.713Z
 - Branch: task/202604270853-ZDBDWP/lifecycle-transition-service
-- Head: f3e03766eb98
+- Head: 27726d6178e5
 
 ```text
-No changes detected.
+ packages/agentplane/src/commands/task/close-shared.ts      | 14 +++++---------
+ .../src/commands/task/shared/transition-command.ts         |  2 +-
+ 2 files changed, 6 insertions(+), 10 deletions(-)
 ```
 
 </details>

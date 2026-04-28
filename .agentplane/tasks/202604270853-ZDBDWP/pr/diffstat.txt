@@ -1,0 +1,3 @@
+ packages/agentplane/src/commands/task/close-shared.ts      | 14 +++++---------
+ .../src/commands/task/shared/transition-command.ts         |  2 +-
+ 2 files changed, 6 insertions(+), 10 deletions(-)
