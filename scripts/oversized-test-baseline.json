@@ -16,7 +16,7 @@
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts",
-      "lines": 1023
+      "lines": 1215
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts",
@@ -69,6 +69,6 @@
   ],
   "summary": {
     "entries": 16,
-    "total_lines": 18227
+    "total_lines": 18419
   }
 }
