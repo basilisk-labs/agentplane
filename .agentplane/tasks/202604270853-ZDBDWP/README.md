@@ -1,10 +1,11 @@
 ---
 id: "202604270853-ZDBDWP"
 title: "Unify lifecycle mutations through transition service"
-status: "DOING"
+result_summary: "Merged via PR #547."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-28T05:34:03.518Z"
   updated_by: "CODER"
   note: "Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts; Result: pass, 3 files and 15 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.lifecycle*.test.ts; Result: pass, 12 files and 63 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: shared lifecycle close transition command path."
-commit: null
+commit:
+  hash: "6a28d20a88c50c278e39940b139e29d9810d5e46"
+  message: "Merge pull request #547 from basilisk-labs/task/202604270853-ZDBDWP/lifecycle-transition-service"
 comments:
   -
     author: "CODER"
     body: "Start: Unifying lifecycle mutation execution through shared transition command surfaces for task close, finish, verify, and hosted closure paths."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #547 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run test:project -- agentplane packages/agentplane/src/commands/task/close-shared.unit.test.ts packages/agentplane/src/commands/task/mutation-parity.unit.test.ts packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts; Result: pass, 3 files and 15 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.lifecycle*.test.ts; Result: pass, 12 files and 63 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: shared lifecycle close transition command path."
+  -
+    type: "status"
+    at: "2026-04-28T05:37:27.976Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #547 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-28T05:34:03.522Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-28T05:37:27.981Z"
+doc_updated_by: "INTEGRATOR"
 description: "Move remaining task lifecycle mutation paths toward the shared workflow transition service so finish, verify rework, close flows, and hosted closure share the same state transition and doc side-effect rules."
 sections:
   Summary: |-

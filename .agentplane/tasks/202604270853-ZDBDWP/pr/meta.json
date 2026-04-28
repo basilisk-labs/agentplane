@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-28T05:36:50Z",
   "base": "main",
   "branch": "task/202604270853-ZDBDWP/lifecycle-transition-service",
   "created_at": "2026-04-28T05:27:20.334Z",
-  "head_sha": "27726d6178e516a9b671a6d0d322e315d30e4c59",
+  "head_sha": "43b5c81fc1068235b465c6788f4e29ca0d1f56ea",
   "last_verified_at": "2026-04-28T05:34:03.518Z",
   "last_verified_sha": "f3e03766eb989a84d53617aadfd27e8dfe6f4695",
+  "merge_commit": "6a28d20a88c50c278e39940b139e29d9810d5e46",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-28T05:36:50Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604270853-ZDBDWP",
-  "updated_at": "2026-04-28T05:34:25.713Z",
+  "updated_at": "2026-04-28T05:36:50Z",
   "verify": {
     "status": "pass"
   }
