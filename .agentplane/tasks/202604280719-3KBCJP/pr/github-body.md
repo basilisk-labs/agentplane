@@ -22,16 +22,19 @@ Prepare and publish patch release v0.3.29 from the current branch_pr main state,
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-28T07:34:24.473Z
+- Updated: 2026-04-28T07:39:09.936Z
 - Branch: task/202604280719-3KBCJP/release-v0-3-29
-- Head: 85c68f4cf0d3
+- Head: eeca80a9a695
 
 ```text
  .../run-cli.core.pr-flow.integrate-strategies.test.ts   | 12 ++++++++----
+ .../agentplane/src/commands/branch/work-start.git.ts    |  2 --
+ .../agentplane/src/commands/shared/branch-pr-context.ts |  2 +-
+ packages/agentplane/src/commands/shared/pr-meta.ts      |  4 ++--
  scripts/generate-scripts-readme.mjs                     | 17 ++++++++++-------
  scripts/oversized-test-baseline.json                    |  4 ++--
  tsconfig.base.json                                      |  2 +-
- 4 files changed, 21 insertions(+), 14 deletions(-)
+ 7 files changed, 24 insertions(+), 19 deletions(-)
 ```
 
 </details>

@@ -1,5 +1,8 @@
  .../run-cli.core.pr-flow.integrate-strategies.test.ts   | 12 ++++++++----
+ .../agentplane/src/commands/branch/work-start.git.ts    |  2 --
+ .../agentplane/src/commands/shared/branch-pr-context.ts |  2 +-
+ packages/agentplane/src/commands/shared/pr-meta.ts      |  4 ++--
  scripts/generate-scripts-readme.mjs                     | 17 ++++++++++-------
  scripts/oversized-test-baseline.json                    |  4 ++--
  tsconfig.base.json                                      |  2 +-
- 4 files changed, 21 insertions(+), 14 deletions(-)
+ 7 files changed, 24 insertions(+), 19 deletions(-)
