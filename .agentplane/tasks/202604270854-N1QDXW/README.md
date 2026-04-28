@@ -1,10 +1,11 @@
 ---
 id: "202604270854-N1QDXW"
 title: "Extract branch_pr testkit fixture builders"
-status: "DOING"
+result_summary: "Merged via PR #553."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-28T06:55:28.431Z"
   updated_by: "CODER"
   note: "Command: bun run test:project -- testkit packages/testkit; Result: pass, 3 files and 4 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts; Result: pass, 1 file and 8 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: extracted branchPrArtifactFixture into testkit cli-core PR-flow helpers and migrated a representative PR lifecycle artifact assertion slice."
-commit: null
+commit:
+  hash: "a6b35db25ab8eb4840819499b9ebe0f6e29c1bc4"
+  message: "Merge pull request #553 from basilisk-labs/task/202604270854-N1QDXW/branch-pr-testkit-fixtures"
 comments:
   -
     author: "CODER"
     body: "Start: extract a branch_pr PR artifact fixture helper into testkit and migrate a representative PR lifecycle test slice to prove the boundary."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #553 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run test:project -- testkit packages/testkit; Result: pass, 3 files and 4 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts; Result: pass, 1 file and 8 tests. Command: bun run typecheck; Result: pass. Command: git diff --check; Result: pass. Scope: extracted branchPrArtifactFixture into testkit cli-core PR-flow helpers and migrated a representative PR lifecycle artifact assertion slice."
+  -
+    type: "status"
+    at: "2026-04-28T06:58:51.647Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #553 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-28T06:55:28.435Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-28T06:58:51.652Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extract reusable branch_pr fixture builders for git repos, task READMEs, PR meta artifacts, verify logs, worktrees, and hosted-close state to reduce duplication across large CLI and command test suites."
 sections:
   Summary: |-

@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-28T06:58:10Z",
   "base": "main",
   "branch": "task/202604270854-N1QDXW/branch-pr-testkit-fixtures",
   "created_at": "2026-04-28T06:52:43.384Z",
-  "head_sha": "8a0ecc3c977f7b3e3c114a3576bea7744b0049bc",
+  "head_sha": "83351f02905a91a7fe9b75546abb917c71071f13",
   "last_verified_at": "2026-04-28T06:55:28.431Z",
   "last_verified_sha": "7e8413158398bdabeb3cf5e70f518f8f4e67f7e0",
+  "merge_commit": "a6b35db25ab8eb4840819499b9ebe0f6e29c1bc4",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-28T06:58:10Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604270854-N1QDXW",
-  "updated_at": "2026-04-28T06:55:38.412Z",
+  "updated_at": "2026-04-28T06:58:10Z",
   "verify": {
     "status": "pass"
   }
