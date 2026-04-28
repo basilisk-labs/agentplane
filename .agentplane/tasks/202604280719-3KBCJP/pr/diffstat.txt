@@ -1,4 +1,5 @@
- .../cli/run-cli.core.pr-flow.integrate-strategies.test.ts    | 12 ++++++++----
- scripts/oversized-test-baseline.json                         |  4 ++--
- tsconfig.base.json                                           |  2 +-
- 3 files changed, 11 insertions(+), 7 deletions(-)
+ .../run-cli.core.pr-flow.integrate-strategies.test.ts   | 12 ++++++++----
+ scripts/generate-scripts-readme.mjs                     | 17 ++++++++++-------
+ scripts/oversized-test-baseline.json                    |  4 ++--
+ tsconfig.base.json                                      |  2 +-
+ 4 files changed, 21 insertions(+), 14 deletions(-)
