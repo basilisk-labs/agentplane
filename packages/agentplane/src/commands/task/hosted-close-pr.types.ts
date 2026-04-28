@@ -54,6 +54,12 @@ export type HostedClosePrOutcome =
       baseBranch: string;
     }
   | {
+      kind: "already-merged-pr";
+      taskId: string;
+      prNumber: number;
+      prUrl: string | null;
+    }
+  | {
       kind: "existing-pr";
       taskId: string;
       prNumber: number;

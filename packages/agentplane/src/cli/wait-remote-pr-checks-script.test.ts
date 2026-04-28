@@ -100,7 +100,7 @@ async function writeGhMock(root: string) {
     "function ok(payload) { process.stdout.write(`${JSON.stringify(payload)}\\n`); process.exit(0); }",
     "function fail(message, code = 1) { process.stderr.write(`${message}\\n`); process.exit(code); }",
     "function nextCount(key, subkey) { const value = readCounter(key, subkey) + 1; writeCounter(key, subkey, value); saveSnapshot(); return value; }",
-    "function prPayload(target) { if (target === '456') { return { number: 456, headRefOid: 'head-sha-2', baseRefName: 'main', url: 'https://github.com/basilisk-labs/agentplane/pull/456', title: 'Check polling 2' }; } return { number: 123, headRefOid: 'head-sha-1', baseRefName: 'main', url: 'https://github.com/basilisk-labs/agentplane/pull/123', title: 'Check polling' }; }",
+    "function prPayload(target) { const mergeStateStatus = scenario === 'dirty-pr' ? 'DIRTY' : 'CLEAN'; if (target === '456') { return { number: 456, headRefOid: 'head-sha-2', baseRefName: 'main', url: 'https://github.com/basilisk-labs/agentplane/pull/456', title: 'Check polling 2', mergeStateStatus }; } return { number: 123, headRefOid: 'head-sha-1', baseRefName: 'main', url: 'https://github.com/basilisk-labs/agentplane/pull/123', title: 'Check polling', mergeStateStatus }; }",
     "function repoPayload() { return { nameWithOwner: 'basilisk-labs/agentplane' }; }",
     "function protectionPayload() { return { required_status_checks: { strict: true, contexts: ['Core CI / test', 'Docs CI / docs'], checks: [ { context: 'Core CI / test', app_id: 123 }, { context: 'Docs CI / docs', app_id: 456 } ] } }; }",
     "function statusPayload(headSha) {",
@@ -256,7 +256,7 @@ describe("wait-remote-pr-checks script", () => {
 
     const callLogText = await readFile(callLog, "utf8");
     expect(callLogText).toContain(
-      `["pr","view","task/test-default-target","--repo","basilisk-labs/agentplane","--json","number,headRefOid,baseRefName,url,title"]`,
+      `["pr","view","task/test-default-target","--repo","basilisk-labs/agentplane","--json","number,headRefOid,baseRefName,url,title,mergeStateStatus"]`,
     );
     expect(callLogText).toContain(
       `["api","repos/basilisk-labs/agentplane/branches/main/protection"]`,
@@ -287,7 +287,7 @@ describe("wait-remote-pr-checks script", () => {
     expect(result.exitCode, transcript(result)).toBe(0);
     const callLogText = await readFile(callLog, "utf8");
     expect(callLogText).toContain(
-      `["pr","view","123","--repo","basilisk-labs/agentplane","--json","number,headRefOid,baseRefName,url,title"]`,
+      `["pr","view","123","--repo","basilisk-labs/agentplane","--json","number,headRefOid,baseRefName,url,title,mergeStateStatus"]`,
     );
     expect(callLogText).not.toContain(`["pr","view","--pr"`);
   });
@@ -413,6 +413,31 @@ describe("wait-remote-pr-checks script", () => {
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain("Authentication required");
     expect(result.stderr).not.toContain("timed out waiting");
+  });
+
+  it("fails fast when GitHub reports a dirty PR before checks start", async () => {
+    const root = await makeTempRoot();
+    const { stateFile, callLog } = await writeGhMock(root);
+
+    const result = await runScript(["123"], {
+      env: {
+        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+        GH_SCENARIO: "dirty-pr",
+        GH_STATE_FILE: stateFile,
+        GH_CALL_LOG: callLog,
+        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "3",
+      },
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain("mergeStateStatus=DIRTY");
+    expect(result.stderr).toContain("resolve conflicts before waiting for checks");
+
+    const callLogText = await readFile(callLog, "utf8");
+    expect(callLogText).toContain(`["pr","view","123"`);
+    expect(callLogText).not.toContain("commits/head-sha-1/status");
+    expect(callLogText).not.toContain("commits/head-sha-1/check-runs");
   });
 
   it(

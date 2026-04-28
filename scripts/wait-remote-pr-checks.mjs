@@ -188,7 +188,12 @@ async function resolvePullRequest(targetArg, repoSlug) {
   if (typeof targetArg === "string" && targetArg.trim().length > 0) {
     prArgs.push(targetArg.trim());
   }
-  prArgs.push("--repo", repoSlug, "--json", "number,headRefOid,baseRefName,url,title");
+  prArgs.push(
+    "--repo",
+    repoSlug,
+    "--json",
+    "number,headRefOid,baseRefName,url,title,mergeStateStatus",
+  );
 
   const payload = await runGhJsonWithRetry([...prArgs]);
 
@@ -209,6 +214,8 @@ async function resolvePullRequest(targetArg, repoSlug) {
     baseRefName,
     url: typeof payload.url === "string" ? payload.url : null,
     title: typeof payload.title === "string" ? payload.title : null,
+    mergeStateStatus:
+      typeof payload.mergeStateStatus === "string" ? payload.mergeStateStatus.trim() : null,
   };
 }
 
@@ -446,6 +453,13 @@ function formatPullRequestPrefix(pr, index, total) {
 }
 
 async function waitForPullRequestChecks(repoSlug, pr, requiredContexts, options, prefix) {
+  if (pr.mergeStateStatus === "DIRTY") {
+    process.stderr.write(
+      `error: ${prefix} is not mergeable (mergeStateStatus=DIRTY); resolve conflicts before waiting for checks.\n`,
+    );
+    return { ok: false };
+  }
+
   let poll = 0;
   let idleAttempts = 0;
   let lastFingerprint = "";
