@@ -1,10 +1,11 @@
 ---
 id: "202604281616-WG87DQ"
 title: "Harden branch_pr close and verification reconciliation"
-status: "DOING"
+result_summary: "Merged via PR #560."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-04-28T16:35:09.732Z"
   updated_by: "CODER"
   note: "Command: git push origin HEAD; Result: pass. Evidence: pre-push fast gate passed after implementation commit b07c53a21661: format, schemas, agent templates, policy routing, release parity, CLI cold-start, build/typecheck/bundles, docs freshness, hotspot baseline, vitest project routing, lint, 245 fast test files with 1419 passed and 2 skipped, plus critical E2E 5 files with 14 passed. Scope: post-commit branch state pushed to PR #560."
-commit: null
+commit:
+  hash: "c02ef92ed56395dac0eb195fcc1dbb6200f20efc"
+  message: "Merge PR #560: harden branch_pr close and verification reconciliation"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved branch_pr lifecycle hardening in the task worktree: hosted-close idempotency, dirty PR check waiting diagnostics, and verification artifact reconciliation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #560 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: git push origin HEAD; Result: pass. Evidence: pre-push fast gate passed after implementation commit b07c53a21661: format, schemas, agent templates, policy routing, release parity, CLI cold-start, build/typecheck/bundles, docs freshness, hotspot baseline, vitest project routing, lint, 245 fast test files with 1419 passed and 2 skipped, plus critical E2E 5 files with 14 passed. Scope: post-commit branch state pushed to PR #560."
+  -
+    type: "status"
+    at: "2026-04-28T16:41:20.162Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #560 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-28T16:35:09.740Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-28T16:41:20.169Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix recurring branch_pr lifecycle failure modes from recent logs: make hosted close idempotent, make remote-check waiting fail fast on conflicted PRs, and preserve verification evidence consistently when a task is closed from hosted or release flows."
 sections:
   Summary: |-
