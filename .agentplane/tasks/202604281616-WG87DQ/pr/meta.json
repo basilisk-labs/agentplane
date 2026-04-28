@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604281616-WG87DQ/close-verification-reconcile",
+  "created_at": "2026-04-28T16:17:24.671Z",
+  "head_sha": "aa15db323eda380c291d0c0b49e1a48b8626267a",
+  "last_verified_at": "2026-04-28T16:27:20.152Z",
+  "last_verified_sha": "aa15db323eda380c291d0c0b49e1a48b8626267a",
+  "schema_version": 1,
+  "task_id": "202604281616-WG87DQ",
+  "updated_at": "2026-04-28T16:17:24.671Z",
+  "verify": {
+    "status": "pass"
+  }
+}
