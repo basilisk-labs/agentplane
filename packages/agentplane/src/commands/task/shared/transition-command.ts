@@ -47,7 +47,7 @@ export async function applyTaskStatusTransitionCommand(opts: {
         });
         primaryTag = resolvePrimaryTag(toStringArray(current.tags), opts.ctx).primary;
         deferredWarnings = execution.deferredWarnings;
-        return { intents: execution.intents };
+        return { intents: execution.intents, nextTask: execution.nextTask };
       },
     });
   } catch (error) {
