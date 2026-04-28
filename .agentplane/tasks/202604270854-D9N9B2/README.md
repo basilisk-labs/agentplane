@@ -1,10 +1,10 @@
 ---
 id: "202604270854-D9N9B2"
 title: "Introduce runner run repository contracts"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -21,16 +21,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-28T05:40:31.154Z"
+  updated_by: "CODER"
+  note: "Command: bun run test:project -- agentplane packages/agentplane/src/runner; Result: pass, 16 files and 77 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.query-run*.test.ts; Result: pass, 5 files and 19 tests. Command: bun run typecheck; Result: pass after framework:dev:bootstrap refreshed local package exports. Scope: existing RunnerRunRepository and task runner projection contracts on current main."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: verify the existing runner run repository contracts and task runner projection wiring on current main before closing this already-satisfied atom."
+events:
+  -
+    type: "status"
+    at: "2026-04-28T05:39:03.664Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: verify the existing runner run repository contracts and task runner projection wiring on current main before closing this already-satisfied atom."
+  -
+    type: "verify"
+    at: "2026-04-28T05:40:31.154Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run test:project -- agentplane packages/agentplane/src/runner; Result: pass, 16 files and 77 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.query-run*.test.ts; Result: pass, 5 files and 19 tests. Command: bun run typecheck; Result: pass after framework:dev:bootstrap refreshed local package exports. Scope: existing RunnerRunRepository and task runner projection contracts on current main."
 doc_version: 3
-doc_updated_at: "2026-04-27T08:56:44.522Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-28T05:40:31.159Z"
+doc_updated_by: "CODER"
 description: "Introduce RunnerRunRepository and TaskRunnerProjection contracts so runner invocation, result semantics, and task projection derive from one persisted run source rather than mutable config reconstruction and adapter-specific result interpretation."
 sections:
   Summary: |-
@@ -48,6 +64,14 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-28T05:40:31.154Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run test:project -- agentplane packages/agentplane/src/runner; Result: pass, 16 files and 77 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.query-run*.test.ts; Result: pass, 5 files and 19 tests. Command: bun run typecheck; Result: pass after framework:dev:bootstrap refreshed local package exports. Scope: existing RunnerRunRepository and task runner projection contracts on current main.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T05:39:03.664Z, excerpt_hash=sha256:ae96fe7a8a7addcdd9581b317a2439ae2946402efac5dbbc17df9c8d537b5561
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -80,6 +104,14 @@ Introduce RunnerRunRepository and TaskRunnerProjection contracts so runner invoc
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-28T05:40:31.154Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run test:project -- agentplane packages/agentplane/src/runner; Result: pass, 16 files and 77 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.query-run*.test.ts; Result: pass, 5 files and 19 tests. Command: bun run typecheck; Result: pass after framework:dev:bootstrap refreshed local package exports. Scope: existing RunnerRunRepository and task runner projection contracts on current main.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T05:39:03.664Z, excerpt_hash=sha256:ae96fe7a8a7addcdd9581b317a2439ae2946402efac5dbbc17df9c8d537b5561
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
