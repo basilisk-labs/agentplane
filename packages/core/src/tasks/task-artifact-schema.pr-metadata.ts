@@ -7,6 +7,13 @@ import {
 } from "./task-artifact-schema.shared.js";
 
 const PR_STATUS_VALUES = ["OPEN", "CLOSED", "MERGED"] as const;
+const PR_ARTIFACT_STATE_VALUES = [
+  "open",
+  "merged",
+  "handoff",
+  "remote_staged",
+  "remote_failed",
+] as const;
 const MERGE_STRATEGY_VALUES = ["squash", "merge", "rebase"] as const;
 const PR_VERIFY_STATUS_VALUES = ["pass", "fail", "skipped"] as const;
 
@@ -21,6 +28,9 @@ export const TASK_PR_META_ZOD_SCHEMA = z
     created_at: ISO_UTC_TIMESTAMP,
     updated_at: ISO_UTC_TIMESTAMP,
     status: z.enum(PR_STATUS_VALUES).optional(),
+    artifact_state: z.enum(PR_ARTIFACT_STATE_VALUES).optional(),
+    artifact_state_reason: NON_EMPTY_STRING.optional(),
+    artifact_state_updated_at: ISO_UTC_TIMESTAMP.optional(),
     merge_strategy: z.enum(MERGE_STRATEGY_VALUES).optional(),
     merged_at: ISO_UTC_TIMESTAMP.optional(),
     merge_commit: NON_EMPTY_STRING.optional(),

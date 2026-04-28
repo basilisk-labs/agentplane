@@ -16,6 +16,13 @@ export type ObservedGithubPrState = {
   base?: string | null;
   headSha?: string | null;
 };
+export type PrArtifactStateKind = "open" | "merged" | "handoff" | "remote_staged" | "remote_failed";
+export type PrArtifactLifecycleState =
+  | { kind: "open"; remoteStatus?: ObservedGithubPrState["status"] | null }
+  | { kind: "merged"; mergeCommit?: string | null; mergedAt?: string | null }
+  | { kind: "handoff"; reason: string }
+  | { kind: "remote_staged"; reason: string }
+  | { kind: "remote_failed"; reason: string };
 export type PrArtifactTextState = {
   diffstatText: string | null;
   verifyLogText: string | null;
@@ -24,11 +31,71 @@ export type PrArtifactTextState = {
 
 export type PrArtifactState = PrArtifactTextState & {
   meta: PrMeta;
+  lifecycle: PrArtifactLifecycleState;
 };
 
 function nowOrExisting(value: string | undefined, fallback: string): string {
   const trimmed = value?.trim() ?? "";
   return trimmed || fallback;
+}
+
+function lifecycleKind(state: PrArtifactLifecycleState): PrArtifactStateKind {
+  return state.kind;
+}
+
+function lifecycleReason(state: PrArtifactLifecycleState): string | undefined {
+  return state.kind === "handoff" ||
+    state.kind === "remote_staged" ||
+    state.kind === "remote_failed"
+    ? state.reason
+    : undefined;
+}
+
+export function withPrArtifactLifecycleState(
+  meta: PrMeta,
+  state: PrArtifactLifecycleState,
+  at: string,
+): PrMeta {
+  const kind = lifecycleKind(state);
+  const reason = lifecycleReason(state);
+  const previousReason = meta.artifact_state_reason ?? undefined;
+  const stateUnchanged = meta.artifact_state === kind && previousReason === reason;
+  return {
+    ...meta,
+    artifact_state: kind,
+    artifact_state_reason: reason,
+    artifact_state_updated_at: stateUnchanged ? (meta.artifact_state_updated_at ?? at) : at,
+  };
+}
+
+export function derivePrArtifactLifecycleState(meta: PrMeta): PrArtifactLifecycleState {
+  const reason =
+    typeof meta.artifact_state_reason === "string" && meta.artifact_state_reason.trim().length > 0
+      ? meta.artifact_state_reason
+      : null;
+  if (meta.artifact_state === "remote_staged") {
+    return {
+      kind: "remote_staged",
+      reason: reason ?? "remote PR creation staged",
+    };
+  }
+  if (meta.artifact_state === "remote_failed") {
+    return {
+      kind: "remote_failed",
+      reason: reason ?? "remote PR creation failed",
+    };
+  }
+  if (meta.artifact_state === "handoff") {
+    return { kind: "handoff", reason: reason ?? "handoff required" };
+  }
+  if (meta.artifact_state === "merged" || meta.status === "MERGED") {
+    return {
+      kind: "merged",
+      mergeCommit: meta.merge_commit ?? null,
+      mergedAt: meta.merged_at ?? null,
+    };
+  }
+  return { kind: "open", remoteStatus: meta.status ?? null };
 }
 
 export function buildOpenedPrMeta(opts: {
@@ -55,6 +122,9 @@ export function buildOpenedPrMeta(opts: {
     created_at: opts.previousMeta?.created_at ?? opts.at,
     updated_at: changed ? opts.at : (opts.previousMeta?.updated_at ?? opts.at),
     status: opts.previousMeta?.status,
+    artifact_state: opts.previousMeta?.artifact_state,
+    artifact_state_reason: opts.previousMeta?.artifact_state_reason,
+    artifact_state_updated_at: opts.previousMeta?.artifact_state_updated_at,
     merge_strategy: opts.previousMeta?.merge_strategy,
     merged_at: opts.previousMeta?.merged_at,
     merge_commit: opts.previousMeta?.merge_commit,
@@ -140,7 +210,16 @@ export function buildObservedGithubPrMeta(opts: {
     nextMeta.updated_at = opts.at;
   }
 
-  return nextMeta;
+  if (nextStatus !== "MERGED") return nextMeta;
+  return withPrArtifactLifecycleState(
+    nextMeta,
+    {
+      kind: "merged",
+      mergeCommit: nextMeta.merge_commit ?? null,
+      mergedAt: nextMeta.merged_at ?? null,
+    },
+    opts.at,
+  );
 }
 
 export function buildVerifiedPrMeta(opts: {
@@ -190,7 +269,15 @@ export function buildIntegratedPrMeta(opts: {
       : { status: "pass", command: opts.verifyCommands.join(" && ") };
   }
 
-  return nextMeta;
+  return withPrArtifactLifecycleState(
+    nextMeta,
+    {
+      kind: "merged",
+      mergeCommit: nextMeta.merge_commit ?? null,
+      mergedAt: nextMeta.merged_at ?? null,
+    },
+    opts.at,
+  );
 }
 
 export type ShellInvocation = {
@@ -265,6 +352,9 @@ type ForwardCompatiblePrMetaRecord = {
   verify?: unknown;
   base?: unknown;
   head_sha?: unknown;
+  artifact_state?: unknown;
+  artifact_state_reason?: unknown;
+  artifact_state_updated_at?: unknown;
 };
 
 function buildForwardCompatiblePrMeta(
@@ -284,6 +374,16 @@ function buildForwardCompatiblePrMeta(
       ? statusCandidate
       : undefined;
 
+  const artifactStateCandidate = asNonEmptyString(parsed.artifact_state);
+  const artifactState =
+    artifactStateCandidate === "open" ||
+    artifactStateCandidate === "merged" ||
+    artifactStateCandidate === "handoff" ||
+    artifactStateCandidate === "remote_staged" ||
+    artifactStateCandidate === "remote_failed"
+      ? artifactStateCandidate
+      : undefined;
+
   return {
     schema_version: 1,
     task_id: taskId,
@@ -301,6 +401,9 @@ function buildForwardCompatiblePrMeta(
     verify: asVerifyStatus(parsed.verify) ?? { status: "skipped" },
     base: asNonEmptyString(parsed.base),
     head_sha: asNonEmptyString(parsed.head_sha),
+    artifact_state: artifactState,
+    artifact_state_reason: asNonEmptyString(parsed.artifact_state_reason),
+    artifact_state_updated_at: asNonEmptyString(parsed.artifact_state_updated_at),
   };
 }
 
