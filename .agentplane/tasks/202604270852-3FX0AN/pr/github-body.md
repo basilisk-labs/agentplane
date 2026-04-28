@@ -22,12 +22,20 @@ Define and validate a typed PR artifact state model for branch_pr meta artifacts
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-28T05:02:02.639Z
+- Updated: 2026-04-28T05:09:23.356Z
 - Branch: task/202604270852-3FX0AN/type-pr-artifact-state
-- Head: 23deb0b2007a
+- Head: aaaccf52bae1
 
 ```text
-No changes detected.
+ .../src/commands/pr/internal/sync-github.ts        |  26 ++++-
+ .../src/commands/pr/internal/sync-model.ts         |   1 +
+ .../src/commands/pr/internal/sync-open-step.ts     |  20 +++-
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  46 +++++++++
+ packages/agentplane/src/commands/shared/pr-meta.ts | 107 ++++++++++++++++++++-
+ packages/core/schemas/pr-meta.schema.json          |  12 +++
+ .../src/tasks/task-artifact-schema.pr-metadata.ts  |  10 ++
+ packages/spec/schemas/pr-meta.schema.json          |  12 +++
+ 8 files changed, 227 insertions(+), 7 deletions(-)
 ```
 
 </details>

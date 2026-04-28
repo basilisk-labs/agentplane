@@ -1,0 +1,9 @@
+ .../src/commands/pr/internal/sync-github.ts        |  26 ++++-
+ .../src/commands/pr/internal/sync-model.ts         |   1 +
+ .../src/commands/pr/internal/sync-open-step.ts     |  20 +++-
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  46 +++++++++
+ packages/agentplane/src/commands/shared/pr-meta.ts | 107 ++++++++++++++++++++-
+ packages/core/schemas/pr-meta.schema.json          |  12 +++
+ .../src/tasks/task-artifact-schema.pr-metadata.ts  |  10 ++
+ packages/spec/schemas/pr-meta.schema.json          |  12 +++
+ 8 files changed, 227 insertions(+), 7 deletions(-)
