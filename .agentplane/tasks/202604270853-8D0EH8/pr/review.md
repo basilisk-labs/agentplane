@@ -46,12 +46,15 @@ Refactor pr open so local artifacts, branch push/linking, and remote PR creation
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-28T05:15:30.213Z
+- Updated: 2026-04-28T05:21:31.636Z
 - Branch: task/202604270853-8D0EH8/pr-open-transactional
-- Head: cff117aecad6
+- Head: 72d465178a7d
 
 ```text
-No changes detected.
+ .../src/cli/run-cli.core.pr-flow.pr-open.test.ts   | 194 ++++++++++++++++++++-
+ .../src/commands/pr/internal/sync-open-step.ts     |   5 +-
+ packages/agentplane/src/commands/pr/open.ts        |  55 +++++-
+ 3 files changed, 248 insertions(+), 6 deletions(-)
 ```
 
 </details>

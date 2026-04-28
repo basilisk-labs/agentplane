@@ -1,0 +1,4 @@
+ .../src/cli/run-cli.core.pr-flow.pr-open.test.ts   | 194 ++++++++++++++++++++-
+ .../src/commands/pr/internal/sync-open-step.ts     |   5 +-
+ packages/agentplane/src/commands/pr/open.ts        |  55 +++++-
+ 3 files changed, 248 insertions(+), 6 deletions(-)
