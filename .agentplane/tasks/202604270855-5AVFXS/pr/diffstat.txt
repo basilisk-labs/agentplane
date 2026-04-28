@@ -1,0 +1,3 @@
+ scripts/generate-scripts-readme.mjs | 28 ++++++++++++++++------------
+ scripts/lib/generated-artifacts.mjs | 22 +++++++++++++++++++++-
+ 2 files changed, 37 insertions(+), 13 deletions(-)

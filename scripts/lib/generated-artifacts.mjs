@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
+import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
@@ -62,6 +62,26 @@ export async function checkGeneratedArtifactFresh({
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }
+}
+
+export async function checkGeneratedTextArtifactFresh({
+  outputPath,
+  generateText,
+  missingMessage,
+  staleMessage,
+}) {
+  if (!(await fileExists(outputPath))) {
+    throw new Error(missingMessage);
+  }
+
+  const [expected, actual] = await Promise.all([readFile(outputPath, "utf8"), generateText()]);
+  if (expected !== actual) {
+    throw new Error(staleMessage);
+  }
+}
+
+export async function writeGeneratedTextArtifact({ outputPath, generateText }) {
+  await writeFile(outputPath, await generateText(), "utf8");
 }
 
 export function defineGeneratedArtifactCheck({

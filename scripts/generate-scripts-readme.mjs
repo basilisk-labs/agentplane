@@ -1,8 +1,12 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { format } from "prettier";
 
 import { ROOT, defineScript, parseScriptArgs, runScriptMain } from "./lib/script-runtime.mjs";
+import {
+  checkGeneratedTextArtifactFresh,
+  writeGeneratedTextArtifact,
+} from "./lib/generated-artifacts.mjs";
 
 const PACKAGE_JSON_PATH = path.join(ROOT, "package.json");
 const DEFAULT_OUT_PATH = path.join(ROOT, "scripts", "README.md");
@@ -144,24 +148,24 @@ async function runGenerateScriptsReadme(argv) {
   const outPath = flags.out ? path.resolve(ROOT, flags.out) : DEFAULT_OUT_PATH;
   const check = flags.check === true;
 
-  const scripts = await loadScripts();
-  const nextContent = await format(buildReadme(scripts), { parser: "markdown" });
+  const generateText = async () => {
+    const scripts = await loadScripts();
+    return format(buildReadme(scripts), { parser: "markdown" });
+  };
 
   if (check) {
-    const current = await readFile(outPath, "utf8").catch(() => null);
-    if (current === null) {
-      throw new Error(
+    await checkGeneratedTextArtifactFresh({
+      outputPath: outPath,
+      generateText,
+      missingMessage:
         "scripts/README.md is missing. Regenerate with: bun run docs:scripts:generate",
-      );
-    }
-    if (current !== nextContent) {
-      throw new Error("scripts/README.md is stale. Regenerate with: bun run docs:scripts:generate");
-    }
+      staleMessage: "scripts/README.md is stale. Regenerate with: bun run docs:scripts:generate",
+    });
     process.stdout.write("ok: scripts/README.md is up to date\n");
     return;
   }
 
-  await writeFile(outPath, nextContent, "utf8");
+  await writeGeneratedTextArtifact({ outputPath: outPath, generateText });
   process.stdout.write(`generated: ${path.relative(ROOT, outPath).split(path.sep).join("/")}\n`);
 }
 

@@ -1,10 +1,10 @@
 ---
 id: "202604270855-5AVFXS"
 title: "Consolidate freshness and sync script helpers"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -21,16 +21,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-28T07:01:01.247Z"
+  updated_by: "CODER"
+  note: "Command: bun run docs:scripts:check; Result: pass. Command: bun run schemas:check; Result: pass. Command: bun run agents:check; Result: pass. Command: git diff --check; Result: pass. Scope: scripts README check/generate now reuses shared generated text artifact helpers; existing schema and agent sync checks remain green."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: consolidate the scripts README freshness check onto shared generated-artifact helper primitives while preserving schema and agent sync checks."
+events:
+  -
+    type: "status"
+    at: "2026-04-28T07:00:09.715Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: consolidate the scripts README freshness check onto shared generated-artifact helper primitives while preserving schema and agent sync checks."
+  -
+    type: "verify"
+    at: "2026-04-28T07:01:01.247Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run docs:scripts:check; Result: pass. Command: bun run schemas:check; Result: pass. Command: bun run agents:check; Result: pass. Command: git diff --check; Result: pass. Scope: scripts README check/generate now reuses shared generated text artifact helpers; existing schema and agent sync checks remain green."
 doc_version: 3
-doc_updated_at: "2026-04-27T08:56:47.589Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-04-28T07:01:01.251Z"
+doc_updated_by: "CODER"
 description: "Create shared helper primitives for generated artifact freshness checks and mirror sync scripts so docs, schema, recipe inventory, and agent template checks reuse one compare/generate/report pattern."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-28T07:01:01.247Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run docs:scripts:check; Result: pass. Command: bun run schemas:check; Result: pass. Command: bun run agents:check; Result: pass. Command: git diff --check; Result: pass. Scope: scripts README check/generate now reuses shared generated text artifact helpers; existing schema and agent sync checks remain green.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T07:00:09.715Z, excerpt_hash=sha256:59e2ed2130d7ef987e397f46b88533f6e442f1eb465d816f2e3feb0c0eff9397
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -82,6 +106,14 @@ Create shared helper primitives for generated artifact freshness checks and mirr
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-28T07:01:01.247Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run docs:scripts:check; Result: pass. Command: bun run schemas:check; Result: pass. Command: bun run agents:check; Result: pass. Command: git diff --check; Result: pass. Scope: scripts README check/generate now reuses shared generated text artifact helpers; existing schema and agent sync checks remain green.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T07:00:09.715Z, excerpt_hash=sha256:59e2ed2130d7ef987e397f46b88533f6e442f1eb465d816f2e3feb0c0eff9397
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
