@@ -11,8 +11,8 @@ Prepare and publish patch release v0.3.29 from the current branch_pr main state,
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Command: release candidate --push --yes, PR #557 hosted checks, Publish to npm run 25045751901, npm view agentplane/@agentplaneorg/core/@agentplaneorg/recipes version, git ls-remote --tags origin v0.3.29, gh release view v0.3.29; Result: pass; Evidence: PR #557 merged into main at a4aa33ce12fedb462fdbb69d48a639101382ddd0, Publish to npm succeeded, npm versions are 0.3.29, tag v0.3.29 points at a4aa33ce12fedb462fdbb69d48a639101382ddd0, GitHub Release v0.3.29 is published; Scope: v0.3.29 release publication and task evidence.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
@@ -22,27 +22,12 @@ Prepare and publish patch release v0.3.29 from the current branch_pr main state,
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-28T09:06:38.982Z
+- Updated: 2026-04-28T09:48:05.135Z
 - Branch: task/202604280719-3KBCJP/release-v0-3-29
 - Head: e72702c145b0
 
 ```text
- .agentplane/config.json                            |   2 +-
- FREEZE.v0.3.md                                     |   4 +-
- docs/reference/generated-reference.mdx             |   6 +-
- docs/releases/v0.3.29.md                           | 118 +++++++++++++++++++++
- packages/agentplane/package.json                   |   6 +-
- ...n-cli.core.pr-flow.integrate-strategies.test.ts |  12 ++-
- .../src/commands/branch/work-start.git.ts          |   2 -
- .../src/commands/shared/branch-pr-context.ts       |   2 +-
- packages/agentplane/src/commands/shared/pr-meta.ts |   4 +-
- packages/core/package.json                         |   2 +-
- packages/recipes/package.json                      |   2 +-
- packages/testkit/package.json                      |   2 +-
- scripts/generate-scripts-readme.mjs                |  17 +--
- scripts/oversized-test-baseline.json               |   4 +-
- tsconfig.base.json                                 |   2 +-
- 15 files changed, 154 insertions(+), 31 deletions(-)
+No changes detected.
 ```
 
 </details>
