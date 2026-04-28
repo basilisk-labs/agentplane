@@ -1,10 +1,11 @@
 ---
 id: "202604270854-D9N9B2"
 title: "Introduce runner run repository contracts"
-status: "DOING"
+result_summary: "Merged via PR #549."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-28T05:40:31.154Z"
   updated_by: "CODER"
   note: "Command: bun run test:project -- agentplane packages/agentplane/src/runner; Result: pass, 16 files and 77 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.query-run*.test.ts; Result: pass, 5 files and 19 tests. Command: bun run typecheck; Result: pass after framework:dev:bootstrap refreshed local package exports. Scope: existing RunnerRunRepository and task runner projection contracts on current main."
-commit: null
+commit:
+  hash: "9695f8b241dd33114c2eda553e337acad7a574d0"
+  message: "Merge pull request #549 from basilisk-labs/task/202604270854-D9N9B2/runner-run-repository-contracts"
 comments:
   -
     author: "CODER"
     body: "Start: verify the existing runner run repository contracts and task runner projection wiring on current main before closing this already-satisfied atom."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #549 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run test:project -- agentplane packages/agentplane/src/runner; Result: pass, 16 files and 77 tests. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.tasks.query-run*.test.ts; Result: pass, 5 files and 19 tests. Command: bun run typecheck; Result: pass after framework:dev:bootstrap refreshed local package exports. Scope: existing RunnerRunRepository and task runner projection contracts on current main."
+  -
+    type: "status"
+    at: "2026-04-28T06:43:15.839Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #549 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-28T05:40:31.159Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-28T06:43:15.845Z"
+doc_updated_by: "INTEGRATOR"
 description: "Introduce RunnerRunRepository and TaskRunnerProjection contracts so runner invocation, result semantics, and task projection derive from one persisted run source rather than mutable config reconstruction and adapter-specific result interpretation."
 sections:
   Summary: |-

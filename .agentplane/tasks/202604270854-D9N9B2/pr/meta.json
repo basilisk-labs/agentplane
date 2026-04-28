@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-28T06:42:33Z",
   "base": "main",
   "branch": "task/202604270854-D9N9B2/runner-run-repository-contracts",
   "created_at": "2026-04-28T05:39:03.730Z",
-  "head_sha": "a51c23fa55fb0c0150b23b3af3860bb70562845f",
+  "head_sha": "ce415da22633624f9f41e50a55b93c01087526dd",
   "last_verified_at": "2026-04-28T05:40:31.154Z",
   "last_verified_sha": "a51c23fa55fb0c0150b23b3af3860bb70562845f",
+  "merge_commit": "9695f8b241dd33114c2eda553e337acad7a574d0",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-28T06:42:33Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604270854-D9N9B2",
-  "updated_at": "2026-04-28T05:39:03.730Z",
+  "updated_at": "2026-04-28T06:42:33Z",
   "verify": {
     "status": "pass"
   }
