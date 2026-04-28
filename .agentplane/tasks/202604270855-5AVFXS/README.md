@@ -1,10 +1,11 @@
 ---
 id: "202604270855-5AVFXS"
 title: "Consolidate freshness and sync script helpers"
-status: "DOING"
+result_summary: "Merged via PR #555."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-28T07:01:01.247Z"
   updated_by: "CODER"
   note: "Command: bun run docs:scripts:check; Result: pass. Command: bun run schemas:check; Result: pass. Command: bun run agents:check; Result: pass. Command: git diff --check; Result: pass. Scope: scripts README check/generate now reuses shared generated text artifact helpers; existing schema and agent sync checks remain green."
-commit: null
+commit:
+  hash: "f16cb9b918cf288903049609fa0d93996cbbfca2"
+  message: "Merge pull request #555 from basilisk-labs/task/202604270855-5AVFXS/freshness-sync-helpers"
 comments:
   -
     author: "CODER"
     body: "Start: consolidate the scripts README freshness check onto shared generated-artifact helper primitives while preserving schema and agent sync checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #555 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run docs:scripts:check; Result: pass. Command: bun run schemas:check; Result: pass. Command: bun run agents:check; Result: pass. Command: git diff --check; Result: pass. Scope: scripts README check/generate now reuses shared generated text artifact helpers; existing schema and agent sync checks remain green."
+  -
+    type: "status"
+    at: "2026-04-28T07:02:58.050Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #555 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-28T07:01:01.251Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-28T07:02:58.056Z"
+doc_updated_by: "INTEGRATOR"
 description: "Create shared helper primitives for generated artifact freshness checks and mirror sync scripts so docs, schema, recipe inventory, and agent template checks reuse one compare/generate/report pattern."
 sections:
   Summary: |-
