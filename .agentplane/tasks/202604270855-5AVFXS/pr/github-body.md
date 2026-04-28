@@ -22,12 +22,14 @@ Create shared helper primitives for generated artifact freshness checks and mirr
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-28T07:00:09.779Z
+- Updated: 2026-04-28T07:01:12.107Z
 - Branch: task/202604270855-5AVFXS/freshness-sync-helpers
-- Head: c96e114796c0
+- Head: 6b2e7a46fc11
 
 ```text
-No changes detected.
+ scripts/generate-scripts-readme.mjs | 28 ++++++++++++++++------------
+ scripts/lib/generated-artifacts.mjs | 22 +++++++++++++++++++++-
+ 2 files changed, 37 insertions(+), 13 deletions(-)
 ```
 
 </details>
