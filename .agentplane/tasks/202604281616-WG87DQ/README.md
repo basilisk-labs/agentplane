@@ -4,7 +4,7 @@ title: "Harden branch_pr close and verification reconciliation"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-28T16:27:20.152Z"
+  updated_at: "2026-04-28T16:35:09.732Z"
   updated_by: "CODER"
-  note: "Command: bun test packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts; Result: pass; Evidence: 12 pass, 0 fail, including dirty PR fast-fail. Scope: remote check watcher. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts; Result: pass; Evidence: 4 pass, 0 fail, including remote merged close PR duplicate skip. Scope: hosted-close-pr lifecycle. Command: bun x prettier --check <changed files>; Result: pass. Scope: formatting. Command: bun x eslint <changed files>; Result: pass. Scope: changed script/source/test files. Command: bun run typecheck; Result: pass; Evidence: tsc -b. Scope: workspace types. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime 0.3.29 matches expected. Scope: framework dev runtime. Command: node .agentplane/policy/check-routing.mjs && git diff --check; Result: pass. Scope: policy routing and whitespace."
+  note: "Command: git push origin HEAD; Result: pass. Evidence: pre-push fast gate passed after implementation commit b07c53a21661: format, schemas, agent templates, policy routing, release parity, CLI cold-start, build/typecheck/bundles, docs freshness, hotspot baseline, vitest project routing, lint, 245 fast test files with 1419 passed and 2 skipped, plus critical E2E 5 files with 14 passed. Scope: post-commit branch state pushed to PR #560."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts; Result: pass; Evidence: 12 pass, 0 fail, including dirty PR fast-fail. Scope: remote check watcher. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts; Result: pass; Evidence: 4 pass, 0 fail, including remote merged close PR duplicate skip. Scope: hosted-close-pr lifecycle. Command: bun x prettier --check <changed files>; Result: pass. Scope: formatting. Command: bun x eslint <changed files>; Result: pass. Scope: changed script/source/test files. Command: bun run typecheck; Result: pass; Evidence: tsc -b. Scope: workspace types. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime 0.3.29 matches expected. Scope: framework dev runtime. Command: node .agentplane/policy/check-routing.mjs && git diff --check; Result: pass. Scope: policy routing and whitespace."
+  -
+    type: "verify"
+    at: "2026-04-28T16:35:09.732Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: git push origin HEAD; Result: pass. Evidence: pre-push fast gate passed after implementation commit b07c53a21661: format, schemas, agent templates, policy routing, release parity, CLI cold-start, build/typecheck/bundles, docs freshness, hotspot baseline, vitest project routing, lint, 245 fast test files with 1419 passed and 2 skipped, plus critical E2E 5 files with 14 passed. Scope: post-commit branch state pushed to PR #560."
 doc_version: 3
-doc_updated_at: "2026-04-28T16:27:20.166Z"
+doc_updated_at: "2026-04-28T16:35:09.740Z"
 doc_updated_by: "CODER"
 description: "Fix recurring branch_pr lifecycle failure modes from recent logs: make hosted close idempotent, make remote-check waiting fail fast on conflicted PRs, and preserve verification evidence consistently when a task is closed from hosted or release flows."
 sections:
@@ -68,6 +74,14 @@ sections:
     Note: Command: bun test packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts; Result: pass; Evidence: 12 pass, 0 fail, including dirty PR fast-fail. Scope: remote check watcher. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts; Result: pass; Evidence: 4 pass, 0 fail, including remote merged close PR duplicate skip. Scope: hosted-close-pr lifecycle. Command: bun x prettier --check <changed files>; Result: pass. Scope: formatting. Command: bun x eslint <changed files>; Result: pass. Scope: changed script/source/test files. Command: bun run typecheck; Result: pass; Evidence: tsc -b. Scope: workspace types. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime 0.3.29 matches expected. Scope: framework dev runtime. Command: node .agentplane/policy/check-routing.mjs && git diff --check; Result: pass. Scope: policy routing and whitespace.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T16:17:24.477Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    ### 2026-04-28T16:35:09.732Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: git push origin HEAD; Result: pass. Evidence: pre-push fast gate passed after implementation commit b07c53a21661: format, schemas, agent templates, policy routing, release parity, CLI cold-start, build/typecheck/bundles, docs freshness, hotspot baseline, vitest project routing, lint, 245 fast test files with 1419 passed and 2 skipped, plus critical E2E 5 files with 14 passed. Scope: post-commit branch state pushed to PR #560.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T16:27:20.166Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -112,6 +126,14 @@ By: CODER
 Note: Command: bun test packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts; Result: pass; Evidence: 12 pass, 0 fail, including dirty PR fast-fail. Scope: remote check watcher. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts; Result: pass; Evidence: 4 pass, 0 fail, including remote merged close PR duplicate skip. Scope: hosted-close-pr lifecycle. Command: bun x prettier --check <changed files>; Result: pass. Scope: formatting. Command: bun x eslint <changed files>; Result: pass. Scope: changed script/source/test files. Command: bun run typecheck; Result: pass; Evidence: tsc -b. Scope: workspace types. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime 0.3.29 matches expected. Scope: framework dev runtime. Command: node .agentplane/policy/check-routing.mjs && git diff --check; Result: pass. Scope: policy routing and whitespace.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T16:17:24.477Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+### 2026-04-28T16:35:09.732Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: git push origin HEAD; Result: pass. Evidence: pre-push fast gate passed after implementation commit b07c53a21661: format, schemas, agent templates, policy routing, release parity, CLI cold-start, build/typecheck/bundles, docs freshness, hotspot baseline, vitest project routing, lint, 245 fast test files with 1419 passed and 2 skipped, plus critical E2E 5 files with 14 passed. Scope: post-commit branch state pushed to PR #560.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-28T16:27:20.166Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 <!-- END VERIFICATION RESULTS -->
 

@@ -25,7 +25,7 @@ Fix recurring branch_pr lifecycle failure modes from recent logs: make hosted cl
 ### Current Status
 
 - State: ok
-- Note: Command: bun test packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts; Result: pass; Evidence: 12 pass, 0 fail, including dirty PR fast-fail. Scope: remote check watcher. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts; Result: pass; Evidence: 4 pass, 0 fail, including remote merged close PR duplicate skip. Scope: hosted-close-pr lifecycle. Command: bun x prettier --check <changed files>; Result: pass. Scope: formatting. Command: bun x eslint <changed files>; Result: pass. Scope: changed script/source/test files. Command: bun run typecheck; Result: pass; Evidence: tsc -b. Scope: workspace types. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime 0.3.29 matches expected. Scope: framework dev runtime. Command: node .agentplane/policy/check-routing.mjs && git diff --check; Result: pass. Scope: policy routing and whitespace.
+- Note: Command: git push origin HEAD; Result: pass. Evidence: pre-push fast gate passed after implementation commit b07c53a21661: format, schemas, agent templates, policy routing, release parity, CLI cold-start, build/typecheck/bundles, docs freshness, hotspot baseline, vitest project routing, lint, 245 fast test files with 1419 passed and 2 skipped, plus critical E2E 5 files with 14 passed. Scope: post-commit branch state pushed to PR #560.
 
 ## Risks
 
