@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-28T07:02:20Z",
   "base": "main",
   "branch": "task/202604270855-5AVFXS/freshness-sync-helpers",
   "created_at": "2026-04-28T07:00:09.779Z",
-  "head_sha": "6b2e7a46fc1199767103aa7a09d21df9e1c643d7",
+  "head_sha": "4f545e4f65ae435c7eaa0de5861f0a4b3ae9a771",
   "last_verified_at": "2026-04-28T07:01:01.247Z",
   "last_verified_sha": "c96e114796c04aed7e0788b23b7279dd5c2c0e44",
+  "merge_commit": "f16cb9b918cf288903049609fa0d93996cbbfca2",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-28T07:02:20Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604270855-5AVFXS",
-  "updated_at": "2026-04-28T07:01:12.107Z",
+  "updated_at": "2026-04-28T07:02:20Z",
   "verify": {
     "status": "pass"
   }
