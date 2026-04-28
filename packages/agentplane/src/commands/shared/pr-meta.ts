@@ -16,8 +16,8 @@ export type ObservedGithubPrState = {
   base?: string | null;
   headSha?: string | null;
 };
-export type PrArtifactStateKind = "open" | "merged" | "handoff" | "remote_staged" | "remote_failed";
-export type PrArtifactLifecycleState =
+type PrArtifactStateKind = "open" | "merged" | "handoff" | "remote_staged" | "remote_failed";
+type PrArtifactLifecycleState =
   | { kind: "open"; remoteStatus?: ObservedGithubPrState["status"] | null }
   | { kind: "merged"; mergeCommit?: string | null; mergedAt?: string | null }
   | { kind: "handoff"; reason: string }

@@ -9,7 +9,7 @@ import type { CommandContext } from "./task-backend.js";
 
 type WorkflowMode = CommandContext["config"]["workflow_mode"];
 
-export type BranchPrLifecycleContext = {
+type BranchPrLifecycleContext = {
   baseBranch: string;
   currentBranch: string;
 };
