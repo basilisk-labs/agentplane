@@ -22,19 +22,26 @@ Prepare and publish patch release v0.3.29 from the current branch_pr main state,
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-28T07:39:09.936Z
+- Updated: 2026-04-28T09:04:23.344Z
 - Branch: task/202604280719-3KBCJP/release-v0-3-29
-- Head: eeca80a9a695
+- Head: 94a72018078c
 
 ```text
- .../run-cli.core.pr-flow.integrate-strategies.test.ts   | 12 ++++++++----
- .../agentplane/src/commands/branch/work-start.git.ts    |  2 --
- .../agentplane/src/commands/shared/branch-pr-context.ts |  2 +-
- packages/agentplane/src/commands/shared/pr-meta.ts      |  4 ++--
- scripts/generate-scripts-readme.mjs                     | 17 ++++++++++-------
- scripts/oversized-test-baseline.json                    |  4 ++--
- tsconfig.base.json                                      |  2 +-
- 7 files changed, 24 insertions(+), 19 deletions(-)
+ .agentplane/config.json                            |   2 +-
+ docs/reference/generated-reference.mdx             |   6 +-
+ docs/releases/v0.3.29.md                           | 118 +++++++++++++++++++++
+ packages/agentplane/package.json                   |   6 +-
+ ...n-cli.core.pr-flow.integrate-strategies.test.ts |  12 ++-
+ .../src/commands/branch/work-start.git.ts          |   2 -
+ .../src/commands/shared/branch-pr-context.ts       |   2 +-
+ packages/agentplane/src/commands/shared/pr-meta.ts |   4 +-
+ packages/core/package.json                         |   2 +-
+ packages/recipes/package.json                      |   2 +-
+ packages/testkit/package.json                      |   2 +-
+ scripts/generate-scripts-readme.mjs                |  17 +--
+ scripts/oversized-test-baseline.json               |   4 +-
+ tsconfig.base.json                                 |   2 +-
+ 14 files changed, 152 insertions(+), 29 deletions(-)
 ```
 
 </details>
