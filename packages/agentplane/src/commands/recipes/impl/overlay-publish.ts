@@ -10,9 +10,14 @@ import {
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 
+import {
+  validatePromptModuleCompiledGraph,
+  type PromptModuleCompiledGraph,
+} from "../../../runtime/prompt-modules/index.js";
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 import {
   resolveProjectOverlayBundlePath,
+  resolveProjectPromptGraphPath,
   resolveProjectRecipeAssetsPath,
   resolveProjectRecipesRegistryPath,
 } from "./paths.js";
@@ -73,12 +78,14 @@ export async function publishProjectRecipesState(opts: {
   registry: ProjectRecipesRegistryFile;
   bundle: CompiledOverlayBundle;
   assets: CompiledRecipeAssetRegistry;
+  promptGraph: PromptModuleCompiledGraph;
 }> {
   const registry = stampProjectRecipesRegistry(opts.registry);
   const compiled = await compileProjectOverlayArtifactsFromRegistry(opts.project, registry);
   await publishJsonFilesTransactional([
     { path: resolveProjectOverlayBundlePath(opts.project), value: compiled.bundle },
     { path: resolveProjectRecipeAssetsPath(opts.project), value: compiled.assets },
+    { path: resolveProjectPromptGraphPath(opts.project), value: compiled.promptGraph },
     { path: resolveProjectRecipesRegistryPath(opts.project), value: registry },
   ]);
   return { registry, ...compiled };
@@ -87,6 +94,7 @@ export async function publishProjectRecipesState(opts: {
 export async function refreshProjectOverlayArtifacts(project: { agentplaneDir: string }): Promise<{
   bundle: CompiledOverlayBundle;
   assets: CompiledRecipeAssetRegistry;
+  promptGraph: PromptModuleCompiledGraph;
 }> {
   const compiled = await compileProjectOverlayArtifactsFromRegistry(
     project,
@@ -94,9 +102,11 @@ export async function refreshProjectOverlayArtifacts(project: { agentplaneDir: s
   );
   const bundlePath = resolveProjectOverlayBundlePath(project);
   const assetsPath = resolveProjectRecipeAssetsPath(project);
+  const promptGraphPath = resolveProjectPromptGraphPath(project);
   await mkdir(path.dirname(bundlePath), { recursive: true });
   await writeJsonStableIfChanged(bundlePath, compiled.bundle);
   await writeJsonStableIfChanged(assetsPath, compiled.assets);
+  await writeJsonStableIfChanged(promptGraphPath, compiled.promptGraph);
   return compiled;
 }
 
@@ -120,6 +130,20 @@ export async function readProjectRecipeAssetRegistry(project: {
   try {
     return validateCompiledRecipeAssetRegistry(
       JSON.parse(await readFile(resolveProjectRecipeAssetsPath(project), "utf8")) as unknown,
+    );
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException | null)?.code;
+    if (code === "ENOENT") return null;
+    throw err;
+  }
+}
+
+export async function readProjectPromptGraph(project: {
+  agentplaneDir: string;
+}): Promise<PromptModuleCompiledGraph | null> {
+  try {
+    return validatePromptModuleCompiledGraph(
+      JSON.parse(await readFile(resolveProjectPromptGraphPath(project), "utf8")) as unknown,
     );
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;

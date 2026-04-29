@@ -4,7 +4,11 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { readProjectOverlayBundle, readProjectRecipeAssetRegistry } from "./overlay-project.js";
+import {
+  readProjectOverlayBundle,
+  readProjectPromptGraph,
+  readProjectRecipeAssetRegistry,
+} from "./overlay-project.js";
 
 const tempDirs = new Set<string>();
 
@@ -28,6 +32,7 @@ describe("overlay project artifact readers", () => {
 
     await expect(readProjectOverlayBundle({ agentplaneDir })).resolves.toBeNull();
     await expect(readProjectRecipeAssetRegistry({ agentplaneDir })).resolves.toBeNull();
+    await expect(readProjectPromptGraph({ agentplaneDir })).resolves.toBeNull();
   });
 
   it("rejects malformed overlay bundle payloads", async () => {
@@ -53,6 +58,19 @@ describe("overlay project artifact readers", () => {
 
     await expect(readProjectRecipeAssetRegistry({ agentplaneDir })).rejects.toThrow(
       "Invalid field recipe asset registry.entries[0].id: expected non-empty string",
+    );
+  });
+
+  it("rejects malformed prompt graph payloads", async () => {
+    const agentplaneDir = await makeAgentplaneDir();
+    await writeFile(
+      path.join(agentplaneDir, "generated", "prompt-graph.json"),
+      JSON.stringify({ schema_version: 1, nodes: [] }, null, 2),
+      "utf8",
+    );
+
+    await expect(readProjectPromptGraph({ agentplaneDir })).rejects.toThrow(
+      "Invalid field prompt module graph.diagnostics: expected array",
     );
   });
 });

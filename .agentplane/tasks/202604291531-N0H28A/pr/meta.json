@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604291531-N0H28A/recipe-mutation-graph",
+  "created_at": "2026-04-29T19:03:49.698Z",
+  "head_sha": "3784a23ed7ca2bc192e300868abf09140f56e995",
+  "last_verified_at": "2026-04-29T19:13:03.366Z",
+  "last_verified_sha": "f5e5ffede6558f4b741402492172e50a0b0eaaa4",
+  "schema_version": 1,
+  "task_id": "202604291531-N0H28A",
+  "updated_at": "2026-04-29T19:14:12.219Z",
+  "verify": {
+    "status": "pass"
+  }
+}

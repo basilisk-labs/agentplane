@@ -1,4 +1,5 @@
 import type { CompiledOverlayBundle, CompiledRecipeAssetRegistry } from "@agentplaneorg/recipes";
+import type { PromptModuleCompiledGraph } from "../../../runtime/prompt-modules/index.js";
 import {
   compileProjectOverlayArtifactsFromRegistry as compileProjectOverlayArtifactsFromRegistryImpl,
   readActiveRecipeIdsFromRegistry,
@@ -7,6 +8,7 @@ export {
   publishProjectRecipesState,
   refreshProjectOverlayArtifacts,
   readProjectOverlayBundle,
+  readProjectPromptGraph,
   readProjectRecipeAssetRegistry,
 } from "./overlay-publish.js";
 import {
@@ -38,6 +40,7 @@ export async function compileProjectOverlayArtifactsFromRegistry(
 ): Promise<{
   bundle: CompiledOverlayBundle;
   assets: CompiledRecipeAssetRegistry;
+  promptGraph: PromptModuleCompiledGraph;
 }> {
   return compileProjectOverlayArtifactsFromRegistryImpl(project, registry);
 }
@@ -45,6 +48,7 @@ export async function compileProjectOverlayArtifactsFromRegistry(
 export async function compileProjectOverlayArtifacts(project: { agentplaneDir: string }): Promise<{
   bundle: CompiledOverlayBundle;
   assets: CompiledRecipeAssetRegistry;
+  promptGraph: PromptModuleCompiledGraph;
 }> {
   const registry = await readProjectRecipesRegistry(project);
   return await compileProjectOverlayArtifactsFromRegistryImpl(project, registry);

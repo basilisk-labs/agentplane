@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { validateRecipeAssets } from "./apply.js";
 import {
   readProjectOverlayBundle,
+  readProjectPromptGraph,
   readProjectRecipeAssetRegistry,
   refreshProjectOverlayArtifacts,
 } from "./overlay-project.js";
@@ -58,7 +59,7 @@ function promptMutationSet(recipeId = "modular", version = "1.0.0"): Record<stri
     recipe_id: recipeId,
     mutations: [
       {
-        id: `${recipeId}.patch.gateway-load-rules`,
+        id: `${recipeId}.patch.policy-guidance`,
         op: "patch_module",
         source: {
           owner: {
@@ -74,12 +75,10 @@ function promptMutationSet(recipeId = "modular", version = "1.0.0"): Record<stri
           },
         },
         target: {
-          address: "framework/gateway/AGENTS.md/load_rules/base",
+          address: `recipe.${recipeId}/policy/.agentplane/policy/body/modular-guidance`,
         },
         patch: {
-          load: {
-            recipe_ids: [recipeId],
-          },
+          summary: "Patched by active recipe mutation.",
         },
       },
     ],
@@ -191,11 +190,18 @@ describe("project installed recipe prompt assets", () => {
     await refreshProjectOverlayArtifacts({ agentplaneDir });
     const assets = await readProjectRecipeAssetRegistry({ agentplaneDir });
     const bundle = await readProjectOverlayBundle({ agentplaneDir });
+    const promptGraph = await readProjectPromptGraph({ agentplaneDir });
     const promptAssets = assets?.entries.filter(
       (entry) => entry.kind === "prompt_module" || entry.kind === "prompt_mutation_set",
     );
+    const recipeModule = promptGraph?.nodes.find(
+      (node) =>
+        node.module.address.value ===
+        "recipe.modular/policy/.agentplane/policy/body/modular-guidance",
+    )?.module;
 
     expect(Object.values(bundle?.surfaces ?? {}).flat()).toEqual([]);
+    expect(recipeModule?.summary).toBe("Patched by active recipe mutation.");
     expect(
       promptAssets?.map((entry) => ({
         id: entry.id,

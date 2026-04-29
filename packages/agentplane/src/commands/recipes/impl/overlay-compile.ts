@@ -9,8 +9,16 @@ import {
   type CompiledOverlayBundle,
 } from "@agentplaneorg/recipes";
 
+import {
+  compilePromptModuleGraph,
+  loadFrameworkPromptModuleRegistry,
+  type PromptModuleCompiledGraph,
+  type PromptModuleGraph,
+  type PromptModuleMutationSet,
+} from "../../../runtime/prompt-modules/index.js";
 import { readProjectInstalledRecipesFromRegistry } from "./project-installed-recipes.js";
 import type { readProjectInstalledRecipes } from "./project-installed-recipes.js";
+import { readRecipePromptModuleAsset, readRecipePromptMutationSetAsset } from "./prompt-assets.js";
 import { resolveProjectInstalledRecipeDir, resolveProjectRecipesDir } from "./paths.js";
 import type { ProjectRecipesRegistryFile } from "./types.js";
 
@@ -184,12 +192,68 @@ async function compileProjectRecipeAssets(opts: {
   };
 }
 
+function assertPromptGraphCompileOk(compiled: PromptModuleCompiledGraph): void {
+  if (compiled.ok) return;
+  const errors = compiled.diagnostics
+    .filter((diagnostic) => diagnostic.severity === "error")
+    .map((diagnostic) => `${diagnostic.code}: ${diagnostic.message}`);
+  throw new Error(`Failed to compile recipe prompt graph: ${errors.join("; ")}`);
+}
+
+async function compileProjectPromptGraph(opts: {
+  project: { agentplaneDir: string };
+  activeIds: string[];
+  installed: Awaited<ReturnType<typeof readProjectInstalledRecipes>>;
+}): Promise<PromptModuleCompiledGraph> {
+  const frameworkGraph = await loadFrameworkPromptModuleRegistry();
+  const graph: PromptModuleGraph = {
+    schema_version: frameworkGraph.schema_version,
+    nodes: [...frameworkGraph.nodes],
+  };
+  const mutationSets: PromptModuleMutationSet[] = [];
+
+  for (const recipeId of opts.activeIds) {
+    const entry = opts.installed.recipes.find((candidate) => candidate.id === recipeId);
+    if (!entry) continue;
+    const recipeDir = entry.project_path
+      ? path.join(resolveProjectRecipesDir(opts.project), entry.project_path)
+      : resolveProjectInstalledRecipeDir(opts.project, entry.id);
+    for (const promptModule of entry.manifest.prompt_modules ?? []) {
+      graph.nodes.push({
+        module: await readRecipePromptModuleAsset({
+          manifest: entry.manifest,
+          recipeDir,
+          file: promptModule.file,
+        }),
+      });
+    }
+    for (const mutationSet of entry.manifest.prompt_mutation_sets ?? []) {
+      mutationSets.push(
+        await readRecipePromptMutationSetAsset({
+          manifest: entry.manifest,
+          recipeDir,
+          file: mutationSet.file,
+        }),
+      );
+    }
+  }
+
+  const compiled = compilePromptModuleGraph({
+    graph,
+    context: { recipe_ids: opts.activeIds },
+    mutation_sets: mutationSets,
+  });
+  assertPromptGraphCompileOk(compiled);
+  return compiled;
+}
+
 export async function compileProjectOverlayArtifactsFromRegistry(
   project: { agentplaneDir: string },
   registry: ProjectRecipesRegistryFile,
 ): Promise<{
   bundle: CompiledOverlayBundle;
   assets: CompiledRecipeAssetRegistry;
+  promptGraph: PromptModuleCompiledGraph;
 }> {
   const activeIds = readActiveRecipeIdsFromRegistry(registry);
   const installed = await readProjectInstalledRecipesFromRegistry(project, registry);
@@ -290,5 +354,6 @@ export async function compileProjectOverlayArtifactsFromRegistry(
   return {
     bundle,
     assets: await compileProjectRecipeAssets({ project, installed }),
+    promptGraph: await compileProjectPromptGraph({ project, activeIds, installed }),
   };
 }

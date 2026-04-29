@@ -1,4 +1,4 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -7,7 +7,10 @@ import { cmdRecipeDisableParsed } from "./recipes/impl/commands/disable.js";
 import { cmdRecipeEnableParsed } from "./recipes/impl/commands/enable.js";
 import { cmdRecipeRemoveParsed } from "./recipes/impl/commands/remove.js";
 import { cmdRecipeUpdateParsed } from "./recipes/impl/commands/update.js";
-import { refreshProjectOverlayArtifacts } from "./recipes/impl/overlay-project.js";
+import {
+  readProjectPromptGraph,
+  refreshProjectOverlayArtifacts,
+} from "./recipes/impl/overlay-project.js";
 import { createRecipeArchiveWithManifest, pathExists } from "@agentplane/testkit";
 import {
   baseRecipeManifest,
@@ -205,6 +208,87 @@ describe("recipes transactional mutations", () => {
       active: unknown[];
     };
     expect(bundleAfter.active).toEqual(bundleBefore.active);
+  });
+
+  it("recipes enable leaves registry and prompt graph unchanged when prompt mutations fail", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await installRecipe({
+      projectDir: root,
+      archivePath: await createOverlayArchive({ id: "broken-prompt-graph", version: "1.0.0" }),
+      vendor: true,
+    });
+    const agentplaneDir = path.join(root, ".agentplane");
+    const vendoredManifestPath = path.join(
+      resolveProjectRecipeDir(root, "broken-prompt-graph"),
+      "manifest.json",
+    );
+    const promptModulesDir = path.join(
+      resolveProjectRecipeDir(root, "broken-prompt-graph"),
+      "prompt-modules",
+    );
+    await mkdir(promptModulesDir, { recursive: true });
+    const vendoredManifest = JSON.parse(await readFile(vendoredManifestPath, "utf8")) as Record<
+      string,
+      unknown
+    >;
+    vendoredManifest.prompt_mutation_sets = [
+      {
+        id: "missing-target",
+        summary: "Mutations targeting a missing prompt module.",
+        file: "prompt-modules/missing-target.json",
+      },
+    ];
+    await writeFile(vendoredManifestPath, JSON.stringify(vendoredManifest, null, 2), "utf8");
+    await writeFile(
+      path.join(promptModulesDir, "missing-target.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          recipe_id: "broken-prompt-graph",
+          mutations: [
+            {
+              id: "broken-prompt-graph.patch.missing",
+              op: "patch_module",
+              source: {
+                owner: {
+                  kind: "recipe",
+                  recipe_id: "broken-prompt-graph",
+                  version: "1.0.0",
+                },
+                provenance: {
+                  source_kind: "recipe_asset",
+                  source_ref: "prompt-modules/missing-target.json",
+                  recipe_id: "broken-prompt-graph",
+                  recipe_version: "1.0.0",
+                },
+              },
+              target: {
+                address: "recipe.broken-prompt-graph/policy/.agentplane/policy/body/missing",
+              },
+              patch: {
+                summary: "Cannot apply because the target module is absent.",
+              },
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const registryBefore = await readRegistry(root);
+    const promptGraphBefore = await readProjectPromptGraph({ agentplaneDir });
+
+    await expect(cmdRecipeEnableParsed({ cwd: root, id: "broken-prompt-graph" })).rejects.toThrow(
+      "Failed to compile recipe prompt graph",
+    );
+
+    const registryAfter = await readRegistry(root);
+    const promptGraphAfter = await readProjectPromptGraph({ agentplaneDir });
+    expect(registryAfter.recipes).toEqual(registryBefore.recipes);
+    expect(promptGraphAfter).toEqual(promptGraphBefore);
   });
 
   it("recipes disable restores the active registry when dependent overlays would break", async () => {

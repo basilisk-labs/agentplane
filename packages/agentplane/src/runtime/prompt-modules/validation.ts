@@ -16,6 +16,7 @@ import type {
   PromptModuleTarget,
 } from "./model.js";
 import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./model.js";
+import type { PromptModuleCompiledGraph } from "./compiler.js";
 import type {
   PromptModuleBindingKind,
   PromptModuleMutation,
@@ -450,6 +451,51 @@ export function validatePromptModuleMutationSet(
     validateMutation(mutation, `${field}.mutations[${index}]`);
   }
   return set as PromptModuleMutationSet;
+}
+
+function validatePromptModuleGraphNode(raw: unknown, field: string): void {
+  const node = requireRecord(raw, field);
+  validatePromptModule(node.module, `${field}.module`);
+  validateOptionalStringList(node.replaces, `${field}.replaces`);
+  validateOptionalStringList(node.extends, `${field}.extends`);
+}
+
+function validatePromptModuleDiagnostic(raw: unknown, field: string): void {
+  const diagnostic = requireRecord(raw, field);
+  validateEnum(diagnostic.severity, `${field}.severity`, ["error", "warning"]);
+  requireString(diagnostic.code, `${field}.code`);
+  requireString(diagnostic.message, `${field}.message`);
+  optionalString(diagnostic.module_address, `${field}.module_address`);
+  optionalString(diagnostic.mutation_id, `${field}.mutation_id`);
+  optionalString(diagnostic.validator_id, `${field}.validator_id`);
+}
+
+export function validatePromptModuleCompiledGraph(
+  raw: unknown,
+  field = "prompt module graph",
+): PromptModuleCompiledGraph {
+  const graph = requireRecord(raw, field);
+  if (graph.schema_version !== PROMPT_MODULE_CONTRACT_SCHEMA_VERSION) {
+    throw invalid(`${field}.schema_version`, `${PROMPT_MODULE_CONTRACT_SCHEMA_VERSION}`);
+  }
+  if (!Array.isArray(graph.nodes)) throw invalid(`${field}.nodes`, "array");
+  for (const [index, node] of graph.nodes.entries()) {
+    validatePromptModuleGraphNode(node, `${field}.nodes[${index}]`);
+  }
+  if (!Array.isArray(graph.diagnostics)) throw invalid(`${field}.diagnostics`, "array");
+  for (const [index, diagnostic] of graph.diagnostics.entries()) {
+    validatePromptModuleDiagnostic(diagnostic, `${field}.diagnostics[${index}]`);
+  }
+  if (!Array.isArray(graph.validators)) throw invalid(`${field}.validators`, "array");
+  for (const [index, validator] of graph.validators.entries()) {
+    validatePromptModuleValidator(validator, `${field}.validators[${index}]`);
+  }
+  if (!Array.isArray(graph.bindings)) throw invalid(`${field}.bindings`, "array");
+  for (const [index, binding] of graph.bindings.entries()) {
+    validateBinding(binding, `${field}.bindings[${index}]`);
+  }
+  if (typeof graph.ok !== "boolean") throw invalid(`${field}.ok`, "boolean");
+  return graph as PromptModuleCompiledGraph;
 }
 
 export type ValidatedPromptModuleMutation = PromptModuleMutation;
