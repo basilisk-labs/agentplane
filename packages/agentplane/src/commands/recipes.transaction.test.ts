@@ -264,7 +264,7 @@ describe("recipes transactional mutations", () => {
                 },
               },
               target: {
-                address: "recipe.broken-prompt-graph/policy/.agentplane/policy/body/missing",
+                fragment_id: "policy.broken_prompt_graph.body.missing",
               },
               patch: {
                 summary: "Cannot apply because the target module is absent.",
@@ -286,7 +286,7 @@ describe("recipes transactional mutations", () => {
     ).toBe(true);
 
     await expect(cmdRecipeEnableParsed({ cwd: root, id: "broken-prompt-graph" })).rejects.toThrow(
-      "Failed to compile recipe prompt graph",
+      "fragment_id=policy.broken_prompt_graph.body.missing",
     );
 
     const registryAfter = await readRegistry(root);

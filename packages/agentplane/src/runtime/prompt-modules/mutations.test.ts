@@ -29,6 +29,7 @@ describe("prompt module mutation contracts", () => {
       source: recipeSource,
       target: {
         address: "framework/gateway/AGENTS.md/load_rules/base",
+        fragment_id: "gateway.agents.load_rules.base",
         surface: "gateway",
         target: "AGENTS.md",
         slot: "load_rules",
@@ -51,6 +52,14 @@ describe("prompt module mutation contracts", () => {
     expect(mutation.patch).not.toHaveProperty("diff");
     expect(mutation.patch).not.toHaveProperty("raw");
     expect(mutation.target.address).toBe("framework/gateway/AGENTS.md/load_rules/base");
+    expect(mutation.target.fragment_id).toBe("gateway.agents.load_rules.base");
+    expect(() =>
+      validatePromptModuleMutationSet({
+        schema_version: 1,
+        recipe_id: "tdd",
+        mutations: [mutation],
+      }),
+    ).not.toThrow();
   });
 
   it("models add, bind, disable, and validator operations in one recipe mutation set", () => {

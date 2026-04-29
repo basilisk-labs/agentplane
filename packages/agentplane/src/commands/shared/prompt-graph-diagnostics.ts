@@ -3,7 +3,10 @@ import { createHash } from "node:crypto";
 import { resolveProject } from "@agentplaneorg/core/project";
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 
-import type { PromptModule, PromptModuleCompiledGraph } from "../../runtime/prompt-modules/index.js";
+import type {
+  PromptModule,
+  PromptModuleCompiledGraph,
+} from "../../runtime/prompt-modules/index.js";
 import { compileProjectOverlayArtifactsFromRegistry } from "../recipes/impl/overlay-project.js";
 import { readProjectPromptGraph } from "../recipes/impl/overlay-publish.js";
 import { resolveProjectPromptGraphPath } from "../recipes/impl/paths.js";
@@ -26,6 +29,7 @@ export type PromptGraphModuleSummary = {
   ownerLabel: string;
   sourceKind: PromptModule["provenance"]["source_kind"];
   sourceRef: string;
+  fragmentId: string | null;
   recipeId: string | null;
 };
 
@@ -113,10 +117,12 @@ function summarizePromptGraph(graph: PromptModuleCompiledGraph): {
     if (isRepoOverride(module)) repoOverrideCount += 1;
   }
 
-  const errorCount = graph.diagnostics.filter((diagnostic) => diagnostic.severity === "error")
-    .length;
-  const warningCount = graph.diagnostics.filter((diagnostic) => diagnostic.severity === "warning")
-    .length;
+  const errorCount = graph.diagnostics.filter(
+    (diagnostic) => diagnostic.severity === "error",
+  ).length;
+  const warningCount = graph.diagnostics.filter(
+    (diagnostic) => diagnostic.severity === "warning",
+  ).length;
 
   return {
     summary: {
@@ -138,6 +144,7 @@ function summarizePromptGraph(graph: PromptModuleCompiledGraph): {
       ownerLabel: ownerLabel(module),
       sourceKind: module.provenance.source_kind,
       sourceRef: module.provenance.source_ref,
+      fragmentId: module.provenance.fragment_id ?? null,
       recipeId: moduleRecipeId(module),
     })),
   };
@@ -272,8 +279,9 @@ export function renderPromptGraphExplainText(inspection: PromptGraphInspection):
   if (inspection.modules.length > 0) {
     lines.push("- Compiled modules:");
     for (const module of inspection.modules.slice(0, 50)) {
+      const fragment = module.fragmentId ? `; fragment=${module.fragmentId}` : "";
       lines.push(
-        `  - ${module.address} [${module.ownerLabel}; ${module.sourceKind}; ${module.sourceRef}]`,
+        `  - ${module.address} [${module.ownerLabel}; ${module.sourceKind}; ${module.sourceRef}${fragment}]`,
       );
     }
     if (inspection.modules.length > 50) {
@@ -283,9 +291,7 @@ export function renderPromptGraphExplainText(inspection: PromptGraphInspection):
   if (inspection.diagnostics.length > 0) {
     lines.push("- Compiler diagnostics:");
     for (const diagnostic of inspection.diagnostics) {
-      lines.push(
-        `  - [${diagnostic.severity}] ${diagnostic.code}: ${diagnostic.message}`,
-      );
+      lines.push(`  - [${diagnostic.severity}] ${diagnostic.code}: ${diagnostic.message}`);
     }
   }
   return lines.join("\n");

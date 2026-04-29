@@ -262,6 +262,7 @@ describe("runtime.command", () => {
             ownerLabel: "recipe:review@1.0.0",
             sourceKind: "recipe_asset",
             sourceRef: ".agentplane/recipes/packages/review/prompt-modules/rule.json",
+            fragmentId: "recipe.review.policy.body.rule",
             recipeId: "review",
           },
         ],
@@ -275,7 +276,7 @@ describe("runtime.command", () => {
     expect(text).toContain("Repo overrides: 1");
     expect(text).toContain("Mutation effects: bindings=1, validators=1, diagnostics=0");
     expect(text).toContain(
-      "recipe.review/policy/.agentplane~policy/body/rule [recipe:review@1.0.0; recipe_asset; .agentplane/recipes/packages/review/prompt-modules/rule.json]",
+      "recipe.review/policy/.agentplane~policy/body/rule [recipe:review@1.0.0; recipe_asset; .agentplane/recipes/packages/review/prompt-modules/rule.json; fragment=recipe.review.policy.body.rule]",
     );
   });
 

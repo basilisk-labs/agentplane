@@ -333,6 +333,8 @@ export function validatePromptModule(raw: unknown, field = "prompt module"): Pro
 function validateSelector(raw: unknown, field: string): PromptModuleSelector {
   const selector = requireRecord(raw, field);
   if (selector.address !== undefined) requireString(selector.address, `${field}.address`);
+  if (selector.fragment_id !== undefined)
+    requireString(selector.fragment_id, `${field}.fragment_id`);
   if (selector.namespace !== undefined) validateNamespace(selector.namespace, `${field}.namespace`);
   if (selector.surface !== undefined) {
     validateEnum(selector.surface, `${field}.surface`, PROMPT_MODULE_SURFACES);
