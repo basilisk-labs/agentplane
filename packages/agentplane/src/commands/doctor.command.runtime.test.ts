@@ -705,6 +705,42 @@ describe(
       }
     });
 
+    it("warns when the generated prompt graph is stale", async () => {
+      const ws = await mkWorkspace();
+      await mkdir(path.join(ws.root, ".agentplane", "generated"), { recursive: true });
+      await writeFile(
+        path.join(ws.root, ".agentplane", "generated", "prompt-graph.json"),
+        JSON.stringify(
+          {
+            schema_version: 1,
+            nodes: [],
+            diagnostics: [],
+            validators: [],
+            bindings: [],
+            ok: true,
+          },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+      const stderr = captureStderr();
+
+      try {
+        const rc = await runDoctor(
+          { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+          { fix: false, dev: false },
+        );
+        expect(rc).toBe(0);
+        const output = stderr.output();
+        expect(output).toContain("generated prompt graph is stale relative to current recipe inputs");
+        expect(output).toContain(".agentplane/generated/prompt-graph.json");
+        expect(output).toContain("agentplane recipes explain-active");
+      } finally {
+        stderr.restore();
+      }
+    });
+
     it("fails when the managed policy tree is incomplete for the active gateway", async () => {
       const ws = await mkWorkspace();
       await rm(path.join(ws.root, ".agentplane", "policy", "workflow.upgrade.md"), { force: true });

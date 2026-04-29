@@ -12,6 +12,7 @@ import {
 } from "./doctor/branch-pr.js";
 import { safeFixGitignore, safeFixTaskIndex } from "./doctor/fixes.js";
 import { checkLayering } from "./doctor/layering.js";
+import { checkPromptGraphFacts } from "./doctor/prompt-graph.js";
 import { checkRuntimeSourceFacts, findingSeverity } from "./doctor/runtime.js";
 import { checkWorkspace } from "./doctor/workspace.js";
 import { checkWorkflowContract, safeFixWorkflow } from "./doctor/workflow.js";
@@ -37,6 +38,7 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
       ...(await checkBranchPrShippedTaskDrift(commandCtx)),
       ...(await checkBranchPrDoneTaskOpenPrDrift(commandCtx)),
       ...checkRuntimeSourceFacts(ctx.cwd, loadedConfig.config),
+      ...(await checkPromptGraphFacts(resolved)),
       ...(await checkDoneTaskCommitInvariants(repoRoot, { fullArchive: p.archiveFull })),
     ];
     if (!isWorkflowEnforcementDisabled()) {

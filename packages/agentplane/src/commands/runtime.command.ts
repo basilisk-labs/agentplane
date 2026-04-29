@@ -25,6 +25,11 @@ import {
   resolveRuntimeSourceInfo,
   type RuntimeSourceInfo,
 } from "../runtime/shared/runtime-source.js";
+import {
+  inspectPromptGraphForCwd,
+  renderPromptGraphExplainText,
+  type PromptGraphInspection,
+} from "./shared/prompt-graph-diagnostics.js";
 import { runtimeSpec, type RuntimeExplainParsed } from "./runtime.spec.js";
 
 const output = createCliEmitter();
@@ -43,6 +48,7 @@ export type FrameworkDevWorkflow = {
 export type RuntimeExplainPayload = RuntimeSourceInfo & {
   frameworkDev: FrameworkDevWorkflow;
   repoCliExpectation: RepoCliVersionExpectation;
+  promptGraph: PromptGraphInspection;
 };
 
 export { runtimeExplainSpec, runtimeSpec } from "./runtime.spec.js";
@@ -87,7 +93,10 @@ export function buildFrameworkDevWorkflow(report: RuntimeSourceInfo): FrameworkD
   };
 }
 
-function buildRuntimeExplainPayload(report: RuntimeSourceInfo): RuntimeExplainPayload {
+function buildRuntimeExplainPayload(
+  report: RuntimeSourceInfo,
+  promptGraph: PromptGraphInspection,
+): RuntimeExplainPayload {
   return {
     ...report,
     frameworkDev: buildFrameworkDevWorkflow(report),
@@ -98,12 +107,14 @@ function buildRuntimeExplainPayload(report: RuntimeSourceInfo): RuntimeExplainPa
       summary: null,
       recovery: null,
     },
+    promptGraph,
   };
 }
 
 export function renderRuntimeExplainText(
   report: RuntimeSourceInfo,
   repoCliExpectation: RepoCliVersionExpectation,
+  promptGraph?: PromptGraphInspection,
 ): string {
   const frameworkDev = buildFrameworkDevWorkflow(report);
   const lines = [
@@ -150,6 +161,9 @@ export function renderRuntimeExplainText(
       lines.push(`Recommendation: ${frameworkDev.recommendation}`);
     }
   }
+  if (promptGraph) {
+    lines.push("", renderPromptGraphExplainText(promptGraph));
+  }
   return lines.join("\n");
 }
 
@@ -191,17 +205,23 @@ export const runRuntimeExplain: CommandHandler<RuntimeExplainParsed> = (ctx, p) 
     cwd: ctx.cwd,
     entryModuleUrl: import.meta.url,
   });
-  return resolveRepoCliExpectation({
-    cwd: ctx.cwd,
-    rootOverride: ctx.rootOverride ?? null,
-    report,
-  }).then((repoCliExpectation) => {
-    const payload = { ...buildRuntimeExplainPayload(report), repoCliExpectation };
+  return Promise.all([
+    resolveRepoCliExpectation({
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride ?? null,
+      report,
+    }),
+    inspectPromptGraphForCwd({
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride ?? null,
+    }),
+  ]).then(([repoCliExpectation, promptGraph]) => {
+    const payload = { ...buildRuntimeExplainPayload(report, promptGraph), repoCliExpectation };
     if (p.json) {
       output.json(payload);
       return 0;
     }
-    output.line(renderRuntimeExplainText(report, repoCliExpectation));
+    output.line(renderRuntimeExplainText(report, repoCliExpectation, promptGraph));
     return 0;
   });
 };
