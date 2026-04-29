@@ -1,10 +1,11 @@
 ---
 id: "202604292023-0BQZMA"
 title: "Migrate agent profiles to addressable prompt fragments"
-status: "DOING"
+result_summary: "Merged via PR #589."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -29,11 +30,16 @@ verification:
   updated_at: "2026-04-29T20:56:49.557Z"
   updated_by: "CODER"
   note: "Bundled agent profiles now use addressable fragment objects while installed profile and runner behavior remain string-array compatible; declared checks passed."
-commit: null
+commit:
+  hash: "99554f87ea4961d3d1a359d6e1124694281a71f8"
+  message: "Merge pull request #589 from basilisk-labs/task/202604292023-0BQZMA/agent-profile-fragments"
 comments:
   -
     author: "CODER"
     body: "Start: migrate bundled agent profile list entries to addressable prompt fragment objects while preserving rendered profile and runner behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #589 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,14 +54,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Bundled agent profiles now use addressable fragment objects while installed profile and runner behavior remain string-array compatible; declared checks passed."
+  -
+    type: "status"
+    at: "2026-04-29T21:00:29.635Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #589 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-29T20:56:49.560Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-29T21:00:29.640Z"
+doc_updated_by: "INTEGRATOR"
 description: "Convert bundled agent JSON profiles from bare string arrays to stable fragment objects with ids, text, and backward-compatible loading so recipes can patch individual agent workflow lines by fragment id."
 sections:
   Summary: |-
     Migrate agent profiles to addressable prompt fragments
-
+    
     Convert bundled agent JSON profiles from bare string arrays to stable fragment objects with ids, text, and backward-compatible loading so recipes can patch individual agent workflow lines by fragment id.
   Scope: |-
     - In scope: Convert bundled agent JSON profiles from bare string arrays to stable fragment objects with ids, text, and backward-compatible loading so recipes can patch individual agent workflow lines by fragment id.
@@ -76,20 +89,20 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-29T20:56:49.557Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Bundled agent profiles now use addressable fragment objects while installed profile and runner behavior remain string-array compatible; declared checks passed.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T20:56:44.940Z, excerpt_hash=sha256:c3ea51171d6cb0750a2cc9a65d73f6ca7101aba566c95355d01c15205d9128f1
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: |-
     No residual findings.
-
+    
     Verification evidence:
     - Command: bun test packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runner/context/base-prompts.test.ts
       Result: pass

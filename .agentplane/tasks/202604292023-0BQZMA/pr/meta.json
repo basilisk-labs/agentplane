@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-29T20:59:56Z",
   "base": "main",
   "branch": "task/202604292023-0BQZMA/agent-profile-fragments",
   "created_at": "2026-04-29T20:50:01.078Z",
-  "head_sha": "226f7dba8d2d96052ad6d8c7b75ed27366fe5185",
+  "head_sha": "00af7ea038c07860f9088e28d941ebc8215a0b5d",
   "last_verified_at": "2026-04-29T20:56:49.557Z",
   "last_verified_sha": "8e793837e3d58117eaf1a3794b97ca47c5095698",
+  "merge_commit": "99554f87ea4961d3d1a359d6e1124694281a71f8",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-29T20:59:56Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604292023-0BQZMA",
-  "updated_at": "2026-04-29T20:57:07.679Z",
+  "updated_at": "2026-04-29T20:59:56Z",
   "verify": {
     "status": "pass"
   }
