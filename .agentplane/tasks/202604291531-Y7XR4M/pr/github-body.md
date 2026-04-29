@@ -13,7 +13,7 @@ Switch .agentplane/agents profile emission and related upgrade baseline handling
 ## Verification
 
 - State: ok
-- Note: Verified agent profile module compilation: focused agents/init/upgrade tests passed (29 tests), typecheck passed, git diff --check passed, framework bootstrap passed, doctor passed with 0 errors and 0 warnings. Extra upgrade-policy checks passed: node .agentplane/policy/check-routing.mjs and agentplane agents after bootstrap.
+- Note: Verified: reconciled PR metadata after agent profile module compilation commit 0b096e4759d1. Prior checks remain current for the committed diff: focused tests, typecheck, git diff --check, framework bootstrap, doctor, check-routing, and agentplane agents passed.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
