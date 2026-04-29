@@ -1,0 +1,146 @@
+---
+title: "Modular prompt assembly"
+description: "Contracts, generated artifacts, diagnostics, and safe-change rules for prompt modules."
+---
+
+AgentPlane prompt text is assembled from typed modules instead of ad hoc string templates.
+The migration boundary covers gateway files, policy modules, agent profiles, runner prompts, and
+recipe-owned prompt extensions.
+
+## Runtime surfaces
+
+| Surface | Source | Compiled through | Output |
+| --- | --- | --- | --- |
+| Policy gateway | `packages/agentplane/assets/AGENTS.md`, `packages/agentplane/assets/CLAUDE.md` | framework prompt module registry | `AGENTS.md` or `CLAUDE.md` during `agentplane init` and upgrade baseline seeding |
+| Policy modules | `packages/agentplane/assets/policy/*` | framework prompt module registry | `.agentplane/policy/*` during `agentplane init` and upgrade baseline seeding |
+| Agent profiles | `packages/agentplane/assets/agents/*.json` | framework prompt module registry | `.agentplane/agents/*.json` during `agentplane init` and upgrade baseline seeding |
+| Runner base prompts | bundled runner prompt, repo gateway, owner profile, execution profile, skills, overlays, recipe context | runner prompt module bridge | sorted runner prompt blocks in `bundle.json` |
+| Recipe prompt assets | vendored recipe `prompt_modules` and `prompt_mutation_sets` | recipe overlay compiler | `.agentplane/generated/prompt-graph.json` |
+| Diagnostics | generated prompt graph plus current recipe registry inputs | doctor/runtime explain prompt graph inspector | `agentplane runtime explain` and `agentplane doctor` findings |
+
+## Contracts
+
+Prompt module domain types live under `packages/agentplane/src/runtime/prompt-modules/`.
+The core contracts are:
+
+- `PromptModule`: addressable prompt content with owner, provenance, load condition, mutability, and merge policy.
+- `PromptModuleGraph`: a list of module nodes, with optional replacement/extension relationships.
+- `PromptModuleMutationSet`: recipe-owned operations such as add, replace, patch, disable, bind, and validator changes.
+- `PromptModuleCompiledGraph`: compiled nodes plus bindings, validators, diagnostics, and `ok`.
+
+Modules must carry stable provenance:
+
+- framework modules use `source_kind: "framework_builtin"`;
+- repo-local overrides use `owner.kind: "project"` or `source_kind: "project_file"`;
+- recipe modules use `owner.kind: "recipe"` and `source_kind: "recipe_asset"`;
+- generated/runtime context uses `source_kind: "generated"` or `"runtime"`.
+
+This provenance is not decorative. It is what lets `runtime explain`, `doctor`, and future recipe
+layers show which source owns a prompt fragment and whether a repo override is involved.
+
+## Init and upgrade path
+
+`agentplane init` compiles gateway, policy, and agent profile files from the framework prompt module
+registry. It also seeds `.agentplane/.upgrade/baseline/**` from the same compiled outputs.
+
+The important invariant is that installed files and upgrade baselines come from the same compiled
+module graph. Do not update `AGENTS.md`, `.agentplane/policy/**`, or `.agentplane/agents/**`
+generation by adding a parallel string assembly path.
+
+When changing framework-owned prompt assets:
+
+1. update the source asset or registry mapping;
+2. keep source provenance derivable from `provenance.source_ref`;
+3. run the init regression tests;
+4. run `agentplane doctor` to catch managed policy tree drift.
+
+## Runner path
+
+The runner still consumes ordered prompt blocks, but those blocks pass through the prompt module
+bridge before the bundle is emitted. That bridge assigns module addresses, owner, source kind, and
+content hashes to:
+
+- bundled runner prompt;
+- repository gateway;
+- owner profile;
+- execution profile runtime block;
+- project skill index;
+- overlay prompt fragments;
+- recipe agent, skill, tool, and execution-context blocks.
+
+This keeps the runner output stable while making each block explainable as a prompt module.
+New runner prompt sources should be added as prompt blocks first, then round-tripped through
+`runnerPromptBlocksToModuleGraph` and `compileRunnerPromptModuleGraph` in tests.
+
+## Recipe layer
+
+Recipe manifests may declare:
+
+- `prompt_modules`: JSON prompt module assets owned by the recipe;
+- `prompt_mutation_sets`: JSON mutation sets that modify the compiled prompt graph.
+
+Project recipe state is transactionally published. When active recipe prompt mutations fail to
+compile, the registry and generated prompt graph remain unchanged.
+
+Generated recipe artifacts are:
+
+- `.agentplane/generated/overlay-bundle.json`;
+- `.agentplane/generated/recipe-assets.json`;
+- `.agentplane/generated/prompt-graph.json`.
+
+These files are derived outputs. The project authority remains `.agentplane/recipes/registry.json`
+plus vendored packages under `.agentplane/recipes/packages/**`.
+
+## Diagnostics
+
+Use `agentplane runtime explain` to inspect the local prompt graph state. Its prompt graph section
+reports:
+
+- generated artifact state: `not_configured`, `missing`, `current`, `stale`, `invalid`, or `compile_error`;
+- active recipe ids;
+- module counts by owner and source kind;
+- repo override count;
+- binding, validator, and diagnostic counts;
+- compiled module provenance.
+
+Use `agentplane doctor` for drift detection. Doctor reports:
+
+- missing generated prompt graph when active recipes exist;
+- stale generated prompt graph relative to the current recipe inputs;
+- invalid generated prompt graph payloads;
+- expected prompt graph compile failures;
+- compiler diagnostics persisted in the generated graph.
+
+Doctor is read-only for this surface. It reports the refresh command path but does not mutate
+recipe artifacts.
+
+## Verification matrix
+
+Use these focused checks when changing modular prompt assembly:
+
+```bash
+bun test packages/agentplane/src/runner/context/base-prompts.test.ts \
+  packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts \
+  packages/agentplane/src/commands/recipes.transaction.test.ts \
+  packages/agentplane/src/commands/doctor.command.runtime.test.ts
+bun run typecheck
+bun run framework:dev:bootstrap
+agentplane doctor
+git diff --check
+```
+
+Run recipe package tests too when changing the manifest schema or recipe validation package:
+
+```bash
+bun test packages/recipes/src/index.test.ts packages/recipes/src/overlay.test.ts
+```
+
+## Safe-change rules
+
+- Keep generated files derived; do not make `.agentplane/generated/*` an authority source.
+- Keep module provenance populated and deterministic.
+- Keep recipe mutation failures transactional.
+- Keep init/upgrade outputs compiled from prompt modules, not from duplicate templates.
+- Keep runner behavior stable by round-tripping prompt blocks through modules before changing sort
+  order, roles, or prompt content.
+- Keep doctor/runtime diagnostics read-only unless a separate task explicitly scopes auto-repair.

@@ -46,6 +46,7 @@ agentplane runtime explain
 Inside the framework checkout, this output is now the canonical framework-dev workflow surface:
 it prints the active runtime facts together with the bootstrap command, manual fallback steps, the
 repo-local verify step, the global reinstall helper, and the explicit force-global override path.
+It also reports the generated prompt graph state when modular prompt artifacts are present.
 
 If watched runtime paths are dirty and the repo-local build would otherwise be considered stale,
 read-only inspection commands still warn and continue:
@@ -90,6 +91,16 @@ To run only the CLI integration tests (without the slower smoke test):
 bun run test:project -- cli-core
 bun run test:project -- cli-recipes
 bun run test:project -- cli-scenario
+```
+
+To check the modular prompt assembly migration surface after touching prompt modules, init
+emission, recipes, runner prompts, or prompt graph diagnostics:
+
+```bash
+bun test packages/agentplane/src/runner/context/base-prompts.test.ts \
+  packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts \
+  packages/agentplane/src/commands/recipes.transaction.test.ts \
+  packages/agentplane/src/commands/doctor.command.runtime.test.ts
 ```
 
 To run the critical pre-push suite (fast, real git, separate-process CLI e2e checks):

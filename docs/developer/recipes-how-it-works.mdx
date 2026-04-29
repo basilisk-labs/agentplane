@@ -24,7 +24,8 @@ recipe-owned scenario assets it still compiles.
 1. Resolves `<id|id@version>` from the global cache.
 2. Materializes the cached package into `.agentplane/recipes/packages/<recipe-id>/` using `copy` by default or `link` when requested.
 3. Writes or updates `.agentplane/recipes/registry.json` as the sole project authority for vendored recipes.
-4. Recompiles `.agentplane/generated/overlay-bundle.json` and `.agentplane/generated/recipe-assets.json`.
+4. Recompiles `.agentplane/generated/overlay-bundle.json`,
+   `.agentplane/generated/recipe-assets.json`, and `.agentplane/generated/prompt-graph.json`.
 5. Leaves runtime pointed at the vendored project-local package, not at the global cache.
 
 ## Listing and inspection
@@ -34,6 +35,20 @@ recipe-owned scenario assets it still compiles.
 - `recipes active` and `recipes explain` read project-local vendored state from `registry.json`.
 - Recipe-owned scenario assets still live in vendored packages, but they are no longer exposed as a
   first-class public CLI namespace.
+
+## Prompt module assets
+
+Project overlay recipes can contribute modular prompt assets:
+
+- `prompt_modules` add recipe-owned prompt modules to the project prompt graph.
+- `prompt_mutation_sets` patch, replace, disable, bind, or validate prompt modules after framework
+  and active recipe modules are loaded.
+
+During recipe artifact refresh, active recipe prompt modules and mutation sets are compiled with the
+framework prompt module registry. The derived prompt graph is published to
+`.agentplane/generated/prompt-graph.json` in the same transaction as the overlay bundle, recipe asset
+registry, and project recipe registry. If prompt graph compilation fails, the previously published
+generated artifacts remain unchanged.
 
 ## Scenario asset preparation
 
@@ -86,7 +101,8 @@ while runner-owned control artifacts and preserved source manifests are exempt.
 
 - Remote index cache and recipe archives are stored globally under `AGENTPLANE_HOME` (default `~/.agentplane`).
 - Vendored project packages live under `.agentplane/recipes/packages/` and are tracked by `.agentplane/recipes/registry.json`.
-- Generated recipe runtime artifacts live under `.agentplane/generated/`.
+- Generated recipe runtime artifacts live under `.agentplane/generated/`; this includes
+  `overlay-bundle.json`, `recipe-assets.json`, and `prompt-graph.json`.
 - After vendoring, runtime reads only project-local recipes; deleting the global cache does not break execution for already vendored recipes.
 - `recipes list-remote --refresh` forces index refresh.
 - `recipes cache prune` removes stale cached entries and supports `--dry-run`.

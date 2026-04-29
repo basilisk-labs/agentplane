@@ -1,10 +1,10 @@
 ---
 id: "202604291532-BV5NQT"
 title: "Document and harden modular prompt migration"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -26,16 +26,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-29T19:41:02.530Z"
+  updated_by: "CODER"
+  note: "Modular prompt migration docs and regression hardening are complete; declared verification passed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: document modular prompt migration and add regression hardening for migrated prompt assembly surfaces."
+events:
+  -
+    type: "status"
+    at: "2026-04-29T19:34:44.106Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: document modular prompt migration and add regression hardening for migrated prompt assembly surfaces."
+  -
+    type: "verify"
+    at: "2026-04-29T19:41:02.530Z"
+    author: "CODER"
+    state: "ok"
+    note: "Modular prompt migration docs and regression hardening are complete; declared verification passed."
 doc_version: 3
-doc_updated_at: "2026-04-29T15:32:46.738Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-04-29T19:41:02.543Z"
+doc_updated_by: "CODER"
 description: "Add migration documentation, fixtures, and regression coverage for modular prompt assembly across init, upgrade, runner prompts, policy modules, agent profiles, and recipe-owned mutations."
 sections:
   Summary: |-
@@ -64,11 +80,45 @@ sections:
     8. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-29T19:41:02.530Z — VERIFY — ok
+    By: CODER
+    Note: Modular prompt migration docs and regression hardening are complete; declared verification passed.
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T19:34:44.106Z, excerpt_hash=sha256:a1c55a35cc102849fc24f7a3161b53a50e2318117b818dcd9655e8f6ca83025a
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert docs and test fixture additions.
     - Keep implementation tasks intact if code checks still pass.
-  Findings: "No findings yet."
+  Findings: |-
+    No residual findings.
+    Verification evidence:
+    - Command: bun test packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts packages/agentplane/src/commands/recipes.transaction.test.ts packages/agentplane/src/commands/doctor.command.runtime.test.ts
+      Result: pass
+      Evidence: 37 pass, 0 fail.
+      Scope: runner/init/recipe/doctor modular prompt migration regressions.
+    - Command: bun run docs:scripts:check
+      Result: pass
+      Evidence: scripts/README.md is up to date.
+      Scope: docs script inventory freshness.
+    - Command: bun run typecheck
+      Result: pass
+      Evidence: tsc -b completed with exit 0.
+      Scope: repository TypeScript project references.
+    - Command: bun run framework:dev:bootstrap
+      Result: pass
+      Evidence: Framework dev runtime is ready.
+      Scope: repo-local runtime rebuild before doctor.
+    - Command: agentplane doctor
+      Result: pass
+      Evidence: doctor OK with errors=0 warnings=0.
+      Scope: repository workflow/runtime diagnostics.
+    - Command: git diff --check
+      Result: pass
+      Evidence: no whitespace errors.
+      Scope: final diff hygiene.
+    - Command: bun run docs:site:typecheck
+      Result: pass
+      Evidence: tsc completed with exit 0 after framework bootstrap installed website dependencies.
+      Scope: website sidebar TypeScript and docs-site type surface.
 id_source: "generated"
 ---
 ## Summary
@@ -106,6 +156,14 @@ Add migration documentation, fixtures, and regression coverage for modular promp
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-29T19:41:02.530Z — VERIFY — ok
+
+By: CODER
+
+Note: Modular prompt migration docs and regression hardening are complete; declared verification passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T19:34:44.106Z, excerpt_hash=sha256:a1c55a35cc102849fc24f7a3161b53a50e2318117b818dcd9655e8f6ca83025a
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -115,4 +173,35 @@ Add migration documentation, fixtures, and regression coverage for modular promp
 
 ## Findings
 
-No findings yet.
+No residual findings.
+
+Verification evidence:
+
+- Command: bun test packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts packages/agentplane/src/commands/recipes.transaction.test.ts packages/agentplane/src/commands/doctor.command.runtime.test.ts
+  Result: pass
+  Evidence: 37 pass, 0 fail.
+  Scope: runner/init/recipe/doctor modular prompt migration regressions.
+- Command: bun run docs:scripts:check
+  Result: pass
+  Evidence: scripts/README.md is up to date.
+  Scope: docs script inventory freshness.
+- Command: bun run typecheck
+  Result: pass
+  Evidence: tsc -b completed with exit 0.
+  Scope: repository TypeScript project references.
+- Command: bun run framework:dev:bootstrap
+  Result: pass
+  Evidence: Framework dev runtime is ready.
+  Scope: repo-local runtime rebuild before doctor.
+- Command: agentplane doctor
+  Result: pass
+  Evidence: doctor OK with errors=0 warnings=0.
+  Scope: repository workflow/runtime diagnostics.
+- Command: git diff --check
+  Result: pass
+  Evidence: no whitespace errors.
+  Scope: final diff hygiene.
+- Command: bun run docs:site:typecheck
+  Result: pass
+  Evidence: tsc completed with exit 0 after framework bootstrap installed website dependencies.
+  Scope: website sidebar TypeScript and docs-site type surface.
