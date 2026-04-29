@@ -79,8 +79,8 @@ describe("incidents runtime", () => {
       "  IncidentRule: Release recovery MUST validate the exact ref inside the workflow.",
       "  IncidentExternal: true",
       "",
-      "- Observation: local test suite was slow",
-      "  Impact: local loop was slower.",
+      "- Observation: local test suite failed after a slow retry loop",
+      "  Impact: local verification was blocked.",
       "  Resolution: keep it narrow.",
       "  Promotion: incident-candidate",
       "  IncidentScope: local performance",
@@ -133,6 +133,34 @@ describe("incidents runtime", () => {
     });
     expect(plan.promotable).toHaveLength(0);
     expect(plan.issues).toHaveLength(0);
+  });
+
+  it("skips promotable-looking findings that do not describe a failure", () => {
+    const plan = planIncidentCollection({
+      task: {
+        id: "TASK-SUCCESS",
+        title: "Close hosted task",
+        description: "Record closure notes",
+        tags: ["workflow"],
+      },
+      findings: [
+        "- Observation: hosted close completed and PR metadata was recorded.",
+        "  Impact: operators have a cleaner audit trail.",
+        "  Resolution: no follow-up required.",
+        "  Promotion: incident-candidate",
+        "  Fixability: external",
+      ].join("\n"),
+      registry: parseIncidentRegistry(createIncidentRegistrySkeleton()),
+      now: new Date("2026-04-08T10:00:00.000Z"),
+    });
+
+    expect(plan.candidates).toHaveLength(0);
+    expect(plan.skipped).toHaveLength(1);
+    expect(plan.skipped[0]).toMatchObject({
+      observation: "hosted close completed and PR metadata was recorded.",
+      reason: "not_failure_like",
+    });
+    expect(plan.promotable).toHaveLength(0);
   });
 
   it("tracks plain Findings text separately from structured incident blocks", () => {

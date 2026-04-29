@@ -45,7 +45,7 @@ export type IncidentFindingCandidate = {
 export type IncidentSkippedFinding = {
   observation: string;
   line: number;
-  reason: "not_marked_external_or_promotable";
+  reason: "not_marked_external_or_promotable" | "not_failure_like";
   rawFields: Record<string, string>;
 };
 

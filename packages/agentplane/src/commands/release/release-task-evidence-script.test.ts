@@ -39,13 +39,22 @@ async function commitAll(root: string, message: string) {
   return String(result.stdout ?? "").trim();
 }
 
-async function writeTaskReadme(root: string, taskId: string) {
+async function writeTaskReadme(
+  root: string,
+  taskId: string,
+  opts: {
+    verificationState?: "pending" | "ok" | "needs_rework";
+    verificationText?: string;
+    docUpdatedAt?: string;
+  } = {},
+) {
   const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
   await mkdir(path.dirname(readmePath), { recursive: true });
-  const verificationText = [
-    "<!-- BEGIN VERIFICATION RESULTS -->",
-    "<!-- END VERIFICATION RESULTS -->",
-  ].join("\n");
+  const verificationText =
+    opts.verificationText ??
+    ["<!-- BEGIN VERIFICATION RESULTS -->", "<!-- END VERIFICATION RESULTS -->"].join("\n");
+  const docUpdatedAt = opts.docUpdatedAt ?? "2026-04-19T00:00:00.000Z";
+  const verificationState = opts.verificationState ?? "pending";
   const body = [
     "## Summary",
     "",
@@ -93,7 +102,7 @@ async function writeTaskReadme(root: string, taskId: string) {
         note: null,
       },
       verification: {
-        state: "pending",
+        state: verificationState,
         updated_at: null,
         updated_by: null,
         note: null,
@@ -101,7 +110,7 @@ async function writeTaskReadme(root: string, taskId: string) {
       comments: [],
       events: [],
       doc_version: 3,
-      doc_updated_at: "2026-04-19T00:00:00.000Z",
+      doc_updated_at: docUpdatedAt,
       doc_updated_by: "CODER",
       description: "release task",
       sections: {
@@ -288,5 +297,69 @@ describe("release-task-evidence script", () => {
     );
     expect(updated).toContain('updated_by: "DEUS"');
     expect(updated).toContain('state: "ok"');
+  });
+
+  it("audits only scoped recent DONE tasks with closure evidence and pending verification", async () => {
+    const root = await initRepo();
+    await writeTaskReadme(root, "202604280001-NEWBAD", {
+      docUpdatedAt: "2026-04-28T12:00:00.000Z",
+      verificationText: [
+        "<!-- BEGIN VERIFICATION RESULTS -->",
+        "- State: ok",
+        "- Note: Hosted publish confirmed for v0.3.15.",
+        "<!-- END VERIFICATION RESULTS -->",
+      ].join("\n"),
+    });
+    await writeTaskReadme(root, "202604200001-LEGACY", {
+      docUpdatedAt: "2026-04-20T12:00:00.000Z",
+      verificationText: [
+        "<!-- BEGIN VERIFICATION RESULTS -->",
+        "- State: ok",
+        "- Note: Hosted publish confirmed for v0.3.14.",
+        "<!-- END VERIFICATION RESULTS -->",
+      ].join("\n"),
+    });
+    await writeTaskReadme(root, "202604280002-NEWOK", {
+      docUpdatedAt: "2026-04-28T13:00:00.000Z",
+      verificationState: "ok",
+      verificationText: [
+        "<!-- BEGIN VERIFICATION RESULTS -->",
+        "- State: ok",
+        "- Note: Hosted publish confirmed for v0.3.16.",
+        "<!-- END VERIFICATION RESULTS -->",
+      ].join("\n"),
+    });
+
+    let stdout = "";
+    try {
+      await execFileAsync(
+        "bun",
+        [
+          SCRIPT_PATH,
+          "audit",
+          "--since",
+          "2026-04-28T00:00:00.000Z",
+          "--tasks-dir",
+          path.join(root, ".agentplane", "tasks"),
+        ],
+        { cwd: root, env: process.env },
+      );
+    } catch (error) {
+      stdout = String((error as { stdout?: string }).stdout ?? "");
+    }
+
+    const payload = JSON.parse(stdout) as {
+      ok: boolean;
+      violations: { task_id: string; verification_state: string }[];
+    };
+    expect(payload.ok).toBe(false);
+    expect(payload.violations).toEqual([
+      {
+        task_id: "202604280001-NEWBAD",
+        readme_path: path.join(root, ".agentplane", "tasks", "202604280001-NEWBAD", "README.md"),
+        doc_updated_at: "2026-04-28T12:00:00.000Z",
+        verification_state: "pending",
+      },
+    ]);
   });
 });

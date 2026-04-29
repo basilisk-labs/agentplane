@@ -65,6 +65,18 @@ function trackedChangesShort() {
   return String(read("git", ["status", "--short", "--untracked-files=no"])).trim();
 }
 
+function readLocalGitConfigBool(name) {
+  try {
+    return String(
+      execFileSync("git", ["config", "--local", "--get", "--bool", name], {
+        encoding: "utf8",
+      }),
+    ).trim();
+  } catch {
+    return "";
+  }
+}
+
 class HookFailure extends Error {
   constructor(message, details = []) {
     super(message);
@@ -81,6 +93,14 @@ function failIfTrackedChanges(message) {
   const changes = trackedChangesShort();
   if (!changes) return;
   fail(message, [changes]);
+}
+
+function failIfPollutedReleaseGitConfig() {
+  if (readLocalGitConfigBool("core.bare") !== "true") return;
+  fail("pre-push blocked: release checks cannot run because local git config has core.bare=true.", [
+    "This indicates repository config pollution, not a release payload failure.",
+    "Restore the checkout git config before retrying release verification.",
+  ]);
 }
 
 function main() {
@@ -102,6 +122,7 @@ function main() {
   }
   const mode = isReleasePush ? "release" : "standard";
   process.stdout.write(`Running pre-push checks in ${mode} mode.\n`);
+  if (isReleasePush) failIfPollutedReleaseGitConfig();
   const ciScript = envFull ? "ci:local:full" : "ci:local:fast";
   const changedFiles = readChangedFilesForRange(
     selectBranchDiffRange(updates, {

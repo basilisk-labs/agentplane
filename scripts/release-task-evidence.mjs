@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -20,6 +20,7 @@ function usage() {
     "Subcommands:",
     "  prepare  Resolve deterministic release-task evidence PR metadata from a publish-result manifest.",
     "  apply    Write hosted publish evidence into the release task README.",
+    "  audit    Check recent closed release/hosted-close task READMEs for pending verification drift.",
   ].join("\n");
 }
 
@@ -46,6 +47,17 @@ function applyUsage() {
     "  --repo <owner/name>       GitHub repository (default: $GITHUB_REPOSITORY)",
     "  --author <name>           doc/verification updater (default: DEUS)",
     "  --at <iso-ts>             Optional override timestamp",
+    "  --json                    Emit JSON to stdout",
+  ].join("\n");
+}
+
+function auditUsage() {
+  return [
+    "Usage: bun scripts/release-task-evidence.mjs audit [options]",
+    "",
+    "Options:",
+    "  --since <iso-ts>          Required. Only inspect task READMEs updated at or after this timestamp.",
+    "  --tasks-dir <path>        Task README directory (default: .agentplane/tasks)",
     "  --json                    Emit JSON to stdout",
   ].join("\n");
 }
@@ -242,6 +254,40 @@ function parseApplyArgs(argv) {
   return out;
 }
 
+function parseAuditArgs(argv) {
+  const out = {
+    since: "",
+    tasksDir: path.join(process.cwd(), ".agentplane", "tasks"),
+    json: false,
+  };
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index] ?? "";
+    if (arg === "--since") {
+      out.since = argv[index + 1] ?? out.since;
+      index += 1;
+      continue;
+    }
+    if (arg === "--tasks-dir") {
+      out.tasksDir = path.resolve(argv[index + 1] ?? out.tasksDir);
+      index += 1;
+      continue;
+    }
+    if (arg === "--json") {
+      out.json = true;
+      continue;
+    }
+    if (arg === "--help" || arg === "-h") {
+      process.stdout.write(`${auditUsage()}\n`);
+      return null;
+    }
+    throw new Error(`unknown argument: ${arg}`);
+  }
+  out.since = ensureNonEmpty(out.since, "since timestamp");
+  const sinceMs = Date.parse(out.since);
+  if (!Number.isFinite(sinceMs)) throw new Error(`Invalid --since timestamp: ${out.since}`);
+  return out;
+}
+
 async function runPrepare(argv) {
   const args = parsePrepareArgs(argv);
   if (!args) return null;
@@ -362,6 +408,66 @@ async function runApply(argv) {
   };
 }
 
+function taskUpdatedAt(frontmatter) {
+  const candidates = [frontmatter.doc_updated_at, frontmatter.updated_at].filter(Boolean);
+  for (const value of candidates) {
+    const parsed = Date.parse(String(value));
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return null;
+}
+
+function hasClosureEvidence(parsed) {
+  const verification = taskDocToSectionMap(parsed.body).Verification ?? "";
+  const text = [
+    verification,
+    String(parsed.frontmatter.result ?? ""),
+    String(parsed.frontmatter.description ?? ""),
+  ].join("\n");
+  return (
+    /Hosted publish confirmed for\s+v?\d/iu.test(text) ||
+    /hosted closure automation recorded canonical task artifacts/iu.test(text) ||
+    /Merged via PR #\d+/iu.test(text)
+  );
+}
+
+async function runAudit(argv) {
+  const args = parseAuditArgs(argv);
+  if (!args) return null;
+  const sinceMs = Date.parse(args.since);
+  const entries = await readdir(args.tasksDir, { withFileTypes: true }).catch(() => []);
+  const violations = [];
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const readmePath = path.join(args.tasksDir, entry.name, "README.md");
+    let parsed;
+    try {
+      parsed = parseTaskReadme(await readFile(readmePath, "utf8"));
+    } catch {
+      continue;
+    }
+    const updatedAt = taskUpdatedAt(parsed.frontmatter);
+    if (updatedAt === null || updatedAt < sinceMs) continue;
+    if (String(parsed.frontmatter.status ?? "").toUpperCase() !== "DONE") continue;
+    if (parsed.frontmatter.verification?.state !== "pending") continue;
+    if (!hasClosureEvidence(parsed)) continue;
+    violations.push({
+      task_id: String(parsed.frontmatter.id ?? entry.name),
+      readme_path: readmePath,
+      doc_updated_at: parsed.frontmatter.doc_updated_at ?? null,
+      verification_state: parsed.frontmatter.verification.state,
+    });
+  }
+
+  return {
+    ok: violations.length === 0,
+    since: args.since,
+    checked_tasks_dir: args.tasksDir,
+    violations,
+  };
+}
+
 async function main() {
   const [command, ...rest] = process.argv.slice(2);
   if (!command || command === "--help" || command === "-h") {
@@ -380,6 +486,13 @@ async function main() {
     const payload = await runApply(rest);
     if (!payload) return;
     process.stdout.write(`${JSON.stringify(payload)}\n`);
+    return;
+  }
+  if (command === "audit") {
+    const payload = await runAudit(rest);
+    if (!payload) return;
+    process.stdout.write(`${JSON.stringify(payload)}\n`);
+    if (!payload.ok) process.exitCode = 1;
     return;
   }
 

@@ -615,6 +615,40 @@ describe("runCli", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     });
   });
 
+  it("pre-push release mode reports polluted local git config before payload checks", async () => {
+    const root = await mkGitRepoRoot();
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["config", "--local", "core.bare", "true"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
+    let failure: (Error & { stderr?: string | Buffer; stdout?: string | Buffer }) | null = null;
+    try {
+      execFileSync("node", [PRE_PUSH_HOOK_SCRIPT], {
+        cwd: root,
+        stdio: "pipe",
+        input: "",
+        env: {
+          ...process.env,
+          AGENTPLANE_HOOKS_RELEASE: "1",
+        },
+      });
+    } catch (error) {
+      failure = error as Error & { stderr?: string | Buffer; stdout?: string | Buffer };
+    }
+
+    expect(failure).not.toBeNull();
+    expect(String(failure?.stdout ?? "")).toContain("Running pre-push checks in release mode.");
+    expect(String(failure?.stderr ?? "")).toContain(
+      "pre-push blocked: release checks cannot run because local git config has core.bare=true.",
+    );
+    expect(String(failure?.stderr ?? "")).toContain(
+      "This indicates repository config pollution, not a release payload failure.",
+    );
+    expect(String(failure?.stdout ?? "")).not.toContain("== Format (check) ==");
+  });
+
   it("hooks run post-merge prunes merged local task worktrees on the base branch", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
