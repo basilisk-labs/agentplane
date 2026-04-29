@@ -1,10 +1,11 @@
 ---
 id: "202604291531-E8NEFB"
 title: "Compile init gateway and policy from modules"
-status: "DOING"
+result_summary: "Merged via PR #569."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -31,11 +32,16 @@ verification:
   updated_at: "2026-04-29T18:19:58.640Z"
   updated_by: "CODER"
   note: "Verified: reconciled PR metadata after init module compilation commit 18ba18488f86. Prior checks remain current for the committed diff: focused tests, policy:routing:check, typecheck, git diff --check, framework bootstrap, doctor, and touched-file prettier/eslint passed."
-commit: null
+commit:
+  hash: "1e1f92d69a7ead8393dfb659fd24e79d6bd54afb"
+  message: "Merge PR #569: compile init gateway policy modules"
 comments:
   -
     author: "CODER"
     body: "Start: Compile init gateway and policy installation from framework prompt modules, preserving current generated outputs while routing source content through the prompt module registry/compiler."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #569 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -56,9 +62,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: reconciled PR metadata after init module compilation commit 18ba18488f86. Prior checks remain current for the committed diff: focused tests, policy:routing:check, typecheck, git diff --check, framework bootstrap, doctor, and touched-file prettier/eslint passed."
+  -
+    type: "status"
+    at: "2026-04-29T18:23:06.861Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #569 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-29T18:19:58.654Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-29T18:23:06.866Z"
+doc_updated_by: "INTEGRATOR"
 description: "Switch init-time AGENTS.md/CLAUDE.md and .agentplane/policy emission to use the prompt module compiler while preserving byte-for-byte or intentional-equivalent output and upgrade baseline seeding."
 sections:
   Summary: |-
