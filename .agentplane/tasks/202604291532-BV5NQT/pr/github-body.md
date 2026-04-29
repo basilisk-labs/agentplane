@@ -24,12 +24,20 @@ Add migration documentation, fixtures, and regression coverage for modular promp
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T19:34:44.153Z
+- Updated: 2026-04-29T19:41:48.123Z
 - Branch: task/202604291532-BV5NQT/modular-prompt-migration-docs
-- Head: 2617ad7b0af9
+- Head: df7b4aff6ef7
 
 ```text
-No changes detected.
+ docs/developer/modular-prompt-assembly.mdx         | 146 +++++++++++++++++++++
+ docs/developer/recipes-how-it-works.mdx            |  20 ++-
+ docs/developer/recipes-spec.mdx                    |  11 +-
+ docs/developer/testing-and-quality.mdx             |  11 ++
+ .../cli/run-cli/commands/init/steps/apply.test.ts  |   5 +
+ .../src/commands/recipes.transaction.test.ts       |   4 +
+ .../src/runner/context/base-prompts.test.ts        |  14 ++
+ website/sidebars.ts                                |   1 +
+ 8 files changed, 209 insertions(+), 3 deletions(-)
 ```
 
 </details>
