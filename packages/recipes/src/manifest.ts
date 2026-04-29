@@ -10,6 +10,8 @@ import {
 } from "./manifest-primitives.js";
 import {
   normalizeAgentId,
+  normalizePromptModuleId,
+  normalizePromptMutationSetId,
   normalizeRecipeId,
   normalizeRecipeRelativePath,
   normalizeRecipeTags,
@@ -27,6 +29,8 @@ import type {
   RecipeAgentDefinition,
   RecipeCompatibility,
   RecipeManifest,
+  RecipePromptModuleDefinition,
+  RecipePromptMutationSetDefinition,
   RecipeRunProfile,
   RecipeScenarioDescriptor,
   RecipeSkillDefinition,
@@ -311,6 +315,63 @@ function normalizeOptionalPrompts(raw: unknown): OverlayPromptFragment[] | undef
   return normalizePrompts(raw);
 }
 
+function normalizePromptModuleDefinitions(
+  raw: unknown,
+): RecipePromptModuleDefinition[] | undefined {
+  if (raw === undefined) return undefined;
+  if (!Array.isArray(raw)) {
+    throw new Error(invalidFieldMessage("manifest.prompt_modules", "array"));
+  }
+  if (raw.length === 0) {
+    throw new Error(invalidFieldMessage("manifest.prompt_modules", "non-empty array"));
+  }
+  return raw.map((entry, index) => {
+    if (!isRecord(entry)) {
+      throw new Error(invalidFieldMessage(`manifest.prompt_modules[${index}]`, "object"));
+    }
+    return {
+      id: normalizePromptModuleId(
+        normalizeRequiredString(entry.id, `manifest.prompt_modules[${index}].id`),
+      ),
+      summary: normalizeRequiredString(entry.summary, `manifest.prompt_modules[${index}].summary`),
+      file: normalizeRecipeRelativePath(
+        `manifest.prompt_modules[${index}].file`,
+        normalizeRequiredString(entry.file, `manifest.prompt_modules[${index}].file`),
+      ),
+    };
+  });
+}
+
+function normalizePromptMutationSetDefinitions(
+  raw: unknown,
+): RecipePromptMutationSetDefinition[] | undefined {
+  if (raw === undefined) return undefined;
+  if (!Array.isArray(raw)) {
+    throw new Error(invalidFieldMessage("manifest.prompt_mutation_sets", "array"));
+  }
+  if (raw.length === 0) {
+    throw new Error(invalidFieldMessage("manifest.prompt_mutation_sets", "non-empty array"));
+  }
+  return raw.map((entry, index) => {
+    if (!isRecord(entry)) {
+      throw new Error(invalidFieldMessage(`manifest.prompt_mutation_sets[${index}]`, "object"));
+    }
+    return {
+      id: normalizePromptMutationSetId(
+        normalizeRequiredString(entry.id, `manifest.prompt_mutation_sets[${index}].id`),
+      ),
+      summary: normalizeRequiredString(
+        entry.summary,
+        `manifest.prompt_mutation_sets[${index}].summary`,
+      ),
+      file: normalizeRecipeRelativePath(
+        `manifest.prompt_mutation_sets[${index}].file`,
+        normalizeRequiredString(entry.file, `manifest.prompt_mutation_sets[${index}].file`),
+      ),
+    };
+  });
+}
+
 function normalizeOptionalScenarios(
   raw: unknown,
   opts?: { legacyScenarioDefaults?: boolean },
@@ -429,11 +490,27 @@ function normalizeProjectOverlay(raw: Record<string, unknown>): ProjectOverlayMa
   const scenarios = normalizeOptionalScenarios(raw.scenarios, {
     legacyScenarioDefaults: raw.schema_version === "1",
   });
+  const prompt_modules = normalizePromptModuleDefinitions(raw.prompt_modules);
+  const prompt_mutation_sets = normalizePromptMutationSetDefinitions(raw.prompt_mutation_sets);
   const tags = normalizeRecipeTags(raw.tags);
-  if (!prompts?.length && !scenarios?.length) {
-    throw new Error(invalidFieldMessage("manifest", "prompts or scenarios"));
+  if (
+    !prompts?.length &&
+    !scenarios?.length &&
+    !prompt_modules?.length &&
+    !prompt_mutation_sets?.length
+  ) {
+    throw new Error(
+      invalidFieldMessage(
+        "manifest",
+        "prompts, scenarios, prompt_modules, or prompt_mutation_sets",
+      ),
+    );
   }
   if (prompts) assertUniqueIds("manifest.prompts", prompts);
+  if (prompt_modules) assertUniqueIds("manifest.prompt_modules", prompt_modules);
+  if (prompt_mutation_sets) {
+    assertUniqueIds("manifest.prompt_mutation_sets", prompt_mutation_sets);
+  }
   if (skills) assertUniqueIds("manifest.skills", skills);
   if (validators) assertUniqueIds("manifest.validators", validators);
   if (agents) assertUniqueIds("manifest.agents", agents);
@@ -494,6 +571,8 @@ function normalizeProjectOverlay(raw: Record<string, unknown>): ProjectOverlayMa
     agents,
     tools,
     scenarios,
+    prompt_modules,
+    prompt_mutation_sets,
   };
 }
 

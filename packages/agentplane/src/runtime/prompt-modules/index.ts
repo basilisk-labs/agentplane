@@ -57,3 +57,8 @@ export {
   loadFrameworkPromptModuleRegistry,
   loadFrameworkPromptModules,
 } from "./registry.js";
+export {
+  validatePromptModule,
+  validatePromptModuleMutationSet,
+  type ValidatedPromptModuleMutation,
+} from "./validation.js";

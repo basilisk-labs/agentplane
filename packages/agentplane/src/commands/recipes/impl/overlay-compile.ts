@@ -103,6 +103,38 @@ async function compileProjectRecipeAssets(opts: {
       });
     }
 
+    for (const promptModule of manifest.prompt_modules ?? []) {
+      const sourcePath = path.join(recipeDir, promptModule.file);
+      entries.push({
+        id: recipeAssetId(recipe.id, "prompt_module", promptModule.id),
+        kind: "prompt_module",
+        recipe_id: recipe.id,
+        recipe_version: recipe.version,
+        recipe_name: manifest.name,
+        asset_id: promptModule.id,
+        source: relativeSource(opts.project, sourcePath),
+        summary: promptModule.summary,
+        definition: promptModule,
+        content: normalizeRecipeAssetContent(await readFile(sourcePath, "utf8")),
+      });
+    }
+
+    for (const mutationSet of manifest.prompt_mutation_sets ?? []) {
+      const sourcePath = path.join(recipeDir, mutationSet.file);
+      entries.push({
+        id: recipeAssetId(recipe.id, "prompt_mutation_set", mutationSet.id),
+        kind: "prompt_mutation_set",
+        recipe_id: recipe.id,
+        recipe_version: recipe.version,
+        recipe_name: manifest.name,
+        asset_id: mutationSet.id,
+        source: relativeSource(opts.project, sourcePath),
+        summary: mutationSet.summary,
+        definition: mutationSet,
+        content: normalizeRecipeAssetContent(await readFile(sourcePath, "utf8")),
+      });
+    }
+
     for (const tool of manifest.tools ?? []) {
       entries.push({
         id: recipeAssetId(recipe.id, "tool", tool.id),

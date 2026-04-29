@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604291531-Z6XH6Q/recipe-prompt-mutations",
+  "created_at": "2026-04-29T18:36:29.612Z",
+  "head_sha": "4fd2fc73e17454ce1e3fad629c716e4f25510127",
+  "last_verified_at": "2026-04-29T18:54:21.158Z",
+  "last_verified_sha": "8cbee17f8634d16c8c5f1e2cec5d27b8f3bec68c",
+  "schema_version": 1,
+  "task_id": "202604291531-Z6XH6Q",
+  "updated_at": "2026-04-29T18:56:33.061Z",
+  "verify": {
+    "status": "pass"
+  }
+}

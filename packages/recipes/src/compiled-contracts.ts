@@ -3,6 +3,8 @@ import type {
   OverlaySurface,
   OverlayValidator,
   RecipeAgentDefinition,
+  RecipePromptModuleDefinition,
+  RecipePromptMutationSetDefinition,
   RecipeScenarioDescriptor,
   RecipeSkillDefinition,
   RecipeToolDefinition,
@@ -45,7 +47,14 @@ export type CompiledOverlayBundle = {
   trace: CompiledOverlayTraceEntry[];
 };
 
-export type CompiledRecipeAssetKind = "agent" | "skill" | "tool" | "scenario" | "template";
+export type CompiledRecipeAssetKind =
+  | "agent"
+  | "skill"
+  | "tool"
+  | "scenario"
+  | "template"
+  | "prompt_module"
+  | "prompt_mutation_set";
 
 export type CompiledRecipeAssetBase = {
   id: string;
@@ -85,12 +94,26 @@ export type CompiledRecipeTemplateAsset = CompiledRecipeAssetBase & {
   content: string;
 };
 
+export type CompiledRecipePromptModuleAsset = CompiledRecipeAssetBase & {
+  kind: "prompt_module";
+  definition: RecipePromptModuleDefinition;
+  content: string;
+};
+
+export type CompiledRecipePromptMutationSetAsset = CompiledRecipeAssetBase & {
+  kind: "prompt_mutation_set";
+  definition: RecipePromptMutationSetDefinition;
+  content: string;
+};
+
 export type CompiledRecipeAssetEntry =
   | CompiledRecipeAgentAsset
   | CompiledRecipeSkillAsset
   | CompiledRecipeToolAsset
   | CompiledRecipeScenarioAsset
-  | CompiledRecipeTemplateAsset;
+  | CompiledRecipeTemplateAsset
+  | CompiledRecipePromptModuleAsset
+  | CompiledRecipePromptMutationSetAsset;
 
 export type CompiledRecipeAssetRegistry = {
   schema_version: 1;

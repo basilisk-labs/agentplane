@@ -37,6 +37,14 @@ export function normalizeScenarioId(value: string): string {
   return normalizeScopedId("scenario.id", value);
 }
 
+export function normalizePromptModuleId(value: string): string {
+  return normalizeScopedId("prompt_module.id", value);
+}
+
+export function normalizePromptMutationSetId(value: string): string {
+  return normalizeScopedId("prompt_mutation_set.id", value);
+}
+
 export function normalizeRecipeTags(value: unknown): string[] {
   if (value === undefined) return [];
   if (!Array.isArray(value)) throw new Error(invalidFieldMessage("manifest.tags", "string[]"));

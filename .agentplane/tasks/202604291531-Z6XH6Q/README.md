@@ -1,10 +1,10 @@
 ---
 id: "202604291531-Z6XH6Q"
 title: "Extend recipe manifests with prompt module mutations"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -26,21 +26,37 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-29T18:54:21.158Z"
+  updated_by: "CODER"
+  note: "Recipe manifests now accept prompt_modules and prompt_mutation_sets JSON assets, validate recipe-owned module/mutation-set shape and provenance, and publish them into recipe-assets without applying them to overlay prompt surfaces."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Extend installed recipe and overlay schema support so recipes can declare prompt modules and structured prompt module mutation sets, without applying those mutations to generated prompt artifacts yet."
+events:
+  -
+    type: "status"
+    at: "2026-04-29T18:36:29.448Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Extend installed recipe and overlay schema support so recipes can declare prompt modules and structured prompt module mutation sets, without applying those mutations to generated prompt artifacts yet."
+  -
+    type: "verify"
+    at: "2026-04-29T18:54:21.158Z"
+    author: "CODER"
+    state: "ok"
+    note: "Recipe manifests now accept prompt_modules and prompt_mutation_sets JSON assets, validate recipe-owned module/mutation-set shape and provenance, and publish them into recipe-assets without applying them to overlay prompt surfaces."
 doc_version: 3
-doc_updated_at: "2026-04-29T15:31:48.894Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-04-29T18:54:21.198Z"
+doc_updated_by: "CODER"
 description: "Extend recipe/project overlay schema support so vendored recipes can declare prompt modules and structured prompt module mutations with validated asset references, without applying them to compiled init surfaces yet."
 sections:
   Summary: |-
     Extend recipe manifests with prompt module mutations
-    
+
     Extend recipe/project overlay schema support so vendored recipes can declare prompt modules and structured prompt module mutations with validated asset references, without applying them to compiled init surfaces yet.
   Scope: |-
     - In scope: recipe manifest/project overlay parsing for prompt module declarations and mutation sets.
@@ -62,11 +78,26 @@ sections:
     7. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-29T18:54:21.158Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Recipe manifests now accept prompt_modules and prompt_mutation_sets JSON assets, validate recipe-owned module/mutation-set shape and provenance, and publish them into recipe-assets without applying them to overlay prompt surfaces.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T18:36:29.448Z, excerpt_hash=sha256:67decb3079de4dcba454a3c7f82fd80e3c563588801e6a5bef285bf65fe87f21
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert recipe schema/parser changes and tests.
     - Existing recipe install/active commands should continue to ignore prompt module fields.
-  Findings: "No findings yet."
+  Findings: |-
+    No findings yet.
+
+    - Observation: Checks passed: bun test packages/agentplane/src/commands/recipes/impl/project-installed-recipes.test.ts packages/agentplane/src/commands/recipes/impl/resolver.test.ts packages/agentplane/src/commands/recipes.transaction.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts; bun run typecheck; git diff --check; bun run framework:dev:bootstrap; agentplane doctor; extra bun test packages/recipes/src/index.test.ts packages/recipes/src/overlay.test.ts; targeted eslint on touched files.
+      Impact: Recipes can declare modular prompt assets and structured mutation sets with validated file references and recipe provenance for later recipe-application work.
+      Resolution: No prompt graph application was added in this step; that remains for the dependent recipe application task.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -102,6 +133,14 @@ Extend recipe/project overlay schema support so vendored recipes can declare pro
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-29T18:54:21.158Z — VERIFY — ok
+
+By: CODER
+
+Note: Recipe manifests now accept prompt_modules and prompt_mutation_sets JSON assets, validate recipe-owned module/mutation-set shape and provenance, and publish them into recipe-assets without applying them to overlay prompt surfaces.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T18:36:29.448Z, excerpt_hash=sha256:67decb3079de4dcba454a3c7f82fd80e3c563588801e6a5bef285bf65fe87f21
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -112,3 +151,9 @@ Extend recipe/project overlay schema support so vendored recipes can declare pro
 ## Findings
 
 No findings yet.
+
+- Observation: Checks passed: bun test packages/agentplane/src/commands/recipes/impl/project-installed-recipes.test.ts packages/agentplane/src/commands/recipes/impl/resolver.test.ts packages/agentplane/src/commands/recipes.transaction.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts; bun run typecheck; git diff --check; bun run framework:dev:bootstrap; agentplane doctor; extra bun test packages/recipes/src/index.test.ts packages/recipes/src/overlay.test.ts; targeted eslint on touched files.
+  Impact: Recipes can declare modular prompt assets and structured mutation sets with validated file references and recipe provenance for later recipe-application work.
+  Resolution: No prompt graph application was added in this step; that remains for the dependent recipe application task.
+  Promotion: incident-candidate
+  Fixability: external

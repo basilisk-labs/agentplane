@@ -113,4 +113,32 @@ describe("@agentplaneorg/recipes", () => {
       }),
     ).toThrow("Invalid field manifest.scenarios[0].file: expected string");
   });
+
+  it("allows v2 overlays to declare prompt module assets without legacy prompt fragments", () => {
+    const manifest = validateRecipeManifest({
+      schema_version: "2",
+      kind: "project_overlay",
+      id: "modular",
+      version: "1.0.0",
+      name: "Modular",
+      summary: "Modular prompt assets",
+      prompt_modules: [
+        {
+          id: "policy-guidance",
+          summary: "Policy guidance module",
+          file: "prompt-modules/policy.json",
+        },
+      ],
+      prompt_mutation_sets: [
+        {
+          id: "gateway-load-rules",
+          summary: "Gateway load-rule mutations",
+          file: "prompt-modules/mutations.json",
+        },
+      ],
+    });
+
+    expect(manifest.prompt_modules?.[0]?.file).toBe("prompt-modules/policy.json");
+    expect(manifest.prompt_mutation_sets?.[0]?.id).toBe("gateway-load-rules");
+  });
 });

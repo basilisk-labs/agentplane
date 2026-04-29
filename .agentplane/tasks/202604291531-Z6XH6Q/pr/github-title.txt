@@ -1,0 +1,1 @@
+prompt-assembly/recipes: Extend recipe manifests with prompt module mutations (Z6XH6Q)
