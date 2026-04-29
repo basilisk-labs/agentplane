@@ -1,10 +1,11 @@
 ---
 id: "202604291531-7R6H51"
 title: "Implement prompt module resolver and compiler"
-status: "DOING"
+result_summary: "Merged via PR #565."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -29,11 +30,16 @@ verification:
   updated_at: "2026-04-29T17:51:50.761Z"
   updated_by: "CODER"
   note: "Verified: reconciled PR metadata after compiler commit."
-commit: null
+commit:
+  hash: "bd84c57e5d8f316a7999b5a7f1ee61aae9d1cf23"
+  message: "Merge PR #565: add prompt module compiler"
 comments:
   -
     author: "CODER"
     body: "Start: Implement the prompt module resolver and compiler on the dedicated branch_pr worktree after NXHDEH landed on main; scope is limited to runtime prompt-module compiler behavior and focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #565 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -54,9 +60,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: reconciled PR metadata after compiler commit."
+  -
+    type: "status"
+    at: "2026-04-29T17:55:16.415Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #565 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-29T17:51:50.787Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-29T17:55:16.421Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add the core resolver/compiler that evaluates PromptModule load conditions, dependencies, merge policies, replacement/extension bindings, conflict handling, and validator phases without changing init or recipe lifecycle surfaces yet."
 sections:
   Summary: |-
