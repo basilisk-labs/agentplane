@@ -22,12 +22,13 @@ Finish the interrupted DESIGN.md rewrite as a standalone documentation artifact:
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T20:15:17.593Z
+- Updated: 2026-04-29T20:18:09.632Z
 - Branch: task/202604292014-TVFA7S/visual-design-guide
-- Head: 21003b3c672f
+- Head: 187e45a82738
 
 ```text
-No changes detected.
+ DESIGN.md | 928 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 877 insertions(+), 51 deletions(-)
 ```
 
 </details>
