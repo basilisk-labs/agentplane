@@ -1,0 +1,107 @@
+---
+id: "202604292023-RSQTPD"
+title: "Compile framework prompt registry from fragments"
+status: "TODO"
+priority: "high"
+owner: "CODER"
+revision: 3
+origin:
+  system: "manual"
+depends_on:
+  - "202604292023-0BQZMA"
+  - "202604292023-W6G3GC"
+tags:
+  - "code"
+  - "prompt-assembly"
+verify:
+  - "agentplane doctor"
+  - "bun run framework:dev:bootstrap"
+  - "bun run typecheck"
+  - "bun test packages/agentplane/src/runtime/prompt-modules/registry.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts packages/agentplane/src/runner/context/base-prompts.test.ts"
+  - "git diff --check"
+plan_approval:
+  state: "approved"
+  updated_at: "2026-04-29T20:24:51.759Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit: null
+comments: []
+events: []
+doc_version: 3
+doc_updated_at: "2026-04-29T20:24:42.180Z"
+doc_updated_by: "ORCHESTRATOR"
+description: "Wire the framework prompt module registry, init/upgrade baseline seeding, and runner prompt bridge to emit prompt modules from parsed source fragments while preserving installed outputs and existing prompt ordering."
+sections:
+  Summary: |-
+    Compile framework prompt registry from fragments
+    
+    Wire the framework prompt module registry, init/upgrade baseline seeding, and runner prompt bridge to emit prompt modules from parsed source fragments while preserving installed outputs and existing prompt ordering.
+  Scope: |-
+    - In scope: Wire the framework prompt module registry, init/upgrade baseline seeding, and runner prompt bridge to emit prompt modules from parsed source fragments while preserving installed outputs and existing prompt ordering.
+    - Out of scope: unrelated refactors not required for "Compile framework prompt registry from fragments".
+  Plan: |-
+    1. Wire framework prompt registry loading to emit prompt modules from parsed source fragments instead of whole-file-only modules.
+    2. Preserve init/upgrade baseline outputs and runner prompt ordering while exposing fragment-level provenance.
+    3. Add tests for registry output, init apply behavior, and runner base prompt stability.
+    4. Run focused tests, typecheck, bootstrap, doctor, and diff hygiene.
+  Verify Steps: |-
+    1. Run `bun test packages/agentplane/src/runtime/prompt-modules/registry.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts packages/agentplane/src/runner/context/base-prompts.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.
+    2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.
+    3. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.
+    4. Run `bun run framework:dev:bootstrap`. Expected: it succeeds and confirms the requested outcome for this task.
+    5. Run `agentplane doctor`. Expected: it succeeds and confirms the requested outcome for this task.
+    6. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+    7. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+id_source: "generated"
+---
+## Summary
+
+Compile framework prompt registry from fragments
+
+Wire the framework prompt module registry, init/upgrade baseline seeding, and runner prompt bridge to emit prompt modules from parsed source fragments while preserving installed outputs and existing prompt ordering.
+
+## Scope
+
+- In scope: Wire the framework prompt module registry, init/upgrade baseline seeding, and runner prompt bridge to emit prompt modules from parsed source fragments while preserving installed outputs and existing prompt ordering.
+- Out of scope: unrelated refactors not required for "Compile framework prompt registry from fragments".
+
+## Plan
+
+1. Wire framework prompt registry loading to emit prompt modules from parsed source fragments instead of whole-file-only modules.
+2. Preserve init/upgrade baseline outputs and runner prompt ordering while exposing fragment-level provenance.
+3. Add tests for registry output, init apply behavior, and runner base prompt stability.
+4. Run focused tests, typecheck, bootstrap, doctor, and diff hygiene.
+
+## Verify Steps
+
+1. Run `bun test packages/agentplane/src/runtime/prompt-modules/registry.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts packages/agentplane/src/runner/context/base-prompts.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.
+2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.
+3. Run `git diff --check`. Expected: it succeeds and confirms the requested outcome for this task.
+4. Run `bun run framework:dev:bootstrap`. Expected: it succeeds and confirms the requested outcome for this task.
+5. Run `agentplane doctor`. Expected: it succeeds and confirms the requested outcome for this task.
+6. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+7. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings
