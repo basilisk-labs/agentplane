@@ -30,7 +30,7 @@ Add the core resolver/compiler that evaluates PromptModule load conditions, depe
 ### Current Status
 
 - State: ok
-- Note: Verified: prompt module resolver/compiler runtime and focused tests pass.
+- Note: Verified: reconciled PR metadata after compiler commit.
 
 ## Risks
 

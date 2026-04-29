@@ -4,7 +4,7 @@ title: "Implement prompt module resolver and compiler"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-29T17:51:02.516Z"
+  updated_at: "2026-04-29T17:51:50.761Z"
   updated_by: "CODER"
-  note: "Verified: prompt module resolver/compiler runtime and focused tests pass."
+  note: "Verified: reconciled PR metadata after compiler commit."
 commit: null
 comments:
   -
@@ -48,8 +48,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: prompt module resolver/compiler runtime and focused tests pass."
+  -
+    type: "verify"
+    at: "2026-04-29T17:51:50.761Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: reconciled PR metadata after compiler commit."
 doc_version: 3
-doc_updated_at: "2026-04-29T17:51:02.523Z"
+doc_updated_at: "2026-04-29T17:51:50.787Z"
 doc_updated_by: "CODER"
 description: "Add the core resolver/compiler that evaluates PromptModule load conditions, dependencies, merge policies, replacement/extension bindings, conflict handling, and validator phases without changing init or recipe lifecycle surfaces yet."
 sections:
@@ -88,6 +94,18 @@ sections:
     Details:
     
     Implemented compilePromptModuleGraph with load-condition filtering, structured mutations, bindings, duplicate merge policies, dependency diagnostics, and validator phase execution. Checks: bun test packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts => 9 pass; bun run typecheck => pass; git diff --check => pass; bun prettier --check and bun eslint on touched prompt-module files => pass; bun run framework:dev:bootstrap => pass; agentplane doctor => OK with info-only historical archive notes.
+    
+    ### 2026-04-29T17:51:50.761Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: reconciled PR metadata after compiler commit.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T17:51:02.523Z, excerpt_hash=sha256:c37ad2f17597f659684393548dfd43bcf8581bb874657f86a4315fa603fe61b7
+    
+    Details:
+    
+    No implementation files changed after the successful verification run. This verification refreshes branch_pr metadata so last_verified_sha points at the reachable compiler code commit; checks remain: prompt-module tests 9 pass, typecheck pass, diff check pass, touched-file prettier/eslint pass, framework bootstrap pass, doctor OK.
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -140,6 +158,18 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T17:41:02.477Z, excerpt_
 Details:
 
 Implemented compilePromptModuleGraph with load-condition filtering, structured mutations, bindings, duplicate merge policies, dependency diagnostics, and validator phase execution. Checks: bun test packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts => 9 pass; bun run typecheck => pass; git diff --check => pass; bun prettier --check and bun eslint on touched prompt-module files => pass; bun run framework:dev:bootstrap => pass; agentplane doctor => OK with info-only historical archive notes.
+
+### 2026-04-29T17:51:50.761Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: reconciled PR metadata after compiler commit.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T17:51:02.523Z, excerpt_hash=sha256:c37ad2f17597f659684393548dfd43bcf8581bb874657f86a4315fa603fe61b7
+
+Details:
+
+No implementation files changed after the successful verification run. This verification refreshes branch_pr metadata so last_verified_sha points at the reachable compiler code commit; checks remain: prompt-module tests 9 pass, typecheck pass, diff check pass, touched-file prettier/eslint pass, framework bootstrap pass, doctor OK.
 
 <!-- END VERIFICATION RESULTS -->
 

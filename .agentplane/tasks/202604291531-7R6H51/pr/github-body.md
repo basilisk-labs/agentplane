@@ -13,7 +13,7 @@ Add the core resolver/compiler that evaluates PromptModule load conditions, depe
 ## Verification
 
 - State: ok
-- Note: Verified: prompt module resolver/compiler runtime and focused tests pass.
+- Note: Verified: reconciled PR metadata after compiler commit.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
