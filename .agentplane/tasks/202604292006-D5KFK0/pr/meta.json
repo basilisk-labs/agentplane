@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-29T20:13:13Z",
   "base": "main",
   "branch": "task/202604292006-D5KFK0/incident-findings-hardening",
   "created_at": "2026-04-29T20:07:04.853Z",
-  "head_sha": "638426d5bbaaa3a77cde1c85f4339a4876ea334f",
+  "head_sha": "63443a9c6dd1c477c73561761b3c7cf22d9e08c0",
   "last_verified_at": "2026-04-29T20:10:00.228Z",
   "last_verified_sha": "830abed3d68adbc2fb8419f444aea822bd543630",
+  "merge_commit": "a049a9a3183133b9543eef2170619d4b3fb76950",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-29T20:13:13Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604292006-D5KFK0",
-  "updated_at": "2026-04-29T20:10:27.281Z",
+  "updated_at": "2026-04-29T20:13:13Z",
   "verify": {
     "status": "pass"
   }
