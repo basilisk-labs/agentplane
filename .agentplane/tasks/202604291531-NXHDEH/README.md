@@ -1,10 +1,11 @@
 ---
 id: "202604291531-NXHDEH"
 title: "Adopt runner prompt module bridge"
-status: "DOING"
+result_summary: "Merged via PR #563."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +30,16 @@ verification:
   updated_at: "2026-04-29T17:32:24.390Z"
   updated_by: "CODER"
   note: "Verified: reconciled PR metadata after rebased artifact refresh."
-commit: null
+commit:
+  hash: "e9a0aa78d3dc40a7b8a0f7e7296a5e9413bd5653"
+  message: "Merge PR #563: adopt runner prompt module bridge"
 comments:
   -
     author: "CODER"
     body: "Start: Land the compatible runner prompt module bridge as the first migration atom, preserving existing runner prompt bundle behavior while making module graph provenance testable."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #563 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -66,9 +72,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: reconciled PR metadata after rebased artifact refresh."
+  -
+    type: "status"
+    at: "2026-04-29T17:36:57.351Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #563 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-29T17:32:24.408Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-29T17:36:57.358Z"
+doc_updated_by: "INTEGRATOR"
 description: "Land the current runner prompt module bridge as the first migration step, preserving RunnerPromptBlock output while introducing stable PromptModule addresses and provenance for runner, gateway, project skill, overlay, and recipe prompt blocks."
 sections:
   Summary: |-
