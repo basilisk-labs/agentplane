@@ -1,10 +1,11 @@
 ---
 id: "202604292024-BGZ798"
 title: "Enable recipe patching for prompt fragments"
-status: "DOING"
+result_summary: "Merged via PR #595."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -30,11 +31,16 @@ verification:
   updated_at: "2026-04-29T21:45:43.179Z"
   updated_by: "CODER"
   note: "Verified: fragment_id selector implementation and recipe documentation passed transaction, doctor runtime, compiler, docs freshness, typecheck, diff check, framework bootstrap, and doctor checks."
-commit: null
+commit:
+  hash: "58cd588f7e563fdd3fb0adc1b4a9a7ad0962e78c"
+  message: "Merge pull request #595 from basilisk-labs/task/202604292024-BGZ798/recipe-fragment-patches"
 comments:
   -
     author: "CODER"
     body: "Start: add recipe mutation coverage and docs for addressing named prompt fragments across prompt surfaces."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #595 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -55,9 +61,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: fragment_id selector implementation and recipe documentation passed transaction, doctor runtime, compiler, docs freshness, typecheck, diff check, framework bootstrap, and doctor checks."
+  -
+    type: "status"
+    at: "2026-04-29T21:49:42.254Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #595 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-29T21:45:43.183Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-29T21:49:42.259Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend recipe prompt mutation fixtures, diagnostics, and developer docs so recipes can patch, replace, disable, or validate individual named prompt fragments across gateway, policy, runner, and agent profile surfaces."
 sections:
   Summary: |-

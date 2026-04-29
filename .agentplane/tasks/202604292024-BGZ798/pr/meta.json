@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-29T21:48:58Z",
   "base": "main",
   "branch": "task/202604292024-BGZ798/recipe-fragment-patches",
   "created_at": "2026-04-29T21:36:49.683Z",
-  "head_sha": "f7169164ee239a3bf1cbc57d53e5e9cdd2f8997c",
+  "head_sha": "5d7a657ac3ebbe505d1d4f4e96f5337fb3756958",
   "last_verified_at": "2026-04-29T21:45:43.179Z",
   "last_verified_sha": "f7169164ee239a3bf1cbc57d53e5e9cdd2f8997c",
+  "merge_commit": "58cd588f7e563fdd3fb0adc1b4a9a7ad0962e78c",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-29T21:48:58Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604292024-BGZ798",
-  "updated_at": "2026-04-29T21:45:43.215Z",
+  "updated_at": "2026-04-29T21:48:58Z",
   "verify": {
     "status": "pass"
   }
