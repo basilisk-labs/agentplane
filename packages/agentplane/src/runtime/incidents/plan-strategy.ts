@@ -28,11 +28,15 @@ import {
   parseIncidentRegistry,
 } from "./registry-strategy.js";
 
-function parseIncidentFindingBlocks(
-  findings: string,
-): (IncidentFindingCandidate & { shouldPromote: boolean })[] {
+function parseIncidentFindingBlocks(findings: string): (IncidentFindingCandidate & {
+  shouldPromote: boolean;
+  skipReason: IncidentSkippedFinding["reason"] | null;
+})[] {
   const lines = normalizeLines(findings);
-  const candidates: (IncidentFindingCandidate & { shouldPromote: boolean })[] = [];
+  const candidates: (IncidentFindingCandidate & {
+    shouldPromote: boolean;
+    skipReason: IncidentSkippedFinding["reason"] | null;
+  })[] = [];
   let currentFields: Record<string, string> | null = null;
   let currentLine = 0;
   let currentKey: string | null = null;
@@ -45,8 +49,16 @@ function parseIncidentFindingBlocks(
       parseBoolean(currentFields.incidentexternal) || fixability === "external";
     const incidentInternal =
       parseBoolean(currentFields.incidentinternal) || fixability === "repo-fixable";
-    const shouldPromote =
+    const hasPromotionSignal =
       promotion?.toLowerCase() === "incident-candidate" || incidentExternal || incidentInternal;
+    const failureLike = hasFailureSignal([
+      currentFields.observation,
+      currentFields.impact,
+      currentFields.resolution,
+      currentFields.incidentrule,
+      currentFields.incidentadvice,
+    ]);
+    const shouldPromote = hasPromotionSignal && failureLike;
     const observation = currentFields.observation?.trim() ?? "";
     if (!observation) {
       currentFields = null;
@@ -70,6 +82,7 @@ function parseIncidentFindingBlocks(
       shouldPromote,
       line: currentLine,
       rawFields: { ...currentFields },
+      skipReason: hasPromotionSignal ? "not_failure_like" : "not_marked_external_or_promotable",
     });
     currentFields = null;
     currentKey = null;
@@ -116,6 +129,21 @@ function parseIncidentFindingBlocks(
 
   flush();
   return candidates;
+}
+
+function hasFailureSignal(values: readonly (string | null | undefined)[]): boolean {
+  const text = values
+    .map((value) =>
+      String(value ?? "")
+        .trim()
+        .toLowerCase(),
+    )
+    .filter(Boolean)
+    .join(" ");
+  if (!text) return false;
+  return /\b(blocked|broke|broken|cannot|conflict|deadlock|deadlocked|drift|error|fail(?:ed|ing|ure)?|flaky|forced|hang(?:ing)?|incorrect|lost|manual retries|missing|mutat(?:e|ed|ion)|pending|pollution|rejected|retry|stalled|timeout|unexpected|violat(?:e|ed|ion)|wrong)\b/u.test(
+    text,
+  );
 }
 
 function nextIncidentId(entries: readonly IncidentRegistryEntry[], now: Date): string {
@@ -203,13 +231,13 @@ export function planIncidentCollection(opts: {
   const parsed = parseIncidentFindingBlocks(opts.findings);
   const candidates = parsed
     .filter((candidate) => candidate.shouldPromote)
-    .map(({ shouldPromote: _shouldPromote, ...candidate }) => candidate);
+    .map(({ shouldPromote: _shouldPromote, skipReason: _skipReason, ...candidate }) => candidate);
   const skipped: IncidentSkippedFinding[] = parsed
     .filter((candidate) => !candidate.shouldPromote)
-    .map(({ observation, line, rawFields }) => ({
+    .map(({ observation, line, rawFields, skipReason }) => ({
       observation,
       line,
-      reason: "not_marked_external_or_promotable",
+      reason: skipReason ?? "not_marked_external_or_promotable",
       rawFields,
     }));
   const issues: IncidentPromotionIssue[] = [];

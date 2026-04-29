@@ -150,6 +150,10 @@ function trackedChangesShort(gitRoot: string): string {
   return readGitText(gitRoot, ["status", "--short", "--untracked-files=no"]);
 }
 
+function readLocalGitConfigBool(gitRoot: string, name: string): string {
+  return readGitText(gitRoot, ["config", "--local", "--get", "--bool", name]);
+}
+
 function fail(message: string, details: string[] = []): never {
   throw new HookFailure(message, details);
 }
@@ -158,6 +162,14 @@ function failIfTrackedChanges(gitRoot: string, message: string): void {
   const changes = trackedChangesShort(gitRoot);
   if (!changes) return;
   fail(message, [changes]);
+}
+
+function failIfPollutedReleaseGitConfig(gitRoot: string): void {
+  if (readLocalGitConfigBool(gitRoot, "core.bare") !== "true") return;
+  fail("pre-push blocked: release checks cannot run because local git config has core.bare=true.", [
+    "This indicates repository config pollution, not a release payload failure.",
+    "Restore the checkout git config before retrying release verification.",
+  ]);
 }
 
 function gitRefExists(gitRoot: string, ref: string): boolean {
@@ -251,6 +263,7 @@ function runInternalPrePushHook(gitRoot: string, stdin: string): number {
 
     const mode = isReleasePush ? "release" : "standard";
     process.stdout.write(`Running pre-push checks in ${mode} mode.\n`);
+    if (isReleasePush) failIfPollutedReleaseGitConfig(gitRoot);
     const ciScript = envFull ? "ci:local:full" : "ci:local:fast";
     const scripts = readPackageScripts(gitRoot);
     const changedFiles = readChangedFilesForRange(
