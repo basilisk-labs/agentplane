@@ -23,12 +23,14 @@ Switch .agentplane/agents profile emission and related upgrade baseline handling
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T18:25:50.887Z
+- Updated: 2026-04-29T18:30:40.439Z
 - Branch: task/202604291531-Y7XR4M/agent-profile-modules
-- Head: f95121f9a2b2
+- Head: 0ae2e233bf33
 
 ```text
-No changes detected.
+ .../cli/run-cli/commands/init/steps/apply.test.ts  | 12 ++++++-
+ .../src/cli/run-cli/commands/init/write-agents.ts  | 40 ++++++++++++++++++----
+ 2 files changed, 45 insertions(+), 7 deletions(-)
 ```
 
 </details>
