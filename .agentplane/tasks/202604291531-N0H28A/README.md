@@ -1,10 +1,10 @@
 ---
 id: "202604291531-N0H28A"
 title: "Apply recipe prompt mutations to compiled graph"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -26,21 +26,37 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-29T19:13:03.366Z"
+  updated_by: "CODER"
+  note: "Active recipe prompt modules and mutation sets now compile into generated prompt-graph.json during recipe refresh, with compile failures blocking transactional publication."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: wire active recipe prompt module assets and mutation sets into the project prompt graph refresh path while preserving existing overlay transaction behavior."
+events:
+  -
+    type: "status"
+    at: "2026-04-29T19:03:49.445Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: wire active recipe prompt module assets and mutation sets into the project prompt graph refresh path while preserving existing overlay transaction behavior."
+  -
+    type: "verify"
+    at: "2026-04-29T19:13:03.366Z"
+    author: "CODER"
+    state: "ok"
+    note: "Active recipe prompt modules and mutation sets now compile into generated prompt-graph.json during recipe refresh, with compile failures blocking transactional publication."
 doc_version: 3
-doc_updated_at: "2026-04-29T15:31:53.377Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-04-29T19:13:03.380Z"
+doc_updated_by: "CODER"
 description: "Wire installed and active recipe prompt module mutations into the compiled prompt graph refresh path so recipe enable/disable/update can affect generated prompt surfaces transactionally."
 sections:
   Summary: |-
     Apply recipe prompt mutations to compiled graph
-    
+
     Wire installed and active recipe prompt module mutations into the compiled prompt graph refresh path so recipe enable/disable/update can affect generated prompt surfaces transactionally.
   Scope: |-
     - In scope: apply active recipe prompt module mutations during project overlay/prompt graph refresh.
@@ -63,11 +79,26 @@ sections:
     7. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-29T19:13:03.366Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Active recipe prompt modules and mutation sets now compile into generated prompt-graph.json during recipe refresh, with compile failures blocking transactional publication.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T19:03:49.445Z, excerpt_hash=sha256:fdd7c93155ee209fa3ac2570f497bb4f3c4c3a0e44055ec825a0bff19d8294b0
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert mutation application wiring while keeping manifest parsing if standalone.
     - Re-run recipe transaction and overlay tests to confirm previous overlay-only behavior.
-  Findings: "No findings yet."
+  Findings: |-
+    No findings yet.
+
+    - Observation: Checks passed: agentplane doctor; bun run framework:dev:bootstrap; bun run typecheck; bun test packages/agentplane/src/commands/recipes/impl/overlay-project.test.ts packages/agentplane/src/commands/recipes.transaction.test.ts packages/agentplane/src/commands/recipes.catalog-install.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts; git diff --check; extra bun test packages/agentplane/src/commands/recipes/impl/project-installed-recipes.test.ts; targeted eslint on touched files.
+      Impact: Recipe enable/disable/update now has a generated prompt graph artifact that reflects active recipe prompt mutations and preserves prior artifacts when mutation compilation fails.
+      Resolution: Runner/runtime consumption and drift diagnostics remain scoped to the following diagnostic task.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -104,6 +135,14 @@ Wire installed and active recipe prompt module mutations into the compiled promp
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-29T19:13:03.366Z — VERIFY — ok
+
+By: CODER
+
+Note: Active recipe prompt modules and mutation sets now compile into generated prompt-graph.json during recipe refresh, with compile failures blocking transactional publication.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T19:03:49.445Z, excerpt_hash=sha256:fdd7c93155ee209fa3ac2570f497bb4f3c4c3a0e44055ec825a0bff19d8294b0
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -114,3 +153,9 @@ Wire installed and active recipe prompt module mutations into the compiled promp
 ## Findings
 
 No findings yet.
+
+- Observation: Checks passed: agentplane doctor; bun run framework:dev:bootstrap; bun run typecheck; bun test packages/agentplane/src/commands/recipes/impl/overlay-project.test.ts packages/agentplane/src/commands/recipes.transaction.test.ts packages/agentplane/src/commands/recipes.catalog-install.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts; git diff --check; extra bun test packages/agentplane/src/commands/recipes/impl/project-installed-recipes.test.ts; targeted eslint on touched files.
+  Impact: Recipe enable/disable/update now has a generated prompt graph artifact that reflects active recipe prompt mutations and preserves prior artifacts when mutation compilation fails.
+  Resolution: Runner/runtime consumption and drift diagnostics remain scoped to the following diagnostic task.
+  Promotion: incident-candidate
+  Fixability: external
