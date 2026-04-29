@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-29T21:16:39Z",
   "base": "main",
   "branch": "task/202604292023-W6G3GC/markdown-prompt-fragments",
   "created_at": "2026-04-29T21:04:10.950Z",
-  "head_sha": "f96bdd28500e3ed2389e9e84aedf813b8499b05b",
+  "head_sha": "ea48f14cbe0d97eeafb10aee2ed37b44fff64d2f",
   "last_verified_at": "2026-04-29T21:11:24.464Z",
   "last_verified_sha": "dafd59fb93483ea17f115bab1842717c04174ba7",
+  "merge_commit": "f0089ce8a71eb219d4a6e103aafe1fe7122d8d61",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-29T21:16:39Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604292023-W6G3GC",
-  "updated_at": "2026-04-29T21:13:10.886Z",
+  "updated_at": "2026-04-29T21:16:39Z",
   "verify": {
     "status": "pass"
   }
