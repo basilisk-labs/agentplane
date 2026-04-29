@@ -24,9 +24,9 @@ Land the current runner prompt module bridge as the first migration step, preser
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T15:38:46.471Z
+- Updated: 2026-04-29T17:30:04.681Z
 - Branch: task/202604291531-NXHDEH/adopt-runner-prompt-bridge
-- Head: b7d0abf29898
+- Head: 27100fdfb1f8
 
 ```text
  .agentplane/tasks/202604291531-1GHEJZ/README.md    | 115 +++++++++++
