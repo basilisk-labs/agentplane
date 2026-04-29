@@ -1,10 +1,11 @@
 ---
 id: "202604291532-BV5NQT"
 title: "Document and harden modular prompt migration"
-status: "DOING"
+result_summary: "Merged via PR #579."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -30,11 +31,16 @@ verification:
   updated_at: "2026-04-29T19:41:02.530Z"
   updated_by: "CODER"
   note: "Modular prompt migration docs and regression hardening are complete; declared verification passed."
-commit: null
+commit:
+  hash: "3b84434879a046b1da412292ef450a5564bfabac"
+  message: "prompt-assembly/testing: Document and harden modular prompt migration (BV5NQT) (#579)"
 comments:
   -
     author: "CODER"
     body: "Start: document modular prompt migration and add regression hardening for migrated prompt assembly surfaces."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #579 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Modular prompt migration docs and regression hardening are complete; declared verification passed."
+  -
+    type: "status"
+    at: "2026-04-29T19:44:45.004Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #579 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-29T19:41:02.543Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-29T19:44:45.010Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add migration documentation, fixtures, and regression coverage for modular prompt assembly across init, upgrade, runner prompts, policy modules, agent profiles, and recipe-owned mutations."
 sections:
   Summary: |-
@@ -157,13 +170,9 @@ Add migration documentation, fixtures, and regression coverage for modular promp
 
 <!-- BEGIN VERIFICATION RESULTS -->
 ### 2026-04-29T19:41:02.530Z — VERIFY — ok
-
 By: CODER
-
 Note: Modular prompt migration docs and regression hardening are complete; declared verification passed.
-
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T19:34:44.106Z, excerpt_hash=sha256:a1c55a35cc102849fc24f7a3161b53a50e2318117b818dcd9655e8f6ca83025a
-
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -174,9 +183,7 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T19:34:44.106Z, excerpt_
 ## Findings
 
 No residual findings.
-
 Verification evidence:
-
 - Command: bun test packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts packages/agentplane/src/commands/recipes.transaction.test.ts packages/agentplane/src/commands/doctor.command.runtime.test.ts
   Result: pass
   Evidence: 37 pass, 0 fail.
