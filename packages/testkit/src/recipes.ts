@@ -44,6 +44,7 @@ const originalRecipesKeys = process.env.AGENTPLANE_RECIPES_INDEX_PUBLIC_KEYS;
 let tempHome: string | null = null;
 const testKeyId = "test-key";
 let testPrivateKey: KeyObject | null = null;
+const viWithGlobalStubReset = vi as typeof vi & { unstubAllGlobals?: () => void };
 
 export { captureStdIO, createRecipeArchive, mkGitRepoRoot, writeDefaultConfig } from "./cli.js";
 
@@ -58,7 +59,7 @@ export function installRecipesCommandHarness(): void {
   });
 
   afterEach(async () => {
-    vi.unstubAllGlobals();
+    viWithGlobalStubReset.unstubAllGlobals?.();
     await resetRecipeArchiveCache();
     if (tempHome) {
       await rm(tempHome, { recursive: true, force: true });

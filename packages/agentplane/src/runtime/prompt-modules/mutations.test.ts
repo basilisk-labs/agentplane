@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
+  validatePromptModuleMutationSet,
   type PromptModuleMutation,
   type PromptModuleMutationSet,
 } from "./index.js";
@@ -136,5 +137,21 @@ describe("prompt module mutation contracts", () => {
       "disable_module",
       "add_validator",
     ]);
+  });
+
+  it("validates structured mutation set assets and rejects raw mutation operations", () => {
+    expect(() =>
+      validatePromptModuleMutationSet({
+        schema_version: 1,
+        recipe_id: "roadmap",
+        mutations: [
+          {
+            id: "roadmap.raw",
+            op: "raw_patch",
+            source: recipeSource,
+          },
+        ],
+      }),
+    ).toThrow("prompt module mutation set.mutations[0].op");
   });
 });

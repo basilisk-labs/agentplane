@@ -151,11 +151,20 @@ function validateCompiledRecipeAssetEntry(raw: unknown, index: number): void {
   const entry = requireRecord(raw, `recipe asset registry.entries[${index}]`);
   requireString(entry.id, `recipe asset registry.entries[${index}].id`);
   const kind = requireString(entry.kind, `recipe asset registry.entries[${index}].kind`);
-  if (!["agent", "skill", "tool", "scenario", "template"].includes(kind)) {
+  const knownKinds = [
+    "agent",
+    "skill",
+    "tool",
+    "scenario",
+    "template",
+    "prompt_module",
+    "prompt_mutation_set",
+  ];
+  if (!knownKinds.includes(kind)) {
     throw new Error(
       invalidFieldMessage(
         `recipe asset registry.entries[${index}].kind`,
-        '"agent" | "skill" | "tool" | "scenario" | "template"',
+        '"agent" | "skill" | "tool" | "scenario" | "template" | "prompt_module" | "prompt_mutation_set"',
       ),
     );
   }

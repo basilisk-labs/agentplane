@@ -106,6 +106,18 @@ export type OverlayPromptFragment = {
   when?: OverlayWhen;
 };
 
+export type RecipePromptModuleDefinition = {
+  id: string;
+  summary: string;
+  file: string;
+};
+
+export type RecipePromptMutationSetDefinition = {
+  id: string;
+  summary: string;
+  file: string;
+};
+
 export type OverlayValidator =
   | {
       id: string;
@@ -152,6 +164,8 @@ export type ProjectOverlayManifestV2 = {
   agents?: RecipeAgentDefinition[];
   tools?: RecipeToolDefinition[];
   scenarios?: RecipeScenarioDescriptor[];
+  prompt_modules?: RecipePromptModuleDefinition[];
+  prompt_mutation_sets?: RecipePromptMutationSetDefinition[];
 };
 
 export type RecipeManifest = ProjectOverlayManifestV2;
