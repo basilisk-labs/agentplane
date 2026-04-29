@@ -120,6 +120,8 @@ export type PromptModuleSourceKind =
 export type PromptModuleProvenance = {
   source_kind: PromptModuleSourceKind;
   source_ref: string;
+  fragment_id?: string;
+  fragment_index?: number;
   recipe_id?: string;
   recipe_version?: string;
   generated_by?: string;

@@ -111,6 +111,7 @@ describe("collectRunnerBasePrompts", () => {
       "Treat `bundle.json` as the authoritative input contract.",
     );
     expect(prompts[0]?.content).toContain("Do not run repository startup commands");
+    expect(prompts[0]?.content).not.toContain("ap:fragment");
     expect(prompts[0]?.resolution?.winner.layer).toBe("builtin");
     expect(prompts[1]?.content).toBe("# Repo Policy\n\nFollow the workspace contract.\n");
     expect(prompts[1]?.resolution?.winner.layer).toBe("harness");

@@ -1,10 +1,10 @@
 ---
 id: "202604292023-RSQTPD"
 title: "Compile framework prompt registry from fragments"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -25,16 +25,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-29T21:29:45.891Z"
+  updated_by: "CODER"
+  note: "Verified fragment-derived prompt registry preserves installed outputs."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: compile framework prompt modules from parsed source fragments while preserving installed gateway, policy, agent profile, and runner outputs."
+events:
+  -
+    type: "status"
+    at: "2026-04-29T21:20:40.713Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: compile framework prompt modules from parsed source fragments while preserving installed gateway, policy, agent profile, and runner outputs."
+  -
+    type: "verify"
+    at: "2026-04-29T21:29:45.891Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified fragment-derived prompt registry preserves installed outputs."
 doc_version: 3
-doc_updated_at: "2026-04-29T20:24:42.180Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-04-29T21:29:45.902Z"
+doc_updated_by: "CODER"
 description: "Wire the framework prompt module registry, init/upgrade baseline seeding, and runner prompt bridge to emit prompt modules from parsed source fragments while preserving installed outputs and existing prompt ordering."
 sections:
   Summary: |-
@@ -59,6 +75,23 @@ sections:
     7. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-29T21:29:45.891Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified fragment-derived prompt registry preserves installed outputs.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T21:20:40.713Z, excerpt_hash=sha256:93f1a2081b2b5f8d1132f8462c7e685736cd7f8170236a2fb520337907ad3eaf
+    
+    Details:
+    
+    Command: agentplane task verify-show 202604292023-RSQTPD | Result: pass | Evidence: verify contract read. Scope: declared task checks.
+    Command: bun test packages/agentplane/src/runtime/prompt-modules/registry.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts packages/agentplane/src/runner/context/base-prompts.test.ts | Result: pass | Evidence: 18 pass, 0 fail, 1 snapshot, 118 expect calls. Scope: registry fragments, init installed outputs, runner base prompts.
+    Command: bun run typecheck | Result: pass | Evidence: tsc -b exited 0. Scope: TypeScript project references.
+    Command: git diff --check | Result: pass | Evidence: no whitespace errors. Scope: changed files.
+    Command: bun run framework:dev:bootstrap | Result: pass | Evidence: framework dev runtime is ready. Scope: build/runtime bootstrap.
+    Command: agentplane doctor | Result: pass | Evidence: OK, errors=0 warnings=0 info=9. Scope: repo runtime health.
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -97,6 +130,23 @@ Wire the framework prompt module registry, init/upgrade baseline seeding, and ru
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-29T21:29:45.891Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified fragment-derived prompt registry preserves installed outputs.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T21:20:40.713Z, excerpt_hash=sha256:93f1a2081b2b5f8d1132f8462c7e685736cd7f8170236a2fb520337907ad3eaf
+
+Details:
+
+Command: agentplane task verify-show 202604292023-RSQTPD | Result: pass | Evidence: verify contract read. Scope: declared task checks.
+Command: bun test packages/agentplane/src/runtime/prompt-modules/registry.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts packages/agentplane/src/runner/context/base-prompts.test.ts | Result: pass | Evidence: 18 pass, 0 fail, 1 snapshot, 118 expect calls. Scope: registry fragments, init installed outputs, runner base prompts.
+Command: bun run typecheck | Result: pass | Evidence: tsc -b exited 0. Scope: TypeScript project references.
+Command: git diff --check | Result: pass | Evidence: no whitespace errors. Scope: changed files.
+Command: bun run framework:dev:bootstrap | Result: pass | Evidence: framework dev runtime is ready. Scope: build/runtime bootstrap.
+Command: agentplane doctor | Result: pass | Evidence: OK, errors=0 warnings=0 info=9. Scope: repo runtime health.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

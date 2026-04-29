@@ -13,6 +13,7 @@ import {
   type PromptJsonTextFragment,
   renderPromptMarkdownFragments,
   type PromptMarkdownFragment,
+  type PromptMarkdownSegment,
 } from "../runtime/prompt-fragments/index.js";
 
 const AGENTS_TEMPLATE_PATH = resolveAgentplaneAssetPath("AGENTS.md");
@@ -35,16 +36,18 @@ export type MarkdownPromptTemplate = {
   contents: string;
   sourceContents: string;
   fragments: PromptMarkdownFragment[];
+  segments: PromptMarkdownSegment[];
 };
 type PolicyTemplate = {
   relativePath: string;
   contents: string;
   sourceContents: string;
   fragments: PromptMarkdownFragment[];
+  segments: PromptMarkdownSegment[];
 };
 
 let agentTemplatesCache: Promise<AgentTemplate[]> | null = null;
-const policyGatewayTemplateCache = new Map<PolicyGatewayFlavor, Promise<string>>();
+const policyGatewayTemplateCache = new Map<PolicyGatewayFlavor, Promise<MarkdownPromptTemplate>>();
 
 function ensureTrailingNewline(text: string): string {
   return text.endsWith("\n") ? text : `${text}\n`;
@@ -69,6 +72,7 @@ export function renderMarkdownPromptTemplate(
     contents: ensureTrailingNewline(renderPromptMarkdownFragments(parsed).trimEnd()),
     sourceContents: source,
     fragments: parsed.fragments,
+    segments: parsed.segments,
   };
 }
 
@@ -237,12 +241,14 @@ export async function loadPolicyTemplates(): Promise<PolicyTemplate[]> {
           contents: ensureTrailingNewline(contents.trimEnd()),
           sourceContents: ensureTrailingNewline(contents.trimEnd()),
           fragments: [],
+          segments: [],
         };
     templates.push({
       relativePath,
       contents: rendered.contents,
       sourceContents: rendered.sourceContents,
       fragments: rendered.fragments,
+      segments: rendered.segments,
     });
   }
 
@@ -260,19 +266,27 @@ export function filterAgentsByWorkflow(template: string, workflow: WorkflowMode)
   return ensureTrailingNewline(filtered.join("\n").trimEnd());
 }
 
-async function readPolicyGatewayTemplate(flavor: PolicyGatewayFlavor): Promise<string> {
+async function readPolicyGatewayTemplate(
+  flavor: PolicyGatewayFlavor,
+): Promise<MarkdownPromptTemplate> {
   const text = await readFile(AGENTS_TEMPLATE_PATH, "utf8");
   const rendered = renderPolicyGatewayTemplateText(text, policyGatewayFileName(flavor));
   return renderMarkdownPromptTemplate(rendered, {
     source_ref: "packages/agentplane/assets/AGENTS.md",
     fallback_id: `gateway.${flavor}.file.template`,
-  }).contents;
+  });
 }
 
-export async function loadPolicyGatewayTemplate(flavor: PolicyGatewayFlavor): Promise<string> {
+export async function loadPolicyGatewayMarkdownTemplate(
+  flavor: PolicyGatewayFlavor,
+): Promise<MarkdownPromptTemplate> {
   const cached = policyGatewayTemplateCache.get(flavor);
   if (cached) return cached;
   const template = readPolicyGatewayTemplate(flavor);
   policyGatewayTemplateCache.set(flavor, template);
   return template;
+}
+
+export async function loadPolicyGatewayTemplate(flavor: PolicyGatewayFlavor): Promise<string> {
+  return (await loadPolicyGatewayMarkdownTemplate(flavor)).contents;
 }

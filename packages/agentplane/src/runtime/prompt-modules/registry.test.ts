@@ -10,9 +10,11 @@ import {
 } from "./index.js";
 import {
   loadAgentTemplates,
+  loadPolicyGatewayTemplate,
   loadPolicyTemplates,
   renderMarkdownPromptTemplate,
 } from "../../agents/agents-template.js";
+import type { PromptModule } from "./index.js";
 import type { ResolvedExecutionProfileRuntime } from "../execution-profile/index.js";
 
 function sha256(text: string): string {
@@ -21,6 +23,18 @@ function sha256(text: string): string {
 
 function moduleAddressValues(modules: Awaited<ReturnType<typeof loadFrameworkPromptModules>>) {
   return modules.map((module) => module.address.value);
+}
+
+function assembleStringModules(modules: PromptModule[]): string {
+  return modules
+    .toSorted((left, right) => {
+      const orderDiff =
+        (left.provenance.fragment_index ?? 0) - (right.provenance.fragment_index ?? 0);
+      if (orderDiff !== 0) return orderDiff;
+      return left.address.value.localeCompare(right.address.value);
+    })
+    .map((module) => (typeof module.content === "string" ? module.content : ""))
+    .join("");
 }
 
 function sampleExecutionProfile(): ResolvedExecutionProfileRuntime {
@@ -61,24 +75,41 @@ describe("framework prompt module registry", () => {
     const agentTemplates = await loadAgentTemplates();
     const policyTemplates = await loadPolicyTemplates();
 
-    expect(addresses).toContain("framework/gateway/AGENTS.md/body/template");
-    expect(addresses).toContain("framework/gateway/CLAUDE.md/body/template");
-    expect(addresses).toContain("framework/runner/runner.bundle/body/framework_runner");
-    expect(modules.filter((module) => module.address.surface === "agent_profile")).toHaveLength(
-      agentTemplates.length,
+    expect(addresses).toContain(
+      "framework/gateway/AGENTS.md/purpose/gateway.agents.purpose.purpose",
     );
-    expect(modules.filter((module) => module.address.surface === "policy")).toHaveLength(
+    expect(addresses).toContain(
+      "framework/gateway/CLAUDE.md/purpose/gateway.agents.purpose.purpose",
+    );
+    expect(addresses).toContain(
+      "framework/runner/runner.bundle/body/runner.bundle.body.framework.runner",
+    );
+    expect(addresses).toContain(
+      "framework/agent_profile/.agentplane~agents/workflow/agent.coder.workflow.keep-diffs-minimal-task-scoped-easy-review",
+    );
+    expect(addresses).not.toContain("framework/gateway/AGENTS.md/body/template");
+    expect(
+      modules.filter((module) => module.address.surface === "agent_profile").length,
+    ).toBeGreaterThan(agentTemplates.length);
+    expect(modules.filter((module) => module.address.surface === "policy").length).toBeGreaterThan(
       policyTemplates.length,
     );
     expect(new Set(addresses).size).toBe(addresses.length);
     expect(modules.every((module) => module.owner.kind === "framework")).toBe(true);
     expect(modules.every((module) => module.provenance.content_hash)).toBe(true);
+    expect(
+      modules.some(
+        (module) => module.provenance.fragment_id === "gateway.agents.load_rules.load.rules",
+      ),
+    ).toBe(true);
   });
 
   it("preserves source parity for bundled runner and agent profile content", async () => {
     const modules = await loadFrameworkPromptModules();
     const runner = modules.find(
-      (module) => module.address.value === "framework/runner/runner.bundle/body/framework_runner",
+      (module) =>
+        module.address.value ===
+        "framework/runner/runner.bundle/body/runner.bundle.body.framework.runner",
     );
     const coder = modules.find(
       (module) =>
@@ -101,6 +132,7 @@ describe("framework prompt module registry", () => {
 
     expect(runner?.content).toBe(runnerAsset);
     expect(runner?.provenance.content_hash).toBe(sha256(runnerAsset));
+    expect(runner?.provenance.fragment_id).toBe("runner.bundle.body.framework.runner");
     expect(coder?.content).toBe(coderAsset);
     expect(coder?.content).not.toBe(`${coderAssetRaw.trimEnd()}\n`);
     expect(coder?.provenance.source_ref).toBe("packages/agentplane/assets/agents/CODER.json");
@@ -108,6 +140,7 @@ describe("framework prompt module registry", () => {
 
   it("uses load conditions for gateway flavor and workflow-specific policy modules", async () => {
     const registry = await loadFrameworkPromptModuleRegistry();
+    const policyTemplates = await loadPolicyTemplates();
     const compiled = compilePromptModuleGraph({
       graph: registry,
       context: {
@@ -118,10 +151,40 @@ describe("framework prompt module registry", () => {
     const addresses = compiled.nodes.map((node) => node.module.address.value);
 
     expect(compiled.ok).toBe(true);
-    expect(addresses).toContain("framework/gateway/AGENTS.md/body/template");
-    expect(addresses).not.toContain("framework/gateway/CLAUDE.md/body/template");
-    expect(addresses).toContain("framework/policy/.agentplane~policy/body/workflow.branch_pr.md");
-    expect(addresses).not.toContain("framework/policy/.agentplane~policy/body/workflow.direct.md");
+    expect(addresses).toContain(
+      "framework/gateway/AGENTS.md/load_rules/gateway.agents.load_rules.load.rules",
+    );
+    expect(addresses).not.toContain(
+      "framework/gateway/CLAUDE.md/load_rules/gateway.agents.load_rules.load.rules",
+    );
+    expect(addresses).toContain(
+      "framework/policy/.agentplane~policy/workflow/policy.workflow.branch_pr.workflow.required.sequence",
+    );
+    expect(addresses).not.toContain(
+      "framework/policy/.agentplane~policy/workflow/policy.workflow.direct.workflow.required.sequence",
+    );
+
+    const compiledModules = compiled.nodes.map((node) => node.module);
+    const gatewayText = assembleStringModules(
+      compiledModules.filter(
+        (module) => module.address.surface === "gateway" && module.address.target === "AGENTS.md",
+      ),
+    );
+    expect(gatewayText).toBe(await loadPolicyGatewayTemplate("codex"));
+
+    const branchPolicyText = assembleStringModules(
+      compiledModules.filter(
+        (module) =>
+          module.address.surface === "policy" &&
+          module.provenance.source_ref.startsWith(
+            "packages/agentplane/assets/policy/workflow.branch_pr.md#",
+          ),
+      ),
+    );
+    expect(branchPolicyText).toBe(
+      policyTemplates.find((template) => template.relativePath === "workflow.branch_pr.md")
+        ?.contents,
+    );
   });
 
   it("can include runtime execution profile prompt content without changing the default registry", async () => {

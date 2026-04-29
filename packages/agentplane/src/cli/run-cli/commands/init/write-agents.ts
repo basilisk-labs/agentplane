@@ -61,8 +61,28 @@ function stringPromptModuleContent(module: PromptModule): string {
   return `${JSON.stringify(module.content, null, 2)}\n`;
 }
 
+function sourceRefPath(module: PromptModule): string {
+  return module.provenance.source_ref.replaceAll("\\", "/").split("#")[0] ?? "";
+}
+
+function moduleFragmentOrder(module: PromptModule): number {
+  return module.provenance.fragment_index ?? 0;
+}
+
+function sortPromptModulesBySourceOrder(modules: PromptModule[]): PromptModule[] {
+  return modules.toSorted((left, right) => {
+    const orderDiff = moduleFragmentOrder(left) - moduleFragmentOrder(right);
+    if (orderDiff !== 0) return orderDiff;
+    return left.address.value.localeCompare(right.address.value);
+  });
+}
+
+function assembleStringPromptModules(modules: PromptModule[]): string {
+  return sortPromptModulesBySourceOrder(modules).map(stringPromptModuleContent).join("");
+}
+
 function agentFileNameFromModule(module: PromptModule): string {
-  const sourceRef = module.provenance.source_ref.replaceAll("\\", "/");
+  const sourceRef = sourceRefPath(module);
   if (!sourceRef.startsWith(AGENT_ASSET_SOURCE_REF_PREFIX)) {
     throw new Error(
       `Cannot derive init agent profile path from prompt module ${module.address.value}: ${module.provenance.source_ref}`,
@@ -72,7 +92,7 @@ function agentFileNameFromModule(module: PromptModule): string {
 }
 
 function policyRelativePathFromModule(module: PromptModule): string {
-  const sourceRef = module.provenance.source_ref.replaceAll("\\", "/");
+  const sourceRef = sourceRefPath(module);
   if (!sourceRef.startsWith(POLICY_ASSET_SOURCE_REF_PREFIX)) {
     throw new Error(
       `Cannot derive init policy path from prompt module ${module.address.value}: ${module.provenance.source_ref}`,
@@ -100,18 +120,17 @@ async function compileInitPromptAssets(opts: {
   const gatewayModules = gatewayCompiled.nodes
     .map((node) => node.module)
     .filter(
-      (module) =>
-        module.address.surface === "gateway" &&
-        module.address.target === gatewayFileName &&
-        module.address.slot === "body",
+      (module) => module.address.surface === "gateway" && module.address.target === gatewayFileName,
     );
-  if (gatewayModules.length !== 1) {
+  if (gatewayModules.length === 0) {
     throw new Error(
-      `Expected exactly one compiled init gateway module for ${gatewayFileName}; got ${gatewayModules.length}.`,
+      `Expected at least one compiled init gateway module for ${gatewayFileName}; got ${gatewayModules.length}.`,
     );
   }
-  const gatewayModule = gatewayModules[0];
-  const gateway = filterAgentsByWorkflow(stringPromptModuleContent(gatewayModule), opts.workflow);
+  const gateway = filterAgentsByWorkflow(
+    assembleStringPromptModules(gatewayModules),
+    opts.workflow,
+  );
   const agentTemplates = gatewayCompiled.nodes
     .map((node) => node.module)
     .filter(
@@ -139,10 +158,18 @@ async function compileInitPromptAssets(opts: {
     });
     assertPromptCompileOk(policyCompiled, `init policy (${workflow})`);
 
+    const policyModulesByPath = new Map<string, PromptModule[]>();
     for (const module of policyCompiled.nodes.map((node) => node.module)) {
       if (module.address.surface !== "policy") continue;
       const relativePath = policyRelativePathFromModule(module);
-      const rawContents = stringPromptModuleContent(module);
+      policyModulesByPath.set(relativePath, [
+        ...(policyModulesByPath.get(relativePath) ?? []),
+        module,
+      ]);
+    }
+
+    for (const [relativePath, modules] of policyModulesByPath) {
+      const rawContents = assembleStringPromptModules(modules);
       const contents = relativePath.endsWith(".md")
         ? renderPolicyGatewayTemplateText(rawContents, gatewayFileName)
         : rawContents;
