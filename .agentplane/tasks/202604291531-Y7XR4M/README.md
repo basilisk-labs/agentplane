@@ -1,10 +1,11 @@
 ---
 id: "202604291531-Y7XR4M"
 title: "Compile agent profiles and upgrade baselines from modules"
-status: "DOING"
+result_summary: "Merged via PR #571."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -31,11 +32,16 @@ verification:
   updated_at: "2026-04-29T18:31:02.066Z"
   updated_by: "CODER"
   note: "Verified: reconciled PR metadata after agent profile module compilation commit 0b096e4759d1. Prior checks remain current for the committed diff: focused tests, typecheck, git diff --check, framework bootstrap, doctor, check-routing, and agentplane agents passed."
-commit: null
+commit:
+  hash: "e31cf40c244146a405762c92502eb34f1b898803"
+  message: "Merge PR #571: compile init agent profile modules"
 comments:
   -
     author: "CODER"
     body: "Start: Route init agent profile emission and related upgrade baseline seeding through compiled framework prompt modules while preserving existing agent JSON output and role behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #571 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -56,9 +62,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: reconciled PR metadata after agent profile module compilation commit 0b096e4759d1. Prior checks remain current for the committed diff: focused tests, typecheck, git diff --check, framework bootstrap, doctor, check-routing, and agentplane agents passed."
+  -
+    type: "status"
+    at: "2026-04-29T18:34:28.247Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #571 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-29T18:31:02.118Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-29T18:34:28.252Z"
+doc_updated_by: "INTEGRATOR"
 description: "Switch .agentplane/agents profile emission and related upgrade baseline handling to the prompt module compiler, preserving existing JSON profile output and role-specific behavior."
 sections:
   Summary: |-
