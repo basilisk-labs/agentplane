@@ -31,7 +31,7 @@ Land the current runner prompt module bridge as the first migration step, preser
 ### Current Status
 
 - State: ok
-- Note: Runner prompt module bridge adopted and verification passed on task branch.
+- Note: Post-commit verification reconciled for current HEAD after adding migration task graph docs.
 
 ## Risks
 
@@ -51,9 +51,9 @@ Land the current runner prompt module bridge as the first migration step, preser
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T15:37:29.318Z
+- Updated: 2026-04-29T15:38:46.471Z
 - Branch: task/202604291531-NXHDEH/adopt-runner-prompt-bridge
-- Head: 4cb536734096
+- Head: b7d0abf29898
 
 ```text
  .agentplane/tasks/202604290751-CN5HST/README.md    | 144 ++++++++++++++
@@ -79,13 +79,21 @@ Land the current runner prompt module bridge as the first migration step, preser
  .../tasks/202604290800-ZP6QVY/pr/notes.jsonl       |   0
  .agentplane/tasks/202604290800-ZP6QVY/pr/review.md |  76 ++++++++
  .../tasks/202604290800-ZP6QVY/pr/verify.log        |   0
+ .agentplane/tasks/202604291531-1GHEJZ/README.md    | 115 +++++++++++
+ .agentplane/tasks/202604291531-7R6H51/README.md    | 113 +++++++++++
+ .agentplane/tasks/202604291531-864BKX/README.md    | 115 +++++++++++
+ .agentplane/tasks/202604291531-E8NEFB/README.md    | 117 ++++++++++++
+ .agentplane/tasks/202604291531-N0H28A/README.md    | 116 +++++++++++
+ .agentplane/tasks/202604291531-Y7XR4M/README.md    | 115 +++++++++++
+ .agentplane/tasks/202604291531-Z6XH6Q/README.md    | 114 +++++++++++
+ .agentplane/tasks/202604291532-BV5NQT/README.md    | 118 ++++++++++++
  docs/developer/architecture.mdx                    |  12 +-
  docs/developer/framework-refactor-program.mdx      |   2 +-
  docs/developer/harness-engeneering.mdx             |   2 +-
  .../src/runner/context/base-prompts.test.ts        |  39 ++++
  .../agentplane/src/runner/context/base-prompts.ts  |   9 +-
  .../src/runner/context/prompt-module-bridge.ts     | 212 +++++++++++++++++++++
- 29 files changed, 1516 insertions(+), 9 deletions(-)
+ 37 files changed, 2439 insertions(+), 9 deletions(-)
 ```
 
 </details>

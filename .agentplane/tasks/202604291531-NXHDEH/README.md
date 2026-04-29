@@ -4,7 +4,7 @@ title: "Adopt runner prompt module bridge"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-29T15:36:54.042Z"
+  updated_at: "2026-04-29T15:38:46.223Z"
   updated_by: "CODER"
-  note: "Runner prompt module bridge adopted and verification passed on task branch."
+  note: "Post-commit verification reconciled for current HEAD after adding migration task graph docs."
 commit: null
 comments:
   -
@@ -48,8 +48,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Runner prompt module bridge adopted and verification passed on task branch."
+  -
+    type: "verify"
+    at: "2026-04-29T15:38:46.223Z"
+    author: "CODER"
+    state: "ok"
+    note: "Post-commit verification reconciled for current HEAD after adding migration task graph docs."
 doc_version: 3
-doc_updated_at: "2026-04-29T15:37:12.921Z"
+doc_updated_at: "2026-04-29T15:38:46.288Z"
 doc_updated_by: "CODER"
 description: "Land the current runner prompt module bridge as the first migration step, preserving RunnerPromptBlock output while introducing stable PromptModule addresses and provenance for runner, gateway, project skill, overlay, and recipe prompt blocks."
 sections:
@@ -89,6 +95,18 @@ sections:
     Details:
     
     Commands passed: focused runner/prompt-module tests (13 pass, 0 fail), bun run typecheck, git diff --check plus cached diff check, touched-file Prettier, touched-file eslint, bun run framework:dev:bootstrap, and agentplane doctor. Doctor returned OK with info-only historical archive notes.
+    
+    ### 2026-04-29T15:38:46.223Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Post-commit verification reconciled for current HEAD after adding migration task graph docs.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T15:37:12.921Z, excerpt_hash=sha256:eb1baf64db02a6af56559a033b2ba75db5dba953acad99f9a13d4022bc835a7d
+    
+    Details:
+    
+    Current task branch contains the runner prompt module bridge plus the documented downstream migration task graph. Previously executed checks passed in this worktree; this verification updates branch_pr metadata after the graph-docs commit.
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -170,6 +188,18 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T15:34:26.930Z, excerpt_
 Details:
 
 Commands passed: focused runner/prompt-module tests (13 pass, 0 fail), bun run typecheck, git diff --check plus cached diff check, touched-file Prettier, touched-file eslint, bun run framework:dev:bootstrap, and agentplane doctor. Doctor returned OK with info-only historical archive notes.
+
+### 2026-04-29T15:38:46.223Z — VERIFY — ok
+
+By: CODER
+
+Note: Post-commit verification reconciled for current HEAD after adding migration task graph docs.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T15:37:12.921Z, excerpt_hash=sha256:eb1baf64db02a6af56559a033b2ba75db5dba953acad99f9a13d4022bc835a7d
+
+Details:
+
+Current task branch contains the runner prompt module bridge plus the documented downstream migration task graph. Previously executed checks passed in this worktree; this verification updates branch_pr metadata after the graph-docs commit.
 
 <!-- END VERIFICATION RESULTS -->
 
