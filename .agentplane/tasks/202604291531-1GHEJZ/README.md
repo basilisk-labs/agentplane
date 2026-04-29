@@ -1,10 +1,11 @@
 ---
 id: "202604291531-1GHEJZ"
 title: "Create framework prompt module registry"
-status: "DOING"
+result_summary: "Merged via PR #567."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -31,11 +32,16 @@ verification:
   updated_at: "2026-04-29T18:05:50.745Z"
   updated_by: "CODER"
   note: "Verified: reconciled PR metadata after registry commit 7b6c07e577d8. Prior checks remain current for the committed framework registry diff: focused tests, typecheck, git diff --check, framework bootstrap, and doctor passed."
-commit: null
+commit:
+  hash: "61d66219df955e09aa1646620da83b834b7266b9"
+  message: "Merge PR #567: add framework prompt module registry"
 comments:
   -
     author: "CODER"
     body: "Start: Build the framework prompt module registry on top of the landed compiler/runtime contracts; scope is limited to framework-owned registry modules and focused runtime tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #567 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -56,9 +62,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: reconciled PR metadata after registry commit 7b6c07e577d8. Prior checks remain current for the committed framework registry diff: focused tests, typecheck, git diff --check, framework bootstrap, and doctor passed."
+  -
+    type: "status"
+    at: "2026-04-29T18:08:51.376Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #567 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-29T18:05:50.778Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-29T18:08:51.381Z"
+doc_updated_by: "INTEGRATOR"
 description: "Convert bundled framework prompt sources into a registry of PromptModules for AGENTS/CLAUDE gateway templates, policy modules, agent profile JSON templates, runner prompts, and runtime execution profile prompts without changing emitted files yet."
 sections:
   Summary: |-
