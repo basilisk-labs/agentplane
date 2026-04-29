@@ -4,7 +4,7 @@ title: "Create framework prompt module registry"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -28,9 +28,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-29T18:05:07.478Z"
+  updated_at: "2026-04-29T18:05:50.745Z"
   updated_by: "CODER"
-  note: "Verified framework prompt module registry: focused registry/compiler/template tests passed (20 tests), typecheck passed, git diff --check passed, framework bootstrap passed, doctor passed with 0 errors and 0 warnings."
+  note: "Verified: reconciled PR metadata after registry commit 7b6c07e577d8. Prior checks remain current for the committed framework registry diff: focused tests, typecheck, git diff --check, framework bootstrap, and doctor passed."
 commit: null
 comments:
   -
@@ -50,8 +50,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified framework prompt module registry: focused registry/compiler/template tests passed (20 tests), typecheck passed, git diff --check passed, framework bootstrap passed, doctor passed with 0 errors and 0 warnings."
+  -
+    type: "verify"
+    at: "2026-04-29T18:05:50.745Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: reconciled PR metadata after registry commit 7b6c07e577d8. Prior checks remain current for the committed framework registry diff: focused tests, typecheck, git diff --check, framework bootstrap, and doctor passed."
 doc_version: 3
-doc_updated_at: "2026-04-29T18:05:07.525Z"
+doc_updated_at: "2026-04-29T18:05:50.778Z"
 doc_updated_by: "CODER"
 description: "Convert bundled framework prompt sources into a registry of PromptModules for AGENTS/CLAUDE gateway templates, policy modules, agent profile JSON templates, runner prompts, and runtime execution profile prompts without changing emitted files yet."
 sections:
@@ -86,6 +92,14 @@ sections:
     Note: Verified framework prompt module registry: focused registry/compiler/template tests passed (20 tests), typecheck passed, git diff --check passed, framework bootstrap passed, doctor passed with 0 errors and 0 warnings.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T17:57:09.235Z, excerpt_hash=sha256:4032c679e7e641ef6cb329aff1ce304ec36a5a131f94b691e5834ef771f7f871
+    
+    ### 2026-04-29T18:05:50.745Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: reconciled PR metadata after registry commit 7b6c07e577d8. Prior checks remain current for the committed framework registry diff: focused tests, typecheck, git diff --check, framework bootstrap, and doctor passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T18:05:07.525Z, excerpt_hash=sha256:4032c679e7e641ef6cb329aff1ce304ec36a5a131f94b691e5834ef771f7f871
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -134,6 +148,14 @@ By: CODER
 Note: Verified framework prompt module registry: focused registry/compiler/template tests passed (20 tests), typecheck passed, git diff --check passed, framework bootstrap passed, doctor passed with 0 errors and 0 warnings.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T17:57:09.235Z, excerpt_hash=sha256:4032c679e7e641ef6cb329aff1ce304ec36a5a131f94b691e5834ef771f7f871
+
+### 2026-04-29T18:05:50.745Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: reconciled PR metadata after registry commit 7b6c07e577d8. Prior checks remain current for the committed framework registry diff: focused tests, typecheck, git diff --check, framework bootstrap, and doctor passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T18:05:07.525Z, excerpt_hash=sha256:4032c679e7e641ef6cb329aff1ce304ec36a5a131f94b691e5834ef771f7f871
 
 <!-- END VERIFICATION RESULTS -->
 

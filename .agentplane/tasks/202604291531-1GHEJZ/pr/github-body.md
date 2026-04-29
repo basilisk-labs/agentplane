@@ -13,7 +13,7 @@ Convert bundled framework prompt sources into a registry of PromptModules for AG
 ## Verification
 
 - State: ok
-- Note: Verified framework prompt module registry: focused registry/compiler/template tests passed (20 tests), typecheck passed, git diff --check passed, framework bootstrap passed, doctor passed with 0 errors and 0 warnings.
+- Note: Verified: reconciled PR metadata after registry commit 7b6c07e577d8. Prior checks remain current for the committed framework registry diff: focused tests, typecheck, git diff --check, framework bootstrap, and doctor passed.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
