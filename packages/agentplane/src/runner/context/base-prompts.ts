@@ -6,6 +6,7 @@ import {
   loadPolicyGatewayPrompt,
 } from "./base-prompt-sources.js";
 import { collectOverlayPromptBlocks } from "./overlay-prompt-blocks.js";
+import { compileRunnerPromptBlocksThroughModules } from "./prompt-module-bridge.js";
 import { collectProjectSkillPromptBlocks } from "./project-skill-prompt-blocks.js";
 import { loadFrameworkRunnerPrompt, normalizeOwnerId } from "./prompt-block-shared.js";
 import { collectRecipePromptBlocks } from "./recipe-prompt-blocks.js";
@@ -16,6 +17,12 @@ export {
   resolveOwnerProfilePromptSource,
   resolvePolicyGatewayPromptSource,
 } from "./base-prompt-sources.js";
+export {
+  compileRunnerPromptBlocksThroughModules,
+  compileRunnerPromptModuleGraph,
+  runnerPromptBlocksToModuleGraph,
+  runnerPromptBlockToModule,
+} from "./prompt-module-bridge.js";
 
 export async function collectRunnerBasePrompts(opts: {
   git_root: string;
@@ -64,7 +71,7 @@ export async function collectRunnerBasePrompts(opts: {
     })),
   ];
 
-  return prompts.toSorted(
+  return compileRunnerPromptBlocksThroughModules(prompts).toSorted(
     (left, right) => left.priority - right.priority || left.id.localeCompare(right.id),
   );
 }

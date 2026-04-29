@@ -1,0 +1,1 @@
+prompt-assembly/recipes: Adopt runner prompt module bridge (NXHDEH)
