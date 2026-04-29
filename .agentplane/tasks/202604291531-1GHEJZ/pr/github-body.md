@@ -23,12 +23,15 @@ Convert bundled framework prompt sources into a registry of PromptModules for AG
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T17:57:09.358Z
+- Updated: 2026-04-29T18:05:26.358Z
 - Branch: task/202604291531-1GHEJZ/framework-prompt-module-registry
-- Head: bcb2b9ad48d7
+- Head: 6a19ad8678d3
 
 ```text
-No changes detected.
+ .../agentplane/src/runtime/prompt-modules/index.ts |   5 +
+ .../src/runtime/prompt-modules/registry.test.ts    | 136 ++++++++++
+ .../src/runtime/prompt-modules/registry.ts         | 275 +++++++++++++++++++++
+ 3 files changed, 416 insertions(+)
 ```
 
 </details>

@@ -1,0 +1,4 @@
+ .../agentplane/src/runtime/prompt-modules/index.ts |   5 +
+ .../src/runtime/prompt-modules/registry.test.ts    | 136 ++++++++++
+ .../src/runtime/prompt-modules/registry.ts         | 275 +++++++++++++++++++++
+ 3 files changed, 416 insertions(+)
