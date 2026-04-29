@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-29T17:54:35Z",
   "base": "main",
   "branch": "task/202604291531-7R6H51/prompt-module-compiler",
   "created_at": "2026-04-29T17:41:02.534Z",
-  "head_sha": "3395372c98b1c0707c3c6efd28a3edaade137c69",
+  "head_sha": "f13e69c38cc5128d35ab6be1e1fb1755fc2e04b6",
   "last_verified_at": "2026-04-29T17:51:50.761Z",
   "last_verified_sha": "3395372c98b1c0707c3c6efd28a3edaade137c69",
+  "merge_commit": "bd84c57e5d8f316a7999b5a7f1ee61aae9d1cf23",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-29T17:54:35Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604291531-7R6H51",
-  "updated_at": "2026-04-29T17:51:19.421Z",
+  "updated_at": "2026-04-29T17:54:35Z",
   "verify": {
     "status": "pass"
   }
