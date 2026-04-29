@@ -1,0 +1,10 @@
+ packages/agentplane/src/agents/agents-template.ts  |  22 +-
+ .../cli/run-cli/commands/init/steps/apply.test.ts  |   2 +
+ .../src/cli/run-cli/commands/init/write-agents.ts  |  49 +++-
+ .../src/runner/context/base-prompts.test.ts        |   1 +
+ .../src/runner/context/prompt-block-shared.ts      |   9 +-
+ .../agentplane/src/runtime/prompt-modules/model.ts |   2 +
+ .../src/runtime/prompt-modules/registry.test.ts    |  85 ++++++-
+ .../src/runtime/prompt-modules/registry.ts         | 273 ++++++++++++++++-----
+ .../src/runtime/prompt-modules/validation.ts       |   2 +
+ 9 files changed, 355 insertions(+), 90 deletions(-)

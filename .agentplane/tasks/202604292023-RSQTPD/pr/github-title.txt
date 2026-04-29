@@ -1,0 +1,1 @@
+prompt-assembly: Compile framework prompt registry from fragments (RSQTPD)

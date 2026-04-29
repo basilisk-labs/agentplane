@@ -243,6 +243,8 @@ function validateProvenance(raw: unknown, field: string): PromptModuleProvenance
   return {
     source_kind: validateEnum(provenance.source_kind, `${field}.source_kind`, SOURCE_KINDS),
     source_ref: requireString(provenance.source_ref, `${field}.source_ref`),
+    fragment_id: optionalString(provenance.fragment_id, `${field}.fragment_id`),
+    fragment_index: optionalNumber(provenance.fragment_index, `${field}.fragment_index`),
     recipe_id: optionalString(provenance.recipe_id, `${field}.recipe_id`),
     recipe_version: optionalString(provenance.recipe_version, `${field}.recipe_version`),
     generated_by: optionalString(provenance.generated_by, `${field}.generated_by`),

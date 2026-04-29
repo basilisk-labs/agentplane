@@ -7,6 +7,7 @@ import {
   type ResolvedBehavior,
 } from "../../runtime/behavior/index.js";
 import type { RunnerPromptBlock, RunnerPromptRole } from "../types.js";
+import { renderMarkdownPromptTemplate } from "../../agents/agents-template.js";
 import { resolveAgentplaneAssetUrl } from "../../shared/package-paths.js";
 
 export const FRAMEWORK_RUNNER_PROMPT_URL = resolveAgentplaneAssetUrl("RUNNER.md");
@@ -138,7 +139,13 @@ async function readFrameworkRunnerPrompt(): Promise<RunnerPromptBlock> {
         value: {
           source: "bundled:runner-prompt:RUNNER.md",
           title: "Framework Runner Prompt",
-          content: normalizeText(await readFile(FRAMEWORK_RUNNER_PROMPT_URL, "utf8")),
+          content: renderMarkdownPromptTemplate(
+            await readFile(FRAMEWORK_RUNNER_PROMPT_URL, "utf8"),
+            {
+              source_ref: "packages/agentplane/assets/RUNNER.md",
+              fallback_id: "runner.bundle.file.framework_runner",
+            },
+          ).contents,
         },
       }),
     ],

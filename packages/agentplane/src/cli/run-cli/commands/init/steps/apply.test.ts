@@ -206,9 +206,11 @@ describe("init apply wrapper", () => {
       expect(await readFile(directPolicyPath, "utf8")).toContain("# Workflow: direct");
       expect(gateway).toBe(expectedGateway);
       expect(gateway).toContain("CLAUDE.md");
+      expect(gateway).not.toContain("ap:fragment");
       expect(gateway).not.toContain("## A) direct mode (single checkout)");
       expect(parsedCoderProfile.id).toBe("CODER");
       expect(branchPolicy).toContain("# Workflow: branch_pr");
+      expect(branchPolicy).not.toContain("ap:fragment");
       expect(gatewayBaseline).toBe(gateway);
       expect(coderProfileBaseline).toBe(coderProfile);
       expect(branchPolicyBaseline).toBe(branchPolicy);
