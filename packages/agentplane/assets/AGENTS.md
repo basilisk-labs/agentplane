@@ -4,6 +4,7 @@ repo_namespace: .agentplane
 default_initiator: ORCHESTRATOR
 -->
 
+<!-- ap:fragment id="gateway.agents.purpose.purpose" slot="purpose" mutability="replaceable" -->
 # PURPOSE
 
 `AGENTS.md` is the policy gateway for agents in this repository.
@@ -11,7 +12,9 @@ It provides strict routing, hard constraints, and command contracts.
 Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
 
 ---
+<!-- /ap:fragment -->
 
+<!-- ap:fragment id="gateway.agents.purpose.project" slot="purpose" mutability="replaceable" -->
 ## PROJECT
 
 - Repository type: user project initialized with `agentplane`.
@@ -21,6 +24,8 @@ Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
 
 ---
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="gateway.agents.source_of_truth.sources.of.truth" slot="source_of_truth" mutability="replaceable" -->
 ## SOURCES OF TRUTH
 
 Priority order (highest first):
@@ -38,6 +43,8 @@ Conflict rule:
 
 ---
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="gateway.agents.hard_constraint.scope.boundary" slot="hard_constraint" mutability="append_only" -->
 ## SCOPE BOUNDARY
 
 - MUST keep all actions inside this repository unless the user explicitly approves outside-repo access.
@@ -46,6 +53,8 @@ Conflict rule:
 
 ---
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="gateway.agents.commands.commands" slot="commands" mutability="replaceable" -->
 ## COMMANDS
 
 ### Preflight
@@ -92,6 +101,8 @@ node .agentplane/policy/check-routing.mjs
 
 ---
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="gateway.agents.body.tooling" slot="body" mutability="replaceable" -->
 ## TOOLING
 
 - Use `## COMMANDS` as the canonical command source.
@@ -100,6 +111,8 @@ node .agentplane/policy/check-routing.mjs
 
 ---
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="gateway.agents.load_rules.load.rules" slot="load_rules" mutability="replaceable" -->
 ## LOAD RULES
 
 Routing is strict. Load only modules that match the current task.
@@ -136,6 +149,8 @@ Routing constraints:
 
 ---
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="gateway.agents.hard_constraint.must.must.not" slot="hard_constraint" mutability="append_only" -->
 ## MUST / MUST NOT
 
 - MUST start with ORCHESTRATOR preflight and plan summary.
@@ -158,6 +173,8 @@ Role boundaries:
 
 ---
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="gateway.agents.body.core.dod" slot="body" mutability="replaceable" -->
 ## CORE DOD
 
 A task is done only when all are true:
@@ -173,6 +190,8 @@ Detailed DoD rules are in `.agentplane/policy/dod.core.md`, `.agentplane/policy/
 
 ---
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="gateway.agents.hard_constraint.size.budget" slot="hard_constraint" mutability="append_only" -->
 ## SIZE BUDGET
 
 - `AGENTS.md` MUST stay <= 250 lines.
@@ -182,6 +201,8 @@ Detailed DoD rules are in `.agentplane/policy/dod.core.md`, `.agentplane/policy/
 
 ---
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="gateway.agents.body.canonical.docs" slot="body" mutability="replaceable" -->
 ## CANONICAL DOCS
 
 - DOC `.agentplane/policy/workflow.md`
@@ -198,6 +219,8 @@ Detailed DoD rules are in `.agentplane/policy/dod.core.md`, `.agentplane/policy/
 
 ---
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="gateway.agents.example.reference.examples" slot="example" mutability="replaceable" -->
 ## REFERENCE EXAMPLES
 
 - EXAMPLE `.agentplane/policy/examples/pr-note.md`
@@ -206,8 +229,11 @@ Detailed DoD rules are in `.agentplane/policy/dod.core.md`, `.agentplane/policy/
 
 ---
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="gateway.agents.body.change.control" slot="body" mutability="replaceable" -->
 ## CHANGE CONTROL
 
 - Follow incident-log, immutability, and policy-budget rules in `.agentplane/policy/governance.md`.
 - Record situational incident rules only in `.agentplane/policy/incidents.md`; use targeted lookup/promotion (`task start-ready`, `incidents advise`, `incidents collect`, `finish`) instead of bulk-loading it during normal startup.
 - Keep `AGENTS.md` as a gateway; move detailed procedures to canonical modules.
+<!-- /ap:fragment -->

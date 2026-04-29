@@ -1,3 +1,4 @@
+<!-- ap:fragment id="policy.examples.unit-test-pattern.example.example.unit.test.pattern" slot="example" mutability="replaceable" -->
 # Example: Unit Test Pattern
 
 ```ts
@@ -17,3 +18,4 @@ describe("policy routing check", () => {
   });
 });
 ```
+<!-- /ap:fragment -->

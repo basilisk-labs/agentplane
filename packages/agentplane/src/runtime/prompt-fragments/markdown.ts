@@ -72,6 +72,23 @@ function markerPrefix(fragment: PromptMarkdownFragment): string {
   return `<!-- ap:fragment id="${fragment.id}" slot="${fragment.slot}" mutability="${fragment.mutability}" -->`;
 }
 
+function isMarkerOnlyLine(source: string, start: number, end: number): boolean {
+  const lineStart = source.lastIndexOf("\n", start - 1) + 1;
+  const nextNewline = source.indexOf("\n", end);
+  const lineEnd = nextNewline === -1 ? source.length : nextNewline;
+  return source.slice(lineStart, start).trim() === "" && source.slice(end, lineEnd).trim() === "";
+}
+
+function markerBodyStart(source: string, markerEnd: number, markerOnlyLine: boolean): number {
+  if (markerOnlyLine && source[markerEnd] === "\n") return markerEnd + 1;
+  return markerEnd;
+}
+
+function markerCursor(source: string, markerEnd: number, markerOnlyLine: boolean): number {
+  if (markerOnlyLine && source[markerEnd] === "\n") return markerEnd + 1;
+  return markerEnd;
+}
+
 function fallbackFragment(
   source: string,
   opts: ParsePromptMarkdownFragmentsOptions,
@@ -124,7 +141,9 @@ export function parsePromptMarkdownFragments(
     }
     ids.add(attrs.id);
 
-    const bodyStart = MARKER_RE.lastIndex;
+    const openMarkerEnd = MARKER_RE.lastIndex;
+    const openOnlyLine = isMarkerOnlyLine(source, open.index, openMarkerEnd);
+    const bodyStart = markerBodyStart(source, openMarkerEnd, openOnlyLine);
     const close = MARKER_RE.exec(source);
     if (!close) {
       throw new Error(`Unclosed ap:fragment marker "${attrs.id}"`);
@@ -132,6 +151,8 @@ export function parsePromptMarkdownFragments(
     if (close[1] !== "/ap:fragment") {
       throw new Error(`Nested ap:fragment marker "${attrs.id}" at offset ${close.index}`);
     }
+    const closeMarkerEnd = MARKER_RE.lastIndex;
+    const closeOnlyLine = isMarkerOnlyLine(source, close.index, closeMarkerEnd);
 
     const fragment: PromptMarkdownFragment = {
       id: attrs.id,
@@ -147,7 +168,8 @@ export function parsePromptMarkdownFragments(
     };
     fragments.push(fragment);
     segments.push({ kind: "fragment", fragment });
-    cursor = MARKER_RE.lastIndex;
+    cursor = markerCursor(source, closeMarkerEnd, closeOnlyLine);
+    MARKER_RE.lastIndex = cursor;
   }
 
   if (!matched) {

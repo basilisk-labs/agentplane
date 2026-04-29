@@ -1,3 +1,4 @@
+<!-- ap:fragment id="runner.bundle.body.framework.runner" slot="body" mutability="replaceable" -->
 # agentplane runner
 
 Operate as the agentplane execution runner.
@@ -15,3 +16,4 @@ Operate as the agentplane execution runner.
 - Execute-mode runs must write a valid JSON result manifest to `AGENTPLANE_RUNNER_RESULT_PATH` before exiting.
 - Minimal manifest example: `{"schema_version":1,"status":"success","summary":"Completed.","capabilities_used":["runner.exec"]}`
 - When the requested task outcome is satisfied, stop immediately instead of re-running repository bootstrap or lifecycle flows.
+<!-- /ap:fragment -->

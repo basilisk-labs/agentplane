@@ -1,10 +1,10 @@
 ---
 id: "202604292023-W6G3GC"
 title: "Migrate markdown prompt assets to named fragments"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -25,16 +25,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-29T21:11:24.464Z"
+  updated_by: "CODER"
+  note: "Verified markdown prompt fragments render without marker comments."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: add named markdown fragment markers to bundled gateway, runner, and policy assets while preserving rendered installed outputs."
+events:
+  -
+    type: "status"
+    at: "2026-04-29T21:04:10.903Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: add named markdown fragment markers to bundled gateway, runner, and policy assets while preserving rendered installed outputs."
+  -
+    type: "verify"
+    at: "2026-04-29T21:11:24.464Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified markdown prompt fragments render without marker comments."
 doc_version: 3
-doc_updated_at: "2026-04-29T20:24:41.923Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-04-29T21:11:24.470Z"
+doc_updated_by: "CODER"
 description: "Add stable named fragment markers to AGENTS.md, RUNNER.md, and bundled policy markdown modules, preserving rendered prompt text while making each logical section addressable for replacement or disabling."
 sections:
   Summary: |-
@@ -60,6 +76,25 @@ sections:
     8. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-29T21:11:24.464Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified markdown prompt fragments render without marker comments.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T21:04:10.903Z, excerpt_hash=sha256:25bec4354b94900c22c1800a812ff101dbaf8bc3ee9201e438897423c67ea303
+    
+    Details:
+    
+    Command: agentplane task verify-show 202604292023-W6G3GC | Result: pass | Evidence: verify contract read. Scope: declared task checks.
+    Command: bun test packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-fragments/*.test.ts | Result: pass | Evidence: 19 pass, 0 fail, 359 expect calls. Scope: asset rendering, markdown/json fragment parser behavior.
+    Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Scope: policy routing budgets.
+    Command: git diff --check | Result: pass | Evidence: no whitespace errors. Scope: changed files.
+    Command: bun run typecheck | Result: pass | Evidence: tsc -b exited 0. Scope: TypeScript project references.
+    Command: bun run framework:dev:bootstrap | Result: pass | Evidence: framework dev runtime is ready. Scope: generated/build runtime.
+    Command: agentplane doctor | Result: pass | Evidence: OK, errors=0 warnings=0 info=9. Scope: repo runtime health.
+    Additional command: bun test packages/agentplane/src/runtime/prompt-modules/registry.test.ts | Result: pass | Evidence: 4 pass, 0 fail. Scope: framework prompt registry runner/profile parity.
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -99,6 +134,25 @@ Add stable named fragment markers to AGENTS.md, RUNNER.md, and bundled policy ma
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-29T21:11:24.464Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified markdown prompt fragments render without marker comments.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T21:04:10.903Z, excerpt_hash=sha256:25bec4354b94900c22c1800a812ff101dbaf8bc3ee9201e438897423c67ea303
+
+Details:
+
+Command: agentplane task verify-show 202604292023-W6G3GC | Result: pass | Evidence: verify contract read. Scope: declared task checks.
+Command: bun test packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/runtime/prompt-fragments/*.test.ts | Result: pass | Evidence: 19 pass, 0 fail, 359 expect calls. Scope: asset rendering, markdown/json fragment parser behavior.
+Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Scope: policy routing budgets.
+Command: git diff --check | Result: pass | Evidence: no whitespace errors. Scope: changed files.
+Command: bun run typecheck | Result: pass | Evidence: tsc -b exited 0. Scope: TypeScript project references.
+Command: bun run framework:dev:bootstrap | Result: pass | Evidence: framework dev runtime is ready. Scope: generated/build runtime.
+Command: agentplane doctor | Result: pass | Evidence: OK, errors=0 warnings=0 info=9. Scope: repo runtime health.
+Additional command: bun test packages/agentplane/src/runtime/prompt-modules/registry.test.ts | Result: pass | Evidence: 4 pass, 0 fail. Scope: framework prompt registry runner/profile parity.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

@@ -1,7 +1,10 @@
+<!-- ap:fragment id="policy.workflow.release.workflow.workflow.release" slot="workflow" mutability="replaceable" -->
 # Workflow: release
 
 Use this module when task touches release/version/publish flows.
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.workflow.release.workflow.required.sequence" slot="workflow" mutability="replaceable" -->
 ## Required sequence
 
 1. CHECKPOINT A: confirm clean tracked tree and approved scope.
@@ -11,6 +14,8 @@ Use this module when task touches release/version/publish flows.
 5. CHECKPOINT C: choose the workflow-specific publication route after all gates pass.
 6. Record release evidence (commands, outputs, resulting version/tag).
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.workflow.release.commands.command.contract" slot="commands" mutability="replaceable" -->
 ## Command contract
 
 ```bash
@@ -24,6 +29,8 @@ agentplane verify <task-id> --ok|--rework --by <ROLE> --note "Release checks: ..
 agentplane finish <task-id> --author <ROLE> --body "Verified: release" --result "Release <v> published" --commit <git-rev> --close-commit
 ```
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.workflow.release.hard_constraint.constraints" slot="hard_constraint" mutability="append_only" -->
 ## Constraints
 
 - MUST NOT perform irreversible release actions before explicit approval.
@@ -32,3 +39,4 @@ agentplane finish <task-id> --author <ROLE> --body "Verified: release" --result 
 - MUST stop and request re-approval if release scope/tag/version changes.
 - In `direct`, `release apply --push --yes` is the publication route and may create/push the release tag.
 - In `branch_pr`, `release apply` is not the publication route; use `release candidate --push --yes`, merge the candidate into the protected base branch, then let hosted publish run from `main`.
+<!-- /ap:fragment -->

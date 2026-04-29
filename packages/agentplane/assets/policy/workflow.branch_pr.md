@@ -1,7 +1,10 @@
+<!-- ap:fragment id="policy.workflow.branch_pr.workflow.workflow.branch_pr" slot="workflow" mutability="replaceable" -->
 # Workflow: branch_pr
 
 Use this module when `workflow_mode=branch_pr`.
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.workflow.branch_pr.workflow.required.sequence" slot="workflow" mutability="replaceable" -->
 ## Required sequence
 
 1. CHECKPOINT A: plan/approve on base checkout.
@@ -14,6 +17,8 @@ Use this module when `workflow_mode=branch_pr`.
 8. CHECKPOINT C: finish task(s) on base with verification evidence.
 9. Remove merged task branches/worktrees once the hosted-close/finish route has landed.
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.workflow.branch_pr.commands.command.contract" slot="commands" mutability="replaceable" -->
 ## Command contract
 
 ```bash
@@ -26,6 +31,8 @@ agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 ```
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.workflow.branch_pr.hard_constraint.constraints" slot="hard_constraint" mutability="append_only" -->
 ## Constraints
 
 - MUST NOT perform mutating actions before explicit user approval.
@@ -40,3 +47,4 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
 - Planning and closure happen on base checkout.
 - Do not export task snapshots from task branches.
 - After merged closure, remove stale task branches/worktrees via the cleanup route instead of leaving orphaned local state behind.
+<!-- /ap:fragment -->
