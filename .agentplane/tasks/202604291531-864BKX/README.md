@@ -1,10 +1,11 @@
 ---
 id: "202604291531-864BKX"
 title: "Add prompt graph diagnostics and drift checks"
-status: "DOING"
+result_summary: "Merged via PR #577."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -31,11 +32,16 @@ verification:
   updated_at: "2026-04-29T19:28:51.819Z"
   updated_by: "CODER"
   note: "Prompt graph diagnostics are exposed through runtime explain and doctor drift checks; declared verification passed."
-commit: null
+commit:
+  hash: "4bfe0b699a8719344432f5cdcdeb7d5f3da490d0"
+  message: "cli/doctor: Add prompt graph diagnostics and drift checks (864BKX) (#577)"
 comments:
   -
     author: "CODER"
     body: "Start: expose read-only prompt graph diagnostics and stale generated prompt artifact checks through doctor/runtime surfaces."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #577 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Prompt graph diagnostics are exposed through runtime explain and doctor drift checks; declared verification passed."
+  -
+    type: "status"
+    at: "2026-04-29T19:33:23.186Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #577 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-29T19:28:51.826Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-29T19:33:23.193Z"
+doc_updated_by: "INTEGRATOR"
 description: "Expose prompt graph diagnostics and drift detection through doctor/explain-style surfaces so operators can see compiled modules, source provenance, repo overrides, recipe mutations, and stale generated prompt artifacts."
 sections:
   Summary: |-
@@ -146,13 +159,9 @@ Expose prompt graph diagnostics and drift detection through doctor/explain-style
 
 <!-- BEGIN VERIFICATION RESULTS -->
 ### 2026-04-29T19:28:51.819Z — VERIFY — ok
-
 By: CODER
-
 Note: Prompt graph diagnostics are exposed through runtime explain and doctor drift checks; declared verification passed.
-
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T19:19:14.560Z, excerpt_hash=sha256:a019d12d713a57a5e046605a22e4c91eda675fe707779b3868ea7dc29e9e077d
-
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -163,9 +172,7 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T19:19:14.560Z, excerpt_
 ## Findings
 
 No residual findings.
-
 Verification evidence:
-
 - Command: bun test packages/agentplane/src/commands/doctor.command.runtime.test.ts packages/agentplane/src/commands/runtime.command.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts
   Result: pass
   Evidence: 27 pass, 0 fail.
