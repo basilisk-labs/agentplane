@@ -23,12 +23,14 @@ Switch init-time AGENTS.md/CLAUDE.md and .agentplane/policy emission to use the 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T18:12:35.563Z
+- Updated: 2026-04-29T18:19:40.906Z
 - Branch: task/202604291531-E8NEFB/init-gateway-policy-modules
-- Head: e60649fd433b
+- Head: e7d750da87ea
 
 ```text
-No changes detected.
+ .../cli/run-cli/commands/init/steps/apply.test.ts  |  60 ++++++++++
+ .../src/cli/run-cli/commands/init/write-agents.ts  | 133 ++++++++++++++++++---
+ 2 files changed, 179 insertions(+), 14 deletions(-)
 ```
 
 </details>
