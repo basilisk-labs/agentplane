@@ -355,6 +355,9 @@ describe("collectRunnerBasePrompts", () => {
 
     const graph = runnerPromptBlocksToModuleGraph(prompts);
     expect(compileRunnerPromptModuleGraph(graph)).toEqual(prompts);
+    expect(
+      graph.nodes.every((node) => typeof node.module.provenance.content_hash === "string"),
+    ).toBe(true);
 
     const gatewayModule = graph.nodes.find(
       (node) => node.module.address.name === "base.policy_gateway",
@@ -370,6 +373,17 @@ describe("collectRunnerBasePrompts", () => {
       provenance: {
         source_kind: "project_file",
         source_ref: "AGENTS.md",
+      },
+    });
+
+    const projectSkillModule = graph.nodes.find(
+      (node) => node.module.address.name === "project.skills_index",
+    )?.module;
+    expect(projectSkillModule).toMatchObject({
+      owner: { kind: "project" },
+      provenance: {
+        source_kind: "generated",
+        generated_by: "runner.project_skill_prompt_blocks",
       },
     });
 

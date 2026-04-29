@@ -280,6 +280,10 @@ describe("recipes transactional mutations", () => {
 
     const registryBefore = await readRegistry(root);
     const promptGraphBefore = await readProjectPromptGraph({ agentplaneDir });
+    expect(promptGraphBefore?.ok).toBe(true);
+    expect(
+      promptGraphBefore?.nodes.some((node) => node.module.address.namespace === "framework"),
+    ).toBe(true);
 
     await expect(cmdRecipeEnableParsed({ cwd: root, id: "broken-prompt-graph" })).rejects.toThrow(
       "Failed to compile recipe prompt graph",

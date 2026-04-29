@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604291532-BV5NQT/modular-prompt-migration-docs",
+  "created_at": "2026-04-29T19:34:44.153Z",
+  "head_sha": "2617ad7b0af9572830193231fe6f53949cccbe2c",
+  "last_verified_at": "2026-04-29T19:41:02.530Z",
+  "last_verified_sha": "2617ad7b0af9572830193231fe6f53949cccbe2c",
+  "schema_version": 1,
+  "task_id": "202604291532-BV5NQT",
+  "updated_at": "2026-04-29T19:34:44.153Z",
+  "verify": {
+    "status": "pass"
+  }
+}

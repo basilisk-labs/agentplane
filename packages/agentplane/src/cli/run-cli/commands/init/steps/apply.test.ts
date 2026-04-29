@@ -195,6 +195,10 @@ describe("init apply wrapper", () => {
         path.join(agentplaneDir, ".upgrade", "baseline", "policy", "workflow.branch_pr.md"),
         "utf8",
       );
+      const directPolicyBaseline = await readFile(
+        path.join(agentplaneDir, ".upgrade", "baseline", "policy", "workflow.direct.md"),
+        "utf8",
+      );
 
       expect(result.installPaths).toContain("CLAUDE.md");
       expect(result.installPaths).toContain(".agentplane/agents/CODER.json");
@@ -208,6 +212,7 @@ describe("init apply wrapper", () => {
       expect(gatewayBaseline).toBe(gateway);
       expect(coderProfileBaseline).toBe(coderProfile);
       expect(branchPolicyBaseline).toBe(branchPolicy);
+      expect(directPolicyBaseline).toBe(await readFile(directPolicyPath, "utf8"));
     } finally {
       await rm(root, { force: true, recursive: true });
     }

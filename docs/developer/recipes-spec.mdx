@@ -29,6 +29,7 @@ Optional directories:
 - `agents/`
 - `assets/`
 - `policy/`
+- `prompt-modules/`
 - `prompts/`
 - `README.md`
 - `scenarios/`
@@ -49,7 +50,8 @@ Minimum required fields:
 - `summary`
 - `description`
 
-First-class sections include `compatibility`, `overlay`, `skills`, `tools`, `agents`, and `scenarios`.
+First-class sections include `compatibility`, `overlay`, `skills`, `tools`, `agents`, `scenarios`,
+`prompt_modules`, and `prompt_mutation_sets`.
 
 Contract notes:
 
@@ -58,6 +60,9 @@ Contract notes:
 - `tools/` remain structured manifests plus executable content where required.
 - `scenarios/` are recipe-owned assets, not a separate top-level package kind.
 - Public scenario descriptors must be sufficient for resolver-driven selection without reading unrelated internal files.
+- `prompt_modules` point at JSON prompt module files owned by the recipe.
+- `prompt_mutation_sets` point at JSON mutation sets that are applied only while compiling the
+  project prompt graph; failed mutations do not partially publish generated project artifacts.
 
 ## CLI surface
 
@@ -119,8 +124,10 @@ Project-local vendor store and derived artifacts:
 - `.agentplane/recipes/packages/<id>/skills/...`
 - `.agentplane/recipes/packages/<id>/tools/...`
 - `.agentplane/recipes/packages/<id>/scenarios/...`
+- `.agentplane/recipes/packages/<id>/prompt-modules/...`
 - `.agentplane/generated/overlay-bundle.json`
 - `.agentplane/generated/recipe-assets.json`
+- `.agentplane/generated/prompt-graph.json`
 - `.agentplane/tasks/<task-id>/runs/<run-id>/bundle.json`
 - `.agentplane/tasks/<task-id>/runs/<run-id>/bootstrap.md`
 - `.agentplane/tasks/<task-id>/runs/<run-id>/run-state.json`
@@ -137,6 +144,8 @@ Authority rules:
 - `.agentplane/recipes/registry.json` is the only project authority for vendored recipes.
 - `.agentplane/generated/*` are derived outputs; they must not carry independent authority.
 - Runtime reads vendored packages from `.agentplane/recipes/packages/*`, not from the global cache.
+- `.agentplane/generated/prompt-graph.json` is the compiled prompt module graph for the current
+  active recipe set. Treat it as inspectable derived state, not as the place to edit modules.
 
 Runner artifacts are layered deliberately:
 
