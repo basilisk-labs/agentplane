@@ -1,10 +1,11 @@
 ---
 id: "202604292023-RSQTPD"
 title: "Compile framework prompt registry from fragments"
-status: "DOING"
+result_summary: "Merged via PR #593."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -29,11 +30,16 @@ verification:
   updated_at: "2026-04-29T21:29:45.891Z"
   updated_by: "CODER"
   note: "Verified fragment-derived prompt registry preserves installed outputs."
-commit: null
+commit:
+  hash: "0a69db17d368a3a1a31ca931caaa235f4171ab36"
+  message: "Merge pull request #593 from basilisk-labs/task/202604292023-RSQTPD/fragment-registry-compile"
 comments:
   -
     author: "CODER"
     body: "Start: compile framework prompt modules from parsed source fragments while preserving installed gateway, policy, agent profile, and runner outputs."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #593 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified fragment-derived prompt registry preserves installed outputs."
+  -
+    type: "status"
+    at: "2026-04-29T21:33:32.504Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #593 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-29T21:29:45.902Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-29T21:33:32.509Z"
+doc_updated_by: "INTEGRATOR"
 description: "Wire the framework prompt module registry, init/upgrade baseline seeding, and runner prompt bridge to emit prompt modules from parsed source fragments while preserving installed outputs and existing prompt ordering."
 sections:
   Summary: |-
