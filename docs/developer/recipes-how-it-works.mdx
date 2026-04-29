@@ -44,6 +44,11 @@ Project overlay recipes can contribute modular prompt assets:
 - `prompt_mutation_sets` patch, replace, disable, bind, or validate prompt modules after framework
   and active recipe modules are loaded.
 
+Framework prompt assets may expose named fragments inside gateway, policy, runner, and agent profile
+files. Those fragments compile into ordinary prompt modules with stable provenance. Recipe mutation
+sets should target those fragment ids when they need to change one behavior, for example a single
+CODER workflow instruction, instead of replacing an entire profile or markdown file.
+
 During recipe artifact refresh, active recipe prompt modules and mutation sets are compiled with the
 framework prompt module registry. The derived prompt graph is published to
 `.agentplane/generated/prompt-graph.json` in the same transaction as the overlay bundle, recipe asset

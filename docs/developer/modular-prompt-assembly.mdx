@@ -28,6 +28,97 @@ The core contracts are:
 - `PromptModuleMutationSet`: recipe-owned operations such as add, replace, patch, disable, bind, and validator changes.
 - `PromptModuleCompiledGraph`: compiled nodes plus bindings, validators, diagnostics, and `ok`.
 
+## Prompt fragments
+
+Prompt fragments are the source-level units inside prompt assets. They are smaller than a prompt
+file and compile into prompt modules with stable addresses. A recipe must target fragments by id,
+not by line number, array index, or prose matching.
+
+Fragment ids use lowercase dot-case:
+
+```text
+gateway.agents.load_rules.workflow.branch_pr
+policy.workflow.branch_pr.sequence.start_worktree
+policy.dod.core.traceability
+agent.coder.workflow.diff.minimal
+agent.orchestrator.workflow.task_graph.atomic
+runner.lifecycle.no_recursive_task_run
+```
+
+The id format is:
+
+```text
+<surface>.<target-or-role>.<slot>.<semantic-name>
+```
+
+Use these surface prefixes:
+
+- `gateway.*` for `AGENTS.md` / `CLAUDE.md` gateway fragments;
+- `policy.*` for `.agentplane/policy/**` fragments;
+- `agent.<role>.*` for `.agentplane/agents/<ROLE>.json` fragments;
+- `runner.*` for bundled runner prompt fragments;
+- `recipe.<id>.*` only for recipe-owned prompt assets.
+
+Semantic names must describe the behavioral contract, not the current wording. For example,
+`agent.coder.workflow.diff.minimal` is stable across wording edits; `agent.coder.workflow.line7`
+is not.
+
+### Markdown marker contract
+
+Markdown prompt assets use HTML comments as source markers:
+
+```md
+<!-- ap:fragment id="policy.workflow.branch_pr.sequence.start_worktree" slot="workflow" mutability="replaceable" -->
+2. Start work with dedicated task branch + worktree.
+<!-- /ap:fragment -->
+```
+
+Rules:
+
+- marker ids must be unique inside the compiled graph;
+- markers must not be nested;
+- rendered installed files should omit source markers unless a task explicitly scopes marker
+  preservation;
+- unmarked markdown remains a fallback whole-file fragment until the file is migrated;
+- source markers are implementation metadata, not policy text.
+
+### Agent profile fragment contract
+
+Agent profile JSON lists should use structured fragment objects when individual lines need to be
+patchable:
+
+```json
+{
+  "id": "agent.coder.workflow.diff.minimal",
+  "text": "Keep diffs minimal, task-scoped, and easy to review.",
+  "mutability": "replaceable"
+}
+```
+
+The loader must continue to accept legacy string arrays:
+
+```json
+"workflow": ["Keep diffs minimal, task-scoped, and easy to review."]
+```
+
+String entries are compatibility input only. They are not stable patch targets unless the loader
+derives a deterministic compatibility id and reports that provenance as generated. New bundled
+profiles should prefer `id`/`text` entries for `inputs`, `outputs`, `permissions`, and `workflow`
+where recipe-level patching is expected.
+
+### Fragment mutability
+
+Use the narrowest mutability that supports the intended extension point:
+
+- `locked`: recipes may depend on the fragment but must not alter it;
+- `replaceable`: one recipe or project override may replace the fragment;
+- `extendable`: recipes may append or prepend related content around the fragment;
+- `append_only`: recipes may add follow-up content but must preserve the original fragment.
+
+Default framework policy and safety gates should be `locked` or `append_only`. Role behavior,
+workflow ergonomics, and recipe-specific context can be `replaceable` or `extendable` when the
+contract is stable enough for third-party recipes.
+
 Modules must carry stable provenance:
 
 - framework modules use `source_kind: "framework_builtin"`;
@@ -78,6 +169,10 @@ Recipe manifests may declare:
 
 - `prompt_modules`: JSON prompt module assets owned by the recipe;
 - `prompt_mutation_sets`: JSON mutation sets that modify the compiled prompt graph.
+
+Mutation sets should target fragment ids or selectors derived from fragment ids. A recipe that
+changes a single CODER behavior should patch `agent.coder.workflow.<name>` rather than replacing the
+whole `CODER.json` profile or the whole runner bundle.
 
 Project recipe state is transactionally published. When active recipe prompt mutations fail to
 compile, the registry and generated prompt graph remain unchanged.

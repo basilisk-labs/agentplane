@@ -63,6 +63,9 @@ Contract notes:
 - `prompt_modules` point at JSON prompt module files owned by the recipe.
 - `prompt_mutation_sets` point at JSON mutation sets that are applied only while compiling the
   project prompt graph; failed mutations do not partially publish generated project artifacts.
+- Prompt mutations should target named prompt fragments such as
+  `agent.coder.workflow.diff.minimal` or `policy.workflow.branch_pr.sequence.start_worktree`, not
+  array indexes, line numbers, or whole-file text replacements.
 
 ## CLI surface
 
@@ -138,6 +141,23 @@ Project-local vendor store and derived artifacts:
 - `.agentplane/tasks/<task-id>/runs/<run-id>/codex-last-message.md` when the selected adapter emits a side artifact for the final assistant message
 
 `AGENTPLANE_HOME` can override the global storage root.
+
+## Prompt fragment patching
+
+Recipe-owned prompt modules and mutation sets operate on the compiled prompt graph. Framework prompt
+assets may expose source-level fragments that compile into addressable modules. The recipe contract
+for those fragments is:
+
+- use stable semantic ids, for example `agent.planner.workflow.verify_steps.contract`;
+- patch by selector or module address derived from the fragment id;
+- prefer `patch_module` for wording or behavior refinements;
+- use `disable_module` only when the target fragment declares a compatible mutability policy;
+- never depend on JSON array index, markdown line number, or current prose text;
+- fail transactionally when a target is missing, ambiguous, locked, or produces a compiler error.
+
+Recipes that need role-specific behavior should target `agent.<role>.*` fragments. Recipes that need
+process policy should target `policy.*` or `gateway.*` fragments only when those fragments are
+explicitly marked replaceable or extendable.
 
 Authority rules:
 
