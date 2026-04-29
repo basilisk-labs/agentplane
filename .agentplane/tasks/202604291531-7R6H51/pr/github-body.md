@@ -23,12 +23,15 @@ Add the core resolver/compiler that evaluates PromptModule load conditions, depe
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T17:41:02.534Z
+- Updated: 2026-04-29T17:51:19.421Z
 - Branch: task/202604291531-7R6H51/prompt-module-compiler
-- Head: 9966cce3a074
+- Head: 3395372c98b1
 
 ```text
-No changes detected.
+ .../src/runtime/prompt-modules/compiler.test.ts    | 350 +++++++++++
+ .../src/runtime/prompt-modules/compiler.ts         | 678 +++++++++++++++++++++
+ .../agentplane/src/runtime/prompt-modules/index.ts |  12 +
+ 3 files changed, 1040 insertions(+)
 ```
 
 </details>
