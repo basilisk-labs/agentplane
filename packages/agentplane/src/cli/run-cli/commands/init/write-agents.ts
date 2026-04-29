@@ -3,7 +3,7 @@ import path from "node:path";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 
 import type { WorkflowMode } from "../../../../agents/agents-template.js";
-import { filterAgentsByWorkflow, loadAgentTemplates } from "../../../../agents/agents-template.js";
+import { filterAgentsByWorkflow } from "../../../../agents/agents-template.js";
 import {
   compilePromptModuleGraph,
   loadFrameworkPromptModuleRegistry,
@@ -33,12 +33,19 @@ type InitCompiledPolicyTemplate = {
   contents: string;
 };
 
+type InitCompiledAgentTemplate = {
+  fileName: string;
+  contents: string;
+};
+
 type InitCompiledPromptAssets = {
   gateway: string;
+  agentTemplates: InitCompiledAgentTemplate[];
   policyTemplates: InitCompiledPolicyTemplate[];
 };
 
 const INIT_POLICY_WORKFLOW_CONTEXTS: WorkflowMode[] = ["direct", "branch_pr"];
+const AGENT_ASSET_SOURCE_REF_PREFIX = "packages/agentplane/assets/agents/";
 const POLICY_ASSET_SOURCE_REF_PREFIX = "packages/agentplane/assets/policy/";
 
 function assertPromptCompileOk(compiled: PromptModuleCompiledGraph, label: string): void {
@@ -52,6 +59,16 @@ function assertPromptCompileOk(compiled: PromptModuleCompiledGraph, label: strin
 function stringPromptModuleContent(module: PromptModule): string {
   if (typeof module.content === "string") return module.content;
   return `${JSON.stringify(module.content, null, 2)}\n`;
+}
+
+function agentFileNameFromModule(module: PromptModule): string {
+  const sourceRef = module.provenance.source_ref.replaceAll("\\", "/");
+  if (!sourceRef.startsWith(AGENT_ASSET_SOURCE_REF_PREFIX)) {
+    throw new Error(
+      `Cannot derive init agent profile path from prompt module ${module.address.value}: ${module.provenance.source_ref}`,
+    );
+  }
+  return sourceRef.slice(AGENT_ASSET_SOURCE_REF_PREFIX.length);
 }
 
 function policyRelativePathFromModule(module: PromptModule): string {
@@ -95,6 +112,19 @@ async function compileInitPromptAssets(opts: {
   }
   const gatewayModule = gatewayModules[0];
   const gateway = filterAgentsByWorkflow(stringPromptModuleContent(gatewayModule), opts.workflow);
+  const agentTemplates = gatewayCompiled.nodes
+    .map((node) => node.module)
+    .filter(
+      (module) =>
+        module.address.surface === "agent_profile" &&
+        module.address.target === ".agentplane/agents" &&
+        module.address.slot === "identity",
+    )
+    .map((module) => ({
+      fileName: agentFileNameFromModule(module),
+      contents: renderPolicyGatewayTemplateText(stringPromptModuleContent(module), gatewayFileName),
+    }))
+    .toSorted((left, right) => left.fileName.localeCompare(right.fileName));
 
   const policiesByPath = new Map<string, string>();
   for (const workflow of INIT_POLICY_WORKFLOW_CONTEXTS) {
@@ -126,6 +156,7 @@ async function compileInitPromptAssets(opts: {
 
   return {
     gateway,
+    agentTemplates,
     policyTemplates: [...policiesByPath.entries()]
       .map(([relativePath, contents]) => ({ relativePath, contents }))
       .toSorted((left, right) => left.relativePath.localeCompare(right.relativePath)),
@@ -163,8 +194,6 @@ export async function ensureAgentsFiles(opts: {
     workflow: opts.workflow,
     policyGateway: opts.policyGateway,
   });
-  const renderGatewayText = (text: string): string =>
-    renderPolicyGatewayTemplateText(text, gatewayFileName);
   const agentsPath = path.join(opts.gitRoot, gatewayFileName);
   const installPaths: string[] = [
     path.relative(opts.gitRoot, opts.configPathAbs),
@@ -184,11 +213,10 @@ export async function ensureAgentsFiles(opts: {
     installedManagedPaths.push(gatewayFileName);
   }
 
-  const agentTemplates = await loadAgentTemplates();
-  for (const agent of agentTemplates) {
+  for (const agent of compiledPrompts.agentTemplates) {
     const targetPath = path.join(opts.agentplaneDir, "agents", agent.fileName);
     if (await fileExists(targetPath)) continue;
-    await atomicWriteFile(targetPath, renderGatewayText(agent.contents), "utf8");
+    await atomicWriteFile(targetPath, agent.contents, "utf8");
     const relPath = path.relative(opts.gitRoot, targetPath);
     installPaths.push(relPath);
     installedManagedPaths.push(relPath);

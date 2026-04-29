@@ -152,7 +152,7 @@ describe("init apply wrapper", () => {
     expect(installCommit).not.toHaveBeenCalled();
   });
 
-  it("installs gateway and policy files from compiled prompt modules", async () => {
+  it("installs gateway, agent profile, and policy files from compiled prompt modules", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-init-modules-"));
     try {
       const agentplaneDir = path.join(root, ".agentplane");
@@ -179,9 +179,16 @@ describe("init apply wrapper", () => {
       );
       const directPolicyPath = path.join(agentplaneDir, "policy", "workflow.direct.md");
       const branchPolicyPath = path.join(agentplaneDir, "policy", "workflow.branch_pr.md");
+      const coderPath = path.join(agentplaneDir, "agents", "CODER.json");
       const branchPolicy = await readFile(branchPolicyPath, "utf8");
+      const coderProfile = await readFile(coderPath, "utf8");
+      const parsedCoderProfile = JSON.parse(coderProfile) as { id?: unknown };
       const gatewayBaseline = await readFile(
         path.join(agentplaneDir, ".upgrade", "baseline", "CLAUDE.md"),
+        "utf8",
+      );
+      const coderProfileBaseline = await readFile(
+        path.join(agentplaneDir, ".upgrade", "baseline", "agents", "CODER.json"),
         "utf8",
       );
       const branchPolicyBaseline = await readFile(
@@ -190,13 +197,16 @@ describe("init apply wrapper", () => {
       );
 
       expect(result.installPaths).toContain("CLAUDE.md");
+      expect(result.installPaths).toContain(".agentplane/agents/CODER.json");
       expect(result.installPaths).toContain(".agentplane/policy/workflow.branch_pr.md");
       expect(await readFile(directPolicyPath, "utf8")).toContain("# Workflow: direct");
       expect(gateway).toBe(expectedGateway);
       expect(gateway).toContain("CLAUDE.md");
       expect(gateway).not.toContain("## A) direct mode (single checkout)");
+      expect(parsedCoderProfile.id).toBe("CODER");
       expect(branchPolicy).toContain("# Workflow: branch_pr");
       expect(gatewayBaseline).toBe(gateway);
+      expect(coderProfileBaseline).toBe(coderProfile);
       expect(branchPolicyBaseline).toBe(branchPolicy);
     } finally {
       await rm(root, { force: true, recursive: true });

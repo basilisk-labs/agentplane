@@ -1,10 +1,10 @@
 ---
 id: "202604291531-Y7XR4M"
 title: "Compile agent profiles and upgrade baselines from modules"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -27,16 +27,38 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-29T18:31:02.066Z"
+  updated_by: "CODER"
+  note: "Verified: reconciled PR metadata after agent profile module compilation commit 0b096e4759d1. Prior checks remain current for the committed diff: focused tests, typecheck, git diff --check, framework bootstrap, doctor, check-routing, and agentplane agents passed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Route init agent profile emission and related upgrade baseline seeding through compiled framework prompt modules while preserving existing agent JSON output and role behavior."
+events:
+  -
+    type: "status"
+    at: "2026-04-29T18:25:50.763Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Route init agent profile emission and related upgrade baseline seeding through compiled framework prompt modules while preserving existing agent JSON output and role behavior."
+  -
+    type: "verify"
+    at: "2026-04-29T18:30:30.626Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified agent profile module compilation: focused agents/init/upgrade tests passed (29 tests), typecheck passed, git diff --check passed, framework bootstrap passed, doctor passed with 0 errors and 0 warnings. Extra upgrade-policy checks passed: node .agentplane/policy/check-routing.mjs and agentplane agents after bootstrap."
+  -
+    type: "verify"
+    at: "2026-04-29T18:31:02.066Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: reconciled PR metadata after agent profile module compilation commit 0b096e4759d1. Prior checks remain current for the committed diff: focused tests, typecheck, git diff --check, framework bootstrap, doctor, check-routing, and agentplane agents passed."
 doc_version: 3
-doc_updated_at: "2026-04-29T15:31:44.541Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-04-29T18:31:02.118Z"
+doc_updated_by: "CODER"
 description: "Switch .agentplane/agents profile emission and related upgrade baseline handling to the prompt module compiler, preserving existing JSON profile output and role-specific behavior."
 sections:
   Summary: |-
@@ -63,6 +85,22 @@ sections:
     7. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-29T18:30:30.626Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified agent profile module compilation: focused agents/init/upgrade tests passed (29 tests), typecheck passed, git diff --check passed, framework bootstrap passed, doctor passed with 0 errors and 0 warnings. Extra upgrade-policy checks passed: node .agentplane/policy/check-routing.mjs and agentplane agents after bootstrap.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T18:25:50.763Z, excerpt_hash=sha256:8ca948ad369f767b877e84ee09329039e3a95f355edd314cca76398526d67f50
+    
+    ### 2026-04-29T18:31:02.066Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: reconciled PR metadata after agent profile module compilation commit 0b096e4759d1. Prior checks remain current for the committed diff: focused tests, typecheck, git diff --check, framework bootstrap, doctor, check-routing, and agentplane agents passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T18:30:30.640Z, excerpt_hash=sha256:8ca948ad369f767b877e84ee09329039e3a95f355edd314cca76398526d67f50
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert agent profile compiler wiring to direct template emission.
@@ -103,6 +141,22 @@ Switch .agentplane/agents profile emission and related upgrade baseline handling
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-29T18:30:30.626Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified agent profile module compilation: focused agents/init/upgrade tests passed (29 tests), typecheck passed, git diff --check passed, framework bootstrap passed, doctor passed with 0 errors and 0 warnings. Extra upgrade-policy checks passed: node .agentplane/policy/check-routing.mjs and agentplane agents after bootstrap.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T18:25:50.763Z, excerpt_hash=sha256:8ca948ad369f767b877e84ee09329039e3a95f355edd314cca76398526d67f50
+
+### 2026-04-29T18:31:02.066Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: reconciled PR metadata after agent profile module compilation commit 0b096e4759d1. Prior checks remain current for the committed diff: focused tests, typecheck, git diff --check, framework bootstrap, doctor, check-routing, and agentplane agents passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T18:30:30.640Z, excerpt_hash=sha256:8ca948ad369f767b877e84ee09329039e3a95f355edd314cca76398526d67f50
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
