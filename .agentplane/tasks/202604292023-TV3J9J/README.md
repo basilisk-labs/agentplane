@@ -1,10 +1,11 @@
 ---
 id: "202604292023-TV3J9J"
 title: "Document prompt fragment contract and naming"
-status: "DOING"
+result_summary: "Merged via PR #585."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-29T20:28:03.155Z"
   updated_by: "DOCS"
   note: "Prompt fragment naming and recipe patch contract documentation is complete; declared docs verification passed."
-commit: null
+commit:
+  hash: "429ba14c4b42dbd95363bd9421d4e09342be1410"
+  message: "Merge pull request #585 from basilisk-labs/task/202604292023-TV3J9J/prompt-fragment-contract"
 comments:
   -
     author: "DOCS"
     body: "Start: document the prompt fragment naming, marker, mutability, and recipe patch contract before code migrations begin."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #585 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Prompt fragment naming and recipe patch contract documentation is complete; declared docs verification passed."
+  -
+    type: "status"
+    at: "2026-04-29T20:31:38.516Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #585 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-29T20:28:03.158Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-04-29T20:31:38.522Z"
+doc_updated_by: "INTEGRATOR"
 description: "Define the canonical prompt fragment naming scheme, marker conventions, mutability rules, and recipe patch semantics for gateway, policy, runner, and agent profile prompts before implementation changes."
 sections:
   Summary: |-
