@@ -1,10 +1,11 @@
 ---
 id: "202604292014-TVFA7S"
 title: "Refresh AgentPlane visual design guide"
-status: "DOING"
+result_summary: "Merged via PR #583."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-29T20:18:00.486Z"
   updated_by: "DOCS"
   note: "DESIGN.md visual guide rewrite is complete; declared docs verification passed with non-blocking design-lint color-reference warnings recorded in Findings."
-commit: null
+commit:
+  hash: "0364f98921ec6b4296d4d4e716e8f9e72f5f0d24"
+  message: "Merge pull request #583 from basilisk-labs/task/202604292014-TVFA7S/visual-design-guide"
 comments:
   -
     author: "DOCS"
     body: "Start: finish the isolated DESIGN.md visual guide rewrite, clean formatting drift, and verify it separately from runtime incident changes."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #583 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "DESIGN.md visual guide rewrite is complete; declared docs verification passed with non-blocking design-lint color-reference warnings recorded in Findings."
+  -
+    type: "status"
+    at: "2026-04-29T20:20:58.228Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #583 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-29T20:18:00.489Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-04-29T20:20:58.233Z"
+doc_updated_by: "INTEGRATOR"
 description: "Finish the interrupted DESIGN.md rewrite as a standalone documentation artifact: preserve the Nova Framework visual lineage intent, remove formatting drift, and verify the root design guide independently from runtime/policy changes."
 sections:
   Summary: |-

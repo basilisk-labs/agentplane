@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-29T20:20:09Z",
   "base": "main",
   "branch": "task/202604292014-TVFA7S/visual-design-guide",
   "created_at": "2026-04-29T20:15:17.593Z",
-  "head_sha": "187e45a82738d6e571c6df938a165af04d7275d9",
+  "head_sha": "76bd69e80ec446ce40df0f97d507788db2307dd8",
   "last_verified_at": "2026-04-29T20:18:00.486Z",
   "last_verified_sha": "21003b3c672f233b9edf2bbec598993f90287bb9",
+  "merge_commit": "0364f98921ec6b4296d4d4e716e8f9e72f5f0d24",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-29T20:20:09Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604292014-TVFA7S",
-  "updated_at": "2026-04-29T20:18:09.632Z",
+  "updated_at": "2026-04-29T20:20:09Z",
   "verify": {
     "status": "pass"
   }
