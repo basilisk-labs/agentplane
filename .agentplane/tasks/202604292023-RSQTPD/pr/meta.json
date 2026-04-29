@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-29T21:32:55Z",
   "base": "main",
   "branch": "task/202604292023-RSQTPD/fragment-registry-compile",
   "created_at": "2026-04-29T21:20:40.761Z",
-  "head_sha": "91df573d07be210ef4e5e9cbbaa8733e37f3cdb1",
+  "head_sha": "d2573beaaeffb1b96dbacaa3ae95d9965d1487fb",
   "last_verified_at": "2026-04-29T21:29:45.891Z",
   "last_verified_sha": "c72118ed4673e577f5feb7879c916ef193d75772",
+  "merge_commit": "0a69db17d368a3a1a31ca931caaa235f4171ab36",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-29T21:32:55Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604292023-RSQTPD",
-  "updated_at": "2026-04-29T21:30:17.791Z",
+  "updated_at": "2026-04-29T21:32:55Z",
   "verify": {
     "status": "pass"
   }
