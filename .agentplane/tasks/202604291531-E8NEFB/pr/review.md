@@ -31,7 +31,7 @@ Switch init-time AGENTS.md/CLAUDE.md and .agentplane/policy emission to use the 
 ### Current Status
 
 - State: ok
-- Note: Verified init gateway/policy module compilation: focused init/template/routing tests passed (17 tests), policy:routing:check passed, typecheck passed, git diff --check passed, framework bootstrap passed, doctor passed with 0 errors and 0 warnings. Extra touched-file prettier/eslint checks passed.
+- Note: Verified: reconciled PR metadata after init module compilation commit 18ba18488f86. Prior checks remain current for the committed diff: focused tests, policy:routing:check, typecheck, git diff --check, framework bootstrap, doctor, and touched-file prettier/eslint passed.
 
 ## Risks
 
