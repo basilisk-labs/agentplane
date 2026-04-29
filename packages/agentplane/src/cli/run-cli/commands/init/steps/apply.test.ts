@@ -1,5 +1,14 @@
+import { mkdtemp, mkdir, readFile, rm } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+
 import { describe, expect, it, vi } from "vitest";
 
+import {
+  filterAgentsByWorkflow,
+  loadPolicyGatewayTemplate,
+} from "../../../../../agents/agents-template.js";
+import { ensureAgentsFiles } from "../write-agents.js";
 import { applyInitWithProgress, withStep } from "./apply.js";
 
 function createSpinnerMocks() {
@@ -141,5 +150,56 @@ describe("init apply wrapper", () => {
     expect(result.installPaths).toEqual([".gitignore", ".agentplane/bin/agentplane"]);
     expect(hooks).toHaveBeenCalledTimes(1);
     expect(installCommit).not.toHaveBeenCalled();
+  });
+
+  it("installs gateway and policy files from compiled prompt modules", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-init-modules-"));
+    try {
+      const agentplaneDir = path.join(root, ".agentplane");
+      const agentsDir = path.join(agentplaneDir, "agents");
+      const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
+      const configPath = path.join(agentplaneDir, "config.json");
+      await mkdir(agentsDir, { recursive: true });
+      await mkdir(path.dirname(backendPath), { recursive: true });
+
+      const result = await ensureAgentsFiles({
+        gitRoot: root,
+        agentplaneDir,
+        workflow: "branch_pr",
+        policyGateway: "claude",
+        configPathAbs: configPath,
+        backendPathAbs: backendPath,
+      });
+
+      const gatewayPath = path.join(root, "CLAUDE.md");
+      const gateway = await readFile(gatewayPath, "utf8");
+      const expectedGateway = filterAgentsByWorkflow(
+        await loadPolicyGatewayTemplate("claude"),
+        "branch_pr",
+      );
+      const directPolicyPath = path.join(agentplaneDir, "policy", "workflow.direct.md");
+      const branchPolicyPath = path.join(agentplaneDir, "policy", "workflow.branch_pr.md");
+      const branchPolicy = await readFile(branchPolicyPath, "utf8");
+      const gatewayBaseline = await readFile(
+        path.join(agentplaneDir, ".upgrade", "baseline", "CLAUDE.md"),
+        "utf8",
+      );
+      const branchPolicyBaseline = await readFile(
+        path.join(agentplaneDir, ".upgrade", "baseline", "policy", "workflow.branch_pr.md"),
+        "utf8",
+      );
+
+      expect(result.installPaths).toContain("CLAUDE.md");
+      expect(result.installPaths).toContain(".agentplane/policy/workflow.branch_pr.md");
+      expect(await readFile(directPolicyPath, "utf8")).toContain("# Workflow: direct");
+      expect(gateway).toBe(expectedGateway);
+      expect(gateway).toContain("CLAUDE.md");
+      expect(gateway).not.toContain("## A) direct mode (single checkout)");
+      expect(branchPolicy).toContain("# Workflow: branch_pr");
+      expect(gatewayBaseline).toBe(gateway);
+      expect(branchPolicyBaseline).toBe(branchPolicy);
+    } finally {
+      await rm(root, { force: true, recursive: true });
+    }
   });
 });
