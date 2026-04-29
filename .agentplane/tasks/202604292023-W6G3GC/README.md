@@ -1,10 +1,11 @@
 ---
 id: "202604292023-W6G3GC"
 title: "Migrate markdown prompt assets to named fragments"
-status: "DOING"
+result_summary: "Merged via PR #591."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -29,11 +30,16 @@ verification:
   updated_at: "2026-04-29T21:11:24.464Z"
   updated_by: "CODER"
   note: "Verified markdown prompt fragments render without marker comments."
-commit: null
+commit:
+  hash: "f0089ce8a71eb219d4a6e103aafe1fe7122d8d61"
+  message: "Merge pull request #591 from basilisk-labs/task/202604292023-W6G3GC/markdown-prompt-fragments"
 comments:
   -
     author: "CODER"
     body: "Start: add named markdown fragment markers to bundled gateway, runner, and policy assets while preserving rendered installed outputs."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #591 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified markdown prompt fragments render without marker comments."
+  -
+    type: "status"
+    at: "2026-04-29T21:17:24.805Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #591 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-29T21:11:24.470Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-29T21:17:24.811Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add stable named fragment markers to AGENTS.md, RUNNER.md, and bundled policy markdown modules, preserving rendered prompt text while making each logical section addressable for replacement or disabling."
 sections:
   Summary: |-
