@@ -1,0 +1,10 @@
+ .agentplane/tasks/202604292023-0BQZMA/README.md | 107 +++++++++++++++++++++++
+ .agentplane/tasks/202604292023-GHNS95/README.md | 106 +++++++++++++++++++++++
+ .agentplane/tasks/202604292023-RSQTPD/README.md | 107 +++++++++++++++++++++++
+ .agentplane/tasks/202604292023-W6G3GC/README.md | 109 +++++++++++++++++++++++
+ .agentplane/tasks/202604292024-BGZ798/README.md | 110 ++++++++++++++++++++++++
+ docs/developer/modular-prompt-assembly.mdx      |  95 ++++++++++++++++++++
+ docs/developer/recipes-how-it-works.mdx         |   5 ++
+ docs/developer/recipes-spec.mdx                 |  20 +++++
+ docs/developer/testing-and-quality.mdx          |   7 ++
+ 9 files changed, 666 insertions(+)

@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604292023-TV3J9J/prompt-fragment-contract",
+  "created_at": "2026-04-29T20:25:13.576Z",
+  "head_sha": "6b7360407cffb13e3fa1569278a491784b5e67c9",
+  "last_verified_at": "2026-04-29T20:28:03.155Z",
+  "last_verified_sha": "86cb09c5f813b8853c9868e4eb1f686ef74095de",
+  "schema_version": 1,
+  "task_id": "202604292023-TV3J9J",
+  "updated_at": "2026-04-29T20:28:50.771Z",
+  "verify": {
+    "status": "pass"
+  }
+}
