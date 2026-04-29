@@ -50,12 +50,18 @@ Expose prompt graph diagnostics and drift detection through doctor/explain-style
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T19:19:14.656Z
+- Updated: 2026-04-29T19:30:20.444Z
 - Branch: task/202604291531-864BKX/prompt-graph-diagnostics
-- Head: fd959dd75abd
+- Head: e030c46467a2
 
 ```text
-No changes detected.
+ .../src/commands/doctor.command.runtime.test.ts    |  36 +++
+ packages/agentplane/src/commands/doctor.run.ts     |   2 +
+ .../agentplane/src/commands/doctor/prompt-graph.ts | 120 +++++++++
+ .../src/commands/runtime.command.test.ts           |  93 +++++++
+ .../agentplane/src/commands/runtime.command.ts     |  36 ++-
+ .../commands/shared/prompt-graph-diagnostics.ts    | 292 +++++++++++++++++++++
+ 6 files changed, 571 insertions(+), 8 deletions(-)
 ```
 
 </details>

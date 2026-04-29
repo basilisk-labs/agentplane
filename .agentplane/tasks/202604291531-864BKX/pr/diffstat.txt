@@ -1,0 +1,7 @@
+ .../src/commands/doctor.command.runtime.test.ts    |  36 +++
+ packages/agentplane/src/commands/doctor.run.ts     |   2 +
+ .../agentplane/src/commands/doctor/prompt-graph.ts | 120 +++++++++
+ .../src/commands/runtime.command.test.ts           |  93 +++++++
+ .../agentplane/src/commands/runtime.command.ts     |  36 ++-
+ .../commands/shared/prompt-graph-diagnostics.ts    | 292 +++++++++++++++++++++
+ 6 files changed, 571 insertions(+), 8 deletions(-)
