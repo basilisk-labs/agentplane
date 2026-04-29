@@ -1,0 +1,8 @@
+ .../src/runtime/prompt-fragments/index.ts          |  29 ++++
+ .../src/runtime/prompt-fragments/json.test.ts      |  89 ++++++++++
+ .../src/runtime/prompt-fragments/json.ts           |  87 ++++++++++
+ .../src/runtime/prompt-fragments/markdown.test.ts  |  92 ++++++++++
+ .../src/runtime/prompt-fragments/markdown.ts       | 188 +++++++++++++++++++++
+ .../src/runtime/prompt-fragments/model.ts          |  63 +++++++
+ .../src/runtime/prompt-fragments/validation.ts     |  89 ++++++++++
+ 7 files changed, 637 insertions(+)

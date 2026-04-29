@@ -22,12 +22,19 @@ Introduce source-level prompt fragment contracts and parser/renderer utilities f
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T20:34:42.410Z
+- Updated: 2026-04-29T20:43:34.460Z
 - Branch: task/202604292023-GHNS95/prompt-fragment-parser
-- Head: 919fedf06554
+- Head: 44355d254a1c
 
 ```text
-No changes detected.
+ .../src/runtime/prompt-fragments/index.ts          |  29 ++++
+ .../src/runtime/prompt-fragments/json.test.ts      |  89 ++++++++++
+ .../src/runtime/prompt-fragments/json.ts           |  87 ++++++++++
+ .../src/runtime/prompt-fragments/markdown.test.ts  |  92 ++++++++++
+ .../src/runtime/prompt-fragments/markdown.ts       | 188 +++++++++++++++++++++
+ .../src/runtime/prompt-fragments/model.ts          |  63 +++++++
+ .../src/runtime/prompt-fragments/validation.ts     |  89 ++++++++++
+ 7 files changed, 637 insertions(+)
 ```
 
 </details>
