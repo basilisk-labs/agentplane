@@ -4,7 +4,7 @@ title: "Enable recipe patching for prompt fragments"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,9 +27,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-29T21:44:44.955Z"
+  updated_at: "2026-04-29T21:45:43.179Z"
   updated_by: "CODER"
-  note: "Implemented fragment_id prompt module selectors for recipe patch/replace/disable/validator flows; verified with recipe transaction, doctor runtime, compiler tests, docs freshness, typecheck, diff check, framework bootstrap, and doctor."
+  note: "Verified: fragment_id selector implementation and recipe documentation passed transaction, doctor runtime, compiler, docs freshness, typecheck, diff check, framework bootstrap, and doctor checks."
 commit: null
 comments:
   -
@@ -49,8 +49,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented fragment_id prompt module selectors for recipe patch/replace/disable/validator flows; verified with recipe transaction, doctor runtime, compiler tests, docs freshness, typecheck, diff check, framework bootstrap, and doctor."
+  -
+    type: "verify"
+    at: "2026-04-29T21:45:43.179Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: fragment_id selector implementation and recipe documentation passed transaction, doctor runtime, compiler, docs freshness, typecheck, diff check, framework bootstrap, and doctor checks."
 doc_version: 3
-doc_updated_at: "2026-04-29T21:44:44.962Z"
+doc_updated_at: "2026-04-29T21:45:43.183Z"
 doc_updated_by: "CODER"
 description: "Extend recipe prompt mutation fixtures, diagnostics, and developer docs so recipes can patch, replace, disable, or validate individual named prompt fragments across gateway, policy, runner, and agent profile surfaces."
 sections:
@@ -85,6 +91,14 @@ sections:
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T21:36:49.637Z, excerpt_hash=sha256:1596ae3bf7a8dddae7e1acbc2c92ff8febae17f795df91c68867a70a9fd0616a
     
+    ### 2026-04-29T21:45:43.179Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: fragment_id selector implementation and recipe documentation passed transaction, doctor runtime, compiler, docs freshness, typecheck, diff check, framework bootstrap, and doctor checks.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T21:44:44.962Z, excerpt_hash=sha256:1596ae3bf7a8dddae7e1acbc2c92ff8febae17f795df91c68867a70a9fd0616a
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -93,6 +107,12 @@ sections:
     - Observation: Recipes can now target provenance.fragment_id selectors across gateway, policy, runner, and agent_profile prompt modules; runtime explain includes fragment provenance.
       Impact: Recipe mutations no longer need line numbers, JSON array indexes, or whole-file prompt replacements for named fragments.
       Resolution: Added selector validation/compiler matching, diagnostics, overlay fixtures, transaction coverage, runtime explain coverage, and developer docs.
+      Promotion: incident-candidate
+      Fixability: external
+    
+    - Observation: Committed implementation supports recipe selectors by provenance.fragment_id for patch_module, replace_module, disable_module, required_module, and forbidden_module.
+      Impact: Recipes can target named prompt fragments across gateway, policy, runner, and agent profile surfaces without JSON line/index selectors.
+      Resolution: Recorded tests and docs around fragment-level selectors and transaction diagnostics.
       Promotion: incident-candidate
       Fixability: external
 id_source: "generated"
@@ -137,6 +157,14 @@ Note: Implemented fragment_id prompt module selectors for recipe patch/replace/d
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T21:36:49.637Z, excerpt_hash=sha256:1596ae3bf7a8dddae7e1acbc2c92ff8febae17f795df91c68867a70a9fd0616a
 
+### 2026-04-29T21:45:43.179Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: fragment_id selector implementation and recipe documentation passed transaction, doctor runtime, compiler, docs freshness, typecheck, diff check, framework bootstrap, and doctor checks.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T21:44:44.962Z, excerpt_hash=sha256:1596ae3bf7a8dddae7e1acbc2c92ff8febae17f795df91c68867a70a9fd0616a
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -149,5 +177,11 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T21:36:49.637Z, excerpt_
 - Observation: Recipes can now target provenance.fragment_id selectors across gateway, policy, runner, and agent_profile prompt modules; runtime explain includes fragment provenance.
   Impact: Recipe mutations no longer need line numbers, JSON array indexes, or whole-file prompt replacements for named fragments.
   Resolution: Added selector validation/compiler matching, diagnostics, overlay fixtures, transaction coverage, runtime explain coverage, and developer docs.
+  Promotion: incident-candidate
+  Fixability: external
+
+- Observation: Committed implementation supports recipe selectors by provenance.fragment_id for patch_module, replace_module, disable_module, required_module, and forbidden_module.
+  Impact: Recipes can target named prompt fragments across gateway, policy, runner, and agent profile surfaces without JSON line/index selectors.
+  Resolution: Recorded tests and docs around fragment-level selectors and transaction diagnostics.
   Promotion: incident-candidate
   Fixability: external
