@@ -1,0 +1,5 @@
+ docs/developer/modular-prompt-assembly.mdx | 95 ++++++++++++++++++++++++++++++
+ docs/developer/recipes-how-it-works.mdx    |  5 ++
+ docs/developer/recipes-spec.mdx            | 20 +++++++
+ docs/developer/testing-and-quality.mdx     |  7 +++
+ 4 files changed, 127 insertions(+)

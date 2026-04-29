@@ -22,12 +22,16 @@ Define the canonical prompt fragment naming scheme, marker conventions, mutabili
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T20:25:13.576Z
+- Updated: 2026-04-29T20:28:31.162Z
 - Branch: task/202604292023-TV3J9J/prompt-fragment-contract
-- Head: 86cb09c5f813
+- Head: 7fefd9f3e9cc
 
 ```text
-No changes detected.
+ docs/developer/modular-prompt-assembly.mdx | 95 ++++++++++++++++++++++++++++++
+ docs/developer/recipes-how-it-works.mdx    |  5 ++
+ docs/developer/recipes-spec.mdx            | 20 +++++++
+ docs/developer/testing-and-quality.mdx     |  7 +++
+ 4 files changed, 127 insertions(+)
 ```
 
 </details>
