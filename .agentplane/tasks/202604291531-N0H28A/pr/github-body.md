@@ -24,12 +24,23 @@ Wire installed and active recipe prompt module mutations into the compiled promp
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T19:03:49.698Z
+- Updated: 2026-04-29T19:14:12.219Z
 - Branch: task/202604291531-N0H28A/recipe-mutation-graph
-- Head: f5e5ffede655
+- Head: 3784a23ed7ca
 
 ```text
-No changes detected.
+ .../src/commands/recipes.transaction.test.ts       |  88 ++++++++++++-
+ .../agentplane/src/commands/recipes/impl/apply.ts  | 138 +------------------
+ .../src/commands/recipes/impl/overlay-compile.ts   |  65 +++++++++
+ .../commands/recipes/impl/overlay-project.test.ts  |  20 ++-
+ .../src/commands/recipes/impl/overlay-project.ts   |   4 +
+ .../src/commands/recipes/impl/overlay-publish.ts   |  24 ++++
+ .../agentplane/src/commands/recipes/impl/paths.ts  |   4 +
+ .../recipes/impl/project-installed-recipes.test.ts |  16 ++-
+ .../src/commands/recipes/impl/prompt-assets.ts     | 146 +++++++++++++++++++++
+ .../agentplane/src/runtime/prompt-modules/index.ts |   1 +
+ .../src/runtime/prompt-modules/validation.ts       |  46 +++++++
+ 11 files changed, 407 insertions(+), 145 deletions(-)
 ```
 
 </details>
