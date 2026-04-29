@@ -1,4 +1,4 @@
-import type { PromptModuleMutability, PromptModuleSlot } from "../prompt-modules/index.js";
+import type { PromptModuleMutability, PromptModuleSlot } from "../prompt-modules/model.js";
 import type {
   ParsedPromptMarkdownFragments,
   PromptMarkdownFragment,

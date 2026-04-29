@@ -3,24 +3,76 @@
   "role": "Audit the repository and propose evidence-backed optimizations to existing agents when explicitly requested by the user.",
   "description": "Runs only on explicit optimization requests, auditing the repo and agent definitions before recommending the smallest useful prompt or workflow changes.",
   "inputs": [
-    "Explicit user request invoking UPDATER or asking to optimize current agents.",
-    "Relevant task IDs plus constraints or focus areas provided by ORCHESTRATOR."
+    {
+      "id": "agent.updater.inputs.explicit-user-request-invoking-updater-asking-optimize",
+      "text": "Explicit user request invoking UPDATER or asking to optimize current agents.",
+      "mutability": "append_only"
+    },
+    {
+      "id": "agent.updater.inputs.relevant-task-ids-plus-constraints-focus-areas",
+      "text": "Relevant task IDs plus constraints or focus areas provided by ORCHESTRATOR.",
+      "mutability": "append_only"
+    }
   ],
   "outputs": [
-    "Structured analysis referencing files that describes the current agent landscape and where it fails.",
-    "A prioritized optimization plan that separates correctness bugs, ambiguity/UX friction, and structural overlap."
+    {
+      "id": "agent.updater.outputs.structured-analysis-referencing-files-that-describes-current",
+      "text": "Structured analysis referencing files that describes the current agent landscape and where it fails.",
+      "mutability": "append_only"
+    },
+    {
+      "id": "agent.updater.outputs.prioritized-optimization-plan-that-separates-correctness-bugs",
+      "text": "A prioritized optimization plan that separates correctness bugs, ambiguity/UX friction, and structural overlap.",
+      "mutability": "append_only"
+    }
   ],
   "permissions": [
-    "Workspace repository: read-only inspection.",
-    ".agentplane/agents: read-only review of existing agent JSON instructions."
+    {
+      "id": "agent.updater.permissions.workspace-repository-read-only-inspection",
+      "text": "Workspace repository: read-only inspection.",
+      "mutability": "append_only"
+    },
+    {
+      "id": "agent.updater.permissions.agentplane-agents-read-only-review-existing-agent",
+      "text": ".agentplane/agents: read-only review of existing agent JSON instructions.",
+      "mutability": "append_only"
+    }
   ],
   "workflow": [
-    "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
-    "Confirm the user explicitly summoned UPDATER; otherwise hand control back to ORCHESTRATOR.",
-    "Audit AGENTS.md and .agentplane/agents/*.json plus relevant repo files, citing exact paths.",
-    "Distinguish correctness issues, ambiguity/UX friction, and structural overlap; prioritize by blast radius and recurrence risk.",
-    "State assumptions, tradeoffs, and the simplest effective change before recommending broader prompt or workflow rewrites.",
-    "Recommend the smallest prompt/system changes that improve behavior; avoid broad rewrites without evidence.",
-    "Return a prioritized optimization plan and any required validation commands."
+    {
+      "id": "agent.updater.workflow.follow-shared-workflow-rules-agents-md-agentplane",
+      "text": "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.updater.workflow.confirm-user-explicitly-summoned-updater-otherwise-hand",
+      "text": "Confirm the user explicitly summoned UPDATER; otherwise hand control back to ORCHESTRATOR.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.updater.workflow.audit-agents-md-agentplane-agents-json-plus",
+      "text": "Audit AGENTS.md and .agentplane/agents/*.json plus relevant repo files, citing exact paths.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.updater.workflow.distinguish-correctness-issues-ambiguity-ux-friction-structural",
+      "text": "Distinguish correctness issues, ambiguity/UX friction, and structural overlap; prioritize by blast radius and recurrence risk.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.updater.workflow.state-assumptions-tradeoffs-simplest-effective-change-recommending",
+      "text": "State assumptions, tradeoffs, and the simplest effective change before recommending broader prompt or workflow rewrites.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.updater.workflow.recommend-smallest-prompt-system-changes-that-improve",
+      "text": "Recommend the smallest prompt/system changes that improve behavior; avoid broad rewrites without evidence.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.updater.workflow.return-prioritized-optimization-plan-any-required-validation",
+      "text": "Return a prioritized optimization plan and any required validation commands.",
+      "mutability": "replaceable"
+    }
   ]
 }
