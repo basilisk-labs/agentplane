@@ -5,6 +5,7 @@ import {
   loadAgentTemplates,
   loadPolicyGatewayTemplate,
   loadPolicyTemplates,
+  renderMarkdownPromptTemplate,
 } from "../../agents/agents-template.js";
 import { getVersion } from "../../meta/version.js";
 import type { ResolvedExecutionProfileRuntime } from "../execution-profile/index.js";
@@ -194,6 +195,8 @@ async function loadFrameworkAgentProfileModules(): Promise<PromptModule[]> {
 }
 
 async function loadFrameworkRunnerModule(): Promise<PromptModule> {
+  const sourceRef = "packages/agentplane/assets/RUNNER.md";
+  const source = await readFile(resolveAgentplaneAssetPath("RUNNER.md"), "utf8");
   return frameworkPromptModule({
     surface: "runner",
     target: "runner.bundle",
@@ -201,10 +204,13 @@ async function loadFrameworkRunnerModule(): Promise<PromptModule> {
     name: "framework_runner",
     title: "Bundled framework runner prompt",
     content_kind: "markdown",
-    content: await readFile(resolveAgentplaneAssetPath("RUNNER.md"), "utf8"),
+    content: renderMarkdownPromptTemplate(source, {
+      source_ref: sourceRef,
+      fallback_id: "runner.bundle.file.framework_runner",
+    }).contents,
     provenance: {
       source_kind: "framework_builtin",
-      source_ref: "packages/agentplane/assets/RUNNER.md",
+      source_ref: sourceRef,
     },
   });
 }

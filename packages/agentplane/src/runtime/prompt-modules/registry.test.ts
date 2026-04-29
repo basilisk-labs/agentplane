@@ -8,7 +8,11 @@ import {
   loadFrameworkPromptModuleRegistry,
   loadFrameworkPromptModules,
 } from "./index.js";
-import { loadAgentTemplates, loadPolicyTemplates } from "../../agents/agents-template.js";
+import {
+  loadAgentTemplates,
+  loadPolicyTemplates,
+  renderMarkdownPromptTemplate,
+} from "../../agents/agents-template.js";
 import type { ResolvedExecutionProfileRuntime } from "../execution-profile/index.js";
 
 function sha256(text: string): string {
@@ -88,12 +92,17 @@ describe("framework prompt module registry", () => {
       path.join(process.cwd(), "packages", "agentplane", "assets", "agents", "CODER.json"),
       "utf8",
     );
-    const runnerAsset = `${runnerAssetRaw.trimEnd()}\n`;
-    const coderAsset = `${coderAssetRaw.trimEnd()}\n`;
+    const runnerAsset = renderMarkdownPromptTemplate(runnerAssetRaw, {
+      source_ref: "packages/agentplane/assets/RUNNER.md",
+    }).contents;
+    const coderAsset = (await loadAgentTemplates()).find(
+      (template) => template.fileName === "CODER.json",
+    )?.contents;
 
     expect(runner?.content).toBe(runnerAsset);
     expect(runner?.provenance.content_hash).toBe(sha256(runnerAsset));
     expect(coder?.content).toBe(coderAsset);
+    expect(coder?.content).not.toBe(`${coderAssetRaw.trimEnd()}\n`);
     expect(coder?.provenance.source_ref).toBe("packages/agentplane/assets/agents/CODER.json");
   });
 

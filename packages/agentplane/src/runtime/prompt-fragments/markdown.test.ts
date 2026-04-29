@@ -26,7 +26,7 @@ describe("prompt markdown fragments", () => {
       id_source: "declared",
       slot: "workflow",
       mutability: "replaceable",
-      text: "\n2. Start work with dedicated task branch + worktree.\n",
+      text: "2. Start work with dedicated task branch + worktree.\n",
       source: {
         kind: "markdown_marker",
         source_ref: "packages/agentplane/assets/policy/workflow.branch_pr.md",
@@ -34,16 +34,9 @@ describe("prompt markdown fragments", () => {
       },
     });
     expect(renderPromptMarkdownFragments(parsed)).toBe(
-      [
-        "# Policy",
-        "",
-        "",
-        "2. Start work with dedicated task branch + worktree.",
-        "",
-        "",
-        "Tail.",
-        "",
-      ].join("\n"),
+      ["# Policy", "", "2. Start work with dedicated task branch + worktree.", "", "Tail.", ""].join(
+        "\n",
+      ),
     );
   });
 

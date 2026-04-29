@@ -1,5 +1,8 @@
+<!-- ap:fragment id="policy.governance.body.policy.governance" slot="body" mutability="replaceable" -->
 # Policy Governance
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.governance.source_of_truth.incident.source.of.truth" slot="source_of_truth" mutability="replaceable" -->
 ## Incident source of truth
 
 - `.agentplane/policy/incidents.md` is the active incident registry for unresolved incidents that still need operator attention or follow-up engineering work.
@@ -11,6 +14,8 @@
 - Normal startup MUST NOT bulk-load `incidents.md`; targeted lookup for analogous work is allowed through `task start-ready` and `agentplane incidents advise`.
 - Closed incidents MAY be removed from `.agentplane/policy/incidents.md`, but only after their final state and evidence have been preserved in `docs/developer/incident-archive.mdx`.
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.governance.hard_constraint.stabilization.criteria" slot="hard_constraint" mutability="append_only" -->
 ## Stabilization criteria
 
 Use `stabilized` only when the same failure class recurs at least 2 times in 30 days.
@@ -23,19 +28,26 @@ Promotion from `incidents.md` into canonical policy modules is allowed only when
 2. Enforcement is defined (`CI`, `test`, `lint`, or policy check script).
 3. Policy gateway load rules are updated if routing behavior changes.
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.governance.hard_constraint.canonical.module.immutability" slot="hard_constraint" mutability="append_only" -->
 ## Canonical module immutability
 
 - Canonical modules are immutable by default during feature delivery tasks.
 - Canonical modules MAY be changed only in a dedicated policy task with explicit user approval.
 - Every canonical policy edit MUST include `node .agentplane/policy/check-routing.mjs` in verification evidence.
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.governance.hard_constraint.policy.budget" slot="hard_constraint" mutability="append_only" -->
 ## Policy budget
 
 - The policy gateway file (`AGENTS.md` or `CLAUDE.md`) MUST remain compact (target <= 250 lines).
 - Detailed procedures MUST be placed in canonical modules listed in the gateway file.
 - If a policy change needs >20 new lines in the gateway file, move detail to a module and keep only routing + hard gate in gateway.
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.governance.hard_constraint.rule.quality" slot="hard_constraint" mutability="append_only" -->
 ## Rule quality
 
 - MUST rules should be enforceable by tooling where possible.
 - Non-enforceable guidance should be marked as SHOULD and kept out of hard-gate sections.
+<!-- /ap:fragment -->

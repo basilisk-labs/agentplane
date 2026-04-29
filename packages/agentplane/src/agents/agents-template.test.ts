@@ -7,9 +7,27 @@ import {
   loadAgentTemplates,
   loadAgentsTemplate,
   loadPolicyTemplates,
+  renderMarkdownPromptTemplate,
 } from "./agents-template.js";
 
 const LOCAL_CLI = "node packages/agentplane/bin/agentplane.js";
+
+async function listMarkdownFiles(dirPath: string, relPrefix = ""): Promise<string[]> {
+  const entries = await readdir(dirPath, { withFileTypes: true });
+  const files: string[] = [];
+
+  for (const entry of entries.toSorted((left, right) => left.name.localeCompare(right.name))) {
+    const relPath = relPrefix ? `${relPrefix}/${entry.name}` : entry.name;
+    const absPath = path.join(dirPath, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...(await listMarkdownFiles(absPath, relPath)));
+      continue;
+    }
+    if (entry.isFile() && entry.name.endsWith(".md")) files.push(relPath);
+  }
+
+  return files;
+}
 
 describe("agents-template", () => {
   it("bundled AGENTS.md matches framework assets AGENTS.md", async () => {
@@ -18,13 +36,21 @@ describe("agents-template", () => {
       "utf8",
     );
     const bundledText = await loadAgentsTemplate();
-    expect(bundledText).toBe(`${assetsText.trimEnd()}\n`);
+    const renderedAsset = renderMarkdownPromptTemplate(assetsText, {
+      source_ref: "packages/agentplane/assets/AGENTS.md",
+    });
+    expect(bundledText).toBe(renderedAsset.contents);
+    expect(bundledText).not.toContain("ap:fragment");
   });
 
-  it("repo AGENTS.md matches bundled AGENTS.md (system CLI)", async () => {
+  it("repo AGENTS.md source renders to bundled AGENTS.md (system CLI)", async () => {
     const repoText = await readFile(path.join(process.cwd(), "AGENTS.md"), "utf8");
     const bundledText = await loadAgentsTemplate();
-    expect(`${repoText.trimEnd()}\n`).toBe(bundledText);
+    const renderedRepo = renderMarkdownPromptTemplate(repoText, {
+      source_ref: "AGENTS.md",
+    });
+    expect(renderedRepo.contents).toBe(bundledText);
+    expect(bundledText).not.toContain("ap:fragment");
   });
 
   it("bundled AGENTS.md keeps workflow guidance derived from config instead of hardcoding a mode", async () => {
@@ -111,7 +137,17 @@ describe("agents-template", () => {
     for (const policy of bundled) {
       const assetPath = path.join(assetsPolicyDir, policy.relativePath);
       const assetText = await readFile(assetPath, "utf8");
-      expect(policy.contents).toBe(`${assetText.trimEnd()}\n`);
+      if (policy.relativePath.endsWith(".md")) {
+        const renderedAsset = renderMarkdownPromptTemplate(assetText, {
+          source_ref: `packages/agentplane/assets/policy/${policy.relativePath}`,
+        });
+        expect(policy.contents).toBe(renderedAsset.contents);
+        expect(policy.sourceContents).toBe(renderedAsset.sourceContents);
+        expect(policy.fragments).toEqual(renderedAsset.fragments);
+        expect(policy.contents).not.toContain("ap:fragment");
+      } else {
+        expect(policy.contents).toBe(`${assetText.trimEnd()}\n`);
+      }
       expect(policy.relativePath.startsWith(".")).toBe(false);
     }
   });
@@ -122,9 +158,33 @@ describe("agents-template", () => {
     const bundled = await loadPolicyTemplates();
 
     for (const policy of bundled) {
-      const assetText = await readFile(path.join(assetsPolicyDir, policy.relativePath), "utf8");
       const repoText = await readFile(path.join(repoPolicyDir, policy.relativePath), "utf8");
-      expect(`${repoText.trimEnd()}\n`).toBe(`${assetText.trimEnd()}\n`);
+      expect(`${repoText.trimEnd()}\n`).toBe(policy.contents);
+    }
+  });
+
+  it("bundled markdown prompt assets use valid unique declared fragments", async () => {
+    const assetsDir = path.join(process.cwd(), "packages", "agentplane", "assets");
+    const policyMarkdownFiles = (await listMarkdownFiles(path.join(assetsDir, "policy"))).map(
+      (entry) => `policy/${entry}`,
+    );
+    const markdownFiles = ["AGENTS.md", "RUNNER.md", ...policyMarkdownFiles];
+    const seen = new Map<string, string>();
+
+    for (const relativePath of markdownFiles) {
+      const assetText = await readFile(path.join(assetsDir, relativePath), "utf8");
+      const rendered = renderMarkdownPromptTemplate(assetText, {
+        source_ref: `packages/agentplane/assets/${relativePath}`,
+      });
+      expect(rendered.fragments.length, relativePath).toBeGreaterThan(0);
+      expect(rendered.contents).not.toContain("ap:fragment");
+
+      for (const fragment of rendered.fragments) {
+        expect(fragment.id_source).toBe("declared");
+        const existing = seen.get(fragment.id);
+        expect(existing, `${fragment.id} duplicated in ${relativePath}`).toBeUndefined();
+        seen.set(fragment.id, relativePath);
+      }
     }
   });
 

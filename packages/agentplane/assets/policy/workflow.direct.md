@@ -1,7 +1,10 @@
+<!-- ap:fragment id="policy.workflow.direct.workflow.workflow.direct" slot="workflow" mutability="replaceable" -->
 # Workflow: direct
 
 Use this module when `workflow_mode=direct`.
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.workflow.direct.workflow.required.sequence" slot="workflow" mutability="replaceable" -->
 ## Required sequence
 
 1. CHECKPOINT A: run preflight and publish summary.
@@ -17,6 +20,8 @@ Use this module when `workflow_mode=direct`.
 8. Record verification result (`agentplane verify ...`) for the task scope.
 9. CHECKPOINT C: finish task with traceable evidence.
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.workflow.direct.commands.command.contract" slot="commands" mutability="replaceable" -->
 ## Command contract
 
 ```bash
@@ -28,6 +33,8 @@ agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
 agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>
 ```
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.workflow.direct.workflow.error.recovery" slot="workflow" mutability="replaceable" -->
 ## ERROR RECOVERY
 
 If any step fails:
@@ -40,6 +47,8 @@ If any step fails:
 4. Request re-approval before scope/risk changes.
 5. If failure is external/process-related and should become reusable advice, record a structured `Observation` / `Impact` / `Resolution` block in `Findings` and mark it with `Fixability: external` (or `IncidentExternal: true`); plain prose in `Findings` stays task-local and does not update `.agentplane/policy/incidents.md`.
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.workflow.direct.hard_constraint.constraints" slot="hard_constraint" mutability="append_only" -->
 ## Constraints
 
 - MUST NOT perform mutating actions before explicit user approval.
@@ -51,3 +60,4 @@ If any step fails:
 - MUST stop and request re-approval on material drift.
 - Do not use worktrees in direct mode.
 - Do not perform `branch_pr`-only operations.
+<!-- /ap:fragment -->

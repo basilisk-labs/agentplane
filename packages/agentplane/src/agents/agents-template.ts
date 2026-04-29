@@ -8,8 +8,11 @@ import {
 } from "../shared/policy-gateway.js";
 import { resolveAgentplaneAssetPath } from "../shared/package-paths.js";
 import {
+  parsePromptMarkdownFragments,
   normalizePromptFragmentList,
   type PromptJsonTextFragment,
+  renderPromptMarkdownFragments,
+  type PromptMarkdownFragment,
 } from "../runtime/prompt-fragments/index.js";
 
 const AGENTS_TEMPLATE_PATH = resolveAgentplaneAssetPath("AGENTS.md");
@@ -28,13 +31,45 @@ export type AgentTemplate = {
   sourceContents: string;
   fragments: PromptJsonTextFragment[];
 };
-type PolicyTemplate = { relativePath: string; contents: string };
+export type MarkdownPromptTemplate = {
+  contents: string;
+  sourceContents: string;
+  fragments: PromptMarkdownFragment[];
+};
+type PolicyTemplate = {
+  relativePath: string;
+  contents: string;
+  sourceContents: string;
+  fragments: PromptMarkdownFragment[];
+};
 
 let agentTemplatesCache: Promise<AgentTemplate[]> | null = null;
 const policyGatewayTemplateCache = new Map<PolicyGatewayFlavor, Promise<string>>();
 
 function ensureTrailingNewline(text: string): string {
   return text.endsWith("\n") ? text : `${text}\n`;
+}
+
+export function renderMarkdownPromptTemplate(
+  sourceContents: string,
+  opts: {
+    source_ref: string;
+    fallback_id?: string;
+  },
+): MarkdownPromptTemplate {
+  const source = ensureTrailingNewline(sourceContents.trimEnd());
+  const parsed = parsePromptMarkdownFragments(source, {
+    source_ref: opts.source_ref,
+    fallback_id: opts.fallback_id,
+    fallback_slot: "file",
+    fallback_mutability: "replaceable",
+  });
+
+  return {
+    contents: ensureTrailingNewline(renderPromptMarkdownFragments(parsed).trimEnd()),
+    sourceContents: source,
+    fragments: parsed.fragments,
+  };
 }
 
 type AgentProfileRecord = Record<string, unknown>;
@@ -194,9 +229,20 @@ export async function loadPolicyTemplates(): Promise<PolicyTemplate[]> {
   for (const relFile of relFiles) {
     const filePath = path.join(dirPath, relFile);
     const contents = await readFile(filePath, "utf8");
+    const relativePath = relFile.replaceAll("\\", "/");
+    const sourceRef = `packages/agentplane/assets/policy/${relativePath}`;
+    const rendered = relFile.endsWith(".md")
+      ? renderMarkdownPromptTemplate(contents, { source_ref: sourceRef })
+      : {
+          contents: ensureTrailingNewline(contents.trimEnd()),
+          sourceContents: ensureTrailingNewline(contents.trimEnd()),
+          fragments: [],
+        };
     templates.push({
-      relativePath: relFile.replaceAll("\\", "/"),
-      contents: ensureTrailingNewline(contents.trimEnd()),
+      relativePath,
+      contents: rendered.contents,
+      sourceContents: rendered.sourceContents,
+      fragments: rendered.fragments,
     });
   }
 
@@ -217,7 +263,10 @@ export function filterAgentsByWorkflow(template: string, workflow: WorkflowMode)
 async function readPolicyGatewayTemplate(flavor: PolicyGatewayFlavor): Promise<string> {
   const text = await readFile(AGENTS_TEMPLATE_PATH, "utf8");
   const rendered = renderPolicyGatewayTemplateText(text, policyGatewayFileName(flavor));
-  return ensureTrailingNewline(rendered.trimEnd());
+  return renderMarkdownPromptTemplate(rendered, {
+    source_ref: "packages/agentplane/assets/AGENTS.md",
+    fallback_id: `gateway.${flavor}.file.template`,
+  }).contents;
 }
 
 export async function loadPolicyGatewayTemplate(flavor: PolicyGatewayFlavor): Promise<string> {
