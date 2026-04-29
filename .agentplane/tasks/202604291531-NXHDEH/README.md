@@ -4,7 +4,7 @@ title: "Adopt runner prompt module bridge"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-29T17:29:36.357Z"
+  updated_at: "2026-04-29T17:32:24.390Z"
   updated_by: "CODER"
-  note: "Rebased task branch onto origin/main and reran verification successfully."
+  note: "Verified: reconciled PR metadata after rebased artifact refresh."
 commit: null
 comments:
   -
@@ -60,8 +60,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rebased task branch onto origin/main and reran verification successfully."
+  -
+    type: "verify"
+    at: "2026-04-29T17:32:24.390Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: reconciled PR metadata after rebased artifact refresh."
 doc_version: 3
-doc_updated_at: "2026-04-29T17:29:36.372Z"
+doc_updated_at: "2026-04-29T17:32:24.408Z"
 doc_updated_by: "CODER"
 description: "Land the current runner prompt module bridge as the first migration step, preserving RunnerPromptBlock output while introducing stable PromptModule addresses and provenance for runner, gateway, project skill, overlay, and recipe prompt blocks."
 sections:
@@ -125,6 +131,18 @@ sections:
     Details:
     
     Commands: bun test packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts; bun run typecheck; git diff --check; bun run framework:dev:bootstrap; agentplane doctor. Results: 13 tests pass; typecheck pass; diff check pass; bootstrap pass; doctor OK with info-only historical archive notes. The initial doctor attempt was invalid because it ran while bootstrap was rebuilding dist and was rerun after bootstrap completed.
+    
+    ### 2026-04-29T17:32:24.390Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: reconciled PR metadata after rebased artifact refresh.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T17:29:36.372Z, excerpt_hash=sha256:eb1baf64db02a6af56559a033b2ba75db5dba953acad99f9a13d4022bc835a7d
+    
+    Details:
+    
+    No implementation files changed after the successful post-rebase verification run. This verification refreshes branch_pr metadata so last_verified_sha points at the reachable rebased branch history; prior checks remain: focused bun tests 13 pass, typecheck pass, git diff --check pass, framework bootstrap pass, doctor OK.
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -230,6 +248,18 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T15:38:46.288Z, excerpt_
 Details:
 
 Commands: bun test packages/agentplane/src/runner/context/base-prompts.test.ts packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts; bun run typecheck; git diff --check; bun run framework:dev:bootstrap; agentplane doctor. Results: 13 tests pass; typecheck pass; diff check pass; bootstrap pass; doctor OK with info-only historical archive notes. The initial doctor attempt was invalid because it ran while bootstrap was rebuilding dist and was rerun after bootstrap completed.
+
+### 2026-04-29T17:32:24.390Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: reconciled PR metadata after rebased artifact refresh.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T17:29:36.372Z, excerpt_hash=sha256:eb1baf64db02a6af56559a033b2ba75db5dba953acad99f9a13d4022bc835a7d
+
+Details:
+
+No implementation files changed after the successful post-rebase verification run. This verification refreshes branch_pr metadata so last_verified_sha points at the reachable rebased branch history; prior checks remain: focused bun tests 13 pass, typecheck pass, git diff --check pass, framework bootstrap pass, doctor OK.
 
 <!-- END VERIFICATION RESULTS -->
 
