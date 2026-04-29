@@ -1,0 +1,12 @@
+ .agentplane/tasks/202604291531-1GHEJZ/README.md    | 115 +++++++++++
+ .agentplane/tasks/202604291531-7R6H51/README.md    | 113 +++++++++++
+ .agentplane/tasks/202604291531-864BKX/README.md    | 115 +++++++++++
+ .agentplane/tasks/202604291531-E8NEFB/README.md    | 117 ++++++++++++
+ .agentplane/tasks/202604291531-N0H28A/README.md    | 116 +++++++++++
+ .agentplane/tasks/202604291531-Y7XR4M/README.md    | 115 +++++++++++
+ .agentplane/tasks/202604291531-Z6XH6Q/README.md    | 114 +++++++++++
+ .agentplane/tasks/202604291532-BV5NQT/README.md    | 118 ++++++++++++
+ .../src/runner/context/base-prompts.test.ts        |  39 ++++
+ .../agentplane/src/runner/context/base-prompts.ts  |   9 +-
+ .../src/runner/context/prompt-module-bridge.ts     | 212 +++++++++++++++++++++
+ 11 files changed, 1182 insertions(+), 1 deletion(-)

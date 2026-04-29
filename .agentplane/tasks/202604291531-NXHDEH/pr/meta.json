@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604291531-NXHDEH/adopt-runner-prompt-bridge",
+  "created_at": "2026-04-29T15:34:27.390Z",
+  "head_sha": "27100fdfb1f8a39fb9a1b8437a29a280b5fc1bd2",
+  "last_verified_at": "2026-04-29T17:32:24.390Z",
+  "last_verified_sha": "27100fdfb1f8a39fb9a1b8437a29a280b5fc1bd2",
+  "schema_version": 1,
+  "task_id": "202604291531-NXHDEH",
+  "updated_at": "2026-04-29T17:30:04.681Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -8,8 +8,10 @@ import { afterEach, describe, expect, it } from "vitest";
 import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
 import {
   collectRunnerBasePrompts,
+  compileRunnerPromptModuleGraph,
   resolveOwnerProfilePromptSource,
   resolvePolicyGatewayPromptSource,
+  runnerPromptBlocksToModuleGraph,
 } from "./base-prompts.js";
 
 const tempDirs = new Set<string>();
@@ -350,6 +352,43 @@ describe("collectRunnerBasePrompts", () => {
     expect(prompts[6]?.content).toContain("Inspect bundle.");
     expect(prompts[6]?.resolution?.winner.layer).toBe("extension");
     expect(prompts[7]?.content).toContain('"entrypoint": "tools/run.js"');
+
+    const graph = runnerPromptBlocksToModuleGraph(prompts);
+    expect(compileRunnerPromptModuleGraph(graph)).toEqual(prompts);
+
+    const gatewayModule = graph.nodes.find(
+      (node) => node.module.address.name === "base.policy_gateway",
+    )?.module;
+    expect(gatewayModule).toMatchObject({
+      address: {
+        namespace: "project",
+        surface: "gateway",
+        target: "AGENTS.md",
+        slot: "body",
+      },
+      owner: { kind: "project" },
+      provenance: {
+        source_kind: "project_file",
+        source_ref: "AGENTS.md",
+      },
+    });
+
+    const recipeAgentModule = graph.nodes.find(
+      (node) => node.module.address.name === "recipe.agent.RECIPE_AGENT",
+    )?.module;
+    expect(recipeAgentModule).toMatchObject({
+      address: {
+        namespace: "recipe.viewer",
+        surface: "agent_profile",
+        target: ".agentplane/agents",
+        slot: "identity",
+      },
+      owner: { kind: "recipe", recipe_id: "viewer" },
+      provenance: {
+        source_kind: "recipe_asset",
+        recipe_id: "viewer",
+      },
+    });
   });
 
   it("filters overlay prompt fragments by conjunctive when predicates including command", async () => {
