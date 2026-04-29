@@ -1,4 +1,16 @@
 export {
+  compilePromptModuleGraph,
+  matchesPromptModuleLoadCondition,
+  matchesPromptModuleMutationWhen,
+  matchesPromptModuleSelector,
+  type PromptModuleCompiledGraph,
+  type PromptModuleCompilerContext,
+  type PromptModuleDiagnostic,
+  type PromptModuleDiagnosticSeverity,
+  type PromptModulePolicyGateway,
+  type PromptModuleWorkflowMode,
+} from "./compiler.js";
+export {
   PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
   type PromptModule,
   type PromptModuleAddress,

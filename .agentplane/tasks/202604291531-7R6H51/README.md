@@ -1,10 +1,10 @@
 ---
 id: "202604291531-7R6H51"
 title: "Implement prompt module resolver and compiler"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -25,16 +25,38 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-29T17:51:50.761Z"
+  updated_by: "CODER"
+  note: "Verified: reconciled PR metadata after compiler commit."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Implement the prompt module resolver and compiler on the dedicated branch_pr worktree after NXHDEH landed on main; scope is limited to runtime prompt-module compiler behavior and focused tests."
+events:
+  -
+    type: "status"
+    at: "2026-04-29T17:41:02.477Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Implement the prompt module resolver and compiler on the dedicated branch_pr worktree after NXHDEH landed on main; scope is limited to runtime prompt-module compiler behavior and focused tests."
+  -
+    type: "verify"
+    at: "2026-04-29T17:51:02.516Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: prompt module resolver/compiler runtime and focused tests pass."
+  -
+    type: "verify"
+    at: "2026-04-29T17:51:50.761Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: reconciled PR metadata after compiler commit."
 doc_version: 3
-doc_updated_at: "2026-04-29T15:31:31.153Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-04-29T17:51:50.787Z"
+doc_updated_by: "CODER"
 description: "Add the core resolver/compiler that evaluates PromptModule load conditions, dependencies, merge policies, replacement/extension bindings, conflict handling, and validator phases without changing init or recipe lifecycle surfaces yet."
 sections:
   Summary: |-
@@ -61,6 +83,30 @@ sections:
     7. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-29T17:51:02.516Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: prompt module resolver/compiler runtime and focused tests pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T17:41:02.477Z, excerpt_hash=sha256:c37ad2f17597f659684393548dfd43bcf8581bb874657f86a4315fa603fe61b7
+    
+    Details:
+    
+    Implemented compilePromptModuleGraph with load-condition filtering, structured mutations, bindings, duplicate merge policies, dependency diagnostics, and validator phase execution. Checks: bun test packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts => 9 pass; bun run typecheck => pass; git diff --check => pass; bun prettier --check and bun eslint on touched prompt-module files => pass; bun run framework:dev:bootstrap => pass; agentplane doctor => OK with info-only historical archive notes.
+    
+    ### 2026-04-29T17:51:50.761Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: reconciled PR metadata after compiler commit.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T17:51:02.523Z, excerpt_hash=sha256:c37ad2f17597f659684393548dfd43bcf8581bb874657f86a4315fa603fe61b7
+    
+    Details:
+    
+    No implementation files changed after the successful verification run. This verification refreshes branch_pr metadata so last_verified_sha points at the reachable compiler code commit; checks remain: prompt-module tests 9 pass, typecheck pass, diff check pass, touched-file prettier/eslint pass, framework bootstrap pass, doctor OK.
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert compiler/resolver files and exports.
@@ -101,6 +147,30 @@ Add the core resolver/compiler that evaluates PromptModule load conditions, depe
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-29T17:51:02.516Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: prompt module resolver/compiler runtime and focused tests pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T17:41:02.477Z, excerpt_hash=sha256:c37ad2f17597f659684393548dfd43bcf8581bb874657f86a4315fa603fe61b7
+
+Details:
+
+Implemented compilePromptModuleGraph with load-condition filtering, structured mutations, bindings, duplicate merge policies, dependency diagnostics, and validator phase execution. Checks: bun test packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/mutations.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts => 9 pass; bun run typecheck => pass; git diff --check => pass; bun prettier --check and bun eslint on touched prompt-module files => pass; bun run framework:dev:bootstrap => pass; agentplane doctor => OK with info-only historical archive notes.
+
+### 2026-04-29T17:51:50.761Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: reconciled PR metadata after compiler commit.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T17:51:02.523Z, excerpt_hash=sha256:c37ad2f17597f659684393548dfd43bcf8581bb874657f86a4315fa603fe61b7
+
+Details:
+
+No implementation files changed after the successful verification run. This verification refreshes branch_pr metadata so last_verified_sha points at the reachable compiler code commit; checks remain: prompt-module tests 9 pass, typecheck pass, diff check pass, touched-file prettier/eslint pass, framework bootstrap pass, doctor OK.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
