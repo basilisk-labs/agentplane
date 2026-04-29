@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-29T20:47:02Z",
   "base": "main",
   "branch": "task/202604292023-GHNS95/prompt-fragment-parser",
   "created_at": "2026-04-29T20:34:42.410Z",
-  "head_sha": "44355d254a1c75610dca1530d52bc6d5fed13d9a",
+  "head_sha": "0eaa7c23954e8bd24cca83223b46149954b7a724",
   "last_verified_at": "2026-04-29T20:43:07.497Z",
   "last_verified_sha": "919fedf06554b0e6937f4f3a6ca15f3e9a745f7d",
+  "merge_commit": "f5451fec77c0dde62c3a546ccec73e686778cf7e",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-29T20:47:02Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604292023-GHNS95",
-  "updated_at": "2026-04-29T20:43:34.460Z",
+  "updated_at": "2026-04-29T20:47:02Z",
   "verify": {
     "status": "pass"
   }

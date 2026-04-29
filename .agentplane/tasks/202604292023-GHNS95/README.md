@@ -1,10 +1,11 @@
 ---
 id: "202604292023-GHNS95"
 title: "Add prompt fragment parser contracts"
-status: "DOING"
+result_summary: "Merged via PR #587."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-29T20:43:07.497Z"
   updated_by: "CODER"
   note: "Prompt fragment parser/renderer contracts are implemented; final declared checks passed with one expected pre-closure doctor warning for the active branch_pr task."
-commit: null
+commit:
+  hash: "f5451fec77c0dde62c3a546ccec73e686778cf7e"
+  message: "Merge pull request #587 from basilisk-labs/task/202604292023-GHNS95/prompt-fragment-parser"
 comments:
   -
     author: "CODER"
     body: "Start: implement source-level prompt fragment parser and renderer contracts for markdown markers and structured agent profile list items."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #587 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -53,14 +59,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Prompt fragment parser/renderer contracts are implemented; final declared checks passed with one expected pre-closure doctor warning for the active branch_pr task."
+  -
+    type: "status"
+    at: "2026-04-29T20:47:46.955Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #587 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-29T20:43:07.500Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-29T20:47:46.961Z"
+doc_updated_by: "INTEGRATOR"
 description: "Introduce source-level prompt fragment contracts and parser/renderer utilities for markdown markers and structured agent-profile list items without migrating bundled prompt assets yet."
 sections:
   Summary: |-
     Add prompt fragment parser contracts
-
+    
     Introduce source-level prompt fragment contracts and parser/renderer utilities for markdown markers and structured agent-profile list items without migrating bundled prompt assets yet.
   Scope: |-
     - In scope: Introduce source-level prompt fragment contracts and parser/renderer utilities for markdown markers and structured agent-profile list items without migrating bundled prompt assets yet.
@@ -81,31 +94,31 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-04-29T20:39:41.993Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Prompt fragment parser/renderer contracts are implemented and declared verification passed.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T20:39:37.703Z, excerpt_hash=sha256:3e95a29c6515b5418f020d47aef708c880aee4797ca64d879ff7f09e86af5d68
-
+    
     ### 2026-04-29T20:43:07.497Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Prompt fragment parser/renderer contracts are implemented; final declared checks passed with one expected pre-closure doctor warning for the active branch_pr task.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T20:43:02.206Z, excerpt_hash=sha256:3e95a29c6515b5418f020d47aef708c880aee4797ca64d879ff7f09e86af5d68
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: |-
     No code residual findings.
-
+    
     Workflow note:
     - `agentplane doctor` reports one warning while this branch_pr task is verified but not yet integrated/closed: `202604292023-GHNS95` appears shipped/open. This is expected between task verification and hosted closure and must clear after PR integration/finish.
-
+    
     Verification evidence:
     - Command: bun test packages/agentplane/src/runtime/prompt-fragments/*.test.ts
       Result: pass
