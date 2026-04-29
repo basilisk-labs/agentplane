@@ -7,6 +7,10 @@ import {
   type PolicyGatewayFlavor,
 } from "../shared/policy-gateway.js";
 import { resolveAgentplaneAssetPath } from "../shared/package-paths.js";
+import {
+  normalizePromptFragmentList,
+  type PromptJsonTextFragment,
+} from "../runtime/prompt-fragments/index.js";
 
 const AGENTS_TEMPLATE_PATH = resolveAgentplaneAssetPath("AGENTS.md");
 const AGENTS_DIR_PATH = resolveAgentplaneAssetPath("agents");
@@ -18,7 +22,12 @@ type Heading = { index: number; level: number; title: string };
 
 export type WorkflowMode = "direct" | "branch_pr";
 
-type AgentTemplate = { fileName: string; contents: string };
+export type AgentTemplate = {
+  fileName: string;
+  contents: string;
+  sourceContents: string;
+  fragments: PromptJsonTextFragment[];
+};
 type PolicyTemplate = { relativePath: string; contents: string };
 
 let agentTemplatesCache: Promise<AgentTemplate[]> | null = null;
@@ -26,6 +35,77 @@ const policyGatewayTemplateCache = new Map<PolicyGatewayFlavor, Promise<string>>
 
 function ensureTrailingNewline(text: string): string {
   return text.endsWith("\n") ? text : `${text}\n`;
+}
+
+type AgentProfileRecord = Record<string, unknown>;
+
+const AGENT_PROFILE_FRAGMENT_FIELDS = ["inputs", "outputs", "permissions", "workflow"] as const;
+const COMPACT_RENDERED_AGENT_ARRAYS = new Set([
+  "ORCHESTRATOR.json:inputs",
+  "REVIEWER.json:permissions",
+]);
+
+function agentProfileId(fileName: string): string {
+  return fileName.replace(/\.json$/i, "");
+}
+
+function agentFragmentIdPrefix(
+  fileName: string,
+  slot: (typeof AGENT_PROFILE_FRAGMENT_FIELDS)[number],
+): string {
+  return `agent.${agentProfileId(fileName).toLowerCase()}.${slot}`;
+}
+
+function defaultAgentFragmentMutability(
+  slot: (typeof AGENT_PROFILE_FRAGMENT_FIELDS)[number],
+): "append_only" | "replaceable" {
+  return slot === "workflow" ? "replaceable" : "append_only";
+}
+
+function parseAgentProfileSource(fileName: string, sourceContents: string): AgentProfileRecord {
+  const parsed = JSON.parse(sourceContents) as unknown;
+  if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) {
+    return parsed as AgentProfileRecord;
+  }
+  throw new Error(`Invalid bundled agent profile ${fileName}: expected JSON object`);
+}
+
+function renderAgentProfileContents(fileName: string, profile: AgentProfileRecord): string {
+  let rendered = JSON.stringify(profile, null, 2);
+  for (const field of AGENT_PROFILE_FRAGMENT_FIELDS) {
+    if (!COMPACT_RENDERED_AGENT_ARRAYS.has(`${fileName}:${field}`)) continue;
+    const value = profile[field];
+    if (!Array.isArray(value) || value.length !== 1 || typeof value[0] !== "string") continue;
+    const pretty = `  "${field}": [\n    ${JSON.stringify(value[0])}\n  ]`;
+    const compact = `  "${field}": [${JSON.stringify(value[0])}]`;
+    rendered = rendered.replace(pretty, compact);
+  }
+  return ensureTrailingNewline(rendered);
+}
+
+function renderAgentProfileTemplate(fileName: string, sourceContents: string): AgentTemplate {
+  const profile = parseAgentProfileSource(fileName, sourceContents);
+  const sourceRef = `packages/agentplane/assets/agents/${fileName}`;
+  const fragments: PromptJsonTextFragment[] = [];
+
+  for (const field of AGENT_PROFILE_FRAGMENT_FIELDS) {
+    if (profile[field] === undefined) continue;
+    const normalized = normalizePromptFragmentList(profile[field], {
+      id_prefix: agentFragmentIdPrefix(fileName, field),
+      slot: field,
+      source_ref: sourceRef,
+      default_mutability: defaultAgentFragmentMutability(field),
+    });
+    fragments.push(...normalized);
+    profile[field] = normalized.map((fragment) => fragment.text);
+  }
+
+  return {
+    fileName,
+    contents: renderAgentProfileContents(fileName, profile),
+    sourceContents: ensureTrailingNewline(sourceContents.trimEnd()),
+    fragments,
+  };
 }
 
 function getHeadings(lines: string[]): Heading[] {
@@ -75,7 +155,7 @@ async function readAgentTemplates(): Promise<AgentTemplate[]> {
   for (const fileName of jsonFiles) {
     const filePath = path.join(dirPath, fileName);
     const contents = await readFile(filePath, "utf8");
-    templates.push({ fileName, contents: ensureTrailingNewline(contents.trimEnd()) });
+    templates.push(renderAgentProfileTemplate(fileName, ensureTrailingNewline(contents.trimEnd())));
   }
 
   return templates;

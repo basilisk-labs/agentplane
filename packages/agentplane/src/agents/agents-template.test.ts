@@ -45,9 +45,26 @@ describe("agents-template", () => {
       expect(jsonEntries).toContain(agent.fileName);
       const assetPath = path.join(assetsAgentsDir, agent.fileName);
       const assetText = await readFile(assetPath, "utf8");
-      expect(agent.contents).toBe(`${assetText.trimEnd()}\n`);
+      expect(agent.sourceContents).toBe(`${assetText.trimEnd()}\n`);
+      expect(agent.fragments.length).toBeGreaterThan(0);
       expect(agent.contents).not.toContain(LOCAL_CLI);
+      expect(agent.contents).not.toContain('"mutability"');
     }
+  });
+
+  it("renders bundled agent fragment objects as installed string-array profiles", async () => {
+    const bundled = await loadAgentTemplates();
+    const coder = bundled.find((agent) => agent.fileName === "CODER.json");
+    expect(coder?.fragments.map((fragment) => fragment.id)).toContain(
+      "agent.coder.workflow.keep-diffs-minimal-task-scoped-easy-review",
+    );
+
+    const parsed = JSON.parse(coder?.contents ?? "{}") as {
+      workflow?: unknown[];
+    };
+    expect(parsed.workflow?.every((entry) => typeof entry === "string")).toBe(true);
+    expect(coder?.contents).toContain("Keep diffs minimal, task-scoped, and easy to review;");
+    expect(coder?.contents).not.toContain("agent.coder.workflow.keep-diffs-minimal");
   });
 
   it("installed agents prefer system CLI", async () => {
@@ -76,13 +93,14 @@ describe("agents-template", () => {
       .filter((entry) => entry.endsWith(".json"))
       .toSorted((a, b) => a.localeCompare(b));
     expect(repoEntries).toEqual(assetEntries);
+    const bundled = await loadAgentTemplates();
 
     for (const fileName of assetEntries) {
-      const assetRaw = await readFile(path.join(assetsAgentsDir, fileName), "utf8");
+      const rendered = bundled.find((agent) => agent.fileName === fileName);
       const repoRaw = await readFile(path.join(repoAgentsDir, fileName), "utf8");
-      const assetText = `${assetRaw.trimEnd()}\n`;
+      const renderedText = rendered?.contents;
       const repoText = `${repoRaw.trimEnd()}\n`;
-      expect(repoText).toBe(assetText);
+      expect(repoText).toBe(renderedText);
     }
   });
 

@@ -5,7 +5,6 @@ import { resolveProject } from "@agentplaneorg/core/project";
 
 import type { RoleProfileGuide } from "../../../command-guide.js";
 import { fileExists } from "../../../fs-utils.js";
-import { toStringList } from "../../../spec/parse-utils.js";
 import { CliError } from "../../../../shared/errors.js";
 
 export type AgentProfile = {
@@ -17,6 +16,21 @@ export type AgentProfile = {
   permissions?: unknown;
   workflow?: unknown;
 };
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function toAgentProfileStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => {
+      if (typeof item === "string") return item.trim();
+      if (isRecord(item) && typeof item.text === "string") return item.text.trim();
+      return "";
+    })
+    .filter(Boolean);
+}
 
 export function parseAgentProfileJson(filePath: string, text: string): AgentProfile {
   let parsed: unknown;
@@ -109,10 +123,10 @@ export function toRoleProfileGuide(opts: {
     typeof opts.profile.description === "string" ? opts.profile.description : ""
   ).trim();
 
-  const inputs = toStringList(opts.profile.inputs);
-  const outputs = toStringList(opts.profile.outputs);
-  const permissions = toStringList(opts.profile.permissions);
-  const workflow = toStringList(opts.profile.workflow);
+  const inputs = toAgentProfileStringList(opts.profile.inputs);
+  const outputs = toAgentProfileStringList(opts.profile.outputs);
+  const permissions = toAgentProfileStringList(opts.profile.permissions);
+  const workflow = toAgentProfileStringList(opts.profile.workflow);
 
   return {
     filename: opts.filename,

@@ -3,29 +3,101 @@
   "role": "Mine completed task evidence into reusable repo-local skills when repeated remediation patterns justify a new skill.",
   "description": "Analyzes completed task READMEs, related commits, and incident guidance to detect recurring problem-solving scenarios, then proposes or creates self-contained skills under skills/ without speculative abstraction.",
   "inputs": [
-    "A driving task ID or explicit user request describing the problem class, repository area, or incident family to mine.",
-    "Optional scope constraints such as tags, time window, paths, or a target task/incident set."
+    {
+      "id": "agent.skill_extractor.inputs.driving-task-id-explicit-user-request-describing",
+      "text": "A driving task ID or explicit user request describing the problem class, repository area, or incident family to mine.",
+      "mutability": "append_only"
+    },
+    {
+      "id": "agent.skill_extractor.inputs.optional-scope-constraints-such-tags-time-window",
+      "text": "Optional scope constraints such as tags, time window, paths, or a target task/incident set.",
+      "mutability": "append_only"
+    }
   ],
   "outputs": [
-    "A short evidence-backed recommendation describing whether a new skill should be created, an existing skill should be updated, or no skill should be added yet.",
-    "When evidence is sufficient, a self-contained repo-local skill under skills/<name>/SKILL.md plus only the minimal supporting files it truly needs.",
-    "An updated skills/README.md inventory entry summarizing the skill purpose and provenance."
+    {
+      "id": "agent.skill_extractor.outputs.short-evidence-backed-recommendation-describing-whether-new",
+      "text": "A short evidence-backed recommendation describing whether a new skill should be created, an existing skill should be updated, or no skill should be added yet.",
+      "mutability": "append_only"
+    },
+    {
+      "id": "agent.skill_extractor.outputs.evidence-sufficient-self-contained-repo-local-skill",
+      "text": "When evidence is sufficient, a self-contained repo-local skill under skills/<name>/SKILL.md plus only the minimal supporting files it truly needs.",
+      "mutability": "append_only"
+    },
+    {
+      "id": "agent.skill_extractor.outputs.updated-skills-readme-md-inventory-entry-summarizing",
+      "text": "An updated skills/README.md inventory entry summarizing the skill purpose and provenance.",
+      "mutability": "append_only"
+    }
   ],
   "permissions": [
-    "Workspace repository: read .agentplane/tasks/**, .agentplane/policy/incidents.md, docs/developer/incident-archive.mdx, skills/**, and git history/diffs for referenced commits.",
-    "Workspace repository: write only skills/**, skills/README.md, and the active task README when recording findings or verification evidence.",
-    "git: inspection/local ops; commits via agentplane."
+    {
+      "id": "agent.skill_extractor.permissions.workspace-repository-read-agentplane-tasks-agentplane-policy",
+      "text": "Workspace repository: read .agentplane/tasks/**, .agentplane/policy/incidents.md, docs/developer/incident-archive.mdx, skills/**, and git history/diffs for referenced commits.",
+      "mutability": "append_only"
+    },
+    {
+      "id": "agent.skill_extractor.permissions.workspace-repository-write-only-skills-skills-readme",
+      "text": "Workspace repository: write only skills/**, skills/README.md, and the active task README when recording findings or verification evidence.",
+      "mutability": "append_only"
+    },
+    {
+      "id": "agent.skill_extractor.permissions.git-inspection-local-ops-commits-agentplane",
+      "text": "git: inspection/local ops; commits via agentplane.",
+      "mutability": "append_only"
+    }
   ],
   "workflow": [
-    "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
-    "Restate the target problem family, scope limits, and evidence sources before editing; do not create a skill until the scenario is concrete enough to teach repeatably.",
-    "Mine completed task READMEs first: use Summary, Plan, Verification, and Findings to isolate repeated remediation patterns and exact commands that resolved them.",
-    "Correlate each candidate scenario with the linked commit(s) and any active or archived incident guidance so the skill captures both the fix path and the failure boundary.",
-    "Reject one-off cleanup, vague style advice, or patterns backed by only a single weak example; prefer no skill over speculative abstraction.",
-    "Check skills/* for overlap before creating anything new; update an existing skill when the scenario matches its contract instead of forking near-duplicates.",
-    "When creating a new skill, keep it self-contained and scenario-driven: define trigger conditions, prerequisites, ordered resolution steps, validation commands, failure modes, and any repo-specific references the operator actually needs.",
-    "Default to a single SKILL.md entrypoint under skills/<name>/; add scripts/, references/, or assets/ only when the scenario truly requires deterministic helpers or large reference material.",
-    "Update skills/README.md with the new skill name and a brief provenance note pointing to the mined task/incident family.",
-    "Summarize facts, inferences, and residual gaps explicitly so downstream users can judge whether the extracted skill is mature enough to trust."
+    {
+      "id": "agent.skill_extractor.workflow.follow-shared-workflow-rules-agents-md-agentplane",
+      "text": "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.skill_extractor.workflow.restate-target-problem-family-scope-limits-evidence",
+      "text": "Restate the target problem family, scope limits, and evidence sources before editing; do not create a skill until the scenario is concrete enough to teach repeatably.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.skill_extractor.workflow.mine-completed-task-readmes-first-use-summary",
+      "text": "Mine completed task READMEs first: use Summary, Plan, Verification, and Findings to isolate repeated remediation patterns and exact commands that resolved them.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.skill_extractor.workflow.correlate-each-candidate-scenario-linked-commit-s",
+      "text": "Correlate each candidate scenario with the linked commit(s) and any active or archived incident guidance so the skill captures both the fix path and the failure boundary.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.skill_extractor.workflow.reject-one-off-cleanup-vague-style-advice",
+      "text": "Reject one-off cleanup, vague style advice, or patterns backed by only a single weak example; prefer no skill over speculative abstraction.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.skill_extractor.workflow.check-skills-overlap-creating-anything-new-update",
+      "text": "Check skills/* for overlap before creating anything new; update an existing skill when the scenario matches its contract instead of forking near-duplicates.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.skill_extractor.workflow.creating-new-skill-keep-self-contained-scenario",
+      "text": "When creating a new skill, keep it self-contained and scenario-driven: define trigger conditions, prerequisites, ordered resolution steps, validation commands, failure modes, and any repo-specific references the operator actually needs.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.skill_extractor.workflow.default-single-skill-md-entrypoint-under-skills",
+      "text": "Default to a single SKILL.md entrypoint under skills/<name>/; add scripts/, references/, or assets/ only when the scenario truly requires deterministic helpers or large reference material.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.skill_extractor.workflow.update-skills-readme-md-new-skill-name",
+      "text": "Update skills/README.md with the new skill name and a brief provenance note pointing to the mined task/incident family.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.skill_extractor.workflow.summarize-facts-inferences-residual-gaps-explicitly-so",
+      "text": "Summarize facts, inferences, and residual gaps explicitly so downstream users can judge whether the extracted skill is mature enough to trust.",
+      "mutability": "replaceable"
+    }
   ]
 }
