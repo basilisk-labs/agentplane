@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-29T18:58:49Z",
   "base": "main",
   "branch": "task/202604291531-Z6XH6Q/recipe-prompt-mutations",
   "created_at": "2026-04-29T18:36:29.612Z",
-  "head_sha": "4fd2fc73e17454ce1e3fad629c716e4f25510127",
+  "head_sha": "3491071b11fa2d82bf8e0fe0074f22d367392629",
   "last_verified_at": "2026-04-29T18:54:21.158Z",
   "last_verified_sha": "8cbee17f8634d16c8c5f1e2cec5d27b8f3bec68c",
+  "merge_commit": "c6921130172066fcc900247a012f37b06d7d6b93",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-29T18:58:49Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604291531-Z6XH6Q",
-  "updated_at": "2026-04-29T18:56:33.061Z",
+  "updated_at": "2026-04-29T18:58:49Z",
   "verify": {
     "status": "pass"
   }
