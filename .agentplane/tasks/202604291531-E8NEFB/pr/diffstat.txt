@@ -1,0 +1,3 @@
+ .../cli/run-cli/commands/init/steps/apply.test.ts  |  60 ++++++++++
+ .../src/cli/run-cli/commands/init/write-agents.ts  | 133 ++++++++++++++++++---
+ 2 files changed, 179 insertions(+), 14 deletions(-)

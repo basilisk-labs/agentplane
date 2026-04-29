@@ -1,10 +1,10 @@
 ---
 id: "202604291531-E8NEFB"
 title: "Compile init gateway and policy from modules"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -27,16 +27,38 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-29T18:19:58.640Z"
+  updated_by: "CODER"
+  note: "Verified: reconciled PR metadata after init module compilation commit 18ba18488f86. Prior checks remain current for the committed diff: focused tests, policy:routing:check, typecheck, git diff --check, framework bootstrap, doctor, and touched-file prettier/eslint passed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Compile init gateway and policy installation from framework prompt modules, preserving current generated outputs while routing source content through the prompt module registry/compiler."
+events:
+  -
+    type: "status"
+    at: "2026-04-29T18:12:35.181Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Compile init gateway and policy installation from framework prompt modules, preserving current generated outputs while routing source content through the prompt module registry/compiler."
+  -
+    type: "verify"
+    at: "2026-04-29T18:19:31.228Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified init gateway/policy module compilation: focused init/template/routing tests passed (17 tests), policy:routing:check passed, typecheck passed, git diff --check passed, framework bootstrap passed, doctor passed with 0 errors and 0 warnings. Extra touched-file prettier/eslint checks passed."
+  -
+    type: "verify"
+    at: "2026-04-29T18:19:58.640Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: reconciled PR metadata after init module compilation commit 18ba18488f86. Prior checks remain current for the committed diff: focused tests, policy:routing:check, typecheck, git diff --check, framework bootstrap, doctor, and touched-file prettier/eslint passed."
 doc_version: 3
-doc_updated_at: "2026-04-29T15:31:40.174Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-04-29T18:19:58.654Z"
+doc_updated_by: "CODER"
 description: "Switch init-time AGENTS.md/CLAUDE.md and .agentplane/policy emission to use the prompt module compiler while preserving byte-for-byte or intentional-equivalent output and upgrade baseline seeding."
 sections:
   Summary: |-
@@ -64,6 +86,22 @@ sections:
     8. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-29T18:19:31.228Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified init gateway/policy module compilation: focused init/template/routing tests passed (17 tests), policy:routing:check passed, typecheck passed, git diff --check passed, framework bootstrap passed, doctor passed with 0 errors and 0 warnings. Extra touched-file prettier/eslint checks passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T18:12:35.181Z, excerpt_hash=sha256:dfb79f9bc25488a362585a143ea06ac9ab075a5659297212db0ec8d461fd6992
+    
+    ### 2026-04-29T18:19:58.640Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: reconciled PR metadata after init module compilation commit 18ba18488f86. Prior checks remain current for the committed diff: focused tests, policy:routing:check, typecheck, git diff --check, framework bootstrap, doctor, and touched-file prettier/eslint passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T18:19:31.254Z, excerpt_hash=sha256:dfb79f9bc25488a362585a143ea06ac9ab075a5659297212db0ec8d461fd6992
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert init gateway/policy wiring to direct template loaders.
@@ -105,6 +143,22 @@ Switch init-time AGENTS.md/CLAUDE.md and .agentplane/policy emission to use the 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-29T18:19:31.228Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified init gateway/policy module compilation: focused init/template/routing tests passed (17 tests), policy:routing:check passed, typecheck passed, git diff --check passed, framework bootstrap passed, doctor passed with 0 errors and 0 warnings. Extra touched-file prettier/eslint checks passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T18:12:35.181Z, excerpt_hash=sha256:dfb79f9bc25488a362585a143ea06ac9ab075a5659297212db0ec8d461fd6992
+
+### 2026-04-29T18:19:58.640Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: reconciled PR metadata after init module compilation commit 18ba18488f86. Prior checks remain current for the committed diff: focused tests, policy:routing:check, typecheck, git diff --check, framework bootstrap, doctor, and touched-file prettier/eslint passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-29T18:19:31.254Z, excerpt_hash=sha256:dfb79f9bc25488a362585a143ea06ac9ab075a5659297212db0ec8d461fd6992
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

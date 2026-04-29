@@ -3,12 +3,15 @@ import path from "node:path";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 
 import type { WorkflowMode } from "../../../../agents/agents-template.js";
+import { filterAgentsByWorkflow, loadAgentTemplates } from "../../../../agents/agents-template.js";
 import {
-  filterAgentsByWorkflow,
-  loadAgentTemplates,
-  loadAgentsTemplate,
-  loadPolicyTemplates,
-} from "../../../../agents/agents-template.js";
+  compilePromptModuleGraph,
+  loadFrameworkPromptModuleRegistry,
+} from "../../../../runtime/prompt-modules/index.js";
+import type {
+  PromptModule,
+  PromptModuleCompiledGraph,
+} from "../../../../runtime/prompt-modules/index.js";
 import { fileExists } from "../../../fs-utils.js";
 import {
   policyGatewayFileName,
@@ -23,6 +26,110 @@ function toUpgradeBaselineKey(repoRelativePath: string): string | null {
     return repoRelativePath.slice(".agentplane/".length);
   }
   return null;
+}
+
+type InitCompiledPolicyTemplate = {
+  relativePath: string;
+  contents: string;
+};
+
+type InitCompiledPromptAssets = {
+  gateway: string;
+  policyTemplates: InitCompiledPolicyTemplate[];
+};
+
+const INIT_POLICY_WORKFLOW_CONTEXTS: WorkflowMode[] = ["direct", "branch_pr"];
+const POLICY_ASSET_SOURCE_REF_PREFIX = "packages/agentplane/assets/policy/";
+
+function assertPromptCompileOk(compiled: PromptModuleCompiledGraph, label: string): void {
+  if (compiled.ok) return;
+  const errors = compiled.diagnostics
+    .filter((diagnostic) => diagnostic.severity === "error")
+    .map((diagnostic) => `${diagnostic.code}: ${diagnostic.message}`);
+  throw new Error(`Failed to compile ${label} prompt modules: ${errors.join("; ")}`);
+}
+
+function stringPromptModuleContent(module: PromptModule): string {
+  if (typeof module.content === "string") return module.content;
+  return `${JSON.stringify(module.content, null, 2)}\n`;
+}
+
+function policyRelativePathFromModule(module: PromptModule): string {
+  const sourceRef = module.provenance.source_ref.replaceAll("\\", "/");
+  if (!sourceRef.startsWith(POLICY_ASSET_SOURCE_REF_PREFIX)) {
+    throw new Error(
+      `Cannot derive init policy path from prompt module ${module.address.value}: ${module.provenance.source_ref}`,
+    );
+  }
+  return sourceRef.slice(POLICY_ASSET_SOURCE_REF_PREFIX.length);
+}
+
+async function compileInitPromptAssets(opts: {
+  workflow: WorkflowMode;
+  policyGateway: PolicyGatewayFlavor;
+}): Promise<InitCompiledPromptAssets> {
+  const gatewayFileName = policyGatewayFileName(opts.policyGateway);
+  const registry = await loadFrameworkPromptModuleRegistry();
+  const gatewayCompiled = compilePromptModuleGraph({
+    graph: registry,
+    context: {
+      command: "init",
+      commands: ["init"],
+      policy_gateway: opts.policyGateway,
+      workflow_mode: opts.workflow,
+    },
+  });
+  assertPromptCompileOk(gatewayCompiled, "init gateway");
+  const gatewayModules = gatewayCompiled.nodes
+    .map((node) => node.module)
+    .filter(
+      (module) =>
+        module.address.surface === "gateway" &&
+        module.address.target === gatewayFileName &&
+        module.address.slot === "body",
+    );
+  if (gatewayModules.length !== 1) {
+    throw new Error(
+      `Expected exactly one compiled init gateway module for ${gatewayFileName}; got ${gatewayModules.length}.`,
+    );
+  }
+  const gatewayModule = gatewayModules[0];
+  const gateway = filterAgentsByWorkflow(stringPromptModuleContent(gatewayModule), opts.workflow);
+
+  const policiesByPath = new Map<string, string>();
+  for (const workflow of INIT_POLICY_WORKFLOW_CONTEXTS) {
+    const policyCompiled = compilePromptModuleGraph({
+      graph: registry,
+      context: {
+        command: "init",
+        commands: ["init"],
+        policy_gateway: opts.policyGateway,
+        workflow_mode: workflow,
+      },
+    });
+    assertPromptCompileOk(policyCompiled, `init policy (${workflow})`);
+
+    for (const module of policyCompiled.nodes.map((node) => node.module)) {
+      if (module.address.surface !== "policy") continue;
+      const relativePath = policyRelativePathFromModule(module);
+      const rawContents = stringPromptModuleContent(module);
+      const contents = relativePath.endsWith(".md")
+        ? renderPolicyGatewayTemplateText(rawContents, gatewayFileName)
+        : rawContents;
+      const previous = policiesByPath.get(relativePath);
+      if (previous !== undefined && previous !== contents) {
+        throw new Error(`Conflicting compiled init policy contents for ${relativePath}.`);
+      }
+      policiesByPath.set(relativePath, contents);
+    }
+  }
+
+  return {
+    gateway,
+    policyTemplates: [...policiesByPath.entries()]
+      .map(([relativePath, contents]) => ({ relativePath, contents }))
+      .toSorted((left, right) => left.relativePath.localeCompare(right.relativePath)),
+  };
 }
 
 async function seedUpgradeBaselineForInstalledFiles(opts: {
@@ -52,6 +159,10 @@ export async function ensureAgentsFiles(opts: {
   backendPathAbs: string;
 }): Promise<{ installPaths: string[] }> {
   const gatewayFileName = policyGatewayFileName(opts.policyGateway);
+  const compiledPrompts = await compileInitPromptAssets({
+    workflow: opts.workflow,
+    policyGateway: opts.policyGateway,
+  });
   const renderGatewayText = (text: string): string =>
     renderPolicyGatewayTemplateText(text, gatewayFileName);
   const agentsPath = path.join(opts.gitRoot, gatewayFileName);
@@ -65,9 +176,7 @@ export async function ensureAgentsFiles(opts: {
   if (await fileExists(agentsPath)) {
     // nothing
   } else {
-    const template = await loadAgentsTemplate();
-    const filtered = filterAgentsByWorkflow(renderGatewayText(template), opts.workflow);
-    await atomicWriteFile(agentsPath, filtered, "utf8");
+    await atomicWriteFile(agentsPath, compiledPrompts.gateway, "utf8");
     wroteAgents = true;
   }
   if (wroteAgents) {
@@ -85,15 +194,11 @@ export async function ensureAgentsFiles(opts: {
     installedManagedPaths.push(relPath);
   }
 
-  const policyTemplates = await loadPolicyTemplates();
-  for (const policy of policyTemplates) {
+  for (const policy of compiledPrompts.policyTemplates) {
     const targetPath = path.join(opts.agentplaneDir, "policy", policy.relativePath);
     if (await fileExists(targetPath)) continue;
-    const rendered = policy.relativePath.endsWith(".md")
-      ? renderGatewayText(policy.contents)
-      : policy.contents;
     await mkdir(path.dirname(targetPath), { recursive: true });
-    await atomicWriteFile(targetPath, rendered, "utf8");
+    await atomicWriteFile(targetPath, policy.contents, "utf8");
     const relPath = path.relative(opts.gitRoot, targetPath);
     installPaths.push(relPath);
     installedManagedPaths.push(relPath);
