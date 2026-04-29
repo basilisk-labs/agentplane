@@ -14,6 +14,7 @@ import type {
 
 export type PromptModuleSelector = {
   address?: string;
+  fragment_id?: string;
   namespace?: PromptModuleAddress["namespace"];
   surface?: PromptModuleSurface;
   target?: PromptModuleTarget;

@@ -1,0 +1,12 @@
+ docs/developer/modular-prompt-assembly.mdx         |  42 ++++--
+ docs/developer/recipes-spec.mdx                    |  51 ++++++-
+ .../src/commands/recipes.transaction.test.ts       |   4 +-
+ .../recipes/impl/project-installed-recipes.test.ts |   3 +-
+ .../src/commands/runtime.command.test.ts           |   3 +-
+ .../commands/shared/prompt-graph-diagnostics.ts    |  24 +--
+ .../src/runtime/prompt-modules/compiler.test.ts    | 168 +++++++++++++++++++--
+ .../src/runtime/prompt-modules/compiler.ts         |  26 +++-
+ .../src/runtime/prompt-modules/mutations.test.ts   |   9 ++
+ .../src/runtime/prompt-modules/mutations.ts        |   1 +
+ .../src/runtime/prompt-modules/validation.ts       |   2 +
+ 11 files changed, 293 insertions(+), 40 deletions(-)

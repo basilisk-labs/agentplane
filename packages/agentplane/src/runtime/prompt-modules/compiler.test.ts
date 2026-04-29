@@ -58,11 +58,30 @@ function markdownModule(opts: {
   dependencies?: PromptModule["dependencies"];
   mutability?: PromptModule["mutability"];
   merge?: PromptModule["merge"];
+  surface?: PromptModule["address"]["surface"];
+  target?: PromptModule["address"]["target"];
+  slot?: PromptModule["address"]["slot"];
+  fragmentId?: string;
 }): PromptModule {
   const owner = opts.owner ?? frameworkOwner;
+  const provenance: PromptModule["provenance"] =
+    owner.kind === "recipe"
+      ? {
+          source_kind: "recipe_asset",
+          source_ref: `.agentplane/recipes/${owner.recipe_id}/modules/${opts.name}.md`,
+          recipe_id: owner.recipe_id,
+          recipe_version: owner.version,
+        }
+      : { ...frameworkSource };
+  if (opts.fragmentId) provenance.fragment_id = opts.fragmentId;
   return {
     schema_version: PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
-    address: moduleAddress(opts.value, opts.name),
+    address: {
+      ...moduleAddress(opts.value, opts.name),
+      surface: opts.surface ?? "gateway",
+      target: opts.target ?? "AGENTS.md",
+      slot: opts.slot ?? "load_rules",
+    },
     owner,
     title: opts.title ?? opts.name,
     content_kind: "markdown",
@@ -75,15 +94,7 @@ function markdownModule(opts: {
     },
     load: opts.load,
     dependencies: opts.dependencies,
-    provenance:
-      owner.kind === "recipe"
-        ? {
-            source_kind: "recipe_asset",
-            source_ref: `.agentplane/recipes/${owner.recipe_id}/modules/${opts.name}.md`,
-            recipe_id: owner.recipe_id,
-            recipe_version: owner.version,
-          }
-        : frameworkSource,
+    provenance,
   };
 }
 
@@ -244,6 +255,143 @@ describe("prompt module compiler", () => {
       "roadmap.prd.extends-base",
       "roadmap.prd.requires-base",
     ]);
+  });
+
+  it("targets named prompt fragments across framework prompt surfaces", () => {
+    const gateway = markdownModule({
+      value: "framework/gateway/AGENTS.md/load_rules/branch-pr",
+      name: "branch-pr",
+      content: "Use branch PR mode.\n",
+      surface: "gateway",
+      target: "AGENTS.md",
+      slot: "load_rules",
+      fragmentId: "gateway.agents.load_rules.workflow.branch_pr",
+    });
+    const policy = markdownModule({
+      value: "framework/policy/.agentplane~policy/body/start-worktree",
+      name: "start-worktree",
+      content: "Start a worktree.\n",
+      surface: "policy",
+      target: ".agentplane/policy",
+      slot: "body",
+      fragmentId: "policy.workflow.branch_pr.sequence.start_worktree",
+    });
+    const runner = markdownModule({
+      value: "framework/runner/runner.bundle/body/framework-runner",
+      name: "framework-runner",
+      content: "Run the task.\n",
+      surface: "runner",
+      target: "runner.bundle",
+      slot: "body",
+      fragmentId: "runner.bundle.body.framework.runner",
+    });
+    const agentProfile = markdownModule({
+      value: "framework/agent_profile/.agentplane~agents/workflow/coder-diff-minimal",
+      name: "coder-diff-minimal",
+      content: "Keep diffs minimal.\n",
+      surface: "agent_profile",
+      target: ".agentplane/agents",
+      slot: "workflow",
+      fragmentId: "agent.coder.workflow.diff.minimal",
+    });
+    const mutations = {
+      schema_version: 1,
+      recipe_id: "roadmap",
+      mutations: [
+        {
+          id: "roadmap.patch.gateway-branch-pr",
+          op: "patch_module",
+          source: recipeSource,
+          target: { fragment_id: "gateway.agents.load_rules.workflow.branch_pr" },
+          patch: { content: "Use branch PR mode with recipe review gates.\n" },
+        },
+        {
+          id: "roadmap.replace.policy-start-worktree",
+          op: "replace_module",
+          source: recipeSource,
+          target: { fragment_id: "policy.workflow.branch_pr.sequence.start_worktree" },
+          module: {
+            ...policy,
+            content: "Start a dedicated recipe-aware worktree.\n",
+          },
+        },
+        {
+          id: "roadmap.disable.runner-base",
+          op: "disable_module",
+          source: recipeSource,
+          target: { fragment_id: "runner.bundle.body.framework.runner" },
+        },
+        {
+          id: "roadmap.validator.coder-fragment",
+          op: "add_validator",
+          source: recipeSource,
+          validator: {
+            id: "roadmap.requires.coder-fragment",
+            phase: "compile",
+            kind: "required_module",
+            target: { fragment_id: "agent.coder.workflow.diff.minimal" },
+            required: true,
+          },
+        },
+      ],
+    } satisfies PromptModuleMutationSet;
+
+    const result = compilePromptModuleGraph({
+      graph: graph([gateway, policy, runner, agentProfile]),
+      mutation_sets: [mutations],
+    });
+
+    expect(result.ok).toBe(true);
+    expect(
+      result.nodes.find(
+        (node) => node.module.provenance.fragment_id === gateway.provenance.fragment_id,
+      )?.module.content,
+    ).toBe("Use branch PR mode with recipe review gates.\n");
+    expect(
+      result.nodes.find(
+        (node) => node.module.provenance.fragment_id === policy.provenance.fragment_id,
+      )?.module.content,
+    ).toBe("Start a dedicated recipe-aware worktree.\n");
+    expect(
+      result.nodes.some(
+        (node) => node.module.provenance.fragment_id === runner.provenance.fragment_id,
+      ),
+    ).toBe(false);
+    expect(result.validators.map((validator) => validator.id)).toContain(
+      "roadmap.requires.coder-fragment",
+    );
+  });
+
+  it("reports missing fragment selectors in compiler diagnostics", () => {
+    const base = markdownModule({
+      value: "framework/gateway/AGENTS.md/load_rules/base",
+      name: "base",
+      content: "Base\n",
+      fragmentId: "gateway.agents.load_rules.base",
+    });
+    const mutations = {
+      schema_version: 1,
+      recipe_id: "roadmap",
+      mutations: [
+        {
+          id: "roadmap.patch.missing-fragment",
+          op: "patch_module",
+          source: recipeSource,
+          target: { fragment_id: "gateway.agents.load_rules.missing" },
+          patch: { content: "Missing\n" },
+        },
+      ],
+    } satisfies PromptModuleMutationSet;
+
+    const result = compilePromptModuleGraph({
+      graph: graph([base]),
+      mutation_sets: [mutations],
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.diagnostics[0]?.message).toContain(
+      "fragment_id=gateway.agents.load_rules.missing",
+    );
   });
 
   it("merges duplicate modules by merge policy when conflicts keep all", () => {

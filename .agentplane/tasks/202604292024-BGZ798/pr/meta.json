@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604292024-BGZ798/recipe-fragment-patches",
+  "created_at": "2026-04-29T21:36:49.683Z",
+  "head_sha": "f7169164ee239a3bf1cbc57d53e5e9cdd2f8997c",
+  "last_verified_at": "2026-04-29T21:45:43.179Z",
+  "last_verified_sha": "f7169164ee239a3bf1cbc57d53e5e9cdd2f8997c",
+  "schema_version": 1,
+  "task_id": "202604292024-BGZ798",
+  "updated_at": "2026-04-29T21:45:43.215Z",
+  "verify": {
+    "status": "pass"
+  }
+}

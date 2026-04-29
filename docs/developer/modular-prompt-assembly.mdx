@@ -9,14 +9,14 @@ recipe-owned prompt extensions.
 
 ## Runtime surfaces
 
-| Surface | Source | Compiled through | Output |
-| --- | --- | --- | --- |
-| Policy gateway | `packages/agentplane/assets/AGENTS.md`, `packages/agentplane/assets/CLAUDE.md` | framework prompt module registry | `AGENTS.md` or `CLAUDE.md` during `agentplane init` and upgrade baseline seeding |
-| Policy modules | `packages/agentplane/assets/policy/*` | framework prompt module registry | `.agentplane/policy/*` during `agentplane init` and upgrade baseline seeding |
-| Agent profiles | `packages/agentplane/assets/agents/*.json` | framework prompt module registry | `.agentplane/agents/*.json` during `agentplane init` and upgrade baseline seeding |
-| Runner base prompts | bundled runner prompt, repo gateway, owner profile, execution profile, skills, overlays, recipe context | runner prompt module bridge | sorted runner prompt blocks in `bundle.json` |
-| Recipe prompt assets | vendored recipe `prompt_modules` and `prompt_mutation_sets` | recipe overlay compiler | `.agentplane/generated/prompt-graph.json` |
-| Diagnostics | generated prompt graph plus current recipe registry inputs | doctor/runtime explain prompt graph inspector | `agentplane runtime explain` and `agentplane doctor` findings |
+| Surface              | Source                                                                                                  | Compiled through                              | Output                                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------- |
+| Policy gateway       | `packages/agentplane/assets/AGENTS.md`, `packages/agentplane/assets/CLAUDE.md`                          | framework prompt module registry              | `AGENTS.md` or `CLAUDE.md` during `agentplane init` and upgrade baseline seeding  |
+| Policy modules       | `packages/agentplane/assets/policy/*`                                                                   | framework prompt module registry              | `.agentplane/policy/*` during `agentplane init` and upgrade baseline seeding      |
+| Agent profiles       | `packages/agentplane/assets/agents/*.json`                                                              | framework prompt module registry              | `.agentplane/agents/*.json` during `agentplane init` and upgrade baseline seeding |
+| Runner base prompts  | bundled runner prompt, repo gateway, owner profile, execution profile, skills, overlays, recipe context | runner prompt module bridge                   | sorted runner prompt blocks in `bundle.json`                                      |
+| Recipe prompt assets | vendored recipe `prompt_modules` and `prompt_mutation_sets`                                             | recipe overlay compiler                       | `.agentplane/generated/prompt-graph.json`                                         |
+| Diagnostics          | generated prompt graph plus current recipe registry inputs                                              | doctor/runtime explain prompt graph inspector | `agentplane runtime explain` and `agentplane doctor` findings                     |
 
 ## Contracts
 
@@ -69,6 +69,7 @@ Markdown prompt assets use HTML comments as source markers:
 
 ```md
 <!-- ap:fragment id="policy.workflow.branch_pr.sequence.start_worktree" slot="workflow" mutability="replaceable" -->
+
 2. Start work with dedicated task branch + worktree.
 <!-- /ap:fragment -->
 ```
@@ -170,9 +171,28 @@ Recipe manifests may declare:
 - `prompt_modules`: JSON prompt module assets owned by the recipe;
 - `prompt_mutation_sets`: JSON mutation sets that modify the compiled prompt graph.
 
-Mutation sets should target fragment ids or selectors derived from fragment ids. A recipe that
-changes a single CODER behavior should patch `agent.coder.workflow.<name>` rather than replacing the
-whole `CODER.json` profile or the whole runner bundle.
+Mutation sets can target named fragments directly with `target.fragment_id`. The selector works for
+gateway, policy, runner, and agent profile modules because source fragments compile into normal
+prompt modules with `provenance.fragment_id`.
+
+```json
+{
+  "op": "patch_module",
+  "target": { "fragment_id": "agent.coder.workflow.diff.minimal" },
+  "patch": {
+    "content": "Keep diffs minimal, task-scoped, and reviewable.\\n"
+  }
+}
+```
+
+Use the same selector shape for `replace_module`, `disable_module`, `required_module`, and
+`forbidden_module`. A recipe that changes a single CODER behavior should patch
+`agent.coder.workflow.<name>` rather than replacing the whole `CODER.json` profile or the whole
+runner bundle.
+
+JSON prompt profile lines are not line-addressable. Patchable list entries must be structured
+`{ "id": "...", "text": "...", "mutability": "..." }` fragments so the compiled graph can expose a
+stable `fragment_id`.
 
 Project recipe state is transactionally published. When active recipe prompt mutations fail to
 compile, the registry and generated prompt graph remain unchanged.

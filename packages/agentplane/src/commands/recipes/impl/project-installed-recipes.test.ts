@@ -47,6 +47,7 @@ function promptModule(recipeId = "modular", version = "1.0.0"): Record<string, u
     provenance: {
       source_kind: "recipe_asset",
       source_ref: "prompt-modules/policy.json",
+      fragment_id: `recipe.${recipeId}.policy.body.modular_guidance`,
       recipe_id: recipeId,
       recipe_version: version,
     },
@@ -75,7 +76,7 @@ function promptMutationSet(recipeId = "modular", version = "1.0.0"): Record<stri
           },
         },
         target: {
-          address: `recipe.${recipeId}/policy/.agentplane/policy/body/modular-guidance`,
+          fragment_id: `recipe.${recipeId}.policy.body.modular_guidance`,
         },
         patch: {
           summary: "Patched by active recipe mutation.",

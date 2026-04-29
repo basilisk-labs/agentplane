@@ -114,6 +114,20 @@ function moduleRecipeId(module: PromptModule): string | undefined {
   return module.provenance.recipe_id;
 }
 
+function describePromptModuleSelector(selector: PromptModuleSelector): string {
+  const parts = [
+    selector.address ? `address=${selector.address}` : null,
+    selector.fragment_id ? `fragment_id=${selector.fragment_id}` : null,
+    selector.namespace ? `namespace=${selector.namespace}` : null,
+    selector.surface ? `surface=${selector.surface}` : null,
+    selector.target ? `target=${selector.target}` : null,
+    selector.slot ? `slot=${selector.slot}` : null,
+    selector.owner ? `owner=${selector.owner}` : null,
+    selector.recipe_id ? `recipe_id=${selector.recipe_id}` : null,
+  ].filter((part): part is string => part !== null);
+  return parts.length > 0 ? parts.join(", ") : "empty selector";
+}
+
 export function matchesPromptModuleSelector(
   module: PromptModule,
   selector: PromptModuleSelector,
@@ -121,6 +135,8 @@ export function matchesPromptModuleSelector(
   const address: PromptModuleAddress = module.address;
   return (
     (selector.address === undefined || selector.address === address.value) &&
+    (selector.fragment_id === undefined ||
+      selector.fragment_id === module.provenance.fragment_id) &&
     (selector.namespace === undefined || selector.namespace === address.namespace) &&
     (selector.surface === undefined || selector.surface === address.surface) &&
     (selector.target === undefined || selector.target === address.target) &&
@@ -469,7 +485,7 @@ function applyMutation(
           severity: "warning",
           code: "missing_module",
           mutation_id: mutation.id,
-          message: `No prompt modules matched disable mutation ${mutation.id}.`,
+          message: `No prompt modules matched disable mutation ${mutation.id} (${describePromptModuleSelector(mutation.target)}).`,
         });
       }
       for (const index of matches) {
@@ -486,7 +502,7 @@ function applyMutation(
           severity: "error",
           code: "missing_module",
           mutation_id: mutation.id,
-          message: `No prompt modules matched ${mutation.op} mutation ${mutation.id}.`,
+          message: `No prompt modules matched ${mutation.op} mutation ${mutation.id} (${describePromptModuleSelector(mutation.target)}).`,
         });
         return;
       }
@@ -495,7 +511,7 @@ function applyMutation(
           severity: "error",
           code: "ambiguous_selector",
           mutation_id: mutation.id,
-          message: `${mutation.op} mutation ${mutation.id} matched ${matches.length} prompt modules.`,
+          message: `${mutation.op} mutation ${mutation.id} matched ${matches.length} prompt modules (${describePromptModuleSelector(mutation.target)}).`,
         });
         return;
       }
@@ -590,7 +606,7 @@ function runValidators(
           severity: "error",
           code: "validator_failed",
           validator_id: validator.id,
-          message: `Validator ${validator.id} requires a matching prompt module.`,
+          message: `Validator ${validator.id} requires a matching prompt module (${describePromptModuleSelector(validator.target)}).`,
         });
       }
     } else if (validator.kind === "forbidden_module") {
@@ -600,7 +616,7 @@ function runValidators(
           severity: "error",
           code: "validator_failed",
           validator_id: validator.id,
-          message: `Validator ${validator.id} forbids a matching prompt module.`,
+          message: `Validator ${validator.id} forbids a matching prompt module (${describePromptModuleSelector(validator.target)}).`,
         });
       }
     } else if (validator.required && !commands.has(validator.command)) {

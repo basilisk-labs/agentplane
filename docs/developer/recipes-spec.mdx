@@ -149,11 +149,60 @@ assets may expose source-level fragments that compile into addressable modules. 
 for those fragments is:
 
 - use stable semantic ids, for example `agent.planner.workflow.verify_steps.contract`;
-- patch by selector or module address derived from the fragment id;
+- patch by selector with `fragment_id` or by module address derived from the fragment id;
 - prefer `patch_module` for wording or behavior refinements;
+- use `replace_module` when the fragment contract is stable but the whole fragment body must change;
 - use `disable_module` only when the target fragment declares a compatible mutability policy;
+- use `required_module` or `forbidden_module` validators to assert that expected fragments are
+  present or absent after all recipe mutations apply;
 - never depend on JSON array index, markdown line number, or current prose text;
 - fail transactionally when a target is missing, ambiguous, locked, or produces a compiler error.
+
+Example mutation set:
+
+```json
+{
+  "schema_version": 1,
+  "recipe_id": "review",
+  "mutations": [
+    {
+      "id": "review.patch.coder-diff",
+      "op": "patch_module",
+      "source": {
+        "owner": { "kind": "recipe", "recipe_id": "review", "version": "1.0.0" },
+        "provenance": {
+          "source_kind": "recipe_asset",
+          "source_ref": "prompt-modules/mutations.json",
+          "recipe_id": "review",
+          "recipe_version": "1.0.0"
+        }
+      },
+      "target": { "fragment_id": "agent.coder.workflow.diff.minimal" },
+      "patch": { "content": "Keep diffs minimal, task-scoped, and reviewable.\\n" }
+    },
+    {
+      "id": "review.require.coder-diff",
+      "op": "add_validator",
+      "source": {
+        "owner": { "kind": "recipe", "recipe_id": "review", "version": "1.0.0" },
+        "provenance": {
+          "source_kind": "recipe_asset",
+          "source_ref": "prompt-modules/mutations.json",
+          "recipe_id": "review",
+          "recipe_version": "1.0.0"
+        }
+      },
+      "validator": {
+        "id": "review.requires.coder-diff",
+        "phase": "compile",
+        "kind": "required_module",
+        "target": { "fragment_id": "agent.coder.workflow.diff.minimal" },
+        "required": true
+      }
+    }
+  ]
+}
+```
 
 Recipes that need role-specific behavior should target `agent.<role>.*` fragments. Recipes that need
 process policy should target `policy.*` or `gateway.*` fragments only when those fragments are
