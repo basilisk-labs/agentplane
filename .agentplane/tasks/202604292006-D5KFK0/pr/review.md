@@ -50,12 +50,23 @@ Finish the interrupted incident findings hardening scope: prevent successful clo
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T20:07:04.853Z
+- Updated: 2026-04-29T20:10:27.281Z
 - Branch: task/202604292006-D5KFK0/incident-findings-hardening
-- Head: 830abed3d68a
+- Head: 638426d5bbaa
 
 ```text
-No changes detected.
+ .agentplane/policy/incidents.md                    |  24 +----
+ docs/developer/incident-archive.mdx                |   8 ++
+ packages/agentplane/assets/policy/incidents.md     |  24 +----
+ .../agentplane/src/cli/run-cli.core.hooks.test.ts  |  34 ++++++
+ .../agentplane/src/commands/hooks/run.pre-push.ts  |  13 +++
+ .../release/release-task-evidence-script.test.ts   |  87 ++++++++++++++--
+ .../src/runtime/incidents/plan-strategy.ts         |  44 ++++++--
+ .../src/runtime/incidents/resolve.test.ts          |  32 +++++-
+ packages/agentplane/src/runtime/incidents/types.ts |   2 +-
+ scripts/release-task-evidence.mjs                  | 115 ++++++++++++++++++++-
+ scripts/run-pre-push-hook.mjs                      |  21 ++++
+ 11 files changed, 341 insertions(+), 63 deletions(-)
 ```
 
 </details>
