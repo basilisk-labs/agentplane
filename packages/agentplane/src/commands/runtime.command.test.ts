@@ -72,6 +72,12 @@ describe("runtime.command", () => {
           summary: string | null;
           recovery: string | null;
         };
+        promptGraph: {
+          artifactPath: string | null;
+          artifactState: string;
+          activeRecipeIds: string[];
+          summary: unknown;
+        };
       };
       expect(payload.mode).toBe("repo-local");
       expect(payload.activeBinaryPath).toContain("packages/agentplane/bin/agentplane.js");
@@ -91,6 +97,8 @@ describe("runtime.command", () => {
       );
       expect(payload.repoCliExpectation.expectedVersion).toBe(repoExpectedCliVersion);
       expect(payload.repoCliExpectation.state).toBe("satisfied");
+      expect(payload.promptGraph.artifactState).toBe("not_configured");
+      expect(payload.promptGraph.activeRecipeIds).toEqual([]);
       expect(io.stdout).toBe(`${JSON.stringify(payload, null, 2)}\n`);
     } finally {
       io.restore();
@@ -184,6 +192,91 @@ describe("runtime.command", () => {
     expect(text).toContain("Framework dev workflow:");
     expect(text).toContain("bun run framework:dev:bootstrap");
     expect(text).toContain("scripts/reinstall-global-agentplane.sh");
+  });
+
+  it("renders prompt graph diagnostics with module provenance", () => {
+    const text = renderRuntimeExplainText(
+      {
+        cwd: "/repo",
+        activeBinaryPath: "/repo/packages/agentplane/bin/agentplane.js",
+        handoffFromBinaryPath: null,
+        mode: "repo-local",
+        framework: {
+          inFrameworkCheckout: true,
+          isRepoLocalBinary: true,
+          isRepoLocalRuntime: true,
+          checkout: {
+            repoRoot: "/repo",
+            packageRoot: "/repo/packages/agentplane",
+            repoBin: "/repo/packages/agentplane/bin/agentplane.js",
+            repoCli: "/repo/packages/agentplane/src/cli.ts",
+          },
+          thisBin: "/repo/packages/agentplane/bin/agentplane.js",
+        },
+        frameworkSources: {
+          repoRoot: "/repo",
+          agentplaneRoot: "/repo/packages/agentplane",
+          coreRoot: "/repo/packages/core",
+        },
+        agentplane: {
+          name: "agentplane",
+          version: agentplaneVersion,
+          packageRoot: "/repo/packages/agentplane",
+          packageJsonPath: "/repo/packages/agentplane/package.json",
+        },
+        core: {
+          name: "@agentplaneorg/core",
+          version: agentplaneVersion,
+          packageRoot: "/repo/packages/core",
+          packageJsonPath: "/repo/packages/core/package.json",
+        },
+      },
+      {
+        expectedVersion: repoExpectedCliVersion,
+        activeVersion: agentplaneVersion,
+        state: "satisfied",
+        summary: `Active runtime ${agentplaneVersion} matches the repository expectation ${repoExpectedCliVersion}.`,
+        recovery: null,
+      },
+      {
+        artifactPath: "/repo/.agentplane/generated/prompt-graph.json",
+        artifactState: "current",
+        activeRecipeIds: ["review"],
+        summary: {
+          moduleCount: 2,
+          bindingCount: 1,
+          validatorCount: 1,
+          diagnosticCount: 0,
+          errorCount: 0,
+          warningCount: 0,
+          repoOverrideCount: 1,
+          ownerCounts: { framework: 1, recipe: 1 },
+          sourceKindCounts: { framework_builtin: 1, recipe_asset: 1 },
+          contentHash: "abc123",
+        },
+        modules: [
+          {
+            address: "recipe.review/policy/.agentplane~policy/body/rule",
+            title: "Review policy rule",
+            ownerKind: "recipe",
+            ownerLabel: "recipe:review@1.0.0",
+            sourceKind: "recipe_asset",
+            sourceRef: ".agentplane/recipes/packages/review/prompt-modules/rule.json",
+            recipeId: "review",
+          },
+        ],
+        diagnostics: [],
+        error: null,
+      },
+    );
+
+    expect(text).toContain("Prompt graph:");
+    expect(text).toContain("Active recipes: review");
+    expect(text).toContain("Repo overrides: 1");
+    expect(text).toContain("Mutation effects: bindings=1, validators=1, diagnostics=0");
+    expect(text).toContain(
+      "recipe.review/policy/.agentplane~policy/body/rule [recipe:review@1.0.0; recipe_asset; .agentplane/recipes/packages/review/prompt-modules/rule.json]",
+    );
   });
 
   it("builds a no-op framework workflow outside the framework checkout", () => {
