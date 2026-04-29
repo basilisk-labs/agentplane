@@ -52,3 +52,8 @@ export type {
   PromptModuleValidatorMutation,
   PromptModuleValidatorPhase,
 } from "./mutations.js";
+export {
+  buildFrameworkExecutionProfilePromptModule,
+  loadFrameworkPromptModuleRegistry,
+  loadFrameworkPromptModules,
+} from "./registry.js";
