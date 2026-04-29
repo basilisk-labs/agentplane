@@ -1,10 +1,11 @@
 ---
 id: "202604292006-D5KFK0"
 title: "Harden incident findings and release evidence diagnostics"
-status: "DOING"
+result_summary: "Merged via PR #581."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +30,16 @@ verification:
   updated_at: "2026-04-29T20:10:00.228Z"
   updated_by: "CODER"
   note: "Incident findings hardening and release evidence diagnostics are implemented; declared verification passed."
-commit: null
+commit:
+  hash: "a049a9a3183133b9543eef2170619d4b3fb76950"
+  message: "Merge pull request #581 from basilisk-labs/task/202604292006-D5KFK0/incident-findings-hardening"
 comments:
   -
     author: "CODER"
     body: "Start: replay interrupted incident findings hardening on a clean branch_pr worktree, reconcile incident policy state against current main, and verify release/hook regressions."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #581 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Incident findings hardening and release evidence diagnostics are implemented; declared verification passed."
+  -
+    type: "status"
+    at: "2026-04-29T20:13:52.167Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #581 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-29T20:10:00.231Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-29T20:13:52.172Z"
+doc_updated_by: "INTEGRATOR"
 description: "Finish the interrupted incident findings hardening scope: prevent successful closure notes from being promoted as incidents, add scoped release/hosted-close evidence audit support, preserve the active incident registry against current main, and add regression coverage for release-mode git config pollution diagnostics."
 sections:
   Summary: |-
