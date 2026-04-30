@@ -1,10 +1,11 @@
 ---
 id: "202604301809-MFVAF2"
 title: "Add GPT-5.5 prompt contract diagnostics"
-status: "DOING"
+result_summary: "Merged via PR #618."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-30T18:23:41.518Z"
   updated_by: "CODER"
   note: "Verified: focused prompt-module and fragment tests pass; agents templates OK; typecheck and framework bootstrap passed earlier in this task; git diff check OK at commit 27511d7."
-commit: null
+commit:
+  hash: "c2c30ea6d3181ab32874d2b22a17928ecfcb0d67"
+  message: "Merge pull request #618 from basilisk-labs/task/202604301809-MFVAF2/gpt55-contract-diagnostics"
 comments:
   -
     author: "CODER"
     body: "Start: add focused GPT-5.5 prompt contract diagnostics without changing active prompt behavior; keep checks scoped to prompt module/profile surfaces."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #618 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: focused prompt-module and fragment tests pass; agents templates OK; typecheck and framework bootstrap passed earlier in this task; git diff check OK at commit 27511d7."
+  -
+    type: "status"
+    at: "2026-04-30T18:26:50.834Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #618 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T18:23:41.553Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-30T18:26:50.840Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a focused diagnostic/test surface that detects prompt contracts that are still procedural or conflict-prone: missing outcome sections, heuristic MUST usage, duplicate approval gates, missing validation commands, unstable fragment IDs, or missing stop rules."
 sections:
   Summary: |-
