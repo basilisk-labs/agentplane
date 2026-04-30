@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604300956-ESW001/v0-4-release-blog",
+  "created_at": "2026-04-30T17:50:05.239Z",
+  "head_sha": "55266cb29b44a0f7e67d2b2d26a4a2d0ec67a919",
+  "last_verified_at": "2026-04-30T17:52:33.126Z",
+  "last_verified_sha": "9df0243504d5285df666014dd96788b30261341c",
+  "schema_version": 1,
+  "task_id": "202604300956-ESW001",
+  "updated_at": "2026-04-30T17:53:53.251Z",
+  "verify": {
+    "status": "pass"
+  }
+}

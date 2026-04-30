@@ -1,0 +1,67 @@
+---
+slug: release-0-4-0-modular-prompts-and-recipes
+title: "AgentPlane 0.4.0: modular prompts, recipe-ready agents"
+description: "AgentPlane 0.4.0 turns prompts into compiled, addressable modules so recipes can target behavior instead of replacing whole instruction files."
+authors: [team]
+tags: [release, workflow, operations]
+---
+
+AgentPlane `0.4.0` is published.
+
+The headline is modular prompt assembly: agent instructions, policy gateway material, generated agent profiles, and runner prompt inputs now move through a shared module graph instead of being treated as large prompt files copied from place to place.
+
+That sounds internal, but it changes the shape of the product. It gives AgentPlane a stable layer where future recipes can patch, bind, disable, or validate named behavior without rewriting an entire prompt surface.
+
+<!-- truncate -->
+
+## Why this is a 0.4 release
+
+The final `0.3` line made the old workflow safer. It tightened policy routing, task closure, release evidence, package checks, and branch PR discipline.
+
+`0.4` starts because the core abstraction changed.
+
+Before this release, a prompt was mostly a file boundary. If a recipe needed to adjust one behavior, it had to work against a broad text surface. That made small changes feel larger than they were and made diagnostics harder to trust.
+
+In `0.4.0`, prompt material is organized as named fragments and compiled modules. The important boundary is no longer "which file contains this instruction?" It is "which module owns this behavior, and what is allowed to change it?"
+
+## What changed
+
+This release adds the first production version of the modular prompt layer:
+
+- prompt fragments have parser contracts and names,
+- prompt modules compile into deterministic generated assets,
+- the framework prompt registry is built from fragmented source material,
+- init compiles gateway policy and agent profiles from the same graph model,
+- runner prompt assembly can use module-aware prompt material,
+- recipe manifests can express prompt module declarations and mutations,
+- diagnostics can detect prompt graph drift before it becomes runtime confusion.
+
+The immediate user-facing result is quieter consistency. Generated `AGENTS.md`, policy modules, agent profiles, and runner prompt behavior now have one source model instead of several related but fragile surfaces.
+
+## Why recipes needed this
+
+Recipes are the reason this release matters.
+
+A useful recipe should be able to say something precise: change this behavior, add this policy module, bind this agent-specific instruction, or validate that this prompt graph still contains a required safety rule.
+
+That is hard if the only target is a whole prompt file.
+
+With module-level prompt assembly, recipes can move toward narrower and more reviewable changes. The recipe layer is still being built out, but `0.4.0` gives it the substrate it needed: named modules, mutation boundaries, selectors, and graph diagnostics.
+
+## Upgrade notes
+
+Existing `0.3.29` projects do not need a manual migration.
+
+Projects that regenerate AgentPlane assets through init or upgrade paths will receive prompt assets compiled from the modular prompt graph. Recipe authors can begin designing against prompt modules and selectors, while still following the documented recipe manifest contract.
+
+The `0.3` maintenance branch remains pinned to `v0.3.29`. The modular prompt architecture starts in the `0.4` line.
+
+## Release evidence
+
+The release was published through the hosted branch PR route:
+
+- `agentplane`, `@agentplaneorg/core`, and `@agentplaneorg/recipes` are all published as `0.4.0` on npm,
+- the remote tag `v0.4.0` resolves to `060b70ca465b780337c2ec9da035fc66e615803f`,
+- the GitHub Release [`v0.4.0`](https://github.com/basilisk-labs/agentplane/releases/tag/v0.4.0) is published.
+
+The formal release notes are available at [`/docs/releases/v0.4.0`](/docs/releases/v0.4.0).
