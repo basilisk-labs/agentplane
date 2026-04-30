@@ -11,8 +11,8 @@ Remove or internalize the newly unused GPT-5.5 prompt diagnostic type exports so
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: bun run knip:check passed after pruning the unused GPT-5.5 diagnostic type exports, focused gpt55-contract tests passed, and the final implementation diff is limited to the prompt-module contract barrel surface.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes

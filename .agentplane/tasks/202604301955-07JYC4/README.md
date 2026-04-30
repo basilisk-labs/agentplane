@@ -4,7 +4,7 @@ title: "Prune unused GPT-5.5 prompt diagnostic exports"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-30T19:59:14.422Z"
+  updated_by: "CODER"
+  note: "Verified: bun run knip:check passed after pruning the unused GPT-5.5 diagnostic type exports, focused gpt55-contract tests passed, and the final implementation diff is limited to the prompt-module contract barrel surface."
 commit: null
 comments:
   -
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: pruning the unused GPT-5.5 prompt diagnostic type exports in the dedicated task worktree, then verifying with the Knip baseline guard before opening PR artifacts."
+  -
+    type: "verify"
+    at: "2026-04-30T19:59:14.422Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: bun run knip:check passed after pruning the unused GPT-5.5 diagnostic type exports, focused gpt55-contract tests passed, and the final implementation diff is limited to the prompt-module contract barrel surface."
 doc_version: 3
-doc_updated_at: "2026-04-30T19:57:15.284Z"
+doc_updated_at: "2026-04-30T19:59:14.429Z"
 doc_updated_by: "CODER"
 description: "Remove or internalize the newly unused GPT-5.5 prompt diagnostic type exports so the Knip baseline guard returns to green without broadening the unused-code baseline."
 sections:
@@ -56,6 +62,14 @@ sections:
     3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-30T19:59:14.422Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: bun run knip:check passed after pruning the unused GPT-5.5 diagnostic type exports, focused gpt55-contract tests passed, and the final implementation diff is limited to the prompt-module contract barrel surface.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T19:57:15.284Z, excerpt_hash=sha256:cb59ca8be8361b3a11459b29986055cbbf82748e5b076e98eccc03ac3480d518
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -87,6 +101,14 @@ Remove or internalize the newly unused GPT-5.5 prompt diagnostic type exports so
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-30T19:59:14.422Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: bun run knip:check passed after pruning the unused GPT-5.5 diagnostic type exports, focused gpt55-contract tests passed, and the final implementation diff is limited to the prompt-module contract barrel surface.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T19:57:15.284Z, excerpt_hash=sha256:cb59ca8be8361b3a11459b29986055cbbf82748e5b076e98eccc03ac3480d518
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
