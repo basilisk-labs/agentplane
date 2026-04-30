@@ -1,10 +1,11 @@
 ---
 id: "202604300724-ZTGZYT"
 title: "Restore release agent and policy parity"
-status: "DOING"
+result_summary: "Merged via PR #597."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-30T07:31:27.475Z"
   updated_by: "CODER"
   note: "Verified: current clean HEAD is ready for PR publication after sync and verification metadata refresh."
-commit: null
+commit:
+  hash: "ac0e1ff930edc7707d7f70677415f117cd7e234e"
+  message: "Merge pull request #597 from basilisk-labs/task/202604300724-ZTGZYT/release-parity-sync"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce agents:check drift, apply canonical sync only if needed, and verify release parity gates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #597 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -59,9 +65,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: current clean HEAD is ready for PR publication after sync and verification metadata refresh."
+  -
+    type: "status"
+    at: "2026-04-30T07:34:38.279Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #597 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T07:31:27.482Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-30T07:34:38.286Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make release hygiene pass by reconciling generated project agent and policy mirrors with canonical framework prompt assets after the fragmented prompt migration. Scope is limited to sync output and any minimal follow-up needed for agents:check."
 sections:
   Summary: |-
