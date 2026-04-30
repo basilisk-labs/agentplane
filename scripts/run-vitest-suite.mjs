@@ -144,6 +144,7 @@ export const SUITES = {
   "release-ci-base": {
     chunkSize: 10,
     files: RELEASE_CI_BASE_FILES,
+    isolatedPatterns: [/\/run-cli\.core\.pr-flow\./],
     maxWorkers: "4",
     pool: "forks",
   },
@@ -206,11 +207,26 @@ function buildVitestArgs(suite, files, extraArgs) {
   ];
 }
 
-function chunkFiles(files, chunkSize) {
+function chunkFiles(files, chunkSize, isolatedPatterns = []) {
   const chunks = [];
-  for (let index = 0; index < files.length; index += chunkSize) {
-    chunks.push(files.slice(index, index + chunkSize));
+  let pending = [];
+  const flushPending = () => {
+    if (pending.length === 0) return;
+    chunks.push(pending);
+    pending = [];
+  };
+  for (const file of files) {
+    if (isolatedPatterns.some((pattern) => pattern.test(file))) {
+      flushPending();
+      chunks.push([file]);
+      continue;
+    }
+    pending.push(file);
+    if (pending.length === chunkSize) {
+      flushPending();
+    }
   }
+  flushPending();
   return chunks;
 }
 
@@ -286,7 +302,7 @@ function main(argv = process.argv.slice(2)) {
 
     const extraArgs = argv.slice(1);
     if (Number.isInteger(suite.chunkSize) && suite.chunkSize > 0) {
-      const chunks = chunkFiles(suite.files, suite.chunkSize);
+      const chunks = chunkFiles(suite.files, suite.chunkSize, suite.isolatedPatterns ?? []);
       for (const [index, files] of chunks.entries()) {
         process.stdout.write(
           `Vitest suite ${suiteName}: chunk ${index + 1}/${chunks.length} (${files.length} files)${formatChunkFileLabel(files)}\n`,

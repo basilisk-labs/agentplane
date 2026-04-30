@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import * as vitestSuiteModule from "../../../../../scripts/run-vitest-suite.mjs";
 
 const { SUITES, VITEST_CHUNK_TIMEOUT_MS } = vitestSuiteModule as {
-  SUITES: Record<string, { chunkSize?: number; files: string[] }>;
+  SUITES: Record<string, { chunkSize?: number; files: string[]; isolatedPatterns?: RegExp[] }>;
   VITEST_CHUNK_TIMEOUT_MS: number;
 };
 
@@ -33,6 +33,11 @@ describe("release CI contract", () => {
     );
 
     expect(SUITES["release-ci-base"]?.chunkSize).toBe(10);
+    expect(
+      SUITES["release-ci-base"]?.isolatedPatterns?.some((pattern) =>
+        pattern.test("packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts"),
+      ),
+    ).toBe(true);
     expect(VITEST_CHUNK_TIMEOUT_MS).toBe(10 * 60 * 1000);
   });
 
