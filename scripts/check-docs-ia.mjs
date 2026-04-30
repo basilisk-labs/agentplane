@@ -29,7 +29,8 @@ const staleReferenceRules = [
   },
   {
     name: "removed context resolver path",
-    pattern: /packages\/agentplane\/src\/usecases\/context\/resolve-context\.ts|usecases\/context\/resolve-context\.ts/gi,
+    pattern:
+      /packages\/agentplane\/src\/usecases\/context\/resolve-context\.ts|usecases\/context\/resolve-context\.ts/gi,
   },
   {
     name: "removed core project file path",
@@ -191,11 +192,7 @@ function extractSidebarDocIds(source) {
 
 function normalizeIndexDocLink(destination) {
   let value = destination.trim();
-  if (
-    value.length === 0 ||
-    value.startsWith("#") ||
-    /^[a-z][a-z0-9+.-]*:/i.test(value)
-  ) {
+  if (value.length === 0 || value.startsWith("#") || /^[a-z][a-z0-9+.-]*:/i.test(value)) {
     return null;
   }
 
@@ -352,7 +349,9 @@ const main = defineScript({
     await assertDocsNavigationAligned();
     await assertNoStaleCurrentDocReferences();
     await assertRepoPathReferencesExist();
-    process.stdout.write("ok: docs IA, sidebar coverage, and current path references are aligned\n");
+    process.stdout.write(
+      "ok: docs IA, sidebar coverage, and current path references are aligned\n",
+    );
   },
 });
 
