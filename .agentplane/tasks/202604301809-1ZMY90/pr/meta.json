@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-30T19:31:51Z",
   "base": "main",
   "branch": "task/202604301809-1ZMY90/gpt55-runner-runtime",
   "created_at": "2026-04-30T19:29:24.107Z",
-  "head_sha": "bca982dcde9841f2b0570fca0a9f572da288cfd2",
+  "head_sha": "a683e65686ae57b2cbd7f450ba5df570cc2e9cae",
   "last_verified_at": "2026-04-30T19:29:24.049Z",
   "last_verified_sha": "a07336f13f5ab3d4db76b4575671f0979eea6829",
+  "merge_commit": "3b15a52be8dc390bdb0d177752c0705aa80e2d5b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-30T19:31:51Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604301809-1ZMY90",
-  "updated_at": "2026-04-30T19:29:44.492Z",
+  "updated_at": "2026-04-30T19:31:51Z",
   "verify": {
     "status": "pass"
   }
