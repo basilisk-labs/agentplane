@@ -14,5 +14,6 @@
  .../src/runtime/prompt-modules/compiler.ts         | 220 +---------
  .../src/runtime/prompt-modules/registry.test.ts    |   3 +-
  scripts/baselines/knip-baseline.json               | 487 ++++++++++++++++-----
- scripts/run-vitest-suite.mjs                       | 109 ++++-
- 17 files changed, 1041 insertions(+), 508 deletions(-)
+ scripts/run-vitest-suite.mjs                       | 112 ++++-
+ vitest.workspace.ts                                |   5 +-
+ 18 files changed, 1048 insertions(+), 509 deletions(-)
