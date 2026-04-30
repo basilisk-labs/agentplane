@@ -25,7 +25,7 @@ Inventory the current v0.4 prompt architecture against OpenAI GPT-5.5 prompt gui
 ### Current Status
 
 - State: ok
-- Note: Verified prompt surface audit: runtime explain reports repo-local 0.4.0 and no active prompt graph; agents:check reports templates OK; policy routing check reports OK.
+- Note: Re-verified after local PR artifact commit: runtime explain OK, agents templates OK, policy routing OK.
 
 ## Risks
 
