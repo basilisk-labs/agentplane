@@ -25,8 +25,8 @@ Eliminate the parallel homepage implementation by either promoting the rich home
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: docs site typecheck, production build, design-language check, and git diff whitespace check passed after promoting the rich home-preview implementation to the root page and removing the separate /home-preview route.
 
 ## Risks
 

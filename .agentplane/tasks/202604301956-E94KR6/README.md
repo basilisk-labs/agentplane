@@ -4,7 +4,7 @@ title: "Resolve docs site homepage preview split"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-30T20:14:58.506Z"
+  updated_by: "CODER"
+  note: "Verified: docs site typecheck, production build, design-language check, and git diff whitespace check passed after promoting the rich home-preview implementation to the root page and removing the separate /home-preview route."
 commit: null
 comments:
   -
@@ -39,8 +39,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: forced start after live docs CI evidence showed homepage split blocks docs:site:build before the dependent docs IA task can merge; scope remains limited to resolving the root/home-preview split."
+  -
+    type: "verify"
+    at: "2026-04-30T20:14:58.506Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: docs site typecheck, production build, design-language check, and git diff whitespace check passed after promoting the rich home-preview implementation to the root page and removing the separate /home-preview route."
 doc_version: 3
-doc_updated_at: "2026-04-30T20:11:34.460Z"
+doc_updated_at: "2026-04-30T20:14:58.513Z"
 doc_updated_by: "CODER"
 description: "Eliminate the parallel homepage implementation by either promoting the rich home-preview surface to the public root page or removing the dormant preview route and its data/CSS if it is no longer intended."
 sections:
@@ -59,6 +65,14 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-30T20:14:58.506Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: docs site typecheck, production build, design-language check, and git diff whitespace check passed after promoting the rich home-preview implementation to the root page and removing the separate /home-preview route.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T20:11:34.460Z, excerpt_hash=sha256:f53dfb2fd5999892b5090d69f7a0500d0fc397dc096124d59de1378cceb7ef36
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -91,6 +105,14 @@ Eliminate the parallel homepage implementation by either promoting the rich home
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-30T20:14:58.506Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: docs site typecheck, production build, design-language check, and git diff whitespace check passed after promoting the rich home-preview implementation to the root page and removing the separate /home-preview route.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T20:11:34.460Z, excerpt_hash=sha256:f53dfb2fd5999892b5090d69f7a0500d0fc397dc096124d59de1378cceb7ef36
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
