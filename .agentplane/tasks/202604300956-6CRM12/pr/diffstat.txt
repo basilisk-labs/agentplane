@@ -7,13 +7,13 @@
  .../run-cli.core.pr-flow.pr-notes-verify.test.ts   |   2 +-
  .../run-cli.core.tasks.normalize-migrate.test.ts   |   2 +-
  .../src/cli/run-cli/commands/init/write-agents.ts  |   4 +-
- .../commands/release/release-ci-contract.test.ts   |  10 +
+ .../commands/release/release-ci-contract.test.ts   |  15 +
  .../src/runtime/incidents/plan-strategy.ts         |   2 +-
  .../src/runtime/prompt-modules/compiler.merge.ts   | 183 ++++++++
  .../src/runtime/prompt-modules/compiler.shared.ts  |  41 ++
  .../src/runtime/prompt-modules/compiler.ts         | 220 +---------
  .../src/runtime/prompt-modules/registry.test.ts    |   3 +-
  scripts/baselines/knip-baseline.json               | 487 ++++++++++++++++-----
- scripts/run-vitest-suite.mjs                       | 112 ++++-
+ scripts/run-vitest-suite.mjs                       | 128 +++++-
  vitest.workspace.ts                                |   5 +-
- 18 files changed, 1048 insertions(+), 509 deletions(-)
+ 18 files changed, 1069 insertions(+), 509 deletions(-)

@@ -53,9 +53,9 @@ Release the current modular prompt assembly work as v0.4.0 instead of v0.3.30. P
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-30T14:52:53.830Z
+- Updated: 2026-04-30T15:25:12.354Z
 - Branch: task/202604300956-6CRM12/v0-4-0-release
-- Head: 91c4b242d92a
+- Head: 6b52826db0fc
 
 ```text
  docs/releases/v0.4.0.md                            | 156 +++++++
@@ -67,16 +67,16 @@ Release the current modular prompt assembly work as v0.4.0 instead of v0.3.30. P
  .../run-cli.core.pr-flow.pr-notes-verify.test.ts   |   2 +-
  .../run-cli.core.tasks.normalize-migrate.test.ts   |   2 +-
  .../src/cli/run-cli/commands/init/write-agents.ts  |   4 +-
- .../commands/release/release-ci-contract.test.ts   |  10 +
+ .../commands/release/release-ci-contract.test.ts   |  15 +
  .../src/runtime/incidents/plan-strategy.ts         |   2 +-
  .../src/runtime/prompt-modules/compiler.merge.ts   | 183 ++++++++
  .../src/runtime/prompt-modules/compiler.shared.ts  |  41 ++
  .../src/runtime/prompt-modules/compiler.ts         | 220 +---------
  .../src/runtime/prompt-modules/registry.test.ts    |   3 +-
  scripts/baselines/knip-baseline.json               | 487 ++++++++++++++++-----
- scripts/run-vitest-suite.mjs                       | 112 ++++-
+ scripts/run-vitest-suite.mjs                       | 128 +++++-
  vitest.workspace.ts                                |   5 +-
- 18 files changed, 1048 insertions(+), 509 deletions(-)
+ 18 files changed, 1069 insertions(+), 509 deletions(-)
 ```
 
 </details>
