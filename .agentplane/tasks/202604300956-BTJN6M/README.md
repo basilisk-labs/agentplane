@@ -1,10 +1,11 @@
 ---
 id: "202604300956-BTJN6M"
 title: "Publish v0.3 retrospective blog"
-status: "DOING"
+result_summary: "Merged via PR #609."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-30T10:02:13.793Z"
   updated_by: "DOCS"
   note: "Command: agentplane task verify-show 202604300956-BTJN6M; Result: pass; Evidence: Verify Steps reviewed. Command: bun run docs:scripts:check; Result: pass; Evidence: scripts README freshness OK. Command: bun run format:check; Result: pass; Evidence: Prettier reports all matched files formatted. Scope: website blog article and task artifacts."
-commit: null
+commit:
+  hash: "b7455d827eaa74401ca1890711416b6acee6c6ed"
+  message: "Merge pull request #609 from basilisk-labs/task/202604300956-BTJN6M/v0-3-road-to-0-4-blog"
 comments:
   -
     author: "DOCS"
     body: "Start: add the v0.3 retrospective blog post as a website-only documentation artifact before the v0.4 release candidate proceeds."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #609 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: agentplane task verify-show 202604300956-BTJN6M; Result: pass; Evidence: Verify Steps reviewed. Command: bun run docs:scripts:check; Result: pass; Evidence: scripts README freshness OK. Command: bun run format:check; Result: pass; Evidence: Prettier reports all matched files formatted. Scope: website blog article and task artifacts."
+  -
+    type: "status"
+    at: "2026-04-30T10:05:37.022Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #609 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T10:02:13.806Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-04-30T10:05:37.027Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a concise, useful website blog article explaining what happened across AgentPlane 0.3 and why it became the road to 0.4. Keep it process-focused, concrete, and linked to the release/documentation history."
 sections:
   Summary: |-
