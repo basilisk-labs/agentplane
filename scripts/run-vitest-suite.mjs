@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const VITEST_TIMEOUT_MS = "60000";
-export const VITEST_CHUNK_TIMEOUT_MS = 5 * 60 * 1000;
+export const VITEST_CHUNK_TIMEOUT_MS = 10 * 60 * 1000;
 
 const PRECOMMIT_FILES = [
   "packages/agentplane/src/commands/shared/network-approval.test.ts",
@@ -142,7 +142,7 @@ export const SUITES = {
     pool: "threads",
   },
   "release-ci-base": {
-    chunkSize: 1,
+    chunkSize: 10,
     files: RELEASE_CI_BASE_FILES,
     maxWorkers: "4",
     pool: "forks",
@@ -256,7 +256,7 @@ function summarizeVitestOutput(output) {
 }
 
 function formatChunkFileLabel(files) {
-  return files.length <= 3 ? `: ${files.join(", ")}` : "";
+  return `: ${files.join(", ")}`;
 }
 
 function main(argv = process.argv.slice(2)) {
