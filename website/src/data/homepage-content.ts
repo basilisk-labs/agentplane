@@ -30,7 +30,7 @@ export const homepageContent = {
       lines: [
         "npm i -g agentplane",
         "agentplane init",
-        "agentplane preflight",
+      "agentplane preflight --mode full",
         'agentplane task start-ready <task-id> --author CODER --body "Start: homepage rewrite"',
         "agentplane task verify-show <task-id>",
         'agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"',
@@ -39,7 +39,7 @@ export const homepageContent = {
     },
     repositoryPanel: {
       title: "Repository surface",
-      lines: ["AGENTS.md", ".agentplane/", ".agentplane/tasks/", ".agentplane/WORKFLOW.md"],
+      lines: ["AGENTS.md", ".agentplane/config.json", ".agentplane/policy/", ".agentplane/tasks/"],
       text: "Visible files and workflow state replace hidden assistant context.",
     },
     trustPanel: {
@@ -92,9 +92,9 @@ export const homepageContent = {
       },
       {
         name: "Workflow contract",
-        kicker: ".agentplane/WORKFLOW.md",
-        text: "The workflow model is explicit, reviewable, and regenerated when the framework updates.",
-        artifact: ["direct", "branch_pr", "gates", "recovery"],
+        kicker: ".agentplane/config.json + policy/",
+        text: "The workflow model is explicit, reviewable, and resolved from repository config plus policy modules.",
+        artifact: ["direct", "branch_pr", "policy", "recovery"],
       },
       {
         name: "Lifecycle path",
@@ -201,7 +201,7 @@ export const homepageContent = {
         kicker: "Repair drift",
         title: "When state drifts, the system should tell you how to recover.",
         text: "Doctor, export, upgrade, and workflow artifacts are designed to restore legible state without guesswork.",
-        artifact: ["doctor", "task export", "upgrade", "WORKFLOW.md"],
+        artifact: ["doctor", "task export", "upgrade", "policy modules"],
       },
     ],
   },
