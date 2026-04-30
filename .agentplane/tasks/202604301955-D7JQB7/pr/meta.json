@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604301955-D7JQB7/docs-agent-first-ia",
+  "created_at": "2026-04-30T20:04:57.305Z",
+  "head_sha": "a654ba89a6d4b7b0abf7059eab96099d35d6bf53",
+  "last_verified_at": "2026-04-30T20:27:54.189Z",
+  "last_verified_sha": "a654ba89a6d4b7b0abf7059eab96099d35d6bf53",
+  "schema_version": 1,
+  "task_id": "202604301955-D7JQB7",
+  "updated_at": "2026-04-30T20:27:38.743Z",
+  "verify": {
+    "status": "pass"
+  }
+}

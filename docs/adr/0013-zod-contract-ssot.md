@@ -1,5 +1,5 @@
 ---
-title: "ADR: Zod Contract SSOT"
+title: "ADR 0013: Zod Contract SSOT"
 description: "Architectural decision record for durable schema contracts after the config and task artifact migrations."
 ---
 
