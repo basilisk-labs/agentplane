@@ -4,6 +4,7 @@ import type {
   PromptModuleGraph,
   PromptModuleGraphNode,
   PromptModuleLoadCondition,
+  PromptModuleMutability,
 } from "./model.js";
 import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./model.js";
 import type {
@@ -48,6 +49,7 @@ export type PromptModuleDiagnostic = {
     | "missing_module"
     | "ambiguous_selector"
     | "missing_binding_endpoint"
+    | "mutability_violation"
     | "validator_failed";
   message: string;
   module_address?: string;
@@ -207,6 +209,27 @@ function patchModule(module: PromptModule, patch: PromptModuleStructuredPatch): 
   }
   if (patch.provenance !== undefined) next.provenance = patch.provenance;
   return next;
+}
+
+function allowsDirectMutation(mutability: PromptModuleMutability): boolean {
+  return mutability === "replaceable";
+}
+
+function reportMutabilityViolation(
+  diagnostics: PromptModuleDiagnostic[],
+  mutation: Extract<
+    PromptModuleMutation,
+    { op: "disable_module" | "patch_module" | "replace_module" }
+  >,
+  module: PromptModule,
+): void {
+  diagnostics.push({
+    severity: "error",
+    code: "mutability_violation",
+    mutation_id: mutation.id,
+    module_address: moduleAddress(module),
+    message: `${mutation.op} mutation ${mutation.id} cannot modify prompt module ${moduleAddress(module)} because its mutability is ${module.mutability}; only replaceable modules allow direct patch, replace, or disable mutations.`,
+  });
 }
 
 function precedenceOf(module: PromptModule): number {
@@ -488,6 +511,16 @@ function applyMutation(
           message: `No prompt modules matched disable mutation ${mutation.id} (${describePromptModuleSelector(mutation.target)}).`,
         });
       }
+      if (
+        matches.some((index) => {
+          const node = nodes[index];
+          if (!node || allowsDirectMutation(node.module.mutability)) return false;
+          reportMutabilityViolation(diagnostics, mutation, node.module);
+          return true;
+        })
+      ) {
+        return;
+      }
       for (const index of matches) {
         const node = nodes[index];
         if (node) node.disabled = true;
@@ -519,6 +552,10 @@ function applyMutation(
       if (index === undefined) return;
       const current = nodes[index];
       if (!current) return;
+      if (!allowsDirectMutation(current.module.mutability)) {
+        reportMutabilityViolation(diagnostics, mutation, current.module);
+        return;
+      }
       const nextModule =
         mutation.op === "patch_module"
           ? patchModule(current.module, mutation.patch)

@@ -1,0 +1,1 @@
+prompt-assembly/recipes: Enforce recipe fragment mutability and E2E patch coverage (3CY7TE)
