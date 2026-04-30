@@ -28,6 +28,33 @@ The core contracts are:
 - `PromptModuleMutationSet`: recipe-owned operations such as add, replace, patch, disable, bind, and validator changes.
 - `PromptModuleCompiledGraph`: compiled nodes plus bindings, validators, diagnostics, and `ok`.
 
+## GPT-5.5 prompt contract
+
+Framework-owned prompts should stay outcome-first. Agent profiles define the target result,
+success criteria, binding constraints, stop rules, and output shape. Detailed workflow gates remain
+in `AGENTS.md` and policy modules so role prompts do not duplicate command procedures.
+
+Use absolute language only for true invariants: safety, approval gates, side effects, required
+fields, irreversible actions, and output contracts. Express judgment calls as decision rules or
+preferences. This keeps model behavior extensible while preserving enforcement-backed constraints.
+
+The shipped profile shape is:
+
+```text
+Goal -> Success criteria -> Constraints -> Stop rules -> Output
+```
+
+Runtime-specific behavior belongs in config and runner context, not in duplicated profile prose:
+
+- `execution.reasoning_effort` controls reasoning depth; `medium` is the default, `low` is
+  latency-oriented, and `high` / `xhigh` are for conservative profiles or eval-backed work.
+- `execution.text_verbosity` controls output length and structure, independent of reasoning depth.
+- Retrieval budgets live in gateway/runner rules: load matched policy, task README, Verify Steps,
+  and relevant files; use incidents only for analogous scope or tags; stop when evidence is enough
+  to satisfy the acceptance contract.
+- Tool-heavy work should have a short visible preamble and meaningful progress updates, while the
+  final answer should report actions, evidence/checks, blockers or drift, and next approval.
+
 ## Prompt fragments
 
 Prompt fragments are the source-level units inside prompt assets. They are smaller than a prompt
@@ -101,6 +128,11 @@ semantic names; the loader derives the full fragment id from the role, slot, and
 The example above compiles to `agent.coder.workflow.diff.minimal` and
 `agent.coder.workflow.verify.evidence`. Use object values only when metadata such as `mutability`
 or `slot` differs from the slot default.
+
+This is the preferred storage format for bundled agent profiles because it avoids repeating full
+ids in JSON while preserving stable patch targets. The full fragment id is derived as
+`agent.<role>.<slot>.<local-key>`, so recipe and project overrides can target the compiled graph
+without making source profiles verbose.
 
 The loader must continue to accept legacy string arrays and structured `{ "id", "text" }` arrays:
 
@@ -245,6 +277,7 @@ recipe artifacts.
 Use these focused checks when changing modular prompt assembly:
 
 ```bash
+bun run agents:check
 bun test packages/agentplane/src/runner/context/base-prompts.test.ts \
   packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts \
   packages/agentplane/src/commands/recipes.transaction.test.ts \
@@ -252,6 +285,7 @@ bun test packages/agentplane/src/runner/context/base-prompts.test.ts \
 bun run typecheck
 bun run framework:dev:bootstrap
 agentplane doctor
+node .agentplane/policy/check-routing.mjs
 git diff --check
 ```
 
@@ -267,6 +301,10 @@ bun test packages/recipes/src/index.test.ts packages/recipes/src/overlay.test.ts
 - Keep module provenance populated and deterministic.
 - Keep recipe mutation failures transactional.
 - Keep init/upgrade outputs compiled from prompt modules, not from duplicate templates.
+- Keep new agent profile entries in compact keyed form; legacy arrays are accepted for old projects,
+  not preferred for new bundled prompts.
+- Keep reasoning effort and text verbosity in execution config or runner context instead of copying
+  those runtime knobs into every role profile.
 - Keep runner behavior stable by round-tripping prompt blocks through modules before changing sort
   order, roles, or prompt content.
 - Keep doctor/runtime diagnostics read-only unless a separate task explicitly scopes auto-repair.
