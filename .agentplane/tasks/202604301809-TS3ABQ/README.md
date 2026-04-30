@@ -1,10 +1,11 @@
 ---
 id: "202604301809-TS3ABQ"
 title: "Normalize core agent profiles for GPT-5.5"
-status: "DOING"
+result_summary: "Merged via PR #622."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-30T18:59:59.431Z"
   updated_by: "CODER"
   note: "Verified: compact keyed agent profile format added with derived fragment ids and legacy array/object compatibility; core profiles normalized to Goal/Success criteria/Constraints/Stop rules/Output; role/IDE readers handle keyed maps; docs updated. Checks: bun run agents:sync, bun run agents:check, targeted prompt/template/registry/GPT-5.5 tests, bun run typecheck, bun run lint:core, node .agentplane/policy/check-routing.mjs, git diff --check, targeted Prettier check, agentplane role CODER."
-commit: null
+commit:
+  hash: "0a66a477987a07bcdf1a0d9da4a1e84d98b09e31"
+  message: "Merge pull request #622 from basilisk-labs/task/202604301809-TS3ABQ/gpt55-core-agent-profiles"
 comments:
   -
     author: "CODER"
     body: "Start: normalize core agent profiles into outcome-first Goal/Success criteria/Constraints/Stop rules/Output blocks, preserving gateway/policy hard gates and generated mirror parity."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #622 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: compact keyed agent profile format added with derived fragment ids and legacy array/object compatibility; core profiles normalized to Goal/Success criteria/Constraints/Stop rules/Output; role/IDE readers handle keyed maps; docs updated. Checks: bun run agents:sync, bun run agents:check, targeted prompt/template/registry/GPT-5.5 tests, bun run typecheck, bun run lint:core, node .agentplane/policy/check-routing.mjs, git diff --check, targeted Prettier check, agentplane role CODER."
+  -
+    type: "status"
+    at: "2026-04-30T19:03:45.861Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #622 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T18:59:59.437Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-30T19:03:45.866Z"
+doc_updated_by: "INTEGRATOR"
 description: "Rewrite core agent profiles around Goal, Success criteria, Constraints, Stop rules, and Output while preserving role boundaries and AgentPlane lifecycle constraints."
 sections:
   Summary: |-
