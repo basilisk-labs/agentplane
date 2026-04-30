@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604300956-BTJN6M/v0-3-road-to-0-4-blog",
+  "created_at": "2026-04-30T10:00:50.985Z",
+  "head_sha": "8ccdb613cbd55a3847348f1076df008772003e97",
+  "last_verified_at": "2026-04-30T10:02:13.793Z",
+  "last_verified_sha": "8ccdb613cbd55a3847348f1076df008772003e97",
+  "schema_version": 1,
+  "task_id": "202604300956-BTJN6M",
+  "updated_at": "2026-04-30T10:02:02.069Z",
+  "verify": {
+    "status": "pass"
+  }
+}

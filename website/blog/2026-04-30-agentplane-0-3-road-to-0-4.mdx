@@ -1,0 +1,96 @@
+---
+slug: agentplane-0-3-road-to-0-4
+title: "AgentPlane 0.3: the road to 0.4"
+description: "A short development note on what the 0.3 line changed, why it took so many patches, and why modular prompt assembly is the right boundary for 0.4."
+authors: [team]
+tags: [release, workflow, operations]
+---
+
+AgentPlane `0.3` ended up being less of a feature line and more of a discipline line.
+
+It started with a policy gateway and stricter release records. It ended with branch PR closure evidence, publish hygiene, recipe groundwork, and the first real modular prompt assembly layer. That is a lot for a `0.3.x` series, but the pattern is easier to see in hindsight: every patch made the system less dependent on implicit agent judgment.
+
+The final published `0.3` release is `v0.3.29`. A maintenance branch now preserves that line as `0.3`. The next release is being prepared as `0.4.0` because prompt modules are not just another patch. They introduce a new mental model for how AgentPlane builds agent instructions.
+
+<!-- truncate -->
+
+## The first half of 0.3 was about making rules executable
+
+`0.3.0` moved the project from large, fuzzy instruction files toward a policy gateway with routed modules. That mattered because agents do not fail only when they lack rules. They also fail when the rule graph is too vague to load deterministically.
+
+The early `0.3` releases tightened that surface:
+
+- `AGENTS.md` became a compact gateway instead of the place where every procedure accumulates.
+- Policy modules became the canonical place for workflow, release, security, and DoD rules.
+- Routing checks started treating policy shape as something testable.
+- Release notes became real traceability records instead of generic summaries.
+
+The point was not documentation polish. It was execution control. If an agent can mutate a repository, it needs a small, checkable path from request to policy to task state to verification.
+
+## The middle of 0.3 was about removing release optimism
+
+Several `0.3` patches were boring in the best possible way: they turned release assumptions into release gates.
+
+The clearest example was the `0.3.8` and `0.3.9` installability incident. A package with a leaked `workspace:` dependency made it to npm, and a fresh install failed before the CLI could start. The fix was not only to remove the bad dependency. The release process had to reject that class of package before publish.
+
+That theme repeated through the line:
+
+- package parity checks got stricter,
+- install smoke tests became more important,
+- publish recovery became less ad hoc,
+- generated references and task artifacts were checked more aggressively,
+- branch PR closure evidence had to reconcile with task state instead of relying on operator memory.
+
+This is why `0.3` has so many small releases. The product was not just gaining commands. It was learning which mistakes deserved a hard gate.
+
+## Branch PR became the default shape of serious work
+
+The later `0.3` work made `branch_pr` feel less like a workflow option and more like the right default for non-trivial changes.
+
+That required a surprising amount of plumbing. PR artifact state had to be typed. PR opening had to become transactional. Integration needed to preserve branch history by default. Hosted close flows needed better reconciliation. Task branches and close branches needed clearer cleanup rules.
+
+The result is not glamorous, but it is important: a task can move from plan to branch to PR to merge to closure with more of its evidence still attached.
+
+That is the core operational idea in AgentPlane. The repository should not have to trust that an agent remembers what happened. The evidence should be in the task, the PR artifacts, the branch history, and the release record.
+
+## Recipes pushed the system toward modular prompts
+
+Recipes were the pressure test.
+
+As long as prompts are just large text files, a recipe can only do coarse things: replace a whole file, append a large instruction block, or hope that a textual patch lands in the right place. That is not a good substrate for agent-specific behavior.
+
+The `0.3` line added enough recipe and prompt groundwork to make the next step obvious:
+
+- recipe manifests gained prompt mutation concepts,
+- prompt fragments gained names and selectors,
+- prompt graphs gained diagnostics,
+- init and runner paths began compiling prompt material instead of copying it blindly.
+
+At that point, the old patch-release framing stopped fitting the change. A modular prompt layer is a platform boundary. It changes what recipes can target and how future agents can be assembled.
+
+## Why 0.4 starts at prompt modules
+
+`0.4` is the right boundary because it names the new abstraction.
+
+The work now moves from "make the old instruction surface safer" to "treat prompts as compiled, addressable modules." That unlocks a different kind of recipe: one that can patch a named behavior, bind a module, disable a specific fragment, or validate that a graph still contains the right policy pieces.
+
+That does not make prompts magic. It makes them less opaque.
+
+The practical target for `0.4` is simple:
+
+- agent instructions should be assembled from named modules,
+- generated project files should come from the same module graph,
+- recipes should be able to target modules rather than whole prompt files,
+- diagnostics should explain graph drift before it becomes runtime confusion.
+
+That is enough of a conceptual shift to stop calling it another `0.3.x` patch.
+
+## What 0.3 leaves behind
+
+The useful lesson from `0.3` is that agent infrastructure improves when weak assumptions become executable checks.
+
+The line started by making policy routing explicit. It then made releases, installability, task closure, PR artifacts, and recipe prompt behavior more testable. By the end, the remaining problem was no longer "where do we put the instructions?" It was "how do we let agents and recipes change the right part of the instruction graph without rewriting the whole thing?"
+
+That is the road to `0.4`.
+
+The formal source records remain the release notes under [`/docs/releases`](/docs/releases), with `v0.3.29` as the final published `0.3` release.
