@@ -1,10 +1,11 @@
 ---
 id: "202604300956-6CRM12"
 title: "Publish v0.4.0 release"
-status: "DOING"
+result_summary: "Merged via PR #611."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -32,11 +33,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "060b70ca465b780337c2ec9da035fc66e615803f"
+  message: "Merge pull request #611 from basilisk-labs/task/202604300956-6CRM12/v0-4-0-release"
 comments:
   -
     author: "CODER"
     body: "Start: prepare the modular prompt assembly milestone as v0.4.0 through the branch_pr release-candidate route, including release-gate fixes needed for publication."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #611 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: prepare the modular prompt assembly milestone as v0.4.0 through the branch_pr release-candidate route, including release-gate fixes needed for publication."
+  -
+    type: "status"
+    at: "2026-04-30T17:40:21.716Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #611 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T10:07:30.351Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-30T17:40:21.722Z"
+doc_updated_by: "INTEGRATOR"
 description: "Release the current modular prompt assembly work as v0.4.0 instead of v0.3.30. Prepare the release candidate through the branch_pr route, satisfy release gates, merge to main, wait for hosted Publish to npm, and verify npm, tag, and GitHub Release evidence."
 sections:
   Summary: |-
