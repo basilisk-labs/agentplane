@@ -1,10 +1,11 @@
 ---
 id: "202604300928-A4CZZ3"
 title: "Recover hosted closure branch deltas"
-status: "DOING"
+result_summary: "Merged via PR #607."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-30T09:33:32.649Z"
   updated_by: "CODER"
   note: "Recovered hosted-close deltas committed at 014b04e1; policy routing, doctor, GitHub open-PR check, and diff hygiene passed."
-commit: null
+commit:
+  hash: "9b3ba7d67f44f506facffccca054209d4da25338"
+  message: "Merge pull request #607 from basilisk-labs/task/202604300928-A4CZZ3/closure-recovery"
 comments:
   -
     author: "CODER"
     body: "Start: recover hosted-close branch residue from four stale remote heads into a fresh branch_pr PR and clean the remotes after merge."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #607 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -51,9 +57,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Recovered hosted-close deltas committed at 014b04e1; policy routing, doctor, GitHub open-PR check, and diff hygiene passed."
+  -
+    type: "status"
+    at: "2026-04-30T09:37:02.480Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #607 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T09:33:32.663Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-30T09:37:02.486Z"
+doc_updated_by: "INTEGRATOR"
 description: "Recover four hosted close branch commits that still contain closure metadata beyond origin/main, merge them through a branch_pr recovery PR, and remove stale remote branches after verification."
 sections:
   Summary: |-
