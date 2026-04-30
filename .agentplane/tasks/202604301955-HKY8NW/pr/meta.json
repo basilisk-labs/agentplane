@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-30T20:53:00Z",
   "base": "main",
   "branch": "task/202604301955-HKY8NW/docs-ia-path-guard",
   "created_at": "2026-04-30T20:35:18.883Z",
-  "head_sha": "4d4a421e925af82a510ee14c74dda6b013e935ec",
+  "head_sha": "4714e43432bf783b4ff176decd008cf53680dfa4",
   "last_verified_at": "2026-04-30T20:48:04.001Z",
   "last_verified_sha": "4ab6c548336f6d8dae2d27b6789f9b8dfe74c956",
+  "merge_commit": "00031a6f3ac9c42d4784bf97e5abe3e7d06e77b7",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-30T20:53:00Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604301955-HKY8NW",
-  "updated_at": "2026-04-30T20:50:20.859Z",
+  "updated_at": "2026-04-30T20:53:00Z",
   "verify": {
     "status": "pass"
   }
