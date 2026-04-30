@@ -22,9 +22,9 @@ Restructure the public docs navigation around the existing agent-first model, se
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-30T20:20:46.197Z
+- Updated: 2026-04-30T20:27:38.743Z
 - Branch: task/202604301955-D7JQB7/docs-agent-first-ia
-- Head: 36ef5f2465f1
+- Head: a654ba89a6d4
 
 ```text
  README.md                                          |  6 +--
