@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-30T18:26:06Z",
   "base": "main",
   "branch": "task/202604301809-MFVAF2/gpt55-contract-diagnostics",
   "created_at": "2026-04-30T18:19:06.286Z",
-  "head_sha": "27511d74c16c491d04c7189849b43248ab0f155c",
+  "head_sha": "c4f27d29505241f692444c9fe55c0966302e62ce",
   "last_verified_at": "2026-04-30T18:23:41.518Z",
   "last_verified_sha": "27511d74c16c491d04c7189849b43248ab0f155c",
+  "merge_commit": "c2c30ea6d3181ab32874d2b22a17928ecfcb0d67",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-30T18:26:06Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604301809-MFVAF2",
-  "updated_at": "2026-04-30T18:23:18.835Z",
+  "updated_at": "2026-04-30T18:26:06Z",
   "verify": {
     "status": "pass"
   }
