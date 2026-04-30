@@ -27,3 +27,4 @@ Keep ADRs short. Prefer facts, decision, consequences, and follow-up over histor
 | [0009](./0009-recipes-index-signing-algorithm-policy.md) | Accepted | Keep Ed25519 as the only implemented recipes index signing algorithm behind an explicit verifier registry. |
 | [0010](./0010-core-root-export-compatibility.md)         | Accepted | Keep `@agentplaneorg/core` as a compatibility aggregate while internal runtime code uses subpath imports.  |
 | [0011](./0011-v0.3-surface-freeze.md)                    | Accepted | Freeze the v0.3 CLI, task lifecycle, config schema, and package surface until v0.4 migration planning.     |
+| [0012](./0012-v0.4-surface-transition.md)                | Accepted | Retire the root v0.3 freeze artifact from the v0.4 line while preserving it on the `0.3` branch.           |

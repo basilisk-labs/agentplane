@@ -35,6 +35,21 @@
       ]
     },
     {
+      "file": "packages/agentplane/src/agents/agents-template.ts",
+      "types": [
+        {
+          "name": "AgentTemplate",
+          "line": 29,
+          "col": 13
+        },
+        {
+          "name": "MarkdownPromptTemplate",
+          "line": 35,
+          "col": 13
+        }
+      ]
+    },
+    {
       "file": "packages/agentplane/src/backends/task-backend/redmine/backend-sync/status.ts",
       "exports": [
         {
@@ -305,7 +320,7 @@
       "types": [
         {
           "name": "AgentProfile",
-          "line": 11,
+          "line": 10,
           "col": 13
         }
       ]
@@ -618,12 +633,12 @@
       "exports": [
         {
           "name": "applyRecipeAgents",
-          "line": 98,
+          "line": 115,
           "col": 23
         },
         {
           "name": "applyRecipeScenarios",
-          "line": 160,
+          "line": 177,
           "col": 23
         }
       ]
@@ -643,17 +658,12 @@
       "exports": [
         {
           "name": "compileProjectOverlayArtifacts",
-          "line": 45,
-          "col": 23
-        },
-        {
-          "name": "compileProjectOverlayArtifactsFromRegistry",
-          "line": 35,
+          "line": 48,
           "col": 23
         },
         {
           "name": "setRecipeActive",
-          "line": 24,
+          "line": 26,
           "col": 23
         }
       ]
@@ -752,183 +762,203 @@
           "col": 3
         },
         {
-          "name": "InstalledRecipeEntry",
+          "name": "CompiledRecipePromptModuleAsset",
           "line": 8,
           "col": 3
         },
         {
-          "name": "InstalledRecipesFile",
+          "name": "CompiledRecipePromptMutationSetAsset",
           "line": 9,
           "col": 3
         },
         {
-          "name": "OverlayPromptFragment",
+          "name": "InstalledRecipeEntry",
           "line": 10,
           "col": 3
         },
         {
-          "name": "OverlayStrength",
+          "name": "InstalledRecipesFile",
           "line": 11,
           "col": 3
         },
         {
-          "name": "OverlaySurface",
+          "name": "OverlayPromptFragment",
           "line": 12,
           "col": 3
         },
         {
-          "name": "OverlayValidator",
+          "name": "OverlayStrength",
           "line": 13,
           "col": 3
         },
         {
-          "name": "OverlayWhen",
+          "name": "OverlaySurface",
           "line": 14,
           "col": 3
         },
         {
-          "name": "ProjectInstalledRecipeEntry",
-          "line": 16,
-          "col": 3
-        },
-        {
-          "name": "ProjectInstalledRecipesFile",
-          "line": 17,
-          "col": 3
-        },
-        {
-          "name": "ProjectOverlayManifestV2",
+          "name": "OverlayValidator",
           "line": 15,
           "col": 3
         },
         {
-          "name": "ProjectRecipeMaterialization",
+          "name": "OverlayWhen",
+          "line": 16,
+          "col": 3
+        },
+        {
+          "name": "ProjectInstalledRecipeEntry",
           "line": 18,
           "col": 3
         },
         {
-          "name": "ProjectRecipeRegistryEntry",
+          "name": "ProjectInstalledRecipesFile",
           "line": 19,
           "col": 3
         },
         {
-          "name": "ProjectRecipeState",
+          "name": "ProjectOverlayManifestV2",
+          "line": 17,
+          "col": 3
+        },
+        {
+          "name": "ProjectRecipeMaterialization",
+          "line": 20,
+          "col": 3
+        },
+        {
+          "name": "ProjectRecipeRegistryEntry",
           "line": 21,
           "col": 3
         },
         {
-          "name": "RecipeAgentDefinition",
-          "line": 22,
-          "col": 3
-        },
-        {
-          "name": "RecipeCompatibility",
+          "name": "ProjectRecipeState",
           "line": 23,
           "col": 3
         },
         {
-          "name": "RecipeConflictMode",
+          "name": "RecipeAgentDefinition",
           "line": 24,
           "col": 3
         },
         {
-          "name": "RecipeInstallSource",
+          "name": "RecipeCompatibility",
           "line": 25,
           "col": 3
         },
         {
-          "name": "RecipeKind",
+          "name": "RecipeConflictMode",
           "line": 26,
           "col": 3
         },
         {
-          "name": "RecipeManifest",
-          "line": 27,
-          "col": 3
-        },
-        {
-          "name": "RecipeResolverCompatibility",
-          "line": 28,
-          "col": 3
-        },
-        {
-          "name": "RecipeResolverCompatibilityFailure",
+          "name": "RecipeInstallSource",
           "line": 29,
           "col": 3
         },
         {
-          "name": "RecipeResolverContext",
+          "name": "RecipeKind",
           "line": 30,
           "col": 3
         },
         {
-          "name": "RecipeRunProfile",
+          "name": "RecipeManifest",
           "line": 31,
           "col": 3
         },
         {
-          "name": "RecipeScenarioDescriptor",
+          "name": "RecipePromptModuleDefinition",
+          "line": 27,
+          "col": 3
+        },
+        {
+          "name": "RecipePromptMutationSetDefinition",
+          "line": 28,
+          "col": 3
+        },
+        {
+          "name": "RecipeResolverCompatibility",
           "line": 32,
           "col": 3
         },
         {
-          "name": "RecipeScenarioDetail",
+          "name": "RecipeResolverCompatibilityFailure",
           "line": 33,
           "col": 3
         },
         {
-          "name": "RecipesIndex",
-          "line": 38,
-          "col": 3
-        },
-        {
-          "name": "RecipesIndexSignature",
-          "line": 39,
-          "col": 3
-        },
-        {
-          "name": "RecipeSkillDefinition",
+          "name": "RecipeResolverContext",
           "line": 34,
           "col": 3
         },
         {
-          "name": "RecipeTaskTemplate",
+          "name": "RecipeRunProfile",
           "line": 35,
           "col": 3
         },
         {
-          "name": "RecipeTaskTemplateDoc",
+          "name": "RecipeScenarioDescriptor",
           "line": 36,
           "col": 3
         },
         {
-          "name": "RecipeToolDefinition",
+          "name": "RecipeScenarioDetail",
           "line": 37,
           "col": 3
         },
         {
-          "name": "ResolvedRecipeRunProfile",
-          "line": 41,
-          "col": 3
-        },
-        {
-          "name": "ResolvedRecipeScenario",
+          "name": "RecipesIndex",
           "line": 42,
           "col": 3
         },
         {
-          "name": "ResolvedRecipeScenarioSelection",
+          "name": "RecipesIndexSignature",
           "line": 43,
           "col": 3
         },
         {
-          "name": "ResolveRecipeScenarioSelectionFlags",
+          "name": "RecipeSkillDefinition",
+          "line": 38,
+          "col": 3
+        },
+        {
+          "name": "RecipeTaskTemplate",
+          "line": 39,
+          "col": 3
+        },
+        {
+          "name": "RecipeTaskTemplateDoc",
           "line": 40,
           "col": 3
         },
         {
-          "name": "ScenarioDefinition",
+          "name": "RecipeToolDefinition",
+          "line": 41,
+          "col": 3
+        },
+        {
+          "name": "ResolvedRecipeRunProfile",
+          "line": 45,
+          "col": 3
+        },
+        {
+          "name": "ResolvedRecipeScenario",
+          "line": 46,
+          "col": 3
+        },
+        {
+          "name": "ResolvedRecipeScenarioSelection",
+          "line": 47,
+          "col": 3
+        },
+        {
+          "name": "ResolveRecipeScenarioSelectionFlags",
           "line": 44,
+          "col": 3
+        },
+        {
+          "name": "ScenarioDefinition",
+          "line": 48,
           "col": 3
         }
       ]
@@ -1164,17 +1194,17 @@
         },
         {
           "name": "PrArtifactState",
-          "line": 25,
+          "line": 32,
           "col": 13
         },
         {
           "name": "PrArtifactTextState",
-          "line": 19,
+          "line": 26,
           "col": 13
         },
         {
           "name": "ShellInvocation",
-          "line": 196,
+          "line": 283,
           "col": 13
         }
       ]
@@ -1993,17 +2023,54 @@
       ]
     },
     {
+      "file": "packages/agentplane/src/runner/context/base-prompts.ts",
+      "exports": [
+        {
+          "name": "compileRunnerPromptBlocksThroughModules",
+          "line": 21,
+          "col": 3
+        },
+        {
+          "name": "runnerPromptBlockToModule",
+          "line": 24,
+          "col": 3
+        }
+      ]
+    },
+    {
       "file": "packages/agentplane/src/runner/context/prompt-block-shared.ts",
       "exports": [
         {
           "name": "ensureTrailingNewline",
-          "line": 38,
+          "line": 39,
           "col": 17
         },
         {
           "name": "FRAMEWORK_RUNNER_PROMPT_URL",
-          "line": 12,
+          "line": 13,
           "col": 14
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/context/prompt-module-bridge.ts",
+      "exports": [
+        {
+          "name": "runnerPromptBlockToModule",
+          "line": 122,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "RunnerPromptBlockModuleContent",
+          "line": 17,
+          "col": 13
+        },
+        {
+          "name": "RunnerPromptModule",
+          "line": 29,
+          "col": 13
         }
       ]
     },
@@ -2299,172 +2366,348 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/runtime/prompt-modules/index.ts",
-      "types": [
+      "file": "packages/agentplane/src/runtime/prompt-fragments/index.ts",
+      "exports": [
         {
-          "name": "PromptModuleAddMutation",
+          "name": "generatedPromptFragmentId",
+          "line": 23,
+          "col": 3
+        },
+        {
+          "name": "generatedWholeFileFragmentId",
+          "line": 24,
+          "col": 3
+        },
+        {
+          "name": "isPromptFragmentId",
           "line": 25,
           "col": 3
         },
         {
-          "name": "PromptModuleAddress",
-          "line": 4,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleBinding",
-          "line": 27,
-          "col": 3
-        },
-        {
-          "name": "PromptModuleBindingKind",
-          "line": 28,
-          "col": 3
-        },
-        {
-          "name": "PromptModuleBindMutation",
+          "name": "validatePromptFragmentId",
           "line": 26,
           "col": 3
         },
         {
-          "name": "PromptModuleConflictPolicy",
+          "name": "validatePromptFragmentMutability",
+          "line": 27,
+          "col": 3
+        },
+        {
+          "name": "validatePromptFragmentSlot",
+          "line": 28,
+          "col": 3
+        }
+      ],
+      "types": [
+        {
+          "name": "NormalizePromptFragmentListOptions",
+          "line": 7,
+          "col": 44
+        },
+        {
+          "name": "ParsedPromptMarkdownFragments",
+          "line": 9,
+          "col": 3
+        },
+        {
+          "name": "ParsePromptMarkdownFragmentsOptions",
+          "line": 4,
+          "col": 8
+        },
+        {
+          "name": "PromptFragmentId",
+          "line": 11,
+          "col": 3
+        },
+        {
+          "name": "PromptFragmentIdSource",
+          "line": 12,
+          "col": 3
+        },
+        {
+          "name": "PromptFragmentListItem",
+          "line": 13,
+          "col": 3
+        },
+        {
+          "name": "PromptFragmentSource",
+          "line": 14,
+          "col": 3
+        },
+        {
+          "name": "PromptFragmentSourceKind",
+          "line": 15,
+          "col": 3
+        },
+        {
+          "name": "PromptMarkdownFragmentSegment",
+          "line": 18,
+          "col": 3
+        },
+        {
+          "name": "PromptMarkdownTextSegment",
+          "line": 20,
+          "col": 3
+        },
+        {
+          "name": "RenderPromptMarkdownFragmentsOptions",
           "line": 5,
           "col": 8
-        },
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/prompt-fragments/json.ts",
+      "types": [
         {
-          "name": "PromptModuleContentKind",
-          "line": 6,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleContractSchemaVersion",
-          "line": 7,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleDependency",
-          "line": 8,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleDisableMutation",
-          "line": 29,
-          "col": 3
-        },
-        {
-          "name": "PromptModuleGraphNode",
+          "name": "NormalizePromptFragmentListOptions",
           "line": 10,
-          "col": 8
-        },
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/prompt-fragments/markdown.ts",
+      "types": [
         {
-          "name": "PromptModuleLoadCondition",
-          "line": 11,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleMergeMode",
-          "line": 12,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleMergePolicy",
-          "line": 13,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleMutability",
-          "line": 14,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleMutationBase",
-          "line": 31,
-          "col": 3
-        },
-        {
-          "name": "PromptModuleMutationSource",
-          "line": 33,
-          "col": 3
-        },
-        {
-          "name": "PromptModuleMutationWhen",
-          "line": 34,
-          "col": 3
-        },
-        {
-          "name": "PromptModuleNamespace",
-          "line": 15,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleOwner",
-          "line": 16,
-          "col": 8
-        },
-        {
-          "name": "PromptModulePatchMutation",
-          "line": 35,
-          "col": 3
-        },
-        {
-          "name": "PromptModuleProvenance",
+          "name": "ParsePromptMarkdownFragmentsOptions",
           "line": 17,
-          "col": 8
+          "col": 13
         },
         {
-          "name": "PromptModuleReference",
-          "line": 18,
-          "col": 8
+          "name": "RenderPromptMarkdownFragmentsOptions",
+          "line": 24,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/prompt-fragments/validation.ts",
+      "exports": [
+        {
+          "name": "isPromptFragmentId",
+          "line": 35,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/prompt-modules/compiler.ts",
+      "exports": [
+        {
+          "name": "matchesPromptModuleLoadCondition",
+          "line": 91,
+          "col": 17
         },
         {
-          "name": "PromptModuleReplaceMutation",
-          "line": 36,
+          "name": "matchesPromptModuleMutationWhen",
+          "line": 148,
+          "col": 17
+        },
+        {
+          "name": "matchesPromptModuleSelector",
+          "line": 126,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "PromptModuleCompilerContext",
+          "line": 34,
+          "col": 13
+        },
+        {
+          "name": "PromptModulePolicyGateway",
+          "line": 27,
+          "col": 13
+        },
+        {
+          "name": "PromptModuleWorkflowMode",
+          "line": 30,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/prompt-modules/index.ts",
+      "exports": [
+        {
+          "name": "buildFrameworkExecutionProfilePromptModule",
+          "line": 56,
           "col": 3
         },
         {
-          "name": "PromptModuleSelector",
+          "name": "matchesPromptModuleLoadCondition",
+          "line": 3,
+          "col": 3
+        },
+        {
+          "name": "matchesPromptModuleMutationWhen",
+          "line": 4,
+          "col": 3
+        },
+        {
+          "name": "matchesPromptModuleSelector",
+          "line": 5,
+          "col": 3
+        }
+      ],
+      "types": [
+        {
+          "name": "PromptModuleAddMutation",
           "line": 37,
           "col": 3
         },
         {
-          "name": "PromptModuleSlot",
-          "line": 19,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleSourceKind",
-          "line": 20,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleStructuredPatch",
-          "line": 38,
-          "col": 3
-        },
-        {
-          "name": "PromptModuleSurface",
-          "line": 21,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleTarget",
-          "line": 22,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleValidator",
+          "name": "PromptModuleBinding",
           "line": 39,
           "col": 3
         },
         {
-          "name": "PromptModuleValidatorMutation",
+          "name": "PromptModuleBindingKind",
           "line": 40,
           "col": 3
         },
         {
-          "name": "PromptModuleValidatorPhase",
+          "name": "PromptModuleBindMutation",
+          "line": 38,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleCompilerContext",
+          "line": 7,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleConflictPolicy",
+          "line": 17,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleContentKind",
+          "line": 18,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleContractSchemaVersion",
+          "line": 19,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleDependency",
+          "line": 20,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleDiagnostic",
+          "line": 8,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleDiagnosticSeverity",
+          "line": 9,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleDisableMutation",
           "line": 41,
           "col": 3
+        },
+        {
+          "name": "PromptModuleLoadCondition",
+          "line": 23,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleMergeMode",
+          "line": 24,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleMergePolicy",
+          "line": 25,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleMutability",
+          "line": 26,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleMutationBase",
+          "line": 43,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleMutationSource",
+          "line": 45,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleMutationWhen",
+          "line": 46,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleNamespace",
+          "line": 27,
+          "col": 8
+        },
+        {
+          "name": "PromptModulePatchMutation",
+          "line": 47,
+          "col": 3
+        },
+        {
+          "name": "PromptModulePolicyGateway",
+          "line": 10,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleReference",
+          "line": 30,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleReplaceMutation",
+          "line": 48,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleSelector",
+          "line": 49,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleSourceKind",
+          "line": 32,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleStructuredPatch",
+          "line": 50,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleValidatorMutation",
+          "line": 52,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleValidatorPhase",
+          "line": 53,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleWorkflowMode",
+          "line": 11,
+          "col": 8
+        },
+        {
+          "name": "ValidatedPromptModuleMutation",
+          "line": 64,
+          "col": 8
         }
       ]
     },
@@ -2473,7 +2716,27 @@
       "types": [
         {
           "name": "PromptModuleReference",
-          "line": 149,
+          "line": 151,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/prompt-modules/registry.ts",
+      "exports": [
+        {
+          "name": "buildFrameworkExecutionProfilePromptModule",
+          "line": 382,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/prompt-modules/validation.ts",
+      "types": [
+        {
+          "name": "ValidatedPromptModuleMutation",
+          "line": 505,
           "col": 13
         }
       ]
@@ -2829,10 +3092,10 @@
   ],
   "counts": {
     "files": 5,
-    "exports": 138,
-    "types": 266,
+    "exports": 155,
+    "types": 290,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 409
+    "total": 450
   }
 }

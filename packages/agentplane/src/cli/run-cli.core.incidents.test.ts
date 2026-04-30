@@ -197,7 +197,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
           "--note",
           "Looks good",
           "--observation",
-          "Repeated recovery was still manual.",
+          "Manual recovery was still required.",
           "--impact",
           "Operators had to remember a second command to preserve findings.",
           "--resolution",
@@ -377,7 +377,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
           "Looks good",
           "--repo-fixable",
           "--observation",
-          "The remaining issue can be fixed in repository code.",
+          "The remaining workflow drift can be fixed in repository code.",
           "--impact",
           "We need a reusable reminder in incidents.md.",
           "--resolution",
@@ -469,7 +469,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
           "--note",
           "Looks good",
           "--observation",
-          "Default verify still records reusable findings.",
+          "Default verify still records reusable drift findings.",
           "--impact",
           "Operators should not get incidents side effects unless they opt in.",
           "--resolution",
@@ -491,7 +491,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         path.join(root, ".agentplane", "policy", "incidents.md"),
         "utf8",
       );
-      expect(incidentsFile).not.toContain("Default verify still records reusable findings.");
+      expect(incidentsFile).not.toContain("Default verify still records reusable drift findings.");
     }
 
     {
@@ -554,7 +554,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
           "Looks good",
           "--collect-incidents",
           "--observation",
-          "Verify can now update incidents.md immediately.",
+          "Verify can now update incidents.md on workflow drift.",
           "--impact",
           "Operators no longer need a second collect command for reusable findings.",
           "--resolution",
@@ -576,7 +576,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         path.join(root, ".agentplane", "policy", "incidents.md"),
         "utf8",
       );
-      expect(incidentsFile).toContain("Verify can now update incidents.md immediately.");
+      expect(incidentsFile).toContain("Verify can now update incidents.md on workflow drift.");
     }
   });
 

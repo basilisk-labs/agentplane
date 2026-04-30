@@ -78,7 +78,9 @@ function sortPromptModulesBySourceOrder(modules: PromptModule[]): PromptModule[]
 }
 
 function assembleStringPromptModules(modules: PromptModule[]): string {
-  return sortPromptModulesBySourceOrder(modules).map(stringPromptModuleContent).join("");
+  return sortPromptModulesBySourceOrder(modules)
+    .map((module) => stringPromptModuleContent(module))
+    .join("");
 }
 
 function agentFileNameFromModule(module: PromptModule): string {

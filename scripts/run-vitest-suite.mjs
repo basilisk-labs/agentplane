@@ -1,10 +1,11 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const VITEST_TIMEOUT_MS = "60000";
+export const VITEST_CHUNK_TIMEOUT_MS = 10 * 60 * 1000;
 
 const PRECOMMIT_FILES = [
   "packages/agentplane/src/commands/shared/network-approval.test.ts",
@@ -141,7 +142,9 @@ export const SUITES = {
     pool: "threads",
   },
   "release-ci-base": {
+    chunkSize: 10,
     files: RELEASE_CI_BASE_FILES,
+    isolatedPatterns: [/\/run-cli\.core\.pr-flow\./],
     maxWorkers: "4",
     pool: "forks",
   },
@@ -186,6 +189,92 @@ ${Object.keys(SUITES)
 `);
 }
 
+function buildVitestArgs(suite, files, extraArgs) {
+  return [
+    "vitest",
+    "--config",
+    "vitest.workspace.ts",
+    "run",
+    ...files,
+    `--pool=${suite.pool}`,
+    "--maxWorkers",
+    suite.maxWorkers,
+    "--testTimeout",
+    suite.testTimeout ?? VITEST_TIMEOUT_MS,
+    "--hookTimeout",
+    suite.hookTimeout ?? VITEST_TIMEOUT_MS,
+    ...extraArgs,
+  ];
+}
+
+function chunkFiles(files, chunkSize, isolatedPatterns = []) {
+  const chunks = [];
+  let pending = [];
+  const flushPending = () => {
+    if (pending.length === 0) return;
+    chunks.push(pending);
+    pending = [];
+  };
+  for (const file of files) {
+    if (isolatedPatterns.some((pattern) => pattern.test(file))) {
+      flushPending();
+      chunks.push([file]);
+      continue;
+    }
+    pending.push(file);
+    if (pending.length === chunkSize) {
+      flushPending();
+    }
+  }
+  flushPending();
+  return chunks;
+}
+
+function runVitest(args) {
+  execFileSync("bunx", args, {
+    cwd: REPO_ROOT,
+    env: process.env,
+    stdio: "inherit",
+  });
+}
+
+function runVitestCaptured(args, files) {
+  const result = spawnSync("bunx", args, {
+    cwd: REPO_ROOT,
+    encoding: "utf8",
+    env: process.env,
+    maxBuffer: 64 * 1024 * 1024,
+    timeout: VITEST_CHUNK_TIMEOUT_MS,
+  });
+  const output = [result.stdout, result.stderr].filter(Boolean).join("");
+  const fileList = files.join(", ");
+  if (result.error) {
+    if (output) process.stdout.write(output);
+    throw new Error(`Vitest failed for ${fileList}: ${result.error.message}`, {
+      cause: result.error,
+    });
+  }
+  if (result.status !== 0 || result.signal) {
+    if (output) process.stdout.write(output);
+    throw new Error(
+      `Vitest failed for ${fileList} with status=${result.status ?? "null"} signal=${result.signal ?? "none"}`,
+    );
+  }
+  return output;
+}
+
+function summarizeVitestOutput(output) {
+  return output
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => /^(Test Files|Tests|Duration)\b/.test(line))
+    .join("; ");
+}
+
+function formatChunkFileLabel(files) {
+  return `: ${files.join(", ")}`;
+}
+
 function main(argv = process.argv.slice(2)) {
   const suiteName = argv[0];
   if (suiteName === "--help" || suiteName === "-h") {
@@ -211,27 +300,22 @@ function main(argv = process.argv.slice(2)) {
       );
     }
 
-    const args = [
-      "vitest",
-      "--config",
-      "vitest.workspace.ts",
-      "run",
-      ...suite.files,
-      `--pool=${suite.pool}`,
-      "--maxWorkers",
-      suite.maxWorkers,
-      "--testTimeout",
-      suite.testTimeout ?? VITEST_TIMEOUT_MS,
-      "--hookTimeout",
-      suite.hookTimeout ?? VITEST_TIMEOUT_MS,
-      ...argv.slice(1),
-    ];
-
-    execFileSync("bunx", args, {
-      cwd: REPO_ROOT,
-      env: process.env,
-      stdio: "inherit",
-    });
+    const extraArgs = argv.slice(1);
+    if (Number.isInteger(suite.chunkSize) && suite.chunkSize > 0) {
+      const chunks = chunkFiles(suite.files, suite.chunkSize, suite.isolatedPatterns ?? []);
+      for (const [index, files] of chunks.entries()) {
+        process.stdout.write(
+          `Vitest suite ${suiteName}: chunk ${index + 1}/${chunks.length} (${files.length} files)${formatChunkFileLabel(files)}\n`,
+        );
+        const output = runVitestCaptured(buildVitestArgs(suite, files, extraArgs), files);
+        const summary = summarizeVitestOutput(output);
+        process.stdout.write(
+          `Vitest suite ${suiteName}: chunk ${index + 1}/${chunks.length} passed${summary ? ` (${summary})` : ""}\n`,
+        );
+      }
+    } else {
+      runVitest(buildVitestArgs(suite, suite.files, extraArgs));
+    }
   } else {
     printHelp();
     throw new Error("Missing Vitest suite name.");

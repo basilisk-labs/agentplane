@@ -141,7 +141,7 @@ function hasFailureSignal(values: readonly (string | null | undefined)[]): boole
     .filter(Boolean)
     .join(" ");
   if (!text) return false;
-  return /\b(blocked|broke|broken|cannot|conflict|deadlock|deadlocked|drift|error|fail(?:ed|ing|ure)?|flaky|forced|hang(?:ing)?|incorrect|lost|manual retries|missing|mutat(?:e|ed|ion)|pending|pollution|rejected|retry|stalled|timeout|unexpected|violat(?:e|ed|ion)|wrong)\b/u.test(
+  return /\b(blocked|broke|broken|cannot|conflict|could not|deadlock|deadlocked|drift(?:ed|ing)?|error|fail(?:ed|ing|ure)?|flaky|forced|hang(?:ing)?|incorrect|lost|manual recover(?:y|ies)|manual retries|mistak(?:e|es)|missing|mutat(?:e|ed|ion)|pending|pollution|rejected|retry|stalled|timeout|unexpected|violat(?:e|ed|ion)|wrong)\b/u.test(
     text,
   );
 }

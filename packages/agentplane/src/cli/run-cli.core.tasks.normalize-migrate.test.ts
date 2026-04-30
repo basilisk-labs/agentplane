@@ -24,7 +24,7 @@ const execFileAsync = promisify(execFile);
 const NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS = 300_000;
 const NORMALIZE_MIGRATE_SHORT_TIMEOUT_MS = 120_000;
 const PROMOTABLE_FINDING = [
-  "- Observation: hosted reconcile left a shipped task without incident promotion.",
+  "- Observation: hosted reconcile left a shipped task missing incident promotion.",
   "  Impact: reusable recovery knowledge stayed task-local and operators repeated the same cleanup steps.",
   "  Resolution: promote incidents during reconcile whenever a DONE task already carries structured external Findings.",
   "  Fixability: external",

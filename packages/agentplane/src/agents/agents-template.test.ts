@@ -11,6 +11,7 @@ import {
 } from "./agents-template.js";
 
 const LOCAL_CLI = "node packages/agentplane/bin/agentplane.js";
+const GENERATED_FRAGMENT_SOURCE_ALLOWLIST = new Set(["policy/incidents.md"]);
 
 async function listMarkdownFiles(dirPath: string, relPrefix = ""): Promise<string[]> {
   const entries = await readdir(dirPath, { withFileTypes: true });
@@ -124,7 +125,7 @@ describe("agents-template", () => {
     for (const fileName of assetEntries) {
       const rendered = bundled.find((agent) => agent.fileName === fileName);
       const repoRaw = await readFile(path.join(repoAgentsDir, fileName), "utf8");
-      const renderedText = rendered?.contents;
+      const renderedText = rendered?.sourceContents;
       const repoText = `${repoRaw.trimEnd()}\n`;
       expect(repoText).toBe(renderedText);
     }
@@ -153,21 +154,19 @@ describe("agents-template", () => {
   });
 
   it("repo .agentplane/policy stays in sync with assets/policy", async () => {
-    const assetsPolicyDir = path.join(process.cwd(), "packages", "agentplane", "assets", "policy");
     const repoPolicyDir = path.join(process.cwd(), ".agentplane", "policy");
     const bundled = await loadPolicyTemplates();
 
     for (const policy of bundled) {
       const repoText = await readFile(path.join(repoPolicyDir, policy.relativePath), "utf8");
-      expect(`${repoText.trimEnd()}\n`).toBe(policy.contents);
+      expect(`${repoText.trimEnd()}\n`).toBe(policy.sourceContents);
     }
   });
 
   it("bundled markdown prompt assets use valid unique declared fragments", async () => {
     const assetsDir = path.join(process.cwd(), "packages", "agentplane", "assets");
-    const policyMarkdownFiles = (await listMarkdownFiles(path.join(assetsDir, "policy"))).map(
-      (entry) => `policy/${entry}`,
-    );
+    const policyFiles = await listMarkdownFiles(path.join(assetsDir, "policy"));
+    const policyMarkdownFiles = policyFiles.map((entry) => `policy/${entry}`);
     const markdownFiles = ["AGENTS.md", "RUNNER.md", ...policyMarkdownFiles];
     const seen = new Map<string, string>();
 
@@ -180,7 +179,9 @@ describe("agents-template", () => {
       expect(rendered.contents).not.toContain("ap:fragment");
 
       for (const fragment of rendered.fragments) {
-        expect(fragment.id_source).toBe("declared");
+        if (!GENERATED_FRAGMENT_SOURCE_ALLOWLIST.has(relativePath)) {
+          expect(fragment.id_source).toBe("declared");
+        }
         const existing = seen.get(fragment.id);
         expect(existing, `${fragment.id} duplicated in ${relativePath}`).toBeUndefined();
         seen.set(fragment.id, relativePath);
