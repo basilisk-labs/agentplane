@@ -1,0 +1,21 @@
+ .agentplane/agents/CODER.json                      | 144 +++----------------
+ .agentplane/agents/ORCHESTRATOR.json               | 152 +++------------------
+ .agentplane/agents/PLANNER.json                    | 147 +++-----------------
+ .agentplane/agents/REVIEWER.json                   |  97 +++----------
+ .agentplane/agents/TESTER.json                     | 119 +++-------------
+ docs/developer/modular-prompt-assembly.mdx         |  32 +++--
+ packages/agentplane/assets/agents/CODER.json       | 144 +++----------------
+ .../agentplane/assets/agents/ORCHESTRATOR.json     | 152 +++------------------
+ packages/agentplane/assets/agents/PLANNER.json     | 147 +++-----------------
+ packages/agentplane/assets/agents/REVIEWER.json    |  97 +++----------
+ packages/agentplane/assets/agents/TESTER.json      | 119 +++-------------
+ .../agentplane/src/agents/agents-template.test.ts  |  26 ++--
+ packages/agentplane/src/agents/agents-template.ts  |  21 +--
+ .../cli/run-cli/commands/core/agent-profiles.ts    |   4 +-
+ .../agentplane/src/cli/run-cli/commands/ide.ts     |  20 ++-
+ .../src/runtime/prompt-fragments/json.test.ts      |  60 ++++++++
+ .../src/runtime/prompt-fragments/json.ts           | 105 ++++++++++++--
+ .../src/runtime/prompt-fragments/model.ts          |   6 +-
+ .../runtime/prompt-modules/gpt55-contract.test.ts  |  25 +++-
+ .../src/runtime/prompt-modules/registry.test.ts    |   4 +-
+ 20 files changed, 428 insertions(+), 1193 deletions(-)
