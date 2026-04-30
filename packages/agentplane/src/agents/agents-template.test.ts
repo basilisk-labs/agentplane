@@ -75,6 +75,7 @@ describe("agents-template", () => {
       expect(agent.sourceContents).toBe(`${assetText.trimEnd()}\n`);
       expect(agent.fragments.length).toBeGreaterThan(0);
       expect(agent.contents).not.toContain(LOCAL_CLI);
+      expect(agent.contents).not.toContain('"mutability"');
     }
   });
 
@@ -100,6 +101,20 @@ describe("agents-template", () => {
     );
     expect(coder?.contents).not.toContain("agent.coder.workflow.goal");
     expect(coder?.contents).not.toContain('"mutability"');
+  });
+
+  it("keeps bundled agent profile fragment fields as compact keyed objects", async () => {
+    const bundled = await loadAgentTemplates();
+    const fragmentFields = ["inputs", "outputs", "permissions", "workflow"] as const;
+
+    for (const agent of bundled) {
+      const parsed = JSON.parse(agent.contents) as Record<string, unknown>;
+      for (const field of fragmentFields) {
+        expect(parsed[field], `${agent.fileName}.${field}`).toBeTruthy();
+        expect(Array.isArray(parsed[field]), `${agent.fileName}.${field}`).toBe(false);
+        expect(typeof parsed[field], `${agent.fileName}.${field}`).toBe("object");
+      }
+    }
   });
 
   it("installed agents prefer system CLI", async () => {

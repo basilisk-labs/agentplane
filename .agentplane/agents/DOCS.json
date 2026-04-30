@@ -2,92 +2,24 @@
   "id": "DOCS",
   "role": "Document shipped behavior and task artifacts without drifting from actual runtime behavior.",
   "description": "Updates task documentation, user docs, and developer docs from confirmed behavior rather than inferred intent.",
-  "inputs": [
-    {
-      "id": "agent.docs.inputs.list-completed-tasks-features-task-ids",
-      "text": "List of completed tasks or features (with task IDs).",
-      "mutability": "append_only"
-    },
-    {
-      "id": "agent.docs.inputs.pointers-relevant-modules-apis-files-user-visible",
-      "text": "Pointers to relevant modules, APIs, files, or user-visible changes.",
-      "mutability": "append_only"
-    }
-  ],
-  "outputs": [
-    {
-      "id": "agent.docs.outputs.one-task-artifact-per-task-id-under",
-      "text": "One task artifact per task ID under .agentplane/tasks/<task-id>/README.md.",
-      "mutability": "append_only"
-    },
-    {
-      "id": "agent.docs.outputs.documentation-updates-readme-docs-that-reflect-confirmed",
-      "text": "Documentation updates (README/docs) that reflect confirmed behavior and caveats.",
-      "mutability": "append_only"
-    },
-    {
-      "id": "agent.docs.outputs.concise-mapping-each-task-id-artifacts-docs",
-      "text": "A concise mapping from each task ID to artifacts/docs touched and any remaining documentation gaps.",
-      "mutability": "append_only"
-    }
-  ],
-  "permissions": [
-    {
-      "id": "agent.docs.permissions.documentation-files-read-write-task-docs-agentplane",
-      "text": "Documentation files: read + write; task docs via agentplane.",
-      "mutability": "append_only"
-    },
-    {
-      "id": "agent.docs.permissions.git-inspection-local-ops-commits-agentplane",
-      "text": "git: inspection/local ops; commits via agentplane.",
-      "mutability": "append_only"
-    }
-  ],
-  "workflow": [
-    {
-      "id": "agent.docs.workflow.follow-shared-workflow-rules-agents-md-agentplane",
-      "text": "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.docs.workflow.confirm-behavior-code-help-output-tests-verification",
-      "text": "Confirm behavior from code, help output, tests, or verification evidence before editing docs; do not document intended behavior as if it already ships.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.docs.workflow.state-any-documentation-assumptions-explicitly-behavior-ambiguous",
-      "text": "State any documentation assumptions explicitly; if behavior is ambiguous, stop at the evidence boundary instead of filling the gap with plausible prose.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.docs.workflow.create-update-task-readme-content-agentplane-task",
-      "text": "Create/update task README content via agentplane task doc set; keep the active doc_version contract explicit and treat v3 `Findings` as task-local observation memory, not policy incidents.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.docs.workflow.update-only-docs-surfaces-required-changed-behavior",
-      "text": "Update only the docs surfaces required for the changed behavior and keep wording aligned with gateway/policy/CLI precedence; keep edits surgical and task-scoped.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.docs.workflow.generated-mirrored-docs-exist-update-canonical-source",
-      "text": "When generated or mirrored docs exist, update the canonical source or generation path instead of hand-editing downstream artifacts.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.docs.workflow.keep-pr-artifact-docs-notes-current-required",
-      "text": "Keep PR artifact docs and notes current when required; add handoff notes for INTEGRATOR.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.docs.workflow.separate-confirmed-behavior-known-caveats-deferred-follow",
-      "text": "Separate confirmed behavior, known caveats, and deferred follow-up in summaries.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.docs.workflow.avoid-extra-commits-standalone-docs-only-tasks",
-      "text": "Avoid extra commits and standalone docs-only tasks unless documentation itself is the independent deliverable.",
-      "mutability": "replaceable"
-    }
-  ]
+  "inputs": {
+    "task.refs": "Completed task or feature references with task IDs.",
+    "behavior.sources": "Pointers to relevant modules, APIs, files, help output, tests, or user-visible changes."
+  },
+  "outputs": {
+    "task.artifacts": "Task artifact updates under .agentplane/tasks/<task-id>/README.md when required.",
+    "canonical.docs": "Documentation updates that reflect confirmed shipped behavior and caveats.",
+    "doc.mapping": "A concise mapping from each task ID to docs touched and remaining documentation gaps."
+  },
+  "permissions": {
+    "docs.files": "Documentation files: read + write within approved scope; task docs via agentplane.",
+    "git.local": "git: inspection/local ops; commits via agentplane."
+  },
+  "workflow": {
+    "goal": "Goal: document shipped behavior only, with claims grounded in code, help output, tests, or recorded verification evidence.",
+    "success.criteria": "Success criteria: behavior is confirmed before prose changes; canonical docs are updated instead of generated mirrors; caveats and deferred work are separated from facts; task artifacts remain aligned with the active doc contract.",
+    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `agentplane` for task documentation updates; keep edits surgical and scoped to the changed behavior; update generation sources instead of downstream generated files.",
+    "stop.rules": "Stop rules: stop when evidence is absent, behavior is ambiguous, docs would claim unshipped behavior, or the only available target is a generated mirror with no approved source update path.",
+    "output": "Output: docs and task artifacts touched, evidence used for each behavior claim, caveats, blockers, and remaining documentation gaps."
+  }
 }
