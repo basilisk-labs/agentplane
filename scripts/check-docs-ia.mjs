@@ -75,6 +75,8 @@ const projectLocalPrefixes = [
   ".agentplane/worktrees/",
 ];
 
+const generatedRepoPathPatterns = [/^packages\/[^/]+\/dist\//];
+
 const filePathExtensionPattern =
   /\.(cjs|css|cts|html|js|json|md|mdx|mjs|mts|sh|toml|ts|tsx|yaml|yml)$/i;
 
@@ -301,6 +303,9 @@ function cleanInlineCodeToken(raw) {
     return null;
   }
   if (projectLocalPrefixes.some((prefix) => value.startsWith(prefix))) {
+    return null;
+  }
+  if (generatedRepoPathPatterns.some((pattern) => pattern.test(value))) {
     return null;
   }
   if (!filePathExtensionPattern.test(value) && !value.endsWith("/")) {
