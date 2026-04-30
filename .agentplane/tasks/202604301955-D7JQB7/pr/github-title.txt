@@ -1,0 +1,1 @@
+cleanup/docs: Align docs hierarchy with current agent-first IA (D7JQB7)

@@ -1,0 +1,18 @@
+ README.md                                          |  6 +--
+ .../0013-zod-contract-ssot.md}                     |  2 +-
+ docs/adr/README.md                                 |  1 +
+ .../v0-3}/cli-bug-ledger-v0-3-x.mdx                |  4 +-
+ .../v0-3}/framework-refactor-program.mdx           |  6 +--
+ docs/developer/architecture.mdx                    | 16 ++++----
+ docs/developer/design-principles.mdx               |  2 +-
+ .../documentation-information-architecture.mdx     | 16 +++++++-
+ ...ess-engeneering.mdx => harness-engineering.mdx} |  8 ++--
+ docs/developer/incident-archive.mdx                |  6 +--
+ docs/developer/schema-validation-strategy.mdx      |  2 +-
+ docs/developer/workflow-contract.mdx               |  2 +-
+ docs/developer/workflow-harness-test-matrix.mdx    |  2 +-
+ docs/index.mdx                                     | 47 ++++++++++++++--------
+ docs/user/overview.mdx                             |  2 +-
+ docs/user/workflow.mdx                             |  2 +-
+ website/sidebars.ts                                | 20 +++++++--
+ 17 files changed, 93 insertions(+), 51 deletions(-)
