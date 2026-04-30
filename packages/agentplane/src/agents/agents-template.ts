@@ -288,5 +288,6 @@ export async function loadPolicyGatewayMarkdownTemplate(
 }
 
 export async function loadPolicyGatewayTemplate(flavor: PolicyGatewayFlavor): Promise<string> {
-  return (await loadPolicyGatewayMarkdownTemplate(flavor)).contents;
+  const template = await loadPolicyGatewayMarkdownTemplate(flavor);
+  return template.contents;
 }

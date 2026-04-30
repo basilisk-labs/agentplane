@@ -126,7 +126,8 @@ describe("framework prompt module registry", () => {
     const runnerAsset = renderMarkdownPromptTemplate(runnerAssetRaw, {
       source_ref: "packages/agentplane/assets/RUNNER.md",
     }).contents;
-    const coderAsset = (await loadAgentTemplates()).find(
+    const agentTemplates = await loadAgentTemplates();
+    const coderAsset = agentTemplates.find(
       (template) => template.fileName === "CODER.json",
     )?.contents;
 
