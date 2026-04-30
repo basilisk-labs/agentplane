@@ -25,7 +25,7 @@ Make release hygiene pass by reconciling generated project agent and policy mirr
 ### Current Status
 
 - State: ok
-- Note: Verified: release agent/policy mirrors are synchronized with canonical prompt assets; agents check, policy routing, diff check, framework bootstrap, and doctor passed.
+- Note: Verified: current branch HEAD contains synced agent/policy mirrors and task graph artifacts; agents check, policy routing, diff check, framework bootstrap, and doctor passed.
 
 ## Risks
 
