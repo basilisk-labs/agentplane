@@ -41,6 +41,7 @@ function sampleExecutionProfile(): ResolvedExecutionProfileRuntime {
   return {
     profile: "balanced",
     reasoning_effort: "medium",
+    text_verbosity: "medium",
     budget: {
       discovery: { limit: 6, used: 0, remaining: 6, exhausted: false },
       implementation: { limit: 10, used: 0, remaining: 10, exhausted: false },
@@ -205,5 +206,6 @@ describe("framework prompt module registry", () => {
     expect(executionProfile?.provenance.source_kind).toBe("runtime");
     expect(typeof executionProfile?.content).toBe("string");
     expect(executionProfile?.content).toContain('"profile": "balanced"');
+    expect(executionProfile?.content).toContain('"text_verbosity": "medium"');
   });
 });

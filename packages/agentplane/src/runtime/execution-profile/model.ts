@@ -16,6 +16,7 @@ export type ExecutionBudgetCounter = {
 export type ResolvedExecutionProfileRuntime = {
   profile: AgentplaneConfig["execution"]["profile"];
   reasoning_effort: AgentplaneConfig["execution"]["reasoning_effort"];
+  text_verbosity: AgentplaneConfig["execution"]["text_verbosity"];
   budget: Record<ExecutionBudgetPhase, ExecutionBudgetCounter>;
   stop_conditions: string[];
   handoff_conditions: string[];

@@ -207,6 +207,7 @@ function renderExecutionProfilePromptContent(runtime: ResolvedExecutionProfileRu
     {
       profile: runtime.profile,
       reasoning_effort: runtime.reasoning_effort,
+      text_verbosity: runtime.text_verbosity,
       budget: runtime.budget,
       approvals: runtime.approvals,
       stop_conditions: runtime.stop_conditions,

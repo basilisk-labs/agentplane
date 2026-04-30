@@ -76,10 +76,16 @@ Current enforcement should be documented and configured through primary-based ke
 
 - `execution.profile`
 - `execution.reasoning_effort`
+- `execution.text_verbosity`
 - `execution.tool_budget`
 - `execution.stop_conditions`
 - `execution.handoff_conditions`
 - `execution.unsafe_actions_requiring_explicit_user_ok`
+
+`execution.reasoning_effort` controls depth, not answer length. `medium` is the balanced default;
+`low` is latency-oriented; `high` and `xhigh` should be reserved for conservative profiles or
+eval-backed work. `execution.text_verbosity` controls output length/structure in runner prompt
+contracts and is rendered into the execution profile runtime block.
 
 ### runner
 

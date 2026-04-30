@@ -107,6 +107,11 @@
         },
         "reasoning_effort": {
           "type": "string",
+          "enum": ["low", "medium", "high", "xhigh"],
+          "default": "medium"
+        },
+        "text_verbosity": {
+          "type": "string",
           "enum": ["low", "medium", "high"],
           "default": "medium"
         },
@@ -177,6 +182,7 @@
       "default": {
         "profile": "balanced",
         "reasoning_effort": "medium",
+        "text_verbosity": "medium",
         "tool_budget": {
           "discovery": 6,
           "implementation": 10,

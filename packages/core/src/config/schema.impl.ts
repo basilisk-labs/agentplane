@@ -16,6 +16,7 @@ const COMMENT_POLICY_DEFAULTS = {
 const EXECUTION_DEFAULTS: {
   profile: "balanced";
   reasoning_effort: "medium";
+  text_verbosity: "medium";
   tool_budget: {
     discovery: number;
     implementation: number;
@@ -27,6 +28,7 @@ const EXECUTION_DEFAULTS: {
 } = {
   profile: "balanced",
   reasoning_effort: "medium",
+  text_verbosity: "medium",
   tool_budget: {
     discovery: 6,
     implementation: 10,
@@ -195,8 +197,11 @@ export const AgentplaneConfigSchema = z
           .enum(["conservative", "balanced", "aggressive"])
           .default(EXECUTION_DEFAULTS.profile),
         reasoning_effort: z
-          .enum(["low", "medium", "high"])
+          .enum(["low", "medium", "high", "xhigh"])
           .default(EXECUTION_DEFAULTS.reasoning_effort),
+        text_verbosity: z
+          .enum(["low", "medium", "high"])
+          .default(EXECUTION_DEFAULTS.text_verbosity),
         tool_budget: z
           .object({
             discovery: z.number().int().min(1).default(EXECUTION_DEFAULTS.tool_budget.discovery),
@@ -223,6 +228,7 @@ export const AgentplaneConfigSchema = z
       .default({
         profile: EXECUTION_DEFAULTS.profile,
         reasoning_effort: EXECUTION_DEFAULTS.reasoning_effort,
+        text_verbosity: EXECUTION_DEFAULTS.text_verbosity,
         tool_budget: { ...EXECUTION_DEFAULTS.tool_budget },
         stop_conditions: [...EXECUTION_DEFAULTS.stop_conditions],
         handoff_conditions: [...EXECUTION_DEFAULTS.handoff_conditions],

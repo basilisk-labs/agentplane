@@ -7,7 +7,8 @@ import { getVersion } from "../../../../meta/version.js";
 
 type InitExecutionConfig = {
   profile: "conservative" | "balanced" | "aggressive";
-  reasoning_effort: "low" | "medium" | "high";
+  reasoning_effort: "low" | "medium" | "high" | "xhigh";
+  text_verbosity: "low" | "medium" | "high";
   tool_budget: {
     discovery: number;
     implementation: number;

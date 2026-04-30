@@ -10,6 +10,7 @@ export type StatusCommitPolicy = AgentplaneConfig["status_commit_policy"];
 export type CommitAutomation = AgentplaneConfig["commit_automation"];
 export type ExecutionProfile = AgentplaneConfig["execution"]["profile"];
 export type ReasoningEffort = AgentplaneConfig["execution"]["reasoning_effort"];
+export type TextVerbosity = AgentplaneConfig["execution"]["text_verbosity"];
 export type RunnerAdapterId = AgentplaneConfig["runner"]["default_adapter"];
 export type RunnerTraceMode = AgentplaneConfig["runner"]["trace"]["mode"];
 export type RunnerTraceRetention = AgentplaneConfig["runner"]["trace"]["retention"];

@@ -27,6 +27,8 @@ describe("execution profile presets", () => {
     const aggressive = resolveExecutionProfilePreset("aggressive");
     const conservative = resolveExecutionProfilePreset("conservative");
     expect(aggressive.reasoning_effort).toBe("low");
+    expect(aggressive.text_verbosity).toBe("low");
+    expect(conservative.text_verbosity).toBe("medium");
     expect(aggressive.tool_budget.implementation).toBeGreaterThan(
       conservative.tool_budget.implementation,
     );

@@ -12,6 +12,7 @@ describe("runtime/execution-profile", () => {
     expect(runtime).toMatchObject({
       profile: "balanced",
       reasoning_effort: "medium",
+      text_verbosity: "medium",
       budget: {
         discovery: { limit: 6, used: 0, remaining: 6, exhausted: false },
         implementation: { limit: 10, used: 0, remaining: 10, exhausted: false },
@@ -32,6 +33,8 @@ describe("runtime/execution-profile", () => {
   it("applies conservative profile overrides to approvals and runner trace/timeout policies", () => {
     const config = defaultConfig();
     config.execution.profile = "conservative";
+    config.execution.reasoning_effort = "xhigh";
+    config.execution.text_verbosity = "high";
     config.agents.approvals.require_network = false;
     config.agents.approvals.require_force = false;
     config.runner.trace.capture_stderr = false;
@@ -40,6 +43,8 @@ describe("runtime/execution-profile", () => {
 
     const runtime = resolveExecutionProfileRuntime(config);
 
+    expect(runtime.reasoning_effort).toBe("xhigh");
+    expect(runtime.text_verbosity).toBe("high");
     expect(runtime.approvals.require_network).toBe(true);
     expect(runtime.approvals.require_force).toBe(true);
     expect(runtime.runner.trace_policy.capture_stderr).toBe(true);
