@@ -1,0 +1,1 @@
+cli/release: Restore release-critical smoke suite (T0M8X3)

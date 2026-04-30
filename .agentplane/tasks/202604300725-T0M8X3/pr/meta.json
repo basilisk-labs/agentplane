@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604300725-T0M8X3/release-critical-smoke",
+  "created_at": "2026-04-30T08:02:17.598Z",
+  "head_sha": "2000d29c87eea28a854cb720ed1cf543541522f9",
+  "last_verified_at": "2026-04-30T08:04:05.151Z",
+  "last_verified_sha": "2000d29c87eea28a854cb720ed1cf543541522f9",
+  "schema_version": 1,
+  "task_id": "202604300725-T0M8X3",
+  "updated_at": "2026-04-30T08:02:17.598Z",
+  "verify": {
+    "status": "pass"
+  }
+}
