@@ -4,5 +4,5 @@
  docs/developer/workflow-harness-test-matrix.mdx |   4 +-
  package.json                                    |   5 +-
  scripts/README.md                               |  47 ++--
- scripts/check-docs-ia.mjs                       | 354 ++++++++++++++++++++++++
- 7 files changed, 392 insertions(+), 36 deletions(-)
+ scripts/check-docs-ia.mjs                       | 359 ++++++++++++++++++++++++
+ 7 files changed, 397 insertions(+), 36 deletions(-)

@@ -46,9 +46,9 @@ Add an automated docs information-architecture guard that checks docs/index.mdx 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-30T20:44:24.408Z
+- Updated: 2026-04-30T20:47:43.087Z
 - Branch: task/202604301955-HKY8NW/docs-ia-path-guard
-- Head: 7a95d2cacb34
+- Head: 4ab6c548336f
 
 ```text
  .github/workflows/docs-ci.yml                   |   3 +
@@ -57,8 +57,8 @@ Add an automated docs information-architecture guard that checks docs/index.mdx 
  docs/developer/workflow-harness-test-matrix.mdx |   4 +-
  package.json                                    |   5 +-
  scripts/README.md                               |  47 ++--
- scripts/check-docs-ia.mjs                       | 354 ++++++++++++++++++++++++
- 7 files changed, 392 insertions(+), 36 deletions(-)
+ scripts/check-docs-ia.mjs                       | 359 ++++++++++++++++++++++++
+ 7 files changed, 397 insertions(+), 36 deletions(-)
 ```
 
 </details>
