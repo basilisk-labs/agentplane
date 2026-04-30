@@ -222,7 +222,7 @@ function runVitest(args) {
   });
 }
 
-function runVitestCaptured(args) {
+function runVitestCaptured(args, files) {
   const result = spawnSync("bunx", args, {
     cwd: REPO_ROOT,
     encoding: "utf8",
@@ -231,14 +231,17 @@ function runVitestCaptured(args) {
     timeout: VITEST_CHUNK_TIMEOUT_MS,
   });
   const output = [result.stdout, result.stderr].filter(Boolean).join("");
+  const fileList = files.join(", ");
   if (result.error) {
     if (output) process.stdout.write(output);
-    throw result.error;
+    throw new Error(`Vitest failed for ${fileList}: ${result.error.message}`, {
+      cause: result.error,
+    });
   }
   if (result.status !== 0 || result.signal) {
     if (output) process.stdout.write(output);
     throw new Error(
-      `Vitest failed with status=${result.status ?? "null"} signal=${result.signal ?? "none"}`,
+      `Vitest failed for ${fileList} with status=${result.status ?? "null"} signal=${result.signal ?? "none"}`,
     );
   }
   return output;
@@ -288,7 +291,7 @@ function main(argv = process.argv.slice(2)) {
         process.stdout.write(
           `Vitest suite ${suiteName}: chunk ${index + 1}/${chunks.length} (${files.length} files)${formatChunkFileLabel(files)}\n`,
         );
-        const output = runVitestCaptured(buildVitestArgs(suite, files, extraArgs));
+        const output = runVitestCaptured(buildVitestArgs(suite, files, extraArgs), files);
         const summary = summarizeVitestOutput(output);
         process.stdout.write(
           `Vitest suite ${suiteName}: chunk ${index + 1}/${chunks.length} passed${summary ? ` (${summary})` : ""}\n`,

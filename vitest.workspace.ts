@@ -38,7 +38,10 @@ export default defineConfig({
         include: ["packages/testkit/src/**/*.test.ts"],
       }),
       project("cli-core", {
-        include: ["packages/agentplane/src/cli/run-cli.core*.test.ts"],
+        include: [
+          "packages/agentplane/src/cli/run-cli.core*.test.ts",
+          "packages/agentplane/src/cli/run-cli.test-helpers.test.ts",
+        ],
         hookTimeout: 60_000,
         testTimeout: 60_000,
       }),
