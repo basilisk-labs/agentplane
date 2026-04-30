@@ -22,12 +22,13 @@ Add a concise, useful website blog article explaining what happened across Agent
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-30T10:00:50.985Z
+- Updated: 2026-04-30T10:02:02.069Z
 - Branch: task/202604300956-BTJN6M/v0-3-road-to-0-4-blog
-- Head: bdf232c20692
+- Head: 8ccdb613cbd5
 
 ```text
-No changes detected.
+ .../blog/2026-04-30-agentplane-0-3-road-to-0-4.mdx | 96 ++++++++++++++++++++++
+ 1 file changed, 96 insertions(+)
 ```
 
 </details>
