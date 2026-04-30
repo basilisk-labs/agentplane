@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-30T19:14:08Z",
   "base": "main",
   "branch": "task/202604301809-FYB4RD/gpt55-secondary-agent-profiles",
   "created_at": "2026-04-30T19:11:25.751Z",
-  "head_sha": "4c0eafe55715ebde34f5ccdd9a60808548d89554",
+  "head_sha": "3ec389a894ea629d9aff88651a683b050aceaa5a",
   "last_verified_at": "2026-04-30T19:11:25.649Z",
   "last_verified_sha": "a3971e511a8dc8c6ea6648edfa558c6d2a4ae533",
+  "merge_commit": "02aeeffc785eb1fb9ae3f6ea40519aeafa29669a",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-30T19:14:08Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604301809-FYB4RD",
-  "updated_at": "2026-04-30T19:11:44.229Z",
+  "updated_at": "2026-04-30T19:14:08Z",
   "verify": {
     "status": "pass"
   }

@@ -1,10 +1,11 @@
 ---
 id: "202604301809-FYB4RD"
 title: "Normalize secondary agent profiles for GPT-5.5"
-status: "DOING"
+result_summary: "Merged via PR #624."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-30T19:11:25.649Z"
   updated_by: "CODER"
   note: "Verified: remaining non-core agent profiles (CREATOR, DOCS, INTEGRATOR, REDMINE, SKILL_EXTRACTOR, UPDATER, UPGRADER) now use compact keyed inputs/outputs/permissions/workflow and outcome-first Goal/Success criteria/Constraints/Stop rules/Output sections; all bundled profiles are covered by GPT-5.5 diagnostics. Checks: bun run agents:sync, bun run agents:check, targeted prompt fragment/template/registry/GPT-5.5 tests, bun run typecheck, bun run lint:core, node .agentplane/policy/check-routing.mjs, git diff --check, targeted Prettier check, agentplane role UPDATER."
-commit: null
+commit:
+  hash: "02aeeffc785eb1fb9ae3f6ea40519aeafa29669a"
+  message: "Merge pull request #624 from basilisk-labs/task/202604301809-FYB4RD/gpt55-secondary-agent-profiles"
 comments:
   -
     author: "CODER"
     body: "Start: normalize secondary agent profiles into the compact keyed outcome-first contract, preserving each role boundary and avoiding authority expansion."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #624 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: remaining non-core agent profiles (CREATOR, DOCS, INTEGRATOR, REDMINE, SKILL_EXTRACTOR, UPDATER, UPGRADER) now use compact keyed inputs/outputs/permissions/workflow and outcome-first Goal/Success criteria/Constraints/Stop rules/Output sections; all bundled profiles are covered by GPT-5.5 diagnostics. Checks: bun run agents:sync, bun run agents:check, targeted prompt fragment/template/registry/GPT-5.5 tests, bun run typecheck, bun run lint:core, node .agentplane/policy/check-routing.mjs, git diff --check, targeted Prettier check, agentplane role UPDATER."
+  -
+    type: "status"
+    at: "2026-04-30T19:15:06.930Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #624 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T19:11:25.659Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-30T19:15:06.934Z"
+doc_updated_by: "INTEGRATOR"
 description: "Apply the same outcome-first profile structure to UPDATER, UPGRADER, SKILL_EXTRACTOR, and REDMINE without expanding their authority or creating overlapping roles."
 sections:
   Summary: |-
