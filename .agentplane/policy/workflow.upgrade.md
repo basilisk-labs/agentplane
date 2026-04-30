@@ -1,7 +1,10 @@
+<!-- ap:fragment id="policy.workflow.upgrade.workflow.workflow.upgrade" slot="workflow" mutability="replaceable" -->
 # Workflow: upgrade
 
 Use this module when task runs `agentplane upgrade` or touches `.agentplane/.upgrade/**`.
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.workflow.upgrade.workflow.required.sequence" slot="workflow" mutability="replaceable" -->
 ## Required sequence
 
 1. Run upgrade command and capture run directory.
@@ -14,7 +17,10 @@ Use this module when task runs `agentplane upgrade` or touches `.agentplane/.upg
 6. Verify policy/agent consistency and routing checks.
 7. Record run path and reviewed files in task notes.
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.workflow.upgrade.check.minimum.verification" slot="check" mutability="append_only" -->
 ## Minimum verification
 
 - `node .agentplane/policy/check-routing.mjs`
 - `agentplane agents`
+<!-- /ap:fragment -->

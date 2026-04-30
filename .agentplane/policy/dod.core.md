@@ -1,3 +1,4 @@
+<!-- ap:fragment id="policy.dod.core.body.dod.core" slot="body" mutability="replaceable" -->
 # DoD: core
 
 The task is complete only if all core checks are true:
@@ -10,6 +11,8 @@ The task is complete only if all core checks are true:
 6. Drift was either absent or explicitly re-approved.
 7. Final repo state contains no unintended tracked changes.
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.dod.core.body.required.task.readme.contract" slot="body" mutability="replaceable" -->
 ## Required task README contract
 
 Every non-trivial task README must satisfy the active `doc_version` contract.
@@ -36,6 +39,8 @@ Target `doc_version=3` tasks use:
 
 `Findings` is task-local. Reusable external incident advice stays there first, then is promoted into `.agentplane/policy/incidents.md` through `finish` or `agentplane incidents collect <task-id>`.
 
+<!-- /ap:fragment -->
+<!-- ap:fragment id="policy.dod.core.hard_constraint.material.drift.criteria" slot="hard_constraint" mutability="append_only" -->
 ## Material drift criteria
 
 Treat drift as material and require re-approval when at least one is true:
@@ -44,3 +49,4 @@ Treat drift as material and require re-approval when at least one is true:
 - Network or outside-repo access becomes necessary and was not approved.
 - Planned scope expands by more than 5 additional files versus approved plan.
 - Verification contract changes (new required checks, changed pass criteria, or skipped mandatory checks).
+<!-- /ap:fragment -->
