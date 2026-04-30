@@ -22,9 +22,9 @@ Release the current modular prompt assembly work as v0.4.0 instead of v0.3.30. P
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-30T11:53:30.000Z
+- Updated: 2026-04-30T12:23:43.149Z
 - Branch: task/202604300956-6CRM12/v0-4-0-release
-- Head: b716a6fa1176
+- Head: 9ef864909ac9
 
 ```text
  docs/releases/v0.4.0.md                            | 156 +++++++
@@ -36,13 +36,15 @@ Release the current modular prompt assembly work as v0.4.0 instead of v0.3.30. P
  .../run-cli.core.pr-flow.pr-notes-verify.test.ts   |   2 +-
  .../run-cli.core.tasks.normalize-migrate.test.ts   |   2 +-
  .../src/cli/run-cli/commands/init/write-agents.ts  |   4 +-
+ .../commands/release/release-ci-contract.test.ts   |   8 +
  .../src/runtime/incidents/plan-strategy.ts         |   2 +-
  .../src/runtime/prompt-modules/compiler.merge.ts   | 183 ++++++++
  .../src/runtime/prompt-modules/compiler.shared.ts  |  41 ++
  .../src/runtime/prompt-modules/compiler.ts         | 220 +---------
  .../src/runtime/prompt-modules/registry.test.ts    |   3 +-
  scripts/baselines/knip-baseline.json               | 487 ++++++++++++++++-----
- 15 files changed, 944 insertions(+), 486 deletions(-)
+ scripts/run-vitest-suite.mjs                       |  68 ++-
+ 17 files changed, 999 insertions(+), 507 deletions(-)
 ```
 
 </details>
