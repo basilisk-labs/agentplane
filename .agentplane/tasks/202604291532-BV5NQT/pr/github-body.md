@@ -24,7 +24,7 @@ Add migration documentation, fixtures, and regression coverage for modular promp
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T19:41:48.123Z
+- Updated: 2026-04-29T19:44:51.854Z
 - Branch: task/202604291532-BV5NQT/modular-prompt-migration-docs
 - Head: df7b4aff6ef7
 

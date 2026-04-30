@@ -1,19 +1,20 @@
 {
   "artifact_state": "merged",
-  "artifact_state_updated_at": "2026-04-29T19:44:09Z",
+  "artifact_state_updated_at": "2026-04-29T19:44:51.854Z",
   "base": "main",
   "branch": "task/202604291532-BV5NQT/modular-prompt-migration-docs",
   "created_at": "2026-04-29T19:34:44.153Z",
-  "head_sha": "8a609a21aadd4e1c64525104856f5e5f09218f7e",
+  "head_sha": "df7b4aff6ef7344fb302a97965382f912c18a861",
   "last_verified_at": "2026-04-29T19:41:02.530Z",
   "last_verified_sha": "2617ad7b0af9572830193231fe6f53949cccbe2c",
   "merge_commit": "3b84434879a046b1da412292ef450a5564bfabac",
-  "merge_strategy": "merge",
   "merged_at": "2026-04-29T19:44:09Z",
+  "pr_number": 579,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/579",
   "schema_version": 1,
   "status": "MERGED",
   "task_id": "202604291532-BV5NQT",
-  "updated_at": "2026-04-29T19:44:09Z",
+  "updated_at": "2026-04-29T19:44:51.854Z",
   "verify": {
     "status": "pass"
   }

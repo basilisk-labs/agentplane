@@ -1,11 +1,11 @@
 ---
 id: "202604291531-N0H28A"
 title: "Apply recipe prompt mutations to compiled graph"
-result_summary: "Merged via PR #575."
+result_summary: "Active recipe prompt modules and mutation sets now compile into generated prompt-graph.json during recipe refresh, with transactional publication preserving prior artifacts when mutation compilation fails."
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -40,7 +40,7 @@ comments:
     body: "Start: wire active recipe prompt module assets and mutation sets into the project prompt graph refresh path while preserving existing overlay transaction behavior."
   -
     author: "INTEGRATOR"
-    body: "Verified: PR #575 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+    body: "Verified: PR #575 merged to main after hosted checks passed; implementation commit ff1e3d04 was squash-merged as ac327dd2."
 events:
   -
     type: "status"
@@ -57,13 +57,13 @@ events:
     note: "Active recipe prompt modules and mutation sets now compile into generated prompt-graph.json during recipe refresh, with compile failures blocking transactional publication."
   -
     type: "status"
-    at: "2026-04-29T19:17:01.564Z"
+    at: "2026-04-29T19:17:43.360Z"
     author: "INTEGRATOR"
     from: "DOING"
     to: "DONE"
-    note: "Verified: PR #575 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+    note: "Verified: PR #575 merged to main after hosted checks passed; implementation commit ff1e3d04 was squash-merged as ac327dd2."
 doc_version: 3
-doc_updated_at: "2026-04-29T19:17:01.570Z"
+doc_updated_at: "2026-04-29T19:17:43.361Z"
 doc_updated_by: "INTEGRATOR"
 description: "Wire installed and active recipe prompt module mutations into the compiled prompt graph refresh path so recipe enable/disable/update can affect generated prompt surfaces transactionally."
 sections:

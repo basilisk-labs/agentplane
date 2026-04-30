@@ -50,7 +50,7 @@ Extend recipe/project overlay schema support so vendored recipes can declare pro
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T18:56:33.061Z
+- Updated: 2026-04-29T19:01:31.392Z
 - Branch: task/202604291531-Z6XH6Q/recipe-prompt-mutations
 - Head: 4fd2fc73e174
 

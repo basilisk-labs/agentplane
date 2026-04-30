@@ -1,11 +1,11 @@
 ---
 id: "202604291531-Z6XH6Q"
 title: "Extend recipe manifests with prompt module mutations"
-result_summary: "Merged via PR #573."
+result_summary: "Recipe manifest and asset registry now support prompt_modules and prompt_mutation_sets with JSON asset validation and recipe-owned provenance; recipe prompt assets are not applied to prompt graphs yet."
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -40,7 +40,7 @@ comments:
     body: "Start: Extend installed recipe and overlay schema support so recipes can declare prompt modules and structured prompt module mutation sets, without applying those mutations to generated prompt artifacts yet."
   -
     author: "INTEGRATOR"
-    body: "Verified: PR #573 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+    body: "Verified: PR #573 merged to main after hosted checks passed; implementation commit 3491071b was squash-merged as c6921130."
 events:
   -
     type: "status"
@@ -57,13 +57,13 @@ events:
     note: "Recipe manifests now accept prompt_modules and prompt_mutation_sets JSON assets, validate recipe-owned module/mutation-set shape and provenance, and publish them into recipe-assets without applying them to overlay prompt surfaces."
   -
     type: "status"
-    at: "2026-04-29T18:59:32.646Z"
+    at: "2026-04-29T19:01:30.591Z"
     author: "INTEGRATOR"
     from: "DOING"
     to: "DONE"
-    note: "Verified: PR #573 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+    note: "Verified: PR #573 merged to main after hosted checks passed; implementation commit 3491071b was squash-merged as c6921130."
 doc_version: 3
-doc_updated_at: "2026-04-29T18:59:32.652Z"
+doc_updated_at: "2026-04-29T19:01:30.592Z"
 doc_updated_by: "INTEGRATOR"
 description: "Extend recipe/project overlay schema support so vendored recipes can declare prompt modules and structured prompt module mutations with validated asset references, without applying them to compiled init surfaces yet."
 sections:

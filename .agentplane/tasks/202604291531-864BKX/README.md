@@ -1,11 +1,11 @@
 ---
 id: "202604291531-864BKX"
 title: "Add prompt graph diagnostics and drift checks"
-result_summary: "Merged via PR #577."
+result_summary: "Merged prompt graph diagnostics and drift checks via PR #577; runtime explain now reports prompt graph artifact state, active recipes, module provenance, owner/source counts, repo override counts, mutation effects, and diagnostics; doctor now warns/errors on missing, stale, invalid, or uncompileable generated prompt graphs."
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -41,7 +41,7 @@ comments:
     body: "Start: expose read-only prompt graph diagnostics and stale generated prompt artifact checks through doctor/runtime surfaces."
   -
     author: "INTEGRATOR"
-    body: "Verified: PR #577 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+    body: "Verified: PR #577 merged after required GitHub checks passed; local task verification recorded by CODER."
 events:
   -
     type: "status"
@@ -58,13 +58,13 @@ events:
     note: "Prompt graph diagnostics are exposed through runtime explain and doctor drift checks; declared verification passed."
   -
     type: "status"
-    at: "2026-04-29T19:33:23.186Z"
+    at: "2026-04-29T19:33:26.914Z"
     author: "INTEGRATOR"
     from: "DOING"
     to: "DONE"
-    note: "Verified: PR #577 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+    note: "Verified: PR #577 merged after required GitHub checks passed; local task verification recorded by CODER."
 doc_version: 3
-doc_updated_at: "2026-04-29T19:33:23.193Z"
+doc_updated_at: "2026-04-29T19:33:26.914Z"
 doc_updated_by: "INTEGRATOR"
 description: "Expose prompt graph diagnostics and drift detection through doctor/explain-style surfaces so operators can see compiled modules, source provenance, repo overrides, recipe mutations, and stale generated prompt artifacts."
 sections:
