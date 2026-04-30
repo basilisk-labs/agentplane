@@ -53,12 +53,18 @@ Release the current modular prompt assembly work as v0.4.0 instead of v0.3.30. P
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-30T10:07:30.508Z
+- Updated: 2026-04-30T10:16:19.855Z
 - Branch: task/202604300956-6CRM12/v0-4-0-release
-- Head: 05ae6e59483b
+- Head: f521eae2e1c4
 
 ```text
-No changes detected.
+ docs/releases/v0.4.0.md                            | 156 +++++++++++++++
+ .../src/cli/run-cli.core.hooks.pre-commit.test.ts  | 158 +++++++++++++++
+ .../agentplane/src/cli/run-cli.core.hooks.test.ts  | 142 -------------
+ .../src/runtime/prompt-modules/compiler.merge.ts   | 183 +++++++++++++++++
+ .../src/runtime/prompt-modules/compiler.shared.ts  |  41 ++++
+ .../src/runtime/prompt-modules/compiler.ts         | 220 +--------------------
+ 6 files changed, 545 insertions(+), 355 deletions(-)
 ```
 
 </details>
