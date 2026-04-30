@@ -5,6 +5,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const VITEST_TIMEOUT_MS = "60000";
+export const VITEST_CHUNK_TIMEOUT_MS = 5 * 60 * 1000;
 
 const PRECOMMIT_FILES = [
   "packages/agentplane/src/commands/shared/network-approval.test.ts",
@@ -227,6 +228,7 @@ function runVitestCaptured(args) {
     encoding: "utf8",
     env: process.env,
     maxBuffer: 64 * 1024 * 1024,
+    timeout: VITEST_CHUNK_TIMEOUT_MS,
   });
   const output = [result.stdout, result.stderr].filter(Boolean).join("");
   if (result.error) {
@@ -248,6 +250,10 @@ function summarizeVitestOutput(output) {
     .map((line) => line.trim())
     .filter((line) => /^(Test Files|Tests|Duration)\b/.test(line))
     .join("; ");
+}
+
+function formatChunkFileLabel(files) {
+  return files.length <= 3 ? `: ${files.join(", ")}` : "";
 }
 
 function main(argv = process.argv.slice(2)) {
@@ -280,7 +286,7 @@ function main(argv = process.argv.slice(2)) {
       const chunks = chunkFiles(suite.files, suite.chunkSize);
       for (const [index, files] of chunks.entries()) {
         process.stdout.write(
-          `Vitest suite ${suiteName}: chunk ${index + 1}/${chunks.length} (${files.length} files)\n`,
+          `Vitest suite ${suiteName}: chunk ${index + 1}/${chunks.length} (${files.length} files)${formatChunkFileLabel(files)}\n`,
         );
         const output = runVitestCaptured(buildVitestArgs(suite, files, extraArgs));
         const summary = summarizeVitestOutput(output);

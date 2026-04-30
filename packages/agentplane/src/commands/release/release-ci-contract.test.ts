@@ -5,8 +5,9 @@ import { describe, expect, it } from "vitest";
 
 import * as vitestSuiteModule from "../../../../../scripts/run-vitest-suite.mjs";
 
-const { SUITES } = vitestSuiteModule as {
+const { SUITES, VITEST_CHUNK_TIMEOUT_MS } = vitestSuiteModule as {
   SUITES: Record<string, { chunkSize?: number; files: string[] }>;
+  VITEST_CHUNK_TIMEOUT_MS: number;
 };
 
 async function readRootText(relativePath: string): Promise<string> {
@@ -32,6 +33,7 @@ describe("release CI contract", () => {
     );
 
     expect(SUITES["release-ci-base"]?.chunkSize).toBe(1);
+    expect(VITEST_CHUNK_TIMEOUT_MS).toBe(5 * 60 * 1000);
   });
 
   it("builds testkit before agentplane in release and hosted install routes", async () => {
