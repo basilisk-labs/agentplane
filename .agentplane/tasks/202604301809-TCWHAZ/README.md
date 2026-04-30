@@ -1,10 +1,11 @@
 ---
 id: "202604301809-TCWHAZ"
 title: "Audit GPT-5.5 prompt surfaces"
-status: "DOING"
+result_summary: "Merged via PR #616."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-30T18:15:24.638Z"
   updated_by: "CODER"
   note: "Verified: runtime explain OK; agents templates OK; policy routing OK at commit 82bd7bb."
-commit: null
+commit:
+  hash: "8fa41075194e70636483ae5a9d63b14fdb735972"
+  message: "Merge pull request #616 from basilisk-labs/task/202604301809-TCWHAZ/gpt55-prompt-audit"
 comments:
   -
     author: "CODER"
     body: "Start: audit current prompt assets, runtime assembly, execution profile config, generated mirrors, and validation coverage before prompt behavior edits."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #616 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -61,9 +67,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: runtime explain OK; agents templates OK; policy routing OK at commit 82bd7bb."
+  -
+    type: "status"
+    at: "2026-04-30T18:17:51.914Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #616 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T18:15:24.674Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-30T18:17:51.920Z"
+doc_updated_by: "INTEGRATOR"
 description: "Inventory the current v0.4 prompt architecture against OpenAI GPT-5.5 prompt guidance. Map every active prompt surface, canonical source, generated mirror, runtime path, and existing validation before editing prompt behavior."
 sections:
   Summary: |-
