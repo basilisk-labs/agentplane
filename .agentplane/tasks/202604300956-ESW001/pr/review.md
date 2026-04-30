@@ -45,12 +45,13 @@ After v0.4.0 is published, add a concise website blog article announcing the rel
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-30T17:50:05.239Z
+- Updated: 2026-04-30T17:53:53.251Z
 - Branch: task/202604300956-ESW001/v0-4-release-blog
-- Head: 9df0243504d5
+- Head: 55266cb29b44
 
 ```text
-No changes detected.
+ ...0-release-0-4-0-modular-prompts-and-recipes.mdx | 67 ++++++++++++++++++++++
+ 1 file changed, 67 insertions(+)
 ```
 
 </details>
