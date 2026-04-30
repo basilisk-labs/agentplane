@@ -22,9 +22,9 @@ Release the current modular prompt assembly work as v0.4.0 instead of v0.3.30. P
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-30T12:42:50.636Z
+- Updated: 2026-04-30T13:04:12.930Z
 - Branch: task/202604300956-6CRM12/v0-4-0-release
-- Head: d6e86515decc
+- Head: a8f1d4d0c823
 
 ```text
  docs/releases/v0.4.0.md                            | 156 +++++++
