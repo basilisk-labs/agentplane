@@ -1,0 +1,4 @@
+ .../recipes/impl/project-installed-recipes.test.ts | 30 +++++++-
+ .../src/runtime/prompt-modules/compiler.test.ts    | 88 ++++++++++++++++++++++
+ .../src/runtime/prompt-modules/compiler.ts         | 37 +++++++++
+ 3 files changed, 154 insertions(+), 1 deletion(-)

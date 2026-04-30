@@ -22,12 +22,15 @@ Close the remaining correctness gap for fragmented prompts by enforcing mutation
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-30T07:48:54.578Z
+- Updated: 2026-04-30T07:54:40.529Z
 - Branch: task/202604300725-3CY7TE/fragment-mutability
-- Head: 040277e00dea
+- Head: 9d4a5fa929c2
 
 ```text
-No changes detected.
+ .../recipes/impl/project-installed-recipes.test.ts | 30 +++++++-
+ .../src/runtime/prompt-modules/compiler.test.ts    | 88 ++++++++++++++++++++++
+ .../src/runtime/prompt-modules/compiler.ts         | 37 +++++++++
+ 3 files changed, 154 insertions(+), 1 deletion(-)
 ```
 
 </details>
