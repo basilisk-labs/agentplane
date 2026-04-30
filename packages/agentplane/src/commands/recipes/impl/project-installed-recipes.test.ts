@@ -14,6 +14,7 @@ import {
 import { readProjectInstalledRecipes } from "./project-installed-recipes.js";
 
 const tempDirs = new Set<string>();
+const FRAMEWORK_RUNNER_FRAGMENT_ID = "runner.bundle.body.framework.runner";
 
 function promptModule(recipeId = "modular", version = "1.0.0"): Record<string, unknown> {
   return {
@@ -35,7 +36,7 @@ function promptModule(recipeId = "modular", version = "1.0.0"): Record<string, u
     summary: "Adds recipe-owned prompt module guidance.",
     content_kind: "markdown",
     content: "Use the recipe guidance during policy compilation.\n",
-    mutability: "extendable",
+    mutability: "replaceable",
     merge: {
       mode: "append",
       conflict: "keep_all",
@@ -80,6 +81,29 @@ function promptMutationSet(recipeId = "modular", version = "1.0.0"): Record<stri
         },
         patch: {
           summary: "Patched by active recipe mutation.",
+        },
+      },
+      {
+        id: `${recipeId}.patch.framework-runner`,
+        op: "patch_module",
+        source: {
+          owner: {
+            kind: "recipe",
+            recipe_id: recipeId,
+            version,
+          },
+          provenance: {
+            source_kind: "recipe_asset",
+            source_ref: "prompt-modules/mutations.json",
+            recipe_id: recipeId,
+            recipe_version: version,
+          },
+        },
+        target: {
+          fragment_id: FRAMEWORK_RUNNER_FRAGMENT_ID,
+        },
+        patch: {
+          content: "Patched framework runner prompt from active recipe.\n",
         },
       },
     ],
@@ -200,9 +224,13 @@ describe("project installed recipe prompt assets", () => {
         node.module.address.value ===
         "recipe.modular/policy/.agentplane/policy/body/modular-guidance",
     )?.module;
+    const frameworkRunner = promptGraph?.nodes.find(
+      (node) => node.module.provenance.fragment_id === FRAMEWORK_RUNNER_FRAGMENT_ID,
+    )?.module;
 
     expect(Object.values(bundle?.surfaces ?? {}).flat()).toEqual([]);
     expect(recipeModule?.summary).toBe("Patched by active recipe mutation.");
+    expect(frameworkRunner?.content).toBe("Patched framework runner prompt from active recipe.\n");
     expect(
       promptAssets?.map((entry) => ({
         id: entry.id,

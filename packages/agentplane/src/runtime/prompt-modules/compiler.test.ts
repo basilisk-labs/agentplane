@@ -152,16 +152,19 @@ describe("prompt module compiler", () => {
       value: "framework/gateway/AGENTS.md/load_rules/base",
       name: "base",
       content: "Base\n",
+      mutability: "replaceable",
     });
     const deprecated = markdownModule({
       value: "framework/gateway/AGENTS.md/load_rules/deprecated",
       name: "deprecated",
       content: "Deprecated\n",
+      mutability: "replaceable",
     });
     const replacement = markdownModule({
       value: "framework/gateway/AGENTS.md/load_rules/replacement",
       name: "replacement",
       content: "Replacement\n",
+      mutability: "replaceable",
     });
     const recipe = markdownModule({
       value: "recipe.roadmap/gateway/AGENTS.md/load_rules/prd",
@@ -257,6 +260,88 @@ describe("prompt module compiler", () => {
     ]);
   });
 
+  it("rejects direct mutations against non-replaceable prompt modules", () => {
+    const locked = markdownModule({
+      value: "framework/gateway/AGENTS.md/load_rules/locked",
+      name: "locked",
+      content: "Locked\n",
+      mutability: "locked",
+    });
+    const appendOnly = markdownModule({
+      value: "framework/gateway/AGENTS.md/load_rules/append-only",
+      name: "append-only",
+      content: "Append only\n",
+      mutability: "append_only",
+    });
+    const extendable = markdownModule({
+      value: "framework/gateway/AGENTS.md/load_rules/extendable",
+      name: "extendable",
+      content: "Extendable\n",
+      mutability: "extendable",
+    });
+    const mutations = {
+      schema_version: 1,
+      recipe_id: "roadmap",
+      mutations: [
+        {
+          id: "roadmap.patch.locked",
+          op: "patch_module",
+          source: recipeSource,
+          target: { address: locked.address.value },
+          patch: { content: "Patched\n" },
+        },
+        {
+          id: "roadmap.replace.append-only",
+          op: "replace_module",
+          source: recipeSource,
+          target: { address: appendOnly.address.value },
+          module: {
+            ...appendOnly,
+            content: "Replaced\n",
+          },
+        },
+        {
+          id: "roadmap.disable.extendable",
+          op: "disable_module",
+          source: recipeSource,
+          target: { address: extendable.address.value },
+        },
+      ],
+    } satisfies PromptModuleMutationSet;
+
+    const result = compilePromptModuleGraph({
+      graph: graph([locked, appendOnly, extendable]),
+      mutation_sets: [mutations],
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.nodes.map((node) => node.module.content)).toEqual([
+      "Locked\n",
+      "Append only\n",
+      "Extendable\n",
+    ]);
+    expect(result.diagnostics).toMatchObject([
+      {
+        severity: "error",
+        code: "mutability_violation",
+        mutation_id: "roadmap.patch.locked",
+        module_address: locked.address.value,
+      },
+      {
+        severity: "error",
+        code: "mutability_violation",
+        mutation_id: "roadmap.replace.append-only",
+        module_address: appendOnly.address.value,
+      },
+      {
+        severity: "error",
+        code: "mutability_violation",
+        mutation_id: "roadmap.disable.extendable",
+        module_address: extendable.address.value,
+      },
+    ]);
+  });
+
   it("targets named prompt fragments across framework prompt surfaces", () => {
     const gateway = markdownModule({
       value: "framework/gateway/AGENTS.md/load_rules/branch-pr",
@@ -266,6 +351,7 @@ describe("prompt module compiler", () => {
       target: "AGENTS.md",
       slot: "load_rules",
       fragmentId: "gateway.agents.load_rules.workflow.branch_pr",
+      mutability: "replaceable",
     });
     const policy = markdownModule({
       value: "framework/policy/.agentplane~policy/body/start-worktree",
@@ -275,6 +361,7 @@ describe("prompt module compiler", () => {
       target: ".agentplane/policy",
       slot: "body",
       fragmentId: "policy.workflow.branch_pr.sequence.start_worktree",
+      mutability: "replaceable",
     });
     const runner = markdownModule({
       value: "framework/runner/runner.bundle/body/framework-runner",
@@ -284,6 +371,7 @@ describe("prompt module compiler", () => {
       target: "runner.bundle",
       slot: "body",
       fragmentId: "runner.bundle.body.framework.runner",
+      mutability: "replaceable",
     });
     const agentProfile = markdownModule({
       value: "framework/agent_profile/.agentplane~agents/workflow/coder-diff-minimal",
