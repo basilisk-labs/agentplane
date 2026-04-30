@@ -1,10 +1,12 @@
 <!-- ap:fragment id="policy.workflow.branch_pr.workflow.workflow.branch_pr" slot="workflow" mutability="replaceable" -->
+
 # Workflow: branch_pr
 
 Use this module when `workflow_mode=branch_pr`.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.branch_pr.workflow.required.sequence" slot="workflow" mutability="replaceable" -->
+
 ## Required sequence
 
 1. CHECKPOINT A: plan/approve on base checkout.
@@ -19,6 +21,7 @@ Use this module when `workflow_mode=branch_pr`.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.branch_pr.commands.command.contract" slot="commands" mutability="replaceable" -->
+
 ## Command contract
 
 ```bash
@@ -33,6 +36,7 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.branch_pr.hard_constraint.constraints" slot="hard_constraint" mutability="append_only" -->
+
 ## Constraints
 
 - MUST NOT perform mutating actions before explicit user approval.

@@ -26,9 +26,7 @@ function artifactDetail(inspection: PromptGraphInspection): string[] {
   ];
 }
 
-export async function checkPromptGraphFacts(project: {
-  agentplaneDir: string;
-}): Promise<string[]> {
+export async function checkPromptGraphFacts(project: { agentplaneDir: string }): Promise<string[]> {
   const inspection = await inspectProjectPromptGraph(project);
   const findings: string[] = [];
 
@@ -41,7 +39,8 @@ export async function checkPromptGraphFacts(project: {
           "the generated artifact was edited manually or produced by an older incompatible runtime",
         nextAction: {
           command: refreshCommand(inspection),
-          reason: "re-publish recipe prompt artifacts from the current registry before relying on them",
+          reason:
+            "re-publish recipe prompt artifacts from the current registry before relying on them",
         },
         details: [...artifactDetail(inspection), ...(inspection.error ? [inspection.error] : [])],
       }),

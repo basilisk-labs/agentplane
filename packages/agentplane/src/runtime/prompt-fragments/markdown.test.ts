@@ -34,9 +34,14 @@ describe("prompt markdown fragments", () => {
       },
     });
     expect(renderPromptMarkdownFragments(parsed)).toBe(
-      ["# Policy", "", "2. Start work with dedicated task branch + worktree.", "", "Tail.", ""].join(
-        "\n",
-      ),
+      [
+        "# Policy",
+        "",
+        "2. Start work with dedicated task branch + worktree.",
+        "",
+        "Tail.",
+        "",
+      ].join("\n"),
     );
   });
 

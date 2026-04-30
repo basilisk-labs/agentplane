@@ -1,10 +1,12 @@
 <!-- ap:fragment id="policy.workflow.direct.workflow.workflow.direct" slot="workflow" mutability="replaceable" -->
+
 # Workflow: direct
 
 Use this module when `workflow_mode=direct`.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.direct.workflow.required.sequence" slot="workflow" mutability="replaceable" -->
+
 ## Required sequence
 
 1. CHECKPOINT A: run preflight and publish summary.
@@ -22,6 +24,7 @@ Use this module when `workflow_mode=direct`.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.direct.commands.command.contract" slot="commands" mutability="replaceable" -->
+
 ## Command contract
 
 ```bash
@@ -35,6 +38,7 @@ agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "...
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.direct.workflow.error.recovery" slot="workflow" mutability="replaceable" -->
+
 ## ERROR RECOVERY
 
 If any step fails:
@@ -49,6 +53,7 @@ If any step fails:
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.direct.hard_constraint.constraints" slot="hard_constraint" mutability="append_only" -->
+
 ## Constraints
 
 - MUST NOT perform mutating actions before explicit user approval.

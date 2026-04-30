@@ -1,8 +1,10 @@
 <!-- ap:fragment id="policy.governance.body.policy.governance" slot="body" mutability="replaceable" -->
+
 # Policy Governance
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.governance.source_of_truth.incident.source.of.truth" slot="source_of_truth" mutability="replaceable" -->
+
 ## Incident source of truth
 
 - `.agentplane/policy/incidents.md` is the active incident registry for unresolved incidents that still need operator attention or follow-up engineering work.
@@ -16,6 +18,7 @@
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.governance.hard_constraint.stabilization.criteria" slot="hard_constraint" mutability="append_only" -->
+
 ## Stabilization criteria
 
 Use `stabilized` only when the same failure class recurs at least 2 times in 30 days.
@@ -30,6 +33,7 @@ Promotion from `incidents.md` into canonical policy modules is allowed only when
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.governance.hard_constraint.canonical.module.immutability" slot="hard_constraint" mutability="append_only" -->
+
 ## Canonical module immutability
 
 - Canonical modules are immutable by default during feature delivery tasks.
@@ -38,6 +42,7 @@ Promotion from `incidents.md` into canonical policy modules is allowed only when
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.governance.hard_constraint.policy.budget" slot="hard_constraint" mutability="append_only" -->
+
 ## Policy budget
 
 - The policy gateway file (`AGENTS.md` or `CLAUDE.md`) MUST remain compact (target <= 250 lines).
@@ -46,6 +51,7 @@ Promotion from `incidents.md` into canonical policy modules is allowed only when
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.governance.hard_constraint.rule.quality" slot="hard_constraint" mutability="append_only" -->
+
 ## Rule quality
 
 - MUST rules should be enforceable by tooling where possible.

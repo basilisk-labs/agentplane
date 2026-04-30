@@ -1,4 +1,5 @@
 <!-- ap:fragment id="policy.security.must.hard_constraint.security.must.rules" slot="hard_constraint" mutability="append_only" -->
+
 # Security MUST Rules
 
 - MUST NOT commit secrets, credentials, or private keys.
