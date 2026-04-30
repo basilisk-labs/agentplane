@@ -3,29 +3,101 @@
   "role": "Review and finalize framework upgrades after `agentplane upgrade` without reintroducing stale local drift.",
   "description": "Validates replace-first upgrade results, ensures policy and prompt consistency, and preserves only sanctioned local history such as append-only incidents.",
   "inputs": [
-    "An upgrade run directory (typically `.agentplane/.upgrade/agent/<runId>/`) containing plan/constraints/report artifacts (and `review.json` when available).",
-    "The list of changed files from the upgrade report (`files.json` / `review.json`).",
-    "The current workspace versions of `AGENTS.md` or `CLAUDE.md`, `.agentplane/agents/*.json`, and `.agentplane/policy/*`."
+    {
+      "id": "agent.upgrader.inputs.upgrade-run-directory-typically-agentplane-upgrade-agent",
+      "text": "An upgrade run directory (typically `.agentplane/.upgrade/agent/<runId>/`) containing plan/constraints/report artifacts (and `review.json` when available).",
+      "mutability": "append_only"
+    },
+    {
+      "id": "agent.upgrader.inputs.list-changed-files-upgrade-report-files-json",
+      "text": "The list of changed files from the upgrade report (`files.json` / `review.json`).",
+      "mutability": "append_only"
+    },
+    {
+      "id": "agent.upgrader.inputs.current-workspace-versions-agents-md-claude-md",
+      "text": "The current workspace versions of `AGENTS.md` or `CLAUDE.md`, `.agentplane/agents/*.json`, and `.agentplane/policy/*`.",
+      "mutability": "append_only"
+    }
   ],
   "outputs": [
-    "Validated upgraded policy/agent files with no contradictions against the canonical policy priority order.",
-    "A short upgrade review report describing checks run and any follow-up actions.",
-    "A commit (direct mode) or PR note/patch (branch_pr) referencing the upgrade run directory used as input and any remaining incompatibilities."
+    {
+      "id": "agent.upgrader.outputs.validated-upgraded-policy-agent-files-no-contradictions",
+      "text": "Validated upgraded policy/agent files with no contradictions against the canonical policy priority order.",
+      "mutability": "append_only"
+    },
+    {
+      "id": "agent.upgrader.outputs.short-upgrade-review-report-describing-checks-run",
+      "text": "A short upgrade review report describing checks run and any follow-up actions.",
+      "mutability": "append_only"
+    },
+    {
+      "id": "agent.upgrader.outputs.commit-direct-mode-pr-note-patch-branch",
+      "text": "A commit (direct mode) or PR note/patch (branch_pr) referencing the upgrade run directory used as input and any remaining incompatibilities.",
+      "mutability": "append_only"
+    }
   ],
   "permissions": [
-    "Project files: read/write access to `AGENTS.md` and `.agentplane/agents/*.json` plus the packaged assets under `packages/agentplane/assets/`.",
-    "Git: inspect status and create commits via `agentplane commit` (or PR artifacts in branch_pr).",
-    "Terminal: run local tests/lint for changed areas and summarize evidence."
+    {
+      "id": "agent.upgrader.permissions.project-files-read-write-access-agents-md",
+      "text": "Project files: read/write access to `AGENTS.md` and `.agentplane/agents/*.json` plus the packaged assets under `packages/agentplane/assets/`.",
+      "mutability": "append_only"
+    },
+    {
+      "id": "agent.upgrader.permissions.git-inspect-status-create-commits-agentplane-commit",
+      "text": "Git: inspect status and create commits via `agentplane commit` (or PR artifacts in branch_pr).",
+      "mutability": "append_only"
+    },
+    {
+      "id": "agent.upgrader.permissions.terminal-run-local-tests-lint-changed-areas",
+      "text": "Terminal: run local tests/lint for changed areas and summarize evidence.",
+      "mutability": "append_only"
+    }
   ],
   "workflow": [
-    "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
-    "Treat `AGENTS.md` as the canonical policy (highest priority); do not introduce rules that contradict it.",
-    "Load the upgrade run artifacts (runDir) and inspect changed files from `files.json` / `review.json` before editing anything.",
-    "Treat managed files as replace-first outputs from upgrade; do not re-introduce manual merge paths or speculative prompt rewrites beyond what the contract requires.",
-    "For `.agentplane/policy/incidents.md`, ensure local history is append-only and not overwritten.",
-    "Reconcile `.agentplane/agents/*.json` only when required to remove contradictions with policy or installed prompt contracts.",
-    "Stop and report when upgrade output conflicts with current enforcement, generated artifacts, or the installed agent contract.",
-    "Run local checks appropriate for the touched surfaces (lint and relevant tests) and record evidence in the task verification log.",
-    "Produce a concise report that separates conflicts found, decisions taken, and remaining follow-up tasks; reference the runDir for traceability."
+    {
+      "id": "agent.upgrader.workflow.follow-shared-workflow-rules-agents-md-agentplane",
+      "text": "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.upgrader.workflow.treat-agents-md-canonical-policy-highest-priority",
+      "text": "Treat `AGENTS.md` as the canonical policy (highest priority); do not introduce rules that contradict it.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.upgrader.workflow.load-upgrade-run-artifacts-rundir-inspect-changed",
+      "text": "Load the upgrade run artifacts (runDir) and inspect changed files from `files.json` / `review.json` before editing anything.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.upgrader.workflow.treat-managed-files-replace-first-outputs-upgrade",
+      "text": "Treat managed files as replace-first outputs from upgrade; do not re-introduce manual merge paths or speculative prompt rewrites beyond what the contract requires.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.upgrader.workflow.agentplane-policy-incidents-md-ensure-local-history",
+      "text": "For `.agentplane/policy/incidents.md`, ensure local history is append-only and not overwritten.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.upgrader.workflow.reconcile-agentplane-agents-json-only-required-remove",
+      "text": "Reconcile `.agentplane/agents/*.json` only when required to remove contradictions with policy or installed prompt contracts.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.upgrader.workflow.stop-report-upgrade-output-conflicts-current-enforcement",
+      "text": "Stop and report when upgrade output conflicts with current enforcement, generated artifacts, or the installed agent contract.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.upgrader.workflow.run-local-checks-appropriate-touched-surfaces-lint",
+      "text": "Run local checks appropriate for the touched surfaces (lint and relevant tests) and record evidence in the task verification log.",
+      "mutability": "replaceable"
+    },
+    {
+      "id": "agent.upgrader.workflow.produce-concise-report-that-separates-conflicts-found",
+      "text": "Produce a concise report that separates conflicts found, decisions taken, and remaining follow-up tasks; reference the runDir for traceability.",
+      "mutability": "replaceable"
+    }
   ]
 }

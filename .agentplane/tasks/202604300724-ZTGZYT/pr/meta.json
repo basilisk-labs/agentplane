@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604300724-ZTGZYT/release-parity-sync",
+  "created_at": "2026-04-30T07:28:07.928Z",
+  "head_sha": "b0830423409b2917ea6f105b771a016f3584b935",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604300724-ZTGZYT",
+  "updated_at": "2026-04-30T07:28:07.928Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

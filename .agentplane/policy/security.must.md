@@ -1,3 +1,4 @@
+<!-- ap:fragment id="policy.security.must.hard_constraint.security.must.rules" slot="hard_constraint" mutability="append_only" -->
 # Security MUST Rules
 
 - MUST NOT commit secrets, credentials, or private keys.
@@ -5,3 +6,4 @@
 - MUST NOT perform network actions when approval is required and not granted.
 - MUST NOT modify auth/crypto/security-critical codepaths without explicit scope approval.
 - MUST report security-sensitive drift immediately and stop before mutation.
+<!-- /ap:fragment -->
