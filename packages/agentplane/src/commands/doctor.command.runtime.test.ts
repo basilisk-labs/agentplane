@@ -733,7 +733,9 @@ describe(
         );
         expect(rc).toBe(0);
         const output = stderr.output();
-        expect(output).toContain("generated prompt graph is stale relative to current recipe inputs");
+        expect(output).toContain(
+          "generated prompt graph is stale relative to current recipe inputs",
+        );
         expect(output).toContain(".agentplane/generated/prompt-graph.json");
         expect(output).toContain("agentplane recipes explain-active");
       } finally {

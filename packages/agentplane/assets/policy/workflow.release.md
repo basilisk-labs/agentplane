@@ -1,10 +1,12 @@
 <!-- ap:fragment id="policy.workflow.release.workflow.workflow.release" slot="workflow" mutability="replaceable" -->
+
 # Workflow: release
 
 Use this module when task touches release/version/publish flows.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.release.workflow.required.sequence" slot="workflow" mutability="replaceable" -->
+
 ## Required sequence
 
 1. CHECKPOINT A: confirm clean tracked tree and approved scope.
@@ -16,6 +18,7 @@ Use this module when task touches release/version/publish flows.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.release.commands.command.contract" slot="commands" mutability="replaceable" -->
+
 ## Command contract
 
 ```bash
@@ -31,6 +34,7 @@ agentplane finish <task-id> --author <ROLE> --body "Verified: release" --result 
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.release.hard_constraint.constraints" slot="hard_constraint" mutability="append_only" -->
+
 ## Constraints
 
 - MUST NOT perform irreversible release actions before explicit approval.

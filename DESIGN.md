@@ -234,20 +234,20 @@ Hero и ключевые proof-секции могут быть асимметр
 
 ```css
 :root {
-  --ap-primary: #0055FF;
-  --ap-secondary: #FFFFFF;
-  --ap-tertiary: #640AFF;
-  --ap-neutral: #FFFFFF;
+  --ap-primary: #0055ff;
+  --ap-secondary: #ffffff;
+  --ap-tertiary: #640aff;
+  --ap-neutral: #ffffff;
 
-  --ap-bg: #FFFFFF;
-  --ap-surface: #FAFAF7;
+  --ap-bg: #ffffff;
+  --ap-surface: #fafaf7;
   --ap-text-primary: #111111;
   --ap-text-secondary: #444444;
   --ap-text-muted: #666666;
-  --ap-border: #E5E5E2;
+  --ap-border: #e5e5e2;
   --ap-border-strong: #111111;
-  --ap-terminal: #0A0A0A;
-  --ap-accent: #0055FF;
+  --ap-terminal: #0a0a0a;
+  --ap-accent: #0055ff;
 }
 ```
 
@@ -360,7 +360,7 @@ JetBrains Mono, uppercase, technical precision.
   border-radius: 0;
   background: rgba(255, 255, 255, 0.78);
   backdrop-filter: blur(12px);
-  border: 1px solid #E5E5E2;
+  border: 1px solid #e5e5e2;
 }
 ```
 
@@ -376,8 +376,8 @@ JetBrains Mono, uppercase, technical precision.
 
 ```css
 .agentplane-card {
-  background: #FFFFFF;
-  border: 1px solid #E5E5E2;
+  background: #ffffff;
+  border: 1px solid #e5e5e2;
   border-radius: 0;
   padding: 32px;
   box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;
@@ -398,8 +398,8 @@ JetBrains Mono, uppercase, technical precision.
 
 ```css
 .agentplane-artifact-dark {
-  background: #0A0A0A;
-  color: #FFFFFF;
+  background: #0a0a0a;
+  color: #ffffff;
   border-radius: 0;
   padding: 40px;
   box-shadow: none;
@@ -447,9 +447,9 @@ Navigation должна быть glassy, тихой, не SaaS-heavy.
 
 ```css
 .agentplane-nav {
-  background: rgba(255,255,255,0.76);
+  background: rgba(255, 255, 255, 0.76);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid #E5E5E2;
+  border-bottom: 1px solid #e5e5e2;
 }
 ```
 
@@ -463,7 +463,7 @@ Primary:
 ```css
 .agentplane-button-primary {
   background: #111111;
-  color: #FFFFFF;
+  color: #ffffff;
   border-radius: 0;
   padding: 20px;
   font-family: "JetBrains Mono";
@@ -480,7 +480,7 @@ Secondary:
 ```css
 .agentplane-button-secondary {
   color: #666666;
-  border: 1px solid #E5E5E2;
+  border: 1px solid #e5e5e2;
   border-radius: 9999px;
   padding: 10px 14px;
 }
@@ -508,8 +508,8 @@ Link:
   align-items: center;
   gap: 8px;
   border-radius: 9999px;
-  border: 1px solid #E5E5E2;
-  background: rgba(255,255,255,0.72);
+  border: 1px solid #e5e5e2;
+  background: rgba(255, 255, 255, 0.72);
   padding: 10px 12px;
   color: #444444;
   font-family: "JetBrains Mono";

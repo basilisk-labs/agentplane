@@ -1,4 +1,5 @@
 <!-- ap:fragment id="policy.examples.migration-note.example.example.policy.migration.note" slot="example" mutability="replaceable" -->
+
 # Example: Policy Migration Note
 
 - Before: monolithic gateway file mixed policy and procedures.

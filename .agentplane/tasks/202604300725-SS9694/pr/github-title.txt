@@ -1,0 +1,1 @@
+docs/formatting: Fix release formatting drift (SS9694)
