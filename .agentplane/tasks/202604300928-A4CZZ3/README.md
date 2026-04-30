@@ -4,7 +4,7 @@ title: "Recover hosted closure branch deltas"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -23,9 +23,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-30T09:32:38.206Z"
+  updated_at: "2026-04-30T09:33:32.649Z"
   updated_by: "CODER"
-  note: "Recovered hosted-close branch deltas without code changes; policy routing, doctor, open PR check, and whitespace checks passed."
+  note: "Recovered hosted-close deltas committed at 014b04e1; policy routing, doctor, GitHub open-PR check, and diff hygiene passed."
 commit: null
 comments:
   -
@@ -45,8 +45,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Recovered hosted-close branch deltas without code changes; policy routing, doctor, open PR check, and whitespace checks passed."
+  -
+    type: "verify"
+    at: "2026-04-30T09:33:32.649Z"
+    author: "CODER"
+    state: "ok"
+    note: "Recovered hosted-close deltas committed at 014b04e1; policy routing, doctor, GitHub open-PR check, and diff hygiene passed."
 doc_version: 3
-doc_updated_at: "2026-04-30T09:32:38.219Z"
+doc_updated_at: "2026-04-30T09:33:32.663Z"
 doc_updated_by: "CODER"
 description: "Recover four hosted close branch commits that still contain closure metadata beyond origin/main, merge them through a branch_pr recovery PR, and remove stale remote branches after verification."
 sections:
@@ -98,6 +104,34 @@ sections:
       Result: pass
       Evidence: no whitespace errors.
       Scope: recovered task, PR artifact, and incident registry diffs.
+    
+    ### 2026-04-30T09:33:32.649Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Recovered hosted-close deltas committed at 014b04e1; policy routing, doctor, GitHub open-PR check, and diff hygiene passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T09:32:38.219Z, excerpt_hash=sha256:55cd29689c9e102324175dc42a113b58efa249700b90390b4b4f0b741716f84c
+    
+    Details:
+    
+    Post-commit verification evidence:
+    - Command: node .agentplane/policy/check-routing.mjs
+      Result: pass
+      Evidence: policy routing OK.
+      Scope: incident registry additions.
+    - Command: agentplane doctor
+      Result: pass
+      Evidence: doctor OK with errors=0 warnings=0.
+      Scope: repo-local runtime and branch_pr diagnostics.
+    - Command: gh pr list --state open --limit 100 --json number,headRefName,baseRefName,url,title,isDraft,mergeStateStatus
+      Result: pass
+      Evidence: [] before opening recovery PR.
+      Scope: GitHub open PR residue check.
+    - Command: git diff --check
+      Result: pass
+      Evidence: no whitespace errors.
+      Scope: final recovery diff.
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -165,6 +199,34 @@ Verification evidence:
   Result: pass
   Evidence: no whitespace errors.
   Scope: recovered task, PR artifact, and incident registry diffs.
+
+### 2026-04-30T09:33:32.649Z — VERIFY — ok
+
+By: CODER
+
+Note: Recovered hosted-close deltas committed at 014b04e1; policy routing, doctor, GitHub open-PR check, and diff hygiene passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T09:32:38.219Z, excerpt_hash=sha256:55cd29689c9e102324175dc42a113b58efa249700b90390b4b4f0b741716f84c
+
+Details:
+
+Post-commit verification evidence:
+- Command: node .agentplane/policy/check-routing.mjs
+  Result: pass
+  Evidence: policy routing OK.
+  Scope: incident registry additions.
+- Command: agentplane doctor
+  Result: pass
+  Evidence: doctor OK with errors=0 warnings=0.
+  Scope: repo-local runtime and branch_pr diagnostics.
+- Command: gh pr list --state open --limit 100 --json number,headRefName,baseRefName,url,title,isDraft,mergeStateStatus
+  Result: pass
+  Evidence: [] before opening recovery PR.
+  Scope: GitHub open PR residue check.
+- Command: git diff --check
+  Result: pass
+  Evidence: no whitespace errors.
+  Scope: final recovery diff.
 
 <!-- END VERIFICATION RESULTS -->
 

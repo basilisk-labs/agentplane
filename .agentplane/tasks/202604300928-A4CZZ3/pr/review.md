@@ -32,7 +32,7 @@ Recover four hosted close branch commits that still contain closure metadata bey
 ### Current Status
 
 - State: ok
-- Note: Recovered hosted-close branch deltas without code changes; policy routing, doctor, open PR check, and whitespace checks passed.
+- Note: Recovered hosted-close deltas committed at 014b04e1; policy routing, doctor, GitHub open-PR check, and diff hygiene passed.
 
 ## Risks
 
