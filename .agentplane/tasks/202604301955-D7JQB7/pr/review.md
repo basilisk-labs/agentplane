@@ -24,8 +24,8 @@ Restructure the public docs navigation around the existing agent-first model, se
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: docs index/sidebar IA comparison passed; stale current-doc references for harness-engineering, Zod ADR routing, and removed core/context paths were cleared; docs site typecheck/build/design checks passed; docs CLI, recipes, bootstrap, scripts checks passed; policy routing and agentplane doctor passed.
 
 ## Risks
 

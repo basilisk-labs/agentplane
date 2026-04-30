@@ -4,7 +4,7 @@ title: "Align docs hierarchy with current agent-first IA"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-30T20:27:54.189Z"
+  updated_by: "DOCS"
+  note: "Verified: docs index/sidebar IA comparison passed; stale current-doc references for harness-engineering, Zod ADR routing, and removed core/context paths were cleared; docs site typecheck/build/design checks passed; docs CLI, recipes, bootstrap, scripts checks passed; policy routing and agentplane doctor passed."
 commit: null
 comments:
   -
@@ -39,8 +39,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: aligning the current docs navigation and developer IA with the existing agent-first model in a dedicated branch_pr worktree, using live docs/sidebar/code-path evidence before editing."
+  -
+    type: "verify"
+    at: "2026-04-30T20:27:54.189Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Verified: docs index/sidebar IA comparison passed; stale current-doc references for harness-engineering, Zod ADR routing, and removed core/context paths were cleared; docs site typecheck/build/design checks passed; docs CLI, recipes, bootstrap, scripts checks passed; policy routing and agentplane doctor passed."
 doc_version: 3
-doc_updated_at: "2026-04-30T20:04:57.266Z"
+doc_updated_at: "2026-04-30T20:27:54.196Z"
 doc_updated_by: "DOCS"
 description: "Restructure the public docs navigation around the existing agent-first model, separate current developer pages from historical/archive material, fix stale current-code references, and reconcile docs/index.mdx with website/sidebars.ts."
 sections:
@@ -58,6 +64,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-30T20:27:54.189Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Verified: docs index/sidebar IA comparison passed; stale current-doc references for harness-engineering, Zod ADR routing, and removed core/context paths were cleared; docs site typecheck/build/design checks passed; docs CLI, recipes, bootstrap, scripts checks passed; policy routing and agentplane doctor passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T20:04:57.266Z, excerpt_hash=sha256:ed00d5d2f5b4f790c3fe2bf4e67cc07e2e06da478954560310aa1e7b4cda1841
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -89,6 +103,14 @@ Restructure the public docs navigation around the existing agent-first model, se
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-30T20:27:54.189Z — VERIFY — ok
+
+By: DOCS
+
+Note: Verified: docs index/sidebar IA comparison passed; stale current-doc references for harness-engineering, Zod ADR routing, and removed core/context paths were cleared; docs site typecheck/build/design checks passed; docs CLI, recipes, bootstrap, scripts checks passed; policy routing and agentplane doctor passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T20:04:57.266Z, excerpt_hash=sha256:ed00d5d2f5b4f790c3fe2bf4e67cc07e2e06da478954560310aa1e7b4cda1841
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
