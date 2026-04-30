@@ -1,0 +1,1 @@
+prompt-assembly: Add GPT-5.5 prompt contract diagnostics (MFVAF2)
