@@ -141,6 +141,7 @@ export const SUITES = {
     pool: "threads",
   },
   "release-ci-base": {
+    chunkSize: 40,
     files: RELEASE_CI_BASE_FILES,
     maxWorkers: "4",
     pool: "forks",
@@ -186,6 +187,40 @@ ${Object.keys(SUITES)
 `);
 }
 
+function buildVitestArgs(suite, files, extraArgs) {
+  return [
+    "vitest",
+    "--config",
+    "vitest.workspace.ts",
+    "run",
+    ...files,
+    `--pool=${suite.pool}`,
+    "--maxWorkers",
+    suite.maxWorkers,
+    "--testTimeout",
+    suite.testTimeout ?? VITEST_TIMEOUT_MS,
+    "--hookTimeout",
+    suite.hookTimeout ?? VITEST_TIMEOUT_MS,
+    ...extraArgs,
+  ];
+}
+
+function chunkFiles(files, chunkSize) {
+  const chunks = [];
+  for (let index = 0; index < files.length; index += chunkSize) {
+    chunks.push(files.slice(index, index + chunkSize));
+  }
+  return chunks;
+}
+
+function runVitest(args) {
+  execFileSync("bunx", args, {
+    cwd: REPO_ROOT,
+    env: process.env,
+    stdio: "inherit",
+  });
+}
+
 function main(argv = process.argv.slice(2)) {
   const suiteName = argv[0];
   if (suiteName === "--help" || suiteName === "-h") {
@@ -211,27 +246,18 @@ function main(argv = process.argv.slice(2)) {
       );
     }
 
-    const args = [
-      "vitest",
-      "--config",
-      "vitest.workspace.ts",
-      "run",
-      ...suite.files,
-      `--pool=${suite.pool}`,
-      "--maxWorkers",
-      suite.maxWorkers,
-      "--testTimeout",
-      suite.testTimeout ?? VITEST_TIMEOUT_MS,
-      "--hookTimeout",
-      suite.hookTimeout ?? VITEST_TIMEOUT_MS,
-      ...argv.slice(1),
-    ];
-
-    execFileSync("bunx", args, {
-      cwd: REPO_ROOT,
-      env: process.env,
-      stdio: "inherit",
-    });
+    const extraArgs = argv.slice(1);
+    if (Number.isInteger(suite.chunkSize) && suite.chunkSize > 0) {
+      const chunks = chunkFiles(suite.files, suite.chunkSize);
+      for (const [index, files] of chunks.entries()) {
+        process.stdout.write(
+          `Vitest suite ${suiteName}: chunk ${index + 1}/${chunks.length} (${files.length} files)\n`,
+        );
+        runVitest(buildVitestArgs(suite, files, extraArgs));
+      }
+    } else {
+      runVitest(buildVitestArgs(suite, suite.files, extraArgs));
+    }
   } else {
     printHelp();
     throw new Error("Missing Vitest suite name.");
