@@ -1,10 +1,11 @@
 ---
 id: "202604301809-K5P2HX"
 title: "Introduce shared GPT-5.5 prompt contract fragments"
-status: "DOING"
+result_summary: "Merged via PR #620."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-30T18:32:29.490Z"
   updated_by: "CODER"
   note: "Verified: shared GPT-5.5 gateway contract remains under AGENTS budget; agents templates OK; registry/agents-template/GPT-5.5 diagnostics tests pass; policy routing OK; git diff check OK at commit 721b8d4."
-commit: null
+commit:
+  hash: "81bd7da1a8ac2c14f45c034949acde0f05c5c66c"
+  message: "Merge pull request #620 from basilisk-labs/task/202604301809-K5P2HX/gpt55-shared-contract"
 comments:
   -
     author: "CODER"
     body: "Start: add shared GPT-5.5 collaboration, visible progress, retrieval budget, stop/output contract, and cache-order prompt fragments without weakening gateway/policy gates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #620 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -51,9 +57,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: shared GPT-5.5 gateway contract remains under AGENTS budget; agents templates OK; registry/agents-template/GPT-5.5 diagnostics tests pass; policy routing OK; git diff check OK at commit 721b8d4."
+  -
+    type: "status"
+    at: "2026-04-30T18:35:35.203Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #620 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T18:32:29.509Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-30T18:35:35.209Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add shared outcome-first prompt guidance as stable fragments: visible progress, retrieval budget, validation behavior, final output contract, findings/incidents boundary, and generic stop rules, without weakening hard workflow/security gates."
 sections:
   Summary: |-
