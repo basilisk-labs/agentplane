@@ -28,12 +28,30 @@ Recover four hosted close branch commits that still contain closure metadata bey
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-30T09:29:34.019Z
+- Updated: 2026-04-30T09:33:08.679Z
 - Branch: task/202604300928-A4CZZ3/closure-recovery
-- Head: cf7f413e9725
+- Head: 18ab2f5e6ef2
 
 ```text
-No changes detected.
+ .agentplane/policy/incidents.md                         |  2 ++
+ .agentplane/tasks/202604291531-864BKX/README.md         | 12 ++++++------
+ .agentplane/tasks/202604291531-864BKX/pr/github-body.md |  2 +-
+ .agentplane/tasks/202604291531-864BKX/pr/meta.json      |  9 +++++----
+ .agentplane/tasks/202604291531-864BKX/pr/review.md      |  2 +-
+ .agentplane/tasks/202604291531-N0H28A/README.md         | 12 ++++++------
+ .agentplane/tasks/202604291531-N0H28A/pr/github-body.md |  2 +-
+ .agentplane/tasks/202604291531-N0H28A/pr/meta.json      |  9 +++++----
+ .agentplane/tasks/202604291531-N0H28A/pr/review.md      |  2 +-
+ .agentplane/tasks/202604291531-Z6XH6Q/README.md         | 12 ++++++------
+ .agentplane/tasks/202604291531-Z6XH6Q/pr/github-body.md |  2 +-
+ .agentplane/tasks/202604291531-Z6XH6Q/pr/meta.json      |  9 +++++----
+ .agentplane/tasks/202604291531-Z6XH6Q/pr/review.md      |  2 +-
+ .agentplane/tasks/202604291532-BV5NQT/README.md         | 12 ++++++------
+ .agentplane/tasks/202604291532-BV5NQT/pr/github-body.md |  2 +-
+ .agentplane/tasks/202604291532-BV5NQT/pr/meta.json      |  9 +++++----
+ .agentplane/tasks/202604291532-BV5NQT/pr/review.md      |  2 +-
+ packages/agentplane/assets/policy/incidents.md          |  2 ++
+ 18 files changed, 56 insertions(+), 48 deletions(-)
 ```
 
 </details>
