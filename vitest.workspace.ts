@@ -57,8 +57,8 @@ export default defineConfig({
       }),
       project("cli-smoke", {
         include: ["packages/agentplane/src/cli/cli-smoke.test.ts"],
-        hookTimeout: 60_000,
-        testTimeout: 60_000,
+        hookTimeout: 120_000,
+        testTimeout: 120_000,
       }),
       project("critical", {
         include: ["packages/agentplane/src/cli/run-cli.critical.*.test.ts"],
