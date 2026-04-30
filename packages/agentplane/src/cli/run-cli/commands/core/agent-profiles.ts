@@ -22,8 +22,8 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function toAgentProfileStringList(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value
+  const items = Array.isArray(value) ? value : isRecord(value) ? Object.values(value) : [];
+  return items
     .map((item) => {
       if (typeof item === "string") return item.trim();
       if (isRecord(item) && typeof item.text === "string") return item.text.trim();

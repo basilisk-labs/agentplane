@@ -66,6 +66,66 @@ describe("prompt JSON text fragments", () => {
     });
   });
 
+  it("normalizes compact keyed object items with derived declared ids", () => {
+    const fragments = normalizePromptFragmentList(
+      {
+        "diff.minimal": "Keep diffs minimal, task-scoped, and easy to review.",
+        "verify.evidence": {
+          text: "Run declared checks and record evidence.",
+          mutability: "append_only",
+        },
+      },
+      {
+        id_prefix: "agent.coder.workflow",
+        slot: "workflow",
+        source_ref: "packages/agentplane/assets/agents/CODER.json",
+      },
+    );
+
+    expect(fragments).toEqual([
+      {
+        id: "agent.coder.workflow.diff.minimal",
+        id_source: "declared",
+        slot: "workflow",
+        text: "Keep diffs minimal, task-scoped, and easy to review.",
+        mutability: "replaceable",
+        source: {
+          kind: "json_keyed_object",
+          source_ref: "packages/agentplane/assets/agents/CODER.json",
+          index: 0,
+          key: "diff.minimal",
+        },
+      },
+      {
+        id: "agent.coder.workflow.verify.evidence",
+        id_source: "declared",
+        slot: "workflow",
+        text: "Run declared checks and record evidence.",
+        mutability: "append_only",
+        source: {
+          kind: "json_keyed_object",
+          source_ref: "packages/agentplane/assets/agents/CODER.json",
+          index: 1,
+          key: "verify.evidence",
+        },
+      },
+    ]);
+  });
+
+  it("rejects full ids as compact keyed object keys", () => {
+    expect(() =>
+      normalizePromptFragmentList(
+        {
+          "agent.coder.workflow.diff.minimal": "Keep diffs minimal.",
+        },
+        {
+          id_prefix: "agent.coder.workflow",
+          slot: "workflow",
+        },
+      ),
+    ).toThrow("expected local key, not full fragment id");
+  });
+
   it("rejects duplicate declared or generated ids", () => {
     expect(() =>
       normalizePromptFragmentList(

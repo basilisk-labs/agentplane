@@ -75,23 +75,31 @@ describe("agents-template", () => {
       expect(agent.sourceContents).toBe(`${assetText.trimEnd()}\n`);
       expect(agent.fragments.length).toBeGreaterThan(0);
       expect(agent.contents).not.toContain(LOCAL_CLI);
-      expect(agent.contents).not.toContain('"mutability"');
     }
   });
 
-  it("renders bundled agent fragment objects as installed string-array profiles", async () => {
+  it("loads compact keyed agent fragments with derived full ids", async () => {
     const bundled = await loadAgentTemplates();
     const coder = bundled.find((agent) => agent.fileName === "CODER.json");
-    expect(coder?.fragments.map((fragment) => fragment.id)).toContain(
-      "agent.coder.workflow.keep-diffs-minimal-task-scoped-easy-review",
-    );
+    expect(coder?.fragments.map((fragment) => fragment.id)).toContain("agent.coder.workflow.goal");
+    expect(
+      coder?.fragments.find((fragment) => fragment.id === "agent.coder.workflow.goal")?.source,
+    ).toMatchObject({
+      kind: "json_keyed_object",
+      key: "goal",
+    });
 
     const parsed = JSON.parse(coder?.contents ?? "{}") as {
-      workflow?: unknown[];
+      workflow?: Record<string, unknown>;
     };
-    expect(parsed.workflow?.every((entry) => typeof entry === "string")).toBe(true);
-    expect(coder?.contents).toContain("Keep diffs minimal, task-scoped, and easy to review;");
-    expect(coder?.contents).not.toContain("agent.coder.workflow.keep-diffs-minimal");
+    expect(parsed.workflow?.goal).toBe(
+      "Goal: implement the approved task with the smallest coherent diff and explicit verification evidence.",
+    );
+    expect(coder?.contents).toContain(
+      "Goal: implement the approved task with the smallest coherent diff",
+    );
+    expect(coder?.contents).not.toContain("agent.coder.workflow.goal");
+    expect(coder?.contents).not.toContain('"mutability"');
   });
 
   it("installed agents prefer system CLI", async () => {
