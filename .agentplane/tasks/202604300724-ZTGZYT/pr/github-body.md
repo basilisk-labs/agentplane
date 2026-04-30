@@ -12,7 +12,7 @@ Make release hygiene pass by reconciling generated project agent and policy mirr
 ## Verification
 
 - State: ok
-- Note: Verified: current branch HEAD contains synced agent/policy mirrors and task graph artifacts; agents check, policy routing, diff check, framework bootstrap, and doctor passed.
+- Note: Verified: current clean HEAD is ready for PR publication after sync and verification metadata refresh.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
