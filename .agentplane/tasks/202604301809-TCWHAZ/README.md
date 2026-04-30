@@ -4,7 +4,7 @@ title: "Audit GPT-5.5 prompt surfaces"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-30T18:14:47.497Z"
+  updated_at: "2026-04-30T18:15:24.638Z"
   updated_by: "CODER"
-  note: "Verified: runtime explain OK; agents templates OK; policy routing OK after PR artifact refresh."
+  note: "Verified: runtime explain OK; agents templates OK; policy routing OK at commit 82bd7bb."
 commit: null
 comments:
   -
@@ -55,8 +55,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: runtime explain OK; agents templates OK; policy routing OK after PR artifact refresh."
+  -
+    type: "verify"
+    at: "2026-04-30T18:15:24.638Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: runtime explain OK; agents templates OK; policy routing OK at commit 82bd7bb."
 doc_version: 3
-doc_updated_at: "2026-04-30T18:14:47.512Z"
+doc_updated_at: "2026-04-30T18:15:24.674Z"
 doc_updated_by: "CODER"
 description: "Inventory the current v0.4 prompt architecture against OpenAI GPT-5.5 prompt guidance. Map every active prompt surface, canonical source, generated mirror, runtime path, and existing validation before editing prompt behavior."
 sections:
@@ -101,6 +107,14 @@ sections:
     Note: Verified: runtime explain OK; agents templates OK; policy routing OK after PR artifact refresh.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T18:14:28.891Z, excerpt_hash=sha256:a73207076d593a2e37454b9eb1779bc8a1fe3d5918269ca6a81bd2371d6846c7
+    
+    ### 2026-04-30T18:15:24.638Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: runtime explain OK; agents templates OK; policy routing OK at commit 82bd7bb.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T18:14:47.512Z, excerpt_hash=sha256:a73207076d593a2e37454b9eb1779bc8a1fe3d5918269ca6a81bd2371d6846c7
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -187,6 +201,14 @@ By: CODER
 Note: Verified: runtime explain OK; agents templates OK; policy routing OK after PR artifact refresh.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T18:14:28.891Z, excerpt_hash=sha256:a73207076d593a2e37454b9eb1779bc8a1fe3d5918269ca6a81bd2371d6846c7
+
+### 2026-04-30T18:15:24.638Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: runtime explain OK; agents templates OK; policy routing OK at commit 82bd7bb.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T18:14:47.512Z, excerpt_hash=sha256:a73207076d593a2e37454b9eb1779bc8a1fe3d5918269ca6a81bd2371d6846c7
 
 <!-- END VERIFICATION RESULTS -->
 
