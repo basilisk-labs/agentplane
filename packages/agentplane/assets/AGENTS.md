@@ -108,8 +108,11 @@ node .agentplane/policy/check-routing.mjs
 - Use `agentplane quickstart` as the canonical installed startup path and `agentplane role <ROLE>` to activate the current role before role-scoped planning or execution.
 - For policy changes, routing validation MUST pass via `node .agentplane/policy/check-routing.mjs`.
 
----
-
+<!-- /ap:fragment -->
+<!-- ap:fragment id="gateway.agents.body.shared.prompt.contract" slot="body" mutability="replaceable" -->
+## SHARED PROMPT CONTRACT
+- Outcome-first, concise, evidence-first: state goal, success criteria, constraints, stop rules, and output; use procedure only for command contracts, state machines, or irreversible gates; ask one narrow question only when missing information changes scope, task graph, security, or irreversible action.
+- Retrieval/progress/cache: preamble before multi-step or tool-heavy work; load only matched policy, task README, Verify Steps, and relevant files; use incidents only for analogous scope/tags; final output names actions, checks, blockers/drift, and next approval; keep stable gateway/policy/role before dynamic context and never cache mutable task state.
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.agents.load_rules.load.rules" slot="load_rules" mutability="replaceable" -->
 
