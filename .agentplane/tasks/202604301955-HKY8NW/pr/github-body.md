@@ -22,19 +22,19 @@ Add an automated docs information-architecture guard that checks docs/index.mdx 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-30T20:47:43.087Z
+- Updated: 2026-04-30T20:50:20.859Z
 - Branch: task/202604301955-HKY8NW/docs-ia-path-guard
-- Head: 4ab6c548336f
+- Head: 4d4a421e925a
 
 ```text
  .github/workflows/docs-ci.yml                   |   3 +
  docs/developer/modular-prompt-assembly.mdx      |   2 +-
  docs/developer/module-topology.mdx              |  13 +-
- docs/developer/workflow-harness-test-matrix.mdx |   4 +-
+ docs/developer/workflow-harness-test-matrix.mdx |  22 +-
  package.json                                    |   5 +-
  scripts/README.md                               |  47 ++--
- scripts/check-docs-ia.mjs                       | 359 ++++++++++++++++++++++++
- 7 files changed, 397 insertions(+), 36 deletions(-)
+ scripts/check-docs-ia.mjs                       | 358 ++++++++++++++++++++++++
+ 7 files changed, 405 insertions(+), 45 deletions(-)
 ```
 
 </details>
