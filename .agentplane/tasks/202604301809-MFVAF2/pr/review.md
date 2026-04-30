@@ -25,7 +25,7 @@ Add a focused diagnostic/test surface that detects prompt contracts that are sti
 ### Current Status
 
 - State: ok
-- Note: Verified: GPT-5.5 prompt contract diagnostics added; focused prompt-module and fragment tests pass; agents templates OK; typecheck OK; framework bootstrap OK; git diff check OK.
+- Note: Verified: focused prompt-module and fragment tests pass; agents templates OK; typecheck and framework bootstrap passed earlier in this task; git diff check OK at commit 27511d7.
 
 ## Risks
 

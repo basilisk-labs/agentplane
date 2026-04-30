@@ -4,7 +4,7 @@ title: "Add GPT-5.5 prompt contract diagnostics"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-30T18:23:02.224Z"
+  updated_at: "2026-04-30T18:23:41.518Z"
   updated_by: "CODER"
-  note: "Verified: GPT-5.5 prompt contract diagnostics added; focused prompt-module and fragment tests pass; agents templates OK; typecheck OK; framework bootstrap OK; git diff check OK."
+  note: "Verified: focused prompt-module and fragment tests pass; agents templates OK; typecheck and framework bootstrap passed earlier in this task; git diff check OK at commit 27511d7."
 commit: null
 comments:
   -
@@ -44,8 +44,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: GPT-5.5 prompt contract diagnostics added; focused prompt-module and fragment tests pass; agents templates OK; typecheck OK; framework bootstrap OK; git diff check OK."
+  -
+    type: "verify"
+    at: "2026-04-30T18:23:41.518Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: focused prompt-module and fragment tests pass; agents templates OK; typecheck and framework bootstrap passed earlier in this task; git diff check OK at commit 27511d7."
 doc_version: 3
-doc_updated_at: "2026-04-30T18:23:02.231Z"
+doc_updated_at: "2026-04-30T18:23:41.553Z"
 doc_updated_by: "CODER"
 description: "Add a focused diagnostic/test surface that detects prompt contracts that are still procedural or conflict-prone: missing outcome sections, heuristic MUST usage, duplicate approval gates, missing validation commands, unstable fragment IDs, or missing stop rules."
 sections:
@@ -74,6 +80,14 @@ sections:
     Note: Verified: GPT-5.5 prompt contract diagnostics added; focused prompt-module and fragment tests pass; agents templates OK; typecheck OK; framework bootstrap OK; git diff check OK.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T18:19:06.107Z, excerpt_hash=sha256:178a150dc126f384561dd8dce969ee032d049b815fe489b65ee70bd8a6ee1ee3
+    
+    ### 2026-04-30T18:23:41.518Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: focused prompt-module and fragment tests pass; agents templates OK; typecheck and framework bootstrap passed earlier in this task; git diff check OK at commit 27511d7.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T18:23:02.231Z, excerpt_hash=sha256:178a150dc126f384561dd8dce969ee032d049b815fe489b65ee70bd8a6ee1ee3
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -116,6 +130,14 @@ By: CODER
 Note: Verified: GPT-5.5 prompt contract diagnostics added; focused prompt-module and fragment tests pass; agents templates OK; typecheck OK; framework bootstrap OK; git diff check OK.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T18:19:06.107Z, excerpt_hash=sha256:178a150dc126f384561dd8dce969ee032d049b815fe489b65ee70bd8a6ee1ee3
+
+### 2026-04-30T18:23:41.518Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: focused prompt-module and fragment tests pass; agents templates OK; typecheck and framework bootstrap passed earlier in this task; git diff check OK at commit 27511d7.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T18:23:02.231Z, excerpt_hash=sha256:178a150dc126f384561dd8dce969ee032d049b815fe489b65ee70bd8a6ee1ee3
 
 <!-- END VERIFICATION RESULTS -->
 
