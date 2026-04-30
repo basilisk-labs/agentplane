@@ -1,11 +1,11 @@
 import type { PromptModule } from "./model.js";
 
-export type Gpt55PromptContractDiagnosticCode =
+type Gpt55PromptContractDiagnosticCode =
   | "gpt55_missing_outcome_contract"
   | "gpt55_absolute_rule_in_role_prompt"
   | "gpt55_missing_referenced_role";
 
-export type Gpt55PromptContractDiagnostic = {
+type Gpt55PromptContractDiagnostic = {
   severity: "warning" | "error";
   code: Gpt55PromptContractDiagnosticCode;
   message: string;
