@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-30T17:56:27Z",
   "base": "main",
   "branch": "task/202604300956-ESW001/v0-4-release-blog",
   "created_at": "2026-04-30T17:50:05.239Z",
-  "head_sha": "55266cb29b44a0f7e67d2b2d26a4a2d0ec67a919",
+  "head_sha": "daae75aea79be56792d1408d97ce0d7dcef4d33b",
   "last_verified_at": "2026-04-30T17:52:33.126Z",
   "last_verified_sha": "9df0243504d5285df666014dd96788b30261341c",
+  "merge_commit": "25d458e7efe2e84e965dac69febcb2dd9bcd523f",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-30T17:56:27Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604300956-ESW001",
-  "updated_at": "2026-04-30T17:53:53.251Z",
+  "updated_at": "2026-04-30T17:56:27Z",
   "verify": {
     "status": "pass"
   }

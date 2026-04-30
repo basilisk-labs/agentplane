@@ -1,10 +1,11 @@
 ---
 id: "202604300956-ESW001"
 title: "Publish v0.4 release blog"
-status: "DOING"
+result_summary: "Merged via PR #614."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-04-30T17:52:33.126Z"
   updated_by: "DOCS"
   note: "v0.4.0 release blog added and verified."
-commit: null
+commit:
+  hash: "25d458e7efe2e84e965dac69febcb2dd9bcd523f"
+  message: "Merge pull request #614 from basilisk-labs/task/202604300956-ESW001/v0-4-release-blog"
 comments:
   -
     author: "DOCS"
     body: "Start: write the v0.4.0 release blog from verified publish evidence, keeping the article scoped to website/blog and task documentation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #614 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "v0.4.0 release blog added and verified."
+  -
+    type: "status"
+    at: "2026-04-30T17:57:01.820Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #614 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T17:52:33.158Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-04-30T17:57:01.826Z"
+doc_updated_by: "INTEGRATOR"
 description: "After v0.4.0 is published, add a concise website blog article announcing the release, explaining the modular prompt layer, recipe implications, upgrade notes, and verified release evidence."
 sections:
   Summary: |-
