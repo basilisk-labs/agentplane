@@ -1,10 +1,11 @@
 ---
 id: "202604301955-D7JQB7"
 title: "Align docs hierarchy with current agent-first IA"
-status: "DOING"
+result_summary: "Merged via PR #634."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-30T20:27:54.189Z"
   updated_by: "DOCS"
   note: "Verified: docs index/sidebar IA comparison passed; stale current-doc references for harness-engineering, Zod ADR routing, and removed core/context paths were cleared; docs site typecheck/build/design checks passed; docs CLI, recipes, bootstrap, scripts checks passed; policy routing and agentplane doctor passed."
-commit: null
+commit:
+  hash: "b5daf155b62ade526b1602d816bfafcb1b31c595"
+  message: "Merge pull request #634 from basilisk-labs/task/202604301955-D7JQB7/docs-agent-first-ia"
 comments:
   -
     author: "DOCS"
     body: "Start: aligning the current docs navigation and developer IA with the existing agent-first model in a dedicated branch_pr worktree, using live docs/sidebar/code-path evidence before editing."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #634 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified: docs index/sidebar IA comparison passed; stale current-doc references for harness-engineering, Zod ADR routing, and removed core/context paths were cleared; docs site typecheck/build/design checks passed; docs CLI, recipes, bootstrap, scripts checks passed; policy routing and agentplane doctor passed."
+  -
+    type: "status"
+    at: "2026-04-30T20:31:46.355Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #634 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T20:27:54.196Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-04-30T20:31:46.360Z"
+doc_updated_by: "INTEGRATOR"
 description: "Restructure the public docs navigation around the existing agent-first model, separate current developer pages from historical/archive material, fix stale current-code references, and reconcile docs/index.mdx with website/sidebars.ts."
 sections:
   Summary: |-

@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-30T20:31:12Z",
   "base": "main",
   "branch": "task/202604301955-D7JQB7/docs-agent-first-ia",
   "created_at": "2026-04-30T20:04:57.305Z",
-  "head_sha": "a654ba89a6d4b7b0abf7059eab96099d35d6bf53",
+  "head_sha": "344ecf41e781ad0e1f36db61529ba0084285fb96",
   "last_verified_at": "2026-04-30T20:27:54.189Z",
   "last_verified_sha": "a654ba89a6d4b7b0abf7059eab96099d35d6bf53",
+  "merge_commit": "b5daf155b62ade526b1602d816bfafcb1b31c595",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-30T20:31:12Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604301955-D7JQB7",
-  "updated_at": "2026-04-30T20:27:38.743Z",
+  "updated_at": "2026-04-30T20:31:12Z",
   "verify": {
     "status": "pass"
   }
