@@ -1,19 +1,20 @@
 {
   "artifact_state": "merged",
-  "artifact_state_updated_at": "2026-04-29T19:32:42Z",
+  "artifact_state_updated_at": "2026-04-29T19:33:27.214Z",
   "base": "main",
   "branch": "task/202604291531-864BKX/prompt-graph-diagnostics",
   "created_at": "2026-04-29T19:19:14.656Z",
-  "head_sha": "68f9b8221136a0b4766c22ab6faffd7340cb0e4d",
+  "head_sha": "e030c46467a295d4b34d5623a709918b0a8dc7c2",
   "last_verified_at": "2026-04-29T19:28:51.819Z",
   "last_verified_sha": "fd959dd75abddd99dac7a006f8846913f75a7968",
   "merge_commit": "4bfe0b699a8719344432f5cdcdeb7d5f3da490d0",
-  "merge_strategy": "merge",
   "merged_at": "2026-04-29T19:32:42Z",
+  "pr_number": 577,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/577",
   "schema_version": 1,
   "status": "MERGED",
   "task_id": "202604291531-864BKX",
-  "updated_at": "2026-04-29T19:32:42Z",
+  "updated_at": "2026-04-29T19:33:27.214Z",
   "verify": {
     "status": "pass"
   }

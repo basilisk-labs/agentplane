@@ -1,11 +1,11 @@
 ---
 id: "202604291532-BV5NQT"
 title: "Document and harden modular prompt migration"
-result_summary: "Merged via PR #579."
+result_summary: "Merged modular prompt migration documentation and regression hardening via PR #579; added developer docs for prompt assembly contracts, diagnostics, recipe mutation extension points, safe-change rules, and focused verification; updated recipe docs and sidebar; added regression assertions for runner provenance, init baselines, and prompt graph transaction safety."
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -40,7 +40,7 @@ comments:
     body: "Start: document modular prompt migration and add regression hardening for migrated prompt assembly surfaces."
   -
     author: "INTEGRATOR"
-    body: "Verified: PR #579 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+    body: "Verified: PR #579 merged after required GitHub checks passed; local task verification recorded by CODER."
 events:
   -
     type: "status"
@@ -57,13 +57,13 @@ events:
     note: "Modular prompt migration docs and regression hardening are complete; declared verification passed."
   -
     type: "status"
-    at: "2026-04-29T19:44:45.004Z"
+    at: "2026-04-29T19:44:51.247Z"
     author: "INTEGRATOR"
     from: "DOING"
     to: "DONE"
-    note: "Verified: PR #579 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+    note: "Verified: PR #579 merged after required GitHub checks passed; local task verification recorded by CODER."
 doc_version: 3
-doc_updated_at: "2026-04-29T19:44:45.010Z"
+doc_updated_at: "2026-04-29T19:44:51.248Z"
 doc_updated_by: "INTEGRATOR"
 description: "Add migration documentation, fixtures, and regression coverage for modular prompt assembly across init, upgrade, runner prompts, policy modules, agent profiles, and recipe-owned mutations."
 sections:

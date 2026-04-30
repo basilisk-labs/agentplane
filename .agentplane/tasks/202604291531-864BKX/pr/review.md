@@ -50,7 +50,7 @@ Expose prompt graph diagnostics and drift detection through doctor/explain-style
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T19:30:20.444Z
+- Updated: 2026-04-29T19:33:27.214Z
 - Branch: task/202604291531-864BKX/prompt-graph-diagnostics
 - Head: e030c46467a2
 

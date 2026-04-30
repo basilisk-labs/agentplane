@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604300928-A4CZZ3/closure-recovery",
+  "created_at": "2026-04-30T09:29:34.019Z",
+  "head_sha": "cf7f413e97256dd01d1ba3474311b8adfe954af6",
+  "last_verified_at": "2026-04-30T09:32:38.206Z",
+  "last_verified_sha": "cf7f413e97256dd01d1ba3474311b8adfe954af6",
+  "schema_version": 1,
+  "task_id": "202604300928-A4CZZ3",
+  "updated_at": "2026-04-30T09:29:34.019Z",
+  "verify": {
+    "status": "pass"
+  }
+}

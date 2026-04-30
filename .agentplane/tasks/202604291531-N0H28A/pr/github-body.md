@@ -24,7 +24,7 @@ Wire installed and active recipe prompt module mutations into the compiled promp
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-29T19:14:12.219Z
+- Updated: 2026-04-29T19:17:43.971Z
 - Branch: task/202604291531-N0H28A/recipe-mutation-graph
 - Head: 3784a23ed7ca
 
