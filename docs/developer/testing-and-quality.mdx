@@ -93,18 +93,25 @@ bun run test:project -- cli-recipes
 bun run test:project -- cli-scenario
 ```
 
-To check the modular prompt assembly migration surface after touching prompt modules, init
-emission, recipes, runner prompts, or prompt graph diagnostics:
+To check the modular prompt assembly migration surface after touching prompt modules, agent
+profiles, init emission, recipes, runner prompts, execution profile prompt blocks, or prompt graph
+diagnostics:
 
 ```bash
+bun run agents:check
 bun test packages/agentplane/src/runner/context/base-prompts.test.ts \
   packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts \
   packages/agentplane/src/commands/recipes.transaction.test.ts \
   packages/agentplane/src/commands/doctor.command.runtime.test.ts
+bun run framework:dev:bootstrap
+agentplane doctor
+node .agentplane/policy/check-routing.mjs
+git diff --check
 ```
 
-After touching prompt fragment parsing, named markdown markers, or structured agent profile list
-items, also run the focused prompt-fragment test surface introduced for that migration slice:
+After touching prompt fragment parsing, named markdown markers, compact keyed agent profile objects,
+or legacy structured agent profile list items, also run the focused prompt-fragment test surface
+introduced for that migration slice:
 
 ```bash
 bun test packages/agentplane/src/runtime/prompt-fragments/*.test.ts
