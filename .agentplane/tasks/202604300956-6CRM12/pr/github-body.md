@@ -22,9 +22,9 @@ Release the current modular prompt assembly work as v0.4.0 instead of v0.3.30. P
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-30T15:25:12.354Z
+- Updated: 2026-04-30T16:26:01.239Z
 - Branch: task/202604300956-6CRM12/v0-4-0-release
-- Head: 6b52826db0fc
+- Head: 509dd310759f
 
 ```text
  docs/releases/v0.4.0.md                            | 156 +++++++
@@ -44,8 +44,8 @@ Release the current modular prompt assembly work as v0.4.0 instead of v0.3.30. P
  .../src/runtime/prompt-modules/registry.test.ts    |   3 +-
  scripts/baselines/knip-baseline.json               | 487 ++++++++++++++++-----
  scripts/run-vitest-suite.mjs                       | 128 +++++-
- vitest.workspace.ts                                |   5 +-
- 18 files changed, 1069 insertions(+), 509 deletions(-)
+ vitest.workspace.ts                                |   9 +-
+ 18 files changed, 1071 insertions(+), 511 deletions(-)
 ```
 
 </details>
