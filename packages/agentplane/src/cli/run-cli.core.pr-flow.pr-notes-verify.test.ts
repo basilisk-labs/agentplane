@@ -593,7 +593,7 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
         "--note",
         "Verification captured a reusable incident candidate",
         "--observation",
-        "Incident promotion still depends on an explicit base-branch step.",
+        "Incident promotion was missing until an explicit base-branch step.",
         "--impact",
         "Operators can misread a task-branch verify as a shared incidents registry update.",
         "--resolution",
