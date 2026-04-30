@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-30T09:36:21Z",
   "base": "main",
   "branch": "task/202604300928-A4CZZ3/closure-recovery",
   "created_at": "2026-04-30T09:29:34.019Z",
-  "head_sha": "18ab2f5e6ef2982e9f35348c4097827d9c5e2371",
+  "head_sha": "59dd0c477fc31f336454f8ded21864e9c7257a09",
   "last_verified_at": "2026-04-30T09:33:32.649Z",
   "last_verified_sha": "18ab2f5e6ef2982e9f35348c4097827d9c5e2371",
+  "merge_commit": "9b3ba7d67f44f506facffccca054209d4da25338",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-30T09:36:21Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604300928-A4CZZ3",
-  "updated_at": "2026-04-30T09:33:08.679Z",
+  "updated_at": "2026-04-30T09:36:21Z",
   "verify": {
     "status": "pass"
   }
