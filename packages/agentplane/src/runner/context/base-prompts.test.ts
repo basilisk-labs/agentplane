@@ -111,6 +111,8 @@ describe("collectRunnerBasePrompts", () => {
       "Treat `bundle.json` as the authoritative input contract.",
     );
     expect(prompts[0]?.content).toContain("Do not run repository startup commands");
+    expect(prompts[0]?.content).toContain("Treat `text_verbosity` as the output");
+    expect(prompts[0]?.content).toContain('phase: "commentary"');
     expect(prompts[0]?.content).not.toContain("ap:fragment");
     expect(prompts[0]?.resolution?.winner.layer).toBe("builtin");
     expect(prompts[1]?.content).toBe("# Repo Policy\n\nFollow the workspace contract.\n");
@@ -267,6 +269,7 @@ describe("collectRunnerBasePrompts", () => {
       title: "Execution Profile Runtime (conservative)",
     });
     expect(prompts[2]?.content).toContain('"reasoning_effort": "high"');
+    expect(prompts[2]?.content).toContain('"text_verbosity": "medium"');
     expect(prompts[2]?.content).toContain('"require_force": true');
     expect(prompts[2]?.content).toContain('"terminate_grace_ms": 5000');
     expect(prompts[2]?.resolution?.winner.layer).toBe("harness");

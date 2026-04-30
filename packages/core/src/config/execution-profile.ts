@@ -11,6 +11,7 @@ export const EXECUTION_PROFILE_PRESETS: Record<ExecutionProfile, AgentplaneConfi
   conservative: {
     profile: "conservative",
     reasoning_effort: "high",
+    text_verbosity: "medium",
     tool_budget: {
       discovery: 4,
       implementation: 8,
@@ -36,6 +37,7 @@ export const EXECUTION_PROFILE_PRESETS: Record<ExecutionProfile, AgentplaneConfi
   balanced: {
     profile: "balanced",
     reasoning_effort: "medium",
+    text_verbosity: "medium",
     tool_budget: {
       discovery: 6,
       implementation: 10,
@@ -60,6 +62,7 @@ export const EXECUTION_PROFILE_PRESETS: Record<ExecutionProfile, AgentplaneConfi
   aggressive: {
     profile: "aggressive",
     reasoning_effort: "low",
+    text_verbosity: "low",
     tool_budget: {
       discovery: 10,
       implementation: 16,

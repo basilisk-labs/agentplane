@@ -9,6 +9,7 @@ export {
   type ExecutionProfile,
   type LoadedConfig,
   type ReasoningEffort,
+  type TextVerbosity,
   type RunnerAdapterId,
   type RunnerCustomConfig,
   type RunnerCustomEnforcementConfig,

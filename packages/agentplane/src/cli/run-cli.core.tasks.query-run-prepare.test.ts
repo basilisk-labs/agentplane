@@ -321,6 +321,7 @@ describe(
             profile_runtime?: {
               profile?: string;
               reasoning_effort?: string;
+              text_verbosity?: string;
               budget?: {
                 discovery?: { used?: number; remaining?: number };
                 implementation?: { used?: number; remaining?: number };
@@ -373,6 +374,7 @@ describe(
         expect(bundle.execution.profile_runtime).toMatchObject({
           profile: "balanced",
           reasoning_effort: "medium",
+          text_verbosity: "medium",
           budget: {
             discovery: { used: 1, remaining: 5 },
             implementation: { used: 1, remaining: 9 },
@@ -384,6 +386,9 @@ describe(
         expect(
           bundle.base_prompts?.find((prompt) => prompt.id === "base.execution_profile")?.content,
         ).toContain('"reasoning_effort": "medium"');
+        expect(
+          bundle.base_prompts?.find((prompt) => prompt.id === "base.execution_profile")?.content,
+        ).toContain('"text_verbosity": "medium"');
         expect(bundle.framework_explain).toMatchObject({
           schema_version: 1,
           policy: {

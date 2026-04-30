@@ -60,6 +60,7 @@ export function resolveExecutionProfileRuntime(
   return {
     profile: config.execution.profile,
     reasoning_effort: config.execution.reasoning_effort,
+    text_verbosity: config.execution.text_verbosity,
     budget: {
       discovery: toBudgetCounter(config.execution.tool_budget.discovery),
       implementation: toBudgetCounter(config.execution.tool_budget.implementation),

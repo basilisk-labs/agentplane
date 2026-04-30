@@ -175,6 +175,7 @@ describe("config", () => {
     const cfg = defaultConfig();
     expect(cfg.execution.profile).toBe("balanced");
     expect(cfg.execution.reasoning_effort).toBe("medium");
+    expect(cfg.execution.text_verbosity).toBe("medium");
     expect(cfg.execution.tool_budget).toEqual({
       discovery: 6,
       implementation: 10,
@@ -199,6 +200,17 @@ describe("config", () => {
       terminate_grace_ms: 1500,
     });
     expect(cfg.close_commit.direct_dirty_policy).toBe("allow_other_task_readmes");
+  });
+
+  it("accepts xhigh reasoning effort and low text verbosity overrides", () => {
+    const cfg = defaultConfig();
+    cfg.execution.reasoning_effort = "xhigh";
+    cfg.execution.text_verbosity = "low";
+
+    const validated = validateConfig(cfg);
+
+    expect(validated.execution.reasoning_effort).toBe("xhigh");
+    expect(validated.execution.text_verbosity).toBe("low");
   });
 
   it("default task README contract uses the active v3 sections", () => {
@@ -433,6 +445,11 @@ describe("config", () => {
         "execution.reasoning_effort",
         (raw) => ((raw.execution as Record<string, unknown>).reasoning_effort = "bad"),
         schemaPath("execution.reasoning_effort"),
+      ],
+      [
+        "execution.text_verbosity",
+        (raw) => ((raw.execution as Record<string, unknown>).text_verbosity = "bad"),
+        schemaPath("execution.text_verbosity"),
       ],
       [
         "execution.tool_budget",
