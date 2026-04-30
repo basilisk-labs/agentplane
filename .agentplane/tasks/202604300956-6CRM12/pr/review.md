@@ -53,9 +53,9 @@ Release the current modular prompt assembly work as v0.4.0 instead of v0.3.30. P
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-30T11:45:24.091Z
+- Updated: 2026-04-30T11:48:16.157Z
 - Branch: task/202604300956-6CRM12/v0-4-0-release
-- Head: be813de42b93
+- Head: 7f8af1c941d0
 
 ```text
  docs/releases/v0.4.0.md                            | 156 +++++++
@@ -64,6 +64,8 @@ Release the current modular prompt assembly work as v0.4.0 instead of v0.3.30. P
  .../src/cli/run-cli.core.hooks.pre-commit.test.ts  | 158 +++++++
  .../agentplane/src/cli/run-cli.core.hooks.test.ts  | 142 ------
  .../src/cli/run-cli.core.incidents.test.ts         |  14 +-
+ .../run-cli.core.pr-flow.pr-notes-verify.test.ts   |   2 +-
+ .../run-cli.core.tasks.normalize-migrate.test.ts   |   2 +-
  .../src/cli/run-cli/commands/init/write-agents.ts  |   4 +-
  .../src/runtime/incidents/plan-strategy.ts         |   2 +-
  .../src/runtime/prompt-modules/compiler.merge.ts   | 183 ++++++++
@@ -71,7 +73,7 @@ Release the current modular prompt assembly work as v0.4.0 instead of v0.3.30. P
  .../src/runtime/prompt-modules/compiler.ts         | 220 +---------
  .../src/runtime/prompt-modules/registry.test.ts    |   3 +-
  scripts/baselines/knip-baseline.json               | 487 ++++++++++++++++-----
- 13 files changed, 944 insertions(+), 484 deletions(-)
+ 15 files changed, 946 insertions(+), 486 deletions(-)
 ```
 
 </details>
