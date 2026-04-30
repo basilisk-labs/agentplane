@@ -1,0 +1,4 @@
+ .../runtime/prompt-modules/gpt55-contract.test.ts  | 139 +++++++++++++++++++++
+ .../src/runtime/prompt-modules/gpt55-contract.ts   | 137 ++++++++++++++++++++
+ .../agentplane/src/runtime/prompt-modules/index.ts |   5 +
+ 3 files changed, 281 insertions(+)
