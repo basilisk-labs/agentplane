@@ -25,7 +25,7 @@ Inventory the current v0.4 prompt architecture against OpenAI GPT-5.5 prompt gui
 ### Current Status
 
 - State: ok
-- Note: Re-verified after local PR artifact commit: runtime explain OK, agents templates OK, policy routing OK.
+- Note: Verified: runtime explain OK; agents templates OK; policy routing OK after PR artifact refresh.
 
 ## Risks
 
