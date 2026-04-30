@@ -554,7 +554,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
           "Looks good",
           "--collect-incidents",
           "--observation",
-          "Verify can now update incidents.md immediately when workflow drift is detected.",
+          "Verify can now update incidents.md on workflow drift.",
           "--impact",
           "Operators no longer need a second collect command for reusable findings.",
           "--resolution",
@@ -576,9 +576,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         path.join(root, ".agentplane", "policy", "incidents.md"),
         "utf8",
       );
-      expect(incidentsFile).toContain(
-        "Verify can now update incidents.md immediately when workflow drift is detected.",
-      );
+      expect(incidentsFile).toContain("Verify can now update incidents.md on workflow drift.");
     }
   });
 
