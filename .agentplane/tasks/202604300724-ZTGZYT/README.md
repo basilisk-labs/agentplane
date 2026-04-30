@@ -4,7 +4,7 @@ title: "Restore release agent and policy parity"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -24,10 +24,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-30T07:30:17.103Z"
+  updated_by: "CODER"
+  note: "Verified: release agent/policy mirrors are synchronized with canonical prompt assets; agents check, policy routing, diff check, framework bootstrap, and doctor passed."
 commit: null
 comments:
   -
@@ -41,8 +41,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: reproduce agents:check drift, apply canonical sync only if needed, and verify release parity gates."
+  -
+    type: "verify"
+    at: "2026-04-30T07:30:17.103Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: release agent/policy mirrors are synchronized with canonical prompt assets; agents check, policy routing, diff check, framework bootstrap, and doctor passed."
 doc_version: 3
-doc_updated_at: "2026-04-30T07:28:07.835Z"
+doc_updated_at: "2026-04-30T07:30:17.120Z"
 doc_updated_by: "CODER"
 description: "Make release hygiene pass by reconciling generated project agent and policy mirrors with canonical framework prompt assets after the fragmented prompt migration. Scope is limited to sync output and any minimal follow-up needed for agents:check."
 sections:
@@ -65,11 +71,24 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-30T07:30:17.103Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: release agent/policy mirrors are synchronized with canonical prompt assets; agents check, policy routing, diff check, framework bootstrap, and doctor passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T07:28:07.835Z, excerpt_hash=sha256:b195c0f501b773a1b83129ce78989062063fc361e1cc8da0a841932193abe0ef
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: bun run agents:check initially failed because target .agentplane agent and policy mirrors lagged the canonical fragmented prompt assets.
+      Impact: release:ci-check was blocked before publishing because agents:check failed.
+      Resolution: Ran bun run agents:sync and verified the generated mirror output.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -100,6 +119,14 @@ Make release hygiene pass by reconciling generated project agent and policy mirr
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-30T07:30:17.103Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: release agent/policy mirrors are synchronized with canonical prompt assets; agents check, policy routing, diff check, framework bootstrap, and doctor passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T07:28:07.835Z, excerpt_hash=sha256:b195c0f501b773a1b83129ce78989062063fc361e1cc8da0a841932193abe0ef
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -108,3 +135,9 @@ Make release hygiene pass by reconciling generated project agent and policy mirr
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: bun run agents:check initially failed because target .agentplane agent and policy mirrors lagged the canonical fragmented prompt assets.
+  Impact: release:ci-check was blocked before publishing because agents:check failed.
+  Resolution: Ran bun run agents:sync and verified the generated mirror output.
+  Promotion: incident-candidate
+  Fixability: external

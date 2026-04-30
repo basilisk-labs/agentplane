@@ -11,8 +11,8 @@ Make release hygiene pass by reconciling generated project agent and policy mirr
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: release agent/policy mirrors are synchronized with canonical prompt assets; agents check, policy routing, diff check, framework bootstrap, and doctor passed.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
@@ -22,12 +22,42 @@ Make release hygiene pass by reconciling generated project agent and policy mirr
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-30T07:28:07.928Z
+- Updated: 2026-04-30T07:30:17.186Z
 - Branch: task/202604300724-ZTGZYT/release-parity-sync
-- Head: b0830423409b
+- Head: 8ad6e1085525
 
 ```text
-No changes detected.
+ .agentplane/agents/CODER.json                    | 138 ++++++++++++++++----
+ .agentplane/agents/CREATOR.json                  |  90 +++++++++++---
+ .agentplane/agents/DOCS.json                     |  96 +++++++++++---
+ .agentplane/agents/INTEGRATOR.json               | 108 +++++++++++++---
+ .agentplane/agents/ORCHESTRATOR.json             | 152 +++++++++++++++++++----
+ .agentplane/agents/PLANNER.json                  | 144 +++++++++++++++++----
+ .agentplane/agents/REDMINE.json                  |  96 +++++++++++---
+ .agentplane/agents/REVIEWER.json                 |  86 ++++++++++---
+ .agentplane/agents/SKILL_EXTRACTOR.json          | 108 +++++++++++++---
+ .agentplane/agents/TESTER.json                   | 108 +++++++++++++---
+ .agentplane/agents/UPDATER.json                  |  78 ++++++++++--
+ .agentplane/agents/UPGRADER.json                 | 108 +++++++++++++---
+ .agentplane/policy/dod.code.md                   |   6 +
+ .agentplane/policy/dod.core.md                   |   6 +
+ .agentplane/policy/dod.docs.md                   |   8 ++
+ .agentplane/policy/examples/migration-note.md    |   2 +
+ .agentplane/policy/examples/pr-note.md           |   8 ++
+ .agentplane/policy/examples/unit-test-pattern.md |   2 +
+ .agentplane/policy/governance.md                 |  12 ++
+ .agentplane/policy/incidents.md                  |   2 +
+ .agentplane/policy/security.must.md              |   2 +
+ .agentplane/policy/workflow.branch_pr.md         |   8 ++
+ .agentplane/policy/workflow.direct.md            |  10 ++
+ .agentplane/policy/workflow.md                   |   2 +
+ .agentplane/policy/workflow.release.md           |   8 ++
+ .agentplane/policy/workflow.upgrade.md           |   6 +
+ .agentplane/tasks/202604300725-3CY7TE/README.md  | 113 +++++++++++++++++
+ .agentplane/tasks/202604300725-SS9694/README.md  | 100 +++++++++++++++
+ .agentplane/tasks/202604300725-T0M8X3/README.md  | 110 ++++++++++++++++
+ .agentplane/tasks/202604300726-7FFNYW/README.md  | 136 ++++++++++++++++++++
+ 30 files changed, 1635 insertions(+), 218 deletions(-)
 ```
 
 </details>
