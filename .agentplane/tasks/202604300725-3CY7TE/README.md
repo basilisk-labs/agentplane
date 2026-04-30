@@ -1,10 +1,11 @@
 ---
 id: "202604300725-3CY7TE"
 title: "Enforce recipe fragment mutability and E2E patch coverage"
-status: "DOING"
+result_summary: "Merged via PR #601."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -31,11 +32,16 @@ verification:
   updated_at: "2026-04-30T07:54:17.486Z"
   updated_by: "CODER"
   note: "Verification passed for prompt fragment mutability enforcement and E2E recipe patch coverage."
-commit: null
+commit:
+  hash: "deed4834e7df9f13d30fb1fe490cc4c071a60716"
+  message: "Merge pull request #601 from basilisk-labs/task/202604300725-3CY7TE/fragment-mutability"
 comments:
   -
     author: "CODER"
     body: "Start: enforce prompt fragment mutability for recipe patch operations and add regression coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #601 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verification passed for prompt fragment mutability enforcement and E2E recipe patch coverage."
+  -
+    type: "status"
+    at: "2026-04-30T08:00:00.104Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #601 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T07:54:17.499Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-30T08:00:00.110Z"
+doc_updated_by: "INTEGRATOR"
 description: "Close the remaining correctness gap for fragmented prompts by enforcing mutation rules for locked, replaceable, extendable, and append-only fragments, and adding an end-to-end active recipe regression that patches a real named framework fragment through the compiled prompt graph."
 sections:
   Summary: |-
