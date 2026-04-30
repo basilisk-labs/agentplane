@@ -26,7 +26,7 @@ Add an automated docs information-architecture guard that checks docs/index.mdx 
 ### Current Status
 
 - State: ok
-- Note: Implemented docs:ia:check for docs/index.mdx/sidebar/doc-file alignment, stale legacy reference denylist, and conservative current-doc repo-path validation. Checks passed: bun run docs:ia:check; bun run docs:scripts:check; bun run docs:site:typecheck; bun run docs:site:build; bun run docs:site:check:design; bun run lint:core; node .agentplane/policy/check-routing.mjs; agentplane doctor; git diff --check.
+- Note: Post-PR fix: docs:ia:check now ignores generated package dist/ references that are not present in fresh CI checkout. Rechecked: bun run docs:ia:check; bun run docs:scripts:check; bun run lint:core.
 
 ## Risks
 
