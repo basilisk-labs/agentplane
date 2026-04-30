@@ -1,4 +1,4 @@
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -221,6 +221,35 @@ function runVitest(args) {
   });
 }
 
+function runVitestCaptured(args) {
+  const result = spawnSync("bunx", args, {
+    cwd: REPO_ROOT,
+    encoding: "utf8",
+    env: process.env,
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  const output = [result.stdout, result.stderr].filter(Boolean).join("");
+  if (result.error) {
+    if (output) process.stdout.write(output);
+    throw result.error;
+  }
+  if (result.status !== 0 || result.signal) {
+    if (output) process.stdout.write(output);
+    throw new Error(
+      `Vitest failed with status=${result.status ?? "null"} signal=${result.signal ?? "none"}`,
+    );
+  }
+  return output;
+}
+
+function summarizeVitestOutput(output) {
+  return output
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => /^(Test Files|Tests|Duration)\b/.test(line))
+    .join("; ");
+}
+
 function main(argv = process.argv.slice(2)) {
   const suiteName = argv[0];
   if (suiteName === "--help" || suiteName === "-h") {
@@ -253,7 +282,11 @@ function main(argv = process.argv.slice(2)) {
         process.stdout.write(
           `Vitest suite ${suiteName}: chunk ${index + 1}/${chunks.length} (${files.length} files)\n`,
         );
-        runVitest(buildVitestArgs(suite, files, extraArgs));
+        const output = runVitestCaptured(buildVitestArgs(suite, files, extraArgs));
+        const summary = summarizeVitestOutput(output);
+        process.stdout.write(
+          `Vitest suite ${suiteName}: chunk ${index + 1}/${chunks.length} passed${summary ? ` (${summary})` : ""}\n`,
+        );
       }
     } else {
       runVitest(buildVitestArgs(suite, suite.files, extraArgs));
