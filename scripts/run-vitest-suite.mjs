@@ -141,7 +141,7 @@ export const SUITES = {
     pool: "threads",
   },
   "release-ci-base": {
-    chunkSize: 10,
+    chunkSize: 1,
     files: RELEASE_CI_BASE_FILES,
     maxWorkers: "4",
     pool: "forks",

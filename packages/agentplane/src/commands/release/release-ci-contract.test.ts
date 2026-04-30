@@ -31,7 +31,7 @@ describe("release CI contract", () => {
       releaseCiCheck.indexOf("bun run coverage:workflow-suite"),
     );
 
-    expect(SUITES["release-ci-base"]?.chunkSize).toBe(10);
+    expect(SUITES["release-ci-base"]?.chunkSize).toBe(1);
   });
 
   it("builds testkit before agentplane in release and hosted install routes", async () => {
