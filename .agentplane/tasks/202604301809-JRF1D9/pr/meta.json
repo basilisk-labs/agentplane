@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-30T19:43:24Z",
   "base": "main",
   "branch": "task/202604301809-JRF1D9/gpt55-docs-verification",
   "created_at": "2026-04-30T19:40:55.436Z",
-  "head_sha": "da3d7bb959cd7930cd5a5fde930d51c911f94ccd",
+  "head_sha": "269e4ec1bdca04895891c75b9fe4652c62a04dcb",
   "last_verified_at": "2026-04-30T19:40:55.393Z",
   "last_verified_sha": "5c95a173f14f00835b9990e7d5264de1d84f3e5f",
+  "merge_commit": "4dfbde416456d89cf7de6e2973beeaf12bf0605d",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-30T19:43:24Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604301809-JRF1D9",
-  "updated_at": "2026-04-30T19:41:08.952Z",
+  "updated_at": "2026-04-30T19:43:24Z",
   "verify": {
     "status": "pass"
   }

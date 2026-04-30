@@ -1,10 +1,11 @@
 ---
 id: "202604301809-JRF1D9"
 title: "Document and verify GPT-5.5 prompt migration"
-status: "DOING"
+result_summary: "Merged via PR #628."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-04-30T19:40:55.393Z"
   updated_by: "DOCS"
   note: "Verified: GPT-5.5 prompt migration is documented in developer prompt assembly docs, quality checklist, and docs IA; compact keyed agent profile storage and backward-compatible legacy readers are documented; runtime reasoning/verbosity and Responses phase boundaries are described as config/runner concerns. Checks: bun run agents:check; node .agentplane/policy/check-routing.mjs; git diff --check; targeted Prettier check; bun run framework:dev:bootstrap; agentplane doctor; bun run docs:site:check; focused prompt-assembly and prompt-fragment tests (45 pass)."
-commit: null
+commit:
+  hash: "4dfbde416456d89cf7de6e2973beeaf12bf0605d"
+  message: "Merge pull request #628 from basilisk-labs/task/202604301809-JRF1D9/gpt55-docs-verification"
 comments:
   -
     author: "DOCS"
     body: "Start: Document the completed GPT-5.5 prompt migration against the current main state, keep the change docs-scoped, preserve branch_pr lifecycle boundaries, and verify agents, routing, doctor, bootstrap, and diff hygiene before PR."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #628 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified: GPT-5.5 prompt migration is documented in developer prompt assembly docs, quality checklist, and docs IA; compact keyed agent profile storage and backward-compatible legacy readers are documented; runtime reasoning/verbosity and Responses phase boundaries are described as config/runner concerns. Checks: bun run agents:check; node .agentplane/policy/check-routing.mjs; git diff --check; targeted Prettier check; bun run framework:dev:bootstrap; agentplane doctor; bun run docs:site:check; focused prompt-assembly and prompt-fragment tests (45 pass)."
+  -
+    type: "status"
+    at: "2026-04-30T19:44:05.251Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #628 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T19:40:55.400Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-04-30T19:44:05.257Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update developer documentation and generated prompt parity after the GPT-5.5 prompt migration, then run the final local verification stack before branch_pr integration."
 sections:
   Summary: |-
