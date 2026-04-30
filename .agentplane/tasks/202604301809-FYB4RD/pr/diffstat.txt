@@ -1,0 +1,17 @@
+ .agentplane/agents/CREATOR.json                    | 103 ++++--------------
+ .agentplane/agents/DOCS.json                       | 108 ++++---------------
+ .agentplane/agents/INTEGRATOR.json                 | 118 ++++----------------
+ .agentplane/agents/REDMINE.json                    | 109 ++++---------------
+ .agentplane/agents/SKILL_EXTRACTOR.json            | 119 ++++----------------
+ .agentplane/agents/UPDATER.json                    |  92 ++++------------
+ .agentplane/agents/UPGRADER.json                   | 120 ++++-----------------
+ packages/agentplane/assets/agents/CREATOR.json     | 103 ++++--------------
+ packages/agentplane/assets/agents/DOCS.json        | 108 ++++---------------
+ packages/agentplane/assets/agents/INTEGRATOR.json  | 118 ++++----------------
+ packages/agentplane/assets/agents/REDMINE.json     | 109 ++++---------------
+ .../agentplane/assets/agents/SKILL_EXTRACTOR.json  | 119 ++++----------------
+ packages/agentplane/assets/agents/UPDATER.json     |  92 ++++------------
+ packages/agentplane/assets/agents/UPGRADER.json    | 120 ++++-----------------
+ .../agentplane/src/agents/agents-template.test.ts  |  15 +++
+ .../runtime/prompt-modules/gpt55-contract.test.ts  |  28 +++--
+ 16 files changed, 323 insertions(+), 1258 deletions(-)
