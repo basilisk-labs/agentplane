@@ -7,11 +7,7 @@ import {
 } from "./index.js";
 import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./model.js";
 
-function agentWorkflowModule(opts: {
-  roleId: string;
-  text: string;
-  name?: string;
-}): PromptModule {
+function agentWorkflowModule(opts: { roleId: string; text: string; name?: string }): PromptModule {
   return {
     schema_version: PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
     address: {
@@ -130,10 +126,25 @@ describe("GPT-5.5 prompt contract diagnostics", () => {
   it("treats current framework profile gaps as migration diagnostics, not loader failures", async () => {
     const diagnostics = diagnoseGpt55PromptContract(await loadFrameworkPromptModules());
 
-    expect(diagnostics.some((diagnostic) => diagnostic.code === "gpt55_missing_outcome_contract"))
-      .toBe(true);
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.code === "gpt55_missing_outcome_contract"),
+    ).toBe(true);
     expect(
       diagnostics.filter((diagnostic) => diagnostic.code === "gpt55_missing_referenced_role"),
+    ).toEqual([]);
+  });
+
+  it("keeps core agent profiles on the outcome-first contract", async () => {
+    const coreRoles = new Set(["CODER", "ORCHESTRATOR", "PLANNER", "REVIEWER", "TESTER"]);
+    const diagnostics = diagnoseGpt55PromptContract(await loadFrameworkPromptModules()).filter(
+      (diagnostic) => diagnostic.role_id && coreRoles.has(diagnostic.role_id),
+    );
+
+    expect(
+      diagnostics.filter((diagnostic) => diagnostic.code === "gpt55_missing_outcome_contract"),
+    ).toEqual([]);
+    expect(
+      diagnostics.filter((diagnostic) => diagnostic.code === "gpt55_absolute_rule_in_role_prompt"),
     ).toEqual([]);
   });
 });

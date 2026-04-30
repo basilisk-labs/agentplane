@@ -109,13 +109,21 @@ type IdeAgentProfile = {
   workflow?: unknown;
 };
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 function toStringList(value: unknown): string[] {
-  return Array.isArray(value)
-    ? value
-        .filter((item): item is string => typeof item === "string")
-        .map((item) => item.trim())
-        .filter(Boolean)
-    : [];
+  const items = Array.isArray(value) ? value : isRecord(value) ? Object.values(value) : [];
+  return items
+    .map((item) => {
+      if (typeof item === "string") return item.trim();
+      if (isRecord(item) && typeof item.text === "string") {
+        return item.text.trim();
+      }
+      return "";
+    })
+    .filter(Boolean);
 }
 
 function toRoleProfileGuide(opts: {

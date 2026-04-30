@@ -85,7 +85,7 @@ describe("framework prompt module registry", () => {
       "framework/runner/runner.bundle/body/runner.bundle.body.framework.runner",
     );
     expect(addresses).toContain(
-      "framework/agent_profile/.agentplane~agents/workflow/agent.coder.workflow.keep-diffs-minimal-task-scoped-easy-review",
+      "framework/agent_profile/.agentplane~agents/workflow/agent.coder.workflow.goal",
     );
     expect(addresses).not.toContain("framework/gateway/AGENTS.md/body/template");
     expect(
@@ -135,7 +135,7 @@ describe("framework prompt module registry", () => {
     expect(runner?.provenance.content_hash).toBe(sha256(runnerAsset));
     expect(runner?.provenance.fragment_id).toBe("runner.bundle.body.framework.runner");
     expect(coder?.content).toBe(coderAsset);
-    expect(coder?.content).not.toBe(`${coderAssetRaw.trimEnd()}\n`);
+    expect(coder?.content).toBe(`${coderAssetRaw.trimEnd()}\n`);
     expect(coder?.provenance.source_ref).toBe("packages/agentplane/assets/agents/CODER.json");
   });
 

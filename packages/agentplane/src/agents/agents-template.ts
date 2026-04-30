@@ -79,11 +79,6 @@ export function renderMarkdownPromptTemplate(
 type AgentProfileRecord = Record<string, unknown>;
 
 const AGENT_PROFILE_FRAGMENT_FIELDS = ["inputs", "outputs", "permissions", "workflow"] as const;
-const COMPACT_RENDERED_AGENT_ARRAYS = new Set([
-  "ORCHESTRATOR.json:inputs",
-  "REVIEWER.json:permissions",
-]);
-
 function agentProfileId(fileName: string): string {
   return fileName.replace(/\.json$/i, "");
 }
@@ -109,17 +104,8 @@ function parseAgentProfileSource(fileName: string, sourceContents: string): Agen
   throw new Error(`Invalid bundled agent profile ${fileName}: expected JSON object`);
 }
 
-function renderAgentProfileContents(fileName: string, profile: AgentProfileRecord): string {
-  let rendered = JSON.stringify(profile, null, 2);
-  for (const field of AGENT_PROFILE_FRAGMENT_FIELDS) {
-    if (!COMPACT_RENDERED_AGENT_ARRAYS.has(`${fileName}:${field}`)) continue;
-    const value = profile[field];
-    if (!Array.isArray(value) || value.length !== 1 || typeof value[0] !== "string") continue;
-    const pretty = `  "${field}": [\n    ${JSON.stringify(value[0])}\n  ]`;
-    const compact = `  "${field}": [${JSON.stringify(value[0])}]`;
-    rendered = rendered.replace(pretty, compact);
-  }
-  return ensureTrailingNewline(rendered);
+function renderAgentProfileContents(profile: AgentProfileRecord): string {
+  return ensureTrailingNewline(JSON.stringify(profile, null, 2));
 }
 
 function renderAgentProfileTemplate(fileName: string, sourceContents: string): AgentTemplate {
@@ -136,12 +122,11 @@ function renderAgentProfileTemplate(fileName: string, sourceContents: string): A
       default_mutability: defaultAgentFragmentMutability(field),
     });
     fragments.push(...normalized);
-    profile[field] = normalized.map((fragment) => fragment.text);
   }
 
   return {
     fileName,
-    contents: renderAgentProfileContents(fileName, profile),
+    contents: renderAgentProfileContents(profile),
     sourceContents: ensureTrailingNewline(sourceContents.trimEnd()),
     fragments,
   };

@@ -85,27 +85,33 @@ Rules:
 
 ### Agent profile fragment contract
 
-Agent profile JSON lists should use structured fragment objects when individual lines need to be
-patchable:
+Agent profile JSON should use compact keyed objects for patchable prompt fragments. Keys are local
+semantic names; the loader derives the full fragment id from the role, slot, and key:
 
 ```json
-{
-  "id": "agent.coder.workflow.diff.minimal",
-  "text": "Keep diffs minimal, task-scoped, and easy to review.",
-  "mutability": "replaceable"
+"workflow": {
+  "diff.minimal": "Keep diffs minimal, task-scoped, and easy to review.",
+  "verify.evidence": {
+    "text": "Run declared checks and record evidence.",
+    "mutability": "append_only"
+  }
 }
 ```
 
-The loader must continue to accept legacy string arrays:
+The example above compiles to `agent.coder.workflow.diff.minimal` and
+`agent.coder.workflow.verify.evidence`. Use object values only when metadata such as `mutability`
+or `slot` differs from the slot default.
+
+The loader must continue to accept legacy string arrays and structured `{ "id", "text" }` arrays:
 
 ```json
 "workflow": ["Keep diffs minimal, task-scoped, and easy to review."]
 ```
 
 String entries are compatibility input only. They are not stable patch targets unless the loader
-derives a deterministic compatibility id and reports that provenance as generated. New bundled
-profiles should prefer `id`/`text` entries for `inputs`, `outputs`, `permissions`, and `workflow`
-where recipe-level patching is expected.
+derives a deterministic compatibility id and reports that provenance as generated. Structured
+arrays remain accepted for backward compatibility, but new bundled profiles should prefer compact
+keyed objects for `inputs`, `outputs`, `permissions`, and `workflow`.
 
 ### Fragment mutability
 
@@ -190,9 +196,9 @@ Use the same selector shape for `replace_module`, `disable_module`, `required_mo
 `agent.coder.workflow.<name>` rather than replacing the whole `CODER.json` profile or the whole
 runner bundle.
 
-JSON prompt profile lines are not line-addressable. Patchable list entries must be structured
-`{ "id": "...", "text": "...", "mutability": "..." }` fragments so the compiled graph can expose a
-stable `fragment_id`.
+JSON prompt profile lines are not line-addressable. New patchable entries should use compact local
+keys so the compiled graph can expose a stable derived `fragment_id`; legacy
+`{ "id": "...", "text": "...", "mutability": "..." }` entries remain readable.
 
 Project recipe state is transactionally published. When active recipe prompt mutations fail to
 compile, the registry and generated prompt graph remain unchanged.

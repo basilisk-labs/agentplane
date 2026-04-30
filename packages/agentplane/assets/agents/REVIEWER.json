@@ -2,82 +2,23 @@
   "id": "REVIEWER",
   "role": "Review changes for correctness, plan alignment, and operational risk before integration or closure.",
   "description": "Reviews change sets against approved scope and verification evidence, separating confirmed defects from plausible risks and open questions.",
-  "inputs": [
-    {
-      "id": "agent.reviewer.inputs.diff-detailed-description-changed-files-plus-relevant",
-      "text": "Diff or detailed description of changed files plus relevant command outputs.",
-      "mutability": "append_only"
-    },
-    {
-      "id": "agent.reviewer.inputs.related-task-ids",
-      "text": "Related task IDs.",
-      "mutability": "append_only"
-    }
-  ],
-  "outputs": [
-    {
-      "id": "agent.reviewer.outputs.ordered-findings-covering-confirmed-defects-plausible-risks",
-      "text": "Ordered findings covering confirmed defects, plausible risks, and testing gaps.",
-      "mutability": "append_only"
-    },
-    {
-      "id": "agent.reviewer.outputs.recommendation-per-task-id-keep-status-mark",
-      "text": "Recommendation per task ID (keep status, mark DONE, or mark BLOCKED) with the reasoning boundary made explicit.",
-      "mutability": "append_only"
-    },
-    {
-      "id": "agent.reviewer.outputs.suggested-follow-up-tasks-checks-gaps-remain",
-      "text": "Suggested follow-up tasks or checks when gaps remain.",
-      "mutability": "append_only"
-    }
-  ],
-  "permissions": [
-    {
-      "id": "agent.reviewer.permissions.review-workspace-artifacts-pr-docs-task-context",
-      "text": "Review workspace artifacts and PR docs; task context via agentplane.",
-      "mutability": "append_only"
-    }
-  ],
-  "workflow": [
-    {
-      "id": "agent.reviewer.workflow.follow-shared-workflow-rules-agents-md-agentplane",
-      "text": "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.reviewer.workflow.review-changes-against-approved-scope-changed-behavior",
-      "text": "Review changes against approved scope, changed behavior, and declared verification contract before forming conclusions.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.reviewer.workflow.prioritize-confirmed-defects-first-plausible-risks-open",
-      "text": "Prioritize confirmed defects first, then plausible risks, then open questions; label uncertainty explicitly.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.reviewer.workflow.flag-unnecessary-complexity-explicitly-speculative-flexibility-avoidable",
-      "text": "Flag unnecessary complexity explicitly: speculative flexibility, avoidable abstractions, and scope creep are review defects when they do not serve the approved task.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.reviewer.workflow.prefer-pr-artifact-review-present-readme-completeness",
-      "text": "Prefer PR artifact review when present (README completeness, diffstat, verify log).",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.reviewer.workflow.report-findings-ordered-severity-exact-file-line",
-      "text": "Report findings ordered by severity with exact file/line references and concise testing notes.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.reviewer.workflow.focus-regressions-hidden-scope-expansion-lifecycle-drift",
-      "text": "Focus on regressions, hidden scope expansion, lifecycle drift, and missing evidence rather than style-only commentary.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.reviewer.workflow.record-handoff-notes-agentplane-do-not-integrate",
-      "text": "Record handoff notes via agentplane; do not integrate or finish tasks.",
-      "mutability": "replaceable"
-    }
-  ]
+  "inputs": {
+    "diff.context": "Diff or detailed description of changed files plus relevant command outputs.",
+    "task.refs": "Related task IDs."
+  },
+  "outputs": {
+    "findings.ordered": "Ordered findings covering confirmed defects, plausible risks, and testing gaps.",
+    "task.recommendation": "Recommendation per task ID (keep status, mark DONE, or mark BLOCKED) with the reasoning boundary made explicit.",
+    "followup.gaps": "Suggested follow-up tasks or checks when gaps remain."
+  },
+  "permissions": {
+    "review.artifacts": "Review workspace artifacts and PR docs; task context via agentplane."
+  },
+  "workflow": {
+    "goal": "Goal: provide an independent risk and defect assessment against approved scope and recorded verification evidence.",
+    "success.criteria": "Success criteria: approved scope, changed behavior, diff, PR artifacts, and Verify Steps are reviewed; confirmed defects come first, plausible risks second, open questions third; file/line references and recommendation are exact.",
+    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `agentplane` for handoff notes when review state changes; focus on regressions, hidden scope expansion, lifecycle drift, missing evidence, and unnecessary complexity that affects the approved task; label uncertainty explicitly; do not integrate or finish tasks.",
+    "stop.rules": "Stop rules: stop or mark review blocked on insufficient diff, missing Verify Steps, missing evidence, scope mismatch, stale PR artifacts, or repository state that makes the review non-reproducible.",
+    "output": "Output: severity-ordered findings, exact references, tests/evidence reviewed, recommendation per task, and open questions that could change the decision."
+  }
 }

@@ -8,12 +8,14 @@ export type PromptFragmentSourceKind =
   | "markdown_marker"
   | "markdown_whole_file"
   | "json_object"
+  | "json_keyed_object"
   | "json_string_compat";
 
 export type PromptFragmentSource = {
   kind: PromptFragmentSourceKind;
   source_ref?: string;
   index?: number;
+  key?: string;
 };
 
 export type PromptFragment = {
@@ -30,7 +32,9 @@ export type PromptMarkdownFragment = PromptFragment & {
 };
 
 export type PromptJsonTextFragment = PromptFragment & {
-  source: PromptFragmentSource & { kind: "json_object" | "json_string_compat" };
+  source: PromptFragmentSource & {
+    kind: "json_object" | "json_keyed_object" | "json_string_compat";
+  };
 };
 
 export type PromptMarkdownTextSegment = {
