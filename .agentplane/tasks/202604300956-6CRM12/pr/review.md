@@ -53,9 +53,9 @@ Release the current modular prompt assembly work as v0.4.0 instead of v0.3.30. P
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-04-30T10:29:26.977Z
+- Updated: 2026-04-30T11:45:24.091Z
 - Branch: task/202604300956-6CRM12/v0-4-0-release
-- Head: 186c284b3b6f
+- Head: be813de42b93
 
 ```text
  docs/releases/v0.4.0.md                            | 156 +++++++
@@ -63,13 +63,15 @@ Release the current modular prompt assembly work as v0.4.0 instead of v0.3.30. P
  packages/agentplane/src/agents/agents-template.ts  |   3 +-
  .../src/cli/run-cli.core.hooks.pre-commit.test.ts  | 158 +++++++
  .../agentplane/src/cli/run-cli.core.hooks.test.ts  | 142 ------
+ .../src/cli/run-cli.core.incidents.test.ts         |  14 +-
  .../src/cli/run-cli/commands/init/write-agents.ts  |   4 +-
+ .../src/runtime/incidents/plan-strategy.ts         |   2 +-
  .../src/runtime/prompt-modules/compiler.merge.ts   | 183 ++++++++
  .../src/runtime/prompt-modules/compiler.shared.ts  |  41 ++
  .../src/runtime/prompt-modules/compiler.ts         | 220 +---------
  .../src/runtime/prompt-modules/registry.test.ts    |   3 +-
  scripts/baselines/knip-baseline.json               | 487 ++++++++++++++++-----
- 11 files changed, 935 insertions(+), 477 deletions(-)
+ 13 files changed, 944 insertions(+), 484 deletions(-)
 ```
 
 </details>
