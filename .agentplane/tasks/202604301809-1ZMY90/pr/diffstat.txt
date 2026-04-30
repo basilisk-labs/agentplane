@@ -1,0 +1,22 @@
+ docs/developer/modular-prompt-assembly.mdx              |  5 +++++
+ docs/user/configuration.mdx                             |  6 ++++++
+ packages/agentplane/assets/RUNNER.md                    |  5 +++++
+ .../cli/run-cli.core.tasks.query-run-prepare.test.ts    |  5 +++++
+ .../src/cli/run-cli/commands/init/write-config.ts       |  3 ++-
+ .../src/runner/context/base-prompt-sources.ts           |  1 +
+ .../agentplane/src/runner/context/base-prompts.test.ts  |  3 +++
+ .../agentplane/src/runtime/execution-profile/model.ts   |  1 +
+ .../src/runtime/execution-profile/resolve.test.ts       |  5 +++++
+ .../agentplane/src/runtime/execution-profile/resolve.ts |  1 +
+ .../src/runtime/prompt-modules/registry.test.ts         |  2 ++
+ .../agentplane/src/runtime/prompt-modules/registry.ts   |  1 +
+ packages/core/schemas/config.schema.json                |  6 ++++++
+ packages/core/src/config/config.test.ts                 | 17 +++++++++++++++++
+ packages/core/src/config/config.ts                      |  1 +
+ packages/core/src/config/execution-profile.test.ts      |  2 ++
+ packages/core/src/config/execution-profile.ts           |  3 +++
+ packages/core/src/config/index.ts                       |  1 +
+ packages/core/src/config/schema.impl.ts                 |  8 +++++++-
+ packages/core/src/index.ts                              |  1 +
+ packages/spec/schemas/config.schema.json                |  6 ++++++
+ 21 files changed, 81 insertions(+), 2 deletions(-)
