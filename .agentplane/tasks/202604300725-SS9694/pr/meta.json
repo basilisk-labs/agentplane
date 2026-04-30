@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-30T07:46:40Z",
   "base": "main",
   "branch": "task/202604300725-SS9694/format-drift",
   "created_at": "2026-04-30T07:37:24.448Z",
-  "head_sha": "240adb569fd6e2a46604a80831d61ae1f3b32af4",
+  "head_sha": "a6bc3ef7f084b8d431d93d5f5da96965ed517031",
   "last_verified_at": "2026-04-30T07:43:07.032Z",
   "last_verified_sha": "e701aa87297f8900132cedf30a011172cd729583",
+  "merge_commit": "494a9eb633f6760bb8429c020fa2953a91480efb",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-30T07:46:40Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604300725-SS9694",
-  "updated_at": "2026-04-30T07:43:30.050Z",
+  "updated_at": "2026-04-30T07:46:40Z",
   "verify": {
     "status": "pass"
   }

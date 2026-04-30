@@ -1,10 +1,11 @@
 ---
 id: "202604300725-SS9694"
 title: "Fix release formatting drift"
-status: "DOING"
+result_summary: "Merged via PR #599."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-04-30T07:43:07.032Z"
   updated_by: "CODER"
   note: "Verification passed for formatting drift."
-commit: null
+commit:
+  hash: "494a9eb633f6760bb8429c020fa2953a91480efb"
+  message: "Merge pull request #599 from basilisk-labs/task/202604300725-SS9694/format-drift"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce format drift, apply mechanical formatting only, and verify format gates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #599 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verification passed for formatting drift."
+  -
+    type: "status"
+    at: "2026-04-30T07:47:23.255Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #599 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T07:43:07.044Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-30T07:47:23.260Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make format:check pass by applying the smallest Prettier-compatible formatting changes to release-blocking files, without changing prompt semantics or unrelated generated artifacts."
 sections:
   Summary: |-
