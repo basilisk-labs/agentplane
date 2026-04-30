@@ -1,10 +1,11 @@
 ---
 id: "202604300725-T0M8X3"
 title: "Restore release-critical smoke suite"
-status: "DOING"
+result_summary: "Merged via PR #603."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -30,11 +31,16 @@ verification:
   updated_at: "2026-04-30T08:04:05.151Z"
   updated_by: "CODER"
   note: "Release-critical smoke suite is restored on current main; no code diff was required beyond prior fixes."
-commit: null
+commit:
+  hash: "737299de73bb61b45d4df0f49136e9e7e181ec00"
+  message: "Merge pull request #603 from basilisk-labs/task/202604300725-T0M8X3/release-critical-smoke"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce release-critical smoke failures, isolate root causes, and restore the suite."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #603 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release-critical smoke suite is restored on current main; no code diff was required beyond prior fixes."
+  -
+    type: "status"
+    at: "2026-04-30T08:06:59.252Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #603 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T08:04:05.164Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-30T08:06:59.257Z"
+doc_updated_by: "INTEGRATOR"
 description: "Investigate and fix the current release-critical CLI smoke and upgrade smoke failures so test:release:critical passes on the release candidate checkout. Scope includes only the failing smoke paths and minimal fixture/runtime changes required to make the release gate reliable."
 sections:
   Summary: |-

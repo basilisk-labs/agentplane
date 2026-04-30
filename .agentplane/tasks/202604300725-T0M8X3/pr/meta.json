@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-30T08:06:23Z",
   "base": "main",
   "branch": "task/202604300725-T0M8X3/release-critical-smoke",
   "created_at": "2026-04-30T08:02:17.598Z",
-  "head_sha": "2000d29c87eea28a854cb720ed1cf543541522f9",
+  "head_sha": "39bdfc73b226f77bd20c262ea42f190b362aa123",
   "last_verified_at": "2026-04-30T08:04:05.151Z",
   "last_verified_sha": "2000d29c87eea28a854cb720ed1cf543541522f9",
+  "merge_commit": "737299de73bb61b45d4df0f49136e9e7e181ec00",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-30T08:06:23Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604300725-T0M8X3",
-  "updated_at": "2026-04-30T08:02:17.598Z",
+  "updated_at": "2026-04-30T08:06:23Z",
   "verify": {
     "status": "pass"
   }
