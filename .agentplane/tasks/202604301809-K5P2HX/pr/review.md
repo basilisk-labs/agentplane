@@ -25,7 +25,7 @@ Add shared outcome-first prompt guidance as stable fragments: visible progress, 
 ### Current Status
 
 - State: ok
-- Note: Verified: shared GPT-5.5 prompt contract added as gateway fragment; AGENTS budget 248 lines; agents templates OK; prompt registry/agents-template/GPT-5.5 diagnostics tests pass; policy routing OK; git diff check OK.
+- Note: Verified: shared GPT-5.5 gateway contract remains under AGENTS budget; agents templates OK; registry/agents-template/GPT-5.5 diagnostics tests pass; policy routing OK; git diff check OK at commit 721b8d4.
 
 ## Risks
 

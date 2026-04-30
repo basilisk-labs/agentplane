@@ -4,7 +4,7 @@ title: "Introduce shared GPT-5.5 prompt contract fragments"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,9 +23,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-04-30T18:31:49.684Z"
+  updated_at: "2026-04-30T18:32:29.490Z"
   updated_by: "CODER"
-  note: "Verified: shared GPT-5.5 prompt contract added as gateway fragment; AGENTS budget 248 lines; agents templates OK; prompt registry/agents-template/GPT-5.5 diagnostics tests pass; policy routing OK; git diff check OK."
+  note: "Verified: shared GPT-5.5 gateway contract remains under AGENTS budget; agents templates OK; registry/agents-template/GPT-5.5 diagnostics tests pass; policy routing OK; git diff check OK at commit 721b8d4."
 commit: null
 comments:
   -
@@ -45,8 +45,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: shared GPT-5.5 prompt contract added as gateway fragment; AGENTS budget 248 lines; agents templates OK; prompt registry/agents-template/GPT-5.5 diagnostics tests pass; policy routing OK; git diff check OK."
+  -
+    type: "verify"
+    at: "2026-04-30T18:32:29.490Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: shared GPT-5.5 gateway contract remains under AGENTS budget; agents templates OK; registry/agents-template/GPT-5.5 diagnostics tests pass; policy routing OK; git diff check OK at commit 721b8d4."
 doc_version: 3
-doc_updated_at: "2026-04-30T18:31:49.700Z"
+doc_updated_at: "2026-04-30T18:32:29.509Z"
 doc_updated_by: "CODER"
 description: "Add shared outcome-first prompt guidance as stable fragments: visible progress, retrieval budget, validation behavior, final output contract, findings/incidents boundary, and generic stop rules, without weakening hard workflow/security gates."
 sections:
@@ -75,6 +81,14 @@ sections:
     Note: Verified: shared GPT-5.5 prompt contract added as gateway fragment; AGENTS budget 248 lines; agents templates OK; prompt registry/agents-template/GPT-5.5 diagnostics tests pass; policy routing OK; git diff check OK.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T18:28:39.311Z, excerpt_hash=sha256:c799f5e2bbbfc2a8aa1735307680c3613dd716ecf814545b81ae1e8e0d86862e
+    
+    ### 2026-04-30T18:32:29.490Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: shared GPT-5.5 gateway contract remains under AGENTS budget; agents templates OK; registry/agents-template/GPT-5.5 diagnostics tests pass; policy routing OK; git diff check OK at commit 721b8d4.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T18:31:49.700Z, excerpt_hash=sha256:c799f5e2bbbfc2a8aa1735307680c3613dd716ecf814545b81ae1e8e0d86862e
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -117,6 +131,14 @@ By: CODER
 Note: Verified: shared GPT-5.5 prompt contract added as gateway fragment; AGENTS budget 248 lines; agents templates OK; prompt registry/agents-template/GPT-5.5 diagnostics tests pass; policy routing OK; git diff check OK.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T18:28:39.311Z, excerpt_hash=sha256:c799f5e2bbbfc2a8aa1735307680c3613dd716ecf814545b81ae1e8e0d86862e
+
+### 2026-04-30T18:32:29.490Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: shared GPT-5.5 gateway contract remains under AGENTS budget; agents templates OK; registry/agents-template/GPT-5.5 diagnostics tests pass; policy routing OK; git diff check OK at commit 721b8d4.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T18:31:49.700Z, excerpt_hash=sha256:c799f5e2bbbfc2a8aa1735307680c3613dd716ecf814545b81ae1e8e0d86862e
 
 <!-- END VERIFICATION RESULTS -->
 
