@@ -3,7 +3,7 @@
  packages/agentplane/src/agents/agents-template.ts  |   3 +-
  .../src/cli/run-cli.core.hooks.pre-commit.test.ts  | 158 +++++++
  .../agentplane/src/cli/run-cli.core.hooks.test.ts  | 142 ------
- .../src/cli/run-cli.core.incidents.test.ts         |  14 +-
+ .../src/cli/run-cli.core.incidents.test.ts         |  12 +-
  .../run-cli.core.pr-flow.pr-notes-verify.test.ts   |   2 +-
  .../run-cli.core.tasks.normalize-migrate.test.ts   |   2 +-
  .../src/cli/run-cli/commands/init/write-agents.ts  |   4 +-
@@ -13,4 +13,4 @@
  .../src/runtime/prompt-modules/compiler.ts         | 220 +---------
  .../src/runtime/prompt-modules/registry.test.ts    |   3 +-
  scripts/baselines/knip-baseline.json               | 487 ++++++++++++++++-----
- 15 files changed, 946 insertions(+), 486 deletions(-)
+ 15 files changed, 944 insertions(+), 486 deletions(-)
