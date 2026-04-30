@@ -64,7 +64,7 @@ Inside the CLI, AgentPlane now resolves one explicit framework control plane bef
 - traced behavior precedence: `harness -> extension -> user -> builtin`
 - machine-readable explain and protocol surfaces that persist the resolved framework inputs into shared runner artifacts
 
-If you are extending the framework instead of only using the CLI, start with [Architecture](docs/developer/architecture.mdx) and [Harness Engineering](docs/developer/harness-engeneering.mdx).
+If you are extending the framework instead of only using the CLI, start with [Architecture](docs/developer/architecture.mdx) and [Harness Engineering](docs/developer/harness-engineering.mdx).
 
 ## 2-minute quickstart
 
@@ -170,14 +170,14 @@ Start here:
 Developer and release docs:
 
 - [Architecture](docs/developer/architecture.mdx)
-- [Framework refactor program](docs/developer/framework-refactor-program.mdx)
+- [Documentation information architecture](docs/developer/documentation-information-architecture.mdx)
 - [CLI contract](docs/developer/cli-contract.mdx)
 - [Release and publishing](docs/developer/release-and-publishing.mdx)
 - [Release notes](docs/releases/)
 
 If you need the deeper execution philosophy, keep it below the product surface:
 
-- [Harness Engineering](docs/developer/harness-engeneering.mdx)
+- [Harness Engineering](docs/developer/harness-engineering.mdx)
 
 ## Contributing
 

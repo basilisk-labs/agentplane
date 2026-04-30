@@ -10,7 +10,7 @@ This page defines where each topic lives, which code paths are the source of tru
 Use it as the routing table before editing any documentation page.
 
 Do not publish deferred design plans, implementation drafts, or legacy navigation metadata as active
-docs. Keep those details in issues, ADRs, release notes, or task history instead of the public
+docs. Keep those details in the archive, ADRs, release notes, or task history instead of the public
 runtime guide.
 
 ## Section boundaries
@@ -40,6 +40,17 @@ Use `docs/help/*` for diagnosis and recovery:
 - Common failure patterns and exact fixes.
 - Shared terminology.
 
+### Archive
+
+Use `docs/archive/*`, `docs/adr/*`, and clearly marked historical pages for non-current material:
+
+- Stabilization ledgers and retired refactor programs.
+- Accepted decision records.
+- Historical incident evidence that no longer belongs in active policy.
+
+Archive pages may remain linkable for provenance, but they must not appear inside the current user
+or developer paths as if they were active guidance.
+
 ## Agent-first navigation model
 
 The public docs entrypoints should mirror the same workflow model the CLI and gateway use:
@@ -50,6 +61,7 @@ The public docs entrypoints should mirror the same workflow model the CLI and ga
 4. **Reference & integrations**: backends, config, generated reference.
 5. **Developer**: implementation and maintenance details.
 6. **Release notes**: historical record only.
+7. **Archive**: historical records, ADRs, and retired program notes.
 
 ## Canonical mapping
 
@@ -68,6 +80,8 @@ The public docs entrypoints should mirror the same workflow model the CLI and ga
 | Release pipeline and publishing rules | `docs/developer/release-and-publishing.mdx`                                                                             | `.github/workflows/*`, `packages/agentplane/src/commands/release/*`, `scripts/*release*`               |
 | Testing, quality, and performance     | `docs/developer/testing-and-quality.mdx`, `docs/developer/code-quality.mdx`, `docs/developer/performance-baselines.mdx` | `package.json` scripts, `scripts/check-*.mjs`, `scripts/measure-*.mjs`, `packages/**/src/**/*.test.ts` |
 | Modular prompt assembly               | `docs/developer/modular-prompt-assembly.mdx`                                                                            | `packages/agentplane/assets/**`, `packages/agentplane/src/runtime/prompt-*`, runner context builders   |
+| Durable contract ADRs                 | `docs/adr/*.md`                                                                                                         | `packages/core/src/**`, `packages/spec/schemas/**`, `packages/core/schemas/**`                         |
+| Historical developer records          | `docs/archive/**`, `docs/developer/incident-archive.mdx`                                                                | Task history, release notes, and shipped mitigation commits                                            |
 
 ## Duplication rules
 

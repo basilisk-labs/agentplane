@@ -1,11 +1,11 @@
 ---
-title: "Harness Engeneering"
+title: "Harness Engineering"
 description: "Execution-system design approach for reliable, high-throughput agent workflows."
 ---
 
 ## Definition
 
-Harness engeneering is the discipline of designing the execution system around agents:
+Harness engineering is the discipline of designing the execution system around agents:
 
 - contracts
 - gates
@@ -19,7 +19,7 @@ The goal is not to make agents sound smarter. The goal is to make outcomes predi
 
 Agent output throughput is high. Without an execution harness, repository entropy grows faster than teams can review or recover.
 
-Harness engeneering counters this by shifting quality control from ad-hoc prompting to system-level controls.
+Harness engineering counters this by shifting quality control from ad-hoc prompting to system-level controls.
 
 ## Core pattern in Agent Plane
 
@@ -41,7 +41,7 @@ The framework layer is no longer just a set of conventions.
 - Harness contract:
   - `runtime/harness` resolves task rules, workflow constraints, protected paths, approval requirements, and backend restrictions into one `ResolvedHarnessContract`.
 - Canonical context:
-  - `usecases/context/resolve-context.ts` builds `AgentplaneExecutionContext` so commands, recipes, and runner flows consume the same repo/task/policy/runtime inputs.
+  - `runtime/execution-context.ts` builds `AgentplaneExecutionContext` so commands, recipes, and runner flows consume the same repo/task/policy/runtime inputs.
 - Precedence core:
   - `runtime/behavior` makes `harness -> extension -> user -> builtin` explicit and traceable.
 - Capability model:

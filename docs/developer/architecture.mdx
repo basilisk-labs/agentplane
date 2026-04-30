@@ -15,7 +15,7 @@ The runtime layer owns command behavior. The core layer owns parsing, defaults, 
 
 Durable config and task artifact contracts now use Zod in `packages/core/src/**` as the single source of truth, with generated JSON Schema mirrors emitted for tooling and external consumers.
 
-For the architectural decision and practical boundary guidance, see [ADR: Zod Contract SSOT](schema-runtime-contract-adr) and [Schema validation strategy](schema-validation-strategy).
+For the architectural decision and practical boundary guidance, see [ADR: Zod Contract SSOT](../adr/0013-zod-contract-ssot) and [Schema validation strategy](schema-validation-strategy).
 
 ## Current priority
 
@@ -34,7 +34,7 @@ The framework layer is the reusable control plane that recipes and runner-specif
   - `packages/agentplane/src/runtime/harness/*`
   - Produces `ResolvedHarnessContract` from repo policy gateway, config, workflow mode, task contract, backend restrictions, and protected-path rules.
 - Canonical execution context:
-  - `packages/agentplane/src/usecases/context/resolve-context.ts`
+  - `packages/agentplane/src/runtime/execution-context.ts`
   - Produces `AgentplaneExecutionContext` / `ReadOnlyUsecaseContext` with repo, task backend, harness, approvals, capability registry, execution-profile runtime, task-intake runtime, explain payloads, and protocol surfaces.
 - Behavior precedence and traces:
   - `packages/agentplane/src/runtime/behavior/*`
@@ -73,17 +73,17 @@ The framework layer is the reusable control plane that recipes and runner-specif
 ## Core map
 
 - Project resolution:
-  - `packages/core/src/project.ts`
+  - `packages/core/src/project/`
 - Config parsing and defaults:
-  - `packages/core/src/config.ts`
+  - `packages/core/src/config/`
 - Task document and snapshot primitives:
-  - `packages/core/src/task-*`
+  - `packages/core/src/tasks/`
 
 ## Runtime data flow
 
 1. CLI resolves project root, runtime mode, and `.agentplane/config.json`.
 2. `runtime/harness` resolves the repo-level contract into `ResolvedHarnessContract`.
-3. `usecases/context/resolve-context.ts` assembles the canonical execution context around that harness.
+3. `runtime/execution-context.ts` assembles the canonical execution context around that harness.
 4. Behavior, capability, approval, execution-profile, task-intake, explain, and protocol modules derive reusable runtime inputs from the canonical context.
 5. Command handlers and runner usecases consume the same context instead of rebuilding ad hoc task/repo/config helpers.
 6. Backend mutation and task projection update `.agentplane/tasks/<task-id>/README.md` and optional exported caches such as `.agentplane/tasks.json`.
@@ -111,7 +111,7 @@ Revisit a future `task.yaml` target only if at least one of these becomes true:
 3. Non-local backends or external integrations need a stricter structured payload than YAML frontmatter inside README can express cleanly.
 4. Projection repair, normalization, or container-specific drift starts costing more complexity than a format migration would remove.
 
-## Harness engeneering loop
+## Harness engineering loop
 
 Agent Plane architecture is designed for an iterative control loop:
 
@@ -154,7 +154,7 @@ Release is split into planning and apply:
 
 - [Project layout](project-layout)
 - [Module topology](module-topology)
-- [Framework refactor program](framework-refactor-program)
+- [Historical v0.3 refactor program](../archive/v0-3/framework-refactor-program)
 - [CLI contract](cli-contract)
 - [Release and publishing](release-and-publishing)
 - [Tasks and backends](../user/tasks-and-backends)
