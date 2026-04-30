@@ -1,10 +1,10 @@
 ---
 id: "202604300726-7FFNYW"
 title: "Verify patch release readiness after prompt fragmentation"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -34,16 +34,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-30T08:11:50.247Z"
+  updated_by: "CODER"
+  note: "Patch release readiness verified after prompt fragmentation tasks."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: run the full patch release readiness gate after prompt fragmentation tasks landed."
+events:
+  -
+    type: "status"
+    at: "2026-04-30T08:08:44.840Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: run the full patch release readiness gate after prompt fragmentation tasks landed."
+  -
+    type: "verify"
+    at: "2026-04-30T08:11:50.247Z"
+    author: "CODER"
+    state: "ok"
+    note: "Patch release readiness verified after prompt fragmentation tasks."
 doc_version: 3
-doc_updated_at: "2026-04-30T07:27:14.171Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-04-30T08:11:50.259Z"
+doc_updated_by: "CODER"
 description: "Run and record the release-readiness gate after parity, formatting, fragment correctness, and release-smoke blockers are fixed. This task should not introduce feature changes; it records whether the checkout is ready for the next patch-release task."
 sections:
   Summary: |-
@@ -78,6 +94,31 @@ sections:
     16. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-30T08:11:50.247Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Patch release readiness verified after prompt fragmentation tasks.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T08:08:44.840Z, excerpt_hash=sha256:00c2c1d26ec38aed148edef776c9b88dcffbac727ffbea5eded72a280cfa850c
+    
+    Details:
+    
+    Command: bun run framework:dev:bootstrap; Result: pass; Evidence: Framework dev runtime is ready; Scope: repo-local runtime.
+    Command: bun run release:check; Result: pass; Evidence: package tarball policy OK (@agentplaneorg/core=73, @agentplaneorg/recipes=20, agentplane=46); Scope: build and tarball policy.
+    Command: bun run release:parity; Result: pass; Evidence: core=0.3.29, agentplane=0.3.29, recipes=0.3.29 parity passed; Scope: package release parity.
+    Command: bun run schemas:check; Result: pass; Evidence: schemas OK; Scope: generated schemas.
+    Command: bun run agents:check; Result: pass; Evidence: agents templates OK; Scope: generated agents/policy mirrors.
+    Command: bun run policy:routing:check; Result: pass; Evidence: policy routing OK; Scope: policy routing budgets.
+    Command: bun run docs:recipes:check; Result: pass; Evidence: docs/recipes-inventory.json is up to date; Scope: recipes docs inventory.
+    Command: bun run docs:cli:check; Result: pass; Evidence: docs/user/cli-reference.generated.mdx is up to date; Scope: CLI docs.
+    Command: bun run task-state:check; Result: pass; Evidence: task state OK; Scope: task archive state.
+    Command: bun run format:check; Result: pass; Evidence: All matched files use Prettier code style; Scope: repository formatting.
+    Command: bun run typecheck; Result: pass; Evidence: tsc -b completed; Scope: TypeScript project references.
+    Command: bun run test:release:critical; Result: pass; Evidence: 4 test files passed, 16 tests passed; Scope: release-critical smoke suite.
+    Command: git diff --check; Result: pass; Evidence: no whitespace errors; Scope: final diff.
+    Command: agentplane doctor; Result: pass; Evidence: doctor OK; Scope: workflow runtime health.
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -126,6 +167,31 @@ Run and record the release-readiness gate after parity, formatting, fragment cor
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-30T08:11:50.247Z — VERIFY — ok
+
+By: CODER
+
+Note: Patch release readiness verified after prompt fragmentation tasks.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T08:08:44.840Z, excerpt_hash=sha256:00c2c1d26ec38aed148edef776c9b88dcffbac727ffbea5eded72a280cfa850c
+
+Details:
+
+Command: bun run framework:dev:bootstrap; Result: pass; Evidence: Framework dev runtime is ready; Scope: repo-local runtime.
+Command: bun run release:check; Result: pass; Evidence: package tarball policy OK (@agentplaneorg/core=73, @agentplaneorg/recipes=20, agentplane=46); Scope: build and tarball policy.
+Command: bun run release:parity; Result: pass; Evidence: core=0.3.29, agentplane=0.3.29, recipes=0.3.29 parity passed; Scope: package release parity.
+Command: bun run schemas:check; Result: pass; Evidence: schemas OK; Scope: generated schemas.
+Command: bun run agents:check; Result: pass; Evidence: agents templates OK; Scope: generated agents/policy mirrors.
+Command: bun run policy:routing:check; Result: pass; Evidence: policy routing OK; Scope: policy routing budgets.
+Command: bun run docs:recipes:check; Result: pass; Evidence: docs/recipes-inventory.json is up to date; Scope: recipes docs inventory.
+Command: bun run docs:cli:check; Result: pass; Evidence: docs/user/cli-reference.generated.mdx is up to date; Scope: CLI docs.
+Command: bun run task-state:check; Result: pass; Evidence: task state OK; Scope: task archive state.
+Command: bun run format:check; Result: pass; Evidence: All matched files use Prettier code style; Scope: repository formatting.
+Command: bun run typecheck; Result: pass; Evidence: tsc -b completed; Scope: TypeScript project references.
+Command: bun run test:release:critical; Result: pass; Evidence: 4 test files passed, 16 tests passed; Scope: release-critical smoke suite.
+Command: git diff --check; Result: pass; Evidence: no whitespace errors; Scope: final diff.
+Command: agentplane doctor; Result: pass; Evidence: doctor OK; Scope: workflow runtime health.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
