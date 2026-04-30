@@ -1,10 +1,11 @@
 ---
 id: "202604301955-HKY8NW"
 title: "Add docs IA and path drift guard"
-status: "DOING"
+result_summary: "Merged via PR #636."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-30T20:48:04.001Z"
   updated_by: "CODER"
   note: "Post-PR fix: docs:ia:check now ignores generated package dist/ references that are not present in fresh CI checkout. Rechecked: bun run docs:ia:check; bun run docs:scripts:check; bun run lint:core."
-commit: null
+commit:
+  hash: "00031a6f3ac9c42d4784bf97e5abe3e7d06e77b7"
+  message: "Merge pull request #636 from basilisk-labs/task/202604301955-HKY8NW/docs-ia-path-guard"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved docs IA/path drift guard in the task worktree, keep the change limited to the docs script surface, and verify with docs:ia:check plus docs script checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #636 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -51,9 +57,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Post-PR fix: docs:ia:check now ignores generated package dist/ references that are not present in fresh CI checkout. Rechecked: bun run docs:ia:check; bun run docs:scripts:check; bun run lint:core."
+  -
+    type: "status"
+    at: "2026-04-30T20:53:44.587Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #636 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T20:48:04.008Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-30T20:53:44.592Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add an automated docs information-architecture guard that checks docs/index.mdx and website/sidebars.ts alignment, catches orphan current docs, and fails on markdown references to repository paths that no longer exist."
 sections:
   Summary: |-
