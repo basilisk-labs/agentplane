@@ -1,10 +1,11 @@
 ---
 id: "202604301956-E94KR6"
 title: "Resolve docs site homepage preview split"
-status: "DOING"
+result_summary: "Merged via PR #632."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-04-30T20:14:58.506Z"
   updated_by: "CODER"
   note: "Verified: docs site typecheck, production build, design-language check, and git diff whitespace check passed after promoting the rich home-preview implementation to the root page and removing the separate /home-preview route."
-commit: null
+commit:
+  hash: "e944d7e1e311570140fdf03b3998336a24d2c698"
+  message: "Merge pull request #632 from basilisk-labs/task/202604301956-E94KR6/resolve-home-preview-split"
 comments:
   -
     author: "CODER"
     body: "Start: forced start after live docs CI evidence showed homepage split blocks docs:site:build before the dependent docs IA task can merge; scope remains limited to resolving the root/home-preview split."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #632 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: docs site typecheck, production build, design-language check, and git diff whitespace check passed after promoting the rich home-preview implementation to the root page and removing the separate /home-preview route."
+  -
+    type: "status"
+    at: "2026-04-30T20:18:17.123Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #632 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T20:14:58.513Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-30T20:18:17.129Z"
+doc_updated_by: "INTEGRATOR"
 description: "Eliminate the parallel homepage implementation by either promoting the rich home-preview surface to the public root page or removing the dormant preview route and its data/CSS if it is no longer intended."
 sections:
   Summary: |-

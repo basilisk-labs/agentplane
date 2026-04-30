@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-04-30T20:17:34Z",
   "base": "main",
   "branch": "task/202604301956-E94KR6/resolve-home-preview-split",
   "created_at": "2026-04-30T20:11:34.502Z",
-  "head_sha": "4f93ee3db2c079b781e49c466f7b2f1a485b81ad",
+  "head_sha": "e58a4a3b3bc109e686ca2f8cde4455339ed7d4c2",
   "last_verified_at": "2026-04-30T20:14:58.506Z",
   "last_verified_sha": "4f93ee3db2c079b781e49c466f7b2f1a485b81ad",
+  "merge_commit": "e944d7e1e311570140fdf03b3998336a24d2c698",
+  "merge_strategy": "merge",
+  "merged_at": "2026-04-30T20:17:34Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202604301956-E94KR6",
-  "updated_at": "2026-04-30T20:14:51.391Z",
+  "updated_at": "2026-04-30T20:17:34Z",
   "verify": {
     "status": "pass"
   }
