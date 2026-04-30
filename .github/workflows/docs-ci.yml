@@ -30,6 +30,7 @@ jobs:
               - "DESIGN.md"
               - "scripts/generate-website-docs.mjs"
               - "scripts/check-design-language.mjs"
+              - "scripts/check-docs-ia.mjs"
               - "packages/**"
               - "package.json"
               - "bun.lock"
@@ -55,6 +56,8 @@ jobs:
         run: bun run docs:site:generate
       - name: Typecheck website
         run: bun run docs:site:typecheck
+      - name: Validate documentation information architecture
+        run: bun run docs:ia:check
       - name: Build website
         run: bun run docs:site:build
       - name: Validate design language constraints

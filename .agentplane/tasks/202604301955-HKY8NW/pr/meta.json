@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604301955-HKY8NW/docs-ia-path-guard",
+  "created_at": "2026-04-30T20:35:18.883Z",
+  "head_sha": "4d4a421e925af82a510ee14c74dda6b013e935ec",
+  "last_verified_at": "2026-04-30T20:48:04.001Z",
+  "last_verified_sha": "4ab6c548336f6d8dae2d27b6789f9b8dfe74c956",
+  "schema_version": 1,
+  "task_id": "202604301955-HKY8NW",
+  "updated_at": "2026-04-30T20:50:20.859Z",
+  "verify": {
+    "status": "pass"
+  }
+}
