@@ -5,7 +5,7 @@ result_summary: "Merged via PR #611."
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -29,10 +29,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-04-30T17:45:45.508Z"
+  updated_by: "INTEGRATOR"
+  note: "Release v0.4.0 verified after hosted publish: PR #611 merged to main at 060b70ca465b780337c2ec9da035fc66e615803f; hosted close PR #612 merged at dafcebf57df778c45c95e5b2d151dbf4de8026a0; Publish to npm workflow run 25180257731 succeeded; npm reports agentplane=0.4.0, @agentplaneorg/core=0.4.0, @agentplaneorg/recipes=0.4.0; origin tag v0.4.0 resolves to 060b70ca465b780337c2ec9da035fc66e615803f; GitHub Release v0.4.0 is published."
 commit:
   hash: "060b70ca465b780337c2ec9da035fc66e615803f"
   message: "Merge pull request #611 from basilisk-labs/task/202604300956-6CRM12/v0-4-0-release"
@@ -58,8 +58,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: PR #611 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+  -
+    type: "verify"
+    at: "2026-04-30T17:45:45.508Z"
+    author: "INTEGRATOR"
+    state: "ok"
+    note: "Release v0.4.0 verified after hosted publish: PR #611 merged to main at 060b70ca465b780337c2ec9da035fc66e615803f; hosted close PR #612 merged at dafcebf57df778c45c95e5b2d151dbf4de8026a0; Publish to npm workflow run 25180257731 succeeded; npm reports agentplane=0.4.0, @agentplaneorg/core=0.4.0, @agentplaneorg/recipes=0.4.0; origin tag v0.4.0 resolves to 060b70ca465b780337c2ec9da035fc66e615803f; GitHub Release v0.4.0 is published."
 doc_version: 3
-doc_updated_at: "2026-04-30T17:40:21.722Z"
+doc_updated_at: "2026-04-30T17:45:45.515Z"
 doc_updated_by: "INTEGRATOR"
 description: "Release the current modular prompt assembly work as v0.4.0 instead of v0.3.30. Prepare the release candidate through the branch_pr route, satisfy release gates, merge to main, wait for hosted Publish to npm, and verify npm, tag, and GitHub Release evidence."
 sections:
@@ -95,6 +101,14 @@ sections:
     11. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-04-30T17:45:45.508Z — VERIFY — ok
+    
+    By: INTEGRATOR
+    
+    Note: Release v0.4.0 verified after hosted publish: PR #611 merged to main at 060b70ca465b780337c2ec9da035fc66e615803f; hosted close PR #612 merged at dafcebf57df778c45c95e5b2d151dbf4de8026a0; Publish to npm workflow run 25180257731 succeeded; npm reports agentplane=0.4.0, @agentplaneorg/core=0.4.0, @agentplaneorg/recipes=0.4.0; origin tag v0.4.0 resolves to 060b70ca465b780337c2ec9da035fc66e615803f; GitHub Release v0.4.0 is published.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T17:40:21.722Z, excerpt_hash=sha256:51f337500a2d110023a676782419f7de2d9d505db338205047ce87449fc54379
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -143,6 +157,14 @@ Re-approval triggers: target changes from 0.4.0, release gate requires broad ref
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-04-30T17:45:45.508Z — VERIFY — ok
+
+By: INTEGRATOR
+
+Note: Release v0.4.0 verified after hosted publish: PR #611 merged to main at 060b70ca465b780337c2ec9da035fc66e615803f; hosted close PR #612 merged at dafcebf57df778c45c95e5b2d151dbf4de8026a0; Publish to npm workflow run 25180257731 succeeded; npm reports agentplane=0.4.0, @agentplaneorg/core=0.4.0, @agentplaneorg/recipes=0.4.0; origin tag v0.4.0 resolves to 060b70ca465b780337c2ec9da035fc66e615803f; GitHub Release v0.4.0 is published.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-04-30T17:40:21.722Z, excerpt_hash=sha256:51f337500a2d110023a676782419f7de2d9d505db338205047ce87449fc54379
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
