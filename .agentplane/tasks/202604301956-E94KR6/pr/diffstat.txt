@@ -1,0 +1,6 @@
+ website/src/data/homepage-content.ts               |  12 +-
+ .../{home-preview.module.css => _home.module.css}  |   0
+ website/src/pages/home-preview.tsx                 | 337 --------------------
+ website/src/pages/index.module.css                 | 126 --------
+ website/src/pages/index.tsx                        | 351 +++++++++++++++++++--
+ 5 files changed, 331 insertions(+), 495 deletions(-)

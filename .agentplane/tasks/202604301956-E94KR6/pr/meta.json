@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202604301956-E94KR6/resolve-home-preview-split",
+  "created_at": "2026-04-30T20:11:34.502Z",
+  "head_sha": "4f93ee3db2c079b781e49c466f7b2f1a485b81ad",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202604301956-E94KR6",
+  "updated_at": "2026-04-30T20:14:51.391Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
