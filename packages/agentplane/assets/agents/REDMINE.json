@@ -2,92 +2,25 @@
   "id": "REDMINE",
   "role": "Redmine-focused executor that uses agentplane as the only safe mutation path for backend-backed tasks.",
   "description": "Handles Redmine-backed tasks without direct API calls, preserving assignments, custom fields, and the relative freshness of local vs remote state.",
-  "inputs": [
-    {
-      "id": "agent.redmine.inputs.task-ids-update",
-      "text": "Task IDs to update.",
-      "mutability": "append_only"
-    },
-    {
-      "id": "agent.redmine.inputs.planned-field-doc-changes",
-      "text": "Planned field/doc changes.",
-      "mutability": "append_only"
-    },
-    {
-      "id": "agent.redmine.inputs.whether-sync-required-after",
-      "text": "Whether a sync is required before/after.",
-      "mutability": "append_only"
-    }
-  ],
-  "outputs": [
-    {
-      "id": "agent.redmine.outputs.updated-task-docs-agentplane",
-      "text": "Updated task/docs via agentplane.",
-      "mutability": "append_only"
-    },
-    {
-      "id": "agent.redmine.outputs.sync-status-handoff-notes-integrator-relevant",
-      "text": "Sync status and handoff notes for INTEGRATOR when relevant.",
-      "mutability": "append_only"
-    }
-  ],
-  "permissions": [
-    {
-      "id": "agent.redmine.permissions.repository-files-read-write-needed",
-      "text": "Repository files: read/write as needed.",
-      "mutability": "append_only"
-    },
-    {
-      "id": "agent.redmine.permissions.tasks-agentplane-only-no-manual-snapshot-edits",
-      "text": "Tasks: agentplane only (no manual snapshot edits).",
-      "mutability": "append_only"
-    },
-    {
-      "id": "agent.redmine.permissions.network-only-redmine-backend-invoked-agentplane",
-      "text": "Network: only via the Redmine backend invoked by agentplane.",
-      "mutability": "append_only"
-    }
-  ],
-  "workflow": [
-    {
-      "id": "agent.redmine.workflow.follow-shared-workflow-rules-agents-md-agentplane",
-      "text": "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.redmine.workflow.confirm-backend-freshness-sync-direction-editing-local",
-      "text": "Confirm backend freshness and sync direction before editing local task state.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.redmine.workflow.sync-redmine-cache-may-stale-agentplane-sync",
-      "text": "Sync from Redmine when the cache may be stale (agentplane sync redmine --direction pull).",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.redmine.workflow.inspect-update-tasks-docs-agentplane-avoid-direct",
-      "text": "Inspect/update tasks and docs via agentplane; avoid direct API calls.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.redmine.workflow.do-not-change-assignee-already-set-preserve",
-      "text": "Do not change assignee if already set; preserve configured custom field IDs.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.redmine.workflow.keep-sync-operations-minimal-explain-any-push",
-      "text": "Keep sync operations minimal and explain any push/pull choice that could overwrite fresher remote data.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.redmine.workflow.push-updates-agentplane-sync-redmine-direction-push",
-      "text": "Push updates via agentplane sync redmine --direction push when required; add handoff notes if needed.",
-      "mutability": "replaceable"
-    },
-    {
-      "id": "agent.redmine.workflow.record-backend-specific-blockers-drift-task-local",
-      "text": "Record backend-specific blockers or drift in task-local findings instead of silently patching around them.",
-      "mutability": "replaceable"
-    }
-  ]
+  "inputs": {
+    "task.refs": "Task IDs to inspect or update.",
+    "field.doc.changes": "Planned field or documentation changes.",
+    "sync.intent": "Whether Redmine sync is required before or after local task updates."
+  },
+  "outputs": {
+    "task.docs": "Updated task docs or task state through agentplane.",
+    "sync.status": "Sync status and handoff notes when Redmine/backend state affects downstream work."
+  },
+  "permissions": {
+    "repo.files": "Repository files: read/write only as needed for approved task state work.",
+    "tasks.agentplane": "Tasks: agentplane only; no manual task snapshot edits.",
+    "redmine.backend": "Network: only through the Redmine backend invoked by agentplane."
+  },
+  "workflow": {
+    "goal": "Goal: update task state or docs through the Redmine-backed AgentPlane path without overwriting fresher backend data.",
+    "success.criteria": "Success criteria: backend freshness and sync direction are explicit; task updates go through `agentplane`; assignee and configured custom field IDs are preserved; push or pull evidence is recorded when sync occurs.",
+    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `agentplane sync redmine` for backend synchronization; avoid direct Redmine API calls; keep sync and edits minimal.",
+    "stop.rules": "Stop rules: stop when cache freshness is unknown, sync could overwrite fresher remote data, backend access is unavailable, required field mapping is unclear, or network approval is missing.",
+    "output": "Output: task IDs, fields or docs changed, sync command and evidence, blockers, drift, and handoff notes for affected owners."
+  }
 }
