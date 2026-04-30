@@ -1,10 +1,11 @@
 ---
 id: "202604301955-07JYC4"
 title: "Prune unused GPT-5.5 prompt diagnostic exports"
-status: "DOING"
+result_summary: "Merged via PR #630."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-04-30T19:59:14.422Z"
   updated_by: "CODER"
   note: "Verified: bun run knip:check passed after pruning the unused GPT-5.5 diagnostic type exports, focused gpt55-contract tests passed, and the final implementation diff is limited to the prompt-module contract barrel surface."
-commit: null
+commit:
+  hash: "0597686f3edf0b93dce3d940866fdff87f764266"
+  message: "Merge pull request #630 from basilisk-labs/task/202604301955-07JYC4/prune-gpt55-diagnostics"
 comments:
   -
     author: "CODER"
     body: "Start: pruning the unused GPT-5.5 prompt diagnostic type exports in the dedicated task worktree, then verifying with the Knip baseline guard before opening PR artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #630 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bun run knip:check passed after pruning the unused GPT-5.5 diagnostic type exports, focused gpt55-contract tests passed, and the final implementation diff is limited to the prompt-module contract barrel surface."
+  -
+    type: "status"
+    at: "2026-04-30T20:02:40.631Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #630 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-04-30T19:59:14.429Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-04-30T20:02:40.636Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove or internalize the newly unused GPT-5.5 prompt diagnostic type exports so the Knip baseline guard returns to green without broadening the unused-code baseline."
 sections:
   Summary: |-
