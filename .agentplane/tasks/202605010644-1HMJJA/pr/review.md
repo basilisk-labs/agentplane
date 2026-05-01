@@ -45,12 +45,20 @@ Centralize prompt module schema version handling and add a no-op v1 migration en
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T07:25:14.066Z
+- Updated: 2026-05-01T07:28:36.468Z
 - Branch: task/202605010644-1HMJJA/prompt-schema-migration
-- Head: ecbc58dab84c
+- Head: dbdb30d49bff
 
 ```text
-No changes detected.
+ .../src/runtime/prompt-modules/compiler.ts         |   2 +-
+ .../agentplane/src/runtime/prompt-modules/index.ts |   6 +-
+ .../src/runtime/prompt-modules/model.test.ts       | 117 +++++++++++++++------
+ .../agentplane/src/runtime/prompt-modules/model.ts |   7 +-
+ .../src/runtime/prompt-modules/mutations.ts        |   3 +-
+ .../src/runtime/prompt-modules/registry.ts         |   2 +-
+ .../src/runtime/prompt-modules/schema.ts           |  27 +++++
+ .../src/runtime/prompt-modules/validation.ts       |  17 +--
+ 8 files changed, 129 insertions(+), 52 deletions(-)
 ```
 
 </details>
