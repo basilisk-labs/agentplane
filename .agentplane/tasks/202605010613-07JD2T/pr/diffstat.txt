@@ -1,0 +1,3 @@
+ agentplane-recipes          |  2 +-
+ docs/recipes-inventory.json | 13 +++++--------
+ 2 files changed, 6 insertions(+), 9 deletions(-)

@@ -22,12 +22,14 @@ Update the agentplane-recipes submodule catalog so bundled recipes validate and 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T06:13:31.223Z
+- Updated: 2026-05-01T06:27:44.914Z
 - Branch: task/202605010613-07JD2T/recipes-catalog-compat
-- Head: cc1ae624556b
+- Head: 38a0ca235686
 
 ```text
-No changes detected.
+ agentplane-recipes          |  2 +-
+ docs/recipes-inventory.json | 13 +++++--------
+ 2 files changed, 6 insertions(+), 9 deletions(-)
 ```
 
 </details>
