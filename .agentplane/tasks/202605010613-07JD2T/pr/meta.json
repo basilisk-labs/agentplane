@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T07:41:21Z",
   "base": "main",
   "branch": "task/202605010613-07JD2T/recipes-catalog-compat",
   "created_at": "2026-05-01T06:13:31.223Z",
-  "head_sha": "9593bbc7fd6592764a6b65f0529bcba05d32a9c3",
+  "head_sha": "824aaf6d618baa8afea473cdb29a038737420bc2",
   "last_verified_at": "2026-05-01T06:27:20.211Z",
   "last_verified_sha": "cc1ae624556b83f828d4b095da66a5cd8f15c332",
+  "merge_commit": "e5b19a5639be8cfb564b073c43496269cc0cc4c4",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T07:41:21Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010613-07JD2T",
-  "updated_at": "2026-05-01T07:06:37.538Z",
+  "updated_at": "2026-05-01T07:41:21Z",
   "verify": {
     "status": "pass"
   }

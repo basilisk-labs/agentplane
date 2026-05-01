@@ -1,10 +1,11 @@
 ---
 id: "202605010613-07JD2T"
 title: "Fix recipes catalog compatibility"
-status: "DOING"
+result_summary: "Merged via PR #651."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-01T06:27:20.211Z"
   updated_by: "CODER"
   note: "Recipe catalog compatibility verified: runtime manifest/assets/scenario validation passed for viewer and dokploy; signed list-remote worked with the committed dev public key override; path and archive installs passed for both recipes; HTTP index install-by-name smoke passed; init --recipes viewer vendored the active recipe and generated prompt graph; docs:recipes:check passed."
-commit: null
+commit:
+  hash: "e5b19a5639be8cfb564b073c43496269cc0cc4c4"
+  message: "Merge pull request #651 from basilisk-labs/task/202605010613-07JD2T/recipes-catalog-compat"
 comments:
   -
     author: "CODER"
     body: "Start: Fix the agentplane-recipes submodule catalog so bundled recipes validate, install, and can be vendored during init against the current AgentPlane runtime."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #651 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Recipe catalog compatibility verified: runtime manifest/assets/scenario validation passed for viewer and dokploy; signed list-remote worked with the committed dev public key override; path and archive installs passed for both recipes; HTTP index install-by-name smoke passed; init --recipes viewer vendored the active recipe and generated prompt graph; docs:recipes:check passed."
+  -
+    type: "status"
+    at: "2026-05-01T07:41:58.314Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #651 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T06:27:20.214Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T07:41:58.320Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the agentplane-recipes submodule catalog so bundled recipes validate and install against the current AgentPlane recipe runtime."
 sections:
   Summary: |-
