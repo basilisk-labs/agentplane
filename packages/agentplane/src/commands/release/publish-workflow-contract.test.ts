@@ -36,6 +36,12 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("node scripts/render-homebrew-formula.mjs");
     expect(workflow).toContain("Render Scoop bucket manifest");
     expect(workflow).toContain("node scripts/render-scoop-manifest.mjs");
+    expect(workflow).toContain("Publish GHCR image");
+    expect(workflow).toContain("node scripts/render-ghcr-image-metadata.mjs");
+    expect(workflow).toContain("docker login ghcr.io");
+    expect(workflow).toContain("docker build \\");
+    expect(workflow).toContain('--build-arg "AGENTPLANE_TARBALL_FILE=${AGENTPLANE_TARBALL_FILE}"');
+    expect(workflow).toContain('docker push "${GHCR_VERSION_TAG}"');
     expect(workflow).toContain(
       ".agentplane/.release/publish/distribution/release-distribution.json",
     );
@@ -48,6 +54,8 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("path: .agentplane/.release/publish/homebrew/");
     expect(workflow).toContain("name: scoop-module");
     expect(workflow).toContain("path: .agentplane/.release/publish/scoop/");
+    expect(workflow).toContain("name: ghcr-module");
+    expect(workflow).toContain("path: .agentplane/.release/publish/ghcr/");
     expect(workflow).toContain(
       "--distribution-manifest .agentplane/.release/publish/distribution/release-distribution.json",
     );
@@ -70,6 +78,7 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("submodules: recursive");
     expect(workflow).toContain("NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || '' }}");
     expect(workflow).toContain("NPM_TOKEN: ${{ secrets.NPM_TOKEN || '' }}");
+    expect(workflow).toContain("packages: write");
     expect(workflow).toContain("name: Write npm auth config");
     expect(workflow).toContain('if [ -n "${NODE_AUTH_TOKEN:-}" ]; then');
     expect(workflow).toContain(

@@ -1,0 +1,10 @@
+*
+!.agentplane/
+!.agentplane/.release/
+!.agentplane/.release/publish/
+!.agentplane/.release/publish/ghcr/
+!.agentplane/.release/publish/ghcr/agentplane.tgz
+!.agentplane/.release/publish/ghcr/agentplane.tgz.sha256
+!packages/
+!packages/agentplane/
+!packages/agentplane/Dockerfile
