@@ -1,10 +1,11 @@
 ---
 id: "202605010645-JGXD12"
 title: "AP-10: Split release apply tests"
-status: "DOING"
+result_summary: "Merged via PR #672."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T10:18:52.192Z"
   updated_by: "CODER"
   note: "Verified: release apply tests split into preflight, version mutation, apply flow, and push recovery suites; shared release helpers moved to @agentplane/testkit/release; oversized baseline ratcheted."
-commit: null
+commit:
+  hash: "697255f2f75cbbfac4988aa04ad51c98979e4e5b"
+  message: "Merge pull request #672 from basilisk-labs/task/202605010645-JGXD12/release-apply-test-split"
 comments:
   -
     author: "CODER"
     body: "Start: split release apply tests into preflight, version mutation, apply flow, and push recovery suites with shared @agentplane/testkit/release fixtures."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #672 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: release apply tests split into preflight, version mutation, apply flow, and push recovery suites; shared release helpers moved to @agentplane/testkit/release; oversized baseline ratcheted."
+  -
+    type: "status"
+    at: "2026-05-01T10:23:06.917Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #672 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T10:18:52.205Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T10:23:06.923Z"
+doc_updated_by: "INTEGRATOR"
 description: "Split release apply tests by preflight, version mutation, apply flow, and push recovery while reusing testkit release fixtures."
 sections:
   Summary: |-
