@@ -4,7 +4,7 @@ title: "Prepare v0.4.1 patch release"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -14,7 +14,7 @@ tags:
 verify: []
 plan_approval:
   state: "approved"
-  updated_at: "2026-05-01T14:19:57.307Z"
+  updated_at: "2026-05-01T14:55:57.718Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
@@ -36,7 +36,7 @@ events:
     to: "DOING"
     note: "Start: preparing the v0.4.1 branch_pr release candidate from current main, with release plan, notes, parity/prepublish checks, PR publication, and hosted publish evidence as the acceptance boundary."
 doc_version: 3
-doc_updated_at: "2026-05-01T14:21:30.144Z"
+doc_updated_at: "2026-05-01T14:55:47.195Z"
 doc_updated_by: "CODER"
 description: "Prepare the v0.4.1 release candidate from current main, including release plan, release notes, version parity, candidate branch, PR, hosted checks, and publication readiness evidence."
 sections:
@@ -47,7 +47,7 @@ sections:
   Scope: |-
     - In scope: Prepare the v0.4.1 release candidate from current main, including release plan, release notes, version parity, candidate branch, PR, hosted checks, and publication readiness evidence.
     - Out of scope: unrelated refactors not required for "Prepare v0.4.1 patch release".
-  Plan: "Release plan: version=0.4.1, tag=v0.4.1, scope=patch release from current main after v0.4.0. Steps: generate release plan; write docs/releases/v0.4.1.md from v0.4.0..main; run registry availability and release parity/prepublish gates; run branch_pr release candidate on dedicated worktree branch; open PR and wait for hosted checks; merge to main; verify hosted publish/tag/npm visibility or record exact blocker; clean stale merged task branch and local merged branches that are safe to remove. Out of scope: merging old backup/WIP local branches that are not proven release fixes."
+  Plan: "Release plan: version=0.4.1, tag=v0.4.1, scope=patch release from current main after v0.4.0. Additional approved scope from user: before continuing the release, correct the public recipes information architecture so the top-level Recipes section describes implemented installable signed recipes, and move Claude/Codex/Cursor/Aider/GitHub Actions/branch_pr copy-paste pages into workflow/integration guides instead of presenting them as installable recipes. Steps: generate release plan; consolidate recipe docs from implemented code and catalog inventory; write docs/releases/v0.4.1.md from v0.4.0..HEAD; run docs/recipes checks plus registry availability and release parity/prepublish gates; run branch_pr release candidate on dedicated worktree branch; open PR and wait for hosted checks; merge to main; verify hosted publish/tag/npm visibility or record exact blocker; clean stale merged task branches that are safe to remove. Out of scope: merging old backup/WIP local branches that are not proven release fixes."
   Verify Steps: |-
     1. Run `agentplane release plan --patch`. Expected: target is `0.4.1` / `v0.4.1` from current `v0.4.0` baseline.
     2. Write and validate `docs/releases/v0.4.1.md` from `v0.4.0..HEAD`. Expected: release notes cover the release range and `node scripts/check-release-notes.mjs --version 0.4.1` passes.
@@ -77,7 +77,7 @@ Prepare the v0.4.1 release candidate from current main, including release plan, 
 
 ## Plan
 
-Release plan: version=0.4.1, tag=v0.4.1, scope=patch release from current main after v0.4.0. Steps: generate release plan; write docs/releases/v0.4.1.md from v0.4.0..main; run registry availability and release parity/prepublish gates; run branch_pr release candidate on dedicated worktree branch; open PR and wait for hosted checks; merge to main; verify hosted publish/tag/npm visibility or record exact blocker; clean stale merged task branch and local merged branches that are safe to remove. Out of scope: merging old backup/WIP local branches that are not proven release fixes.
+Release plan: version=0.4.1, tag=v0.4.1, scope=patch release from current main after v0.4.0. Additional approved scope from user: before continuing the release, correct the public recipes information architecture so the top-level Recipes section describes implemented installable signed recipes, and move Claude/Codex/Cursor/Aider/GitHub Actions/branch_pr copy-paste pages into workflow/integration guides instead of presenting them as installable recipes. Steps: generate release plan; consolidate recipe docs from implemented code and catalog inventory; write docs/releases/v0.4.1.md from v0.4.0..HEAD; run docs/recipes checks plus registry availability and release parity/prepublish gates; run branch_pr release candidate on dedicated worktree branch; open PR and wait for hosted checks; merge to main; verify hosted publish/tag/npm visibility or record exact blocker; clean stale merged task branches that are safe to remove. Out of scope: merging old backup/WIP local branches that are not proven release fixes.
 
 ## Verify Steps
 

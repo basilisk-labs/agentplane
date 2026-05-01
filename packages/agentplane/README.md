@@ -130,16 +130,19 @@ boundaries.
 - Not a replacement for your editor.
 - Not a replacement for Claude Code, Codex, Cursor, or Aider.
 
-## Recipes
+## Workflow guides
 
-Start from the recipe that matches your current stack:
+Start from the guide that matches your current stack:
 
-- [AgentPlane + Claude Code](https://agentplane.org/docs/recipes/claude-code)
-- [AgentPlane + Codex](https://agentplane.org/docs/recipes/codex)
-- [AgentPlane + Cursor](https://agentplane.org/docs/recipes/cursor)
-- [AgentPlane + Aider](https://agentplane.org/docs/recipes/aider)
-- [AgentPlane + GitHub Actions](https://agentplane.org/docs/recipes/github-actions)
-- [AgentPlane + branch_pr workflow](https://agentplane.org/docs/recipes/branch-pr)
+- [AgentPlane + Claude Code](https://agentplane.org/docs/workflow-guides/claude-code)
+- [AgentPlane + Codex](https://agentplane.org/docs/workflow-guides/codex)
+- [AgentPlane + Cursor](https://agentplane.org/docs/workflow-guides/cursor)
+- [AgentPlane + Aider](https://agentplane.org/docs/workflow-guides/aider)
+- [AgentPlane + GitHub Actions](https://agentplane.org/docs/workflow-guides/github-actions)
+- [AgentPlane + branch_pr workflow](https://agentplane.org/docs/workflow-guides/branch-pr)
+
+Installable recipes are separate signed packages; the current catalog starts with
+[Code Map](https://agentplane.org/docs/recipes/code-map).
 
 ## Documentation
 

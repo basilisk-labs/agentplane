@@ -1,5 +1,6 @@
 export const githubUrl = "https://github.com/basilisk-labs/agentplane";
 export const docsUrl = "/docs/user/overview";
+export const workflowGuidesUrl = "/docs/workflow-guides";
 export const recipesUrl = "/docs/recipes";
 export const workflowDocsUrl = "/docs/user/workflow";
 export const quickstartUrl = "/docs/user/setup";
@@ -94,7 +95,13 @@ export const homepageContent = {
       },
       {
         title: "Use with your agent",
-        text: "Recipes for Claude Code, Codex, Cursor, Aider, and local coding agents.",
+        text: "Workflow guides for Claude Code, Codex, Cursor, Aider, GitHub Actions, and branch_pr.",
+        action: "Open guides",
+        to: workflowGuidesUrl,
+      },
+      {
+        title: "Install a recipe",
+        text: "Start with the signed Code Map recipe for lightweight repository mapping.",
         action: "Open recipes",
         to: recipesUrl,
       },

@@ -118,19 +118,20 @@ Fast local loops in the current checkout. Good for solo work, prototypes, and sh
 Structured per-task branch and PR-style handoff. Good for teams, stricter review, and integration
 boundaries.
 
-## Recipes
+## Workflow guides
 
-Start from the recipe that matches your current stack:
+Start from the guide that matches your current stack:
 
-- [AgentPlane + Claude Code](docs/recipes/claude-code.mdx)
-- [AgentPlane + Codex](docs/recipes/codex.mdx)
-- [AgentPlane + Cursor](docs/recipes/cursor.mdx)
-- [AgentPlane + Aider](docs/recipes/aider.mdx)
-- [AgentPlane + GitHub Actions](docs/recipes/github-actions.mdx)
-- [AgentPlane + branch_pr workflow](docs/recipes/branch-pr.mdx)
+- [AgentPlane + Claude Code](docs/workflow-guides/claude-code.mdx)
+- [AgentPlane + Codex](docs/workflow-guides/codex.mdx)
+- [AgentPlane + Cursor](docs/workflow-guides/cursor.mdx)
+- [AgentPlane + Aider](docs/workflow-guides/aider.mdx)
+- [AgentPlane + GitHub Actions](docs/workflow-guides/github-actions.mdx)
+- [AgentPlane + branch_pr workflow](docs/workflow-guides/branch-pr.mdx)
 
-Each recipe includes when to use it, commands, expected repo artifacts, limitations, and a
-copy-paste flow.
+Each guide includes when to use it, commands, expected repo artifacts, limitations, and a
+copy-paste flow. Installable recipes are separate signed packages; the current catalog starts with
+[Code Map](docs/recipes/code-map.mdx).
 
 ## Documentation
 

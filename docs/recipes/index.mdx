@@ -1,50 +1,83 @@
 ---
 title: "Recipes"
-description: "Copy-paste AgentPlane flows for Claude Code, Codex, Cursor, Aider, GitHub Actions, and branch_pr review."
+description: "Installable AgentPlane recipe packages from the signed catalog."
 ---
 
-AgentPlane recipes show how to wrap the tools you already use with repo-visible task state,
-verification, and closure.
+Recipes are optional AgentPlane extension packages.
 
-AgentPlane does not replace your coding agent. Your agent writes code. AgentPlane records the
-workflow around that code. Git remains the source of truth.
+They are different from workflow guides:
 
-## Choose a recipe
+- A recipe has a manifest, version, compatibility metadata, and package assets.
+- A remote recipe is discovered through the signed recipes index.
+- `recipes install` imports a package into the global cache.
+- `recipes add` vendors a cached package into the current project under `.agentplane/recipes/`.
+- Runtime reads project-local vendored recipes, not an agent chat transcript or editor state.
 
-- [AgentPlane + Claude Code](claude-code)
-- [AgentPlane + Codex](codex)
-- [AgentPlane + Cursor](cursor)
-- [AgentPlane + Aider](aider)
-- [AgentPlane + GitHub Actions](github-actions)
-- [AgentPlane + branch_pr workflow](branch-pr)
+For copy-paste flows with Claude Code, Codex, Cursor, Aider, GitHub Actions, or `branch_pr`, use
+[Workflow guides](../workflow-guides).
 
-## Baseline flow
+## Current catalog
 
-Use this shape unless a recipe says otherwise:
+The production catalog currently contains one recipe:
+
+1. [Code Map](code-map) (`code-map@0.1.0`)
+
+The catalog is sourced from the `agentplane-recipes` submodule and projected into
+`docs/recipes-inventory.json` by `node scripts/generate-recipes-inventory.mjs`.
+
+## Install and vendor
+
+List the signed remote catalog:
 
 ```bash
-npm i -g agentplane
-agentplane init
-agentplane quickstart
-agentplane task new --title "..." --description "..." --priority med --owner CODER --tag code
-agentplane task plan set <task-id> --text "..." --updated-by CODER
-agentplane task plan approve <task-id> --by ORCHESTRATOR
-agentplane task start-ready <task-id> --author CODER --body "Start: ..."
-# run your coding agent or edit manually
-agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok --by CODER --note "Verification passed"
-agentplane finish <task-id> --author CODER --body "Verified: ..." --result "..." --commit <git-rev>
+agentplane recipes list-remote --refresh --yes
 ```
 
-## Expected repo artifacts
+Install a recipe into the global cache:
 
-- `AGENTS.md` or `CLAUDE.md`
-- `.agentplane/config.json`
-- `.agentplane/tasks/<task-id>/README.md`
-- verification records in the task README
-- finish metadata tied to a Git revision
+```bash
+agentplane recipes install code-map --refresh --yes
+agentplane recipes list
+agentplane recipes info code-map
+```
 
-## Limits
+Vendor the cached recipe into a project:
 
-These recipes are workflow recipes, not hosted integrations. They do not grant AgentPlane remote
-access to your coding tools, editor, or GitHub account.
+```bash
+agentplane recipes add code-map
+agentplane recipes active
+agentplane recipes explain code-map
+```
+
+During project initialization, use `--recipes` only for recipes already available to the init flow:
+
+```bash
+agentplane init --recipes code-map
+```
+
+## Runtime model
+
+After vendoring, AgentPlane uses:
+
+- `.agentplane/recipes/registry.json` as the project authority;
+- `.agentplane/recipes/packages/<recipe-id>/` for the vendored package;
+- `.agentplane/generated/overlay-bundle.json` for derived overlay data;
+- `.agentplane/generated/recipe-assets.json` for recipe asset projection;
+- `.agentplane/generated/prompt-graph.json` for compiled prompt-module output.
+
+Deleting the global recipe cache does not remove recipes already vendored into a project.
+
+## Safety model
+
+Recipes are executable extensions. Review the manifest and package contents before installing.
+
+The default remote index is verified with AgentPlane's trusted recipes index keys before cached
+catalog data is trusted. See [Recipes safety](../developer/recipes-safety) and
+[ADR 0009](../adr/0009-recipes-index-signing-algorithm-policy) for signing and key handling.
+
+## Developer docs
+
+- [Recipes specification](../developer/recipes-spec)
+- [How recipes work](../developer/recipes-how-it-works)
+- [Recipes development](../developer/recipes-development)
+- [Recipes safety](../developer/recipes-safety)
