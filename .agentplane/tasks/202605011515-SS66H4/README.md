@@ -1,10 +1,10 @@
 ---
 id: "202605011515-SS66H4"
 title: "Add AgentPlane to Picrew awesome-agent-harness"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 1
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -13,20 +13,36 @@ tags:
   - "docs"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-05-01T15:53:22.519Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-01T15:58:10.152Z"
+  updated_by: "DOCS"
+  note: "Picrew upstream PR opened"
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "DOCS"
+    body: "Start: submitting AgentPlane to Picrew/awesome-agent-harness with harness-focused listing wording and upstream format verification."
+events:
+  -
+    type: "status"
+    at: "2026-05-01T15:53:57.281Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: submitting AgentPlane to Picrew/awesome-agent-harness with harness-focused listing wording and upstream format verification."
+  -
+    type: "verify"
+    at: "2026-05-01T15:58:10.152Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Picrew upstream PR opened"
 doc_version: 3
-doc_updated_at: "2026-05-01T15:15:09.839Z"
+doc_updated_at: "2026-05-01T15:58:10.162Z"
 doc_updated_by: "DOCS"
 description: "Submit a focused GitHub PR adding AgentPlane to Picrew/awesome-agent-harness in the most fitting harness implementation, guardrails, governance, or orchestration section after verifying the current README structure."
 sections:
@@ -38,15 +54,59 @@ sections:
     - In scope: Submit a focused GitHub PR adding AgentPlane to Picrew/awesome-agent-harness in the most fitting harness implementation, guardrails, governance, or orchestration section after verifying the current README structure.
     - Out of scope: unrelated refactors not required for "Add AgentPlane to Picrew awesome-agent-harness".
   Plan: |-
-    1. Implement the change for "Add AgentPlane to Picrew awesome-agent-harness".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+    1. Inspect Picrew/awesome-agent-harness current README, categories, ordering, and contribution rules.
+    2. Fork/edit the list in the structurally best section without creating a new category unless the list structure requires it.
+    3. Use harness-focused AgentPlane wording from docs/listing.md, including maintainer disclosure in the PR body.
+    4. Open a GitHub PR with gh, record the PR URL, and verify formatting/diff scope.
   Verify Steps: |-
-    1. Review the requested outcome for "Add AgentPlane to Picrew awesome-agent-harness". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Confirm Picrew/awesome-agent-harness accepts GitHub project entries and locate the best existing section for AgentPlane.
+    2. Confirm the PR changes only the list source files required by that repository.
+    3. Confirm the entry positions AgentPlane as a local-first Git-native CLI harness, not as another coding agent.
+    4. Confirm the GitHub PR URL is recorded in this task and the upstream branch is pushed.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-01T15:58:10.152Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Picrew upstream PR opened
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T15:53:57.281Z, excerpt_hash=sha256:96c0267f8187635c682ccd22a89747f7a0367c5145a2ddd067455cee1430f68e
+    
+    Details:
+    
+    Command: gh repo view Picrew/awesome-agent-harness --json nameWithOwner,defaultBranchRef,description,url,viewerPermission,isFork
+    Result: pass
+    Evidence: repo reachable; default branch main; list describes implementation-first agent harness engineering resources.
+    Scope: upstream repository fit.
+    Links: https://github.com/Picrew/awesome-agent-harness
+    
+    Command: python3 scripts/sync_github_metadata.py
+    Result: pass
+    Evidence: processed 164 entries; refreshed 139 GitHub metadata entries.
+    Scope: Picrew data-driven catalog metadata after adding AgentPlane.
+    Links: /tmp/agentplane-listing-prs/awesome-agent-harness-agentplane/data/projects.yaml
+    
+    Command: python3 scripts/render_readme.py
+    Result: pass
+    Evidence: rendered README.md and README_zh.md.
+    Scope: generated English and Chinese mirrors.
+    Links: README.md, README_zh.md
+    
+    Command: python3 scripts/verify_catalog.py
+    Result: pass
+    Evidence: verification passed; report 2026-05-01 wrote 164 total entries, 0 broken URLs.
+    Scope: catalog structure and reachable URLs.
+    Links: reports/verification/2026-05-01.md
+    
+    Command: git diff --check
+    Result: pass
+    Evidence: no whitespace errors.
+    Scope: Picrew PR diff.
+    Links: https://github.com/Picrew/awesome-agent-harness/pull/4
+    
+    Upstream PR: https://github.com/Picrew/awesome-agent-harness/pull/4
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -67,19 +127,63 @@ Submit a focused GitHub PR adding AgentPlane to Picrew/awesome-agent-harness in 
 
 ## Plan
 
-1. Implement the change for "Add AgentPlane to Picrew awesome-agent-harness".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Inspect Picrew/awesome-agent-harness current README, categories, ordering, and contribution rules.
+2. Fork/edit the list in the structurally best section without creating a new category unless the list structure requires it.
+3. Use harness-focused AgentPlane wording from docs/listing.md, including maintainer disclosure in the PR body.
+4. Open a GitHub PR with gh, record the PR URL, and verify formatting/diff scope.
 
 ## Verify Steps
 
-1. Review the requested outcome for "Add AgentPlane to Picrew awesome-agent-harness". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Confirm Picrew/awesome-agent-harness accepts GitHub project entries and locate the best existing section for AgentPlane.
+2. Confirm the PR changes only the list source files required by that repository.
+3. Confirm the entry positions AgentPlane as a local-first Git-native CLI harness, not as another coding agent.
+4. Confirm the GitHub PR URL is recorded in this task and the upstream branch is pushed.
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-01T15:58:10.152Z — VERIFY — ok
+
+By: DOCS
+
+Note: Picrew upstream PR opened
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T15:53:57.281Z, excerpt_hash=sha256:96c0267f8187635c682ccd22a89747f7a0367c5145a2ddd067455cee1430f68e
+
+Details:
+
+Command: gh repo view Picrew/awesome-agent-harness --json nameWithOwner,defaultBranchRef,description,url,viewerPermission,isFork
+Result: pass
+Evidence: repo reachable; default branch main; list describes implementation-first agent harness engineering resources.
+Scope: upstream repository fit.
+Links: https://github.com/Picrew/awesome-agent-harness
+
+Command: python3 scripts/sync_github_metadata.py
+Result: pass
+Evidence: processed 164 entries; refreshed 139 GitHub metadata entries.
+Scope: Picrew data-driven catalog metadata after adding AgentPlane.
+Links: /tmp/agentplane-listing-prs/awesome-agent-harness-agentplane/data/projects.yaml
+
+Command: python3 scripts/render_readme.py
+Result: pass
+Evidence: rendered README.md and README_zh.md.
+Scope: generated English and Chinese mirrors.
+Links: README.md, README_zh.md
+
+Command: python3 scripts/verify_catalog.py
+Result: pass
+Evidence: verification passed; report 2026-05-01 wrote 164 total entries, 0 broken URLs.
+Scope: catalog structure and reachable URLs.
+Links: reports/verification/2026-05-01.md
+
+Command: git diff --check
+Result: pass
+Evidence: no whitespace errors.
+Scope: Picrew PR diff.
+Links: https://github.com/Picrew/awesome-agent-harness/pull/4
+
+Upstream PR: https://github.com/Picrew/awesome-agent-harness/pull/4
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
