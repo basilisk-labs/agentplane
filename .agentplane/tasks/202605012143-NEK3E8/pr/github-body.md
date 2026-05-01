@@ -25,12 +25,14 @@ Update the Homebrew formula renderer and tap formula so fresh AgentPlane release
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T21:44:12.317Z
+- Updated: 2026-05-01T21:47:58.392Z
 - Branch: task/202605012143-NEK3E8/homebrew-formula-install
-- Head: f72a6c574a6f
+- Head: bb5048218199
 
 ```text
-No changes detected.
+ .../release/render-homebrew-formula-script.test.ts | 74 ++++++++++++++++++++++
+ scripts/render-homebrew-formula.mjs                | 15 +++--
+ 2 files changed, 85 insertions(+), 4 deletions(-)
 ```
 
 </details>
