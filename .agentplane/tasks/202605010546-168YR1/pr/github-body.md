@@ -24,34 +24,38 @@ Update the public landing page, README, and user-facing docs so AgentPlane is po
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T06:42:28.197Z
+- Updated: 2026-05-01T06:53:14.618Z
 - Branch: task/202605010546-168YR1/launch-landing-docs
-- Head: 84c7fd8d93a3
+- Head: 776c28b4f25b
 
 ```text
- DESIGN.md                               | 1075 +++++++++++--------------------
- README.md                               |  194 +++---
- docs/index.mdx                          |   14 +-
- docs/recipes/aider.mdx                  |   51 ++
- docs/recipes/branch-pr.mdx              |   57 ++
- docs/recipes/claude-code.mdx            |   49 ++
- docs/recipes/codex.mdx                  |   46 ++
- docs/recipes/cursor.mdx                 |   45 ++
- docs/recipes/github-actions.mdx         |   51 ++
- docs/recipes/index.mdx                  |   50 ++
- docs/user/overview.mdx                  |   61 +-
- docs/user/setup.mdx                     |   22 +-
- docs/user/website-ia.mdx                |   39 +-
- docs/user/workflow.mdx                  |   16 +-
- website/docusaurus.config.ts            |   47 +-
- website/sidebars.ts                     |   13 +
- website/src/css/custom.css              |  105 ++-
- website/src/data/homepage-content.ts    |  409 ++++++------
- website/src/pages/_home.module.css      |  849 +++++++++++-------------
- website/src/pages/blog/index.module.css |   64 +-
- website/src/pages/blog/index.tsx        |  164 ++---
- website/src/pages/index.tsx             |  461 ++++++-------
- 22 files changed, 1935 insertions(+), 1947 deletions(-)
+ .agentplane/policy/incidents.md                    |    3 +-
+ DESIGN.md                                          | 1075 +++++++-------------
+ README.md                                          |  194 ++--
+ docs/index.mdx                                     |   14 +-
+ docs/recipes/aider.mdx                             |   51 +
+ docs/recipes/branch-pr.mdx                         |   57 ++
+ docs/recipes/claude-code.mdx                       |   49 +
+ docs/recipes/codex.mdx                             |   46 +
+ docs/recipes/cursor.mdx                            |   45 +
+ docs/recipes/github-actions.mdx                    |   51 +
+ docs/recipes/index.mdx                             |   50 +
+ docs/user/overview.mdx                             |   61 +-
+ docs/user/setup.mdx                                |   22 +-
+ docs/user/website-ia.mdx                           |   39 +-
+ docs/user/workflow.mdx                             |   16 +-
+ packages/agentplane/assets/AGENTS.md               |    5 +-
+ packages/agentplane/assets/policy/incidents.md     |    3 +-
+ .../agentplane/src/runtime/prompt-modules/index.ts |    4 +-
+ website/docusaurus.config.ts                       |   47 +-
+ website/sidebars.ts                                |   13 +
+ website/src/css/custom.css                         |  105 +-
+ website/src/data/homepage-content.ts               |  409 ++++----
+ website/src/pages/_home.module.css                 |  849 +++++++---------
+ website/src/pages/blog/index.module.css            |   64 +-
+ website/src/pages/blog/index.tsx                   |  164 ++-
+ website/src/pages/index.tsx                        |  461 +++++----
+ 26 files changed, 1943 insertions(+), 1954 deletions(-)
 ```
 
 </details>
