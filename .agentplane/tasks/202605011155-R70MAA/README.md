@@ -1,10 +1,11 @@
 ---
 id: "202605011155-R70MAA"
 title: "AP-13 follow-up: Extract task query fixtures"
-status: "DOING"
+result_summary: "Merged via PR #682."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-01T11:59:28.607Z"
   updated_by: "CODER"
   note: "Verified AP-13 follow-up task query fixture extraction: helper diff applied on fresh branch and all impacted checks passed."
-commit: null
+commit:
+  hash: "a2af73abbea82b92989f0bea01ee6d8b6028217d"
+  message: "Merge pull request #682 from basilisk-labs/task/202605011155-R70MAA/task-query-fixtures-follow-up"
 comments:
   -
     author: "CODER"
     body: "Start: applying the AP-13 leftover task-query helper extraction on a fresh follow-up branch without carrying stale AP-13 task artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #682 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified AP-13 follow-up task query fixture extraction: helper diff applied on fresh branch and all impacted checks passed."
+  -
+    type: "status"
+    at: "2026-05-01T12:07:53.058Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #682 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T11:59:28.626Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T12:07:53.063Z"
+doc_updated_by: "INTEGRATOR"
 description: "Move repeated task run/query setup into @agentplane/testkit cli-core-tasks-query helpers after AP-13 split landed before the helper extraction."
 sections:
   Summary: |-
