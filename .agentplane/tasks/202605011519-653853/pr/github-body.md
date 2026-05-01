@@ -1,33 +1,23 @@
 ## Summary
 
-Add AgentPlane to sorrycc awesome-code-agents
-
-Submit a GitHub PR adding AgentPlane to sorrycc/awesome-code-agents under workflow, orchestration, or infrastructure rather than agent sections after checking current structure.
+Record the external listing PR for `sorrycc/awesome-code-agents`.
 
 ## Scope
 
-- In scope: Submit a GitHub PR adding AgentPlane to sorrycc/awesome-code-agents under workflow, orchestration, or infrastructure rather than agent sections after checking current structure.
-- Out of scope: unrelated refactors not required for "Add AgentPlane to sorrycc awesome-code-agents".
+- External PR: https://github.com/sorrycc/awesome-code-agents/pull/19
+- Category: `Specialized Tools` / `专用工具`
+- Entry wording: AgentPlane as a Git-native CLI workflow-control layer for auditable repo-local coding-agent work.
+- Internal change: task and PR artifacts for `202605011519-653853` only.
 
 ## Verification
 
-- State: ok
-- Note: External sorrycc PR opened and PR body formatting verified.
-- Full verification checklist lives in local review.md.
+- `git diff --check`: pass.
+- Entry presence confirmed in `README.md` and `README.zh-CN.md`.
+- `gh pr view 19 --repo sorrycc/awesome-code-agents --json body`: pass; body uses real Markdown line breaks from `--body-file`.
+- `gh pr checks 19 --repo sorrycc/awesome-code-agents`: no checks reported.
+- `node .agentplane/policy/check-routing.mjs`: pass.
+- `agentplane doctor`: pass.
 
 ## Handoff Notes
 
-- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
-
-<details>
-<summary>Raw evidence</summary>
-
-- Updated: 2026-05-01T17:22:47.890Z
-- Branch: task/202605011519-653853/sorrycc-awesome-code-agents
-- Head: 05ac0404d488
-
-```text
-No changes detected.
-```
-
-</details>
+- The target repo has no workflow/orchestration/infrastructure section, so `Specialized Tools` is the least misleading existing placement.
