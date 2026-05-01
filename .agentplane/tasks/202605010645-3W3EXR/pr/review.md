@@ -45,12 +45,14 @@ Run final integrated verification for the refactor wave and record any residual 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T12:57:52.297Z
+- Updated: 2026-05-01T13:13:19.701Z
 - Branch: task/202605010645-3W3EXR/final-verification
-- Head: cc489c7875d1
+- Head: 1fbe1c0a3eee
 
 ```text
-No changes detected.
+ packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts   | 2 +-
+ packages/agentplane/src/cli/run-cli/commands/init/write-agents.ts | 7 ++++++-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 ```
 
 </details>
