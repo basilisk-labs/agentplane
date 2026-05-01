@@ -1,10 +1,11 @@
 ---
 id: "202605010926-A9JHHM"
 title: "Add homepage hero motion and refresh Pages Actions"
-status: "DOING"
+result_summary: "Merged via PR #667."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-01T09:53:29.047Z"
   updated_by: "CODER"
   note: "Follow-up CI deprecation verification passed: dorny/paths-filter was updated from v3 to v4 across ci.yml, docs-ci.yml, and prepublish.yml after PR checks surfaced the remaining Node.js 20 annotation. Confirmed dorny/paths-filter@v4 action.yml uses node24; reran bun run workflows:lint successfully. This keeps the deprecation fix complete beyond the Pages actions."
-commit: null
+commit:
+  hash: "9460e5c655f407de6d60d6192ce5e0bed375603c"
+  message: "frontend: Add hero motion and refresh Actions (A9JHHM)"
 comments:
   -
     author: "CODER"
     body: "Start: Implement restrained homepage hero motion, restore rounded header/menu affordances, add local microinteractions, and refresh Pages workflow actions within the approved frontend/CI scope."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #667 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Follow-up CI deprecation verification passed: dorny/paths-filter was updated from v3 to v4 across ci.yml, docs-ci.yml, and prepublish.yml after PR checks surfaced the remaining Node.js 20 annotation. Confirmed dorny/paths-filter@v4 action.yml uses node24; reran bun run workflows:lint successfully. This keeps the deprecation fix complete beyond the Pages actions."
+  -
+    type: "status"
+    at: "2026-05-01T09:59:47.096Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #667 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T09:53:29.104Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T09:59:47.102Z"
+doc_updated_by: "INTEGRATOR"
 description: "Enhance the launch homepage with a restrained looping hero background animation, rounded navigation affordances, and microinteractions; update GitHub Pages workflow actions so deploys no longer warn about Node.js 20 action runtime deprecation."
 sections:
   Summary: |-
