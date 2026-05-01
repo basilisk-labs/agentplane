@@ -1,10 +1,11 @@
 ---
 id: "202605011519-653853"
 title: "Add AgentPlane to sorrycc awesome-code-agents"
-status: "DOING"
+result_summary: "Merged via PR #721."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-01T17:25:59.320Z"
   updated_by: "DOCS"
   note: "External sorrycc PR opened and PR body formatting verified."
-commit: null
+commit:
+  hash: "fc5bf9bfc9c27ae279a6e9f86723f14f14bcc13f"
+  message: "Merge pull request #721 from basilisk-labs/task/202605011519-653853/sorrycc-awesome-code-agents"
 comments:
   -
     author: "DOCS"
     body: "Start: inspect sorrycc list structure and submit AgentPlane only if it fits workflow, orchestration, or infrastructure placement rather than an agent entry."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #721 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,14 +47,21 @@ events:
     author: "DOCS"
     state: "ok"
     note: "External sorrycc PR opened and PR body formatting verified."
+  -
+    type: "status"
+    at: "2026-05-01T17:29:26.464Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #721 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T17:25:59.541Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-01T17:29:26.470Z"
+doc_updated_by: "INTEGRATOR"
 description: "Submit a GitHub PR adding AgentPlane to sorrycc/awesome-code-agents under workflow, orchestration, or infrastructure rather than agent sections after checking current structure."
 sections:
   Summary: |-
     Add AgentPlane to sorrycc awesome-code-agents
-
+    
     Submit a GitHub PR adding AgentPlane to sorrycc/awesome-code-agents under workflow, orchestration, or infrastructure rather than agent sections after checking current structure.
   Scope: |-
     - In scope: Submit a GitHub PR adding AgentPlane to sorrycc/awesome-code-agents under workflow, orchestration, or infrastructure rather than agent sections after checking current structure.
@@ -65,13 +78,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-01T17:25:59.320Z — VERIFY — ok
-
+    
     By: DOCS
-
+    
     Note: External sorrycc PR opened and PR body formatting verified.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T17:22:47.850Z, excerpt_hash=sha256:505479e32d2ab58252e49a1597924407d1b5525557210bd9f693cf1e42e2ec93
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
