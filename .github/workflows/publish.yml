@@ -22,6 +22,7 @@ permissions:
   actions: read
   contents: write
   id-token: write
+  packages: write
   pull-requests: write
 
 concurrency:
@@ -331,6 +332,35 @@ jobs:
       - name: Post-publish npm smoke
         id: post_publish_smoke
         run: bun run release:smoke:published
+      - name: Publish GHCR image
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node scripts/render-ghcr-image-metadata.mjs \
+            --manifest .agentplane/.release/publish/distribution/release-distribution.json \
+            --out .agentplane/.release/publish/ghcr
+          set -a
+          . .agentplane/.release/publish/ghcr/docker-build-args.env
+          set +a
+          echo "${GITHUB_TOKEN}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker build \
+            -f packages/agentplane/Dockerfile \
+            --build-arg "AGENTPLANE_VERSION=${AGENTPLANE_VERSION}" \
+            --build-arg "AGENTPLANE_TARBALL_FILE=${AGENTPLANE_TARBALL_FILE}" \
+            --build-arg "AGENTPLANE_TARBALL_SHA256_FILE=${AGENTPLANE_TARBALL_SHA256_FILE}" \
+            -t "${GHCR_VERSION_TAG}" \
+            -t "${GHCR_RELEASE_TAG}" \
+            -t "${GHCR_LATEST_TAG}" \
+            .
+          docker push "${GHCR_VERSION_TAG}"
+          docker push "${GHCR_RELEASE_TAG}"
+          docker push "${GHCR_LATEST_TAG}"
+          node scripts/render-ghcr-image-metadata.mjs \
+            --manifest .agentplane/.release/publish/distribution/release-distribution.json \
+            --out .agentplane/.release/publish/ghcr \
+            --status published
       - name: Push release tag
         id: push_tag
         if: steps.tag_state.outputs.tag_exists != 'true'
@@ -374,6 +404,13 @@ jobs:
         with:
           name: scoop-module
           path: .agentplane/.release/publish/scoop/
+          if-no-files-found: warn
+      - name: Upload ghcr-module artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ghcr-module
+          path: .agentplane/.release/publish/ghcr/
           if-no-files-found: warn
       - name: Write publish-result manifest
         if: always()

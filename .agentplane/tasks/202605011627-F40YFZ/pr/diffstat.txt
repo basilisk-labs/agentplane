@@ -1,0 +1,8 @@
+ .github/workflows/publish.yml                      |  37 ++++
+ package.json                                       |   1 +
+ packages/agentplane/Dockerfile                     |  17 ++
+ packages/agentplane/Dockerfile.dockerignore        |  10 +
+ .../release/publish-workflow-contract.test.ts      |   9 +
+ scripts/README.md                                  |   1 +
+ scripts/render-ghcr-image-metadata.mjs             | 203 +++++++++++++++++++++
+ 7 files changed, 278 insertions(+)
