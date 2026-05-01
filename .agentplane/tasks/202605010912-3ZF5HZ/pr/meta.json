@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T11:44:37Z",
   "base": "main",
   "branch": "task/202605010912-3ZF5HZ/npm-readme-metadata",
   "created_at": "2026-05-01T11:40:54.682Z",
-  "head_sha": "3ac839bd2a7f00e35b3cef0da02ea510cb330e8f",
+  "head_sha": "3d418da372354b6eeca81fbcea4dd5df4126c253",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "4ff9547b5a63f54c336c755d51228ec277e93967",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T11:44:37Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010912-3ZF5HZ",
-  "updated_at": "2026-05-01T11:40:54.682Z",
+  "updated_at": "2026-05-01T11:44:37Z",
   "verify": {
     "status": "skipped"
   }
