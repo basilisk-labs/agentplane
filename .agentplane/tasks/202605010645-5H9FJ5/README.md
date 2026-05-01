@@ -1,10 +1,11 @@
 ---
 id: "202605010645-5H9FJ5"
 title: "AP-15: Factor CI contract and release extras"
-status: "DOING"
+result_summary: "Merged via PR #686."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T12:36:21.782Z"
   updated_by: "CODER"
   note: "Verified CI script lane factoring and release contract guard."
-commit: null
+commit:
+  hash: "ef2ff9a92ce98ea766cfebf1995070e3e6f3ed1e"
+  message: "Merge pull request #686 from basilisk-labs/task/202605010645-5H9FJ5/ci-contract-release-extras"
 comments:
   -
     author: "CODER"
     body: "Start: refactoring package CI and release scripts into explicit contract, test, and release-extra lanes while preserving existing workflow behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #686 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified CI script lane factoring and release contract guard."
+  -
+    type: "status"
+    at: "2026-05-01T12:39:51.472Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #686 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T12:36:21.794Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T12:39:51.478Z"
+doc_updated_by: "INTEGRATOR"
 description: "Split package CI scripts into shared contract, test, and release-extra lanes to reduce ci/release duplication."
 sections:
   Summary: |-

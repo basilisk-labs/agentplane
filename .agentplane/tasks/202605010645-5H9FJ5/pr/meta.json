@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T12:39:08Z",
   "base": "main",
   "branch": "task/202605010645-5H9FJ5/ci-contract-release-extras",
   "created_at": "2026-05-01T12:23:40.715Z",
-  "head_sha": "287430946007f7c43bbe3140cbab9e16a523d936",
+  "head_sha": "4915b59743e600d0f1d28b9502320bebd763d877",
   "last_verified_at": "2026-05-01T12:36:21.782Z",
   "last_verified_sha": "c18e428de420df88bd3d33d9095448ccf9f826ba",
+  "merge_commit": "ef2ff9a92ce98ea766cfebf1995070e3e6f3ed1e",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T12:39:08Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010645-5H9FJ5",
-  "updated_at": "2026-05-01T12:36:39.904Z",
+  "updated_at": "2026-05-01T12:39:08Z",
   "verify": {
     "status": "pass"
   }
