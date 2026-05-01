@@ -45,12 +45,15 @@ Upgrade oversized test baseline enforcement to schema v2 budgets so current tota
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T06:55:38.929Z
+- Updated: 2026-05-01T06:59:59.506Z
 - Branch: task/202605010644-1YXBE7/oversized-test-guard
-- Head: dd38c6d5b384
+- Head: 1ccbf50eeb28
 
 ```text
-No changes detected.
+ .../src/cli/hotspot-report-script.test.ts          | 56 +++++++++++---
+ scripts/check-oversized-test-baseline.mjs          | 89 +++++++++++++++-------
+ scripts/oversized-test-baseline.json               | 16 ++--
+ 3 files changed, 117 insertions(+), 44 deletions(-)
 ```
 
 </details>

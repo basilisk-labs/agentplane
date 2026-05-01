@@ -1,0 +1,4 @@
+ .../src/cli/hotspot-report-script.test.ts          | 56 +++++++++++---
+ scripts/check-oversized-test-baseline.mjs          | 89 +++++++++++++++-------
+ scripts/oversized-test-baseline.json               | 16 ++--
+ 3 files changed, 117 insertions(+), 44 deletions(-)
