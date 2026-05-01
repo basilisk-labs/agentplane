@@ -42,5 +42,5 @@ agentplane finish <task-id> --author <ROLE> --body "Verified: release" --result 
 - MUST NOT bypass required notes validation.
 - MUST stop and request re-approval if release scope/tag/version changes.
 - In `direct`, `release apply --push --yes` is the publication route and may create/push the release tag.
-- In `branch_pr`, `release apply` is not the publication route; use `release candidate --push --yes`, merge the candidate into the protected base branch, then let hosted publish run from `main`.
+- In `branch_pr`, `release apply` is not the publication route; use `release candidate --push --yes`, merge the candidate into the protected base branch, then explicitly dispatch `Publish to npm` with the release commit `sha`.
 <!-- /ap:fragment -->

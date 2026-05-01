@@ -114,7 +114,7 @@ export const releaseCandidateSpec: CommandSpec<ReleaseApplyParsed> = {
   summary:
     "Prepare a branch_pr release candidate: bump versions, validate notes, commit, and optionally push the candidate branch.",
   description:
-    "Prepares a release candidate from a generated release plan on a dedicated non-base branch in branch_pr mode. This command creates the candidate commit but intentionally does not create or push the release tag; final publication remains gated on merge to the protected base branch and hosted publish from main.",
+    "Prepares a release candidate from a generated release plan on a dedicated non-base branch in branch_pr mode. This command creates the candidate commit but intentionally does not create or push the release tag; final publication remains gated on merge to the protected base branch and explicit Publish to npm workflow dispatch with the release commit sha.",
   options: releaseCandidateOptions,
   parse: releaseApplySpec.parse,
   validate: (p) => {

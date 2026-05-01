@@ -89,7 +89,7 @@ async function resolveDirectReleaseRoute(opts: {
     code: "E_VALIDATION",
     message:
       "release apply is not available in branch_pr mode.\n" +
-      "Prepare the release candidate on a dedicated branch, merge it into the protected base branch, then let hosted publish run from main.",
+      "Prepare the release candidate on a dedicated branch, merge it into the protected base branch, then explicitly dispatch Publish to npm with the release commit sha.",
     context: withDiagnosticContext(
       { command: "release apply" },
       {

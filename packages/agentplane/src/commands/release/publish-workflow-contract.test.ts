@@ -13,6 +13,9 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("- Core CI");
     expect(workflow).toContain("github.event.workflow_run.conclusion == 'success'");
     expect(workflow).toContain(
+      "if: github.event_name == 'workflow_dispatch' && needs.detect.outputs.should_publish == 'true'",
+    );
+    expect(workflow).toContain(
       "release_ready_artifact_name: ${{ steps.source.outputs.release_ready_artifact_name }}",
     );
     expect(workflow).toContain("actions/download-artifact@v8");
