@@ -50,6 +50,7 @@ export type PromptModuleDiagnosticSeverity = "error" | "warning";
 export type PromptModuleDiagnostic = {
   severity: PromptModuleDiagnosticSeverity;
   code:
+    | "compiler_context_value_discarded"
     | "duplicate_module"
     | "missing_dependency"
     | "missing_module"
@@ -69,6 +70,162 @@ export type PromptModuleCompiledGraph = PromptModuleGraph & {
   bindings: PromptModuleBinding[];
   ok: boolean;
 };
+
+const CONTROL_CHAR_RE = /[\u0000-\u001f\u007f]/u;
+const PROMPT_MODULE_WORKFLOW_MODE_VALUES = ["direct", "branch_pr"] as const;
+const PROMPT_MODULE_POLICY_GATEWAY_VALUES = ["codex", "claude"] as const;
+const PROMPT_MODULE_VALIDATOR_PHASE_VALUES = ["resolve", "compile", "emit", "doctor"] as const;
+
+function hasAllowedValue<TValue extends string>(
+  value: string,
+  allowedValues: readonly TValue[],
+): value is TValue {
+  return (allowedValues as readonly string[]).includes(value);
+}
+
+function contextValueLabel(value: unknown): string {
+  if (typeof value === "string") return JSON.stringify(value);
+  if (value === undefined) return "undefined";
+  return Object.prototype.toString.call(value);
+}
+
+function reportDiscardedContextValue(
+  diagnostics: PromptModuleDiagnostic[],
+  field: string,
+  value: unknown,
+  reason: string,
+): void {
+  diagnostics.push({
+    severity: "warning",
+    code: "compiler_context_value_discarded",
+    message: `Discarded compiler context value ${field}=${contextValueLabel(value)}: ${reason}.`,
+  });
+}
+
+function normalizeContextString<TValue extends string = string>(
+  value: unknown,
+  field: string,
+  diagnostics: PromptModuleDiagnostic[],
+  allowedValues?: readonly TValue[],
+): TValue | string | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value !== "string") {
+    reportDiscardedContextValue(diagnostics, field, value, "expected string");
+    return undefined;
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    reportDiscardedContextValue(diagnostics, field, value, "empty after trimming");
+    return undefined;
+  }
+  if (CONTROL_CHAR_RE.test(trimmed)) {
+    reportDiscardedContextValue(diagnostics, field, value, "contains control characters");
+    return undefined;
+  }
+  if (allowedValues && !hasAllowedValue(trimmed, allowedValues)) {
+    reportDiscardedContextValue(
+      diagnostics,
+      field,
+      value,
+      `expected one of ${allowedValues.join(", ")}`,
+    );
+    return undefined;
+  }
+  return trimmed;
+}
+
+function normalizeContextStringList<TValue extends string = string>(
+  value: unknown,
+  field: string,
+  diagnostics: PromptModuleDiagnostic[],
+  allowedValues?: readonly TValue[],
+): TValue[] | string[] | undefined {
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value)) {
+    reportDiscardedContextValue(diagnostics, field, value, "expected string array");
+    return undefined;
+  }
+
+  const normalized: string[] = [];
+  for (const [index, item] of value.entries()) {
+    const normalizedItem = normalizeContextString(
+      item,
+      `${field}[${index}]`,
+      diagnostics,
+      allowedValues,
+    );
+    if (normalizedItem !== undefined) normalized.push(normalizedItem);
+  }
+  return uniqueStrings(normalized);
+}
+
+export function normalizePromptModuleCompilerContext(
+  context: PromptModuleCompilerContext = {},
+  diagnostics: PromptModuleDiagnostic[] = [],
+): PromptModuleCompilerContext {
+  const raw = context as Record<string, unknown>;
+  const normalized: PromptModuleCompilerContext = {};
+
+  const workflowMode = normalizeContextString(
+    raw.workflow_mode,
+    "workflow_mode",
+    diagnostics,
+    PROMPT_MODULE_WORKFLOW_MODE_VALUES,
+  );
+  if (workflowMode !== undefined) {
+    normalized.workflow_mode = workflowMode as PromptModuleWorkflowMode;
+  }
+
+  const policyGateway = normalizeContextString(
+    raw.policy_gateway,
+    "policy_gateway",
+    diagnostics,
+    PROMPT_MODULE_POLICY_GATEWAY_VALUES,
+  );
+  if (policyGateway !== undefined) {
+    normalized.policy_gateway = policyGateway as PromptModulePolicyGateway;
+  }
+
+  const command = normalizeContextString(raw.command, "command", diagnostics);
+  if (command !== undefined) normalized.command = command;
+
+  const repoType = normalizeContextString(raw.repo_type, "repo_type", diagnostics);
+  if (repoType !== undefined) normalized.repo_type = repoType;
+
+  const roles = normalizeContextStringList(raw.roles, "roles", diagnostics);
+  if (roles !== undefined) normalized.roles = roles;
+
+  const commands = normalizeContextStringList(raw.commands, "commands", diagnostics);
+  if (commands !== undefined) normalized.commands = commands;
+
+  const taskTags = normalizeContextStringList(raw.task_tags, "task_tags", diagnostics);
+  if (taskTags !== undefined) normalized.task_tags = taskTags;
+
+  const repoTypes = normalizeContextStringList(raw.repo_types, "repo_types", diagnostics);
+  if (repoTypes !== undefined) normalized.repo_types = repoTypes;
+
+  const recipeIds = normalizeContextStringList(raw.recipe_ids, "recipe_ids", diagnostics);
+  if (recipeIds !== undefined) normalized.recipe_ids = recipeIds;
+
+  const availableCommands = normalizeContextStringList(
+    raw.available_commands,
+    "available_commands",
+    diagnostics,
+  );
+  if (availableCommands !== undefined) normalized.available_commands = availableCommands;
+
+  const validatorPhases = normalizeContextStringList(
+    raw.validator_phases,
+    "validator_phases",
+    diagnostics,
+    PROMPT_MODULE_VALIDATOR_PHASE_VALUES,
+  );
+  if (validatorPhases !== undefined) {
+    normalized.validator_phases = validatorPhases as PromptModuleValidatorPhase[];
+  }
+
+  return normalized;
+}
 
 function contextCommands(context: PromptModuleCompilerContext): string[] {
   return uniqueStrings([context.command ?? "", ...(context.commands ?? [])]);
@@ -467,8 +624,8 @@ export function compilePromptModuleGraph(opts: {
   mutation_sets?: PromptModuleMutationSet[];
   validators?: PromptModuleValidator[];
 }): PromptModuleCompiledGraph {
-  const context = opts.context ?? {};
   const diagnostics: PromptModuleDiagnostic[] = [];
+  const context = normalizePromptModuleCompilerContext(opts.context ?? {}, diagnostics);
   let sequence = 0;
   const nextSequence = () => sequence++;
   const nodes: WorkingPromptModuleNode[] = opts.graph.nodes

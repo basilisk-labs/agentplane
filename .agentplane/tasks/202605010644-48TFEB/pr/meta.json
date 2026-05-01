@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605010644-48TFEB/prompt-context-normalizer",
+  "created_at": "2026-05-01T07:15:10.152Z",
+  "head_sha": "678f857593146d1d5ecbb6f90831dce5d847842c",
+  "last_verified_at": "2026-05-01T07:19:03.366Z",
+  "last_verified_sha": "678f857593146d1d5ecbb6f90831dce5d847842c",
+  "schema_version": 1,
+  "task_id": "202605010644-48TFEB",
+  "updated_at": "2026-05-01T07:15:10.152Z",
+  "verify": {
+    "status": "pass"
+  }
+}
