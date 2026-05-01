@@ -19,6 +19,10 @@ export const CHECK_REGISTRY = {
     description: "Validate generated schema files.",
     command: ["bun", "run", "schemas:check"],
   },
+  "spec:examples": {
+    description: "Validate spec examples against generated schemas.",
+    command: ["bun", "run", "spec:examples:check"],
+  },
   "vitest:projects": {
     description: "Validate Vitest project and route registry parity.",
     command: ["bun", "run", "vitest:projects:check"],
