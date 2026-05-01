@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T16:27:07Z",
   "base": "main",
   "branch": "task/202605011618-D5MGX8/refine-listing-wording",
   "created_at": "2026-05-01T16:19:51.694Z",
-  "head_sha": "cb029c3d084214ecfb5dcf64c18f9651a4c30c6e",
+  "head_sha": "2a0cb11df3d92e2e4970c0e582fd86e7a954d060",
   "last_verified_at": "2026-05-01T16:21:04.383Z",
   "last_verified_sha": "1b5d53040703929ab5e5f8e2f2982ba16c0f87d4",
+  "merge_commit": "9071ca8111c2fd86c9c11b8ad27ecb29e2415add",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T16:27:07Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605011618-D5MGX8",
-  "updated_at": "2026-05-01T16:22:06.889Z",
+  "updated_at": "2026-05-01T16:27:07Z",
   "verify": {
     "status": "pass"
   }
