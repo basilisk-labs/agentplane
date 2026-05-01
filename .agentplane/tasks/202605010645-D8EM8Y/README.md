@@ -1,10 +1,11 @@
 ---
 id: "202605010645-D8EM8Y"
 title: "AP-07: Introduce unified test route registry"
-status: "DOING"
+result_summary: "Merged via PR #659."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T09:02:23.263Z"
   updated_by: "CODER"
   note: "Verified: unified test route registry drives Vitest projects, aggregate suites, local CI selector, and routing checks with 331 tests / 10 primary routes."
-commit: null
+commit:
+  hash: "b9e4fd4c9a6f59990086d0c836fdecce83d10c59"
+  message: "Merge pull request #659 from basilisk-labs/task/202605010645-D8EM8Y/test-route-registry"
 comments:
   -
     author: "CODER"
     body: "Start: route Vitest workspace projects, suite aggregation, local CI selection, and routing checks through one test route registry."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #659 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: unified test route registry drives Vitest projects, aggregate suites, local CI selector, and routing checks with 331 tests / 10 primary routes."
+  -
+    type: "status"
+    at: "2026-05-01T09:04:44.858Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #659 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T09:02:23.267Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T09:04:44.864Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make Vitest workspace, aggregate suites, local CI selector, and routing checks consume one route registry."
 sections:
   Summary: |-
