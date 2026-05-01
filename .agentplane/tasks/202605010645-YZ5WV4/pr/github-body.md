@@ -22,12 +22,16 @@ Add scripts/run-checks.mjs with a registry of pure checks while preserving exist
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T12:09:42.714Z
+- Updated: 2026-05-01T12:16:00.929Z
 - Branch: task/202605010645-YZ5WV4/modular-check-runner
-- Head: 71b5c456eda7
+- Head: 4af8dc553b5b
 
 ```text
-No changes detected.
+ package.json                   |  1 +
+ scripts/README.md              |  2 +
+ scripts/lib/check-registry.mjs | 47 ++++++++++++++++++++++
+ scripts/run-checks.mjs         | 91 ++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 141 insertions(+)
 ```
 
 </details>
