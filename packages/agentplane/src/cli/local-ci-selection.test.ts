@@ -202,7 +202,16 @@ describe("local CI fast selection", () => {
     expect(plan.reason).toBe("cli_core_execution_paths_only");
     expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts");
     expect(plan.testFiles).toContain(
-      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.validation.test.ts",
     );
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts",
@@ -232,14 +241,14 @@ describe("local CI fast selection", () => {
     const plan = selectFastCiPlan([
       ".agentplane/tasks/202604130750-E2J835/README.md",
       ".agentplane/tasks/202604130750-E2J835/pr/meta.json",
-      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts",
       "packages/agentplane/src/commands/pr/internal/sync.ts",
     ]);
     expect(plan.kind).toBe("targeted");
     expect(plan.bucket).toBe("pr");
     expect(plan.reason).toBe("pr_paths_only");
     expect(plan.lintTargets).toEqual([
-      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts",
       "packages/agentplane/src/commands/pr/internal/sync.ts",
     ]);
   });

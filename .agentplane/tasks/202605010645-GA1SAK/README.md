@@ -1,10 +1,10 @@
 ---
 id: "202605010645-GA1SAK"
 title: "AP-12: Split PR open flow tests"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -14,19 +14,36 @@ tags:
 verify:
   - "bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow*.test.ts"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-05-01T11:01:40.956Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
-events: []
+  state: "ok"
+  updated_at: "2026-05-01T11:17:56.666Z"
+  updated_by: "CODER"
+  note: "Focused PR-open split verification passed: PR-flow suites, routing/inventory checks, oversized baseline, typecheck, lint, formatting, bootstrap, doctor, and policy routing were green."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: splitting the PR open flow test suite into artifact, git, validation, and network-gate files with shared testkit helpers and focused routing checks."
+events:
+  -
+    type: "status"
+    at: "2026-05-01T11:02:36.717Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: splitting the PR open flow test suite into artifact, git, validation, and network-gate files with shared testkit helpers and focused routing checks."
+  -
+    type: "verify"
+    at: "2026-05-01T11:17:56.666Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused PR-open split verification passed: PR-flow suites, routing/inventory checks, oversized baseline, typecheck, lint, formatting, bootstrap, doctor, and policy routing were green."
 doc_version: 3
-doc_updated_at: "2026-05-01T06:45:17.366Z"
+doc_updated_at: "2026-05-01T11:17:56.729Z"
 doc_updated_by: "CODER"
 description: "Split PR open flow tests by artifact, git, validation, and network gates using cli-core-pr-flow testkit helpers."
 sections:
@@ -38,15 +55,67 @@ sections:
     - In scope: Split PR open flow tests by artifact, git, validation, and network gates using cli-core-pr-flow testkit helpers.
     - Out of scope: unrelated refactors not required for "AP-12: Split PR open flow tests".
   Plan: |-
-    1. Implement the change for "AP-12: Split PR open flow tests".
-    2. Run required checks and capture verification evidence.
-    3. Finalize task findings and finish with traceable commit metadata.
+    1. Inspect the existing PR-open flow test, local-ci/test-inventory route metadata, and current testkit exports.
+    2. Extract reusable PR-flow fixtures into @agentplane/testkit private helpers if the existing test duplicates setup.
+    3. Split run-cli.core.pr-flow.pr-open.test.ts into artifact, git, validation, and network-gate focused test files without changing runtime behavior.
+    4. Update test routing metadata and oversized baseline only to reflect the split.
+    5. Run focused PR-flow tests, routing/inventory checks, oversized guard, typecheck, lint:core, formatting/diff checks, and final branch_pr checks.
   Verify Steps: |-
     1. Run `bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow*.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.
     2. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
     3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-01T11:17:56.666Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused PR-open split verification passed: PR-flow suites, routing/inventory checks, oversized baseline, typecheck, lint, formatting, bootstrap, doctor, and policy routing were green.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T11:02:36.717Z, excerpt_hash=sha256:dc53b9276e6a821c50325c73779195f83ba5e1118418b7f0c24e43317ec32531
+    
+    Details:
+    
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow*.test.ts --testTimeout 180000 --hookTimeout 180000
+    Result: pass
+    Evidence: 15 files, 116 tests passed after splitting pr-open into artifacts/git/network/validation suites.
+    Scope: PR-flow CLI behavior and new split test files.
+    
+    Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/cli/test-inventory.test.ts packages/agentplane/src/cli/test-routing-check.test.ts --testTimeout 60000 --hookTimeout 60000
+    Result: pass
+    Evidence: 3 files, 47 tests passed.
+    Scope: local CI selection, inventory, and routing check coverage.
+    
+    Command: node scripts/check-oversized-test-baseline.mjs --threshold-lines 1000
+    Result: pass
+    Evidence: Oversized test baseline OK (11 entries, 12176 total lines, threshold>1000).
+    Scope: oversized test baseline budget.
+    
+    Command: node scripts/check-vitest-projects.mjs
+    Result: pass
+    Evidence: vitest workspace projects OK; test routing OK (345 tests, 10 primary routes).
+    Scope: Vitest workspace and route registry parity.
+    
+    Command: bun run typecheck
+    Result: pass
+    Evidence: tsc -b exited 0.
+    Scope: TypeScript project references.
+    
+    Command: bun run lint:core
+    Result: pass
+    Evidence: eslint packages scripts eslint.config.cjs vitest.config.ts exited 0.
+    Scope: core lint surface.
+    
+    Command: bunx prettier --check <touched files> && git diff --check
+    Result: pass
+    Evidence: Prettier reported all matched files use code style; git diff --check exited 0.
+    Scope: touched file formatting and whitespace.
+    
+    Command: bun run framework:dev:bootstrap; node packages/agentplane/bin/agentplane.js doctor; node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: framework dev runtime ready; doctor OK with 0 errors/0 warnings; policy routing OK.
+    Scope: repo-local runtime and policy routing.
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -67,9 +136,11 @@ Split PR open flow tests by artifact, git, validation, and network gates using c
 
 ## Plan
 
-1. Implement the change for "AP-12: Split PR open flow tests".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Inspect the existing PR-open flow test, local-ci/test-inventory route metadata, and current testkit exports.
+2. Extract reusable PR-flow fixtures into @agentplane/testkit private helpers if the existing test duplicates setup.
+3. Split run-cli.core.pr-flow.pr-open.test.ts into artifact, git, validation, and network-gate focused test files without changing runtime behavior.
+4. Update test routing metadata and oversized baseline only to reflect the split.
+5. Run focused PR-flow tests, routing/inventory checks, oversized guard, typecheck, lint:core, formatting/diff checks, and final branch_pr checks.
 
 ## Verify Steps
 
@@ -80,6 +151,56 @@ Split PR open flow tests by artifact, git, validation, and network gates using c
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-01T11:17:56.666Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused PR-open split verification passed: PR-flow suites, routing/inventory checks, oversized baseline, typecheck, lint, formatting, bootstrap, doctor, and policy routing were green.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T11:02:36.717Z, excerpt_hash=sha256:dc53b9276e6a821c50325c73779195f83ba5e1118418b7f0c24e43317ec32531
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow*.test.ts --testTimeout 180000 --hookTimeout 180000
+Result: pass
+Evidence: 15 files, 116 tests passed after splitting pr-open into artifacts/git/network/validation suites.
+Scope: PR-flow CLI behavior and new split test files.
+
+Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/cli/test-inventory.test.ts packages/agentplane/src/cli/test-routing-check.test.ts --testTimeout 60000 --hookTimeout 60000
+Result: pass
+Evidence: 3 files, 47 tests passed.
+Scope: local CI selection, inventory, and routing check coverage.
+
+Command: node scripts/check-oversized-test-baseline.mjs --threshold-lines 1000
+Result: pass
+Evidence: Oversized test baseline OK (11 entries, 12176 total lines, threshold>1000).
+Scope: oversized test baseline budget.
+
+Command: node scripts/check-vitest-projects.mjs
+Result: pass
+Evidence: vitest workspace projects OK; test routing OK (345 tests, 10 primary routes).
+Scope: Vitest workspace and route registry parity.
+
+Command: bun run typecheck
+Result: pass
+Evidence: tsc -b exited 0.
+Scope: TypeScript project references.
+
+Command: bun run lint:core
+Result: pass
+Evidence: eslint packages scripts eslint.config.cjs vitest.config.ts exited 0.
+Scope: core lint surface.
+
+Command: bunx prettier --check <touched files> && git diff --check
+Result: pass
+Evidence: Prettier reported all matched files use code style; git diff --check exited 0.
+Scope: touched file formatting and whitespace.
+
+Command: bun run framework:dev:bootstrap; node packages/agentplane/bin/agentplane.js doctor; node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: framework dev runtime ready; doctor OK with 0 errors/0 warnings; policy routing OK.
+Scope: repo-local runtime and policy routing.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

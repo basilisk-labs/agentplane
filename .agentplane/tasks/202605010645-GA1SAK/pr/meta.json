@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605010645-GA1SAK/pr-open-flow-test-split",
+  "created_at": "2026-05-01T11:02:36.968Z",
+  "head_sha": "c389f1be97348757656f9cfbc6c0120c6e7bd331",
+  "last_verified_at": "2026-05-01T11:17:56.666Z",
+  "last_verified_sha": "c389f1be97348757656f9cfbc6c0120c6e7bd331",
+  "schema_version": 1,
+  "task_id": "202605010645-GA1SAK",
+  "updated_at": "2026-05-01T11:02:36.968Z",
+  "verify": {
+    "status": "pass"
+  }
+}
