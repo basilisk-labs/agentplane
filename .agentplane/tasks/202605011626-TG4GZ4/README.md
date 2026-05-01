@@ -1,10 +1,11 @@
 ---
 id: "202605011626-TG4GZ4"
 title: "Add Homebrew tap publication module"
-status: "DOING"
+result_summary: "Merged via PR #715."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-05-01T17:13:07.600Z"
   updated_by: "CODER"
   note: "Homebrew tap module verified: release:homebrew:check passed; release:distribution:check passed; workflows:command-check passed; docs:scripts:check passed; publish workflow contract test passed; lint:core passed; targeted Prettier check passed."
-commit: null
+commit:
+  hash: "c99e72c28aa19a98f90b7cf64fe0c29823916c11"
+  message: "Merge pull request #715 from basilisk-labs/task/202605011626-TG4GZ4/homebrew-tap-publication"
 comments:
   -
     author: "CODER"
     body: "Start: add Homebrew tap publication rendering and credentials-gated release workflow evidence from release-distribution.json."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #715 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Homebrew tap module verified: release:homebrew:check passed; release:distribution:check passed; workflows:command-check passed; docs:scripts:check passed; publish workflow contract test passed; lint:core passed; targeted Prettier check passed."
+  -
+    type: "status"
+    at: "2026-05-01T17:16:14.453Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #715 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T17:13:07.603Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T17:16:14.459Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a release module that can update an AgentPlane Homebrew tap formula from the published npm tarball, checksum, and release manifest without blocking unrelated channels."
 sections:
   Summary: |-
