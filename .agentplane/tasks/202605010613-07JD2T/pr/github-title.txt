@@ -1,0 +1,1 @@
+Fix recipes catalog compatibility (07JD2T)
