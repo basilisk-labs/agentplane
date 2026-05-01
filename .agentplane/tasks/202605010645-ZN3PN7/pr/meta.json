@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T12:54:51Z",
   "base": "main",
   "branch": "task/202605010645-ZN3PN7/spec-examples-validation",
   "created_at": "2026-05-01T12:45:51.855Z",
-  "head_sha": "fbcd3c0801030e3c8167869411b5f8c71179aa94",
+  "head_sha": "f5515e49122fe1b3f7b34ce1bbd6877a8297a82b",
   "last_verified_at": "2026-05-01T12:52:01.818Z",
   "last_verified_sha": "13b2483cc2600239649cd7641a1b58a4a7e1879c",
+  "merge_commit": "88df17c529aac0f80fecff477ab5beec4ef03e10",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T12:54:51Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010645-ZN3PN7",
-  "updated_at": "2026-05-01T12:52:20.745Z",
+  "updated_at": "2026-05-01T12:54:51Z",
   "verify": {
     "status": "pass"
   }
