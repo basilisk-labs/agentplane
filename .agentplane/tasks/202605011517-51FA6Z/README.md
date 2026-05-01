@@ -1,10 +1,11 @@
 ---
 id: "202605011517-51FA6Z"
 title: "Prepare AgentPlane listing submission profile"
-status: "DOING"
+result_summary: "Merged via PR #692."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-01T15:45:46.547Z"
   updated_by: "DOCS"
   note: "docs listing profile verified; doctor passed after longer runtime"
-commit: null
+commit:
+  hash: "2657343f96f6dc5e08d69196cef4268f9ac0dfe8"
+  message: "Merge pull request #692 from basilisk-labs/task/202605011517-51FA6Z/listing-submission-profile"
 comments:
   -
     author: "DOCS"
     body: "Start: preparing listing-only discoverability profile in a dedicated branch_pr worktree; skill artifacts remain excluded by user request."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #692 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "docs listing profile verified; doctor passed after longer runtime"
+  -
+    type: "status"
+    at: "2026-05-01T15:50:52.992Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #692 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T15:45:46.580Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-01T15:50:52.999Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prepare AgentPlane for curated-list submissions by updating GitHub topics and adding docs/listing.md snippets. Excludes agent-skill directory work by user request."
 sections:
   Summary: "Prepare AgentPlane for curated-list submissions by tightening repository discovery metadata and adding reusable listing snippets. Agent-skill directory work is explicitly out of scope by user request."
