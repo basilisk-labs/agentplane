@@ -1,0 +1,1 @@
+docs: Add AgentPlane to brandonhimpfen awesome-ai-coding-agents (PH7024)

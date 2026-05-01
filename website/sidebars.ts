@@ -103,6 +103,7 @@ const sidebars: SidebarsConfig = {
         "user/agent-discovery",
         "user/indexing-and-webmaster-operations",
         "user/website-ia",
+        "listing",
         "user/cli-reference.generated",
         "reference/generated-reference",
       ],

@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T16:44:01Z",
+  "base": "main",
+  "branch": "task/202605011515-NKWCVZ/ai-boost-awesome-harness-engineering",
+  "created_at": "2026-05-01T16:37:00.429Z",
+  "head_sha": "20546afad1070354496e52ec814d3d5a9f3e96a6",
+  "last_verified_at": "2026-05-01T16:40:36.665Z",
+  "last_verified_sha": "3d56cc31a62e08bda955e9e58321ace2c9817182",
+  "merge_commit": "9e6a4bdaa1b04369ec3d340d7abef775a2d63294",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T16:44:01Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605011515-NKWCVZ",
+  "updated_at": "2026-05-01T16:44:01Z",
+  "verify": {
+    "status": "pass"
+  }
+}

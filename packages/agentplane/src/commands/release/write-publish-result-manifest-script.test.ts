@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -185,5 +185,104 @@ describe("manifest script publish-result command", () => {
     expect(payload.checks.npmSmoke.outcome).toBe("skipped");
     expect(payload.checks.githubRelease.created).toBe(false);
     expect(payload.checks.githubRelease.outcome).toBe("skipped");
+  });
+
+  it("embeds release distribution evidence when a distribution manifest is provided", async () => {
+    const root = await makeRoot();
+    const distributionPath = path.join(
+      root,
+      ".agentplane",
+      ".release",
+      "publish",
+      "distribution",
+      "release-distribution.json",
+    );
+    await mkdir(path.dirname(distributionPath), { recursive: true });
+    await writeFile(
+      distributionPath,
+      `${JSON.stringify(
+        {
+          schemaVersion: 1,
+          manifestKind: "release_distribution",
+          version: "0.3.6",
+          tag: "v0.3.6",
+          sha: "abc123",
+          releaseAssets: [
+            {
+              name: "install.sh",
+              kind: "installer",
+              sha256: "a".repeat(64),
+              url: "https://github.com/basilisk-labs/agentplane/releases/download/v0.3.6/install.sh",
+            },
+          ],
+          channels: {
+            homebrewTap: {
+              status: "skipped_missing_credentials",
+              requiredSecret: "HOMEBREW_TAP_TOKEN",
+            },
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    const result = await runScript(root, [
+      "--json",
+      "--sha",
+      "abc123",
+      "--version",
+      "0.3.6",
+      "--tag",
+      "v0.3.6",
+      "--distribution-manifest",
+      distributionPath,
+      "--job-status",
+      "success",
+      "--core-prepublished",
+      "true",
+      "--recipes-prepublished",
+      "true",
+      "--cli-prepublished",
+      "true",
+      "--core-outcome",
+      "skipped",
+      "--recipes-outcome",
+      "skipped",
+      "--cli-outcome",
+      "skipped",
+      "--smoke-outcome",
+      "success",
+      "--tag-exists",
+      "true",
+      "--tag-outcome",
+      "skipped",
+      "--release-outcome",
+      "success",
+    ]);
+
+    const payload = JSON.parse(String(result.stdout ?? "")) as {
+      success: boolean;
+      distribution: {
+        requested: boolean;
+        loaded: boolean;
+        manifest: {
+          releaseAssets: { name: string }[];
+          channels: { homebrewTap: { status: string; requiredSecret: string } };
+        };
+      };
+    };
+
+    expect(payload.success).toBe(true);
+    expect(payload.distribution.requested).toBe(true);
+    expect(payload.distribution.loaded).toBe(true);
+    expect(payload.distribution.manifest.releaseAssets[0]?.name).toBe("install.sh");
+    expect(payload.distribution.manifest.channels.homebrewTap.status).toBe(
+      "skipped_missing_credentials",
+    );
+    expect(payload.distribution.manifest.channels.homebrewTap.requiredSecret).toBe(
+      "HOMEBREW_TAP_TOKEN",
+    );
   });
 });

@@ -1,0 +1,6 @@
+ .github/workflows/publish.yml                      |  14 ++
+ package.json                                       |   1 +
+ .../release/publish-workflow-contract.test.ts      |   4 +
+ scripts/README.md                                  |   1 +
+ scripts/render-homebrew-formula.mjs                | 154 +++++++++++++++++++++
+ 5 files changed, 174 insertions(+)

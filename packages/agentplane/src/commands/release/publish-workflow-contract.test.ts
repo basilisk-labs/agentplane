@@ -30,6 +30,23 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("node scripts/manifest.mjs publish-result");
     expect(workflow).toContain("name: publish-result");
     expect(workflow).toContain("path: .agentplane/.release/publish/publish-result.json");
+    expect(workflow).toContain("Generate release distribution assets");
+    expect(workflow).toContain("node scripts/generate-release-distribution.mjs");
+    expect(workflow).toContain("Render Homebrew tap formula");
+    expect(workflow).toContain("node scripts/render-homebrew-formula.mjs");
+    expect(workflow).toContain(
+      ".agentplane/.release/publish/distribution/release-distribution.json",
+    );
+    expect(workflow).toContain(".agentplane/.release/publish/distribution/install.sh");
+    expect(workflow).toContain(".agentplane/.release/publish/distribution/install.ps1");
+    expect(workflow).toContain(".agentplane/.release/publish/distribution/SHA256SUMS");
+    expect(workflow).toContain("name: Upload release-distribution artifact");
+    expect(workflow).toContain("name: release-distribution");
+    expect(workflow).toContain("name: homebrew-module");
+    expect(workflow).toContain("path: .agentplane/.release/publish/homebrew/");
+    expect(workflow).toContain(
+      "--distribution-manifest .agentplane/.release/publish/distribution/release-distribution.json",
+    );
     expect(workflow).toContain("if: always()");
     expect(workflow).toContain("pull-requests: write");
     expect(workflow).toContain("Prepare release task evidence");
