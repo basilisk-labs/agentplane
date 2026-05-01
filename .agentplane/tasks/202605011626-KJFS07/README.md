@@ -1,10 +1,11 @@
 ---
 id: "202605011626-KJFS07"
 title: "Add Scoop bucket publication module"
-status: "DOING"
+result_summary: "Merged via PR #719."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-05-01T17:22:11.081Z"
   updated_by: "CODER"
   note: "Scoop bucket module renders agentplane.json and scoop-result.json from release-distribution.json; publish workflow uploads scoop-module artifact and contract test covers the route."
-commit: null
+commit:
+  hash: "3bffd65a076178e7b344a8c67f85f51804548174"
+  message: "Merge pull request #719 from basilisk-labs/task/202605011626-KJFS07/scoop-bucket-publication"
 comments:
   -
     author: "CODER"
     body: "Start: add Scoop bucket manifest rendering and credentials-gated release workflow evidence from release-distribution.json."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #719 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Scoop bucket module renders agentplane.json and scoop-result.json from release-distribution.json; publish workflow uploads scoop-module artifact and contract test covers the route."
+  -
+    type: "status"
+    at: "2026-05-01T17:25:07.552Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #719 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T17:22:11.088Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T17:25:07.558Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a release module that can update an AgentPlane Scoop manifest from the published npm tarball, checksum, and release manifest while keeping Windows publication recoverable."
 sections:
   Summary: |-
