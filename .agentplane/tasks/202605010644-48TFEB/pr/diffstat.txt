@@ -1,0 +1,4 @@
+ .../src/runtime/prompt-modules/compiler.test.ts    | 101 +++++++++++++
+ .../src/runtime/prompt-modules/compiler.ts         | 159 ++++++++++++++++++++-
+ .../agentplane/src/runtime/prompt-modules/index.ts |   5 +-
+ 3 files changed, 261 insertions(+), 4 deletions(-)

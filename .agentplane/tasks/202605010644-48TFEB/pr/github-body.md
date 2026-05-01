@@ -22,12 +22,15 @@ Add a pure prompt compiler context normalizer with diagnostics for discarded or 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T07:15:10.152Z
+- Updated: 2026-05-01T07:19:14.153Z
 - Branch: task/202605010644-48TFEB/prompt-context-normalizer
-- Head: 678f85759314
+- Head: 42e10f74db16
 
 ```text
-No changes detected.
+ .../src/runtime/prompt-modules/compiler.test.ts    | 101 +++++++++++++
+ .../src/runtime/prompt-modules/compiler.ts         | 159 ++++++++++++++++++++-
+ .../agentplane/src/runtime/prompt-modules/index.ts |   5 +-
+ 3 files changed, 261 insertions(+), 4 deletions(-)
 ```
 
 </details>
