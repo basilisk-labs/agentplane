@@ -1,0 +1,4 @@
+ .../src/runtime/prompt-modules/compiler.ts         | 273 +------------------
+ .../src/runtime/prompt-modules/mutations-engine.ts | 301 +++++++++++++++++++++
+ .../src/runtime/prompt-modules/mutations.test.ts   | 192 +++++++++++++
+ 3 files changed, 508 insertions(+), 258 deletions(-)
