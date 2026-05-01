@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605011626-4TQ11R/release-distribution-assets",
+  "created_at": "2026-05-01T16:48:36.674Z",
+  "head_sha": "6ddf24956581e014f09cfe3671f9828da37fd8b9",
+  "last_verified_at": "2026-05-01T16:56:43.396Z",
+  "last_verified_sha": "6ddf24956581e014f09cfe3671f9828da37fd8b9",
+  "schema_version": 1,
+  "task_id": "202605011626-4TQ11R",
+  "updated_at": "2026-05-01T16:48:36.674Z",
+  "verify": {
+    "status": "pass"
+  }
+}
