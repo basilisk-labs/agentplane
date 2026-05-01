@@ -1,10 +1,11 @@
 ---
 id: "202605010645-FD8ZPX"
 title: "AP-11: Split guard commit wrapper tests"
-status: "DOING"
+result_summary: "Merged via PR #674."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T10:46:52.687Z"
   updated_by: "CODER"
   note: "Verified: guard commit-wrapper tests split into env, policy, refresh, and close suites; routing, inventory, and significant coverage use the split files; oversized baseline ratcheted."
-commit: null
+commit:
+  hash: "e6ef929fd3eff84cda3921fc99867cec708f5f7a"
+  message: "Merge pull request #674 from basilisk-labs/task/202605010645-FD8ZPX/guard-commit-wrapper-test-split"
 comments:
   -
     author: "CODER"
     body: "Start: split guard commit-wrapper CLI tests into env, policy, close, and refresh suites with shared repo fixtures in @agentplane/testkit/guard."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #674 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: guard commit-wrapper tests split into env, policy, refresh, and close suites; routing, inventory, and significant coverage use the split files; oversized baseline ratcheted."
+  -
+    type: "status"
+    at: "2026-05-01T10:51:10.127Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #674 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T10:46:52.704Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T10:51:10.132Z"
+doc_updated_by: "INTEGRATOR"
 description: "Split guard commit-wrapper CLI scenarios by env, policy, close, and refresh behavior with shared testkit fixtures."
 sections:
   Summary: |-
