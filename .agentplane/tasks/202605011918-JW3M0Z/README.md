@@ -1,10 +1,11 @@
 ---
 id: "202605011918-JW3M0Z"
 title: "Standardize release PR titles and messages"
-status: "DOING"
+result_summary: "Merged via PR #732."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T19:24:48.053Z"
   updated_by: "CODER"
   note: "Passed targeted PR-title, hosted-close, release-evidence, workflow-contract, lint, routing, bootstrap, and doctor checks."
-commit: null
+commit:
+  hash: "55aa4869a90b383593e331264df70f81e34e2393"
+  message: "workflow: Standardize release PR titles (JW3M0Z)"
 comments:
   -
     author: "CODER"
     body: "Start: standardize branch_pr, hosted-close, and release-evidence PR titles with one readable task format."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #732 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Passed targeted PR-title, hosted-close, release-evidence, workflow-contract, lint, routing, bootstrap, and doctor checks."
+  -
+    type: "status"
+    at: "2026-05-01T19:28:26.523Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #732 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T19:24:48.060Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T19:28:26.529Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make branch_pr and hosted-close PR titles/messages use one readable canonical format before publishing v0.4.1."
 sections:
   Summary: |-
