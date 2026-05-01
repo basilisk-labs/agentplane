@@ -1,33 +1,22 @@
 ## Summary
 
-Add AgentPlane to ai-boost awesome-harness-engineering
+Record the AgentPlane submission to ai-boost/awesome-harness-engineering.
 
-Submit a GitHub PR adding AgentPlane to ai-boost/awesome-harness-engineering in Task Runners and Orchestration or the closest workflow-control section after checking current scope and ordering.
+External PR: https://github.com/ai-boost/awesome-harness-engineering/pull/13
 
-## Scope
+## Placement
 
-- In scope: Submit a GitHub PR adding AgentPlane to ai-boost/awesome-harness-engineering in Task Runners and Orchestration or the closest workflow-control section after checking current scope and ordering.
-- Out of scope: unrelated refactors not required for "Add AgentPlane to ai-boost awesome-harness-engineering".
+- Category: `Task Runners & Orchestration`
+- Change: one `README.md` entry in the upstream list
+- Positioning: AgentPlane is described as a local-first, Git-native workflow control layer for repo-local coding-agent work.
+
+## Entry
+
+AgentPlane - Local-first, Git-native CLI harness for repo-local coding-agent work: task state, accepted plans, approval state, verification evidence, and finish records are written into the repository.
 
 ## Verification
 
-- State: ok
-- Note: External ai-boost PR opened and body formatting verified.
-- Full verification checklist lives in local review.md.
-
-## Handoff Notes
-
-- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
-
-<details>
-<summary>Raw evidence</summary>
-
-- Updated: 2026-05-01T16:37:00.429Z
-- Branch: task/202605011515-NKWCVZ/ai-boost-awesome-harness-engineering
-- Head: 3d56cc31a62e
-
-```text
-No changes detected.
-```
-
-</details>
+- External fork check: `git diff --check`
+- External URL check: `verify_urls.py` completed; the new AgentPlane URL and badge passed, while existing unrelated 403/404 URLs remain outside this PR
+- PR body check: `gh pr view 13 --repo ai-boost/awesome-harness-engineering --json body` confirmed real Markdown line breaks, not escaped `\n`
+- Task verification: `agentplane verify 202605011515-NKWCVZ --ok --by DOCS`
