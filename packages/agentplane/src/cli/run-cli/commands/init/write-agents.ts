@@ -77,10 +77,15 @@ function sortPromptModulesBySourceOrder(modules: PromptModule[]): PromptModule[]
   });
 }
 
+function ensureTrailingNewline(text: string): string {
+  return text.endsWith("\n") ? text : `${text}\n`;
+}
+
 function assembleStringPromptModules(modules: PromptModule[]): string {
-  return sortPromptModulesBySourceOrder(modules)
+  const assembled = sortPromptModulesBySourceOrder(modules)
     .map((module) => stringPromptModuleContent(module))
     .join("");
+  return ensureTrailingNewline(assembled.trimEnd());
 }
 
 function agentFileNameFromModule(module: PromptModule): string {

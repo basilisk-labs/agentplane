@@ -233,7 +233,7 @@ describe("runCli", () => {
     for (const agent of templates) {
       const target = path.join(agentsDir, agent.fileName);
       const contents = await readFile(target, "utf8");
-      expect(contents).toBe(agent.contents);
+      expect(contents).toBe(renderPolicyGatewayTemplateText(agent.contents, "AGENTS.md"));
     }
 
     const policyDir = path.join(root, ".agentplane", "policy");
