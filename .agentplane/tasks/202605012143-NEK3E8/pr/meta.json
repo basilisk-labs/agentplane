@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605012143-NEK3E8/homebrew-formula-install",
+  "created_at": "2026-05-01T21:44:12.317Z",
+  "head_sha": "bb5048218199be09b484b4e92977347189955a80",
+  "last_verified_at": "2026-05-01T21:47:52.326Z",
+  "last_verified_sha": "f72a6c574a6f787e6c93dff4b3135594804c28ec",
+  "schema_version": 1,
+  "task_id": "202605012143-NEK3E8",
+  "updated_at": "2026-05-01T21:47:58.392Z",
+  "verify": {
+    "status": "pass"
+  }
+}
