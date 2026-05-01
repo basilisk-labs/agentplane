@@ -1,9 +1,18 @@
 ---
 title: "Workflow"
-description: "How work moves from plan to completion in Agent Plane."
+description: "How work moves from plan to completion in AgentPlane."
 ---
 
 ## Default path in this repository
+
+AgentPlane is a workflow layer around coding-agent work:
+
+```text
+task -> plan -> approve -> implement -> verify -> finish
+```
+
+Use Claude Code, Codex, Cursor, Aider, or another tool to edit code. Use AgentPlane to record the
+task state, plan, verification, and closure around those edits.
 
 This repository is configured for `branch_pr`, so the normal guarded route is:
 
@@ -51,7 +60,7 @@ When a repository intentionally operates in `direct`, the default happy path is 
 
 ## Harness engineering workflow style
 
-In Agent Plane, speed comes from reducing ambiguity rather than skipping controls:
+In AgentPlane, speed comes from reducing ambiguity rather than skipping controls:
 
 - keep changes small and frequent;
 - run preflight/doctor early;
@@ -90,8 +99,8 @@ agentplane workflow restore
 ## direct mode
 
 - Work in a single checkout.
-- `agentplane work start` records the active task lock for that checkout.
 - Per-task branches/worktrees are not required.
+- Good for solo work, prototypes, and short tasks.
 - The default happy path is `task start-ready -> task verify-show -> verify -> finish`.
 - In direct mode, `finish` creates the deterministic close commit by default.
 
@@ -101,6 +110,7 @@ agentplane workflow restore
 - PR artifacts live under `.agentplane/tasks/<task-id>/pr/`.
 - `agentplane work start ... --worktree` is required.
 - Local integration runs through `agentplane integrate`.
+- Good for teams, stricter review, and integration boundaries.
 - Hosted PR creation and remote required checks run through `gh`.
 - When remote checks are required, `agentplane integrate` and `finish` happen only after `bun run workflow:wait-remote-checks` returns green.
 

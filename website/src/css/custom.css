@@ -124,14 +124,10 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 }
 
 .navbar__inner::after {
-  background:
-    radial-gradient(circle at 14% 18%, rgb(78 196 255 / 0.18), transparent 20%),
-    radial-gradient(circle at 86% 16%, rgb(77 119 255 / 0.14), transparent 21%),
-    radial-gradient(circle at 54% -8%, rgb(255 230 168 / 0.12), transparent 20%);
+  background: linear-gradient(90deg, rgb(0 132 184 / 0.12), rgb(10 10 10 / 0.05));
   content: "";
-  filter: blur(24px);
-  inset: -12px -18px -6px;
-  opacity: 0.6;
+  height: 1px;
+  inset: auto 0 -1px;
   pointer-events: none;
   position: absolute;
   z-index: -1;
@@ -198,6 +194,26 @@ html.nav-scrolled .navbar.navbar--fixed-top {
     linear-gradient(180deg, rgb(255 255 255 / 0.76), rgb(245 250 255 / 0.34)), rgb(var(--bg) / 0.2);
   border-color: rgb(var(--accent) / 0.36);
   color: rgb(var(--fg)) !important;
+}
+
+.navbar__item.navbar-install-command {
+  background: rgb(255 255 255 / 0.72);
+  border-color: rgb(var(--border));
+  color: rgb(var(--fg));
+  text-transform: none;
+}
+
+.navbar__item.navbar-github-cta {
+  background: rgb(var(--fg));
+  border-color: rgb(var(--fg));
+  color: rgb(255 255 255);
+  text-transform: none;
+}
+
+.navbar__item.navbar-github-cta:hover,
+.navbar__item.navbar-github-cta:focus-visible {
+  background: rgb(28 36 42);
+  color: rgb(255 255 255);
 }
 
 html.nav-scrolled .navbar__inner {

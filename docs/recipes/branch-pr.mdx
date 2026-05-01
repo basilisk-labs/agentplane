@@ -1,0 +1,57 @@
+---
+title: "AgentPlane + branch_pr workflow"
+description: "Use AgentPlane branch_pr mode for per-task branches, PR artifacts, verification, and integration boundaries."
+---
+
+Use this when the implementation branch should stay separate from the base checkout until review and
+verification are complete.
+
+## When to use
+
+- Multiple people or agents may work near the same repository.
+- Integration should happen only after review or hosted checks.
+- You want PR metadata and verification artifacts per task.
+
+## Copy-paste flow
+
+```bash
+npm i -g agentplane
+agentplane init
+agentplane config set workflow_mode branch_pr
+
+agentplane task new --title "Improve CLI help copy" --description "Update CLI help copy and verify docs generation." --priority med --owner CODER --tag code
+agentplane task plan set <task-id> --text "Edit CLI help copy, regenerate docs if needed, run focused checks." --updated-by CODER
+agentplane task plan approve <task-id> --by ORCHESTRATOR
+agentplane work start <task-id> --agent CODER --slug cli-help-copy --worktree
+```
+
+From the task worktree:
+
+```bash
+agentplane task start-ready <task-id> --author CODER --body "Start: branch_pr CLI help copy update with focused verification."
+# edit files
+agentplane task verify-show <task-id>
+# run listed checks
+agentplane pr open <task-id> --branch task/<task-id>/cli-help-copy --author CODER
+agentplane pr update <task-id>
+agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
+```
+
+From the base checkout after review:
+
+```bash
+agentplane integrate <task-id> --branch task/<task-id>/cli-help-copy --run-verify
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: branch integrated after review and verification." --result "CLI help copy updated" --commit <git-rev> --close-commit
+```
+
+## Expected repo artifacts
+
+- task branch or worktree
+- `.agentplane/tasks/<task-id>/pr/` PR title/body/diffstat artifacts
+- task README verification evidence
+- base-branch finish record after integration
+
+## Limitations
+
+`branch_pr` adds process overhead. Use `direct` for solo short loops where a separate branch or
+worktree would slow down the task without improving review.

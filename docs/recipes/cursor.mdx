@@ -1,0 +1,45 @@
+---
+title: "AgentPlane + Cursor"
+description: "Keep Cursor or Windsurf-style editor agent edits inside a reviewable AgentPlane task."
+---
+
+Use this when an editor agent changes files and you want the task state to survive outside the
+editor session.
+
+## When to use
+
+- Cursor, Windsurf, or another editor agent is doing the edits.
+- You still want the terminal to hold the workflow state.
+- A reviewer should be able to reconstruct the task, plan, and verification from repo files.
+
+## Copy-paste flow
+
+```bash
+npm i -g agentplane
+agentplane init
+agentplane task new --title "Refine dashboard empty state" --description "Update the empty state and verify the UI build." --priority med --owner CODER --tag frontend
+agentplane task plan set <task-id> --text "Update only the dashboard empty state copy/layout, then run typecheck and build." --updated-by CODER
+agentplane task plan approve <task-id> --by ORCHESTRATOR
+agentplane task start-ready <task-id> --author CODER --body "Start: dashboard empty state update with editor-agent edits and build verification."
+```
+
+Open the repository in Cursor or Windsurf and let the editor agent edit within the approved plan.
+
+```bash
+agentplane task verify-show <task-id>
+# run the listed UI checks
+agentplane verify <task-id> --ok --by CODER --note "UI checks passed after editor-agent edits."
+agentplane finish <task-id> --author CODER --body "Verified: UI checks passed and the final diff matches the approved task." --result "Dashboard empty state refined" --commit <git-rev>
+```
+
+## Expected repo artifacts
+
+- task README with plan and verification sections
+- ordinary Git diff from editor-agent edits
+- recorded verification state
+- finish record
+
+## Limitations
+
+AgentPlane does not replace Cursor, configure its model, or read private editor context. Keep the
+approved task text narrow so editor-agent edits stay reviewable.

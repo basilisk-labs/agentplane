@@ -88,8 +88,7 @@ const config = {
       { name: "twitter:title", content: "AgentPlane" },
       {
         name: "twitter:description",
-        content:
-          "Deterministic workflow framework for policy-driven agent execution in repositories.",
+        content: "A local CLI for reviewable coding-agent work inside Git repositories.",
       },
       { name: "twitter:image", content: "https://agentplane.org/img/twitter-card.png" },
       { name: "twitter:site", content: "@agentplaneorg" },
@@ -109,53 +108,38 @@ const config = {
       },
       items: [
         {
+          href: "https://agentplane.org/#demo",
+          label: "Demo",
+          position: "left",
+        },
+        {
+          href: "https://agentplane.org/#how-it-works",
+          label: "How it works",
+          position: "left",
+        },
+        {
+          to: "/docs/recipes",
+          label: "Recipes",
+          position: "left",
+          activeBaseRegex: "^/docs/recipes",
+        },
+        {
           to: "/docs/user/overview",
-          label: "Start",
+          label: "Docs",
           position: "left",
-          activeBaseRegex: String.raw`^/docs/user/(overview|prerequisites|setup|agent-bootstrap\.generated)$`,
-        },
-        {
-          to: "/docs/user/workflow",
-          label: "Work on a Task",
-          position: "left",
-          activeBaseRegex:
-            "^/docs/user/(workflow|task-lifecycle|commands|agents|branching-and-pr-artifacts)$",
-        },
-        {
-          to: "/docs/help/legacy-upgrade-recovery",
-          label: "Upgrade & Recover",
-          position: "left",
-          activeBaseRegex:
-            "^/docs/(user/(breaking-changes|workflow-migration)|help/(legacy-upgrade-recovery|troubleshooting-by-symptom|troubleshooting))$",
-        },
-        {
-          to: "/docs/user/tasks-and-backends",
-          label: "Reference",
-          position: "left",
-          activeBaseRegex: String.raw`^/docs/(user/(tasks-and-backends|backends|backends/local|backends/redmine|redmine|configuration|commands|cli-reference\.generated|agent-discovery|indexing-and-webmaster-operations|website-ia)|reference/generated-reference)$`,
-        },
-        {
-          to: "/docs/developer/architecture",
-          label: "Developer",
-          position: "left",
-          activeBaseRegex: "^/docs/developer/",
-        },
-        { to: "/blog", label: "Blog", position: "left", activeBaseRegex: "^/blog" },
-        {
-          to: "/docs/releases",
-          label: "Release Notes",
-          position: "right",
-          activeBaseRegex: "^/docs/releases",
+          activeBaseRegex: "^/docs",
         },
         {
           href: "https://www.npmjs.com/package/agentplane",
-          label: "npm",
+          label: "npm i -g agentplane",
           position: "right",
+          className: "navbar-install-command",
         },
         {
           href: "https://github.com/basilisk-labs/agentplane",
-          label: "GitHub",
+          label: "View on GitHub",
           position: "right",
+          className: "navbar-github-cta",
         },
       ],
     },

@@ -63,6 +63,19 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Recipes",
+      items: [
+        "recipes/index",
+        "recipes/claude-code",
+        "recipes/codex",
+        "recipes/cursor",
+        "recipes/aider",
+        "recipes/github-actions",
+        "recipes/branch-pr",
+      ],
+    },
+    {
+      type: "category",
       label: "Upgrade & recover",
       items: [
         "user/breaking-changes",

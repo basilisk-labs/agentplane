@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605010546-168YR1/launch-landing-docs",
+  "created_at": "2026-05-01T05:48:19.120Z",
+  "head_sha": "cc1ae624556b83f828d4b095da66a5cd8f15c332",
+  "last_verified_at": "2026-05-01T06:03:08.110Z",
+  "last_verified_sha": "cc1ae624556b83f828d4b095da66a5cd8f15c332",
+  "schema_version": 1,
+  "task_id": "202605010546-168YR1",
+  "updated_at": "2026-05-01T05:48:19.120Z",
+  "verify": {
+    "status": "pass"
+  }
+}

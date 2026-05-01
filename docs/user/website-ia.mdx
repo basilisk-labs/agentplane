@@ -12,7 +12,8 @@ It keeps marketing, technical docs, and blog content aligned to one routing mode
 
 1. `/` — product narrative and conversion entry point.
 2. `/docs` — canonical documentation sourced from repository `docs/`.
-3. `/blog` — editorial stream for releases, implementation notes, and migration guides.
+3. `/docs/recipes` — copy-paste flows for common coding-agent stacks.
+4. `/blog` — editorial stream for releases, implementation notes, and migration guides.
 
 ## Docs navigation model
 
@@ -20,25 +21,39 @@ The docs shell should mirror the same workflow model that `AGENTS.md` and CLI gu
 
 1. **Start**
 2. **Work on a task**
-3. **Upgrade & recover**
-4. **Reference & integrations**
-5. **Developer**
-6. **Release notes**
+3. **Recipes**
+4. **Upgrade & recover**
+5. **Reference & integrations**
+6. **Developer**
+7. **Release notes**
 
 ## Home page section contract
 
 The home page must map each section to concrete docs pages:
 
-1. **Getting Started**
+1. **Hero**
+   Links: GitHub repository, `npm i -g agentplane`, and the 90-second terminal flow.
+2. **Problem**
+   Explain what task, plan, diff, verification, and finish evidence answer for coding-agent work.
+3. **Demo**
+   Links: GitHub repository and `docs/recipes`.
+4. **Repo artifacts**
+   Names: `AGENTS.md` or `CLAUDE.md`, `.agentplane/`, task records, verification records, finish record.
+5. **How it works**
+   Commands: `agentplane init`, `task new`, `task plan set`, `verify`, `finish`.
+6. **Recipes**
+   Links: `docs/recipes/claude-code`, `docs/recipes/codex`, `docs/recipes/cursor`,
+   `docs/recipes/aider`, `docs/recipes/github-actions`, `docs/recipes/branch-pr`.
+7. **Getting Started**
    Links: `docs/user/overview`, `docs/user/prerequisites`, `docs/user/setup`.
-2. **Workflow Model**
+8. **Workflow Model**
    Links: `docs/user/workflow`, `docs/user/task-lifecycle`, `docs/user/agents`.
-3. **Reference**
+9. **Reference**
    Links: `docs/user/commands`, `docs/user/configuration`, `docs/reference/generated-reference`.
-4. **Developer Track**
-   Links: `docs/developer/architecture`, `docs/developer/cli-contract`, `docs/developer/release-and-publishing`.
-5. **Support**
-   Links: `docs/help/troubleshooting-by-symptom`, `docs/help/glossary`.
+10. **Developer Track**
+    Links: `docs/developer/architecture`, `docs/developer/cli-contract`, `docs/developer/release-and-publishing`.
+11. **Support**
+    Links: `docs/help/troubleshooting-by-symptom`, `docs/help/glossary`.
 
 ## Blog scope
 

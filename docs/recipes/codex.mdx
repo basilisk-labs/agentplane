@@ -1,0 +1,46 @@
+---
+title: "AgentPlane + Codex"
+description: "Use Codex-style CLI work inside a repo-local AgentPlane task lifecycle."
+---
+
+Use this when a Codex-style coding agent works from your terminal and you need the result to be
+auditable through Git-visible artifacts.
+
+## When to use
+
+- You run a local coding agent from the terminal.
+- You want an explicit task boundary before the agent mutates files.
+- You need verification evidence attached to the work.
+
+## Copy-paste flow
+
+```bash
+npm i -g agentplane
+agentplane init
+
+agentplane task new --title "Fix failing parser test" --description "Repair the parser regression and verify the focused test." --priority med --owner CODER --tag code
+agentplane task plan set <task-id> --text "Reproduce the parser failure, patch the smallest code path, run the focused test." --updated-by CODER
+agentplane task plan approve <task-id> --by ORCHESTRATOR
+agentplane task start-ready <task-id> --author CODER --body "Start: parser regression fix with Codex-style terminal workflow and focused verification."
+```
+
+Run your Codex-style agent in the same checkout and keep its edits inside the approved scope.
+
+```bash
+agentplane task verify-show <task-id>
+# run the listed test command
+agentplane verify <task-id> --ok --by CODER --note "Focused parser verification passed."
+agentplane finish <task-id> --author CODER --body "Verified: focused parser verification passed and no unintended tracked changes remain." --result "Parser regression fixed" --commit <git-rev>
+```
+
+## Expected repo artifacts
+
+- task state under `.agentplane/tasks/<task-id>/`
+- approved plan and start comment
+- verification evidence
+- finish metadata linked to the Git revision
+
+## Limitations
+
+AgentPlane does not assume a specific Codex product, hosted runner, or model provider. It wraps the
+local workflow around whatever agent edited the repository.

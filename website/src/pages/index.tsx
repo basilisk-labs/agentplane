@@ -1,23 +1,45 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { useCallback, useState } from "react";
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
-import { homepageContent } from "../data/homepage-content";
+import { githubUrl, homepageContent, installCommand } from "../data/homepage-content";
 import styles from "./_home.module.css";
 
 type Action = {
   label: string;
-  to: string;
   variant: "primary" | "secondary";
+  to?: string;
+  command?: string;
 };
 
-function ActionLink({ action }: { action: Action }): ReactNode {
+function ActionControl({ action }: { action: Action }): ReactNode {
+  const [copied, setCopied] = useState(false);
   const className =
     action.variant === "primary"
       ? `${styles.action} ${styles.actionPrimary}`
       : `${styles.action} ${styles.actionSecondary}`;
 
+  const copyCommand = useCallback(() => {
+    const command = action.command;
+    if (!command) return;
+    const writeCommand = async (): Promise<void> => {
+      await navigator.clipboard.writeText(command);
+      setCopied(true);
+      globalThis.setTimeout(() => setCopied(false), 1800);
+    };
+    void writeCommand();
+  }, [action.command]);
+
+  if (action.command) {
+    return (
+      <button className={className} type="button" onClick={copyCommand}>
+        {copied ? "Copied" : action.label}
+      </button>
+    );
+  }
+
   return (
-    <Link className={className} to={action.to}>
+    <Link className={className} to={action.to ?? "/"}>
       {action.label}
     </Link>
   );
@@ -41,113 +63,141 @@ function SectionLead({
   );
 }
 
+function CommandBlock({ lines, label }: { lines: readonly string[]; label: string }): ReactNode {
+  return (
+    <pre className={styles.commandPre} aria-label={label}>
+      <code>
+        {lines.map((line) => (
+          <span key={line} className={styles.commandLine}>
+            <span className={styles.commandPrompt}>$</span>
+            {line}
+          </span>
+        ))}
+      </code>
+    </pre>
+  );
+}
+
+function TerminalRecording({
+  title,
+  lines,
+}: {
+  title: string;
+  lines: readonly string[];
+}): ReactNode {
+  return (
+    <div className={styles.terminalRecording}>
+      <div className={styles.terminalTopbar}>
+        <span>{title}</span>
+        <span className={styles.terminalStatus}>recording</span>
+      </div>
+      <pre className={styles.terminalBody} aria-label="AgentPlane terminal recording">
+        <code>
+          {lines.map((line, index) => (
+            <span
+              key={`${line}-${index}`}
+              className={styles.terminalLine}
+              style={{ "--line-delay": `${index * 90}ms` } as CSSProperties}
+            >
+              <span className={styles.commandPrompt}>$</span>
+              {line}
+            </span>
+          ))}
+          <span className={styles.terminalCursor} />
+        </code>
+      </pre>
+    </div>
+  );
+}
+
+function ActionsRow({ actions }: { actions: readonly Action[] }): ReactNode {
+  return (
+    <div className={styles.actionsRow}>
+      {actions.map((action) => (
+        <ActionControl key={action.label} action={action} />
+      ))}
+    </div>
+  );
+}
+
 export default function Home(): ReactNode {
   const {
     seo,
     hero,
     problem,
-    repositorySurface,
-    workflowPath,
+    beforeAfter,
+    demo,
+    repository,
+    howItWorks,
+    audience,
+    stack,
     workflowModes,
-    controlModel,
-    harness,
-    docsRail,
-    journal,
+    gitNative,
+    quickstart,
+    recipes,
+    proof,
+    faq,
     closing,
   } = homepageContent;
-
-  const repositoryTree = [
-    ".",
-    "├── AGENTS.md / CLAUDE.md",
-    "└── .agentplane/",
-    "    ├── config.json",
-    "    ├── agents/",
-    "    ├── policy/",
-    "    ├── tasks/",
-    "    └── worktrees/",
-  ];
 
   return (
     <Layout title={seo.title} description={seo.description}>
       <main className={styles.page}>
-        <section className={`${styles.heroStage} ${styles.shell}`}>
-          <div className={styles.heroMedia} aria-hidden="true">
-            <div className={styles.heroMediaGlow} />
-            <div className={styles.heroMediaNoise} />
-          </div>
-
-          <article className={styles.heroPanel}>
-            <div className={styles.heroCopy}>
-              <span className={styles.heroEyebrow}>{hero.eyebrow}</span>
-              <h1>{hero.title}</h1>
-              <p className={styles.heroSubtitle}>{hero.subtitle}</p>
-
-              <div className={styles.actionsRow}>
-                {hero.actions.map((action) => (
-                  <ActionLink key={action.label} action={action} />
-                ))}
-              </div>
-
-              <div className={styles.heroChips}>
-                {hero.chips.map((chip) => (
-                  <span key={chip} className={styles.heroChip}>
-                    {chip}
-                  </span>
-                ))}
-              </div>
-
-              <ul className={styles.heroBullets}>
-                {hero.supportBullets.map((bullet) => (
-                  <li key={bullet}>{bullet}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div className={styles.heroProof}>
-              <div className={styles.terminalPanel}>
-                <span className={styles.cardKicker}>{hero.terminalPanel.title}</span>
-                <pre className={styles.commandPre} aria-label="AgentPlane workflow preview">
-                  <code>
-                    {hero.terminalPanel.lines.map((line) => (
-                      <span key={line} className={styles.commandLine}>
-                        <span className={styles.commandPrompt}>$</span>
-                        {line}
-                      </span>
-                    ))}
-                  </code>
-                </pre>
-
-                <div className={styles.terminalMeta}>
-                  {hero.repositoryPanel.lines.map((line) => (
-                    <span key={line} className={styles.metaTag}>
-                      {line}
-                    </span>
-                  ))}
+        <section className={styles.heroStage}>
+          <div className={styles.shell}>
+            <div className={styles.heroGrid}>
+              <article className={styles.heroCopy}>
+                <span className={styles.heroEyebrow}>{hero.eyebrow}</span>
+                <h1>{hero.title}</h1>
+                <p className={styles.heroSubtitle}>{hero.subtitle}</p>
+                <p className={styles.flowLine}>{hero.flow}</p>
+                <ActionsRow actions={hero.actions} />
+                <div className={styles.installLine}>
+                  <code>{installCommand}</code>
+                  <iframe
+                    className={styles.starButton}
+                    title="GitHub star button"
+                    src="https://ghbtns.com/github-btn.html?user=basilisk-labs&repo=agentplane&type=star&count=true"
+                    width="110"
+                    height="20"
+                  />
                 </div>
+                <ul className={styles.assuranceList}>
+                  {hero.assurances.map((assurance) => (
+                    <li key={assurance}>{assurance}</li>
+                  ))}
+                </ul>
+              </article>
 
-                <p className={styles.terminalNote}>{hero.trustPanel.text}</p>
-              </div>
+              <TerminalRecording title={hero.terminal.title} lines={hero.terminal.lines} />
             </div>
-          </article>
+          </div>
         </section>
 
         <section className={`${styles.section} ${styles.shell}`}>
-          <SectionLead label={problem.label} title={problem.title} text={problem.text} />
+          <SectionLead label={problem.label} title={problem.title} text={problem.close} />
+          <ul className={styles.questionList}>
+            {problem.questions.map((question) => (
+              <li key={question}>{question}</li>
+            ))}
+          </ul>
+        </section>
 
-          <div className={styles.problemGrid}>
-            <div className={styles.problemColumn}>
-              <span className={styles.compareLabel}>{problem.beforeTitle}</span>
-              <ul className={styles.problemList}>
-                {problem.before.map((item) => (
+        <section className={`${styles.section} ${styles.shell}`}>
+          <SectionLead label={beforeAfter.label} title={beforeAfter.title} />
+          <div className={styles.compareGrid}>
+            <div className={styles.compareColumn}>
+              <h3>{beforeAfter.withoutTitle}</h3>
+              <ul>
+                {beforeAfter.without.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
             </div>
-
-            <div className={styles.problemColumn}>
-              <span className={styles.compareLabel}>{problem.afterTitle}</span>
-              <ul className={styles.problemList}>
-                {problem.after.map((item) => (
+            <div className={styles.compareColumn}>
+              <h3>{beforeAfter.withTitle}</h3>
+              <ul>
+                {beforeAfter.with.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
@@ -155,57 +205,32 @@ export default function Home(): ReactNode {
           </div>
         </section>
 
-        <section className={`${styles.section} ${styles.shell}`}>
-          <SectionLead
-            label={repositorySurface.label}
-            title={repositorySurface.title}
-            text={repositorySurface.intro}
-          />
-
-          <div className={styles.repositorySurface}>
-            <article className={styles.repoTreePanel}>
-              <span className={styles.cardKicker}>Repository preview</span>
-              <pre className={styles.treePre} aria-label="Repository surface preview">
-                <code>
-                  {repositoryTree.map((line) => (
-                    <span key={line} className={styles.treeLine}>
-                      {line}
-                    </span>
-                  ))}
-                </code>
-              </pre>
-            </article>
-
-            <div className={styles.repositoryLabels}>
-              {repositorySurface.items.map((item) => (
-                <div key={item.name} className={styles.repositoryRow}>
-                  <div className={styles.repositoryTerm}>
-                    <code>{item.kicker}</code>
-                    <span>{item.name}</span>
-                  </div>
-                  <p>{item.text}</p>
-                </div>
-              ))}
-            </div>
+        <section id="demo" className={`${styles.section} ${styles.shell}`}>
+          <SectionLead label={demo.label} title={demo.title} text={demo.scenario} />
+          <div className={styles.demoStack}>
+            <TerminalRecording title="Try the same flow locally" lines={demo.commands} />
+            <ActionsRow actions={demo.actions} />
           </div>
         </section>
 
         <section className={`${styles.section} ${styles.shell}`}>
-          <SectionLead
-            label={workflowPath.label}
-            title={workflowPath.title}
-            text={workflowPath.text}
-          />
+          <SectionLead label={repository.label} title={repository.title} text={repository.text} />
+          <div className={styles.repoSurface}>
+            {repository.tree.map((item) => (
+              <code key={item}>{item}</code>
+            ))}
+          </div>
+        </section>
 
-          <ol className={styles.timeline}>
-            {workflowPath.steps.map((step, index) => (
-              <li key={step.name} className={styles.timelineItem}>
-                <span className={styles.timelineIndex}>{String(index + 1).padStart(2, "0")}</span>
-                <div className={styles.timelineContent}>
-                  <div className={styles.timelineHeader}>
-                    <h3>{step.name}</h3>
-                    <code>{step.artifact}</code>
-                  </div>
+        <section id="how-it-works" className={`${styles.section} ${styles.shell}`}>
+          <SectionLead label={howItWorks.label} title={howItWorks.title} />
+          <ol className={styles.stepList}>
+            {howItWorks.steps.map((step, index) => (
+              <li key={step.name} className={styles.stepItem}>
+                <span className={styles.stepIndex}>{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3>{step.name}</h3>
+                  <code>{step.command}</code>
                   <p>{step.text}</p>
                 </div>
               </li>
@@ -214,72 +239,55 @@ export default function Home(): ReactNode {
         </section>
 
         <section className={`${styles.section} ${styles.shell}`}>
-          <SectionLead label={workflowModes.label} title={workflowModes.title} />
+          <SectionLead label={audience.label} title={audience.title} />
+          <div className={styles.audienceGrid}>
+            <ul className={styles.cleanList}>
+              {audience.for.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+            <ul className={`${styles.cleanList} ${styles.notForList}`}>
+              {audience.notFor.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
 
-          <div className={styles.modesAccordion}>
-            {workflowModes.items.map((mode, index) => (
-              <details key={mode.name} className={styles.modeItem} open={index === 0}>
-                <summary className={styles.modeSummary}>
-                  <div className={styles.modeLead}>
-                    <span className={styles.modeBadge}>{mode.badge}</span>
-                    <h3>{mode.name}</h3>
-                  </div>
-                  <p>{mode.text}</p>
-                </summary>
-                <ul className={styles.modeList}>
-                  {mode.bullets.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
-                  ))}
-                </ul>
-              </details>
+        <section className={`${styles.section} ${styles.shell}`}>
+          <SectionLead label={stack.label} title={stack.title} text={stack.text} />
+          <div className={styles.stackGrid}>
+            {stack.items.map((item) => (
+              <span key={item}>{item}</span>
             ))}
           </div>
         </section>
 
         <section className={`${styles.section} ${styles.shell}`}>
-          <SectionLead
-            label={controlModel.label}
-            title={controlModel.title}
-            text={controlModel.text}
-          />
+          <SectionLead label={workflowModes.label} title={workflowModes.title} />
+          <div className={styles.modeGrid}>
+            {workflowModes.items.map((mode) => (
+              <article key={mode.name} className={styles.modeBlock}>
+                <h3>{mode.name}</h3>
+                <p>{mode.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
 
-          <div className={styles.controlGrid}>
-            <ul className={styles.proofPointList}>
-              {controlModel.proofPoints.map((point) => (
+        <section className={`${styles.section} ${styles.shell}`}>
+          <SectionLead label={gitNative.label} title={gitNative.title} />
+          <div className={styles.gitNativeGrid}>
+            <ul className={styles.cleanList}>
+              {gitNative.points.map((point) => (
                 <li key={point}>{point}</li>
               ))}
             </ul>
-
-            <div className={styles.controlArtifacts}>
-              {controlModel.tabs.map((tab) => (
-                <article key={tab.id} className={styles.controlArtifact}>
-                  <span className={styles.cardKicker}>{tab.kicker}</span>
-                  <h3>{tab.title}</h3>
-                  <p>{tab.text}</p>
-                  <div className={styles.artifactRow}>
-                    {tab.artifact.map((item) => (
-                      <span key={item} className={styles.artifactChip}>
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className={`${styles.section} ${styles.shell}`}>
-          <SectionLead label={harness.label} title={harness.title} text={harness.text} />
-
-          <div className={styles.harnessSection}>
-            <div className={styles.harnessLoop}>
-              {harness.steps.map((step, index) => (
-                <div key={step} className={styles.harnessStep}>
-                  <span>{step}</span>
-                  {index < harness.steps.length - 1 ? (
-                    <span className={styles.harnessArrow}>→</span>
-                  ) : null}
+            <div className={styles.diagram} aria-label="Git-native workflow diagram">
+              {gitNative.diagram.map((item, index) => (
+                <div key={item} className={styles.diagramNode}>
+                  <span>{item}</span>
+                  {index < gitNative.diagram.length - 1 ? <b>-&gt;</b> : null}
                 </div>
               ))}
             </div>
@@ -287,50 +295,65 @@ export default function Home(): ReactNode {
         </section>
 
         <section className={`${styles.section} ${styles.shell}`}>
-          <SectionLead label={docsRail.label} title={docsRail.title} />
-
-          <div className={styles.docsGrid}>
-            {docsRail.groups.map((group) => (
-              <div key={group.name} className={styles.docsGroup}>
-                <h3>{group.name}</h3>
-                <div className={styles.docsLinks}>
-                  {group.links.map((link) => (
-                    <Link key={link.label} className={styles.inlineLink} to={link.to}>
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
+          <SectionLead label={quickstart.label} title={quickstart.title} />
+          <div className={styles.quickstartGrid}>
+            <CommandBlock lines={quickstart.commands} label="AgentPlane quickstart commands" />
+            <div className={styles.requirements}>
+              <h3>Requirements</h3>
+              <ul>
+                {quickstart.requirements.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <ActionsRow actions={quickstart.actions} />
+            </div>
           </div>
         </section>
 
-        <section className={`${styles.section} ${styles.shell}`}>
-          <SectionLead label={journal.label} title={journal.title} />
-
-          <div className={styles.journalGrid}>
-            {journal.items.map((item) => (
-              <Link key={item.name} className={styles.journalCard} to={item.to}>
-                <span className={styles.cardKicker}>{item.name}</span>
-                <h3>{item.name}</h3>
-                <p>{item.text}</p>
+        <section id="recipes" className={`${styles.section} ${styles.shell}`}>
+          <SectionLead label={recipes.label} title={recipes.title} />
+          <div className={styles.recipeGrid}>
+            {recipes.items.map((recipe) => (
+              <Link key={recipe.name} className={styles.recipeLink} to={recipe.to}>
+                {recipe.name}
               </Link>
             ))}
           </div>
         </section>
 
-        <section className={`${styles.shell} ${styles.closingWrap}`}>
-          <article className={styles.closingCard}>
+        <section className={`${styles.section} ${styles.shell}`}>
+          <SectionLead label={proof.label} title={proof.title} />
+          <div className={styles.proofGrid}>
+            {proof.points.map((point) => (
+              <span key={point}>{point}</span>
+            ))}
+          </div>
+        </section>
+
+        <section className={`${styles.section} ${styles.shell}`}>
+          <SectionLead label={faq.label} title={faq.title} />
+          <div className={styles.faqList}>
+            {faq.items.map((item) => (
+              <details key={item.question} className={styles.faqItem}>
+                <summary>{item.question}</summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.finalCta}>
+          <div className={styles.shell}>
             <span className={styles.sectionLabel}>{closing.label}</span>
             <h2>{closing.title}</h2>
-            <p>{closing.text}</p>
-            <div className={styles.actionsRow}>
-              {closing.actions.map((action) => (
-                <ActionLink key={action.label} action={action} />
-              ))}
-            </div>
-          </article>
+            <code>{closing.command}</code>
+            <ActionsRow actions={closing.actions} />
+          </div>
         </section>
+
+        <a className={styles.repoMicroLink} href={githubUrl}>
+          View AgentPlane on GitHub
+        </a>
       </main>
     </Layout>
   );
