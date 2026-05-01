@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T10:22:25Z",
   "base": "main",
   "branch": "task/202605010645-JGXD12/release-apply-test-split",
   "created_at": "2026-05-01T10:00:45.097Z",
-  "head_sha": "a4537344bf8c668ab1e7200bb550f149770dc464",
+  "head_sha": "8b74471a6b14e2a8350eb1dd3a5919c4b452a806",
   "last_verified_at": "2026-05-01T10:18:52.192Z",
   "last_verified_sha": "e0ac888d700232bf418fce03f13c8111d2266243",
+  "merge_commit": "697255f2f75cbbfac4988aa04ad51c98979e4e5b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T10:22:25Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010645-JGXD12",
-  "updated_at": "2026-05-01T10:19:23.835Z",
+  "updated_at": "2026-05-01T10:22:25Z",
   "verify": {
     "status": "pass"
   }
