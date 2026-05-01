@@ -1,0 +1,8 @@
+ .../agentplane/src/cli/local-ci-selection.test.ts  |  7 ++++-
+ packages/testkit/package.json                      |  4 +++
+ packages/testkit/src/hooks.ts                      | 36 ++++++++++++++++++++++
+ scripts/lib/local-ci-selection.mjs                 |  2 +-
+ scripts/lib/test-route-registry.mjs                |  5 ++-
+ scripts/oversized-test-baseline.json               |  8 ++---
+ vitest.config.ts                                   |  4 +++
+ 7 files changed, 57 insertions(+), 9 deletions(-)

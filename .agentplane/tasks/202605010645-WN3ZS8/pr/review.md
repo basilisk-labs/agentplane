@@ -45,12 +45,19 @@ Split run-cli.core.hooks.test.ts by hook scenario family and promote shared fixt
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T09:09:54.255Z
+- Updated: 2026-05-01T09:18:19.542Z
 - Branch: task/202605010645-WN3ZS8/hooks-test-split
-- Head: 95902ae6fce4
+- Head: 2da946134c1e
 
 ```text
-No changes detected.
+ .../agentplane/src/cli/local-ci-selection.test.ts  |  7 ++++-
+ packages/testkit/package.json                      |  4 +++
+ packages/testkit/src/hooks.ts                      | 36 ++++++++++++++++++++++
+ scripts/lib/local-ci-selection.mjs                 |  2 +-
+ scripts/lib/test-route-registry.mjs                |  5 ++-
+ scripts/oversized-test-baseline.json               |  8 ++---
+ vitest.config.ts                                   |  4 +++
+ 7 files changed, 57 insertions(+), 9 deletions(-)
 ```
 
 </details>
