@@ -1,10 +1,10 @@
 ---
 id: "202605010645-WN3ZS8"
 title: "AP-08: Split hooks CLI test monolith"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -14,19 +14,36 @@ tags:
 verify:
   - "bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks*.test.ts && node scripts/check-oversized-test-baseline.mjs --threshold-lines 1000"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-05-01T09:09:15.364Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved after AP-07 closed on main and dependency is ready."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
-events: []
+  state: "ok"
+  updated_at: "2026-05-01T09:18:05.676Z"
+  updated_by: "CODER"
+  note: "Verified: hooks CLI monolith split into install, uninstall, runtime-shim, hook-run groups; oversized guard now passes with 15 entries and 17132 total lines."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: split hooks CLI tests by install, uninstall, runtime shim, and hook-run scenario groups while keeping shared fixtures in testkit."
+events:
+  -
+    type: "status"
+    at: "2026-05-01T09:09:54.167Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: split hooks CLI tests by install, uninstall, runtime shim, and hook-run scenario groups while keeping shared fixtures in testkit."
+  -
+    type: "verify"
+    at: "2026-05-01T09:18:05.676Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: hooks CLI monolith split into install, uninstall, runtime-shim, hook-run groups; oversized guard now passes with 15 entries and 17132 total lines."
 doc_version: 3
-doc_updated_at: "2026-05-01T06:45:08.227Z"
+doc_updated_at: "2026-05-01T09:18:05.680Z"
 doc_updated_by: "CODER"
 description: "Split run-cli.core.hooks.test.ts by hook scenario family and promote shared fixtures to testkit hooks helpers."
 sections:
@@ -47,6 +64,18 @@ sections:
     3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-01T09:18:05.676Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: hooks CLI monolith split into install, uninstall, runtime-shim, hook-run groups; oversized guard now passes with 15 entries and 17132 total lines.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T09:09:54.167Z, excerpt_hash=sha256:a4e82fc31d83d1995af821946af7a7731d02988207fada689fbec7ee4f099b7c
+    
+    Details:
+    
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks*.test.ts --testTimeout 180000 --hookTimeout 180000 && node scripts/check-oversized-test-baseline.mjs --threshold-lines 1000; Result: pass; Evidence: 5 files, 42 tests; oversized baseline OK (15 entries, 17132 total lines). Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/cli/test-routing-check.test.ts --testTimeout 60000 --hookTimeout 60000; Result: pass; Evidence: 2 files, 43 tests. Command: node scripts/check-vitest-projects.mjs; Result: pass; Evidence: 334 tests, 10 primary routes. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run framework:dev:bootstrap; Result: pass. Command: git diff --check; Result: pass.
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -80,6 +109,18 @@ Split run-cli.core.hooks.test.ts by hook scenario family and promote shared fixt
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-01T09:18:05.676Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: hooks CLI monolith split into install, uninstall, runtime-shim, hook-run groups; oversized guard now passes with 15 entries and 17132 total lines.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T09:09:54.167Z, excerpt_hash=sha256:a4e82fc31d83d1995af821946af7a7731d02988207fada689fbec7ee4f099b7c
+
+Details:
+
+Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks*.test.ts --testTimeout 180000 --hookTimeout 180000 && node scripts/check-oversized-test-baseline.mjs --threshold-lines 1000; Result: pass; Evidence: 5 files, 42 tests; oversized baseline OK (15 entries, 17132 total lines). Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/cli/test-routing-check.test.ts --testTimeout 60000 --hookTimeout 60000; Result: pass; Evidence: 2 files, 43 tests. Command: node scripts/check-vitest-projects.mjs; Result: pass; Evidence: 334 tests, 10 primary routes. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run framework:dev:bootstrap; Result: pass. Command: git diff --check; Result: pass.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

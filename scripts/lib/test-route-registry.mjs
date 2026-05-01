@@ -425,7 +425,10 @@ const DOCTOR_TEST_FILES = ["packages/agentplane/src/commands/doctor.fast.test.ts
 
 const HOOKS_TEST_FILES = [
   "packages/agentplane/src/cli/local-ci-selection.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.hooks.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.hooks.install.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.hooks.uninstall.test.ts",
   "packages/agentplane/src/cli/pre-commit-staged-files.test.ts",
   "packages/agentplane/src/cli/pre-commit-test-fast-script.test.ts",
 ];

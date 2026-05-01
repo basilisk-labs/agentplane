@@ -16,6 +16,12 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
+import {
+  HOOKS_SUITE_TIMEOUT_MS,
+  TEST_WORKFLOW_GITIGNORE,
+  markTaskDoneWithCommit,
+  withInstalledAgentplaneRuntime,
+} from "@agentplane/testkit/hooks";
 import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
 import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
@@ -38,7 +44,6 @@ import {
   runCliSilent,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
-  mkTempDir,
   pathExists,
   stageGitignoreIfPresent,
   stubTaskBackend,
@@ -55,186 +60,8 @@ const PRE_PUSH_HOOK_SCRIPT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../../../../scripts/run-pre-push-hook.mjs",
 );
-const TEST_WORKFLOW_GITIGNORE = ".agentplane/worktrees\n.agentplane/cache\n";
-const HOOKS_SUITE_TIMEOUT_MS = 180_000;
-const ACTIVE_BIN_ENV = "AGENTPLANE_RUNTIME_ACTIVE_BIN";
 
-function markTaskDoneWithCommit(readmeText: string, hash: string, message: string): string {
-  const commitBlock = `commit:\n  hash: "${hash}"\n  message: "${message}"`;
-  const withDoneStatus = readmeText.replace('status: "TODO"', 'status: "DONE"');
-  if (withDoneStatus.includes("commit: null")) {
-    return withDoneStatus.replace("commit: null", commitBlock);
-  }
-  return withDoneStatus.replace("comments:", `${commitBlock}\ncomments:`);
-}
-
-async function withInstalledAgentplaneRuntime<T>(fn: () => T | Promise<T>): Promise<T> {
-  const previousActiveBin = process.env[ACTIVE_BIN_ENV];
-  const packageRoot = await mkTempDir("agentplane-installed-runtime-");
-  const activeBin = path.join(packageRoot, "bin", "agentplane.js");
-  await mkdir(path.dirname(activeBin), { recursive: true });
-  await writeFile(path.join(packageRoot, "package.json"), '{"name":"agentplane"}\n', "utf8");
-  await writeFile(activeBin, "process.exit(0);\n", "utf8");
-  process.env[ACTIVE_BIN_ENV] = activeBin;
-  try {
-    return await fn();
-  } finally {
-    if (previousActiveBin === undefined) delete process.env[ACTIVE_BIN_ENV];
-    else process.env[ACTIVE_BIN_ENV] = previousActiveBin;
-  }
-}
-
-describe("runCli", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
-  it("hooks install writes managed hooks and shim", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const activeBin = path.join(root, "installed agentplane", "bin", "agentplane.js");
-    const previousActiveBin = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
-    await mkdir(path.dirname(activeBin), { recursive: true });
-    await writeFile(activeBin, "process.exit(0);\n", "utf8");
-    process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = activeBin;
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["hooks", "install", "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-      if (previousActiveBin === undefined) delete process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
-      else process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = previousActiveBin;
-    }
-
-    const hooksDir = path.join(root, ".git", "hooks");
-    const commitMsg = await readFile(path.join(hooksDir, "commit-msg"), "utf8");
-    const preCommit = await readFile(path.join(hooksDir, "pre-commit"), "utf8");
-    const postMerge = await readFile(path.join(hooksDir, "post-merge"), "utf8");
-    const shim = await readFile(path.join(root, ".agentplane", "bin", "agentplane"), "utf8");
-
-    expect(commitMsg).toContain("agentplane-hook");
-    expect(preCommit).toContain("agentplane-hook");
-    expect(postMerge).toContain("agentplane-hook");
-    expect(postMerge).toContain("hooks run post-merge");
-    expect(shim).toContain("agentplane-hook-shim");
-    expect(shim).toContain(`INSTALL_BIN='${activeBin}'`);
-    expect(shim).toContain("AGENTPLANE_HOOK_RUNNER");
-    expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_NPX");
-  });
-
-  it("hooks install refuses to overwrite unmanaged hook", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await mkdir(path.join(root, ".git", "hooks"), { recursive: true });
-    await writeFile(path.join(root, ".git", "hooks", "commit-msg"), "custom", "utf8");
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["hooks", "install", "--root", root]);
-      expect(code).toBe(5);
-      expect(io.stderr).toContain("Refusing to overwrite existing hook");
-    } finally {
-      io.restore();
-    }
-  });
-
-  it("hooks install is idempotent for managed hooks", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await runCliSilent(["hooks", "install", "--root", root]);
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["hooks", "install", "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
-  });
-
-  it("hooks install supports --quiet", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["hooks", "install", "--quiet", "--root", root]);
-      expect(code).toBe(0);
-      expect(io.stdout).toBe("");
-    } finally {
-      io.restore();
-    }
-  }, 15_000);
-
-  it("hooks install maps errors for non-git roots", async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
-    await mkdir(path.join(root, ".agentplane"), { recursive: true });
-    await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["hooks", "install", "--root", root]);
-      expect(code).toBe(5);
-      expect(io.stderr).toContain("Not a git repository");
-    } finally {
-      io.restore();
-    }
-  });
-
-  it("hooks rejects unknown subcommands", async () => {
-    const root = await mkGitRepoRoot();
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["hooks", "nope", "--root", root]);
-      expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage:");
-      expect(io.stderr).toContain("agentplane hooks <command>");
-    } finally {
-      io.restore();
-    }
-  });
-
-  it("hooks uninstall removes managed hooks", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await runCliSilent(["hooks", "install", "--root", root]);
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["hooks", "uninstall", "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
-
-    const hookPath = path.join(root, ".git", "hooks", "commit-msg");
-    await expect(readFile(hookPath, "utf8")).rejects.toThrow();
-  });
-
-  it("hooks uninstall reports when no hooks are present", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["hooks", "uninstall", "--root", root]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("no agentplane hooks found");
-    } finally {
-      io.restore();
-    }
-  });
-
-  it("hooks uninstall maps errors for non-git roots", async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
-    await mkdir(path.join(root, ".agentplane"), { recursive: true });
-    await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["hooks", "uninstall", "--root", root]);
-      expect(code).toBe(5);
-      expect(io.stderr).toContain("Not a git repository");
-    } finally {
-      io.restore();
-    }
-  });
-
+describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
   it("hooks run commit-msg requires a message file", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
@@ -499,120 +326,6 @@ describe("runCli", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     } finally {
       io.restore();
     }
-  });
-
-  it("hooks run pre-push resolves the repository-local script before bundled fallbacks", async () => {
-    const root = await mkGitRepoRoot();
-    await mkdir(path.join(root, "scripts"), { recursive: true });
-    const repoScript = path.join(root, "scripts", "run-pre-push-hook.mjs");
-    await writeFile(repoScript, "process.exit(0);\n", "utf8");
-
-    await expect(resolvePrePushHookScriptPath(root)).resolves.toBe(repoScript);
-  });
-
-  it("hooks run pre-push treats missing global-install fallbacks as unresolved", async () => {
-    const root = await mkGitRepoRoot();
-    const missingGlobalFallback = path.join(
-      root,
-      "simulated-global-prefix",
-      "lib",
-      "scripts",
-      "run-pre-push-hook.mjs",
-    );
-
-    await expect(
-      resolvePrePushHookScriptPath(root, { bundledScriptPath: missingGlobalFallback }),
-    ).resolves.toBeNull();
-  });
-
-  it("hooks run pre-push uses installed CLI fallback when repository script is absent", async () => {
-    await withInstalledAgentplaneRuntime(async () => {
-      const root = await mkGitRepoRoot();
-      await writeDefaultConfig(root);
-      await writeFile(
-        path.join(root, "package.json"),
-        JSON.stringify(
-          {
-            name: "installed-hook-fallback",
-            private: true,
-            scripts: {
-              "format:check": "node scripts/format-check.mjs",
-              "ci:local:fast": "node scripts/ci-fast.mjs",
-              "ci:local:full": "node scripts/ci-fast.mjs",
-            },
-          },
-          null,
-          2,
-        ),
-        "utf8",
-      );
-      await mkdir(path.join(root, "scripts"), { recursive: true });
-      await writeFile(path.join(root, "scripts", "format-check.mjs"), "process.exit(0);\n", "utf8");
-      await writeFile(
-        path.join(root, "scripts", "ci-fast.mjs"),
-        "import { writeFileSync } from 'node:fs';\nwriteFileSync('.agentplane/cache/pre-push-fallback.marker', 'ok\\n');\n",
-        "utf8",
-      );
-      await mkdir(path.join(root, ".agentplane", "cache"), { recursive: true });
-
-      const io = captureStdIO();
-      try {
-        const code = await runCli(["hooks", "run", "pre-push", "--root", root]);
-        expect(code).toBe(0);
-        expect(io.stderr).not.toContain("Missing pre-push hook script");
-        await expect(
-          pathExists(path.join(root, ".agentplane/cache/pre-push-fallback.marker")),
-        ).resolves.toBe(true);
-      } finally {
-        io.restore();
-      }
-    });
-  });
-
-  it("hooks run pre-push skips missing project scripts in clean initialized repositories", async () => {
-    await withInstalledAgentplaneRuntime(async () => {
-      const root = await mkGitRepoRoot();
-      await writeDefaultConfig(root);
-
-      const io = captureStdIO();
-      try {
-        const code = await runCli(["hooks", "run", "pre-push", "--root", root]);
-        expect(code).toBe(0);
-        expect(io.stdout).toContain("Running pre-push checks in standard mode.");
-        expect(io.stdout).toContain("Skipping format:check: package.json script is not defined.");
-        expect(io.stdout).toContain("Skipping ci:local:fast: package.json script is not defined.");
-        expect(io.stderr).not.toContain("Missing pre-push hook script");
-      } finally {
-        io.restore();
-      }
-    });
-  });
-
-  it("hooks run pre-push skips framework release scripts in clean initialized repositories", async () => {
-    await withInstalledAgentplaneRuntime(async () => {
-      const root = await mkGitRepoRoot();
-      await writeDefaultConfig(root);
-      const previousRelease = process.env.AGENTPLANE_HOOKS_RELEASE;
-      process.env.AGENTPLANE_HOOKS_RELEASE = "1";
-
-      const io = captureStdIO();
-      try {
-        const code = await runCli(["hooks", "run", "pre-push", "--root", root]);
-        expect(code).toBe(0);
-        expect(io.stdout).toContain("Running pre-push checks in release mode.");
-        expect(io.stdout).toContain(
-          "Skipping release notes check: scripts/check-release-notes.mjs is not defined.",
-        );
-        expect(io.stdout).toContain(
-          "Skipping release:prepublish: package.json script is not defined.",
-        );
-        expect(io.stderr).not.toContain("Missing pre-push hook script");
-      } finally {
-        io.restore();
-        if (previousRelease === undefined) delete process.env.AGENTPLANE_HOOKS_RELEASE;
-        else process.env.AGENTPLANE_HOOKS_RELEASE = previousRelease;
-      }
-    });
   });
 
   it("pre-push release mode reports polluted local git config before payload checks", async () => {

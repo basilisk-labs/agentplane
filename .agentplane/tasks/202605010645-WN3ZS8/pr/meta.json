@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605010645-WN3ZS8/hooks-test-split",
+  "created_at": "2026-05-01T09:09:54.255Z",
+  "head_sha": "157fd6ac0ba278c11d4ba9e34476f866be007191",
+  "last_verified_at": "2026-05-01T09:18:05.676Z",
+  "last_verified_sha": "95902ae6fce4a320b0ee27c8e4526e9e8483ffd2",
+  "schema_version": 1,
+  "task_id": "202605010645-WN3ZS8",
+  "updated_at": "2026-05-01T09:19:26.263Z",
+  "verify": {
+    "status": "pass"
+  }
+}

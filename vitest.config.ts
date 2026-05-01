@@ -20,6 +20,10 @@ export default defineConfig({
         replacement: path.join(__dirname, "packages/testkit/src/cli-core-tasks-query.ts"),
       },
       {
+        find: /^@agentplane\/testkit\/hooks$/,
+        replacement: path.join(__dirname, "packages/testkit/src/hooks.ts"),
+      },
+      {
         find: /^@agentplane\/testkit\/cli$/,
         replacement: path.join(__dirname, "packages/testkit/src/cli.ts"),
       },

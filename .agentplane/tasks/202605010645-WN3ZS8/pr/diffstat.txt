@@ -1,0 +1,12 @@
+ .../agentplane/src/cli/local-ci-selection.test.ts  |   7 +-
+ ...test.ts => run-cli.core.hooks.hook-run.test.ts} | 301 +--------------------
+ .../src/cli/run-cli.core.hooks.install.test.ts     | 169 ++++++++++++
+ .../cli/run-cli.core.hooks.runtime-shim.test.ts    | 178 ++++++++++++
+ .../src/cli/run-cli.core.hooks.uninstall.test.ts   | 109 ++++++++
+ packages/testkit/package.json                      |   4 +
+ packages/testkit/src/hooks.ts                      |  36 +++
+ scripts/lib/local-ci-selection.mjs                 |   2 +-
+ scripts/lib/test-route-registry.mjs                |   5 +-
+ scripts/oversized-test-baseline.json               |   8 +-
+ vitest.config.ts                                   |   4 +
+ 11 files changed, 520 insertions(+), 303 deletions(-)
