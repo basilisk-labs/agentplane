@@ -5,7 +5,7 @@ import type {
   PromptModuleLoadCondition,
   PromptModuleMutability,
 } from "./model.js";
-import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./model.js";
+import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./schema.js";
 import { mergeDuplicateNodes } from "./compiler.merge.js";
 import {
   copyModule,

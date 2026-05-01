@@ -1,10 +1,10 @@
 ---
 id: "202605010644-1HMJJA"
 title: "AP-04: Add prompt schema migration seam"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -14,19 +14,36 @@ tags:
 verify:
   - "bunx vitest run packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-05-01T07:24:10.521Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved AP-04 from user-provided Agentplane 0.4 refactor plan after AP-03 closed."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
-events: []
+  state: "ok"
+  updated_at: "2026-05-01T07:28:06.257Z"
+  updated_by: "CODER"
+  note: "Verified prompt schema migration seam with: bunx vitest run packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts --testTimeout 60000 --hookTimeout 60000; bun run typecheck; bunx prettier --check touched files; git diff --check; bun run framework:dev:bootstrap."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: add prompt module schema version migration entrypoint and route validation through it without changing wire shape."
+events:
+  -
+    type: "status"
+    at: "2026-05-01T07:25:10.448Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: add prompt module schema version migration entrypoint and route validation through it without changing wire shape."
+  -
+    type: "verify"
+    at: "2026-05-01T07:28:06.257Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified prompt schema migration seam with: bunx vitest run packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts --testTimeout 60000 --hookTimeout 60000; bun run typecheck; bunx prettier --check touched files; git diff --check; bun run framework:dev:bootstrap."
 doc_version: 3
-doc_updated_at: "2026-05-01T06:44:55.804Z"
+doc_updated_at: "2026-05-01T07:28:06.261Z"
 doc_updated_by: "CODER"
 description: "Centralize prompt module schema version handling and add a no-op v1 migration entrypoint with unknown-version tests."
 sections:
@@ -47,6 +64,14 @@ sections:
     3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-01T07:28:06.257Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified prompt schema migration seam with: bunx vitest run packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts --testTimeout 60000 --hookTimeout 60000; bun run typecheck; bunx prettier --check touched files; git diff --check; bun run framework:dev:bootstrap.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T07:25:10.448Z, excerpt_hash=sha256:83c0c929137cfc7aa8aaa2b03ecc85fde654bcc40cfa2c3d0c3aaaf0a5db60be
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -80,6 +105,14 @@ Centralize prompt module schema version handling and add a no-op v1 migration en
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-01T07:28:06.257Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified prompt schema migration seam with: bunx vitest run packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts --testTimeout 60000 --hookTimeout 60000; bun run typecheck; bunx prettier --check touched files; git diff --check; bun run framework:dev:bootstrap.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T07:25:10.448Z, excerpt_hash=sha256:83c0c929137cfc7aa8aaa2b03ecc85fde654bcc40cfa2c3d0c3aaaf0a5db60be
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

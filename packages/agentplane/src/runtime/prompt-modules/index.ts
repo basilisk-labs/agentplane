@@ -13,11 +13,15 @@ export {
 } from "./compiler.js";
 export {
   PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
+  SUPPORTED_PROMPT_MODULE_SCHEMA_VERSIONS,
+  migratePromptModuleSchemaVersion,
+  type PromptModuleContractSchemaVersion,
+} from "./schema.js";
+export {
   type PromptModule,
   type PromptModuleAddress,
   type PromptModuleConflictPolicy,
   type PromptModuleContentKind,
-  type PromptModuleContractSchemaVersion,
   type PromptModuleDependency,
   type PromptModuleGraph,
   type PromptModuleGraphNode,
