@@ -1,10 +1,11 @@
 ---
 id: "202605010644-6YE9F6"
 title: "AP-05: Extract prompt mutation engine"
-status: "DOING"
+result_summary: "Merged via PR #653."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T07:59:00.605Z"
   updated_by: "CODER"
   note: "Verified: mutation engine extraction passes focused prompt-module tests, typecheck, full lint:core, formatting, diff check, and framework bootstrap."
-commit: null
+commit:
+  hash: "8e79fd817f2e33efc43c98eb62a20267345d53c6"
+  message: "Merge pull request #653 from basilisk-labs/task/202605010644-6YE9F6/prompt-mutation-engine"
 comments:
   -
     author: "CODER"
     body: "Start: extract prompt mutation application into a dedicated mutations engine while keeping compiler orchestration and public APIs stable."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #653 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: mutation engine extraction passes focused prompt-module tests, typecheck, full lint:core, formatting, diff check, and framework bootstrap."
+  -
+    type: "status"
+    at: "2026-05-01T08:02:55.040Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #653 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T07:59:00.609Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T08:02:55.045Z"
+doc_updated_by: "INTEGRATOR"
 description: "Move mutation application logic out of compiler.ts into a dedicated mutations-engine module while keeping compiled graph behavior stable."
 sections:
   Summary: |-
