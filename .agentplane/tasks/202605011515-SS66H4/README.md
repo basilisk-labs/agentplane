@@ -1,10 +1,11 @@
 ---
 id: "202605011515-SS66H4"
 title: "Add AgentPlane to Picrew awesome-agent-harness"
-status: "DOING"
+result_summary: "Merged via PR #694."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-01T16:00:37.096Z"
   updated_by: "DOCS"
   note: "Picrew PR body corrected and verified"
-commit: null
+commit:
+  hash: "1893c2bc6e3ef733d8ec4e8ccbe498525d0912de"
+  message: "Merge pull request #694 from basilisk-labs/task/202605011515-SS66H4/picrew-awesome-agent-harness"
 comments:
   -
     author: "DOCS"
     body: "Start: submitting AgentPlane to Picrew/awesome-agent-harness with harness-focused listing wording and upstream format verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #694 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Picrew PR body corrected and verified"
+  -
+    type: "status"
+    at: "2026-05-01T16:05:04.907Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #694 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T16:00:37.114Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-01T16:05:04.914Z"
+doc_updated_by: "INTEGRATOR"
 description: "Submit a focused GitHub PR adding AgentPlane to Picrew/awesome-agent-harness in the most fitting harness implementation, guardrails, governance, or orchestration section after verifying the current README structure."
 sections:
   Summary: |-
