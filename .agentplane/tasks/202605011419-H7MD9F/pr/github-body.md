@@ -22,35 +22,36 @@ Prepare the v0.4.1 release candidate from current main, including release plan, 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T15:05:14.837Z
+- Updated: 2026-05-01T15:06:43.924Z
 - Branch: task/202605011419-H7MD9F/v0-4-1-release-candidate
-- Head: 8dd512200211
+- Head: e8bbf838bd96
 
 ```text
  .agentplane/policy/incidents.md                    |   1 +
- README.md                                          |  21 +--
+ README.md                                          |  21 +-
  .../documentation-information-architecture.mdx     |  14 +-
- docs/index.mdx                                     |  25 ++--
- docs/recipes/code-map.mdx                          |  89 ++++++++++++
- docs/recipes/index.mdx                             | 101 +++++++++-----
+ docs/index.mdx                                     |  25 ++-
+ docs/recipes/code-map.mdx                          |  89 +++++++++
+ docs/recipes/index.mdx                             | 101 ++++++----
+ docs/releases/v0.4.1.md                            | 220 +++++++++++++++++++++
  docs/user/commands.mdx                             |   9 +-
  docs/user/overview.mdx                             |   5 +-
  docs/user/setup.mdx                                |   7 +-
- docs/user/website-ia.mdx                           |  39 +++---
+ docs/user/website-ia.mdx                           |  39 ++--
  docs/{recipes => workflow-guides}/aider.mdx        |   0
  docs/{recipes => workflow-guides}/branch-pr.mdx    |   0
  docs/{recipes => workflow-guides}/claude-code.mdx  |   0
  docs/{recipes => workflow-guides}/codex.mdx        |   0
  docs/{recipes => workflow-guides}/cursor.mdx       |   0
  .../github-actions.mdx                             |   0
- docs/workflow-guides/index.mdx                     |  29 ++++
- packages/agentplane/README.md                      |  19 +--
+ docs/workflow-guides/index.mdx                     |  29 +++
+ packages/agentplane/README.md                      |  19 +-
  packages/agentplane/assets/policy/incidents.md     |   1 +
- scripts/baselines/knip-baseline.json               | 150 ++++++++++++---------
+ scripts/baselines/knip-baseline.json               | 150 ++++++++------
  scripts/check-docs-ia.mjs                          |  10 +-
- website/sidebars.ts                                |  21 +--
+ website/sidebars.ts                                |  21 +-
  website/src/data/homepage-content.ts               |   9 +-
- 23 files changed, 388 insertions(+), 162 deletions(-)
+ 24 files changed, 608 insertions(+), 162 deletions(-)
 ```
 
 </details>
