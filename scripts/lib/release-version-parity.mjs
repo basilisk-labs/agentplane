@@ -2,7 +2,9 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 const FREEZE_V03_PATH = "FREEZE.v0.3.md";
+const RECIPES_RUNTIME_VERSION_PATH = "packages/recipes/src/index.ts";
 const V03_VERSION_RE = /^0\.3\.\d+(?:[-+][0-9A-Za-z.-]+)?$/u;
+const RECIPES_VERSION_EXPORT_RE = /export\s+const\s+RECIPES_VERSION\s*=\s*["']([^"']+)["']\s*;/u;
 
 async function readPackageJson(rootDir, relPath) {
   const absPath = path.join(rootDir, relPath);
@@ -18,6 +20,24 @@ async function readOptionalText(rootDir, relPath) {
     if (code === "ENOENT") return null;
     throw error;
   }
+}
+
+async function readRecipesRuntimeVersion(rootDir) {
+  const text = await readOptionalText(rootDir, RECIPES_RUNTIME_VERSION_PATH);
+  if (text === null) {
+    return {
+      relPath: RECIPES_RUNTIME_VERSION_PATH,
+      exists: false,
+      version: null,
+    };
+  }
+
+  const match = RECIPES_VERSION_EXPORT_RE.exec(text);
+  return {
+    relPath: RECIPES_RUNTIME_VERSION_PATH,
+    exists: true,
+    version: typeof match?.[1] === "string" ? match[1].trim() : null,
+  };
 }
 
 async function readWorkspacePrivatePackageNames(rootDir) {
@@ -139,6 +159,7 @@ export async function readReleaseParityState(rootDir) {
   const privateWorkspacePackageNames = await readWorkspacePrivatePackageNames(rootDir);
   const packageWorkspaceDependencies = await readPackageWorkspaceDependencies(rootDir);
   const freezeV03Text = await readOptionalText(rootDir, FREEZE_V03_PATH);
+  const recipesRuntimeVersion = await readRecipesRuntimeVersion(rootDir);
 
   const coreVersion = readVersion(corePkg, corePath);
   const agentplaneVersion = readVersion(agentplanePkg, agentplanePath);
@@ -156,6 +177,7 @@ export async function readReleaseParityState(rootDir) {
     recipesVersion,
     coreDependency,
     recipesDependency,
+    recipesRuntimeVersion,
     packageWorkspaceDependencies,
     publishDependencyErrors,
     freezeV03: {
@@ -180,6 +202,25 @@ export function collectReleaseParityErrors(state, opts = {}) {
   if (state.recipesVersion !== state.agentplaneVersion) {
     errors.push(
       `Package versions must match. packages/recipes=${state.recipesVersion} packages/agentplane=${state.agentplaneVersion}.`,
+    );
+  }
+  const recipesRuntimeVersion = state.recipesRuntimeVersion ?? {
+    relPath: RECIPES_RUNTIME_VERSION_PATH,
+    exists: false,
+    version: null,
+  };
+  if (recipesRuntimeVersion.exists && recipesRuntimeVersion.version === null) {
+    errors.push(
+      `${recipesRuntimeVersion.relPath} must export RECIPES_VERSION as a string literal.`,
+    );
+  }
+  if (
+    recipesRuntimeVersion.exists &&
+    recipesRuntimeVersion.version !== null &&
+    recipesRuntimeVersion.version !== state.recipesVersion
+  ) {
+    errors.push(
+      `${recipesRuntimeVersion.relPath} RECIPES_VERSION=${recipesRuntimeVersion.version} does not match packages/recipes version ${state.recipesVersion}.`,
     );
   }
 

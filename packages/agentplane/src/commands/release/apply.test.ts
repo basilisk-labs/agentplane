@@ -199,6 +199,10 @@ describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_
         path.join(root, "packages", "recipes", "package.json"),
         "utf8",
       );
+      const recipesRuntimeText = await readFile(
+        path.join(root, "packages", "recipes", "src", "index.ts"),
+        "utf8",
+      );
       const testkitText = await readFile(
         path.join(root, "packages", "testkit", "package.json"),
         "utf8",
@@ -210,6 +214,7 @@ describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_
       const configText = await readFile(path.join(root, ".agentplane", "config.json"), "utf8");
       expect(coreText).toContain('"version": "0.2.7"');
       expect(recipesText).toContain('"version": "0.2.7"');
+      expect(recipesRuntimeText).toContain('RECIPES_VERSION = "0.2.7"');
       expect(agentplaneText).toContain('"version": "0.2.7"');
       expect(agentplaneText).toContain('"@agentplaneorg/core": "0.2.7"');
       expect(agentplaneText).toContain('"@agentplaneorg/recipes": "0.2.7"');
@@ -228,6 +233,7 @@ describeWhenNotHook("release apply", { timeout: RELEASE_APPLY_FULL_GATE_TIMEOUT_
       );
       expect(committedFiles).toContain(".agentplane/config.json");
       expect(committedFiles).toContain("packages/recipes/package.json");
+      expect(committedFiles).toContain("packages/recipes/src/index.ts");
       expect(committedFiles).toContain("packages/testkit/package.json");
 
       const reportPath = path.join(root, ".agentplane", ".release", "apply", "latest.json");

@@ -27,6 +27,25 @@ export async function replacePackageVersionInFile(
   await writeFile(pkgJsonPath, replaced, "utf8");
 }
 
+export async function replaceRecipesRuntimeVersionInFile(
+  sourcePath: string,
+  nextVersion: string,
+): Promise<void> {
+  const text = await readFile(sourcePath, "utf8");
+  const replaced = text.replace(
+    /export\s+const\s+RECIPES_VERSION\s*=\s*["'][^"']*["']\s*;/u,
+    `export const RECIPES_VERSION = "${nextVersion}";`,
+  );
+  if (replaced === text) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: `Failed to update RECIPES_VERSION in ${sourcePath}.`,
+    });
+  }
+  await writeFile(sourcePath, replaced, "utf8");
+}
+
 export async function replaceAgentplanePackageMetadata(
   pkgJsonPath: string,
   nextVersion: string,
