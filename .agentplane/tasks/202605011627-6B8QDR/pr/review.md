@@ -46,12 +46,17 @@ Add the release path and contract for a setup-agentplane GitHub Action so CI use
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T17:57:05.123Z
+- Updated: 2026-05-01T18:06:30.529Z
 - Branch: task/202605011627-6B8QDR/setup-agentplane-action
-- Head: 50320970b119
+- Head: b887ebcd7d3d
 
 ```text
-No changes detected.
+ .github/workflows/publish.yml                      |  14 ++
+ package.json                                       |   1 +
+ .../release/publish-workflow-contract.test.ts      |   4 +
+ scripts/README.md                                  |   1 +
+ scripts/render-setup-agentplane-action.mjs         | 188 +++++++++++++++++++++
+ 5 files changed, 208 insertions(+)
 ```
 
 </details>
