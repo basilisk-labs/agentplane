@@ -25,8 +25,8 @@ Rotate the recipes remote index signing trust root, document key custody and rot
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Command: node packages/agentplane/bin/agentplane.js recipes list-remote --refresh --yes with clean AGENTPLANE_HOME. Result: pass; Evidence: code-map@0.1.0 listed from default remote signed with key_id 2026-05. Command: bun test packages/agentplane/src/cli/run-cli.recipes.remote-usage.test.ts packages/agentplane/src/cli/run-cli.recipes.validation-list.test.ts packages/agentplane/src/cli/run-cli.recipes.install-project.test.ts packages/recipes/src/index.test.ts packages/recipes/src/overlay.test.ts. Result: pass; Evidence: 40 pass, 0 fail. Command: node .agentplane/policy/check-routing.mjs; bun run docs:ia:check; bun run docs:recipes:check; bun run format:check; agentplane doctor; gh pr checks 670. Result: pass; Evidence: routing OK, docs checks OK, Prettier OK, doctor OK, hosted checks pass/skipped as scoped. Key custody: RECIPES_INDEX_SIGNING_PRIVATE_KEY exists in agentplane-recipes secrets; rg found no private key material or 2026-05-dev in tracked tree.
 
 ## Risks
 
