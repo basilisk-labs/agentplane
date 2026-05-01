@@ -1,10 +1,11 @@
 ---
 id: "202605011627-6B8QDR"
 title: "Add setup-agentplane release path"
-status: "DOING"
+result_summary: "Merged via PR #728."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-05-01T18:06:15.627Z"
   updated_by: "CODER"
   note: "setup-agentplane module renders a composite GitHub Action bundle and setup-agentplane-result.json from release-distribution.json; publish workflow uploads setup-agentplane-module evidence."
-commit: null
+commit:
+  hash: "e99f2fd367189810d11dc9cc669c61df4f3379bb"
+  message: "Merge pull request #728 from basilisk-labs/task/202605011627-6B8QDR/setup-agentplane-action"
 comments:
   -
     author: "CODER"
     body: "Start: add setup-agentplane GitHub Action release module and workflow evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #728 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "setup-agentplane module renders a composite GitHub Action bundle and setup-agentplane-result.json from release-distribution.json; publish workflow uploads setup-agentplane-module evidence."
+  -
+    type: "status"
+    at: "2026-05-01T18:09:33.955Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #728 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T18:06:15.662Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T18:09:33.961Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add the release path and contract for a setup-agentplane GitHub Action so CI users can install exact AgentPlane versions from the release distribution manifest."
 sections:
   Summary: |-
