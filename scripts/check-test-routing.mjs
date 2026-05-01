@@ -1,13 +1,13 @@
 import { pathToFileURL } from "node:url";
 
-import { listLocalCiTargetTestFiles } from "./lib/local-ci-selection.mjs";
 import {
   AGGREGATE_TEST_ROUTES,
   PRIMARY_TEST_ROUTES,
   buildTestInventory,
+  listLocalCiTargetTestFiles,
+  listVitestSuiteFiles,
   summarizeTestInventory,
-} from "./lib/test-inventory.mjs";
-import { listVitestSuiteFiles } from "./run-vitest-suite.mjs";
+} from "./lib/test-route-registry.mjs";
 
 const PRIMARY_ROUTE_SET = new Set(PRIMARY_TEST_ROUTES);
 const AGGREGATE_ROUTE_SET = new Set(AGGREGATE_TEST_ROUTES);

@@ -1,6 +1,19 @@
-import { readdirSync } from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { LOCAL_CI_TARGET_TEST_FILES } from "./test-route-registry.mjs";
+
+const {
+  backend: BACKEND_TEST_FILES,
+  "cli-core": CLI_CORE_TEST_FILES,
+  "cli-help": CLI_HELP_TEST_FILES,
+  "cli-runtime": CLI_RUNTIME_TEST_FILES,
+  doctor: DOCTOR_TEST_FILES,
+  guard: GUARD_TEST_FILES,
+  hooks: HOOKS_TEST_FILES,
+  pr: PR_TEST_FILES,
+  release: RELEASE_TEST_FILES,
+  task: TASK_TEST_FILES,
+  upgrade: UPGRADE_TEST_FILES,
+  workflow: WORKFLOW_TEST_FILES,
+} = LOCAL_CI_TARGET_TEST_FILES;
 
 const DOCS_ONLY_PATTERNS = [
   /^docs\//,
@@ -66,10 +79,6 @@ const CLI_HELP_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/spec\//,
   /^packages\/agentplane\/src\/shared\/ansi(?:\.test)?\.ts$/,
 ];
-const CLI_HELP_DISCOVERY_PATTERNS = [
-  /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:docs-cli|help-contract|help-snap)\.test\.ts$/,
-];
-
 const CLI_CORE_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\/(?!commands\/init\/)/,
@@ -80,15 +89,6 @@ const CLI_CORE_BUCKET_PATTERNS = [
 ];
 const PR_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/commands\/pr(?:\/|\.|$)/,
-  /^packages\/agentplane\/src\/cli\/run-cli\.core\.pr-flow(?:\..+)?\.test\.ts$/,
-];
-const CLI_CORE_DISCOVERY_PATTERNS = [
-  /^packages\/agentplane\/src\/cli\/run-cli\.core\.test\.ts$/,
-  /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta(?:\..+)?|misc|pr-flow(?:\..+)?)\.test\.ts$/,
-  /^packages\/agentplane\/src\/cli\/run-cli\.core\.lifecycle(?:\..+)?\.test\.ts$/,
-  /^packages\/agentplane\/src\/cli\/run-cli\.core\.tasks(?:\..+)?\.test\.ts$/,
-];
-const PR_FLOW_DISCOVERY_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.pr-flow(?:\..+)?\.test\.ts$/,
 ];
 
@@ -123,10 +123,6 @@ const GUARD_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/commands\/guard\//,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.guard(?:\..+)?\.test\.ts$/,
 ];
-const GUARD_DISCOVERY_PATTERNS = [
-  /^packages\/agentplane\/src\/commands\/guard\/.+\.test\.ts$/,
-  /^packages\/agentplane\/src\/cli\/run-cli\.core\.guard(?:\..+)?\.test\.ts$/,
-];
 
 const BROAD_FALLBACK_PATTERNS = [
   /^package\.json$/,
@@ -141,141 +137,6 @@ const BROAD_FALLBACK_PATTERNS = [
   /^packages\/agentplane\/bin\//,
 ];
 
-const TASK_TEST_FILES = [
-  "packages/agentplane/src/commands/task/shared.unit.test.ts",
-  "packages/agentplane/src/commands/task/shared.verify-steps.test.ts",
-  "packages/agentplane/src/commands/task/warn-owner.unit.test.ts",
-  "packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts",
-  "packages/agentplane/src/commands/task/finish.state.unit.test.ts",
-  "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
-  "packages/agentplane/src/commands/task/verify-record.unit.test.ts",
-  "packages/agentplane/src/commands/task/plan.unit.test.ts",
-];
-
-const DOCTOR_TEST_FILES = ["packages/agentplane/src/commands/doctor.fast.test.ts"];
-const BACKEND_TEST_FILES = [
-  "packages/agentplane/src/backends/task-backend.test.ts",
-  "packages/agentplane/src/backends/task-backend.local.test.ts",
-  "packages/agentplane/src/backends/task-backend.redmine.cache.test.ts",
-  "packages/agentplane/src/backends/task-backend.redmine.docs.test.ts",
-  "packages/agentplane/src/backends/task-backend.redmine.mapping.test.ts",
-  "packages/agentplane/src/backends/task-backend.redmine.remote.test.ts",
-  "packages/agentplane/src/backends/task-backend.redmine.write.test.ts",
-  "packages/agentplane/src/backends/task-backend.load.test.ts",
-  "packages/agentplane/src/backends/task-backend/redmine/env.test.ts",
-  "packages/agentplane/src/commands/backend.test.ts",
-  "packages/agentplane/src/commands/shared/task-backend.test.ts",
-  "packages/agentplane/src/commands/task/export.unit.test.ts",
-  "packages/agentplane/src/commands/task/migrate-doc.test.ts",
-  "packages/agentplane/src/commands/doctor.fast.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.tasks.incidents.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts",
-];
-const HOOKS_TEST_FILES = [
-  "packages/agentplane/src/cli/local-ci-selection.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.hooks.test.ts",
-  "packages/agentplane/src/cli/pre-commit-staged-files.test.ts",
-  "packages/agentplane/src/cli/pre-commit-test-fast-script.test.ts",
-];
-const WORKFLOW_TEST_FILES = [];
-const SELECTOR_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-
-function normalizeRepoPath(value) {
-  return value.split(path.sep).join("/");
-}
-
-function listRepoFiles(relativeDir) {
-  const root = path.join(SELECTOR_ROOT, relativeDir);
-  const files = [];
-  const pending = [root];
-
-  while (pending.length > 0) {
-    const current = pending.pop();
-    if (!current) continue;
-    for (const entry of readdirSync(current, { withFileTypes: true })) {
-      const absolute = path.join(current, entry.name);
-      if (entry.isDirectory()) {
-        pending.push(absolute);
-        continue;
-      }
-      if (!entry.isFile()) continue;
-      files.push(normalizeRepoPath(path.relative(SELECTOR_ROOT, absolute)));
-    }
-  }
-
-  return files.toSorted((a, b) => a.localeCompare(b));
-}
-
-function discoverTestFiles(relativeDirs, patterns) {
-  const matches = new Set();
-  for (const relativeDir of relativeDirs) {
-    for (const filePath of listRepoFiles(relativeDir)) {
-      if (patterns.some((pattern) => pattern.test(filePath))) {
-        matches.add(filePath);
-      }
-    }
-  }
-  return [...matches].toSorted((a, b) => a.localeCompare(b));
-}
-
-const CLI_HELP_TEST_FILES = [
-  "packages/agentplane/src/cli/command-guide.test.ts",
-  "packages/agentplane/src/cli/cli-contract.test.ts",
-  "packages/agentplane/src/cli/help.all-commands.contract.test.ts",
-  "packages/agentplane/src/cli/output.test.ts",
-  "packages/agentplane/src/cli/error-map.test.ts",
-  "packages/agentplane/src/cli/prompts.test.ts",
-  "packages/agentplane/src/cli/spec/parse.test.ts",
-  "packages/agentplane/src/cli/spec/help-render.test.ts",
-  "packages/agentplane/src/cli/spec/registry.test.ts",
-  "packages/agentplane/src/cli/spec/suggest.test.ts",
-  "packages/agentplane/src/shared/ansi.test.ts",
-  ...discoverTestFiles(["packages/agentplane/src/cli"], CLI_HELP_DISCOVERY_PATTERNS),
-];
-const CLI_CORE_TEST_FILES = [
-  ...discoverTestFiles(["packages/agentplane/src/cli"], CLI_CORE_DISCOVERY_PATTERNS),
-  "packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts",
-];
-const PR_TEST_FILES = [
-  "packages/agentplane/src/commands/pr/input-validation.test.ts",
-  ...discoverTestFiles(["packages/agentplane/src/cli"], PR_FLOW_DISCOVERY_PATTERNS),
-];
-const CLI_RUNTIME_TEST_FILES = [
-  "packages/agentplane/src/cli/runtime-context.test.ts",
-  "packages/agentplane/src/cli/runtime-watch.test.ts",
-  "packages/agentplane/src/cli/dist-guard.test.ts",
-  "packages/agentplane/src/cli/stale-dist-policy.test.ts",
-  "packages/agentplane/src/cli/stale-dist-readonly.test.ts",
-  "packages/agentplane/src/cli/repo-local-handoff.test.ts",
-  "packages/agentplane/src/cli/verify-global-install-script.test.ts",
-];
-const RELEASE_TEST_FILES = [
-  "packages/agentplane/src/commands/release/plan.test.ts",
-  "packages/agentplane/src/commands/release/release-check-script.test.ts",
-  "packages/agentplane/src/commands/release/check-release-parity-script.test.ts",
-  "packages/agentplane/src/commands/release/check-release-version-script.test.ts",
-  "packages/agentplane/src/commands/release/apply.test.ts",
-  "packages/agentplane/src/cli/release-recovery-script.test.ts",
-];
-const UPGRADE_TEST_FILES = [
-  "packages/agentplane/src/commands/upgrade.agent-mode.test.ts",
-  "packages/agentplane/src/commands/upgrade.cleanup.test.ts",
-  "packages/agentplane/src/commands/upgrade.json-merge.stability.test.ts",
-  "packages/agentplane/src/commands/upgrade.merge.test.ts",
-  "packages/agentplane/src/commands/upgrade.release-assets.unit.test.ts",
-  "packages/agentplane/src/commands/upgrade.safety.test.ts",
-  "packages/agentplane/src/commands/upgrade.spec-parse.test.ts",
-  "packages/agentplane/src/commands/upgrade.tarball-url.unit.test.ts",
-  "packages/agentplane/src/commands/upgrade.unit.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.upgrade.test.ts",
-];
-const GUARD_TEST_FILES = discoverTestFiles(
-  ["packages/agentplane/src/commands/guard", "packages/agentplane/src/cli"],
-  GUARD_DISCOVERY_PATTERNS,
-);
 const CLI_DOCS_RELEVANT_PATTERNS = [
   /^packages\/agentplane\/src\/cli\//,
   /^packages\/agentplane\/src\/commands\/.+(?:command|spec)\.ts$/,
