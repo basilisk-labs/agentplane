@@ -1,33 +1,21 @@
 ## Summary
 
-Add AgentPlane to ai-for-developers awesome-ai-coding-tools
-
-Submit a GitHub PR adding AgentPlane to ai-for-developers/awesome-ai-coding-tools as workflow infrastructure for AI coding tools after verifying the current contribution format.
+Record the external listing PR for `ai-for-developers/awesome-ai-coding-tools`.
 
 ## Scope
 
-- In scope: Submit a GitHub PR adding AgentPlane to ai-for-developers/awesome-ai-coding-tools as workflow infrastructure for AI coding tools after verifying the current contribution format.
-- Out of scope: unrelated refactors not required for "Add AgentPlane to ai-for-developers awesome-ai-coding-tools".
+- External PR: https://github.com/ai-for-developers/awesome-ai-coding-tools/pull/285
+- Category: `Developer Productivity Tools`
+- Entry wording: AgentPlane as a local-first, Git-native CLI harness for repo-local coding-agent work.
+- Internal change: task and PR artifacts for `202605011518-97HPR5` only.
 
 ## Verification
 
-- State: ok
-- Note: External ai-for-developers PR opened and PR body formatting verified.
-- Full verification checklist lives in local review.md.
+- `git diff --check` in the external fork: pass.
+- `gh pr view 285 --repo ai-for-developers/awesome-ai-coding-tools --json body`: pass; body uses real Markdown line breaks from `--body-file`.
+- `node .agentplane/policy/check-routing.mjs`: pass.
+- `agentplane doctor`: pass; one unrelated warning for task `202605011626-4TQ11R` state reconciliation.
 
 ## Handoff Notes
 
-- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
-
-<details>
-<summary>Raw evidence</summary>
-
-- Updated: 2026-05-01T17:00:25.033Z
-- Branch: task/202605011518-97HPR5/ai-for-developers-awesome-ai-coding-tools
-- Head: 53c1dfba0663
-
-```text
-No changes detected.
-```
-
-</details>
+- AgentPlane is positioned as developer workflow infrastructure, not as another coding agent or model framework.
