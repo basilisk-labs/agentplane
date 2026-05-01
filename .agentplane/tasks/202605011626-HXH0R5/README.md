@@ -1,10 +1,11 @@
 ---
 id: "202605011626-HXH0R5"
 title: "Modularize publish workflow distribution stages"
-status: "DOING"
+result_summary: "Merged via PR #711."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-05-01T17:05:54.208Z"
   updated_by: "CODER"
   note: "Modular publish workflow verified: workflows:command-check passed; release:distribution:check passed; focused publish-result and publish workflow contract tests passed; lint:core passed; targeted Prettier check passed."
-commit: null
+commit:
+  hash: "e5942215efd83b67c5555986843e1af148065206"
+  message: "Merge pull request #711 from basilisk-labs/task/202605011626-HXH0R5/modular-release-distribution"
 comments:
   -
     author: "CODER"
     body: "Start: modularize hosted release publication stages around the generated release distribution manifest and explicit channel evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #711 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Modular publish workflow verified: workflows:command-check passed; release:distribution:check passed; focused publish-result and publish workflow contract tests passed; lint:core passed; targeted Prettier check passed."
+  -
+    type: "status"
+    at: "2026-05-01T17:08:58.277Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #711 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T17:05:54.216Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T17:08:58.282Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refactor the release publishing workflow so npm, GitHub assets, package-manager publications, and evidence reporting are explicit distribution modules driven by the release distribution manifest."
 sections:
   Summary: |-
