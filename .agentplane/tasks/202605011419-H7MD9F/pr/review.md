@@ -48,20 +48,20 @@ Prepare the v0.4.1 release candidate from current main, including release plan, 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T17:12:54.724Z
+- Updated: 2026-05-01T17:23:30.689Z
 - Branch: task/202605011419-H7MD9F/v0-4-1-release-candidate
-- Head: 323b1109a1fb
+- Head: dc764d93dcbd
 
 ```text
  .agentplane/config.json                            |   2 +-
  .agentplane/policy/incidents.md                    |   1 +
  README.md                                          |  21 +-
  .../documentation-information-architecture.mdx     |  14 +-
- docs/index.mdx                                     |  23 ++-
- docs/recipes/code-map.mdx                          |  89 +++++++++
- docs/recipes/index.mdx                             | 101 ++++++----
+ docs/index.mdx                                     |  23 +-
+ docs/recipes/code-map.mdx                          |  89 ++++++++
+ docs/recipes/index.mdx                             | 101 ++++++---
  docs/reference/generated-reference.mdx             |   6 +-
- docs/releases/v0.4.1.md                            | 220 +++++++++++++++++++++
+ docs/releases/v0.4.1.md                            | 239 +++++++++++++++++++++
  docs/user/commands.mdx                             |   9 +-
  docs/user/overview.mdx                             |   5 +-
  docs/user/setup.mdx                                |   7 +-
@@ -80,11 +80,11 @@ Prepare the v0.4.1 release candidate from current main, including release plan, 
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
  packages/testkit/package.json                      |   2 +-
- scripts/baselines/knip-baseline.json               | 150 ++++++++------
+ scripts/baselines/knip-baseline.json               | 150 +++++++------
  scripts/check-docs-ia.mjs                          |  14 +-
  website/sidebars.ts                                |  21 +-
  website/src/data/homepage-content.ts               |   9 +-
- 31 files changed, 622 insertions(+), 172 deletions(-)
+ 31 files changed, 641 insertions(+), 172 deletions(-)
 ```
 
 </details>
