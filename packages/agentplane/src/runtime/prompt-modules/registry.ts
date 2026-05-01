@@ -29,7 +29,7 @@ import type {
   PromptModuleSurface,
   PromptModuleTarget,
 } from "./model.js";
-import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./model.js";
+import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./schema.js";
 
 const FRAMEWORK_OWNER: PromptModuleOwner = {
   kind: "framework",

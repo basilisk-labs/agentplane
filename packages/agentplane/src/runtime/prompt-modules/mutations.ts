@@ -11,6 +11,7 @@ import type {
   PromptModuleSurface,
   PromptModuleTarget,
 } from "./model.js";
+import type { PromptModuleContractSchemaVersion } from "./schema.js";
 
 export type PromptModuleSelector = {
   address?: string;
@@ -140,7 +141,7 @@ export type PromptModuleMutation =
   | PromptModuleValidatorMutation;
 
 export type PromptModuleMutationSet = {
-  schema_version: 1;
+  schema_version: PromptModuleContractSchemaVersion;
   recipe_id?: string;
   mutations: PromptModuleMutation[];
 };

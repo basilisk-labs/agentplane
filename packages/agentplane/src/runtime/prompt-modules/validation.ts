@@ -15,8 +15,8 @@ import type {
   PromptModuleSurface,
   PromptModuleTarget,
 } from "./model.js";
-import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./model.js";
 import type { PromptModuleCompiledGraph } from "./compiler.js";
+import { migratePromptModuleSchemaVersion } from "./schema.js";
 import type {
   PromptModuleBindingKind,
   PromptModuleMutation,
@@ -312,10 +312,7 @@ function validateModuleContent(raw: unknown, field: string): void {
 }
 
 export function validatePromptModule(raw: unknown, field = "prompt module"): PromptModule {
-  const module = requireRecord(raw, field);
-  if (module.schema_version !== PROMPT_MODULE_CONTRACT_SCHEMA_VERSION) {
-    throw invalid(`${field}.schema_version`, `${PROMPT_MODULE_CONTRACT_SCHEMA_VERSION}`);
-  }
+  const module = requireRecord(migratePromptModuleSchemaVersion(raw, field), field);
   validateAddress(module.address, `${field}.address`);
   validateOwner(module.owner, `${field}.owner`);
   requireString(module.title, `${field}.title`);
@@ -445,10 +442,7 @@ export function validatePromptModuleMutationSet(
   raw: unknown,
   field = "prompt module mutation set",
 ): PromptModuleMutationSet {
-  const set = requireRecord(raw, field);
-  if (set.schema_version !== PROMPT_MODULE_CONTRACT_SCHEMA_VERSION) {
-    throw invalid(`${field}.schema_version`, `${PROMPT_MODULE_CONTRACT_SCHEMA_VERSION}`);
-  }
+  const set = requireRecord(migratePromptModuleSchemaVersion(raw, field), field);
   optionalString(set.recipe_id, `${field}.recipe_id`);
   if (!Array.isArray(set.mutations)) throw invalid(`${field}.mutations`, "array");
   for (const [index, mutation] of set.mutations.entries()) {
@@ -478,10 +472,7 @@ export function validatePromptModuleCompiledGraph(
   raw: unknown,
   field = "prompt module graph",
 ): PromptModuleCompiledGraph {
-  const graph = requireRecord(raw, field);
-  if (graph.schema_version !== PROMPT_MODULE_CONTRACT_SCHEMA_VERSION) {
-    throw invalid(`${field}.schema_version`, `${PROMPT_MODULE_CONTRACT_SCHEMA_VERSION}`);
-  }
+  const graph = requireRecord(migratePromptModuleSchemaVersion(raw, field), field);
   if (!Array.isArray(graph.nodes)) throw invalid(`${field}.nodes`, "array");
   for (const [index, node] of graph.nodes.entries()) {
     validatePromptModuleGraphNode(node, `${field}.nodes[${index}]`);

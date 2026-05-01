@@ -1,6 +1,9 @@
-export const PROMPT_MODULE_CONTRACT_SCHEMA_VERSION = 1 as const;
+import type { PromptModuleContractSchemaVersion } from "./schema.js";
 
-export type PromptModuleContractSchemaVersion = typeof PROMPT_MODULE_CONTRACT_SCHEMA_VERSION;
+export {
+  PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
+  type PromptModuleContractSchemaVersion,
+} from "./schema.js";
 
 export type PromptModuleNamespace = "framework" | "project" | "runtime" | `recipe.${string}`;
 
