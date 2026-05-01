@@ -9,8 +9,8 @@ Prepare AgentPlane for curated-list submissions by tightening repository discove
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: docs listing profile verified; doctor passed after longer runtime
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
