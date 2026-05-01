@@ -22,17 +22,19 @@ Prepare the v0.4.1 release candidate from current main, including release plan, 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T15:06:43.924Z
+- Updated: 2026-05-01T17:09:09.910Z
 - Branch: task/202605011419-H7MD9F/v0-4-1-release-candidate
-- Head: e8bbf838bd96
+- Head: d24b7320f097
 
 ```text
+ .agentplane/config.json                            |   2 +-
  .agentplane/policy/incidents.md                    |   1 +
  README.md                                          |  21 +-
  .../documentation-information-architecture.mdx     |  14 +-
  docs/index.mdx                                     |  25 ++-
  docs/recipes/code-map.mdx                          |  89 +++++++++
  docs/recipes/index.mdx                             | 101 ++++++----
+ docs/reference/generated-reference.mdx             |   6 +-
  docs/releases/v0.4.1.md                            | 220 +++++++++++++++++++++
  docs/user/commands.mdx                             |   9 +-
  docs/user/overview.mdx                             |   5 +-
@@ -47,11 +49,16 @@ Prepare the v0.4.1 release candidate from current main, including release plan, 
  docs/workflow-guides/index.mdx                     |  29 +++
  packages/agentplane/README.md                      |  19 +-
  packages/agentplane/assets/policy/incidents.md     |   1 +
+ packages/agentplane/package.json                   |   6 +-
+ packages/core/package.json                         |   2 +-
+ packages/recipes/package.json                      |   2 +-
+ packages/recipes/src/index.ts                      |   2 +-
+ packages/testkit/package.json                      |   2 +-
  scripts/baselines/knip-baseline.json               | 150 ++++++++------
  scripts/check-docs-ia.mjs                          |  10 +-
  website/sidebars.ts                                |  21 +-
  website/src/data/homepage-content.ts               |   9 +-
- 24 files changed, 608 insertions(+), 162 deletions(-)
+ 31 files changed, 619 insertions(+), 173 deletions(-)
 ```
 
 </details>
