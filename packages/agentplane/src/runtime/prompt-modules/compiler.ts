@@ -49,7 +49,9 @@ export type PromptModuleDiagnostic = {
   severity: PromptModuleDiagnosticSeverity;
   code:
     | "compiler_context_value_discarded"
+    | "broad_disable_selector"
     | "duplicate_module"
+    | "implicit_duplicate_selection"
     | "missing_dependency"
     | "missing_module"
     | "ambiguous_selector"

@@ -18,6 +18,21 @@ function chooseLastWriter(nodes: readonly WorkingPromptModuleNode[]): WorkingPro
   return nodes.toSorted((left, right) => left.sequence - right.sequence).at(-1)!;
 }
 
+function reportImplicitDuplicateSelection(
+  diagnostics: PromptModuleDiagnostic[],
+  address: string,
+  group: readonly WorkingPromptModuleNode[],
+  selected: WorkingPromptModuleNode,
+  reason: string,
+): void {
+  diagnostics.push({
+    severity: "warning",
+    code: "implicit_duplicate_selection",
+    module_address: address,
+    message: `Multiple active prompt modules target ${address}; selected "${selected.module.title}" by ${reason} from ${group.length} candidates.`,
+  });
+}
+
 function mergeStringContent(
   nodes: readonly WorkingPromptModuleNode[],
   direction: "append" | "prepend",
@@ -107,21 +122,46 @@ export function mergeDuplicateNodes(
         continue;
       }
       case "highest_precedence": {
-        merged.push(cloneNode(chooseHighestPrecedence(group)));
+        const selected = chooseHighestPrecedence(group);
+        reportImplicitDuplicateSelection(
+          diagnostics,
+          address,
+          group,
+          selected,
+          "highest_precedence conflict policy",
+        );
+        merged.push(cloneNode(selected));
         continue;
       }
       case "last_writer_wins": {
-        merged.push(cloneNode(chooseLastWriter(group)));
+        const selected = chooseLastWriter(group);
+        reportImplicitDuplicateSelection(
+          diagnostics,
+          address,
+          group,
+          selected,
+          "last_writer_wins conflict policy",
+        );
+        merged.push(cloneNode(selected));
         continue;
       }
       case "keep_all": {
         if (mergeMode !== "replace") break;
-        merged.push(cloneNode(chooseLastWriter(group)));
+        const selected = chooseLastWriter(group);
+        reportImplicitDuplicateSelection(
+          diagnostics,
+          address,
+          group,
+          selected,
+          "replace merge mode",
+        );
+        merged.push(cloneNode(selected));
         continue;
       }
     }
 
-    const base = cloneNode(chooseHighestPrecedence(group));
+    const selected = chooseHighestPrecedence(group);
+    const base = cloneNode(selected);
     switch (mergeMode) {
       case "append":
       case "prepend": {
@@ -167,6 +207,13 @@ export function mergeDuplicateNodes(
         break;
       }
       case "pick_one": {
+        reportImplicitDuplicateSelection(
+          diagnostics,
+          address,
+          group,
+          selected,
+          "pick_one merge mode",
+        );
         break;
       }
     }

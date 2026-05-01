@@ -443,6 +443,49 @@ describe("prompt module compiler", () => {
     ]);
   });
 
+  it("warns when disable selectors match multiple prompt modules", () => {
+    const first = markdownModule({
+      value: "framework/gateway/AGENTS.md/load_rules/first",
+      name: "first",
+      content: "First\n",
+      mutability: "replaceable",
+    });
+    const second = markdownModule({
+      value: "framework/gateway/AGENTS.md/load_rules/second",
+      name: "second",
+      content: "Second\n",
+      mutability: "replaceable",
+    });
+    const mutations = {
+      schema_version: 1,
+      recipe_id: "roadmap",
+      mutations: [
+        {
+          id: "roadmap.disable.load-rules",
+          op: "disable_module",
+          source: recipeSource,
+          target: { slot: "load_rules" },
+        },
+      ],
+    } satisfies PromptModuleMutationSet;
+
+    const result = compilePromptModuleGraph({
+      graph: graph([first, second]),
+      mutation_sets: [mutations],
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.nodes).toEqual([]);
+    expect(result.diagnostics).toMatchObject([
+      {
+        severity: "warning",
+        code: "broad_disable_selector",
+        mutation_id: "roadmap.disable.load-rules",
+      },
+    ]);
+    expect(result.diagnostics[0]?.message).toContain("matched 2 prompt modules");
+  });
+
   it("targets named prompt fragments across framework prompt surfaces", () => {
     const gateway = markdownModule({
       value: "framework/gateway/AGENTS.md/load_rules/branch-pr",
@@ -635,6 +678,38 @@ describe("prompt module compiler", () => {
         module_address: address,
       },
     ]);
+  });
+
+  it("warns when duplicate pick-one merge selects one module implicitly", () => {
+    const address = "framework/gateway/AGENTS.md/load_rules/base";
+    const first = markdownModule({
+      value: address,
+      name: "base-first",
+      content: "First\n",
+      merge: { mode: "pick_one", conflict: "keep_all", precedence: 100 },
+    });
+    const second = markdownModule({
+      value: address,
+      name: "base-second",
+      content: "Second\n",
+      merge: { mode: "pick_one", conflict: "keep_all", precedence: 500 },
+    });
+
+    const result = compilePromptModuleGraph({
+      graph: graph([first, second]),
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.nodes).toHaveLength(1);
+    expect(result.nodes[0]?.module.content).toBe("Second\n");
+    expect(result.diagnostics).toMatchObject([
+      {
+        severity: "warning",
+        code: "implicit_duplicate_selection",
+        module_address: address,
+      },
+    ]);
+    expect(result.diagnostics[0]?.message).toContain("pick_one merge mode");
   });
 
   it("runs validators for requested phases", () => {

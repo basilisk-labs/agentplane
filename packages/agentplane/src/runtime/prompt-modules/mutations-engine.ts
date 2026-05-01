@@ -217,6 +217,14 @@ export function applyPromptModuleMutation(opts: ApplyPromptModuleMutationOptions
           message: `No prompt modules matched disable mutation ${mutation.id} (${describePromptModuleSelector(mutation.target)}).`,
         });
       }
+      if (matches.length > 1) {
+        diagnostics.push({
+          severity: "warning",
+          code: "broad_disable_selector",
+          mutation_id: mutation.id,
+          message: `disable_module mutation ${mutation.id} matched ${matches.length} prompt modules (${describePromptModuleSelector(mutation.target)}).`,
+        });
+      }
       if (
         matches.some((index) => {
           const node = nodes[index];
