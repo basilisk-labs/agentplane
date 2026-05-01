@@ -1,10 +1,11 @@
 ---
 id: "202605010645-WG423K"
 title: "AP-06: Add prompt selector and merge diagnostics"
-status: "DOING"
+result_summary: "Merged via PR #655."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T08:12:21.408Z"
   updated_by: "CODER"
   note: "Verified: prompt diagnostics warnings pass focused compiler tests, typecheck, full lint:core, formatting, diff check, and framework bootstrap."
-commit: null
+commit:
+  hash: "7f722b17416ad44c46cd39e894e7c8e22b6bf863"
+  message: "Merge pull request #655 from basilisk-labs/task/202605010645-WG423K/prompt-diagnostics"
 comments:
   -
     author: "CODER"
     body: "Start: add prompt compiler diagnostics for broad disable selectors and implicit duplicate merge selection."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #655 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: prompt diagnostics warnings pass focused compiler tests, typecheck, full lint:core, formatting, diff check, and framework bootstrap."
+  -
+    type: "status"
+    at: "2026-05-01T08:16:06.748Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #655 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T08:12:21.422Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T08:16:06.752Z"
+doc_updated_by: "INTEGRATOR"
 description: "Warn on broad disable selectors and implicit duplicate pick-one selection so prompt graph data loss is visible."
 sections:
   Summary: |-
