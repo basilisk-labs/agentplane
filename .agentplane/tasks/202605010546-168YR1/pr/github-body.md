@@ -14,7 +14,7 @@ Update the public landing page, README, and user-facing docs so AgentPlane is po
 ## Verification
 
 - State: ok
-- Note: Launch landing, README, docs, recipes, and design-system alignment verified locally.
+- Note: Blog listing chronological order verified locally.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes

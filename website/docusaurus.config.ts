@@ -43,6 +43,7 @@ const config = {
         },
         blog: {
           showReadingTime: true,
+          postsPerPage: "ALL",
           routeBasePath: "/blog",
           blogListComponent: "@site/src/pages/blog/index.tsx",
           blogTitle: "AgentPlane Blog",
