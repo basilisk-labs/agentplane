@@ -41,6 +41,31 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("node scripts/render-scoop-manifest.mjs");
     expect(workflow).toContain("Render setup-agentplane action");
     expect(workflow).toContain("node scripts/render-setup-agentplane-action.mjs");
+    expect(workflow).toContain("Publish Homebrew tap PR");
+    expect(workflow).toContain("Publish Scoop bucket PR");
+    expect(workflow).toContain("Publish setup-agentplane PR");
+    expect(workflow).toContain("node scripts/publish-external-distribution.mjs");
+    expect(workflow).toContain("HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN || '' }}");
+    expect(workflow).toContain("SCOOP_BUCKET_TOKEN: ${{ secrets.SCOOP_BUCKET_TOKEN || '' }}");
+    expect(workflow).toContain(
+      "SETUP_AGENTPLANE_TOKEN: ${{ secrets.SETUP_AGENTPLANE_TOKEN || '' }}",
+    );
+    expect(workflow).toContain("--repo basilisk-labs/homebrew-tap");
+    expect(workflow).toContain("--repo basilisk-labs/scoop-bucket");
+    expect(workflow).toContain("--repo basilisk-labs/setup-agentplane");
+    expect(workflow).toContain("--copy Formula/agentplane.rb:Formula/agentplane.rb");
+    expect(workflow).toContain("--copy agentplane.json:bucket/agentplane.json");
+    expect(workflow).toContain("--copy action.yml:action.yml");
+    expect(workflow).toContain("--copy README.md:README.md");
+    expect(workflow).toContain(
+      "--out .agentplane/.release/publish/homebrew/homebrew-publish-result.json",
+    );
+    expect(workflow).toContain(
+      "--out .agentplane/.release/publish/scoop/scoop-publish-result.json",
+    );
+    expect(workflow).toContain(
+      "--out .agentplane/.release/publish/setup-agentplane/setup-agentplane-publish-result.json",
+    );
     expect(workflow).toContain("Publish GHCR image");
     expect(workflow).toContain("node scripts/render-ghcr-image-metadata.mjs");
     expect(workflow).toContain("docker login ghcr.io");
@@ -76,6 +101,12 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("bun scripts/release-task-evidence.mjs apply");
     expect(workflow).toContain("Open or recover release evidence PR");
     expect(workflow).toContain("Enable auto-merge for release evidence PR");
+    expect(workflow.indexOf("Create GitHub Release")).toBeLessThan(
+      workflow.indexOf("Publish Homebrew tap PR"),
+    );
+    expect(workflow.indexOf("Publish setup-agentplane PR")).toBeLessThan(
+      workflow.indexOf("Upload release-distribution artifact"),
+    );
     for (const stepName of [
       "Check for existing release evidence PR",
       "Open or recover release evidence PR",

@@ -391,6 +391,55 @@ jobs:
             .agentplane/.release/publish/distribution/install.ps1
             .agentplane/.release/publish/distribution/SHA256SUMS
             .agentplane/.release/publish/distribution/release-distribution.json
+      - name: Publish Homebrew tap PR
+        shell: bash
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN || '' }}
+        run: |
+          set -euo pipefail
+          node scripts/publish-external-distribution.mjs \
+            --module homebrew \
+            --repo basilisk-labs/homebrew-tap \
+            --source .agentplane/.release/publish/homebrew \
+            --copy Formula/agentplane.rb:Formula/agentplane.rb \
+            --version "${{ needs.detect.outputs.version }}" \
+            --tag "${{ needs.detect.outputs.tag }}" \
+            --sha "${{ needs.detect.outputs.sha }}" \
+            --token-env HOMEBREW_TAP_TOKEN \
+            --out .agentplane/.release/publish/homebrew/homebrew-publish-result.json
+      - name: Publish Scoop bucket PR
+        shell: bash
+        env:
+          SCOOP_BUCKET_TOKEN: ${{ secrets.SCOOP_BUCKET_TOKEN || '' }}
+        run: |
+          set -euo pipefail
+          node scripts/publish-external-distribution.mjs \
+            --module scoop \
+            --repo basilisk-labs/scoop-bucket \
+            --source .agentplane/.release/publish/scoop \
+            --copy agentplane.json:bucket/agentplane.json \
+            --version "${{ needs.detect.outputs.version }}" \
+            --tag "${{ needs.detect.outputs.tag }}" \
+            --sha "${{ needs.detect.outputs.sha }}" \
+            --token-env SCOOP_BUCKET_TOKEN \
+            --out .agentplane/.release/publish/scoop/scoop-publish-result.json
+      - name: Publish setup-agentplane PR
+        shell: bash
+        env:
+          SETUP_AGENTPLANE_TOKEN: ${{ secrets.SETUP_AGENTPLANE_TOKEN || '' }}
+        run: |
+          set -euo pipefail
+          node scripts/publish-external-distribution.mjs \
+            --module setup-agentplane \
+            --repo basilisk-labs/setup-agentplane \
+            --source .agentplane/.release/publish/setup-agentplane \
+            --copy action.yml:action.yml \
+            --copy README.md:README.md \
+            --version "${{ needs.detect.outputs.version }}" \
+            --tag "${{ needs.detect.outputs.tag }}" \
+            --sha "${{ needs.detect.outputs.sha }}" \
+            --token-env SETUP_AGENTPLANE_TOKEN \
+            --out .agentplane/.release/publish/setup-agentplane/setup-agentplane-publish-result.json
       - name: Upload release-distribution artifact
         if: always()
         uses: actions/upload-artifact@v7

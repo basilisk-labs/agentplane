@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605012125-PXYEPC/external-distribution-publish",
+  "created_at": "2026-05-01T21:26:16.551Z",
+  "head_sha": "9b6156d62117ba0b48e3adde5f1a35613d8be308",
+  "last_verified_at": "2026-05-01T21:31:43.594Z",
+  "last_verified_sha": "0a141dfaeb7908364fd189895ff84a60f0c22cf2",
+  "schema_version": 1,
+  "task_id": "202605012125-PXYEPC",
+  "updated_at": "2026-05-01T21:31:57.672Z",
+  "verify": {
+    "status": "pass"
+  }
+}
