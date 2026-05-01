@@ -31,7 +31,7 @@ AgentPlane - Git-native workflow control for auditable coding-agent work.
 
 ### Medium
 
-AgentPlane is a local-first CLI harness for Claude Code, Codex, Cursor, Aider, and similar coding agents. It records task state, plan approval, verification evidence, and finish closure inside the Git repository.
+AgentPlane is a local-first CLI harness for repo-local coding-agent work. It records task state, plan approval, verification evidence, and finish closure inside the Git repository.
 
 ### Tags
 
@@ -56,7 +56,7 @@ AgentPlane is a local-first CLI harness for Claude Code, Codex, Cursor, Aider, a
 ### CLI coding-agent lists
 
 ```markdown
-- [AgentPlane](https://github.com/basilisk-labs/agentplane) - Git-native workflow control layer for Claude Code, Codex, Cursor, Aider, and other CLI coding-agent workflows. Adds task, plan, approval, verification, and finish records inside the repository.
+- [AgentPlane](https://github.com/basilisk-labs/agentplane) - Git-native workflow control layer for repo-local coding-agent work. Adds task, plan, approval, verification, and finish records inside the repository.
 ```
 
 ### Harness-engineering lists
@@ -97,7 +97,7 @@ Hi - I would like to add AgentPlane to this list.
 Disclosure: I maintain AgentPlane.
 
 Why it fits:
-AgentPlane is not another coding agent and not a hosted agent platform. It is a local-first, Git-native workflow control layer for Claude Code, Codex, Cursor, Aider, and similar coding-agent workflows.
+AgentPlane is not another coding agent and not a hosted agent platform. It is a local-first, Git-native workflow control layer for repo-local coding-agent work.
 
 It records:
 - task state
@@ -121,6 +121,7 @@ Happy to adjust category, wording, or remove if this is outside scope.
 - Fit the target list's structure first; do not force AgentPlane into a top section.
 - Follow `CONTRIBUTING.md` and generated-data files when the list uses them.
 - Keep wording concrete: task state, plan approval, verification evidence, finish closure, Git revision.
+- Avoid enumerating specific coding-agent products in external submission copy unless the target list explicitly asks for examples.
 - Avoid claims like "best", "production-grade", "first", or "revolutionary".
 - Skip MCP server lists unless AgentPlane ships an MCP server.
 - Skip agent-skill lists unless a real skill artifact is created in a separate approved task.
