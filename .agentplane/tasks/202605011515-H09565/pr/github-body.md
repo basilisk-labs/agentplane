@@ -1,33 +1,21 @@
 ## Summary
 
-Add AgentPlane to bradAGI awesome-cli-coding-agents
+Record the AgentPlane submission to bradAGI/awesome-cli-coding-agents.
 
-Submit a GitHub PR adding AgentPlane to bradAGI/awesome-cli-coding-agents under Harnesses and orchestration after verifying the current category names and formatting conventions.
+External PR: https://github.com/bradAGI/awesome-cli-coding-agents/pull/71
 
-## Scope
+## Placement
 
-- In scope: Submit a GitHub PR adding AgentPlane to bradAGI/awesome-cli-coding-agents under Harnesses and orchestration after verifying the current category names and formatting conventions.
-- Out of scope: unrelated refactors not required for "Add AgentPlane to bradAGI awesome-cli-coding-agents".
+- Category: `Harnesses & orchestration -> Agent infrastructure`
+- Change: one `README.md` entry in the upstream list
+- Positioning: AgentPlane is described as a Git-native workflow control layer for CLI coding-agent workflows, not as another coding agent.
+
+## Entry
+
+AgentPlane - Git-native workflow control layer for Claude Code, Codex, Cursor, Aider, and other CLI coding-agent workflows. Adds task, plan, approval, verification, and finish records inside the repository.
 
 ## Verification
 
-- State: ok
-- Note: External PR opened and body formatting verified.
-- Full verification checklist lives in local review.md.
-
-## Handoff Notes
-
-- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
-
-<details>
-<summary>Raw evidence</summary>
-
-- Updated: 2026-05-01T16:06:44.858Z
-- Branch: task/202605011515-H09565/bradagi-awesome-cli-coding-agents
-- Head: 72f6f0de47ec
-
-```text
-No changes detected.
-```
-
-</details>
+- External fork check: `git diff --check`
+- PR body check: `gh pr view 71 --repo bradAGI/awesome-cli-coding-agents --json body` confirmed real Markdown line breaks, not escaped `\n`
+- Task verification: `agentplane verify 202605011515-H09565 --ok --by DOCS`
