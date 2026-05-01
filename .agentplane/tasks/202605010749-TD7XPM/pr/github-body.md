@@ -22,18 +22,18 @@ Turn the homepage into a short launch gateway: hero, demo/proof, core workflow, 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T08:15:03.631Z
+- Updated: 2026-05-01T09:04:35.860Z
 - Branch: task/202605010749-TD7XPM/short-homepage-gateway
-- Head: 5f3b3000fd79
+- Head: 3a63fd0207fb
 
 ```text
  website/docusaurus.config.ts         |  21 +-
  website/src/css/custom.css           |  54 ++++
- website/src/data/homepage-content.ts | 294 ++++++----------------
- website/src/pages/_home.module.css   | 474 +++++++++++++++--------------------
- website/src/pages/index.tsx          | 416 ++++++++++++------------------
+ website/src/data/homepage-content.ts | 294 +++++--------------
+ website/src/pages/_home.module.css   | 535 ++++++++++++++++-------------------
+ website/src/pages/index.tsx          | 416 +++++++++++----------------
  website/src/theme/Root.tsx           |  68 +++++
- 6 files changed, 575 insertions(+), 752 deletions(-)
+ 6 files changed, 620 insertions(+), 768 deletions(-)
 ```
 
 </details>
