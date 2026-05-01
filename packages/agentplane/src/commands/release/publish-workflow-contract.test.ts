@@ -76,6 +76,20 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("bun scripts/release-task-evidence.mjs apply");
     expect(workflow).toContain("Open or recover release evidence PR");
     expect(workflow).toContain("Enable auto-merge for release evidence PR");
+    for (const stepName of [
+      "Check for existing release evidence PR",
+      "Open or recover release evidence PR",
+      "Enable auto-merge for release evidence PR",
+    ]) {
+      const stepIndex = workflow.indexOf(`- name: ${stepName}`);
+      expect(stepIndex).toBeGreaterThanOrEqual(0);
+      const nextStepIndex = workflow.indexOf("\n      - name:", stepIndex + 1);
+      const stepBlock = workflow.slice(
+        stepIndex,
+        nextStepIndex === -1 ? workflow.length : nextStepIndex,
+      );
+      expect(stepBlock).toContain("GH_TOKEN: ${{ github.token }}");
+    }
   });
 
   it("checks out recursive submodules before validating the exact-ref publish payload", async () => {

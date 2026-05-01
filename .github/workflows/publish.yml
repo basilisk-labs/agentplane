@@ -509,6 +509,8 @@ jobs:
       - name: Check for existing release evidence PR
         if: steps.release_evidence.outputs.actionable == 'true'
         id: release_evidence_existing
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           pr_url="$(gh pr list \
@@ -565,6 +567,7 @@ jobs:
           steps.release_evidence_existing.outputs.pr_url == ''
         id: create_release_evidence_pr
         env:
+          GH_TOKEN: ${{ github.token }}
           PR_TITLE: ${{ steps.release_evidence.outputs.pr_title }}
           PR_BODY: ${{ steps.release_evidence.outputs.pr_body }}
           MANUAL_PR_URL: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.release_evidence.outputs.base_ref }}...${{ steps.release_evidence.outputs.closure_branch }}?expand=1
@@ -595,6 +598,8 @@ jobs:
         if: |
           steps.release_evidence.outputs.actionable == 'true' &&
           (steps.release_evidence_existing.outputs.pr_url != '' || steps.create_release_evidence_pr.outputs.pr_url != '')
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           pr_url="${{ steps.release_evidence_existing.outputs.pr_url }}"
