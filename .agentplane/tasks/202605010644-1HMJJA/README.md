@@ -1,10 +1,11 @@
 ---
 id: "202605010644-1HMJJA"
 title: "AP-04: Add prompt schema migration seam"
-status: "DOING"
+result_summary: "Merged via PR #649."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T07:28:06.257Z"
   updated_by: "CODER"
   note: "Verified prompt schema migration seam with: bunx vitest run packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts --testTimeout 60000 --hookTimeout 60000; bun run typecheck; bunx prettier --check touched files; git diff --check; bun run framework:dev:bootstrap."
-commit: null
+commit:
+  hash: "b8b1e225a44bf54c8ef9b0d2bd018d968628d7a2"
+  message: "Merge pull request #649 from basilisk-labs/task/202605010644-1HMJJA/prompt-schema-migration"
 comments:
   -
     author: "CODER"
     body: "Start: add prompt module schema version migration entrypoint and route validation through it without changing wire shape."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #649 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified prompt schema migration seam with: bunx vitest run packages/agentplane/src/runtime/prompt-modules/model.test.ts packages/agentplane/src/runtime/prompt-modules/compiler.test.ts --testTimeout 60000 --hookTimeout 60000; bun run typecheck; bunx prettier --check touched files; git diff --check; bun run framework:dev:bootstrap."
+  -
+    type: "status"
+    at: "2026-05-01T07:31:19.860Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #649 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T07:28:06.261Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T07:31:19.865Z"
+doc_updated_by: "INTEGRATOR"
 description: "Centralize prompt module schema version handling and add a no-op v1 migration entrypoint with unknown-version tests."
 sections:
   Summary: |-
