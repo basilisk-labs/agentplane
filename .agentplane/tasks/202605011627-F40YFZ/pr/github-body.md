@@ -22,12 +22,19 @@ Add a release module that builds and publishes a versioned GHCR image for AgentP
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T17:27:30.544Z
+- Updated: 2026-05-01T17:52:20.837Z
 - Branch: task/202605011627-F40YFZ/ghcr-release-image
-- Head: 3f889613cf8b
+- Head: 0132bad0de07
 
 ```text
-No changes detected.
+ .github/workflows/publish.yml                      |  37 ++++
+ package.json                                       |   1 +
+ packages/agentplane/Dockerfile                     |  17 ++
+ packages/agentplane/Dockerfile.dockerignore        |  10 +
+ .../release/publish-workflow-contract.test.ts      |   9 +
+ scripts/README.md                                  |   1 +
+ scripts/render-ghcr-image-metadata.mjs             | 203 +++++++++++++++++++++
+ 7 files changed, 278 insertions(+)
 ```
 
 </details>
