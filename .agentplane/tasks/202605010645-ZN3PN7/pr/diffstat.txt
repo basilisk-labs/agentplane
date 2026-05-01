@@ -1,0 +1,5 @@
+ package.json                    |   3 +-
+ scripts/README.md               |   4 +-
+ scripts/check-spec-examples.mjs | 204 ++++++++++++++++++++++++++++++++++++++++
+ scripts/lib/check-registry.mjs  |   4 +
+ 4 files changed, 213 insertions(+), 2 deletions(-)

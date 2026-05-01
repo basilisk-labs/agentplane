@@ -45,12 +45,16 @@ Validate packages/spec examples against generated schemas without making spec th
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T12:45:51.855Z
+- Updated: 2026-05-01T12:52:20.745Z
 - Branch: task/202605010645-ZN3PN7/spec-examples-validation
-- Head: 13b2483cc260
+- Head: fbcd3c080103
 
 ```text
-No changes detected.
+ package.json                    |   3 +-
+ scripts/README.md               |   4 +-
+ scripts/check-spec-examples.mjs | 204 ++++++++++++++++++++++++++++++++++++++++
+ scripts/lib/check-registry.mjs  |   4 +
+ 4 files changed, 213 insertions(+), 2 deletions(-)
 ```
 
 </details>
