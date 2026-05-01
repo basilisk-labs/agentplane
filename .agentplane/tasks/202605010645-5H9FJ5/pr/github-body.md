@@ -22,12 +22,15 @@ Split package CI scripts into shared contract, test, and release-extra lanes to 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T12:23:40.715Z
+- Updated: 2026-05-01T12:36:39.904Z
 - Branch: task/202605010645-5H9FJ5/ci-contract-release-extras
-- Head: c18e428de420
+- Head: 287430946007
 
 ```text
-No changes detected.
+ package.json                                       |  7 +++-
+ .../commands/release/release-ci-contract.test.ts   | 23 ++++++----
+ scripts/README.md                                  | 49 ++++++++++++----------
+ 3 files changed, 46 insertions(+), 33 deletions(-)
 ```
 
 </details>
