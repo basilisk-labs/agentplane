@@ -2,18 +2,14 @@
   "schema_version": 2,
   "threshold_lines": 1000,
   "budgets": {
-    "max_entries": 12,
-    "max_total_lines": 13391,
+    "max_entries": 11,
+    "max_total_lines": 12176,
     "max_file_lines": 1300
   },
   "entries": [
     {
       "file": "packages/agentplane/src/cli/run-cli.core.incidents.test.ts",
       "lines": 1112
-    },
-    {
-      "file": "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.test.ts",
-      "lines": 1215
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts",
