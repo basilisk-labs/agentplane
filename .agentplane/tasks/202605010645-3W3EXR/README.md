@@ -1,10 +1,11 @@
 ---
 id: "202605010645-3W3EXR"
 title: "AP-17: Run final refactor wave verification"
-status: "DOING"
+result_summary: "Merged via PR #690."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T13:12:44.822Z"
   updated_by: "CODER"
   note: "Verified final refactor wave gates; fixed the init prompt-asset byte-parity drift exposed by platform-critical before rerunning the full suite."
-commit: null
+commit:
+  hash: "b48a260fa73d72caed01e17605dd006c89f278a4"
+  message: "Merge pull request #690 from basilisk-labs/task/202605010645-3W3EXR/final-verification"
 comments:
   -
     author: "CODER"
     body: "Start: running final integrated verification for the completed refactor wave on a fresh task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #690 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified final refactor wave gates; fixed the init prompt-asset byte-parity drift exposed by platform-critical before rerunning the full suite."
+  -
+    type: "status"
+    at: "2026-05-01T13:16:37.180Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #690 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T13:12:44.837Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T13:16:37.185Z"
+doc_updated_by: "INTEGRATOR"
 description: "Run final integrated verification for the refactor wave and record any residual gaps."
 sections:
   Summary: |-
