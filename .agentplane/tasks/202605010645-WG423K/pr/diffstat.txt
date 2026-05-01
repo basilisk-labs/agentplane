@@ -1,0 +1,5 @@
+ .../src/runtime/prompt-modules/compiler.merge.ts   | 55 ++++++++++++++--
+ .../src/runtime/prompt-modules/compiler.test.ts    | 75 ++++++++++++++++++++++
+ .../src/runtime/prompt-modules/compiler.ts         |  2 +
+ .../src/runtime/prompt-modules/mutations-engine.ts |  8 +++
+ 4 files changed, 136 insertions(+), 4 deletions(-)

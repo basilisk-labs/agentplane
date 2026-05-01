@@ -45,12 +45,16 @@ Warn on broad disable selectors and implicit duplicate pick-one selection so pro
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T08:07:50.194Z
+- Updated: 2026-05-01T08:12:32.550Z
 - Branch: task/202605010645-WG423K/prompt-diagnostics
-- Head: f9ae50733573
+- Head: f35ffff75bef
 
 ```text
-No changes detected.
+ .../src/runtime/prompt-modules/compiler.merge.ts   | 55 ++++++++++++++--
+ .../src/runtime/prompt-modules/compiler.test.ts    | 75 ++++++++++++++++++++++
+ .../src/runtime/prompt-modules/compiler.ts         |  2 +
+ .../src/runtime/prompt-modules/mutations-engine.ts |  8 +++
+ 4 files changed, 136 insertions(+), 4 deletions(-)
 ```
 
 </details>
