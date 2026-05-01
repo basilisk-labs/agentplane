@@ -14,7 +14,7 @@ Update the public landing page, README, and user-facing docs so AgentPlane is po
 ## Verification
 
 - State: ok
-- Note: Updated DESIGN.md included and verified before push.
+- Note: Pre-push format blocker resolved before branch publish.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes

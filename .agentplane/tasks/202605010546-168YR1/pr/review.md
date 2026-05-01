@@ -30,7 +30,7 @@ Update the public landing page, README, and user-facing docs so AgentPlane is po
 ### Current Status
 
 - State: ok
-- Note: Updated DESIGN.md included and verified before push.
+- Note: Pre-push format blocker resolved before branch publish.
 
 ## Risks
 

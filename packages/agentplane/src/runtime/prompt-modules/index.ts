@@ -57,9 +57,7 @@ export {
   loadFrameworkPromptModuleRegistry,
   loadFrameworkPromptModules,
 } from "./registry.js";
-export {
-  diagnoseGpt55PromptContract,
-} from "./gpt55-contract.js";
+export { diagnoseGpt55PromptContract } from "./gpt55-contract.js";
 export {
   validatePromptModuleCompiledGraph,
   validatePromptModule,
