@@ -1,10 +1,11 @@
 ---
 id: "202605010645-WN3ZS8"
 title: "AP-08: Split hooks CLI test monolith"
-status: "DOING"
+result_summary: "Merged via PR #664."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T09:18:05.676Z"
   updated_by: "CODER"
   note: "Verified: hooks CLI monolith split into install, uninstall, runtime-shim, hook-run groups; oversized guard now passes with 15 entries and 17132 total lines."
-commit: null
+commit:
+  hash: "f8d4f998c3e5dd3ff61921665402fdfff067d164"
+  message: "Merge pull request #664 from basilisk-labs/task/202605010645-WN3ZS8/hooks-test-split"
 comments:
   -
     author: "CODER"
     body: "Start: split hooks CLI tests by install, uninstall, runtime shim, and hook-run scenario groups while keeping shared fixtures in testkit."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #664 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: hooks CLI monolith split into install, uninstall, runtime-shim, hook-run groups; oversized guard now passes with 15 entries and 17132 total lines."
+  -
+    type: "status"
+    at: "2026-05-01T09:25:11.808Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #664 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T09:18:05.680Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T09:25:11.813Z"
+doc_updated_by: "INTEGRATOR"
 description: "Split run-cli.core.hooks.test.ts by hook scenario family and promote shared fixtures to testkit hooks helpers."
 sections:
   Summary: |-
