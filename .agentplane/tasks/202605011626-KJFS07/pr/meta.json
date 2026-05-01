@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T17:24:21Z",
+  "base": "main",
+  "branch": "task/202605011626-KJFS07/scoop-bucket-publication",
+  "created_at": "2026-05-01T17:17:22.181Z",
+  "head_sha": "59ce696e82cb7980d502e7c968b82bedfaae7959",
+  "last_verified_at": "2026-05-01T17:22:11.081Z",
+  "last_verified_sha": "347891e858d0028ad5187c65ffbd69b6db958c28",
+  "merge_commit": "3bffd65a076178e7b344a8c67f85f51804548174",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T17:24:21Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605011626-KJFS07",
+  "updated_at": "2026-05-01T17:24:21Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -39,6 +39,7 @@ Grouping policy: `ci`, `release`, `docs`, `test`, `coverage`, `arch`, `bench`, `
 | `release:prepublish:fast`       | `bun run release:check`                                                                                                                                           | Run release workflow: prepublish fast.       |
 | `release:prepublish:heavy`      | `bun run release:ci-check`                                                                                                                                        | Run release workflow: prepublish heavy.      |
 | `release:recover`               | `node scripts/check-release-recovery-state.mjs`                                                                                                                   | Run release workflow: recover.               |
+| `release:scoop:check`           | `node scripts/render-scoop-manifest.mjs --check`                                                                                                                  | Run release workflow: scoop check.           |
 | `release:smoke:published`       | `node scripts/check-published-packages.mjs`                                                                                                                       | Run release workflow: smoke published.       |
 
 ## Docs
