@@ -75,14 +75,6 @@ const PROMPT_MODULE_WORKFLOW_MODE_VALUES = ["direct", "branch_pr"] as const;
 const PROMPT_MODULE_POLICY_GATEWAY_VALUES = ["codex", "claude"] as const;
 const PROMPT_MODULE_VALIDATOR_PHASE_VALUES = ["resolve", "compile", "emit", "doctor"] as const;
 
-function hasControlCharacter(value: string): boolean {
-  for (const character of value) {
-    const code = character.codePointAt(0) ?? -1;
-    if (code <= 0x1f || code === 0x7f) return true;
-  }
-  return false;
-}
-
 function hasAllowedValue<TValue extends string>(
   value: string,
   allowedValues: readonly TValue[],
