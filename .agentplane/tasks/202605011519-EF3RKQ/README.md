@@ -1,10 +1,11 @@
 ---
 id: "202605011519-EF3RKQ"
 title: "Add AgentPlane to filipecalegario awesome-vibe-coding"
-status: "DOING"
+result_summary: "Merged via PR #723."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-01T17:36:27.629Z"
   updated_by: "DOCS"
   note: "External awesome-vibe-coding PR opened and PR body formatting verified."
-commit: null
+commit:
+  hash: "8581ad30ef28de8ead1ec88b4bc0d0312c3a594d"
+  message: "Merge pull request #723 from basilisk-labs/task/202605011519-EF3RKQ/awesome-vibe-coding"
 comments:
   -
     author: "DOCS"
     body: "Start: inspect awesome-vibe-coding structure and submit AgentPlane only as workflow governance or task-lifecycle infrastructure, not as a generic coding agent."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #723 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,14 +47,21 @@ events:
     author: "DOCS"
     state: "ok"
     note: "External awesome-vibe-coding PR opened and PR body formatting verified."
+  -
+    type: "status"
+    at: "2026-05-01T17:40:43.210Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #723 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T17:36:27.663Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-01T17:40:43.216Z"
+doc_updated_by: "INTEGRATOR"
 description: "Submit a GitHub PR adding AgentPlane to filipecalegario/awesome-vibe-coding as workflow governance or task-lifecycle infrastructure for vibe-coded repositories after verifying fit and format."
 sections:
   Summary: |-
     Add AgentPlane to filipecalegario awesome-vibe-coding
-
+    
     Submit a GitHub PR adding AgentPlane to filipecalegario/awesome-vibe-coding as workflow governance or task-lifecycle infrastructure for vibe-coded repositories after verifying fit and format.
   Scope: |-
     - In scope: Submit a GitHub PR adding AgentPlane to filipecalegario/awesome-vibe-coding as workflow governance or task-lifecycle infrastructure for vibe-coded repositories after verifying fit and format.
@@ -65,13 +78,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-01T17:36:27.629Z — VERIFY — ok
-
+    
     By: DOCS
-
+    
     Note: External awesome-vibe-coding PR opened and PR body formatting verified.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T17:31:17.769Z, excerpt_hash=sha256:d9c941e0e4c4bb4e0df780cb67a711d4330caa0e9d815ba692f33d3194a18e29
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
