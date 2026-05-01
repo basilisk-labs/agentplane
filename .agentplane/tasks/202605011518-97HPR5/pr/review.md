@@ -44,3 +44,15 @@ Record the external listing PR for `ai-for-developers/awesome-ai-coding-tools`.
 ## Handoff Notes
 
 - AgentPlane is positioned as developer workflow infrastructure, not as another coding agent or model framework.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- External PR: https://github.com/ai-for-developers/awesome-ai-coding-tools/pull/285
+- External verification: `git diff --check`
+- PR body verification: `gh pr view 285 --repo ai-for-developers/awesome-ai-coding-tools --json body`
+- Internal verification: `node .agentplane/policy/check-routing.mjs`; `agentplane doctor`
+
+</details>
+<!-- END AUTO SUMMARY -->
