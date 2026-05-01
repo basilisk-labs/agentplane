@@ -22,12 +22,13 @@ Replace listing submission snippets that enumerate Claude Code, Codex, Cursor, a
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T16:19:51.694Z
+- Updated: 2026-05-01T16:22:06.889Z
 - Branch: task/202605011618-D5MGX8/refine-listing-wording
-- Head: 1b5d53040703
+- Head: cb029c3d0842
 
 ```text
-No changes detected.
+ docs/listing.md | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 ```
 
 </details>
