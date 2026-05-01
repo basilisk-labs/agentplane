@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T09:12:46Z",
   "base": "main",
   "branch": "task/202605010749-TD7XPM/short-homepage-gateway",
   "created_at": "2026-05-01T07:50:11.679Z",
-  "head_sha": "3a63fd0207fb1aa651ec31946912658267018276",
+  "head_sha": "3040c9bc51a6085cc174dfe7cf6e6b805fbeb8ff",
   "last_verified_at": "2026-05-01T09:04:22.862Z",
   "last_verified_sha": "5f3b3000fd795279a625f8897ca25bd5564a184a",
+  "merge_commit": "564705beebafe0d36d3b89d75648edd04f368c5d",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T09:12:46Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010749-TD7XPM",
-  "updated_at": "2026-05-01T09:04:35.860Z",
+  "updated_at": "2026-05-01T09:12:46Z",
   "verify": {
     "status": "pass"
   }

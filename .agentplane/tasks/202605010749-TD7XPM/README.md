@@ -1,10 +1,11 @@
 ---
 id: "202605010749-TD7XPM"
 title: "Shorten launch homepage gateway"
-status: "DOING"
+result_summary: "Merged via PR #662."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-01T09:04:22.862Z"
   updated_by: "CODER"
   note: "Minimal homepage layout iteration verified locally before deploy: CSS diff only, whitespace/formatting/targeted ESLint/typecheck/build/design guard and desktop/mobile Playwright checks passed."
-commit: null
+commit:
+  hash: "564705beebafe0d36d3b89d75648edd04f368c5d"
+  message: "frontend: Refine minimal launch homepage (TD7XPM)"
 comments:
   -
     author: "CODER"
     body: "Start: Implement the approved short homepage gateway in the task worktree, limiting changes to homepage content/layout/styles and local verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #662 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Minimal homepage layout iteration verified locally before deploy: CSS diff only, whitespace/formatting/targeted ESLint/typecheck/build/design guard and desktop/mobile Playwright checks passed."
+  -
+    type: "status"
+    at: "2026-05-01T09:13:30.408Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #662 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T09:04:22.882Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T09:13:30.414Z"
+doc_updated_by: "INTEGRATOR"
 description: "Turn the homepage into a short launch gateway: hero, demo/proof, core workflow, repo-local artifacts, docs paths, and final CTA."
 sections:
   Summary: |-
