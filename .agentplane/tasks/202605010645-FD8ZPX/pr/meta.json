@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605010645-FD8ZPX/guard-commit-wrapper-test-split",
+  "created_at": "2026-05-01T10:33:13.996Z",
+  "head_sha": "fc85c7d5cee5ba78bb6bf12c78a5ea676164ec08",
+  "last_verified_at": "2026-05-01T10:46:52.687Z",
+  "last_verified_sha": "fc85c7d5cee5ba78bb6bf12c78a5ea676164ec08",
+  "schema_version": 1,
+  "task_id": "202605010645-FD8ZPX",
+  "updated_at": "2026-05-01T10:33:13.996Z",
+  "verify": {
+    "status": "pass"
+  }
+}
