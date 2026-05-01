@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T12:18:29Z",
   "base": "main",
   "branch": "task/202605010645-YZ5WV4/modular-check-runner",
   "created_at": "2026-05-01T12:09:42.714Z",
-  "head_sha": "4af8dc553b5b0ffcff7a7d2cd5c74adefde5d125",
+  "head_sha": "0185709f0679e6135be6c5ca0a6e2c9a09750dae",
   "last_verified_at": "2026-05-01T12:15:38.501Z",
   "last_verified_sha": "71b5c456eda7027340ed1d4f02942f1dc962d24b",
+  "merge_commit": "5ca05b007a2b513af85bbbc21552c91027b72429",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T12:18:29Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010645-YZ5WV4",
-  "updated_at": "2026-05-01T12:16:00.929Z",
+  "updated_at": "2026-05-01T12:18:29Z",
   "verify": {
     "status": "pass"
   }
