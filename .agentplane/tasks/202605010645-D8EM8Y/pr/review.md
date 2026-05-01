@@ -45,12 +45,20 @@ Make Vitest workspace, aggregate suites, local CI selector, and routing checks c
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T08:18:15.671Z
+- Updated: 2026-05-01T09:02:42.117Z
 - Branch: task/202605010645-D8EM8Y/test-route-registry
-- Head: 4a5439e0aad7
+- Head: 41008296649b
 
 ```text
-No changes detected.
+ scripts/check-critical-test-route.mjs |  31 +-
+ scripts/check-test-routing.mjs        |   6 +-
+ scripts/check-vitest-projects.mjs     |  49 +---
+ scripts/lib/local-ci-selection.mjs    | 171 +----------
+ scripts/lib/test-inventory.mjs        | 165 +----------
+ scripts/lib/test-route-registry.mjs   | 536 ++++++++++++++++++++++++++++++++++
+ scripts/run-vitest-suite.mjs          | 183 +-----------
+ vitest.workspace.ts                   |  57 +---
+ 8 files changed, 617 insertions(+), 581 deletions(-)
 ```
 
 </details>
