@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T09:03:00Z",
   "base": "main",
-  "branch": "task/202605010748-NXZF00/code-map-recipe",
+  "branch": "task/202605010748-NXZF00/close-fix",
   "created_at": "2026-05-01T07:49:29.976Z",
-  "head_sha": "521c6df43060cc5a57cf0d5e2fd8747ef9482363",
+  "head_sha": "81820fe093dd45d2c8392a81b4be60a6e6e228f9",
   "last_verified_at": "2026-05-01T08:04:20.789Z",
   "last_verified_sha": "734519e639d62ea886a52eee6d9de327a9018f56",
+  "merge_commit": "0ad3d226795348b90f36f72103eb2e9fd6e8d1e8",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T09:03:00Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010748-NXZF00",
-  "updated_at": "2026-05-01T08:32:44.491Z",
+  "updated_at": "2026-05-01T09:03:00Z",
   "verify": {
     "status": "pass"
   }
