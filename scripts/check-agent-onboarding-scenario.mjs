@@ -49,7 +49,7 @@ const onboardingScenarios = [
   {
     name: "framework-checkout handoff",
     checks: [
-      ["setup", "## Working inside the Agent Plane framework checkout"],
+      ["setup", "## Working inside the AgentPlane framework checkout"],
       ["setup", "agentplane runtime explain"],
       ["setup", "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1"],
       ["commands", "## Runtime diagnostics"],
@@ -133,11 +133,7 @@ const main = defineScript({
       assertIncludes(fileContents.sidebar, label, "sidebar");
     }
 
-    for (const navLabel of [
-      'label: "Start"',
-      'label: "Work on a Task"',
-      'label: "Upgrade & Recover"',
-    ]) {
+    for (const navLabel of ['label: "Docs"', 'label: "Recipes"']) {
       assertIncludes(fileContents.docusaurusConfig, navLabel, "navbar");
     }
 

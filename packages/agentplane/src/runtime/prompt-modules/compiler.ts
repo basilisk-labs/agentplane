@@ -96,6 +96,14 @@ function contextValueLabel(value: unknown): string {
   return Object.prototype.toString.call(value);
 }
 
+function hasControlCharacter(value: string): boolean {
+  for (const character of value) {
+    const code = character.codePointAt(0) ?? 0;
+    if (code <= 0x1f || code === 0x7f) return true;
+  }
+  return false;
+}
+
 function reportDiscardedContextValue(
   diagnostics: PromptModuleDiagnostic[],
   field: string,
