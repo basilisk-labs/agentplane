@@ -1,10 +1,11 @@
 ---
 id: "202605010644-CE27KS"
 title: "AP-00: Record 0.4 refactor execution backlog"
-status: "DOING"
+result_summary: "Merged via PR #638."
+status: "DONE"
 priority: "med"
 owner: "PLANNER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-01T06:46:50.910Z"
   updated_by: "PLANNER"
   note: "Command: agentplane task list --status TODO --owner CODER; git status --short --untracked-files=no. Result: pass. Evidence: 17 dependent CODER tasks exist; tracked drift remains limited to pre-existing DESIGN.md. Scope: task graph creation."
-commit: null
+commit:
+  hash: "2ae58d9c78a7c9c3a34f1d7f588ac68ec0b85610"
+  message: "Merge pull request #638 from basilisk-labs/task/202605010644-CE27KS/refactor-backlog"
 comments:
   -
     author: "PLANNER"
     body: "Start: record the approved Agentplane 0.4 refactor plan as traceable executable task artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #638 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Command: agentplane task list --status TODO --owner CODER; git status --short --untracked-files=no. Result: pass. Evidence: 17 dependent CODER tasks exist; tracked drift remains limited to pre-existing DESIGN.md. Scope: task graph creation."
+  -
+    type: "status"
+    at: "2026-05-01T06:51:51.057Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #638 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T06:46:50.940Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-01T06:51:51.062Z"
+doc_updated_by: "INTEGRATOR"
 description: "Create traceable executable tasks for the Agentplane 0.4 refactor wave without touching unrelated DESIGN.md drift."
 sections:
   Summary: |-
