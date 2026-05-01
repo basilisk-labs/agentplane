@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605010645-D8EM8Y/test-route-registry",
+  "created_at": "2026-05-01T08:18:15.671Z",
+  "head_sha": "41008296649b36122c94d853db9177cd9569d587",
+  "last_verified_at": "2026-05-01T09:02:23.263Z",
+  "last_verified_sha": "4a5439e0aad702d19ea2f12d1ce7a7926862ff72",
+  "schema_version": 1,
+  "task_id": "202605010645-D8EM8Y",
+  "updated_at": "2026-05-01T09:02:42.117Z",
+  "verify": {
+    "status": "pass"
+  }
+}

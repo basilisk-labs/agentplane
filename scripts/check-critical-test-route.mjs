@@ -2,8 +2,10 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 
 import { defineScript, runScriptMain } from "./lib/script-runtime.mjs";
+import { getVitestWorkspaceProjects } from "./lib/test-route-registry.mjs";
 
 const CRITICAL_TIMEOUT_MINUTES = 10;
+const CRITICAL_VITEST_TIMEOUT_MS = 60_000;
 const VITEST_TIMEOUT_LITERAL = "60_000";
 
 const WORKFLOW_FILES = [".github/workflows/ci.yml", ".github/workflows/prepublish.yml"];
@@ -47,14 +49,29 @@ function assertPackageScript() {
 
 function assertVitestProject() {
   const source = readRepoFile("vitest.workspace.ts");
-  assertIncludes(source, 'project("critical"', "vitest.workspace.ts");
-  assertIncludes(
-    source,
-    '"packages/agentplane/src/cli/run-cli.critical.*.test.ts"',
-    "vitest.workspace.ts",
+  assertIncludes(source, "getVitestWorkspaceProjects", "vitest.workspace.ts");
+
+  const criticalProject = getVitestWorkspaceProjects().find(
+    (project) => project.name === "critical",
   );
-  assertIncludes(source, `hookTimeout: ${VITEST_TIMEOUT_LITERAL}`, "vitest.workspace.ts");
-  assertIncludes(source, `testTimeout: ${VITEST_TIMEOUT_LITERAL}`, "vitest.workspace.ts");
+  if (!criticalProject) {
+    throw new Error("test-route-registry.mjs must define the critical Vitest route.");
+  }
+
+  const criticalInclude = criticalProject.test.include ?? [];
+  if (!criticalInclude.includes("packages/agentplane/src/cli/run-cli.critical.*.test.ts")) {
+    throw new Error(
+      "critical Vitest route must include packages/agentplane/src/cli/run-cli.critical.*.test.ts.",
+    );
+  }
+  if (
+    criticalProject.test.hookTimeout !== CRITICAL_VITEST_TIMEOUT_MS ||
+    criticalProject.test.testTimeout !== CRITICAL_VITEST_TIMEOUT_MS
+  ) {
+    throw new Error(
+      `critical Vitest route must keep hookTimeout and testTimeout at ${VITEST_TIMEOUT_LITERAL}.`,
+    );
+  }
 }
 
 function checkCriticalRoute() {

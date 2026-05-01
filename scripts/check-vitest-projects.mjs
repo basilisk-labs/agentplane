@@ -1,51 +1,30 @@
 import { readFileSync } from "node:fs";
 
 import { renderTestRoutingReport, validateTestRouting } from "./check-test-routing.mjs";
-import { buildTestInventory } from "./lib/test-inventory.mjs";
+import {
+  DISALLOWED_WORKSPACE_TEST_ROUTES,
+  PRIMARY_TEST_ROUTES,
+  buildTestInventory,
+  getVitestWorkspaceProjects,
+} from "./lib/test-route-registry.mjs";
 
 const source = readFileSync("vitest.workspace.ts", "utf8");
-
-const aggregateProjects = [
-  "backend-critical",
-  "cli",
-  "cli-slow",
-  "cli-unit",
-  "fast",
-  "platform-critical",
-  "precommit",
-  "release-ci-base",
-  "release-critical",
-  "release-recovery",
-  "release-smoke",
-  "significant-coverage",
-  "workflow-coverage",
-];
-
-const primaryProjects = [
-  "agentplane",
-  "cli-core",
-  "cli-recipes",
-  "cli-scenario",
-  "cli-smoke",
-  "core",
-  "critical",
-  "guard",
-  "recipes",
-  "testkit",
-];
-
-function projectPattern(name) {
-  return new RegExp(String.raw`project\("${name}"`);
+if (!source.includes("getVitestWorkspaceProjects")) {
+  throw new Error("vitest.workspace.ts must load project routes from test-route-registry.mjs");
 }
 
-const invalidProjects = aggregateProjects.filter((name) => projectPattern(name).test(source));
+const workspaceProjectNames = new Set(getVitestWorkspaceProjects().map((route) => route.name));
+
+const invalidProjects = DISALLOWED_WORKSPACE_TEST_ROUTES.filter((name) =>
+  workspaceProjectNames.has(name),
+);
 if (invalidProjects.length > 0) {
   throw new Error(
     `Aggregate Vitest project(s) must be implemented by scripts/run-vitest-suite.mjs, not workspace projects: ${invalidProjects.join(", ")}`,
   );
 }
 
-const missingProjects = primaryProjects.filter((name) => !projectPattern(name).test(source));
+const missingProjects = PRIMARY_TEST_ROUTES.filter((name) => !workspaceProjectNames.has(name));
 if (missingProjects.length > 0) {
   throw new Error(`Missing primary Vitest project(s): ${missingProjects.join(", ")}`);
 }

@@ -1,10 +1,10 @@
 ---
 id: "202605010645-D8EM8Y"
 title: "AP-07: Introduce unified test route registry"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -14,19 +14,36 @@ tags:
 verify:
   - "node scripts/check-vitest-projects.mjs"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-05-01T08:17:56.880Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved after AP-06 closed on main and dependency is ready."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
-events: []
+  state: "ok"
+  updated_at: "2026-05-01T09:02:23.263Z"
+  updated_by: "CODER"
+  note: "Verified: unified test route registry drives Vitest projects, aggregate suites, local CI selector, and routing checks with 331 tests / 10 primary routes."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: route Vitest workspace projects, suite aggregation, local CI selection, and routing checks through one test route registry."
+events:
+  -
+    type: "status"
+    at: "2026-05-01T08:18:15.548Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: route Vitest workspace projects, suite aggregation, local CI selection, and routing checks through one test route registry."
+  -
+    type: "verify"
+    at: "2026-05-01T09:02:23.263Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: unified test route registry drives Vitest projects, aggregate suites, local CI selector, and routing checks with 331 tests / 10 primary routes."
 doc_version: 3
-doc_updated_at: "2026-05-01T06:45:05.585Z"
+doc_updated_at: "2026-05-01T09:02:23.267Z"
 doc_updated_by: "CODER"
 description: "Make Vitest workspace, aggregate suites, local CI selector, and routing checks consume one route registry."
 sections:
@@ -47,6 +64,18 @@ sections:
     3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-01T09:02:23.263Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: unified test route registry drives Vitest projects, aggregate suites, local CI selector, and routing checks with 331 tests / 10 primary routes.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T08:18:15.548Z, excerpt_hash=sha256:37af48df3918472f0736c1700b52cdb25dc1559fe4e62c97be8d3578c7258b97
+    
+    Details:
+    
+    Command: node scripts/check-vitest-projects.mjs; Result: pass; Evidence: vitest workspace projects OK; test routing OK (331 tests, 10 primary routes). Command: bunx vitest run packages/agentplane/src/cli/test-inventory.test.ts packages/agentplane/src/cli/test-routing-check.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts --testTimeout 60000 --hookTimeout 60000; Result: pass; Evidence: 4 files, 54 tests. Command: bun run test:project -- critical; Result: pass; Evidence: 5 files, 14 tests. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run workflows:lint; Result: pass. Command: bun run docs:scripts:check; Result: pass. Command: bun run framework:dev:bootstrap; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass.
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -80,6 +109,18 @@ Make Vitest workspace, aggregate suites, local CI selector, and routing checks c
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-01T09:02:23.263Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: unified test route registry drives Vitest projects, aggregate suites, local CI selector, and routing checks with 331 tests / 10 primary routes.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T08:18:15.548Z, excerpt_hash=sha256:37af48df3918472f0736c1700b52cdb25dc1559fe4e62c97be8d3578c7258b97
+
+Details:
+
+Command: node scripts/check-vitest-projects.mjs; Result: pass; Evidence: vitest workspace projects OK; test routing OK (331 tests, 10 primary routes). Command: bunx vitest run packages/agentplane/src/cli/test-inventory.test.ts packages/agentplane/src/cli/test-routing-check.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts --testTimeout 60000 --hookTimeout 60000; Result: pass; Evidence: 4 files, 54 tests. Command: bun run test:project -- critical; Result: pass; Evidence: 5 files, 14 tests. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run workflows:lint; Result: pass. Command: bun run docs:scripts:check; Result: pass. Command: bun run framework:dev:bootstrap; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
