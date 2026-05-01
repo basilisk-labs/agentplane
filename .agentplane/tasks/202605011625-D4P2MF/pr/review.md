@@ -45,12 +45,13 @@ Define the multi-channel release contract, blocking gates, non-blocking follow-u
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T16:38:50.202Z
+- Updated: 2026-05-01T16:41:31.459Z
 - Branch: task/202605011625-D4P2MF/release-distribution-contract
-- Head: 3d56cc31a62e
+- Head: c687d8ba4016
 
 ```text
-No changes detected.
+ docs/developer/release-and-publishing.mdx | 75 +++++++++++++++++++++++++++++++
+ 1 file changed, 75 insertions(+)
 ```
 
 </details>
