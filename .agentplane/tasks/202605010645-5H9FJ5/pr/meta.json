@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605010645-5H9FJ5/ci-contract-release-extras",
+  "created_at": "2026-05-01T12:23:40.715Z",
+  "head_sha": "c18e428de420df88bd3d33d9095448ccf9f826ba",
+  "last_verified_at": "2026-05-01T12:36:21.782Z",
+  "last_verified_sha": "c18e428de420df88bd3d33d9095448ccf9f826ba",
+  "schema_version": 1,
+  "task_id": "202605010645-5H9FJ5",
+  "updated_at": "2026-05-01T12:23:40.715Z",
+  "verify": {
+    "status": "pass"
+  }
+}

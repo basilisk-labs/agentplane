@@ -21,15 +21,22 @@ describe("release CI contract", () => {
       scripts?: Record<string, string>;
     };
 
-    const releaseCiCheck = packageJson.scripts?.["release:ci-check"] ?? "";
-    expect(releaseCiCheck).toContain("bun run coverage:workflow-suite");
-    expect(releaseCiCheck).toContain("bun run coverage:significant-suite");
-    expect(releaseCiCheck).toContain("node scripts/run-vitest-suite.mjs release-ci-base");
-    expect(releaseCiCheck.indexOf("bun run coverage:workflow-suite")).toBeGreaterThan(
-      releaseCiCheck.indexOf("node scripts/run-vitest-suite.mjs release-ci-base"),
+    const scripts = packageJson.scripts ?? {};
+    const releaseCiCheck = scripts["release:ci-check"] ?? "";
+    const releaseExtras = scripts["ci:release-extras"] ?? "";
+
+    expect(scripts.ci).toBe("bun run ci:contract && bun run ci:test");
+    expect(releaseCiCheck).toBe("bun run ci:contract && bun run ci:release-extras");
+    expect(scripts["ci:contract"]).toContain("bun run release:parity");
+    expect(scripts["ci:test"]).toContain("bun run typecheck");
+    expect(releaseExtras).toContain("bun run coverage:workflow-suite");
+    expect(releaseExtras).toContain("bun run coverage:significant-suite");
+    expect(releaseExtras).toContain("node scripts/run-vitest-suite.mjs release-ci-base");
+    expect(releaseExtras.indexOf("bun run coverage:workflow-suite")).toBeGreaterThan(
+      releaseExtras.indexOf("node scripts/run-vitest-suite.mjs release-ci-base"),
     );
-    expect(releaseCiCheck.indexOf("bun run coverage:significant-suite")).toBeGreaterThan(
-      releaseCiCheck.indexOf("bun run coverage:workflow-suite"),
+    expect(releaseExtras.indexOf("bun run coverage:significant-suite")).toBeGreaterThan(
+      releaseExtras.indexOf("bun run coverage:workflow-suite"),
     );
 
     expect(SUITES["release-ci-base"]?.chunkSize).toBe(10);
