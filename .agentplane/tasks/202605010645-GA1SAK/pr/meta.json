@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T11:21:58Z",
   "base": "main",
   "branch": "task/202605010645-GA1SAK/pr-open-flow-test-split",
   "created_at": "2026-05-01T11:02:36.968Z",
-  "head_sha": "bcbc33fefad1bb4c8722f8b48508ccd8771c671c",
+  "head_sha": "a451d42044d6f9292137180d6593184e92bc1ce2",
   "last_verified_at": "2026-05-01T11:17:56.666Z",
   "last_verified_sha": "c389f1be97348757656f9cfbc6c0120c6e7bd331",
+  "merge_commit": "08c46fccb7f7c616122a4e06b9a83aec05c32c42",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T11:21:58Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010645-GA1SAK",
-  "updated_at": "2026-05-01T11:18:41.474Z",
+  "updated_at": "2026-05-01T11:21:58Z",
   "verify": {
     "status": "pass"
   }
