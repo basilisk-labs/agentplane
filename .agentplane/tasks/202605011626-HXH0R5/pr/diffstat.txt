@@ -1,0 +1,5 @@
+ .github/workflows/publish.yml                      |   8 ++
+ .../release/publish-workflow-contract.test.ts      |   9 +-
+ .../write-publish-result-manifest-script.test.ts   | 101 ++++++++++++++++++++-
+ scripts/manifest.mjs                               |  66 +++++++++++++-
+ 4 files changed, 181 insertions(+), 3 deletions(-)
