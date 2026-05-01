@@ -30,7 +30,7 @@ export async function runPushPreflight(opts: {
   const loaded = await loadConfig(opts.agentplaneDir);
   const pushReason =
     opts.route.kind === "release_candidate"
-      ? `${opts.commandLabel} will push current branch ${opts.route.current_branch} to ${opts.remote} as a release candidate for ${opts.nextTag}; final publication remains gated on merge to ${opts.route.base_branch}`
+      ? `${opts.commandLabel} will push current branch ${opts.route.current_branch} to ${opts.remote} as a release candidate for ${opts.nextTag}; final publication remains gated on merge to ${opts.route.base_branch} and explicit Publish to npm workflow dispatch`
       : `${opts.commandLabel} will push HEAD and ${opts.nextTag} to ${opts.remote}`;
   await ensureNetworkApproved({
     action: opts.route.kind === "release_candidate" ? "release_candidate" : "release_apply",

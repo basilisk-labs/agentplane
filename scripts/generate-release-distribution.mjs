@@ -287,7 +287,9 @@ async function buildDistribution(repoRoot, args) {
   const version = args.version ?? cliPackage.version;
   const tag = args.tag ?? `v${version}`;
   const sha = args.sha ?? resolveGitHead(repoRoot);
-  const outDir = args.check ? mkdtempSync(path.join(os.tmpdir(), "agentplane-release-dist-")) : args.outDir;
+  const outDir = args.check
+    ? mkdtempSync(path.join(os.tmpdir(), "agentplane-release-dist-"))
+    : args.outDir;
   await mkdir(outDir, { recursive: true });
 
   const packDir = path.join(outDir, ".npm-pack");

@@ -124,7 +124,7 @@ agentplane runtime explain
 - If npm history may already contain the target version, run `bun run release:recover -- --check-registry`.
 - Fix reported errors first, then rerun the workflow-appropriate release step:
   - `direct`: `agentplane release apply --push`
-  - `branch_pr`: `agentplane release candidate --push`, review/merge the candidate PR, then let hosted publish run from `main`
+  - `branch_pr`: `agentplane release candidate --push`, review/merge the candidate PR, then explicitly dispatch `Publish to npm` with the release commit `sha`
 
 ## init completed, but repo is not clean
 

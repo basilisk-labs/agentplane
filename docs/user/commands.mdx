@@ -268,6 +268,8 @@ agentplane branch base explain
 ## Recipes
 
 ```bash
+agentplane recipes list-remote --refresh --yes
+agentplane recipes install code-map --refresh --yes
 agentplane recipes list
 agentplane recipes info <id>
 agentplane recipes add <id|id@version>
@@ -277,9 +279,10 @@ agentplane recipes update <id>
 agentplane recipes detach <id>
 ```
 
-`recipes list` and `recipes info` inspect the global cache. `recipes add` vendors a cached recipe
-into the current project, and `recipes active` / `recipes explain` inspect the project-local
-runtime surface.
+`recipes list-remote` inspects the signed remote catalog. `recipes install` imports a recipe into
+the global cache. `recipes list` and `recipes info` inspect the global cache. `recipes add` vendors a
+cached recipe into the current project, and `recipes active` / `recipes explain` inspect the
+project-local runtime surface.
 
 After a recipe is vendored, runtime reads project-local packages from `.agentplane/recipes/` rather
 than from the global cache.

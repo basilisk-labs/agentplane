@@ -105,8 +105,8 @@ Local `npm publish` is blocked by `prepublishOnly` through `scripts/enforce-gith
 
 GitHub workflow `Publish to npm`:
 
-- auto-publishes only from successful `Core CI` `workflow_run` events on `main`
-- `workflow_dispatch` recovery remains available for explicit reruns
+- observes successful `Core CI` `workflow_run` events on `main` to detect release readiness, but does not publish from automatic events
+- publishes only from explicit `workflow_dispatch`
 - manual recovery should pass an exact `sha` input; `ref` is only a fallback when `sha` is omitted
 - serializes publish runs by release identity (`workflow_run.head_sha` or explicit dispatch `sha`) instead of branch ref, and queues duplicates instead of canceling an in-flight release
 - uses OIDC trusted publishing

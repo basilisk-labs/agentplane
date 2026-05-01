@@ -1003,7 +1003,7 @@
       "exports": [
         {
           "name": "applyReleaseMutation",
-          "line": 21,
+          "line": 22,
           "col": 23
         }
       ]
@@ -2017,7 +2017,7 @@
       "exports": [
         {
           "name": "loadFrameworkRunnerPrompt",
-          "line": 250,
+          "line": 251,
           "col": 10
         }
       ]
@@ -2497,35 +2497,23 @@
       "exports": [
         {
           "name": "matchesPromptModuleLoadCondition",
-          "line": 91,
+          "line": 255,
           "col": 17
         },
         {
           "name": "matchesPromptModuleMutationWhen",
-          "line": 148,
+          "line": 294,
           "col": 17
         },
         {
           "name": "matchesPromptModuleSelector",
-          "line": 126,
+          "line": 276,
           "col": 17
-        }
-      ],
-      "types": [
-        {
-          "name": "PromptModuleCompilerContext",
-          "line": 34,
-          "col": 13
         },
         {
-          "name": "PromptModulePolicyGateway",
-          "line": 27,
-          "col": 13
-        },
-        {
-          "name": "PromptModuleWorkflowMode",
-          "line": 30,
-          "col": 13
+          "name": "normalizePromptModuleCompilerContext",
+          "line": 169,
+          "col": 17
         }
       ]
     },
@@ -2534,7 +2522,7 @@
       "exports": [
         {
           "name": "buildFrameworkExecutionProfilePromptModule",
-          "line": 56,
+          "line": 61,
           "col": 3
         },
         {
@@ -2551,162 +2539,167 @@
           "name": "matchesPromptModuleSelector",
           "line": 5,
           "col": 3
+        },
+        {
+          "name": "normalizePromptModuleCompilerContext",
+          "line": 6,
+          "col": 3
+        },
+        {
+          "name": "SUPPORTED_PROMPT_MODULE_SCHEMA_VERSIONS",
+          "line": 16,
+          "col": 3
         }
       ],
       "types": [
         {
           "name": "PromptModuleAddMutation",
-          "line": 37,
+          "line": 42,
           "col": 3
         },
         {
           "name": "PromptModuleBinding",
-          "line": 39,
+          "line": 44,
           "col": 3
         },
         {
           "name": "PromptModuleBindingKind",
-          "line": 40,
-          "col": 3
-        },
-        {
-          "name": "PromptModuleBindMutation",
-          "line": 38,
-          "col": 3
-        },
-        {
-          "name": "PromptModuleCompilerContext",
-          "line": 7,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleConflictPolicy",
-          "line": 17,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleContentKind",
-          "line": 18,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleContractSchemaVersion",
-          "line": 19,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleDependency",
-          "line": 20,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleDiagnostic",
-          "line": 8,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleDiagnosticSeverity",
-          "line": 9,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleDisableMutation",
-          "line": 41,
-          "col": 3
-        },
-        {
-          "name": "PromptModuleLoadCondition",
-          "line": 23,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleMergeMode",
-          "line": 24,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleMergePolicy",
-          "line": 25,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleMutability",
-          "line": 26,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleMutationBase",
-          "line": 43,
-          "col": 3
-        },
-        {
-          "name": "PromptModuleMutationSource",
           "line": 45,
           "col": 3
         },
         {
-          "name": "PromptModuleMutationWhen",
-          "line": 46,
+          "name": "PromptModuleBindMutation",
+          "line": 43,
           "col": 3
         },
         {
-          "name": "PromptModuleNamespace",
-          "line": 27,
+          "name": "PromptModuleConflictPolicy",
+          "line": 23,
           "col": 8
         },
         {
-          "name": "PromptModulePatchMutation",
-          "line": 47,
-          "col": 3
+          "name": "PromptModuleContentKind",
+          "line": 24,
+          "col": 8
         },
         {
-          "name": "PromptModulePolicyGateway",
+          "name": "PromptModuleContractSchemaVersion",
+          "line": 18,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleDependency",
+          "line": 25,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleDiagnostic",
+          "line": 9,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleDiagnosticSeverity",
           "line": 10,
           "col": 8
         },
         {
-          "name": "PromptModuleReference",
+          "name": "PromptModuleDisableMutation",
+          "line": 46,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleLoadCondition",
+          "line": 28,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleMergeMode",
+          "line": 29,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleMergePolicy",
           "line": 30,
           "col": 8
         },
         {
-          "name": "PromptModuleReplaceMutation",
+          "name": "PromptModuleMutability",
+          "line": 31,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleMutationBase",
           "line": 48,
           "col": 3
         },
         {
-          "name": "PromptModuleSelector",
-          "line": 49,
-          "col": 3
-        },
-        {
-          "name": "PromptModuleSourceKind",
-          "line": 32,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleStructuredPatch",
+          "name": "PromptModuleMutationSource",
           "line": 50,
           "col": 3
         },
         {
-          "name": "PromptModuleValidatorMutation",
+          "name": "PromptModuleMutationWhen",
+          "line": 51,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleNamespace",
+          "line": 32,
+          "col": 8
+        },
+        {
+          "name": "PromptModulePatchMutation",
           "line": 52,
           "col": 3
         },
         {
-          "name": "PromptModuleValidatorPhase",
-          "line": 53,
-          "col": 3
-        },
-        {
-          "name": "PromptModuleWorkflowMode",
+          "name": "PromptModulePolicyGateway",
           "line": 11,
           "col": 8
         },
         {
+          "name": "PromptModuleReference",
+          "line": 35,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleReplaceMutation",
+          "line": 53,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleSelector",
+          "line": 54,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleSourceKind",
+          "line": 37,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleStructuredPatch",
+          "line": 55,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleValidatorMutation",
+          "line": 57,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleValidatorPhase",
+          "line": 58,
+          "col": 3
+        },
+        {
+          "name": "PromptModuleWorkflowMode",
+          "line": 12,
+          "col": 8
+        },
+        {
           "name": "ValidatedPromptModuleMutation",
-          "line": 64,
+          "line": 70,
           "col": 8
         }
       ]
@@ -2716,7 +2709,32 @@
       "types": [
         {
           "name": "PromptModuleReference",
-          "line": 151,
+          "line": 154,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/prompt-modules/mutations-engine.ts",
+      "types": [
+        {
+          "name": "ApplyPromptModuleMutationOptions",
+          "line": 34,
+          "col": 13
+        },
+        {
+          "name": "PromptModuleLoadMatcher",
+          "line": 18,
+          "col": 13
+        },
+        {
+          "name": "PromptModuleMutationWhenMatcher",
+          "line": 28,
+          "col": 13
+        },
+        {
+          "name": "PromptModuleSelectorMatcher",
+          "line": 23,
           "col": 13
         }
       ]
@@ -2726,8 +2744,18 @@
       "exports": [
         {
           "name": "buildFrameworkExecutionProfilePromptModule",
-          "line": 382,
+          "line": 383,
           "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/prompt-modules/schema.ts",
+      "exports": [
+        {
+          "name": "SUPPORTED_PROMPT_MODULE_SCHEMA_VERSIONS",
+          "line": 5,
+          "col": 14
         }
       ]
     },
@@ -2736,7 +2764,7 @@
       "types": [
         {
           "name": "ValidatedPromptModuleMutation",
-          "line": 505,
+          "line": 496,
           "col": 13
         }
       ]
@@ -3092,10 +3120,10 @@
   ],
   "counts": {
     "files": 5,
-    "exports": 155,
+    "exports": 159,
     "types": 290,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 450
+    "total": 454
   }
 }

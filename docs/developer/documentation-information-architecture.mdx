@@ -57,11 +57,13 @@ The public docs entrypoints should mirror the same workflow model the CLI and ga
 
 1. **Start**: repository entry, setup, bootstrap.
 2. **Work on a task**: workflow, lifecycle, commands, roles.
-3. **Upgrade & recover**: upgrade state model, migration, recovery runbooks.
-4. **Reference & integrations**: backends, config, generated reference.
-5. **Developer**: implementation and maintenance details.
-6. **Release notes**: historical record only.
-7. **Archive**: historical records, ADRs, and retired program notes.
+3. **Workflow guides**: copy-paste flows for agents, CI, and review modes around AgentPlane.
+4. **Recipes**: installable recipe packages and catalog/runtime behavior.
+5. **Upgrade & recover**: upgrade state model, migration, recovery runbooks.
+6. **Reference & integrations**: backends, config, generated reference.
+7. **Developer**: implementation and maintenance details.
+8. **Release notes**: historical record only.
+9. **Archive**: historical records, ADRs, and retired program notes.
 
 ## Canonical mapping
 
@@ -72,6 +74,8 @@ The public docs entrypoints should mirror the same workflow model the CLI and ga
 | Config keys and defaults              | `docs/user/configuration.mdx`                                                                                           | `packages/spec/schemas/config.schema.json`, `packages/core/src/config/config.ts`                       |
 | Task lifecycle and status transitions | `docs/user/task-lifecycle.mdx`, `docs/user/workflow.mdx`                                                                | `packages/agentplane/src/commands/task/*`                                                              |
 | Command usage guide                   | `docs/user/commands.mdx`                                                                                                | `packages/agentplane/src/commands/**/*.spec.ts`                                                        |
+| Workflow guides                       | `docs/workflow-guides/*`                                                                                                | `docs/user/workflow.mdx`, `.agentplane/config.json`, `packages/agentplane/src/commands/**`             |
+| Recipes                               | `docs/recipes/*`, `docs/recipes-inventory.json`                                                                         | `packages/agentplane/src/commands/recipes/**`, `packages/recipes/src/**`, `agentplane-recipes/**`      |
 | Upgrade and mixed-state recovery      | `docs/user/setup.mdx`, `docs/help/legacy-upgrade-recovery.mdx`                                                          | `packages/agentplane/src/commands/upgrade*`, `packages/agentplane/src/commands/doctor.run.ts`          |
 | Full CLI reference (generated)        | `docs/user/cli-reference.generated.mdx`                                                                                 | `agentplane docs cli --out docs/user/cli-reference.generated.mdx`                                      |
 | Backend behavior (local/redmine)      | `docs/user/backends*.mdx`, `docs/user/redmine.mdx`                                                                      | `packages/agentplane/src/backends/task-backend/*`                                                      |

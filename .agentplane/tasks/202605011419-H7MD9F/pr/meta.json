@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605011419-H7MD9F/v0-4-1-release-candidate",
+  "created_at": "2026-05-01T14:20:47.251Z",
+  "head_sha": "4f050552ec342e2f99357dd1b1225858e695d1f9",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605011419-H7MD9F",
+  "updated_at": "2026-05-01T17:56:41.668Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

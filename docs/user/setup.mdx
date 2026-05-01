@@ -292,10 +292,11 @@ Each command writes evidence to `.agentplane/workflows/evidence/`.
 ## Install optional recipes (extensions)
 
 ```bash
-agentplane recipes install --name viewer
-agentplane recipes add viewer
+agentplane recipes list-remote --refresh --yes
+agentplane recipes install code-map --refresh --yes
+agentplane recipes add code-map
 agentplane recipes active
-agentplane recipes explain viewer
+agentplane recipes explain code-map
 ```
 
 `recipes install` fills the global cache. `recipes add` vendors the selected package into the current

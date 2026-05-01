@@ -7,8 +7,17 @@ const DOCS_DIR = path.join(ROOT, "docs");
 const DOCS_INDEX_PATH = path.join(DOCS_DIR, "index.mdx");
 const SIDEBARS_PATH = path.join(ROOT, "website", "sidebars.ts");
 
-const NAV_DOC_ROOTS = new Set(["user", "developer", "help", "reference", "archive"]);
+const NAV_DOC_ROOTS = new Set([
+  "user",
+  "workflow-guides",
+  "recipes",
+  "developer",
+  "help",
+  "reference",
+  "archive",
+]);
 const INDEX_DOC_ROOTS = new Set([...NAV_DOC_ROOTS, "releases"]);
+const INDEX_ROUTE_ALIASES = new Set(["workflow-guides", "recipes", "releases"]);
 
 const staleReferenceRules = [
   {
@@ -203,6 +212,9 @@ function normalizeIndexDocLink(destination) {
   value = stripDocExtension(value);
 
   const root = value.split("/")[0] ?? "";
+  if (value === root && INDEX_ROUTE_ALIASES.has(value)) {
+    return `${value}/index`;
+  }
   return INDEX_DOC_ROOTS.has(root) ? value : null;
 }
 
