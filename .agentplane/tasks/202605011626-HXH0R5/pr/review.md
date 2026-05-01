@@ -46,12 +46,16 @@ Refactor the release publishing workflow so npm, GitHub assets, package-manager 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T17:01:37.856Z
+- Updated: 2026-05-01T17:06:15.696Z
 - Branch: task/202605011626-HXH0R5/modular-release-distribution
-- Head: 206528a6ef47
+- Head: 47065cc2900a
 
 ```text
-No changes detected.
+ .github/workflows/publish.yml                      |   8 ++
+ .../release/publish-workflow-contract.test.ts      |   9 +-
+ .../write-publish-result-manifest-script.test.ts   | 101 ++++++++++++++++++++-
+ scripts/manifest.mjs                               |  66 +++++++++++++-
+ 4 files changed, 181 insertions(+), 3 deletions(-)
 ```
 
 </details>
