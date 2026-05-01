@@ -1,10 +1,11 @@
 ---
 id: "202605010546-168YR1"
 title: "Refresh launch landing and acquisition docs"
-status: "DOING"
+result_summary: "Merged via PR #647."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-01T06:50:46.347Z"
   updated_by: "CODER"
   note: "Pre-push format blocker resolved before branch publish."
-commit: null
+commit:
+  hash: "a6b585e2b45a5228e88801f8174a8b9ca95cb4a1"
+  message: "frontend: Refresh launch landing and acquisition docs (168YR1)"
 comments:
   -
     author: "CODER"
     body: "Start: refresh the landing page, README, and recipe-oriented docs from the approved launch acquisition plan."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #647 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -64,14 +70,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Pre-push format blocker resolved before branch publish."
+  -
+    type: "status"
+    at: "2026-05-01T07:28:49.117Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #647 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T06:50:46.385Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T07:28:49.125Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the public landing page, README, and user-facing docs so AgentPlane is positioned as a Git-native workflow layer for auditable coding-agent work, with focused CTAs, demo flow, recipes, FAQ, and concise quickstart."
 sections:
   Summary: |-
     Refresh launch landing and acquisition docs
-
+    
     Update the public landing page, README, and user-facing docs so AgentPlane is positioned as a Git-native workflow layer for auditable coding-agent work, with focused CTAs, demo flow, recipes, FAQ, and concise quickstart.
   Scope: |-
     - In scope: `website/src/pages/index.tsx`, `website/src/pages/_home.module.css`, `website/src/data/homepage-content.ts`, `website/docusaurus.config.ts`, `website/sidebars.ts`, `website/src/css/custom.css` when needed for navigation/landing styling.
@@ -89,45 +102,45 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-01T06:03:08.110Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Website acquisition landing, README, and recipe docs verified.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T05:48:19.077Z, excerpt_hash=sha256:e2f8d223a04c269ed78c935f9d1340a180ab79746892bac98e6d69fb485b75ff
-
+    
     ### 2026-05-01T06:17:40.741Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Launch landing, README, docs, recipes, and design-system alignment verified locally.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T06:03:08.118Z, excerpt_hash=sha256:e2f8d223a04c269ed78c935f9d1340a180ab79746892bac98e6d69fb485b75ff
-
+    
     ### 2026-05-01T06:25:00.886Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Blog listing chronological order verified locally.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T06:20:45.037Z, excerpt_hash=sha256:e2f8d223a04c269ed78c935f9d1340a180ab79746892bac98e6d69fb485b75ff
-
+    
     ### 2026-05-01T06:42:11.430Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Updated DESIGN.md included and verified before push.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T06:40:46.230Z, excerpt_hash=sha256:e2f8d223a04c269ed78c935f9d1340a180ab79746892bac98e6d69fb485b75ff
-
+    
     ### 2026-05-01T06:50:46.347Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Pre-push format blocker resolved before branch publish.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T06:44:14.728Z, excerpt_hash=sha256:e2f8d223a04c269ed78c935f9d1340a180ab79746892bac98e6d69fb485b75ff
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task branch commits or abandon the task worktree/branch before integration.
@@ -144,19 +157,19 @@ sections:
     Command: bun run lint:website. Result: pass after replacing the copy handler .then chain with an async helper. Evidence: eslint website exited 0. Scope: changed website code.
       Impact: The requested landing, README, and docs changes have local type/build/design/policy/IA/lint coverage.
       Resolution: Generated build/typecheck artifacts and the temporary website/node_modules symlink were removed before final status review.
-
+    
     - Observation: Passed: bun run docs:site:typecheck; bun run docs:site:build; bun run docs:site:check:design; bun run docs:ia:check; bun run lint:website; node .agentplane/policy/check-routing.mjs; agentplane doctor; git diff --check. Playwright desktop and mobile screenshots showed non-overlapping hero/header, dark terminal surfaces, and no console warnings after aligning CSS with the updated DESIGN.md guidance.
       Impact: Homepage now works as a launch-post conversion bridge to GitHub/install/docs, README and docs share the Git-native workflow-layer story, and recipes provide concrete agent-stack entry points.
       Resolution: Only local verification was performed; hosted PR/push/integration is intentionally pending because network access is approval-gated and the main checkout contains user-owned DESIGN.md changes.
-
+    
     - Observation: Updated the custom Docusaurus blog list to derive entries from blog metadata, sort them oldest-to-newest, and render all posts on /blog via postsPerPage=ALL. Passed: bun run docs:site:typecheck; bun run docs:site:build; bun run lint:website; bun run docs:site:check:design; bun run docs:ia:check; node .agentplane/policy/check-routing.mjs; agentplane task verify-show 202605010546-168YR1; agentplane doctor; git diff --check. Additional generated HTML assertion confirmed /blog renders 12 posts in chronological order from 2026-02-24 through 2026-04-30.
       Impact: The blog landing no longer relies on stale manually grouped arrays and now shows the current article set as one chronological archive.
       Resolution: Temporary website node_modules/build/.docusaurus artifacts were removed before commit; hosted push/PR remains approval-gated.
-
+    
     - Observation: Copied the current user-updated DESIGN.md from the base checkout into the task worktree; cmp confirmed the task-branch DESIGN.md matches the base dirty file. Passed after inclusion: bun run docs:site:typecheck; bun run docs:site:build; bun run docs:site:check:design; node .agentplane/policy/check-routing.mjs; agentplane task verify-show 202605010546-168YR1; agentplane doctor; git diff --check.
       Impact: The branch now contains the design source used for the landing/blog redesign instead of relying on an uncommitted base-checkout file.
       Resolution: Temporary website build/.docusaurus/node_modules artifacts were removed before commit. User explicitly requested push, so network approval is granted for pushing this task branch.
-
+    
     - Observation: Initial git push was blocked by the managed pre-push hook because format:check reported packages/agentplane/assets/AGENTS.md, packages/agentplane/assets/policy/incidents.md, and packages/agentplane/src/runtime/prompt-modules/index.ts. Applied a narrow Prettier-only fix to those files, synced canonical policy to .agentplane/policy with bun run agents:sync, and kept the gateway under the policy line budget. Passed: bun run format:check; bun run agents:check; node .agentplane/policy/check-routing.mjs; git diff --check; agentplane doctor.
       Impact: The task branch can be pushed without carrying a known format gate failure, and canonical/target policy mirrors are synchronized.
       Resolution: This was a push blocker found by local hook after the requested push; no product behavior changes were made in the format-only files.
