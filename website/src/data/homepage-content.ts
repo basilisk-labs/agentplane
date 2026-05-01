@@ -12,7 +12,7 @@ export const homepageContent = {
     title: "Use coding agents without losing Git discipline.",
     subtitle:
       "AgentPlane makes Claude Code, Codex, Cursor-style agent work auditable inside your Git repository.",
-    flow: "task -> plan -> approve -> implement -> verify -> finish",
+    flow: "task → plan → approve → implement → verify → finish",
     assurances: ["No hosted runtime", "No hidden state", "Everything stays in your repo"],
     actions: [
       { label: "View on GitHub", to: githubUrl, variant: "primary" },

@@ -30,7 +30,7 @@ Update the public landing page, README, and user-facing docs so AgentPlane is po
 ### Current Status
 
 - State: ok
-- Note: Website acquisition landing, README, and recipe docs verified.
+- Note: Launch landing, README, docs, recipes, and design-system alignment verified locally.
 
 ## Risks
 

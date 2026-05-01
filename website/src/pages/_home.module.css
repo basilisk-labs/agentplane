@@ -1,5 +1,5 @@
 .page {
-  background: linear-gradient(180deg, rgb(247 249 251), rgb(255 255 255) 36rem), rgb(var(--bg));
+  background: linear-gradient(180deg, #fafaf7 0%, #ffffff 55%, #ffffff 100%), rgb(var(--bg));
   color: rgb(var(--fg));
   overflow: clip;
 }
@@ -12,9 +12,9 @@
 
 .heroStage {
   background-image:
-    linear-gradient(rgb(16 24 32 / 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(16 24 32 / 0.06) 1px, transparent 1px);
-  background-size: 42px 42px;
+    linear-gradient(rgb(17 17 17 / 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(17 17 17 / 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
   border-bottom: 1px solid rgb(var(--border));
   min-height: calc(100svh - var(--ifm-navbar-height));
   padding: calc(var(--ifm-navbar-height) + 3.75rem) 0 4.25rem;
@@ -48,7 +48,9 @@
 .heroCopy h1,
 .sectionLead h2,
 .finalCta h2 {
+  font-family: var(--ap-display-font);
   font-size: 5rem;
+  font-weight: 300;
   letter-spacing: 0;
   line-height: 0.96;
   margin: 0;
@@ -72,6 +74,7 @@
 .faqItem p {
   color: rgb(var(--muted));
   font-size: 1rem;
+  font-weight: 300;
   line-height: 1.6;
 }
 
@@ -98,11 +101,13 @@
 
 .action {
   align-items: center;
-  border-radius: 8px;
+  border-radius: 0;
   cursor: pointer;
   display: inline-flex;
   font: inherit;
-  font-weight: 650;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.78rem;
+  font-weight: 300;
   justify-content: center;
   min-height: 2.9rem;
   padding: 0.76rem 1rem;
@@ -135,6 +140,7 @@
 .actionSecondary {
   background: rgb(255 255 255);
   border: 1px solid rgb(var(--border));
+  border-radius: 9999px;
   color: rgb(var(--fg));
 }
 
@@ -153,9 +159,9 @@
 
 .installLine code,
 .finalCta code {
-  background: rgb(255 255 255);
+  background: rgb(var(--surface));
   border: 1px solid rgb(var(--border));
-  border-radius: 8px;
+  border-radius: 9999px;
   color: rgb(var(--fg));
   font-size: 0.9rem;
   padding: 0.55rem 0.72rem;
@@ -193,17 +199,17 @@
 .stackGrid span,
 .proofGrid span {
   border: 1px solid rgb(var(--border));
-  border-radius: 999px;
+  border-radius: 9999px;
   color: rgb(var(--fg));
   font-size: 0.85rem;
   padding: 0.45rem 0.68rem;
 }
 
 .terminalRecording {
-  background: rgb(8 12 16);
-  border: 1px solid rgb(34 44 54);
-  border-radius: 8px;
-  box-shadow: 0 24px 54px rgb(8 12 16 / 0.18);
+  background: #0a0a0a;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
 }
 
@@ -215,6 +221,7 @@
   display: flex;
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.78rem;
+  font-weight: 300;
   justify-content: space-between;
   padding: 0.72rem 0.9rem;
 }
@@ -230,11 +237,14 @@
 }
 
 .terminalBody {
-  padding: 1.05rem 1.05rem 1.2rem;
+  background: #0a0a0a;
+  padding: 2.5rem;
 }
 
 .terminalBody code,
 .commandPre code {
+  background: transparent;
+  color: rgb(255 255 255);
   display: grid;
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.82rem;
@@ -251,14 +261,14 @@
 }
 
 .commandPrompt {
-  color: rgb(97 206 255);
+  color: rgb(var(--accent));
   display: inline-block;
   margin-right: 0.66rem;
 }
 
 .terminalCursor {
   animation: blink 1s steps(2, start) infinite;
-  background: rgb(97 206 255);
+  background: rgb(var(--accent));
   display: inline-block;
   height: 1rem;
   width: 0.56rem;
@@ -269,7 +279,7 @@
   display: grid;
   gap: 2.5rem;
   grid-template-columns: minmax(240px, 340px) minmax(0, 1fr);
-  padding: 5rem 0 0;
+  padding: 6rem 0 0;
 }
 
 .questionList {
@@ -301,15 +311,18 @@
 
 .compareColumn,
 .modeBlock {
-  border-top: 2px solid rgb(var(--fg));
-  padding-top: 1rem;
+  background: rgb(255 255 255);
+  border: 1px solid rgb(var(--border));
+  padding: 2rem;
 }
 
 .compareColumn h3,
 .stepItem h3,
 .modeBlock h3,
 .requirements h3 {
+  font-family: var(--ap-display-font);
   font-size: 1.28rem;
+  font-weight: 300;
   letter-spacing: 0;
   margin: 0 0 0.75rem;
 }
@@ -323,7 +336,8 @@
 }
 
 .repoSurface {
-  border-top: 1px solid rgb(var(--border));
+  background: rgb(var(--surface));
+  border: 1px solid rgb(var(--border));
   display: grid;
   gap: 0;
 }
@@ -334,7 +348,7 @@
   border-bottom: 1px solid rgb(var(--border));
   color: rgb(var(--fg));
   font-size: 0.94rem;
-  padding: 0.86rem 0;
+  padding: 0.86rem 1rem;
 }
 
 .stepList {
@@ -362,7 +376,7 @@
 .stepItem code {
   background: rgb(246 248 250);
   border: 1px solid rgb(var(--border));
-  border-radius: 8px;
+  border-radius: 0;
   color: rgb(var(--fg));
   display: inline-block;
   font-size: 0.82rem;
@@ -402,7 +416,7 @@
 
 .diagram {
   border: 1px solid rgb(var(--border));
-  border-radius: 8px;
+  border-radius: 0;
   display: grid;
   gap: 0.55rem;
   padding: 1rem;
@@ -427,10 +441,10 @@
 }
 
 .commandPre {
-  background: rgb(8 12 16);
-  border: 1px solid rgb(34 44 54);
-  border-radius: 8px;
-  padding: 1rem;
+  background: #0a0a0a;
+  border: 0;
+  border-radius: 0;
+  padding: 2.5rem;
 }
 
 .commandPre code,
@@ -454,10 +468,12 @@
 
 .recipeLink {
   border: 1px solid rgb(var(--border));
-  border-radius: 8px;
+  border-radius: 0;
   color: rgb(var(--fg));
   display: inline-flex;
-  font-weight: 650;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.82rem;
+  font-weight: 300;
   min-height: 3rem;
   padding: 0.8rem 0.92rem;
   text-decoration: none;
@@ -486,7 +502,7 @@
 
 .faqItem summary {
   cursor: pointer;
-  font-weight: 650;
+  font-weight: 500;
   list-style: none;
 }
 
@@ -495,7 +511,7 @@
 }
 
 .finalCta {
-  background: rgb(10 12 14);
+  background: #0a0a0a;
   color: rgb(255 255 255);
   margin-top: 5.5rem;
   padding: 4.5rem 0;

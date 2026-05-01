@@ -4,7 +4,7 @@ title: "Refresh launch landing and acquisition docs"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-01T06:03:08.110Z"
+  updated_at: "2026-05-01T06:17:40.741Z"
   updated_by: "CODER"
-  note: "Website acquisition landing, README, and recipe docs verified."
+  note: "Launch landing, README, docs, recipes, and design-system alignment verified locally."
 commit: null
 comments:
   -
@@ -40,8 +40,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Website acquisition landing, README, and recipe docs verified."
+  -
+    type: "verify"
+    at: "2026-05-01T06:17:40.741Z"
+    author: "CODER"
+    state: "ok"
+    note: "Launch landing, README, docs, recipes, and design-system alignment verified locally."
 doc_version: 3
-doc_updated_at: "2026-05-01T06:03:08.118Z"
+doc_updated_at: "2026-05-01T06:17:40.749Z"
 doc_updated_by: "CODER"
 description: "Update the public landing page, README, and user-facing docs so AgentPlane is positioned as a Git-native workflow layer for auditable coding-agent work, with focused CTAs, demo flow, recipes, FAQ, and concise quickstart."
 sections:
@@ -77,6 +83,14 @@ sections:
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T05:48:19.077Z, excerpt_hash=sha256:e2f8d223a04c269ed78c935f9d1340a180ab79746892bac98e6d69fb485b75ff
     
+    ### 2026-05-01T06:17:40.741Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Launch landing, README, docs, recipes, and design-system alignment verified locally.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T06:03:08.118Z, excerpt_hash=sha256:e2f8d223a04c269ed78c935f9d1340a180ab79746892bac98e6d69fb485b75ff
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task branch commits or abandon the task worktree/branch before integration.
@@ -93,6 +107,10 @@ sections:
     Command: bun run lint:website. Result: pass after replacing the copy handler .then chain with an async helper. Evidence: eslint website exited 0. Scope: changed website code.
       Impact: The requested landing, README, and docs changes have local type/build/design/policy/IA/lint coverage.
       Resolution: Generated build/typecheck artifacts and the temporary website/node_modules symlink were removed before final status review.
+    
+    - Observation: Passed: bun run docs:site:typecheck; bun run docs:site:build; bun run docs:site:check:design; bun run docs:ia:check; bun run lint:website; node .agentplane/policy/check-routing.mjs; agentplane doctor; git diff --check. Playwright desktop and mobile screenshots showed non-overlapping hero/header, dark terminal surfaces, and no console warnings after aligning CSS with the updated DESIGN.md guidance.
+      Impact: Homepage now works as a launch-post conversion bridge to GitHub/install/docs, README and docs share the Git-native workflow-layer story, and recipes provide concrete agent-stack entry points.
+      Resolution: Only local verification was performed; hosted PR/push/integration is intentionally pending because network access is approval-gated and the main checkout contains user-owned DESIGN.md changes.
 id_source: "generated"
 ---
 ## Summary
@@ -136,6 +154,14 @@ Note: Website acquisition landing, README, and recipe docs verified.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T05:48:19.077Z, excerpt_hash=sha256:e2f8d223a04c269ed78c935f9d1340a180ab79746892bac98e6d69fb485b75ff
 
+### 2026-05-01T06:17:40.741Z — VERIFY — ok
+
+By: CODER
+
+Note: Launch landing, README, docs, recipes, and design-system alignment verified locally.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T06:03:08.118Z, excerpt_hash=sha256:e2f8d223a04c269ed78c935f9d1340a180ab79746892bac98e6d69fb485b75ff
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -156,3 +182,7 @@ Command: bun run docs:ia:check. Result: pass. Evidence: docs IA, sidebar coverag
 Command: bun run lint:website. Result: pass after replacing the copy handler .then chain with an async helper. Evidence: eslint website exited 0. Scope: changed website code.
   Impact: The requested landing, README, and docs changes have local type/build/design/policy/IA/lint coverage.
   Resolution: Generated build/typecheck artifacts and the temporary website/node_modules symlink were removed before final status review.
+
+- Observation: Passed: bun run docs:site:typecheck; bun run docs:site:build; bun run docs:site:check:design; bun run docs:ia:check; bun run lint:website; node .agentplane/policy/check-routing.mjs; agentplane doctor; git diff --check. Playwright desktop and mobile screenshots showed non-overlapping hero/header, dark terminal surfaces, and no console warnings after aligning CSS with the updated DESIGN.md guidance.
+  Impact: Homepage now works as a launch-post conversion bridge to GitHub/install/docs, README and docs share the Git-native workflow-layer story, and recipes provide concrete agent-stack entry points.
+  Resolution: Only local verification was performed; hosted PR/push/integration is intentionally pending because network access is approval-gated and the main checkout contains user-owned DESIGN.md changes.
