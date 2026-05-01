@@ -1,0 +1,3 @@
+ packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts   | 2 +-
+ packages/agentplane/src/cli/run-cli/commands/init/write-agents.ts | 7 ++++++-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
