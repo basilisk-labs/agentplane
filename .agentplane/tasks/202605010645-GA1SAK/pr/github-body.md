@@ -22,12 +22,18 @@ Split PR open flow tests by artifact, git, validation, and network gates using c
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T11:02:36.968Z
+- Updated: 2026-05-01T11:18:41.474Z
 - Branch: task/202605010645-GA1SAK/pr-open-flow-test-split
-- Head: c389f1be9734
+- Head: bcbc33fefad1
 
 ```text
-No changes detected.
+ .../agentplane/src/cli/local-ci-selection.test.ts  |  15 +-
+ .../run-cli.core.pr-flow.pr-open.artifacts.test.ts | 213 ++++++++
+ ...ts => run-cli.core.pr-flow.pr-open.git.test.ts} | 548 +--------------------
+ .../run-cli.core.pr-flow.pr-open.network.test.ts   | 351 +++++++++++++
+ ...run-cli.core.pr-flow.pr-open.validation.test.ts | 173 +++++++
+ scripts/oversized-test-baseline.json               |   8 +-
+ 6 files changed, 752 insertions(+), 556 deletions(-)
 ```
 
 </details>
