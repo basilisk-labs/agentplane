@@ -48,9 +48,9 @@ Prepare the v0.4.1 release candidate from current main, including release plan, 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T17:23:30.689Z
+- Updated: 2026-05-01T17:24:43.201Z
 - Branch: task/202605011419-H7MD9F/v0-4-1-release-candidate
-- Head: dc764d93dcbd
+- Head: ffec92499a0a
 
 ```text
  .agentplane/config.json                            |   2 +-
@@ -82,9 +82,10 @@ Prepare the v0.4.1 release candidate from current main, including release plan, 
  packages/testkit/package.json                      |   2 +-
  scripts/baselines/knip-baseline.json               | 150 +++++++------
  scripts/check-docs-ia.mjs                          |  14 +-
+ scripts/generate-release-distribution.mjs          |   4 +-
  website/sidebars.ts                                |  21 +-
  website/src/data/homepage-content.ts               |   9 +-
- 31 files changed, 641 insertions(+), 172 deletions(-)
+ 32 files changed, 644 insertions(+), 173 deletions(-)
 ```
 
 </details>
