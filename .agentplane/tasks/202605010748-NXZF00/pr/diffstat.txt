@@ -1,0 +1,9 @@
+ agentplane-recipes                                 |  2 +-
+ docs/recipes-inventory.json                        | 76 +++++-----------------
+ package.json                                       |  2 +-
+ .../src/runtime/prompt-modules/compiler.ts         | 11 +++-
+ scripts/README.md                                  | 74 ++++++++++-----------
+ scripts/check-agent-onboarding-scenario.mjs        |  8 +--
+ scripts/generate-recipes-inventory.mjs             |  7 +-
+ scripts/oversized-test-baseline.json               |  2 +-
+ 8 files changed, 74 insertions(+), 108 deletions(-)
