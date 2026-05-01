@@ -90,7 +90,8 @@ export const SIGNIFICANT_COVERAGE_TARGETS = [
   {
     source: "packages/agentplane/src/commands/guard/impl/commit.ts",
     tests: [
-      "packages/agentplane/src/commands/guard/impl/commands.unit.test.ts",
+      "packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts",
+      "packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts",
       "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
     ],
   },
@@ -111,7 +112,7 @@ export const SIGNIFICANT_COVERAGE_TARGETS = [
   },
   {
     source: "packages/agentplane/src/commands/guard/impl/suggest.ts",
-    tests: ["packages/agentplane/src/commands/guard/impl/commands.unit.test.ts"],
+    tests: ["packages/agentplane/src/commands/guard/impl/commands.guard.unit.test.ts"],
   },
 ];
 

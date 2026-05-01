@@ -46,6 +46,10 @@
       "types": "./dist/hooks.d.ts",
       "default": "./dist/hooks.js"
     },
+    "./guard": {
+      "types": "./dist/guard.d.ts",
+      "default": "./dist/guard.js"
+    },
     "./recipes": {
       "types": "./dist/recipes.d.ts",
       "default": "./dist/recipes.js"

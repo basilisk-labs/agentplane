@@ -24,6 +24,10 @@ export default defineConfig({
         replacement: path.join(__dirname, "packages/testkit/src/hooks.ts"),
       },
       {
+        find: /^@agentplane\/testkit\/guard$/,
+        replacement: path.join(__dirname, "packages/testkit/src/guard.ts"),
+      },
+      {
         find: /^@agentplane\/testkit\/cli$/,
         replacement: path.join(__dirname, "packages/testkit/src/cli.ts"),
       },
