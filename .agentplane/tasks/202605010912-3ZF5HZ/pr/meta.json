@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605010912-3ZF5HZ/npm-readme-metadata",
+  "created_at": "2026-05-01T11:40:54.682Z",
+  "head_sha": "3ac839bd2a7f00e35b3cef0da02ea510cb330e8f",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605010912-3ZF5HZ",
+  "updated_at": "2026-05-01T11:40:54.682Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

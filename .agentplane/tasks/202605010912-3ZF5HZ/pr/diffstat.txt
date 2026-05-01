@@ -1,0 +1,3 @@
+ packages/agentplane/README.md    | 172 ++++++++++++++++++++-------------------
+ packages/agentplane/package.json |   2 +-
+ 2 files changed, 89 insertions(+), 85 deletions(-)
