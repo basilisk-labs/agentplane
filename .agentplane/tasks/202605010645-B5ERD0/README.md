@@ -1,10 +1,11 @@
 ---
 id: "202605010645-B5ERD0"
 title: "AP-09: Split guard implementation tests"
-status: "DOING"
+result_summary: "Merged via PR #666."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T09:46:54.363Z"
   updated_by: "CODER"
   note: "Verified: guard commands.unit.test.ts split into guard, commit close, and commit non-close suites; @agentplane/testkit/guard added for shared command context fixtures; guard project and oversized baseline pass."
-commit: null
+commit:
+  hash: "21fc53bc2ac894cfbf0710ae9ff806008dc1c2cd"
+  message: "Merge pull request #666 from basilisk-labs/task/202605010645-B5ERD0/guard-test-split"
 comments:
   -
     author: "CODER"
     body: "Start: split guard implementation command tests by command family and move reusable mock guard context builders into testkit."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #666 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: guard commands.unit.test.ts split into guard, commit close, and commit non-close suites; @agentplane/testkit/guard added for shared command context fixtures; guard project and oversized baseline pass."
+  -
+    type: "status"
+    at: "2026-05-01T09:52:07.415Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #666 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T09:46:54.370Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T09:52:07.421Z"
+doc_updated_by: "INTEGRATOR"
 description: "Split guard commands.unit.test.ts by command family and promote mock context builders to testkit guard helpers."
 sections:
   Summary: |-
