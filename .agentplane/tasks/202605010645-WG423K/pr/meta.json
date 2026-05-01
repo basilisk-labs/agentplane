@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T08:15:30Z",
   "base": "main",
   "branch": "task/202605010645-WG423K/prompt-diagnostics",
   "created_at": "2026-05-01T08:07:50.194Z",
-  "head_sha": "f35ffff75befc87581a84ba082b8e0c74eee0d3a",
+  "head_sha": "d8d3c1c3259752e7cbbe031f1f7a95f1cea5c75f",
   "last_verified_at": "2026-05-01T08:12:21.408Z",
   "last_verified_sha": "f9ae5073357340e705b9b6a2242e583845dfb0aa",
+  "merge_commit": "7f722b17416ad44c46cd39e894e7c8e22b6bf863",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T08:15:30Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010645-WG423K",
-  "updated_at": "2026-05-01T08:12:32.550Z",
+  "updated_at": "2026-05-01T08:15:30Z",
   "verify": {
     "status": "pass"
   }
