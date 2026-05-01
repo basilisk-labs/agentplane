@@ -9,8 +9,15 @@ import type {
   HostedClosePrPlan,
 } from "./hosted-close-pr.types.js";
 
-function buildHostedClosePrTitle(taskId: string): string {
-  return `📝 ${taskId} task: close after hosted merge`;
+function normalizeOneLine(value: string, maxChars: number): string {
+  const trimmed = value.trim().replaceAll(/\s+/g, " ");
+  if (!trimmed) return "";
+  return trimmed.length > maxChars ? `${trimmed.slice(0, Math.max(1, maxChars - 3))}...` : trimmed;
+}
+
+function buildHostedClosePrTitle(opts: { taskId: string; taskTitle: string }): string {
+  const title = normalizeOneLine(opts.taskTitle, 96) || "Hosted task closure";
+  return `task-close: ${title} [${opts.taskId}]`;
 }
 
 function buildHostedClosePrBody(opts: {
@@ -21,14 +28,21 @@ function buildHostedClosePrBody(opts: {
 }): string {
   const prLine =
     typeof opts.prNumber === "number" && opts.prNumber > 0
-      ? `Automated closure for merged task PR #${opts.prNumber}.`
-      : "Automated closure for merged task PR.";
+      ? `Closes task \`${opts.taskId}\` after merged task PR #${opts.prNumber}.`
+      : `Closes task \`${opts.taskId}\` after a merged task PR.`;
   return [
     prLine,
     "",
-    `- task_id: \`${opts.taskId}\``,
-    `- source_branch: \`${opts.sourceBranch}\``,
-    `- merge_sha: \`${opts.mergeSha}\``,
+    "## Source",
+    "",
+    `- Task: \`${opts.taskId}\``,
+    typeof opts.prNumber === "number" && opts.prNumber > 0
+      ? `- Source PR: #${opts.prNumber}`
+      : "- Source PR: not recorded",
+    `- Source branch: \`${opts.sourceBranch}\``,
+    `- Merge SHA: \`${opts.mergeSha}\``,
+    "",
+    "## Scope",
     "",
     "This PR contains only tracked task artifacts produced by the hosted branch_pr closure flow.",
   ].join("\n");
@@ -163,7 +177,7 @@ export async function executeHostedClosePrPlan(
     "-X",
     "POST",
     "-f",
-    `title=${buildHostedClosePrTitle(plan.taskId)}`,
+    `title=${buildHostedClosePrTitle({ taskId: plan.taskId, taskTitle: plan.taskTitle })}`,
     "-f",
     `body=${buildHostedClosePrBody({
       taskId: plan.taskId,

@@ -1,5 +1,3 @@
-import { extractTaskSuffix } from "@agentplaneorg/core/commit";
-
 import type { TaskData } from "../../../backends/task-backend.js";
 import type { PrHandoffNote } from "./note-store.js";
 
@@ -20,18 +18,6 @@ function normalizeOneLine(value: string, maxChars: number): string {
   const trimmed = value.trim().replaceAll(/\s+/g, " ");
   if (!trimmed) return "";
   return trimmed.length > maxChars ? `${trimmed.slice(0, Math.max(1, maxChars - 3))}...` : trimmed;
-}
-
-function informativeTags(task: TaskData): string[] {
-  const seen = new Set<string>();
-  const out: string[] = [];
-  for (const rawTag of Array.isArray(task.tags) ? task.tags : []) {
-    const tag = rawTag.trim().toLowerCase();
-    if (!tag || tag === "code" || seen.has(tag)) continue;
-    seen.add(tag);
-    out.push(tag);
-  }
-  return out;
 }
 
 function renderVerificationSummary(task: TaskData): string {
@@ -150,10 +136,8 @@ function renderGithubBodySections(opts: {
 }
 
 export function buildGithubPrTitle(task: TaskData): string {
-  const suffix = extractTaskSuffix(task.id);
-  const scope = informativeTags(task).slice(0, 2).join("/");
-  const title = normalizeOneLine(task.title, scope ? 72 : 84);
-  return scope ? `${scope}: ${title} (${suffix})` : `${title} (${suffix})`;
+  const title = normalizeOneLine(task.title, 96) || "Untitled task";
+  return `task: ${title} [${task.id}]`;
 }
 
 export function renderPrAutoSummary(opts: {
@@ -258,6 +242,9 @@ export function renderGithubPrBody(opts: {
   autoSummary: string;
 }): string {
   return [
+    `Task: \`${opts.task.id}\``,
+    `Title: ${normalizeOneLine(opts.task.title, 120) || "Untitled task"}`,
+    "",
     ...renderGithubBodySections({
       task: opts.task,
       handoffNotes: opts.handoffNotes ?? [],

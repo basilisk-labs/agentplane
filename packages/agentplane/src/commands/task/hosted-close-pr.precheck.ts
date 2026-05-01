@@ -327,6 +327,7 @@ export async function precheckHostedClosePr(
     kind: "ready",
     plan: {
       taskId: opts.taskId,
+      taskTitle: task.title,
       gitRoot,
       workflowDir: opts.ctx.config.paths.workflow_dir,
       repo,

@@ -523,7 +523,7 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
       expect(review).toContain("change.txt");
       const githubTitle = await readFile(path.join(prDir, "github-title.txt"), "utf8");
       const githubBody = await readFile(path.join(prDir, "github-body.md"), "utf8");
-      expect(githubTitle.trim()).toContain(`(${extractTaskSuffix(taskId)})`);
+      expect(githubTitle.trim()).toContain(`[${taskId}]`);
       expect(githubTitle).not.toContain(`task/${taskId}/pr-update`);
       expect(githubBody).toContain("## Summary");
       expect(githubBody).toContain("## Scope");

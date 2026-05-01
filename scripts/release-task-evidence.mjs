@@ -72,6 +72,10 @@ function shortSha(value) {
   return value.trim().slice(0, 12);
 }
 
+function buildReleaseEvidencePrTitle(taskId) {
+  return `task-evidence: Record hosted publish evidence [${taskId}]`;
+}
+
 async function git(args) {
   const result = await execFileAsync("git", args, {
     cwd: process.cwd(),
@@ -127,17 +131,21 @@ function buildPrepareOutcome({ actionable, reason, manifest, releaseSha, baseRef
     ? `https://github.com/${repo}/actions/runs/${manifest.job.runId}`
     : null;
   const prBodyLines = [
-    `Automated hosted publish evidence for ${manifest.tag}.`,
+    `Records hosted publish evidence for \`${manifest.tag}\`.`,
     "",
-    `- task_id: \`${taskId}\``,
-    `- release_sha: \`${releaseSha}\``,
-    `- tag: \`${manifest.tag}\``,
-    `- release_url: ${releaseUrl}`,
+    "## Source",
+    "",
+    `- Task: \`${taskId}\``,
+    `- Release SHA: \`${releaseSha}\``,
+    `- Tag: \`${manifest.tag}\``,
+    `- Release: ${releaseUrl}`,
   ];
   if (publishRunUrl) {
-    prBodyLines.push(`- publish_run: ${publishRunUrl}`);
+    prBodyLines.push(`- Publish run: ${publishRunUrl}`);
   }
   prBodyLines.push(
+    "",
+    "## Scope",
     "",
     "This PR updates only the tracked release task README so canonical task closure includes hosted publish evidence.",
   );
@@ -149,7 +157,7 @@ function buildPrepareOutcome({ actionable, reason, manifest, releaseSha, baseRef
     base_ref: baseRef,
     release_sha: releaseSha,
     closure_branch: closureBranch,
-    pr_title: `📝 ${taskId} task: record hosted publish evidence`,
+    pr_title: buildReleaseEvidencePrTitle(taskId),
     pr_body: prBodyLines.join("\n"),
     readme_path: `.agentplane/tasks/${taskId}/README.md`,
   };

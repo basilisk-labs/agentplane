@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605011918-JW3M0Z/standardize-pr-titles",
+  "created_at": "2026-05-01T19:18:47.834Z",
+  "head_sha": "4952e94907c181febfbb5c2268b2d1b5617a5629",
+  "last_verified_at": "2026-05-01T19:24:48.053Z",
+  "last_verified_sha": "abc47697882b1cbb9bf7883ffb2f962c6eaa9e2c",
+  "schema_version": 1,
+  "task_id": "202605011918-JW3M0Z",
+  "updated_at": "2026-05-01T19:25:13.455Z",
+  "verify": {
+    "status": "pass"
+  }
+}
