@@ -24,9 +24,9 @@ Update the public landing page, README, and user-facing docs so AgentPlane is po
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T06:03:41.995Z
+- Updated: 2026-05-01T06:17:56.633Z
 - Branch: task/202605010546-168YR1/launch-landing-docs
-- Head: a993fdd2c94a
+- Head: 5ee1cc898973
 
 ```text
  README.md                            | 194 ++++----
@@ -44,11 +44,11 @@ Update the public landing page, README, and user-facing docs so AgentPlane is po
  docs/user/workflow.mdx               |  16 +-
  website/docusaurus.config.ts         |  46 +-
  website/sidebars.ts                  |  13 +
- website/src/css/custom.css           |  30 +-
+ website/src/css/custom.css           | 105 +++--
  website/src/data/homepage-content.ts | 409 ++++++++---------
- website/src/pages/_home.module.css   | 835 +++++++++++++++--------------------
+ website/src/pages/_home.module.css   | 849 +++++++++++++++--------------------
  website/src/pages/index.tsx          | 461 ++++++++++---------
- 19 files changed, 1390 insertions(+), 1099 deletions(-)
+ 19 files changed, 1455 insertions(+), 1123 deletions(-)
 ```
 
 </details>
