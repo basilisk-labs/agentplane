@@ -1,10 +1,11 @@
 ---
 id: "202605011518-PH7024"
 title: "Add AgentPlane to brandonhimpfen awesome-ai-coding-agents"
-status: "DOING"
+result_summary: "Merged via PR #717."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-01T17:19:02.446Z"
   updated_by: "DOCS"
   note: "External brandonhimpfen PR opened and PR body formatting verified."
-commit: null
+commit:
+  hash: "cb1fe303f97a863489e9c547eff11675b744b29f"
+  message: "Merge pull request #717 from basilisk-labs/task/202605011518-PH7024/brandonhimpfen-awesome-ai-coding-agents"
 comments:
   -
     author: "DOCS"
     body: "Start: inspect brandonhimpfen list scope and submit AgentPlane only as workflow infrastructure for AI coding agents, not as an agent entry."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #717 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,14 +47,21 @@ events:
     author: "DOCS"
     state: "ok"
     note: "External brandonhimpfen PR opened and PR body formatting verified."
+  -
+    type: "status"
+    at: "2026-05-01T17:21:51.564Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #717 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T17:19:02.454Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-01T17:21:51.569Z"
+doc_updated_by: "INTEGRATOR"
 description: "Submit a GitHub PR adding AgentPlane to brandonhimpfen/awesome-ai-coding-agents as workflow infrastructure for AI coding agents after checking scope alignment, formatting, and category placement."
 sections:
   Summary: |-
     Add AgentPlane to brandonhimpfen awesome-ai-coding-agents
-
+    
     Submit a GitHub PR adding AgentPlane to brandonhimpfen/awesome-ai-coding-agents as workflow infrastructure for AI coding agents after checking scope alignment, formatting, and category placement.
   Scope: |-
     - In scope: Submit a GitHub PR adding AgentPlane to brandonhimpfen/awesome-ai-coding-agents as workflow infrastructure for AI coding agents after checking scope alignment, formatting, and category placement.
@@ -65,13 +78,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-01T17:19:02.446Z — VERIFY — ok
-
+    
     By: DOCS
-
+    
     Note: External brandonhimpfen PR opened and PR body formatting verified.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T17:11:55.088Z, excerpt_hash=sha256:75a49a37ac73d0b0587cd589419dfeefbf8cbb1686629fe57ce39a84cd2317cb
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
