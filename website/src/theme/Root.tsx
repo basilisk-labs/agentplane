@@ -93,6 +93,72 @@ function NavbarScrollState(): null {
   return null;
 }
 
+async function copyNavbarInstallCommand(
+  installLink: HTMLAnchorElement,
+  initialLabel: string,
+  installCommand: string,
+): Promise<void> {
+  await navigator.clipboard.writeText(installCommand);
+  installLink.textContent = "Copied";
+  globalThis.setTimeout(() => {
+    installLink.textContent = initialLabel;
+  }, 1800);
+}
+
+function NavbarInstallCopy(): null {
+  useEffect(() => {
+    const installLink = document.querySelector<HTMLAnchorElement>(".navbar-install-command");
+
+    if (!installLink) {
+      return;
+    }
+
+    const installCommand = "npm i -g agentplane";
+    const initialLabel = installLink.textContent ?? installCommand;
+
+    installLink.setAttribute("href", "#");
+    installLink.setAttribute("role", "button");
+    installLink.setAttribute("aria-label", `Copy command: ${installCommand}`);
+
+    const handleClick = (event: MouseEvent) => {
+      event.preventDefault();
+      void copyNavbarInstallCommand(installLink, initialLabel, installCommand);
+    };
+
+    installLink.addEventListener("click", handleClick);
+
+    return () => {
+      installLink.removeEventListener("click", handleClick);
+      installLink.textContent = initialLabel;
+    };
+  }, []);
+
+  return null;
+}
+
+function MobileNavbarGithubCta(): null {
+  useEffect(() => {
+    const navbarInner = document.querySelector<HTMLElement>(".navbar__inner");
+
+    if (!navbarInner || navbarInner.querySelector(".navbar-mobile-github-cta")) {
+      return;
+    }
+
+    const githubLink = document.createElement("a");
+    githubLink.className = "navbar-mobile-github-cta";
+    githubLink.href = "https://github.com/basilisk-labs/agentplane";
+    githubLink.textContent = "GitHub";
+    githubLink.setAttribute("aria-label", "View AgentPlane on GitHub");
+    navbarInner.append(githubLink);
+
+    return () => {
+      githubLink.remove();
+    };
+  }, []);
+
+  return null;
+}
+
 export default function RootWrapper(props: Props): ReactElement {
   return (
     <>
@@ -122,6 +188,8 @@ export default function RootWrapper(props: Props): ReactElement {
         </noscript>
       ) : null}
       <NavbarScrollState />
+      <NavbarInstallCopy />
+      <MobileNavbarGithubCta />
       <BlogReadingProgress />
       <ThemeRoot {...props} />
     </>

@@ -220,6 +220,10 @@ html.nav-scrolled .navbar.navbar--fixed-top {
   color: rgb(255 255 255);
 }
 
+.navbar-mobile-github-cta {
+  display: none;
+}
+
 html.nav-scrolled .navbar__inner {
   background:
     linear-gradient(180deg, rgb(255 255 255 / 0.48), rgb(255 255 255 / 0.18)),
@@ -257,6 +261,56 @@ html.nav-scrolled .navbar__inner {
     border-color 180ms ease,
     background-color 180ms ease,
     color 180ms ease;
+}
+
+@media (max-width: 996px) {
+  .navbar__inner {
+    gap: 0.5rem;
+  }
+
+  .navbar__brand {
+    margin-right: auto;
+  }
+
+  .navbar__items--right {
+    display: flex;
+    flex: 0 0 auto;
+    margin-left: 0;
+  }
+
+  .navbar__items--right .navbar__item:not(.navbar-github-cta) {
+    display: none;
+  }
+
+  .navbar__item.navbar-github-cta {
+    display: inline-flex;
+    font-size: 0.68rem;
+    min-height: 2.25rem;
+    padding: 0.48rem 0.62rem;
+  }
+
+  .navbar-mobile-github-cta {
+    background: rgb(var(--fg));
+    border: 1px solid rgb(var(--fg));
+    color: rgb(255 255 255);
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-family: var(--ifm-font-family-monospace);
+    font-size: 0.68rem;
+    font-weight: 300;
+    justify-content: center;
+    margin-left: auto;
+    min-height: 2.25rem;
+    padding: 0.48rem 0.62rem;
+    text-decoration: none;
+  }
+
+  .navbar-mobile-github-cta:hover,
+  .navbar-mobile-github-cta:focus-visible {
+    background: rgb(28 36 42);
+    color: rgb(255 255 255);
+    text-decoration: none;
+  }
 }
 
 .navbar-sidebar__item.menu__list-item .menu__link:hover,
