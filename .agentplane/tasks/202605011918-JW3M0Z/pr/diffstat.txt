@@ -1,0 +1,13 @@
+ .github/workflows/publish.yml                      |  4 +--
+ .../cli/prepare-hosted-task-closure-script.test.ts |  7 +++-
+ .../cli/run-cli.core.pr-flow.pr-lifecycle.test.ts  |  2 +-
+ .../run-cli.core.pr-flow.pr-open.artifacts.test.ts |  4 +--
+ .../cli/run-cli.core.task-hosted-close-pr.test.ts  |  4 +++
+ .../src/commands/pr/internal/review-template.ts    | 23 +++----------
+ .../release/release-task-evidence-script.test.ts   |  4 ++-
+ .../src/commands/task/hosted-close-pr.execute.ts   | 30 ++++++++++++-----
+ .../src/commands/task/hosted-close-pr.precheck.ts  |  1 +
+ .../src/commands/task/hosted-close-pr.types.ts     |  1 +
+ scripts/prepare-hosted-task-closure.mjs            | 39 +++++++++++++++++++---
+ scripts/release-task-evidence.mjs                  | 22 ++++++++----
+ 12 files changed, 94 insertions(+), 47 deletions(-)
