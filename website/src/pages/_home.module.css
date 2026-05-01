@@ -21,7 +21,138 @@
     40px 40px;
   border-bottom: 1px solid rgb(var(--border));
   min-height: auto;
+  overflow: hidden;
   padding: calc(var(--ifm-navbar-height) + 2.25rem) 0 3.25rem;
+  position: relative;
+}
+
+.heroStage::after {
+  background: linear-gradient(
+    90deg,
+    rgb(var(--bg)) 0%,
+    transparent 20%,
+    transparent 76%,
+    rgb(var(--bg)) 100%
+  );
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.heroStage .shell {
+  position: relative;
+  z-index: 2;
+}
+
+.heroMotion {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+.heroMotion::before {
+  animation: heroGridDrift 24s linear infinite;
+  background:
+    linear-gradient(rgb(var(--accent) / 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--accent) / 0.08) 1px, transparent 1px);
+  background-size: 74px 74px;
+  content: "";
+  inset: 8% -10% -18% 34%;
+  opacity: 0.56;
+  position: absolute;
+  transform: rotate(-7deg);
+  transform-origin: center;
+}
+
+.heroMotion::after {
+  animation: traceSweep 9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  background: linear-gradient(90deg, transparent, rgb(var(--accent) / 0.2), transparent);
+  content: "";
+  height: 1px;
+  left: 42%;
+  position: absolute;
+  right: -18%;
+  top: 42%;
+  transform: rotate(-11deg);
+}
+
+.motionRail {
+  background: linear-gradient(90deg, transparent, rgb(var(--fg) / 0.08), transparent);
+  height: 1px;
+  left: 43%;
+  position: absolute;
+  right: -10%;
+  transform: rotate(-11deg);
+}
+
+.motionRailOne {
+  animation: railPulse 7s ease-in-out infinite;
+  top: 30%;
+}
+
+.motionRailTwo {
+  animation: railPulse 7s ease-in-out 1.1s infinite;
+  top: 47%;
+}
+
+.motionRailThree {
+  animation: railPulse 7s ease-in-out 2.2s infinite;
+  top: 64%;
+}
+
+.motionCursor {
+  animation: motionCursor 8.5s cubic-bezier(0.64, 0, 0.28, 1) infinite;
+  background: rgb(var(--accent));
+  box-shadow: 0 0 0 6px rgb(var(--accent) / 0.08);
+  height: 0.75rem;
+  left: 46%;
+  position: absolute;
+  top: 62%;
+  transform: translate3d(0, 0, 0) rotate(-11deg);
+  width: 0.35rem;
+}
+
+.motionNode {
+  animation: motionNodeGlow 8.5s ease-in-out infinite;
+  background: rgb(255 255 255 / 0.72);
+  border: 1px solid rgb(var(--border) / 0.74);
+  border-radius: 9999px;
+  color: rgb(var(--muted));
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.68rem;
+  left: 50%;
+  padding: 0.28rem 0.5rem;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+.motionNodeTask {
+  animation-delay: 0s;
+  left: 51%;
+  top: 67%;
+}
+
+.motionNodePlan {
+  animation-delay: 1.8s;
+  left: 64%;
+  top: 53%;
+}
+
+.motionNodeVerify {
+  animation-delay: 3.6s;
+  left: 78%;
+  top: 39%;
+}
+
+.motionNodeFinish {
+  animation-delay: 5.4s;
+  left: 91%;
+  top: 25%;
 }
 
 .heroGrid {
@@ -104,7 +235,7 @@
 .action,
 .copyCommand {
   align-items: center;
-  border-radius: 0;
+  border-radius: 9999px;
   cursor: pointer;
   display: inline-flex;
   font: inherit;
@@ -113,12 +244,15 @@
   font-weight: 300;
   justify-content: center;
   min-height: 2.9rem;
+  overflow: hidden;
   padding: 0.76rem 1rem;
+  position: relative;
   text-decoration: none;
   transition:
     background-color 160ms ease,
     border-color 160ms ease,
     color 160ms ease,
+    box-shadow 160ms ease,
     transform 160ms ease;
 }
 
@@ -126,8 +260,14 @@
 .action:focus-visible,
 .copyCommand:hover,
 .copyCommand:focus-visible {
+  box-shadow: 0 10px 26px rgb(17 17 17 / 0.06);
   text-decoration: none;
   transform: translateY(-1px);
+}
+
+.action:active,
+.copyCommand:active {
+  transform: translateY(0) scale(0.985);
 }
 
 .actionPrimary {
@@ -140,6 +280,21 @@
 .actionPrimary:focus-visible {
   background: rgb(28 36 42);
   color: rgb(255 255 255);
+}
+
+.actionPrimary::after {
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.22), transparent);
+  content: "";
+  inset: 0 auto 0 -45%;
+  position: absolute;
+  transform: skewX(-18deg) translateX(0);
+  transition: transform 360ms ease;
+  width: 42%;
+}
+
+.actionPrimary:hover::after,
+.actionPrimary:focus-visible::after {
+  transform: skewX(-18deg) translateX(360%);
 }
 
 .actionSecondary,
@@ -164,12 +319,41 @@
   width: fit-content;
 }
 
+.copyText {
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
 .copyCommand code {
   background: transparent;
   border: 0;
   color: inherit;
   font-size: 0.86rem;
   padding: 0;
+}
+
+.copyFeedback {
+  color: rgb(var(--accent));
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.74rem;
+  inset: 50% auto auto 50%;
+  opacity: 0;
+  position: absolute;
+  transform: translate(-50%, 55%);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.copyCommand[data-copied="true"] .copyText {
+  opacity: 0;
+  transform: translateY(-55%);
+}
+
+.copyCommand[data-copied="true"] .copyFeedback {
+  opacity: 1;
+  transform: translate(-50%, -50%);
 }
 
 .actionCopy {
@@ -192,14 +376,34 @@
   color: rgb(var(--muted));
   font-size: 0.8rem;
   padding: 0.45rem 0.68rem;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.assuranceList li:hover {
+  border-color: rgb(var(--accent) / 0.32);
+  color: rgb(var(--fg));
+  transform: translateY(-1px);
 }
 
 .terminalPreview {
   background: rgb(255 255 255 / 0.86);
   border: 1px solid rgb(var(--border));
-  border-radius: 0;
+  border-radius: 22px;
   box-shadow: none;
   overflow: hidden;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.terminalPreview:hover {
+  border-color: rgb(var(--accent) / 0.28);
+  box-shadow: 0 18px 44px rgb(17 17 17 / 0.07);
+  transform: translateY(-2px);
 }
 
 .terminalTopbar {
@@ -313,6 +517,7 @@
   align-content: start;
   background: rgb(var(--surface));
   border: 1px solid rgb(var(--border));
+  border-radius: 22px;
   padding: 1.25rem;
 }
 
@@ -343,11 +548,25 @@
   display: grid;
   gap: 0.75rem;
   padding: 1.25rem;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
 
 .workflowCard:first-child,
 .nextStepCard:first-child {
   border-left: 1px solid rgb(var(--border));
+}
+
+.workflowCard:hover,
+.workflowCard:focus-within,
+.nextStepCard:hover,
+.nextStepCard:focus-within {
+  border-color: rgb(var(--accent) / 0.28);
+  box-shadow: 0 16px 34px rgb(17 17 17 / 0.055);
+  transform: translateY(-2px);
+  z-index: 1;
 }
 
 .workflowCard span {
@@ -387,6 +606,7 @@
 .fileTree {
   background: rgb(255 255 255);
   border: 1px solid rgb(var(--border));
+  border-radius: 22px;
   color: rgb(var(--fg));
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.9rem;
@@ -395,6 +615,16 @@
   overflow: visible;
   padding: 1.5rem;
   white-space: pre-wrap;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.fileTree:hover {
+  border-color: rgb(var(--accent) / 0.28);
+  box-shadow: 0 18px 44px rgb(17 17 17 / 0.055);
+  transform: translateY(-2px);
 }
 
 .fileTree code {
@@ -441,18 +671,24 @@
 
 .nextStepCard a {
   color: rgb(var(--fg));
+  display: inline-flex;
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.78rem;
   text-decoration: underline;
   text-decoration-color: rgb(var(--border));
   text-transform: uppercase;
   text-underline-offset: 0.28rem;
+  transition:
+    color 160ms ease,
+    text-decoration-color 160ms ease,
+    transform 160ms ease;
 }
 
 .nextStepCard a:hover,
 .nextStepCard a:focus-visible {
   color: rgb(var(--accent));
   text-decoration-color: rgb(var(--accent));
+  transform: translateX(2px);
 }
 
 .nextStepFeatured {
@@ -491,6 +727,83 @@
   background: transparent;
   border-color: rgb(255 255 255 / 0.34);
   color: rgb(255 255 255);
+}
+
+@keyframes heroGridDrift {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 74px 74px;
+  }
+}
+
+@keyframes traceSweep {
+  0%,
+  18% {
+    opacity: 0;
+    transform: rotate(-11deg) translateX(-18%);
+  }
+
+  36%,
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: rotate(-11deg) translateX(18%);
+  }
+}
+
+@keyframes railPulse {
+  0%,
+  100% {
+    opacity: 0.24;
+  }
+
+  48% {
+    opacity: 0.72;
+  }
+}
+
+@keyframes motionCursor {
+  0%,
+  10% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(-11deg);
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  78% {
+    opacity: 1;
+    transform: translate3d(42vw, -42vh, 0) rotate(-11deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(42vw, -42vh, 0) rotate(-11deg);
+  }
+}
+
+@keyframes motionNodeGlow {
+  0%,
+  100% {
+    border-color: rgb(var(--border) / 0.74);
+    color: rgb(var(--muted));
+    opacity: 0.58;
+  }
+
+  28%,
+  44% {
+    border-color: rgb(var(--accent) / 0.34);
+    color: rgb(var(--fg));
+    opacity: 1;
+  }
 }
 
 @keyframes terminalLineIn {
@@ -532,6 +845,18 @@
   .heroCopy h1 {
     font-size: 4rem;
   }
+
+  .heroMotion {
+    opacity: 0.7;
+  }
+
+  .motionNodeTask {
+    left: 56%;
+  }
+
+  .motionNodeFinish {
+    left: 88%;
+  }
 }
 
 @media (max-width: 720px) {
@@ -542,6 +867,17 @@
 
   .heroCopy h1 {
     font-size: 3rem;
+  }
+
+  .heroMotion::before {
+    inset: 30% -35% -8% 12%;
+  }
+
+  .heroMotion::after,
+  .motionRail,
+  .motionCursor,
+  .motionNode {
+    display: none;
   }
 
   .sectionLead h2,
@@ -581,5 +917,27 @@
 
   .nextStepCard {
     min-height: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroMotion::before,
+  .heroMotion::after,
+  .motionRail,
+  .motionCursor,
+  .motionNode,
+  .terminalLine,
+  .terminalCursor {
+    animation: none;
+  }
+
+  .action,
+  .copyCommand,
+  .assuranceList li,
+  .terminalPreview,
+  .workflowCard,
+  .nextStepCard,
+  .fileTree {
+    transition: none;
   }
 }

@@ -13,6 +13,30 @@ type Action = {
   command?: string;
 };
 
+async function copyTextToClipboard(text: string): Promise<void> {
+  if (navigator.clipboard) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.append(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  textarea.remove();
+}
+
+function showCopiedFeedback(button: HTMLButtonElement): void {
+  button.dataset.copied = "true";
+  globalThis.setTimeout(() => {
+    delete button.dataset.copied;
+  }, 1600);
+}
+
 function CopyCommand({
   command,
   label = command,
@@ -22,8 +46,13 @@ function CopyCommand({
   label?: string;
   className?: string;
 }): ReactNode {
-  const copyCommand = () => {
-    void navigator.clipboard.writeText(command);
+  const copyCommand = (event: unknown) => {
+    const { currentTarget: button } = event as { currentTarget: HTMLButtonElement };
+
+    void copyTextToClipboard(command).then(() => {
+      showCopiedFeedback(button);
+      return null;
+    });
   };
 
   return (
@@ -32,8 +61,12 @@ function CopyCommand({
       type="button"
       onClick={copyCommand}
       aria-label={`Copy command: ${command}`}
+      aria-live="polite"
     >
-      <code>{label}</code>
+      <span className={styles.copyText}>
+        <code>{label}</code>
+      </span>
+      <span className={styles.copyFeedback}>Copied</span>
     </button>
   );
 }
@@ -62,6 +95,29 @@ function ActionsRow({ actions }: { actions: readonly Action[] }): ReactNode {
     <div className={styles.actionsRow}>
       {actions.map((action) => (
         <ActionControl key={action.label} action={action} />
+      ))}
+    </div>
+  );
+}
+
+const heroMotionNodes = [
+  { label: "task", className: "motionNodeTask" },
+  { label: "plan", className: "motionNodePlan" },
+  { label: "verify", className: "motionNodeVerify" },
+  { label: "finish", className: "motionNodeFinish" },
+] as const;
+
+function HeroMotion(): ReactNode {
+  return (
+    <div className={styles.heroMotion} aria-hidden="true">
+      <span className={`${styles.motionRail} ${styles.motionRailOne}`} />
+      <span className={`${styles.motionRail} ${styles.motionRailTwo}`} />
+      <span className={`${styles.motionRail} ${styles.motionRailThree}`} />
+      <span className={styles.motionCursor} />
+      {heroMotionNodes.map((node) => (
+        <span key={node.label} className={`${styles.motionNode} ${styles[node.className]}`}>
+          {node.label}
+        </span>
       ))}
     </div>
   );
@@ -166,6 +222,7 @@ export default function Home(): ReactNode {
     <Layout title={seo.title} description={seo.description}>
       <main className={styles.page}>
         <section className={styles.heroStage}>
+          <HeroMotion />
           <div className={styles.shell}>
             <div className={styles.heroGrid}>
               <article className={styles.heroCopy}>
