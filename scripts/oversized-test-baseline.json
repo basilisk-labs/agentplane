@@ -62,7 +62,7 @@
     },
     {
       "file": "packages/agentplane/src/commands/release/apply.test.ts",
-      "lines": 1263
+      "lines": 1269
     },
     {
       "file": "packages/agentplane/src/commands/shared/task-store.test.ts",

@@ -71,7 +71,6 @@ export type PromptModuleCompiledGraph = PromptModuleGraph & {
   ok: boolean;
 };
 
-const CONTROL_CHAR_RE = /[\u0000-\u001f\u007f]/u;
 const PROMPT_MODULE_WORKFLOW_MODE_VALUES = ["direct", "branch_pr"] as const;
 const PROMPT_MODULE_POLICY_GATEWAY_VALUES = ["codex", "claude"] as const;
 const PROMPT_MODULE_VALIDATOR_PHASE_VALUES = ["resolve", "compile", "emit", "doctor"] as const;
@@ -87,6 +86,14 @@ function contextValueLabel(value: unknown): string {
   if (typeof value === "string") return JSON.stringify(value);
   if (value === undefined) return "undefined";
   return Object.prototype.toString.call(value);
+}
+
+function hasControlCharacter(value: string): boolean {
+  for (const character of value) {
+    const code = character.codePointAt(0) ?? 0;
+    if (code <= 0x1f || code === 0x7f) return true;
+  }
+  return false;
 }
 
 function reportDiscardedContextValue(
@@ -118,7 +125,7 @@ function normalizeContextString<TValue extends string = string>(
     reportDiscardedContextValue(diagnostics, field, value, "empty after trimming");
     return undefined;
   }
-  if (CONTROL_CHAR_RE.test(trimmed)) {
+  if (hasControlCharacter(trimmed)) {
     reportDiscardedContextValue(diagnostics, field, value, "contains control characters");
     return undefined;
   }

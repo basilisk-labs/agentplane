@@ -156,7 +156,12 @@ const main = defineScript({
     const outputPath = resolveOutPathArg(argv, cwd, defaultOutputPath);
     const payload = await buildInventory(cwd);
     await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
-    await runBunx(["prettier", "--write", outputPath], { cwd });
+    await runBunx(
+      ["prettier", "--config", path.join(cwd, ".prettierrc.json"), "--write", outputPath],
+      {
+        cwd,
+      },
+    );
     process.stdout.write(`generated ${path.relative(cwd, outputPath)}\n`);
   },
 });
