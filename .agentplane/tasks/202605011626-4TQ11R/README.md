@@ -1,10 +1,11 @@
 ---
 id: "202605011626-4TQ11R"
 title: "Generate release install assets and manifest"
-status: "DOING"
+result_summary: "Merged via PR #707."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-05-01T16:56:43.396Z"
   updated_by: "CODER"
   note: "Release distribution assets verified: release:distribution:check passed; release:check passed; workflows:command-check passed; docs:scripts:check passed after regenerating scripts/README.md; publish workflow contract test passed; lint:core passed sequentially."
-commit: null
+commit:
+  hash: "53c1dfba0663149fcf7c8acb084a143026d47f26"
+  message: "Merge pull request #707 from basilisk-labs/task/202605011626-4TQ11R/release-distribution-assets"
 comments:
   -
     author: "CODER"
     body: "Start: implement deterministic release distribution assets and manifest generation now that the distribution contract task is closed on main."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #707 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release distribution assets verified: release:distribution:check passed; release:check passed; workflows:command-check passed; docs:scripts:check passed after regenerating scripts/README.md; publish workflow contract test passed; lint:core passed sequentially."
+  -
+    type: "status"
+    at: "2026-05-01T16:59:55.421Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #707 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T16:56:43.403Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T16:59:55.426Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add deterministic release distribution asset generation for install.sh, install.ps1, SHA256SUMS, and a machine-readable release distribution manifest."
 sections:
   Summary: |-
