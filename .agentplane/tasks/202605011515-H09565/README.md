@@ -1,10 +1,11 @@
 ---
 id: "202605011515-H09565"
 title: "Add AgentPlane to bradAGI awesome-cli-coding-agents"
-status: "DOING"
+result_summary: "Merged via PR #696."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-01T16:10:12.715Z"
   updated_by: "DOCS"
   note: "External PR opened and body formatting verified."
-commit: null
+commit:
+  hash: "a92eb20b8ecc4658c314ff25908ac505c4487cec"
+  message: "Merge pull request #696 from basilisk-labs/task/202605011515-H09565/bradagi-awesome-cli-coding-agents"
 comments:
   -
     author: "DOCS"
     body: "Start: submitting AgentPlane to bradAGI/awesome-cli-coding-agents with CLI harness infrastructure positioning and verified PR-body formatting."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #696 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "External PR opened and body formatting verified."
+  -
+    type: "status"
+    at: "2026-05-01T16:15:37.529Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #696 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T16:10:12.724Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-01T16:15:37.535Z"
+doc_updated_by: "INTEGRATOR"
 description: "Submit a GitHub PR adding AgentPlane to bradAGI/awesome-cli-coding-agents under Harnesses and orchestration after verifying the current category names and formatting conventions."
 sections:
   Summary: |-
