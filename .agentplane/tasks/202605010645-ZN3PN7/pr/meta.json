@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605010645-ZN3PN7/spec-examples-validation",
+  "created_at": "2026-05-01T12:45:51.855Z",
+  "head_sha": "13b2483cc2600239649cd7641a1b58a4a7e1879c",
+  "last_verified_at": "2026-05-01T12:52:01.818Z",
+  "last_verified_sha": "13b2483cc2600239649cd7641a1b58a4a7e1879c",
+  "schema_version": 1,
+  "task_id": "202605010645-ZN3PN7",
+  "updated_at": "2026-05-01T12:45:51.855Z",
+  "verify": {
+    "status": "pass"
+  }
+}
