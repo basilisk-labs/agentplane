@@ -22,12 +22,17 @@ Add a release module that can update an AgentPlane Scoop manifest from the publi
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T17:17:22.181Z
+- Updated: 2026-05-01T17:22:17.534Z
 - Branch: task/202605011626-KJFS07/scoop-bucket-publication
-- Head: 347891e858d0
+- Head: e88e18a18e2e
 
 ```text
-No changes detected.
+ .github/workflows/publish.yml                      |  14 ++
+ package.json                                       |   1 +
+ .../release/publish-workflow-contract.test.ts      |   4 +
+ scripts/README.md                                  |   1 +
+ scripts/render-scoop-manifest.mjs                  | 144 +++++++++++++++++++++
+ 5 files changed, 164 insertions(+)
 ```
 
 </details>
