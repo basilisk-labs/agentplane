@@ -1,10 +1,11 @@
 ---
 id: "202605010644-48TFEB"
 title: "AP-03: Normalize prompt compiler context"
-status: "DOING"
+result_summary: "Merged via PR #645."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T07:19:03.366Z"
   updated_by: "CODER"
   note: "Verified prompt compiler context normalization with: bunx vitest run packages/agentplane/src/runtime/prompt-modules/compiler.test.ts --testTimeout 60000 --hookTimeout 60000; bun run typecheck; bunx prettier --check touched files; git diff --check; bun run framework:dev:bootstrap."
-commit: null
+commit:
+  hash: "6f83debaeaf928eae926beb6873126220e432089"
+  message: "Merge pull request #645 from basilisk-labs/task/202605010644-48TFEB/prompt-context-normalizer"
 comments:
   -
     author: "CODER"
     body: "Start: add pure normalization for PromptModuleCompilerContext and focused compiler diagnostics for discarded context values."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #645 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified prompt compiler context normalization with: bunx vitest run packages/agentplane/src/runtime/prompt-modules/compiler.test.ts --testTimeout 60000 --hookTimeout 60000; bun run typecheck; bunx prettier --check touched files; git diff --check; bun run framework:dev:bootstrap."
+  -
+    type: "status"
+    at: "2026-05-01T07:21:57.966Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #645 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T07:19:03.369Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T07:21:57.971Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a pure prompt compiler context normalizer with diagnostics for discarded or invalid values before graph compilation."
 sections:
   Summary: |-
