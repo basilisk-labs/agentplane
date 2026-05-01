@@ -1,10 +1,11 @@
 ---
 id: "202605011627-F40YFZ"
 title: "Add GHCR release image module"
-status: "DOING"
+result_summary: "Merged via PR #725."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-05-01T17:52:04.041Z"
   updated_by: "CODER"
   note: "GHCR release image module builds the AgentPlane container from the local release tarball artifact, pushes version/tag/latest tags in publish.yml, and uploads ghcr-module evidence."
-commit: null
+commit:
+  hash: "c7954ec86cd8b30d7b294f391997fa0aab7f7d3a"
+  message: "Merge pull request #725 from basilisk-labs/task/202605011627-F40YFZ/ghcr-release-image"
 comments:
   -
     author: "CODER"
     body: "Start: add GHCR image packaging and release workflow evidence from release-distribution.json."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #725 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "GHCR release image module builds the AgentPlane container from the local release tarball artifact, pushes version/tag/latest tags in publish.yml, and uploads ghcr-module evidence."
+  -
+    type: "status"
+    at: "2026-05-01T17:55:28.515Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #725 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T17:52:04.074Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T17:55:28.521Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a release module that builds and publishes a versioned GHCR image for AgentPlane and verifies the container can run the CLI."
 sections:
   Summary: |-
