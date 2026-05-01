@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605011627-ZZBSAE/release-distribution-docs",
+  "created_at": "2026-05-01T18:11:34.746Z",
+  "head_sha": "ef204e16d5a34b715a6e4d31b7840a2fcda9c01a",
+  "last_verified_at": "2026-05-01T18:15:24.568Z",
+  "last_verified_sha": "ef204e16d5a34b715a6e4d31b7840a2fcda9c01a",
+  "schema_version": 1,
+  "task_id": "202605011627-ZZBSAE",
+  "updated_at": "2026-05-01T18:11:34.746Z",
+  "verify": {
+    "status": "pass"
+  }
+}
