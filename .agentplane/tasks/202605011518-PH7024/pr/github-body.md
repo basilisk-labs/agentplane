@@ -1,33 +1,24 @@
 ## Summary
 
-Add AgentPlane to brandonhimpfen awesome-ai-coding-agents
-
-Submit a GitHub PR adding AgentPlane to brandonhimpfen/awesome-ai-coding-agents as workflow infrastructure for AI coding agents after checking scope alignment, formatting, and category placement.
+Record the external listing PR for `brandonhimpfen/awesome-ai-coding-agents`.
 
 ## Scope
 
-- In scope: Submit a GitHub PR adding AgentPlane to brandonhimpfen/awesome-ai-coding-agents as workflow infrastructure for AI coding agents after checking scope alignment, formatting, and category placement.
-- Out of scope: unrelated refactors not required for "Add AgentPlane to brandonhimpfen awesome-ai-coding-agents".
+- External PR: https://github.com/brandonhimpfen/awesome-ai-coding-agents/pull/8
+- Category: `Agent Infrastructure`
+- Entry wording: AgentPlane as a Git-native workflow-control harness for repo-local AI coding-agent work.
+- Internal change: task and PR artifacts for `202605011518-PH7024` only.
 
 ## Verification
 
-- State: ok
-- Note: External brandonhimpfen PR opened and PR body formatting verified.
-- Full verification checklist lives in local review.md.
+- `git diff --check`: pass.
+- `python3 .github/scripts/awesome_list_lint.py`: pass.
+- `python3 .github/scripts/detect_duplicate_links.py`: pass.
+- `python3 check_readme_links.py README.md --timeout 8`: AgentPlane URL returned `200`; full command fails on pre-existing `agentcoder/AgentCoder` 404.
+- `gh pr view 8 --repo brandonhimpfen/awesome-ai-coding-agents --json body`: pass; body uses real Markdown line breaks from `--body-file`.
+- `node .agentplane/policy/check-routing.mjs`: pass.
+- `agentplane doctor`: pass.
 
 ## Handoff Notes
 
-- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
-
-<details>
-<summary>Raw evidence</summary>
-
-- Updated: 2026-05-01T17:11:55.129Z
-- Branch: task/202605011518-PH7024/brandonhimpfen-awesome-ai-coding-agents
-- Head: f9c26e332052
-
-```text
-No changes detected.
-```
-
-</details>
+- AgentPlane is positioned as infrastructure/workflow-control for AI coding agents, not as another coding agent or model framework.

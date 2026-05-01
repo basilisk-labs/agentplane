@@ -5,14 +5,14 @@ Branch: task/202605011518-PH7024/brandonhimpfen-awesome-ai-coding-agents
 
 ## Summary
 
-Add AgentPlane to brandonhimpfen awesome-ai-coding-agents
-
-Submit a GitHub PR adding AgentPlane to brandonhimpfen/awesome-ai-coding-agents as workflow infrastructure for AI coding agents after checking scope alignment, formatting, and category placement.
+Record the external listing PR for `brandonhimpfen/awesome-ai-coding-agents`.
 
 ## Scope
 
-- In scope: Submit a GitHub PR adding AgentPlane to brandonhimpfen/awesome-ai-coding-agents as workflow infrastructure for AI coding agents after checking scope alignment, formatting, and category placement.
-- Out of scope: unrelated refactors not required for "Add AgentPlane to brandonhimpfen awesome-ai-coding-agents".
+- External PR: https://github.com/brandonhimpfen/awesome-ai-coding-agents/pull/8
+- Category: `Agent Infrastructure`
+- Entry wording: AgentPlane as a Git-native workflow-control harness for repo-local AI coding-agent work.
+- Internal change: task and PR artifacts for `202605011518-PH7024` only.
 
 ## Verification
 
@@ -26,6 +26,11 @@ Submit a GitHub PR adding AgentPlane to brandonhimpfen/awesome-ai-coding-agents 
 
 - State: ok
 - Note: External brandonhimpfen PR opened and PR body formatting verified.
+- External fork verification: `git diff --check`, `awesome_list_lint.py`, and `detect_duplicate_links.py` passed.
+- Link verification: AgentPlane URL returned `200`; full checker exits non-zero on pre-existing `agentcoder/AgentCoder` 404.
+- External PR body verification: `gh pr view 8 --repo brandonhimpfen/awesome-ai-coding-agents --json body` showed real Markdown line breaks from `--body-file`.
+- Internal policy verification: `node .agentplane/policy/check-routing.mjs` passed.
+- Internal doctor verification: `agentplane doctor` passed.
 
 ## Risks
 
@@ -39,19 +44,17 @@ Submit a GitHub PR adding AgentPlane to brandonhimpfen/awesome-ai-coding-agents 
 
 ## Handoff Notes
 
-- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+- AgentPlane is positioned as infrastructure/workflow-control for AI coding agents, not as another coding agent or model framework.
 
 <!-- BEGIN AUTO SUMMARY -->
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T17:11:55.129Z
-- Branch: task/202605011518-PH7024/brandonhimpfen-awesome-ai-coding-agents
-- Head: f9c26e332052
-
-```text
-No changes detected.
-```
+- External PR: https://github.com/brandonhimpfen/awesome-ai-coding-agents/pull/8
+- External verification: `git diff --check`; `python3 .github/scripts/awesome_list_lint.py`; `python3 .github/scripts/detect_duplicate_links.py`
+- Link verification: `python3 check_readme_links.py README.md --timeout 8` returned `200` for AgentPlane and found one pre-existing 404.
+- PR body verification: `gh pr view 8 --repo brandonhimpfen/awesome-ai-coding-agents --json body`
+- Internal verification: `node .agentplane/policy/check-routing.mjs`; `agentplane doctor`
 
 </details>
 <!-- END AUTO SUMMARY -->
