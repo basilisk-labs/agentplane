@@ -2,8 +2,8 @@
   "schema_version": 2,
   "threshold_lines": 1000,
   "budgets": {
-    "max_entries": 11,
-    "max_total_lines": 12176,
+    "max_entries": 10,
+    "max_total_lines": 11090,
     "max_file_lines": 1300
   },
   "entries": [
@@ -30,11 +30,6 @@
     {
       "file": "packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts",
       "lines": 1183
-    },
-    {
-      "file": "packages/agentplane/src/cli/run-cli.core.tasks.query-run-prepare.test.ts",
-      "lines": 1081,
-      "max_lines": 1090
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.test.ts",
