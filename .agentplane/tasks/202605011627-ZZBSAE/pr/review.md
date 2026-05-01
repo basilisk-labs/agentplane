@@ -45,12 +45,14 @@ Update public and developer docs so the next release checklist explains npm, Git
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T18:11:34.746Z
+- Updated: 2026-05-01T18:15:36.014Z
 - Branch: task/202605011627-ZZBSAE/release-distribution-docs
-- Head: ef204e16d5a3
+- Head: b98e017935c4
 
 ```text
-No changes detected.
+ docs/developer/release-and-publishing.mdx | 53 +++++++++++++++++--------------
+ docs/releases/v0.4.1.md                   |  8 ++++-
+ 2 files changed, 37 insertions(+), 24 deletions(-)
 ```
 
 </details>
