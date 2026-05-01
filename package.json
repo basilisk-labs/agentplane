@@ -41,6 +41,7 @@
     "ci:recipes": "node scripts/ci-scope.mjs --scope recipes",
     "ci:spec": "node scripts/ci-scope.mjs --scope spec",
     "ci:testkit": "node scripts/ci-scope.mjs --scope testkit",
+    "checks:run": "node scripts/run-checks.mjs",
     "release:check": "bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && bun run --filter=@agentplane/testkit build && node scripts/release-check.mjs",
     "release:check:registry": "node scripts/check-npm-version-availability.mjs",
     "release:recover": "node scripts/check-release-recovery-state.mjs",
