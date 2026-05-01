@@ -2,18 +2,14 @@
   "schema_version": 2,
   "threshold_lines": 1000,
   "budgets": {
-    "max_entries": 16,
-    "max_total_lines": 18419,
+    "max_entries": 15,
+    "max_total_lines": 17132,
     "max_file_lines": 1300
   },
   "entries": [
     {
       "file": "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
       "lines": 1218
-    },
-    {
-      "file": "packages/agentplane/src/cli/run-cli.core.hooks.test.ts",
-      "lines": 1298
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.incidents.test.ts",

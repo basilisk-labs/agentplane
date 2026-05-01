@@ -42,6 +42,10 @@
       "types": "./dist/cli-core-tasks-query.d.ts",
       "default": "./dist/cli-core-tasks-query.js"
     },
+    "./hooks": {
+      "types": "./dist/hooks.d.ts",
+      "default": "./dist/hooks.js"
+    },
     "./recipes": {
       "types": "./dist/recipes.d.ts",
       "default": "./dist/recipes.js"

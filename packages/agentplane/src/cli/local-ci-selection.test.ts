@@ -124,7 +124,12 @@ describe("local CI fast selection", () => {
     expect(plan.kind).toBe("targeted");
     expect(plan.bucket).toBe("hooks");
     expect(plan.reason).toBe("hook_and_ci_routing_paths_only");
-    expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.hooks.test.ts");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.hooks.install.test.ts",
+    );
   });
 
   it("routes the pre-commit test-fast decision script to the hooks bucket", () => {
