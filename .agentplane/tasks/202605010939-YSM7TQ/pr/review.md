@@ -46,12 +46,17 @@ Rotate the recipes remote index signing trust root, document key custody and rot
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T09:41:47.808Z
+- Updated: 2026-05-01T10:00:31.203Z
 - Branch: task/202605010939-YSM7TQ/recipes-signing-rotation
-- Head: 400d8fee5bd6
+- Head: 3fc930da98f1
 
 ```text
-No changes detected.
+ agentplane-recipes                                 |  2 +-
+ .../0009-recipes-index-signing-algorithm-policy.md | 25 ++++++++++++++++++++++
+ docs/developer/recipes-development.mdx             |  6 ++++++
+ docs/developer/recipes-safety.mdx                  |  4 ++++
+ packages/recipes/src/constants.ts                  |  3 +++
+ 5 files changed, 39 insertions(+), 1 deletion(-)
 ```
 
 </details>

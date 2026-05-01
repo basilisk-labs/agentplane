@@ -1,0 +1,6 @@
+ agentplane-recipes                                 |  2 +-
+ .../0009-recipes-index-signing-algorithm-policy.md | 25 ++++++++++++++++++++++
+ docs/developer/recipes-development.mdx             |  6 ++++++
+ docs/developer/recipes-safety.mdx                  |  4 ++++
+ packages/recipes/src/constants.ts                  |  3 +++
+ 5 files changed, 39 insertions(+), 1 deletion(-)
