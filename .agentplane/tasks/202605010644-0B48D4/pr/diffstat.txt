@@ -1,0 +1,9 @@
+ .../src/commands/release/apply.mutation.ts         | 19 ++++++++++
+ .../commands/release/apply.pipeline/mutation.ts    |  9 +++++
+ .../agentplane/src/commands/release/apply.test.ts  |  6 ++++
+ .../release/check-release-parity-script.test.ts    | 23 ++++++++++++
+ packages/recipes/src/index.ts                      |  2 +-
+ packages/testkit/src/release.ts                    |  6 ++++
+ scripts/check-release-parity.mjs                   |  4 ++-
+ scripts/lib/release-version-parity.mjs             | 41 ++++++++++++++++++++++
+ 8 files changed, 108 insertions(+), 2 deletions(-)

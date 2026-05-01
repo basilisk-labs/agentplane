@@ -22,12 +22,20 @@ Fix RECIPES_VERSION drift and make release parity catch future runtime constant 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T07:05:04.801Z
+- Updated: 2026-05-01T07:10:12.749Z
 - Branch: task/202605010644-0B48D4/recipes-version-parity
-- Head: cc1c5c42fc69
+- Head: 7663845e6697
 
 ```text
-No changes detected.
+ .../src/commands/release/apply.mutation.ts         | 19 ++++++++++
+ .../commands/release/apply.pipeline/mutation.ts    |  9 +++++
+ .../agentplane/src/commands/release/apply.test.ts  |  6 ++++
+ .../release/check-release-parity-script.test.ts    | 23 ++++++++++++
+ packages/recipes/src/index.ts                      |  2 +-
+ packages/testkit/src/release.ts                    |  6 ++++
+ scripts/check-release-parity.mjs                   |  4 ++-
+ scripts/lib/release-version-parity.mjs             | 41 ++++++++++++++++++++++
+ 8 files changed, 108 insertions(+), 2 deletions(-)
 ```
 
 </details>
