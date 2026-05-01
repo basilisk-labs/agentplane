@@ -1,0 +1,1 @@
+frontend: Shorten launch homepage gateway (TD7XPM)

@@ -109,26 +109,21 @@ const config = {
       },
       items: [
         {
-          href: "https://agentplane.org/#demo",
-          label: "Demo",
-          position: "left",
-        },
-        {
-          href: "https://agentplane.org/#how-it-works",
-          label: "How it works",
-          position: "left",
+          to: "/docs/user/overview",
+          label: "Docs",
+          position: "right",
+          activeBaseRegex: "^/docs",
         },
         {
           to: "/docs/recipes",
           label: "Recipes",
-          position: "left",
+          position: "right",
           activeBaseRegex: "^/docs/recipes",
         },
         {
-          to: "/docs/user/overview",
-          label: "Docs",
-          position: "left",
-          activeBaseRegex: "^/docs",
+          href: "https://github.com/basilisk-labs/agentplane",
+          label: "GitHub",
+          position: "right",
         },
         {
           href: "https://www.npmjs.com/package/agentplane",
