@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T06:51:08Z",
   "base": "main",
   "branch": "task/202605010644-CE27KS/refactor-backlog",
   "created_at": "2026-05-01T06:50:09.614Z",
-  "head_sha": "9a2668f04b4160fec91a6cf0db23f61f8e67846e",
+  "head_sha": "4bf9aae45585afff49994fb2179e0bca36015b29",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "2ae58d9c78a7c9c3a34f1d7f588ac68ec0b85610",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T06:51:08Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010644-CE27KS",
-  "updated_at": "2026-05-01T06:50:09.614Z",
+  "updated_at": "2026-05-01T06:51:08Z",
   "verify": {
     "status": "skipped"
   }
