@@ -1,7 +1,13 @@
 ---
 version: "alpha"
-name: "AgentPlane — Governed Git Workflow Studio"
-description: "AgentPlane visual style adapted from the Nova Framework design system. The product semantics are AgentPlane-specific, while the visual language intentionally preserves the original Nova look: full-bleed grid, glassy editorial surfaces, warm white canvas, electric blue accent, square premium cards, pill chips, Fraunces display type, Inter body copy, and JetBrains Mono labels."
+name: "AgentPlane — Git-Native Agent Control Plane"
+description: "Design system for agentplane.org using the new editorial-glass visual language: full-bleed grid composition, Fraunces display typography, Inter body copy, JetBrains Mono labels, sharp proof surfaces, pill secondary controls, blue technical accent, and repository-native workflow artifacts."
+mode: "light"
+atmosphere:
+  density: "compact-editorial"
+  mood: "precise, gridded, glassy, premium, technical"
+  product_frame: "agent work as governed repository infrastructure"
+  avoid: "generic AI dashboards, neon/cyberpunk visuals, soft SaaS blobs, arbitrary feature-card farms"
 colors:
   primary: "#0055FF"
   secondary: "#FFFFFF"
@@ -9,45 +15,77 @@ colors:
   neutral: "#FFFFFF"
   background: "#FFFFFF"
   surface: "#FAFAF7"
+  surface-glass: "rgba(255, 255, 255, 0.72)"
+  surface-dark: "#0A0A0A"
   text-primary: "#111111"
   text-secondary: "#444444"
   text-muted: "#666666"
+  text-faint: "#8A8A84"
   border: "#E5E5E2"
   border-strong: "#111111"
-  terminal: "#0A0A0A"
   accent: "#0055FF"
+  accent-secondary: "#640AFF"
+  accent-soft: "rgba(0, 85, 255, 0.08)"
+  grid-line: "rgba(17, 17, 17, 0.08)"
+  gradient-border: "linear-gradient(135deg, rgb(229, 229, 226), rgba(0, 0, 0, 0))"
+  gradient-page: "linear-gradient(180deg, #FAFAF7 0%, #FFFFFF 55%, #FFFFFF 100%)"
+  gradient-accent: "linear-gradient(135deg, rgba(0, 85, 255, 0.40), rgba(229, 229, 226, 0.75), transparent)"
 typography:
   display-lg:
-    fontFamily: "Fraunces"
+    fontFamily: "Fraunces, Georgia, serif"
     fontSize: "72px"
     fontWeight: 300
     lineHeight: "72px"
     letterSpacing: "-0.025em"
   display-md:
-    fontFamily: "Fraunces"
-    fontSize: "52px"
+    fontFamily: "Fraunces, Georgia, serif"
+    fontSize: "56px"
     fontWeight: 300
-    lineHeight: "56px"
-    letterSpacing: "-0.025em"
+    lineHeight: "60px"
+    letterSpacing: "-0.024em"
+  headline-lg:
+    fontFamily: "Fraunces, Georgia, serif"
+    fontSize: "44px"
+    fontWeight: 300
+    lineHeight: "48px"
+    letterSpacing: "-0.022em"
+  headline-md:
+    fontFamily: "Fraunces, Georgia, serif"
+    fontSize: "32px"
+    fontWeight: 300
+    lineHeight: "38px"
+    letterSpacing: "-0.018em"
+  body-lg:
+    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
+    fontSize: "18px"
+    fontWeight: 300
+    lineHeight: "30px"
   body-md:
-    fontFamily: "Inter"
+    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
     fontSize: "16px"
     fontWeight: 300
     lineHeight: "26px"
   body-sm:
-    fontFamily: "Inter"
+    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
     fontSize: "14px"
     fontWeight: 300
     lineHeight: "22px"
   label-md:
-    fontFamily: "JetBrains Mono"
+    fontFamily: "JetBrains Mono, SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, monospace"
     fontSize: "12px"
     fontWeight: 200
     lineHeight: "16px"
     letterSpacing: "1.2px"
     textTransform: "uppercase"
+  label-sm:
+    fontFamily: "JetBrains Mono, SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, monospace"
+    fontSize: "10px"
+    fontWeight: 200
+    lineHeight: "14px"
+    letterSpacing: "1px"
+    textTransform: "uppercase"
   code-md:
-    fontFamily: "JetBrains Mono"
+    fontFamily: "JetBrains Mono, SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, monospace"
     fontSize: "13px"
     fontWeight: 300
     lineHeight: "22px"
@@ -62,8 +100,50 @@ spacing:
   lg: "10px"
   xl: "12px"
   gap: "8px"
+  gap-md: "12px"
+  gap-lg: "16px"
+  gap-xl: "24px"
   card-padding: "18px"
+  card-padding-md: "24px"
+  card-padding-lg: "32px"
+  artifact-padding: "40px"
   section-padding: "32px"
+  section-padding-md: "56px"
+  section-padding-lg: "96px"
+  full-bleed-max: "none"
+  content-max: "1280px"
+borders:
+  hairline: "1px solid #E5E5E2"
+  strong: "1px solid #111111"
+  dark-muted: "1px solid #222222"
+  dark-soft: "1px solid #333333"
+shadows:
+  soft: "rgba(0, 0, 0, 0.05) 0px 1px 2px 0px"
+  elevated: "rgba(0, 0, 0, 0.10) 0px 20px 25px -5px, rgba(0, 0, 0, 0.10) 0px 8px 10px -6px"
+  none: "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+blur:
+  sm: "4px"
+  md: "12px"
+motion:
+  level: "expressive"
+  durations:
+    fast: "150ms"
+    base: "300ms"
+    reveal: "500ms"
+    section: "700ms"
+    ambient: "2000ms"
+  easings:
+    standard: "ease"
+    exit: "cubic-bezier(0.4, 0, 1, 1)"
+    expressive: "cubic-bezier(0.2, 0.6, 0.2, 1)"
+  hoverPatterns:
+    - "color"
+    - "text"
+    - "stroke"
+    - "underline"
+    - "grayscale"
+  scrollPatterns:
+    - "gsap-scrolltrigger"
 components:
   button-primary:
     backgroundColor: "{colors.text-primary}"
@@ -71,835 +151,416 @@ components:
     typography: "{typography.label-md}"
     rounded: "{rounded.md}"
     padding: "20px"
+    border: "0px solid transparent"
   button-secondary:
-    backgroundColor: "transparent"
-    textColor: "#666666"
+    backgroundColor: "rgba(255, 255, 255, 0.72)"
+    textColor: "{colors.text-muted}"
     typography: "{typography.label-md}"
     rounded: "{rounded.full}"
     padding: "10px 14px"
+    border: "1px solid #E5E5E2"
   button-link:
+    backgroundColor: "transparent"
     textColor: "{colors.text-secondary}"
     typography: "{typography.label-md}"
     rounded: "{rounded.md}"
     padding: "0px"
+    border: "0px solid transparent"
+  glass-shell:
+    backgroundColor: "{colors.surface-glass}"
+    textColor: "{colors.text-primary}"
+    typography: "{typography.body-md}"
+    rounded: "{rounded.md}"
+    padding: "1px"
+    border: "none"
+    backgroundImage: "{colors.gradient-border}"
+    blur: "{blur.md}"
   card:
     backgroundColor: "{colors.secondary}"
     textColor: "{colors.text-primary}"
+    typography: "{typography.body-md}"
     rounded: "{rounded.md}"
     padding: "32px"
-  dark-artifact-card:
-    backgroundColor: "{colors.terminal}"
-    textColor: "{colors.secondary}"
-    rounded: "{rounded.md}"
-    padding: "40px"
-  proof-chip:
-    backgroundColor: "rgba(255,255,255,0.72)"
-    textColor: "{colors.text-secondary}"
-    typography: "{typography.label-md}"
-    rounded: "{rounded.full}"
-    padding: "10px 12px"
-  command-pill:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.text-primary}"
-    typography: "{typography.code-md}"
-    rounded: "{rounded.full}"
-    padding: "8px 12px"
-  workflow-step:
+    border: "1px solid #E5E5E2"
+    shadow: "{shadows.soft}"
+  proof-card:
     backgroundColor: "{colors.secondary}"
     textColor: "{colors.text-primary}"
     typography: "{typography.body-sm}"
     rounded: "{rounded.md}"
     padding: "24px"
-  repo-tree:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.text-primary}"
+    border: "1px solid #E5E5E2"
+    shadow: "none"
+  dark-artifact:
+    backgroundColor: "{colors.surface-dark}"
+    textColor: "{colors.secondary}"
     typography: "{typography.code-md}"
     rounded: "{rounded.md}"
-    padding: "24px"
+    padding: "40px"
+    border: "0px solid transparent"
+    shadow: "none"
+  workflow-chip:
+    backgroundColor: "{colors.secondary}"
+    textColor: "{colors.text-secondary}"
+    typography: "{typography.label-md}"
+    rounded: "{rounded.full}"
+    padding: "10px"
+    border: "1px solid #E5E5E2"
+  approval-gate:
+    backgroundColor: "{colors.accent-soft}"
+    textColor: "{colors.text-primary}"
+    typography: "{typography.label-md}"
+    rounded: "{rounded.md}"
+    padding: "18px"
+    border: "1px solid rgba(0, 85, 255, 0.40)"
+  grid-section:
+    backgroundColor: "{colors.background}"
+    textColor: "{colors.text-primary}"
+    typography: "{typography.body-md}"
+    rounded: "{rounded.md}"
+    padding: "32px"
+    backgroundImage: "linear-gradient(to right, rgba(17, 17, 17, 0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(17, 17, 17, 0.08) 1px, transparent 1px)"
+    backgroundSize: "32px 32px"
+  icon:
+    treatment: "linear"
+    set: "Solar"
 ---
 
-# AgentPlane Visual Style — Nova Framework Lineage
+# AgentPlane Design System
 
-## Metadata
+## Overview
 
-- Source style: Nova Framework — Next-Gen Development Studio.
-- Palette lineage: Nova Framework light editorial palette.
-- Layout lineage: full-bleed grid with strong structural framing.
-- Material lineage: glass surface system with gradient border shells.
-- Type lineage: Fraunces + Inter + JetBrains Mono.
-- Geometry lineage: square cards, pill chips, linear iconography.
-- Product category: Git-native control plane for auditable agent work.
-- Primary line: Put coding agents on a governed Git workflow.
-- Core surfaces: AGENTS.md / CLAUDE.md policy gateway, `.agentplane/` repo-local workspace, task state, plan approval, verification record, deterministic closure, `direct` and `branch_pr` workflow modes.
+AgentPlane is a Git-native control plane for auditable agent work. The interface should make governed repository execution feel visible, deliberate, and inspectable. It should not look like a generic AI assistant, hosted automation dashboard, or decorative workflow canvas.
 
-## 1. Назначение
+The visual system uses a premium editorial-glass language: a white canvas, a soft off-white surface layer, strong full-bleed grid structure, sharp squared proof cards, thin gradient border shells, restrained glass blur, and a single saturated technical blue. The product should feel like a next-generation development studio built around real repository artifacts.
 
-Этот файл задаёт визуальный стиль AgentPlane на основе оригинальной системы Nova Framework.
-Смысловая модель адаптирована под AgentPlane: Git-native workflow, repo-local artifacts, approvals, task state, verification, closure. Визуальная модель остаётся Nova: светлая editorial-сетка, glass shell, электрический синий акцент, квадратные карточки, pill-чипы, моноширинные технические подписи.
+Use the style to frame AgentPlane as a precise operating surface for agent work:
 
-Ключевой принцип: AgentPlane должен выглядеть как точная инженерная поверхность управления, но внутри визуального языка Nova Framework, а не как новый бренд с другой типографикой, палитрой или радиусами.
+- `AGENTS.md`, `CLAUDE.md`, `.agentplane/`, task records, workflow contracts, verification steps, and close commits are visual objects, not hidden implementation details.
+- Plan, approval, execution, verification, and finish are distinct interface states with visible boundaries.
+- Controls are minimal and typographic. The interface should rely on grid, borders, labels, and artifact surfaces before decoration.
+- The page can feel expressive, but every visual flourish must reinforce governance, traceability, or deterministic closure.
 
-## 2. Визуальная ДНК
+The primary aesthetic is light, glassy, gridded, and editorial. Dark surfaces are reserved for terminal-like proof blocks, command examples, and high-emphasis repository artifacts.
 
-### Сохранять
+## Colors
 
-- Белый фон `#FFFFFF` и тёплую surface-базу `#FAFAF7`.
-- Основной акцент `#0055FF`.
-- Дополнительный акцент `#640AFF`, использовать редко и только для поддерживающего контраста.
-- Основной текст `#111111`, вторичный текст `#444444`, muted `#666666`.
-- Границы `#E5E5E2`.
-- Fraunces для крупных заголовков.
-- Inter для обычного текста.
-- JetBrains Mono для labels, command chips, repo paths, task states.
-- Full-bleed grid, сильный структурный каркас, 4px spacing rhythm.
-- Квадратные карточки с `0px` radius.
-- Pill-элементы только для chips, badges, mode toggles, secondary controls.
-- Glass surface treatment: border + blur + gradient shell.
-- Linear Solar-style iconography.
+The palette is a light technical system with one dominant blue accent.
 
-### Не менять
+- **Command Blue (`#0055FF`):** Main accent for active state, selected task, primary links, progress, repository focus markers, and conversion-critical actions. Use it as a decisive technical signal, not as a decorative wash.
+- **White Canvas (`#FFFFFF`):** Primary background, card interior, navigation chrome, and clean negative space.
+- **Warm Surface (`#FAFAF7`):** Secondary page layer for panels, section transitions, soft documentation blocks, and glass-backed frames.
+- **Ink Black (`#111111`):** Primary text, primary buttons, hard borders, terminal labels, and decisive interface moments.
+- **Repository Grey (`#444444`):** Body support text, metadata, secondary labels, and explanatory copy.
+- **Muted Control Grey (`#666666`):** Secondary buttons, inactive navigation, quiet state labels, and utility controls.
+- **Hairline Border (`#E5E5E2`):** Structural linework for cards, shell edges, dividers, comparison rows, and proof surfaces.
+- **Violet Reserve (`#640AFF`):** Rare secondary accent for cross-state contrast, advanced mode markers, or visual distinction between `direct` and `branch_pr` flows. Never let it compete with Command Blue.
+- **Dark Artifact (`#0A0A0A`):** Terminal-like proof surfaces, command panels, or release/verification blocks that need strong contrast.
 
-- Не заменять Fraunces на Geist, Inter на системный sans или JetBrains Mono на другой mono-stack.
-- Не уводить интерфейс в тёмный режим, кроме terminal/artifact blocks.
-- Не вводить новые яркие акценты, особенно rainbow/neon/cyber gradients.
-- Не превращать AgentPlane в generic AI SaaS dashboard.
-- Не делать карточки декоративными. Каждая карточка должна нести artifact, workflow state, repo surface, command, mode или route.
+The source visual language mentions dark mode, but its actual tokens define a light system. AgentPlane should therefore stay light-first and use dark material only as an artifact treatment.
 
-## 3. Тон интерфейса
+### Gradients
 
-AgentPlane внутри этого стиля должен ощущаться как:
+Use gradients as structural depth, not as illustration.
 
-- editorial control surface;
-- precise engineering sheet;
-- repo-native proof layer;
-- governed workflow console;
-- premium but quiet developer tool.
+- **Gradient border shell:** `linear-gradient(135deg, rgb(229, 229, 226), rgba(0, 0, 0, 0))` around cards and hero panels.
+- **Page transition:** `linear-gradient(180deg, #FAFAF7 0%, #FFFFFF 55%, #FFFFFF 100%)` for section depth.
+- **Accent edge:** `linear-gradient(135deg, rgba(0, 85, 255, 0.40), rgba(229, 229, 226, 0.75), transparent)` for selected proof surfaces or workflow focus states.
 
-Не как:
+Do not create multicolor AI gradients, rainbow blobs, or synthetic glow effects.
 
-- hosted AI assistant;
-- chat product;
-- autonomous company dashboard;
-- futurist AI landing page;
-- decorative glassmorphism demo.
+## Typography
 
-## 4. Композиция
+Typography pairs expressive editorial display type with restrained engineering text.
 
-### 4.1 Page Shell
+- **Display:** Fraunces, 300 weight, tight tracking. Use for hero headlines, major section titles, and high-level positioning. The display voice should feel precise and premium, not playful.
+- **Body:** Inter, 300 weight, open line height. Use for descriptions, docs-style explanations, benefit statements, and captions.
+- **Labels:** JetBrains Mono, 200 weight, uppercase, wide tracking. Use for workflow states, navigation labels, artifact IDs, task metadata, button copy, and small section markers.
+- **Code and artifacts:** JetBrains Mono, 300 weight. Use for commands, file names, task IDs, verification output, and repository paths.
 
-Использовать full-bleed canvas с внутренней grid-структурой.
-Основные секции держать на широкой сетке, но текстовые блоки ограничивать по читаемости.
+Recommended hierarchy:
 
-Рекомендуемый desktop pattern:
+- Hero headline: `display-lg`, 72px / 72px, `-0.025em`.
+- Section headline: `display-md` or `headline-lg`, 56px or 44px with compact line height.
+- Card title: `headline-md`, 32px / 38px.
+- Body: `body-md`, 16px / 26px.
+- Metadata: `label-md`, 12px / 16px, uppercase.
 
-```txt
-[ full bleed background ]
-  [ 32px / 40px section inset ]
-    [ 12-column grid ]
-      left: editorial copy
-      right: artifact/proof surface
-```
+Avoid heavy sans-serif display headings. AgentPlane should feel like an editorial development system, not a standard B2B dashboard.
 
-Hero и ключевые proof-секции могут быть асимметричными. Пропорции: `5/7`, `6/6`, `7/5`.
+## Layout
 
-### 4.2 Ритм
+The layout is full-bleed, gridded, and highly structured. The grid should be visible as a compositional principle even when lines are subtle.
 
-База — `4px`.
+Use a 4px base rhythm. Larger spacing should step out of that cadence instead of introducing unrelated values.
 
-Использовать значения:
+- **Layout type:** Full-bleed grid.
+- **Primary rhythm:** 4px.
+- **Micro spacing:** 1px, 4px, 8px, 10px, 12px.
+- **Component gaps:** 8px, 12px, 16px, 24px.
+- **Card padding:** 18px, 24px, 32px, 40px.
+- **Section padding:** 32px, 56px, 96px.
+- **Grid density:** Strong, but not noisy. Use subtle grid lines at low opacity.
 
-```txt
-1px, 4px, 8px, 10px, 12px, 16px, 20px, 24px, 32px, 40px, 56px, 96px
-```
+### Page Composition
 
-Избегать случайных значений вроде `18px` можно только там, где они уже закреплены как original card-padding token.
+AgentPlane pages should use an editorial proof sequence:
 
-### 4.3 Секции
+1. **Positioning hero:** Fraunces headline, short Inter explanation, JetBrains Mono label, primary action, secondary pill action.
+2. **Repository proof surface:** A visualized repo object, command block, task state, or workflow contract.
+3. **Governance boundary:** Plan approval, policy gateway, verification, and finish shown as separate states.
+4. **Mode comparison:** `direct` and `branch_pr` explained as workflow discipline, not pricing or maturity tiers.
+5. **Deterministic close:** A final proof section showing verification, result, close commit, or audit trail.
 
-Рекомендуемые section patterns:
+Use two-column and asymmetric grid sections. Let the proof artifact carry visual weight while copy remains concise.
 
-1. Editorial left / proof right.
-2. Proof left / explanation right.
-3. 2x2 bento для repo surfaces.
-4. Horizontal workflow rail: plan → start → execute → verify → finish.
-5. Compact comparison rows: raw agent session vs governed task flow.
-6. Mode comparison: `direct` vs `branch_pr`.
+Do not produce generic feature-card farms. Every card must correspond to a real AgentPlane artifact, command, workflow state, or governance boundary.
 
-## 5. Цветовая система
+## Elevation & Depth
 
-Фактический режим — светлый.
-Исходная система содержит белую canvas/surface-структуру, поэтому AgentPlane должен сохранять light editorial mode.
-
-### Базовые роли
-
-```css
-:root {
-  --ap-primary: #0055ff;
-  --ap-secondary: #ffffff;
-  --ap-tertiary: #640aff;
-  --ap-neutral: #ffffff;
-
-  --ap-bg: #ffffff;
-  --ap-surface: #fafaf7;
-  --ap-text-primary: #111111;
-  --ap-text-secondary: #444444;
-  --ap-text-muted: #666666;
-  --ap-border: #e5e5e2;
-  --ap-border-strong: #111111;
-  --ap-terminal: #0a0a0a;
-  --ap-accent: #0055ff;
-}
-```
+Depth comes from glass, hairline borders, gradient shells, and occasional shadow. The system should feel dimensional but not glossy in a consumer-app way.
 
-### Использование
-
-- Background: `#FFFFFF`
-- Surface: `#FAFAF7`
-- Primary text: `#111111`
-- Secondary text: `#444444`
-- Muted labels: `#666666`
-- Borders: `#E5E5E2`
-- Main accent/action: `#0055FF`
-- Rare secondary accent: `#640AFF`
-- Terminal/artifact dark surface: `#0A0A0A`
-
-### Градиенты
-
-Сохранять оригинальные gradient recipes:
-
-```txt
-bg-gradient-to-br from-[#E5E5E2] to-transparent
-bg-gradient-to-b from-[#FAFAF7] to-white
-bg-gradient-to-br from-[#0055FF]/40 to-transparent via-[#E5E5E2]
-```
-
-Градиенты не должны становиться главным содержанием. Они работают как edge depth, background atmosphere или CTA field.
-
-## 6. Типографика
-
-### Display
-
-Fraunces, light editorial feel.
-
-```css
---ap-display-lg-font: "Fraunces";
---ap-display-lg-size: 72px;
---ap-display-lg-weight: 300;
---ap-display-lg-line-height: 72px;
---ap-display-lg-letter-spacing: -0.025em;
-```
-
-Использовать для:
-
-- hero headline;
-- section-defining statements;
-- major conversion blocks.
-
-Пример:
-
-```txt
-Put coding agents on a governed Git workflow.
-```
-
-### Body
-
-Inter, тонкий и спокойный.
-
-```css
---ap-body-font: "Inter";
---ap-body-size: 16px;
---ap-body-weight: 300;
---ap-body-line-height: 26px;
-```
-
-Использовать для:
-
-- explanations;
-- product rationale;
-- docs routing text;
-- comparison descriptions.
-
-### Labels / Mono
-
-JetBrains Mono, uppercase, technical precision.
-
-```css
---ap-label-font: "JetBrains Mono";
---ap-label-size: 12px;
---ap-label-weight: 200;
---ap-label-line-height: 16px;
---ap-label-letter-spacing: 1.2px;
---ap-label-transform: uppercase;
-```
-
-Использовать для:
-
-- `Repo-native`
-- `Verification record`
-- `Direct mode`
-- `branch_pr`
-- `Task state`
-- `AGENTS.md`
-- command labels
-- status badges
-
-## 7. Material System
-
-### 7.1 Glass Shell
-
-Основной premium-приём: тонкая gradient border shell.
-
-```css
-.agentplane-shell {
-  padding: 1px;
-  border-radius: 0;
-  background: linear-gradient(rgb(229, 229, 226), rgba(0, 0, 0, 0));
-}
-
-.agentplane-shell > .surface {
-  border-radius: 0;
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(12px);
-  border: 1px solid #e5e5e2;
-}
-```
-
-Применять к:
-
-- hero proof stack;
-- main workflow card;
-- pricing/conversion panel;
-- docs CTA;
-- repository artifact preview.
-
-### 7.2 Card Surface
-
-```css
-.agentplane-card {
-  background: #ffffff;
-  border: 1px solid #e5e5e2;
-  border-radius: 0;
-  padding: 32px;
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;
-}
-```
-
-Карточка допустима только если она содержит:
-
-- repo artifact;
-- workflow state;
-- command;
-- task record;
-- verification summary;
-- mode comparison;
-- routing CTA.
-
-### 7.3 Dark Artifact Card
-
-```css
-.agentplane-artifact-dark {
-  background: #0a0a0a;
-  color: #ffffff;
-  border-radius: 0;
-  padding: 40px;
-  box-shadow: none;
-}
-```
-
-Использовать только для:
-
-- terminal transcript;
-- command output;
-- verification log;
-- compact CLI proof.
-
-Не превращать весь сайт в dark mode.
-
-## 8. AgentPlane Components
-
-### 8.1 Hero
-
-Hero должен иметь Nova-style editorial composition:
-
-- eyebrow label;
-- Fraunces headline;
-- short Inter support copy;
-- primary square CTA;
-- secondary pill CTA;
-- 3–5 proof chips;
-- right-side proof surface.
-
-Рекомендуемая структура:
-
-```txt
-Eyebrow: Git-native control plane
-H1: Put coding agents on a governed Git workflow.
-Body: AgentPlane gives agent work visible task state, approvals, verification, and closure inside the repository.
-Primary CTA: Install AgentPlane
-Secondary CTA: Read workflow docs
-Chips: Repo-native / Explicit approvals / Verification record / direct + branch_pr
-Visual: repo tree + task state + terminal command
-```
-
-### 8.2 Navigation
-
-Navigation должна быть glassy, тихой, не SaaS-heavy.
-
-```css
-.agentplane-nav {
-  background: rgba(255, 255, 255, 0.76);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid #e5e5e2;
-}
-```
-
-Nav labels: JetBrains Mono или Inter small, в зависимости от плотности.
-Primary nav CTA — square black button. Secondary docs link — text/link.
-
-### 8.3 Buttons
-
-Primary:
-
-```css
-.agentplane-button-primary {
-  background: #111111;
-  color: #ffffff;
-  border-radius: 0;
-  padding: 20px;
-  font-family: "JetBrains Mono";
-  font-size: 12px;
-  font-weight: 200;
-  line-height: 16px;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-}
-```
-
-Secondary:
-
-```css
-.agentplane-button-secondary {
-  color: #666666;
-  border: 1px solid #e5e5e2;
-  border-radius: 9999px;
-  padding: 10px 14px;
-}
-```
-
-Link:
-
-```css
-.agentplane-button-link {
-  color: #444444;
-  border-radius: 0;
-  padding: 0;
-  font-family: "JetBrains Mono";
-  font-size: 12px;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-}
-```
-
-### 8.4 Proof Chips
-
-```css
-.agentplane-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border-radius: 9999px;
-  border: 1px solid #e5e5e2;
-  background: rgba(255, 255, 255, 0.72);
-  padding: 10px 12px;
-  color: #444444;
-  font-family: "JetBrains Mono";
-  font-size: 12px;
-  font-weight: 200;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-}
-```
-
-Approved chip labels:
-
-```txt
-Repo-native
-Explicit approvals
-Verification record
-Local CLI
-direct + branch_pr
-Task state
-Deterministic closure
-```
-
-### 8.5 Repo Tree Surface
-
-```txt
-.agentplane/
-  config.json
-  WORKFLOW.md
-  tasks/
-    T-042/
-      plan.md
-      verify.md
-      finish.md
-AGENTS.md
-```
-
-Visual rules:
-
-- background `#FAFAF7`;
-- mono text;
-- paths may use `#0055FF`;
-- avoid tiny unreadable screenshots;
-- keep 1px border and square radius.
-
-### 8.6 Workflow Rail
-
-Use for the canonical AgentPlane flow:
-
-```txt
-Plan → Approve → Start → Execute → Verify → Finish
-```
-
-Each step:
-
-- label in JetBrains Mono uppercase;
-- short body in Inter;
-- active step edge or dot in `#0055FF`;
-- square card, border `#E5E5E2`;
-- no colorful status rainbow.
-
-### 8.7 Mode Comparison
-
-Use original pricing/comparison structure, but map it to AgentPlane modes.
-
-```txt
-direct
-Single checkout, short loops, current working tree.
-
-branch_pr
-Structured per-task branch/worktree flow, explicit PR artifacts.
-```
-
-Design:
-
-- two or three cards in grid;
-- same height;
-- square cards;
-- primary accent only on selected/default mode;
-- secondary pill labels for mode names;
-- avoid “pricing tier” semantics unless real pricing exists.
-
-### 8.8 Verification Record Card
-
-A verification card should look like a proof object, not a marketing card.
-
-```txt
-VERIFY RECORD
-Task: AP-102
-Status: ok
-By: REVIEWER
-Note: CLI contract passes fast checks.
-Closed with: deterministic finish commit
-```
-
-Design:
-
-- mono header;
-- Inter explanatory line;
-- optional dark terminal inset;
-- blue accent line, not full blue background.
-
-### 8.9 CTA Surface
-
-CTA can be slightly richer but must remain inside Nova visual grammar.
-
-Recommended CTA:
-
-```txt
-Start with a governed task.
-npm install -g agentplane
-agentplane init
-agentplane quickstart
-```
-
-Use:
-
-- gradient border shell;
-- white or `#FAFAF7` surface;
-- primary black square button;
-- secondary pill docs button;
-- optional command pill.
-
-## 9. Page Recipes
-
-### 9.1 Homepage
-
-Order:
-
-1. Hero: category, value, proof stack.
-2. Problem: raw agent changes vs governed repo workflow.
-3. Repository surface: what appears in the repo.
-4. Workflow rail: plan → start → verify → finish.
-5. Mode comparison: `direct` / `branch_pr`.
-6. Trust mechanism: approvals, task state, verification, closure.
-7. Docs rail.
-8. Closing CTA.
-
-Visual constraint: every major section must include one concrete artifact or control surface.
-
-### 9.2 Docs Landing
-
-Order:
-
-1. Compact hero.
-2. Quickstart command card.
-3. First task path.
-4. Workflow modes.
-5. Command reference rail.
-6. Recovery/troubleshooting.
-
-Docs pages can be quieter than homepage but must keep the same typography and borders.
-
-### 9.3 Workflow Page
-
-Use horizontal or vertical control loop.
-
-Core visual:
-
-```txt
-task new
-plan set
-plan approve
-start-ready
-verify
-finish
-```
-
-Use command pills and artifact cards.
-Avoid generic process diagrams with abstract icons only.
-
-### 9.4 Pricing / Plan Comparison
-
-If AgentPlane receives a pricing page, preserve the original Nova pricing DNA:
-
-- full-bleed grid;
-- plan comparison blocks;
-- square white cards;
-- black primary CTA;
-- pill secondary controls;
-- mono plan labels;
-- blue accent only for recommended/default plan.
-
-Do not invent visual metaphors beyond the existing pricing comparison system.
-
-## 10. Copy and Content Fit
-
-Use concrete nouns:
-
-```txt
-repo
-task
-plan
-approval
-verification
-closure
-artifact
-workflow
-direct
-branch_pr
-AGENTS.md
-.agentplane/
-```
-
-Avoid vague AI language:
-
-```txt
-magical
-autonomous workforce
-AI operating system
-agentic future
-unlock productivity
-next-gen intelligence
-```
-
-Preferred claim structure:
-
-```txt
-Claim: Agent work needs visible state.
-Rationale: Chat-style changes are hard to review and close.
-Proof: .agentplane/tasks/<task-id>/verify.md
-Route: Read the workflow docs.
-```
-
-Every major UI block should include:
-
-1. one-line claim;
-2. short rationale;
-3. one artifact/control surface;
-4. one route or action.
-
-## 11. Motion
-
-Motion should keep Nova’s expressive interface feel but remain controlled for AgentPlane.
-
-Allowed:
-
-- color changes;
-- text/stroke transitions;
-- underline expansion;
-- subtle fade/rise;
-- grayscale-to-normal artifact previews;
-- ScrollTrigger section reveal when it improves pacing.
-
-Durations:
-
-```txt
-150ms fast feedback
-300ms normal transition
-500ms reveal
-700ms section choreography
-2000ms ambient background only
-```
-
-Avoid:
-
-- bounce;
-- elastic easing;
-- parallax theater;
-- fast decorative particle systems;
-- motion that delays reading.
-
-Respect `prefers-reduced-motion`.
-
-## 12. Accessibility
-
-Minimum rules:
-
-- primary text must stay near-black on white/surface backgrounds;
-- focus states must be visible and may use `#0055FF`;
-- chips cannot rely only on color;
-- terminal blocks need high contrast;
-- gradients cannot carry essential meaning;
-- motion must be reducible.
-
-## 13. Implementation Guardrails
+- **Default card:** White surface, `1px #E5E5E2` border, `0px` radius, 32px padding, soft shadow only when the card must separate from a dense grid.
+- **Glass shell:** Outer wrapper with 1px padding, gradient border, subtle blur, and an inner white or off-white content surface.
+- **Dark artifact:** `#0A0A0A`, 40px padding, square corners, no shadow. Use for terminal-like proof blocks only.
+- **Hero surface:** Full-bleed or large grid-aligned glass shell with an off-white-to-white background transition.
+- **Selected state:** Use accent-edge gradient or a thin Command Blue border. Do not use thick blue fills for large surfaces.
+
+### Gradient Border Shell
+
+Wrap major cards and proof surfaces in a 1px outer shell with `linear-gradient(135deg, rgb(229, 229, 226), rgba(0, 0, 0, 0))`. Keep the actual content surface inside the shell. The effect should read as a premium hairline frame, not a decorative border.
+
+### Blur
+
+Use `12px` blur for glass navigation and shell overlays. Use `4px` blur for small floating state labels. Avoid blur on text-heavy surfaces where readability is more important than material effect.
+
+## Shapes
+
+The geometry is intentionally binary.
+
+- **Proof surfaces, cards, primary buttons, code blocks, and repository artifacts:** squared-off `0px` radius.
+- **Secondary controls, small chips, navigation pills, and workflow tags:** `9999px` pill radius.
+- **Icons:** linear Solar-style icons, thin strokes, simple geometry.
+
+This contrast is important: square surfaces communicate determinism and auditability; pill controls communicate optional navigation, filtering, or secondary state.
+
+Do not introduce soft rounded cards, 8px SaaS radii, bubbly components, or mixed radius scales.
+
+## Components
+
+### Buttons
+
+**Primary Button**
+
+Use for decisive actions: install, initialize, start a task, approve a plan, verify, finish, or open docs.
+
+- Background: `#111111`.
+- Text: `#FFFFFF`.
+- Typography: JetBrains Mono, uppercase, 12px, 1.2px tracking.
+- Radius: `0px`.
+- Padding: `20px`.
+- Hover: invert emphasis through text or stroke changes, not glow.
+
+**Secondary Button**
+
+Use for docs links, references, mode switching, and non-critical navigation.
+
+- Background: transparent white or glass.
+- Text: `#666666`.
+- Border: `1px solid #E5E5E2`.
+- Radius: `9999px`.
+- Padding: `10px 14px`.
+- Hover: text darkens to `#111111`; border can shift toward `#111111`.
+
+**Link Button**
+
+Use for inline navigation, command references, and small helper actions.
+
+- Text: `#444444`.
+- Typography: JetBrains Mono uppercase.
+- Radius: `0px`.
+- Padding: `0px`.
+- Hover: underline, stroke, or color shift to `#0055FF`.
+
+### Cards and Surfaces
+
+**Proof Card**
+
+A proof card presents one real AgentPlane object: task state, policy file, verification step, workflow mode, command, or closure artifact.
+
+- Background: `#FFFFFF`.
+- Border: `1px solid #E5E5E2`.
+- Radius: `0px`.
+- Padding: `24px` or `32px`.
+- Shadow: none by default; soft shadow only when needed for layer separation.
+- Header: JetBrains Mono label.
+- Title: Fraunces or Inter depending on density.
+
+**Glass Hero Shell**
+
+Use for hero panels, pricing-like comparison blocks, or large workflow explainers.
+
+- Outer background: gradient border shell.
+- Inner background: `rgba(255, 255, 255, 0.72)` or `#FAFAF7`.
+- Border: visually implied by the shell.
+- Radius: `0px`.
+- Blur: `12px`.
+- Content: large Fraunces heading plus one concrete artifact.
+
+**Dark Artifact Block**
+
+Use for commands, terminal output, verification summaries, and close commits.
+
+- Background: `#0A0A0A`.
+- Text: `#FFFFFF`.
+- Accent: `#0055FF` for cursor, active line, or selected command.
+- Typography: JetBrains Mono.
+- Radius: `0px`.
+- Padding: `40px`.
+
+### Repository Artifact Card
+
+Repository artifact cards visualize files and directories that make agent work inspectable.
+
+Recommended rows:
+
+- `AGENTS.md` — policy gateway.
+- `CLAUDE.md` — alternate policy gateway where relevant.
+- `.agentplane/config.json` — repo configuration.
+- `.agentplane/tasks/` — task records.
+- `.agentplane/WORKFLOW.md` — workflow contract.
+- `.agentplane/tasks.json` — exported task projection.
+
+Use a square card with a mono label column, subtle row dividers, and one blue active marker for the currently explained artifact.
+
+### Workflow State Strip
+
+Use a horizontal or vertical strip to show task progression.
+
+States:
+
+1. `planned`
+2. `approval_required`
+3. `ready`
+4. `running`
+5. `verified`
+6. `finished`
+
+Each state should use a pill chip for metadata but sit inside a squared proof surface. This keeps the workflow readable without making it feel like a playful kanban board.
+
+### Approval Gate
+
+Approval gates should be visually strict.
+
+- Use a square card, thin blue accent edge, and mono uppercase label.
+- Show who approved, when it was approved, and what plan or policy condition was satisfied.
+- Do not represent approvals as vague green checkmarks without context.
+
+### Verification Panel
+
+Verification panels should show proof, not reassurance.
+
+Required content:
+
+- Command or check name.
+- Result state.
+- Reviewer or actor.
+- Note or evidence summary.
+- Optional commit or task reference.
+
+Use Command Blue sparingly for the result indicator. Keep the rest black, grey, and bordered.
+
+### Mode Comparison
+
+`direct` and `branch_pr` should be compared as workflow modes.
+
+- `direct`: short loops in the current checkout.
+- `branch_pr`: structured per-task branch or worktree flow with stricter handoff.
+
+Use a two-column comparison card with equal visual weight. Do not style one mode as premium or superior by default.
+
+### Navigation
+
+Navigation can use glass framing, but it must stay quiet.
+
+- Use pill secondary controls for docs, reference, blog, and GitHub links.
+- Active navigation can use a blue underline, blue text, or soft blue background tint.
+- Avoid heavy nav shadows or oversized header chrome.
+
+### Iconography
+
+Use linear Solar-style icons. Icons should explain structure: repository, branch, lock, check, terminal, file, timeline, shield, and close/finish. Avoid abstract sparkles, bot faces, brain icons, or generic AI magic symbols.
+
+## Motion
+
+Motion is expressive but functional. It should reveal structure, not perform personality.
+
+- **Fast interactions:** 150ms for hover color, stroke, underline, or text changes.
+- **Base transitions:** 300ms for card focus, button state, and small panel changes.
+- **Section reveal:** 500ms to 700ms for scroll-driven entry.
+- **Ambient rhythm:** 2000ms only for subtle grid, cursor, or artifact focus effects.
+- **Easing:** `ease`, `cubic-bezier(0.4, 0, 1, 1)`, and `cubic-bezier(0.2, 0.6, 0.2, 1)`.
+- **Scroll choreography:** GSAP ScrollTrigger is allowed for section reveal, workflow progression, and proof-card sequencing.
+
+Hover behavior should focus on color, text, stroke, underline, or grayscale changes. Avoid bounce, elastic motion, parallax spectacle, or decorative particle systems.
+
+## Do's and Don'ts
 
 ### Do
 
-- Use the original Nova palette and typography.
-- Keep square premium cards and pill chips.
-- Use AgentPlane artifacts as visual proof.
-- Use `#0055FF` for action, active state, and key emphasis.
-- Use 4px rhythm.
-- Keep glass surfaces consistent.
-- Keep copy concrete and repo-native.
+- Use the full-bleed grid as the primary composition device.
+- Use Fraunces for high-level editorial hierarchy.
+- Use Inter for clear explanatory prose.
+- Use JetBrains Mono for labels, states, commands, and repository artifacts.
+- Keep proof surfaces square and exact.
+- Use pill shapes only for secondary controls and metadata chips.
+- Use `#0055FF` for action, selection, proof focus, and active workflow state.
+- Show real AgentPlane artifacts whenever a claim is made.
+- Separate plan, approval, execution, verification, and finish as visible states.
+- Use gradient border shells for hero panels and important proof blocks.
+- Keep motion expressive but tied to comprehension.
 
-### Don’t
+### Don't
 
-- Don’t adopt AgentPlane’s existing Geist-based visual direction if preserving Nova is the goal.
-- Don’t add neon AI gradients.
-- Don’t use decorative bento cards without artifacts.
-- Don’t make all cards dark.
-- Don’t use rounded SaaS cards where Nova requires square surfaces.
-- Don’t add unrelated accent colors.
-- Don’t use mock dashboards that do not correspond to real AgentPlane behavior.
+- Do not mention or import any non-AgentPlane brand identity into generated pages.
+- Do not use generic AI visuals: sparkles, chat bubbles, robot mascots, neural blobs, or hallucinated dashboards.
+- Do not replace repository artifacts with abstract cards.
+- Do not create feature grids where each tile lacks a real command, file, state, or proof point.
+- Do not introduce additional accent colors unless required for semantic states.
+- Do not soften all corners. Square proof surfaces are part of the control-plane identity.
+- Do not use dark mode as the default page mode.
+- Do not use violet as a second primary accent.
+- Do not let animation compete with text, code, or workflow evidence.
 
-## 14. QA Checklist
+## Accessibility
 
-A generated AgentPlane screen matches this style only if all are true:
+- Maintain strong contrast between text and background. Use `#111111` for primary text on white or warm surfaces.
+- Avoid using `#0055FF` as small body text unless paired with underline, weight, or another affordance.
+- Ensure focus states are visible with a blue outline, black outline, or high-contrast border shift.
+- Do not rely on color alone for task status. Pair color with labels such as `verified`, `approval_required`, or `finished`.
+- Keep body text at or above 16px for marketing pages and 14px only for dense metadata.
 
-### Visual fidelity
+## AgentPlane-Specific Content Rules
 
-- [ ] Palette matches Nova: `#FFFFFF`, `#FAFAF7`, `#111111`, `#444444`, `#E5E5E2`, `#0055FF`.
-- [ ] Display type uses Fraunces.
-- [ ] Body type uses Inter.
-- [ ] Labels/code use JetBrains Mono.
-- [ ] Cards are square, not softly rounded.
-- [ ] Chips and secondary controls are pill-shaped.
-- [ ] Glass shell uses border/blur/gradient edge rather than heavy glow.
+The visual system must support the actual product model.
 
-### Product fit
+AgentPlane is local and repository-native. It runs inside a git repository and makes agent work visible through policy files, `.agentplane/` workspace state, task records, verification state, and deterministic closure.
 
-- [ ] First screen makes AgentPlane repo-native and auditable.
-- [ ] At least one repo artifact or CLI proof appears early.
-- [ ] Claims are tied to task state, approvals, verification, closure, or workflow modes.
-- [ ] `direct` and `branch_pr` are represented as workflow modes, not decorative tiers.
-- [ ] The interface does not imply a hosted AI assistant.
+Use this language consistently:
 
-### Conversion fit
+- Primary line: **Git-native control plane for auditable agent work.**
+- Human line: **Put coding agents on a governed Git workflow.**
+- Product object: **local CLI, repo-local artifacts, explicit approvals, visible task state, verification, deterministic finish.**
 
-- [ ] Primary CTA is obvious and square black.
-- [ ] Secondary CTA is pill or link style.
-- [ ] Docs/install/quickstart routes are visible.
-- [ ] Artifact blocks remain readable.
+Use concrete examples:
 
-## 15. Minimal Tailwind Token Map
-
-```ts
-export const agentplaneNovaTheme = {
-  colors: {
-    primary: "#0055FF",
-    secondary: "#FFFFFF",
-    tertiary: "#640AFF",
-    background: "#FFFFFF",
-    surface: "#FAFAF7",
-    textPrimary: "#111111",
-    textSecondary: "#444444",
-    textMuted: "#666666",
-    border: "#E5E5E2",
-    terminal: "#0A0A0A",
-  },
-  fontFamily: {
-    display: ["Fraunces", "serif"],
-    body: ["Inter", "sans-serif"],
-    mono: ["JetBrains Mono", "monospace"],
-  },
-  borderRadius: {
-    none: "0px",
-    md: "0px",
-    full: "9999px",
-  },
-  spacing: {
-    base: "4px",
-    sm: "1px",
-    md: "4px",
-    lg: "10px",
-    xl: "12px",
-    gap: "8px",
-    card: "32px",
-    section: "32px",
-  },
-  boxShadow: {
-    subtle: "rgba(0,0,0,0.05) 0px 1px 2px 0px",
-    deep: "rgba(0,0,0,0.1) 0px 20px 25px -5px, rgba(0,0,0,0.1) 0px 8px 10px -6px",
-  },
-};
+```bash
+npm install -g agentplane
+agentplane init
+agentplane task new --title "Implement signed task closure"
+agentplane task plan approve <task-id> --by REVIEWER
+agentplane verify <task-id> --ok --by REVIEWER
+agentplane finish <task-id> --commit <git-rev>
 ```
 
-## 16. Canonical Prompt for Future Generation
-
-```txt
-Create an AgentPlane interface using the Nova Framework visual lineage.
-
-Preserve:
-- white full-bleed editorial grid;
-- Fraunces display typography;
-- Inter body typography;
-- JetBrains Mono uppercase labels;
-- #0055FF primary accent;
-- #FAFAF7 surfaces;
-- #111111 text;
-- #E5E5E2 borders;
-- square cards with 0px radius;
-- pill chips with 9999px radius;
-- glass shells with gradient border edges;
-- subtle shadows and blur.
-
-Represent AgentPlane through real workflow evidence:
-repo artifacts, AGENTS.md / CLAUDE.md, .agentplane/, task records, approval state, verification records, finish/closure, direct and branch_pr modes.
-
-Avoid:
-generic AI SaaS dashboards, neon futurism, abstract agent illustrations, unrelated accent colors, decorative cards without proof, dark-mode takeover.
-```
+Avoid claims that imply AgentPlane is a hosted runtime, autonomous agent platform, generic prompt framework, or replacement for git, editors, or terminals.

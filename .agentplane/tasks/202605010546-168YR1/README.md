@@ -4,7 +4,7 @@ title: "Refresh launch landing and acquisition docs"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -13,14 +13,14 @@ tags:
 verify: []
 plan_approval:
   state: "approved"
-  updated_at: "2026-05-01T06:20:49.999Z"
+  updated_at: "2026-05-01T06:40:46.485Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-01T06:25:00.886Z"
+  updated_at: "2026-05-01T06:42:11.430Z"
   updated_by: "CODER"
-  note: "Blog listing chronological order verified locally."
+  note: "Updated DESIGN.md included and verified before push."
 commit: null
 comments:
   -
@@ -52,8 +52,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Blog listing chronological order verified locally."
+  -
+    type: "verify"
+    at: "2026-05-01T06:42:11.430Z"
+    author: "CODER"
+    state: "ok"
+    note: "Updated DESIGN.md included and verified before push."
 doc_version: 3
-doc_updated_at: "2026-05-01T06:25:00.894Z"
+doc_updated_at: "2026-05-01T06:42:11.438Z"
 doc_updated_by: "CODER"
 description: "Update the public landing page, README, and user-facing docs so AgentPlane is positioned as a Git-native workflow layer for auditable coding-agent work, with focused CTAs, demo flow, recipes, FAQ, and concise quickstart."
 sections:
@@ -66,7 +72,7 @@ sections:
     - In scope: `README.md`, `docs/index.mdx`, `docs/user/overview.mdx`, `docs/user/setup.mdx`, `docs/user/workflow.mdx`, `docs/user/website-ia.mdx`, and `docs/recipes/**` for acquisition docs and concrete recipe pages.
     - In scope: generated website docs artifacts only if `docs:site:generate` requires them.
     - Out of scope: CLI/runtime behavior changes, release/publish flow changes, hosted deployment, external analytics, new third-party service integrations, and unrelated docs refactors.
-  Plan: "Extend the launch landing/docs task with one blog listing update: keep the redesigned acquisition homepage/README/docs work, and update the custom blog landing so it renders the available articles as one chronological archive using Docusaurus blog metadata, with all posts on the listing page and old-to-new ordering. Verify with focused website typecheck/build/lint and policy/doctor checks."
+  Plan: "Extend the launch landing/docs task with the user-updated root DESIGN.md: include the current DESIGN.md changes from the base checkout in the task branch, verify design/docs/site checks, commit the design guide update with task artifacts, then push task/202605010546-168YR1/launch-landing-docs to origin as requested."
   Verify Steps: |-
     1. `bun run docs:site:typecheck` — expected: Docusaurus/React TypeScript passes for changed website code.
     2. `bun run docs:site:build` — expected: the public site builds with the new homepage and docs links.
@@ -100,6 +106,14 @@ sections:
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T06:20:45.037Z, excerpt_hash=sha256:e2f8d223a04c269ed78c935f9d1340a180ab79746892bac98e6d69fb485b75ff
     
+    ### 2026-05-01T06:42:11.430Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Updated DESIGN.md included and verified before push.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T06:40:46.230Z, excerpt_hash=sha256:e2f8d223a04c269ed78c935f9d1340a180ab79746892bac98e6d69fb485b75ff
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task branch commits or abandon the task worktree/branch before integration.
@@ -124,6 +138,10 @@ sections:
     - Observation: Updated the custom Docusaurus blog list to derive entries from blog metadata, sort them oldest-to-newest, and render all posts on /blog via postsPerPage=ALL. Passed: bun run docs:site:typecheck; bun run docs:site:build; bun run lint:website; bun run docs:site:check:design; bun run docs:ia:check; node .agentplane/policy/check-routing.mjs; agentplane task verify-show 202605010546-168YR1; agentplane doctor; git diff --check. Additional generated HTML assertion confirmed /blog renders 12 posts in chronological order from 2026-02-24 through 2026-04-30.
       Impact: The blog landing no longer relies on stale manually grouped arrays and now shows the current article set as one chronological archive.
       Resolution: Temporary website node_modules/build/.docusaurus artifacts were removed before commit; hosted push/PR remains approval-gated.
+    
+    - Observation: Copied the current user-updated DESIGN.md from the base checkout into the task worktree; cmp confirmed the task-branch DESIGN.md matches the base dirty file. Passed after inclusion: bun run docs:site:typecheck; bun run docs:site:build; bun run docs:site:check:design; node .agentplane/policy/check-routing.mjs; agentplane task verify-show 202605010546-168YR1; agentplane doctor; git diff --check.
+      Impact: The branch now contains the design source used for the landing/blog redesign instead of relying on an uncommitted base-checkout file.
+      Resolution: Temporary website build/.docusaurus/node_modules artifacts were removed before commit. User explicitly requested push, so network approval is granted for pushing this task branch.
 id_source: "generated"
 ---
 ## Summary
@@ -141,7 +159,7 @@ Update the public landing page, README, and user-facing docs so AgentPlane is po
 
 ## Plan
 
-Extend the launch landing/docs task with one blog listing update: keep the redesigned acquisition homepage/README/docs work, and update the custom blog landing so it renders the available articles as one chronological archive using Docusaurus blog metadata, with all posts on the listing page and old-to-new ordering. Verify with focused website typecheck/build/lint and policy/doctor checks.
+Extend the launch landing/docs task with the user-updated root DESIGN.md: include the current DESIGN.md changes from the base checkout in the task branch, verify design/docs/site checks, commit the design guide update with task artifacts, then push task/202605010546-168YR1/launch-landing-docs to origin as requested.
 
 ## Verify Steps
 
@@ -179,6 +197,14 @@ Note: Blog listing chronological order verified locally.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T06:20:45.037Z, excerpt_hash=sha256:e2f8d223a04c269ed78c935f9d1340a180ab79746892bac98e6d69fb485b75ff
 
+### 2026-05-01T06:42:11.430Z — VERIFY — ok
+
+By: CODER
+
+Note: Updated DESIGN.md included and verified before push.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T06:40:46.230Z, excerpt_hash=sha256:e2f8d223a04c269ed78c935f9d1340a180ab79746892bac98e6d69fb485b75ff
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -207,3 +233,7 @@ Command: bun run lint:website. Result: pass after replacing the copy handler .th
 - Observation: Updated the custom Docusaurus blog list to derive entries from blog metadata, sort them oldest-to-newest, and render all posts on /blog via postsPerPage=ALL. Passed: bun run docs:site:typecheck; bun run docs:site:build; bun run lint:website; bun run docs:site:check:design; bun run docs:ia:check; node .agentplane/policy/check-routing.mjs; agentplane task verify-show 202605010546-168YR1; agentplane doctor; git diff --check. Additional generated HTML assertion confirmed /blog renders 12 posts in chronological order from 2026-02-24 through 2026-04-30.
   Impact: The blog landing no longer relies on stale manually grouped arrays and now shows the current article set as one chronological archive.
   Resolution: Temporary website node_modules/build/.docusaurus artifacts were removed before commit; hosted push/PR remains approval-gated.
+
+- Observation: Copied the current user-updated DESIGN.md from the base checkout into the task worktree; cmp confirmed the task-branch DESIGN.md matches the base dirty file. Passed after inclusion: bun run docs:site:typecheck; bun run docs:site:build; bun run docs:site:check:design; node .agentplane/policy/check-routing.mjs; agentplane task verify-show 202605010546-168YR1; agentplane doctor; git diff --check.
+  Impact: The branch now contains the design source used for the landing/blog redesign instead of relying on an uncommitted base-checkout file.
+  Resolution: Temporary website build/.docusaurus/node_modules artifacts were removed before commit. User explicitly requested push, so network approval is granted for pushing this task branch.

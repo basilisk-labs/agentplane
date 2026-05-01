@@ -30,7 +30,7 @@ Update the public landing page, README, and user-facing docs so AgentPlane is po
 ### Current Status
 
 - State: ok
-- Note: Blog listing chronological order verified locally.
+- Note: Updated DESIGN.md included and verified before push.
 
 ## Risks
 
