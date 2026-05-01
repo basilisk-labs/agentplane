@@ -9,6 +9,9 @@ Page text lives in the Markdown and MDX files under this directory.
 
 `website/sidebars.ts` is the active navigation manifest for the public docs site.
 
+`docs/listing.md` is the reusable listing/submission profile for curated harness,
+CLI coding-agent, and AI coding-tool directories.
+
 Docs are organized into an agent-first navigation model on top of `docs/user/`, `docs/developer/`, and `docs/help/`:
 
 - `Start`
