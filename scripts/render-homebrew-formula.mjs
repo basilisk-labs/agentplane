@@ -59,13 +59,16 @@ function renderFormula(manifest) {
   homepage "https://agentplane.org"
   url "${url}"
   sha256 "${sha256}"
+  version "${version}"
   license "MIT"
 
   depends_on "node"
 
   def install
-    system "npm", "install", *std_npm_args
-    bin.install_symlink libexec.glob("bin/*")
+    system "npm", "install", "--global", "--prefix", libexec,
+      "--omit=dev", "--ignore-scripts", "--no-audit", "--no-fund",
+      cached_download
+    bin.install_symlink Dir[libexec/"bin/*"]
   end
 
   test do
@@ -112,6 +115,7 @@ async function renderHomebrew(repoRoot, args) {
     formulaName: FORMULA_NAME,
     npmTarballUrl: manifest.packages?.agentplane?.npmTarballUrl ?? null,
     npmTarballSha256: manifest.packages?.agentplane?.npmTarballSha256 ?? null,
+    installStrategy: "npm_global_cached_tarball",
     nextAction:
       channel.status === "skipped_missing_credentials"
         ? "Add HOMEBREW_TAP_TOKEN and rerun the Homebrew tap publication module for this manifest."
@@ -123,8 +127,11 @@ async function renderHomebrew(repoRoot, args) {
   );
 
   if (args.check) {
-    if (!formula.includes("std_npm_args")) {
-      throw new Error("Homebrew formula must use std_npm_args for npm package installation");
+    if (formula.includes("std_npm_args") || formula.includes("--min-release-age")) {
+      throw new Error("Homebrew formula must not use std_npm_args/min-release-age");
+    }
+    if (!formula.includes("cached_download")) {
+      throw new Error("Homebrew formula must install the cached release tarball");
     }
     rmSync(tempRoot, { recursive: true, force: true });
   }
