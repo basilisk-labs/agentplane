@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605010939-YSM7TQ/recipes-signing-rotation",
+  "created_at": "2026-05-01T09:41:47.808Z",
+  "head_sha": "3fc930da98f1301ec306eca0056def1b6d931fa2",
+  "last_verified_at": "2026-05-01T10:02:28.936Z",
+  "last_verified_sha": "3fc930da98f1301ec306eca0056def1b6d931fa2",
+  "schema_version": 1,
+  "task_id": "202605010939-YSM7TQ",
+  "updated_at": "2026-05-01T10:00:31.203Z",
+  "verify": {
+    "status": "pass"
+  }
+}
