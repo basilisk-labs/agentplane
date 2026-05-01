@@ -1,10 +1,11 @@
 ---
 id: "202605012143-NEK3E8"
 title: "Fix Homebrew formula npm install"
-status: "DOING"
+result_summary: "Merged via PR #738."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-01T21:47:52.326Z"
   updated_by: "CODER"
   note: "Homebrew formula install hotfix verified."
-commit: null
+commit:
+  hash: "43bc2ed84a23e09b4982a62cd68968de62343037"
+  message: "🍺 NEK3E8 release: fix Homebrew formula install"
 comments:
   -
     author: "CODER"
     body: "Start: fix Homebrew formula install path and update the tap hotfix for v0.4.1."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #738 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Homebrew formula install hotfix verified."
+  -
+    type: "status"
+    at: "2026-05-01T21:50:51.414Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #738 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T21:47:52.333Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T21:50:51.419Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the Homebrew formula renderer and tap formula so fresh AgentPlane releases install without Homebrew npm min-release-age blocking fresh package dependencies."
 sections:
   Summary: |-

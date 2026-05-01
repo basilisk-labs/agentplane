@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T21:50:14Z",
   "base": "main",
   "branch": "task/202605012143-NEK3E8/homebrew-formula-install",
   "created_at": "2026-05-01T21:44:12.317Z",
-  "head_sha": "bb5048218199be09b484b4e92977347189955a80",
+  "head_sha": "c2436922a41937989915e49ce6a0cef7bca285d3",
   "last_verified_at": "2026-05-01T21:47:52.326Z",
   "last_verified_sha": "f72a6c574a6f787e6c93dff4b3135594804c28ec",
+  "merge_commit": "43bc2ed84a23e09b4982a62cd68968de62343037",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T21:50:14Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605012143-NEK3E8",
-  "updated_at": "2026-05-01T21:47:58.392Z",
+  "updated_at": "2026-05-01T21:50:14Z",
   "verify": {
     "status": "pass"
   }
