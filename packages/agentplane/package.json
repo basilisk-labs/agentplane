@@ -24,7 +24,7 @@
     "type": "git",
     "url": "git+https://github.com/basilisk-labs/agentplane.git"
   },
-  "homepage": "https://github.com/basilisk-labs/agentplane",
+  "homepage": "https://agentplane.org",
   "bugs": {
     "url": "https://github.com/basilisk-labs/agentplane/issues"
   },
