@@ -1,12 +1,17 @@
  .agentplane/config.json                            |   2 +-
  .agentplane/policy/incidents.md                    |   1 +
+ .agentplane/policy/workflow.release.md             |   2 +-
+ .github/workflows/publish.yml                      |   2 +-
  README.md                                          |  21 +-
  .../documentation-information-architecture.mdx     |  14 +-
+ docs/developer/release-and-publishing.mdx          |   4 +-
+ docs/help/troubleshooting.mdx                      |   2 +-
  docs/index.mdx                                     |  23 +-
  docs/recipes/code-map.mdx                          |  89 ++++++++
  docs/recipes/index.mdx                             | 101 ++++++---
  docs/reference/generated-reference.mdx             |   6 +-
- docs/releases/v0.4.1.md                            | 239 +++++++++++++++++++++
+ docs/releases/v0.4.1.md                            | 245 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   2 +-
  docs/user/commands.mdx                             |   9 +-
  docs/user/overview.mdx                             |   5 +-
  docs/user/setup.mdx                                |   7 +-
@@ -20,14 +25,19 @@
  docs/workflow-guides/index.mdx                     |  29 +++
  packages/agentplane/README.md                      |  19 +-
  packages/agentplane/assets/policy/incidents.md     |   1 +
+ .../agentplane/assets/policy/workflow.release.md   |   2 +-
  packages/agentplane/package.json                   |   6 +-
+ .../src/commands/release/apply.command.ts          |   2 +-
+ .../commands/release/apply.pipeline/preflight.ts   |   2 +-
+ .../agentplane/src/commands/release/apply.spec.ts  |   2 +-
+ .../release/publish-workflow-contract.test.ts      |   3 +
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
  packages/testkit/package.json                      |   2 +-
- scripts/baselines/knip-baseline.json               | 150 +++++++------
+ scripts/baselines/knip-baseline.json               | 150 ++++++++-----
  scripts/check-docs-ia.mjs                          |  14 +-
  scripts/generate-release-distribution.mjs          |   4 +-
  website/sidebars.ts                                |  21 +-
  website/src/data/homepage-content.ts               |   9 +-
- 32 files changed, 644 insertions(+), 173 deletions(-)
+ 42 files changed, 663 insertions(+), 183 deletions(-)
