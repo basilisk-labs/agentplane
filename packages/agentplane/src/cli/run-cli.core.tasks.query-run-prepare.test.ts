@@ -7,11 +7,13 @@ import {
   RUSSIAN_TRACE_LINE,
   TASKS_QUERY_CLI_TIMEOUT_MS,
   VERIFY_STEPS_PLACEHOLDER,
+  approveAndStartTaskQueryCliTask,
   captureStdIO,
   chmod,
   cleanGitEnv,
   commitAll,
   configureGitUser,
+  createTaskQueryCliTask,
   createUpgradeBundle,
   defaultConfig,
   evolveRunnerRunState,
@@ -83,30 +85,10 @@ describe("runCli task run preparation", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS },
   it("task rebuild-index recreates the cache from tracked task artifacts when the cache file is missing", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Rebuild index task",
-          "--description",
-          "Exercise task rebuild-index on a missing cache file",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-      } finally {
-        io.restore();
-      }
-    }
+    const taskId = await createTaskQueryCliTask(root, {
+      title: "Rebuild index task",
+      description: "Exercise task rebuild-index on a missing cache file",
+    });
 
     const cachePath = path.join(root, ".agentplane", "cache", "tasks-index.v2.json");
     await rm(cachePath, { force: true });
@@ -129,30 +111,10 @@ describe("runCli task run preparation", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS },
   it("task run rejects tasks that have not entered DOING yet", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Runner placeholder task",
-          "--description",
-          "Placeholder task run contract",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-      } finally {
-        io.restore();
-      }
-    }
+    const taskId = await createTaskQueryCliTask(root, {
+      title: "Runner placeholder task",
+      description: "Placeholder task run contract",
+    });
 
     const io = captureStdIO();
     try {
@@ -171,30 +133,10 @@ describe("runCli task run preparation", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS },
   it("task run --dry-run materializes runner artifacts for a DOING task without executing a real runner", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Runner placeholder task",
-          "--description",
-          "Placeholder task run contract",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-      } finally {
-        io.restore();
-      }
-    }
+    const taskId = await createTaskQueryCliTask(root, {
+      title: "Runner placeholder task",
+      description: "Placeholder task run contract",
+    });
     await runCliSilent([
       "task",
       "doc",
@@ -209,18 +151,11 @@ describe("runCli task run preparation", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS },
       "--root",
       root,
     ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
-    await runCliSilent([
-      "task",
-      "start-ready",
-      taskId,
-      "--author",
-      "CODER",
-      "--body",
-      "Start: move the task into DOING before preparing runner artifacts for the dry-run contract.",
-      "--root",
+    await approveAndStartTaskQueryCliTask(
       root,
-    ]);
+      taskId,
+      "Start: move the task into DOING before preparing runner artifacts for the dry-run contract.",
+    );
 
     const io = captureStdIO();
     try {
@@ -455,28 +390,11 @@ describe("runCli task run preparation", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS },
     };
     await writeConfig(root, config);
 
-    const ioCreate = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Runner custom wrapper dry-run task",
-        "--description",
-        "Inspect dry-run reporting for the custom wrapper enforcement mode",
-        "--owner",
-        "CODER",
-        "--tag",
-        "code",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioCreate.stdout.trim();
-    } finally {
-      ioCreate.restore();
-    }
+    const taskId = await createTaskQueryCliTask(root, {
+      title: "Runner custom wrapper dry-run task",
+      description: "Inspect dry-run reporting for the custom wrapper enforcement mode",
+      tag: "code",
+    });
     const verifyStepsPath = path.join(root, ".task-verify-steps.md");
     await writeFile(
       verifyStepsPath,
@@ -501,18 +419,11 @@ describe("runCli task run preparation", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS },
       "--root",
       root,
     ]);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
-    await runCliSilent([
-      "task",
-      "start-ready",
-      taskId,
-      "--author",
-      "CODER",
-      "--body",
-      "Start: move the task into DOING before inspecting custom wrapper dry-run reporting.",
-      "--root",
+    await approveAndStartTaskQueryCliTask(
       root,
-    ]);
+      taskId,
+      "Start: move the task into DOING before inspecting custom wrapper dry-run reporting.",
+    );
 
     const io = captureStdIO();
     try {
@@ -536,42 +447,15 @@ describe("runCli task run preparation", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS },
   it("task run --dry-run writes bounded task context and truncation metadata for long-history tasks", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Runner compaction task",
-          "--description",
-          "Dry-run bundle should compact long task context history",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-      } finally {
-        io.restore();
-      }
-    }
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
-    await runCliSilent([
-      "task",
-      "start-ready",
-      taskId,
-      "--author",
-      "CODER",
-      "--body",
-      "Start: move the task into DOING before preparing a bounded runner bundle for long task history.",
-      "--root",
+    const taskId = await createTaskQueryCliTask(root, {
+      title: "Runner compaction task",
+      description: "Dry-run bundle should compact long task context history",
+    });
+    await approveAndStartTaskQueryCliTask(
       root,
-    ]);
+      taskId,
+      "Start: move the task into DOING before preparing a bounded runner bundle for long task history.",
+    );
 
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
     const task = await loadTaskFromContext({ ctx, taskId });
@@ -640,42 +524,15 @@ describe("runCli task run preparation", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS },
   it("prepareTaskRunnerExecution writes refusal artifacts before spawn when declared policy is unenforceable", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Runner refusal task",
-          "--description",
-          "Prepare runner refusal artifacts before spawn",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-      } finally {
-        io.restore();
-      }
-    }
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
-    await runCliSilent([
-      "task",
-      "start-ready",
-      taskId,
-      "--author",
-      "CODER",
-      "--body",
-      "Start: move the task into DOING before verifying runner refusal artifacts for unenforceable recipe policy.",
-      "--root",
+    const taskId = await createTaskQueryCliTask(root, {
+      title: "Runner refusal task",
+      description: "Prepare runner refusal artifacts before spawn",
+    });
+    await approveAndStartTaskQueryCliTask(
       root,
-    ]);
+      taskId,
+      "Start: move the task into DOING before verifying runner refusal artifacts for unenforceable recipe policy.",
+    );
 
     const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
     await expect(

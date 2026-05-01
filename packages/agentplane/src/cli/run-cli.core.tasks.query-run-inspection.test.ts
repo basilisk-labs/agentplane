@@ -7,11 +7,13 @@ import {
   RUSSIAN_TRACE_LINE,
   TASKS_QUERY_CLI_TIMEOUT_MS,
   VERIFY_STEPS_PLACEHOLDER,
+  approveAndStartTaskQueryCliTask,
   captureStdIO,
   chmod,
   cleanGitEnv,
   commitAll,
   configureGitUser,
+  createTaskQueryCliTask,
   createUpgradeBundle,
   defaultConfig,
   evolveRunnerRunState,
@@ -91,30 +93,10 @@ describe("runCli task run inspection queries", { timeout: TASKS_QUERY_CLI_TIMEOU
 
     const fakeBinDir = path.join(root, "bin");
     const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Runner inspect task",
-          "--description",
-          "Inspect persisted runner artifacts via CLI",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-      } finally {
-        io.restore();
-      }
-    }
+    const taskId = await createTaskQueryCliTask(root, {
+      title: "Runner inspect task",
+      description: "Inspect persisted runner artifacts via CLI",
+    });
 
     await mkdir(fakeBinDir, { recursive: true });
     await writeFile(
@@ -129,18 +111,11 @@ describe("runCli task run inspection queries", { timeout: TASKS_QUERY_CLI_TIMEOU
       "utf8",
     );
     await chmod(fakeRunnerPath, 0o755);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
-    await runCliSilent([
-      "task",
-      "start-ready",
-      taskId,
-      "--author",
-      "CODER",
-      "--body",
-      "Start: move the task into DOING before exercising runner inspection commands in the CLI test.",
-      "--root",
+    await approveAndStartTaskQueryCliTask(
       root,
-    ]);
+      taskId,
+      "Start: move the task into DOING before exercising runner inspection commands in the CLI test.",
+    );
 
     const originalPath = process.env.PATH;
     try {
@@ -252,30 +227,10 @@ describe("runCli task run inspection queries", { timeout: TASKS_QUERY_CLI_TIMEOU
 
     const fakeBinDir = path.join(root, "bin");
     const fakeRunnerPath = path.join(fakeBinDir, "custom-runner");
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Runner compressed trace task",
-          "--description",
-          "Inspect compressed runner trace artifacts via CLI",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-      } finally {
-        io.restore();
-      }
-    }
+    const taskId = await createTaskQueryCliTask(root, {
+      title: "Runner compressed trace task",
+      description: "Inspect compressed runner trace artifacts via CLI",
+    });
 
     await mkdir(fakeBinDir, { recursive: true });
     await writeFile(
@@ -290,18 +245,11 @@ describe("runCli task run inspection queries", { timeout: TASKS_QUERY_CLI_TIMEOU
       "utf8",
     );
     await chmod(fakeRunnerPath, 0o755);
-    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
-    await runCliSilent([
-      "task",
-      "start-ready",
-      taskId,
-      "--author",
-      "CODER",
-      "--body",
-      "Start: move the task into DOING before exercising compressed runner trace inspection in the CLI test.",
-      "--root",
+    await approveAndStartTaskQueryCliTask(
       root,
-    ]);
+      taskId,
+      "Start: move the task into DOING before exercising compressed runner trace inspection in the CLI test.",
+    );
 
     const originalPath = process.env.PATH;
     try {
@@ -333,30 +281,10 @@ describe("runCli task run inspection queries", { timeout: TASKS_QUERY_CLI_TIMEOU
   it("task run trace fails with a typed error when the requested run is missing", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    let taskId = "";
-    {
-      const io = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "new",
-          "--title",
-          "Missing runner trace task",
-          "--description",
-          "Missing runner trace task",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        taskId = io.stdout.trim();
-      } finally {
-        io.restore();
-      }
-    }
+    const taskId = await createTaskQueryCliTask(root, {
+      title: "Missing runner trace task",
+      description: "Missing runner trace task",
+    });
 
     const io = captureStdIO();
     try {

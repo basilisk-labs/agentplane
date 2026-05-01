@@ -1,8 +1,14 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { loadCommandContext, type taskBackend } from "./agentplane-internal.js";
+import { loadCommandContext, runCli, type taskBackend } from "./agentplane-internal.js";
 
-import { installRunCliIntegrationHarness, pathExists, writeDefaultConfig } from "./cli-harness.js";
+import {
+  captureStdIO,
+  installRunCliIntegrationHarness,
+  pathExists,
+  runCliSilent,
+  writeDefaultConfig,
+} from "./cli-harness.js";
 import { waitForCondition } from "./wait.js";
 
 function useRunCliIntegrationHarness(): void {
@@ -50,4 +56,63 @@ async function seedTaskQueryFixture(root: string, tasks: taskBackend.TaskData[])
   }
 }
 
-export { seedTaskQueryFixture, useRunCliIntegrationHarness, waitForRunnerState };
+async function createTaskQueryCliTask(
+  root: string,
+  opts: {
+    title: string;
+    description: string;
+    owner?: string;
+    tag?: string;
+  },
+): Promise<string> {
+  const io = captureStdIO();
+  try {
+    const code = await runCli([
+      "task",
+      "new",
+      "--title",
+      opts.title,
+      "--description",
+      opts.description,
+      "--owner",
+      opts.owner ?? "CODER",
+      "--tag",
+      opts.tag ?? "docs",
+      "--root",
+      root,
+    ]);
+    if (code !== 0) {
+      throw new Error(`task new failed with exit code ${code}: ${io.stderr}`);
+    }
+    return io.stdout.trim();
+  } finally {
+    io.restore();
+  }
+}
+
+async function approveAndStartTaskQueryCliTask(
+  root: string,
+  taskId: string,
+  startBody: string,
+): Promise<void> {
+  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+  await runCliSilent([
+    "task",
+    "start-ready",
+    taskId,
+    "--author",
+    "CODER",
+    "--body",
+    startBody,
+    "--root",
+    root,
+  ]);
+}
+
+export {
+  approveAndStartTaskQueryCliTask,
+  createTaskQueryCliTask,
+  seedTaskQueryFixture,
+  useRunCliIntegrationHarness,
+  waitForRunnerState,
+};
