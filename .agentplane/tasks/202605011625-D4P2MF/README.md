@@ -1,10 +1,11 @@
 ---
 id: "202605011625-D4P2MF"
 title: "Record release distribution contract"
-status: "DOING"
+result_summary: "Merged via PR #701."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-05-01T16:40:54.828Z"
   updated_by: "DOCS"
   note: "Docs contract verified: node .agentplane/policy/check-routing.mjs passed; agentplane doctor passed with zero errors and zero warnings."
-commit: null
+commit:
+  hash: "e31f20f6913e253cda4afc6222cac5ac02baff83"
+  message: "Merge pull request #701 from basilisk-labs/task/202605011625-D4P2MF/release-distribution-contract"
 comments:
   -
     author: "DOCS"
     body: "Start: document the release distribution contract and acceptance gates before downstream release automation changes."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #701 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Docs contract verified: node .agentplane/policy/check-routing.mjs passed; agentplane doctor passed with zero errors and zero warnings."
+  -
+    type: "status"
+    at: "2026-05-01T16:47:13.182Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #701 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T16:40:54.842Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-01T16:47:13.187Z"
+doc_updated_by: "INTEGRATOR"
 description: "Define the multi-channel release contract, blocking gates, non-blocking follow-ups, required secrets, and verification evidence for publishing beyond npm."
 sections:
   Summary: |-
