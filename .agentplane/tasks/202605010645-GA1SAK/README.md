@@ -1,10 +1,11 @@
 ---
 id: "202605010645-GA1SAK"
 title: "AP-12: Split PR open flow tests"
-status: "DOING"
+result_summary: "Merged via PR #676."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T11:17:56.666Z"
   updated_by: "CODER"
   note: "Focused PR-open split verification passed: PR-flow suites, routing/inventory checks, oversized baseline, typecheck, lint, formatting, bootstrap, doctor, and policy routing were green."
-commit: null
+commit:
+  hash: "08c46fccb7f7c616122a4e06b9a83aec05c32c42"
+  message: "Merge pull request #676 from basilisk-labs/task/202605010645-GA1SAK/pr-open-flow-test-split"
 comments:
   -
     author: "CODER"
     body: "Start: splitting the PR open flow test suite into artifact, git, validation, and network-gate files with shared testkit helpers and focused routing checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #676 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused PR-open split verification passed: PR-flow suites, routing/inventory checks, oversized baseline, typecheck, lint, formatting, bootstrap, doctor, and policy routing were green."
+  -
+    type: "status"
+    at: "2026-05-01T11:22:31.941Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #676 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T11:17:56.729Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T11:22:31.947Z"
+doc_updated_by: "INTEGRATOR"
 description: "Split PR open flow tests by artifact, git, validation, and network gates using cli-core-pr-flow testkit helpers."
 sections:
   Summary: |-
