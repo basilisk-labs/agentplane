@@ -1,10 +1,11 @@
 ---
 id: "202605010645-YZ5WV4"
 title: "AP-14: Add modular check runner"
-status: "DOING"
+result_summary: "Merged via PR #684."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T12:15:38.501Z"
   updated_by: "CODER"
   note: "Verified modular check runner and registry wrappers."
-commit: null
+commit:
+  hash: "5ca05b007a2b513af85bbbc21552c91027b72429"
+  message: "Merge pull request #684 from basilisk-labs/task/202605010645-YZ5WV4/modular-check-runner"
 comments:
   -
     author: "CODER"
     body: "Start: adding the modular check runner wrapper and registry without changing existing check command implementations."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #684 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified modular check runner and registry wrappers."
+  -
+    type: "status"
+    at: "2026-05-01T12:19:08.675Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #684 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T12:15:38.520Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T12:19:08.680Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add scripts/run-checks.mjs with a registry of pure checks while preserving existing npm script behavior."
 sections:
   Summary: |-
