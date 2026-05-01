@@ -32,10 +32,17 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("path: .agentplane/.release/publish/publish-result.json");
     expect(workflow).toContain("Generate release distribution assets");
     expect(workflow).toContain("node scripts/generate-release-distribution.mjs");
-    expect(workflow).toContain(".agentplane/.release/publish/distribution/release-distribution.json");
+    expect(workflow).toContain(
+      ".agentplane/.release/publish/distribution/release-distribution.json",
+    );
     expect(workflow).toContain(".agentplane/.release/publish/distribution/install.sh");
     expect(workflow).toContain(".agentplane/.release/publish/distribution/install.ps1");
     expect(workflow).toContain(".agentplane/.release/publish/distribution/SHA256SUMS");
+    expect(workflow).toContain("name: Upload release-distribution artifact");
+    expect(workflow).toContain("name: release-distribution");
+    expect(workflow).toContain(
+      "--distribution-manifest .agentplane/.release/publish/distribution/release-distribution.json",
+    );
     expect(workflow).toContain("if: always()");
     expect(workflow).toContain("pull-requests: write");
     expect(workflow).toContain("Prepare release task evidence");

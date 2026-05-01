@@ -124,6 +124,7 @@ function publishResultUsage() {
     "  --version <semver>          Released package version",
     "  --tag <tag>                 Release tag (vX.Y.Z)",
     "  --release-ready-run-id <id> Core CI run id that produced release-ready",
+    "  --distribution-manifest <path> Optional release-distribution.json path",
     "  --job-status <status>       Current GitHub job status",
     "  --core-prepublished <bool>  Whether @agentplaneorg/core was already published before this run",
     "  --recipes-prepublished <bool> Whether @agentplaneorg/recipes was already published before this run",
@@ -167,6 +168,7 @@ function parsePublishResultArgs(argv) {
     version: null,
     tag: null,
     releaseReadyRunId: null,
+    distributionManifestPath: null,
     jobStatus: process.env.AGENTPLANE_PUBLISH_JOB_STATUS ?? null,
     corePrepublished: false,
     recipesPrepublished: false,
@@ -207,6 +209,11 @@ function parsePublishResultArgs(argv) {
     }
     if (arg === "--release-ready-run-id") {
       out.releaseReadyRunId = next ?? out.releaseReadyRunId;
+      index += 1;
+      continue;
+    }
+    if (arg === "--distribution-manifest") {
+      out.distributionManifestPath = next ? path.resolve(next) : out.distributionManifestPath;
       index += 1;
       continue;
     }
@@ -334,6 +341,9 @@ function buildPublishResultManifest(args) {
   if (!tagEnsured) failures.push(`release tag not ensured (outcome=${tagOutcome})`);
   if (!releaseCreated) failures.push(`GitHub release outcome=${releaseOutcome}`);
   if (jobStatus !== "success") failures.push(`publish job status=${jobStatus}`);
+  if (args.distribution?.requested && !args.distribution.loaded) {
+    failures.push(`release distribution manifest unavailable (${args.distribution.reason})`);
+  }
 
   const success = failures.length === 0;
 
@@ -352,6 +362,13 @@ function buildPublishResultManifest(args) {
     tag: assertNonEmpty(args.tag, "tag"),
     releaseReady: {
       runId: args.releaseReadyRunId ? String(args.releaseReadyRunId) : null,
+    },
+    distribution: args.distribution ?? {
+      requested: false,
+      loaded: false,
+      path: null,
+      reason: "not_requested",
+      manifest: null,
     },
     packages: {
       core,
@@ -384,13 +401,60 @@ function buildPublishResultManifest(args) {
   };
 }
 
+async function loadDistributionManifest(filePath) {
+  if (!filePath) {
+    return {
+      requested: false,
+      loaded: false,
+      path: null,
+      reason: "not_requested",
+      manifest: null,
+    };
+  }
+  try {
+    const manifest = JSON.parse(await readFile(filePath, "utf8"));
+    return {
+      requested: true,
+      loaded: true,
+      path: filePath,
+      reason: "loaded",
+      manifest: {
+        schemaVersion: manifest.schemaVersion ?? null,
+        manifestKind: manifest.manifestKind ?? null,
+        version: manifest.version ?? null,
+        tag: manifest.tag ?? null,
+        sha: manifest.sha ?? null,
+        releaseAssets: Array.isArray(manifest.releaseAssets)
+          ? manifest.releaseAssets.map((asset) => ({
+              name: asset?.name ?? null,
+              kind: asset?.kind ?? null,
+              sha256: asset?.sha256 ?? null,
+              url: asset?.url ?? null,
+            }))
+          : [],
+        channels:
+          manifest.channels && typeof manifest.channels === "object" ? manifest.channels : {},
+      },
+    };
+  } catch (error) {
+    return {
+      requested: true,
+      loaded: false,
+      path: filePath,
+      reason: error instanceof Error ? error.message : String(error),
+      manifest: null,
+    };
+  }
+}
+
 async function runPublishResultManifest(argv) {
   const args = parsePublishResultArgs(argv);
   if (args.help) {
     process.stdout.write(`${publishResultUsage()}\n`);
     return;
   }
-  const manifest = buildPublishResultManifest(args);
+  const distribution = await loadDistributionManifest(args.distributionManifestPath);
+  const manifest = buildPublishResultManifest({ ...args, distribution });
   if (args.outPath) {
     await mkdir(path.dirname(args.outPath), { recursive: true });
     await writeFile(args.outPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");

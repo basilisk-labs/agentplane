@@ -340,6 +340,13 @@ jobs:
             .agentplane/.release/publish/distribution/install.ps1
             .agentplane/.release/publish/distribution/SHA256SUMS
             .agentplane/.release/publish/distribution/release-distribution.json
+      - name: Upload release-distribution artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-distribution
+          path: .agentplane/.release/publish/distribution/
+          if-no-files-found: warn
       - name: Write publish-result manifest
         if: always()
         shell: bash
@@ -353,6 +360,7 @@ jobs:
             --version "${{ needs.detect.outputs.version }}" \
             --tag "${{ needs.detect.outputs.tag }}" \
             --release-ready-run-id "${{ needs.detect.outputs.release_ready_run_id }}" \
+            --distribution-manifest .agentplane/.release/publish/distribution/release-distribution.json \
             --job-status "${{ job.status }}" \
             --core-prepublished "${{ needs.detect.outputs.core_published }}" \
             --recipes-prepublished "${{ needs.detect.outputs.recipes_published }}" \
