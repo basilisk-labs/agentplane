@@ -22,12 +22,21 @@ Split release apply tests by preflight, version mutation, apply flow, and push r
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T10:00:45.097Z
+- Updated: 2026-05-01T10:19:23.835Z
 - Branch: task/202605010645-JGXD12/release-apply-test-split
-- Head: e0ac888d7002
+- Head: a4537344bf8c
 
 ```text
-No changes detected.
+ .../agentplane/src/cli/local-ci-selection.test.ts  |    7 +-
+ .../src/commands/release/apply.apply-flow.test.ts  |  156 +++
+ .../src/commands/release/apply.preflight.test.ts   |  405 +++++++
+ .../commands/release/apply.push-recovery.test.ts   |  400 ++++++
+ .../agentplane/src/commands/release/apply.test.ts  | 1268 --------------------
+ .../release/apply.version-mutation.test.ts         |  352 ++++++
+ packages/testkit/src/release.ts                    |   71 +-
+ scripts/lib/test-route-registry.mjs                |    5 +-
+ scripts/oversized-test-baseline.json               |    8 +-
+ 9 files changed, 1395 insertions(+), 1277 deletions(-)
 ```
 
 </details>
