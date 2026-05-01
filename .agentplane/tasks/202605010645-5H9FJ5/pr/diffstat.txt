@@ -1,0 +1,4 @@
+ package.json                                       |  7 +++-
+ .../commands/release/release-ci-contract.test.ts   | 23 ++++++----
+ scripts/README.md                                  | 49 ++++++++++++----------
+ 3 files changed, 46 insertions(+), 33 deletions(-)
