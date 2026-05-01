@@ -1,0 +1,1 @@
+release: Add Scoop bucket publication module (KJFS07)
