@@ -1,10 +1,10 @@
 ---
 id: "202605010644-48TFEB"
 title: "AP-03: Normalize prompt compiler context"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -14,19 +14,36 @@ tags:
 verify:
   - "bunx vitest run packages/agentplane/src/runtime/prompt-modules/compiler.test.ts"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-05-01T07:14:53.950Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved AP-03 from user-provided Agentplane 0.4 refactor plan after AP-02 closed."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
-events: []
+  state: "ok"
+  updated_at: "2026-05-01T07:19:03.366Z"
+  updated_by: "CODER"
+  note: "Verified prompt compiler context normalization with: bunx vitest run packages/agentplane/src/runtime/prompt-modules/compiler.test.ts --testTimeout 60000 --hookTimeout 60000; bun run typecheck; bunx prettier --check touched files; git diff --check; bun run framework:dev:bootstrap."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: add pure normalization for PromptModuleCompilerContext and focused compiler diagnostics for discarded context values."
+events:
+  -
+    type: "status"
+    at: "2026-05-01T07:15:10.114Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: add pure normalization for PromptModuleCompilerContext and focused compiler diagnostics for discarded context values."
+  -
+    type: "verify"
+    at: "2026-05-01T07:19:03.366Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified prompt compiler context normalization with: bunx vitest run packages/agentplane/src/runtime/prompt-modules/compiler.test.ts --testTimeout 60000 --hookTimeout 60000; bun run typecheck; bunx prettier --check touched files; git diff --check; bun run framework:dev:bootstrap."
 doc_version: 3
-doc_updated_at: "2026-05-01T06:44:52.509Z"
+doc_updated_at: "2026-05-01T07:19:03.369Z"
 doc_updated_by: "CODER"
 description: "Add a pure prompt compiler context normalizer with diagnostics for discarded or invalid values before graph compilation."
 sections:
@@ -47,6 +64,14 @@ sections:
     3. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-01T07:19:03.366Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified prompt compiler context normalization with: bunx vitest run packages/agentplane/src/runtime/prompt-modules/compiler.test.ts --testTimeout 60000 --hookTimeout 60000; bun run typecheck; bunx prettier --check touched files; git diff --check; bun run framework:dev:bootstrap.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T07:15:10.114Z, excerpt_hash=sha256:2488d932674b6cf163d1054627d4316fd1f5fe35689a60c29436aa82178c774d
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -80,6 +105,14 @@ Add a pure prompt compiler context normalizer with diagnostics for discarded or 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-01T07:19:03.366Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified prompt compiler context normalization with: bunx vitest run packages/agentplane/src/runtime/prompt-modules/compiler.test.ts --testTimeout 60000 --hookTimeout 60000; bun run typecheck; bunx prettier --check touched files; git diff --check; bun run framework:dev:bootstrap.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T07:15:10.114Z, excerpt_hash=sha256:2488d932674b6cf163d1054627d4316fd1f5fe35689a60c29436aa82178c774d
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

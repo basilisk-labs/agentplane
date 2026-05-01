@@ -4,6 +4,7 @@ import {
   compilePromptModuleGraph,
   PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
   type PromptModule,
+  type PromptModuleCompilerContext,
   type PromptModuleGraph,
   type PromptModuleMutationSet,
   type PromptModuleOwner,
@@ -145,6 +146,106 @@ describe("prompt module compiler", () => {
     ]);
     expect(result.ok).toBe(false);
     expect(result.diagnostics.map((diagnostic) => diagnostic.code)).toContain("missing_dependency");
+  });
+
+  it("normalizes compiler context strings before load matching and validators", () => {
+    const base = markdownModule({
+      value: "framework/gateway/AGENTS.md/load_rules/base",
+      name: "base",
+      content: "Base\n",
+      load: {
+        workflow_modes: ["branch_pr"],
+        policy_gateways: ["codex"],
+        roles: ["CODER"],
+        commands: ["agentplane task start"],
+        task_tags_any: ["code"],
+        repo_types: ["framework"],
+        recipe_ids: ["roadmap"],
+      },
+    });
+    const validators: PromptModuleValidator[] = [
+      {
+        id: "doctor.requires-command",
+        phase: "doctor",
+        kind: "required_command",
+        command: "agentplane doctor",
+        required: true,
+      },
+    ];
+
+    const result = compilePromptModuleGraph({
+      graph: graph([base]),
+      validators,
+      context: {
+        workflow_mode: " branch_pr ",
+        policy_gateway: " codex ",
+        roles: [" CODER ", "CODER", "", "BAD\u0000"],
+        command: " agentplane task start ",
+        commands: ["agentplane task start", " agentplane task list "],
+        task_tags: [" code ", "code"],
+        repo_type: " framework ",
+        repo_types: ["framework"],
+        recipe_ids: [" roadmap ", "roadmap"],
+        available_commands: [" agentplane doctor ", "bad\u0001"],
+        validator_phases: [" doctor ", "doctor", "bogus"],
+      } as unknown as PromptModuleCompilerContext,
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.nodes.map((node) => node.module.address.value)).toEqual([base.address.value]);
+    expect(result.diagnostics.map((diagnostic) => diagnostic.code)).toEqual([
+      "compiler_context_value_discarded",
+      "compiler_context_value_discarded",
+      "compiler_context_value_discarded",
+      "compiler_context_value_discarded",
+    ]);
+    expect(result.diagnostics.map((diagnostic) => diagnostic.message).join("\n")).toContain(
+      "roles[2]",
+    );
+    expect(result.diagnostics.map((diagnostic) => diagnostic.message).join("\n")).toContain(
+      "roles[3]",
+    );
+    expect(result.diagnostics.map((diagnostic) => diagnostic.message).join("\n")).toContain(
+      "available_commands[1]",
+    );
+    expect(result.diagnostics.map((diagnostic) => diagnostic.message).join("\n")).toContain(
+      "validator_phases[2]",
+    );
+  });
+
+  it("discards unknown compiler context enum values before load matching", () => {
+    const base = markdownModule({
+      value: "framework/gateway/AGENTS.md/load_rules/base",
+      name: "base",
+      content: "Base\n",
+      load: {
+        workflow_modes: ["branch_pr"],
+        policy_gateways: ["codex"],
+      },
+    });
+
+    const result = compilePromptModuleGraph({
+      graph: graph([base]),
+      context: {
+        workflow_mode: "preview",
+        policy_gateway: "cursor",
+      } as unknown as PromptModuleCompilerContext,
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.nodes).toEqual([]);
+    expect(result.diagnostics).toMatchObject([
+      {
+        severity: "warning",
+        code: "compiler_context_value_discarded",
+      },
+      {
+        severity: "warning",
+        code: "compiler_context_value_discarded",
+      },
+    ]);
+    expect(result.diagnostics[0]?.message).toContain("workflow_mode");
+    expect(result.diagnostics[1]?.message).toContain("policy_gateway");
   });
 
   it("applies add, patch, disable, replace, and binding mutations deterministically", () => {

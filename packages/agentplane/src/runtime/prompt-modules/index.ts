@@ -3,6 +3,7 @@ export {
   matchesPromptModuleLoadCondition,
   matchesPromptModuleMutationWhen,
   matchesPromptModuleSelector,
+  normalizePromptModuleCompilerContext,
   type PromptModuleCompiledGraph,
   type PromptModuleCompilerContext,
   type PromptModuleDiagnostic,
@@ -57,9 +58,7 @@ export {
   loadFrameworkPromptModuleRegistry,
   loadFrameworkPromptModules,
 } from "./registry.js";
-export {
-  diagnoseGpt55PromptContract,
-} from "./gpt55-contract.js";
+export { diagnoseGpt55PromptContract } from "./gpt55-contract.js";
 export {
   validatePromptModuleCompiledGraph,
   validatePromptModule,
