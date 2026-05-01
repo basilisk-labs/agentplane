@@ -1,0 +1,4 @@
+ ...run-cli.core.tasks.query-run-inspection.test.ts | 112 ++---------
+ .../run-cli.core.tasks.query-run-prepare.test.ts   | 221 ++++-----------------
+ .../testkit/src/cli-core-tasks-query.fixtures.ts   |  71 ++++++-
+ 3 files changed, 127 insertions(+), 277 deletions(-)
