@@ -1,10 +1,11 @@
 ---
 id: "202605011518-97HPR5"
 title: "Add AgentPlane to ai-for-developers awesome-ai-coding-tools"
-status: "DOING"
+result_summary: "Merged via PR #710."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-01T17:05:19.069Z"
   updated_by: "DOCS"
   note: "External ai-for-developers PR opened and PR body formatting verified."
-commit: null
+commit:
+  hash: "dc4f353e273bafec07f2cbcabbbb21533ee7116c"
+  message: "Merge pull request #710 from basilisk-labs/task/202605011518-97HPR5/ai-for-developers-awesome-ai-coding-tools"
 comments:
   -
     author: "DOCS"
     body: "Start: inspect ai-for-developers list structure and submit AgentPlane only where it fits as repo-local workflow infrastructure for coding tools."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #710 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,14 +47,21 @@ events:
     author: "DOCS"
     state: "ok"
     note: "External ai-for-developers PR opened and PR body formatting verified."
+  -
+    type: "status"
+    at: "2026-05-01T17:10:56.186Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #710 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T17:05:19.092Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-01T17:10:56.191Z"
+doc_updated_by: "INTEGRATOR"
 description: "Submit a GitHub PR adding AgentPlane to ai-for-developers/awesome-ai-coding-tools as workflow infrastructure for AI coding tools after verifying the current contribution format."
 sections:
   Summary: |-
     Add AgentPlane to ai-for-developers awesome-ai-coding-tools
-
+    
     Submit a GitHub PR adding AgentPlane to ai-for-developers/awesome-ai-coding-tools as workflow infrastructure for AI coding tools after verifying the current contribution format.
   Scope: |-
     - In scope: Submit a GitHub PR adding AgentPlane to ai-for-developers/awesome-ai-coding-tools as workflow infrastructure for AI coding tools after verifying the current contribution format.
@@ -65,13 +78,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-01T17:05:19.069Z — VERIFY — ok
-
+    
     By: DOCS
-
+    
     Note: External ai-for-developers PR opened and PR body formatting verified.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T17:00:24.959Z, excerpt_hash=sha256:e42437d7dc41c2d7b7c7af567be39aa767ca67d9dc4e0df20b92dcd229cb2a5f
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
