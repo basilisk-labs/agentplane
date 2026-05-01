@@ -47,16 +47,19 @@ Enhance the launch homepage with a restrained looping hero background animation,
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T09:49:53.755Z
+- Updated: 2026-05-01T09:53:57.181Z
 - Branch: task/202605010926-A9JHHM/hero-motion-actions
-- Head: 60cc9fbba14a
+- Head: c88b10957858
 
 ```text
+ .github/workflows/ci.yml           |   2 +-
+ .github/workflows/docs-ci.yml      |   2 +-
  .github/workflows/pages-deploy.yml |   6 +-
+ .github/workflows/prepublish.yml   |   2 +-
  website/src/css/custom.css         |  34 +++-
  website/src/pages/_home.module.css | 362 ++++++++++++++++++++++++++++++++++++-
  website/src/pages/index.tsx        |  63 ++++++-
- 4 files changed, 447 insertions(+), 18 deletions(-)
+ 7 files changed, 450 insertions(+), 21 deletions(-)
 ```
 
 </details>
