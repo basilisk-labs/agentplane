@@ -1,10 +1,11 @@
 ---
 id: "202605011515-NKWCVZ"
 title: "Add AgentPlane to ai-boost awesome-harness-engineering"
-status: "DOING"
+result_summary: "Merged via PR #700."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-01T16:40:36.665Z"
   updated_by: "DOCS"
   note: "External ai-boost PR opened and body formatting verified."
-commit: null
+commit:
+  hash: "9e6a4bdaa1b04369ec3d340d7abef775a2d63294"
+  message: "Merge pull request #700 from basilisk-labs/task/202605011515-NKWCVZ/ai-boost-awesome-harness-engineering"
 comments:
   -
     author: "DOCS"
     body: "Start: submit AgentPlane to ai-boost/awesome-harness-engineering with neutral repo-local coding-agent work wording and verified PR body formatting."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #700 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "External ai-boost PR opened and body formatting verified."
+  -
+    type: "status"
+    at: "2026-05-01T16:44:40.126Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #700 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T16:40:36.672Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-01T16:44:40.131Z"
+doc_updated_by: "INTEGRATOR"
 description: "Submit a GitHub PR adding AgentPlane to ai-boost/awesome-harness-engineering in Task Runners and Orchestration or the closest workflow-control section after checking current scope and ordering."
 sections:
   Summary: |-
