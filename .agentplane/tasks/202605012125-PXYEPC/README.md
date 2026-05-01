@@ -1,10 +1,11 @@
 ---
 id: "202605012125-PXYEPC"
 title: "Automate external distribution repo publishing"
-status: "DOING"
+result_summary: "Merged via PR #736."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T21:31:43.594Z"
   updated_by: "CODER"
   note: "External distribution publishing automation verified."
-commit: null
+commit:
+  hash: "19d401ff227469eac8c010071f526347194c712e"
+  message: "🚀 PXYEPC release: automate external distribution PRs"
 comments:
   -
     author: "CODER"
     body: "Start: add automated external distribution repo publication for release modules."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #736 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "External distribution publishing automation verified."
+  -
+    type: "status"
+    at: "2026-05-01T21:35:11.425Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #736 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T21:31:43.601Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T21:35:11.431Z"
+doc_updated_by: "INTEGRATOR"
 description: "Publish Homebrew, Scoop, and setup-agentplane outputs to their external repositories from the release workflow when credentials are configured."
 sections:
   Summary: |-

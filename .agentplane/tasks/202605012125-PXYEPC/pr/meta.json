@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T21:34:29Z",
   "base": "main",
   "branch": "task/202605012125-PXYEPC/external-distribution-publish",
   "created_at": "2026-05-01T21:26:16.551Z",
-  "head_sha": "9b6156d62117ba0b48e3adde5f1a35613d8be308",
+  "head_sha": "6ac506a6588e644f2603c13d6960fdc0286060e7",
   "last_verified_at": "2026-05-01T21:31:43.594Z",
   "last_verified_sha": "0a141dfaeb7908364fd189895ff84a60f0c22cf2",
+  "merge_commit": "19d401ff227469eac8c010071f526347194c712e",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T21:34:29Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605012125-PXYEPC",
-  "updated_at": "2026-05-01T21:31:57.672Z",
+  "updated_at": "2026-05-01T21:34:29Z",
   "verify": {
     "status": "pass"
   }
