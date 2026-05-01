@@ -278,6 +278,13 @@ jobs:
             --tag "${{ needs.detect.outputs.tag }}" \
             --sha "${{ needs.detect.outputs.sha }}" \
             --repo "${{ github.repository }}"
+      - name: Render Homebrew tap formula
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/render-homebrew-formula.mjs \
+            --manifest .agentplane/.release/publish/distribution/release-distribution.json \
+            --out .agentplane/.release/publish/homebrew
       - name: Write npm auth config
         shell: bash
         run: |
@@ -346,6 +353,13 @@ jobs:
         with:
           name: release-distribution
           path: .agentplane/.release/publish/distribution/
+          if-no-files-found: warn
+      - name: Upload homebrew-module artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: homebrew-module
+          path: .agentplane/.release/publish/homebrew/
           if-no-files-found: warn
       - name: Write publish-result manifest
         if: always()
