@@ -28,7 +28,7 @@ Turn the homepage into a short launch gateway: hero, demo/proof, core workflow, 
 ### Current Status
 
 - State: ok
-- Note: Homepage gateway implementation verified locally: diff whitespace, Prettier check, site typecheck, Docusaurus build, DESIGN.md guard, targeted homepage/config ESLint, and desktop/mobile Playwright render passed.
+- Note: Minimal homepage layout iteration verified locally before deploy: CSS diff only, whitespace/formatting/targeted ESLint/typecheck/build/design guard and desktop/mobile Playwright checks passed.
 
 ## Risks
 
