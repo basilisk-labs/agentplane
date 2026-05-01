@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T17:15:27Z",
   "base": "main",
   "branch": "task/202605011626-TG4GZ4/homebrew-tap-publication",
   "created_at": "2026-05-01T17:10:15.251Z",
-  "head_sha": "91fb43545abd7d8acf5e679a295f466e58100759",
+  "head_sha": "3d6d5dbbc25a9ffb40db5e9ee96248f41ab90eb9",
   "last_verified_at": "2026-05-01T17:13:07.600Z",
   "last_verified_sha": "bb38e9d2423c928eca92501a362e64748608a3ee",
+  "merge_commit": "c99e72c28aa19a98f90b7cf64fe0c29823916c11",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T17:15:27Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605011626-TG4GZ4",
-  "updated_at": "2026-05-01T17:13:16.665Z",
+  "updated_at": "2026-05-01T17:15:27Z",
   "verify": {
     "status": "pass"
   }
