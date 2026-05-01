@@ -22,12 +22,17 @@ Add deterministic release distribution asset generation for install.sh, install.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T16:48:36.674Z
+- Updated: 2026-05-01T16:56:59.303Z
 - Branch: task/202605011626-4TQ11R/release-distribution-assets
-- Head: 6ddf24956581
+- Head: 915dfc266716
 
 ```text
-No changes detected.
+ .github/workflows/publish.yml                      |  18 +-
+ package.json                                       |   2 +
+ .../release/publish-workflow-contract.test.ts      |   6 +
+ scripts/README.md                                  |  26 +-
+ scripts/generate-release-distribution.mjs          | 394 +++++++++++++++++++++
+ 5 files changed, 429 insertions(+), 17 deletions(-)
 ```
 
 </details>

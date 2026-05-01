@@ -1,0 +1,6 @@
+ .github/workflows/publish.yml                      |  18 +-
+ package.json                                       |   2 +
+ .../release/publish-workflow-contract.test.ts      |   6 +
+ scripts/README.md                                  |  26 +-
+ scripts/generate-release-distribution.mjs          | 394 +++++++++++++++++++++
+ 5 files changed, 429 insertions(+), 17 deletions(-)
