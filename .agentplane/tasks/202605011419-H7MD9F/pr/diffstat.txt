@@ -1,3 +1,4 @@
- .agentplane/policy/incidents.md                | 1 +
- packages/agentplane/assets/policy/incidents.md | 1 +
- 2 files changed, 2 insertions(+)
+ .agentplane/policy/incidents.md                |   1 +
+ packages/agentplane/assets/policy/incidents.md |   1 +
+ scripts/baselines/knip-baseline.json           | 150 +++++++++++++++----------
+ 3 files changed, 91 insertions(+), 61 deletions(-)
