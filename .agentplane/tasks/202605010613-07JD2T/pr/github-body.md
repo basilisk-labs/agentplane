@@ -22,9 +22,9 @@ Update the agentplane-recipes submodule catalog so bundled recipes validate and 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T06:54:00.025Z
+- Updated: 2026-05-01T07:06:37.538Z
 - Branch: task/202605010613-07JD2T/recipes-catalog-compat
-- Head: e169b8ab9ed3
+- Head: 9593bbc7fd65
 
 ```text
  .agentplane/policy/incidents.md                         |  3 ++-
@@ -33,8 +33,9 @@ Update the agentplane-recipes submodule catalog so bundled recipes validate and 
  packages/agentplane/assets/AGENTS.md                    |  8 ++++----
  packages/agentplane/assets/policy/incidents.md          |  3 ++-
  packages/agentplane/src/runtime/prompt-modules/index.ts |  4 +---
+ scripts/check-oversized-test-baseline.mjs               |  2 +-
  website/src/data/homepage-content.ts                    |  2 +-
- 7 files changed, 16 insertions(+), 19 deletions(-)
+ 8 files changed, 17 insertions(+), 20 deletions(-)
 ```
 
 </details>
