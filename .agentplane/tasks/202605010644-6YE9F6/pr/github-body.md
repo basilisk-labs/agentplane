@@ -22,12 +22,15 @@ Move mutation application logic out of compiler.ts into a dedicated mutations-en
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T07:59:00.641Z
+- Updated: 2026-05-01T07:59:21.250Z
 - Branch: task/202605010644-6YE9F6/prompt-mutation-engine
-- Head: 65045d23e037
+- Head: 3e289e12efd9
 
 ```text
-No changes detected.
+ .../src/runtime/prompt-modules/compiler.ts         | 273 +------------------
+ .../src/runtime/prompt-modules/mutations-engine.ts | 301 +++++++++++++++++++++
+ .../src/runtime/prompt-modules/mutations.test.ts   | 192 +++++++++++++
+ 3 files changed, 508 insertions(+), 258 deletions(-)
 ```
 
 </details>
