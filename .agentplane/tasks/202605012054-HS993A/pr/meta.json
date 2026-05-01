@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605012054-HS993A/publish-evidence-gh-token",
+  "created_at": "2026-05-01T20:54:39.445Z",
+  "head_sha": "d76b638117e0acce830ef596a72dd74f169115c3",
+  "last_verified_at": "2026-05-01T20:55:55.110Z",
+  "last_verified_sha": "62153d7eedd49b356e67aee92d713ad9b7b8485c",
+  "schema_version": 1,
+  "task_id": "202605012054-HS993A",
+  "updated_at": "2026-05-01T20:56:01.665Z",
+  "verify": {
+    "status": "pass"
+  }
+}
