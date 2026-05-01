@@ -22,12 +22,17 @@ Add a release module that can update an AgentPlane Homebrew tap formula from the
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T17:10:15.251Z
+- Updated: 2026-05-01T17:13:16.665Z
 - Branch: task/202605011626-TG4GZ4/homebrew-tap-publication
-- Head: bb38e9d2423c
+- Head: 91fb43545abd
 
 ```text
-No changes detected.
+ .github/workflows/publish.yml                      |  14 ++
+ package.json                                       |   1 +
+ .../release/publish-workflow-contract.test.ts      |   4 +
+ scripts/README.md                                  |   1 +
+ scripts/render-homebrew-formula.mjs                | 154 +++++++++++++++++++++
+ 5 files changed, 174 insertions(+)
 ```
 
 </details>
