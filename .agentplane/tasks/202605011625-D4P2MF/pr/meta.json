@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605011625-D4P2MF/release-distribution-contract",
+  "created_at": "2026-05-01T16:38:50.202Z",
+  "head_sha": "c687d8ba4016b4f638986ad794a7ac71aa3c6894",
+  "last_verified_at": "2026-05-01T16:40:54.828Z",
+  "last_verified_sha": "3d56cc31a62e08bda955e9e58321ace2c9817182",
+  "schema_version": 1,
+  "task_id": "202605011625-D4P2MF",
+  "updated_at": "2026-05-01T16:41:31.459Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -125,6 +125,65 @@ GitHub workflow `Publish to npm`:
 
 `Pre-publish Checks` workflow remains available as a manual matrix gate (`workflow_dispatch`) for explicit validation runs.
 
+## Distribution contract
+
+The release commit is the source of truth. Every downstream distribution channel must derive its
+version, tag, source URL, checksum, and human-readable status from the same release distribution
+manifest rather than recalculating those values independently.
+
+Required release distribution artifacts:
+
+- `release-distribution.json`: machine-readable summary of the release version, tag, source SHA,
+  npm tarball URLs, npm package status, GitHub Release asset names, external channel status, and
+  recovery hints.
+- `SHA256SUMS`: checksums for generated GitHub Release assets and installer payloads.
+- `install.sh`: POSIX installer entrypoint for users who want a shell install path.
+- `install.ps1`: PowerShell installer entrypoint for Windows users. The script must install a
+  versioned release payload and verify checksums before executing or linking installed files.
+- `agentplane-upgrade.tar.gz`: upgrade bundle consumed by `agentplane upgrade`.
+
+The install scripts are convenience entrypoints, not update sources of truth. Package managers and
+scripts must install an exact release version and must not implement self-update behavior that
+bypasses the hosted release pipeline.
+
+Blocking release channels:
+
+- npm packages: `@agentplaneorg/core`, `@agentplaneorg/recipes`, and `agentplane`
+- GitHub Release tag/body/assets
+- GitHub Release checksum manifest
+- GHCR image for the exact version and commit
+- AgentPlane-owned Homebrew tap update when tap credentials are configured
+- AgentPlane-owned Scoop bucket update when bucket credentials are configured
+- `setup-agentplane` release/update when action repository credentials are configured
+
+Credentials-gated channels must be explicit in the manifest. If a credential is absent, the channel
+must record `skipped_missing_credentials` with the expected secret name and a recovery command. It
+must not fail an otherwise valid npm/GitHub release unless that channel was explicitly marked
+required for the run.
+
+External moderated registries such as `homebrew/core`, winget, Chocolatey, AUR, and nixpkgs are
+follow-up publication targets. They should be opened as PR jobs or manual recovery tasks after the
+release is already published, because their review queues are outside the AgentPlane release SLA.
+
+## Distribution modules
+
+Keep publication modules independent and evidence-backed:
+
+- npm module: publishes packages, runs published-package smoke checks, and records package outcomes.
+- GitHub assets module: creates release assets, checksum manifest, and upload evidence.
+- GHCR module: builds the exact-version image, tags `vX.Y.Z`, commit SHA, and `latest`, then runs a
+  container CLI smoke check.
+- Homebrew tap module: renders `Formula/agentplane.rb` from `release-distribution.json`, verifies
+  the formula in dry-run/check mode, then opens or updates a tap PR when credentials exist.
+- Scoop bucket module: renders `bucket/agentplane.json` from `release-distribution.json`, verifies
+  checksum and URL fields in check mode, then opens or updates a bucket PR when credentials exist.
+- setup action module: updates the `setup-agentplane` release path so CI users can resolve an exact
+  AgentPlane version from the manifest.
+
+Each module must emit a compact JSON evidence file under `.agentplane/.release/publish/`. The final
+`publish-result.json` should reference those module files instead of flattening every channel into
+one shell step.
+
 GitHub workflow `Core CI` also supports `workflow_dispatch` recovery:
 
 - prefer `sha=<release commit>` to validate the exact historical release candidate
@@ -191,6 +250,17 @@ The publish workflow now also writes `publish-result.json` as a separate artifac
 diagnostics can distinguish a completed release from a partially failed publish run without relying
 only on workflow status inference.
 
+For distribution recovery, use the manifest first:
+
+- if npm succeeded but a package-manager channel was skipped, rerun only that channel with the same
+  `release-distribution.json`
+- if GitHub Release assets are missing, regenerate and upload assets for the same tag before running
+  package-manager modules
+- if GHCR publish failed after npm succeeded, rerun the GHCR module against the exact release SHA
+- if a tap or bucket PR already exists, update that PR rather than creating a duplicate
+- if credentials were missing, add the secret and rerun the credentials-gated module; do not bump the
+  release version
+
 ## Local release E2E harness
 
 For a local end-to-end validation of the exact release SHA against the real GitHub `release-ready`
@@ -226,3 +296,8 @@ versions, or release notes for you.
 - verify npm versions for all published packages
 - verify GitHub release body matches `docs/releases/vX.Y.Z.md`
 - verify upgrade bundle artifacts exist in release assets
+- verify `release-distribution.json` matches the published tag and release SHA
+- verify `SHA256SUMS` covers all install and upgrade assets
+- verify GHCR image tags resolve and `agentplane --version` works in the container
+- verify Homebrew tap, Scoop bucket, and setup-action outcomes are either published or explicitly
+  recorded as `skipped_missing_credentials` with recovery instructions

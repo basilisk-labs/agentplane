@@ -1,0 +1,1 @@
+docs/release: Record release distribution contract (D4P2MF)
