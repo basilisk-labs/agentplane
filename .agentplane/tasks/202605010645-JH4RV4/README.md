@@ -1,10 +1,11 @@
 ---
 id: "202605010645-JH4RV4"
 title: "AP-13: Split task query prepare tests"
-status: "DOING"
+result_summary: "Merged via PR #678."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T11:38:51.440Z"
   updated_by: "CODER"
   note: "Verified split task query prepare tests before merge request. Commands passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.query-run*.test.ts && node scripts/check-oversized-test-baseline.mjs --threshold-lines 1000 (6 files, 19 tests, oversized baseline OK); bun run vitest:projects:check; bun run typecheck; bun run lint:core; bun run format:check; git diff --check; bun run policy:routing:check; agentplane doctor; bun run framework:dev:bootstrap. Scope remains test split plus oversized baseline update."
-commit: null
+commit:
+  hash: "27239a60f0eaea56dd53c285b5c451c0c0acdc53"
+  message: "tests: Split task query run inspection suite (JH4RV4)"
 comments:
   -
     author: "CODER"
     body: "Start: splitting the oversized task query run/prepare suite and moving repeated setup into cli-core-tasks-query testkit helpers without changing task command behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #678 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified split task query prepare tests before merge request. Commands passed: bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.query-run*.test.ts && node scripts/check-oversized-test-baseline.mjs --threshold-lines 1000 (6 files, 19 tests, oversized baseline OK); bun run vitest:projects:check; bun run typecheck; bun run lint:core; bun run format:check; git diff --check; bun run policy:routing:check; agentplane doctor; bun run framework:dev:bootstrap. Scope remains test split plus oversized baseline update."
+  -
+    type: "status"
+    at: "2026-05-01T11:44:38.710Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #678 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T11:38:51.506Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T11:44:38.715Z"
+doc_updated_by: "INTEGRATOR"
 description: "Reduce the failing task query/prepare oversized test by moving repeated fixtures into testkit task-query helpers."
 sections:
   Summary: |-

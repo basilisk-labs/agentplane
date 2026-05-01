@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T11:44:04Z",
   "base": "main",
   "branch": "task/202605010645-JH4RV4/task-query-prepare-test-split",
   "created_at": "2026-05-01T11:26:23.732Z",
-  "head_sha": "3167cbe56a76450e160182f100ffb55470d6fe58",
+  "head_sha": "23888688b728d46704edbef794962c6f25374cdf",
   "last_verified_at": "2026-05-01T11:38:51.440Z",
   "last_verified_sha": "ce762aa1008a96c57a39105649567da6e6588a0d",
+  "merge_commit": "27239a60f0eaea56dd53c285b5c451c0c0acdc53",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T11:44:04Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010645-JH4RV4",
-  "updated_at": "2026-05-01T11:39:11.709Z",
+  "updated_at": "2026-05-01T11:44:04Z",
   "verify": {
     "status": "pass"
   }
