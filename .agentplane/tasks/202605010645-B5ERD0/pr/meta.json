@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605010645-B5ERD0/guard-test-split",
+  "created_at": "2026-05-01T09:29:51.147Z",
+  "head_sha": "400d8fee5bd698fb3701b432f02d83f88c911a65",
+  "last_verified_at": "2026-05-01T09:46:54.363Z",
+  "last_verified_sha": "400d8fee5bd698fb3701b432f02d83f88c911a65",
+  "schema_version": 1,
+  "task_id": "202605010645-B5ERD0",
+  "updated_at": "2026-05-01T09:29:51.147Z",
+  "verify": {
+    "status": "pass"
+  }
+}

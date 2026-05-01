@@ -57,7 +57,7 @@ describe("test inventory", () => {
     ).toEqual(["critical"]);
     expect(
       classifyPrimaryTestRoutes(
-        "packages/agentplane/src/commands/guard/impl/commands.unit.test.ts",
+        "packages/agentplane/src/commands/guard/impl/commands.guard.unit.test.ts",
       ),
     ).toEqual(["guard"]);
     expect(classifyPrimaryTestRoutes("packages/agentplane/src/cli/prompts.test.ts")).toEqual([
