@@ -1,10 +1,11 @@
 ---
 id: "202605010645-ZN3PN7"
 title: "AP-16: Validate spec examples as mirrors"
-status: "DOING"
+result_summary: "Merged via PR #688."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T12:52:01.818Z"
   updated_by: "CODER"
   note: "Verified spec examples against generated core schemas."
-commit: null
+commit:
+  hash: "88df17c529aac0f80fecff477ab5beec4ef03e10"
+  message: "Merge pull request #688 from basilisk-labs/task/202605010645-ZN3PN7/spec-examples-validation"
 comments:
   -
     author: "CODER"
     body: "Start: adding spec example validation against generated core schemas while keeping @agentplane/spec as a mirror artifact."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #688 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified spec examples against generated core schemas."
+  -
+    type: "status"
+    at: "2026-05-01T12:55:28.885Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #688 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T12:52:01.838Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T12:55:28.890Z"
+doc_updated_by: "INTEGRATOR"
 description: "Validate packages/spec examples against generated schemas without making spec the source of truth."
 sections:
   Summary: |-
