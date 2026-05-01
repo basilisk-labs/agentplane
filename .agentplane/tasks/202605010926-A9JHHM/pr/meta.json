@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T09:59:11Z",
   "base": "main",
   "branch": "task/202605010926-A9JHHM/hero-motion-actions",
   "created_at": "2026-05-01T09:30:14.340Z",
-  "head_sha": "c88b10957858a1e70982ea9028aa1000d35aefc3",
+  "head_sha": "0fb127ee0fbc52c5a595d084bcc75adc50b5b5f0",
   "last_verified_at": "2026-05-01T09:53:29.047Z",
   "last_verified_sha": "60cc9fbba14ae2e49b2f7c7f5e060bf8fe95fe7a",
+  "merge_commit": "9460e5c655f407de6d60d6192ce5e0bed375603c",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T09:59:11Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010926-A9JHHM",
-  "updated_at": "2026-05-01T09:53:57.181Z",
+  "updated_at": "2026-05-01T09:59:11Z",
   "verify": {
     "status": "pass"
   }
