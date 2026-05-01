@@ -312,7 +312,12 @@ describe("local CI fast selection", () => {
     expect(plan.kind).toBe("targeted");
     expect(plan.bucket).toBe("release");
     expect(plan.reason).toBe("release_paths_only");
-    expect(plan.testFiles).toContain("packages/agentplane/src/commands/release/apply.test.ts");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/commands/release/apply.preflight.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/commands/release/apply.version-mutation.test.ts",
+    );
   });
 
   it("routes isolated release recovery test paths to the release bucket", () => {
