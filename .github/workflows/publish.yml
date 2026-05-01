@@ -548,12 +548,10 @@ jobs:
             echo "closure_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          suffix="${{ steps.release_evidence.outputs.task_id }}"
-          suffix="${suffix##*-}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add "${{ steps.release_evidence.outputs.readme_path }}"
-          git commit --no-verify -m "📝 ${suffix} task: record hosted publish evidence"
+          git commit --no-verify -m "📝 ${{ steps.release_evidence.outputs.task_id }} task: record hosted publish evidence"
           echo "created_commit=true" >> "$GITHUB_OUTPUT"
           echo "closure_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Push release evidence branch

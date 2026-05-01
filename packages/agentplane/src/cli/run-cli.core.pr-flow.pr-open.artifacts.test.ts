@@ -128,9 +128,7 @@ describe("runCli pr open flow artifacts", { timeout: PR_FLOW_INTEGRATION_TIMEOUT
     await readFile(prArtifacts.diffstatPath, "utf8");
     expect(await readFile(prArtifacts.notesPath, "utf8")).toBe("");
     await readFile(prArtifacts.verifyLogPath, "utf8");
-    expect(await readFile(prArtifacts.githubTitlePath, "utf8")).toContain(
-      `(${extractTaskSuffix(taskId)})`,
-    );
+    expect(await readFile(prArtifacts.githubTitlePath, "utf8")).toContain(`[${taskId}]`);
     expect(await prArtifacts.readGithubBody()).toContain("## Verification");
     expect(await prArtifacts.readGithubBody()).not.toContain("## Risks");
   });

@@ -31,6 +31,7 @@ export type HostedClosePrPrecheckOptions = {
 
 export type HostedClosePrPlan = {
   taskId: string;
+  taskTitle: string;
   gitRoot: string;
   workflowDir: string;
   repo: string;

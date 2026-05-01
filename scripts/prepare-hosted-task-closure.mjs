@@ -63,6 +63,29 @@ function shortSha(value) {
     .slice(0, 12);
 }
 
+function normalizeOneLine(value, maxChars) {
+  const trimmed = String(value ?? "")
+    .trim()
+    .replaceAll(/\s+/g, " ");
+  if (!trimmed) return "";
+  return trimmed.length > maxChars ? `${trimmed.slice(0, Math.max(1, maxChars - 3))}...` : trimmed;
+}
+
+function titleFromSourcePullTitle(value, taskId) {
+  const title = normalizeOneLine(value, 140);
+  if (!title) return "Merged task";
+  const patterns = [
+    /^task:\s*(.+?)\s*\[[^\]]+\]$/iu,
+    /^[^:]+:\s*(.+?)\s*\([A-Z0-9]{4,8}\)$/iu,
+    /^[\p{Emoji_Presentation}\p{Extended_Pictographic}\s]*[A-Z0-9-]+\s+task:\s*(.+)$/iu,
+  ];
+  for (const pattern of patterns) {
+    const match = pattern.exec(title);
+    if (match?.[1]) return normalizeOneLine(match[1], 96);
+  }
+  return normalizeOneLine(title.replace(`[${taskId}]`, "").replace(`(${taskId})`, ""), 96);
+}
+
 function buildClosureMetadata(payload, prefix) {
   const pull = payload && typeof payload === "object" ? payload.pull_request : null;
   if (!pull || typeof pull !== "object") return noAction("event does not contain pull_request");
@@ -85,13 +108,19 @@ function buildClosureMetadata(payload, prefix) {
 
   const mergeShort = shortSha(mergeSha);
   const closureBranch = `task-close/${taskId}/${mergeShort}`;
-  const prTitle = `📝 ${taskId} task: close after hosted merge`;
+  const sourceTitle = titleFromSourcePullTitle(pull.title, taskId);
+  const prTitle = `task-close: ${sourceTitle} [${taskId}]`;
   const prBody = [
-    `Automated closure for merged task PR #${number}.`,
+    `Closes task \`${taskId}\` after merged task PR #${number}.`,
     "",
-    `- task_id: \`${taskId}\``,
-    `- source_branch: \`${sourceBranch}\``,
-    `- merge_sha: \`${mergeSha}\``,
+    "## Source",
+    "",
+    `- Task: \`${taskId}\``,
+    `- Source PR: #${number}`,
+    `- Source branch: \`${sourceBranch}\``,
+    `- Merge SHA: \`${mergeSha}\``,
+    "",
+    "## Scope",
     "",
     "This PR contains only tracked task artifacts produced by the hosted branch_pr closure flow.",
   ].join("\n");

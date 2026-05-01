@@ -718,6 +718,10 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
     expect(log).toContain(
       '"repos/example/repo/pulls?state=closed&head=example%3Atask%2F202604091600-348SVA%2Fhosted-close-pr-fallback&base=main"',
     );
+    expect(log).toContain(
+      "title=task-close: Hosted close PR fallback [202604091600-348SVA]",
+    );
+    expect(log).toContain("## Source");
     expect(log).toContain('"POST"');
   }, 240_000);
 

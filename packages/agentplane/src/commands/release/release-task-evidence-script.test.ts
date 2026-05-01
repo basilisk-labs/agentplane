@@ -222,8 +222,10 @@ describe("release-task-evidence script", () => {
     expect(payload.actionable).toBe(true);
     expect(payload.task_id).toBe(taskId);
     expect(payload.closure_branch).toBe(`task-close/${taskId}/${releaseSha.slice(0, 12)}-publish`);
-    expect(payload.pr_title).toContain(taskId);
+    expect(payload.pr_title).toBe(`task-evidence: Record hosted publish evidence [${taskId}]`);
     expect(payload.pr_body).toContain("v0.3.15");
+    expect(payload.pr_body).toContain("## Source");
+    expect(payload.pr_body).toContain("## Scope");
   });
 
   it("marks prepare as non-actionable when publish-result is incomplete", async () => {
