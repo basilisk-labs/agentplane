@@ -22,12 +22,15 @@ Reduce the failing task query/prepare oversized test by moving repeated fixtures
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T11:26:23.732Z
+- Updated: 2026-05-01T11:39:11.709Z
 - Branch: task/202605010645-JH4RV4/task-query-prepare-test-split
-- Head: ce762aa1008a
+- Head: 3167cbe56a76
 
 ```text
-No changes detected.
+ ...run-cli.core.tasks.query-run-inspection.test.ts |  371 +++++
+ .../run-cli.core.tasks.query-run-prepare.test.ts   | 1521 ++++++++------------
+ scripts/oversized-test-baseline.json               |    9 +-
+ 3 files changed, 960 insertions(+), 941 deletions(-)
 ```
 
 </details>
