@@ -4,7 +4,7 @@ title: "Add homepage hero motion and refresh Pages Actions"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-01T09:49:10.475Z"
+  updated_at: "2026-05-01T09:53:29.047Z"
   updated_by: "CODER"
-  note: "Local verification passed for homepage hero motion, rounded navigation/menu affordances, copy feedback, workflow lint, and Pages action version refresh. Commands run: git diff --check; bunx prettier --check .github/workflows/pages-deploy.yml website/src/pages/index.tsx website/src/pages/_home.module.css website/src/css/custom.css; bunx eslint website/src/pages/index.tsx; bun run docs:site:generate; bun run docs:site:typecheck; bun run docs:ia:check; bun run docs:site:build; bun run docs:site:check:design; bun run workflows:lint; Playwright desktop/mobile local visual checks. Pages action tags confirmed: configure-pages@v6 and deploy-pages@v5 use node24; upload-pages-artifact@v5 delegates to upload-artifact v7. Hosted CI and live deploy verification remain for PR/main."
+  note: "Follow-up CI deprecation verification passed: dorny/paths-filter was updated from v3 to v4 across ci.yml, docs-ci.yml, and prepublish.yml after PR checks surfaced the remaining Node.js 20 annotation. Confirmed dorny/paths-filter@v4 action.yml uses node24; reran bun run workflows:lint successfully. This keeps the deprecation fix complete beyond the Pages actions."
 commit: null
 comments:
   -
@@ -41,8 +41,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local verification passed for homepage hero motion, rounded navigation/menu affordances, copy feedback, workflow lint, and Pages action version refresh. Commands run: git diff --check; bunx prettier --check .github/workflows/pages-deploy.yml website/src/pages/index.tsx website/src/pages/_home.module.css website/src/css/custom.css; bunx eslint website/src/pages/index.tsx; bun run docs:site:generate; bun run docs:site:typecheck; bun run docs:ia:check; bun run docs:site:build; bun run docs:site:check:design; bun run workflows:lint; Playwright desktop/mobile local visual checks. Pages action tags confirmed: configure-pages@v6 and deploy-pages@v5 use node24; upload-pages-artifact@v5 delegates to upload-artifact v7. Hosted CI and live deploy verification remain for PR/main."
+  -
+    type: "verify"
+    at: "2026-05-01T09:53:29.047Z"
+    author: "CODER"
+    state: "ok"
+    note: "Follow-up CI deprecation verification passed: dorny/paths-filter was updated from v3 to v4 across ci.yml, docs-ci.yml, and prepublish.yml after PR checks surfaced the remaining Node.js 20 annotation. Confirmed dorny/paths-filter@v4 action.yml uses node24; reran bun run workflows:lint successfully. This keeps the deprecation fix complete beyond the Pages actions."
 doc_version: 3
-doc_updated_at: "2026-05-01T09:49:10.485Z"
+doc_updated_at: "2026-05-01T09:53:29.104Z"
 doc_updated_by: "CODER"
 description: "Enhance the launch homepage with a restrained looping hero background animation, rounded navigation affordances, and microinteractions; update GitHub Pages workflow actions so deploys no longer warn about Node.js 20 action runtime deprecation."
 sections:
@@ -74,6 +80,14 @@ sections:
     Note: Local verification passed for homepage hero motion, rounded navigation/menu affordances, copy feedback, workflow lint, and Pages action version refresh. Commands run: git diff --check; bunx prettier --check .github/workflows/pages-deploy.yml website/src/pages/index.tsx website/src/pages/_home.module.css website/src/css/custom.css; bunx eslint website/src/pages/index.tsx; bun run docs:site:generate; bun run docs:site:typecheck; bun run docs:ia:check; bun run docs:site:build; bun run docs:site:check:design; bun run workflows:lint; Playwright desktop/mobile local visual checks. Pages action tags confirmed: configure-pages@v6 and deploy-pages@v5 use node24; upload-pages-artifact@v5 delegates to upload-artifact v7. Hosted CI and live deploy verification remain for PR/main.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T09:48:38.572Z, excerpt_hash=sha256:68949e4b84b07b982564c567fec54b5b95b5f550f374ec5ad633796929fc5b62
+    
+    ### 2026-05-01T09:53:29.047Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Follow-up CI deprecation verification passed: dorny/paths-filter was updated from v3 to v4 across ci.yml, docs-ci.yml, and prepublish.yml after PR checks surfaced the remaining Node.js 20 annotation. Confirmed dorny/paths-filter@v4 action.yml uses node24; reran bun run workflows:lint successfully. This keeps the deprecation fix complete beyond the Pages actions.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T09:49:10.485Z, excerpt_hash=sha256:68949e4b84b07b982564c567fec54b5b95b5f550f374ec5ad633796929fc5b62
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -119,6 +133,14 @@ By: CODER
 Note: Local verification passed for homepage hero motion, rounded navigation/menu affordances, copy feedback, workflow lint, and Pages action version refresh. Commands run: git diff --check; bunx prettier --check .github/workflows/pages-deploy.yml website/src/pages/index.tsx website/src/pages/_home.module.css website/src/css/custom.css; bunx eslint website/src/pages/index.tsx; bun run docs:site:generate; bun run docs:site:typecheck; bun run docs:ia:check; bun run docs:site:build; bun run docs:site:check:design; bun run workflows:lint; Playwright desktop/mobile local visual checks. Pages action tags confirmed: configure-pages@v6 and deploy-pages@v5 use node24; upload-pages-artifact@v5 delegates to upload-artifact v7. Hosted CI and live deploy verification remain for PR/main.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T09:48:38.572Z, excerpt_hash=sha256:68949e4b84b07b982564c567fec54b5b95b5f550f374ec5ad633796929fc5b62
+
+### 2026-05-01T09:53:29.047Z — VERIFY — ok
+
+By: CODER
+
+Note: Follow-up CI deprecation verification passed: dorny/paths-filter was updated from v3 to v4 across ci.yml, docs-ci.yml, and prepublish.yml after PR checks surfaced the remaining Node.js 20 annotation. Confirmed dorny/paths-filter@v4 action.yml uses node24; reran bun run workflows:lint successfully. This keeps the deprecation fix complete beyond the Pages actions.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T09:49:10.485Z, excerpt_hash=sha256:68949e4b84b07b982564c567fec54b5b95b5f550f374ec5ad633796929fc5b62
 
 <!-- END VERIFICATION RESULTS -->
 

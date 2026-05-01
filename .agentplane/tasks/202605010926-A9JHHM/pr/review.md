@@ -27,7 +27,7 @@ Enhance the launch homepage with a restrained looping hero background animation,
 ### Current Status
 
 - State: ok
-- Note: Local verification passed for homepage hero motion, rounded navigation/menu affordances, copy feedback, workflow lint, and Pages action version refresh. Commands run: git diff --check; bunx prettier --check .github/workflows/pages-deploy.yml website/src/pages/index.tsx website/src/pages/_home.module.css website/src/css/custom.css; bunx eslint website/src/pages/index.tsx; bun run docs:site:generate; bun run docs:site:typecheck; bun run docs:ia:check; bun run docs:site:build; bun run docs:site:check:design; bun run workflows:lint; Playwright desktop/mobile local visual checks. Pages action tags confirmed: configure-pages@v6 and deploy-pages@v5 use node24; upload-pages-artifact@v5 delegates to upload-artifact v7. Hosted CI and live deploy verification remain for PR/main.
+- Note: Follow-up CI deprecation verification passed: dorny/paths-filter was updated from v3 to v4 across ci.yml, docs-ci.yml, and prepublish.yml after PR checks surfaced the remaining Node.js 20 annotation. Confirmed dorny/paths-filter@v4 action.yml uses node24; reran bun run workflows:lint successfully. This keeps the deprecation fix complete beyond the Pages actions.
 
 ## Risks
 
