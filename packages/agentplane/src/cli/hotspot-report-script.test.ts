@@ -343,10 +343,48 @@ describe("hotspot-report script", () => {
       baselinePath,
       JSON.stringify(
         {
-          schema_version: 1,
+          schema_version: 2,
           threshold_lines: 3,
-          summary: { entries: 1, total_lines: 5 },
+          budgets: { max_entries: 1, max_total_lines: 5, max_file_lines: 8 },
           entries: [{ file: "packages/example/src/large.test.ts", lines: 5 }],
+        },
+        null,
+        2,
+      ),
+    );
+
+    const result = await runBaselineScript([
+      "--root",
+      root,
+      "--baseline",
+      baselinePath,
+      "--threshold-lines",
+      "3",
+    ]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain("Oversized test baseline OK");
+    expect(result.stderr).toBe("");
+  });
+
+  it("allows oversized test file drift only with an explicit per-file cap", async () => {
+    const root = await makeTempRoot("agentplane-hotspot-test-baseline-");
+    await mkdir(path.join(root, "packages", "agentplane", "src"), { recursive: true });
+    await mkdir(path.join(root, "packages", "example", "src"), { recursive: true });
+    await writeFile(path.join(root, "packages", "agentplane", "src", "ok.ts"), "const ok = 1;\n");
+    await writeFile(
+      path.join(root, "packages", "example", "src", "large.test.ts"),
+      Array.from({ length: 6 }, (_, index) => `const testValue${index} = ${index};`).join("\n"),
+    );
+    const baselinePath = path.join(root, "baseline.json");
+    await writeFile(
+      baselinePath,
+      JSON.stringify(
+        {
+          schema_version: 2,
+          threshold_lines: 3,
+          budgets: { max_entries: 1, max_total_lines: 6, max_file_lines: 6 },
+          entries: [{ file: "packages/example/src/large.test.ts", lines: 5, max_lines: 6 }],
         },
         null,
         2,
@@ -385,9 +423,9 @@ describe("hotspot-report script", () => {
       baselinePath,
       JSON.stringify(
         {
-          schema_version: 1,
+          schema_version: 2,
           threshold_lines: 3,
-          summary: { entries: 1, total_lines: 5 },
+          budgets: { max_entries: 1, max_total_lines: 5, max_file_lines: 8 },
           entries: [{ file: "packages/example/src/large.test.ts", lines: 5 }],
         },
         null,
@@ -412,8 +450,8 @@ describe("hotspot-report script", () => {
     expect(result.stderr).toContain(
       "New oversized test without baseline: packages/example/src/new-large.test.ts",
     );
-    expect(result.stderr).toContain("Oversized test entry count grew beyond baseline: 2 > 1");
-    expect(result.stderr).toContain("Oversized test total lines grew beyond baseline: 11 > 5");
+    expect(result.stderr).toContain("Oversized test entry count grew beyond budget: 2 > 1");
+    expect(result.stderr).toContain("Oversized test total lines grew beyond budget: 11 > 5");
   });
 
   it("fails oversized test baseline when aggregate totals grow", async () => {
@@ -430,9 +468,9 @@ describe("hotspot-report script", () => {
       baselinePath,
       JSON.stringify(
         {
-          schema_version: 1,
+          schema_version: 2,
           threshold_lines: 3,
-          summary: { entries: 1, total_lines: 4 },
+          budgets: { max_entries: 1, max_total_lines: 4, max_file_lines: 8 },
           entries: [{ file: "packages/example/src/large.test.ts", lines: 5 }],
         },
         null,
@@ -450,6 +488,6 @@ describe("hotspot-report script", () => {
     ]);
 
     expect(result.exitCode).toBe(1);
-    expect(result.stderr).toContain("Oversized test total lines grew beyond baseline: 5 > 4");
+    expect(result.stderr).toContain("Oversized test total lines grew beyond budget: 5 > 4");
   });
 });
