@@ -1,34 +1,21 @@
 ## Summary
 
-Refine listing wording for repo-local coding-agent work
+Refine the reusable listing submission copy so external PRs do not enumerate specific coding-agent products by default.
 
-Replace listing submission snippets that enumerate Claude Code, Codex, Cursor, and Aider with a source-grounded neutral phrase about repo-local coding-agent work before continuing external listing PRs.
+## Why
 
-## Scope
+The product-specific examples are present in AgentPlane docs and recipes, including the Aider recipe, but that is not the best evidence standard for curated-list submissions. External list copy should avoid implying official integrations unless the target list explicitly asks for examples.
 
-- In scope: Replace listing submission snippets that enumerate Claude Code, Codex, Cursor, and Aider with a source-grounded neutral phrase about repo-local coding-agent work before continuing external listing PRs.
-- Out of scope: unrelated refactors not required for "Refine listing wording for repo-local coding-agent work".
+## Changes
+
+- Updated `docs/listing.md` medium snippet, CLI-list entry, and PR body template to use `repo-local coding-agent work`.
+- Added maintainer guidance to avoid enumerating specific products in external submission copy by default.
+- Already updated the open external PRs:
+  - https://github.com/bradAGI/awesome-cli-coding-agents/pull/71
+  - https://github.com/Picrew/awesome-agent-harness/pull/4
 
 ## Verification
 
-- State: ok
-- Note: Listing wording corrected and external PRs updated.
-- Full verification checklist lives in local review.md.
-
-## Handoff Notes
-
-- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
-
-<details>
-<summary>Raw evidence</summary>
-
-- Updated: 2026-05-01T16:22:06.889Z
-- Branch: task/202605011618-D5MGX8/refine-listing-wording
-- Head: cb029c3d0842
-
-```text
- docs/listing.md | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-```
-
-</details>
+- `git diff --check`
+- `rg -n "Claude Code, Codex, Cursor, Aider|similar coding-agent workflows|CLI coding-agent workflows" docs/listing.md` returned no matches
+- Verified both external PR bodies now render with real line breaks and use `repo-local coding-agent work`
