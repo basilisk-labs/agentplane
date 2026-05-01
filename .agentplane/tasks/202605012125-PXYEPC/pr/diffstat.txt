@@ -1,0 +1,5 @@
+ .github/workflows/publish.yml                      |  49 ++++
+ .../publish-external-distribution-script.test.ts   | 121 ++++++++++
+ .../release/publish-workflow-contract.test.ts      |  31 +++
+ scripts/publish-external-distribution.mjs          | 251 +++++++++++++++++++++
+ 4 files changed, 452 insertions(+)

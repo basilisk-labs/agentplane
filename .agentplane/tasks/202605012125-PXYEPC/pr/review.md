@@ -45,12 +45,16 @@ Publish Homebrew, Scoop, and setup-agentplane outputs to their external reposito
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T21:26:16.551Z
+- Updated: 2026-05-01T21:31:57.672Z
 - Branch: task/202605012125-PXYEPC/external-distribution-publish
-- Head: 0a141dfaeb79
+- Head: 9b6156d62117
 
 ```text
-No changes detected.
+ .github/workflows/publish.yml                      |  49 ++++
+ .../publish-external-distribution-script.test.ts   | 121 ++++++++++
+ .../release/publish-workflow-contract.test.ts      |  31 +++
+ scripts/publish-external-distribution.mjs          | 251 +++++++++++++++++++++
+ 4 files changed, 452 insertions(+)
 ```
 
 </details>
