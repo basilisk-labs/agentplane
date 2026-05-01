@@ -36,6 +36,8 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("node scripts/render-homebrew-formula.mjs");
     expect(workflow).toContain("Render Scoop bucket manifest");
     expect(workflow).toContain("node scripts/render-scoop-manifest.mjs");
+    expect(workflow).toContain("Render setup-agentplane action");
+    expect(workflow).toContain("node scripts/render-setup-agentplane-action.mjs");
     expect(workflow).toContain("Publish GHCR image");
     expect(workflow).toContain("node scripts/render-ghcr-image-metadata.mjs");
     expect(workflow).toContain("docker login ghcr.io");
@@ -56,6 +58,8 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("path: .agentplane/.release/publish/scoop/");
     expect(workflow).toContain("name: ghcr-module");
     expect(workflow).toContain("path: .agentplane/.release/publish/ghcr/");
+    expect(workflow).toContain("name: setup-agentplane-module");
+    expect(workflow).toContain("path: .agentplane/.release/publish/setup-agentplane/");
     expect(workflow).toContain(
       "--distribution-manifest .agentplane/.release/publish/distribution/release-distribution.json",
     );
