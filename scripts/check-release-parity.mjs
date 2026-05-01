@@ -15,7 +15,9 @@ const main = defineCheck({
     process.stdout.write(
       `Release parity check passed (core=${state.coreVersion}, agentplane=${state.agentplaneVersion}, recipes=${state.recipesVersion}, coreDep=${String(
         state.coreDependency,
-      )}, recipesDep=${String(state.recipesDependency)}).\n`,
+      )}, recipesDep=${String(state.recipesDependency)}, recipesRuntime=${String(
+        state.recipesRuntimeVersion?.version,
+      )}).\n`,
     );
   },
 });

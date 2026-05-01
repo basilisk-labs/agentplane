@@ -13,6 +13,7 @@ import {
   replaceAgentplanePackageMetadata,
   replacePackageDependencyVersion,
   replacePackageVersionInFile,
+  replaceRecipesRuntimeVersionInFile,
 } from "../apply.mutation.js";
 import { fileExists } from "../apply.preflight.plan.js";
 import type { ReleaseCommandMutation, ReleaseCommandState } from "../apply.types.js";
@@ -33,10 +34,15 @@ export async function applyReleaseMutation(opts: {
   taskBranchPrefix: string;
 }): Promise<ReleaseCommandMutation> {
   let releaseCommit: { hash: string; subject: string } | null = null;
+  const recipesRuntimeVersionPath = path.join(path.dirname(opts.recipesPkgPath), "src", "index.ts");
+  const shouldUpdateRecipesRuntimeVersion = await fileExists(recipesRuntimeVersionPath);
   await Promise.all([
     replacePackageVersionInFile(opts.corePkgPath, opts.nextVersion),
     replacePackageVersionInFile(opts.recipesPkgPath, opts.nextVersion),
     replaceAgentplanePackageMetadata(opts.agentplanePkgPath, opts.nextVersion),
+    shouldUpdateRecipesRuntimeVersion
+      ? replaceRecipesRuntimeVersionInFile(recipesRuntimeVersionPath, opts.nextVersion)
+      : Promise.resolve(),
   ]);
   const shouldUpdateTestkitAgentplaneDependency =
     (await fileExists(opts.testkitPkgPath)) &&
@@ -68,6 +74,9 @@ export async function applyReleaseMutation(opts: {
     "packages/recipes/package.json",
     path.relative(opts.gitRoot, opts.notesPath),
   ];
+  if (shouldUpdateRecipesRuntimeVersion) {
+    stagePaths.push("packages/recipes/src/index.ts");
+  }
   if (shouldUpdateTestkitAgentplaneDependency || shouldUpdateTestkitCoreDependency) {
     stagePaths.push("packages/testkit/package.json");
   }

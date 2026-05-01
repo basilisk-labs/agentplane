@@ -67,6 +67,12 @@ export async function seedReleaseWorkspace(
     name: "@agentplaneorg/recipes",
     version: recipesVersion,
   });
+  await mkdir(path.join(root, "packages", "recipes", "src"), { recursive: true });
+  await writeFile(
+    path.join(root, "packages", "recipes", "src", "index.ts"),
+    `export const RECIPES_VERSION = "${recipesVersion}";\n`,
+    "utf8",
+  );
   for (const pkg of opts.extraWorkspacePackages ?? []) {
     await writePackageJson(root, pkg.relDir, {
       name: pkg.name,

@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605010644-0B48D4/recipes-version-parity",
+  "created_at": "2026-05-01T07:05:04.801Z",
+  "head_sha": "7663845e669748885f0ad467fa2d11c6c9ca8728",
+  "last_verified_at": "2026-05-01T07:09:45.410Z",
+  "last_verified_sha": "cc1c5c42fc699120676c5e4eec89b9e10c6d33a3",
+  "schema_version": 1,
+  "task_id": "202605010644-0B48D4",
+  "updated_at": "2026-05-01T07:10:12.749Z",
+  "verify": {
+    "status": "pass"
+  }
+}

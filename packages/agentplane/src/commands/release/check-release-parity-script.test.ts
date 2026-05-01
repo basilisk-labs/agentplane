@@ -41,6 +41,29 @@ describe("check-release-parity script", () => {
     await expect(execFileAsync("node", [SCRIPT_PATH], { cwd: root })).resolves.toBeDefined();
   });
 
+  it("fails when the recipes runtime version constant drifts from package version", async () => {
+    const root = await initReleaseWorkspace({
+      prefix: "agentplane-release-parity-",
+      coreVersion: "2.3.4",
+      cliVersion: "2.3.4",
+      recipesVersion: "2.3.4",
+      dependencyVersion: "2.3.4",
+      recipesDependencyVersion: "2.3.4",
+    });
+    await writeFile(
+      path.join(root, "packages", "recipes", "src", "index.ts"),
+      'export const RECIPES_VERSION = "2.3.3";\n',
+      "utf8",
+    );
+
+    const result = await runParity(root);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain(
+      "packages/recipes/src/index.ts RECIPES_VERSION=2.3.3 does not match packages/recipes version 2.3.4",
+    );
+  });
+
   it("passes when the v0.3 freeze artifact references the current package version", async () => {
     const root = await initReleaseWorkspace({
       prefix: "agentplane-release-parity-",
