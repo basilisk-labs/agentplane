@@ -1,10 +1,11 @@
 ---
 id: "202605010748-NXZF00"
 title: "Replace recipes catalog with code map recipe"
-status: "DOING"
+result_summary: "Merged via PR #658."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-01T08:04:20.789Z"
   updated_by: "CODER"
   note: "Verified code-map recipe catalog replacement: list-remote with dev public-key override passed; local archive install passed; init --recipes code-map vendored the recipe and generated prompt graph included recipe.code-map/policy/.agentplane/policy/body/code-map-discipline; bun run ci:recipes passed; bun run docs:recipes:check passed; policy routing passed."
-commit: null
+commit:
+  hash: "0ad3d226795348b90f36f72103eb2e9fd6e8d1e8"
+  message: "Merge pull request #658 from basilisk-labs/task/202605010748-NXZF00/close-fix"
 comments:
   -
     author: "CODER"
     body: "Start: Replace bundled recipes with one small code-map recipe and validate install/init behavior against the current AgentPlane runtime."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #658 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified code-map recipe catalog replacement: list-remote with dev public-key override passed; local archive install passed; init --recipes code-map vendored the recipe and generated prompt graph included recipe.code-map/policy/.agentplane/policy/body/code-map-discipline; bun run ci:recipes passed; bun run docs:recipes:check passed; policy routing passed."
+  -
+    type: "status"
+    at: "2026-05-01T09:03:40.245Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #658 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T08:04:20.823Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T09:03:40.250Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove existing bundled recipes and publish one small recipe that changes agent behavior by requiring a code-map check/update loop."
 sections:
   Summary: |-
