@@ -1,0 +1,1 @@
+ci/frontend: Add homepage hero motion and refresh Pages Actions (A9JHHM)
