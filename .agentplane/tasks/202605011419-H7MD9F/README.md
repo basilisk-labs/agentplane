@@ -1,10 +1,11 @@
 ---
 id: "202605011419-H7MD9F"
 title: "Prepare v0.4.1 patch release"
-status: "DOING"
+result_summary: "Merged via PR #713."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "e744dbc3e030c699b6c587af8b1d2c44ca10e33a"
+  message: "Merge pull request #713 from basilisk-labs/task/202605011419-H7MD9F/v0-4-1-release-candidate"
 comments:
   -
     author: "CODER"
     body: "Start: preparing the v0.4.1 branch_pr release candidate from current main, with release plan, notes, parity/prepublish checks, PR publication, and hosted publish evidence as the acceptance boundary."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #713 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -35,9 +41,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: preparing the v0.4.1 branch_pr release candidate from current main, with release plan, notes, parity/prepublish checks, PR publication, and hosted publish evidence as the acceptance boundary."
+  -
+    type: "status"
+    at: "2026-05-01T17:59:37.762Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #713 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T14:55:47.195Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T17:59:37.767Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prepare the v0.4.1 release candidate from current main, including release plan, release notes, version parity, candidate branch, PR, hosted checks, and publication readiness evidence."
 sections:
   Summary: |-
