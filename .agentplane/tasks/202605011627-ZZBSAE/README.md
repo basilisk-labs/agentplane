@@ -1,10 +1,11 @@
 ---
 id: "202605011627-ZZBSAE"
 title: "Update release distribution docs and DoD"
-status: "DOING"
+result_summary: "Merged via PR #730."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -29,11 +30,16 @@ verification:
   updated_at: "2026-05-01T18:15:24.568Z"
   updated_by: "DOCS"
   note: "Release distribution docs now match the merged modular publish workflow and v0.4.1 notes include GHCR/setup-action release surface."
-commit: null
+commit:
+  hash: "bc7fce2b4066ae76fe40854797002dbf869b9487"
+  message: "Merge pull request #730 from basilisk-labs/task/202605011627-ZZBSAE/release-distribution-docs"
 comments:
   -
     author: "DOCS"
     body: "Start: align release distribution documentation and DoD with the shipped modular publish workflow."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #730 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Release distribution docs now match the merged modular publish workflow and v0.4.1 notes include GHCR/setup-action release surface."
+  -
+    type: "status"
+    at: "2026-05-01T18:18:12.885Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #730 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T18:15:24.575Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-01T18:18:12.889Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update public and developer docs so the next release checklist explains npm, GitHub assets, Homebrew tap, Scoop bucket, GHCR image, setup-agentplane, recovery, and evidence expectations."
 sections:
   Summary: |-

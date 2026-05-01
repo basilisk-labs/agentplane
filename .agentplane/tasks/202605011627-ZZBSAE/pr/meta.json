@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T18:17:38Z",
   "base": "main",
   "branch": "task/202605011627-ZZBSAE/release-distribution-docs",
   "created_at": "2026-05-01T18:11:34.746Z",
-  "head_sha": "b98e017935c4324fb267450fb774dc6170f1071c",
+  "head_sha": "ada127be4e6b09ce7255ac63481594cc670a5d3b",
   "last_verified_at": "2026-05-01T18:15:24.568Z",
   "last_verified_sha": "ef204e16d5a34b715a6e4d31b7840a2fcda9c01a",
+  "merge_commit": "bc7fce2b4066ae76fe40854797002dbf869b9487",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T18:17:38Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605011627-ZZBSAE",
-  "updated_at": "2026-05-01T18:15:36.014Z",
+  "updated_at": "2026-05-01T18:17:38Z",
   "verify": {
     "status": "pass"
   }
