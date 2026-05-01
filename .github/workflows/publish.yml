@@ -268,12 +268,16 @@ jobs:
           else
             echo "tag_exists=false" >> "$GITHUB_OUTPUT"
           fi
-      - name: Build upgrade bundle assets
+      - name: Generate release distribution assets
         shell: bash
         run: |
           set -euo pipefail
-          tar -czf agentplane-upgrade.tar.gz -C packages/agentplane/assets .
-          sha256sum agentplane-upgrade.tar.gz > agentplane-upgrade.tar.gz.sha256
+          node scripts/generate-release-distribution.mjs \
+            --out .agentplane/.release/publish/distribution \
+            --version "${{ needs.detect.outputs.version }}" \
+            --tag "${{ needs.detect.outputs.tag }}" \
+            --sha "${{ needs.detect.outputs.sha }}" \
+            --repo "${{ github.repository }}"
       - name: Write npm auth config
         shell: bash
         run: |
@@ -330,8 +334,12 @@ jobs:
           tag_name: ${{ needs.detect.outputs.tag }}
           body_path: docs/releases/${{ needs.detect.outputs.tag }}.md
           files: |
-            agentplane-upgrade.tar.gz
-            agentplane-upgrade.tar.gz.sha256
+            .agentplane/.release/publish/distribution/agentplane-upgrade.tar.gz
+            .agentplane/.release/publish/distribution/agentplane-upgrade.tar.gz.sha256
+            .agentplane/.release/publish/distribution/install.sh
+            .agentplane/.release/publish/distribution/install.ps1
+            .agentplane/.release/publish/distribution/SHA256SUMS
+            .agentplane/.release/publish/distribution/release-distribution.json
       - name: Write publish-result manifest
         if: always()
         shell: bash

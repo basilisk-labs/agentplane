@@ -25,18 +25,20 @@ Grouping policy: `ci`, `release`, `docs`, `test`, `coverage`, `arch`, `bench`, `
 
 ## Release
 
-| Script                     | Command                                                                                                                                                           | Purpose                                 |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| `release:check`            | `bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && bun run --filter=@agentplane/testkit build && node scripts/release-check.mjs` | Run release workflow: check.            |
-| `release:check:registry`   | `node scripts/check-npm-version-availability.mjs`                                                                                                                 | Run release workflow: check registry.   |
-| `release:ci-check`         | `bun run ci:contract && bun run ci:release-extras`                                                                                                                | Run release workflow: ci-check.         |
-| `release:e2e:local`        | `node scripts/run-local-release-e2e.mjs`                                                                                                                          | Run release workflow: e2e local.        |
-| `release:parity`           | `node scripts/check-release-parity.mjs`                                                                                                                           | Run release workflow: parity.           |
-| `release:prepublish`       | `bun run release:prepublish:fast && bun run release:prepublish:heavy`                                                                                             | Run release workflow: prepublish.       |
-| `release:prepublish:fast`  | `bun run release:check`                                                                                                                                           | Run release workflow: prepublish fast.  |
-| `release:prepublish:heavy` | `bun run release:ci-check`                                                                                                                                        | Run release workflow: prepublish heavy. |
-| `release:recover`          | `node scripts/check-release-recovery-state.mjs`                                                                                                                   | Run release workflow: recover.          |
-| `release:smoke:published`  | `node scripts/check-published-packages.mjs`                                                                                                                       | Run release workflow: smoke published.  |
+| Script                          | Command                                                                                                                                                           | Purpose                                      |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `release:check`                 | `bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && bun run --filter=@agentplane/testkit build && node scripts/release-check.mjs` | Run release workflow: check.                 |
+| `release:check:registry`        | `node scripts/check-npm-version-availability.mjs`                                                                                                                 | Run release workflow: check registry.        |
+| `release:ci-check`              | `bun run ci:contract && bun run ci:release-extras`                                                                                                                | Run release workflow: ci-check.              |
+| `release:distribution:check`    | `node scripts/generate-release-distribution.mjs --check`                                                                                                          | Run release workflow: distribution check.    |
+| `release:distribution:generate` | `node scripts/generate-release-distribution.mjs`                                                                                                                  | Run release workflow: distribution generate. |
+| `release:e2e:local`             | `node scripts/run-local-release-e2e.mjs`                                                                                                                          | Run release workflow: e2e local.             |
+| `release:parity`                | `node scripts/check-release-parity.mjs`                                                                                                                           | Run release workflow: parity.                |
+| `release:prepublish`            | `bun run release:prepublish:fast && bun run release:prepublish:heavy`                                                                                             | Run release workflow: prepublish.            |
+| `release:prepublish:fast`       | `bun run release:check`                                                                                                                                           | Run release workflow: prepublish fast.       |
+| `release:prepublish:heavy`      | `bun run release:ci-check`                                                                                                                                        | Run release workflow: prepublish heavy.      |
+| `release:recover`               | `node scripts/check-release-recovery-state.mjs`                                                                                                                   | Run release workflow: recover.               |
+| `release:smoke:published`       | `node scripts/check-published-packages.mjs`                                                                                                                       | Run release workflow: smoke published.       |
 
 ## Docs
 
