@@ -1,10 +1,11 @@
 ---
 id: "202605012054-HS993A"
 title: "Fix publish evidence GH auth"
-status: "DOING"
+result_summary: "Merged via PR #734."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T20:55:55.110Z"
   updated_by: "CODER"
   note: "Passed publish workflow contract test, workflow command contract, lint, routing, diff check, and doctor."
-commit: null
+commit:
+  hash: "c329da9be70f46f70224d6117c44dce1c9f7f008"
+  message: "release: Authenticate publish evidence gh steps (HS993A)"
 comments:
   -
     author: "CODER"
     body: "Start: fix publish workflow release evidence gh authentication after successful publication."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #734 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Passed publish workflow contract test, workflow command contract, lint, routing, diff check, and doctor."
+  -
+    type: "status"
+    at: "2026-05-01T21:00:23.947Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #734 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T20:55:55.146Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T21:00:23.953Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make post-publish release evidence PR recovery authenticate gh so successful releases do not end as failed after publication."
 sections:
   Summary: |-
