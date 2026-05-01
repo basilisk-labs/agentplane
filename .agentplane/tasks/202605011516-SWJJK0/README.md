@@ -1,10 +1,11 @@
 ---
 id: "202605011516-SWJJK0"
 title: "Add AgentPlane to walkinglabs awesome-harness-engineering"
-status: "DOING"
+result_summary: "Merged via PR #706."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-01T16:54:45.896Z"
   updated_by: "DOCS"
   note: "External walkinglabs PR opened and body formatting verified."
-commit: null
+commit:
+  hash: "5e3e231c287d469bd3d31a87352c5be795083008"
+  message: "Merge pull request #706 from basilisk-labs/task/202605011516-SWJJK0/walkinglabs-awesome-harness-engineering"
 comments:
   -
     author: "DOCS"
     body: "Start: inspect walkinglabs scope and submit AgentPlane only if it fits as a repo-local reliability/control primitive for coding-agent work."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #706 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "External walkinglabs PR opened and body formatting verified."
+  -
+    type: "status"
+    at: "2026-05-01T16:57:38.697Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #706 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T16:54:45.901Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-01T16:57:38.702Z"
+doc_updated_by: "INTEGRATOR"
 description: "Submit a GitHub PR adding AgentPlane to walkinglabs/awesome-harness-engineering as a reliability and workflow-control primitive after verifying the stricter inclusion scope and current section structure."
 sections:
   Summary: |-
