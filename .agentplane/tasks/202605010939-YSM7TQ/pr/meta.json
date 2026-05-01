@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T10:08:24Z",
   "base": "main",
   "branch": "task/202605010939-YSM7TQ/recipes-signing-rotation",
   "created_at": "2026-05-01T09:41:47.808Z",
-  "head_sha": "3fc930da98f1301ec306eca0056def1b6d931fa2",
+  "head_sha": "273ff7f0acb21a79dceedc0712f6c505deb55c52",
   "last_verified_at": "2026-05-01T10:02:28.936Z",
   "last_verified_sha": "3fc930da98f1301ec306eca0056def1b6d931fa2",
+  "merge_commit": "c2ee38f626a45a38e372020831e4744ade5886a0",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T10:08:24Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010939-YSM7TQ",
-  "updated_at": "2026-05-01T10:00:31.203Z",
+  "updated_at": "2026-05-01T10:08:24Z",
   "verify": {
     "status": "pass"
   }
