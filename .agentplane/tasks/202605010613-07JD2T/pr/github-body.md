@@ -27,15 +27,10 @@ Update the agentplane-recipes submodule catalog so bundled recipes validate and 
 - Head: 9593bbc7fd65
 
 ```text
- .agentplane/policy/incidents.md                         |  3 ++-
- agentplane-recipes                                      |  2 +-
- docs/recipes-inventory.json                             | 13 +++++--------
- packages/agentplane/assets/AGENTS.md                    |  8 ++++----
- packages/agentplane/assets/policy/incidents.md          |  3 ++-
- packages/agentplane/src/runtime/prompt-modules/index.ts |  4 +---
- scripts/check-oversized-test-baseline.mjs               |  2 +-
- website/src/data/homepage-content.ts                    |  2 +-
- 8 files changed, 17 insertions(+), 20 deletions(-)
+ agentplane-recipes                        |  2 +-
+ docs/recipes-inventory.json               | 13 +++++--------
+ scripts/check-oversized-test-baseline.mjs |  2 +-
+ 3 files changed, 7 insertions(+), 10 deletions(-)
 ```
 
 </details>
