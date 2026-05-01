@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T07:12:49Z",
   "base": "main",
   "branch": "task/202605010644-0B48D4/recipes-version-parity",
   "created_at": "2026-05-01T07:05:04.801Z",
-  "head_sha": "7663845e669748885f0ad467fa2d11c6c9ca8728",
+  "head_sha": "fb7fa7db0c630beb00c8b8380783ba0f9b9f90c1",
   "last_verified_at": "2026-05-01T07:09:45.410Z",
   "last_verified_sha": "cc1c5c42fc699120676c5e4eec89b9e10c6d33a3",
+  "merge_commit": "96d1cbac3a539239633ac58f77f2fdcfaf844b45",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T07:12:49Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010644-0B48D4",
-  "updated_at": "2026-05-01T07:10:12.749Z",
+  "updated_at": "2026-05-01T07:12:49Z",
   "verify": {
     "status": "pass"
   }

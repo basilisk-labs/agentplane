@@ -1,10 +1,11 @@
 ---
 id: "202605010644-0B48D4"
 title: "AP-02: Guard recipes runtime version parity"
-status: "DOING"
+result_summary: "Merged via PR #643."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T07:09:45.410Z"
   updated_by: "CODER"
   note: "Verified recipes runtime version parity with: bun run release:parity; bun run test:project -- recipes; bunx vitest run packages/agentplane/src/commands/release/check-release-parity-script.test.ts --testTimeout 60000 --hookTimeout 60000; bunx vitest run packages/agentplane/src/commands/release/apply.test.ts --testNamePattern 'bumps versions, commits, and tags using the latest plan' --testTimeout 180000 --hookTimeout 180000; bun run typecheck; bunx prettier --check touched files; git diff --check; bun run framework:dev:bootstrap."
-commit: null
+commit:
+  hash: "96d1cbac3a539239633ac58f77f2fdcfaf844b45"
+  message: "Merge pull request #643 from basilisk-labs/task/202605010644-0B48D4/recipes-version-parity"
 comments:
   -
     author: "CODER"
     body: "Start: align recipes runtime RECIPES_VERSION with package version and add release parity coverage so future bumps update both surfaces."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #643 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified recipes runtime version parity with: bun run release:parity; bun run test:project -- recipes; bunx vitest run packages/agentplane/src/commands/release/check-release-parity-script.test.ts --testTimeout 60000 --hookTimeout 60000; bunx vitest run packages/agentplane/src/commands/release/apply.test.ts --testNamePattern 'bumps versions, commits, and tags using the latest plan' --testTimeout 180000 --hookTimeout 180000; bun run typecheck; bunx prettier --check touched files; git diff --check; bun run framework:dev:bootstrap."
+  -
+    type: "status"
+    at: "2026-05-01T07:13:30.594Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #643 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T07:09:45.416Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T07:13:30.600Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix RECIPES_VERSION drift and make release parity catch future runtime constant mismatches."
 sections:
   Summary: |-
