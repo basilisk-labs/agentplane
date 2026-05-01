@@ -319,7 +319,10 @@ const SIGNIFICANT_COVERAGE_FILES = [
   "packages/agentplane/src/commands/guard/impl/policy.test.ts",
   "packages/agentplane/src/commands/guard/impl/comment-commit.test.ts",
   "packages/agentplane/src/cli/run-cli.core.guard.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.close.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.env.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.policy.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.refresh.test.ts",
 ];
 
 const WORKFLOW_COVERAGE_FILES = discoverTests(

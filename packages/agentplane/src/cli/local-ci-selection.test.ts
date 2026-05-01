@@ -367,13 +367,16 @@ describe("local CI fast selection", () => {
 
   it("routes the split guard commit-wrapper suite to the guard bucket", () => {
     const plan = selectFastCiPlan([
-      "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.close.test.ts",
     ]);
     expect(plan.kind).toBe("targeted");
     expect(plan.bucket).toBe("guard");
     expect(plan.reason).toBe("guard_paths_only");
     expect(plan.testFiles).toContain(
-      "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.close.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.refresh.test.ts",
     );
   });
 
