@@ -36,6 +36,31 @@ Treat `key_id` as a key-selection label, not as an algorithm selector. Key rotat
 from algorithm rotation: a new Ed25519 key can be added under a new `key_id` without changing the
 algorithm policy.
 
+## Key Custody And Rotation
+
+The active production recipes index key is `2026-05`. The previous `2026-02` public key remains in
+the verifier keyring only to validate older cached or archived indexes; it must not be used for new
+catalog signatures.
+
+Production private keys must not be committed, stored in `.env`, copied into release artifacts, or
+kept in long-lived local filesystem paths. The only approved online storage location is the
+`RECIPES_INDEX_SIGNING_PRIVATE_KEY` GitHub Actions secret in the `basilisk-labs/agentplane-recipes`
+repository. Local private-key material may exist only as an ephemeral process value or temporary file
+while setting that secret or performing emergency signing, and must be deleted immediately.
+
+Rotation sequence:
+
+1. Generate a new Ed25519 key pair and assign a new date-based `key_id`.
+2. Store the private key as `RECIPES_INDEX_SIGNING_PRIVATE_KEY` in `agentplane-recipes`.
+3. Commit the public key in `agentplane-recipes/keys/` and add it to AgentPlane's trusted recipes
+   keyring.
+4. Publish an AgentPlane CLI release that contains the new trust-root before switching the default
+   remote catalog signature to the new `key_id`.
+5. Re-sign `agentplane-recipes/index.json` with the new `key_id`, publish the catalog, and verify a
+   clean `agentplane recipes list-remote --refresh --yes` without key overrides.
+6. Keep the previous public key for one compatibility window, then remove it only in a later release
+   after cached-index compatibility is no longer required.
+
 Future signature envelope revisions should add `created_at` as signing metadata. Once present,
 verifiers should reject malformed timestamps and may use them for freshness policy, but `created_at`
 must not replace cryptographic verification or `key_id` lookup.

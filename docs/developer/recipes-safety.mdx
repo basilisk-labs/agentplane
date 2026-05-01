@@ -30,6 +30,10 @@ project runtime.
 - Keep secrets in `.env` or environment variables, not in recipe files.
 - Never store tokens in committed recipe manifests or scenario definitions.
 - Redact sensitive values from logs and reports.
+- Exception: production recipes index signing private keys must not be stored in project `.env`
+  files. Keep them only in the `agentplane-recipes` GitHub Actions secret
+  `RECIPES_INDEX_SIGNING_PRIVATE_KEY`, with public keys committed separately for verifier trust-root
+  updates.
 
 ## Execution review
 
