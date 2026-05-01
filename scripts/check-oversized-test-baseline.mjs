@@ -8,7 +8,7 @@ const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "..");
 const DEFAULT_BASELINE_PATH = path.join(repoRoot, "scripts", "oversized-test-baseline.json");
 const DEFAULT_THRESHOLD_LINES = 1000;
-const BASELINE_SCHEMA_VERSION = 1;
+const BASELINE_SCHEMA_VERSION = 2;
 
 function printHelp() {
   process.stdout.write(
@@ -31,6 +31,25 @@ function parsePositiveInt(flag, raw) {
     throw new Error(`Invalid value for ${flag}: ${raw} (expected integer >= 1)`);
   }
   return parsed;
+}
+
+function requireRecord(raw, field) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+    throw new TypeError(`Invalid oversized test baseline: ${field} must be an object`);
+  }
+  return raw;
+}
+
+function requirePositiveInt(raw, field) {
+  if (!Number.isInteger(raw) || raw < 1) {
+    throw new TypeError(`Invalid oversized test baseline: ${field} must be an integer >= 1`);
+  }
+  return raw;
+}
+
+function optionalPositiveInt(raw, field) {
+  if (raw === undefined) return undefined;
+  return requirePositiveInt(raw, field);
 }
 
 export function parseArgs(argv) {
@@ -91,18 +110,21 @@ function readBaseline(baselinePath) {
   if (!Array.isArray(raw.entries)) {
     throw new TypeError("Invalid oversized test baseline: entries must be an array");
   }
+  const budgets = requireRecord(raw.budgets, "budgets");
   return {
-    thresholdLines: Number(raw.threshold_lines),
-    summary:
-      raw.summary && typeof raw.summary === "object"
-        ? {
-            entries: Number(raw.summary.entries),
-            totalLines: Number(raw.summary.total_lines),
-          }
-        : null,
+    thresholdLines: requirePositiveInt(Number(raw.threshold_lines), "threshold_lines"),
+    budgets: {
+      maxEntries: requirePositiveInt(Number(budgets.max_entries), "budgets.max_entries"),
+      maxTotalLines: requirePositiveInt(Number(budgets.max_total_lines), "budgets.max_total_lines"),
+      maxFileLines: requirePositiveInt(Number(budgets.max_file_lines), "budgets.max_file_lines"),
+    },
     entries: raw.entries.map((entry) => ({
       file: String(entry.file),
-      lines: Number(entry.lines),
+      lines: requirePositiveInt(Number(entry.lines), `entries.${String(entry.file)}.lines`),
+      maxLines: optionalPositiveInt(
+        entry.max_lines === undefined ? undefined : Number(entry.max_lines),
+        `entries.${String(entry.file)}.max_lines`,
+      ),
     })),
   };
 }
@@ -139,17 +161,37 @@ export function validateOversizedTestBaseline({ baseline, current, thresholdLine
       errors.push(`Duplicate baseline entry: ${entry.file}`);
       continue;
     }
-    baselineByFile.set(entry.file, entry.lines);
+    if (entry.maxLines !== undefined && entry.maxLines < entry.lines) {
+      errors.push(
+        `Invalid baseline entry: ${entry.file} has max_lines ${entry.maxLines} below baseline lines ${entry.lines}`,
+      );
+      continue;
+    }
+    if (entry.maxLines !== undefined && entry.maxLines > baseline.budgets.maxFileLines) {
+      errors.push(
+        `Invalid baseline entry: ${entry.file} max_lines ${entry.maxLines} exceeds max_file_lines ${baseline.budgets.maxFileLines}`,
+      );
+      continue;
+    }
+    baselineByFile.set(entry.file, entry);
   }
 
   const currentByFile = new Map(current.map((entry) => [entry.file, entry.lines]));
   for (const entry of current) {
-    const baselineLines = baselineByFile.get(entry.file);
-    if (baselineLines === undefined) {
+    const baselineEntry = baselineByFile.get(entry.file);
+    if (baselineEntry === undefined) {
       errors.push(`New oversized test without baseline: ${entry.file} (${entry.lines} lines)`);
-    } else if (entry.lines > baselineLines) {
+      continue;
+    }
+    if (entry.lines > baseline.budgets.maxFileLines) {
       errors.push(
-        `Oversized test grew beyond baseline: ${entry.file} (${entry.lines} > ${baselineLines} lines)`,
+        `Oversized test exceeds max_file_lines budget: ${entry.file} (${entry.lines} > ${baseline.budgets.maxFileLines} lines)`,
+      );
+    }
+    const maxLines = baselineEntry.maxLines ?? baselineEntry.lines;
+    if (entry.lines > maxLines) {
+      errors.push(
+        `Oversized test grew beyond baseline: ${entry.file} (${entry.lines} > ${maxLines} lines)`,
       );
     }
   }
@@ -172,24 +214,15 @@ function summarizeEntries(entries) {
 
 function validateOversizedTestSummary({ baseline, current }) {
   const errors = [];
-  if (!baseline.summary) return errors;
-  if (!Number.isInteger(baseline.summary.entries) || baseline.summary.entries < 0) {
-    errors.push("Invalid baseline summary: entries must be a non-negative integer");
-  }
-  if (!Number.isInteger(baseline.summary.totalLines) || baseline.summary.totalLines < 0) {
-    errors.push("Invalid baseline summary: total_lines must be a non-negative integer");
-  }
-  if (errors.length > 0) return errors;
-
   const currentSummary = summarizeEntries(current);
-  if (currentSummary.entries > baseline.summary.entries) {
+  if (currentSummary.entries > baseline.budgets.maxEntries) {
     errors.push(
-      `Oversized test entry count grew beyond baseline: ${currentSummary.entries} > ${baseline.summary.entries}`,
+      `Oversized test entry count grew beyond budget: ${currentSummary.entries} > ${baseline.budgets.maxEntries}`,
     );
   }
-  if (currentSummary.totalLines > baseline.summary.totalLines) {
+  if (currentSummary.totalLines > baseline.budgets.maxTotalLines) {
     errors.push(
-      `Oversized test total lines grew beyond baseline: ${currentSummary.totalLines} > ${baseline.summary.totalLines}`,
+      `Oversized test total lines grew beyond budget: ${currentSummary.totalLines} > ${baseline.budgets.maxTotalLines}`,
     );
   }
   return errors;

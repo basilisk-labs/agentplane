@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605010644-1YXBE7/oversized-test-guard",
+  "created_at": "2026-05-01T06:55:38.929Z",
+  "head_sha": "dd38c6d5b384248f027212e6248a445f221a7fab",
+  "last_verified_at": "2026-05-01T06:59:34.260Z",
+  "last_verified_sha": "dd38c6d5b384248f027212e6248a445f221a7fab",
+  "schema_version": 1,
+  "task_id": "202605010644-1YXBE7",
+  "updated_at": "2026-05-01T06:55:38.929Z",
+  "verify": {
+    "status": "pass"
+  }
+}

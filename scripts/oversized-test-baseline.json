@@ -1,6 +1,11 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "threshold_lines": 1000,
+  "budgets": {
+    "max_entries": 16,
+    "max_total_lines": 18419,
+    "max_file_lines": 1300
+  },
   "entries": [
     {
       "file": "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
@@ -40,7 +45,8 @@
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.tasks.query-run-prepare.test.ts",
-      "lines": 1081
+      "lines": 1081,
+      "max_lines": 1090
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.test.ts",
@@ -66,9 +72,5 @@
       "file": "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
       "lines": 1038
     }
-  ],
-  "summary": {
-    "entries": 16,
-    "total_lines": 18419
-  }
+  ]
 }
