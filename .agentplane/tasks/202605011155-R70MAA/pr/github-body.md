@@ -22,12 +22,15 @@ Move repeated task run/query setup into @agentplane/testkit cli-core-tasks-query
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-01T11:56:08.432Z
+- Updated: 2026-05-01T11:59:43.063Z
 - Branch: task/202605011155-R70MAA/task-query-fixtures-follow-up
-- Head: c3eb859d16e9
+- Head: 071f4ad5d136
 
 ```text
-No changes detected.
+ ...run-cli.core.tasks.query-run-inspection.test.ts | 112 ++---------
+ .../run-cli.core.tasks.query-run-prepare.test.ts   | 221 ++++-----------------
+ .../testkit/src/cli-core-tasks-query.fixtures.ts   |  71 ++++++-
+ 3 files changed, 127 insertions(+), 277 deletions(-)
 ```
 
 </details>
