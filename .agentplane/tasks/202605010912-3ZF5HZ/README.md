@@ -1,10 +1,11 @@
 ---
 id: "202605010912-3ZF5HZ"
 title: "Refresh npm package README metadata"
-status: "DOING"
+result_summary: "Merged via PR #679."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-01T09:16:37.890Z"
   updated_by: "DOCS"
   note: "Checks passed: node .agentplane/policy/check-routing.mjs; agentplane doctor; npm pack --json --dry-run --ignore-scripts in packages/agentplane; bunx prettier --check packages/agentplane/README.md packages/agentplane/package.json; git diff --check; local doc target existence check."
-commit: null
+commit:
+  hash: "4ff9547b5a63f54c336c755d51228ec277e93967"
+  message: "docs: Refresh npm README metadata (3ZF5HZ)"
 comments:
   -
     author: "DOCS"
     body: "Start: Refreshing npm package README and homepage metadata in a dedicated branch_pr worktree, scoped to package documentation and publish metadata only."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #679 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Checks passed: node .agentplane/policy/check-routing.mjs; agentplane doctor; npm pack --json --dry-run --ignore-scripts in packages/agentplane; bunx prettier --check packages/agentplane/README.md packages/agentplane/package.json; git diff --check; local doc target existence check."
+  -
+    type: "status"
+    at: "2026-05-01T11:45:16.423Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #679 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T09:16:37.899Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-01T11:45:16.428Z"
+doc_updated_by: "INTEGRATOR"
 description: "Rewrite the npm-published package README to match the root README's usable onboarding shape and correct the package homepage metadata without publishing a new version."
 sections:
   Summary: |-
