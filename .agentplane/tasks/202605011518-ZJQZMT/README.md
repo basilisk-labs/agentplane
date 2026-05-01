@@ -1,10 +1,11 @@
 ---
 id: "202605011518-ZJQZMT"
 title: "Add AgentPlane to AutoJunjie awesome-agent-harness"
-status: "DOING"
+result_summary: "Merged via PR #704."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-01T16:48:36.396Z"
   updated_by: "DOCS"
   note: "External AutoJunjie PR opened and body formatting verified."
-commit: null
+commit:
+  hash: "cbb8761ff63a0d51fb1d664fa545114de69716ca"
+  message: "Merge pull request #704 from basilisk-labs/task/202605011518-ZJQZMT/autojunjie-awesome-agent-harness"
 comments:
   -
     author: "DOCS"
     body: "Start: submit AgentPlane to AutoJunjie/awesome-agent-harness with repo-local coding-agent harness positioning and verified PR body formatting."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #704 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "External AutoJunjie PR opened and body formatting verified."
+  -
+    type: "status"
+    at: "2026-05-01T16:51:52.501Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #704 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T16:48:36.403Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-01T16:51:52.506Z"
+doc_updated_by: "INTEGRATOR"
 description: "Submit a GitHub PR adding AgentPlane to AutoJunjie/awesome-agent-harness as a Git-native coding-agent harness after verifying the current repository structure and list formatting."
 sections:
   Summary: |-
