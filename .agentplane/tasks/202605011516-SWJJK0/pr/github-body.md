@@ -1,33 +1,21 @@
 ## Summary
 
-Add AgentPlane to walkinglabs awesome-harness-engineering
+Record the AgentPlane submission to walkinglabs/awesome-harness-engineering.
 
-Submit a GitHub PR adding AgentPlane to walkinglabs/awesome-harness-engineering as a reliability and workflow-control primitive after verifying the stricter inclusion scope and current section structure.
+External PR: https://github.com/walkinglabs/awesome-harness-engineering/pull/21
 
-## Scope
+## Placement
 
-- In scope: Submit a GitHub PR adding AgentPlane to walkinglabs/awesome-harness-engineering as a reliability and workflow-control primitive after verifying the stricter inclusion scope and current section structure.
-- Out of scope: unrelated refactors not required for "Add AgentPlane to walkinglabs awesome-harness-engineering".
+- Category: `Runtimes, Harnesses & Reference Implementations`
+- Change: one `README.md` entry
+- Positioning: AgentPlane is described as an inspectable workflow-control harness and reliability primitive, not generic agent tooling.
+
+## Entry
+
+AgentPlane - Git-native workflow control harness for repo-local coding-agent work. It makes task records, workflow policy, verification evidence, and closure state explicit repo artifacts, which is useful for auditable and resumable agent work.
 
 ## Verification
 
-- State: ok
-- Note: External walkinglabs PR opened and body formatting verified.
-- Full verification checklist lives in local review.md.
-
-## Handoff Notes
-
-- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
-
-<details>
-<summary>Raw evidence</summary>
-
-- Updated: 2026-05-01T16:53:03.007Z
-- Branch: task/202605011516-SWJJK0/walkinglabs-awesome-harness-engineering
-- Head: 16465a45d0eb
-
-```text
-No changes detected.
-```
-
-</details>
+- External fork check: `git diff --check`
+- PR body check: `gh pr view 21 --repo walkinglabs/awesome-harness-engineering --json body` confirmed real Markdown line breaks, not escaped `\n`
+- Task verification: `agentplane verify 202605011516-SWJJK0 --ok --by DOCS`
