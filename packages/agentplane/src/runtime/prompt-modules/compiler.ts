@@ -3,7 +3,6 @@ import type {
   PromptModuleAddress,
   PromptModuleGraph,
   PromptModuleLoadCondition,
-  PromptModuleMutability,
 } from "./model.js";
 import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "./schema.js";
 import { mergeDuplicateNodes } from "./compiler.merge.js";
@@ -13,13 +12,12 @@ import {
   uniqueStrings,
   type WorkingPromptModuleNode,
 } from "./compiler.shared.js";
+import { applyPromptModuleMutation, describePromptModuleSelector } from "./mutations-engine.js";
 import type {
   PromptModuleBinding,
-  PromptModuleMutation,
   PromptModuleMutationSet,
   PromptModuleMutationWhen,
   PromptModuleSelector,
-  PromptModuleStructuredPatch,
   PromptModuleValidator,
   PromptModuleValidatorPhase,
 } from "./mutations.js";
@@ -71,10 +69,17 @@ export type PromptModuleCompiledGraph = PromptModuleGraph & {
   ok: boolean;
 };
 
-const CONTROL_CHAR_RE = /[\u0000-\u001f\u007f]/u;
 const PROMPT_MODULE_WORKFLOW_MODE_VALUES = ["direct", "branch_pr"] as const;
 const PROMPT_MODULE_POLICY_GATEWAY_VALUES = ["codex", "claude"] as const;
 const PROMPT_MODULE_VALIDATOR_PHASE_VALUES = ["resolve", "compile", "emit", "doctor"] as const;
+
+function hasControlCharacter(value: string): boolean {
+  for (const character of value) {
+    const code = character.codePointAt(0) ?? -1;
+    if (code <= 0x1f || code === 0x7f) return true;
+  }
+  return false;
+}
 
 function hasAllowedValue<TValue extends string>(
   value: string,
@@ -118,7 +123,7 @@ function normalizeContextString<TValue extends string = string>(
     reportDiscardedContextValue(diagnostics, field, value, "empty after trimming");
     return undefined;
   }
-  if (CONTROL_CHAR_RE.test(trimmed)) {
+  if (hasControlCharacter(trimmed)) {
     reportDiscardedContextValue(diagnostics, field, value, "contains control characters");
     return undefined;
   }
@@ -266,20 +271,6 @@ function moduleRecipeId(module: PromptModule): string | undefined {
   return module.provenance.recipe_id;
 }
 
-function describePromptModuleSelector(selector: PromptModuleSelector): string {
-  const parts = [
-    selector.address ? `address=${selector.address}` : null,
-    selector.fragment_id ? `fragment_id=${selector.fragment_id}` : null,
-    selector.namespace ? `namespace=${selector.namespace}` : null,
-    selector.surface ? `surface=${selector.surface}` : null,
-    selector.target ? `target=${selector.target}` : null,
-    selector.slot ? `slot=${selector.slot}` : null,
-    selector.owner ? `owner=${selector.owner}` : null,
-    selector.recipe_id ? `recipe_id=${selector.recipe_id}` : null,
-  ].filter((part): part is string => part !== null);
-  return parts.length > 0 ? parts.join(", ") : "empty selector";
-}
-
 export function matchesPromptModuleSelector(
   module: PromptModule,
   selector: PromptModuleSelector,
@@ -298,10 +289,6 @@ export function matchesPromptModuleSelector(
   );
 }
 
-function activeModules(nodes: readonly WorkingPromptModuleNode[]): PromptModule[] {
-  return nodes.filter((node) => node.disabled !== true).map((node) => node.module);
-}
-
 export function matchesPromptModuleMutationWhen(
   when: PromptModuleMutationWhen | undefined,
   context: PromptModuleCompilerContext,
@@ -312,239 +299,6 @@ export function matchesPromptModuleMutationWhen(
   if (when?.module_present?.some((address) => !addresses.has(address))) return false;
   if (when?.module_absent?.some((address) => addresses.has(address))) return false;
   return true;
-}
-
-function findMatchingNodeIndexes(
-  nodes: readonly WorkingPromptModuleNode[],
-  selector: PromptModuleSelector,
-): number[] {
-  const indexes: number[] = [];
-  for (const [index, node] of nodes.entries()) {
-    if (node.disabled === true) continue;
-    if (matchesPromptModuleSelector(node.module, selector)) indexes.push(index);
-  }
-  return indexes;
-}
-
-function patchModule(module: PromptModule, patch: PromptModuleStructuredPatch): PromptModule {
-  const next = copyModule(module);
-  if (patch.title !== undefined) next.title = patch.title;
-  if (patch.summary !== undefined) {
-    if (patch.summary === null) {
-      delete next.summary;
-    } else {
-      next.summary = patch.summary;
-    }
-  }
-  if (patch.content !== undefined) next.content = patch.content;
-  if (patch.mutability !== undefined) next.mutability = patch.mutability;
-  if (patch.merge !== undefined) next.merge = patch.merge;
-  if (patch.load !== undefined) {
-    if (patch.load === null) {
-      delete next.load;
-    } else {
-      next.load = patch.load;
-    }
-  }
-  if (patch.dependencies !== undefined) {
-    if (patch.dependencies === null) {
-      delete next.dependencies;
-    } else {
-      next.dependencies = patch.dependencies;
-    }
-  }
-  if (patch.provenance !== undefined) next.provenance = patch.provenance;
-  return next;
-}
-
-function allowsDirectMutation(mutability: PromptModuleMutability): boolean {
-  return mutability === "replaceable";
-}
-
-function reportMutabilityViolation(
-  diagnostics: PromptModuleDiagnostic[],
-  mutation: Extract<
-    PromptModuleMutation,
-    { op: "disable_module" | "patch_module" | "replace_module" }
-  >,
-  module: PromptModule,
-): void {
-  diagnostics.push({
-    severity: "error",
-    code: "mutability_violation",
-    mutation_id: mutation.id,
-    module_address: moduleAddress(module),
-    message: `${mutation.op} mutation ${mutation.id} cannot modify prompt module ${moduleAddress(module)} because its mutability is ${module.mutability}; only replaceable modules allow direct patch, replace, or disable mutations.`,
-  });
-}
-
-function applyBinding(
-  nodes: WorkingPromptModuleNode[],
-  binding: PromptModuleBinding,
-  diagnostics: PromptModuleDiagnostic[],
-  mutationId: string,
-): PromptModuleBinding | null {
-  const fromIndex = nodes.findIndex(
-    (node) => node.disabled !== true && moduleAddress(node.module) === binding.from,
-  );
-  const toIndex = nodes.findIndex(
-    (node) => node.disabled !== true && moduleAddress(node.module) === binding.to,
-  );
-  const required = binding.required !== false;
-  if (required && (fromIndex === -1 || toIndex === -1)) {
-    diagnostics.push({
-      severity: "error",
-      code: "missing_binding_endpoint",
-      mutation_id: mutationId,
-      module_address: fromIndex === -1 ? binding.from : binding.to,
-      message: `Binding ${binding.id} references a missing prompt module endpoint.`,
-    });
-  }
-  if (fromIndex === -1) return null;
-
-  const from = nodes[fromIndex];
-  if (!from) return null;
-  switch (binding.kind) {
-    case "extends": {
-      from.extends = uniqueStrings([...(from.extends ?? []), binding.to]);
-      break;
-    }
-    case "replaces": {
-      from.replaces = uniqueStrings([...(from.replaces ?? []), binding.to]);
-      break;
-    }
-    case "requires": {
-      from.module = {
-        ...from.module,
-        dependencies: [
-          ...(from.module.dependencies ?? []),
-          {
-            address: binding.to,
-            required,
-          },
-        ],
-      };
-      break;
-    }
-    case "feeds":
-    case "validates": {
-      break;
-    }
-  }
-  return binding;
-}
-
-function applyMutation(
-  nodes: WorkingPromptModuleNode[],
-  mutation: PromptModuleMutation,
-  context: PromptModuleCompilerContext,
-  diagnostics: PromptModuleDiagnostic[],
-  validators: Map<string, PromptModuleValidator>,
-  disabledValidators: Set<string>,
-  bindings: PromptModuleBinding[],
-  nextSequence: () => number,
-): void {
-  if (!matchesPromptModuleMutationWhen(mutation.when, context, activeModules(nodes))) return;
-
-  switch (mutation.op) {
-    case "add_module": {
-      if (!matchesPromptModuleLoadCondition(mutation.module.load, context)) return;
-      nodes.push({ module: copyModule(mutation.module), sequence: nextSequence() });
-      return;
-    }
-    case "disable_module": {
-      const matches = findMatchingNodeIndexes(nodes, mutation.target);
-      if (matches.length === 0) {
-        diagnostics.push({
-          severity: "warning",
-          code: "missing_module",
-          mutation_id: mutation.id,
-          message: `No prompt modules matched disable mutation ${mutation.id} (${describePromptModuleSelector(mutation.target)}).`,
-        });
-      }
-      if (
-        matches.some((index) => {
-          const node = nodes[index];
-          if (!node || allowsDirectMutation(node.module.mutability)) return false;
-          reportMutabilityViolation(diagnostics, mutation, node.module);
-          return true;
-        })
-      ) {
-        return;
-      }
-      for (const index of matches) {
-        const node = nodes[index];
-        if (node) node.disabled = true;
-      }
-      return;
-    }
-    case "patch_module":
-    case "replace_module": {
-      const matches = findMatchingNodeIndexes(nodes, mutation.target);
-      if (matches.length === 0) {
-        diagnostics.push({
-          severity: "error",
-          code: "missing_module",
-          mutation_id: mutation.id,
-          message: `No prompt modules matched ${mutation.op} mutation ${mutation.id} (${describePromptModuleSelector(mutation.target)}).`,
-        });
-        return;
-      }
-      if (matches.length > 1) {
-        diagnostics.push({
-          severity: "error",
-          code: "ambiguous_selector",
-          mutation_id: mutation.id,
-          message: `${mutation.op} mutation ${mutation.id} matched ${matches.length} prompt modules (${describePromptModuleSelector(mutation.target)}).`,
-        });
-        return;
-      }
-      const index = matches[0];
-      if (index === undefined) return;
-      const current = nodes[index];
-      if (!current) return;
-      if (!allowsDirectMutation(current.module.mutability)) {
-        reportMutabilityViolation(diagnostics, mutation, current.module);
-        return;
-      }
-      const nextModule =
-        mutation.op === "patch_module"
-          ? patchModule(current.module, mutation.patch)
-          : copyModule(mutation.module);
-      if (!matchesPromptModuleLoadCondition(nextModule.load, context)) {
-        current.disabled = true;
-        return;
-      }
-      nodes[index] = {
-        ...current,
-        module: nextModule,
-        sequence: nextSequence(),
-      };
-      return;
-    }
-    case "bind_module": {
-      if (!matchesPromptModuleMutationWhen(mutation.binding.when, context, activeModules(nodes))) {
-        return;
-      }
-      const applied = applyBinding(nodes, mutation.binding, diagnostics, mutation.id);
-      if (applied) bindings.push(applied);
-      return;
-    }
-    case "add_validator": {
-      if (
-        !matchesPromptModuleMutationWhen(mutation.validator.when, context, activeModules(nodes))
-      ) {
-        return;
-      }
-      disabledValidators.delete(mutation.validator.id);
-      validators.set(mutation.validator.id, mutation.validator);
-      return;
-    }
-    case "disable_validator": {
-      disabledValidators.add(mutation.validator_id);
-      validators.delete(mutation.validator_id);
-    }
-  }
 }
 
 function validateDependencies(
@@ -645,7 +399,7 @@ export function compilePromptModuleGraph(opts: {
 
   for (const set of opts.mutation_sets ?? []) {
     for (const mutation of set.mutations) {
-      applyMutation(
+      applyPromptModuleMutation({
         nodes,
         mutation,
         context,
@@ -654,7 +408,10 @@ export function compilePromptModuleGraph(opts: {
         disabledValidators,
         bindings,
         nextSequence,
-      );
+        matchesLoadCondition: matchesPromptModuleLoadCondition,
+        matchesMutationWhen: matchesPromptModuleMutationWhen,
+        matchesSelector: matchesPromptModuleSelector,
+      });
     }
   }
 
