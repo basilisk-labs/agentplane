@@ -34,6 +34,8 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("node scripts/generate-release-distribution.mjs");
     expect(workflow).toContain("Render Homebrew tap formula");
     expect(workflow).toContain("node scripts/render-homebrew-formula.mjs");
+    expect(workflow).toContain("Render Scoop bucket manifest");
+    expect(workflow).toContain("node scripts/render-scoop-manifest.mjs");
     expect(workflow).toContain(
       ".agentplane/.release/publish/distribution/release-distribution.json",
     );
@@ -44,6 +46,8 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("name: release-distribution");
     expect(workflow).toContain("name: homebrew-module");
     expect(workflow).toContain("path: .agentplane/.release/publish/homebrew/");
+    expect(workflow).toContain("name: scoop-module");
+    expect(workflow).toContain("path: .agentplane/.release/publish/scoop/");
     expect(workflow).toContain(
       "--distribution-manifest .agentplane/.release/publish/distribution/release-distribution.json",
     );

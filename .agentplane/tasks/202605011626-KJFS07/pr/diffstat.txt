@@ -1,0 +1,6 @@
+ .github/workflows/publish.yml                      |  14 ++
+ package.json                                       |   1 +
+ .../release/publish-workflow-contract.test.ts      |   4 +
+ scripts/README.md                                  |   1 +
+ scripts/render-scoop-manifest.mjs                  | 144 +++++++++++++++++++++
+ 5 files changed, 164 insertions(+)
