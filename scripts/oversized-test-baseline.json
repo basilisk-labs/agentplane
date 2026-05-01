@@ -2,8 +2,8 @@
   "schema_version": 2,
   "threshold_lines": 1000,
   "budgets": {
-    "max_entries": 14,
-    "max_total_lines": 15878,
+    "max_entries": 13,
+    "max_total_lines": 14609,
     "max_file_lines": 1300
   },
   "entries": [
@@ -51,10 +51,6 @@
     {
       "file": "packages/agentplane/src/commands/doctor.command.open-pr.test.ts",
       "lines": 1110
-    },
-    {
-      "file": "packages/agentplane/src/commands/release/apply.test.ts",
-      "lines": 1269
     },
     {
       "file": "packages/agentplane/src/commands/shared/task-store.test.ts",
