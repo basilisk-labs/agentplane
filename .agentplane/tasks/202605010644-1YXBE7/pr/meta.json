@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-01T07:02:46Z",
   "base": "main",
   "branch": "task/202605010644-1YXBE7/oversized-test-guard",
   "created_at": "2026-05-01T06:55:38.929Z",
-  "head_sha": "1ccbf50eeb28792aaa2b11996e0152f1b816dee5",
+  "head_sha": "43dfebf5f59b532c1eeeb0ee75b0b4de6ce6fe54",
   "last_verified_at": "2026-05-01T06:59:34.260Z",
   "last_verified_sha": "dd38c6d5b384248f027212e6248a445f221a7fab",
+  "merge_commit": "22d321f8c7300cb0b095cc84c6d77f6e5a900825",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-01T07:02:46Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605010644-1YXBE7",
-  "updated_at": "2026-05-01T06:59:59.506Z",
+  "updated_at": "2026-05-01T07:02:46Z",
   "verify": {
     "status": "pass"
   }

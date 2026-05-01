@@ -1,10 +1,11 @@
 ---
 id: "202605010644-1YXBE7"
 title: "AP-01: Restore oversized test guard budget model"
-status: "DOING"
+result_summary: "Merged via PR #641."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-01T06:59:34.260Z"
   updated_by: "CODER"
   note: "Verified oversized baseline schema v2 guard with: node scripts/check-oversized-test-baseline.mjs --threshold-lines 1000; bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts --testTimeout 60000 --hookTimeout 60000; bunx prettier --check touched files; git diff --check."
-commit: null
+commit:
+  hash: "22d321f8c7300cb0b095cc84c6d77f6e5a900825"
+  message: "Merge pull request #641 from basilisk-labs/task/202605010644-1YXBE7/oversized-test-guard"
 comments:
   -
     author: "CODER"
     body: "Start: implement oversized test baseline schema v2 budgets and keep the guard green without raising limits."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #641 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified oversized baseline schema v2 guard with: node scripts/check-oversized-test-baseline.mjs --threshold-lines 1000; bunx vitest run packages/agentplane/src/cli/hotspot-report-script.test.ts --testTimeout 60000 --hookTimeout 60000; bunx prettier --check touched files; git diff --check."
+  -
+    type: "status"
+    at: "2026-05-01T07:03:42.242Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #641 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-01T06:59:34.268Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-01T07:03:42.247Z"
+doc_updated_by: "INTEGRATOR"
 description: "Upgrade oversized test baseline enforcement to schema v2 budgets so current total reductions are respected while new oversized tests remain blocked."
 sections:
   Summary: |-
