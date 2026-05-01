@@ -1,77 +1,7 @@
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
+import type { Props as BlogListPageProps } from "@theme/BlogListPage";
 import styles from "./index.module.css";
-
-const releaseLineEntries = [
-  {
-    href: "/blog/release-0-3-8-and-0-3-9-preparing-0-4-fixing-installability",
-    title:
-      "AgentPlane 0.3.8 and 0.3.9: preparing 0.4, then fixing the release that proved why it mattered",
-    excerpt:
-      "Why 0.3.8 spent its effort on internal cleanup for 0.4 and 0.5, why the shipped npm package still broke on install, and how 0.3.9 turned installability into a hard release gate.",
-    meta: "Release journal • 5 min read",
-  },
-  {
-    href: "/blog/release-0-3-5-readme-v3-docs-shell-and-backend-projection",
-    title:
-      "AgentPlane 0.3.5: README v3 settles in, docs shell tightens up, backends go projection-first",
-    excerpt:
-      "Why README v3 is now the actual task-doc contract, why docs pages feel calmer on wide layouts, and why Redmine-backed repos stopped hiding network reads inside ordinary task commands.",
-    meta: "Release journal • 6 min read",
-  },
-  {
-    href: "/blog/release-0-3-4-install-first-startup-and-upgrade-repair",
-    title: "AgentPlane 0.3.4: install-first startup, upgrade repair, cleaner role surfaces",
-    excerpt:
-      "How the npm-installed path stopped leaking framework-only docs, why upgrade now restores workflow artifacts, and what changed in role guidance.",
-    meta: "Release journal • 5 min read",
-  },
-  {
-    href: "/blog/release-0-3-3-runtime-hardening-and-readme-v3",
-    title: "AgentPlane 0.3.3: runtime hardening, README v3, faster local feedback",
-    excerpt:
-      "How runtime diagnostics became explicit, task docs got a real migration path, and local contributor loops got less expensive.",
-    meta: "Release journal • 6 min read",
-  },
-  {
-    href: "/blog/release-0-3-2-smoother-upgrades-and-framework-dev",
-    title: "AgentPlane 0.3.2: smoother upgrades, cleaner finish, better framework dev",
-    excerpt:
-      "Why upgrades got less weird, why finish now leaves a cleaner tree, and why framework contributors are less likely to run the wrong binary.",
-    meta: "Release journal • 5 min read",
-  },
-  {
-    href: "/blog/release-0-3-1-publish-recovery-and-quieter-surface",
-    title: "AgentPlane 0.3.1: publish recovery, quieter homepage, cleaner docs",
-    excerpt:
-      "How the 0.3.x line recovered from a blocked publish and why the public surface got quieter on purpose.",
-    meta: "Release journal • 4 min read",
-  },
-  {
-    href: "/blog/release-0-3-0-policy-gateway-and-release-discipline",
-    title: "AgentPlane 0.3.0: policy gateway, stricter release discipline",
-    excerpt:
-      "How policy routing became easier to follow, release notes got more concrete, and safe publish reruns stopped being awkward.",
-    meta: "Release journal • 5 min read",
-  },
-];
-
-const archiveEntries = [
-  {
-    href: "/blog/release-0-2-25-safer-commits-cleaner-release-flow",
-    title: "AgentPlane 0.2.25: safer commits, cleaner release flow",
-    excerpt:
-      "Why stricter commit scope and cleaner release checks mattered once agents started touching real repositories.",
-    meta: "Earlier release • 4 min read",
-  },
-  {
-    href: "/blog/roadmap-0-5-agentplane-runner",
-    title: "Roadmap 0.1 → 0.5: toward AgentPlane Runner",
-    excerpt:
-      "The path from a strict repository workflow tool to a more autonomous runtime, without dropping the audit trail on the floor.",
-    meta: "Roadmap • 5 min read",
-  },
-];
 
 const references = [
   {
@@ -91,7 +21,50 @@ const references = [
   },
 ];
 
-export default function BlogLanding() {
+type BlogEntry = {
+  date: string;
+  description: string;
+  href: string;
+  readingTime: string;
+  title: string;
+};
+
+function toIsoDate(value: Date | string): string {
+  return new Date(value).toISOString().slice(0, 10);
+}
+
+function toTimestamp(value: Date | string): number {
+  return new Date(value).getTime();
+}
+
+function toReadingTime(value: number | undefined): string {
+  if (!value) {
+    return "Article";
+  }
+
+  return `${Math.ceil(value)} min read`;
+}
+
+function getChronologicalEntries(items: BlogListPageProps["items"]): BlogEntry[] {
+  return items
+    .toSorted(
+      ({ content: left }, { content: right }) =>
+        toTimestamp(left.metadata.date) - toTimestamp(right.metadata.date),
+    )
+    .map(({ content }) => ({
+      date: toIsoDate(content.metadata.date),
+      description:
+        content.metadata.description ||
+        "Product and release context from the AgentPlane development line.",
+      href: content.metadata.permalink,
+      readingTime: toReadingTime(content.metadata.readingTime),
+      title: content.metadata.title,
+    }));
+}
+
+export default function BlogLanding({ items }: BlogListPageProps) {
+  const entries = getChronologicalEntries(items);
+
   return (
     <Layout
       title="Blog"
@@ -110,42 +83,25 @@ export default function BlogLanding() {
         <div className={styles.layout}>
           <section className={styles.entriesSection} aria-labelledby="blog-entries-title">
             <div className={styles.sectionHeading}>
-              <p className={styles.sectionLabel}>Release line</p>
-              <h2 id="blog-entries-title">AgentPlane 0.3.x</h2>
+              <p className={styles.sectionLabel}>Oldest to newest</p>
+              <h2 id="blog-entries-title">Chronological archive</h2>
             </div>
 
             <div className={styles.entryList}>
-              {releaseLineEntries.map((entry) => (
+              {entries.map((entry) => (
                 <article key={entry.href} className={styles.entryItem}>
-                  <p className={styles.entryMeta}>{entry.meta}</p>
-                  <h3>
-                    <Link className={styles.entryTitleLink} to={entry.href}>
-                      {entry.title}
-                    </Link>
-                  </h3>
-                  <p>{entry.excerpt}</p>
-                  <Link className={styles.entryLink} to={entry.href}>
-                    Open entry
-                  </Link>
-                </article>
-              ))}
-            </div>
-
-            <div className={styles.sectionHeading}>
-              <p className={styles.sectionLabel}>Earlier context</p>
-              <h2>Earlier releases and roadmap</h2>
-            </div>
-
-            <div className={styles.entryList}>
-              {archiveEntries.map((entry) => (
-                <article key={entry.href} className={styles.entryItem}>
-                  <p className={styles.entryMeta}>{entry.meta}</p>
-                  <h3>
-                    <Link className={styles.entryTitleLink} to={entry.href}>
-                      {entry.title}
-                    </Link>
-                  </h3>
-                  <p>{entry.excerpt}</p>
+                  <div className={styles.entryHeader}>
+                    <time dateTime={entry.date}>{entry.date}</time>
+                    <span>{entry.readingTime}</span>
+                  </div>
+                  <div className={styles.entryBody}>
+                    <h3>
+                      <Link className={styles.entryTitleLink} to={entry.href}>
+                        {entry.title}
+                      </Link>
+                    </h3>
+                    <p>{entry.description}</p>
+                  </div>
                   <Link className={styles.entryLink} to={entry.href}>
                     Open entry
                   </Link>

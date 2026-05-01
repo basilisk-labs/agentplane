@@ -1,0 +1,51 @@
+---
+title: "AgentPlane + GitHub Actions"
+description: "Use GitHub Actions as the hosted check surface while AgentPlane keeps local workflow state reviewable."
+---
+
+Use this when repository checks run in GitHub Actions and agent-generated work should not merge until
+task state and CI evidence are both legible.
+
+## When to use
+
+- Your repository already uses GitHub Actions for required checks.
+- You want AgentPlane task records to explain why an agent change is ready for review.
+- You use pull requests or branch protection.
+
+## Copy-paste flow
+
+```bash
+npm i -g agentplane
+agentplane init
+agentplane config set workflow_mode branch_pr
+
+agentplane task new --title "Tighten onboarding docs" --description "Update onboarding docs and wait for CI." --priority med --owner CODER --tag docs
+agentplane task plan set <task-id> --text "Update docs, run local docs checks, open PR, wait for required GitHub Actions." --updated-by CODER
+agentplane task plan approve <task-id> --by ORCHESTRATOR
+agentplane work start <task-id> --agent CODER --slug onboarding-docs --worktree
+```
+
+From the task worktree:
+
+```bash
+agentplane task start-ready <task-id> --author CODER --body "Start: onboarding docs update with GitHub Actions as the hosted check gate."
+# edit files and run local checks
+agentplane pr open <task-id> --branch task/<task-id>/onboarding-docs --author CODER
+agentplane pr update <task-id>
+# wait for GitHub Actions through your normal repository process
+agentplane verify <task-id> --ok --by CODER --note "Local checks passed and hosted GitHub Actions are green."
+```
+
+Integrate only after the required hosted checks are green.
+
+## Expected repo artifacts
+
+- task README with PR metadata
+- `.agentplane/tasks/<task-id>/pr/` local PR artifacts
+- verification note referencing local checks and hosted CI result
+- final merge/finish metadata
+
+## Limitations
+
+AgentPlane does not replace GitHub branch protection. Use your repository's existing required checks
+and PR review rules as the hosted gate.

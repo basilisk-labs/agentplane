@@ -1,0 +1,50 @@
+---
+title: "Recipes"
+description: "Copy-paste AgentPlane flows for Claude Code, Codex, Cursor, Aider, GitHub Actions, and branch_pr review."
+---
+
+AgentPlane recipes show how to wrap the tools you already use with repo-visible task state,
+verification, and closure.
+
+AgentPlane does not replace your coding agent. Your agent writes code. AgentPlane records the
+workflow around that code. Git remains the source of truth.
+
+## Choose a recipe
+
+- [AgentPlane + Claude Code](claude-code)
+- [AgentPlane + Codex](codex)
+- [AgentPlane + Cursor](cursor)
+- [AgentPlane + Aider](aider)
+- [AgentPlane + GitHub Actions](github-actions)
+- [AgentPlane + branch_pr workflow](branch-pr)
+
+## Baseline flow
+
+Use this shape unless a recipe says otherwise:
+
+```bash
+npm i -g agentplane
+agentplane init
+agentplane quickstart
+agentplane task new --title "..." --description "..." --priority med --owner CODER --tag code
+agentplane task plan set <task-id> --text "..." --updated-by CODER
+agentplane task plan approve <task-id> --by ORCHESTRATOR
+agentplane task start-ready <task-id> --author CODER --body "Start: ..."
+# run your coding agent or edit manually
+agentplane task verify-show <task-id>
+agentplane verify <task-id> --ok --by CODER --note "Verification passed"
+agentplane finish <task-id> --author CODER --body "Verified: ..." --result "..." --commit <git-rev>
+```
+
+## Expected repo artifacts
+
+- `AGENTS.md` or `CLAUDE.md`
+- `.agentplane/config.json`
+- `.agentplane/tasks/<task-id>/README.md`
+- verification records in the task README
+- finish metadata tied to a Git revision
+
+## Limits
+
+These recipes are workflow recipes, not hosted integrations. They do not grant AgentPlane remote
+access to your coding tools, editor, or GitHub account.

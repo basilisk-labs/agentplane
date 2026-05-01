@@ -13,171 +13,153 @@
 [![release:parity](https://img.shields.io/badge/release%3Aparity-Core%20CI-2563eb.svg)](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml)
 [![knip](https://img.shields.io/badge/knip-roadmap-f59e0b.svg)](ROADMAP.md#2026q2-refactor-status)
 
-**Git-native control plane for auditable agent work.**
+**Use coding agents without losing Git discipline.**
 
-Put coding agents on a governed Git workflow.
-
-AgentPlane is a local CLI for agent-driven development inside a git repository. It runs in your repo, not in a hosted runtime, and adds visible workflow artifacts such as `AGENTS.md` or `CLAUDE.md`, `.agentplane/`, task records, verification state, and deterministic closure. Teams trust it because approvals, task state, verification, and finish are explicit instead of implied. Use `agentplane` when you want agents to work inside a governed repository workflow rather than as an opaque assistant.
-
-## What AgentPlane is
-
-AgentPlane is a repository-native workflow layer for agent work.
-
-It does not replace git, your editor, or your terminal. It sits inside an existing repository and gives agent execution a visible operating model:
-
-- a policy gateway in the repo root
-- a repo-local workspace in `.agentplane/`
-- task state with ownership and dependencies
-- verification and closure recorded in the repository
-- workflow modes for both short loops and stricter team integration
-
-## Why teams use it
-
-Teams use AgentPlane when "just let the agent change files" is not enough.
-
-- **Trust comes from visible state**. Approvals, task transitions, verification, and finish are all recorded in the repo.
-- **The workflow stays local and inspectable**. There is no hosted control plane sitting between your repository and your team.
-- **Agents work inside git, not around it**. Commits, review points, and closure remain explicit.
-- **You can pick the right integration style**. Use `direct` for short loops or `branch_pr` for stricter handoff and integration.
-
-## What appears in your repository
-
-A repository using AgentPlane typically includes a small set of visible artifacts so the workflow stays legible to both humans and agents.
+AgentPlane is a local CLI that makes Claude Code, Codex, Cursor, Aider, and similar coding-agent
+work auditable inside your Git repository:
 
 ```text
-AGENTS.md or CLAUDE.md   Policy gateway for the repository
-.agentplane/            Repo-local workspace and workflow state
-.agentplane/config.json Current repo configuration
-.agentplane/tasks/      Per-task records
-.agentplane/WORKFLOW.md Materialized workflow contract
-.agentplane/tasks.json  Optional exported task snapshot derived from the current backend projection
+task -> plan -> approve -> implement -> verify -> finish
 ```
 
-These files matter because they make agent work inspectable. A reviewer can see what policy governs the repo, what task is active, what was verified, and how the task was closed.
+No hosted runtime. No hidden state. Everything stays in your repo.
 
-## Framework control plane
-
-Inside the CLI, AgentPlane now resolves one explicit framework control plane before recipe-specific or runner-specific behavior runs:
-
-- a resolved harness contract for repo policy, workflow, task rules, and backend restrictions
-- one canonical execution context carrying capabilities, approvals, execution profile runtime, task intake, and trace-ready behavior state
-- traced behavior precedence: `harness -> extension -> user -> builtin`
-- machine-readable explain and protocol surfaces that persist the resolved framework inputs into shared runner artifacts
-
-If you are extending the framework instead of only using the CLI, start with [Architecture](docs/developer/architecture.mdx) and [Harness Engineering](docs/developer/harness-engineering.mdx).
-
-## 2-minute quickstart
-
-Install the CLI:
+## Install
 
 ```bash
-npm install -g agentplane
-```
-
-Initialize your repository and print the built-in startup guide:
-
-```bash
+npm i -g agentplane
 agentplane init
 agentplane quickstart
 ```
 
-`agentplane init` creates the repo-local workflow surface: a policy gateway file (`AGENTS.md` or `CLAUDE.md`), `.agentplane/config.json`, built-in agent profiles, task storage, and workflow state such as `.agentplane/WORKFLOW.md`.
+Requirements:
 
-The default path is `direct`, and the daily loop starts with a task instead of a free-form prompt:
+- Node.js 20+
+- Git repository
+- Local terminal
+
+## Why it exists
+
+Coding agents can change files. Teams still need to know what happened:
+
+- What task was the agent solving?
+- What plan was approved?
+- What changed in the repository?
+- What was verified?
+- Why was the task considered finished?
+
+AgentPlane adds a visible workflow layer around agent work without replacing Git, your editor, or
+your terminal.
+
+## What appears in your repository
+
+```text
+AGENTS.md or CLAUDE.md   Policy gateway for the repository
+.agentplane/            Repo-local workflow workspace
+.agentplane/config.json Current workflow configuration
+.agentplane/tasks/      Per-task records
+.agentplane/WORKFLOW.md Materialized workflow contract
+verification records    Stored in task docs
+finish record           Linked to the Git revision
+```
+
+These artifacts make agent work inspectable. A reviewer can see what policy governed the repo, what
+task was active, what plan was accepted, what checks ran, and how the task was closed.
+
+## How it works
 
 ```bash
 agentplane task new --title "First task" --description "Describe the change" --priority med --owner DOCS --tag docs
 agentplane task plan set <task-id> --text "Explain the plan" --updated-by DOCS
+agentplane task plan approve <task-id> --by ORCHESTRATOR
 agentplane task start-ready <task-id> --author DOCS --body "Start: ..."
+# run Claude Code, Codex, Cursor, Aider, or edit manually
 agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
-agentplane finish <task-id> --author DOCS --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
+agentplane verify <task-id> --ok --by DOCS --note "Checks passed"
+agentplane finish <task-id> --author DOCS --body "Verified: checks passed." --result "One-line outcome" --commit <git-rev>
 ```
 
-If your repository requires explicit plan approval, run `agentplane task plan approve <task-id> --by ORCHESTRATOR` before `agentplane task start-ready`.
+If your repository does not require explicit plan approval, skip `task plan approve`.
 
-If you need structured worktrees and PR-style integration, switch to `branch_pr` before you begin active work:
+## Without vs with AgentPlane
 
-```bash
-agentplane config set workflow_mode branch_pr
-```
+| Without AgentPlane       | With AgentPlane                 |
+| ------------------------ | ------------------------------- |
+| Prompt in chat           | Task is recorded                |
+| Agent edits files        | Plan is explicit                |
+| Human inspects diff      | Approval is visible             |
+| Context is scattered     | Verification is stored          |
+| Verification is implicit | Finish creates closure evidence |
+| Closure is manual        | Everything lives close to Git   |
 
-For exact flags and recovery paths, use:
+## Who it is for
 
-- [Overview](docs/user/overview.mdx)
-- [Setup](docs/user/setup.mdx)
-- [Commands](docs/user/commands.mdx)
+- Developers using Claude Code, Codex, Cursor, Aider, or local coding agents.
+- Maintainers who want agent changes to remain reviewable.
+- Teams that need task state, verification, and closure before merging agent-generated work.
+- Local-first builders who do not want a hosted agent runtime between their repo and their workflow.
+
+## What it is not
+
+- Not a hosted agent platform.
+- Not a prompt framework.
+- Not a replacement for Git.
+- Not a replacement for your editor.
+- Not a replacement for Claude Code, Codex, Cursor, or Aider.
 
 ## Workflow modes
 
-AgentPlane supports two integration styles.
-
 ### `direct`
 
-- single checkout
-- short loops in the current working tree
-- good for solo work and fast iteration
-- default mode after `agentplane init`
+Fast local loops in the current checkout. Good for solo work, prototypes, and short tasks.
 
 ### `branch_pr`
 
-- structured per-task branch or worktree flow
-- explicit PR artifacts under `.agentplane/tasks/<task-id>/pr/`
-- better fit when integration must stay separate from implementation
-- use it when the repository needs stricter handoff and integration discipline
+Structured per-task branch and PR-style handoff. Good for teams, stricter review, and integration
+boundaries.
 
-The difference is workflow discipline, not product tiering.
+## Recipes
 
-## Typical task flow
+Start from the recipe that matches your current stack:
 
-The normal happy path is short and explicit:
+- [AgentPlane + Claude Code](docs/recipes/claude-code.mdx)
+- [AgentPlane + Codex](docs/recipes/codex.mdx)
+- [AgentPlane + Cursor](docs/recipes/cursor.mdx)
+- [AgentPlane + Aider](docs/recipes/aider.mdx)
+- [AgentPlane + GitHub Actions](docs/recipes/github-actions.mdx)
+- [AgentPlane + branch_pr workflow](docs/recipes/branch-pr.mdx)
 
-1. Run preflight and inspect the current repo state.
-2. Create the task and record the plan.
-3. Start the task with `agentplane task start-ready`.
-4. Implement the change in the repository.
-5. Print `Verify Steps` and record the result with `agentplane verify`.
-6. Close the task with `agentplane finish`.
-
-Under `direct`, `finish` creates the deterministic close commit by default. Under `branch_pr`, integration stays more structured and PR-oriented.
-
-## When to use it
-
-Use AgentPlane when:
-
-- you want agents to work inside a real git repository
-- you need explicit approvals, task state, verification, and closure
-- you want repo-local artifacts that show what happened and why
-- you need a governed workflow instead of a chat-style assistant loop
-
-Do not use AgentPlane when:
-
-- you are looking for a hosted agent platform
-- you want a generic prompt framework
-- you want the tool to hide git or replace your editor
+Each recipe includes when to use it, commands, expected repo artifacts, limitations, and a
+copy-paste flow.
 
 ## Documentation
 
 Start here:
 
 - [Overview](docs/user/overview.mdx)
+- [Setup](docs/user/setup.mdx)
 - [Workflow](docs/user/workflow.mdx)
+- [Task lifecycle](docs/user/task-lifecycle.mdx)
 - [Commands](docs/user/commands.mdx)
-- [Configuration](docs/user/configuration.mdx)
-- [Backends](docs/user/backends.mdx)
 - [CLI reference (generated)](docs/user/cli-reference.generated.mdx)
 
-Developer and release docs:
+Developer surfaces:
 
 - [Architecture](docs/developer/architecture.mdx)
-- [Documentation information architecture](docs/developer/documentation-information-architecture.mdx)
 - [CLI contract](docs/developer/cli-contract.mdx)
+- [Harness engineering](docs/developer/harness-engineering.mdx)
 - [Release and publishing](docs/developer/release-and-publishing.mdx)
-- [Release notes](docs/releases/)
 
-If you need the deeper execution philosophy, keep it below the product surface:
+Deep architecture terms such as framework control plane, harness contract, protocol surfaces, and
+behavior precedence belong in the developer docs, not in the first-start path.
 
-- [Harness Engineering](docs/developer/harness-engineering.mdx)
+## Technical proof
+
+- MIT licensed.
+- TypeScript codebase.
+- Local-first CLI.
+- Active release history.
+- No hosted control plane.
 
 ## Contributing
 

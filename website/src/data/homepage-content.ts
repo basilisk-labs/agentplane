@@ -1,286 +1,261 @@
+export const githubUrl = "https://github.com/basilisk-labs/agentplane";
+export const installCommand = "npm i -g agentplane";
+
 export const homepageContent = {
   seo: {
-    title: "Git-native control plane for auditable agent work",
+    title: "Use coding agents without losing Git discipline",
     description:
-      "Put coding agents on a governed Git workflow with repo-local task state, approvals, verification, and deterministic closure.",
+      "AgentPlane is a local CLI that makes Claude Code, Codex, Cursor, and Aider-style agent work auditable inside your Git repository.",
   },
   hero: {
-    eyebrow: "Git-native control plane",
-    chips: [
-      "Local CLI",
-      "Repo-native workflow",
-      "Explicit approvals",
-      "Verification record",
-      "Direct + PR modes",
-    ],
-    title: "Put coding agents on a governed Git workflow.",
+    eyebrow: "Local CLI for agent-driven development",
+    title: "Use coding agents without losing Git discipline.",
     subtitle:
-      "AgentPlane is a local CLI workflow that adds task state, approvals, verification, and deterministic closure to agent work inside real Git repositories.",
-    supportBullets: [
-      "Runs inside the repository you already own instead of a hosted control surface.",
-      "Turns vague agent sessions into visible workflow state, proof, and closure.",
-    ],
+      "AgentPlane makes Claude Code, Codex, Cursor-style agent work auditable inside your Git repository.",
+    flow: "task → plan → approve → implement → verify → finish",
+    assurances: ["No hosted runtime", "No hidden state", "Everything stays in your repo"],
     actions: [
-      { label: "Open overview", to: "/docs/user/overview", variant: "primary" },
-      { label: "Read workflow", to: "/docs/user/workflow", variant: "secondary" },
-      { label: "Browse release notes", to: "/docs/releases", variant: "secondary" },
+      { label: "View on GitHub", to: githubUrl, variant: "primary" },
+      { label: "Copy install command", command: installCommand, variant: "secondary" },
     ],
-    terminalPanel: {
-      title: "First controlled loop",
+    terminal: {
+      title: "90-second terminal flow",
       lines: [
-        "npm i -g agentplane",
+        installCommand,
         "agentplane init",
-      "agentplane preflight --mode full",
-        'agentplane task start-ready <task-id> --author CODER --body "Start: homepage rewrite"',
+        'agentplane task new --title "Tighten README" --owner DOCS --tag docs',
+        'agentplane task plan set <task-id> --text "..." --updated-by DOCS',
+        "agentplane task plan approve <task-id> --by ORCHESTRATOR",
+        'agentplane task start-ready <task-id> --author DOCS --body "Start: ..."',
         "agentplane task verify-show <task-id>",
-        'agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"',
-        'agentplane finish <task-id> --author CODER --body "Verified: checks passed" --result "Homepage shipped" --commit <git-rev>',
+        'agentplane verify <task-id> --ok --by DOCS --note "Docs build passed"',
+        'agentplane finish <task-id> --author DOCS --result "Verified change" --commit <git-rev>',
       ],
-    },
-    repositoryPanel: {
-      title: "Repository surface",
-      lines: ["AGENTS.md", ".agentplane/config.json", ".agentplane/policy/", ".agentplane/tasks/"],
-      text: "Visible files and workflow state replace hidden assistant context.",
-    },
-    trustPanel: {
-      title: "Trust model",
-      items: ["approval gates", "verify step", "deterministic finish", "recovery path"],
-      text: "Git stays visible. AgentPlane governs the workflow around it.",
     },
   },
   problem: {
-    label: "Problem framing",
-    title: "Fast agents are easy. Governed agent work is the harder problem.",
-    text: "The failure mode is not only weak prompting. It is hidden state, implicit approval, unclear verification, and messy closure inside a real repository workflow.",
-    beforeTitle: "Without visible process",
-    afterTitle: "With AgentPlane",
-    before: [
-      "Scope drifts from intent to mutation without a clean task boundary.",
-      "Approvals live in chat context instead of a repository-visible workflow.",
-      "Verification is implied instead of recorded.",
-      "Completion is fuzzy, which makes review and recovery harder.",
+    label: "Problem",
+    title: "Coding agents can change files. Teams still need to know what happened.",
+    questions: [
+      "What task was the agent solving?",
+      "What plan was approved?",
+      "What changed in the repository?",
+      "What was verified?",
+      "Why was the task considered finished?",
     ],
-    after: [
-      "Task state becomes visible and bounded inside the repository.",
-      "Start, verification, and finish are explicit lifecycle operations.",
-      "Artifacts stay local to the repo through the task path.",
-      "The final result is a traceable Git outcome instead of an opaque session ending.",
+    close:
+      "AgentPlane adds a visible workflow layer around agent work without replacing Git, your editor, or your terminal.",
+  },
+  beforeAfter: {
+    label: "What it does",
+    title: "Workflow discipline for agentic coding.",
+    withoutTitle: "Without AgentPlane",
+    withTitle: "With AgentPlane",
+    without: [
+      "Prompt in chat",
+      "Agent edits files",
+      "Human inspects diff",
+      "Context is scattered",
+      "Verification is implicit",
+      "Closure is manual",
+    ],
+    with: [
+      "Task is recorded",
+      "Plan is explicit",
+      "Approval is visible",
+      "Verification is stored",
+      "Finish creates closure evidence",
+      "Everything lives in Git",
     ],
   },
-  repositorySurface: {
-    label: "Repository surface",
-    title: "What appears in the repository after AgentPlane starts governing work.",
-    intro: "The product is visible in files, commands, and state transitions. That is the point.",
-    items: [
-      {
-        name: "Policy gateway",
-        kicker: "AGENTS.md / CLAUDE.md",
-        text: "A compact root file tells agents which rules, workflow, and safety boundaries to load.",
-        artifact: ["Load policy", "Choose route", "Gate mutation"],
-      },
-      {
-        name: "Repo-local workspace",
-        kicker: ".agentplane/",
-        text: "Config, policy files, workflow state, and recovery surfaces stay in a repo-local workspace.",
-        artifact: ["config.json", "policy/", "agents/", "workflows/"],
-      },
-      {
-        name: "Task records",
-        kicker: ".agentplane/tasks/",
-        text: "Per-task state, verify evidence, PR artifacts, and closure history stay near the code they justify.",
-        artifact: ["README.md", "verification", "pr/", "comments"],
-      },
-      {
-        name: "Workflow contract",
-        kicker: ".agentplane/config.json + policy/",
-        text: "The workflow model is explicit, reviewable, and resolved from repository config plus policy modules.",
-        artifact: ["direct", "branch_pr", "policy", "recovery"],
-      },
-      {
-        name: "Lifecycle path",
-        kicker: "start-ready → verify-show → verify → finish",
-        text: "Work moves through visible transitions instead of ad-hoc mutation and vague completion.",
-        artifact: ["start-ready", "verify-show", "verify", "finish"],
-      },
+  demo: {
+    label: "Demo",
+    title: "See AgentPlane in 90 seconds.",
+    scenario:
+      "A coding agent modifies a repository. AgentPlane records task state, plan, verification, and finish so a reviewer can reconstruct what happened from Git-visible artifacts.",
+    commands: [installCommand, "agentplane init", "agentplane quickstart"],
+    actions: [
+      { label: "View source on GitHub", to: githubUrl, variant: "primary" },
+      { label: "Open recipes", to: "/docs/recipes", variant: "secondary" },
     ],
   },
-  workflowPath: {
-    label: "Workflow path",
-    title: "A normal direct loop from intent to verified change.",
-    text: "The default story is the direct workflow: short local loops with explicit state and a deterministic finish path.",
+  repository: {
+    label: "Repo artifacts",
+    title: "What appears in your repo.",
+    tree: [
+      "AGENTS.md or CLAUDE.md",
+      ".agentplane/",
+      ".agentplane/config.json",
+      ".agentplane/tasks/",
+      ".agentplane/WORKFLOW.md",
+      "verification records",
+      "finish record",
+    ],
+    text: "The workflow state sits close to the code it explains.",
+  },
+  howItWorks: {
+    label: "How it works",
+    title: "Five commands turn a loose agent session into a reviewable workflow.",
     steps: [
       {
-        name: "Preflight",
-        text: "Read config, current task state, and repo status before mutation begins.",
-        artifact: "agentplane preflight",
+        name: "Initialize the repo",
+        command: "agentplane init",
+        text: "Creates the policy gateway and repo-local AgentPlane workspace.",
       },
       {
-        name: "Plan",
-        text: "Set the intended scope and make the approval path explicit before work starts.",
-        artifact: "task new → plan set → plan approve",
+        name: "Create a task",
+        command: "agentplane task new ...",
+        text: "Records what the agent is supposed to solve before files change.",
       },
       {
-        name: "Start",
-        text: "Move the task into active work with a visible author, comment, and bounded scope.",
-        artifact: "agentplane task start-ready",
+        name: "Record the plan",
+        command: "agentplane task plan set ...",
+        text: "Makes scope and intended approach visible in the repository.",
       },
       {
-        name: "Change",
-        text: "Make repository changes inside the chosen workflow instead of improvising inside a session.",
-        artifact: "repo mutation under task state",
+        name: "Verify the result",
+        command: "agentplane verify ...",
+        text: "Stores the verification outcome instead of leaving it in chat history.",
       },
       {
-        name: "Verify",
-        text: "Record the verification outcome deliberately so review state is reusable and auditable.",
-        artifact: "verify-show → verify",
+        name: "Finish the task",
+        command: "agentplane finish ...",
+        text: "Closes the work with traceable evidence and commit metadata.",
       },
-      {
-        name: "Finish",
-        text: "Close with a deterministic result path that leaves the repo in a more legible state.",
-        artifact: "agentplane finish",
-      },
+    ],
+  },
+  audience: {
+    label: "Who it is for",
+    title: "Built for developers already using coding agents.",
+    for: [
+      "Developers using Claude Code, Codex, Cursor, Aider, or local coding agents.",
+      "Maintainers who want agent changes to remain reviewable.",
+      "Teams that need task state, verification, and closure before merging agent-generated work.",
+      "Local-first builders who do not want a hosted agent runtime between their repo and their workflow.",
+    ],
+    notFor: [
+      "Not a hosted agent platform.",
+      "Not a prompt framework.",
+      "Not a replacement for Git.",
+      "Not a replacement for your editor.",
+    ],
+  },
+  stack: {
+    label: "Agent stack",
+    title: "Works around your current agent stack.",
+    text: "Your agent writes code. AgentPlane records the workflow around that code. Git remains the source of truth.",
+    items: [
+      "Claude Code",
+      "Codex-style CLI workflows",
+      "Cursor / Windsurf-style agent edits",
+      "Aider",
+      "local LLM coding agents",
+      "human-driven terminal workflows",
     ],
   },
   workflowModes: {
     label: "Workflow modes",
-    title: "Choose integration discipline, not feature gating.",
+    title: "Choose the workflow discipline you need.",
     items: [
       {
         name: "direct",
-        badge: "Fast local loop",
-        text: "Single-checkout workflow for shorter policy-aware iteration and quick repository feedback.",
-        bullets: [
-          "Runs in one checkout",
-          "Best for short local loops",
-          "Finish creates the deterministic close commit by default",
-        ],
+        text: "Fast local loops in the current checkout. Good for solo work, prototypes, and short tasks.",
       },
       {
         name: "branch_pr",
-        badge: "Structured integration path",
-        text: "Worktree and PR-oriented workflow for cleaner handoff, review, and multi-role integration.",
-        bullets: [
-          "One task per branch or worktree",
-          "PR artifacts live under .agentplane/tasks/<task-id>/pr/",
-          "Integrates through a stricter merge path",
-        ],
+        text: "Structured per-task branch and PR-style handoff. Good for teams, stricter review, and integration boundaries.",
       },
     ],
   },
-  controlModel: {
-    label: "Control model",
-    title: "Trust comes from explicit mechanisms, not from bigger claims.",
-    text: "AgentPlane makes state, approval, verification, and recovery visible instead of treating them as chat-side assumptions.",
-    proofPoints: [
-      "Explicit approvals can gate work before repository mutation begins.",
-      "Verification is recorded instead of inferred from a final assistant message.",
-      "State transitions remain visible and bounded through the task lifecycle.",
-      "Recovery paths exist when workflow state drifts or artifacts go stale.",
-      "Git remains visible; AgentPlane governs the workflow around it rather than replacing it.",
+  gitNative: {
+    label: "Why Git-native",
+    title: "Agent work should leave reviewable evidence.",
+    points: [
+      "policy lives in the repo",
+      "task records live in the repo",
+      "verification is explicit",
+      "closure is recorded",
+      "reviewers can inspect what happened",
     ],
-    tabs: [
-      {
-        id: "approvals",
-        label: "Approvals",
-        kicker: "Gate the start",
-        title: "Put approval state in the workflow, not in invisible session memory.",
-        text: "Plan approval, workflow mode, and bounded starts turn intention into a checkable control surface.",
-        artifact: ["plan approve", "start-ready", "approval required", "scoped blast radius"],
-      },
-      {
-        id: "verification",
-        label: "Verification",
-        kicker: "Record proof",
-        title: "Make review and verification reusable.",
-        text: "The workflow records verification state as an explicit artifact instead of leaving it implied in chat history.",
-        artifact: ["verify-show", "verify --ok|--rework", "## Verification", "review note"],
-      },
-      {
-        id: "recovery",
-        label: "Recovery",
-        kicker: "Repair drift",
-        title: "When state drifts, the system should tell you how to recover.",
-        text: "Doctor, export, upgrade, and workflow artifacts are designed to restore legible state without guesswork.",
-        artifact: ["doctor", "task export", "upgrade", "policy modules"],
-      },
+    diagram: ["Agent", "AgentPlane workflow", "Git repo artifacts", "Human review / CI / merge"],
+  },
+  quickstart: {
+    label: "Quickstart",
+    title: "Try it in a Git repository.",
+    commands: [installCommand, "agentplane init", "agentplane quickstart"],
+    requirements: ["Node.js 20+", "Git repository", "Local terminal"],
+    actions: [
+      { label: "Read docs", to: "/docs/user/overview", variant: "primary" },
+      { label: "View commands", to: "/docs/user/commands", variant: "secondary" },
+      { label: "Open GitHub", to: githubUrl, variant: "secondary" },
     ],
   },
-  harness: {
-    label: "Harness engineering",
-    title: "Constrain. Execute. Observe. Recover. Integrate.",
-    text: "Harness engineering is the internal doctrine beneath the product surface. It belongs below the fold because the product value should already be clear before the deeper model appears.",
-    steps: ["Constrain", "Execute", "Observe", "Recover", "Integrate"],
-  },
-  docsRail: {
-    label: "Docs rail",
-    title: "Canonical routes into the product surface.",
-    groups: [
-      {
-        name: "Getting Started",
-        links: [
-          { label: "Overview", to: "/docs/user/overview" },
-          { label: "Prerequisites", to: "/docs/user/prerequisites" },
-          { label: "Setup", to: "/docs/user/setup" },
-        ],
-      },
-      {
-        name: "Work on a Task",
-        links: [
-          { label: "Workflow", to: "/docs/user/workflow" },
-          { label: "Task lifecycle", to: "/docs/user/task-lifecycle" },
-          { label: "Branching & PR artifacts", to: "/docs/user/branching-and-pr-artifacts" },
-        ],
-      },
-      {
-        name: "Reference",
-        links: [
-          { label: "Commands", to: "/docs/user/commands" },
-          { label: "Configuration", to: "/docs/user/configuration" },
-          { label: "Generated reference", to: "/docs/reference/generated-reference" },
-        ],
-      },
-      {
-        name: "Upgrade & Recover",
-        links: [
-          { label: "Setup", to: "/docs/user/setup" },
-          { label: "Troubleshooting", to: "/docs/help/troubleshooting-by-symptom" },
-          { label: "Upgrade recovery", to: "/docs/help/legacy-upgrade-recovery" },
-        ],
-      },
-      {
-        name: "Developer Track",
-        links: [
-          { label: "Architecture", to: "/docs/developer/architecture" },
-          { label: "CLI contract", to: "/docs/developer/cli-contract" },
-          { label: "Release and publishing", to: "/docs/developer/release-and-publishing" },
-        ],
-      },
+  recipes: {
+    label: "Recipes",
+    title: "Copy-paste flows for the tools you already use.",
+    items: [
+      { name: "AgentPlane + Claude Code", to: "/docs/recipes/claude-code" },
+      { name: "AgentPlane + Codex", to: "/docs/recipes/codex" },
+      { name: "AgentPlane + Cursor", to: "/docs/recipes/cursor" },
+      { name: "AgentPlane + Aider", to: "/docs/recipes/aider" },
+      { name: "AgentPlane + GitHub Actions", to: "/docs/recipes/github-actions" },
+      { name: "AgentPlane + branch_pr workflow", to: "/docs/recipes/branch-pr" },
     ],
   },
-  journal: {
-    label: "Release and journal",
-    title: "Follow shipped behavior and product thinking separately.",
+  proof: {
+    label: "Technical proof",
+    title: "Built for real repositories.",
+    points: [
+      "MIT licensed",
+      "Local-first CLI",
+      "TypeScript codebase",
+      "Active release history",
+      "No hosted control plane",
+    ],
+  },
+  faq: {
+    label: "FAQ",
+    title: "Objections, answered directly.",
     items: [
       {
-        name: "Release notes",
-        to: "/docs/releases",
-        text: "Use the release notes as the formal source-of-truth record for what shipped.",
+        question: "Is AgentPlane an agent?",
+        answer: "No. It is a workflow layer around agent work.",
       },
       {
-        name: "Blog / journal",
-        to: "/blog",
-        text: "Use the blog for release rationale, implementation notes, and product analysis.",
+        question: "Does it send my code to a hosted service?",
+        answer: "No. It runs locally in your repository.",
+      },
+      {
+        question: "Does it replace Git?",
+        answer: "No. It makes agent work more legible inside Git.",
+      },
+      {
+        question: "Does it replace Claude Code, Codex, or Cursor?",
+        answer:
+          "No. Use those tools to write code; use AgentPlane to record task state, verification, and closure.",
+      },
+      {
+        question: "Can I use it solo?",
+        answer: "Yes. Use direct mode.",
+      },
+      {
+        question: "Can teams use it?",
+        answer: "Yes. Use branch_pr mode for stricter handoff and integration.",
+      },
+      {
+        question: "What files does it create?",
+        answer:
+          "AGENTS.md or CLAUDE.md, .agentplane/, task records, workflow state, and verification records.",
       },
     ],
   },
   closing: {
-    label: "Next step",
-    title: "Start with the overview, then follow the workflow model.",
-    text: "The homepage should orient quickly. The product contract lives in the docs, workflow, command surface, and release history.",
+    label: "Start",
+    title: "Put coding agents on a visible Git workflow.",
+    command: installCommand,
     actions: [
-      { label: "Open overview", to: "/docs/user/overview", variant: "primary" },
-      { label: "Read workflow", to: "/docs/user/workflow", variant: "secondary" },
-      { label: "See setup", to: "/docs/user/setup", variant: "secondary" },
+      { label: "View on GitHub", to: githubUrl, variant: "primary" },
+      { label: "Read the docs", to: "/docs/user/overview", variant: "secondary" },
     ],
   },
 } as const;

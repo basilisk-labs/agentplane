@@ -1,45 +1,58 @@
 ---
 title: "Overview"
-description: "Learn what Agent Plane is, what it is not, and how the core pieces fit together."
+description: "Learn what AgentPlane is, what it is not, and how it makes coding-agent work auditable inside Git."
 ---
 
-## What Agent Plane is
+## What AgentPlane is
 
-Agent Plane is a local CLI workflow for agent-driven development in a git repository.
+AgentPlane is a local CLI for agent-driven development inside a Git repository.
 
-You run `agentplane` once to initialize a repo, then agents use the same CLI for planning, execution, verification, and closure.
+It makes Claude Code, Codex, Cursor, Aider, and similar coding-agent work auditable by recording the
+workflow around the code:
+
+```text
+task -> plan -> approve -> implement -> verify -> finish
+```
+
+AgentPlane runs locally. It does not add a hosted runtime between your repository and your agent.
 
 ## What it gives you
 
-- A policy file in repo root: `AGENTS.md`.
-- A repo-local workspace in `.agentplane/`.
-- Task tracking with explicit ownership and dependencies.
-- Guarded commit and finish flows.
-- Optional backends, including local and Redmine.
-- A harness engineering operating model for predictable agent execution.
+- A repo policy gateway: `AGENTS.md` or `CLAUDE.md`.
+- A repo-local workspace: `.agentplane/`.
+- Task records with ownership, plan, status, and dependencies.
+- Explicit verification state.
+- Finish records tied to Git revisions.
+- Workflow modes for fast local loops and stricter branch/PR handoff.
 
 ## What it does not do
 
-- It is not a hosted service. There is no remote runtime.
-- It is not a replacement for your editor. It sits on top of your existing IDE and terminal.
-- It does not hide git. You still see and control commit history.
+- It is not an agent.
+- It is not a hosted agent platform.
+- It is not a prompt framework.
+- It does not replace Git.
+- It does not replace your editor or terminal.
+- It does not replace Claude Code, Codex, Cursor, Aider, or other coding agents.
 
 ## How the pieces fit
 
-1. `agentplane init` creates `AGENTS.md`, `.agentplane/config.json`, backend stubs, and agent templates.
-2. Agents create and run tasks through `agentplane task/start/verify/finish`.
-3. Policy and approvals are enforced from config plus `AGENTS.md`.
-4. Task artifacts and metadata stay inside the repository.
+1. `agentplane init` creates the policy gateway and `.agentplane/` workspace.
+2. A task records what the agent is supposed to solve.
+3. A plan records the intended approach before implementation.
+4. Verification records what was checked.
+5. Finish records why the work is considered closed.
 
 ## Source of truth model
 
-- Workflow policy: `AGENTS.md`.
-- CLI behavior: command specs and runtime code.
-- Config schema/defaults: `packages/spec/schemas/config.schema.json`.
-- Current repo config: `.agentplane/config.json`.
+- Workflow policy: `AGENTS.md` or `CLAUDE.md`.
+- Repo configuration: `.agentplane/config.json`.
+- Task state: `.agentplane/tasks/`.
+- Command behavior: installed `agentplane` CLI.
+- Git history: commits, branches, and review workflow.
 
 ## Next steps
 
-1. Read [Prerequisites](prerequisites).
-2. Run [Setup](setup).
-3. Use [Commands](commands) for daily operation and [CLI reference](cli-reference.generated) for exact flags.
+1. Install and initialize from [Setup](setup).
+2. Learn the [Workflow](workflow).
+3. Pick a concrete [Recipe](../recipes).
+4. Use [Commands](commands) for exact flags.
