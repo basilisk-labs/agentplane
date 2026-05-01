@@ -4,7 +4,7 @@ title: "Add AgentPlane to Picrew awesome-agent-harness"
 status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-01T15:58:10.152Z"
+  updated_at: "2026-05-01T16:00:37.096Z"
   updated_by: "DOCS"
-  note: "Picrew upstream PR opened"
+  note: "Picrew PR body corrected and verified"
 commit: null
 comments:
   -
@@ -41,8 +41,14 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Picrew upstream PR opened"
+  -
+    type: "verify"
+    at: "2026-05-01T16:00:37.096Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Picrew PR body corrected and verified"
 doc_version: 3
-doc_updated_at: "2026-05-01T15:58:10.162Z"
+doc_updated_at: "2026-05-01T16:00:37.114Z"
 doc_updated_by: "DOCS"
 description: "Submit a focused GitHub PR adding AgentPlane to Picrew/awesome-agent-harness in the most fitting harness implementation, guardrails, governance, or orchestration section after verifying the current README structure."
 sections:
@@ -106,6 +112,29 @@ sections:
     Links: https://github.com/Picrew/awesome-agent-harness/pull/4
     
     Upstream PR: https://github.com/Picrew/awesome-agent-harness/pull/4
+    
+    ### 2026-05-01T16:00:37.096Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Picrew PR body corrected and verified
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T15:58:10.162Z, excerpt_hash=sha256:96c0267f8187635c682ccd22a89747f7a0367c5145a2ddd067455cee1430f68e
+    
+    Details:
+    
+    Command: gh pr edit 4 --repo Picrew/awesome-agent-harness --body-file /tmp/picrew-agentplane-pr-body.md
+    Result: pass
+    Evidence: PR body replaced with rendered Markdown using real paragraph breaks and bullets.
+    Scope: external Picrew PR presentation only.
+    Links: https://github.com/Picrew/awesome-agent-harness/pull/4
+    
+    Command: gh pr view 4 --repo Picrew/awesome-agent-harness --json body --jq .body
+    Result: pass
+    Evidence: output contains normal Markdown sections and no literal escaped 
+     separators.
+    Scope: PR body formatting check.
+    Links: https://github.com/Picrew/awesome-agent-harness/pull/4
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -183,6 +212,29 @@ Scope: Picrew PR diff.
 Links: https://github.com/Picrew/awesome-agent-harness/pull/4
 
 Upstream PR: https://github.com/Picrew/awesome-agent-harness/pull/4
+
+### 2026-05-01T16:00:37.096Z — VERIFY — ok
+
+By: DOCS
+
+Note: Picrew PR body corrected and verified
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-01T15:58:10.162Z, excerpt_hash=sha256:96c0267f8187635c682ccd22a89747f7a0367c5145a2ddd067455cee1430f68e
+
+Details:
+
+Command: gh pr edit 4 --repo Picrew/awesome-agent-harness --body-file /tmp/picrew-agentplane-pr-body.md
+Result: pass
+Evidence: PR body replaced with rendered Markdown using real paragraph breaks and bullets.
+Scope: external Picrew PR presentation only.
+Links: https://github.com/Picrew/awesome-agent-harness/pull/4
+
+Command: gh pr view 4 --repo Picrew/awesome-agent-harness --json body --jq .body
+Result: pass
+Evidence: output contains normal Markdown sections and no literal escaped 
+ separators.
+Scope: PR body formatting check.
+Links: https://github.com/Picrew/awesome-agent-harness/pull/4
 
 <!-- END VERIFICATION RESULTS -->
 

@@ -12,7 +12,7 @@ Submit a focused GitHub PR adding AgentPlane to Picrew/awesome-agent-harness in 
 ## Verification
 
 - State: ok
-- Note: Picrew upstream PR opened
+- Note: Picrew PR body corrected and verified
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes

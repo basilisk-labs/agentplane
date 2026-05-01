@@ -26,7 +26,7 @@ Submit a focused GitHub PR adding AgentPlane to Picrew/awesome-agent-harness in 
 ### Current Status
 
 - State: ok
-- Note: Picrew upstream PR opened
+- Note: Picrew PR body corrected and verified
 
 ## Risks
 
