@@ -1,0 +1,4 @@
+ agentplane-recipes                        |  2 +-
+ docs/recipes-inventory.json               | 13 +++++--------
+ scripts/check-oversized-test-baseline.mjs |  2 +-
+ 3 files changed, 7 insertions(+), 10 deletions(-)

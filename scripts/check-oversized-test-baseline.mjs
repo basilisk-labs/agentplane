@@ -48,7 +48,7 @@ function requirePositiveInt(raw, field) {
 }
 
 function optionalPositiveInt(raw, field) {
-  if (raw === undefined) return undefined;
+  if (raw === undefined) return;
   return requirePositiveInt(raw, field);
 }
 

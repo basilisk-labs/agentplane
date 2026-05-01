@@ -1,0 +1,36 @@
+## Summary
+
+Fix recipes catalog compatibility
+
+Update the agentplane-recipes submodule catalog so bundled recipes validate and install against the current AgentPlane recipe runtime.
+
+## Scope
+
+- In scope: Update the agentplane-recipes submodule catalog so bundled recipes validate and install against the current AgentPlane recipe runtime.
+- Out of scope: unrelated refactors not required for "Fix recipes catalog compatibility".
+
+## Verification
+
+- State: ok
+- Note: Recipe catalog compatibility verified: runtime manifest/assets/scenario validation passed for viewer and dokploy; signed list-remote worked with the committed dev public key override; path and archive installs passed for both recipes; HTTP index install-by-name smoke passed; init --recipes viewer vendored the active recipe and generated prompt graph; docs:recipes:check passed.
+- Full verification checklist lives in local review.md.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-01T07:06:37.538Z
+- Branch: task/202605010613-07JD2T/recipes-catalog-compat
+- Head: 9593bbc7fd65
+
+```text
+ agentplane-recipes                        |  2 +-
+ docs/recipes-inventory.json               | 13 +++++--------
+ scripts/check-oversized-test-baseline.mjs |  2 +-
+ 3 files changed, 7 insertions(+), 10 deletions(-)
+```
+
+</details>
