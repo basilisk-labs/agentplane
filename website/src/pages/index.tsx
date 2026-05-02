@@ -290,9 +290,7 @@ function latestVersion(recipe: RecipeEntry): string | null {
 }
 
 function buildInstallCommand(recipe: RecipeEntry): string {
-  const version = latestVersion(recipe);
-  const target = version ? `${recipe.id}@${version}` : recipe.id;
-  return `agentplane recipes install ${target} --index ${recipesIndexUrl} --refresh --yes`;
+  return `agentplane recipes install ${recipe.id} --index ${recipesIndexUrl} --refresh --yes`;
 }
 
 function RecipeCard({ recipe }: { recipe: RecipeEntry }): ReactNode {
@@ -307,11 +305,7 @@ function RecipeCard({ recipe }: { recipe: RecipeEntry }): ReactNode {
       <div className={styles.recipeMeta}>
         <span>{latest ? `latest: ${latest}` : "version: n/a"}</span>
       </div>
-      <CopyCommand
-        command={installCommand}
-        label="Install"
-        className={styles.recipeAction}
-      />
+      <CopyCommand command={installCommand} label="Install" className={styles.recipeAction} />
     </article>
   );
 }

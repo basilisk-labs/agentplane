@@ -6,7 +6,7 @@ export const workflowDocsUrl = "/docs/user/workflow";
 export const quickstartUrl = "/docs/user/setup";
 export const installCommand = "npm i -g agentplane";
 export const recipesIndexUrl =
-  "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/refs/heads/main/index.json";
+  "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json";
 
 export const homepageContent = {
   seo: {
