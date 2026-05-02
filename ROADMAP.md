@@ -27,7 +27,8 @@ Open groups:
   move historical migration notes out of the main install path.
 - Init correctness: keep init plan/apply behavior transactional and ensure every materialized file
   intended for the first install commit is included.
-- Future eval system: define repeatable evaluation suites before they become release gates.
+- Future eval system: define repeatable evaluation suites and recursive prompt/recipe improvement
+  loops before they become release gates.
 
 ## 0.1 Foundation and Baseline Workflow
 
@@ -62,11 +63,16 @@ Open groups:
 - Enable coordinated swarm-style execution by custom agents.
 - Provide orchestration primitives for reliable multi-agent runs.
 
-## 0.6 Evaluation System
+## 0.6 Evaluation and Recursive Improvement
 
-- Define eval manifests for agents, recipes, runner behavior, lifecycle flows, and prompt compiler
-  regressions.
-- Run scenario-based evaluations with reproducible inputs, scoring, evidence artifacts, and
-  comparison reports.
-- Promote stable eval suites into release gates so task lifecycle, recipe behavior, and runner
-  execution quality can regress only with explicit review.
+- Define eval targets for agents, recipes, core prompt modules, runner behavior, lifecycle flows,
+  and prompt compiler regressions.
+- Run scenario-based evaluations through the planner-runner-evaluator loop with reproducible
+  inputs, structured evidence artifacts, deterministic gates, optional LLM quality scoring, and
+  baseline-vs-candidate comparison reports.
+- Support recursive improvement for prompts and recipes: evaluate the current behavior, test a
+  candidate prompt/module/recipe change, and promote it only when quality improves without
+  critical regressions.
+- Keep benchmark mode separate from internal improvement evals: AgentPlane should be able to run
+  external harness benchmarks and export/submit results without letting leaderboard metrics replace
+  recipe or prompt quality gates.

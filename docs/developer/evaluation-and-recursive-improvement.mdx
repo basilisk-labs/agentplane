@@ -1,0 +1,94 @@
+---
+title: "Evaluation and recursive improvement"
+description: "Planned eval architecture for measuring and improving prompts, recipes, and runner behavior."
+---
+
+## Status
+
+This page describes the planned `0.6` eval architecture. It documents target behavior and boundaries;
+it does not claim that the full eval runner, quality loop, or promotion workflow is already shipped.
+
+## Goal
+
+AgentPlane evals should measure behavior, not prompt text alone. The core question is whether a
+prompt, recipe, or prompt module helps a runner-controlled agent reach the documented quality
+criteria with reproducible evidence.
+
+The same architecture should support two separate modes:
+
+1. Internal improvement evals for prompts, recipes, agents, and core prompt modules.
+2. External benchmark runs where AgentPlane acts as a harness adapter and exports results in the
+   benchmark's required format.
+
+These modes can share runner artifacts and result manifests, but they must keep scoring and
+promotion decisions separate.
+
+## Internal improvement loop
+
+Internal evals compare a baseline target with a candidate target:
+
+1. Select an eval target: `recipe`, `prompt_module`, `agent_profile`, `policy_gateway`, or compiled
+   prompt bundle.
+2. Resolve reference behavior into scenarios, hard gates, scoring rubrics, and promotion policy.
+3. Run the baseline through the planner-runner-evaluator loop.
+4. Apply the candidate prompt/module/recipe change.
+5. Run the same scenarios again.
+6. Compare baseline and candidate results.
+7. Promote the candidate only when required gates pass and the candidate improves without critical
+   regressions.
+
+Natural-language reference behavior is not enough by itself. It should seed scenarios and scoring
+rubrics, but promotion needs executable checks and recorded evidence.
+
+## Planner-runner-evaluator phases
+
+The eval loop depends on three distinct phases:
+
+- `PLANNER` recursively decomposes a request into atomic dependent leaf tasks. Composite nodes are
+  refined until each executable leaf has one owner, clear scope, explicit dependencies, DoD, and
+  Verify Steps.
+- The selected executor agent runs one leaf task through the shared runner contract. The runner is
+  the executor and evidence source: it writes bundle, trace, result manifest, artifacts, metrics,
+  changed paths, and verification candidates.
+- `EVALUATOR` compares task documentation, Verify Steps, runner evidence, traces, artifacts, and
+  optional reference behavior. It emits `pass`, `rework`, or `blocked`, plus focused context for the
+  next runner pass when rework is required.
+
+Runner success is not the same as quality success. A process can exit successfully while evidence is
+missing or the documented quality criteria remain unmet.
+
+## Scoring model
+
+Eval scoring should separate hard gates from judgement:
+
+- Deterministic gates: valid result manifest, required README sections, Verify Steps covered by
+  evidence, expected artifacts, allowed file scope, policy compliance, and lifecycle state.
+- LLM quality scoring: plan quality, output usefulness, reference-behavior fit, documentation
+  completeness, and whether the run made unsupported claims.
+- Promotion policy: minimum score delta, maximum allowed regressions, required scenario coverage,
+  and blockers for critical gate failures.
+
+LLM judgement can be useful, but it should evaluate evidence and documented behavior. It should not
+replace deterministic gates for policy, lifecycle, or artifact correctness.
+
+## Benchmark mode
+
+Benchmark mode is a separate integration surface:
+
+1. A benchmark adapter reads the benchmark dataset.
+2. AgentPlane materializes each case as a task or scenario under a declared harness profile.
+3. The runner executes the selected model/agent setup.
+4. A result exporter writes JSONL, JUnit, benchmark-specific schemas, or hosted submission payloads.
+5. Reports include AgentPlane version, model, prompt bundle hash, recipe set, commit SHA, and
+   reproducibility notes.
+
+Benchmark scores are useful for external comparison. They should not automatically promote internal
+prompt or recipe changes unless the internal eval promotion policy also passes.
+
+## Non-goals for the first implementation
+
+- Do not make LLM judge scores the only release gate.
+- Do not let the runner perform opaque in-process retries without visible verdict artifacts.
+- Do not merge internal eval promotion policy with public leaderboard submission policy.
+- Do not treat recipe scenario `steps` as a direct execution DSL; execution remains delegated to the
+  configured runner adapter.

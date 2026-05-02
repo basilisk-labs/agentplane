@@ -122,6 +122,7 @@ const sidebars: SidebarsConfig = {
         "developer/workflow-contract",
         "developer/workflow-harness-test-matrix",
         "developer/harness-engineering",
+        "developer/evaluation-and-recursive-improvement",
         "developer/close-taxonomy",
         "developer/modular-prompt-assembly",
         "developer/schema-validation-strategy",
