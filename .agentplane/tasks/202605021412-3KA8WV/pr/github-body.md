@@ -25,12 +25,14 @@ Extend release-distribution.json generation and validation to include platformAs
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T16:57:22.593Z
+- Updated: 2026-05-02T17:03:38.292Z
 - Branch: task/202605021412-3KA8WV/standalone-distribution-manifest
-- Head: ce3aea49fd87
+- Head: 598043f10bfb
 
 ```text
-No changes detected.
+ .../generate-release-distribution-script.test.ts   | 100 +++++++++++++++++++++
+ scripts/generate-release-distribution.mjs          |  79 ++++++++++++++--
+ 2 files changed, 171 insertions(+), 8 deletions(-)
 ```
 
 </details>
