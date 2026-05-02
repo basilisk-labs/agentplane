@@ -90,7 +90,8 @@ export function parseSuiteArgs(argv) {
     switch (arg) {
       case "--help":
       case "-h": {
-        return { help: true };
+        help = true;
+        break;
       }
       case "--suite": {
         const next = argv[i + 1];

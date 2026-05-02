@@ -1,7 +1,7 @@
 import { printCliPerfHelpText, runSuiteRunner } from "./cli-benchmark-runner.mjs";
 
 const args = process.argv.slice(2);
-if (!args.includes("--help") && !args.includes("-h") && !args.includes("--suite")) {
+if (!args.includes("--suite")) {
   args.push("--suite", "cli-cold-path");
 }
 

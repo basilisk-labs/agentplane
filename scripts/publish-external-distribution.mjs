@@ -190,7 +190,7 @@ async function publishExternal(args) {
         "--json",
         "url",
         "--jq",
-        ".[0].url // \"\"",
+        '.[0].url // ""',
       ],
       { cwd: cloneDir, env },
     );
