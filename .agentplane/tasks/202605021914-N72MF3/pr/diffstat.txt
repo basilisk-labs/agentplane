@@ -1,0 +1,13 @@
+ .agentplane/tasks/202605021914-ADH1EE/README.md    | 118 +++++++++++++
+ .agentplane/tasks/202605021914-AMCDG4/README.md    | 118 +++++++++++++
+ .agentplane/tasks/202605021914-Z2P2TS/README.md    | 118 +++++++++++++
+ .github/workflows/publish-distribution-module.yml  | 196 +++++++++++++++++++++
+ .github/workflows/publish.yml                      |   5 +-
+ docs/developer/release-and-publishing.mdx          |  39 ++--
+ .../generate-release-distribution-script.test.ts   |  12 ++
+ .../generate-standalone-cli-assets-script.test.ts  |  49 +++++-
+ .../release/publish-workflow-contract.test.ts      |  31 ++++
+ scripts/generate-release-distribution.mjs          |  99 ++++++++---
+ scripts/generate-standalone-cli-assets.mjs         |  54 ++++--
+ scripts/render-ghcr-image-metadata.mjs             |  26 ++-
+ 12 files changed, 805 insertions(+), 60 deletions(-)

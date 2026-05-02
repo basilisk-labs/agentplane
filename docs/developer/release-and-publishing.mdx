@@ -103,7 +103,7 @@ release-relevant Linux gate that can block or invalidate a publishable SHA.
 npm publish is GitHub-only.
 Local `npm publish` is blocked by `prepublishOnly` through `scripts/enforce-github-publish.mjs`.
 
-GitHub workflow `Publish to npm`:
+GitHub workflow `Publish release`:
 
 - observes successful `Core CI` `workflow_run` events on `main` to detect release readiness, but does not publish from automatic events
 - publishes only from explicit `workflow_dispatch`
@@ -144,9 +144,9 @@ Required release distribution artifacts:
 - `agentplane-vX.Y.Z-<platform>-<arch>.tar.gz` or `.zip`: bundled-runtime CLI archives for
   package managers and no-Node installer paths.
 
-The install scripts are convenience entrypoints, not update sources of truth. Package managers and
-scripts must install an exact release version and must not implement self-update behavior that
-bypasses the hosted release pipeline.
+The install scripts are convenience entrypoints over the same standalone release assets used by
+package managers and setup actions. They install an exact release version, verify `SHA256SUMS`, and
+must not require external `node`, `npm`, `bun`, or global packages.
 
 ## Standalone CLI artifact contract
 
@@ -293,6 +293,22 @@ If a credential is absent, the channel must record `skipped_missing_credentials`
 secret name and a recovery command. It must not fail an otherwise valid npm/GitHub/GHCR release
 unless that channel was explicitly marked required for the run.
 
+External handoff channels are also recoverable through `Publish distribution module`, a
+`workflow_dispatch` workflow that accepts:
+
+- `tag`: release tag, for example `v0.4.2`
+- `sha`: exact release commit SHA
+- `module`: `github-release`, `ghcr`, `homebrew`, `scoop`, `setup-agentplane`, `external`, or `all`
+
+Use it when npm is already published and a distribution channel needs a focused retry:
+
+```bash
+gh workflow run publish-distribution-module.yml \
+  -f tag=vX.Y.Z \
+  -f sha=<release-sha> \
+  -f module=homebrew
+```
+
 External moderated registries such as `homebrew/core`, winget, Chocolatey, AUR, and nixpkgs are
 follow-up publication targets. They should be opened as PR jobs or manual recovery tasks after the
 release is already published, because their review queues are outside the AgentPlane release SLA.
@@ -325,7 +341,7 @@ GitHub workflow `Core CI` also supports `workflow_dispatch` recovery:
 - prefer `sha=<release commit>` to validate the exact historical release candidate
 - use `ref` only when `sha` is omitted
 - the dispatched run checks out that exact target and can mint the canonical `release-ready` artifact
-  for the same commit, which `Publish to npm` then consumes
+  for the same commit, which `Publish release` then consumes
 
 ## Provenance requirements
 
@@ -353,7 +369,7 @@ workflow can publish it without forking the release route.
   artifact source instead of following a moving branch ref
 - If the exact release SHA never produced `release-ready` historically:
 - first dispatch `Core CI` for that same `sha`
-- then dispatch `Publish to npm` for that same `sha`
+- then dispatch `Publish release` for that same `sha`
 - If only some packages are trusted publishers:
 - keep OIDC enabled and supply `NPM_TOKEN` as fallback for the remaining packages until npm-side
   trusted publishing is enabled for them too
@@ -388,11 +404,12 @@ only on workflow status inference.
 
 For distribution recovery, use the manifest first:
 
-- if npm succeeded but a package-manager channel was skipped, rerun only that channel with the same
-  `release-distribution.json`
-- if GitHub Release assets are missing, regenerate and upload assets for the same tag before running
-  package-manager modules
-- if GHCR publish failed after npm succeeded, rerun the GHCR module against the exact release SHA
+- if npm succeeded but a package-manager channel was skipped, dispatch `Publish distribution module`
+  with `module=homebrew`, `module=scoop`, `module=setup-agentplane`, or `module=external`
+- if GitHub Release assets are missing, dispatch `Publish distribution module` with
+  `module=github-release` for the same tag and SHA
+- if GHCR publish failed after npm succeeded, dispatch `Publish distribution module` with
+  `module=ghcr` against the exact release SHA
 - if a tap, bucket, or setup-action repository PR already exists, update that PR rather than creating
   a duplicate
 - if credentials were missing, add the secret and rerun the credentials-gated module; do not bump the

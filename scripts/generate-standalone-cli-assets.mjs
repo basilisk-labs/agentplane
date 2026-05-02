@@ -12,6 +12,8 @@ const DEFAULT_REPO = "basilisk-labs/agentplane";
 const DEFAULT_OUT_DIR = ".agentplane/.release/publish/standalone";
 const DEFAULT_NODE_VERSION = "v24.15.0";
 const CLI_PACKAGE_DIR = "packages/agentplane";
+const CORE_PACKAGE_DIR = "packages/core";
+const RECIPES_PACKAGE_DIR = "packages/recipes";
 const NODE_DIST_BASE_URL = "https://nodejs.org/download/release";
 const TARGETS = [
   { platform: "darwin", arch: "arm64", node: "darwin-arm64", archive: "tar.gz" },
@@ -216,17 +218,17 @@ async function materializeOfficialNode({ target, nodeVersion, cacheDir, nodeRoot
   }
 }
 
-function packCliPackage(repoRoot, outDir) {
+function packWorkspacePackage(repoRoot, packageDir, outDir) {
   const cacheDir = path.join(repoRoot, ".agentplane", ".npm-cache");
   const stdout = run("npm", ["pack", "--json", "--ignore-scripts", "--pack-destination", outDir], {
-    cwd: path.join(repoRoot, CLI_PACKAGE_DIR),
+    cwd: path.join(repoRoot, packageDir),
     env: { ...process.env, NPM_CONFIG_CACHE: cacheDir },
   });
   const jsonMatch = /(^|\n)(\[\s*\{[\s\S]*\]\s*)$/u.exec(stdout);
-  if (!jsonMatch) throw new Error("npm pack did not emit JSON for the agentplane package");
+  if (!jsonMatch) throw new Error(`npm pack did not emit JSON for ${packageDir}`);
   const [entry] = JSON.parse(jsonMatch[2]);
   const filename = String(entry?.filename ?? "");
-  if (!filename) throw new Error("npm pack did not report a filename for agentplane");
+  if (!filename) throw new Error(`npm pack did not report a filename for ${packageDir}`);
   return path.join(outDir, filename);
 }
 
@@ -238,6 +240,30 @@ async function extractCliPackage(tarballPath, packageRoot) {
   } finally {
     rmSync(extractDir, { recursive: true, force: true });
   }
+}
+
+async function sanitizeStandalonePackageJson(packageRoot, localPackages) {
+  const packageJsonPath = path.join(packageRoot, "package.json");
+  const packageJson = await readJson(packageJsonPath);
+  delete packageJson.devDependencies;
+  delete packageJson.scripts;
+  packageJson.dependencies = {
+    ...(packageJson.dependencies ?? {}),
+    "@agentplaneorg/core": `file:${localPackages.coreTarball}`,
+    "@agentplaneorg/recipes": `file:${localPackages.recipesTarball}`,
+  };
+  await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`, "utf8");
+}
+
+async function restoreStandalonePackageJson(packageRoot, version) {
+  const packageJsonPath = path.join(packageRoot, "package.json");
+  const packageJson = await readJson(packageJsonPath);
+  packageJson.dependencies = {
+    ...(packageJson.dependencies ?? {}),
+    "@agentplaneorg/core": version,
+    "@agentplaneorg/recipes": version,
+  };
+  await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`, "utf8");
 }
 
 async function writeWrapper(target, rootDir) {
@@ -312,15 +338,23 @@ function createArchive(rootDir, outPath, target) {
 
 async function installProductionDependencies(repoRoot, packageRoot, skipInstall) {
   if (skipInstall) return "skipped_check_mode";
-  const lockPath = path.join(repoRoot, "bun.lock");
-  if (!existsSync(lockPath)) {
-    throw new Error("Standalone dependency installation requires repository bun.lock");
-  }
-  await writeFile(path.join(packageRoot, "bun.lock"), await readFile(lockPath));
-  run("bun", ["install", "--production", "--frozen-lockfile", "--ignore-scripts"], {
+  const env = {
+    ...process.env,
+    NPM_CONFIG_CACHE: path.join(repoRoot, ".agentplane", ".npm-cache"),
+  };
+  run(
+    "npm",
+    ["install", "--package-lock-only", "--omit=dev", "--ignore-scripts", "--no-audit", "--no-fund"],
+    {
+      cwd: packageRoot,
+      env,
+    },
+  );
+  run("npm", ["ci", "--omit=dev", "--ignore-scripts", "--no-audit", "--no-fund"], {
     cwd: packageRoot,
+    env,
   });
-  return "installed_bun_frozen_lockfile";
+  return "installed_npm_ci_local_workspace_tarballs";
 }
 
 function publicStandaloneAsset(asset) {
@@ -342,6 +376,8 @@ async function buildTarget({
   target,
   syntheticNode,
   skipInstall,
+  coreTarball,
+  recipesTarball,
 }) {
   const rootDir = path.join(workRoot, `${target.platform}-${target.arch}`);
   const packageRoot = path.join(rootDir, "lib", "agentplane", "package");
@@ -350,7 +386,9 @@ async function buildTarget({
   await mkdir(nodeRoot, { recursive: true });
 
   await extractCliPackage(cliTarball, packageRoot);
+  await sanitizeStandalonePackageJson(packageRoot, { coreTarball, recipesTarball });
   const dependencyStatus = await installProductionDependencies(repoRoot, packageRoot, skipInstall);
+  await restoreStandalonePackageJson(packageRoot, version);
   await (syntheticNode
     ? materializeSyntheticNode(target, nodeRoot)
     : materializeOfficialNode({
@@ -435,7 +473,9 @@ async function buildStandaloneAssets(repoRoot, args) {
     const targets = selectTargets(args.targets);
     const packDir = path.join(workRoot, ".npm-pack");
     await mkdir(packDir, { recursive: true });
-    const cliTarball = packCliPackage(repoRoot, packDir);
+    const cliTarball = packWorkspacePackage(repoRoot, CLI_PACKAGE_DIR, packDir);
+    const coreTarball = packWorkspacePackage(repoRoot, CORE_PACKAGE_DIR, packDir);
+    const recipesTarball = packWorkspacePackage(repoRoot, RECIPES_PACKAGE_DIR, packDir);
     const assets = [];
     for (const target of targets) {
       assets.push(
@@ -452,6 +492,8 @@ async function buildStandaloneAssets(repoRoot, args) {
           target,
           syntheticNode: args.check || args.syntheticNode,
           skipInstall: args.check || args.skipInstall,
+          coreTarball,
+          recipesTarball,
         }),
       );
     }

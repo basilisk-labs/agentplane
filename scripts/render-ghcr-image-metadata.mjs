@@ -64,11 +64,15 @@ function sha256File(filePath) {
 }
 
 function runDistributionGenerator(repoRoot, outDir) {
-  execFileSync("node", ["scripts/generate-release-distribution.mjs", "--out", outDir], {
-    cwd: repoRoot,
-    stdio: "ignore",
-    env: process.env,
-  });
+  execFileSync(
+    "node",
+    ["scripts/generate-release-distribution.mjs", "--out", outDir, "--standalone-check-mode"],
+    {
+      cwd: repoRoot,
+      stdio: "ignore",
+      env: process.env,
+    },
+  );
   return path.join(outDir, "release-distribution.json");
 }
 
@@ -90,6 +94,15 @@ function packCliPackage(repoRoot, outDir) {
   const filename = String(entry?.filename ?? "");
   if (!filename) throw new Error("npm pack did not report a filename for agentplane");
   return path.join(outDir, filename);
+}
+
+function findDistributionTarball(manifestPath, version) {
+  const tarballPath = path.join(
+    path.dirname(manifestPath),
+    ".npm-pack",
+    `agentplane-${version}.tgz`,
+  );
+  return existsSync(tarballPath) ? tarballPath : null;
 }
 
 function buildImageMetadata(manifest) {
@@ -123,7 +136,8 @@ async function renderGhcr(repoRoot, args) {
   const channel = manifest.channels?.ghcr ?? {};
   const status = args.status || channel.status || "unknown";
   await mkdir(outDir, { recursive: true });
-  const packedTarballPath = packCliPackage(repoRoot, outDir);
+  const packedTarballPath =
+    findDistributionTarball(manifestPath, metadata.version) ?? packCliPackage(repoRoot, outDir);
   const packedTarballSha256 = sha256File(packedTarballPath);
   if (packedTarballSha256 !== metadata.tarballSha256) {
     throw new Error(

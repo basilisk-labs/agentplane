@@ -161,13 +161,15 @@ function packCliPackage(repoRoot, outDir) {
   };
 }
 
-function renderInstallSh({ version, tarballUrl, tarballSha256 }) {
+function renderInstallSh({ version, repo, tag }) {
   return `#!/usr/bin/env sh
 set -eu
 
 VERSION="${version}"
-TARBALL_URL="${tarballUrl}"
-TARBALL_SHA256="${tarballSha256}"
+REPO="${repo}"
+TAG="${tag}"
+BASE_URL="https://github.com/$REPO/releases/download/$TAG"
+INSTALL_DIR="\${AGENTPLANE_INSTALL_DIR:-$HOME/.agentplane/standalone/$VERSION}"
 
 need() {
   command -v "$1" >/dev/null 2>&1 || {
@@ -176,40 +178,67 @@ need() {
   }
 }
 
-need node
-need npm
 need curl
+need tar
 
 tmp_dir="$(mktemp -d)"
 trap 'rm -rf "$tmp_dir"' EXIT INT TERM
-tarball="$tmp_dir/agentplane-$VERSION.tgz"
 
-curl -fsSL "$TARBALL_URL" -o "$tarball"
-if command -v sha256sum >/dev/null 2>&1; then
-  actual="$(sha256sum "$tarball" | awk '{print $1}')"
-else
-  need shasum
-  actual="$(shasum -a 256 "$tarball" | awk '{print $1}')"
+case "$(uname -s)" in
+  Darwin) platform="darwin" ;;
+  Linux) platform="linux" ;;
+  *) echo "agentplane install: unsupported OS: $(uname -s)" >&2; exit 1 ;;
+esac
+
+case "$(uname -m)" in
+  arm64|aarch64) arch="arm64" ;;
+  x86_64|amd64) arch="x64" ;;
+  *) echo "agentplane install: unsupported architecture: $(uname -m)" >&2; exit 1 ;;
+esac
+
+asset="agentplane-v$VERSION-$platform-$arch.tar.gz"
+archive="$tmp_dir/$asset"
+checksums="$tmp_dir/SHA256SUMS"
+
+curl -fsSL "$BASE_URL/SHA256SUMS" -o "$checksums"
+curl -fsSL "$BASE_URL/$asset" -o "$archive"
+
+expected="$(awk -v asset="$asset" '$2 == asset {print $1}' "$checksums")"
+if [ -z "$expected" ]; then
+  echo "agentplane install: checksum entry missing for $asset" >&2
+  exit 1
 fi
 
-if [ "$actual" != "$TARBALL_SHA256" ]; then
-  echo "agentplane install: checksum mismatch for $TARBALL_URL" >&2
-  echo "expected: $TARBALL_SHA256" >&2
+if command -v sha256sum >/dev/null 2>&1; then
+  actual="$(sha256sum "$archive" | awk '{print $1}')"
+else
+  need shasum
+  actual="$(shasum -a 256 "$archive" | awk '{print $1}')"
+fi
+
+if [ "$actual" != "$expected" ]; then
+  echo "agentplane install: checksum mismatch for $asset" >&2
+  echo "expected: $expected" >&2
   echo "actual:   $actual" >&2
   exit 1
 fi
 
-npm install -g "$tarball"
-agentplane --version
+rm -rf "$INSTALL_DIR"
+mkdir -p "$INSTALL_DIR"
+tar -xzf "$archive" -C "$INSTALL_DIR"
+"$INSTALL_DIR/bin/agentplane" --version
+printf '%s\\n' "$INSTALL_DIR/bin"
 `;
 }
 
-function renderInstallPs1({ version, tarballUrl, tarballSha256 }) {
+function renderInstallPs1({ version, repo, tag }) {
   return `$ErrorActionPreference = "Stop"
 
 $Version = "${version}"
-$TarballUrl = "${tarballUrl}"
-$TarballSha256 = "${tarballSha256}"
+$Repo = "${repo}"
+$Tag = "${tag}"
+$BaseUrl = "https://github.com/$Repo/releases/download/$Tag"
+$InstallDir = if ($env:AGENTPLANE_INSTALL_DIR) { $env:AGENTPLANE_INSTALL_DIR } else { Join-Path $HOME ".agentplane\\standalone\\$Version" }
 
 function Require-Command($Name) {
   if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
@@ -217,20 +246,32 @@ function Require-Command($Name) {
   }
 }
 
-Require-Command "node"
-Require-Command "npm"
-
 $TempDir = Join-Path ([System.IO.Path]::GetTempPath()) ("agentplane-install-" + [System.Guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $TempDir | Out-Null
 try {
-  $Tarball = Join-Path $TempDir "agentplane-$Version.tgz"
-  Invoke-WebRequest -Uri $TarballUrl -OutFile $Tarball
-  $Actual = (Get-FileHash -Algorithm SHA256 -Path $Tarball).Hash.ToLowerInvariant()
-  if ($Actual -ne $TarballSha256) {
-    throw "agentplane install: checksum mismatch for $TarballUrl; expected $TarballSha256, actual $Actual"
+  $Asset = "agentplane-v$Version-win32-x64.zip"
+  $Archive = Join-Path $TempDir $Asset
+  $Checksums = Join-Path $TempDir "SHA256SUMS"
+  Invoke-WebRequest -Uri "$BaseUrl/SHA256SUMS" -OutFile $Checksums
+  Invoke-WebRequest -Uri "$BaseUrl/$Asset" -OutFile $Archive
+  $Expected = (Get-Content $Checksums | ForEach-Object {
+    $Parts = ($_ -split '\\s+')
+    if ($Parts.Count -ge 2 -and $Parts[1] -eq $Asset) { $Parts[0] }
+  } | Select-Object -First 1)
+  if (-not $Expected) {
+    throw "agentplane install: checksum entry missing for $Asset"
   }
-  npm install -g $Tarball
-  agentplane --version
+  $Actual = (Get-FileHash -Algorithm SHA256 -Path $Archive).Hash.ToLowerInvariant()
+  if ($Actual -ne $Expected.ToLowerInvariant()) {
+    throw "agentplane install: checksum mismatch for $Asset; expected $Expected, actual $Actual"
+  }
+  if (Test-Path $InstallDir) {
+    Remove-Item -Recurse -Force $InstallDir
+  }
+  New-Item -ItemType Directory -Path $InstallDir | Out-Null
+  Expand-Archive -Path $Archive -DestinationPath $InstallDir -Force
+  & (Join-Path $InstallDir "bin\\agentplane.cmd") --version
+  Write-Output (Join-Path $InstallDir "bin")
 }
 finally {
   Remove-Item -Recurse -Force $TempDir -ErrorAction SilentlyContinue
@@ -327,8 +368,8 @@ async function buildDistribution(repoRoot, args) {
   const upgradeBundle = await createUpgradeBundle(repoRoot, outDir);
   const installerAssets = await writeInstallers(outDir, {
     version,
-    tarballUrl: cliTarballUrl,
-    tarballSha256: cliTarball.sha256,
+    repo: args.repo,
+    tag,
   });
   const standaloneManifest = generateStandaloneAssets(repoRoot, outDir, {
     version,

@@ -4,8 +4,18 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const PUBLISH_WORKFLOW_PATH = path.resolve(process.cwd(), ".github/workflows/publish.yml");
+const DISTRIBUTION_MODULE_WORKFLOW_PATH = path.resolve(
+  process.cwd(),
+  ".github/workflows/publish-distribution-module.yml",
+);
 
 describe("publish workflow contract", () => {
+  it("names the primary workflow as a full release publisher", async () => {
+    const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+
+    expect(workflow).toContain("name: Publish release");
+  });
+
   it("uses workflow_run from Core CI and downloads the exact detected release-ready artifact by run id", async () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
 
@@ -47,6 +57,7 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("Render setup-agentplane action");
     expect(workflow).toContain("node scripts/render-setup-agentplane-action.mjs");
     expect(workflow).toContain("Publish Homebrew tap PR");
+    expect(workflow).toContain("continue-on-error: true");
     expect(workflow).toContain("Publish Scoop bucket PR");
     expect(workflow).toContain("Publish setup-agentplane PR");
     expect(workflow).toContain("node scripts/publish-external-distribution.mjs");
@@ -213,5 +224,25 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain(
       "SHA=\"$(node -e \"const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/canonical.json','utf8')); process.stdout.write(String(payload.sha || ''));\")\"",
     );
+  });
+
+  it("adds an exact-SHA distribution module recovery workflow without npm publication", async () => {
+    const workflow = await readFile(DISTRIBUTION_MODULE_WORKFLOW_PATH, "utf8");
+
+    expect(workflow).toContain("name: Publish distribution module");
+    expect(workflow).toContain("workflow_dispatch:");
+    expect(workflow).toContain("tag:");
+    expect(workflow).toContain("sha:");
+    expect(workflow).toContain("module:");
+    expect(workflow).toContain("ref: ${{ github.event.inputs.sha }}");
+    expect(workflow).toContain("node scripts/generate-release-distribution.mjs");
+    expect(workflow).toContain("Publish GitHub Release assets");
+    expect(workflow).toContain("Publish GHCR image");
+    expect(workflow).toContain("Publish Homebrew tap PR");
+    expect(workflow).toContain("Publish Scoop bucket PR");
+    expect(workflow).toContain("Publish setup-agentplane PR");
+    expect(workflow).toContain("distribution-module-${{ github.event.inputs.module }}");
+    expect(workflow).not.toContain("npm publish");
+    expect(workflow).not.toContain("Write npm auth config");
   });
 });
