@@ -18,6 +18,23 @@ recipe-owned prompt extensions.
 | Recipe prompt assets | vendored recipe `prompt_modules` and `prompt_mutation_sets`                                             | recipe overlay compiler                       | `.agentplane/generated/prompt-graph.json`                                         |
 | Diagnostics          | generated prompt graph plus current recipe registry inputs                                              | doctor/runtime explain prompt graph inspector | `agentplane runtime explain` and `agentplane doctor` findings                     |
 
+## Managed source model
+
+AgentPlane-managed prompt files are the visible behavior surface:
+
+- `AGENTS.md` / `CLAUDE.md` for the policy gateway;
+- `.agentplane/policy/**` for canonical policy modules;
+- `.agentplane/agents/*.json` for role profiles.
+
+These files are human-readable and git-tracked, but direct edits are drift unless they happen through
+an AgentPlane command. Recipe activation should update them through fragment-aware materialization,
+then regenerate `.agentplane/generated/prompt-graph.json` as the diagnostic index for the same
+behavior.
+
+User-authored instructions are the exception. They belong in the `gateway.user.instructions`
+fragment, with `.agentplane/user-instructions.md` as the default editable file. The gateway should
+only contain the stable hook that loads this block when it exists.
+
 ## Contracts
 
 Prompt module domain types live under `packages/agentplane/src/runtime/prompt-modules/`.

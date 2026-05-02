@@ -28,6 +28,23 @@ recipe-owned scenario assets it still compiles.
    `.agentplane/generated/recipe-assets.json`, and `.agentplane/generated/prompt-graph.json`.
 5. Leaves runtime pointed at the vendored project-local package, not at the global cache.
 
+## Target activation model
+
+Recipe activation is the contract for changing project behavior. The project registry records which
+vendored recipes are active, and AgentPlane applies their declared prompt mutations to managed
+prompt sources through named fragments. `AGENTS.md`, `.agentplane/policy/**`, and
+`.agentplane/agents/**` stay human-readable and git-tracked, but they are AgentPlane-managed
+artifacts rather than free-form user edit targets.
+
+The generated prompt graph is an index and diagnostics artifact for the activated behavior. It must
+be derived from the active recipe registry and the managed prompt sources, not become a hidden source
+of behavior that disagrees with the files agents and reviewers can inspect.
+
+User-specific instructions must live in the dedicated `gateway.user.instructions` extension point.
+The default materialization target is `.agentplane/user-instructions.md`, loaded through a stable
+gateway hook when present. Recipes may add, patch, replace, or bind managed fragments, but they must
+not erase the core task lifecycle, workflow routing, git hygiene, or safety invariants.
+
 ## Listing and inspection
 
 - `recipes list` scans the global cache and prints cached entries.
