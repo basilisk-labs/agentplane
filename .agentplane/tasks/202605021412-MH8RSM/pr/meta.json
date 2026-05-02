@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-02T17:46:26Z",
   "base": "main",
   "branch": "task/202605021412-MH8RSM/scoop-setup-standalone-assets",
   "created_at": "2026-05-02T17:39:32.233Z",
-  "head_sha": "a01933ea017008e2fba0fc0ba5186bde65a84526",
+  "head_sha": "ae0bd8449f53db7af9ddb34475b397ae313e6a2e",
   "last_verified_at": "2026-05-02T17:43:57.303Z",
   "last_verified_sha": "d9b9773282240b3c49ac3b0bb75754b33cdcc16a",
+  "merge_commit": "51ed52d6df7098ed0bc636d5a4e71065bd903aca",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-02T17:46:26Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605021412-MH8RSM",
-  "updated_at": "2026-05-02T17:44:07.686Z",
+  "updated_at": "2026-05-02T17:46:26Z",
   "verify": {
     "status": "pass"
   }
