@@ -1,10 +1,11 @@
 ---
 id: "202605012059-GWA2MF"
 title: "Внедрить CLI performance benchmark framework"
-status: "DOING"
+result_summary: "Merged via PR #740."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-02T06:51:51.572Z"
   updated_by: "CODER"
   note: "Wall-time process for CLI now includes mandatory team PR local step and before/after report template; baseline thresholds updated and checked."
-commit: null
+commit:
+  hash: "9c4edb4fa7ca2aeaf3dca87fe43ab9f5fde85e92"
+  message: "Merge pull request #740 from basilisk-labs/task/202605012059-GWA2MF/cli-perf"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: внедрить unified CLI performance benchmark framework для оценки refactoring quality до изменения логики команд."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #740 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Wall-time process for CLI now includes mandatory team PR local step and before/after report template; baseline thresholds updated and checked."
+  -
+    type: "status"
+    at: "2026-05-02T07:00:48.680Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #740 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-02T06:51:51.576Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-05-02T07:00:48.685Z"
+doc_updated_by: "INTEGRATOR"
 description: "Добавить механизмы замера и сравнения производительности CLI для оценки качества рефакторинга, покрыть hot-пути и хранить baseline/трендовые отчёты."
 sections:
   Summary: |-
