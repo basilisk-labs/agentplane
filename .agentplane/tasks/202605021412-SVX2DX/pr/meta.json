@@ -2,12 +2,12 @@
   "base": "main",
   "branch": "task/202605021412-SVX2DX/publish-standalone-assets",
   "created_at": "2026-05-02T17:21:17.198Z",
-  "head_sha": "ca7aa766e26dc0ace07a29ee346011312898a235",
+  "head_sha": "85583da943b7939a96152eb41561b631365c743f",
   "last_verified_at": "2026-05-02T17:24:54.591Z",
   "last_verified_sha": "ca7aa766e26dc0ace07a29ee346011312898a235",
   "schema_version": 1,
   "task_id": "202605021412-SVX2DX",
-  "updated_at": "2026-05-02T17:21:17.198Z",
+  "updated_at": "2026-05-02T17:25:17.243Z",
   "verify": {
     "status": "pass"
   }

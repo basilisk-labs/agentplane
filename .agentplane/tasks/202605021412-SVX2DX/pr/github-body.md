@@ -25,12 +25,14 @@ Wire the publish workflow to build/upload bundled-runtime CLI artifacts for macO
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T17:21:17.198Z
+- Updated: 2026-05-02T17:25:17.243Z
 - Branch: task/202605021412-SVX2DX/publish-standalone-assets
-- Head: ca7aa766e26d
+- Head: 85583da943b7
 
 ```text
-No changes detected.
+ .github/workflows/publish.yml                      | 28 ++++++++++++++++++++++
+ .../release/publish-workflow-contract.test.ts      | 21 ++++++++++++++++
+ 2 files changed, 49 insertions(+)
 ```
 
 </details>

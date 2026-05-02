@@ -1,0 +1,3 @@
+ .github/workflows/publish.yml                      | 28 ++++++++++++++++++++++
+ .../release/publish-workflow-contract.test.ts      | 21 ++++++++++++++++
+ 2 files changed, 49 insertions(+)
