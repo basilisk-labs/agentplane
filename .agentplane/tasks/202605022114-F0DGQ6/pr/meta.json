@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-02T21:30:11Z",
   "base": "main",
   "branch": "task/202605022114-F0DGQ6/repo-local-handoff-deps",
   "created_at": "2026-05-02T21:15:28.144Z",
-  "head_sha": "e0736895b5e9fe9c2794957ef972def94cd600fa",
+  "head_sha": "03d9ee6ab3ae1393458ce89a15e4a66356c1084a",
   "last_verified_at": "2026-05-02T21:25:48.137Z",
   "last_verified_sha": "04699e5c12c179ef255724a52286cf3cb5ac8c0f",
+  "merge_commit": "561e5dbdd75695953b4fce89aae822188061aa32",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-02T21:30:11Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605022114-F0DGQ6",
-  "updated_at": "2026-05-02T21:26:26.141Z",
+  "updated_at": "2026-05-02T21:30:11Z",
   "verify": {
     "status": "pass"
   }
