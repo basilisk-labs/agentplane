@@ -1,10 +1,11 @@
 ---
 id: "202605021909-2GJ5SR"
 title: "Add managed user instructions fragment"
-status: "TODO"
+result_summary: "Closed as included task in primary batch 202605021908-BGE36D; implementation landed in merge commit 38c5df9686ab176d7a1cce60531a28201a5a8d2f and closure commit 8cd6f64da7f49d8d3a27d66c4e625b02faea3022."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -26,8 +27,13 @@ verification:
   updated_at: "2026-05-02T19:38:32.994Z"
   updated_by: "CODER"
   note: "Implemented managed gateway.user.instructions prompt source. Evidence: base-prompts targeted tests passed; policy routing OK."
-commit: null
-comments: []
+commit:
+  hash: "38c5df9686ab176d7a1cce60531a28201a5a8d2f"
+  message: "task: Define managed recipe materialization contract [202605021908-BGE36D] (#765)"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: implemented as part of batch PR #765 and closure PR #770."
 events:
   -
     type: "verify"
@@ -35,9 +41,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented managed gateway.user.instructions prompt source. Evidence: base-prompts targeted tests passed; policy routing OK."
+  -
+    type: "status"
+    at: "2026-05-02T20:09:41.164Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: implemented as part of batch PR #765 and closure PR #770."
 doc_version: 3
-doc_updated_at: "2026-05-02T19:38:32.999Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-02T20:09:41.165Z"
+doc_updated_by: "INTEGRATOR"
 description: "Introduce gateway.user.instructions as the sanctioned user-editable prompt extension point and wire framework prompt assets/docs so user instructions stay separate from AgentPlane-managed source files."
 sections:
   Summary: |-
