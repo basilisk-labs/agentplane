@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-02T16:53:47Z",
   "base": "main",
   "branch": "task/202605021412-Q2WGGA/standalone-artifact-generator",
   "created_at": "2026-05-02T16:14:57.168Z",
-  "head_sha": "c86faa33270d2aa3d26125592c9d8d874cd5c42f",
+  "head_sha": "02fc54bfcc6bf5278967808d586385bf3fd23e52",
   "last_verified_at": "2026-05-02T16:43:54.846Z",
   "last_verified_sha": "fcc34f82b39fcbeff07ee9d5b1e5efbaad13cae0",
+  "merge_commit": "cf4b59a22618118cd7dcf8f119f1b8d70977d802",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-02T16:53:47Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605021412-Q2WGGA",
-  "updated_at": "2026-05-02T16:44:05.221Z",
+  "updated_at": "2026-05-02T16:53:47Z",
   "verify": {
     "status": "pass"
   }
