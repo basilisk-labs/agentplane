@@ -1,8 +1,12 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
 import { loadConfig, type AgentplaneConfig } from "@agentplaneorg/core/config";
 import { GitContext } from "@agentplaneorg/core/git";
 import { resolveProject } from "@agentplaneorg/core/project";
 
 import { loadTaskBackend } from "../../../../backends/task-backend.js";
+import { validateGithubPrTitleContents } from "../../../../commands/pr/internal/review-template.js";
 import { gitCurrentBranch } from "../../../../commands/shared/git-ops.js";
 import { dedupeStrings } from "../../../../shared/strings.js";
 import {
@@ -20,6 +24,11 @@ type TaskArtifactDrift = {
   task_ids: string[];
   paths: string[];
 };
+type MessageFormatGuard = {
+  ok: boolean;
+  checked_paths: string[];
+  errors: string[];
+};
 
 export type PreflightReport = {
   mode: PreflightMode;
@@ -30,6 +39,7 @@ export type PreflightReport = {
   task_list_loaded: Probe & { count?: number };
   working_tree_clean_tracked: Probe & { value?: boolean };
   task_artifact_drift: TaskArtifactDrift;
+  message_format_guard: MessageFormatGuard;
   current_branch: Probe & { value?: string };
   workflow_mode: "direct" | "branch_pr" | "unknown";
   approvals: {
@@ -102,6 +112,38 @@ function detectTaskArtifactDrift(opts: {
     present: matched.length > 0,
     task_ids: [...taskIds].toSorted((a, b) => a.localeCompare(b)),
     paths: matched,
+  };
+}
+
+async function validateChangedGithubTitleArtifacts(opts: {
+  gitRoot: string;
+  changedPaths: string[];
+  workflowDir: string;
+}): Promise<MessageFormatGuard> {
+  const workflowDir = normalizeRepoPath(opts.workflowDir).replace(/\/+$/, "");
+  const prefix = `${workflowDir}/`;
+  const suffix = "/pr/github-title.txt";
+  const checkedPaths = opts.changedPaths
+    .map((value) => normalizeRepoPath(value))
+    .filter((value) => value.startsWith(prefix) && value.endsWith(suffix))
+    .toSorted((a, b) => a.localeCompare(b));
+  const errors: string[] = [];
+  for (const relPath of checkedPaths) {
+    const relative = relPath.slice(prefix.length);
+    const taskId = relative.slice(0, -suffix.length);
+    if (!taskId || taskId.includes("/")) {
+      errors.push(`${relPath}: cannot infer task id from PR title artifact path`);
+      continue;
+    }
+    const title = await readFile(path.join(opts.gitRoot, relPath), "utf8");
+    const titleErrors: string[] = [];
+    validateGithubPrTitleContents(title, taskId, titleErrors);
+    errors.push(...titleErrors.map((message) => `${relPath}: ${message}`));
+  }
+  return {
+    ok: errors.length === 0,
+    checked_paths: checkedPaths,
+    errors,
   };
 }
 
@@ -220,6 +262,11 @@ export async function buildPreflightReport(opts: {
     task_ids: [],
     paths: [],
   };
+  let messageFormatGuard: MessageFormatGuard = {
+    ok: true,
+    checked_paths: [],
+    errors: [],
+  };
   let branch: PreflightReport["current_branch"] = {
     ok: false,
     error: "project not resolved",
@@ -236,6 +283,11 @@ export async function buildPreflightReport(opts: {
         changedPaths: changed,
         workflowDir: config?.paths.workflow_dir ?? ".agentplane/tasks",
       });
+      messageFormatGuard = await validateChangedGithubTitleArtifacts({
+        gitRoot: resolved.gitRoot,
+        changedPaths: changed,
+        workflowDir: config?.paths.workflow_dir ?? ".agentplane/tasks",
+      });
       workingTree = { ok: true, value: staged.length === 0 && unstagedTracked.length === 0 };
       if (!workingTree.value) {
         harnessHealthReasons.push("working_tree_dirty");
@@ -249,6 +301,13 @@ export async function buildPreflightReport(opts: {
         nextActions.push({
           command: `git status --short --untracked-files=all -- ${config?.paths.workflow_dir ?? ".agentplane/tasks"}`,
           reason: `task artifact drift detected for ${taskArtifactDrift.task_ids.join(", ")}`,
+        });
+      }
+      if (!messageFormatGuard.ok) {
+        harnessHealthReasons.push("message_format_guard_failed");
+        nextActions.push({
+          command: "agentplane pr update <task-id>",
+          reason: `changed PR title artifact failed message format guard (${messageFormatGuard.errors.join("; ")})`,
         });
       }
     } catch (err) {
@@ -277,6 +336,7 @@ export async function buildPreflightReport(opts: {
     task_list_loaded: taskListLoaded,
     working_tree_clean_tracked: workingTree,
     task_artifact_drift: taskArtifactDrift,
+    message_format_guard: messageFormatGuard,
     current_branch: branch,
     workflow_mode: inferWorkflowMode(config),
     approvals: inferApprovals(config),

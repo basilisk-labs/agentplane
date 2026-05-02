@@ -1,3 +1,5 @@
+import { extractTaskSuffix } from "@agentplaneorg/core/commit";
+
 import { runGhApiJson } from "../pr/internal/gh-api.js";
 import { cleanupMergedLocalBranch } from "../shared/merged-branch-cleanup.js";
 
@@ -17,7 +19,8 @@ function normalizeOneLine(value: string, maxChars: number): string {
 
 function buildHostedClosePrTitle(opts: { taskId: string; taskTitle: string }): string {
   const title = normalizeOneLine(opts.taskTitle, 96) || "Hosted task closure";
-  return `task-close: ${title} [${opts.taskId}]`;
+  const suffix = extractTaskSuffix(opts.taskId);
+  return `🧩 ${suffix} task-close: ${title} [${opts.taskId}]`;
 }
 
 function buildHostedClosePrBody(opts: {

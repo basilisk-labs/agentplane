@@ -71,6 +71,11 @@ function normalizeOneLine(value, maxChars) {
   return trimmed.length > maxChars ? `${trimmed.slice(0, Math.max(1, maxChars - 3))}...` : trimmed;
 }
 
+function extractTaskSuffix(taskId) {
+  const parts = String(taskId).trim().split("-");
+  return parts.at(-1) || String(taskId).trim();
+}
+
 function titleFromSourcePullTitle(value, taskId) {
   const title = normalizeOneLine(value, 140);
   if (!title) return "Merged task";
@@ -109,7 +114,7 @@ function buildClosureMetadata(payload, prefix) {
   const mergeShort = shortSha(mergeSha);
   const closureBranch = `task-close/${taskId}/${mergeShort}`;
   const sourceTitle = titleFromSourcePullTitle(pull.title, taskId);
-  const prTitle = `task-close: ${sourceTitle} [${taskId}]`;
+  const prTitle = `🧩 ${extractTaskSuffix(taskId)} task-close: ${sourceTitle} [${taskId}]`;
   const prBody = [
     `Closes task \`${taskId}\` after merged task PR #${number}.`,
     "",

@@ -7,7 +7,6 @@ const mocks = vi.hoisted(() => ({
   gitRevParse: vi.fn(),
   extractTaskSuffix: vi.fn(),
   validateCommitSubject: vi.fn(),
-  buildGithubPrTitle: vi.fn(),
 }));
 
 vi.mock("@agentplaneorg/core/process", () => ({
@@ -22,9 +21,6 @@ vi.mock("../../../shared/git-ops.js", () => ({
 vi.mock("@agentplaneorg/core/commit", () => ({
   extractTaskSuffix: mocks.extractTaskSuffix,
   validateCommitSubject: mocks.validateCommitSubject,
-}));
-vi.mock("../../internal/review-template.js", () => ({
-  buildGithubPrTitle: mocks.buildGithubPrTitle,
 }));
 
 describe("pr/integrate/internal/merge", () => {
@@ -41,7 +37,6 @@ describe("pr/integrate/internal/merge", () => {
       .mockResolvedValueOnce({}); // commit
     mocks.validateCommitSubject.mockReturnValue({ ok: false, errors: ["bad"] });
     mocks.extractTaskSuffix.mockReturnValue("ABC123");
-    mocks.buildGithubPrTitle.mockReturnValue("workflow/cli: improve PR UX (ABC123)");
     mocks.gitRevParse.mockResolvedValue("deadbeefcafebabe");
 
     const hash = await runSquashMerge({
@@ -59,11 +54,7 @@ describe("pr/integrate/internal/merge", () => {
     expect(hash).toBe("deadbeefcafebabe");
     const commitCall = mocks.execFileAsync.mock.calls.at(-1);
     expect(commitCall?.[0]).toBe("git");
-    expect(commitCall?.[1]).toEqual([
-      "commit",
-      "-m",
-      "🧩 ABC123 integrate: workflow/cli: improve PR UX",
-    ]);
+    expect(commitCall?.[1]).toEqual(["commit", "-m", "🧩 ABC123 integrate: Improve PR UX"]);
     expect(commitCall?.[2]).toMatchObject({
       cwd: "/repo",
       env: {
@@ -91,7 +82,6 @@ describe("pr/integrate/internal/merge", () => {
       .mockResolvedValueOnce({}); // commit
     mocks.validateCommitSubject.mockReturnValue({ ok: true, errors: [] });
     mocks.extractTaskSuffix.mockReturnValue("X32XPT");
-    mocks.buildGithubPrTitle.mockReturnValue("workflow/cli: improve PR UX (X32XPT)");
     mocks.gitRevParse.mockResolvedValue("deadbeefcafebabe");
 
     const hash = await runSquashMerge({
@@ -109,11 +99,7 @@ describe("pr/integrate/internal/merge", () => {
     expect(hash).toBe("deadbeefcafebabe");
     const commitCall = mocks.execFileAsync.mock.calls.at(-1);
     expect(commitCall?.[0]).toBe("git");
-    expect(commitCall?.[1]).toEqual([
-      "commit",
-      "-m",
-      "🧩 X32XPT integrate: workflow/cli: improve PR UX",
-    ]);
+    expect(commitCall?.[1]).toEqual(["commit", "-m", "🧩 X32XPT integrate: Improve PR UX"]);
     expect(commitCall?.[2]).toMatchObject({
       cwd: "/repo",
       env: {
@@ -157,7 +143,6 @@ describe("pr/integrate/internal/merge", () => {
   it("runMergeCommit aborts merge and raises E_GIT on failure", async () => {
     const { runMergeCommit } = await import("./merge.js");
     mocks.extractTaskSuffix.mockReturnValue("ABC123");
-    mocks.buildGithubPrTitle.mockReturnValue("workflow/cli: improve PR UX (ABC123)");
     mocks.execFileAsync.mockRejectedValueOnce(new Error("merge failed")).mockResolvedValueOnce({});
 
     await expect(
@@ -181,7 +166,6 @@ describe("pr/integrate/internal/merge", () => {
   it("runMergeCommit allows tracked task state updates on the base commit path", async () => {
     const { runMergeCommit } = await import("./merge.js");
     mocks.extractTaskSuffix.mockReturnValue("ABC123");
-    mocks.buildGithubPrTitle.mockReturnValue("workflow/cli: improve PR UX (ABC123)");
     mocks.execFileAsync.mockResolvedValueOnce({}).mockResolvedValueOnce({});
     mocks.gitRevParse.mockResolvedValue("deadbeefcafebabe");
 
@@ -203,7 +187,7 @@ describe("pr/integrate/internal/merge", () => {
       "--no-ff",
       "task/T-3",
       "-m",
-      "🔀 ABC123 integrate: workflow/cli: improve PR UX",
+      "🔀 ABC123 integrate: Improve PR UX",
     ]);
     expect(mergeCall?.[2]).toMatchObject({
       cwd: "/repo",

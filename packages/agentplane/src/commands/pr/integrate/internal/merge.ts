@@ -8,8 +8,6 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";
 import { gitRevParse } from "../../../shared/git-ops.js";
 import type { PrMeta } from "../../../shared/pr-meta.js";
-import { buildGithubPrTitle } from "../../internal/review-template.js";
-
 import { computeVerifyState, runVerifyCommands } from "../verify.js";
 
 type MovedTaskArtifact = {
@@ -35,23 +33,15 @@ function isTaskArtifactPath(filePath: string): boolean {
   return normalized.startsWith(".agentplane/tasks/") || normalized.startsWith("tasks/");
 }
 
-function fallbackIntegrateSummary(opts: {
-  taskId: string;
-  taskTitle: string;
-  taskTags: string[];
-}): string {
-  const suffix = extractTaskSuffix(opts.taskId);
-  return buildGithubPrTitle({
-    id: opts.taskId,
-    title: opts.taskTitle,
-    tags: opts.taskTags,
-    description: "",
-    status: "TODO",
-    priority: "med",
-    owner: "UNKNOWN",
-    depends_on: [],
-    verify: [],
-  }).replace(new RegExp(String.raw` \(${suffix}\)$`, "u"), "");
+function fallbackIntegrateSummary(opts: { taskTitle: string }): string {
+  const summary = normalizeOneLine(opts.taskTitle, 96) || "Task integration update";
+  return `${summary}`;
+}
+
+function normalizeOneLine(value: string, maxChars: number): string {
+  const trimmed = value.trim().replaceAll(/\s+/g, " ");
+  if (!trimmed) return "";
+  return trimmed.length > maxChars ? `${trimmed.slice(0, Math.max(1, maxChars - 3))}...` : trimmed;
 }
 
 async function listUntrackedTaskArtifacts(opts: {
