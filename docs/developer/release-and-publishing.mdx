@@ -233,11 +233,12 @@ Every standalone archive must have a corresponding `SHA256SUMS` line and a
 
 Standalone smoke tests must unpack each archive and run at least:
 
-- `bin/agentplane --version`
-- `bin/agentplane quickstart`
-- `bin/agentplane doctor`
-- `bin/agentplane runtime explain`
-- `bin/agentplane init` inside a temporary git repository
+- POSIX targets: `bin/agentplane --version`, `bin/agentplane quickstart`,
+  `bin/agentplane doctor`, `bin/agentplane runtime explain`, and `bin/agentplane init` inside a
+  temporary git repository.
+- Windows targets: `bin/agentplane.cmd --version`, `bin/agentplane.cmd quickstart`,
+  `bin/agentplane.cmd doctor`, `bin/agentplane.cmd runtime explain`, and `bin/agentplane.cmd init`
+  inside a temporary git repository.
 
 Where the host platform allows it, the smoke test must also poison or remove external `node` from
 `PATH` before invoking the archive entrypoint. This confirms the package-manager path is truly
@@ -298,8 +299,9 @@ Keep publication modules independent and evidence-backed:
   the formula in dry-run/check mode, and writes `homebrew-result.json`.
 - Scoop bucket module: renders `agentplane.json` from `release-distribution.json`, verifies checksum
   and URL fields in check mode, and writes `scoop-result.json`.
-- setup action module: renders a `setup-agentplane` composite action bundle that installs through
-  the release `install.sh` asset and writes `setup-agentplane-result.json`.
+- setup action module: renders a `setup-agentplane` composite action bundle that resolves the
+  runner platform to a standalone CLI asset from `release-distribution.json`, verifies checksums,
+  and writes `setup-agentplane-result.json`.
 
 Each module must emit a compact JSON evidence file under `.agentplane/.release/publish/`. The
 publish workflow uploads the distribution manifest plus module artifact directories so a failed or

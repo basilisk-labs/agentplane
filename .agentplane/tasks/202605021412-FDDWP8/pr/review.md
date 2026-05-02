@@ -26,22 +26,24 @@ Specify the bundled-runtime AgentPlane CLI artifact contract: supported platform
 ### Current Status
 
 - State: ok
-- Note: Command: node .agentplane/policy/check-routing.mjs
+- Note: Review follow-up: addressed PR review comments.
+
+Command: node .agentplane/policy/check-routing.mjs
 Result: pass
-Evidence: policy routing OK.
-Scope: AGENTS/policy routing remains valid after release documentation update.
+Evidence: policy routing OK after review updates.
+Scope: release docs contract.
 Links: docs/developer/release-and-publishing.mdx
 
 Command: agentplane doctor
 Result: pass
-Evidence: doctor OK; errors=0 warnings=0.
-Scope: repository health for docs-only task branch.
+Evidence: doctor OK; errors=0 warnings=0 after review updates.
+Scope: docs-only PR branch.
 Links: docs/developer/release-and-publishing.mdx
 
-Command: rg -n "Standalone CLI artifact contract|standalone_cli|bundled_node|depends_on \"node\"|setup-agentplane|agentplane-vX\.Y\.Z" docs/developer/release-and-publishing.mdx
+Command: rg -n "agentplane\.cmd|setup action module|standalone CLI asset|depends_on \"node\"" docs/developer/release-and-publishing.mdx
 Result: pass
-Evidence: matched standalone contract heading, deterministic archive names, standalone_cli manifest kind, bundled_node install strategy, Homebrew no depends_on node rule, and setup-agentplane consumption rule.
-Scope: standalone CLI artifact contract and package-manager handoff rules.
+Evidence: Windows smoke tests now use bin/agentplane.cmd and setup-action module now consumes standalone CLI assets from the manifest.
+Scope: addressed PR review comments.
 Links: docs/developer/release-and-publishing.mdx
 
 ## Risks
