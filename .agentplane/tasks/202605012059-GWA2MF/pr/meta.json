@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605012059-GWA2MF/cli-perf",
+  "created_at": "2026-05-02T06:51:51.606Z",
+  "head_sha": "1b7e01c9cc1e56959b723a2bcfd2f150e14fa44f",
+  "last_verified_at": "2026-05-02T06:51:51.572Z",
+  "last_verified_sha": "62153d7eedd49b356e67aee92d713ad9b7b8485c",
+  "schema_version": 1,
+  "task_id": "202605012059-GWA2MF",
+  "updated_at": "2026-05-02T06:55:03.195Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "default_suite": "cli_walltime_baseline",
+  "suites": [
+    {
+      "id": "cli_walltime_baseline",
+      "mode": "cli_walltime_v1",
+      "description": "CLI wall-time control set for startup + hot path command execution.",
+      "commands": [
+        {
+          "id": "quickstart",
+          "argv": ["quickstart", "--root", "{root}"]
+        },
+        {
+          "id": "task_list",
+          "argv": ["task", "list", "--root", "{root}"]
+        },
+        {
+          "id": "task_search",
+          "argv": ["task", "search", "task", "--root", "{root}"]
+        },
+        {
+          "id": "task_next",
+          "argv": ["task", "next", "--root", "{root}"]
+        },
+        {
+          "id": "preflight_quick",
+          "argv": ["preflight", "--mode", "quick", "--root", "{root}"]
+        },
+        {
+          "id": "help",
+          "argv": ["--help"]
+        },
+        {
+          "id": "version",
+          "argv": ["--version"]
+        }
+      ]
+    },
+    {
+      "id": "cli_walltime_minimal",
+      "mode": "cli_walltime_v1",
+      "description": "Minimal command set for fast local spot-checking.",
+      "commands": [
+        {
+          "id": "help",
+          "argv": ["--help"]
+        },
+        {
+          "id": "version",
+          "argv": ["--version"]
+        }
+      ]
+    }
+  ]
+}
