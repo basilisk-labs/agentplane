@@ -1,7 +1,13 @@
-import type { ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
-import { docsUrl, githubUrl, homepageContent, installCommand } from "../data/homepage-content";
+import {
+  docsUrl,
+  githubUrl,
+  homepageContent,
+  installCommand,
+  recipesIndexUrl,
+} from "../data/homepage-content";
 import styles from "./_home.module.css";
 
 type ButtonVariant = "primary" | "secondary" | "copy";
@@ -11,6 +17,25 @@ type Action = {
   variant: ButtonVariant;
   to?: string;
   command?: string;
+};
+
+type RecipeVersion = {
+  version: string;
+  url?: string;
+  sha256?: string;
+};
+
+type RecipeEntry = {
+  id: string;
+  summary: string;
+  description: string;
+  versions?: RecipeVersion[];
+};
+
+type RecipeLoadState = "idle" | "loading" | "ready" | "error";
+
+type RecipeIndexPayload = {
+  recipes?: unknown[];
 };
 
 async function copyTextToClipboard(text: string): Promise<void> {
@@ -197,6 +222,186 @@ function FileTree({ lines }: { lines: readonly string[] }): ReactNode {
   );
 }
 
+function normalizeVersion(version: string): number[] {
+  return String(version)
+    .trim()
+    .split(".")
+    .map((part) => Number.parseInt(part, 10))
+    .map((part) => (Number.isNaN(part) ? 0 : part));
+}
+
+function compareVersions(left: string, right: string): number {
+  const leftParts = normalizeVersion(left);
+  const rightParts = normalizeVersion(right);
+  const maxLength = Math.max(leftParts.length, rightParts.length);
+  for (let index = 0; index < maxLength; index += 1) {
+    const leftPart = leftParts[index] ?? 0;
+    const rightPart = rightParts[index] ?? 0;
+    if (leftPart > rightPart) return -1;
+    if (leftPart < rightPart) return 1;
+  }
+  return 0;
+}
+
+function parseRecipes(payload: unknown): RecipeEntry[] {
+  if (!payload || typeof payload !== "object") return [];
+  const raw = (payload as RecipeIndexPayload).recipes;
+  if (!Array.isArray(raw)) return [];
+
+  const normalized: RecipeEntry[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue;
+    const candidate = item as Partial<RecipeEntry>;
+    const id = String(candidate.id ?? "").trim();
+    const summary = String(candidate.summary ?? "").trim();
+    const description = String(candidate.description ?? "").trim();
+    if (!id || !summary || !description) continue;
+
+    const versions = Array.isArray(candidate.versions)
+      ? candidate.versions
+          .filter((entry): entry is RecipeVersion => {
+            if (!entry || typeof entry !== "object") return false;
+            const typed = entry as Partial<RecipeVersion>;
+            return typeof typed.version === "string" && typed.version.trim().length > 0;
+          })
+          .map((entry) => ({
+            version: String(entry.version).trim(),
+            url: typeof entry.url === "string" ? entry.url.trim() : undefined,
+            sha256: typeof entry.sha256 === "string" ? entry.sha256.trim() : undefined,
+          }))
+      : [];
+
+    normalized.push({
+      id,
+      summary,
+      description,
+      versions,
+    });
+  }
+
+  return normalized.sort((left, right) => left.id.localeCompare(right.id));
+}
+
+function latestVersion(recipe: RecipeEntry): string | null {
+  const versions = recipe.versions?.filter((entry) => entry.version.trim().length > 0) ?? [];
+  if (versions.length === 0) return null;
+  const sorted = versions.toSorted((left, right) => compareVersions(left.version, right.version));
+  return sorted[0]?.version ?? null;
+}
+
+function buildInstallCommand(recipe: RecipeEntry): string {
+  const version = latestVersion(recipe);
+  const target = version ? `${recipe.id}@${version}` : recipe.id;
+  return `agentplane recipes install ${target} --index ${recipesIndexUrl} --refresh --yes`;
+}
+
+function RecipeCard({ recipe }: { recipe: RecipeEntry }): ReactNode {
+  const latest = latestVersion(recipe);
+  const installCommand = buildInstallCommand(recipe);
+
+  return (
+    <article className={styles.recipeCard}>
+      <h3>{recipe.id}</h3>
+      <p className={styles.recipeDescription}>{recipe.description}</p>
+      <p>{recipe.summary}</p>
+      <div className={styles.recipeMeta}>
+        <span>{latest ? `latest: ${latest}` : "version: n/a"}</span>
+      </div>
+      <CopyCommand
+        command={installCommand}
+        label="Install"
+        className={styles.recipeAction}
+      />
+    </article>
+  );
+}
+
+function RecipesCatalogSection(): ReactNode {
+  const { recipesCatalog } = homepageContent;
+  const [state, setState] = useState<RecipeLoadState>("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [recipes, setRecipes] = useState<RecipeEntry[]>([]);
+
+  const loadRecipes = useCallback(async () => {
+    setState("loading");
+    setErrorMessage("");
+    const controller = new AbortController();
+    const timeoutId = globalThis.setTimeout(() => {
+      controller.abort();
+    }, 9000);
+
+    try {
+      const response = await fetch(recipesIndexUrl, {
+        signal: controller.signal,
+        headers: {
+          accept: "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Catalog request failed: ${response.status} ${response.statusText}`);
+      }
+
+      const payload = (await response.json()) as unknown;
+      const parsed = parseRecipes(payload);
+      setRecipes(parsed);
+      setState("ready");
+    } catch (error) {
+      setRecipes([]);
+      setState("error");
+      setErrorMessage(error instanceof Error ? error.message : "Cannot fetch recipes catalog");
+    } finally {
+      globalThis.clearTimeout(timeoutId);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (state === "idle") {
+      void loadRecipes();
+    }
+  }, [loadRecipes, state]);
+
+  const content = useMemo(() => {
+    if (state === "loading") {
+      return (
+        <p className={styles.recipeStatus} aria-live="polite">
+          Loading recipes catalog...
+        </p>
+      );
+    }
+
+    if (state === "error") {
+      return (
+        <div className={styles.recipeStatus}>
+          <p>{errorMessage}</p>
+          <button className={styles.recipeAction} type="button" onClick={() => void loadRecipes()}>
+            Retry
+          </button>
+        </div>
+      );
+    }
+
+    if (state === "ready" && recipes.length === 0) {
+      return <p className={styles.recipeStatus}>No recipes found in catalog.</p>;
+    }
+
+    return (
+      <div className={styles.recipeGrid}>
+        {recipes.map((recipe) => (
+          <RecipeCard key={recipe.id} recipe={recipe} />
+        ))}
+      </div>
+    );
+  }, [state, recipes, errorMessage]);
+
+  return (
+    <section className={`${styles.section} ${styles.shell}`}>
+      <SectionLead label="Recipes" title={recipesCatalog.title} text={recipesCatalog.text} />
+      <p className={styles.sectionLeadText}>{recipesCatalog.stepText}</p>
+      {content}
+    </section>
+  );
+}
+
 function NextStepCard({
   item,
 }: {
@@ -266,6 +471,8 @@ export default function Home(): ReactNode {
             </div>
           </div>
         </section>
+
+        <RecipesCatalogSection />
 
         <section className={`${styles.section} ${styles.shell}`}>
           <SectionLead label="Core workflow" title={workflow.title} text={workflow.text} />

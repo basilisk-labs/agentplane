@@ -729,6 +729,61 @@
   color: rgb(255 255 255);
 }
 
+.sectionLeadText {
+  color: rgb(var(--muted));
+  font-size: 0.95rem;
+  margin-top: 0.4rem;
+}
+
+.recipeGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  margin-top: 1rem;
+}
+
+.recipeCard {
+  background: linear-gradient(rgb(var(--bg)), rgb(var(--bg)));
+  border: 1px solid rgb(var(--border) / 0.7);
+  border-radius: 0.92rem;
+  padding: 1rem 1.05rem;
+  display: grid;
+  gap: 0.58rem;
+}
+
+.recipeCard h3 {
+  margin: 0;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 1.05rem;
+}
+
+.recipeDescription {
+  color: rgb(var(--muted));
+  font-size: 0.93rem;
+  margin: 0;
+}
+
+.recipeMeta {
+  color: rgb(var(--faint));
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.78rem;
+}
+
+.recipeStatus {
+  border: 1px dashed rgb(var(--border));
+  border-radius: 0.8rem;
+  margin-top: 1rem;
+  padding: 0.95rem;
+  color: rgb(var(--muted));
+}
+
+.recipeAction {
+  background: rgb(var(--accent));
+  border: 1px solid rgb(var(--accent));
+  color: rgb(255 255 255);
+  min-height: 2.45rem;
+}
+
 @keyframes heroGridDrift {
   from {
     background-position: 0 0;
