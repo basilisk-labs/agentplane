@@ -35,6 +35,11 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("path: .agentplane/.release/publish/publish-result.json");
     expect(workflow).toContain("Generate release distribution assets");
     expect(workflow).toContain("node scripts/generate-release-distribution.mjs");
+    expect(workflow).toContain("Smoke standalone release assets");
+    expect(workflow).toContain("scripts/smoke-standalone-cli-artifact.mjs");
+    expect(workflow).toContain('--expected-version "${VERSION}"');
+    expect(workflow).toContain('if [[ "${artifact}" != *"-linux-x64.tar.gz" ]]; then');
+    expect(workflow).toContain("args+=(--skip-cli-commands)");
     expect(workflow).toContain("Render Homebrew tap formula");
     expect(workflow).toContain("node scripts/render-homebrew-formula.mjs");
     expect(workflow).toContain("Render Scoop bucket manifest");
@@ -75,6 +80,22 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain(
       ".agentplane/.release/publish/distribution/release-distribution.json",
     );
+    expect(workflow).toContain(
+      ".agentplane/.release/publish/distribution/agentplane-v${{ needs.detect.outputs.version }}-darwin-arm64.tar.gz",
+    );
+    expect(workflow).toContain(
+      ".agentplane/.release/publish/distribution/agentplane-v${{ needs.detect.outputs.version }}-darwin-x64.tar.gz",
+    );
+    expect(workflow).toContain(
+      ".agentplane/.release/publish/distribution/agentplane-v${{ needs.detect.outputs.version }}-linux-arm64.tar.gz",
+    );
+    expect(workflow).toContain(
+      ".agentplane/.release/publish/distribution/agentplane-v${{ needs.detect.outputs.version }}-linux-x64.tar.gz",
+    );
+    expect(workflow).toContain(
+      ".agentplane/.release/publish/distribution/agentplane-v${{ needs.detect.outputs.version }}-win32-x64.zip",
+    );
+    expect(workflow).toContain(".agentplane/.release/publish/distribution/standalone-assets.json");
     expect(workflow).toContain(".agentplane/.release/publish/distribution/install.sh");
     expect(workflow).toContain(".agentplane/.release/publish/distribution/install.ps1");
     expect(workflow).toContain(".agentplane/.release/publish/distribution/SHA256SUMS");

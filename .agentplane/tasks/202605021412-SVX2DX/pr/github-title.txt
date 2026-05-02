@@ -1,0 +1,1 @@
+task: Publish standalone artifacts in release workflow [202605021412-SVX2DX]
