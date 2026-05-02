@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-02T17:18:27Z",
   "base": "main",
   "branch": "task/202605021412-DV2ZT8/standalone-artifact-smoke-tests",
   "created_at": "2026-05-02T17:08:39.733Z",
-  "head_sha": "8899518f2183f56f10ba9a397cf6b1c9e86ae449",
+  "head_sha": "5c89f9c8ec50b9e38e05db603a0182e990322546",
   "last_verified_at": "2026-05-02T17:15:54.797Z",
   "last_verified_sha": "f5e2e39d8c6026ed477e5e3eee9e36d60d9c39a9",
+  "merge_commit": "56ed4f9b26adcd183986456cc9043878d36b2b9b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-02T17:18:27Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605021412-DV2ZT8",
-  "updated_at": "2026-05-02T17:16:10.041Z",
+  "updated_at": "2026-05-02T17:18:27Z",
   "verify": {
     "status": "pass"
   }

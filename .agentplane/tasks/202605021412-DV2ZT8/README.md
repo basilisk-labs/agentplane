@@ -1,10 +1,11 @@
 ---
 id: "202605021412-DV2ZT8"
 title: "Add standalone artifact smoke tests"
-status: "DOING"
+result_summary: "Merged via PR #750."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-05-02T17:15:54.797Z"
   updated_by: "CODER"
   note: "Passed: agentplane task verify-show 202605021412-DV2ZT8; bun test packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts; node scripts/smoke-standalone-cli-artifact.mjs --artifact <synthetic fixture> --expected-version 1.2.3 --allow-synthetic-runtime; bun run release:standalone:check; bunx eslint scripts/smoke-standalone-cli-artifact.mjs packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts; bun run format:check; node .agentplane/policy/check-routing.mjs; agentplane doctor."
-commit: null
+commit:
+  hash: "56ed4f9b26adcd183986456cc9043878d36b2b9b"
+  message: "release: Add standalone artifact smoke tests (DV2ZT8)"
 comments:
   -
     author: "CODER"
     body: "Start: Add deterministic standalone archive smoke script and tests for bundled-runtime CLI artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #750 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Passed: agentplane task verify-show 202605021412-DV2ZT8; bun test packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts; node scripts/smoke-standalone-cli-artifact.mjs --artifact <synthetic fixture> --expected-version 1.2.3 --allow-synthetic-runtime; bun run release:standalone:check; bunx eslint scripts/smoke-standalone-cli-artifact.mjs packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts; bun run format:check; node .agentplane/policy/check-routing.mjs; agentplane doctor."
+  -
+    type: "status"
+    at: "2026-05-02T17:19:04.927Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #750 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-02T17:15:54.807Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-02T17:19:04.933Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add cross-platform smoke coverage for unpacked bundled-runtime artifacts: agentplane --version, quickstart, init in a temp git repo, doctor, and runtime path checks without relying on a PATH node binary."
 sections:
   Summary: |-
