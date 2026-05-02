@@ -5,6 +5,8 @@ export const recipesUrl = "/docs/recipes";
 export const workflowDocsUrl = "/docs/user/workflow";
 export const quickstartUrl = "/docs/user/setup";
 export const installCommand = "npm i -g agentplane";
+export const recipesIndexUrl =
+  "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json";
 
 export const homepageContent = {
   seo: {
@@ -83,6 +85,11 @@ export const homepageContent = {
       "Verification is explicit.",
       "Git remains the source of truth.",
     ],
+  },
+  recipesCatalog: {
+    title: "Recipes",
+    text: "Installable recipe packages add ready-to-run workflows and guardrails from a remote catalog.",
+    stepText: "Each card shows what the recipe does and the CLI command to cache it locally.",
   },
   nextSteps: {
     title: "Choose your next step.",
