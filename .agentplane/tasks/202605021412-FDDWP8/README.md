@@ -4,7 +4,7 @@ title: "Define standalone CLI artifact contract"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -21,27 +21,33 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-02T16:08:35.812Z"
+  updated_at: "2026-05-02T16:10:07.837Z"
   updated_by: "PLANNER"
   note: |-
-    Review follow-up: addressed PR review comments.
+    Formatting follow-up after pre-push.
+    
+    Command: bunx prettier docs/developer/release-and-publishing.mdx --write
+    Result: pass
+    Evidence: formatted release docs.
+    Scope: docs/developer/release-and-publishing.mdx
+    Links: docs/developer/release-and-publishing.mdx
+    
+    Command: bun run format:check -- docs/developer/release-and-publishing.mdx
+    Result: pass
+    Evidence: All matched files use Prettier code style.
+    Scope: docs/developer/release-and-publishing.mdx
+    Links: docs/developer/release-and-publishing.mdx
     
     Command: node .agentplane/policy/check-routing.mjs
     Result: pass
-    Evidence: policy routing OK after review updates.
-    Scope: release docs contract.
+    Evidence: policy routing OK.
+    Scope: policy routing after formatting follow-up.
     Links: docs/developer/release-and-publishing.mdx
     
     Command: agentplane doctor
     Result: pass
-    Evidence: doctor OK; errors=0 warnings=0 after review updates.
-    Scope: docs-only PR branch.
-    Links: docs/developer/release-and-publishing.mdx
-    
-    Command: rg -n "agentplane\.cmd|setup action module|standalone CLI asset|depends_on \"node\"" docs/developer/release-and-publishing.mdx
-    Result: pass
-    Evidence: Windows smoke tests now use bin/agentplane.cmd and setup-action module now consumes standalone CLI assets from the manifest.
-    Scope: addressed PR review comments.
+    Evidence: doctor OK; errors=0 warnings=0.
+    Scope: docs-only PR branch after formatting follow-up.
     Links: docs/developer/release-and-publishing.mdx
 commit: null
 comments:
@@ -104,8 +110,39 @@ events:
       Evidence: Windows smoke tests now use bin/agentplane.cmd and setup-action module now consumes standalone CLI assets from the manifest.
       Scope: addressed PR review comments.
       Links: docs/developer/release-and-publishing.mdx
+  -
+    type: "verify"
+    at: "2026-05-02T16:10:07.837Z"
+    author: "PLANNER"
+    state: "ok"
+    note: |-
+      Formatting follow-up after pre-push.
+      
+      Command: bunx prettier docs/developer/release-and-publishing.mdx --write
+      Result: pass
+      Evidence: formatted release docs.
+      Scope: docs/developer/release-and-publishing.mdx
+      Links: docs/developer/release-and-publishing.mdx
+      
+      Command: bun run format:check -- docs/developer/release-and-publishing.mdx
+      Result: pass
+      Evidence: All matched files use Prettier code style.
+      Scope: docs/developer/release-and-publishing.mdx
+      Links: docs/developer/release-and-publishing.mdx
+      
+      Command: node .agentplane/policy/check-routing.mjs
+      Result: pass
+      Evidence: policy routing OK.
+      Scope: policy routing after formatting follow-up.
+      Links: docs/developer/release-and-publishing.mdx
+      
+      Command: agentplane doctor
+      Result: pass
+      Evidence: doctor OK; errors=0 warnings=0.
+      Scope: docs-only PR branch after formatting follow-up.
+      Links: docs/developer/release-and-publishing.mdx
 doc_version: 3
-doc_updated_at: "2026-05-02T16:08:35.829Z"
+doc_updated_at: "2026-05-02T16:10:07.846Z"
 doc_updated_by: "PLANNER"
 description: "Specify the bundled-runtime AgentPlane CLI artifact contract: supported platform/arch targets, archive layout, embedded Node version source, checksum/signature expectations, runtime path invariants, and security update policy."
 sections:
@@ -184,6 +221,38 @@ sections:
     Links: docs/developer/release-and-publishing.mdx
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T16:03:48.548Z, excerpt_hash=sha256:a4afc2342bce3133d3a452b2ea9da4c3b8e1b3235234f7a1288429b10802529d
+    
+    ### 2026-05-02T16:10:07.837Z — VERIFY — ok
+    
+    By: PLANNER
+    
+    Note: Formatting follow-up after pre-push.
+    
+    Command: bunx prettier docs/developer/release-and-publishing.mdx --write
+    Result: pass
+    Evidence: formatted release docs.
+    Scope: docs/developer/release-and-publishing.mdx
+    Links: docs/developer/release-and-publishing.mdx
+    
+    Command: bun run format:check -- docs/developer/release-and-publishing.mdx
+    Result: pass
+    Evidence: All matched files use Prettier code style.
+    Scope: docs/developer/release-and-publishing.mdx
+    Links: docs/developer/release-and-publishing.mdx
+    
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK.
+    Scope: policy routing after formatting follow-up.
+    Links: docs/developer/release-and-publishing.mdx
+    
+    Command: agentplane doctor
+    Result: pass
+    Evidence: doctor OK; errors=0 warnings=0.
+    Scope: docs-only PR branch after formatting follow-up.
+    Links: docs/developer/release-and-publishing.mdx
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T16:08:35.829Z, excerpt_hash=sha256:a4afc2342bce3133d3a452b2ea9da4c3b8e1b3235234f7a1288429b10802529d
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -276,6 +345,38 @@ Scope: addressed PR review comments.
 Links: docs/developer/release-and-publishing.mdx
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T16:03:48.548Z, excerpt_hash=sha256:a4afc2342bce3133d3a452b2ea9da4c3b8e1b3235234f7a1288429b10802529d
+
+### 2026-05-02T16:10:07.837Z — VERIFY — ok
+
+By: PLANNER
+
+Note: Formatting follow-up after pre-push.
+
+Command: bunx prettier docs/developer/release-and-publishing.mdx --write
+Result: pass
+Evidence: formatted release docs.
+Scope: docs/developer/release-and-publishing.mdx
+Links: docs/developer/release-and-publishing.mdx
+
+Command: bun run format:check -- docs/developer/release-and-publishing.mdx
+Result: pass
+Evidence: All matched files use Prettier code style.
+Scope: docs/developer/release-and-publishing.mdx
+Links: docs/developer/release-and-publishing.mdx
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK.
+Scope: policy routing after formatting follow-up.
+Links: docs/developer/release-and-publishing.mdx
+
+Command: agentplane doctor
+Result: pass
+Evidence: doctor OK; errors=0 warnings=0.
+Scope: docs-only PR branch after formatting follow-up.
+Links: docs/developer/release-and-publishing.mdx
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T16:08:35.829Z, excerpt_hash=sha256:a4afc2342bce3133d3a452b2ea9da4c3b8e1b3235234f7a1288429b10802529d
 
 <!-- END VERIFICATION RESULTS -->
 

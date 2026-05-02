@@ -15,24 +15,30 @@ Specify the bundled-runtime AgentPlane CLI artifact contract: supported platform
 ## Verification
 
 - State: ok
-- Note: Review follow-up: addressed PR review comments.
+- Note: Formatting follow-up after pre-push.
+
+Command: bunx prettier docs/developer/release-and-publishing.mdx --write
+Result: pass
+Evidence: formatted release docs.
+Scope: docs/developer/release-and-publishing.mdx
+Links: docs/developer/release-and-publishing.mdx
+
+Command: bun run format:check -- docs/developer/release-and-publishing.mdx
+Result: pass
+Evidence: All matched files use Prettier code style.
+Scope: docs/developer/release-and-publishing.mdx
+Links: docs/developer/release-and-publishing.mdx
 
 Command: node .agentplane/policy/check-routing.mjs
 Result: pass
-Evidence: policy routing OK after review updates.
-Scope: release docs contract.
+Evidence: policy routing OK.
+Scope: policy routing after formatting follow-up.
 Links: docs/developer/release-and-publishing.mdx
 
 Command: agentplane doctor
 Result: pass
-Evidence: doctor OK; errors=0 warnings=0 after review updates.
-Scope: docs-only PR branch.
-Links: docs/developer/release-and-publishing.mdx
-
-Command: rg -n "agentplane\.cmd|setup action module|standalone CLI asset|depends_on \"node\"" docs/developer/release-and-publishing.mdx
-Result: pass
-Evidence: Windows smoke tests now use bin/agentplane.cmd and setup-action module now consumes standalone CLI assets from the manifest.
-Scope: addressed PR review comments.
+Evidence: doctor OK; errors=0 warnings=0.
+Scope: docs-only PR branch after formatting follow-up.
 Links: docs/developer/release-and-publishing.mdx
 - Full verification checklist lives in local review.md.
 
