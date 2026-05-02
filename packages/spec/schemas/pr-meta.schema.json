@@ -45,21 +45,11 @@
     },
     "status": {
       "type": "string",
-      "enum": [
-        "OPEN",
-        "CLOSED",
-        "MERGED"
-      ]
+      "enum": ["OPEN", "CLOSED", "MERGED"]
     },
     "artifact_state": {
       "type": "string",
-      "enum": [
-        "open",
-        "merged",
-        "handoff",
-        "remote_staged",
-        "remote_failed"
-      ]
+      "enum": ["open", "merged", "handoff", "remote_staged", "remote_failed"]
     },
     "artifact_state_reason": {
       "type": "string",
@@ -71,11 +61,7 @@
     },
     "merge_strategy": {
       "type": "string",
-      "enum": [
-        "squash",
-        "merge",
-        "rebase"
-      ]
+      "enum": ["squash", "merge", "rebase"]
     },
     "merged_at": {
       "type": "string",
@@ -116,11 +102,7 @@
       "properties": {
         "status": {
           "type": "string",
-          "enum": [
-            "pass",
-            "fail",
-            "skipped"
-          ]
+          "enum": ["pass", "fail", "skipped"]
         },
         "command": {
           "type": "string"
@@ -129,11 +111,6 @@
       "additionalProperties": true
     }
   },
-  "required": [
-    "schema_version",
-    "task_id",
-    "created_at",
-    "updated_at"
-  ],
+  "required": ["schema_version", "task_id", "created_at", "updated_at"],
   "additionalProperties": true
 }
