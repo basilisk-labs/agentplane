@@ -1,10 +1,11 @@
 ---
 id: "202605021412-1TG306"
 title: "Document standalone release channel operations"
-status: "DOING"
+result_summary: "Merged via PR #758."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-05-02T17:52:14.815Z"
   updated_by: "DOCS"
   note: "Passed: agentplane task verify-show 202605021412-1TG306; bun run docs:cli:check; bun run docs:scripts:check; bun run format:check; node .agentplane/policy/check-routing.mjs; agentplane doctor."
-commit: null
+commit:
+  hash: "5f889a2aa72e715b357b74b7655619273849f26d"
+  message: "docs/release: Document standalone release operations (1TG306)"
 comments:
   -
     author: "DOCS"
     body: "Start: Document completed standalone release channel behavior and evidence boundaries."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #758 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Passed: agentplane task verify-show 202605021412-1TG306; bun run docs:cli:check; bun run docs:scripts:check; bun run format:check; node .agentplane/policy/check-routing.mjs; agentplane doctor."
+  -
+    type: "status"
+    at: "2026-05-02T17:55:24.612Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #758 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-02T17:52:14.842Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-02T17:55:24.617Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update release and publishing docs with the standalone artifact architecture, Homebrew/Scoop/setup-action install behavior, embedded Node maintenance policy, verification commands, recovery steps, and release DoD changes."
 sections:
   Summary: |-
