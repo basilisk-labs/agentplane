@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605021412-1TG306/standalone-release-docs",
+  "created_at": "2026-05-02T17:48:18.032Z",
+  "head_sha": "09042f30910d9de39b36f2bac558232f1ae8639c",
+  "last_verified_at": "2026-05-02T17:52:14.815Z",
+  "last_verified_sha": "5fa0fe6d72893e792df9bfec8d915af9e9fb0cae",
+  "schema_version": 1,
+  "task_id": "202605021412-1TG306",
+  "updated_at": "2026-05-02T17:52:30.602Z",
+  "verify": {
+    "status": "pass"
+  }
+}
