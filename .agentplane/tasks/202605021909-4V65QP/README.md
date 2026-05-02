@@ -1,10 +1,11 @@
 ---
 id: "202605021909-4V65QP"
 title: "Align runner and diagnostics with materialized prompt sources"
-status: "TODO"
+result_summary: "Closed as included task in primary batch 202605021908-BGE36D; implementation landed in merge commit 38c5df9686ab176d7a1cce60531a28201a5a8d2f and closure commit 8cd6f64da7f49d8d3a27d66c4e625b02faea3022."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -26,8 +27,13 @@ verification:
   updated_at: "2026-05-02T19:38:34.357Z"
   updated_by: "CODER"
   note: "Aligned runner prompt source ordering and prompt-module bridge metadata. Evidence: base-prompts targeted tests passed; policy routing OK."
-commit: null
-comments: []
+commit:
+  hash: "38c5df9686ab176d7a1cce60531a28201a5a8d2f"
+  message: "task: Define managed recipe materialization contract [202605021908-BGE36D] (#765)"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: implemented as part of batch PR #765 and closure PR #770."
 events:
   -
     type: "verify"
@@ -35,9 +41,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Aligned runner prompt source ordering and prompt-module bridge metadata. Evidence: base-prompts targeted tests passed; policy routing OK."
+  -
+    type: "status"
+    at: "2026-05-02T20:10:42.732Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: implemented as part of batch PR #765 and closure PR #770."
 doc_version: 3
-doc_updated_at: "2026-05-02T19:38:34.366Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-02T20:10:42.733Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make runner behavior, prompt graph diagnostics, and doctor agree on the materialized source prompt model so physical managed files and generated graph cannot silently drift after recipe activation."
 sections:
   Summary: |-
