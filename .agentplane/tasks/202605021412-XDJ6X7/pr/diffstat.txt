@@ -1,0 +1,3 @@
+ .../release/render-homebrew-formula-script.test.ts | 40 ++++++++++---
+ scripts/render-homebrew-formula.mjs                | 69 +++++++++++++++-------
+ 2 files changed, 78 insertions(+), 31 deletions(-)

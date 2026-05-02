@@ -2,12 +2,12 @@
   "base": "main",
   "branch": "task/202605021412-XDJ6X7/homebrew-standalone-assets",
   "created_at": "2026-05-02T17:29:47.769Z",
-  "head_sha": "eda5d5f2d4d3de90d97f78833bc1892ce42a51cf",
+  "head_sha": "22c39fcb601fbe8a3cb865490e578bba4a1ff315",
   "last_verified_at": "2026-05-02T17:33:35.388Z",
   "last_verified_sha": "eda5d5f2d4d3de90d97f78833bc1892ce42a51cf",
   "schema_version": 1,
   "task_id": "202605021412-XDJ6X7",
-  "updated_at": "2026-05-02T17:29:47.769Z",
+  "updated_at": "2026-05-02T17:33:48.184Z",
   "verify": {
     "status": "pass"
   }

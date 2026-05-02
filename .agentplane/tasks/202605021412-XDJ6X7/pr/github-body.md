@@ -25,12 +25,14 @@ Update the Homebrew formula renderer and tap publication flow to consume macOS b
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T17:29:47.769Z
+- Updated: 2026-05-02T17:33:48.184Z
 - Branch: task/202605021412-XDJ6X7/homebrew-standalone-assets
-- Head: eda5d5f2d4d3
+- Head: 22c39fcb601f
 
 ```text
-No changes detected.
+ .../release/render-homebrew-formula-script.test.ts | 40 ++++++++++---
+ scripts/render-homebrew-formula.mjs                | 69 +++++++++++++++-------
+ 2 files changed, 78 insertions(+), 31 deletions(-)
 ```
 
 </details>
