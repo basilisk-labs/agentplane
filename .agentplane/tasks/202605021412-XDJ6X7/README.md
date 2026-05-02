@@ -1,10 +1,11 @@
 ---
 id: "202605021412-XDJ6X7"
 title: "Switch Homebrew formula to standalone assets"
-status: "DOING"
+result_summary: "Merged via PR #754."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-05-02T17:33:35.388Z"
   updated_by: "CODER"
   note: "Passed: agentplane task verify-show 202605021412-XDJ6X7; bun run release:homebrew:check; bun test packages/agentplane/src/commands/release/render-homebrew-formula-script.test.ts; ruby -c generated Formula/agentplane.rb; bunx eslint scripts/render-homebrew-formula.mjs packages/agentplane/src/commands/release/render-homebrew-formula-script.test.ts; bun run format:check; node .agentplane/policy/check-routing.mjs; agentplane doctor."
-commit: null
+commit:
+  hash: "1038442881c2232891fb53d9ab38892975555941"
+  message: "release: Switch Homebrew formula to standalone assets (XDJ6X7)"
 comments:
   -
     author: "CODER"
     body: "Start: Render Homebrew formula from macOS standalone archives without Node dependency."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #754 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Passed: agentplane task verify-show 202605021412-XDJ6X7; bun run release:homebrew:check; bun test packages/agentplane/src/commands/release/render-homebrew-formula-script.test.ts; ruby -c generated Formula/agentplane.rb; bunx eslint scripts/render-homebrew-formula.mjs packages/agentplane/src/commands/release/render-homebrew-formula-script.test.ts; bun run format:check; node .agentplane/policy/check-routing.mjs; agentplane doctor."
+  -
+    type: "status"
+    at: "2026-05-02T17:36:34.689Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #754 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-02T17:33:35.418Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-02T17:36:34.694Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the Homebrew formula renderer and tap publication flow to consume macOS bundled-runtime archives directly, remove depends_on node, select arm64/x64 assets, and validate formula syntax/install behavior."
 sections:
   Summary: |-
