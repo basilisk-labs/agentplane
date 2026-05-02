@@ -49,26 +49,42 @@ function requireString(value, label) {
   return text;
 }
 
+function findPlatformAsset(manifest, platform, arch) {
+  const asset = (manifest.platformAssets ?? []).find(
+    (entry) =>
+      entry?.kind === "standalone_cli" && entry?.platform === platform && entry?.arch === arch,
+  );
+  if (!asset) throw new Error(`Missing standalone platform asset: ${platform}-${arch}`);
+  return {
+    url: requireString(asset.url, `${platform}-${arch} standalone URL`),
+    sha256: requireString(asset.sha256, `${platform}-${arch} standalone sha256`),
+    name: requireString(asset.name, `${platform}-${arch} standalone asset name`),
+  };
+}
+
 function renderFormula(manifest) {
   const version = requireString(manifest.version, "release version");
-  const pkg = manifest.packages?.agentplane;
-  const url = requireString(pkg?.npmTarballUrl, "agentplane npm tarball URL");
-  const sha256 = requireString(pkg?.npmTarballSha256, "agentplane npm tarball sha256");
+  const darwinArm64 = findPlatformAsset(manifest, "darwin", "arm64");
+  const darwinX64 = findPlatformAsset(manifest, "darwin", "x64");
   return `class Agentplane < Formula
   desc "Git-native CLI harness for auditable coding-agent workflows"
   homepage "https://agentplane.org"
-  url "${url}"
-  sha256 "${sha256}"
   version "${version}"
   license "MIT"
 
-  depends_on "node"
+  if OS.mac? && Hardware::CPU.arm?
+    url "${darwinArm64.url}"
+    sha256 "${darwinArm64.sha256}"
+  elsif OS.mac? && Hardware::CPU.intel?
+    url "${darwinX64.url}"
+    sha256 "${darwinX64.sha256}"
+  else
+    odie "AgentPlane Homebrew formula currently supports macOS arm64 and x86_64 standalone archives"
+  end
 
   def install
-    system "npm", "install", "--global", "--prefix", libexec,
-      "--omit=dev", "--ignore-scripts", "--no-audit", "--no-fund",
-      cached_download
-    bin.install_symlink Dir[libexec/"bin/*"]
+    libexec.install Dir["*"]
+    bin.install_symlink libexec/"bin/agentplane" => "agentplane"
   end
 
   test do
@@ -80,11 +96,15 @@ end
 }
 
 function runDistributionGenerator(repoRoot, outDir) {
-  execFileSync("node", ["scripts/generate-release-distribution.mjs", "--out", outDir], {
-    cwd: repoRoot,
-    stdio: "ignore",
-    env: process.env,
-  });
+  execFileSync(
+    "node",
+    ["scripts/generate-release-distribution.mjs", "--out", outDir, "--standalone-check-mode"],
+    {
+      cwd: repoRoot,
+      stdio: "ignore",
+      env: process.env,
+    },
+  );
   return path.join(outDir, "release-distribution.json");
 }
 
@@ -113,9 +133,11 @@ async function renderHomebrew(repoRoot, args) {
     sha: manifest.sha,
     formulaPath,
     formulaName: FORMULA_NAME,
-    npmTarballUrl: manifest.packages?.agentplane?.npmTarballUrl ?? null,
-    npmTarballSha256: manifest.packages?.agentplane?.npmTarballSha256 ?? null,
-    installStrategy: "npm_global_cached_tarball",
+    assets: {
+      darwinArm64: findPlatformAsset(manifest, "darwin", "arm64"),
+      darwinX64: findPlatformAsset(manifest, "darwin", "x64"),
+    },
+    installStrategy: "standalone_bundled_node",
     nextAction:
       channel.status === "skipped_missing_credentials"
         ? "Add HOMEBREW_TAP_TOKEN and rerun the Homebrew tap publication module for this manifest."
@@ -127,11 +149,14 @@ async function renderHomebrew(repoRoot, args) {
   );
 
   if (args.check) {
-    if (formula.includes("std_npm_args") || formula.includes("--min-release-age")) {
-      throw new Error("Homebrew formula must not use std_npm_args/min-release-age");
+    if (formula.includes('depends_on "node"') || formula.includes("npm")) {
+      throw new Error("Homebrew formula must not depend on Node or npm");
     }
-    if (!formula.includes("cached_download")) {
-      throw new Error("Homebrew formula must install the cached release tarball");
+    if (!formula.includes("standalone archives")) {
+      throw new Error("Homebrew formula must describe standalone archive support");
+    }
+    if (!formula.includes('bin.install_symlink libexec/"bin/agentplane"')) {
+      throw new Error("Homebrew formula must link the standalone agentplane wrapper");
     }
     rmSync(tempRoot, { recursive: true, force: true });
   }
