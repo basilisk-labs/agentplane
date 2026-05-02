@@ -1,0 +1,4 @@
+ ...ender-scoop-and-setup-standalone-script.test.ts | 139 +++++++++++++++++++++
+ scripts/render-scoop-manifest.mjs                  |  53 +++++---
+ scripts/render-setup-agentplane-action.mjs         |  94 +++++++++++---
+ 3 files changed, 255 insertions(+), 31 deletions(-)

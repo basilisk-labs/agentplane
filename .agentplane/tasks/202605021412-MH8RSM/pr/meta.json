@@ -2,12 +2,12 @@
   "base": "main",
   "branch": "task/202605021412-MH8RSM/scoop-setup-standalone-assets",
   "created_at": "2026-05-02T17:39:32.233Z",
-  "head_sha": "d9b9773282240b3c49ac3b0bb75754b33cdcc16a",
+  "head_sha": "a01933ea017008e2fba0fc0ba5186bde65a84526",
   "last_verified_at": "2026-05-02T17:43:57.303Z",
   "last_verified_sha": "d9b9773282240b3c49ac3b0bb75754b33cdcc16a",
   "schema_version": 1,
   "task_id": "202605021412-MH8RSM",
-  "updated_at": "2026-05-02T17:39:32.233Z",
+  "updated_at": "2026-05-02T17:44:07.686Z",
   "verify": {
     "status": "pass"
   }

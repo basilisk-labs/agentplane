@@ -46,12 +46,15 @@ Update Scoop manifest rendering and setup-agentplane action generation to prefer
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T17:39:32.233Z
+- Updated: 2026-05-02T17:44:07.686Z
 - Branch: task/202605021412-MH8RSM/scoop-setup-standalone-assets
-- Head: d9b977328224
+- Head: a01933ea0170
 
 ```text
-No changes detected.
+ ...ender-scoop-and-setup-standalone-script.test.ts | 139 +++++++++++++++++++++
+ scripts/render-scoop-manifest.mjs                  |  53 +++++---
+ scripts/render-setup-agentplane-action.mjs         |  94 +++++++++++---
+ 3 files changed, 255 insertions(+), 31 deletions(-)
 ```
 
 </details>
