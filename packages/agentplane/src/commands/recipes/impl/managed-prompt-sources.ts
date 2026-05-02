@@ -21,7 +21,7 @@ function sourcePolicyPath(sourceRef: string): string | null {
     .slice(index + marker.length)
     .split("#", 1)[0]
     ?.trim();
-  return relative && relative.endsWith(".md") ? relative : null;
+  return relative?.endsWith(".md") ? relative : null;
 }
 
 function outputPathForModule(opts: {
