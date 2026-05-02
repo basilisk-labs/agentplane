@@ -1,10 +1,11 @@
 ---
 id: "202605021412-Q2WGGA"
 title: "Build bundled-runtime CLI artifact generator"
-status: "DOING"
+result_summary: "Merged via PR #746."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -66,11 +67,16 @@ verification:
     Review resolutions:
     - Replaced range-resolving npm install with bun.lock-backed `bun install --production --frozen-lockfile --ignore-scripts` for real dependency installation.
     - Quoted Windows .cmd runtime and JS entrypoint paths.
-commit: null
+commit:
+  hash: "cf4b59a22618118cd7dcf8f119f1b8d70977d802"
+  message: "release: Add standalone CLI asset generator (Q2WGGA)"
 comments:
   -
     author: "CODER"
     body: "Start: Implement the standalone CLI asset generator and focused check-mode tests according to the approved bundled-runtime artifact contract."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #746 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -170,9 +176,16 @@ events:
       Review resolutions:
       - Replaced range-resolving npm install with bun.lock-backed `bun install --production --frozen-lockfile --ignore-scripts` for real dependency installation.
       - Quoted Windows .cmd runtime and JS entrypoint paths.
+  -
+    type: "status"
+    at: "2026-05-02T16:54:24.671Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #746 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-02T16:43:54.865Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-02T16:54:24.678Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement a deterministic script that assembles AgentPlane CLI archives with an embedded Node runtime, installed production dependencies, package assets, wrapper entrypoints, version metadata, and sha256 outputs."
 sections:
   Summary: |-
