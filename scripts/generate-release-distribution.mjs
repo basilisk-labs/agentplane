@@ -232,13 +232,16 @@ printf '%s\\n' "$INSTALL_DIR/bin"
 }
 
 function renderInstallPs1({ version, repo, tag }) {
+  const defaultInstallDir = String.raw`".agentplane\standalone\$Version"`;
+  const checksumSplitPattern = String.raw`'\s+'`;
+  const agentplaneCmd = String.raw`"bin\agentplane.cmd"`;
   return `$ErrorActionPreference = "Stop"
 
 $Version = "${version}"
 $Repo = "${repo}"
 $Tag = "${tag}"
 $BaseUrl = "https://github.com/$Repo/releases/download/$Tag"
-$InstallDir = if ($env:AGENTPLANE_INSTALL_DIR) { $env:AGENTPLANE_INSTALL_DIR } else { Join-Path $HOME ".agentplane\\standalone\\$Version" }
+$InstallDir = if ($env:AGENTPLANE_INSTALL_DIR) { $env:AGENTPLANE_INSTALL_DIR } else { Join-Path $HOME ${defaultInstallDir} }
 
 function Require-Command($Name) {
   if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
@@ -255,7 +258,7 @@ try {
   Invoke-WebRequest -Uri "$BaseUrl/SHA256SUMS" -OutFile $Checksums
   Invoke-WebRequest -Uri "$BaseUrl/$Asset" -OutFile $Archive
   $Expected = (Get-Content $Checksums | ForEach-Object {
-    $Parts = ($_ -split '\\s+')
+    $Parts = ($_ -split ${checksumSplitPattern})
     if ($Parts.Count -ge 2 -and $Parts[1] -eq $Asset) { $Parts[0] }
   } | Select-Object -First 1)
   if (-not $Expected) {
@@ -270,7 +273,7 @@ try {
   }
   New-Item -ItemType Directory -Path $InstallDir | Out-Null
   Expand-Archive -Path $Archive -DestinationPath $InstallDir -Force
-  & (Join-Path $InstallDir "bin\\agentplane.cmd") --version
+  & (Join-Path $InstallDir ${agentplaneCmd}) --version
   Write-Output (Join-Path $InstallDir "bin")
 }
 finally {

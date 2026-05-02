@@ -238,9 +238,12 @@ describe("repo-local handoff wrapper", () => {
     const requireFromAgentplane = createRequire(
       path.join(workspaceRoot, "packages", "agentplane", "package.json"),
     );
-    expect(requireFromAgentplane.resolve("@agentplaneorg/core")).toBe(
-      path.join(workspaceRoot, "packages", "core", "dist", "index.js"),
-    );
+    const resolvedCore = requireFromAgentplane.resolve("@agentplaneorg/core");
+    const relativeCore = path.relative(path.join(workspaceRoot, "packages", "core"), resolvedCore);
+    expect(
+      relativeCore === path.join("dist", "index.js") ||
+        relativeCore === path.join("src", "index.ts"),
+    ).toBe(true);
   });
 
   it("delegates to the repo-local binary from a nested framework cwd", async () => {

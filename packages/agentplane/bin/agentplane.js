@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { stat } from "node:fs/promises";
 import { createRequire } from "node:module";
@@ -187,6 +188,7 @@ function renderStalePolicyWarning(reason) {
 
 function missingRepoRuntimeDependencies(agentplaneRoot) {
   const requireFromAgentplane = createRequire(path.join(agentplaneRoot, "package.json"));
+  const frameworkRoot = path.resolve(agentplaneRoot, "..", "..");
   let packageJson = null;
   try {
     packageJson = requireFromAgentplane("./package.json");
@@ -206,8 +208,9 @@ function missingRepoRuntimeDependencies(agentplaneRoot) {
   const requiredSpecifiers = ["@agentplaneorg/core"];
   return requiredSpecifiers.filter((specifier) => {
     try {
-      requireFromAgentplane.resolve(specifier);
-      return false;
+      const resolved = requireFromAgentplane.resolve(specifier);
+      if (isPathInside(frameworkRoot, resolved)) return false;
+      return !existsSync(path.join(agentplaneRoot, "node_modules", ...specifier.split("/")));
     } catch {
       return true;
     }
