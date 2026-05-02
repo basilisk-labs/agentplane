@@ -1,10 +1,11 @@
 ---
 id: "202605022118-M0GKG8"
 title: "Fix release lint drift before patch release"
-status: "DOING"
+result_summary: "Release lint drift fix merged via PR #775."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-02T21:25:58.359Z"
   updated_by: "CODER"
   note: "Verified: current release lint drift is fixed without behavior changes. Evidence: bun run lint:core passed after String.raw and dependency-spread cleanup; bun test packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts passed 2/2; combined affected suite passed 14/14; prettier check passed; git diff --check passed."
-commit: null
+commit:
+  hash: "ee98cd343156106ed85f177d92a36f8c5433a538"
+  message: "✅ F0DGQ6 close: Merged via PR #775. (202605022114-F0DGQ6) [cli,code,release] (#776)"
 comments:
   -
     author: "CODER"
     body: "Start: Fix the release-distribution lint drift found during patch-release readiness checks and include it in the current release-readiness PR."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release lint drift fix merged via PR #775 and hosted checks passed."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: current release lint drift is fixed without behavior changes. Evidence: bun run lint:core passed after String.raw and dependency-spread cleanup; bun test packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts passed 2/2; combined affected suite passed 14/14; prettier check passed; git diff --check passed."
+  -
+    type: "status"
+    at: "2026-05-02T21:32:00.200Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release lint drift fix merged via PR #775 and hosted checks passed."
 doc_version: 3
-doc_updated_at: "2026-05-02T21:25:58.368Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-02T21:32:00.202Z"
+doc_updated_by: "INTEGRATOR"
 description: "Repair current release-distribution and standalone asset lint errors so release-readiness checks can run cleanly before the next patch release."
 sections:
   Summary: |-
