@@ -16,6 +16,7 @@ const INSTALL_SH_NAME = "install.sh";
 const INSTALL_PS1_NAME = "install.ps1";
 const SHA256SUMS_NAME = "SHA256SUMS";
 const DISTRIBUTION_MANIFEST_NAME = "release-distribution.json";
+const STANDALONE_ASSETS_MANIFEST_NAME = "standalone-assets.json";
 
 function usage() {
   return [
@@ -29,6 +30,7 @@ function usage() {
     "  --tag <tag>             Release tag (default: v<version>)",
     "  --sha <git-sha>         Release git SHA (default: git rev-parse HEAD)",
     "  --repo <owner/name>     GitHub repository (default: basilisk-labs/agentplane)",
+    "  --standalone-check-mode Generate standalone assets with synthetic Node and skipped install",
     "  --check                 Generate into a temporary directory and validate outputs",
     "  --json                  Emit the manifest JSON to stdout",
     "  --help, -h              Show this help text",
@@ -65,7 +67,7 @@ async function readCliPackage(repoRoot) {
 function parseArgs(argv, repoRoot) {
   const { flags } = parseScriptArgs(argv, {
     valueFlags: ["out", "version", "tag", "sha", "repo"],
-    booleanFlags: ["check", "json", "help"],
+    booleanFlags: ["check", "json", "help", "standalone-check-mode"],
   });
   const help = Boolean(flags.help);
   const outDir = path.resolve(repoRoot, flags.out ?? DEFAULT_OUT_DIR);
@@ -80,6 +82,7 @@ function parseArgs(argv, repoRoot) {
     tag,
     sha,
     repo,
+    standaloneCheckMode: Boolean(flags["standalone-check-mode"]),
     check: Boolean(flags.check),
     json: Boolean(flags.json),
   };
@@ -140,7 +143,7 @@ function npmTarballUrl(packageName, version) {
 
 function packCliPackage(repoRoot, outDir) {
   const cacheDir = path.join(repoRoot, ".agentplane", ".npm-cache");
-  const stdout = run("npm", ["pack", "--json", "--pack-destination", outDir], {
+  const stdout = run("npm", ["pack", "--json", "--ignore-scripts", "--pack-destination", outDir], {
     cwd: path.join(repoRoot, CLI_PACKAGE_DIR),
     env: { ...process.env, NPM_CONFIG_CACHE: cacheDir },
   });
@@ -278,6 +281,31 @@ async function writeChecksums(outDir, assets) {
   };
 }
 
+function generateStandaloneAssets(repoRoot, outDir, context) {
+  const args = [
+    "scripts/generate-standalone-cli-assets.mjs",
+    "--out",
+    outDir,
+    "--version",
+    context.version,
+    "--tag",
+    context.tag,
+    "--sha",
+    context.sha,
+    "--repo",
+    context.repo,
+  ];
+  if (context.check || context.standaloneCheckMode) {
+    args.push("--synthetic-node", "--skip-install");
+  }
+  execFileSync("node", args, {
+    cwd: repoRoot,
+    stdio: "ignore",
+    env: process.env,
+  });
+  return JSON.parse(readFileSync(path.join(outDir, STANDALONE_ASSETS_MANIFEST_NAME), "utf8"));
+}
+
 function publicReleaseAssetUrl(repo, tag, assetName) {
   return `https://github.com/${repo}/releases/download/${tag}/${assetName}`;
 }
@@ -302,9 +330,32 @@ async function buildDistribution(repoRoot, args) {
     tarballUrl: cliTarballUrl,
     tarballSha256: cliTarball.sha256,
   });
-  const checksumManifest = await writeChecksums(outDir, [upgradeBundle, ...installerAssets]);
+  const standaloneManifest = generateStandaloneAssets(repoRoot, outDir, {
+    version,
+    tag,
+    sha,
+    repo: args.repo,
+    check: args.check,
+    standaloneCheckMode: args.standaloneCheckMode,
+  });
+  const standaloneAssets = standaloneManifest.assets ?? [];
+  const checksumManifest = await writeChecksums(outDir, [
+    upgradeBundle,
+    ...installerAssets,
+    ...standaloneAssets,
+  ]);
 
-  const releaseAssets = [upgradeBundle, ...installerAssets, checksumManifest].map((asset) => ({
+  const releaseAssets = [
+    upgradeBundle,
+    ...installerAssets,
+    ...standaloneAssets,
+    checksumManifest,
+    {
+      name: STANDALONE_ASSETS_MANIFEST_NAME,
+      kind: "standalone_manifest",
+      sha256: sha256File(path.join(outDir, STANDALONE_ASSETS_MANIFEST_NAME)),
+    },
+  ].map((asset) => ({
     name: asset.name,
     kind: asset.kind,
     sha256: asset.sha256,
@@ -325,6 +376,7 @@ async function buildDistribution(repoRoot, args) {
         npmTarballSha256: cliTarball.sha256,
       },
     },
+    platformAssets: standaloneAssets,
     releaseAssets,
     channels: {
       npm: { status: "pending", required: true },
@@ -359,16 +411,27 @@ function assertDistributionOutputs(outDir, manifest) {
     INSTALL_PS1_NAME,
     SHA256SUMS_NAME,
     DISTRIBUTION_MANIFEST_NAME,
+    STANDALONE_ASSETS_MANIFEST_NAME,
   ];
   for (const name of required) {
     const target = path.join(outDir, name);
     if (!existsSync(target)) throw new Error(`Missing release distribution output: ${name}`);
   }
-  if (manifest.releaseAssets.length !== 4) {
-    throw new Error(`Expected 4 public release assets, got ${manifest.releaseAssets.length}`);
+  if (manifest.platformAssets.length !== 5) {
+    throw new Error(`Expected 5 standalone platform assets, got ${manifest.platformAssets.length}`);
+  }
+  if (manifest.releaseAssets.length !== 10) {
+    throw new Error(`Expected 10 public release assets, got ${manifest.releaseAssets.length}`);
   }
   const names = new Set(manifest.releaseAssets.map((asset) => asset.name));
-  for (const name of [UPGRADE_ASSET_NAME, INSTALL_SH_NAME, INSTALL_PS1_NAME, SHA256SUMS_NAME]) {
+  for (const name of [
+    UPGRADE_ASSET_NAME,
+    INSTALL_SH_NAME,
+    INSTALL_PS1_NAME,
+    SHA256SUMS_NAME,
+    STANDALONE_ASSETS_MANIFEST_NAME,
+    ...manifest.platformAssets.map((asset) => asset.name),
+  ]) {
     if (!names.has(name)) throw new Error(`release-distribution.json missing asset ${name}`);
   }
 }

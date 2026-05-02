@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605021412-3KA8WV/standalone-distribution-manifest",
+  "created_at": "2026-05-02T16:57:22.593Z",
+  "head_sha": "598043f10bfb83ec8491525a74ffb164dadcb452",
+  "last_verified_at": "2026-05-02T17:03:21.005Z",
+  "last_verified_sha": "ce3aea49fd8737f60fc80245630636b461f42fa3",
+  "schema_version": 1,
+  "task_id": "202605021412-3KA8WV",
+  "updated_at": "2026-05-02T17:03:38.292Z",
+  "verify": {
+    "status": "pass"
+  }
+}
