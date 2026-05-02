@@ -9,7 +9,11 @@ import { gitRevParse } from "../../shared/git-ops.js";
 import { assessPrArtifactFreshness } from "./freshness.js";
 import { readPrArtifactFromBranch } from "./pr-paths.js";
 import { parsePrMeta, type PrMeta } from "../../shared/pr-meta.js";
-import { validateGithubPrBodyContents, validateReviewContents } from "./review-template.js";
+import {
+  validateGithubPrBodyContents,
+  validateGithubPrTitleContents,
+  validateReviewContents,
+} from "./review-template.js";
 import {
   findWorktreeForBranch,
   gitListTaskBranches,
@@ -105,6 +109,8 @@ export function validateSnapshotContents(opts: {
   }
   if (!opts.texts.githubTitleText?.trim()) {
     errors.push(`Missing ${opts.relGithubTitlePath}`);
+  } else {
+    validateGithubPrTitleContents(opts.texts.githubTitleText, opts.taskId, errors);
   }
   if (opts.texts.githubBodyText) {
     validateGithubPrBodyContents(opts.texts.githubBodyText, errors);

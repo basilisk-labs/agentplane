@@ -322,6 +322,42 @@ describe("runCli", () => {
     }
   });
 
+  it("preflight --json guards changed PR title artifacts against the canonical message format", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202604100023-ABC123";
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(path.join(prDir, "github-title.txt"), `task: stale artifact [${taskId}]\n`, "utf8");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["preflight", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        message_format_guard?: { ok?: boolean; checked_paths?: string[]; errors?: string[] };
+        harness_health?: { status?: string; reasons?: string[] };
+        next_actions?: { command?: string; reason?: string }[];
+      };
+      expect(payload.message_format_guard?.ok).toBe(false);
+      expect(payload.message_format_guard?.checked_paths).toContain(
+        ".agentplane/tasks/202604100023-ABC123/pr/github-title.txt",
+      );
+      expect(payload.message_format_guard?.errors?.join("\n")).toContain(
+        "Invalid GitHub PR title format",
+      );
+      expect(payload.harness_health?.reasons).toContain("message_format_guard_failed");
+      expect(payload.next_actions).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            command: "agentplane pr update <task-id>",
+          }),
+        ]),
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
   it("preflight --json supports workflow kill-switch via env", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

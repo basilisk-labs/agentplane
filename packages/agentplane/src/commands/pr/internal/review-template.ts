@@ -1,5 +1,7 @@
 import type { TaskData } from "../../../backends/task-backend.js";
 import type { PrHandoffNote } from "./note-store.js";
+import { defaultCommitEmojiForStatus } from "../../task/shared/transitions.js";
+import { extractTaskSuffix, parseTaskSubjectTemplate } from "@agentplaneorg/core/commit";
 
 const AUTO_SUMMARY_START = "<!-- BEGIN AUTO SUMMARY -->";
 const AUTO_SUMMARY_END = "<!-- END AUTO SUMMARY -->";
@@ -8,6 +10,7 @@ const SCOPE_SECTION = "## Scope";
 const VERIFICATION_SECTION = "## Verification";
 const RISKS_SECTION = "## Risks";
 const HANDOFF_NOTES_MARKER = "## Handoff Notes";
+const TASK_ID_SUFFIX_PATTERN = /\s*\[[^\]]+\]\s*$/u;
 
 function sectionText(task: TaskData, name: string, fallback: string): string {
   const value = typeof task.sections?.[name] === "string" ? task.sections[name].trim() : "";
@@ -149,7 +152,8 @@ function renderGithubBodySections(opts: {
 
 export function buildGithubPrTitle(task: TaskData): string {
   const title = normalizeOneLine(task.title, 96) || "Untitled task";
-  return `task: ${title} [${task.id}]`;
+  const suffix = extractTaskSuffix(task.id);
+  return `${defaultCommitEmojiForStatus(task.status)} ${suffix || task.id} task: ${title} [${task.id}]`;
 }
 
 export function renderPrAutoSummary(opts: {
@@ -301,5 +305,42 @@ export function validateGithubPrBodyContents(body: string, errors: string[]): vo
   }
   if (!body.includes("<details>")) {
     errors.push("Missing raw evidence details block");
+  }
+}
+
+export function validateGithubPrTitleContents(
+  title: string,
+  taskId: string,
+  errors: string[],
+): void {
+  const trimmed = title.trim();
+  if (!trimmed) {
+    errors.push("Missing GitHub PR title content");
+    return;
+  }
+
+  const taskIdMarkerMatch = /\[([^\]]+)\]\s*$/u.exec(trimmed);
+  if (!taskIdMarkerMatch?.[1]) {
+    errors.push("Missing task id in GitHub PR title: expected [TASK-ID]");
+    return;
+  }
+  if (taskIdMarkerMatch[1]?.trim() !== taskId) {
+    errors.push(
+      `GitHub PR title task id does not match artifact task id: ${taskIdMarkerMatch[1]?.trim()}`,
+    );
+  }
+
+  const titleWithoutTaskId = trimmed.replace(TASK_ID_SUFFIX_PATTERN, "");
+  const parsed = parseTaskSubjectTemplate(titleWithoutTaskId);
+  if (!parsed) {
+    errors.push("Invalid GitHub PR title format");
+    return;
+  }
+  if (parsed.scope !== "task") {
+    errors.push("Invalid GitHub PR title scope: expected task:");
+  }
+  const expectedSuffix = extractTaskSuffix(taskId);
+  if (expectedSuffix && parsed.suffix.toLowerCase() !== expectedSuffix.toLowerCase()) {
+    errors.push("GitHub PR title suffix does not match task id");
   }
 }

@@ -91,7 +91,9 @@ describe("prepare-hosted-task-closure script", () => {
     expect(parsed.task_id).toBe("202603271940-EG3B0C");
     expect(parsed.merge_sha).toBe("1234567890abcdef1234567890abcdef12345678");
     expect(parsed.closure_branch).toBe("task-close/202603271940-EG3B0C/1234567890ab");
-    expect(parsed.pr_title).toBe("task-close: Runner repository refactor [202603271940-EG3B0C]");
+    expect(parsed.pr_title).toBe(
+      "🧩 EG3B0C task-close: Runner repository refactor [202603271940-EG3B0C]",
+    );
     expect(parsed.pr_body).toContain("## Source");
     expect(parsed.pr_body).toContain("## Scope");
   });
