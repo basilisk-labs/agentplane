@@ -25,9 +25,9 @@ Fix commit and PR message generators for single canonical format in local and br
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T22:28:38.215Z
+- Updated: 2026-05-02T22:33:20.453Z
 - Branch: task/202605022153-93GVV1/git-message-format
-- Head: cd153a9ff19f
+- Head: 7ceaa64298a6
 
 ```text
  docs/recipes-inventory.json                        |  2 +-
