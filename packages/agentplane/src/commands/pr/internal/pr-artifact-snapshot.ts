@@ -107,10 +107,10 @@ export function validateSnapshotContents(opts: {
   } else {
     errors.push(`Missing ${opts.relReviewPath}`);
   }
-  if (!opts.texts.githubTitleText?.trim()) {
-    errors.push(`Missing ${opts.relGithubTitlePath}`);
-  } else {
+  if (opts.texts.githubTitleText?.trim()) {
     validateGithubPrTitleContents(opts.texts.githubTitleText, opts.taskId, errors);
+  } else {
+    errors.push(`Missing ${opts.relGithubTitlePath}`);
   }
   if (opts.texts.githubBodyText) {
     validateGithubPrBodyContents(opts.texts.githubBodyText, errors);
