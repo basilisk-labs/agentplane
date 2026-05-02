@@ -1,0 +1,1 @@
+task: Switch Scoop and setup-action to standalone assets [202605021412-MH8RSM]
