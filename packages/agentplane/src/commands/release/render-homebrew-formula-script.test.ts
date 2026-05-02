@@ -40,8 +40,7 @@ describe("render-homebrew-formula script", () => {
           packages: {
             agentplane: {
               npmTarballUrl: "https://registry.npmjs.org/agentplane/-/agentplane-0.4.1.tgz",
-              npmTarballSha256:
-                "76edd130dceddb1d15313a5feb3819c513c815b350b9abc822b3ea4712ccc74b",
+              npmTarballSha256: "76edd130dceddb1d15313a5feb3819c513c815b350b9abc822b3ea4712ccc74b",
             },
           },
           channels: {
@@ -61,7 +60,9 @@ describe("render-homebrew-formula script", () => {
     });
 
     const formula = await readFile(path.join(outDir, "Formula", "agentplane.rb"), "utf8");
-    const evidence = JSON.parse(await readFile(path.join(outDir, "homebrew-result.json"), "utf8")) as {
+    const evidence = JSON.parse(
+      await readFile(path.join(outDir, "homebrew-result.json"), "utf8"),
+    ) as {
       installStrategy: string;
     };
     expect(formula).toContain('version "0.4.1"');

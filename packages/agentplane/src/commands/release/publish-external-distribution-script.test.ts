@@ -28,7 +28,10 @@ describe("publish-external-distribution script", () => {
   it("records a skipped evidence file when the target repository token is missing", async () => {
     const root = await makeTempRoot();
     await mkdir(path.join(root, "source", "Formula"), { recursive: true });
-    await writeFile(path.join(root, "source", "Formula", "agentplane.rb"), "class Agentplane\nend\n");
+    await writeFile(
+      path.join(root, "source", "Formula", "agentplane.rb"),
+      "class Agentplane\nend\n",
+    );
     const outPath = path.join(root, "result.json");
 
     const { stdout } = await execFileAsync(
