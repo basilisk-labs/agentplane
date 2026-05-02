@@ -62,7 +62,7 @@ description: "Make install.sh and install.ps1 consume standalone bundled-runtime
 sections:
   Summary: |-
     Add standalone installer distribution path
-    
+
     Make install.sh and install.ps1 consume standalone bundled-runtime release assets instead of requiring user-provided node/npm.
   Scope: |-
     - In scope: Make install.sh and install.ps1 consume standalone bundled-runtime release assets instead of requiring user-provided node/npm.
@@ -75,13 +75,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-02T19:36:10.313Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: Verified: install.sh and install.ps1 now consume standalone release archives with SHA256SUMS verification and no node/npm requirement; standalone production install test passes with local workspace tarballs.
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T19:34:41.028Z, excerpt_hash=sha256:25fdb3b0d57c1c948df8c8d927f4b1492778b0e7e22aa7a3a27b776a967fbac3
-    
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).

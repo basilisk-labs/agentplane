@@ -62,7 +62,7 @@ description: "Add a dispatchable recovery path that can rerun selected distribut
 sections:
   Summary: |-
     Add release module recovery workflow
-    
+
     Add a dispatchable recovery path that can rerun selected distribution modules for an exact release tag and SHA without republishing npm.
   Scope: |-
     - In scope: Add a dispatchable recovery path that can rerun selected distribution modules for an exact release tag and SHA without republishing npm.
@@ -75,13 +75,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-02T19:36:11.293Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: Verified: publish-distribution-module.yml accepts exact tag/SHA/module inputs and excludes npm publish; workflow lint and contract tests passed.
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T19:34:41.317Z, excerpt_hash=sha256:f2651ccc32b4b154044e08db43b0464efa701e68e1e7eb83e1fb4f5c66da6dae
-    
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).

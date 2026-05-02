@@ -62,7 +62,7 @@ description: "Split the release publish workflow into independently recoverable 
 sections:
   Summary: |-
     Modularize release publish jobs
-    
+
     Split the release publish workflow into independently recoverable jobs for distribution assets, npm, GitHub Release, GHCR, and credentials-gated external repositories.
   Scope: |-
     - In scope: Split the release publish workflow into independently recoverable jobs for distribution assets, npm, GitHub Release, GHCR, and credentials-gated external repositories.
@@ -75,13 +75,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-02T19:36:08.443Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: Verified: modular release pipeline checks passed: workflow lint, format, release:prepublish:fast, distribution/standalone/Homebrew/Scoop/setup-action/GHCR checks, targeted release contract tests, policy routing, docs scripts, and agentplane doctor.
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T19:15:45.460Z, excerpt_hash=sha256:76c33aefe091b330e7fa0c28625b0abbc6b863a69b99616e49cf0ba286d243be
-    
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
