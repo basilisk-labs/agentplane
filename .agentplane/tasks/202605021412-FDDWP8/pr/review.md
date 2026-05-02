@@ -62,12 +62,13 @@ Links: docs/developer/release-and-publishing.mdx
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T16:02:21.033Z
+- Updated: 2026-05-02T16:04:11.833Z
 - Branch: task/202605021412-FDDWP8/standalone-artifact-contract
-- Head: 3405acf6c80b
+- Head: e0a7c1d109bf
 
 ```text
-No changes detected.
+ docs/developer/release-and-publishing.mdx | 121 +++++++++++++++++++++++++++++-
+ 1 file changed, 119 insertions(+), 2 deletions(-)
 ```
 
 </details>
