@@ -1,0 +1,1 @@
+task: Define managed recipe materialization contract [202605021908-BGE36D]

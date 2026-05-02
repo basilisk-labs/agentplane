@@ -1,0 +1,4 @@
+ docs/developer/modular-prompt-assembly.mdx | 17 +++++++++++++++++
+ docs/developer/recipes-how-it-works.mdx    | 17 +++++++++++++++++
+ docs/developer/recipes-spec.mdx            |  6 ++++++
+ 3 files changed, 40 insertions(+)
