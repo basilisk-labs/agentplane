@@ -2,12 +2,18 @@
   "base": "main",
   "branch": "task/202605021908-BGE36D/managed-recipe-materialization",
   "created_at": "2026-05-02T19:10:44.274Z",
-  "head_sha": "d28a45f12fc65e63ff677027b921c03a29a49bf6",
+  "head_sha": "414aed4b9abbd971459f12bcb9b03633796d8460",
   "last_verified_at": "2026-05-02T19:12:27.197Z",
   "last_verified_sha": "b73d17fb596422b25012a5f44f8f216e19b73301",
+  "related_task_ids": [
+    "202605021909-2GJ5SR",
+    "202605021909-4V65QP",
+    "202605021909-XANHF2",
+    "202605021926-0H15MJ"
+  ],
   "schema_version": 1,
   "task_id": "202605021908-BGE36D",
-  "updated_at": "2026-05-02T19:13:01.248Z",
+  "updated_at": "2026-05-02T19:38:41.287Z",
   "verify": {
     "status": "pass"
   }
