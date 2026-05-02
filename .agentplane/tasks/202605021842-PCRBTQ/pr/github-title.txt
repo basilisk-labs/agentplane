@@ -1,0 +1,1 @@
+task: Add evaluator agent profile and recursive planning contract [202605021842-PCRBTQ]
