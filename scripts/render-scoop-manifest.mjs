@@ -49,30 +49,47 @@ function requireString(value, label) {
   return text;
 }
 
+function findPlatformAsset(manifest, platform, arch) {
+  const asset = (manifest.platformAssets ?? []).find(
+    (entry) =>
+      entry?.kind === "standalone_cli" && entry?.platform === platform && entry?.arch === arch,
+  );
+  if (!asset) throw new Error(`Missing standalone platform asset: ${platform}-${arch}`);
+  return {
+    url: requireString(asset.url, `${platform}-${arch} standalone URL`),
+    sha256: requireString(asset.sha256, `${platform}-${arch} standalone sha256`),
+    name: requireString(asset.name, `${platform}-${arch} standalone asset name`),
+  };
+}
+
 function renderScoopManifest(manifest) {
   const version = requireString(manifest.version, "release version");
-  const pkg = manifest.packages?.agentplane;
-  const url = requireString(pkg?.npmTarballUrl, "agentplane npm tarball URL");
-  const hash = requireString(pkg?.npmTarballSha256, "agentplane npm tarball sha256");
+  const win32X64 = findPlatformAsset(manifest, "win32", "x64");
   return {
     version,
     description: "Git-native CLI harness for auditable coding-agent workflows",
     homepage: "https://agentplane.org",
     license: "MIT",
-    depends: "nodejs",
-    url,
-    hash,
-    extract_dir: "package",
-    bin: [["bin/agentplane.js", "agentplane"]],
+    architecture: {
+      "64bit": {
+        url: win32X64.url,
+        hash: win32X64.sha256,
+      },
+    },
+    bin: [[String.raw`bin\agentplane.cmd`, "agentplane"]],
   };
 }
 
 function runDistributionGenerator(repoRoot, outDir) {
-  execFileSync("node", ["scripts/generate-release-distribution.mjs", "--out", outDir], {
-    cwd: repoRoot,
-    stdio: "ignore",
-    env: process.env,
-  });
+  execFileSync(
+    "node",
+    ["scripts/generate-release-distribution.mjs", "--out", outDir, "--standalone-check-mode"],
+    {
+      cwd: repoRoot,
+      stdio: "ignore",
+      env: process.env,
+    },
+  );
   return path.join(outDir, "release-distribution.json");
 }
 
@@ -100,8 +117,10 @@ async function renderScoop(repoRoot, args) {
     sha: manifest.sha,
     manifestPath: scoopManifestPath,
     manifestName: SCOOP_MANIFEST_NAME,
-    npmTarballUrl: manifest.packages?.agentplane?.npmTarballUrl ?? null,
-    npmTarballSha256: manifest.packages?.agentplane?.npmTarballSha256 ?? null,
+    assets: {
+      win32X64: findPlatformAsset(manifest, "win32", "x64"),
+    },
+    installStrategy: "standalone_bundled_node",
     nextAction:
       channel.status === "skipped_missing_credentials"
         ? "Add SCOOP_BUCKET_TOKEN and rerun the Scoop bucket publication module for this manifest."
@@ -110,8 +129,8 @@ async function renderScoop(repoRoot, args) {
   await writeFile(path.join(outDir, "scoop-result.json"), `${JSON.stringify(evidence, null, 2)}\n`);
 
   if (args.check) {
-    if (scoopManifest.extract_dir !== "package") {
-      throw new Error("Scoop manifest must extract the npm tarball package directory");
+    if ("depends" in scoopManifest || "extract_dir" in scoopManifest) {
+      throw new Error("Scoop manifest must not depend on nodejs or npm package extraction");
     }
     if (!Array.isArray(scoopManifest.bin) || scoopManifest.bin.length === 0) {
       throw new Error("Scoop manifest must expose an agentplane shim");
