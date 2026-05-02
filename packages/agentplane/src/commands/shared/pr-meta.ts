@@ -117,7 +117,10 @@ export function buildOpenedPrMeta(opts: {
   return {
     schema_version: 1,
     task_id: opts.taskId,
-    related_task_ids: normalizeRelatedTaskIds(opts.relatedTaskIds ?? opts.previousMeta?.related_task_ids, opts.taskId),
+    related_task_ids: normalizeRelatedTaskIds(
+      opts.relatedTaskIds ?? opts.previousMeta?.related_task_ids,
+      opts.taskId,
+    ),
     branch: opts.branch,
     pr_number: opts.previousMeta?.pr_number,
     pr_url: opts.previousMeta?.pr_url,
@@ -154,7 +157,10 @@ export function buildUpdatedPrMeta(opts: {
     (opts.meta.head_sha ?? null) !== (nextHeadSha ?? null);
   return {
     ...opts.meta,
-    related_task_ids: normalizeRelatedTaskIds(opts.relatedTaskIds ?? opts.meta.related_task_ids, opts.meta.task_id),
+    related_task_ids: normalizeRelatedTaskIds(
+      opts.relatedTaskIds ?? opts.meta.related_task_ids,
+      opts.meta.task_id,
+    ),
     branch: opts.branch,
     base: nextBase,
     head_sha: nextHeadSha,

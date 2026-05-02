@@ -17,7 +17,10 @@ function sourcePolicyPath(sourceRef: string): string | null {
   const marker = "packages/agentplane/assets/policy/";
   const index = sourceRef.indexOf(marker);
   if (index === -1) return null;
-  const relative = sourceRef.slice(index + marker.length).split("#", 1)[0]?.trim();
+  const relative = sourceRef
+    .slice(index + marker.length)
+    .split("#", 1)[0]
+    ?.trim();
   return relative && relative.endsWith(".md") ? relative : null;
 }
 

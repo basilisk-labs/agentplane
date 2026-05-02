@@ -116,16 +116,23 @@ node .agentplane/policy/check-routing.mjs
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.user.instructions" slot="body" mutability="append_only" -->
+
 IF `.agentplane/user-instructions.md` exists THEN LOAD it as `gateway.user.instructions`.
+
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.agents.load_rules.load.rules" slot="load_rules" mutability="replaceable" -->
+
 ## LOAD RULES
+
 Routing is strict. Load only modules that match the current task.
+
 ### Always imports for mutating tasks
+
 Condition: task includes mutation (file edits, task-state changes, commits, merge/integrate, release/publish).
 
 - `@.agentplane/policy/security.must.md`
 - `@.agentplane/policy/dod.core.md`
+
 ### Conditional imports (linear IF -> LOAD contract)
 
 1. IF `workflow_mode=direct` THEN LOAD `@.agentplane/policy/workflow.direct.md`.
@@ -136,11 +143,6 @@ Condition: task includes mutation (file edits, task-state changes, commits, merg
 6. IF task modifies docs/policy-only paths (`AGENTS.md`, docs, `.agentplane/policy/**`) THEN LOAD `@.agentplane/policy/dod.docs.md`.
 7. IF task modifies policy files (`AGENTS.md` or `.agentplane/policy/**`) THEN LOAD `@.agentplane/policy/governance.md`.
 8. IF task modifies `.agentplane/policy/incidents.md` THEN LOAD `@.agentplane/policy/incidents.md`.
-
-Routing examples:
-
-- Example (docs-only task): rules `1|6` apply in `direct`; do not load `dod.code.md`.
-- Example (upgrade task): rules `4|7` apply plus workflow mode rule.
 
 Routing constraints:
 
