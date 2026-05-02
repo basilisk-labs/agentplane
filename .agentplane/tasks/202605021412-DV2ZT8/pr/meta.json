@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605021412-DV2ZT8/standalone-artifact-smoke-tests",
+  "created_at": "2026-05-02T17:08:39.733Z",
+  "head_sha": "8899518f2183f56f10ba9a397cf6b1c9e86ae449",
+  "last_verified_at": "2026-05-02T17:15:54.797Z",
+  "last_verified_sha": "f5e2e39d8c6026ed477e5e3eee9e36d60d9c39a9",
+  "schema_version": 1,
+  "task_id": "202605021412-DV2ZT8",
+  "updated_at": "2026-05-02T17:16:10.041Z",
+  "verify": {
+    "status": "pass"
+  }
+}

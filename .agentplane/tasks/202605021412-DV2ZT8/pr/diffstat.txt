@@ -1,0 +1,5 @@
+ package.json                                       |   1 +
+ .../generate-standalone-cli-assets-script.test.ts  |  72 ++++++
+ scripts/README.md                                  |   1 +
+ scripts/smoke-standalone-cli-artifact.mjs          | 274 +++++++++++++++++++++
+ 4 files changed, 348 insertions(+)
