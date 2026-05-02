@@ -64,16 +64,16 @@ Review resolutions:
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T16:35:59.161Z
+- Updated: 2026-05-02T16:44:05.221Z
 - Branch: task/202605021412-Q2WGGA/standalone-artifact-generator
-- Head: fcc34f82b39f
+- Head: c86faa33270d
 
 ```text
  package.json                                       |   2 +
- .../generate-standalone-cli-assets-script.test.ts  | 151 +++++++
+ .../generate-standalone-cli-assets-script.test.ts  | 161 +++++++
  scripts/README.md                                  |   2 +
- scripts/generate-standalone-cli-assets.mjs         | 499 +++++++++++++++++++++
- 4 files changed, 654 insertions(+)
+ scripts/generate-standalone-cli-assets.mjs         | 503 +++++++++++++++++++++
+ 4 files changed, 668 insertions(+)
 ```
 
 </details>
