@@ -18,25 +18,29 @@ function parseArgs(argv) {
 
     switch (flag) {
       case "--help":
-      case "-h":
+      case "-h": {
         args.help = true;
         break;
-      case "--before":
+      }
+      case "--before": {
         if (!next) throw new Error("Missing value after --before");
         args.before = path.resolve(next);
         i += 1;
         break;
-      case "--after":
+      }
+      case "--after": {
         if (!next) throw new Error("Missing value after --after");
         args.after = path.resolve(next);
         i += 1;
         break;
-      case "--metric":
+      }
+      case "--metric": {
         if (!next) throw new Error("Missing value after --metric");
         args.metric = next;
         i += 1;
         break;
-      case "--tolerance":
+      }
+      case "--tolerance": {
         if (!next) throw new Error("Missing value after --tolerance");
         args.tolerance = Number.parseFloat(next);
         if (!Number.isFinite(args.tolerance) || args.tolerance < 0) {
@@ -44,16 +48,20 @@ function parseArgs(argv) {
         }
         i += 1;
         break;
-      case "--command-id":
+      }
+      case "--command-id": {
         if (!next) throw new Error("Missing value after --command-id");
         args.commandId = next;
         i += 1;
         break;
-      case "--json":
+      }
+      case "--json": {
         args.format = "json";
         break;
-      default:
+      }
+      default: {
         throw new Error(`Unknown argument: ${flag}`);
+      }
     }
   }
 
@@ -81,7 +89,7 @@ function readPayload(filePath, label) {
 function metric(command, metricName) {
   const value = Number(command?.[metricName]);
   if (!Number.isFinite(value)) {
-    throw new Error(`command ${command?.id ?? "unknown"} has no numeric ${metricName}`);
+    throw new TypeError(`command ${command?.id ?? "unknown"} has no numeric ${metricName}`);
   }
   return value;
 }
@@ -146,7 +154,7 @@ function assertSchema(payload, label) {
     throw new Error(`${label} must be schema_version=1 mode=cli_walltime_v1`);
   }
   if (!Array.isArray(payload.commands)) {
-    throw new Error(`${label} must include commands`);
+    throw new TypeError(`${label} must include commands`);
   }
 }
 
@@ -220,9 +228,11 @@ async function main() {
 main()
   .then((exitCode) => {
     process.exitCode = exitCode;
+    return exitCode;
   })
   .catch((error) => {
     process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
     process.stderr.write(`${printHelp()}\n`);
     process.exitCode = 1;
+    return 1;
   });

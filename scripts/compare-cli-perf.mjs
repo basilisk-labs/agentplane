@@ -17,25 +17,29 @@ function parseArgs(argv) {
     const next = argv[index + 1];
     switch (flag) {
       case "--help":
-      case "-h":
+      case "-h": {
         args.help = true;
         break;
-      case "--before":
+      }
+      case "--before": {
         if (!next) throw new Error("Missing value after --before");
         args.before = path.resolve(next);
         index += 1;
         break;
-      case "--after":
+      }
+      case "--after": {
         if (!next) throw new Error("Missing value after --after");
         args.after = path.resolve(next);
         index += 1;
         break;
-      case "--metric":
+      }
+      case "--metric": {
         if (!next) throw new Error("Missing value after --metric");
         args.metric = next;
         index += 1;
         break;
-      case "--tolerance":
+      }
+      case "--tolerance": {
         if (!next) throw new Error("Missing value after --tolerance");
         args.tolerance = Number.parseFloat(next);
         if (!Number.isFinite(args.tolerance) || args.tolerance < 0) {
@@ -43,16 +47,20 @@ function parseArgs(argv) {
         }
         index += 1;
         break;
-      case "--id":
+      }
+      case "--id": {
         if (!next) throw new Error("Missing value after --id");
         args.id = next;
         index += 1;
         break;
-      case "--json":
+      }
+      case "--json": {
         args.format = "json";
         break;
-      default:
+      }
+      default: {
         throw new Error(`Unknown argument: ${flag}`);
+      }
     }
   }
 
@@ -79,7 +87,7 @@ function loadPayload(filePath, label) {
 function toMetric(command, metric) {
   const value = Number(command?.[metric]);
   if (!Number.isFinite(value)) {
-    throw new Error(`Command ${command?.id ?? "unknown"} has no numeric ${metric}`);
+    throw new TypeError(`Command ${command?.id ?? "unknown"} has no numeric ${metric}`);
   }
   return value;
 }
@@ -134,12 +142,13 @@ function comparePayloads(before, after, options) {
 }
 
 function printText(rows, options) {
-  const lines = [];
-  lines.push(`Comparison (${options.metric}), tolerance=${(options.tolerance * 100).toFixed(1)}%`);
-  lines.push(`before: ${options.before}`);
-  lines.push(`after: ${options.after}`);
-  lines.push("");
-  lines.push("id | before_ms | after_ms | delta_ms | delta_pct | status | details");
+  const lines = [
+    `Comparison (${options.metric}), tolerance=${(options.tolerance * 100).toFixed(1)}%`,
+    `before: ${options.before}`,
+    `after: ${options.after}`,
+    "",
+    "id | before_ms | after_ms | delta_ms | delta_pct | status | details",
+  ];
   for (const row of rows) {
     lines.push(
       [
@@ -201,9 +210,11 @@ async function main() {
 main()
   .then((exitCode) => {
     process.exitCode = exitCode;
+    return exitCode;
   })
   .catch((error) => {
     process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
     process.stderr.write(`${printHelp()}\n`);
     process.exitCode = 1;
+    return 1;
   });

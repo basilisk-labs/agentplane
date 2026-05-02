@@ -8,6 +8,7 @@ if (!args.includes("--help") && !args.includes("-h") && !args.includes("--suite"
 runSuiteRunner(args, process.stdout, "scripts/measure-cli-cold-path.mjs")
   .then((result) => {
     process.exitCode = result.exitCode;
+    return result.exitCode;
   })
   .catch((error) => {
     process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
@@ -15,4 +16,5 @@ runSuiteRunner(args, process.stdout, "scripts/measure-cli-cold-path.mjs")
       `${printCliPerfHelpText({ scriptName: "scripts/measure-cli-cold-path.mjs" })}\n`,
     );
     process.exitCode = 1;
+    return 1;
   });

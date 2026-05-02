@@ -43,12 +43,18 @@ function percentile(values, percentileValue) {
 }
 
 function summarizeDurations(durations) {
-  const average = durations.reduce((sum, value) => sum + value, 0) / durations.length;
-  const variance =
-    durations.reduce((sum, value) => {
-      const diff = value - average;
-      return sum + diff * diff;
-    }, 0) / durations.length;
+  let sum = 0;
+  for (const value of durations) {
+    sum += value;
+  }
+  const average = durations.length === 0 ? 0 : sum / durations.length;
+
+  let totalDiff = 0;
+  for (const value of durations) {
+    const diff = value - average;
+    totalDiff += diff * diff;
+  }
+  const variance = durations.length === 0 ? 0 : totalDiff / durations.length;
 
   return {
     min_ms: roundMs(Math.min(...durations)),
@@ -83,8 +89,9 @@ export function parseSuiteArgs(argv) {
     const arg = argv[i];
     switch (arg) {
       case "--help":
-      case "-h":
+      case "-h": {
         return { help: true };
+      }
       case "--suite": {
         const next = argv[i + 1];
         if (!next) throw new Error("Missing value after --suite");
@@ -137,8 +144,9 @@ export function parseSuiteArgs(argv) {
         i += 1;
         break;
       }
-      default:
+      default: {
         throw new Error(`Unknown argument: ${arg}`);
+      }
     }
   }
 

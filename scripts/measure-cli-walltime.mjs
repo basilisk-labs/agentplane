@@ -53,16 +53,22 @@ function summarizeDurations(durations) {
       avg_ms: 0,
       p95_ms: 0,
       p99_ms: 0,
-      stddev_ms: 0,
-    };
+    stddev_ms: 0,
+  };
   }
 
-  const average = durations.reduce((sum, value) => sum + value, 0) / durations.length;
-  const variance =
-    durations.reduce((sum, value) => {
-      const diff = value - average;
-      return sum + diff * diff;
-    }, 0) / durations.length;
+  let sum = 0;
+  for (const value of durations) {
+    sum += value;
+  }
+  const average = sum / durations.length;
+
+  let totalDiff = 0;
+  for (const value of durations) {
+    const diff = value - average;
+    totalDiff += diff * diff;
+  }
+  const variance = totalDiff / durations.length;
 
   return {
     min_ms: roundMs(Math.min(...durations)),
@@ -97,8 +103,9 @@ function parseSuiteArgs(argv) {
     const arg = argv[i];
     switch (arg) {
       case "--help":
-      case "-h":
+      case "-h": {
         return { help: true };
+      }
       case "--suite": {
         const next = argv[i + 1];
         if (!next) throw new Error("Missing value after --suite");
@@ -151,8 +158,9 @@ function parseSuiteArgs(argv) {
         i += 1;
         break;
       }
-      default:
+      default: {
         throw new Error(`Unknown argument: ${arg}`);
+      }
     }
   }
 
@@ -379,9 +387,11 @@ export async function runWalltimeRunner(
 runWalltimeRunner(process.argv.slice(2))
   .then((result) => {
     process.exitCode = result.exitCode;
+    return result.exitCode;
   })
   .catch((error) => {
     process.stderr.write(`error: ${error instanceof Error ? error.message : String(error)}\n`);
     process.stderr.write(`${printWalltimeHelpText()}\n`);
     process.exitCode = 1;
+    return 1;
   });
