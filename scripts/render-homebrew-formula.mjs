@@ -67,8 +67,8 @@ function renderFormula(manifest) {
   const darwinArm64 = findPlatformAsset(manifest, "darwin", "arm64");
   const darwinX64 = findPlatformAsset(manifest, "darwin", "x64");
   return `class Agentplane < Formula
-  desc "Git-native CLI harness for auditable coding-agent workflows"
-  homepage "https://agentplane.org"
+  desc "CLI for auditable coding-agent workflows"
+  homepage "https://github.com/basilisk-labs/agentplane"
   version "${version}"
   license "MIT"
 
@@ -80,6 +80,13 @@ function renderFormula(manifest) {
     sha256 "${darwinX64.sha256}"
   else
     odie "AgentPlane Homebrew formula currently supports macOS arm64 and x86_64 standalone archives"
+  end
+
+  livecheck do
+    url "https://api.github.com/repos/basilisk-labs/agentplane/releases/latest"
+    strategy :json do |json|
+      json["tag_name"]&.gsub(/^v/, "")
+    end
   end
 
   def install

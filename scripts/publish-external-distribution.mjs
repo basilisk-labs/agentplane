@@ -24,6 +24,9 @@ function usage() {
     "  --tag <tag>             Release tag",
     "  --sha <sha>             Release commit SHA",
     "  --token-env <name>      Environment variable containing target repo token",
+    "  --repo-topics <list>    Comma-separated topics to set on target repository",
+    "  --repo-description <text>  Repository description to apply",
+    "  --repo-homepage <url>   Repository homepage URL to apply",
     "  --out <path>            Evidence JSON path",
     "  --json                  Emit evidence JSON to stdout",
     "  --help, -h              Show this help text",
@@ -49,7 +52,19 @@ function parseArgs(argv, repoRoot) {
     passthroughArgs.push(raw);
   }
   const { flags } = parseScriptArgs(passthroughArgs, {
-    valueFlags: ["module", "repo", "source", "version", "tag", "sha", "token-env", "out"],
+    valueFlags: [
+      "module",
+      "repo",
+      "source",
+      "version",
+      "tag",
+      "sha",
+      "token-env",
+      "repo-topics",
+      "repo-description",
+      "repo-homepage",
+      "out",
+    ],
     booleanFlags: ["json", "help"],
   });
   return {
@@ -61,10 +76,25 @@ function parseArgs(argv, repoRoot) {
     tag: String(flags.tag ?? "").trim(),
     sha: String(flags.sha ?? "").trim(),
     tokenEnv: String(flags["token-env"] ?? "").trim(),
+    topics: parseCommaList(String(flags["repo-topics"] ?? "")),
+    description: String(flags["repo-description"] ?? "").trim(),
+    homepage: String(flags["repo-homepage"] ?? "").trim(),
     outPath: path.resolve(repoRoot, String(flags.out ?? "")),
     json: Boolean(flags.json),
     help: Boolean(flags.help),
   };
+}
+
+function parseCommaList(value) {
+  return [
+    ...new Set(
+      value
+        .split(",")
+        .map((entry) => entry.trim())
+        .filter((entry) => entry.length > 0)
+        .map((entry) => entry.replace(/^["']/, "").replace(/["']$/, "")),
+    ),
+  ];
 }
 
 function requireNonEmpty(value, label) {
@@ -136,6 +166,35 @@ async function publishExternal(args) {
     };
   }
 
+  async function syncRepositoryMetadata(cloneDir) {
+    const repoFlags = [];
+    if (args.topics.length > 0) {
+      repoFlags.push("-f", `names=${JSON.stringify(args.topics)}`);
+      await run(
+        "gh",
+        [
+          "api",
+          "--method",
+          "PUT",
+          `/repos/${args.repo}/topics`,
+          "-H",
+          "Accept: application/vnd.github+json",
+          ...repoFlags,
+        ],
+        { cwd: cloneDir, env },
+      );
+    }
+    const patchFields = [];
+    if (args.description) patchFields.push("-f", `description=${args.description}`);
+    if (args.homepage) patchFields.push("-f", `homepage=${args.homepage}`);
+    if (patchFields.length > 0) {
+      await run("gh", ["api", "--method", "PATCH", `/repos/${args.repo}`, ...patchFields], {
+        cwd: cloneDir,
+        env,
+      });
+    }
+  }
+
   const tempRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-external-dist-"));
   const cloneDir = path.join(tempRoot, "repo");
   const branch = `agentplane/${args.tag}`;
@@ -143,6 +202,7 @@ async function publishExternal(args) {
   try {
     await run("gh", ["repo", "clone", args.repo, cloneDir, "--", "--depth", "1"], { env });
     await run("gh", ["auth", "setup-git", "--hostname", "github.com"], { cwd: cloneDir, env });
+    await syncRepositoryMetadata(cloneDir);
     await run("git", ["switch", "-C", branch], { cwd: cloneDir, env });
     await copyArtifacts({
       sourceDir: args.sourceDir,
