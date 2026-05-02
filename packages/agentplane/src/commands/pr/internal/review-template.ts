@@ -95,6 +95,18 @@ function renderReviewSections(opts: { task: TaskData; handoffNotes: PrHandoffNot
   ];
 }
 
+function renderRelatedTasks(primaryTaskId: string, relatedTaskIds: string[]): string[] {
+  const ids = relatedTaskIds.filter((id) => id !== primaryTaskId);
+  if (ids.length === 0) return [];
+  return [
+    "## Related Tasks",
+    "",
+    `- Primary: \`${primaryTaskId}\``,
+    ...ids.map((id) => `- Included: \`${id}\``),
+    "",
+  ];
+}
+
 function renderGithubVerificationSummary(task: TaskData): string {
   const state = task.verification?.state ?? "pending";
   const note = typeof task.verification?.note === "string" ? task.verification.note.trim() : "";
@@ -216,6 +228,7 @@ export function renderPrReviewDocument(opts: {
   author?: string;
   createdAt: string;
   branch: string;
+  relatedTaskIds?: string[];
   handoffNotes?: PrHandoffNote[];
   autoSummary: string;
 }): string {
@@ -225,6 +238,7 @@ export function renderPrReviewDocument(opts: {
     `Created: ${opts.createdAt || "UNKNOWN"}`,
     `Branch: ${opts.branch || "UNKNOWN"}`,
     "",
+    ...renderRelatedTasks(opts.task.id, opts.relatedTaskIds ?? []),
     ...renderReviewSections({
       task: opts.task,
       handoffNotes: opts.handoffNotes ?? [],
@@ -238,6 +252,7 @@ export function renderPrReviewDocument(opts: {
 
 export function renderGithubPrBody(opts: {
   task: TaskData;
+  relatedTaskIds?: string[];
   handoffNotes?: PrHandoffNote[];
   autoSummary: string;
 }): string {
@@ -245,6 +260,7 @@ export function renderGithubPrBody(opts: {
     `Task: \`${opts.task.id}\``,
     `Title: ${normalizeOneLine(opts.task.title, 120) || "Untitled task"}`,
     "",
+    ...renderRelatedTasks(opts.task.id, opts.relatedTaskIds ?? []),
     ...renderGithubBodySections({
       task: opts.task,
       handoffNotes: opts.handoffNotes ?? [],

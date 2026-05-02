@@ -49,6 +49,7 @@ async function buildPrSyncCommonState(opts: {
   githubTitlePath: string;
   githubBodyPath: string;
   existingMeta: PrMeta | null;
+  relatedTaskIds?: string[];
   branch: string;
   baseBranch: string | null;
   workflowDir: string;
@@ -102,6 +103,7 @@ async function buildPrSyncCommonState(opts: {
     githubTitlePath: opts.githubTitlePath,
     githubBodyPath: opts.githubBodyPath,
     existingMeta: opts.existingMeta,
+    relatedTaskIds: normalizeRelatedTaskIds(opts.relatedTaskIds, opts.task.id),
     handoffNotes,
     now,
     createdAt,
@@ -186,6 +188,7 @@ export async function syncPrArtifacts(opts: {
   mode: PrSyncMode;
   author?: string;
   branch?: string;
+  includeTaskIds?: string[];
   remoteMode?: PrRemoteMode;
 }): Promise<{
   meta: PrMeta;
@@ -287,6 +290,7 @@ export async function syncPrArtifacts(opts: {
         githubTitlePath,
         githubBodyPath,
         existingMeta,
+        relatedTaskIds: opts.includeTaskIds,
         branch,
         baseBranch,
       });
@@ -335,4 +339,16 @@ export async function syncPrArtifacts(opts: {
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "pr sync", root: opts.rootOverride ?? null });
   }
+}
+
+function normalizeRelatedTaskIds(value: string[] | undefined, primaryTaskId: string): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const raw of value ?? []) {
+    const id = raw.trim();
+    if (!id || id === primaryTaskId || seen.has(id)) continue;
+    seen.add(id);
+    result.push(id);
+  }
+  return result.toSorted();
 }

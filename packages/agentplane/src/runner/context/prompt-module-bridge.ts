@@ -67,7 +67,9 @@ function inferModuleNamespace(owner: PromptModuleOwner): PromptModuleAddress["na
 }
 
 function inferModuleSurface(block: RunnerPromptBlock): PromptModuleSurface {
-  if (block.id === "base.policy_gateway") return "gateway";
+  if (block.id === "base.policy_gateway" || block.id === "gateway.user.instructions") {
+    return "gateway";
+  }
   if (block.id === "base.owner_profile" || block.id.startsWith("recipe.agent.")) {
     return "agent_profile";
   }
@@ -79,6 +81,7 @@ function inferModuleTarget(block: RunnerPromptBlock): PromptModuleTarget {
   if (block.id === "base.policy_gateway") {
     return block.source?.endsWith("CLAUDE.md") ? "CLAUDE.md" : "AGENTS.md";
   }
+  if (block.id === "gateway.user.instructions") return "AGENTS.md";
   if (block.id === "base.owner_profile" || block.id.startsWith("recipe.agent.")) {
     return ".agentplane/agents";
   }

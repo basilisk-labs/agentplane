@@ -17,6 +17,7 @@ let frameworkRunnerPromptCache: Promise<RunnerPromptBlock> | null = null;
 export const BASE_PROMPT_PRIORITIES = {
   framework_runner: 100,
   policy_gateway: 200,
+  user_instructions: 210,
   execution_profile: 250,
   owner_profile: 300,
   recipe_execution_context: 400,

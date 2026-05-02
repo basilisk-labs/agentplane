@@ -4,6 +4,7 @@ import {
   loadExecutionProfilePrompt,
   loadOwnerProfilePrompt,
   loadPolicyGatewayPrompt,
+  loadUserInstructionsPrompt,
 } from "./base-prompt-sources.js";
 import { collectOverlayPromptBlocks } from "./overlay-prompt-blocks.js";
 import { compileRunnerPromptBlocksThroughModules } from "./prompt-module-bridge.js";
@@ -48,6 +49,7 @@ export async function collectRunnerBasePrompts(opts: {
       fallback_flavor,
       harness: opts.harness,
     }),
+    loadUserInstructionsPrompt({ git_root: opts.git_root }),
     Promise.resolve(loadExecutionProfilePrompt({ execution_profile: opts.execution_profile })),
     loadOwnerProfilePrompt({ git_root: opts.git_root, agents_dir, owner_id }),
   ]);

@@ -21,6 +21,7 @@ export const TASK_PR_META_ZOD_SCHEMA = z
   .object({
     schema_version: z.literal(1),
     task_id: NON_EMPTY_STRING,
+    related_task_ids: z.array(NON_EMPTY_STRING).optional(),
     branch: NON_EMPTY_STRING.optional(),
     base: NON_EMPTY_STRING.optional(),
     pr_number: z.number().int().min(1).optional(),

@@ -115,19 +115,17 @@ node .agentplane/policy/check-routing.mjs
 - Retrieval/progress/cache: preamble before multi-step or tool-heavy work; load only matched policy, task README, Verify Steps, and relevant files; use incidents only for analogous scope/tags; final output names actions, checks, blockers/drift, and next approval; keep stable gateway/policy/role before dynamic context and never cache mutable task state.
 
 <!-- /ap:fragment -->
+<!-- ap:fragment id="gateway.user.instructions" slot="body" mutability="append_only" -->
+IF `.agentplane/user-instructions.md` exists THEN LOAD it as `gateway.user.instructions`.
+<!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.agents.load_rules.load.rules" slot="load_rules" mutability="replaceable" -->
-
 ## LOAD RULES
-
 Routing is strict. Load only modules that match the current task.
-
 ### Always imports for mutating tasks
-
 Condition: task includes mutation (file edits, task-state changes, commits, merge/integrate, release/publish).
 
 - `@.agentplane/policy/security.must.md`
 - `@.agentplane/policy/dod.core.md`
-
 ### Conditional imports (linear IF -> LOAD contract)
 
 1. IF `workflow_mode=direct` THEN LOAD `@.agentplane/policy/workflow.direct.md`.

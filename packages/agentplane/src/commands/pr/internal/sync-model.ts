@@ -26,6 +26,7 @@ export type PrSyncCommonState = {
   githubTitlePath: string;
   githubBodyPath: string;
   existingMeta: PrMeta | null;
+  relatedTaskIds: string[];
   handoffNotes: Awaited<ReturnType<typeof readPrHandoffNotes>>;
   now: string;
   createdAt: string;

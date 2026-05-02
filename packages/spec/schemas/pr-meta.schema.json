@@ -28,6 +28,13 @@
       "type": "string",
       "minLength": 1
     },
+    "related_task_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "created_at": {
       "type": "string",
       "format": "date-time"

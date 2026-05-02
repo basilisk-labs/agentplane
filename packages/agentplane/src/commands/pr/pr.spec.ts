@@ -40,6 +40,7 @@ export type PrOpenParsed = {
   taskId: string;
   author: string;
   branch: string | null;
+  includeTaskIds: string[];
   syncOnly: boolean;
 };
 
@@ -64,6 +65,13 @@ export const prOpenSpec: CommandSpec<PrOpenParsed> = {
       description: "Branch name (default: current branch).",
     },
     {
+      kind: "string",
+      name: "include-task",
+      valueHint: "<task-id>",
+      repeatable: true,
+      description: "Repeatable. Record an additional related task id on this primary PR.",
+    },
+    {
       kind: "boolean",
       name: "sync-only",
       default: false,
@@ -86,19 +94,40 @@ export const prOpenSpec: CommandSpec<PrOpenParsed> = {
     taskId: String(raw.args["task-id"]),
     author: String(raw.opts.author),
     branch: typeof raw.opts.branch === "string" ? raw.opts.branch : null,
+    includeTaskIds: Array.isArray(raw.opts["include-task"])
+      ? raw.opts["include-task"].map(String)
+      : typeof raw.opts["include-task"] === "string"
+        ? [String(raw.opts["include-task"])]
+        : [],
     syncOnly: Boolean(raw.opts["sync-only"]),
   }),
 };
 
-export type PrUpdateParsed = { taskId: string };
+export type PrUpdateParsed = { taskId: string; includeTaskIds: string[] };
 
 export const prUpdateSpec: CommandSpec<PrUpdateParsed> = {
   id: ["pr", "update"],
   group: "PR",
   summary: "Update PR artifacts (review packet, diffstat, and GitHub projections).",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+  options: [
+    {
+      kind: "string",
+      name: "include-task",
+      valueHint: "<task-id>",
+      repeatable: true,
+      description: "Repeatable. Record an additional related task id on this primary PR.",
+    },
+  ],
   examples: [{ cmd: "agentplane pr update 202602030608-F1Q8AB", why: "Update artifacts." }],
-  parse: (raw) => ({ taskId: String(raw.args["task-id"]) }),
+  parse: (raw) => ({
+    taskId: String(raw.args["task-id"]),
+    includeTaskIds: Array.isArray(raw.opts["include-task"])
+      ? raw.opts["include-task"].map(String)
+      : typeof raw.opts["include-task"] === "string"
+        ? [String(raw.opts["include-task"])]
+        : [],
+  }),
 };
 
 export type PrCheckParsed = { taskId: string };

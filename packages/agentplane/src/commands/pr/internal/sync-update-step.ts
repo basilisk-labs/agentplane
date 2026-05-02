@@ -35,6 +35,7 @@ export async function runPrUpdateSync(common: PrSyncCommonState): Promise<{ meta
   });
   let nextMeta: PrMeta = buildUpdatedPrMeta({
     meta: common.existingMeta!,
+    relatedTaskIds: common.relatedTaskIds,
     branch: common.branch,
     at: common.now,
     base: common.baseBranch,
@@ -64,12 +65,14 @@ export async function runPrUpdateSync(common: PrSyncCommonState): Promise<{ meta
     task: common.task,
     createdAt: common.createdAt,
     branch: common.branch,
+    relatedTaskIds: nextMeta.related_task_ids ?? [],
     handoffNotes: common.handoffNotes,
     autoSummary: nextAutoSummary,
   });
   const githubTitle = buildGithubPrTitle(common.task);
   const githubBody = renderGithubPrBody({
     task: common.task,
+    relatedTaskIds: nextMeta.related_task_ids ?? [],
     handoffNotes: common.handoffNotes,
     autoSummary: nextAutoSummary,
   });

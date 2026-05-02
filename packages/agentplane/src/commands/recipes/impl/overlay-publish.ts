@@ -21,6 +21,7 @@ import {
   resolveProjectRecipeAssetsPath,
   resolveProjectRecipesRegistryPath,
 } from "./paths.js";
+import { materializeManagedPromptSources } from "./managed-prompt-sources.js";
 import { readProjectRecipesRegistry, stampProjectRecipesRegistry } from "./project-registry.js";
 import type { ProjectRecipesRegistryFile } from "./types.js";
 import { compileProjectOverlayArtifactsFromRegistry } from "./overlay-compile.js";
@@ -82,6 +83,10 @@ export async function publishProjectRecipesState(opts: {
 }> {
   const registry = stampProjectRecipesRegistry(opts.registry);
   const compiled = await compileProjectOverlayArtifactsFromRegistry(opts.project, registry);
+  await materializeManagedPromptSources({
+    project: opts.project,
+    promptGraph: compiled.promptGraph,
+  });
   await publishJsonFilesTransactional([
     { path: resolveProjectOverlayBundlePath(opts.project), value: compiled.bundle },
     { path: resolveProjectRecipeAssetsPath(opts.project), value: compiled.assets },
@@ -100,6 +105,10 @@ export async function refreshProjectOverlayArtifacts(project: { agentplaneDir: s
     project,
     await readProjectRecipesRegistry(project),
   );
+  await materializeManagedPromptSources({
+    project,
+    promptGraph: compiled.promptGraph,
+  });
   const bundlePath = resolveProjectOverlayBundlePath(project);
   const assetsPath = resolveProjectRecipeAssetsPath(project);
   const promptGraphPath = resolveProjectPromptGraphPath(project);

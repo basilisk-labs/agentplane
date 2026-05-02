@@ -41,6 +41,7 @@ export async function runPrOpenSync(
     : (common.renderedHeadSha ?? common.headSha);
   let nextMeta: PrMeta = buildOpenedPrMeta({
     taskId: common.task.id,
+    relatedTaskIds: common.relatedTaskIds,
     branch: common.branch,
     at: common.now,
     previousMeta: common.existingMeta,
@@ -58,6 +59,7 @@ export async function runPrOpenSync(
   const githubTitle = buildGithubPrTitle(common.task);
   const githubBody = renderGithubPrBody({
     task: common.task,
+    relatedTaskIds: nextMeta.related_task_ids ?? [],
     handoffNotes: common.handoffNotes,
     autoSummary: renderPrAutoSummary({
       updatedAt: common.renderUpdatedAt,
@@ -146,11 +148,13 @@ export async function runPrOpenSync(
     author: opts.author,
     createdAt: common.createdAt,
     branch: common.branch,
+    relatedTaskIds: nextMeta.related_task_ids ?? [],
     handoffNotes: common.handoffNotes,
     autoSummary: nextAutoSummary,
   });
   const nextGithubBody = renderGithubPrBody({
     task: common.task,
+    relatedTaskIds: nextMeta.related_task_ids ?? [],
     handoffNotes: common.handoffNotes,
     autoSummary: nextAutoSummary,
   });
