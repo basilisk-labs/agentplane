@@ -1,10 +1,11 @@
 ---
 id: "202605021412-FDDWP8"
 title: "Define standalone CLI artifact contract"
-status: "DOING"
+result_summary: "Merged via PR #744."
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -49,11 +50,16 @@ verification:
     Evidence: doctor OK; errors=0 warnings=0.
     Scope: docs-only PR branch after formatting follow-up.
     Links: docs/developer/release-and-publishing.mdx
-commit: null
+commit:
+  hash: "e13a21fa3be0686c4fee0f2284830a5ac8b56c2e"
+  message: "docs/release: Define standalone CLI artifact contract (FDDWP8)"
 comments:
   -
     author: "PLANNER"
     body: "Start: Define the bundled-runtime artifact contract in release documentation before downstream generator, workflow, Homebrew, Scoop, and setup-action tasks consume it."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #744 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -141,9 +147,16 @@ events:
       Evidence: doctor OK; errors=0 warnings=0.
       Scope: docs-only PR branch after formatting follow-up.
       Links: docs/developer/release-and-publishing.mdx
+  -
+    type: "status"
+    at: "2026-05-02T16:11:39.653Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #744 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-02T16:10:07.846Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-02T16:11:39.660Z"
+doc_updated_by: "INTEGRATOR"
 description: "Specify the bundled-runtime AgentPlane CLI artifact contract: supported platform/arch targets, archive layout, embedded Node version source, checksum/signature expectations, runtime path invariants, and security update policy."
 sections:
   Summary: |-
