@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-02T18:48:26Z",
   "base": "main",
   "branch": "task/202605021842-PCRBTQ/evaluator-agent-profile",
   "created_at": "2026-05-02T18:43:04.382Z",
-  "head_sha": "92d2299872072eb7d08570ee0ed7203ce0700664",
+  "head_sha": "34bb7b2716b449e1e9ae52f459151e96f6c7058f",
   "last_verified_at": "2026-05-02T18:45:55.808Z",
   "last_verified_sha": "a84705e3f8134a3646fdb325c2bb6c2f97557d40",
+  "merge_commit": "ba947428bdb3cebaef69b237184b5be7b89db366",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-02T18:48:26Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605021842-PCRBTQ",
-  "updated_at": "2026-05-02T18:46:30.750Z",
+  "updated_at": "2026-05-02T18:48:26Z",
   "verify": {
     "status": "pass"
   }

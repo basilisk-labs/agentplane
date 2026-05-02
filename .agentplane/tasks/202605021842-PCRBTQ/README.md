@@ -1,10 +1,11 @@
 ---
 id: "202605021842-PCRBTQ"
 title: "Add evaluator agent profile and recursive planning contract"
-status: "DOING"
+result_summary: "Merged via PR #760."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-02T18:45:55.808Z"
   updated_by: "DOCS"
   note: "Command: bun run agents:check -> pass (agents templates OK). Command: node .agentplane/policy/check-routing.mjs -> pass (policy routing OK). Command: git diff --check -> pass. Command: agentplane doctor -> pass (doctor OK; informational findings only)."
-commit: null
+commit:
+  hash: "ba947428bdb3cebaef69b237184b5be7b89db366"
+  message: "Merge pull request #760 from basilisk-labs/task/202605021842-PCRBTQ/evaluator-agent-profile"
 comments:
   -
     author: "DOCS"
     body: "Start: update the agent prompt surface by adding an evaluator role and tightening planner decomposition guidance while keeping changes scoped to bundled/project agent profiles."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #760 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: bun run agents:check -> pass (agents templates OK). Command: node .agentplane/policy/check-routing.mjs -> pass (policy routing OK). Command: git diff --check -> pass. Command: agentplane doctor -> pass (doctor OK; informational findings only)."
+  -
+    type: "status"
+    at: "2026-05-02T18:49:07.278Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #760 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-02T18:45:55.840Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-02T18:49:07.284Z"
+doc_updated_by: "INTEGRATOR"
 description: "Introduce an EVALUATOR agent profile and tighten PLANNER guidance so approved goals are recursively decomposed into atomic dependent leaf tasks before execution."
 sections:
   Summary: |-
