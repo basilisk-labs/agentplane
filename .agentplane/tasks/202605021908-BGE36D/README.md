@@ -4,7 +4,7 @@ title: "Define managed recipe materialization contract"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-02T19:12:27.197Z"
-  updated_by: "DOCS"
-  note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with 0 errors, 0 warnings, informational runtime/archive findings only. Scope: managed recipe materialization docs contract in developer docs."
+  updated_at: "2026-05-02T19:39:18.433Z"
+  updated_by: "CODER"
+  note: "Verified batch implementation after related task evidence commit. Evidence: policy routing OK; targeted prompt/pr/schema tests passed; git diff --check passed."
 commit: null
 comments:
   -
@@ -44,8 +44,14 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass; Evidence: doctor OK with 0 errors, 0 warnings, informational runtime/archive findings only. Scope: managed recipe materialization docs contract in developer docs."
+  -
+    type: "verify"
+    at: "2026-05-02T19:39:18.433Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified batch implementation after related task evidence commit. Evidence: policy routing OK; targeted prompt/pr/schema tests passed; git diff --check passed."
 doc_version: 3
-doc_updated_at: "2026-05-02T19:12:27.272Z"
+doc_updated_at: "2026-05-02T19:39:18.437Z"
 doc_updated_by: "DOCS"
 description: "Document the target behavior for recipe activation: managed prompt source files are changed only by AgentPlane, recipe registry records active recipes, prompt graph is a diagnostic index, and gateway.user.instructions is the human-editable extension point."
 sections:
@@ -82,11 +88,24 @@ sections:
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T19:10:44.229Z, excerpt_hash=sha256:c0ac4a1bf01e8b7676a46ec341b4bb8868aaeec3dcd97ce8dedfac4fe9bdf1b0
     
+    ### 2026-05-02T19:39:18.433Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified batch implementation after related task evidence commit. Evidence: policy routing OK; targeted prompt/pr/schema tests passed; git diff --check passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T19:12:27.272Z, excerpt_hash=sha256:c0ac4a1bf01e8b7676a46ec341b4bb8868aaeec3dcd97ce8dedfac4fe9bdf1b0
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Managed recipe materialization, user instruction block, and related-task batch PR metadata are implemented in one primary branch_pr worktree.
+      Impact: AgentPlane can keep base task/git hygiene in core while recipe-specific behavior is materialized through managed prompt sources.
+      Resolution: Updated docs, gateway/assets, recipe overlay publication, runner prompt sources, PR metadata, and branch_pr policy; related tasks are recorded in PR artifacts.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -131,6 +150,14 @@ Note: Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T19:10:44.229Z, excerpt_hash=sha256:c0ac4a1bf01e8b7676a46ec341b4bb8868aaeec3dcd97ce8dedfac4fe9bdf1b0
 
+### 2026-05-02T19:39:18.433Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified batch implementation after related task evidence commit. Evidence: policy routing OK; targeted prompt/pr/schema tests passed; git diff --check passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T19:12:27.272Z, excerpt_hash=sha256:c0ac4a1bf01e8b7676a46ec341b4bb8868aaeec3dcd97ce8dedfac4fe9bdf1b0
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -139,3 +166,9 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T19:10:44.229Z, excerpt_
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Managed recipe materialization, user instruction block, and related-task batch PR metadata are implemented in one primary branch_pr worktree.
+  Impact: AgentPlane can keep base task/git hygiene in core while recipe-specific behavior is materialized through managed prompt sources.
+  Resolution: Updated docs, gateway/assets, recipe overlay publication, runner prompt sources, PR metadata, and branch_pr policy; related tasks are recorded in PR artifacts.
+  Promotion: incident-candidate
+  Fixability: external
