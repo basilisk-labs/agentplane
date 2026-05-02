@@ -1,10 +1,11 @@
 ---
 id: "202605021914-AMCDG4"
 title: "Document modular release recovery"
-status: "DOING"
+result_summary: "Modular release recovery documentation merged via PR #766."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-02T19:36:12.112Z"
   updated_by: "DOCS"
   note: "Verified: release publishing docs describe Publish release, standalone installers, distribution module recovery commands, and focused module retries."
-commit: null
+commit:
+  hash: "93db085a628f25e32e4bbb669c8d0132f5f61c5a"
+  message: "✅ N72MF3 close: Merged via PR #766. (202605021914-N72MF3) [ci,distribution,release] (#767)"
 comments:
   -
     author: "DOCS"
     body: "Start: Document the modular release recovery workflow and evidence model after automation changes are in place."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: modular release recovery documentation merged via PR #766 and post-merge checks passed."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified: release publishing docs describe Publish release, standalone installers, distribution module recovery commands, and focused module retries."
+  -
+    type: "status"
+    at: "2026-05-02T20:03:41.924Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: modular release recovery documentation merged via PR #766 and post-merge checks passed."
 doc_version: 3
-doc_updated_at: "2026-05-02T19:36:12.118Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-02T20:03:41.926Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update release documentation and checks so the modular publish flow, external PR handoffs, and recovery commands are clear and evidence-backed."
 sections:
   Summary: |-

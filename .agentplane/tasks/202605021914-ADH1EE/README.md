@@ -1,10 +1,11 @@
 ---
 id: "202605021914-ADH1EE"
 title: "Add release module recovery workflow"
-status: "DOING"
+result_summary: "Release module recovery workflow merged via PR #766."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-02T19:36:11.293Z"
   updated_by: "CODER"
   note: "Verified: publish-distribution-module.yml accepts exact tag/SHA/module inputs and excludes npm publish; workflow lint and contract tests passed."
-commit: null
+commit:
+  hash: "93db085a628f25e32e4bbb669c8d0132f5f61c5a"
+  message: "✅ N72MF3 close: Merged via PR #766. (202605021914-N72MF3) [ci,distribution,release] (#767)"
 comments:
   -
     author: "CODER"
     body: "Start: Implement exact-SHA distribution module recovery workflow as part of the approved modular release pipeline worktree; do not republish npm in this path."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: release module recovery workflow merged via PR #766 and post-merge checks passed."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: publish-distribution-module.yml accepts exact tag/SHA/module inputs and excludes npm publish; workflow lint and contract tests passed."
+  -
+    type: "status"
+    at: "2026-05-02T20:03:23.946Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release module recovery workflow merged via PR #766 and post-merge checks passed."
 doc_version: 3
-doc_updated_at: "2026-05-02T19:36:11.300Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-02T20:03:23.947Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a dispatchable recovery path that can rerun selected distribution modules for an exact release tag and SHA without republishing npm."
 sections:
   Summary: |-
