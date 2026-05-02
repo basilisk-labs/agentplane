@@ -255,7 +255,7 @@ try {
   Invoke-WebRequest -Uri "$BaseUrl/SHA256SUMS" -OutFile $Checksums
   Invoke-WebRequest -Uri "$BaseUrl/$Asset" -OutFile $Archive
   $Expected = (Get-Content $Checksums | ForEach-Object {
-    $Parts = ($_ -split "\\s+")
+    $Parts = ($_ -split '\\s+')
     if ($Parts.Count -ge 2 -and $Parts[1] -eq $Asset) { $Parts[0] }
   } | Select-Object -First 1)
   if (-not $Expected) {

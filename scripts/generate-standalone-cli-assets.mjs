@@ -338,11 +338,23 @@ function createArchive(rootDir, outPath, target) {
 
 async function installProductionDependencies(repoRoot, packageRoot, skipInstall) {
   if (skipInstall) return "skipped_check_mode";
-  run("npm", ["install", "--omit=dev", "--ignore-scripts", "--no-audit", "--no-fund"], {
+  const env = {
+    ...process.env,
+    NPM_CONFIG_CACHE: path.join(repoRoot, ".agentplane", ".npm-cache"),
+  };
+  run(
+    "npm",
+    ["install", "--package-lock-only", "--omit=dev", "--ignore-scripts", "--no-audit", "--no-fund"],
+    {
+      cwd: packageRoot,
+      env,
+    },
+  );
+  run("npm", ["ci", "--omit=dev", "--ignore-scripts", "--no-audit", "--no-fund"], {
     cwd: packageRoot,
-    env: { ...process.env, NPM_CONFIG_CACHE: path.join(repoRoot, ".agentplane", ".npm-cache") },
+    env,
   });
-  return "installed_npm_omit_dev_local_workspace_tarballs";
+  return "installed_npm_ci_local_workspace_tarballs";
 }
 
 function publicStandaloneAsset(asset) {

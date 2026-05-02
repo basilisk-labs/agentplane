@@ -210,9 +210,7 @@ describe("generate-standalone-cli-assets script", () => {
       scripts?: Record<string, string>;
     };
 
-    expect(manifest.assets[0]?.dependencyStatus).toBe(
-      "installed_npm_omit_dev_local_workspace_tarballs",
-    );
+    expect(manifest.assets[0]?.dependencyStatus).toBe("installed_npm_ci_local_workspace_tarballs");
     expect(packageJson.dependencies?.["@agentplaneorg/core"]).toBe("1.2.3");
     expect(packageJson.dependencies?.["@agentplaneorg/recipes"]).toBe("1.2.3");
     expect(packageJson.devDependencies).toBeUndefined();
