@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "mode": "cli_walltime_v1",
+  "metric": "median_ms",
+  "captured_at": "2026-05-02",
+  "source_task": "202605012059-GWA2MF",
+  "notes": [
+    "Thresholds are based on local baseline capture in this worktree on 2026-05-02.",
+    "Median ceilings are primary; p95 ceilings are secondary diagnostics."
+  ],
+  "commands": [
+    {
+      "id": "quickstart",
+      "max_median_ms": 220,
+      "max_p95_ms": 240,
+      "expected_exit_code": 0
+    },
+    {
+      "id": "task_list",
+      "max_median_ms": 280,
+      "max_p95_ms": 320,
+      "expected_exit_code": 0
+    },
+    {
+      "id": "task_search",
+      "max_median_ms": 290,
+      "max_p95_ms": 340,
+      "expected_exit_code": 0
+    },
+    {
+      "id": "task_next",
+      "max_median_ms": 240,
+      "max_p95_ms": 260,
+      "expected_exit_code": 0
+    },
+    {
+      "id": "preflight_quick",
+      "max_median_ms": 330,
+      "max_p95_ms": 430,
+      "expected_exit_code": 0
+    },
+    {
+      "id": "help",
+      "max_median_ms": 220,
+      "max_p95_ms": 240,
+      "expected_exit_code": 0
+    },
+    {
+      "id": "version",
+      "max_median_ms": 220,
+      "max_p95_ms": 250,
+      "expected_exit_code": 0
+    }
+  ]
+}

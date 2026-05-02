@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "default_suite": "cli-cold-path",
+  "suites": [
+    {
+      "id": "cli-cold-path",
+      "mode": "cli_cold_path_v1",
+      "description": "CLI cold start and hot-path baseline commands.",
+      "commands": [
+        {
+          "id": "quickstart",
+          "argv": ["quickstart", "--root", "{root}"]
+        },
+        {
+          "id": "task_list",
+          "argv": ["task", "list", "--root", "{root}"]
+        },
+        {
+          "id": "task_search",
+          "argv": ["task", "search", "task", "--root", "{root}"]
+        },
+        {
+          "id": "task_next",
+          "argv": ["task", "next", "--root", "{root}"]
+        },
+        {
+          "id": "preflight_quick",
+          "argv": ["preflight", "--mode", "quick", "--root", "{root}"]
+        }
+      ]
+    },
+    {
+      "id": "cli-refactor-shadow",
+      "mode": "cli_perf_v1",
+      "description": "Refactoring safety probe set for read-only CLI hot paths.",
+      "commands": [
+        {
+          "id": "task_list",
+          "argv": ["task", "list", "--root", "{root}"]
+        },
+        {
+          "id": "task_search",
+          "argv": ["task", "search", "docs", "--root", "{root}"]
+        },
+        {
+          "id": "workflow_playbook",
+          "argv": ["workflow", "playbook", "--root", "{root}"]
+        },
+        {
+          "id": "preflight_full",
+          "argv": ["preflight", "--mode", "all", "--root", "{root}"]
+        }
+      ]
+    }
+  ]
+}

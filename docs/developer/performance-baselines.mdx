@@ -43,3 +43,65 @@ regressions back toward the pre-bundling cold path, not to make cross-machine pe
 Use the raw benchmark after packaging, subpath export, startup, or task-index changes. Compare the
 same checkout shape and task volume when possible; `task list` and `task search` are output-size
 sensitive and should not be compared against a small fixture repository.
+
+## CLI wall-time guard (runtime impact check)
+
+Это отдельная трасса измерений для оценки runtime impact без runner-payload:
+
+- baseline-файл: `scripts/baselines/cli-walltime-baseline.json`
+- измерение baseline:
+
+```bash
+bun run bench:cli:time --runs 5 --warmups 1
+```
+
+- контроль baseline:
+
+```bash
+bun run bench:cli:time:check --suite cli_walltime_baseline --runs 5 --warmups 1
+```
+
+Скрипт сравнивает `cli_walltime_v1` payload и контролирует `median_ms` (плюс опциональный `max_p95_ms`).
+Этот путь не влияет на существующий `bench:cli:cold:check`, который продолжает оставаться единым CI-гейтом.
+
+Для PR по изменению CLI перед финальной верификацией добавьте локальный шаг:
+
+```bash
+bun run bench:cli:time:check --suite cli_walltime_baseline --runs 5 --warmups 1
+```
+
+Для изменений в горячем пути добавьте отчёт до/после:
+
+```bash
+# before
+bun run bench:cli:time --suite cli_walltime_baseline --runs 5 --warmups 1 > baseline.json
+# after
+bun run bench:cli:time --suite cli_walltime_baseline --runs 5 --warmups 1 > candidate.json
+bun run bench:cli:time:diff -- --before baseline.json --after candidate.json --tolerance 0.05
+```
+
+В PR используйте такой блок:
+
+```text
+Performance summary:
+- command: <id>
+- before_ms: <median_ms>
+- after_ms: <median_ms>
+- delta_ms: <delta_ms>
+- delta_pct: <delta_pct>
+- status: <ok|regression>
+```
+
+## CLI refactor loop
+
+Для оценки влияния рефакторинга на скорость:
+
+1. Замер до изменений:
+   - `bun run bench:cli:perf --suite cli-refactor-shadow --runs 5 --warmups 1 --root <repo-root> > baseline.json`
+2. Замер после изменений:
+   - `bun run bench:cli:perf --suite cli-refactor-shadow --runs 5 --warmups 1 --root <repo-root> > candidate.json`
+3. Сравнение:
+   - `bun run bench:cli:diff -- --before baseline.json --after candidate.json --tolerance 0.08`
+
+`bench:cli:diff` сравнивает `median_ms` по `command.id` и возвращает ошибку при росте метрики выше
+допустимого порога. Для CI-контроля по холодному пути остаётся валидным `bun run bench:cli:cold:check`.
