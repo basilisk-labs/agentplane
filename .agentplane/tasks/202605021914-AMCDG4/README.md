@@ -62,7 +62,7 @@ description: "Update release documentation and checks so the modular publish flo
 sections:
   Summary: |-
     Document modular release recovery
-    
+
     Update release documentation and checks so the modular publish flow, external PR handoffs, and recovery commands are clear and evidence-backed.
   Scope: |-
     - In scope: Update release documentation and checks so the modular publish flow, external PR handoffs, and recovery commands are clear and evidence-backed.
@@ -75,13 +75,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-02T19:36:12.112Z — VERIFY — ok
-    
+
     By: DOCS
-    
+
     Note: Verified: release publishing docs describe Publish release, standalone installers, distribution module recovery commands, and focused module retries.
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T19:34:41.640Z, excerpt_hash=sha256:fca48445cee84c0e22951d987a470ec9ffb38cd19e62f7eae71d16893486e217
-    
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
