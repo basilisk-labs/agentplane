@@ -1,10 +1,11 @@
 ---
 id: "202605021914-Z2P2TS"
 title: "Add standalone installer distribution path"
-status: "DOING"
+result_summary: "Standalone installer distribution path merged via PR #766."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-02T19:36:10.313Z"
   updated_by: "CODER"
   note: "Verified: install.sh and install.ps1 now consume standalone release archives with SHA256SUMS verification and no node/npm requirement; standalone production install test passes with local workspace tarballs."
-commit: null
+commit:
+  hash: "93db085a628f25e32e4bbb669c8d0132f5f61c5a"
+  message: "✅ N72MF3 close: Merged via PR #766. (202605021914-N72MF3) [ci,distribution,release] (#767)"
 comments:
   -
     author: "CODER"
     body: "Start: Implement standalone installer distribution path as part of the approved modular release pipeline worktree; stop if installer scope expands beyond release assets."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: standalone installer distribution path merged via PR #766 and post-merge checks passed."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: install.sh and install.ps1 now consume standalone release archives with SHA256SUMS verification and no node/npm requirement; standalone production install test passes with local workspace tarballs."
+  -
+    type: "status"
+    at: "2026-05-02T20:02:52.566Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: standalone installer distribution path merged via PR #766 and post-merge checks passed."
 doc_version: 3
-doc_updated_at: "2026-05-02T19:36:10.321Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-02T20:02:52.568Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make install.sh and install.ps1 consume standalone bundled-runtime release assets instead of requiring user-provided node/npm."
 sections:
   Summary: |-
