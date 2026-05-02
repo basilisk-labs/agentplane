@@ -1,0 +1,6 @@
+ .agentplane/agents/EVALUATOR.json                  | 26 ++++++++++++++++++++++
+ .agentplane/agents/PLANNER.json                    | 14 ++++++------
+ packages/agentplane/assets/agents/EVALUATOR.json   | 26 ++++++++++++++++++++++
+ packages/agentplane/assets/agents/PLANNER.json     | 14 ++++++------
+ packages/agentplane/assets/framework.manifest.json |  7 ++++++
+ 5 files changed, 73 insertions(+), 14 deletions(-)

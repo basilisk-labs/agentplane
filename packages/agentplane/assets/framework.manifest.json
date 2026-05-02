@@ -23,6 +23,13 @@
       "required": true
     },
     {
+      "path": ".agentplane/agents/EVALUATOR.json",
+      "source_path": "agents/EVALUATOR.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
       "path": ".agentplane/agents/INTEGRATOR.json",
       "source_path": "agents/INTEGRATOR.json",
       "type": "json",
