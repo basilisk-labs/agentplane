@@ -25,9 +25,9 @@ Title: Внедрить CLI performance benchmark framework
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T06:54:48.429Z
+- Updated: 2026-05-02T06:55:03.195Z
 - Branch: task/202605012059-GWA2MF/cli-perf
-- Head: 6e33f446495d
+- Head: 1b7e01c9cc1e
 
 ```text
  .github/PULL_REQUEST_TEMPLATE.md                   |  29 ++
