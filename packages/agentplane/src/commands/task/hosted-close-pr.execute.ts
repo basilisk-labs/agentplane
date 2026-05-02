@@ -17,8 +17,13 @@ function normalizeOneLine(value: string, maxChars: number): string {
   return trimmed.length > maxChars ? `${trimmed.slice(0, Math.max(1, maxChars - 3))}...` : trimmed;
 }
 
+function stripTaskMarkers(value: string, taskId: string): string {
+  return value.replaceAll(`[${taskId}]`, "").replaceAll(`(${taskId})`, "").trim();
+}
+
 function buildHostedClosePrTitle(opts: { taskId: string; taskTitle: string }): string {
-  const title = normalizeOneLine(opts.taskTitle, 96) || "Hosted task closure";
+  const title =
+    normalizeOneLine(stripTaskMarkers(opts.taskTitle, opts.taskId), 96) || "Hosted task closure";
   const suffix = extractTaskSuffix(opts.taskId);
   return `🧩 ${suffix} task-close: ${title} [${opts.taskId}]`;
 }

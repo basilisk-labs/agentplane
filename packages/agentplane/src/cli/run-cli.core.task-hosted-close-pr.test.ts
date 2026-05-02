@@ -552,7 +552,7 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
         "add",
         taskId,
         "--title",
-        "Hosted close PR fallback",
+        `Hosted close PR fallback [${taskId}]`,
         "--description",
         "Recover hosted-close-pr from stale base metadata",
         "--priority",
