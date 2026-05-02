@@ -1610,6 +1610,7 @@ Options:
 
 - `--author <id>`: Author id (e.g. CODER). (required)
 - `--branch <name>`: Branch name (default: current branch).
+- `--include-task <task-id>`: Repeatable. Record an additional related task id on this primary PR. (repeatable)
 - `--sync-only`: Only write local PR artifacts; do not create a remote GitHub PR. (default=false)
 
 Examples:
@@ -1627,8 +1628,12 @@ Update PR artifacts (review packet, diffstat, and GitHub projections).
 Usage:
 
 ```text
-agentplane pr update <task-id>
+agentplane pr update <task-id> [options]
 ```
+
+Options:
+
+- `--include-task <task-id>`: Repeatable. Record an additional related task id on this primary PR. (repeatable)
 
 Examples:
 

@@ -211,6 +211,7 @@ export async function cmdPrOpen(opts: {
   taskId: string;
   author: string;
   branch?: string;
+  includeTaskIds?: string[];
   syncOnly?: boolean;
 }): Promise<number> {
   try {
@@ -236,6 +237,7 @@ export async function cmdPrOpen(opts: {
       mode: "open",
       author,
       branch: opts.branch,
+      includeTaskIds: opts.includeTaskIds,
       remoteMode: "sync-only",
     });
     if (initialSync.meta.branch) {
@@ -277,6 +279,7 @@ export async function cmdPrOpen(opts: {
           mode: "open",
           author,
           branch: opts.branch,
+          includeTaskIds: opts.includeTaskIds,
           remoteMode: "auto",
         });
 

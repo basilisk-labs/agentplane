@@ -100,6 +100,7 @@ export function derivePrArtifactLifecycleState(meta: PrMeta): PrArtifactLifecycl
 
 export function buildOpenedPrMeta(opts: {
   taskId: string;
+  relatedTaskIds?: string[];
   branch: string;
   at: string;
   previousMeta: PrMeta | null;
@@ -116,6 +117,10 @@ export function buildOpenedPrMeta(opts: {
   return {
     schema_version: 1,
     task_id: opts.taskId,
+    related_task_ids: normalizeRelatedTaskIds(
+      opts.relatedTaskIds ?? opts.previousMeta?.related_task_ids,
+      opts.taskId,
+    ),
     branch: opts.branch,
     pr_number: opts.previousMeta?.pr_number,
     pr_url: opts.previousMeta?.pr_url,
@@ -138,6 +143,7 @@ export function buildOpenedPrMeta(opts: {
 
 export function buildUpdatedPrMeta(opts: {
   meta: PrMeta;
+  relatedTaskIds?: string[];
   branch: string;
   at: string;
   base?: string | null;
@@ -151,6 +157,10 @@ export function buildUpdatedPrMeta(opts: {
     (opts.meta.head_sha ?? null) !== (nextHeadSha ?? null);
   return {
     ...opts.meta,
+    related_task_ids: normalizeRelatedTaskIds(
+      opts.relatedTaskIds ?? opts.meta.related_task_ids,
+      opts.meta.task_id,
+    ),
     branch: opts.branch,
     base: nextBase,
     head_sha: nextHeadSha,
@@ -328,6 +338,26 @@ function asVerifyStatus(
   return command ? { status, command } : { status };
 }
 
+function asStringArray(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const values = value.filter((entry): entry is string => typeof entry === "string");
+  return values.length > 0 ? values : undefined;
+}
+
+function normalizeRelatedTaskIds(value: unknown, primaryTaskId: string): string[] | undefined {
+  const ids = asStringArray(value);
+  if (!ids) return undefined;
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const raw of ids) {
+    const id = raw.trim();
+    if (!id || id === primaryTaskId || seen.has(id)) continue;
+    seen.add(id);
+    result.push(id);
+  }
+  return result.length > 0 ? result.toSorted() : undefined;
+}
+
 function asMergeStrategy(value: unknown): "squash" | "merge" | "rebase" | undefined {
   const strategy = asNonEmptyString(value);
   return strategy === "squash" || strategy === "merge" || strategy === "rebase"
@@ -338,6 +368,7 @@ function asMergeStrategy(value: unknown): "squash" | "merge" | "rebase" | undefi
 type ForwardCompatiblePrMetaRecord = {
   schema_version?: unknown;
   task_id?: unknown;
+  related_task_ids?: unknown;
   branch?: unknown;
   pr_number?: unknown;
   pr_url?: unknown;
@@ -387,6 +418,7 @@ function buildForwardCompatiblePrMeta(
   return {
     schema_version: 1,
     task_id: taskId,
+    related_task_ids: normalizeRelatedTaskIds(parsed.related_task_ids, taskId),
     branch,
     pr_number: asOptionalInteger(parsed.pr_number),
     pr_url: asNonEmptyString(parsed.pr_url),

@@ -56,6 +56,7 @@ export function makeRunPrOpenHandler(getCtx: (cmd: string) => Promise<CommandCon
       taskId: p.taskId,
       author: p.author,
       branch: p.branch ?? undefined,
+      includeTaskIds: p.includeTaskIds,
       syncOnly: p.syncOnly,
     });
   };
@@ -68,6 +69,7 @@ export function makeRunPrUpdateHandler(getCtx: (cmd: string) => Promise<CommandC
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       taskId: p.taskId,
+      includeTaskIds: p.includeTaskIds,
     });
   };
 }

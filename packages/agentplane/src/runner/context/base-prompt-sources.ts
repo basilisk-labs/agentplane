@@ -202,6 +202,23 @@ export async function loadPolicyGatewayPrompt(opts: {
   });
 }
 
+export async function loadUserInstructionsPrompt(opts: {
+  git_root: string;
+}): Promise<RunnerPromptBlock | null> {
+  const absPath = path.join(opts.git_root, ".agentplane", "user-instructions.md");
+  if (!(await fileExists(absPath))) return null;
+  const content = normalizeText(await readTextFileCached(absPath));
+  if (!content.trim()) return null;
+  return {
+    id: "gateway.user.instructions",
+    role: "policy",
+    title: "User Instructions",
+    source: ".agentplane/user-instructions.md",
+    priority: BASE_PROMPT_PRIORITIES.user_instructions,
+    content,
+  };
+}
+
 function renderExecutionProfilePromptContent(runtime: ResolvedExecutionProfileRuntime): string {
   return JSON.stringify(
     {

@@ -19,6 +19,22 @@ Use this module when `workflow_mode=branch_pr`.
 8. CHECKPOINT C: finish task(s) on base with verification evidence.
 9. Remove merged task branches/worktrees once the hosted-close/finish route has landed.
 
+## Related task batch worktrees
+
+When several approved tasks form one dependent change, they MAY be executed in one primary task
+worktree instead of one worktree per task. Use this only when splitting the work into separate PRs
+would add coordination risk without improving review.
+
+Batch worktree rules:
+
+- One task is the primary integration task and owns the branch, worktree, and PR.
+- Every included task id MUST be listed in the primary task plan or PR artifact before mutation.
+- Each included task MUST keep its own plan, start-ready record, Verify Steps, verification result,
+  and finish evidence.
+- Commits SHOULD mention the relevant task suffixes when a change serves more than one included
+  task.
+- The final PR MUST describe the full included task set and merge the complete result into `main`.
+
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.branch_pr.commands.command.contract" slot="commands" mutability="replaceable" -->
 
@@ -43,6 +59,8 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
 - Task documentation updates MAY be batched within one turn before approval.
 - MUST run `task plan approve` then `task start-ready` as `Step 1 -> wait -> Step 2` (never parallel).
 - In `branch_pr`, `task start-ready`, `pr open`, `pr update`, and verification commands SHOULD be run from the task worktree created by `work start`.
+- A related task batch MAY reuse one primary task worktree when all included tasks are approved,
+  listed, verified independently, and merged through the primary task PR.
 - `pr open` without `--sync-only` SHOULD complete in one pass: sync local artifacts, auto-publish the task branch to `origin` when it has no upstream yet, then create/link the remote GitHub PR.
 - `integrate` defaults to the `merge` strategy so task branch commits stay in base history. Use `--merge-strategy squash` only when intentionally compacting branch history.
 - `task start-ready` MAY surface targeted incident advice for analogous scope/tags; follow it before widening scope.

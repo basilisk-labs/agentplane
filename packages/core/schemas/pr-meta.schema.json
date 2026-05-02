@@ -12,6 +12,13 @@
       "type": "string",
       "minLength": 1
     },
+    "related_task_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "branch": {
       "type": "string",
       "minLength": 1

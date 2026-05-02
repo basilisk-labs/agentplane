@@ -83,6 +83,7 @@ export async function cmdPrUpdate(opts: {
   cwd: string;
   rootOverride?: string;
   taskId: string;
+  includeTaskIds?: string[];
 }): Promise<number> {
   try {
     const output = createCliEmitter();
@@ -95,6 +96,7 @@ export async function cmdPrUpdate(opts: {
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
       mode: "update",
+      includeTaskIds: opts.includeTaskIds,
     });
     if (meta.branch) {
       await maybeAutoCommitTaskPrArtifacts({

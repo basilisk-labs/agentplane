@@ -66,6 +66,12 @@ Contract notes:
 - Prompt mutations should target named prompt fragments such as
   `agent.coder.workflow.diff.minimal` or `policy.workflow.branch_pr.sequence.start_worktree`, not
   array indexes, line numbers, or whole-file text replacements.
+- The target activation model materializes active recipe mutations into AgentPlane-managed prompt
+  source files, then regenerates the prompt graph as diagnostics. Recipes may change prompt
+  behavior through named fragments, but they must not change core lifecycle, workflow, git hygiene,
+  or safety invariants.
+- User-authored behavior belongs in `gateway.user.instructions`, normally backed by
+  the optional user instructions file under `.agentplane/` (`user-instructions.md`), instead of direct edits to managed prompt files.
 
 ## CLI surface
 
