@@ -1,10 +1,11 @@
 ---
 id: "202605021412-SVX2DX"
 title: "Publish standalone artifacts in release workflow"
-status: "DOING"
+result_summary: "Merged via PR #752."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-05-02T17:24:54.591Z"
   updated_by: "CODER"
   note: "Passed: agentplane task verify-show 202605021412-SVX2DX; bun run workflows:command-check; bun test packages/agentplane/src/commands/release/publish-workflow-contract.test.ts; bun run format:check; node .agentplane/policy/check-routing.mjs; agentplane doctor."
-commit: null
+commit:
+  hash: "88b28d56bacd6b54162b6e51fe6f43755d953888"
+  message: "release: Publish standalone assets in workflow (SVX2DX)"
 comments:
   -
     author: "CODER"
     body: "Start: Publish generated standalone archives as GitHub Release assets and smoke them in the publish job."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #752 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Passed: agentplane task verify-show 202605021412-SVX2DX; bun run workflows:command-check; bun test packages/agentplane/src/commands/release/publish-workflow-contract.test.ts; bun run format:check; node .agentplane/policy/check-routing.mjs; agentplane doctor."
+  -
+    type: "status"
+    at: "2026-05-02T17:28:26.126Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #752 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-02T17:24:54.631Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-02T17:28:26.132Z"
+doc_updated_by: "INTEGRATOR"
 description: "Wire the publish workflow to build/upload bundled-runtime CLI artifacts for macOS arm64/x64, Linux x64/arm64, and Windows x64, then record them in release-distribution evidence before external package-manager modules run."
 sections:
   Summary: |-
