@@ -32,7 +32,7 @@ then regenerate `.agentplane/generated/prompt-graph.json` as the diagnostic inde
 behavior.
 
 User-authored instructions are the exception. They belong in the `gateway.user.instructions`
-fragment, with `.agentplane/user-instructions.md` as the default editable file. The gateway should
+fragment, with the optional user instructions file under `.agentplane/` (`user-instructions.md`) as the default editable file. The gateway should
 only contain the stable hook that loads this block when it exists.
 
 ## Contracts

@@ -41,7 +41,7 @@ be derived from the active recipe registry and the managed prompt sources, not b
 of behavior that disagrees with the files agents and reviewers can inspect.
 
 User-specific instructions must live in the dedicated `gateway.user.instructions` extension point.
-The default materialization target is `.agentplane/user-instructions.md`, loaded through a stable
+The default materialization target is the optional user instructions file under `.agentplane/` (`user-instructions.md`), loaded through a stable
 gateway hook when present. Recipes may add, patch, replace, or bind managed fragments, but they must
 not erase the core task lifecycle, workflow routing, git hygiene, or safety invariants.
 
