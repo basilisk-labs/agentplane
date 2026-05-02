@@ -53,8 +53,8 @@ function summarizeDurations(durations) {
       avg_ms: 0,
       p95_ms: 0,
       p99_ms: 0,
-    stddev_ms: 0,
-  };
+      stddev_ms: 0,
+    };
   }
 
   let sum = 0;
