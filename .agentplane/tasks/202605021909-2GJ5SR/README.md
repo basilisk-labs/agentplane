@@ -4,7 +4,7 @@ title: "Add managed user instructions fragment"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +22,22 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-02T19:38:32.994Z"
+  updated_by: "CODER"
+  note: "Implemented managed gateway.user.instructions prompt source. Evidence: base-prompts targeted tests passed; policy routing OK."
 commit: null
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-05-02T19:38:32.994Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented managed gateway.user.instructions prompt source. Evidence: base-prompts targeted tests passed; policy routing OK."
 doc_version: 3
-doc_updated_at: "2026-05-02T19:09:51.844Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-05-02T19:38:32.999Z"
+doc_updated_by: "CODER"
 description: "Introduce gateway.user.instructions as the sanctioned user-editable prompt extension point and wire framework prompt assets/docs so user instructions stay separate from AgentPlane-managed source files."
 sections:
   Summary: |-
@@ -60,11 +66,24 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-02T19:38:32.994Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Implemented managed gateway.user.instructions prompt source. Evidence: base-prompts targeted tests passed; policy routing OK.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T19:09:51.844Z, excerpt_hash=sha256:77f9bfbcf92c3c085725f402356f726d5d1cfc7f77baeaac73a28b09483af6ac
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Added optional .agentplane/user-instructions.md loading as gateway.user.instructions.
+      Impact: User instructions can be added without direct edits to managed gateway files.
+      Resolution: Runtime base prompt collection now includes the managed user instructions block when present.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -102,6 +121,14 @@ Acceptance:
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-02T19:38:32.994Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented managed gateway.user.instructions prompt source. Evidence: base-prompts targeted tests passed; policy routing OK.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T19:09:51.844Z, excerpt_hash=sha256:77f9bfbcf92c3c085725f402356f726d5d1cfc7f77baeaac73a28b09483af6ac
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -110,3 +137,9 @@ Acceptance:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Added optional .agentplane/user-instructions.md loading as gateway.user.instructions.
+  Impact: User instructions can be added without direct edits to managed gateway files.
+  Resolution: Runtime base prompt collection now includes the managed user instructions block when present.
+  Promotion: incident-candidate
+  Fixability: external

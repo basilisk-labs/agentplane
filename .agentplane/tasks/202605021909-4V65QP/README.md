@@ -4,7 +4,7 @@ title: "Align runner and diagnostics with materialized prompt sources"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +22,22 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-02T19:38:34.357Z"
+  updated_by: "CODER"
+  note: "Aligned runner prompt source ordering and prompt-module bridge metadata. Evidence: base-prompts targeted tests passed; policy routing OK."
 commit: null
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-05-02T19:38:34.357Z"
+    author: "CODER"
+    state: "ok"
+    note: "Aligned runner prompt source ordering and prompt-module bridge metadata. Evidence: base-prompts targeted tests passed; policy routing OK."
 doc_version: 3
-doc_updated_at: "2026-05-02T19:09:52.119Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-05-02T19:38:34.366Z"
+doc_updated_by: "CODER"
 description: "Make runner behavior, prompt graph diagnostics, and doctor agree on the materialized source prompt model so physical managed files and generated graph cannot silently drift after recipe activation."
 sections:
   Summary: |-
@@ -60,11 +66,24 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-02T19:38:34.357Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Aligned runner prompt source ordering and prompt-module bridge metadata. Evidence: base-prompts targeted tests passed; policy routing OK.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T19:09:52.119Z, excerpt_hash=sha256:537ce244f3bc542b712c14c5f3cf05a078881935fe6b51709716b18cf7d01ddb
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: gateway.user.instructions is represented as a gateway prompt module surface.
+      Impact: Diagnostics/prompt graph can show the user-instructions block consistently with gateway policy.
+      Resolution: Added priority and bridge mapping for gateway.user.instructions.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -102,6 +121,14 @@ Acceptance:
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-02T19:38:34.357Z — VERIFY — ok
+
+By: CODER
+
+Note: Aligned runner prompt source ordering and prompt-module bridge metadata. Evidence: base-prompts targeted tests passed; policy routing OK.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T19:09:52.119Z, excerpt_hash=sha256:537ce244f3bc542b712c14c5f3cf05a078881935fe6b51709716b18cf7d01ddb
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -110,3 +137,9 @@ Acceptance:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: gateway.user.instructions is represented as a gateway prompt module surface.
+  Impact: Diagnostics/prompt graph can show the user-instructions block consistently with gateway policy.
+  Resolution: Added priority and bridge mapping for gateway.user.instructions.
+  Promotion: incident-candidate
+  Fixability: external
