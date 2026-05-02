@@ -25,7 +25,7 @@ afterEach(async () => {
 });
 
 describe("render-homebrew-formula script", () => {
-  it("renders a cached tarball npm install without Homebrew min-release-age arguments", async () => {
+  it("renders a standalone macOS formula without Node or npm install dependencies", async () => {
     const root = await makeTempRoot();
     const manifestPath = path.join(root, "release-distribution.json");
     const outDir = path.join(root, "homebrew");
@@ -37,12 +37,26 @@ describe("render-homebrew-formula script", () => {
           version: "0.4.1",
           tag: "v0.4.1",
           sha: "abc123",
-          packages: {
-            agentplane: {
-              npmTarballUrl: "https://registry.npmjs.org/agentplane/-/agentplane-0.4.1.tgz",
-              npmTarballSha256: "76edd130dceddb1d15313a5feb3819c513c815b350b9abc822b3ea4712ccc74b",
+          platformAssets: [
+            {
+              name: "agentplane-v0.4.1-darwin-arm64.tar.gz",
+              kind: "standalone_cli",
+              platform: "darwin",
+              arch: "arm64",
+              archive: "tar.gz",
+              url: "https://github.com/basilisk-labs/agentplane/releases/download/v0.4.1/agentplane-v0.4.1-darwin-arm64.tar.gz",
+              sha256: "76edd130dceddb1d15313a5feb3819c513c815b350b9abc822b3ea4712ccc74b",
             },
-          },
+            {
+              name: "agentplane-v0.4.1-darwin-x64.tar.gz",
+              kind: "standalone_cli",
+              platform: "darwin",
+              arch: "x64",
+              archive: "tar.gz",
+              url: "https://github.com/basilisk-labs/agentplane/releases/download/v0.4.1/agentplane-v0.4.1-darwin-x64.tar.gz",
+              sha256: "31fa4f4f74bf683e8f3933e339e3c731c5a9a840fc50134a6d2d77c1ef9441bb",
+            },
+          ],
           channels: {
             homebrewTap: {
               status: "skipped_missing_credentials",
@@ -64,12 +78,20 @@ describe("render-homebrew-formula script", () => {
       await readFile(path.join(outDir, "homebrew-result.json"), "utf8"),
     ) as {
       installStrategy: string;
+      assets: { darwinArm64: { name: string }; darwinX64: { name: string } };
     };
     expect(formula).toContain('version "0.4.1"');
-    expect(formula).toContain("cached_download");
-    expect(formula).toContain('"--omit=dev", "--ignore-scripts", "--no-audit", "--no-fund"');
+    expect(formula).toContain("Hardware::CPU.arm?");
+    expect(formula).toContain("agentplane-v0.4.1-darwin-arm64.tar.gz");
+    expect(formula).toContain("agentplane-v0.4.1-darwin-x64.tar.gz");
+    expect(formula).toContain('bin.install_symlink libexec/"bin/agentplane" => "agentplane"');
+    expect(formula).not.toContain('depends_on "node"');
+    expect(formula).not.toContain("cached_download");
+    expect(formula).not.toContain("npm");
     expect(formula).not.toContain("std_npm_args");
     expect(formula).not.toContain("--min-release-age");
-    expect(evidence.installStrategy).toBe("npm_global_cached_tarball");
+    expect(evidence.installStrategy).toBe("standalone_bundled_node");
+    expect(evidence.assets.darwinArm64.name).toBe("agentplane-v0.4.1-darwin-arm64.tar.gz");
+    expect(evidence.assets.darwinX64.name).toBe("agentplane-v0.4.1-darwin-x64.tar.gz");
   });
 });

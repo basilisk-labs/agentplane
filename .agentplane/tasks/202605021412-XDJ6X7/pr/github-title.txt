@@ -1,0 +1,1 @@
+task: Switch Homebrew formula to standalone assets [202605021412-XDJ6X7]
