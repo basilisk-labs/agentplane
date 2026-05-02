@@ -1,10 +1,11 @@
 ---
 id: "202605021908-BGE36D"
 title: "Define managed recipe materialization contract"
-status: "DOING"
+result_summary: "Merged via PR #765."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-05-02T19:39:18.433Z"
   updated_by: "CODER"
   note: "Verified batch implementation after related task evidence commit. Evidence: policy routing OK; targeted prompt/pr/schema tests passed; git diff --check passed."
-commit: null
+commit:
+  hash: "38c5df9686ab176d7a1cce60531a28201a5a8d2f"
+  message: "task: Define managed recipe materialization contract [202605021908-BGE36D] (#765)"
 comments:
   -
     author: "DOCS"
     body: "Start: Defining managed recipe materialization architecture contract before implementation tasks so code work has a stable source-of-truth boundary."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #765 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified batch implementation after related task evidence commit. Evidence: policy routing OK; targeted prompt/pr/schema tests passed; git diff --check passed."
+  -
+    type: "status"
+    at: "2026-05-02T20:07:49.712Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #765 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-02T19:39:18.437Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-02T20:07:49.719Z"
+doc_updated_by: "INTEGRATOR"
 description: "Document the target behavior for recipe activation: managed prompt source files are changed only by AgentPlane, recipe registry records active recipes, prompt graph is a diagnostic index, and gateway.user.instructions is the human-editable extension point."
 sections:
   Summary: |-
