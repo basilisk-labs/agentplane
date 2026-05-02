@@ -25,12 +25,14 @@ Update release and publishing docs with the standalone artifact architecture, Ho
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T17:48:18.032Z
+- Updated: 2026-05-02T17:52:30.602Z
 - Branch: task/202605021412-1TG306/standalone-release-docs
-- Head: 5fa0fe6d7289
+- Head: 09042f30910d
 
 ```text
-No changes detected.
+ docs/developer/release-and-publishing.mdx | 43 ++++++++++++++++++++-----------
+ docs/releases/v0.4.1.md                   |  7 +++++
+ 2 files changed, 35 insertions(+), 15 deletions(-)
 ```
 
 </details>
