@@ -328,7 +328,11 @@ describe("runCli", () => {
     const taskId = "202604100023-ABC123";
     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
     await mkdir(prDir, { recursive: true });
-    await writeFile(path.join(prDir, "github-title.txt"), `task: stale artifact [${taskId}]\n`, "utf8");
+    await writeFile(
+      path.join(prDir, "github-title.txt"),
+      `task: stale artifact [${taskId}]\n`,
+      "utf8",
+    );
     const io = captureStdIO();
     try {
       const code = await runCli(["preflight", "--json", "--root", root]);

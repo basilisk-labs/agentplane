@@ -1,4 +1,7 @@
 {
+  "artifact_state": "remote_failed",
+  "artifact_state_reason": "task branch push failed: remote: error: GH006: Protected branch update failed for refs/heads/main.        \nremote: \nremote: - Changes must be made through a pull request.        \nTo https://github.com/basilisk-labs/agentplane.git\n ! [remote rejected]   HEAD -> main (protected branch hook declined)\nerror: failed to push some refs to 'https://github.com/basilisk-labs/agentplane.git'",
+  "artifact_state_updated_at": "2026-05-02T22:20:46.090Z",
   "base": "main",
   "branch": "task/202605022153-93GVV1/git-message-format",
   "created_at": "2026-05-02T22:20:39.345Z",

@@ -40,11 +40,7 @@ describe("buildGithubPrTitle", () => {
 
   it("flags invalid PR title format", () => {
     const errors: string[] = [];
-    validateGithubPrTitleContents(
-      "task: bad title format",
-      "202603101200-C0M1T0",
-      errors,
-    );
+    validateGithubPrTitleContents("task: bad title format", "202603101200-C0M1T0", errors);
     expect(errors).toContain("Missing task id in GitHub PR title");
   });
 

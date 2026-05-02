@@ -33,9 +33,7 @@ function isTaskArtifactPath(filePath: string): boolean {
   return normalized.startsWith(".agentplane/tasks/") || normalized.startsWith("tasks/");
 }
 
-function fallbackIntegrateSummary(opts: {
-  taskTitle: string;
-}): string {
+function fallbackIntegrateSummary(opts: { taskTitle: string }): string {
   const summary = normalizeOneLine(opts.taskTitle, 96) || "Task integration update";
   return `${summary}`;
 }

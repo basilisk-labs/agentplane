@@ -54,11 +54,7 @@ describe("pr/integrate/internal/merge", () => {
     expect(hash).toBe("deadbeefcafebabe");
     const commitCall = mocks.execFileAsync.mock.calls.at(-1);
     expect(commitCall?.[0]).toBe("git");
-    expect(commitCall?.[1]).toEqual([
-      "commit",
-      "-m",
-      "🧩 ABC123 integrate: Improve PR UX",
-    ]);
+    expect(commitCall?.[1]).toEqual(["commit", "-m", "🧩 ABC123 integrate: Improve PR UX"]);
     expect(commitCall?.[2]).toMatchObject({
       cwd: "/repo",
       env: {
@@ -103,11 +99,7 @@ describe("pr/integrate/internal/merge", () => {
     expect(hash).toBe("deadbeefcafebabe");
     const commitCall = mocks.execFileAsync.mock.calls.at(-1);
     expect(commitCall?.[0]).toBe("git");
-    expect(commitCall?.[1]).toEqual([
-      "commit",
-      "-m",
-      "🧩 X32XPT integrate: Improve PR UX",
-    ]);
+    expect(commitCall?.[1]).toEqual(["commit", "-m", "🧩 X32XPT integrate: Improve PR UX"]);
     expect(commitCall?.[2]).toMatchObject({
       cwd: "/repo",
       env: {
