@@ -39,7 +39,7 @@ Avoid false missing-dependency reports when the repo-local wrapper resolves @age
 
 ## Handoff Notes
 
-- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+- 2026-05-02T21:26:55Z CODER: Related task included: 202605022118-M0GKG8 fixes current release lint drift discovered during patch-release readiness checks. Verification: lint:core passed, generate-release-distribution-script.test.ts passed 2/2, combined affected suite passed 14/14.
 
 <!-- BEGIN AUTO SUMMARY -->
 <details>
