@@ -247,7 +247,7 @@ async function writeWrapper(target, rootDir) {
     const wrapperPath = path.join(binDir, "agentplane.cmd");
     await writeFile(
       wrapperPath,
-      "@echo off\r\n%~dp0..\\lib\\node\\node.exe %~dp0..\\lib\\agentplane\\package\\bin\\agentplane.js %*\r\n",
+      '@echo off\r\n"%~dp0..\\lib\\node\\node.exe" "%~dp0..\\lib\\agentplane\\package\\bin\\agentplane.js" %*\r\n',
       "utf8",
     );
     return "bin/agentplane.cmd";
@@ -310,13 +310,17 @@ function createArchive(rootDir, outPath, target) {
   run("tar", ["-czf", outPath, "-C", rootDir, "."]);
 }
 
-async function installProductionDependencies(packageRoot, skipInstall) {
-  return skipInstall
-    ? "skipped_check_mode"
-    : (run("npm", ["install", "--omit=dev", "--ignore-scripts", "--no-audit", "--no-fund"], {
-        cwd: packageRoot,
-      }),
-      "installed");
+async function installProductionDependencies(repoRoot, packageRoot, skipInstall) {
+  if (skipInstall) return "skipped_check_mode";
+  const lockPath = path.join(repoRoot, "bun.lock");
+  if (!existsSync(lockPath)) {
+    throw new Error("Standalone dependency installation requires repository bun.lock");
+  }
+  await writeFile(path.join(packageRoot, "bun.lock"), await readFile(lockPath));
+  run("bun", ["install", "--production", "--frozen-lockfile", "--ignore-scripts"], {
+    cwd: packageRoot,
+  });
+  return "installed_bun_frozen_lockfile";
 }
 
 function publicStandaloneAsset(asset) {
@@ -346,7 +350,7 @@ async function buildTarget({
   await mkdir(nodeRoot, { recursive: true });
 
   await extractCliPackage(cliTarball, packageRoot);
-  const dependencyStatus = await installProductionDependencies(packageRoot, skipInstall);
+  const dependencyStatus = await installProductionDependencies(repoRoot, packageRoot, skipInstall);
   await (syntheticNode
     ? materializeSyntheticNode(target, nodeRoot)
     : materializeOfficialNode({

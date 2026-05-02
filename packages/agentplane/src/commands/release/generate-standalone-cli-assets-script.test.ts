@@ -35,6 +35,13 @@ async function listZip(pathToArchive: string) {
   return stdout.split(/\r?\n/u).filter(Boolean);
 }
 
+async function readZipEntry(pathToArchive: string, entry: string) {
+  const { stdout } = await execFileAsync("unzip", ["-p", pathToArchive, entry], {
+    cwd: process.cwd(),
+  });
+  return stdout;
+}
+
 describe("generate-standalone-cli-assets script", () => {
   it("generates POSIX standalone archive layout in offline check mode", async () => {
     const outDir = path.join(await makeTempRoot(), "out");
@@ -126,6 +133,7 @@ describe("generate-standalone-cli-assets script", () => {
       assets: { entrypoint: string; platform: string; archive: string }[];
     };
     const listing = await listZip(archivePath);
+    const wrapper = await readZipEntry(archivePath, "bin/agentplane.cmd");
 
     expect(existsSync(archivePath)).toBe(true);
     expect(manifest.assets[0]).toMatchObject({
@@ -137,6 +145,8 @@ describe("generate-standalone-cli-assets script", () => {
     expect(listing).toContain("lib/node/node.exe");
     expect(listing).toContain("lib/agentplane/package/bin/agentplane.js");
     expect(listing).toContain("share/agentplane/manifest.json");
+    expect(wrapper).toContain(String.raw`"%~dp0..\lib\node\node.exe"`);
+    expect(wrapper).toContain(String.raw`"%~dp0..\lib\agentplane\package\bin\agentplane.js"`);
   }, 90_000);
 
   it("validates every contract target through --check without writing final outputs", async () => {
