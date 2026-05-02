@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { existsSync } from "node:fs";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -170,6 +170,53 @@ describe("generate-standalone-cli-assets script", () => {
 
     expect(stdout).toContain("standalone CLI assets check");
     expect(existsSync(outDir)).toBe(false);
+  }, 90_000);
+
+  it("installs production dependencies from a sanitized package payload", async () => {
+    const root = await makeTempRoot();
+    const outDir = path.join(root, "out");
+    const extractDir = path.join(root, "extract");
+
+    await execFileAsync(
+      "node",
+      [
+        SCRIPT_PATH,
+        "--out",
+        outDir,
+        "--target",
+        "linux-x64",
+        "--version",
+        "1.2.3",
+        "--tag",
+        "v1.2.3",
+        "--sha",
+        "abc123",
+        "--synthetic-node",
+      ],
+      { cwd: process.cwd() },
+    );
+
+    const archivePath = path.join(outDir, "agentplane-v1.2.3-linux-x64.tar.gz");
+    await mkdir(extractDir, { recursive: true });
+    await execFileAsync("tar", ["-xzf", archivePath, "-C", extractDir], { cwd: process.cwd() });
+    const manifest = JSON.parse(
+      await readFile(path.join(outDir, "standalone-assets.json"), "utf8"),
+    ) as { assets: { dependencyStatus: string }[] };
+    const packageJson = JSON.parse(
+      await readFile(path.join(extractDir, "lib", "agentplane", "package", "package.json"), "utf8"),
+    ) as {
+      dependencies?: Record<string, string>;
+      devDependencies?: Record<string, string>;
+      scripts?: Record<string, string>;
+    };
+
+    expect(manifest.assets[0]?.dependencyStatus).toBe(
+      "installed_npm_omit_dev_local_workspace_tarballs",
+    );
+    expect(packageJson.dependencies?.["@agentplaneorg/core"]).toBe("1.2.3");
+    expect(packageJson.dependencies?.["@agentplaneorg/recipes"]).toBe("1.2.3");
+    expect(packageJson.devDependencies).toBeUndefined();
+    expect(packageJson.scripts).toBeUndefined();
   }, 90_000);
 
   it("smoke-tests a standalone archive fixture without a PATH node dependency", async () => {

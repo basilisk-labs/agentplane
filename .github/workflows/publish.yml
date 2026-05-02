@@ -1,4 +1,4 @@
-name: Publish to npm
+name: Publish release
 
 on:
   workflow_run:
@@ -420,6 +420,7 @@ jobs:
             .agentplane/.release/publish/distribution/release-distribution.json
             .agentplane/.release/publish/distribution/standalone-assets.json
       - name: Publish Homebrew tap PR
+        continue-on-error: true
         shell: bash
         env:
           HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN || '' }}
@@ -436,6 +437,7 @@ jobs:
             --token-env HOMEBREW_TAP_TOKEN \
             --out .agentplane/.release/publish/homebrew/homebrew-publish-result.json
       - name: Publish Scoop bucket PR
+        continue-on-error: true
         shell: bash
         env:
           SCOOP_BUCKET_TOKEN: ${{ secrets.SCOOP_BUCKET_TOKEN || '' }}
@@ -452,6 +454,7 @@ jobs:
             --token-env SCOOP_BUCKET_TOKEN \
             --out .agentplane/.release/publish/scoop/scoop-publish-result.json
       - name: Publish setup-agentplane PR
+        continue-on-error: true
         shell: bash
         env:
           SETUP_AGENTPLANE_TOKEN: ${{ secrets.SETUP_AGENTPLANE_TOKEN || '' }}

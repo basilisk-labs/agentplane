@@ -60,6 +60,8 @@ describe("generate-release-distribution script", () => {
       releaseAssets: { name: string; kind: string }[];
     };
     const checksums = await readFile(path.join(outDir, "SHA256SUMS"), "utf8");
+    const installSh = await readFile(path.join(outDir, "install.sh"), "utf8");
+    const installPs1 = await readFile(path.join(outDir, "install.ps1"), "utf8");
 
     expect(manifest.platformAssets).toHaveLength(5);
     expect(manifest.platformAssets).toContainEqual(
@@ -88,6 +90,16 @@ describe("generate-release-distribution script", () => {
       expect(checksums).toContain(asset.name);
       expect(existsSync(path.join(outDir, asset.name))).toBe(true);
     }
+    expect(installSh).toContain("SHA256SUMS");
+    expect(installSh).toContain('asset="agentplane-v$VERSION-$platform-$arch.tar.gz"');
+    expect(installSh).toContain('"$INSTALL_DIR/bin/agentplane" --version');
+    expect(installSh).not.toContain("npm install");
+    expect(installSh).not.toContain("need node");
+    expect(installPs1).toContain("SHA256SUMS");
+    expect(installPs1).toContain('"agentplane-v$Version-win32-x64.zip"');
+    expect(installPs1).toContain('"bin\\agentplane.cmd"');
+    expect(installPs1).not.toContain("npm install");
+    expect(installPs1).not.toContain('Require-Command "node"');
   }, 90_000);
 
   it("validates standalone assets during release distribution check", async () => {
