@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-02T17:35:54Z",
   "base": "main",
   "branch": "task/202605021412-XDJ6X7/homebrew-standalone-assets",
   "created_at": "2026-05-02T17:29:47.769Z",
-  "head_sha": "22c39fcb601fbe8a3cb865490e578bba4a1ff315",
+  "head_sha": "b4631c56f45ed4cbe9eb1db22919a6d58721d589",
   "last_verified_at": "2026-05-02T17:33:35.388Z",
   "last_verified_sha": "eda5d5f2d4d3de90d97f78833bc1892ce42a51cf",
+  "merge_commit": "1038442881c2232891fb53d9ab38892975555941",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-02T17:35:54Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605021412-XDJ6X7",
-  "updated_at": "2026-05-02T17:33:48.184Z",
+  "updated_at": "2026-05-02T17:35:54Z",
   "verify": {
     "status": "pass"
   }
