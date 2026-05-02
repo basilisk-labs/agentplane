@@ -1,0 +1,74 @@
+# PR Review
+
+Created: 2026-05-02T16:02:21.033Z
+Branch: task/202605021412-FDDWP8/standalone-artifact-contract
+
+## Summary
+
+Define standalone CLI artifact contract
+
+Specify the bundled-runtime AgentPlane CLI artifact contract: supported platform/arch targets, archive layout, embedded Node version source, checksum/signature expectations, runtime path invariants, and security update policy.
+
+## Scope
+
+- In scope: Specify the bundled-runtime AgentPlane CLI artifact contract: supported platform/arch targets, archive layout, embedded Node version source, checksum/signature expectations, runtime path invariants, and security update policy.
+- Out of scope: unrelated refactors not required for "Define standalone CLI artifact contract".
+
+## Verification
+
+### Plan
+
+1. Inspect docs/developer/release-and-publishing.mdx and confirm the standalone contract covers targets, archive names, archive layout, embedded runtime source, checksum/manifest fields, smoke tests, package-manager consumption rules, and release ordering. Expected: Homebrew/Scoop/setup-action implementation tasks can consume the contract without inventing missing fields.
+2. Run node .agentplane/policy/check-routing.mjs. Expected: policy routing remains valid.
+3. Run agentplane doctor. Expected: repository health checks pass.
+4. Run rg -n "Standalone CLI artifact contract|standalone_cli|bundled_node|depends_on \"node\"|setup-agentplane" docs/developer/release-and-publishing.mdx. Expected: the updated canonical docs expose the contract and the no-external-Node package-manager rules.
+
+### Current Status
+
+- State: ok
+- Note: Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK.
+Scope: AGENTS/policy routing remains valid after release documentation update.
+Links: docs/developer/release-and-publishing.mdx
+
+Command: agentplane doctor
+Result: pass
+Evidence: doctor OK; errors=0 warnings=0.
+Scope: repository health for docs-only task branch.
+Links: docs/developer/release-and-publishing.mdx
+
+Command: rg -n "Standalone CLI artifact contract|standalone_cli|bundled_node|depends_on \"node\"|setup-agentplane|agentplane-vX\.Y\.Z" docs/developer/release-and-publishing.mdx
+Result: pass
+Evidence: matched standalone contract heading, deterministic archive names, standalone_cli manifest kind, bundled_node install strategy, Homebrew no depends_on node rule, and setup-agentplane consumption rule.
+Scope: standalone CLI artifact contract and package-manager handoff rules.
+Links: docs/developer/release-and-publishing.mdx
+
+## Risks
+
+- Risk level: not recorded
+- Breaking change: no
+
+### Rollback
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-02T16:02:21.033Z
+- Branch: task/202605021412-FDDWP8/standalone-artifact-contract
+- Head: 3405acf6c80b
+
+```text
+No changes detected.
+```
+
+</details>
+<!-- END AUTO SUMMARY -->

@@ -134,17 +134,134 @@ manifest rather than recalculating those values independently.
 Required release distribution artifacts:
 
 - `release-distribution.json`: machine-readable summary of the release version, tag, source SHA,
-  npm tarball URLs, npm package status, GitHub Release asset names, external channel status, and
-  recovery hints.
+  npm tarball URLs, npm package status, standalone CLI assets, GitHub Release asset names, external
+  channel status, and recovery hints.
 - `SHA256SUMS`: checksums for generated GitHub Release assets and installer payloads.
 - `install.sh`: POSIX installer entrypoint for users who want a shell install path.
 - `install.ps1`: PowerShell installer entrypoint for Windows users. The script must install a
   versioned release payload and verify checksums before executing or linking installed files.
 - `agentplane-upgrade.tar.gz`: upgrade bundle consumed by `agentplane upgrade`.
+- `agentplane-vX.Y.Z-<platform>-<arch>.tar.gz` or `.zip`: bundled-runtime CLI archives for
+  package managers and no-Node installer paths.
 
 The install scripts are convenience entrypoints, not update sources of truth. Package managers and
 scripts must install an exact release version and must not implement self-update behavior that
 bypasses the hosted release pipeline.
+
+## Standalone CLI artifact contract
+
+The first standalone release channel is a bundled-runtime CLI artifact, not a single native
+executable. It packages the built AgentPlane CLI plus a pinned Node runtime so Homebrew, Scoop,
+`setup-agentplane`, and install scripts can run without installing or discovering `node` from the
+user's machine. npm remains the canonical JavaScript package channel, and GHCR remains the container
+channel.
+
+Initial required targets:
+
+- `darwin-arm64`
+- `darwin-x64`
+- `linux-x64`
+- `linux-arm64`
+- `win32-x64`
+
+Archive names are deterministic:
+
+- `agentplane-vX.Y.Z-darwin-arm64.tar.gz`
+- `agentplane-vX.Y.Z-darwin-x64.tar.gz`
+- `agentplane-vX.Y.Z-linux-x64.tar.gz`
+- `agentplane-vX.Y.Z-linux-arm64.tar.gz`
+- `agentplane-vX.Y.Z-win32-x64.zip`
+
+POSIX archive layout:
+
+```text
+bin/agentplane
+lib/node/bin/node
+lib/agentplane/package/bin/agentplane.js
+lib/agentplane/package/dist/
+lib/agentplane/package/assets/
+lib/agentplane/package/node_modules/
+share/agentplane/VERSION
+share/agentplane/manifest.json
+```
+
+Windows archive layout:
+
+```text
+bin/agentplane.cmd
+lib/node/node.exe
+lib/agentplane/package/bin/agentplane.js
+lib/agentplane/package/dist/
+lib/agentplane/package/assets/
+lib/agentplane/package/node_modules/
+share/agentplane/VERSION
+share/agentplane/manifest.json
+```
+
+Runtime invariants:
+
+- `bin/agentplane` and `bin/agentplane.cmd` must invoke the embedded Node runtime by relative path.
+- Installed standalone archives must not require external `node`, `npm`, `bun`, or global packages.
+- The packaged CLI must preserve repo-local framework handoff behavior and `agentplane runtime
+  explain` must identify the bundled runtime source.
+- The embedded Node version must come from one repository-controlled release constant or manifest
+  field and must be visible in `share/agentplane/manifest.json`.
+- Node downloads must be pinned to official Node distribution URLs and verified against official
+  checksums before packaging.
+- Updating the embedded Node runtime is a release-scope security update: bump the pinned version,
+  regenerate every platform archive, and publish fresh checksums for the same release candidate.
+
+Every standalone archive must have a corresponding `SHA256SUMS` line and a
+`release-distribution.json` entry with these fields:
+
+```json
+{
+  "name": "agentplane-vX.Y.Z-darwin-arm64.tar.gz",
+  "kind": "standalone_cli",
+  "platform": "darwin",
+  "arch": "arm64",
+  "archive": "tar.gz",
+  "url": "https://github.com/basilisk-labs/agentplane/releases/download/vX.Y.Z/agentplane-vX.Y.Z-darwin-arm64.tar.gz",
+  "sha256": "...",
+  "size": 123,
+  "nodeVersion": "v24.x.y",
+  "installStrategy": "bundled_node",
+  "entrypoint": "bin/agentplane",
+  "status": "created"
+}
+```
+
+Standalone smoke tests must unpack each archive and run at least:
+
+- `bin/agentplane --version`
+- `bin/agentplane quickstart`
+- `bin/agentplane doctor`
+- `bin/agentplane runtime explain`
+- `bin/agentplane init` inside a temporary git repository
+
+Where the host platform allows it, the smoke test must also poison or remove external `node` from
+`PATH` before invoking the archive entrypoint. This confirms the package-manager path is truly
+standalone instead of accidentally falling back to a developer machine runtime.
+
+Package-manager consumption rules:
+
+- Homebrew formulas must select the matching `darwin-*` archive, verify its checksum, install the
+  archive contents, link `bin/agentplane`, and must not declare `depends_on "node"`.
+- Scoop manifests must select the `win32-x64` archive, verify its checksum, expose the
+  `agentplane` shim from `bin/agentplane.cmd`, and must not run `npm`.
+- `setup-agentplane` must resolve the current runner OS/architecture to a standalone asset, verify
+  `SHA256SUMS`, unpack it into the tool cache, and add the archive `bin` directory to `PATH`.
+- `install.sh` and `install.ps1` may use the same standalone assets, but they remain convenience
+  entrypoints over the release manifest rather than separate update channels.
+
+Release ordering:
+
+1. Build npm packages and the upgrade bundle.
+2. Build standalone CLI archives from the exact release package payload and pinned Node runtime.
+3. Generate `SHA256SUMS` and `release-distribution.json` including standalone asset entries.
+4. Upload GitHub Release assets.
+5. Render Homebrew, Scoop, and setup-action handoff artifacts from the manifest.
+6. Publish credentials-gated external repository PRs, or record `skipped_missing_credentials`.
 
 Automated release channels:
 

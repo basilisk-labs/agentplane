@@ -1,0 +1,1 @@
+task: Define standalone CLI artifact contract [202605021412-FDDWP8]
