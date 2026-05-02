@@ -1,10 +1,11 @@
 ---
 id: "202605022153-93GVV1"
 title: "Unify git commit and PR message format"
-status: "DOING"
+result_summary: "Merged via PR #781."
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-02T22:18:45.061Z"
   updated_by: "ORCHESTRATOR"
   note: "Command: agentplane task verify-show 202605022153-93GVV1; Result: pass; Evidence: verify checklist displayed. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000; Result: pass; Evidence: 4 files, 23 tests passed. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime ready. Command: git diff --check; Result: pass; Evidence: no whitespace errors. Command: agentplane preflight --json; Result: pass with expected dirty-worktree/task-artifact warnings; Evidence: message_format_guard ok."
-commit: null
+commit:
+  hash: "2b521bee46533af0c4a2264885e71d6110672c03"
+  message: "Merge pull request #781 from basilisk-labs/task/202605022153-93GVV1/git-message-format"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: implementing unified message format across task commits and PR artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #781 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "ORCHESTRATOR"
     state: "ok"
     note: "Command: agentplane task verify-show 202605022153-93GVV1; Result: pass; Evidence: verify checklist displayed. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000; Result: pass; Evidence: 4 files, 23 tests passed. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime ready. Command: git diff --check; Result: pass; Evidence: no whitespace errors. Command: agentplane preflight --json; Result: pass with expected dirty-worktree/task-artifact warnings; Evidence: message_format_guard ok."
+  -
+    type: "status"
+    at: "2026-05-02T22:41:21.666Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #781 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-02T22:18:45.071Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-05-02T22:41:21.672Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix commit and PR message generators for single canonical format in local and branch_pr modes with emoji by change type, task suffix and task context."
 sections:
   Summary: |-
