@@ -45,24 +45,24 @@ Fix commit and PR message generators for single canonical format in local and br
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T22:20:39.345Z
+- Updated: 2026-05-02T22:21:33.710Z
 - Branch: task/202605022153-93GVV1/git-message-format
-- Head: a632c88cba24
+- Head: e9fdbae886ec
 
 ```text
  .../cli/prepare-hosted-task-closure-script.test.ts |  4 +-
- .../cli/run-cli.core.branch-meta.readiness.test.ts | 36 +++++++++++++
- .../cli/run-cli.core.task-hosted-close-pr.test.ts  |  2 +-
+ .../cli/run-cli.core.branch-meta.readiness.test.ts | 40 +++++++++++++++
+ .../cli/run-cli.core.task-hosted-close-pr.test.ts  |  4 +-
  .../cli/run-cli/commands/core/preflight-render.ts  |  1 +
  .../cli/run-cli/commands/core/preflight-report.ts  | 60 ++++++++++++++++++++++
- .../commands/pr/integrate/internal/merge.test.ts   | 14 ++---
- .../src/commands/pr/integrate/internal/merge.ts    | 24 +++------
+ .../commands/pr/integrate/internal/merge.test.ts   | 22 ++------
+ .../src/commands/pr/integrate/internal/merge.ts    | 28 ++++------
  .../commands/pr/internal/pr-artifact-snapshot.ts   |  8 ++-
- .../commands/pr/internal/review-template.test.ts   | 60 ++++++++++++++++++++++
+ .../commands/pr/internal/review-template.test.ts   | 56 ++++++++++++++++++++
  .../src/commands/pr/internal/review-template.ts    | 43 +++++++++++++++-
  .../src/commands/task/hosted-close-pr.execute.ts   |  5 +-
  scripts/prepare-hosted-task-closure.mjs            |  7 ++-
- 12 files changed, 231 insertions(+), 33 deletions(-)
+ 12 files changed, 234 insertions(+), 44 deletions(-)
 ```
 
 </details>
