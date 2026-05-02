@@ -1,3 +1,4 @@
+ docs/recipes-inventory.json                        |  2 +-
  .../cli/prepare-hosted-task-closure-script.test.ts |  4 +-
  .../cli/run-cli.core.branch-meta.readiness.test.ts | 40 +++++++++++++++
  .../cli/run-cli.core.task-hosted-close-pr.test.ts  |  4 +-
@@ -10,4 +11,4 @@
  .../src/commands/pr/internal/review-template.ts    | 43 +++++++++++++++-
  .../src/commands/task/hosted-close-pr.execute.ts   |  5 +-
  scripts/prepare-hosted-task-closure.mjs            |  7 ++-
- 12 files changed, 234 insertions(+), 44 deletions(-)
+ 13 files changed, 235 insertions(+), 45 deletions(-)

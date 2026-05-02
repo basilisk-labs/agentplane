@@ -45,11 +45,12 @@ Fix commit and PR message generators for single canonical format in local and br
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T22:21:33.710Z
+- Updated: 2026-05-02T22:26:31.321Z
 - Branch: task/202605022153-93GVV1/git-message-format
-- Head: e9fdbae886ec
+- Head: f6ab081f9613
 
 ```text
+ docs/recipes-inventory.json                        |  2 +-
  .../cli/prepare-hosted-task-closure-script.test.ts |  4 +-
  .../cli/run-cli.core.branch-meta.readiness.test.ts | 40 +++++++++++++++
  .../cli/run-cli.core.task-hosted-close-pr.test.ts  |  4 +-
@@ -62,7 +63,7 @@ Fix commit and PR message generators for single canonical format in local and br
  .../src/commands/pr/internal/review-template.ts    | 43 +++++++++++++++-
  .../src/commands/task/hosted-close-pr.execute.ts   |  5 +-
  scripts/prepare-hosted-task-closure.mjs            |  7 ++-
- 12 files changed, 234 insertions(+), 44 deletions(-)
+ 13 files changed, 235 insertions(+), 45 deletions(-)
 ```
 
 </details>
