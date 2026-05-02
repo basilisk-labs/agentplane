@@ -25,16 +25,12 @@ Update developer documentation and ROADMAP so v0.6 is explicitly scoped to evals
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T18:59:07.187Z
+- Updated: 2026-05-02T19:01:47.535Z
 - Branch: task/202605021842-Q3814M/v06-evals-roadmap
 - Head: b4140c2cf3c2
 
 ```text
- ROADMAP.md                                         | 24 +++---
- .../evaluation-and-recursive-improvement.mdx       | 94 ++++++++++++++++++++++
- docs/index.mdx                                     | 27 ++++---
- website/sidebars.ts                                |  1 +
- 4 files changed, 124 insertions(+), 22 deletions(-)
+No changes detected.
 ```
 
 </details>

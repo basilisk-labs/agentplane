@@ -1,13 +1,20 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-02T19:01:47.535Z",
   "base": "main",
   "branch": "task/202605021842-Q3814M/v06-evals-roadmap",
   "created_at": "2026-05-02T18:50:35.489Z",
   "head_sha": "b4140c2cf3c2d6849b52385fa8d0ffd92ef9bc91",
   "last_verified_at": "2026-05-02T18:58:46.984Z",
   "last_verified_sha": "aa636cb7b949ff1d6377523a2f51f3f24749f589",
+  "merge_commit": "8418b6fb7bad2a07a3f8cee06cf780531ecbcf0d",
+  "merged_at": "2026-05-02T19:00:58Z",
+  "pr_number": 762,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/762",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605021842-Q3814M",
-  "updated_at": "2026-05-02T18:59:07.187Z",
+  "updated_at": "2026-05-02T19:01:47.535Z",
   "verify": {
     "status": "pass"
   }
