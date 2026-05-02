@@ -248,7 +248,7 @@ async function sanitizeStandalonePackageJson(packageRoot, localPackages) {
   delete packageJson.devDependencies;
   delete packageJson.scripts;
   packageJson.dependencies = {
-    ...(packageJson.dependencies ?? {}),
+    ...packageJson.dependencies,
     "@agentplaneorg/core": `file:${localPackages.coreTarball}`,
     "@agentplaneorg/recipes": `file:${localPackages.recipesTarball}`,
   };
@@ -259,7 +259,7 @@ async function restoreStandalonePackageJson(packageRoot, version) {
   const packageJsonPath = path.join(packageRoot, "package.json");
   const packageJson = await readJson(packageJsonPath);
   packageJson.dependencies = {
-    ...(packageJson.dependencies ?? {}),
+    ...packageJson.dependencies,
     "@agentplaneorg/core": version,
     "@agentplaneorg/recipes": version,
   };

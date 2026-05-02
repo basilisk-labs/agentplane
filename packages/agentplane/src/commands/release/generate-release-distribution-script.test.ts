@@ -97,8 +97,8 @@ describe("generate-release-distribution script", () => {
     expect(installSh).not.toContain("need node");
     expect(installPs1).toContain("SHA256SUMS");
     expect(installPs1).toContain('"agentplane-v$Version-win32-x64.zip"');
-    expect(installPs1).toContain("-split '\\s+'");
-    expect(installPs1).toContain('"bin\\agentplane.cmd"');
+    expect(installPs1).toContain(String.raw`-split '\s+'`);
+    expect(installPs1).toContain(String.raw`"bin\agentplane.cmd"`);
     expect(installPs1).not.toContain("npm install");
     expect(installPs1).not.toContain('Require-Command "node"');
   }, 90_000);
