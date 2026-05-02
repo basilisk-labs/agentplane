@@ -1,10 +1,11 @@
 ---
 id: "202605022114-F0DGQ6"
 title: "Fix repo-local handoff dependency detection"
-status: "DOING"
+result_summary: "Merged via PR #775."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-02T21:25:48.137Z"
   updated_by: "CODER"
   note: "Verified: repo-local handoff dependency detection now accepts workspace-local @agentplaneorg/core resolution and rejects missing package-local installs when resolution escapes the framework checkout. Evidence: bun test packages/agentplane/src/cli/repo-local-handoff.test.ts passed 7/7; combined affected suite passed 14/14; prettier check passed; git diff --check passed; agentplane doctor passed."
-commit: null
+commit:
+  hash: "561e5dbdd75695953b4fce89aae822188061aa32"
+  message: "Merge pull request #775 from basilisk-labs/task/202605022114-F0DGQ6/repo-local-handoff-deps"
 comments:
   -
     author: "CODER"
     body: "Start: Apply the repo-local handoff dependency detection fix from a fresh worktree and verify the wrapper behavior before the next patch release."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #775 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,14 +48,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: repo-local handoff dependency detection now accepts workspace-local @agentplaneorg/core resolution and rejects missing package-local installs when resolution escapes the framework checkout. Evidence: bun test packages/agentplane/src/cli/repo-local-handoff.test.ts passed 7/7; combined affected suite passed 14/14; prettier check passed; git diff --check passed; agentplane doctor passed."
+  -
+    type: "status"
+    at: "2026-05-02T21:30:48.940Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #775 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-02T21:25:48.158Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-02T21:30:48.945Z"
+doc_updated_by: "INTEGRATOR"
 description: "Avoid false missing-dependency reports when the repo-local wrapper resolves @agentplaneorg/core through workspace conditional exports instead of package-local node_modules."
 sections:
   Summary: |-
     Fix repo-local handoff dependency detection
-
+    
     Avoid false missing-dependency reports when the repo-local wrapper resolves @agentplaneorg/core through workspace conditional exports instead of package-local node_modules.
   Scope: |-
     - In scope: Avoid false missing-dependency reports when the repo-local wrapper resolves @agentplaneorg/core through workspace conditional exports instead of package-local node_modules.
@@ -62,13 +75,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-02T21:25:48.137Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Verified: repo-local handoff dependency detection now accepts workspace-local @agentplaneorg/core resolution and rejects missing package-local installs when resolution escapes the framework checkout. Evidence: bun test packages/agentplane/src/cli/repo-local-handoff.test.ts passed 7/7; combined affected suite passed 14/14; prettier check passed; git diff --check passed; agentplane doctor passed.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-02T21:15:28.101Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
