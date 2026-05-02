@@ -45,25 +45,12 @@ Fix commit and PR message generators for single canonical format in local and br
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T22:33:20.453Z
+- Updated: 2026-05-02T22:45:45.577Z
 - Branch: task/202605022153-93GVV1/git-message-format
-- Head: 7ceaa64298a6
+- Head: a7fc39b4e4f6
 
 ```text
- docs/recipes-inventory.json                        |  2 +-
- .../cli/prepare-hosted-task-closure-script.test.ts |  4 +-
- .../cli/run-cli.core.branch-meta.readiness.test.ts | 40 +++++++++++++++
- .../cli/run-cli.core.task-hosted-close-pr.test.ts  |  4 +-
- .../cli/run-cli/commands/core/preflight-render.ts  |  1 +
- .../cli/run-cli/commands/core/preflight-report.ts  | 60 ++++++++++++++++++++++
- .../commands/pr/integrate/internal/merge.test.ts   | 22 ++------
- .../src/commands/pr/integrate/internal/merge.ts    | 28 ++++------
- .../commands/pr/internal/pr-artifact-snapshot.ts   | 10 +++-
- .../commands/pr/internal/review-template.test.ts   | 56 ++++++++++++++++++++
- .../src/commands/pr/internal/review-template.ts    | 43 +++++++++++++++-
- .../src/commands/task/hosted-close-pr.execute.ts   |  5 +-
- scripts/prepare-hosted-task-closure.mjs            |  7 ++-
- 13 files changed, 236 insertions(+), 46 deletions(-)
+No changes detected.
 ```
 
 </details>

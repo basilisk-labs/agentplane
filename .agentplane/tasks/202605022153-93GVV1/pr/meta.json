@@ -10,10 +10,12 @@
   "merge_commit": "2b521bee46533af0c4a2264885e71d6110672c03",
   "merge_strategy": "merge",
   "merged_at": "2026-05-02T22:40:45Z",
+  "pr_number": 781,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/781",
   "schema_version": 1,
   "status": "MERGED",
   "task_id": "202605022153-93GVV1",
-  "updated_at": "2026-05-02T22:40:45Z",
+  "updated_at": "2026-05-02T22:45:45.577Z",
   "verify": {
     "status": "skipped"
   }
