@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-02T22:26:51Z",
   "base": "main",
   "branch": "task/202605022208-9QYS5D/homepage-recipes-catalog",
   "created_at": "2026-05-02T22:09:09.046Z",
-  "head_sha": "af1af4aec40e3d11b74571c5b289a09aaa091123",
+  "head_sha": "eae291280d1253c3adc99649a4bcf1564ee5bc7f",
   "last_verified_at": "2026-05-02T22:09:43.998Z",
   "last_verified_sha": "8f9b00f814b931a2537b5efc9086d39e1445004c",
+  "merge_commit": "05701bfd53a2733cff965b5b3498199d5e0efc5f",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-02T22:26:51Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605022208-9QYS5D",
-  "updated_at": "2026-05-02T22:18:37.004Z",
+  "updated_at": "2026-05-02T22:26:51Z",
   "verify": {
     "status": "pass"
   }

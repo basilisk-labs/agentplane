@@ -1,10 +1,11 @@
 ---
 id: "202605022208-9QYS5D"
 title: "Add recipes catalog section to website homepage"
-status: "DOING"
+result_summary: "Merged via PR #779."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-02T22:09:43.998Z"
   updated_by: "CODER"
   note: "Verified frontend homepage changes in branch worktree: added recipes catalog loader, cards, and copy-to-clipboard install commands without touching backend code."
-commit: null
+commit:
+  hash: "05701bfd53a2733cff965b5b3498199d5e0efc5f"
+  message: "Merge pull request #779 from basilisk-labs/task/202605022208-9QYS5D/homepage-recipes-catalog"
 comments:
   -
     author: "CODER"
     body: "Start: implement dedicated recipes section on website homepage with remote index cards and copy-to-clipboard install commands; no logic changes outside frontend rendering."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #779 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified frontend homepage changes in branch worktree: added recipes catalog loader, cards, and copy-to-clipboard install commands without touching backend code."
+  -
+    type: "status"
+    at: "2026-05-02T22:27:29.192Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #779 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-02T22:09:51.736Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-02T22:27:29.198Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a dedicated Recipes section on the website homepage with cards loaded from remote index and copy-to-clipboard install commands."
 sections:
   Summary: |-
