@@ -25,12 +25,16 @@ Add cross-platform smoke coverage for unpacked bundled-runtime artifacts: agentp
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T17:08:39.733Z
+- Updated: 2026-05-02T17:16:10.041Z
 - Branch: task/202605021412-DV2ZT8/standalone-artifact-smoke-tests
-- Head: f5e2e39d8c60
+- Head: 8899518f2183
 
 ```text
-No changes detected.
+ package.json                                       |   1 +
+ .../generate-standalone-cli-assets-script.test.ts  |  72 ++++++
+ scripts/README.md                                  |   1 +
+ scripts/smoke-standalone-cli-artifact.mjs          | 274 +++++++++++++++++++++
+ 4 files changed, 348 insertions(+)
 ```
 
 </details>
