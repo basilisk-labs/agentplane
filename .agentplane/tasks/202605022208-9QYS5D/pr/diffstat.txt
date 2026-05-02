@@ -1,0 +1,4 @@
+ website/src/data/homepage-content.ts |   7 ++
+ website/src/pages/_home.module.css   |  55 +++++++++
+ website/src/pages/index.tsx          | 211 ++++++++++++++++++++++++++++++++++-
+ 3 files changed, 271 insertions(+), 2 deletions(-)

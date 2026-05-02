@@ -45,12 +45,15 @@ Add a dedicated Recipes section on the website homepage with cards loaded from r
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T22:09:09.046Z
+- Updated: 2026-05-02T22:11:21.198Z
 - Branch: task/202605022208-9QYS5D/homepage-recipes-catalog
-- Head: 8f9b00f814b9
+- Head: d133de45c128
 
 ```text
-No changes detected.
+ website/src/data/homepage-content.ts |   7 ++
+ website/src/pages/_home.module.css   |  55 +++++++++
+ website/src/pages/index.tsx          | 211 ++++++++++++++++++++++++++++++++++-
+ 3 files changed, 271 insertions(+), 2 deletions(-)
 ```
 
 </details>
