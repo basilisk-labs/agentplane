@@ -1,10 +1,11 @@
 ---
 id: "202605021842-Q3814M"
 title: "Document v0.6 eval and recursive improvement roadmap"
-status: "DOING"
+result_summary: "Merged via PR #762."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-02T18:58:46.984Z"
   updated_by: "DOCS"
   note: "Command: node .agentplane/policy/check-routing.mjs -> pass (policy routing OK). Command: git diff --check -> pass. Command: bun run docs:ia:check -> pass (docs IA/sidebar coverage aligned). Command: bun run docs:site:typecheck -> pass. Command: bun run format:check -- ROADMAP.md docs/index.mdx docs/developer/evaluation-and-recursive-improvement.mdx website/sidebars.ts -> pass. Command: agentplane doctor -> pass (doctor OK). Note: docs:site:build was attempted in nested .agentplane worktree and failed with duplicate / route SSG behavior; the same command passed on clean main, so CI remains the branch build authority."
-commit: null
+commit:
+  hash: "8418b6fb7bad2a07a3f8cee06cf780531ecbcf0d"
+  message: "Merge pull request #762 from basilisk-labs/task/202605021842-Q3814M/v06-evals-roadmap"
 comments:
   -
     author: "DOCS"
     body: "Start: update roadmap and developer documentation to make v0.6 an evals and recursive prompt/recipe improvement milestone without claiming runtime support exists yet."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #762 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: node .agentplane/policy/check-routing.mjs -> pass (policy routing OK). Command: git diff --check -> pass. Command: bun run docs:ia:check -> pass (docs IA/sidebar coverage aligned). Command: bun run docs:site:typecheck -> pass. Command: bun run format:check -- ROADMAP.md docs/index.mdx docs/developer/evaluation-and-recursive-improvement.mdx website/sidebars.ts -> pass. Command: agentplane doctor -> pass (doctor OK). Note: docs:site:build was attempted in nested .agentplane worktree and failed with duplicate / route SSG behavior; the same command passed on clean main, so CI remains the branch build authority."
+  -
+    type: "status"
+    at: "2026-05-02T19:01:40.806Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #762 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-02T18:58:47.014Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-02T19:01:40.811Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update developer documentation and ROADMAP so v0.6 is explicitly scoped to evals, recursive prompt/recipe improvement, and the planner-runner-evaluator loop."
 sections:
   Summary: |-
