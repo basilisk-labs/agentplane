@@ -266,6 +266,34 @@ async function restoreStandalonePackageJson(packageRoot, version) {
   await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`, "utf8");
 }
 
+async function materializeSyntheticAgentplanePackage(packageRoot, version) {
+  const binDir = path.join(packageRoot, "bin");
+  await mkdir(binDir, { recursive: true });
+  await writeFile(
+    path.join(packageRoot, "package.json"),
+    `${JSON.stringify(
+      {
+        name: "agentplane",
+        version,
+        type: "module",
+        bin: {
+          agentplane: "bin/agentplane.js",
+        },
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+  const binPath = path.join(binDir, "agentplane.js");
+  await writeFile(
+    binPath,
+    "#!/usr/bin/env node\nconsole.log(process.argv.includes('--version') ? process.env.AGENTPLANE_SYNTHETIC_VERSION || '0.0.0' : 'synthetic-agentplane')\n",
+    "utf8",
+  );
+  chmodSync(binPath, 0o755);
+}
+
 async function writeWrapper(target, rootDir) {
   const binDir = path.join(rootDir, "bin");
   await mkdir(binDir, { recursive: true });
@@ -385,10 +413,15 @@ async function buildTarget({
   await mkdir(packageRoot, { recursive: true });
   await mkdir(nodeRoot, { recursive: true });
 
-  await extractCliPackage(cliTarball, packageRoot);
-  await sanitizeStandalonePackageJson(packageRoot, { coreTarball, recipesTarball });
-  const dependencyStatus = await installProductionDependencies(repoRoot, packageRoot, skipInstall);
-  await restoreStandalonePackageJson(packageRoot, version);
+  let dependencyStatus = "skipped_check_mode";
+  if (syntheticNode && skipInstall) {
+    await materializeSyntheticAgentplanePackage(packageRoot, version);
+  } else {
+    await extractCliPackage(cliTarball, packageRoot);
+    await sanitizeStandalonePackageJson(packageRoot, { coreTarball, recipesTarball });
+    dependencyStatus = await installProductionDependencies(repoRoot, packageRoot, skipInstall);
+    await restoreStandalonePackageJson(packageRoot, version);
+  }
   await (syntheticNode
     ? materializeSyntheticNode(target, nodeRoot)
     : materializeOfficialNode({
