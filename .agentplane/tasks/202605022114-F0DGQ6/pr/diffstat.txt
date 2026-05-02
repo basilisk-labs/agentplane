@@ -1,0 +1,7 @@
+ .agentplane/tasks/202605022118-M0GKG8/README.md    | 118 +++++++++++++++++++++
+ packages/agentplane/bin/agentplane.js              |   7 +-
+ .../agentplane/src/cli/repo-local-handoff.test.ts  |   9 +-
+ .../generate-release-distribution-script.test.ts   |   4 +-
+ scripts/generate-release-distribution.mjs          |   9 +-
+ scripts/generate-standalone-cli-assets.mjs         |   4 +-
+ 6 files changed, 139 insertions(+), 12 deletions(-)
