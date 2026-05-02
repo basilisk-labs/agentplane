@@ -25,9 +25,9 @@ Fix commit and PR message generators for single canonical format in local and br
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T22:26:31.321Z
+- Updated: 2026-05-02T22:28:38.215Z
 - Branch: task/202605022153-93GVV1/git-message-format
-- Head: f6ab081f9613
+- Head: cd153a9ff19f
 
 ```text
  docs/recipes-inventory.json                        |  2 +-
@@ -38,12 +38,12 @@ Fix commit and PR message generators for single canonical format in local and br
  .../cli/run-cli/commands/core/preflight-report.ts  | 60 ++++++++++++++++++++++
  .../commands/pr/integrate/internal/merge.test.ts   | 22 ++------
  .../src/commands/pr/integrate/internal/merge.ts    | 28 ++++------
- .../commands/pr/internal/pr-artifact-snapshot.ts   |  8 ++-
+ .../commands/pr/internal/pr-artifact-snapshot.ts   | 10 +++-
  .../commands/pr/internal/review-template.test.ts   | 56 ++++++++++++++++++++
  .../src/commands/pr/internal/review-template.ts    | 43 +++++++++++++++-
  .../src/commands/task/hosted-close-pr.execute.ts   |  5 +-
  scripts/prepare-hosted-task-closure.mjs            |  7 ++-
- 13 files changed, 235 insertions(+), 45 deletions(-)
+ 13 files changed, 236 insertions(+), 46 deletions(-)
 ```
 
 </details>
