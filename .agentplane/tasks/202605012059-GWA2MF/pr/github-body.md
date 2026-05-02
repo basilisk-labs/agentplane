@@ -25,26 +25,28 @@ Title: Внедрить CLI performance benchmark framework
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-02T06:52:07.342Z
+- Updated: 2026-05-02T06:53:22.592Z
 - Branch: task/202605012059-GWA2MF/cli-perf
-- Head: f9e0b161ce19
+- Head: 00835e56b991
 
 ```text
- .github/PULL_REQUEST_TEMPLATE.md             |  30 ++-
- docs/developer/performance-baselines.mdx     |  62 +++++
- package.json                                 |   5 +
- scripts/README.md                            |  13 +-
- scripts/baselines/cli-walltime-baseline.json |  55 ++++
- scripts/check-cli-walltime-baseline.mjs      | 196 ++++++++++++++
- scripts/cli-benchmark-runner.mjs             | 379 ++++++++++++++++++++++++++
- scripts/cli-benchmark-suites.json            |  56 ++++
- scripts/cli-walltime-suites.json             |  56 ++++
- scripts/compare-cli-perf.mjs                 | 209 +++++++++++++++
- scripts/compare-cli-walltime.mjs             | 222 ++++++++++++++++
- scripts/measure-cli-cold-path.mjs            | 279 ++-----------------
- scripts/measure-cli-perf.mjs                 |  11 +
- scripts/measure-cli-walltime.mjs             | 382 +++++++++++++++++++++++++++
- 14 files changed, 1687 insertions(+), 268 deletions(-)
+ .github/PULL_REQUEST_TEMPLATE.md                   |  29 ++
+ docs/developer/performance-baselines.mdx           |  62 ++++
+ package.json                                       |   5 +
+ .../cli/prepare-hosted-task-closure-script.test.ts |   4 +-
+ .../cli/run-cli.core.task-hosted-close-pr.test.ts  |   4 +-
+ scripts/README.md                                  |  13 +-
+ scripts/baselines/cli-walltime-baseline.json       |  55 +++
+ scripts/check-cli-walltime-baseline.mjs            | 201 +++++++++++
+ scripts/cli-benchmark-runner.mjs                   | 383 ++++++++++++++++++++
+ scripts/cli-benchmark-suites.json                  |  56 +++
+ scripts/cli-walltime-suites.json                   |  56 +++
+ scripts/compare-cli-perf.mjs                       | 209 +++++++++++
+ scripts/compare-cli-walltime.mjs                   | 228 ++++++++++++
+ scripts/measure-cli-cold-path.mjs                  | 281 +--------------
+ scripts/measure-cli-perf.mjs                       |  11 +
+ scripts/measure-cli-walltime.mjs                   | 387 +++++++++++++++++++++
+ 16 files changed, 1711 insertions(+), 273 deletions(-)
 ```
 
 </details>
