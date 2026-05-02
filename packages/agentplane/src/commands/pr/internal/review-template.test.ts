@@ -41,7 +41,7 @@ describe("buildGithubPrTitle", () => {
   it("flags invalid PR title format", () => {
     const errors: string[] = [];
     validateGithubPrTitleContents("task: bad title format", "202603101200-C0M1T0", errors);
-    expect(errors).toContain("Missing task id in GitHub PR title");
+    expect(errors.join("\n")).toContain("Missing task id in GitHub PR title");
   });
 
   it("flags PR title with mismatched task id", () => {
@@ -51,6 +51,6 @@ describe("buildGithubPrTitle", () => {
       "202603101200-C0M1T0",
       errors,
     );
-    expect(errors).toContain("GitHub PR title task id does not match artifact task id");
+    expect(errors.join("\n")).toContain("GitHub PR title task id does not match artifact task id");
   });
 });
