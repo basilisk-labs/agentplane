@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-02T17:06:12Z",
   "base": "main",
   "branch": "task/202605021412-3KA8WV/standalone-distribution-manifest",
   "created_at": "2026-05-02T16:57:22.593Z",
-  "head_sha": "598043f10bfb83ec8491525a74ffb164dadcb452",
+  "head_sha": "e4731c1f9357757e1e18bba82aa9ee5bfff6fa99",
   "last_verified_at": "2026-05-02T17:03:21.005Z",
   "last_verified_sha": "ce3aea49fd8737f60fc80245630636b461f42fa3",
+  "merge_commit": "ff878cc730cae958d9dd0fab7726910efb4c851d",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-02T17:06:12Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605021412-3KA8WV",
-  "updated_at": "2026-05-02T17:03:38.292Z",
+  "updated_at": "2026-05-02T17:06:12Z",
   "verify": {
     "status": "pass"
   }

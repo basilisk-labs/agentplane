@@ -1,10 +1,11 @@
 ---
 id: "202605021412-3KA8WV"
 title: "Extend release distribution manifest with standalone assets"
-status: "DOING"
+result_summary: "Merged via PR #748."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-05-02T17:03:21.005Z"
   updated_by: "CODER"
   note: "Passed: bun run release:distribution:check; bun test packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts packages/agentplane/src/commands/release/write-publish-result-manifest-script.test.ts; bunx eslint scripts/generate-release-distribution.mjs packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts; bun run format:check; node .agentplane/policy/check-routing.mjs; agentplane doctor."
-commit: null
+commit:
+  hash: "ff878cc730cae958d9dd0fab7726910efb4c851d"
+  message: "release: Add standalone assets to distribution manifest (3KA8WV)"
 comments:
   -
     author: "CODER"
     body: "Start: Wire standalone CLI assets into release-distribution generation, checksum coverage, and focused distribution tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #748 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Passed: bun run release:distribution:check; bun test packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts packages/agentplane/src/commands/release/write-publish-result-manifest-script.test.ts; bunx eslint scripts/generate-release-distribution.mjs packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts; bun run format:check; node .agentplane/policy/check-routing.mjs; agentplane doctor."
+  -
+    type: "status"
+    at: "2026-05-02T17:06:53.953Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #748 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-02T17:03:21.024Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-02T17:06:53.958Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend release-distribution.json generation and validation to include platformAssets for bundled-runtime CLI archives, per-platform sha256 values, install strategy metadata, and recovery evidence."
 sections:
   Summary: |-
