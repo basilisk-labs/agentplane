@@ -1,0 +1,1 @@
+task: Add standalone artifact smoke tests [202605021412-DV2ZT8]

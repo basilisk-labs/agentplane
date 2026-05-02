@@ -9,6 +9,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 const execFileAsync = promisify(execFile);
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/generate-standalone-cli-assets.mjs");
+const SMOKE_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/smoke-standalone-cli-artifact.mjs");
 const tempRoots: string[] = [];
 
 async function makeTempRoot() {
@@ -40,6 +41,18 @@ async function readZipEntry(pathToArchive: string, entry: string) {
     cwd: process.cwd(),
   });
   return stdout;
+}
+
+function hostStandaloneTarget() {
+  const target = `${process.platform}-${process.arch}`;
+  const supported = new Set([
+    "darwin-arm64",
+    "darwin-x64",
+    "linux-x64",
+    "linux-arm64",
+    "win32-x64",
+  ]);
+  return supported.has(target) ? target : "linux-x64";
 }
 
 describe("generate-standalone-cli-assets script", () => {
@@ -157,5 +170,64 @@ describe("generate-standalone-cli-assets script", () => {
 
     expect(stdout).toContain("standalone CLI assets check");
     expect(existsSync(outDir)).toBe(false);
+  }, 90_000);
+
+  it("smoke-tests a standalone archive fixture without a PATH node dependency", async () => {
+    const outDir = path.join(await makeTempRoot(), "out");
+    const target = hostStandaloneTarget();
+
+    await execFileAsync(
+      "node",
+      [
+        SCRIPT_PATH,
+        "--out",
+        outDir,
+        "--target",
+        target,
+        "--version",
+        "1.2.3",
+        "--tag",
+        "v1.2.3",
+        "--sha",
+        "abc123",
+        "--synthetic-node",
+        "--skip-install",
+      ],
+      { cwd: process.cwd() },
+    );
+
+    const extension = target.startsWith("win32-") ? "zip" : "tar.gz";
+    const archivePath = path.join(outDir, `agentplane-v1.2.3-${target}.${extension}`);
+    const smokeArgs = [
+      SMOKE_SCRIPT_PATH,
+      "--artifact",
+      archivePath,
+      "--expected-version",
+      "1.2.3",
+      "--allow-synthetic-runtime",
+      "--json",
+    ];
+    if (target.startsWith("win32-")) smokeArgs.push("--skip-cli-commands");
+
+    const { stdout } = await execFileAsync("node", smokeArgs, { cwd: process.cwd() });
+    const result = JSON.parse(stdout) as {
+      artifact: string;
+      version: string;
+      commandResult: { executed: boolean; syntheticRuntime?: boolean; reason?: string };
+    };
+
+    expect(result.artifact).toBe(`agentplane-v1.2.3-${target}.${extension}`);
+    expect(result.version).toBe("1.2.3");
+    if (target.startsWith("win32-")) {
+      expect(result.commandResult).toMatchObject({
+        executed: false,
+        reason: "skip_cli_commands",
+      });
+    } else {
+      expect(result.commandResult).toMatchObject({
+        executed: true,
+        syntheticRuntime: true,
+      });
+    }
   }, 90_000);
 });

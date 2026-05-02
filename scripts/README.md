@@ -45,6 +45,7 @@ Grouping policy: `ci`, `release`, `docs`, `test`, `coverage`, `arch`, `bench`, `
 | `release:smoke:published`       | `node scripts/check-published-packages.mjs`                                                                                                                       | Run release workflow: smoke published.       |
 | `release:standalone:check`      | `node scripts/generate-standalone-cli-assets.mjs --check`                                                                                                         | Run release workflow: standalone check.      |
 | `release:standalone:generate`   | `node scripts/generate-standalone-cli-assets.mjs`                                                                                                                 | Run release workflow: standalone generate.   |
+| `release:standalone:smoke`      | `node scripts/smoke-standalone-cli-artifact.mjs`                                                                                                                  | Run release workflow: standalone smoke.      |
 
 ## Docs
 
