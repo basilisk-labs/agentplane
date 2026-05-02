@@ -43,6 +43,8 @@ Grouping policy: `ci`, `release`, `docs`, `test`, `coverage`, `arch`, `bench`, `
 | `release:scoop:check`           | `node scripts/render-scoop-manifest.mjs --check`                                                                                                                  | Run release workflow: scoop check.           |
 | `release:setup-action:check`    | `node scripts/render-setup-agentplane-action.mjs --check`                                                                                                         | Run release workflow: setup-action check.    |
 | `release:smoke:published`       | `node scripts/check-published-packages.mjs`                                                                                                                       | Run release workflow: smoke published.       |
+| `release:standalone:check`      | `node scripts/generate-standalone-cli-assets.mjs --check`                                                                                                         | Run release workflow: standalone check.      |
+| `release:standalone:generate`   | `node scripts/generate-standalone-cli-assets.mjs`                                                                                                                 | Run release workflow: standalone generate.   |
 
 ## Docs
 

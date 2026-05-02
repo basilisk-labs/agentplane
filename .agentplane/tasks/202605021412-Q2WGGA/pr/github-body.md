@@ -1,0 +1,74 @@
+Task: `202605021412-Q2WGGA`
+Title: Build bundled-runtime CLI artifact generator
+
+## Summary
+
+Build bundled-runtime CLI artifact generator
+
+Implement a deterministic script that assembles AgentPlane CLI archives with an embedded Node runtime, installed production dependencies, package assets, wrapper entrypoints, version metadata, and sha256 outputs.
+
+## Scope
+
+- In scope: Implement a deterministic script that assembles AgentPlane CLI archives with an embedded Node runtime, installed production dependencies, package assets, wrapper entrypoints, version metadata, and sha256 outputs.
+- Out of scope: unrelated refactors not required for "Build bundled-runtime CLI artifact generator".
+
+## Verification
+
+- State: ok
+- Note: Command: agentplane task verify-show 202605021412-Q2WGGA
+Result: pass
+Evidence: Verify Steps loaded before final verification.
+Scope: task verification contract.
+
+Command: node scripts/generate-standalone-cli-assets.mjs --check
+Result: pass
+Evidence: standalone CLI assets check for v0.4.1 (5 assets).
+Scope: all contract targets with synthetic embedded runtime and offline layout validation.
+
+Command: bun test packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts
+Result: pass
+Evidence: 3 pass, 0 fail, 16 expect() calls; POSIX, Windows, and all-target check-mode coverage.
+Scope: archive layout, metadata, checksum manifest, wrappers, check-mode cleanup.
+
+Command: bun run docs:scripts:check
+Result: pass
+Evidence: scripts/README.md is up to date.
+Scope: package script documentation.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK.
+Scope: policy routing after code/script changes.
+
+Command: agentplane doctor
+Result: pass
+Evidence: doctor OK; errors=0 warnings=0.
+Scope: repository health for task worktree.
+
+Command: bunx eslint scripts/generate-standalone-cli-assets.mjs packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts
+Result: pass
+Evidence: no lint output after fixes.
+Scope: focused lint for new script/test.
+
+Command: bun run format:check
+Result: pass
+Evidence: All matched files use Prettier code style.
+Scope: repository formatting.
+- Full verification checklist lives in local review.md.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-02T16:14:57.168Z
+- Branch: task/202605021412-Q2WGGA/standalone-artifact-generator
+- Head: 949844c9539e
+
+```text
+No changes detected.
+```
+
+</details>

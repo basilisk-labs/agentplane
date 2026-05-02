@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605021412-Q2WGGA/standalone-artifact-generator",
+  "created_at": "2026-05-02T16:14:57.168Z",
+  "head_sha": "949844c9539efbb4bb15e6a8a87b3cb4bc93d0ee",
+  "last_verified_at": "2026-05-02T16:35:32.601Z",
+  "last_verified_sha": "949844c9539efbb4bb15e6a8a87b3cb4bc93d0ee",
+  "schema_version": 1,
+  "task_id": "202605021412-Q2WGGA",
+  "updated_at": "2026-05-02T16:14:57.168Z",
+  "verify": {
+    "status": "pass"
+  }
+}
