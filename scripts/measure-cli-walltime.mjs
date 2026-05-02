@@ -283,8 +283,12 @@ async function measureSuite(options) {
       exit_code: Number.isInteger(lastResult?.exitCode) ? lastResult.exitCode : 1,
       stdout_bytes: Buffer.byteLength(lastResult?.stdout ?? "", "utf8"),
       stderr_bytes: Buffer.byteLength(lastResult?.stderr ?? "", "utf8"),
-      stdout_preview: String(lastResult?.stdout ?? "").trim().slice(0, 240),
-      stderr_preview: String(lastResult?.stderr ?? "").trim().slice(0, 240),
+      stdout_preview: String(lastResult?.stdout ?? "")
+        .trim()
+        .slice(0, 240),
+      stderr_preview: String(lastResult?.stderr ?? "")
+        .trim()
+        .slice(0, 240),
       command_line: `${path.basename(options.cliPath)} ${argv
         .map((value) => JSON.stringify(value))
         .join(" ")}`,
@@ -349,7 +353,8 @@ export async function runWalltimeRunner(
   if (options.help) {
     const suiteConfig = readSuiteConfig(options.suiteConfig);
     const suites = new Map((suiteConfig.suites ?? []).map((suite) => [suite.id, suite]));
-    const previewSuite = suites.get(options.suite) ?? suites.get(suiteConfig.default_suite ?? options.suite);
+    const previewSuite =
+      suites.get(options.suite) ?? suites.get(suiteConfig.default_suite ?? options.suite);
     const commandPreview = formatSuiteCommands(previewSuite);
     outputStream.write(
       `${printWalltimeHelpText({

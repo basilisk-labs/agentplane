@@ -44,6 +44,7 @@ List reviewer or executor notes that matter for merge.
 ```text
 Diffstat / raw evidence
 ```
+
 </details>
 
 ### Performance before/after wall-time (mandatory for CLI-affecting changes)

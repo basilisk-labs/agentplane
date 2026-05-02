@@ -200,17 +200,17 @@ function formatSuiteCommands(suite) {
     id: String(command.id ?? ""),
     commandLine: `agentplane ${
       Array.isArray(command.argv)
-      ? command.argv
-          .map((argument) =>
-            typeof argument === "string" &&
-            argument.includes(" ") &&
-            !argument.startsWith('"') &&
-            !argument.endsWith('"')
-              ? `"${argument}"`
-              : String(argument)
-          )
-          .join(" ")
-      : ""
+        ? command.argv
+            .map((argument) =>
+              typeof argument === "string" &&
+              argument.includes(" ") &&
+              !argument.startsWith('"') &&
+              !argument.endsWith('"')
+                ? `"${argument}"`
+                : String(argument),
+            )
+            .join(" ")
+        : ""
     }`,
   }));
 }
@@ -288,8 +288,12 @@ export async function measureSuite(options) {
       exit_code: Number.isInteger(lastResult?.exitCode) ? lastResult.exitCode : 1,
       stdout_bytes: Buffer.byteLength(lastResult?.stdout ?? "", "utf8"),
       stderr_bytes: Buffer.byteLength(lastResult?.stderr ?? "", "utf8"),
-      stdout_preview: String(lastResult?.stdout ?? "").trim().slice(0, 240),
-      stderr_preview: String(lastResult?.stderr ?? "").trim().slice(0, 240),
+      stdout_preview: String(lastResult?.stdout ?? "")
+        .trim()
+        .slice(0, 240),
+      stderr_preview: String(lastResult?.stderr ?? "")
+        .trim()
+        .slice(0, 240),
       command_line: `${path.basename(options.cliPath)} ${argv.map((value) => JSON.stringify(value)).join(" ")}`,
       failed: (lastResult?.exitCode ?? 1) !== 0,
     });

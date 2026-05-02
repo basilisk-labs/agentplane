@@ -87,9 +87,15 @@ function metric(command, metricName) {
 }
 
 function compareWalltimePayloads(before, after, args) {
-  const beforeCommands = new Map((before.commands ?? []).map((command) => [String(command.id), command]));
-  const afterCommands = new Map((after.commands ?? []).map((command) => [String(command.id), command]));
-  const ids = args.commandId ? [args.commandId] : [...new Set([...beforeCommands.keys(), ...afterCommands.keys()])];
+  const beforeCommands = new Map(
+    (before.commands ?? []).map((command) => [String(command.id), command]),
+  );
+  const afterCommands = new Map(
+    (after.commands ?? []).map((command) => [String(command.id), command]),
+  );
+  const ids = args.commandId
+    ? [args.commandId]
+    : [...new Set([...beforeCommands.keys(), ...afterCommands.keys()])];
   const rows = [];
   let failures = 0;
 

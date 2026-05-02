@@ -9,7 +9,12 @@ const SCRIPT_NAME = "check-cli-walltime-baseline.mjs";
 const MODE = "cli_walltime_v1";
 const scriptPath = fileURLToPath(import.meta.url);
 const repoRoot = path.resolve(path.dirname(scriptPath), "..");
-const DEFAULT_BASELINE_PATH = path.join(repoRoot, "scripts", "baselines", "cli-walltime-baseline.json");
+const DEFAULT_BASELINE_PATH = path.join(
+  repoRoot,
+  "scripts",
+  "baselines",
+  "cli-walltime-baseline.json",
+);
 const MEASURE_SCRIPT_PATH = path.join(repoRoot, "scripts", "measure-cli-walltime.mjs");
 
 function parsePositiveInt(raw, flag) {
