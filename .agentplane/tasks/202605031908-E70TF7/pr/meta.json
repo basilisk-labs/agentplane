@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T20:57:14Z",
   "base": "main",
   "branch": "task/202605031908-E70TF7/acr-launch-backlog",
   "created_at": "2026-05-03T19:12:02.241Z",
-  "head_sha": "1ba9ae27780079a63dab93ddd4b1034eb016feb8",
+  "head_sha": "8bcb0edf3f952cbff766d6eba9e5a348c02f83db",
   "last_verified_at": "2026-05-03T19:31:52.988Z",
   "last_verified_sha": "06327cacb22f7507aea45711c49b8a186b6fa191",
+  "merge_commit": "02579b80b963154c24d2a3fbd1e36b697bde978e",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T20:57:14Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605031908-E70TF7",
-  "updated_at": "2026-05-03T20:52:05.343Z",
+  "updated_at": "2026-05-03T20:57:14Z",
   "verify": {
     "status": "pass"
   }
