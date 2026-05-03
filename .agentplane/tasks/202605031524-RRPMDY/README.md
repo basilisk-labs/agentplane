@@ -1,10 +1,11 @@
 ---
 id: "202605031524-RRPMDY"
 title: "Harden branch_pr worktree ownership for batch tasks"
-status: "DOING"
+result_summary: "Merged via PR #834."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-05-03T16:05:41.590Z"
   updated_by: "CODER"
   note: "work start now rejects duplicate active branch ownership for a task."
-commit: null
+commit:
+  hash: "8823fc10d2fb6c9e4457da0266ac02b0214db0c1"
+  message: "Merge pull request #834 from basilisk-labs/task/202605031524-RRPMDY/batch-worktree-ownership"
 comments:
   -
     author: "CODER"
     body: "Start: harden branch_pr worktree ownership for batch tasks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #834 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "work start now rejects duplicate active branch ownership for a task."
+  -
+    type: "status"
+    at: "2026-05-03T16:08:46.662Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #834 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T16:05:41.596Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T16:08:46.667Z"
+doc_updated_by: "INTEGRATOR"
 description: "Ensure batch worktrees have explicit ownership of all included task README artifacts and prevent multiple active primary branches from owning the same included task."
 sections:
   Summary: |-

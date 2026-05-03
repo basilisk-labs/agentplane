@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T16:08:06Z",
   "base": "main",
   "branch": "task/202605031524-RRPMDY/batch-worktree-ownership",
   "created_at": "2026-05-03T16:05:41.673Z",
-  "head_sha": "6a26e9bc38a923f5fa03a2e69dc37c1b06271a50",
+  "head_sha": "62227eb6464fe1300def29739ec38c2976ad78b3",
   "last_verified_at": "2026-05-03T16:05:41.590Z",
   "last_verified_sha": "e2cfd48bac43cdb738a57c1481139533f6be2945",
+  "merge_commit": "8823fc10d2fb6c9e4457da0266ac02b0214db0c1",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T16:08:06Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605031524-RRPMDY",
-  "updated_at": "2026-05-03T16:05:51.349Z",
+  "updated_at": "2026-05-03T16:08:06Z",
   "verify": {
     "status": "pass"
   }
