@@ -1,10 +1,11 @@
 ---
 id: "202605031118-RF08MQ"
 title: "Define Bun binary runtime contract"
-status: "DOING"
+result_summary: "Merged via PR #801."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T11:21:34.995Z"
   updated_by: "CODER"
   note: "Focused verification passed: bun test packages/agentplane/src/shared/package-paths.test.ts (2 tests); bun run build; bun build packages/agentplane/dist/cli.js --compile with __AGENTPLANE_PACKAGE_VERSION__; compiled binary returned 0.4.2 for --version and rendered quickstart without package-root failure."
-commit: null
+commit:
+  hash: "f57698c389f666d06a01dcfba50a0116dcd8805d"
+  message: "Merge pull request #801 from basilisk-labs/task/202605031118-RF08MQ/bun-binary-runtime-contract"
 comments:
   -
     author: "CODER"
     body: "Start: Implement a Bun binary runtime contract so the compiled CLI can start without resolving the npm package root from disk."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #801 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused verification passed: bun test packages/agentplane/src/shared/package-paths.test.ts (2 tests); bun run build; bun build packages/agentplane/dist/cli.js --compile with __AGENTPLANE_PACKAGE_VERSION__; compiled binary returned 0.4.2 for --version and rendered quickstart without package-root failure."
+  -
+    type: "status"
+    at: "2026-05-03T11:39:14.103Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #801 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T11:21:34.999Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T11:39:14.110Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make the CLI able to start as a Bun compiled executable by introducing an explicit binary runtime contract for package metadata, package-root-independent execution, and asset/runtime path behavior."
 sections:
   Summary: |-
