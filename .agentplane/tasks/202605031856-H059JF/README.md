@@ -1,10 +1,11 @@
 ---
 id: "202605031856-H059JF"
 title: "ACR standard schema and digest alignment"
-status: "DOING"
+result_summary: "Merged via PR #849."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-03T19:21:16.058Z"
   updated_by: "CODER"
   note: "Verified schema/digest alignment: schemas synced and checked; core typecheck passed; focused core ACR schema tests passed; generated ACR local validation passed."
-commit: null
+commit:
+  hash: "ddcaf000741259312262042049fba87115537778"
+  message: "✨ H059JF task: harden ACR validation contract"
 comments:
   -
     author: "CODER"
     body: "Start: align the ACR schema and digest contract with the hardened standard repo in this batch worktree before semantic validation and docs tasks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #849 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified schema/digest alignment: schemas synced and checked; core typecheck passed; focused core ACR schema tests passed; generated ACR local validation passed."
+  -
+    type: "status"
+    at: "2026-05-03T19:26:01.796Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #849 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T19:21:16.076Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T19:26:01.801Z"
+doc_updated_by: "INTEGRATOR"
 description: "Align AgentPlane core ACR schema and digest implementation with the hardened ACR v0.1 standard: nullable draft digest, Git OID constraints, shared risk categories, strict repo paths, and RFC8785/JCS digest computation."
 sections:
   Summary: |-
