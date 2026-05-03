@@ -1,10 +1,11 @@
 ---
 id: "202605031535-633VCY"
 title: "Document Agent Change Record standard"
-status: "DOING"
+result_summary: "Merged via PR #829."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-03T15:59:39.909Z"
   updated_by: "DOCS"
   note: "Follow-up docs IA verification passed after adding ACR docs to docs/index.mdx: node scripts/check-docs-ia.mjs, Prettier check, and policy routing all pass."
-commit: null
+commit:
+  hash: "dbeb1eee9a4c81039ec96b67cb1a262f68839121"
+  message: "Merge pull request #829 from basilisk-labs/task/202605031535-633VCY/acr-standard-docs"
 comments:
   -
     author: "DOCS"
     body: "Start: document ACR v0.1 as a repo-local evidence contract and link it from AgentPlane docs without implementing CLI behavior yet."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #829 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Follow-up docs IA verification passed after adding ACR docs to docs/index.mdx: node scripts/check-docs-ia.mjs, Prettier check, and policy routing all pass."
+  -
+    type: "status"
+    at: "2026-05-03T16:04:12.796Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #829 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T15:59:39.943Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-03T16:04:12.801Z"
+doc_updated_by: "INTEGRATOR"
 description: "Document Agent Change Record v0.1 in AgentPlane docs before implementation and repository publication."
 sections:
   Summary: |-
