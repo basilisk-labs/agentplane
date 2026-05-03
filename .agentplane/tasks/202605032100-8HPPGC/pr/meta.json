@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605032100-8HPPGC/finalize-043-release",
+  "created_at": "2026-05-03T21:01:02.427Z",
+  "head_sha": "6e3966215e4b0562925c03ff3fac6ba9175a7229",
+  "last_verified_at": "2026-05-03T21:06:44.631Z",
+  "last_verified_sha": "6e3966215e4b0562925c03ff3fac6ba9175a7229",
+  "schema_version": 1,
+  "task_id": "202605032100-8HPPGC",
+  "updated_at": "2026-05-03T21:01:02.427Z",
+  "verify": {
+    "status": "pass"
+  }
+}

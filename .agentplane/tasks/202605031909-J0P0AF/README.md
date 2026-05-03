@@ -1,10 +1,10 @@
 ---
 id: "202605031909-J0P0AF"
 title: "T17: Mirror trust badges in CLI package README"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -24,12 +24,24 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
-comments: []
-events: []
+commit:
+  hash: "02579b80b963154c24d2a3fbd1e36b697bde978e"
+  message: "🚧 E70TF7 task: Launch public-surface ACR task graph [202605031908-E70TF7]"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: implemented through merged PR #853; release finalization closes the leaf backlog against merge commit 02579b80 after hosted checks passed."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T21:03:54.921Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: implemented through merged PR #853; release finalization closes the leaf backlog against merge commit 02579b80 after hosted checks passed."
 doc_version: 3
-doc_updated_at: "2026-05-03T19:09:04.265Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T21:03:54.921Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add the trust badge row to packages/agentplane/README.md."
 sections:
   Summary: |-

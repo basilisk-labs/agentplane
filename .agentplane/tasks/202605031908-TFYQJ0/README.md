@@ -1,10 +1,10 @@
 ---
 id: "202605031908-TFYQJ0"
 title: "T03: Add ACR command unit tests"
-status: "TODO"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -24,12 +24,24 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
-comments: []
-events: []
+commit:
+  hash: "02579b80b963154c24d2a3fbd1e36b697bde978e"
+  message: "🚧 E70TF7 task: Launch public-surface ACR task graph [202605031908-E70TF7]"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: implemented through merged PR #853; release finalization closes the leaf backlog against merge commit 02579b80 after hosted checks passed."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T21:03:54.909Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: implemented through merged PR #853; release finalization closes the leaf backlog against merge commit 02579b80 after hosted checks passed."
 doc_version: 3
-doc_updated_at: "2026-05-03T19:08:16.485Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T21:03:54.909Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add direct Vitest coverage for acr generate, validate, check failure modes, and schema output."
 sections:
   Summary: |-
