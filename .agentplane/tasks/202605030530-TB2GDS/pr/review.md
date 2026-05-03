@@ -45,9 +45,9 @@ Recover the useful pending branch deltas, confirm recipe listing behavior, and p
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T05:42:18.067Z
+- Updated: 2026-05-03T06:06:18.701Z
 - Branch: task/202605030530-TB2GDS/next-patch-release-prep
-- Head: e53eb0678e0b
+- Head: ef1d8ea96349
 
 ```text
  .github/workflows/publish-distribution-module.yml  |   9 ++
