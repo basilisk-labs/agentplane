@@ -3,8 +3,8 @@
 This package hosts **versioned specifications** (JSON Schemas + examples) for `agentplane`.
 
 It is the repository contract for files AgentPlane writes into a project: configuration, task
-README frontmatter, task exports, PR metadata, and handoff metadata. If you are an end user, install
-the CLI instead:
+README frontmatter, task exports, PR metadata, handoff metadata, and Agent Change Records (ACR).
+If you are an end user, install the CLI instead:
 
 ```bash
 npm install -g agentplane
@@ -43,10 +43,18 @@ packages/spec/
     tasks-export.schema.json
     pr-meta.schema.json
     task-handoff.schema.json
+    acr-v0.1.schema.json
   examples/
     config.json
     task-readme-frontmatter.json
     tasks.json
     pr-meta.json
     task-handoff.json
+    acr.json
 ```
+
+## Links
+
+- ACR schema: https://agentplane.org/schemas/acr-v0.1.schema.json
+- CLI package: https://www.npmjs.com/package/agentplane
+- Repository: https://github.com/basilisk-labs/agentplane

@@ -56,8 +56,7 @@ evidence in Git.
 ```text
 AGENTS.md or CLAUDE.md   Repository policy gateway
 .agentplane/            Repo-local workflow workspace
-.agentplane/config.json Current workflow configuration
-.agentplane/WORKFLOW.md Materialized workflow contract
+.agentplane/WORKFLOW.md Current workflow/config contract
 .agentplane/tasks/      Per-task records, PR artifacts, and evidence
 ```
 
@@ -84,23 +83,23 @@ Schema: [`packages/spec/schemas/acr-v0.1.schema.json`](packages/spec/schemas/acr
 Create a task:
 
 ```bash
-agentplane task new --title "Fix parser edge case" --description "Reject empty labels."
+agentplane task new --title "Fix parser edge case" --description "Reject empty labels." --owner CODER --tag code
 ```
 
 Record the plan and approval:
 
 ```bash
-agentplane task plan set <task-id> --text "Add a fixture, tighten validation, and run focused tests."
-agentplane task plan approve <task-id>
+agentplane task plan set <task-id> --text "Add a fixture, tighten validation, and run focused tests." --updated-by CODER
+agentplane task plan approve <task-id> --by ORCHESTRATOR
 ```
 
 Then start, verify, and finish:
 
 ```bash
-agentplane task start-ready <task-id> --body "Start: implementing parser validation."
+agentplane task start-ready <task-id> --author CODER --body "Start: implementing parser validation with focused tests."
 agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok --note "Focused parser tests passed."
-agentplane finish <task-id> --result "Parser rejects empty labels." --commit <git-rev>
+agentplane verify <task-id> --ok --by CODER --note "Focused parser tests passed."
+agentplane finish <task-id> --author CODER --result "Parser rejects empty labels." --commit <git-rev>
 ```
 
 Roles like `CODER` and `ORCHESTRATOR` are configurable agent IDs. See
