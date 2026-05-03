@@ -27,7 +27,7 @@
  .../agentplane/src/commands/task/finish-execute.ts |  35 +
  .../agentplane/src/commands/task/finish-types.ts   |   1 +
  packages/core/schemas/acr-v0.1.schema.json         | 684 ++++++++++++++
- packages/core/schemas/config.schema.json           | 298 +++++-
+ packages/core/schemas/config.schema.json           |  53 ++
  packages/core/src/config/config.ts                 |   1 +
  packages/core/src/config/schema.impl.ts            |  37 +
  packages/core/src/index.ts                         |   6 +
@@ -37,6 +37,6 @@
  .../core/src/tasks/task-artifact-schema.test.ts    | 168 ++++
  packages/core/src/tasks/task-artifact-schema.ts    |  22 +
  packages/spec/schemas/acr-v0.1.schema.json         | 684 ++++++++++++++
- packages/spec/schemas/config.schema.json           | 298 +++++-
+ packages/spec/schemas/config.schema.json           |  53 ++
  scripts/sync-schemas.mjs                           |   9 +
- 41 files changed, 5243 insertions(+), 119 deletions(-)
+ 41 files changed, 4827 insertions(+), 45 deletions(-)

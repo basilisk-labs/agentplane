@@ -4,7 +4,7 @@ title: "ACR v0.1 core schema contract"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-03T17:31:46.271Z"
+  updated_at: "2026-05-03T17:34:21.039Z"
   updated_by: "CODER"
-  note: "Command: post-merge verification after syncing origin/main. Result: pass. Evidence: bun run schemas:check, bun run docs:cli:check, bun run --filter=agentplane typecheck, bun run --filter=@agentplaneorg/core typecheck, and framework:dev:bootstrap all passed after resolving config schema merge conflicts. Scope: ACR batch rebased/merged onto current main."
+  note: "Command: final verification after formatting merged schema artifacts. Result: pass. Evidence: bun run schemas:check passed after Prettier formatting of packages/core and packages/spec config schemas; working tree clean before verification. Scope: current task branch head before push."
 commit: null
 comments:
   -
@@ -74,8 +74,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: post-merge verification after syncing origin/main. Result: pass. Evidence: bun run schemas:check, bun run docs:cli:check, bun run --filter=agentplane typecheck, bun run --filter=@agentplaneorg/core typecheck, and framework:dev:bootstrap all passed after resolving config schema merge conflicts. Scope: ACR batch rebased/merged onto current main."
+  -
+    type: "verify"
+    at: "2026-05-03T17:34:21.039Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: final verification after formatting merged schema artifacts. Result: pass. Evidence: bun run schemas:check passed after Prettier formatting of packages/core and packages/spec config schemas; working tree clean before verification. Scope: current task branch head before push."
 doc_version: 3
-doc_updated_at: "2026-05-03T17:31:46.289Z"
+doc_updated_at: "2026-05-03T17:34:21.060Z"
 doc_updated_by: "CODER"
 description: "Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, synchronized schema artifacts, and schema-focused tests. ACR remains a derived evidence projection from AgentPlane task and Git state."
 sections:
@@ -141,6 +147,14 @@ sections:
     Note: Command: post-merge verification after syncing origin/main. Result: pass. Evidence: bun run schemas:check, bun run docs:cli:check, bun run --filter=agentplane typecheck, bun run --filter=@agentplaneorg/core typecheck, and framework:dev:bootstrap all passed after resolving config schema merge conflicts. Scope: ACR batch rebased/merged onto current main.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T17:25:33.770Z, excerpt_hash=sha256:a5ac24bc830ebeee219d3ee957b3fec45f3b6164604fed986291e63b486783a2
+    
+    ### 2026-05-03T17:34:21.039Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: final verification after formatting merged schema artifacts. Result: pass. Evidence: bun run schemas:check passed after Prettier formatting of packages/core and packages/spec config schemas; working tree clean before verification. Scope: current task branch head before push.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T17:31:46.289Z, excerpt_hash=sha256:a5ac24bc830ebeee219d3ee957b3fec45f3b6164604fed986291e63b486783a2
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -221,6 +235,14 @@ By: CODER
 Note: Command: post-merge verification after syncing origin/main. Result: pass. Evidence: bun run schemas:check, bun run docs:cli:check, bun run --filter=agentplane typecheck, bun run --filter=@agentplaneorg/core typecheck, and framework:dev:bootstrap all passed after resolving config schema merge conflicts. Scope: ACR batch rebased/merged onto current main.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T17:25:33.770Z, excerpt_hash=sha256:a5ac24bc830ebeee219d3ee957b3fec45f3b6164604fed986291e63b486783a2
+
+### 2026-05-03T17:34:21.039Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: final verification after formatting merged schema artifacts. Result: pass. Evidence: bun run schemas:check passed after Prettier formatting of packages/core and packages/spec config schemas; working tree clean before verification. Scope: current task branch head before push.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T17:31:46.289Z, excerpt_hash=sha256:a5ac24bc830ebeee219d3ee957b3fec45f3b6164604fed986291e63b486783a2
 
 <!-- END VERIFICATION RESULTS -->
 

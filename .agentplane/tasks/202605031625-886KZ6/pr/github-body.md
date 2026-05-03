@@ -27,7 +27,7 @@ Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, 
 ## Verification
 
 - State: ok
-- Note: Command: post-merge verification after syncing origin/main. Result: pass. Evidence: bun run schemas:check, bun run docs:cli:check, bun run --filter=agentplane typecheck, bun run --filter=@agentplaneorg/core typecheck, and framework:dev:bootstrap all passed after resolving config schema merge conflicts. Scope: ACR batch rebased/merged onto current main.
+- Note: Command: final verification after formatting merged schema artifacts. Result: pass. Evidence: bun run schemas:check passed after Prettier formatting of packages/core and packages/spec config schemas; working tree clean before verification. Scope: current task branch head before push.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
@@ -37,9 +37,9 @@ Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T17:31:46.537Z
+- Updated: 2026-05-03T17:34:21.187Z
 - Branch: task/202605031625-886KZ6/acr-core-schema
-- Head: bdd4eab5aa41
+- Head: 5ec69b47132a
 
 ```text
  .agentplane/tasks/202605031624-H1PV7F/README.md    | 129 +++
@@ -71,7 +71,7 @@ Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, 
  .../agentplane/src/commands/task/finish-execute.ts |  35 +
  .../agentplane/src/commands/task/finish-types.ts   |   1 +
  packages/core/schemas/acr-v0.1.schema.json         | 684 ++++++++++++++
- packages/core/schemas/config.schema.json           | 298 +++++-
+ packages/core/schemas/config.schema.json           |  53 ++
  packages/core/src/config/config.ts                 |   1 +
  packages/core/src/config/schema.impl.ts            |  37 +
  packages/core/src/index.ts                         |   6 +
@@ -81,9 +81,9 @@ Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, 
  .../core/src/tasks/task-artifact-schema.test.ts    | 168 ++++
  packages/core/src/tasks/task-artifact-schema.ts    |  22 +
  packages/spec/schemas/acr-v0.1.schema.json         | 684 ++++++++++++++
- packages/spec/schemas/config.schema.json           | 298 +++++-
+ packages/spec/schemas/config.schema.json           |  53 ++
  scripts/sync-schemas.mjs                           |   9 +
- 41 files changed, 5243 insertions(+), 119 deletions(-)
+ 41 files changed, 4827 insertions(+), 45 deletions(-)
 ```
 
 </details>
