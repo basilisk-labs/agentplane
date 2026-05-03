@@ -539,7 +539,10 @@ jobs:
             --smoke-outcome "${{ steps.post_publish_smoke.outcome }}" \
             --tag-exists "${{ steps.tag_state.outputs.tag_exists || 'false' }}" \
             --tag-outcome "${{ steps.push_tag.outcome }}" \
-            --release-outcome "${{ steps.create_release.outcome }}"
+            --release-outcome "${{ steps.create_release.outcome }}" \
+            --external-result .agentplane/.release/publish/homebrew/homebrew-publish-result.json \
+            --external-result .agentplane/.release/publish/scoop/scoop-publish-result.json \
+            --external-result .agentplane/.release/publish/setup-agentplane/setup-agentplane-publish-result.json
           node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/publish/publish-result.json','utf8')); console.log(payload.message);"
       - name: Upload publish-result artifact
         if: always()
