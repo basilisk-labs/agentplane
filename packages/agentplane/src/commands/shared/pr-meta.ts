@@ -7,6 +7,7 @@ import { validateTaskPrMeta } from "@agentplaneorg/core/schemas";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
 export type PrMeta = TaskPrMeta;
+export type PrBatchMeta = NonNullable<PrMeta["batch"]>;
 export type ObservedGithubPrState = {
   prNumber: number;
   prUrl: string | null;
@@ -109,6 +110,12 @@ export function buildOpenedPrMeta(opts: {
 }): PrMeta {
   const nextBase = opts.base ?? opts.previousMeta?.base;
   const nextHeadSha = opts.headSha ?? opts.previousMeta?.head_sha;
+  const relatedTaskIds = normalizeRelatedTaskIds(
+    opts.relatedTaskIds ??
+      opts.previousMeta?.batch?.included_task_ids ??
+      opts.previousMeta?.related_task_ids,
+    opts.taskId,
+  );
   const changed =
     opts.previousMeta === null ||
     (opts.previousMeta.branch ?? null) !== opts.branch ||
@@ -117,10 +124,12 @@ export function buildOpenedPrMeta(opts: {
   return {
     schema_version: 1,
     task_id: opts.taskId,
-    related_task_ids: normalizeRelatedTaskIds(
-      opts.relatedTaskIds ?? opts.previousMeta?.related_task_ids,
-      opts.taskId,
-    ),
+    related_task_ids: relatedTaskIds,
+    batch: buildPrBatchMeta({
+      primaryTaskId: opts.taskId,
+      includedTaskIds: relatedTaskIds,
+      previousBatch: opts.previousMeta?.batch,
+    }),
     branch: opts.branch,
     pr_number: opts.previousMeta?.pr_number,
     pr_url: opts.previousMeta?.pr_url,
@@ -151,16 +160,22 @@ export function buildUpdatedPrMeta(opts: {
 }): PrMeta {
   const nextBase = opts.base ?? opts.meta.base;
   const nextHeadSha = opts.headSha ?? opts.meta.head_sha;
+  const relatedTaskIds = normalizeRelatedTaskIds(
+    opts.relatedTaskIds ?? opts.meta.batch?.included_task_ids ?? opts.meta.related_task_ids,
+    opts.meta.task_id,
+  );
   const changed =
     (opts.meta.branch ?? null) !== opts.branch ||
     (opts.meta.base ?? null) !== (nextBase ?? null) ||
     (opts.meta.head_sha ?? null) !== (nextHeadSha ?? null);
   return {
     ...opts.meta,
-    related_task_ids: normalizeRelatedTaskIds(
-      opts.relatedTaskIds ?? opts.meta.related_task_ids,
-      opts.meta.task_id,
-    ),
+    related_task_ids: relatedTaskIds,
+    batch: buildPrBatchMeta({
+      primaryTaskId: opts.meta.task_id,
+      includedTaskIds: relatedTaskIds,
+      previousBatch: opts.meta.batch,
+    }),
     branch: opts.branch,
     base: nextBase,
     head_sha: nextHeadSha,
@@ -358,6 +373,50 @@ function normalizeRelatedTaskIds(value: unknown, primaryTaskId: string): string[
   return result.length > 0 ? result.toSorted() : undefined;
 }
 
+function asPrBatchMeta(value: unknown, primaryTaskId: string): PrBatchMeta | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const record = value as {
+    schema_version?: unknown;
+    primary_task_id?: unknown;
+    included_task_ids?: unknown;
+    closure_policy?: unknown;
+  };
+  if (record.schema_version !== 1) return undefined;
+  if (asNonEmptyString(record.primary_task_id) !== primaryTaskId) return undefined;
+  const includedTaskIds = normalizeRelatedTaskIds(record.included_task_ids, primaryTaskId);
+  if (!includedTaskIds) return undefined;
+  const closurePolicy = asNonEmptyString(record.closure_policy);
+  return {
+    schema_version: 1,
+    primary_task_id: primaryTaskId,
+    included_task_ids: includedTaskIds,
+    closure_policy: closurePolicy === "all_or_fail" ? closurePolicy : "all_or_fail",
+  };
+}
+
+function buildPrBatchMeta(opts: {
+  primaryTaskId: string;
+  includedTaskIds: string[] | undefined;
+  previousBatch: unknown;
+}): PrBatchMeta | undefined {
+  const includedTaskIds = normalizeRelatedTaskIds(opts.includedTaskIds, opts.primaryTaskId);
+  if (!includedTaskIds) return undefined;
+  const previous = asPrBatchMeta(opts.previousBatch, opts.primaryTaskId);
+  return {
+    schema_version: 1,
+    primary_task_id: opts.primaryTaskId,
+    included_task_ids: includedTaskIds,
+    closure_policy: previous?.closure_policy ?? "all_or_fail",
+  };
+}
+
+export function resolvePrBatchIncludedTaskIds(meta: PrMeta): string[] {
+  return (
+    normalizeRelatedTaskIds(meta.batch?.included_task_ids ?? meta.related_task_ids, meta.task_id) ??
+    []
+  );
+}
+
 function asMergeStrategy(value: unknown): "squash" | "merge" | "rebase" | undefined {
   const strategy = asNonEmptyString(value);
   return strategy === "squash" || strategy === "merge" || strategy === "rebase"
@@ -369,6 +428,7 @@ type ForwardCompatiblePrMetaRecord = {
   schema_version?: unknown;
   task_id?: unknown;
   related_task_ids?: unknown;
+  batch?: unknown;
   branch?: unknown;
   pr_number?: unknown;
   pr_url?: unknown;
@@ -419,6 +479,13 @@ function buildForwardCompatiblePrMeta(
     schema_version: 1,
     task_id: taskId,
     related_task_ids: normalizeRelatedTaskIds(parsed.related_task_ids, taskId),
+    batch:
+      asPrBatchMeta(parsed.batch, taskId) ??
+      buildPrBatchMeta({
+        primaryTaskId: taskId,
+        includedTaskIds: normalizeRelatedTaskIds(parsed.related_task_ids, taskId),
+        previousBatch: undefined,
+      }),
     branch,
     pr_number: asOptionalInteger(parsed.pr_number),
     pr_url: asNonEmptyString(parsed.pr_url),

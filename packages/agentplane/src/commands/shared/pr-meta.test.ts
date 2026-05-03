@@ -3,12 +3,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   buildObservedGithubPrMeta,
+  buildOpenedPrMeta,
   buildIntegratedPrMeta,
   buildUpdatedPrMeta,
   buildVerifiedPrMeta,
   derivePrArtifactLifecycleState,
   parsePrMetaForwardCompatible,
   parsePrMeta,
+  resolvePrBatchIncludedTaskIds,
   resolvePrArtifactHeadSha,
   resolveShellInvocation,
   runShellCommand,
@@ -126,6 +128,62 @@ describe("pr-meta shell invocations", () => {
         artifact_state_updated_at: "2026-01-28T00:00:00Z",
       }),
     );
+  });
+
+  it("records first-class branch_pr batch metadata alongside legacy related task ids", () => {
+    const nextMeta = buildOpenedPrMeta({
+      taskId: "202601010101-ABCDE",
+      relatedTaskIds: [
+        "202601010102-BBBBB",
+        "202601010101-ABCDE",
+        "202601010103-CCCCC",
+        "202601010102-BBBBB",
+      ],
+      branch: "task/202601010101-ABCDE/example",
+      at: "2026-01-27T00:00:00Z",
+      previousMeta: null,
+      base: "main",
+      headSha: "deadbeef",
+    });
+
+    expect(nextMeta.related_task_ids).toEqual(["202601010102-BBBBB", "202601010103-CCCCC"]);
+    expect(nextMeta.batch).toEqual({
+      schema_version: 1,
+      primary_task_id: "202601010101-ABCDE",
+      included_task_ids: ["202601010102-BBBBB", "202601010103-CCCCC"],
+      closure_policy: "all_or_fail",
+    });
+    expect(resolvePrBatchIncludedTaskIds(nextMeta)).toEqual([
+      "202601010102-BBBBB",
+      "202601010103-CCCCC",
+    ]);
+  });
+
+  it("hydrates batch metadata from legacy related task ids during updates", () => {
+    const nextMeta = buildUpdatedPrMeta({
+      meta: {
+        schema_version: 1,
+        task_id: "202601010101-ABCDE",
+        related_task_ids: ["202601010102-BBBBB"],
+        branch: "task/202601010101-ABCDE/example",
+        created_at: "2026-01-27T00:00:00Z",
+        updated_at: "2026-01-27T00:00:00Z",
+        base: "main",
+        head_sha: "deadbeef",
+        verify: { status: "skipped" },
+      },
+      branch: "task/202601010101-ABCDE/example",
+      base: "main",
+      headSha: "deadbeef",
+      at: "2026-01-28T00:00:00Z",
+    });
+
+    expect(nextMeta.batch).toEqual({
+      schema_version: 1,
+      primary_task_id: "202601010101-ABCDE",
+      included_task_ids: ["202601010102-BBBBB"],
+      closure_policy: "all_or_fail",
+    });
   });
 
   it("derives explicit branch_pr artifact lifecycle states from typed metadata", () => {

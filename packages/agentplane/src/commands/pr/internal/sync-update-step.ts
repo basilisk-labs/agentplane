@@ -6,6 +6,7 @@ import { writeJsonStableIfChanged, writeTextIfChanged } from "../../../shared/wr
 import {
   buildObservedGithubPrMeta,
   buildUpdatedPrMeta,
+  resolvePrBatchIncludedTaskIds,
   type PrMeta,
 } from "../../shared/pr-meta.js";
 import {
@@ -68,14 +69,14 @@ export async function runPrUpdateSync(common: PrSyncCommonState): Promise<{ meta
     task: common.task,
     createdAt: common.createdAt,
     branch: common.branch,
-    relatedTaskIds: nextMeta.related_task_ids ?? [],
+    relatedTaskIds: resolvePrBatchIncludedTaskIds(nextMeta),
     handoffNotes: common.handoffNotes,
     autoSummary: nextAutoSummary,
   });
   const githubTitle = buildGithubPrTitle(common.task);
   const githubBody = renderGithubPrBody({
     task: common.task,
-    relatedTaskIds: nextMeta.related_task_ids ?? [],
+    relatedTaskIds: resolvePrBatchIncludedTaskIds(nextMeta),
     handoffNotes: common.handoffNotes,
     autoSummary: nextAutoSummary,
   });

@@ -113,9 +113,10 @@ function renderRelatedTasks(primaryTaskId: string, relatedTaskIds: string[]): st
   const ids = relatedTaskIds.filter((id) => id !== primaryTaskId);
   if (ids.length === 0) return [];
   return [
-    "## Related Tasks",
+    "## Batch Tasks",
     "",
     `- Primary: \`${primaryTaskId}\``,
+    "- Closure policy: `all_or_fail`",
     ...ids.map((id) => `- Included: \`${id}\``),
     "",
   ];

@@ -7,6 +7,7 @@ import { CliError } from "../../../shared/errors.js";
 import {
   buildObservedGithubPrMeta,
   buildOpenedPrMeta,
+  resolvePrBatchIncludedTaskIds,
   type PrMeta,
   withPrArtifactLifecycleState,
 } from "../../shared/pr-meta.js";
@@ -64,7 +65,7 @@ export async function runPrOpenSync(
   const githubTitle = buildGithubPrTitle(common.task);
   const githubBody = renderGithubPrBody({
     task: common.task,
-    relatedTaskIds: nextMeta.related_task_ids ?? [],
+    relatedTaskIds: resolvePrBatchIncludedTaskIds(nextMeta),
     handoffNotes: common.handoffNotes,
     autoSummary: renderPrAutoSummary({
       updatedAt: common.renderUpdatedAt,
@@ -153,13 +154,13 @@ export async function runPrOpenSync(
     author: opts.author,
     createdAt: common.createdAt,
     branch: common.branch,
-    relatedTaskIds: nextMeta.related_task_ids ?? [],
+    relatedTaskIds: resolvePrBatchIncludedTaskIds(nextMeta),
     handoffNotes: common.handoffNotes,
     autoSummary: nextAutoSummary,
   });
   const nextGithubBody = renderGithubPrBody({
     task: common.task,
-    relatedTaskIds: nextMeta.related_task_ids ?? [],
+    relatedTaskIds: resolvePrBatchIncludedTaskIds(nextMeta),
     handoffNotes: common.handoffNotes,
     autoSummary: nextAutoSummary,
   });

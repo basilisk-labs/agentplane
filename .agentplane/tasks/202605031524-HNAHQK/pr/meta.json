@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605031524-HNAHQK/batch-metadata-contract",
+  "created_at": "2026-05-03T15:31:22.377Z",
+  "head_sha": "bab00d92157e24e0e9e3565c5434e778c10e60fc",
+  "last_verified_at": "2026-05-03T15:31:22.293Z",
+  "last_verified_sha": "352b9fc0663d9ea737dcf2903b3b674115cc4827",
+  "schema_version": 1,
+  "task_id": "202605031524-HNAHQK",
+  "updated_at": "2026-05-03T15:31:42.929Z",
+  "verify": {
+    "status": "pass"
+  }
+}
