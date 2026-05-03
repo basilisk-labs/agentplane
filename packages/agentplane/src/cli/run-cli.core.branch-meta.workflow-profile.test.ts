@@ -65,7 +65,10 @@ describe("runCli", () => {
       const code = await runCli(["workflow", "build", "--validate", "--dry-run", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("## Prompt Template");
-      expect(await pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).toBe(false);
+      expect(await pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).toBe(true);
+      expect(
+        await pathExists(path.join(root, ".agentplane", "workflows", "last-known-good.md")),
+      ).toBe(false);
     } finally {
       io.restore();
     }
@@ -136,7 +139,7 @@ describe("runCli", () => {
         const io = captureStdIO();
         try {
           const code = await runCli(["workflow", mode, "--root", root]);
-          expect(code).toBe(0);
+          expect(code, `stdout:\n${io.stdout}\nstderr:\n${io.stderr}`).toBe(0);
           const match = /Evidence:\s+(.+\.json)/.exec(io.stdout);
           expect(match).not.toBeNull();
           const evidenceRel = String(match?.[1] ?? "").trim();
@@ -166,15 +169,10 @@ describe("runCli", () => {
       const code = await runCli(["profile", "set", "light", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout.trim()).toBe("light");
-      const rawConfig = JSON.parse(
-        await readFile(path.join(root, ".agentplane", "config.json"), "utf8"),
-      ) as {
-        agents?: { approvals?: { require_plan?: boolean; require_network?: boolean } };
-        execution?: { profile?: string };
-      };
-      expect(rawConfig.agents?.approvals?.require_plan).toBe(false);
-      expect(rawConfig.agents?.approvals?.require_network).toBe(false);
-      expect(rawConfig.execution?.profile).toBe("aggressive");
+      const workflowText = await readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8");
+      expect(workflowText).toContain("require_plan: false");
+      expect(workflowText).toContain("require_network: false");
+      expect(workflowText).toContain("profile: aggressive");
     } finally {
       io.restore();
     }

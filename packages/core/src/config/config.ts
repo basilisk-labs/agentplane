@@ -4,6 +4,14 @@ export type AgentplaneConfig = AgentplaneConfigShape;
 export { defaultConfig, setByDottedKey } from "./defaults.js";
 export { loadConfig, saveConfig, type LoadedConfig } from "./io.js";
 export { validateConfig } from "./validation.js";
+export {
+  configRawToWorkflowFrontMatter,
+  readWorkflowConfigRaw,
+  readWorkflowMarkdown,
+  workflowFrontMatterToConfigRaw,
+  writeWorkflowConfigRaw,
+  type WorkflowMarkdown,
+} from "./workflow-file.js";
 
 export type WorkflowMode = AgentplaneConfig["workflow_mode"];
 export type StatusCommitPolicy = AgentplaneConfig["status_commit_policy"];

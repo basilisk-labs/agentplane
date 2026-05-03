@@ -118,7 +118,7 @@ export async function checkWorkspace(
   opts?: { ctx?: CommandContext },
 ): Promise<string[]> {
   const problems: string[] = [];
-  const requiredFiles = [path.join(repoRoot, ".agentplane", "config.json")];
+  const requiredFiles = [path.join(repoRoot, ".agentplane", "WORKFLOW.md")];
   for (const filePath of requiredFiles) {
     if (!(await pathExists(filePath))) {
       problems.push(`Missing required file: ${path.relative(repoRoot, filePath)}`);

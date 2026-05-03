@@ -55,10 +55,11 @@ describe("config", () => {
   });
 
   it("keeps config IO and validation behind dedicated modules", async () => {
-    const [configText, ioText, validationText] = await Promise.all([
+    const [configText, ioText, validationText, workflowFileText] = await Promise.all([
       readConfigModuleText("./config.ts"),
       readConfigModuleText("./io.ts"),
       readConfigModuleText("./validation.ts"),
+      readConfigModuleText("./workflow-file.ts"),
     ]);
 
     expect(configText).toContain('from "./io.js"');
@@ -67,7 +68,8 @@ describe("config", () => {
     expect(configText).not.toContain("atomicWriteFile");
 
     expect(ioText).toContain("node:fs/promises");
-    expect(ioText).toContain("atomicWriteFile");
+    expect(ioText).toContain("readWorkflowConfigRaw");
+    expect(workflowFileText).toContain("atomicWriteFile");
     expect(validationText).toContain("validateAgentplaneConfig");
   });
 
@@ -77,7 +79,7 @@ describe("config", () => {
     expect(() => validateConfig(raw)).not.toThrow();
   });
 
-  it("loadConfig returns default config when config.json is missing", async () => {
+  it("loadConfig returns default config when WORKFLOW.md is missing", async () => {
     const tmp = await mkdtemp(path.join(os.tmpdir(), "agentplane-config-missing-"));
     const agentplaneDir = path.join(tmp, ".agentplane");
 
@@ -109,7 +111,7 @@ describe("config", () => {
     }
   });
 
-  it("loadConfig fills the default runner adapter when config.json omits runner", async () => {
+  it("loadConfig fills the default runner adapter when legacy config.json omits runner", async () => {
     const tmp = await mkdtemp(path.join(os.tmpdir(), "agentplane-config-runner-default-"));
     const agentplaneDir = path.join(tmp, ".agentplane");
     await mkdir(agentplaneDir, { recursive: true });
@@ -270,20 +272,27 @@ describe("config", () => {
     expect(() => setByDottedKey(cfg, ".", "x")).toThrow(/non-empty/);
   });
 
-  it("saveConfig writes config.json and loadConfig reads it back", async () => {
+  it("saveConfig writes WORKFLOW.md, removes config.json, and loadConfig reads it back", async () => {
     const tmp = await mkdtemp(path.join(os.tmpdir(), "agentplane-config-test-"));
     const agentplaneDir = path.join(tmp, ".agentplane");
 
     const raw = defaultConfig() as unknown as Record<string, unknown>;
     setByDottedKey(raw, "workflow_mode", "branch_pr");
+    await mkdir(agentplaneDir, { recursive: true });
+    await writeFile(path.join(agentplaneDir, "config.json"), "{}\n", "utf8");
     await saveConfig(agentplaneDir, raw);
 
-    const text = await readFile(path.join(agentplaneDir, "config.json"), "utf8");
-    expect(text).toContain('"workflow_mode": "branch_pr"');
+    await expect(readFile(path.join(agentplaneDir, "config.json"), "utf8")).rejects.toMatchObject({
+      code: "ENOENT",
+    });
+    const text = await readFile(path.join(agentplaneDir, "WORKFLOW.md"), "utf8");
+    expect(text).toContain("version: 2");
+    expect(text).toContain("mode: branch_pr");
 
     const loaded = await loadConfig(agentplaneDir);
     expect(loaded.exists).toBe(true);
     expect(loaded.config.workflow_mode).toBe("branch_pr");
+    expect(path.basename(loaded.path)).toBe("WORKFLOW.md");
   });
 
   it("validateConfig rejects unsupported schema_version", () => {

@@ -57,10 +57,10 @@ your terminal.
 ```text
 AGENTS.md or CLAUDE.md   Policy gateway for the repository
 .agentplane/            Repo-local workflow workspace
-.agentplane/config.json Current workflow configuration
+.agentplane/WORKFLOW.md Current workflow/config contract
 .agentplane/agents/     Installed agent profiles
 .agentplane/tasks/      Per-task records and evidence
-.agentplane/WORKFLOW.md Materialized workflow contract
+.agentplane/workflows/  Last-known-good workflow snapshot
 ```
 
 These artifacts make agent work inspectable. A reviewer can see what policy governed the repo, what

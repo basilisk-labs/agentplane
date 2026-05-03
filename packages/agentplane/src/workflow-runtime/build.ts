@@ -59,7 +59,14 @@ export function buildWorkflowFromTemplates(input: WorkflowBuildInput): WorkflowB
     const runtimeWorkflowRecord = runtimeWorkflow as Record<string, unknown>;
     const runtimeMode = runtimeWorkflowRecord.mode;
     if (runtimeMode === "direct" || runtimeMode === "branch_pr") {
-      mergedFrontMatter.mode = runtimeMode;
+      const workflowSection =
+        mergedFrontMatter.workflow &&
+        typeof mergedFrontMatter.workflow === "object" &&
+        !Array.isArray(mergedFrontMatter.workflow)
+          ? (mergedFrontMatter.workflow as Record<string, unknown>)
+          : {};
+      mergedFrontMatter.workflow = { ...workflowSection, mode: runtimeMode };
+      delete mergedFrontMatter.mode;
     }
     const runtimeApprovals = runtimeWorkflowRecord.approvals;
     if (
@@ -117,14 +124,55 @@ export function buildWorkflowFromTemplates(input: WorkflowBuildInput): WorkflowB
 }
 
 export const DEFAULT_WORKFLOW_TEMPLATE = `---
-version: 1
-mode: direct
+version: 2
+workflow:
+  mode: direct
+  status_commit_policy: warn
+  commit_automation: manual
+  finish_auto_status_commit: false
+  close_commit:
+    direct_dirty_policy: allow_other_task_readmes
+  artifacts_language: any
+  closure_commit_requires_approval: false
 owners:
   orchestrator: ORCHESTRATOR
 approvals:
   require_plan: true
   require_verify: true
   require_network: true
+workspace:
+  agents_dir: .agentplane/agents
+  tasks_path: .agentplane/tasks.json
+  workflow_dir: .agentplane/tasks
+  worktrees_dir: .agentplane/worktrees
+  isolation: per_task
+  cleanup: after_finish
+tasks:
+  backend:
+    config_path: .agentplane/backends/local/backend.json
+runner:
+  default_adapter: codex
+scheduler:
+  concurrency: 1
+  poll_interval_ms: 30000
+  retry_policy:
+    normal_exit_continuation: true
+    abnormal_backoff: exponential
+    max_attempts: 5
+evaluator:
+  verdicts:
+    - pass
+    - rework
+    - blocked_external
+    - human_review
+    - infra_failed
+    - no_change
+  required_checks:
+    - agentplane doctor
+    - node .agentplane/policy/check-routing.mjs
+observability:
+  runs_dir: .agentplane/runs
+  events: jsonl
 retry_policy:
   normal_exit_continuation: true
   abnormal_backoff: exponential

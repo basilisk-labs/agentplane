@@ -22,11 +22,12 @@ Repository {{ runtime.repo_name }}
 - custom
 `,
       runtimeContext: {
-        workflow: { mode: "branch_pr", version: 1 },
+        workflow: { mode: "branch_pr", version: 2 },
         runtime: { repo_name: "repo", repo_root: "/repo" },
       },
     });
 
+    expect(out.text).toContain("workflow:");
     expect(out.text).toContain('mode: "branch_pr"');
     expect(out.text).toContain("Repository repo");
     expect(out.text).toContain("- custom");
@@ -51,7 +52,7 @@ Unknown {{ missing.value }}
 f
 `,
       runtimeContext: {
-        workflow: { mode: "direct", version: 1 },
+        workflow: { mode: "direct", version: 2 },
         runtime: { repo_name: "repo", repo_root: "/repo" },
       },
     });
@@ -65,7 +66,7 @@ f
       runtimeContext: {
         workflow: {
           mode: "direct",
-          version: 1,
+          version: 2,
           approvals: {
             require_plan: false,
             require_verify: false,

@@ -43,12 +43,12 @@ describe("init conflict resolver step", () => {
       promptConflictResolverStep({
         clack: clackMock(),
         gitRoot: "/repo",
-        conflicts: ["/repo/.agentplane/config.json"],
+        conflicts: ["/repo/.agentplane/WORKFLOW.md"],
       }),
     ).resolves.toBe("overwrite");
 
     expect(mocks.noteMock).toHaveBeenCalledWith(
-      "- .agentplane/config.json",
+      "- .agentplane/WORKFLOW.md",
       "Init conflicts detected",
     );
   });
@@ -74,7 +74,7 @@ describe("init conflict resolver step", () => {
       promptConflictResolverStep({
         clack: clackMock(),
         gitRoot: "/repo",
-        conflicts: ["/repo/.agentplane/config.json"],
+        conflicts: ["/repo/.agentplane/WORKFLOW.md"],
       }),
     ).rejects.toBeInstanceOf(InitAborted);
 

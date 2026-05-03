@@ -24,7 +24,7 @@ import { assertConfirmed } from "./answers.js";
 export type ResolvedInitPaths = {
   gitRoot: string;
   agentplaneDir: string;
-  configPath: string;
+  workflowPath: string;
   backendPath: string;
 };
 
@@ -43,11 +43,11 @@ export async function resolveInitPaths(opts: {
     baseBranchFallback: "main",
   });
   const agentplaneDir = path.join(gitRoot, ".agentplane");
-  const configPath = path.join(agentplaneDir, "config.json");
+  const workflowPath = path.join(agentplaneDir, "WORKFLOW.md");
   const localBackendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
   const redmineBackendPath = path.join(agentplaneDir, "backends", "redmine", "backend.json");
   const backendPath = opts.backend === "redmine" ? redmineBackendPath : localBackendPath;
-  return { gitRoot, gitRootExisted, agentplaneDir, configPath, backendPath };
+  return { gitRoot, gitRootExisted, agentplaneDir, workflowPath, backendPath };
 }
 
 export async function collectInitAndHookConflicts(opts: {
@@ -62,7 +62,7 @@ export async function collectInitAndHookConflicts(opts: {
     path.join(opts.paths.agentplaneDir, "backends"),
     path.join(opts.paths.agentplaneDir, "backends", opts.answers.backend),
   ];
-  const initFiles = [opts.paths.configPath, opts.paths.backendPath];
+  const initFiles = [opts.paths.workflowPath, opts.paths.backendPath];
   const initConflicts = await collectInitConflicts({ initDirs, initFiles });
   const hookConflicts = opts.answers.hooks
     ? await collectHooksInstallConflicts({
@@ -165,7 +165,7 @@ export async function applyInitPlan(opts: {
           agentplaneDir: opts.paths.agentplaneDir,
           workflow: opts.answers.workflow,
           policyGateway: opts.answers.policyGateway,
-          configPathAbs: opts.paths.configPath,
+          workflowPathAbs: opts.paths.workflowPath,
           backendPathAbs: opts.paths.backendPath,
         });
         if (opts.answers.backend === "redmine") {
