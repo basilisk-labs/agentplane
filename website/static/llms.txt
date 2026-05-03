@@ -5,13 +5,21 @@ docs: https://agentplane.org/docs
 blog: https://agentplane.org/blog
 repo: https://github.com/basilisk-labs/agentplane
 
-summary: Deterministic workflow framework for policy-driven agent execution in repositories.
-capabilities: task planning, approval-gated execution, verification workflows, release/publish automation.
+summary: Open-source audit layer for coding agents; gives Claude Code, Codex, Cursor, Aider, and other coding-agent tools a repository-native task, policy, verification, branch, and closure lifecycle.
+not: hosted agent runtime, model provider, IDE, CI replacement, pull-request replacement.
+capabilities: task planning, policy routing, approval-gated execution, verification evidence, branch_pr worktrees, pull-request handoff, release/publish automation, recipe modules.
 
 index:
+- https://agentplane.org/docs/manifesto
+- https://agentplane.org/docs/compare
 - https://agentplane.org/docs/user/overview
+- https://agentplane.org/docs/user/setup
 - https://agentplane.org/docs/user/workflow
 - https://agentplane.org/docs/user/commands
-- https://agentplane.org/docs/user/website-ia
+- https://agentplane.org/docs/workflow-guides/claude-code
+- https://agentplane.org/docs/workflow-guides/codex
+- https://agentplane.org/docs/workflow-guides/cursor
+- https://agentplane.org/docs/workflow-guides/aider
+- https://agentplane.org/docs/recipes/code-map
 - https://agentplane.org/docs/developer/architecture
 - https://agentplane.org/docs/developer/cli-contract

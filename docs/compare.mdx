@@ -1,0 +1,53 @@
+---
+title: "How AgentPlane compares"
+description: "Where AgentPlane fits alongside coding agents, AGENTS.md, Git, CI, and hosted workflow dashboards."
+---
+
+AgentPlane is not another coding agent.
+
+It is the audit layer around coding-agent work: task scope, approved plan, role ownership, verification evidence, branch handoff, and closure recorded inside the repository.
+
+## Decision guide
+
+Use AgentPlane when you need coding-agent work to be reviewable after the chat window is gone.
+
+Do not use it as a replacement for an editor, model provider, pull request system, or CI service. AgentPlane depends on those surfaces and makes their work easier to inspect.
+
+## Comparison
+
+| Surface | What it is good at | What it does not preserve by itself | Where AgentPlane fits |
+| --- | --- | --- | --- |
+| Claude Code, Codex, Cursor, Aider | Generating, editing, and explaining code | A durable repository-native task lifecycle with policy, verification, and closure evidence | Gives those agents an executable workflow contract |
+| `AGENTS.md` alone | Describing local policy and instructions | Task state, plan approval, verification records, branch handoff | Turns policy into lifecycle commands and artifacts |
+| Git alone | Recording file history, commits, branches, and reviews | Why an agent made a change, which checks ran, whether scope was approved | Adds intent and verification around Git history |
+| CI alone | Enforcing automated checks | Human or agent reasoning about scope, plan, ownership, and closure | Records CI as evidence inside the task lifecycle |
+| Hosted dashboards | Centralizing status views | A fully repository-owned audit trail without hosted runtime dependence | Keeps the durable record in repo files and Git |
+| Dev harnesses and coding-agent frameworks | Running agents or test harnesses | Cross-agent governance and reviewable task provenance | Provides the governance layer around execution |
+
+## What AgentPlane adds
+
+AgentPlane adds four things that are usually scattered across chat, branch names, pull request descriptions, and memory:
+
+1. **Task identity**: every meaningful mutation maps to a task ID and task folder.
+2. **Policy routing**: agents load only the policy modules that match the work.
+3. **Verification evidence**: checks and findings are attached to the task lifecycle.
+4. **Closure discipline**: finish and integration are explicit states, not assumed from a diff.
+
+## What AgentPlane does not add
+
+AgentPlane does not generate code for you. It does not choose a model. It does not replace a pull request review. It does not make broken tests pass.
+
+Its job is narrower: make the work traceable enough that a human or another agent can inspect the execution path and decide whether closure was justified.
+
+## Best fit
+
+AgentPlane fits teams and solo developers who already use coding agents for real repository work and want stronger control over:
+
+- multi-step refactors
+- documentation and release workflows
+- branch-per-task development
+- agent handoffs
+- local policy enforcement
+- review evidence that survives beyond the chat session
+
+If your work is a one-line throwaway edit, Git and the agent transcript may be enough. If the change needs trust, rollback, or later investigation, AgentPlane provides the missing audit surface.

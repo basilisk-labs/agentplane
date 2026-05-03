@@ -1,10 +1,10 @@
 ---
 id: "202605031315-E9WZ3G"
 title: "Add comparison manifesto and LLM discovery docs"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +22,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-03T13:41:18.199Z"
+  updated_by: "DOCS"
+  note: "Added docs/manifesto.mdx and docs/compare.mdx, placed them in the docs index/sidebar, and refreshed llms.txt plus llms-full.txt around the audit-layer positioning. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "DOCS"
+    body: "Start: add comparison, manifesto, and LLM discovery surfaces required by the updated website navigation."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T13:36:32.948Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: add comparison, manifesto, and LLM discovery surfaces required by the updated website navigation."
+  -
+    type: "verify"
+    at: "2026-05-03T13:41:18.199Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Added docs/manifesto.mdx and docs/compare.mdx, placed them in the docs index/sidebar, and refreshed llms.txt plus llms-full.txt around the audit-layer positioning. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:15:45.516Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T13:41:18.202Z"
+doc_updated_by: "DOCS"
 description: "Add repository-owned discovery docs from the audit: compare page, manifesto page, llms.txt rewrite, and llms-full freshness or generation contract so LLM and search surfaces teach the same model."
 sections:
   Summary: |-
@@ -48,11 +64,22 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T13:41:18.199Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Added docs/manifesto.mdx and docs/compare.mdx, placed them in the docs index/sidebar, and refreshed llms.txt plus llms-full.txt around the audit-layer positioning. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:36:32.948Z, excerpt_hash=sha256:a0254289a785c6444cd8d50bdf8a107bb80e2ca28a0da6c29c0330c152b9330e
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: The updated Docusaurus build resolves the previously broken /docs/manifesto and /docs/compare links.
+      Impact: Human and LLM discovery surfaces now explain AgentPlane as a repository-native audit layer and route readers to comparison and manifesto pages.
+      Resolution: Keep future copy changes grounded in repo-local lifecycle artifacts rather than vendor-specific claims.
 id_source: "generated"
 ---
 ## Summary
@@ -79,6 +106,14 @@ Add docs/compare.mdx and docs/manifesto.mdx or the current equivalent docs-site 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T13:41:18.199Z — VERIFY — ok
+
+By: DOCS
+
+Note: Added docs/manifesto.mdx and docs/compare.mdx, placed them in the docs index/sidebar, and refreshed llms.txt plus llms-full.txt around the audit-layer positioning. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:36:32.948Z, excerpt_hash=sha256:a0254289a785c6444cd8d50bdf8a107bb80e2ca28a0da6c29c0330c152b9330e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -87,3 +122,7 @@ Add docs/compare.mdx and docs/manifesto.mdx or the current equivalent docs-site 
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: The updated Docusaurus build resolves the previously broken /docs/manifesto and /docs/compare links.
+  Impact: Human and LLM discovery surfaces now explain AgentPlane as a repository-native audit layer and route readers to comparison and manifesto pages.
+  Resolution: Keep future copy changes grounded in repo-local lifecycle artifacts rather than vendor-specific claims.
