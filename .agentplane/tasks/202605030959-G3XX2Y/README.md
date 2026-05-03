@@ -1,10 +1,10 @@
 ---
 id: "202605030959-G3XX2Y"
 title: "Spike Bun executable compatibility"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,16 +19,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-03T11:04:59.221Z"
+  updated_by: "CODER"
+  note: "Compatibility spike completed: bun run build passed; bun build packages/agentplane/dist/cli.js --compile produced an executable; executing --version/quickstart failed at startup with 'Unable to resolve agentplane package root' under Bun $bunfs, so direct release migration is no-go until binary runtime contract work lands."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Prototype Bun executable output for the real AgentPlane CLI entrypoint and record compatibility blockers before changing release artifacts."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T11:03:23.635Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Prototype Bun executable output for the real AgentPlane CLI entrypoint and record compatibility blockers before changing release artifacts."
+  -
+    type: "verify"
+    at: "2026-05-03T11:04:59.221Z"
+    author: "CODER"
+    state: "ok"
+    note: "Compatibility spike completed: bun run build passed; bun build packages/agentplane/dist/cli.js --compile produced an executable; executing --version/quickstart failed at startup with 'Unable to resolve agentplane package root' under Bun $bunfs, so direct release migration is no-go until binary runtime contract work lands."
 doc_version: 3
-doc_updated_at: "2026-05-03T10:00:17.383Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T11:04:59.224Z"
+doc_updated_by: "CODER"
 description: "Prototype Bun executable output for the AgentPlane CLI entrypoint and runtime assets, identify unsupported Node APIs or packaging assumptions, and produce a compatibility report before release workflow changes."
 sections:
   Summary: |-
@@ -51,11 +67,19 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T11:04:59.221Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Compatibility spike completed: bun run build passed; bun build packages/agentplane/dist/cli.js --compile produced an executable; executing --version/quickstart failed at startup with 'Unable to resolve agentplane package root' under Bun $bunfs, so direct release migration is no-go until binary runtime contract work lands.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T11:04:57.327Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: "Bun executable compatibility spike result: direct migration is no-go until AgentPlane has a binary runtime contract. bun build --compile succeeded for packages/agentplane/dist/cli.js, but the compiled binary failed before argument handling with 'Unable to resolve agentplane package root' from Bun's embedded $bunfs path. See .agentplane/tasks/202605030959-G3XX2Y/bun-executable-compatibility.md for evidence, root cause, and required next steps."
 id_source: "generated"
 ---
 ## Summary
@@ -87,6 +111,14 @@ Acceptance: we know whether Bun executable artifacts can replace the current bun
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T11:04:59.221Z — VERIFY — ok
+
+By: CODER
+
+Note: Compatibility spike completed: bun run build passed; bun build packages/agentplane/dist/cli.js --compile produced an executable; executing --version/quickstart failed at startup with 'Unable to resolve agentplane package root' under Bun $bunfs, so direct release migration is no-go until binary runtime contract work lands.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T11:04:57.327Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -95,3 +127,5 @@ Acceptance: we know whether Bun executable artifacts can replace the current bun
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+Bun executable compatibility spike result: direct migration is no-go until AgentPlane has a binary runtime contract. bun build --compile succeeded for packages/agentplane/dist/cli.js, but the compiled binary failed before argument handling with 'Unable to resolve agentplane package root' from Bun's embedded $bunfs path. See .agentplane/tasks/202605030959-G3XX2Y/bun-executable-compatibility.md for evidence, root cause, and required next steps.
