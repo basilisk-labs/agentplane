@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T08:26:57Z",
   "base": "main",
   "branch": "task/202605030807-DBY2RS/standalone-doctor-smoke",
   "created_at": "2026-05-03T08:08:07.052Z",
-  "head_sha": "4960313bb41bde670c98b8e1743b4b65e42f288d",
+  "head_sha": "896882c50efbd6f30b5047a3edb9afa214b9e414",
   "last_verified_at": "2026-05-03T08:09:13.786Z",
   "last_verified_sha": "4960313bb41bde670c98b8e1743b4b65e42f288d",
+  "merge_commit": "2c98719336c87cbe2aaf196d14b32c841a9defa1",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T08:26:57Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605030807-DBY2RS",
-  "updated_at": "2026-05-03T08:09:13.813Z",
+  "updated_at": "2026-05-03T08:26:57Z",
   "verify": {
     "status": "pass"
   }

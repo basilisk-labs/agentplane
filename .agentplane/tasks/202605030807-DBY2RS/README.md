@@ -1,10 +1,11 @@
 ---
 id: "202605030807-DBY2RS"
 title: "Fix standalone release doctor smoke marker"
-status: "DOING"
+result_summary: "Merged via PR #789."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T08:09:13.786Z"
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts --pool=forks --maxWorkers 1 --testTimeout 120000 --hookTimeout 120000; Result: pass; Evidence: 1 file, 5 tests passed. Command: node scripts/check-release-parity.mjs && git diff --check; Result: pass; Evidence: release parity OK and no whitespace errors."
-commit: null
+commit:
+  hash: "2c98719336c87cbe2aaf196d14b32c841a9defa1"
+  message: "Merge PR #789: 🐛 DBY2RS release: accept current doctor smoke output"
 comments:
   -
     author: "CODER"
     body: "Start: fixing the standalone release smoke doctor marker that blocked v0.4.2 publication before npm or tag publication."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #789 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts --pool=forks --maxWorkers 1 --testTimeout 120000 --hookTimeout 120000; Result: pass; Evidence: 1 file, 5 tests passed. Command: node scripts/check-release-parity.mjs && git diff --check; Result: pass; Evidence: release parity OK and no whitespace errors."
+  -
+    type: "status"
+    at: "2026-05-03T08:27:33.022Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #789 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T08:09:13.789Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T08:27:33.029Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update standalone release artifact smoke testing to accept the current doctor OK output and surface doctor output on failures so v0.4.2 publish can complete."
 sections:
   Summary: |-
