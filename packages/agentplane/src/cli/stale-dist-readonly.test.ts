@@ -372,4 +372,25 @@ describe("stale-dist warn-and-run command policy", { timeout: 180_000 }, () => {
       "run framework:dev:bootstrap",
     );
   });
+
+  it("stops instead of running stale diagnostics when the bootstrap lock exists", async () => {
+    const { repoRoot, repoBin } = await setupFrameworkCheckout();
+    await mkdir(path.join(repoRoot, ".agentplane", "cache", "framework-dev-bootstrap.lock"), {
+      recursive: true,
+    });
+
+    let error: unknown;
+    try {
+      await execFileAsync(process.execPath, [repoBin, "config", "show"], {
+        cwd: repoRoot,
+        encoding: "utf8",
+      });
+    } catch (caught) {
+      error = caught;
+    }
+    const execError = error as { stdout?: unknown; stderr?: unknown };
+    expect(execError.stdout).toBe("");
+    expect(typeof execError.stderr).toBe("string");
+    expect(execError.stderr).toContain("another framework dev bootstrap is already running");
+  });
 });

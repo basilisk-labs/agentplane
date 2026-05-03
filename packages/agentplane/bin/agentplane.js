@@ -207,7 +207,7 @@ async function withBootstrapLock(repoRoot, fn) {
         `Retry after the lock is released: ${path.relative(repoRoot, lockDir)}\n`,
     );
     process.exitCode = 2;
-    return false;
+    return true;
   }
 
   try {
