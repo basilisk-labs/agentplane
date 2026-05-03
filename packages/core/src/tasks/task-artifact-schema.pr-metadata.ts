@@ -16,12 +16,22 @@ const PR_ARTIFACT_STATE_VALUES = [
 ] as const;
 const MERGE_STRATEGY_VALUES = ["squash", "merge", "rebase"] as const;
 const PR_VERIFY_STATUS_VALUES = ["pass", "fail", "skipped"] as const;
+const PR_BATCH_CLOSURE_POLICY_VALUES = ["all_or_fail"] as const;
 
 export const TASK_PR_META_ZOD_SCHEMA = z
   .object({
     schema_version: z.literal(1),
     task_id: NON_EMPTY_STRING,
     related_task_ids: z.array(NON_EMPTY_STRING).optional(),
+    batch: z
+      .object({
+        schema_version: z.literal(1),
+        primary_task_id: NON_EMPTY_STRING,
+        included_task_ids: z.array(NON_EMPTY_STRING).min(1),
+        closure_policy: z.enum(PR_BATCH_CLOSURE_POLICY_VALUES),
+      })
+      .strict()
+      .optional(),
     branch: NON_EMPTY_STRING.optional(),
     base: NON_EMPTY_STRING.optional(),
     pr_number: z.number().int().min(1).optional(),

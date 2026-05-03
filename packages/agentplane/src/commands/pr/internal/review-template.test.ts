@@ -1,56 +1,45 @@
 import { describe, expect, it } from "vitest";
-import { makeTaskFixture } from "@agentplane/testkit/task";
 
-import { buildGithubPrTitle, validateGithubPrTitleContents } from "./review-template.js";
+import type { TaskData } from "../../../backends/task-backend.js";
+import { renderGithubPrBody, renderPrReviewDocument } from "./review-template.js";
 
-describe("buildGithubPrTitle", () => {
-  it("renders unified PR title format for DOING status", () => {
-    const task = makeTaskFixture({
-      id: "202602111653-2S7HGD",
-      title: "Refactor task message commit",
-      status: "DOING",
+function makeTask(): TaskData {
+  return {
+    id: "202601010101-ABCDE",
+    title: "Batch metadata",
+    status: "DOING",
+    priority: "high",
+    owner: "CODER",
+    depends_on: [],
+    tags: ["code"],
+    verify: [],
+    created_at: "2026-01-27T00:00:00Z",
+    updated_at: "2026-01-27T00:00:00Z",
+    created_by: "CODER",
+    updated_by: "CODER",
+  };
+}
+
+describe("review-template batch rendering", () => {
+  it("renders included task ids as an explicit branch_pr batch", () => {
+    const review = renderPrReviewDocument({
+      task: makeTask(),
+      createdAt: "2026-01-27T00:00:00Z",
+      branch: "task/202601010101-ABCDE/batch-metadata",
+      relatedTaskIds: ["202601010102-BBBBB"],
+      autoSummary: "No changes detected.",
+    });
+    const githubBody = renderGithubPrBody({
+      task: makeTask(),
+      relatedTaskIds: ["202601010102-BBBBB"],
+      autoSummary: "No changes detected.",
     });
 
-    expect(buildGithubPrTitle(task)).toBe(
-      "🚧 2S7HGD task: Refactor task message commit [202602111653-2S7HGD]",
-    );
-  });
-
-  it("renders unified PR title format for DONE status", () => {
-    const task = makeTaskFixture({
-      id: "202602111653-3M4N5P",
-      title: "Release readiness",
-      status: "DONE",
-    });
-
-    expect(buildGithubPrTitle(task)).toBe(
-      "✅ 3M4N5P task: Release readiness [202602111653-3M4N5P]",
-    );
-  });
-
-  it("validates a compliant PR title", () => {
-    const errors: string[] = [];
-    validateGithubPrTitleContents(
-      "🧩 C0M1T0 task: Document PR message governance [202603101200-C0M1T0]",
-      "202603101200-C0M1T0",
-      errors,
-    );
-    expect(errors).toEqual([]);
-  });
-
-  it("flags invalid PR title format", () => {
-    const errors: string[] = [];
-    validateGithubPrTitleContents("task: bad title format", "202603101200-C0M1T0", errors);
-    expect(errors.join("\n")).toContain("Missing task id in GitHub PR title");
-  });
-
-  it("flags PR title with mismatched task id", () => {
-    const errors: string[] = [];
-    validateGithubPrTitleContents(
-      "🧩 C0M1T0 task: Document PR message governance [202603101201-C0M1T1]",
-      "202603101200-C0M1T0",
-      errors,
-    );
-    expect(errors.join("\n")).toContain("GitHub PR title task id does not match artifact task id");
+    for (const text of [review, githubBody]) {
+      expect(text).toContain("## Batch Tasks");
+      expect(text).toContain("- Primary: `202601010101-ABCDE`");
+      expect(text).toContain("- Closure policy: `all_or_fail`");
+      expect(text).toContain("- Included: `202601010102-BBBBB`");
+    }
   });
 });

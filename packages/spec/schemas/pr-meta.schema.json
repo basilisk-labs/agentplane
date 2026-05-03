@@ -19,6 +19,33 @@
         "minLength": 1
       }
     },
+    "batch": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "number",
+          "const": 1
+        },
+        "primary_task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "included_task_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "closure_policy": {
+          "type": "string",
+          "enum": ["all_or_fail"]
+        }
+      },
+      "required": ["schema_version", "primary_task_id", "included_task_ids", "closure_policy"],
+      "additionalProperties": false
+    },
     "branch": {
       "type": "string",
       "minLength": 1
