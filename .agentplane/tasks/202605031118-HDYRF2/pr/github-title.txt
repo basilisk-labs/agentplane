@@ -1,0 +1,1 @@
+🚧 HDYRF2 task: Add Bun binary smoke coverage [202605031118-HDYRF2]
