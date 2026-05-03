@@ -4,7 +4,7 @@ title: "Remove config.json from managed repository state"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -46,7 +46,7 @@ events:
     state: "ok"
     note: ".agentplane/config.json is deleted; saveConfig removes legacy config.json; doctor requires WORKFLOW.md; testkit writes WORKFLOW-backed config."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:28:32.274Z"
+doc_updated_at: "2026-05-03T13:38:01.915Z"
 doc_updated_by: "CODER"
 description: "Delete .agentplane/config.json as a generated/managed artifact for current repositories, migrate examples and docs to WORKFLOW.md v2, remove config.json schema expectations from setup output, and keep only legacy import/upgrade support where needed."
 sections:
@@ -59,7 +59,7 @@ sections:
     - Out of scope: unrelated refactors not required for "Remove config.json from managed repository state".
   Plan: "Remove config.json from managed current repository state. Migrate docs, examples, schemas, setup output, tests, and generated artifacts to WORKFLOW.md v2. Keep only explicit legacy import/upgrade support. Acceptance: fresh init does not create .agentplane/config.json and repository docs no longer present it as canonical."
   Verify Steps: |-
-    1. Run `rg 'config.json' docs packages/spec packages/core packages/agentplane`. Expected: it succeeds and confirms the requested outcome for this task.
+    1. Run `rg "config\.json" docs packages/spec packages/core packages/agentplane`. Expected: any matches are explicit legacy import/schema references, not current canonical config guidance.
     2. Run `bun test packages/core/src/config packages/agentplane/src/cli packages/agentplane/src/workflow-runtime`. Expected: it succeeds and confirms the requested outcome for this task.
     3. Run `agentplane doctor`. Expected: it succeeds and confirms the requested outcome for this task.
     4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
@@ -98,7 +98,7 @@ Remove config.json from managed current repository state. Migrate docs, examples
 
 ## Verify Steps
 
-1. Run `rg 'config.json' docs packages/spec packages/core packages/agentplane`. Expected: it succeeds and confirms the requested outcome for this task.
+1. Run `rg "config\.json" docs packages/spec packages/core packages/agentplane`. Expected: any matches are explicit legacy import/schema references, not current canonical config guidance.
 2. Run `bun test packages/core/src/config packages/agentplane/src/cli packages/agentplane/src/workflow-runtime`. Expected: it succeeds and confirms the requested outcome for this task.
 3. Run `agentplane doctor`. Expected: it succeeds and confirms the requested outcome for this task.
 4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
