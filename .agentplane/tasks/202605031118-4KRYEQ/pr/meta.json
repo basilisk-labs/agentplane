@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T12:18:33Z",
   "base": "main",
   "branch": "task/202605031118-4KRYEQ/bun-binary-release-assets",
   "created_at": "2026-05-03T12:07:47.572Z",
-  "head_sha": "fd8245541efac92628075f6b5225b856befadb93",
+  "head_sha": "f900eb22aa0ffe702882080a7394835e736edee6",
   "last_verified_at": "2026-05-03T12:10:42.948Z",
   "last_verified_sha": "295f90645be2e64e4d7ccfc50ca52bb1ee61e621",
+  "merge_commit": "f85da16d5cdc4cc859d17721b7862ef317474563",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T12:18:33Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605031118-4KRYEQ",
-  "updated_at": "2026-05-03T12:16:27.579Z",
+  "updated_at": "2026-05-03T12:18:33Z",
   "verify": {
     "status": "pass"
   }

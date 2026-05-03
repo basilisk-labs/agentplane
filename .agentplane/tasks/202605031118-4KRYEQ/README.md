@@ -1,10 +1,11 @@
 ---
 id: "202605031118-4KRYEQ"
 title: "Generate Bun executable release assets"
-status: "DOING"
+result_summary: "Merged via PR #807."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T12:10:42.948Z"
   updated_by: "CODER"
   note: "Focused verification passed: bun run build; node scripts/generate-bun-cli-assets.mjs --check generated 5 Bun executable assets; bun test packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts passed."
-commit: null
+commit:
+  hash: "f85da16d5cdc4cc859d17721b7862ef317474563"
+  message: "Merge pull request #807 from basilisk-labs/task/202605031118-4KRYEQ/bun-binary-release-assets"
 comments:
   -
     author: "CODER"
     body: "Start: add Bun executable release asset generation as a parallel artifact channel."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #807 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused verification passed: bun run build; node scripts/generate-bun-cli-assets.mjs --check generated 5 Bun executable assets; bun test packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts passed."
+  -
+    type: "status"
+    at: "2026-05-03T12:19:11.793Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #807 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T12:10:42.950Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T12:19:11.799Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add release asset generation for Bun compiled executables as an experimental parallel channel with manifest and checksum entries, preserving the existing standalone Node archive channel."
 sections:
   Summary: |-
