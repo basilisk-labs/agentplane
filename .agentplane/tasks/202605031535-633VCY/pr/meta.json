@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605031535-633VCY/acr-standard-docs",
+  "created_at": "2026-05-03T15:38:03.356Z",
+  "head_sha": "9047a13ae48a39bac9eb18b1adba7a025f727292",
+  "last_verified_at": "2026-05-03T15:59:39.909Z",
+  "last_verified_sha": "ade32a1c9750fd985dc4606f5db9d895cca0e908",
+  "schema_version": 1,
+  "task_id": "202605031535-633VCY",
+  "updated_at": "2026-05-03T16:00:03.501Z",
+  "verify": {
+    "status": "pass"
+  }
+}

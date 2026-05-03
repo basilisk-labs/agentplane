@@ -88,6 +88,9 @@ The framework layer is the reusable control plane that recipes and runner-specif
 5. Command handlers and runner usecases consume the same context instead of rebuilding ad hoc task/repo/config helpers.
 6. Backend mutation and task projection update `.agentplane/tasks/<task-id>/README.md` and optional exported caches such as `.agentplane/tasks.json`.
 7. Shared runner flows persist run artifacts under `.agentplane/tasks/<task-id>/runs/<run-id>/`, including machine-readable framework explain/protocol payloads in the bundle.
+8. Planned Agent Change Record support will derive `.agentplane/tasks/<task-id>/acr.json` from the
+   same task, policy, verification, finish, and Git evidence instead of adding a parallel task
+   source of truth.
 
 ## Task file decision
 
@@ -158,3 +161,4 @@ Release is split into planning and apply:
 - [CLI contract](cli-contract)
 - [Release and publishing](release-and-publishing)
 - [Tasks and backends](../user/tasks-and-backends)
+- [ACR implementation plan](agent-change-record-implementation)

@@ -1,0 +1,239 @@
+---
+title: "ACR implementation plan"
+description: "How AgentPlane should implement Agent Change Record generation, validation, and merge-gate support."
+---
+
+## Goal
+
+Implement Agent Change Record v0.1 as an AgentPlane producer and validator for repo-local evidence.
+
+ACR support must fit the existing lifecycle:
+
+```text
+task -> plan -> approve -> start -> implement -> verify -> finish
+```
+
+It must not create a parallel task source of truth.
+
+## Code changes
+
+### Command group
+
+Add a new command group under the spec-driven CLI:
+
+```bash
+agentplane acr generate <task-id> [options]
+agentplane acr validate [<task-id-or-path>] [options]
+agentplane acr check <task-id> [options]
+agentplane acr explain [<task-id-or-path>] [options]
+agentplane acr schema [options]
+```
+
+Command specs belong in the command catalog and generated help surfaces. Generated CLI reference
+files must be regenerated, not hand-edited.
+
+### Usecases
+
+Keep side effects out of parser code. Add usecases for:
+
+- generate ACR from task, Git, policy, and verification state
+- validate ACR schema and local invariants
+- run CI/PR merge-gate checks
+- render reviewer explanation
+- emit bundled schema
+
+The command handlers should format output and route errors. The usecases should own behavior.
+
+### Ports and adapters
+
+Use explicit ports for:
+
+- task repository
+- Git repository
+- file store
+- hash service
+- clock
+- schema validator
+- policy decision source
+
+Adapters can use local filesystem, Git commands, and the existing JSON Schema tooling. This keeps
+ACR validation reusable from CLI, tests, and future CI integration points.
+
+### Schema and examples
+
+Add the v0.1 schema as a first-class artifact:
+
+```text
+schemas/acr/v0.1/acr.schema.json
+```
+
+or, if the spec package owns public schemas:
+
+```text
+packages/spec/schemas/acr-v0.1.schema.json
+```
+
+The exact path should follow the current schema-generation ownership at implementation time. The
+public schema must also be exported by `agentplane acr schema --version 0.1`.
+
+### Default output path
+
+The default producer path is:
+
+```text
+.agentplane/tasks/<task-id>/acr.json
+```
+
+`--out <path>` may write elsewhere for integrations. `--write` writes the task-local default.
+Existing ACR files should not be overwritten unless `--refresh` is passed.
+
+### Finish integration
+
+Roll out in stages:
+
+1. `acr generate`, `acr validate --mode schema`, and `acr validate --mode local`.
+2. `acr check --mode ci`.
+3. `finish --write-acr` as opt-in evidence generation.
+4. Config-controlled write-on-finish behavior.
+5. Optional branch_pr/team profile requirement.
+
+Do not make ACR mandatory in the first implementation release.
+
+## Proposed config surface
+
+The future config surface should be explicit and safe by default:
+
+```json
+{
+  "acr": {
+    "enabled": true,
+    "version": "0.1.0",
+    "write_on_finish": true,
+    "require_for_pr_check": true,
+    "default_validation_mode": "local",
+    "include_model_identity": "when_known",
+    "include_prompts": false,
+    "include_tool_outputs": false
+  }
+}
+```
+
+`include_prompts` and `include_tool_outputs` must stay `false` by default. ACR is intended to be a
+public, commit-safe evidence manifest, not a transcript archive.
+
+## Error model
+
+ACR commands should reuse the existing AgentPlane exit code classes:
+
+| Class                            | Exit code |
+| -------------------------------- | --------: |
+| usage errors                     |         2 |
+| schema or validation errors      |         3 |
+| filesystem errors                |         4 |
+| Git or workflow guardrail errors |         5 |
+| unexpected errors                |         1 |
+
+Recommended ACR-specific error codes:
+
+```text
+ACR_E_NOT_FOUND
+ACR_E_INVALID_JSON
+ACR_E_SCHEMA
+ACR_E_UNSUPPORTED_VERSION
+ACR_E_TASK_NOT_FOUND
+ACR_E_PLAN_REQUIRED
+ACR_E_PLAN_NOT_APPROVED
+ACR_E_VERIFICATION_REQUIRED
+ACR_E_VERIFICATION_FAILED
+ACR_E_POLICY_FAILED
+ACR_E_MANUAL_OVERRIDE_NOT_ALLOWED
+ACR_E_WAIVER_NOT_ALLOWED
+ACR_E_GIT_COMMIT_MISSING
+ACR_E_GIT_RANGE_INVALID
+ACR_E_EVIDENCE_NOT_FOUND
+ACR_E_EVIDENCE_HASH_MISMATCH
+ACR_E_DIGEST_MISMATCH
+ACR_E_PRIVACY_FORBIDDEN_FIELD
+```
+
+Error context must not include secrets, raw transcripts, or unredacted command output.
+
+## Validation rules
+
+Schema validation is necessary but insufficient.
+
+`local` mode must verify:
+
+- task exists in the active backend projection
+- approved plans reference real evidence
+- approvals are structurally valid
+- Git commits resolve locally
+- `work_commit` descends from `base_commit`
+- evidence paths are relative and do not contain `..`
+- evidence hashes match current files
+- verification and policy status are internally consistent
+- record digest matches the canonical JSON representation
+
+`ci` mode must add:
+
+- expected task-local ACR path unless an explicit path is provided
+- branch or PR contains `work_commit`
+- required plan approval exists
+- required verification is passed
+- failed policy decisions block merge
+- waivers and overrides are rejected unless explicitly allowed and approved
+
+## Tests
+
+Required AgentPlane tests:
+
+- `acr generate` creates a valid minimal ACR.
+- `acr validate` passes for a valid example.
+- `acr validate` fails for missing task.
+- `acr validate` fails for missing plan approval when required.
+- `acr validate` fails for failed verification in CI mode.
+- `acr validate` fails on evidence hash mismatch.
+- `acr validate` fails on invalid Git range.
+- `acr check` passes for merge-ready ACR.
+- `acr check` rejects `manual_override` unless explicitly allowed.
+- `acr schema` emits the bundled v0.1 schema.
+- generated CLI reference includes ACR commands.
+- help JSON includes ACR commands.
+- `--json-errors` behavior stays consistent.
+
+Required public spec tests:
+
+- every valid example passes schema validation
+- every invalid example fails for the expected reason
+- schema rejects unknown top-level fields
+- schema rejects absolute paths
+- schema rejects paths containing `..`
+- schema rejects malformed `sha256` values
+
+## Critical risks
+
+### Over-collecting evidence
+
+The strongest failure mode is making ACR too rich: prompts, transcripts, full shell output, tool call
+logs, screenshots, token streams, and private context. That would make the artifact impressive but
+unsafe to commit.
+
+The v0.1 record should remain narrow:
+
+```text
+who / why / approved plan / Git range / policy decisions / verification / evidence hashes / merge readiness
+```
+
+### Parallel truth
+
+If ACR becomes independently editable task truth, agents can generate clean reports that diverge
+from real task state. The validator must compare ACR against local task and evidence files.
+
+### Self-referential commits
+
+Do not require ACR to name the commit that contains the ACR file. Use `work_commit`; treat
+evidence commits as optional, later metadata.
+
+## Related standard
+
+For the user-facing standard definition, see [Agent Change Record](../user/agent-change-record).
