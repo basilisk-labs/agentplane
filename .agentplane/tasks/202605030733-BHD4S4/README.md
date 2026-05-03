@@ -1,10 +1,11 @@
 ---
 id: "202605030733-BHD4S4"
 title: "Enforce English PR artifacts language"
-status: "DOING"
+result_summary: "Merged via PR #787."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T07:37:40.720Z"
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.test.ts packages/core/src/config/config.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000; Result: pass; Evidence: 2 files, 22 tests passed. Command: node scripts/check-policy-routing.mjs && node scripts/check-recipes-inventory-fresh.mjs && git diff --check; Result: pass; Evidence: policy routing OK, recipes inventory up to date, no whitespace errors. Command: remote recipes raw fetch; Result: pass; Evidence: raw_recipes=1:code-map."
-commit: null
+commit:
+  hash: "c66cff3d6f160f310233b936ca3e16af44e71479"
+  message: "Merge pull request #787 from basilisk-labs/task/202605030733-BHD4S4/artifacts-language-validation"
 comments:
   -
     author: "CODER"
     body: "Start: porting the English PR artifact language validation from the stale cli-artifacts branch onto current main with current release state preserved."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #787 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.test.ts packages/core/src/config/config.test.ts --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000; Result: pass; Evidence: 2 files, 22 tests passed. Command: node scripts/check-policy-routing.mjs && node scripts/check-recipes-inventory-fresh.mjs && git diff --check; Result: pass; Evidence: policy routing OK, recipes inventory up to date, no whitespace errors. Command: remote recipes raw fetch; Result: pass; Evidence: raw_recipes=1:code-map."
+  -
+    type: "status"
+    at: "2026-05-03T07:54:55.575Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #787 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T07:37:40.723Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T07:54:55.580Z"
+doc_updated_by: "INTEGRATOR"
 description: "Port the artifacts_language configuration and PR artifact language validation from the stale cli-artifacts branch onto current main, preserving current v0.4.2 release state."
 sections:
   Summary: |-
