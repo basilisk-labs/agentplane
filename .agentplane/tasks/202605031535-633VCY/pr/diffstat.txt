@@ -1,0 +1,9 @@
+ .../agent-change-record-implementation.mdx         | 239 ++++++++++++++++++++
+ docs/developer/architecture.mdx                    |   4 +
+ docs/user/agent-change-record.mdx                  | 249 +++++++++++++++++++++
+ docs/user/commands.mdx                             |  16 ++
+ docs/user/configuration.mdx                        |  23 ++
+ docs/user/overview.mdx                             |   4 +
+ docs/user/task-lifecycle.mdx                       |  11 +-
+ website/sidebars.ts                                |   5 +
+ 8 files changed, 548 insertions(+), 3 deletions(-)
