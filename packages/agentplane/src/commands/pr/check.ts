@@ -89,6 +89,7 @@ export async function cmdPrCheck(opts: {
       relGithubTitlePath,
       relGithubBodyPath,
       taskId: task.id,
+      artifactsLanguage: config.artifacts_language,
     });
     const localSnapshot: PrArtifactSnapshot = {
       source: "local",
@@ -148,6 +149,7 @@ export async function cmdPrCheck(opts: {
         relGithubBodyPath,
         taskId: task.id,
         branchForFreshness,
+        artifactsLanguage: config.artifacts_language,
       });
       await evaluateSnapshotFreshness({
         snapshot: branchSnapshot,

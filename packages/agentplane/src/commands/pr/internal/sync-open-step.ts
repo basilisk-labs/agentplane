@@ -1,5 +1,9 @@
+import path from "node:path";
+
 import { fileExists } from "../../../cli/fs-utils.js";
+import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../../shared/write-if-changed.js";
+import { CliError } from "../../../shared/errors.js";
 import {
   buildObservedGithubPrMeta,
   buildOpenedPrMeta,
@@ -11,6 +15,7 @@ import {
   renderGithubPrBody,
   renderPrAutoSummary,
   renderPrReviewDocument,
+  validateArtifactsLanguage,
 } from "./review-template.js";
 import { computePrDiffstat } from "./sync-branch.js";
 import {
@@ -158,6 +163,26 @@ export async function runPrOpenSync(
     handoffNotes: common.handoffNotes,
     autoSummary: nextAutoSummary,
   });
+  const errors: string[] = [];
+  validateArtifactsLanguage({
+    texts: {
+      reviewText: nextReview,
+      githubTitleText: githubTitle,
+      githubBodyText: nextGithubBody,
+    },
+    relReviewPath: path.relative(common.resolved.gitRoot, common.reviewPath),
+    relGithubTitlePath: path.relative(common.resolved.gitRoot, common.githubTitlePath),
+    relGithubBodyPath: path.relative(common.resolved.gitRoot, common.githubBodyPath),
+    artifactsLanguage: common.artifactsLanguage,
+    errors,
+  });
+  if (errors.length > 0) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: errors.join("\n"),
+    });
+  }
   await writeJsonStableIfChanged(common.metaPath, nextMeta);
   await writeTextIfChanged(common.diffstatPath, diffstat ? `${diffstat}\n` : "");
   if (!(await fileExists(common.notesPath))) {

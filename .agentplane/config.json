@@ -26,6 +26,7 @@
       "expected_version": "0.4.2"
     }
   },
+  "artifacts_language": "en",
   "tasks": {
     "id_suffix_length_default": 6,
     "verify": {

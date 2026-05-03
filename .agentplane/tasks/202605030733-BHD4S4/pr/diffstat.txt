@@ -1,0 +1,18 @@
+ .agentplane/config.json                            |   1 +
+ docs/recipes-inventory.json                        |  76 +++++++++---
+ packages/agentplane/src/commands/pr/check.ts       |   2 +
+ .../src/commands/pr/integrate/artifacts.ts         |  75 +++++++++++-
+ .../src/commands/pr/integrate/internal/prepare.ts  |   3 +
+ .../pr/internal/pr-artifact-snapshot.test.ts       | 134 +++++++++++++++++++++
+ .../commands/pr/internal/pr-artifact-snapshot.ts   |  18 +++
+ .../src/commands/pr/internal/review-template.ts    |  29 +++++
+ .../src/commands/pr/internal/sync-model.ts         |   2 +
+ .../src/commands/pr/internal/sync-open-step.ts     |  25 ++++
+ .../src/commands/pr/internal/sync-update-step.ts   |  23 ++++
+ .../agentplane/src/commands/pr/internal/sync.ts    |   4 +
+ packages/core/schemas/config.schema.json           |   5 +
+ packages/core/src/config/config.test.ts            |   7 ++
+ packages/core/src/config/schema.impl.ts            |   3 +
+ packages/spec/examples/config.json                 |   1 +
+ packages/spec/schemas/config.schema.json           |   5 +
+ 17 files changed, 395 insertions(+), 18 deletions(-)

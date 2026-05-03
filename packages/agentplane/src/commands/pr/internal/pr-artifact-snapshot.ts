@@ -10,10 +10,12 @@ import { assessPrArtifactFreshness } from "./freshness.js";
 import { readPrArtifactFromBranch } from "./pr-paths.js";
 import { parsePrMeta, type PrMeta } from "../../shared/pr-meta.js";
 import {
+  validateArtifactsLanguage,
   validateGithubPrBodyContents,
   validateGithubPrTitleContents,
   validateReviewContents,
 } from "./review-template.js";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import {
   findWorktreeForBranch,
   gitListTaskBranches,
@@ -86,6 +88,7 @@ export function validateSnapshotContents(opts: {
   relGithubTitlePath: string;
   relGithubBodyPath: string;
   taskId: string;
+  artifactsLanguage: AgentplaneConfig["artifacts_language"];
 }): { meta: PrMeta | null; errors: string[] } {
   const errors: string[] = [];
   let meta: PrMeta | null = null;
@@ -117,6 +120,19 @@ export function validateSnapshotContents(opts: {
   } else {
     errors.push(`Missing ${opts.relGithubBodyPath}`);
   }
+
+  validateArtifactsLanguage({
+    texts: {
+      reviewText: opts.texts.reviewText,
+      githubTitleText: opts.texts.githubTitleText,
+      githubBodyText: opts.texts.githubBodyText,
+    },
+    relReviewPath: opts.relReviewPath,
+    relGithubTitlePath: opts.relGithubTitlePath,
+    relGithubBodyPath: opts.relGithubBodyPath,
+    artifactsLanguage: opts.artifactsLanguage,
+    errors,
+  });
   return { meta, errors };
 }
 
@@ -219,6 +235,7 @@ export async function buildBranchSnapshot(opts: {
   relGithubBodyPath: string;
   taskId: string;
   branchForFreshness: string;
+  artifactsLanguage: AgentplaneConfig["artifacts_language"];
 }): Promise<PrArtifactSnapshot> {
   const worktreePath = await findWorktreeForBranch(opts.resolved.gitRoot, opts.branchForFreshness);
   const texts: PrArtifactTexts = {
@@ -275,6 +292,7 @@ export async function buildBranchSnapshot(opts: {
     relGithubTitlePath: opts.relGithubTitlePath,
     relGithubBodyPath: opts.relGithubBodyPath,
     taskId: opts.taskId,
+    artifactsLanguage: opts.artifactsLanguage,
   });
   return {
     source: "branch",

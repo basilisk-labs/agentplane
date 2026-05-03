@@ -30,6 +30,7 @@
       "expected_version": null
     }
   },
+  "artifacts_language": "any",
   "tasks": {
     "id_suffix_length_default": 6,
     "verify": {

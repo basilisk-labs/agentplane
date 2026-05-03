@@ -1,4 +1,5 @@
 import type { TaskData } from "../../../backends/task-backend.js";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import type { PrHandoffNote } from "./note-store.js";
 import { extractTaskSuffix, parseTaskSubjectTemplate } from "@agentplaneorg/core/commit";
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
@@ -11,6 +12,8 @@ const VERIFICATION_SECTION = "## Verification";
 const RISKS_SECTION = "## Risks";
 const HANDOFF_NOTES_MARKER = "## Handoff Notes";
 const TASK_ID_SUFFIX_PATTERN = /\s*\[[^\]]+\]\s*$/u;
+const COMMON_NON_ENGLISH_LATIN_MARKERS =
+  /\b(?:avec|dans|des|est|este|esta|las|les|los|para|pero|por|que|sans|sont|una|une)\b/iu;
 
 function sectionText(task: TaskData, name: string, fallback: string): string {
   const value = typeof task.sections?.[name] === "string" ? task.sections[name].trim() : "";
@@ -351,4 +354,38 @@ export function validateGithubPrTitleContents(
   if (expectedSuffix && parsed.suffix.toLowerCase() !== expectedSuffix.toLowerCase()) {
     errors.push("GitHub PR title suffix does not match task id");
   }
+}
+
+type PrArtifactTexts = {
+  reviewText: string | null;
+  githubTitleText: string | null;
+  githubBodyText: string | null;
+};
+
+export function validateArtifactsLanguage(opts: {
+  texts: PrArtifactTexts;
+  relReviewPath: string;
+  relGithubTitlePath: string;
+  relGithubBodyPath: string;
+  artifactsLanguage: AgentplaneConfig["artifacts_language"];
+  errors: string[];
+}): void {
+  if (opts.artifactsLanguage !== "en") return;
+
+  if (opts.texts.reviewText && containsLikelyNonEnglishText(opts.texts.reviewText)) {
+    opts.errors.push(`Non-English text in ${opts.relReviewPath}`);
+  }
+  if (opts.texts.githubTitleText && containsLikelyNonEnglishText(opts.texts.githubTitleText)) {
+    opts.errors.push(`Non-English text in ${opts.relGithubTitlePath}`);
+  }
+  if (opts.texts.githubBodyText && containsLikelyNonEnglishText(opts.texts.githubBodyText)) {
+    opts.errors.push(`Non-English text in ${opts.relGithubBodyPath}`);
+  }
+}
+
+function containsLikelyNonEnglishText(text: string): boolean {
+  for (const char of text) {
+    if (/\p{Letter}/u.test(char) && !/[A-Za-z]/u.test(char)) return true;
+  }
+  return COMMON_NON_ENGLISH_LATIN_MARKERS.test(text);
 }
