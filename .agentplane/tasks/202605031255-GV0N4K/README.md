@@ -1,10 +1,10 @@
 ---
 id: "202605031255-GV0N4K"
 title: "Define WORKFLOW.md v2 canonical source contract"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -26,10 +26,20 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "PLANNER"
+    body: "Start: Begin WORKFLOW.md v2 source-of-truth contract design on the primary branch for the dependent migration task graph; implementation tasks remain dependency-gated until this contract is accepted."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T13:01:43.671Z"
+    author: "PLANNER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Begin WORKFLOW.md v2 source-of-truth contract design on the primary branch for the dependent migration task graph; implementation tasks remain dependency-gated until this contract is accepted."
 doc_version: 3
-doc_updated_at: "2026-05-03T12:56:46.611Z"
+doc_updated_at: "2026-05-03T13:01:43.671Z"
 doc_updated_by: "PLANNER"
 description: "Design the WORKFLOW.md v2 contract as the only project source of truth for AgentPlane workflow/config state. Specify startup contract behavior for IDE agents, CLI-owned front matter formatting, AGENTS.md policy-gateway boundaries, config.json removal strategy, migration phases, and source-of-truth conflict rules."
 sections:
