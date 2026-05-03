@@ -12,30 +12,72 @@
   },
   "recipes": [
     {
-      "id": "code-map",
-      "name": "Code Map",
-      "version": "0.1.1",
-      "summary": "Adds a lightweight code-map discipline to agent development work.",
-      "source": "agentplane-recipes/recipes/code-map",
+      "id": "dokploy",
+      "name": "Dokploy",
+      "version": "0.1.0",
+      "summary": "Dokploy API automation.",
+      "source": "agentplane-recipes/recipes/dokploy",
       "self_contained": true,
       "scenarios": [
         {
-          "id": "code-map",
-          "summary": "Create or refresh a compact project code map before implementation.",
+          "id": "deploy-application",
+          "summary": "Prepare a run plan for deploying an application through Dokploy.",
           "use_when": [
-            "A coding task spans multiple modules or ownership boundaries.",
-            "A new agent needs a quick map of the project's runtime surfaces.",
-            "A change depends on understanding entry points and verification commands."
+            "Need to deploy an application through Dokploy.",
+            "Need to review deployment permissions before execution."
           ],
-          "required_inputs": ["target_paths"],
-          "outputs": ["code_map_path", "mapped_surfaces", "verification_commands"],
-          "agents_involved": ["code-map-operator"],
-          "skills_used": ["code-map-discipline"],
-          "tools_used": [],
+          "required_inputs": ["application_id"],
+          "outputs": ["deployment_status"],
+          "agents_involved": ["dokploy-operator"],
+          "skills_used": ["dokploy-analysis"],
+          "tools_used": ["dokploy"],
+          "run_profile": {
+            "mode": "apply",
+            "sandbox": "workspace-write"
+          }
+        },
+        {
+          "id": "list-projects",
+          "summary": "Prepare a run plan for listing Dokploy projects.",
+          "use_when": [
+            "Need to validate Dokploy connectivity.",
+            "Need to inspect available projects before a deployment."
+          ],
+          "required_inputs": [],
+          "outputs": ["projects"],
+          "agents_involved": ["dokploy-operator"],
+          "skills_used": ["dokploy-analysis"],
+          "tools_used": ["dokploy"],
           "run_profile": {
             "mode": "analysis",
-            "sandbox": "workspace-write",
-            "writes_artifacts_to": ["docs/code-map.md"]
+            "sandbox": "workspace-write"
+          }
+        }
+      ]
+    },
+    {
+      "id": "viewer",
+      "name": "Viewer",
+      "version": "0.1.0",
+      "summary": "Local viewer for task artifacts.",
+      "source": "agentplane-recipes/recipes/viewer",
+      "self_contained": true,
+      "scenarios": [
+        {
+          "id": "viewer",
+          "summary": "Prepare the local task viewer run plan.",
+          "use_when": [
+            "Need to inspect task artifacts in a browser.",
+            "Need a local preview before editing task data."
+          ],
+          "required_inputs": ["port"],
+          "outputs": ["viewer_url"],
+          "agents_involved": ["viewer-operator"],
+          "skills_used": ["viewer-analysis"],
+          "tools_used": ["viewer-server"],
+          "run_profile": {
+            "mode": "analysis",
+            "sandbox": "workspace-write"
           }
         }
       ]

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { buildOpenedPrMeta, type PrMeta } from "../../shared/pr-meta.js";
 import { validateSnapshotContents } from "./pr-artifact-snapshot.js";
 
 const relPrDir = ".agentplane/tasks/T-1/pr";
@@ -12,27 +13,14 @@ const relGithubBodyPath = ".agentplane/tasks/T-1/pr/github-body.md";
 
 function makeMetaText(): string {
   const now = "2026-05-01T00:00:00.000Z";
-  const meta = {
-    schema_version: 1,
-    task_id: "T-1",
+  const meta: PrMeta = buildOpenedPrMeta({
+    taskId: "T-1",
     branch: "task/branch",
-    pr_number: null,
-    pr_url: null,
-    created_at: now,
-    updated_at: now,
-    status: null,
-    artifact_state: null,
-    artifact_state_reason: null,
-    artifact_state_updated_at: now,
-    merge_strategy: null,
-    merged_at: null,
-    merge_commit: null,
-    last_verified_sha: null,
-    last_verified_at: null,
-    verify: { status: "skipped" },
+    at: now,
+    previousMeta: null,
     base: "main",
-    head_sha: "abc123",
-  };
+    headSha: "abc123",
+  });
   return JSON.stringify(meta, null, 2);
 }
 
@@ -88,8 +76,11 @@ function makeTexts(
         "- Risk level: low",
         "## Handoff Notes",
         "- No notes",
+        "<!-- BEGIN AUTO SUMMARY -->",
+        "<details><summary>Raw evidence</summary></details>",
+        "<!-- END AUTO SUMMARY -->",
       ].join("\n"),
-    githubTitleText: overrides.githubTitleText ?? "task: Sample task [T-1]",
+    githubTitleText: overrides.githubTitleText ?? "🧩 1 task: Sample task [T-1]",
     githubBodyText: overrides.githubBodyText ?? englishBody,
   };
 }
@@ -99,7 +90,7 @@ describe("validateSnapshotContents", () => {
     const { meta, errors } = validateSnapshotContents({
       texts: makeTexts({
         reviewText:
-          "## Summary\n- Пример без ограничения языка\n## Scope\n- Тест\n## Verification\n- State: pending\n## Risks\n- Risk level: low\n## Handoff Notes\n- No notes",
+          "## Summary\n- Пример без ограничения языка\n## Scope\n- Тест\n## Verification\n- State: pending\n## Risks\n- Risk level: low\n## Handoff Notes\n- No notes\n<!-- BEGIN AUTO SUMMARY -->\n<details><summary>Raw evidence</summary></details>\n<!-- END AUTO SUMMARY -->",
       }),
       relPrDir,
       relMetaPath,
