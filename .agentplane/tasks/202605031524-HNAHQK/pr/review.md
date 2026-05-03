@@ -45,12 +45,21 @@ Extend branch_pr PR metadata and artifact rendering so a primary PR records incl
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T15:31:22.377Z
+- Updated: 2026-05-03T15:31:42.929Z
 - Branch: task/202605031524-HNAHQK/batch-metadata-contract
-- Head: 352b9fc0663d
+- Head: bab00d92157e
 
 ```text
-No changes detected.
+ .../commands/pr/internal/review-template.test.ts   | 87 ++++++++++------------
+ .../src/commands/pr/internal/review-template.ts    |  3 +-
+ .../src/commands/pr/internal/sync-open-step.ts     |  7 +-
+ .../src/commands/pr/internal/sync-update-step.ts   |  5 +-
+ .../agentplane/src/commands/shared/pr-meta.test.ts | 58 +++++++++++++++
+ packages/agentplane/src/commands/shared/pr-meta.ts | 83 +++++++++++++++++++--
+ packages/core/schemas/pr-meta.schema.json          | 27 +++++++
+ .../src/tasks/task-artifact-schema.pr-metadata.ts  | 10 +++
+ packages/spec/schemas/pr-meta.schema.json          | 27 +++++++
+ 9 files changed, 244 insertions(+), 63 deletions(-)
 ```
 
 </details>
