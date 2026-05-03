@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605031524-SDCTFM/batch-hosted-close-cascade",
+  "created_at": "2026-05-03T16:01:08.820Z",
+  "head_sha": "ccfe5b3420bd8548ede76cc441767dcf530df028",
+  "last_verified_at": "2026-05-03T16:01:08.728Z",
+  "last_verified_sha": "e2cfd48bac43cdb738a57c1481139533f6be2945",
+  "schema_version": 1,
+  "task_id": "202605031524-SDCTFM",
+  "updated_at": "2026-05-03T16:01:25.887Z",
+  "verify": {
+    "status": "pass"
+  }
+}

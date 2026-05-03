@@ -351,6 +351,164 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
     HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS,
   );
 
+  it(
+    "task hosted-close closes included branch_pr batch tasks with the primary task",
+    async () => {
+      const root = await writeAndConfigureRoot();
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+      await mkdir(path.join(root, "packages", "agentplane", "assets", "policy"), {
+        recursive: true,
+      });
+      await writeFile(
+        path.join(root, ".agentplane", "policy", "incidents.md"),
+        createIncidentRegistrySkeleton(),
+        "utf8",
+      );
+      await writeFile(
+        path.join(root, "packages", "agentplane", "assets", "policy", "incidents.md"),
+        createIncidentRegistrySkeleton(),
+        "utf8",
+      );
+      await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+      await execFileAsync("git", ["add", "."], { cwd: root });
+      await execFileAsync("git", ["commit", "--no-verify", "-m", "seed"], { cwd: root });
+      const { stdout: baseBranchStdout } = await execFileAsync(
+        "git",
+        ["rev-parse", "--abbrev-ref", "HEAD"],
+        { cwd: root },
+      );
+      const baseBranch = baseBranchStdout.trim();
+
+      const primaryTaskId = "202603271940-BATCH1";
+      const includedTaskId = "202603271940-BATCH2";
+      for (const taskId of [primaryTaskId, includedTaskId]) {
+        const addCode = await runCliSilent([
+          "task",
+          "add",
+          taskId,
+          "--title",
+          `Batch task ${taskId}`,
+          "--description",
+          "Exercise hosted branch_pr batch closure",
+          "--priority",
+          "high",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]);
+        expect(addCode).toBe(0);
+        await approveTaskPlan(root, taskId);
+        const startCode = await runCliSilent([
+          "task",
+          "start-ready",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: exercise hosted branch_pr batch closure.",
+          "--root",
+          root,
+        ]);
+        expect(startCode).toBe(0);
+        await recordVerificationOk(root, taskId);
+      }
+
+      const branch = `task/${primaryTaskId}/hosted-close-batch`;
+      const prOpenCode = await runCliSilent([
+        "pr",
+        "open",
+        primaryTaskId,
+        "--branch",
+        branch,
+        "--include-task",
+        includedTaskId,
+        "--sync-only",
+        "--author",
+        "CODER",
+        "--root",
+        root,
+      ]);
+      expect(prOpenCode).toBe(0);
+
+      await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+      const touchedFile = path.join(root, "src", "hosted-close-batch.ts");
+      await mkdir(path.dirname(touchedFile), { recursive: true });
+      await writeFile(touchedFile, "export const hostedCloseBatch = true;\n", "utf8");
+      await execFileAsync("git", ["add", "."], { cwd: root });
+      await execFileAsync("git", ["commit", "--no-verify", "-m", "feat: hosted close batch"], {
+        cwd: root,
+      });
+      const { stdout: branchHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: root,
+      });
+      const branchHead = branchHeadStdout.trim();
+
+      await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
+      await execFileAsync("git", ["merge", "--no-ff", branch, "-m", "Merge batch task branch"], {
+        cwd: root,
+      });
+      const { stdout: mergeHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: root,
+      });
+      const mergeSha = mergeHeadStdout.trim();
+
+      const eventDir = await mkdtemp(path.join(tmpdir(), "agentplane-hosted-close-batch-"));
+      const eventPath = path.join(eventDir, "event.json");
+      await writeFile(
+        eventPath,
+        `${JSON.stringify(
+          {
+            pull_request: {
+              merged: true,
+              number: 89,
+              title: "Hosted close batch task",
+              merge_commit_sha: mergeSha,
+              merged_at: "2026-03-27T20:00:00.000Z",
+              head: { ref: branch, sha: branchHead },
+              base: { ref: baseBranch },
+            },
+          },
+          null,
+          2,
+        )}\n`,
+        "utf8",
+      );
+
+      const code = await runCli([
+        "task",
+        "hosted-close",
+        "--event-json",
+        eventPath,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+
+      for (const taskId of [primaryTaskId, includedTaskId]) {
+        const taskShow = captureStdIO();
+        try {
+          const showCode = await runCli(["task", "show", taskId, "--root", root]);
+          expect(showCode).toBe(0);
+          const task = JSON.parse(taskShow.stdout) as {
+            status?: string;
+            commit?: { hash?: string } | null;
+          };
+          expect(task.status).toBe("DONE");
+          expect(task.commit?.hash).toBe(mergeSha);
+        } finally {
+          taskShow.restore();
+        }
+      }
+    },
+    HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS,
+  );
+
   it("task hosted-close falls back when the merge commit object is absent locally", async () => {
     const root = await writeAndConfigureRoot();
     const config = defaultConfig();

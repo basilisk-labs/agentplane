@@ -1,0 +1,5 @@
+ .../src/cli/run-cli.core.task-hosted-close.test.ts | 158 +++++++++++++++++++++
+ .../agentplane/src/commands/guard/impl/commit.ts   |   4 +-
+ .../agentplane/src/commands/task/finish-shared.ts  |   6 +-
+ .../src/commands/task/hosted-close.command.ts      | 120 +++++++++++-----
+ 4 files changed, 252 insertions(+), 36 deletions(-)
