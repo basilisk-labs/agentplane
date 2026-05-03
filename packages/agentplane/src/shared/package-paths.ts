@@ -120,8 +120,7 @@ export function resolveAgentplanePackageJsonPath(entryModuleUrl = import.meta.ur
 
 export function resolveAgentplaneAssetPath(...segments: string[]): string {
   const packageAssetPath = path.join(resolveAgentplanePackageRoot(), "assets", ...segments);
-  const useBuiltinAssets =
-    MODULE_IS_BUN_COMPILED || process.env[FORCE_BUILTIN_ASSETS_ENV] === "1";
+  const useBuiltinAssets = MODULE_IS_BUN_COMPILED || process.env[FORCE_BUILTIN_ASSETS_ENV] === "1";
   if (pathExists(packageAssetPath) || !useBuiltinAssets) return packageAssetPath;
   return path.join(materializeBuiltinAssets(), ...segments);
 }
