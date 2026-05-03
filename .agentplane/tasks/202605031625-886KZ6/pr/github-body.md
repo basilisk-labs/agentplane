@@ -1,6 +1,18 @@
 Task: `202605031625-886KZ6`
 Title: ACR v0.1 core schema contract
 
+## Batch Tasks
+
+- Primary: `202605031625-886KZ6`
+- Closure policy: `all_or_fail`
+- Included: `202605031625-BM686J`
+- Included: `202605031626-83YQTA`
+- Included: `202605031626-EQYR7H`
+- Included: `202605031626-M8GRHS`
+- Included: `202605031626-QPTPBD`
+- Included: `202605031626-RX30C6`
+- Included: `202605031626-ZN55PB`
+
 ## Summary
 
 ACR v0.1 core schema contract
@@ -15,7 +27,7 @@ Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, 
 ## Verification
 
 - State: ok
-- Note: Command: bun run schemas:check. Result: pass. Evidence: schemas OK. Scope: synchronized ACR v0.1 schema artifacts. Command: bun run test:project core packages/core/src/tasks packages/core/src/schemas. Result: pass. Evidence: 9 files and 75 tests passed. Scope: core task/schema bucket. Command: bun run --filter=@agentplaneorg/core typecheck. Result: pass. Evidence: core typecheck exited 0. Scope: exported ACR types/helpers. Command: bunx prettier --check changed ACR/schema files. Result: pass. Evidence: all matched files use Prettier style. Scope: changed source and generated schema artifacts.
+- Note: Command: bun run schemas:check. Result: pass. Evidence: schemas OK. Scope: ACR and config schemas. Command: bun run --filter=@agentplaneorg/core typecheck && build checked separately. Result: pass. Evidence: core typecheck/build exited 0. Scope: ACR schema exports. Command: bun run --filter=agentplane typecheck && build checked separately. Result: pass. Evidence: agentplane typecheck/build exited 0. Scope: ACR CLI and finish integration. Command: bun test packages/core/src/tasks/task-artifact-schema.test.ts. Result: pass. Evidence: 10 tests passed. Scope: ACR schema contract. Command: bun run test:project core packages/core/src/tasks packages/core/src/schemas. Result: pass. Evidence: 75 tests passed. Scope: core task/schema bucket. Command: ACR CLI smokes generate/validate/check/explain/schema. Result: pass. Evidence: acr.json generated, validate/check ok=true, explain merge ready yes.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
