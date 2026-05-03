@@ -152,7 +152,7 @@ export function configRawToWorkflowFrontMatter(
     commit: config.commit,
     scheduler: config.scheduler ?? {
       concurrency: 1,
-      poll_interval_ms: 30000,
+      poll_interval_ms: 30_000,
       retry_policy: {
         normal_exit_continuation: true,
         abnormal_backoff: "exponential",
@@ -200,7 +200,10 @@ export async function writeWorkflowConfigRaw(
   const current = await readWorkflowMarkdown(workflowPath);
   const frontMatter = configRawToWorkflowFrontMatter(raw);
   const yaml = YAML.stringify(frontMatter, { lineWidth: 0, sortMapEntries: false }).trimEnd();
-  const body = (current?.body.trimEnd() || DEFAULT_WORKFLOW_BODY.trimEnd()).trimEnd();
+  const currentBody = current?.body.trimEnd();
+  const body = (
+    currentBody === undefined || currentBody === "" ? DEFAULT_WORKFLOW_BODY : currentBody
+  ).trimEnd();
   await atomicWriteFile(workflowPath, `---\n${yaml}\n---\n\n${body}\n`, "utf8");
   return workflowPath;
 }

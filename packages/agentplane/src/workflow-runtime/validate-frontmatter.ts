@@ -327,9 +327,9 @@ export function validateWorkflowFrontMatter(
     true,
   );
   const mode =
-    workflow !== undefined
-      ? validateMode(diags, workflow.mode, "front_matter.workflow.mode")
-      : validateMode(diags, raw.mode);
+    workflow === undefined
+      ? validateMode(diags, raw.mode)
+      : validateMode(diags, workflow.mode, "front_matter.workflow.mode");
   const owners = validateOwners(diags, raw.owners, opts?.knownAgentIds ?? null);
   const approvals = validateApprovals(diags, raw.approvals);
   const retry_policy = validateRetryPolicy(diags, raw.retry_policy ?? scheduler?.retry_policy);
