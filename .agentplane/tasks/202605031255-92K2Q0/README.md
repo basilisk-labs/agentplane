@@ -66,7 +66,7 @@ description: "Update init, config show, config set, upgrade, doctor, and generat
 sections:
   Summary: |-
     Migrate config CLI and init to WORKFLOW.md only
-    
+
     Update init, config show, config set, upgrade, doctor, and generated docs so migrated configuration keys are read and written through WORKFLOW.md v2. config set must patch managed YAML front matter, preserve Markdown body, and stop writing .agentplane/config.json for new repositories.
   Scope: |-
     - In scope: Update init, config show, config set, upgrade, doctor, and generated docs so migrated configuration keys are read and written through WORKFLOW.md v2. config set must patch managed YAML front matter, preserve Markdown body, and stop writing .agentplane/config.json for new repositories.
@@ -81,13 +81,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-03T13:28:30.498Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: config set/mode/profile now save WORKFLOW.md; init resolves WORKFLOW.md as the setup artifact; tests updated for WORKFLOW-only config writes.
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:28:30.133Z, excerpt_hash=sha256:7c1b90ce8dd2f8b78e961ec22edfaff780a299d451196424a0bfc1e882f3aa92
-    
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).

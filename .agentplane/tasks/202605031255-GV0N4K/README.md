@@ -70,7 +70,7 @@ description: "Design the WORKFLOW.md v2 contract as the only project source of t
 sections:
   Summary: |-
     Define WORKFLOW.md v2 canonical source contract
-    
+
     Design the WORKFLOW.md v2 contract as the only project source of truth for AgentPlane workflow/config state. Specify startup contract behavior for IDE agents, CLI-owned front matter formatting, AGENTS.md policy-gateway boundaries, config.json removal strategy, migration phases, and source-of-truth conflict rules.
   Scope: |-
     - In scope: Design the WORKFLOW.md v2 contract as the only project source of truth for AgentPlane workflow/config state. Specify startup contract behavior for IDE agents, CLI-owned front matter formatting, AGENTS.md policy-gateway boundaries, config.json removal strategy, migration phases, and source-of-truth conflict rules.
@@ -83,21 +83,21 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-03T13:27:42.785Z — VERIFY — ok
-    
+
     By: PLANNER
-    
+
     Note: WORKFLOW v2 source-of-truth contract implemented in fb39a8d8 with CLI-owned front matter, legacy config import fallback, startup docs, and validation coverage.
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:01:43.671Z, excerpt_hash=sha256:c7a25d62accdf1554e2bcb64329211617b2b73fba29d3b8d70e4579e3dbfebbb
-    
+
     ### 2026-05-03T13:32:06.416Z — VERIFY — ok
-    
+
     By: PLANNER
-    
+
     Note: Verified: current PR head d3f396d1 contains implementation commits, task artifacts, CLI reference refresh, and PR artifact refresh. Targeted typecheck/tests, workflow build, doctor, policy routing, and pre-push checks passed up to unrelated recipes inventory drift.
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:27:42.790Z, excerpt_hash=sha256:c7a25d62accdf1554e2bcb64329211617b2b73fba29d3b8d70e4579e3dbfebbb
-    
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).

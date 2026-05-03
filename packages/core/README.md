@@ -4,36 +4,28 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/basilisk-labs/agentplane/blob/main/LICENSE)
 [![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](https://github.com/basilisk-labs/agentplane/blob/main/docs/user/prerequisites.mdx)
 
-Core utilities and models used by the `agentplane` CLI. This package exposes the reusable building blocks
-for project discovery, config handling, task readme parsing, and task export/linting.
+Core utilities and models used by the `agentplane` CLI.
 
-If you are an end-user, install the CLI instead: https://www.npmjs.com/package/agentplane
-
-## 5-minute start (CLI)
+This package powers the CLI's repo-visible contracts: project discovery, configuration loading,
+commit-subject validation, task README parsing/rendering, task exports, and schema helpers. If you
+are an end user, install the CLI instead:
 
 ```bash
 npm install -g agentplane
-agentplane init
-agentplane quickstart
-agentplane task new --title "First task" --description "Describe the change" --priority med --owner ORCHESTRATOR --tag docs
-agentplane verify <task-id>
-agentplane finish <task-id>
 ```
 
-## For library usage
-
-### Install
+## Install
 
 ```bash
 npm install @agentplaneorg/core
 ```
 
-### Requirements
+## Requirements
 
-- Node.js >= 20
+- Node.js 20+
 - ESM-only (`type: module`)
 
-### Usage
+## Usage
 
 ```ts
 import {
@@ -53,40 +45,42 @@ const snapshot = await buildTasksExportSnapshot(project.root);
 console.log(config.data.workflow_mode, task?.id, snapshot.meta.version);
 ```
 
-The root `@agentplaneorg/core` import is a backward-compatible aggregate export. For new code, prefer
-the narrowest published subpath when you only need one domain:
+The root import is a backward-compatible aggregate export. Prefer narrow subpaths for new code:
 
 ```ts
+import { validateCommitSubject } from "@agentplaneorg/core/commit";
 import { GitContext } from "@agentplaneorg/core/git";
 import { runProcess } from "@agentplaneorg/core/process";
 import { renderTaskReadme } from "@agentplaneorg/core/tasks";
 ```
 
-## Exported Modules
+## Exported modules
 
-| Import path                   | Area       | Highlights                                                                        |
-| ----------------------------- | ---------- | --------------------------------------------------------------------------------- |
-| `@agentplaneorg/core`         | Full API   | Backward-compatible aggregate export                                              |
-| `@agentplaneorg/core/fs`      | Filesystem | `atomicWriteFile`                                                                 |
-| `@agentplaneorg/core/git`     | Git        | `GitContext`, base branch helpers, changed-file helpers                           |
-| `@agentplaneorg/core/logger`  | Logger     | `createLogger`, `resolveLoggerMode`                                               |
-| `@agentplaneorg/core/process` | Process    | `runProcess`, `runProcessSync`, `startProcess`                                    |
-| `@agentplaneorg/core/schemas` | Schemas    | `AgentplaneConfigSchema`, schema renderers, task metadata validators              |
-| `@agentplaneorg/core/tasks`   | Tasks      | `createTask`, `listTasks`, `readTask`, task docs, task export and linting helpers |
+| Import path                   | Area       | Highlights                                                           |
+| ----------------------------- | ---------- | -------------------------------------------------------------------- |
+| `@agentplaneorg/core`         | Full API   | Backward-compatible aggregate export                                 |
+| `@agentplaneorg/core/commit`  | Commit     | Commit-subject parsing and validation                                |
+| `@agentplaneorg/core/config`  | Config     | Config schema, loading, validation, and default handling             |
+| `@agentplaneorg/core/fs`      | Filesystem | Atomic write helpers                                                 |
+| `@agentplaneorg/core/git`     | Git        | Git context, base branch helpers, and changed-file helpers           |
+| `@agentplaneorg/core/process` | Process    | Process execution helpers                                            |
+| `@agentplaneorg/core/schemas` | Schemas    | Schema renderers and task metadata validators                        |
+| `@agentplaneorg/core/tasks`   | Tasks      | Task docs, task stores, task exports, and README rendering utilities |
 
 ## Stability
 
-This package is versioned alongside the CLI and is primarily used by `agentplane`. The API is stable for
-current use cases, but expect changes as the CLI evolves.
-
-The root aggregate export is kept for patch/minor compatibility. Existing root re-exports will not be
-removed in a patch release. Any future removal or narrowing of the aggregate export requires a breaking
-release plan and migration notes that map removed symbols to their replacement subpaths.
+| Surface                   | Stability                                    |
+| ------------------------- | -------------------------------------------- |
+| Published subpath exports | Stable across patch releases                 |
+| Root aggregate export     | Backward compatible until a breaking release |
+| Internal file layout      | Not public API                               |
+| Task/schema contracts     | Versioned through repo-visible specs         |
 
 ## Docs
 
 - Repository: https://github.com/basilisk-labs/agentplane
-- Developer docs: https://github.com/basilisk-labs/agentplane/tree/main/docs
+- CLI package: https://www.npmjs.com/package/agentplane
+- Developer docs: https://github.com/basilisk-labs/agentplane/tree/main/docs/developer
 
 ## License
 

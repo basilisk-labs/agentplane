@@ -66,7 +66,7 @@ description: "Make WORKFLOW.md v2 part of the shared startup contract for any ID
 sections:
   Summary: |-
     Wire WORKFLOW.md into startup and prompt assembly
-    
+
     Make WORKFLOW.md v2 part of the shared startup contract for any IDE or CLI agent working in the folder. Ensure quickstart, AGENTS.md gateway guidance, runtime context, base prompt assembly, and runner bundles expose the workflow contract without copying AGENTS.md into the Prompt Template.
   Scope: |-
     - In scope: Make WORKFLOW.md v2 part of the shared startup contract for any IDE or CLI agent working in the folder. Ensure quickstart, AGENTS.md gateway guidance, runtime context, base prompt assembly, and runner bundles expose the workflow contract without copying AGENTS.md into the Prompt Template.
@@ -81,13 +81,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-03T13:28:31.086Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: quickstart, bundled AGENTS, docs, workflow artifacts, and workflow build now point to WORKFLOW.md as workflow/config source.
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:28:30.717Z, excerpt_hash=sha256:97efe8d56a8f3fe3db0b18dad659579a5dbf73a753a6e1dc0f49c673a4057edb
-    
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).

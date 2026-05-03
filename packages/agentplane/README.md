@@ -1,22 +1,17 @@
-# AgentPlane
+# AgentPlane CLI
+
+**The open-source audit layer for coding agents.**
+
+`agentplane` is a local CLI that turns Claude Code, Codex, Cursor, Aider, and similar coding-agent
+work into reviewable, reversible Git artifacts.
 
 [![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
 [![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
+[![GitHub stars](https://img.shields.io/github/stars/basilisk-labs/agentplane?style=flat)](https://github.com/basilisk-labs/agentplane/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/basilisk-labs/agentplane/blob/main/LICENSE)
 [![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](https://agentplane.org/docs/user/prerequisites)
 
-**Use coding agents without losing Git discipline.**
-
-`agentplane` is a local CLI that makes Claude Code, Codex, Cursor, Aider, and similar coding-agent
-work auditable inside your Git repository:
-
-```text
-task -> plan -> approve -> implement -> verify -> finish
-```
-
-No hosted runtime. No hidden control plane. Everything stays in your repo.
-
-## Install
+## Install in 30 seconds
 
 ```bash
 npm i -g agentplane
@@ -24,35 +19,16 @@ agentplane init
 agentplane quickstart
 ```
 
-Requirements:
-
-- Node.js 20+
-- Git repository
-- Local terminal
-
-Prefer not to install globally:
+Prefer no global install:
 
 ```bash
 npx agentplane init
 npx agentplane quickstart
 ```
 
-## Why it exists
+Requirements: Node.js 20+, Git, and a local terminal.
 
-Coding agents can change files. Teams still need to know what happened:
-
-- What task was the agent solving?
-- What plan was approved?
-- What changed in the repository?
-- What was verified?
-- Why was the task considered finished?
-
-AgentPlane adds a visible workflow layer around agent work without replacing Git, your editor, or
-your terminal.
-
-## What appears in your repository
-
-`agentplane init` creates a visible workflow surface:
+## What you get after `agentplane init`
 
 ```text
 AGENTS.md or CLAUDE.md   Policy gateway for the repository
@@ -63,102 +39,57 @@ AGENTS.md or CLAUDE.md   Policy gateway for the repository
 .agentplane/workflows/  Last-known-good workflow snapshot
 ```
 
-These artifacts make agent work inspectable. A reviewer can see what policy governed the repo, what
-task was active, what plan was accepted, what checks ran, and how the task was closed.
+AgentPlane does not run a hosted control plane. It records the task trail inside the repository you
+already review.
 
-## First task flow
-
-Create a task and record the plan:
+## One task loop
 
 ```bash
-agentplane task new --title "First task" --description "Describe the change" --priority med --owner DOCS --tag docs
-agentplane task plan set <task-id> --text "Explain the plan" --updated-by DOCS
-```
-
-If your repository requires explicit plan approval, run:
-
-```bash
-agentplane task plan approve <task-id> --by ORCHESTRATOR
-```
-
-Then start work, record verification, and finish:
-
-```bash
-agentplane task start-ready <task-id> --author DOCS --body "Start: ..."
+agentplane task new --title "Fix parser edge case" --description "Reject empty labels" --owner CODER --tag code
+agentplane task plan set <task-id> --text "Add a fixture, tighten validation, and run focused tests." --updated-by CODER
+agentplane task start-ready <task-id> --author CODER --body "Start: implement parser validation with focused tests."
+# Run Claude Code, Codex, Cursor, Aider, or edit manually.
 agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok --by DOCS --note "Checks passed"
-agentplane finish <task-id> --author DOCS --body "Verified: checks passed." --result "One-line outcome" --commit <git-rev>
+agentplane verify <task-id> --ok --by CODER --note "Focused tests passed."
+agentplane finish <task-id> --author CODER --body "Verified: focused tests passed." --result "Parser rejects empty labels." --commit <git-rev>
 ```
 
-That is the shortest useful path: initialize the repo, create a task, verify the change, and close it
-through recorded workflow state instead of an unstructured agent session.
-
-## Without vs with AgentPlane
-
-| Without AgentPlane       | With AgentPlane                 |
-| ------------------------ | ------------------------------- |
-| Prompt in chat           | Task is recorded                |
-| Agent edits files        | Plan is explicit                |
-| Human inspects diff      | Approval is visible             |
-| Context is scattered     | Verification is stored          |
-| Verification is implicit | Finish creates closure evidence |
-| Closure is manual        | Everything lives close to Git   |
+The visible output is the point: a reviewer can inspect task intent, plan, verification, and closure
+from Git-visible files.
 
 ## Workflow modes
 
-### `direct`
+- `direct` keeps work in the current checkout for fast local loops.
+- `branch_pr` creates per-task branches, worktrees, PR artifacts, and integration handoff.
 
-Fast local loops in the current checkout. Good for solo work, prototypes, and short tasks.
+## Compatible with
 
-### `branch_pr`
+Claude Code, Codex CLI, Cursor agent, Aider, GitHub Actions agent runners, and MCP-driven
+workflows. AgentPlane does not replace them; it records what they did and whether your gates passed.
 
-Structured per-task branch and PR-style handoff. Good for teams, stricter review, and integration
-boundaries.
+## Recipes
 
-## Who it is for
+Recipes are signed, versioned behavior modules for AgentPlane:
 
-- Developers using Claude Code, Codex, Cursor, Aider, or local coding agents.
-- Maintainers who want agent changes to remain reviewable.
-- Teams that need task state, verification, and closure before merging agent-generated work.
-- Local-first builders who do not want a hosted agent runtime between their repo and their workflow.
+```bash
+agentplane recipes list-remote
+agentplane recipes install code-map --refresh --yes
+```
 
-## What it is not
+Start with [Code Map](https://agentplane.org/docs/recipes/code-map).
 
-- Not a hosted agent platform.
-- Not a prompt framework.
-- Not a replacement for Git.
-- Not a replacement for your editor.
-- Not a replacement for Claude Code, Codex, Cursor, or Aider.
-
-## Workflow guides
-
-Start from the guide that matches your current stack:
-
-- [AgentPlane + Claude Code](https://agentplane.org/docs/workflow-guides/claude-code)
-- [AgentPlane + Codex](https://agentplane.org/docs/workflow-guides/codex)
-- [AgentPlane + Cursor](https://agentplane.org/docs/workflow-guides/cursor)
-- [AgentPlane + Aider](https://agentplane.org/docs/workflow-guides/aider)
-- [AgentPlane + GitHub Actions](https://agentplane.org/docs/workflow-guides/github-actions)
-- [AgentPlane + branch_pr workflow](https://agentplane.org/docs/workflow-guides/branch-pr)
-
-Installable recipes are separate signed packages; the current catalog starts with
-[Code Map](https://agentplane.org/docs/recipes/code-map).
-
-## Documentation
-
-Start here:
+## Docs
 
 - [Overview](https://agentplane.org/docs/user/overview)
 - [Setup](https://agentplane.org/docs/user/setup)
-- [Workflow](https://agentplane.org/docs/user/workflow)
 - [Task lifecycle](https://agentplane.org/docs/user/task-lifecycle)
-- [Commands](https://agentplane.org/docs/user/commands)
-- [CLI reference](https://agentplane.org/docs/user/cli-reference.generated)
+- [Workflow guides](https://agentplane.org/docs/workflow-guides)
+- [Recipes](https://agentplane.org/docs/recipes)
+- [Comparison](https://agentplane.org/docs/compare)
 
-## Support
+## Repository
 
-- [Issues](https://github.com/basilisk-labs/agentplane/issues)
-- [Contributing](https://github.com/basilisk-labs/agentplane/blob/main/CONTRIBUTING.md)
+https://github.com/basilisk-labs/agentplane
 
 ## License
 

@@ -1,28 +1,26 @@
-![Agent Plane Header](docs/assets/header.png)
+<p align="center">
+  <img src="docs/assets/header.png" alt="AgentPlane - the audit layer for coding agents" width="720"/>
+</p>
 
 # AgentPlane
 
-[![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
-[![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](docs/user/prerequisites.mdx)
-[![CLI Contract](https://img.shields.io/badge/CLI-contract-111827.svg)](docs/developer/cli-contract.mdx)
-[![Core CI](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml/badge.svg)](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml)
-[![test:fast](https://img.shields.io/badge/test%3Afast-Core%20CI-2563eb.svg)](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml)
-[![coverage](https://img.shields.io/badge/coverage-Core%20CI-2563eb.svg)](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml)
-[![release:parity](https://img.shields.io/badge/release%3Aparity-Core%20CI-2563eb.svg)](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml)
-[![knip](https://img.shields.io/badge/knip-roadmap-f59e0b.svg)](ROADMAP.md#2026q2-refactor-status)
+**The open-source audit layer for coding agents.**
 
-**Use coding agents without losing Git discipline.**
-
-AgentPlane is a local CLI that makes Claude Code, Codex, Cursor, Aider, and similar coding-agent
-work auditable inside your Git repository:
+AgentPlane turns Claude Code, Codex, Cursor, Aider, and similar coding-agent work into reviewable,
+reversible Git artifacts. It records what the agent was asked to do, what plan was accepted, what
+was verified, and how the work closed.
 
 ```text
 task -> plan -> approve -> implement -> verify -> finish
 ```
 
-No hosted runtime. No hidden state. Everything stays in your repo.
+No hosted runtime. No telemetry. No vendor lock-in. Everything stays in your repository.
+
+[![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
+[![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
+[![GitHub stars](https://img.shields.io/github/stars/basilisk-labs/agentplane?style=flat)](https://github.com/basilisk-labs/agentplane/stargazers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](docs/user/prerequisites.mdx)
 
 ## Install
 
@@ -32,95 +30,108 @@ agentplane init
 agentplane quickstart
 ```
 
-Requirements:
+Requirements: Node.js 20+, Git, and a local terminal.
 
-- Node.js 20+
-- Git repository
-- Local terminal
+## The problem
 
-## Why it exists
+You let a coding agent run. It edits dozens of files. The final diff is real, but the surrounding
+evidence is scattered across chat history, terminal scrollback, and memory. Reviewers can see what
+changed, but not the task, plan, approval, verification, and closure chain that made the change
+safe to merge.
 
-Coding agents can change files. Teams still need to know what happened:
+Hosted dashboards solve that by moving workflow state out of your repo. AgentPlane keeps the
+evidence in Git.
 
-- What task was the agent solving?
-- What plan was approved?
-- What changed in the repository?
-- What was verified?
-- Why was the task considered finished?
+## What AgentPlane writes
 
-AgentPlane adds a visible workflow layer around agent work without replacing Git, your editor, or
-your terminal.
-
-## What appears in your repository
+`agentplane init` adds a local workflow surface:
 
 ```text
-AGENTS.md or CLAUDE.md   Policy gateway for the repository
+AGENTS.md or CLAUDE.md   Repository policy gateway
 .agentplane/            Repo-local workflow workspace
 .agentplane/config.json Current workflow configuration
-.agentplane/tasks/      Per-task records
 .agentplane/WORKFLOW.md Materialized workflow contract
-verification records    Stored in task docs
-finish record           Linked to the Git revision
+.agentplane/tasks/      Per-task records, PR artifacts, and evidence
 ```
 
-These artifacts make agent work inspectable. A reviewer can see what policy governed the repo, what
-task was active, what plan was accepted, what checks ran, and how the task was closed.
+A reviewer can reconstruct the work from repo-visible artifacts: task intent, accepted plan,
+verification result, finish note, and linked commit.
 
-## How it works
+## First task flow
+
+Create a task:
 
 ```bash
-agentplane task new --title "First task" --description "Describe the change" --priority med --owner DOCS --tag docs
-agentplane task plan set <task-id> --text "Explain the plan" --updated-by DOCS
-agentplane task plan approve <task-id> --by ORCHESTRATOR
-agentplane task start-ready <task-id> --author DOCS --body "Start: ..."
-# run Claude Code, Codex, Cursor, Aider, or edit manually
-agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok --by DOCS --note "Checks passed"
-agentplane finish <task-id> --author DOCS --body "Verified: checks passed." --result "One-line outcome" --commit <git-rev>
+agentplane task new --title "Fix parser edge case" --description "Make the parser reject empty labels" --owner CODER --tag code
 ```
 
-If your repository does not require explicit plan approval, skip `task plan approve`.
+Record the plan and approval:
 
-## Without vs with AgentPlane
+```bash
+agentplane task plan set <task-id> --text "Add a parser fixture, tighten validation, and run focused tests." --updated-by CODER
+agentplane task plan approve <task-id> --by ORCHESTRATOR
+```
 
-| Without AgentPlane       | With AgentPlane                 |
-| ------------------------ | ------------------------------- |
-| Prompt in chat           | Task is recorded                |
-| Agent edits files        | Plan is explicit                |
-| Human inspects diff      | Approval is visible             |
-| Context is scattered     | Verification is stored          |
-| Verification is implicit | Finish creates closure evidence |
-| Closure is manual        | Everything lives close to Git   |
+Then start, verify, and finish:
 
-## Who it is for
+```bash
+agentplane task start-ready <task-id> --author CODER --body "Start: implement parser validation with focused test coverage."
+agentplane task verify-show <task-id>
+agentplane verify <task-id> --ok --by CODER --note "Focused parser tests passed."
+agentplane finish <task-id> --author CODER --body "Verified: parser validation and focused tests passed." --result "Parser rejects empty labels." --commit <git-rev>
+```
 
-- Developers using Claude Code, Codex, Cursor, Aider, or local coding agents.
-- Maintainers who want agent changes to remain reviewable.
-- Teams that need task state, verification, and closure before merging agent-generated work.
-- Local-first builders who do not want a hosted agent runtime between their repo and their workflow.
+The role names are configurable agent IDs. The important part is the artifact chain.
 
-## What it is not
+## Why AgentPlane
 
-- Not a hosted agent platform.
-- Not a prompt framework.
-- Not a replacement for Git.
-- Not a replacement for your editor.
-- Not a replacement for Claude Code, Codex, Cursor, or Aider.
+| Without AgentPlane       | With AgentPlane                       |
+| ------------------------ | ------------------------------------- |
+| Prompt in chat history   | Task intent recorded in the repo      |
+| Plan is implicit         | Plan is explicit and can be approved  |
+| Verification is a claim  | Verification is recorded with context |
+| Reviewer reads one diff  | Reviewer reads diff plus task record  |
+| Closure is manual        | Finish state links to a commit        |
+| Workflow lives elsewhere | Workflow artifacts live in Git        |
+
+## vs. other tools
+
+AgentPlane is not another coding agent. It is the workflow envelope around the agent you already
+use:
+
+- Claude Code, Codex, Cursor, and Aider generate or edit code; AgentPlane records the task trail.
+- `AGENTS.md` and `CLAUDE.md` are policy text; AgentPlane adds task state and CLI gates around it.
+- Git stores the final diff; AgentPlane stores the task, plan, verification, and closure evidence
+  beside that diff.
+- Hosted agent dashboards centralize workflow state; AgentPlane keeps it local to the repository.
+
+See the full comparison page in [docs/compare.mdx](docs/compare.mdx).
+
+## Recipes
+
+Recipes are signed, versioned behavior modules for AgentPlane. They can add agent profiles, prompt
+modules, skills, scenario assets, and expected project artifacts without turning your workflow into
+an opaque hosted service.
+
+```bash
+agentplane recipes list-remote
+agentplane recipes install code-map --refresh --yes
+```
+
+The current catalog starts with [Code Map](docs/recipes/code-map.mdx).
 
 ## Workflow modes
 
 ### `direct`
 
-Fast local loops in the current checkout. Good for solo work, prototypes, and short tasks.
+Fast local loops in the current checkout. Use it for solo work, prototypes, and short tasks.
 
 ### `branch_pr`
 
-Structured per-task branch and PR-style handoff. Good for teams, stricter review, and integration
-boundaries.
+Per-task branches, worktrees, PR artifacts, and integration handoff. Use it for teams and stricter
+review boundaries.
 
 ## Workflow guides
-
-Start from the guide that matches your current stack:
 
 - [AgentPlane + Claude Code](docs/workflow-guides/claude-code.mdx)
 - [AgentPlane + Codex](docs/workflow-guides/codex.mdx)
@@ -129,38 +140,24 @@ Start from the guide that matches your current stack:
 - [AgentPlane + GitHub Actions](docs/workflow-guides/github-actions.mdx)
 - [AgentPlane + branch_pr workflow](docs/workflow-guides/branch-pr.mdx)
 
-Each guide includes when to use it, commands, expected repo artifacts, limitations, and a
-copy-paste flow. Installable recipes are separate signed packages; the current catalog starts with
-[Code Map](docs/recipes/code-map.mdx).
-
 ## Documentation
-
-Start here:
 
 - [Overview](docs/user/overview.mdx)
 - [Setup](docs/user/setup.mdx)
 - [Workflow](docs/user/workflow.mdx)
 - [Task lifecycle](docs/user/task-lifecycle.mdx)
 - [Commands](docs/user/commands.mdx)
-- [CLI reference (generated)](docs/user/cli-reference.generated.mdx)
-
-Developer surfaces:
-
+- [CLI reference](docs/user/cli-reference.generated.mdx)
 - [Architecture](docs/developer/architecture.mdx)
 - [CLI contract](docs/developer/cli-contract.mdx)
-- [Harness engineering](docs/developer/harness-engineering.mdx)
-- [Release and publishing](docs/developer/release-and-publishing.mdx)
 
-Deep architecture terms such as framework control plane, harness contract, protocol surfaces, and
-behavior precedence belong in the developer docs, not in the first-start path.
+## Status
 
-## Technical proof
-
-- MIT licensed.
-- TypeScript codebase.
-- Local-first CLI.
-- Active release history.
-- No hosted control plane.
+[![Core CI](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml/badge.svg)](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml)
+[![test:fast](https://img.shields.io/badge/test%3Afast-Core%20CI-2563eb.svg)](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml)
+[![coverage](https://img.shields.io/badge/coverage-Core%20CI-2563eb.svg)](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml)
+[![release:parity](https://img.shields.io/badge/release%3Aparity-Core%20CI-2563eb.svg)](https://github.com/basilisk-labs/agentplane/actions/workflows/ci.yml)
+[![CLI Contract](https://img.shields.io/badge/CLI-contract-111827.svg)](docs/developer/cli-contract.mdx)
 
 ## Contributing
 

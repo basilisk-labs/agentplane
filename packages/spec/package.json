@@ -1,10 +1,11 @@
 {
   "name": "@agentplane/spec",
   "version": "0.0.0",
-  "description": "Schemas and examples for Agent Plane file formats (internal package).",
+  "description": "Schemas and examples for AgentPlane audit-layer file formats (internal package).",
   "keywords": [
     "agentplane",
     "agentplane-framework",
+    "agent-audit",
     "schema",
     "spec",
     "tasks"
@@ -15,7 +16,7 @@
     "type": "git",
     "url": "https://github.com/basilisk-labs/agentplane.git"
   },
-  "homepage": "https://github.com/basilisk-labs/agentplane",
+  "homepage": "https://agentplane.org",
   "bugs": {
     "url": "https://github.com/basilisk-labs/agentplane/issues"
   },

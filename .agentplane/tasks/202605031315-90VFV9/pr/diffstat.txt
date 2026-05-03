@@ -1,0 +1,50 @@
+ .agentplane/tasks/202605031255-92K2Q0/README.md    |  10 +-
+ .agentplane/tasks/202605031255-E1YFBV/README.md    |  10 +-
+ .agentplane/tasks/202605031255-GV0N4K/README.md    |  18 +--
+ .agentplane/tasks/202605031255-H9WWA0/README.md    |  10 +-
+ .agentplane/tasks/202605031255-TWKAW3/README.md    |  10 +-
+ .agentplane/tasks/202605031255-XM1W31/README.md    |  10 +-
+ .agentplane/tasks/202605031256-2HEMDS/README.md    |  10 +-
+ .agentplane/tasks/202605031256-758Q7Z/README.md    |  10 +-
+ .agentplane/tasks/202605031315-6DPX1F/README.md    | 129 +++++++++++++++
+ .agentplane/tasks/202605031315-8R3SRX/README.md    | 133 +++++++++++++++
+ .agentplane/tasks/202605031315-E9WZ3G/README.md    | 128 +++++++++++++++
+ .agentplane/tasks/202605031315-GPW9P5/README.md    | 130 +++++++++++++++
+ .agentplane/tasks/202605031315-HZQGRZ/README.md    | 128 +++++++++++++++
+ .agentplane/tasks/202605031315-VZ15JW/README.md    | 130 +++++++++++++++
+ .agentplane/tasks/202605031315-Z0PECQ/README.md    | 130 +++++++++++++++
+ .agentplane/tasks/202605031315-ZN8594/README.md    | 127 +++++++++++++++
+ README.md                                          | 179 ++++++++++-----------
+ docs/assets/header.png                             | Bin 25895 -> 170586 bytes
+ docs/compare.mdx                                   |  53 ++++++
+ docs/index.mdx                                     |  22 +--
+ docs/manifesto.mdx                                 |  74 +++++++++
+ docs/recipes-inventory.json                        |  29 ++++
+ packages/agentplane/README.md                      | 149 +++++------------
+ .../assets/codex-plugin/assets/header.png          | Bin 25895 -> 170586 bytes
+ packages/agentplane/package.json                   |   6 +-
+ packages/agentplane/src/cli/command-guide.test.ts  |   3 +
+ packages/agentplane/src/cli/command-guide.ts       |  21 +++
+ .../src/workflow-runtime/validate-frontmatter.ts   |   6 +-
+ packages/core/README.md                            |  64 ++++----
+ packages/core/package.json                         |   7 +-
+ packages/core/src/config/workflow-file.ts          |   7 +-
+ packages/recipes/README.md                         |  29 +++-
+ packages/recipes/package.json                      |   7 +-
+ packages/spec/README.md                            |   8 +
+ packages/spec/package.json                         |   5 +-
+ packages/testkit/README.md                         |  22 +++
+ packages/testkit/package.json                      |   5 +-
+ ...-05-03-coding-agent-audit-layer-and-recipes.mdx | 100 ++++++++++++
+ website/docusaurus.config.ts                       |  26 ++-
+ website/sidebars.ts                                |   2 +
+ website/src/data/homepage-content.ts               |  93 ++++++++---
+ website/src/pages/_home.module.css                 | 123 +++++++++++++-
+ website/src/pages/index.tsx                        |  38 ++++-
+ website/static/img/header.png                      | Bin 25895 -> 170586 bytes
+ website/static/img/og-image.png                    | Bin 25895 -> 170586 bytes
+ website/static/img/twitter-card.png                | Bin 25895 -> 170586 bytes
+ website/static/llms-full.txt                       |  95 ++++++++---
+ website/static/llms.txt                            |  14 +-
+ website/static/site.webmanifest                    |   4 +-
+ 49 files changed, 1945 insertions(+), 369 deletions(-)

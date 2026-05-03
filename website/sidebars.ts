@@ -45,6 +45,8 @@ const sidebars: SidebarsConfig = {
       label: "Start",
       items: [
         "user/overview",
+        "manifesto",
+        "compare",
         "user/prerequisites",
         "user/setup",
         "user/agent-bootstrap.generated",

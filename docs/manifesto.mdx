@@ -1,0 +1,74 @@
+---
+title: "Why AgentPlane exists"
+description: "Why coding-agent work needs a repository-native audit layer instead of another hosted dashboard or prompt convention."
+---
+
+Coding agents made code generation cheap. They did not make agent work reviewable.
+
+AgentPlane exists for the gap between a generated diff and an accountable engineering change: the task that justified it, the plan that constrained it, the checks that verified it, and the handoff that made it safe to close.
+
+## The failure mode
+
+Most agent workflows leave reviewers with a diff and a chat transcript.
+
+That is not enough when work spans several commands, retries, roles, branches, worktrees, and verification steps. The important questions are usually outside the diff:
+
+- What task was the agent executing?
+- Which plan was approved before mutation?
+- Which role owned the work?
+- Which checks actually ran?
+- What evidence justified closure?
+- Which branch or pull request carries the handoff?
+
+Git records content. It does not, by itself, record agent intent or verification.
+
+## The audit layer
+
+AgentPlane adds a repository-native audit layer around coding agents.
+
+It gives Claude Code, Codex, Cursor, Aider, and other coding-agent tools a shared operating surface:
+
+- task files in `.agentplane/tasks/<task-id>/`
+- policy gates in `AGENTS.md` and `.agentplane/policy/`
+- explicit lifecycle commands for plan, start, verify, finish, and integrate
+- branch and pull request artifacts for `branch_pr` workflows
+- generated documentation and reference surfaces for humans and agents
+
+The result is not a replacement for Git, pull requests, CI, or the coding agent. It is the missing control plane around them.
+
+## What AgentPlane refuses
+
+AgentPlane is intentionally not a hosted agent runtime.
+
+It does not require a cloud dashboard for the core workflow. It does not ask reviewers to trust an external activity feed. It does not move the source of truth out of the repository.
+
+The repository stays the record:
+
+- policies are files
+- tasks are files
+- verification is written down
+- branches and commits remain normal Git objects
+- CI and local checks stay the highest source of truth
+
+## What changes
+
+Without AgentPlane, a coding agent can produce a correct patch with weak provenance.
+
+With AgentPlane, the patch sits inside a lifecycle:
+
+1. A task names the scope.
+2. A plan states the expected route.
+3. A role owns execution.
+4. Checks produce evidence.
+5. Finish records the result.
+6. Integration closes the loop.
+
+That lifecycle is small enough to run locally and explicit enough for another agent or reviewer to inspect later.
+
+## The operating bet
+
+AgentPlane assumes the durable interface for agentic engineering is not a single model, IDE, or vendor.
+
+The durable interface is a repository protocol: tasks, policies, checks, branches, and reviewable evidence that any capable coding agent can follow.
+
+That is the surface AgentPlane builds.

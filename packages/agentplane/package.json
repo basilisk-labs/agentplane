@@ -1,10 +1,14 @@
 {
   "name": "agentplane",
   "version": "0.4.2",
-  "description": "Agent Plane CLI for task workflows, recipes, and project automation.",
+  "description": "Open-source audit-layer CLI for coding-agent task, policy, verification, and branch workflows.",
   "keywords": [
     "agentplane",
     "agentplane-framework",
+    "coding-agent",
+    "agent-audit",
+    "git-workflow",
+    "agentic-coding",
     "cli",
     "tasks",
     "workflow",

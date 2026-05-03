@@ -65,7 +65,7 @@ description: "Delete .agentplane/config.json as a generated/managed artifact for
 sections:
   Summary: |-
     Remove config.json from managed repository state
-    
+
     Delete .agentplane/config.json as a generated/managed artifact for current repositories, migrate examples and docs to WORKFLOW.md v2, remove config.json schema expectations from setup output, and keep only legacy import/upgrade support where needed.
   Scope: |-
     - In scope: Delete .agentplane/config.json as a generated/managed artifact for current repositories, migrate examples and docs to WORKFLOW.md v2, remove config.json schema expectations from setup output, and keep only legacy import/upgrade support where needed.
@@ -80,13 +80,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-03T13:28:32.271Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: .agentplane/config.json is deleted; saveConfig removes legacy config.json; doctor requires WORKFLOW.md; testkit writes WORKFLOW-backed config.
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:28:31.903Z, excerpt_hash=sha256:490bacaf83ca0bf66c46d1a6828dc8fd7c50d3dc6237ee12682d4f131751a8d9
-    
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).

@@ -67,7 +67,7 @@ description: "Add the final integration gate for the WORKFLOW-only architecture:
 sections:
   Summary: |-
     Add WORKFLOW-only migration and release gate
-    
+
     Add the final integration gate for the WORKFLOW-only architecture: migrate an existing config.json repository to WORKFLOW.md v2, verify no new repository writes config.json, run full doctor/routing/schema checks, and document rollback behavior for legacy imports.
   Scope: |-
     - In scope: Add the final integration gate for the WORKFLOW-only architecture: migrate an existing config.json repository to WORKFLOW.md v2, verify no new repository writes config.json, run full doctor/routing/schema checks, and document rollback behavior for legacy imports.
@@ -83,13 +83,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-03T13:28:32.858Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: upgrade policy denies .agentplane/WORKFLOW.md and legacy config.json, workflow build preserves existing WORKFLOW.md as override, and release/test helpers use WORKFLOW-backed config.
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:28:32.488Z, excerpt_hash=sha256:b300a19315d1bf97105962ed19dcf822a9f622192c31c4cb9ed1d648961664b4
-    
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).

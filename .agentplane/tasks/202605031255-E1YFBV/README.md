@@ -66,7 +66,7 @@ description: "Define the allowed Prompt Template runtime context for task, works
 sections:
   Summary: |-
     Enforce strict WORKFLOW prompt template variables
-    
+
     Define the allowed Prompt Template runtime context for task, workspace, git, workflow, policy, checks, attempt, runner, and evaluator data. Add workflow vars/render/validate diagnostics that fail on unknown variables or filters before a runner or IDE agent receives a broken prompt.
   Scope: |-
     - In scope: Define the allowed Prompt Template runtime context for task, workspace, git, workflow, policy, checks, attempt, runner, and evaluator data. Add workflow vars/render/validate diagnostics that fail on unknown variables or filters before a runner or IDE agent receives a broken prompt.
@@ -81,13 +81,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-03T13:28:31.681Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: workflow build continues validateTemplateStrict/renderTemplateStrict with strictVariables and strictFilters; tests cover unknown variable/filter diagnostics and v2 build behavior.
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:28:31.314Z, excerpt_hash=sha256:0046e2497f86493f36023440d8d68b591e177eb62e73f6c0201778a2a1ab844a
-    
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).

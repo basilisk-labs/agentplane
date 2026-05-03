@@ -65,7 +65,7 @@ description: "Implement the typed WORKFLOW.md v2 front matter schema, parser, se
 sections:
   Summary: |-
     Add WORKFLOW.md v2 schema and managed front matter writer
-    
+
     Implement the typed WORKFLOW.md v2 front matter schema, parser, serializer, and CLI-owned formatting path for workflow, tasks, workspace, runner, scheduler, evaluator, observability, and prompt_template metadata without changing runtime precedence yet.
   Scope: |-
     - In scope: Implement the typed WORKFLOW.md v2 front matter schema, parser, serializer, and CLI-owned formatting path for workflow, tasks, workspace, runner, scheduler, evaluator, observability, and prompt_template metadata without changing runtime precedence yet.
@@ -79,13 +79,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-03T13:28:11.106Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: Implemented packages/core/src/config/workflow-file.ts and v2 front matter validation; covered by config and workflow-runtime tests.
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:28:10.702Z, excerpt_hash=sha256:de8cd1593f93100da4fe4df9cc83bd719895beb114580cd2f4c08acfaaa87a5e
-    
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).

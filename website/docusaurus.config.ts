@@ -6,7 +6,7 @@ const gaMeasurementId = process.env.GA_MEASUREMENT_ID ?? "G-L8T8ZZ8RSG";
 
 const config = {
   title: "AgentPlane",
-  tagline: "Deterministic agent workflows with auditable guardrails.",
+  tagline: "The audit layer for coding agents.",
   titleDelimiter: "·",
   favicon: "img/favicon.ico",
   future: {
@@ -70,7 +70,8 @@ const config = {
     metadata: [
       {
         name: "keywords",
-        content: "agent workflows, cli automation, policy gates, codex workflow, ai agents",
+        content:
+          "claude code workflow, codex workflow, cursor agent, aider, ai coding agent guardrails, agent audit log, AGENTS.md, reviewable agent work",
       },
       {
         name: "robots",
@@ -78,18 +79,19 @@ const config = {
       },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "AgentPlane" },
-      { property: "og:title", content: "AgentPlane" },
+      { property: "og:title", content: "AgentPlane: the audit layer for coding agents" },
       {
         property: "og:description",
         content:
-          "Deterministic agent workflows with auditable policy gates and repository-native task execution.",
+          "Open-source CLI that turns Claude Code, Codex, Cursor, and Aider into reviewable, reversible work inside Git repositories.",
       },
       { property: "og:image", content: "https://agentplane.org/img/og-image.png" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "AgentPlane" },
+      { name: "twitter:title", content: "AgentPlane: the audit layer for coding agents" },
       {
         name: "twitter:description",
-        content: "A local CLI for reviewable coding-agent work inside Git repositories.",
+        content:
+          "Open-source CLI that records task, plan, verification, and closure evidence for coding-agent work.",
       },
       { name: "twitter:image", content: "https://agentplane.org/img/twitter-card.png" },
       { name: "twitter:site", content: "@agentplaneorg" },
@@ -109,10 +111,22 @@ const config = {
       },
       items: [
         {
+          to: "/docs/manifesto",
+          label: "Why",
+          position: "right",
+          activeBaseRegex: "^/docs/manifesto",
+        },
+        {
           to: "/docs/user/overview",
           label: "Docs",
           position: "right",
           activeBaseRegex: "^/docs",
+        },
+        {
+          to: "/docs/compare",
+          label: "Compare",
+          position: "right",
+          activeBaseRegex: "^/docs/compare",
         },
         {
           to: "/docs/recipes",
