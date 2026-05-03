@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T14:49:03Z",
   "base": "main",
   "branch": "task/202605031445-0MGNSR/refresh-recipes-inventory",
   "created_at": "2026-05-03T14:46:54.659Z",
-  "head_sha": "37d7354800dc97cff6eba4711f30c13c71f7c5eb",
+  "head_sha": "45e5d8e975ae14ef008e711a3a4896f7180fb6a0",
   "last_verified_at": "2026-05-03T14:46:54.622Z",
   "last_verified_sha": "9f3999832eae5d371db11bcba76a16e556d04539",
+  "merge_commit": "4278ac2cca8ab60d28859be033170f68e1c5caba",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T14:49:03Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605031445-0MGNSR",
-  "updated_at": "2026-05-03T14:46:58.422Z",
+  "updated_at": "2026-05-03T14:49:03Z",
   "verify": {
     "status": "pass"
   }
