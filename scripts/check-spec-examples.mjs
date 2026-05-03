@@ -3,6 +3,7 @@ import path from "node:path";
 import { inspect } from "node:util";
 
 const EXAMPLE_ROUTES = [
+  ["acr.json", "acr-v0.1.schema.json"],
   ["config.json", "config.schema.json"],
   ["pr-meta.json", "pr-meta.schema.json"],
   ["task-handoff.json", "task-handoff.schema.json"],

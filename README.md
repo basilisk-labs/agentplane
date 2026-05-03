@@ -22,6 +22,11 @@ No hosted runtime. No telemetry. No vendor lock-in. Everything stays in your rep
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](docs/user/prerequisites.mdx)
 
+[![SLSA v1 provenance](https://img.shields.io/badge/SLSA-v1-success)](https://registry.npmjs.org/-/npm/v1/attestations/agentplane@latest)
+[![Trusted publisher](https://img.shields.io/badge/npm-trusted%20publisher-blue)](https://docs.npmjs.com/generating-provenance-statements)
+[![Recipes signed: Ed25519](https://img.shields.io/badge/recipes-Ed25519%20signed-111827)](https://agentplane.org/docs/recipes)
+[![Discussions](https://img.shields.io/github/discussions/basilisk-labs/agentplane)](https://github.com/basilisk-labs/agentplane/discussions)
+
 ## Install
 
 ```bash
@@ -31,6 +36,8 @@ agentplane quickstart
 ```
 
 Requirements: Node.js 20+, Git, and a local terminal.
+
+![AgentPlane CLI demo](docs/assets/agentplane-demo.gif)
 
 ## The problem
 
@@ -49,39 +56,54 @@ evidence in Git.
 ```text
 AGENTS.md or CLAUDE.md   Repository policy gateway
 .agentplane/            Repo-local workflow workspace
-.agentplane/config.json Current workflow configuration
-.agentplane/WORKFLOW.md Materialized workflow contract
+.agentplane/WORKFLOW.md Current workflow/config contract
 .agentplane/tasks/      Per-task records, PR artifacts, and evidence
 ```
 
 A reviewer can reconstruct the work from repo-visible artifacts: task intent, accepted plan,
 verification result, finish note, and linked commit.
 
+## What is an ACR?
+
+Every AgentPlane task can produce an **Agent Change Record (ACR)**: a deterministic,
+machine-readable JSON document that summarizes the task's intent, accepted plan, verification
+result, and closure commit. ACRs are validated against `@agentplane/spec` so they remain reviewable
+by humans and parseable by tooling.
+
+```bash
+agentplane acr generate <task-id> --work-commit HEAD --write
+agentplane acr validate .agentplane/tasks/<task-id>/acr.json
+agentplane acr check <task-id> --require-plan-approved --require-verification
+```
+
+Schema: [`packages/spec/schemas/acr-v0.1.schema.json`](packages/spec/schemas/acr-v0.1.schema.json).
+
 ## First task flow
 
 Create a task:
 
 ```bash
-agentplane task new --title "Fix parser edge case" --description "Make the parser reject empty labels" --owner CODER --tag code
+agentplane task new --title "Fix parser edge case" --description "Reject empty labels." --owner CODER --tag code
 ```
 
 Record the plan and approval:
 
 ```bash
-agentplane task plan set <task-id> --text "Add a parser fixture, tighten validation, and run focused tests." --updated-by CODER
+agentplane task plan set <task-id> --text "Add a fixture, tighten validation, and run focused tests." --updated-by CODER
 agentplane task plan approve <task-id> --by ORCHESTRATOR
 ```
 
 Then start, verify, and finish:
 
 ```bash
-agentplane task start-ready <task-id> --author CODER --body "Start: implement parser validation with focused test coverage."
+agentplane task start-ready <task-id> --author CODER --body "Start: implementing parser validation with focused tests."
 agentplane task verify-show <task-id>
 agentplane verify <task-id> --ok --by CODER --note "Focused parser tests passed."
-agentplane finish <task-id> --author CODER --body "Verified: parser validation and focused tests passed." --result "Parser rejects empty labels." --commit <git-rev>
+agentplane finish <task-id> --author CODER --result "Parser rejects empty labels." --commit <git-rev>
 ```
 
-The role names are configurable agent IDs. The important part is the artifact chain.
+Roles like `CODER` and `ORCHESTRATOR` are configurable agent IDs. See
+[Agents](docs/user/agents.mdx).
 
 ## Why AgentPlane
 
@@ -121,6 +143,20 @@ agentplane recipes install code-map --refresh --yes
 The current catalog starts with [Code Map](docs/recipes/code-map.mdx).
 
 ## Workflow modes
+
+## Who uses it
+
+- Solo developers who want a future-self version of the agent's work to stay reviewable.
+- Maintainers accepting agent-generated PRs.
+- Teams enforcing AGENTS.md policy and DCO sign-off across human and agent commits.
+- Platform, DevProd, and security orgs building internal AGENTS.md standards.
+
+DCO sign-off and multi-author commits are first-class. AgentPlane-managed commits preserve DCO
+identity fallbacks so agent and human co-authoring stays compliant.
+
+Using AgentPlane in a real repo? Tell us in
+[Discussions](https://github.com/basilisk-labs/agentplane/discussions). We will add your story to
+[docs/showcase](docs/showcase.mdx).
 
 ### `direct`
 
@@ -162,6 +198,16 @@ review boundaries.
 ## Contributing
 
 Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Help us ship this
+
+If AgentPlane saved you a bad merge, [star the repo](https://github.com/basilisk-labs/agentplane)
+and drop a note in [Discussions](https://github.com/basilisk-labs/agentplane/discussions). It is
+the only growth signal we use.
+
+## Stargazers over time
+
+[![Stargazers over time](https://api.star-history.com/svg?repos=basilisk-labs/agentplane&type=Date)](https://star-history.com/#basilisk-labs/agentplane&Date)
 
 ## License
 

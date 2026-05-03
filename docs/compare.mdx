@@ -5,7 +5,7 @@ description: "Where AgentPlane fits alongside coding agents, AGENTS.md, Git, CI,
 
 AgentPlane is not another coding agent.
 
-It is the audit layer around coding-agent work: task scope, approved plan, role ownership, verification evidence, branch handoff, and closure recorded inside the repository.
+It is the audit layer around coding-agent work: task scope, approved plan, role ownership, verification evidence, branch handoff, closure, and a machine-readable Agent Change Record (ACR) recorded inside the repository.
 
 ## Decision guide
 
@@ -15,14 +15,30 @@ Do not use it as a replacement for an editor, model provider, pull request syste
 
 ## Comparison
 
-| Surface                                   | What it is good at                                     | What it does not preserve by itself                                                        | Where AgentPlane fits                              |
-| ----------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------ | -------------------------------------------------- |
-| Claude Code, Codex, Cursor, Aider         | Generating, editing, and explaining code               | A durable repository-native task lifecycle with policy, verification, and closure evidence | Gives those agents an executable workflow contract |
-| `AGENTS.md` alone                         | Describing local policy and instructions               | Task state, plan approval, verification records, branch handoff                            | Turns policy into lifecycle commands and artifacts |
-| Git alone                                 | Recording file history, commits, branches, and reviews | Why an agent made a change, which checks ran, whether scope was approved                   | Adds intent and verification around Git history    |
-| CI alone                                  | Enforcing automated checks                             | Human or agent reasoning about scope, plan, ownership, and closure                         | Records CI as evidence inside the task lifecycle   |
-| Hosted dashboards                         | Centralizing status views                              | A fully repository-owned audit trail without hosted runtime dependence                     | Keeps the durable record in repo files and Git     |
-| Dev harnesses and coding-agent frameworks | Running agents or test harnesses                       | Cross-agent governance and reviewable task provenance                                      | Provides the governance layer around execution     |
+| Surface           | What it is good at                       | Produces an ACR | Where AgentPlane fits                              |
+| ----------------- | ---------------------------------------- | --------------- | -------------------------------------------------- |
+| AgentPlane        | Repo-native task lifecycle and evidence  | Yes             | Produces the durable ACR and task record           |
+| Claude Code       | Generating and editing code              | No              | Wraps Claude Code work in reviewable task evidence |
+| Codex CLI         | Terminal-native code changes             | No              | Records plan, checks, and closure around Codex     |
+| Cursor agent      | IDE-native agent edits                   | No              | Adds repo-local lifecycle state                    |
+| Aider             | Git-oriented pair programming            | No              | Adds explicit task and verification artifacts      |
+| Plandex           | Planning and executing larger code tasks | No              | Preserves the audit trail around execution         |
+| OpenCode (SST)    | Agentic terminal coding                  | No              | Adds governance and ACR output                     |
+| Continue.dev      | Open-source IDE assistant workflows      | No              | Records task provenance outside the IDE session    |
+| Roo Code          | IDE agent modes and automation           | No              | Adds a repository-owned evidence layer             |
+| `AGENTS.md` alone | Describing local policy and instructions | No              | Turns policy into lifecycle commands and artifacts |
+| Git alone         | Recording file history and review state  | No              | Adds intent and verification around Git history    |
+| CI alone          | Enforcing automated checks               | No              | Records CI as task lifecycle evidence              |
+| Hosted dashboards | Centralizing status views                | No              | Keeps the durable record in repo files and Git     |
+
+## Use AgentPlane with your agent
+
+- [Claude Code](workflow-guides/claude-code)
+- [Codex CLI](workflow-guides/codex)
+- [Cursor agent](workflow-guides/cursor)
+- [Aider](workflow-guides/aider)
+- [GitHub Actions](workflow-guides/github-actions)
+- [branch_pr workflow](workflow-guides/branch-pr)
 
 ## What AgentPlane adds
 

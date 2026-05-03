@@ -7,8 +7,8 @@
 Core utilities and models used by the `agentplane` CLI.
 
 This package powers the CLI's repo-visible contracts: project discovery, configuration loading,
-commit-subject validation, task README parsing/rendering, task exports, and schema helpers. If you
-are an end user, install the CLI instead:
+commit-subject validation, task README parsing/rendering, task exports, Agent Change Record (ACR)
+schema helpers, and workflow metadata utilities. If you are an end user, install the CLI instead:
 
 ```bash
 npm install -g agentplane
@@ -64,7 +64,7 @@ import { renderTaskReadme } from "@agentplaneorg/core/tasks";
 | `@agentplaneorg/core/fs`      | Filesystem | Atomic write helpers                                                 |
 | `@agentplaneorg/core/git`     | Git        | Git context, base branch helpers, and changed-file helpers           |
 | `@agentplaneorg/core/process` | Process    | Process execution helpers                                            |
-| `@agentplaneorg/core/schemas` | Schemas    | Schema renderers and task metadata validators                        |
+| `@agentplaneorg/core/schemas` | Schemas    | Schema renderers, ACR schema access, and task metadata validators    |
 | `@agentplaneorg/core/tasks`   | Tasks      | Task docs, task stores, task exports, and README rendering utilities |
 
 ## Stability
@@ -80,7 +80,9 @@ import { renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 - Repository: https://github.com/basilisk-labs/agentplane
 - CLI package: https://www.npmjs.com/package/agentplane
-- Developer docs: https://github.com/basilisk-labs/agentplane/tree/main/docs/developer
+- User docs: https://agentplane.org/docs/user/overview
+- ACR schema: https://agentplane.org/schemas/acr-v0.1.schema.json
+- Developer docs: https://agentplane.org/docs/developer
 
 ## License
 

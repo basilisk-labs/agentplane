@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://agentplane.dev/schemas/tasks-export.schema.json",
+  "$id": "https://agentplane.org/schemas/tasks-export.schema.json",
   "title": "tasks.json export snapshot (v1)",
   "type": "object",
   "properties": {

@@ -1,0 +1,43 @@
+name: Compatibility report
+description: Report how AgentPlane works with a coding agent or runner.
+title: "compatibility: "
+labels: ["compatibility"]
+body:
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent
+      options:
+        - Claude Code
+        - Codex
+        - Cursor
+        - Aider
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: agent_version
+    attributes:
+      label: Agent version
+    validations:
+      required: true
+  - type: input
+    id: agentplane_version
+    attributes:
+      label: AgentPlane version
+      placeholder: "agentplane --version"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS
+    validations:
+      required: true
+  - type: textarea
+    id: lifecycle_gap
+    attributes:
+      label: Observed lifecycle gap
+      description: Where did task, plan, verify, branch_pr, ACR, or finish behavior fail?
+    validations:
+      required: true

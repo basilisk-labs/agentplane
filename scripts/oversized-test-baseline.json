@@ -3,7 +3,7 @@
   "threshold_lines": 1000,
   "budgets": {
     "max_entries": 10,
-    "max_total_lines": 11090,
+    "max_total_lines": 11305,
     "max_file_lines": 1300
   },
   "entries": [
@@ -17,7 +17,7 @@
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts",
-      "lines": 1182
+      "lines": 1254
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts",
@@ -33,11 +33,11 @@
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.test.ts",
-      "lines": 1029
+      "lines": 1041
     },
     {
       "file": "packages/agentplane/src/commands/doctor.command.open-pr.test.ts",
-      "lines": 1110
+      "lines": 1176
     },
     {
       "file": "packages/agentplane/src/commands/shared/task-store.test.ts",
@@ -45,7 +45,7 @@
     },
     {
       "file": "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
-      "lines": 1038
+      "lines": 1103
     }
   ]
 }

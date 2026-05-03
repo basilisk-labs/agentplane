@@ -117,6 +117,11 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Community",
+      items: ["showcase"],
+    },
+    {
+      type: "category",
       label: "Developer guide",
       items: [
         "developer/design-principles",

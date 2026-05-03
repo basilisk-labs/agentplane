@@ -26,7 +26,7 @@ export { ACR_VERSION, computeAcrRecordDigest } from "./task-artifact-schema.acr.
 export { withTaskReadmeFrontmatterDefaults } from "./task-artifact-schema.task.js";
 
 export const ACR_SCHEMA = buildJsonSchemaDocument(ACR_ZOD_SCHEMA, {
-  $id: "https://agentplane.dev/schemas/acr-v0.1.schema.json",
+  $id: "https://agentplane.org/schemas/acr-v0.1.schema.json",
   title: "Agent Change Record (ACR) v0.1",
   description:
     "ACR is a machine-readable evidence projection derived from AgentPlane task, policy, verification, and Git state.",
@@ -35,7 +35,7 @@ export const ACR_SCHEMA = buildJsonSchemaDocument(ACR_ZOD_SCHEMA, {
 export const TASK_README_FRONTMATTER_SCHEMA = buildJsonSchemaDocument(
   TASK_README_FRONTMATTER_ZOD_SCHEMA,
   {
-    $id: "https://agentplane.dev/schemas/task-readme-frontmatter.schema.json",
+    $id: "https://agentplane.org/schemas/task-readme-frontmatter.schema.json",
     title: "Task README frontmatter (v1)",
     description:
       "Task READMEs are Markdown with YAML frontmatter. This schema describes the frontmatter keys.",
@@ -43,17 +43,17 @@ export const TASK_README_FRONTMATTER_SCHEMA = buildJsonSchemaDocument(
 );
 
 export const TASKS_EXPORT_SCHEMA = buildJsonSchemaDocument(TASKS_EXPORT_ZOD_SCHEMA, {
-  $id: "https://agentplane.dev/schemas/tasks-export.schema.json",
+  $id: "https://agentplane.org/schemas/tasks-export.schema.json",
   title: "tasks.json export snapshot (v1)",
 });
 
 export const TASK_PR_META_SCHEMA = buildJsonSchemaDocument(TASK_PR_META_ZOD_SCHEMA, {
-  $id: "https://agentplane.dev/schemas/pr-meta.schema.json",
+  $id: "https://agentplane.org/schemas/pr-meta.schema.json",
   title: "PR artifact meta.json (v1)",
 });
 
 export const TASK_HANDOFF_SCHEMA = buildJsonSchemaDocument(TASK_HANDOFF_ZOD_SCHEMA, {
-  $id: "https://agentplane.dev/schemas/task-handoff.schema.json",
+  $id: "https://agentplane.org/schemas/task-handoff.schema.json",
   title: "Task handoff artifact (v1)",
 });
 

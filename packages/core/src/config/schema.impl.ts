@@ -495,7 +495,7 @@ function buildAgentplaneConfigJsonSchema(): Record<string, unknown> {
 
   return {
     $schema: "http://json-schema.org/draft-07/schema#",
-    $id: "https://agentplane.dev/schemas/config.schema.json",
+    $id: "https://agentplane.org/schemas/config.schema.json",
     title: "agentplane config.json (v1)",
     ...schema,
   };

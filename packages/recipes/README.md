@@ -42,7 +42,10 @@ It does not install recipes into a project by itself. Use the `agentplane` CLI f
 
 - Recipes overview: https://agentplane.org/docs/recipes
 - Code Map recipe: https://agentplane.org/docs/recipes/code-map
-- Recipes spec: https://github.com/basilisk-labs/agentplane/blob/main/docs/developer/recipes-spec.mdx
+- AgentPlane CLI: https://www.npmjs.com/package/agentplane
+- Repository: https://github.com/basilisk-labs/agentplane
+- Recipes spec: https://agentplane.org/docs/developer/recipes-spec
+- ACR schema: https://agentplane.org/schemas/acr-v0.1.schema.json
 
 ## License
 

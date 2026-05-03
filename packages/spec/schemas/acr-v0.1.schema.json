@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://agentplane.dev/schemas/acr-v0.1.schema.json",
+  "$id": "https://agentplane.org/schemas/acr-v0.1.schema.json",
   "title": "Agent Change Record (ACR) v0.1",
   "description": "ACR is a machine-readable evidence projection derived from AgentPlane task, policy, verification, and Git state.",
   "type": "object",

@@ -1,0 +1,28 @@
+name: Recipe submission
+description: Propose or submit an AgentPlane recipe.
+title: "recipe: "
+labels: ["recipe"]
+body:
+  - type: input
+    id: recipe
+    attributes:
+      label: Recipe name
+    validations:
+      required: true
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case
+      description: What repeatable repo behavior should the recipe install?
+    validations:
+      required: true
+  - type: textarea
+    id: artifacts
+    attributes:
+      label: Expected artifacts
+      description: Agent profiles, prompt modules, skills, docs, or checks.
+  - type: textarea
+    id: safety
+    attributes:
+      label: Safety notes
+      description: Required permissions, network use, or protected paths.

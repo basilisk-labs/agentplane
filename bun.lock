@@ -29,7 +29,7 @@
     },
     "packages/agentplane": {
       "name": "agentplane",
-      "version": "0.4.2",
+      "version": "0.4.3",
       "bin": {
         "agentplane": "bin/agentplane.js",
       },
@@ -48,7 +48,7 @@
     },
     "packages/core": {
       "name": "@agentplaneorg/core",
-      "version": "0.4.2",
+      "version": "0.4.3",
       "dependencies": {
         "canonicalize": "^3.0.0",
         "execa": "^5.1.1",
@@ -60,7 +60,7 @@
     },
     "packages/recipes": {
       "name": "@agentplaneorg/recipes",
-      "version": "0.4.2",
+      "version": "0.4.3",
     },
     "packages/spec": {
       "name": "@agentplane/spec",
@@ -70,7 +70,7 @@
       "name": "@agentplane/testkit",
       "version": "0.0.0",
       "dependencies": {
-        "@agentplaneorg/core": "0.3.25",
+        "@agentplaneorg/core": "0.4.3",
       },
     },
     "website": {

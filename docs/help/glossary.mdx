@@ -7,6 +7,13 @@ description: "Definitions for key terms used across Agent Plane documentation."
 
 A role profile loaded from `.agentplane/agents/<ID>.json`.
 
+## Agent Change Record (ACR)
+
+A deterministic, machine-readable JSON evidence projection for one AgentPlane task. It records task
+intent, accepted plan, verification status, policy decisions, changed files, and closure state.
+Schema: `https://agentplane.org/schemas/acr-v0.1.schema.json`. Commands:
+`agentplane acr generate`, `agentplane acr validate`, and `agentplane acr check`.
+
 ## Task ID
 
 A unique identifier like `202601031816-7F3K2Q` used to track work across backends.

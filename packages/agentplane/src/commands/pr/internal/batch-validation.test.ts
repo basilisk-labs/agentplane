@@ -23,7 +23,7 @@ function makeTask(overrides: Partial<TaskData> = {}): TaskData {
 function makeCtx(tasks: Map<string, TaskData>): CommandContext {
   return {
     taskBackend: {
-      getTask: async (taskId: string) => tasks.get(taskId) ?? null,
+      getTask: (taskId: string) => Promise.resolve(tasks.get(taskId) ?? null),
     },
     config: {
       paths: { workflow_dir: ".agentplane/tasks" },
@@ -46,8 +46,8 @@ describe("validateBranchPrBatchIncludedTasks", () => {
         includeTaskIds: ["202601010103-CCCCC", "202601010102-BBBBB"],
         primaryBranch: "task/202601010101-AAAAA/primary",
         deps: {
-          resolveTaskBranch: async () => null,
-          readPrMeta: async () => null,
+          resolveTaskBranch: () => Promise.resolve(null),
+          readPrMeta: () => Promise.resolve(null),
         },
       }),
     ).resolves.toEqual(["202601010102-BBBBB", "202601010103-CCCCC"]);
@@ -79,19 +79,23 @@ describe("validateBranchPrBatchIncludedTasks", () => {
         ],
         primaryBranch: "task/202601010101-AAAAA/primary",
         deps: {
-          resolveTaskBranch: async (taskId) =>
-            taskId === "202601010103-CCCCC" ? "task/202601010103-CCCCC/owned" : null,
-          readPrMeta: async (taskId) =>
-            taskId === "202601010105-EEEEE"
-              ? {
-                  schema_version: 1,
-                  task_id: "202601010105-EEEEE",
-                  branch: "task/202601010105-EEEEE/pr",
-                  created_at: "2026-01-27T00:00:00Z",
-                  updated_at: "2026-01-27T00:00:00Z",
-                  verify: { status: "skipped" },
-                }
-              : null,
+          resolveTaskBranch: (taskId) =>
+            Promise.resolve(
+              taskId === "202601010103-CCCCC" ? "task/202601010103-CCCCC/owned" : null,
+            ),
+          readPrMeta: (taskId) =>
+            Promise.resolve(
+              taskId === "202601010105-EEEEE"
+                ? {
+                    schema_version: 1,
+                    task_id: "202601010105-EEEEE",
+                    branch: "task/202601010105-EEEEE/pr",
+                    created_at: "2026-01-27T00:00:00Z",
+                    updated_at: "2026-01-27T00:00:00Z",
+                    verify: { status: "skipped" },
+                  }
+                : null,
+            ),
         },
       }),
     ).rejects.toThrow(

@@ -177,7 +177,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["acr", "schema", "--version", "0.1"]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain('"$id": "https://agentplane.dev/schemas/acr-v0.1.schema.json"');
+      expect(io.stdout).toContain('"$id": "https://agentplane.org/schemas/acr-v0.1.schema.json"');
       expect(io.stdout).toContain('"version"');
     } finally {
       io.restore();

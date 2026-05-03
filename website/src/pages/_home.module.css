@@ -162,6 +162,14 @@
   grid-template-columns: minmax(0, 0.98fr) minmax(340px, 0.82fr);
 }
 
+.heroDemo {
+  border: 1px solid rgb(var(--border));
+  box-shadow: 0 24px 60px rgb(17 24 39 / 0.14);
+  display: block;
+  max-width: 100%;
+  width: 100%;
+}
+
 .heroCopy,
 .sectionLead,
 .demoAside,
