@@ -45,12 +45,14 @@ Ensure batch worktrees have explicit ownership of all included task README artif
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T16:05:41.673Z
+- Updated: 2026-05-03T16:05:51.349Z
 - Branch: task/202605031524-RRPMDY/batch-worktree-ownership
-- Head: e2cfd48bac43
+- Head: 6a26e9bc38a9
 
 ```text
-No changes detected.
+ .../src/cli/run-cli.core.pr-flow.test.ts           | 72 ++++++++++++++++++++++
+ .../agentplane/src/commands/branch/work-start.ts   | 29 ++++++++-
+ 2 files changed, 100 insertions(+), 1 deletion(-)
 ```
 
 </details>
