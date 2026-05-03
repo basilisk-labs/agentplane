@@ -25,19 +25,23 @@ Split AgentPlane default sign-off identity from repo-wide manual DCO validation 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T18:17:04.500Z
+- Updated: 2026-05-03T18:20:03.138Z
 - Branch: task/202605031737-9A4FWX/dco-tasks-export-optional
-- Head: fe21cf574a2e
+- Head: cb1999a0d4e4
 
 ```text
  .agentplane/tasks.json                             | 42043 -------------------
+ docs/developer/architecture.mdx                    |     2 +-
+ docs/developer/project-layout.mdx                  |     2 +-
+ docs/developer/schema-validation-strategy.mdx      |     2 +-
  docs/help/troubleshooting-by-symptom.mdx           |     2 +-
  docs/help/troubleshooting.mdx                      |     2 +-
  docs/user/backends/local.mdx                       |     4 +-
  docs/user/backends/redmine.mdx                     |     2 +-
+ docs/user/breaking-changes.mdx                     |     2 +-
  docs/user/cli-reference.generated.mdx              |    12 +-
  docs/user/commands.mdx                             |     6 +-
- docs/user/tasks-and-backends.mdx                   |     4 +-
+ docs/user/tasks-and-backends.mdx                   |     6 +-
  docs/user/workflow.mdx                             |     2 +-
  .../run-cli.core.help-snap.test.ts.snap            |     2 +-
  .../src/cli/run-cli.core.docs-cli.test.ts          |     2 +-
@@ -54,7 +58,7 @@ Split AgentPlane default sign-off identity from repo-wide manual DCO validation 
  .../src/commands/task/set-status.command.ts        |     2 +-
  packages/agentplane/src/policy/evaluate.test.ts    |    23 +-
  .../agentplane/src/policy/rules/branch-pr-base.ts  |    15 +-
- 24 files changed, 134 insertions(+), 42107 deletions(-)
+ 28 files changed, 139 insertions(+), 42112 deletions(-)
 ```
 
 </details>
