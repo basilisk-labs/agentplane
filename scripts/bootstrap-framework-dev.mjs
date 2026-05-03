@@ -31,10 +31,13 @@ function printUsage() {
 }
 
 function isRepoRoot(repoRoot) {
+  const hasWorkflowConfig =
+    fs.existsSync(path.join(repoRoot, ".agentplane", "WORKFLOW.md")) ||
+    fs.existsSync(path.join(repoRoot, ".agentplane", "config.json"));
   return (
     fs.existsSync(path.join(repoRoot, "package.json")) &&
     fs.existsSync(path.join(repoRoot, "packages", "agentplane")) &&
-    fs.existsSync(path.join(repoRoot, ".agentplane", "config.json"))
+    hasWorkflowConfig
   );
 }
 

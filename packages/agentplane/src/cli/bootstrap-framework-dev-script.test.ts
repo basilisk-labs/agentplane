@@ -54,6 +54,17 @@ async function mkFrameworkRepo() {
   return repoRoot;
 }
 
+async function mkWorkflowOnlyFrameworkRepo() {
+  const repoRoot = await mkFrameworkRepo();
+  await rm(path.join(repoRoot, ".agentplane", "config.json"), { force: true });
+  await writeFile(
+    path.join(repoRoot, ".agentplane", "WORKFLOW.md"),
+    "---\nworkflow:\n  mode: branch_pr\n---\n\n",
+    "utf8",
+  );
+  return repoRoot;
+}
+
 afterEach(async () => {
   while (tempRoots.length > 0) {
     const root = tempRoots.pop();
@@ -66,6 +77,13 @@ describe("bootstrap-framework-dev script", () => {
   it("resolves the framework repo root from nested paths", async () => {
     const { resolveRepoRoot } = await loadBootstrapModule();
     const repoRoot = await mkFrameworkRepo();
+    const nested = path.join(repoRoot, "packages", "agentplane");
+    expect(resolveRepoRoot(nested)).toBe(repoRoot);
+  });
+
+  it("resolves WORKFLOW.md-only framework repo roots", async () => {
+    const { resolveRepoRoot } = await loadBootstrapModule();
+    const repoRoot = await mkWorkflowOnlyFrameworkRepo();
     const nested = path.join(repoRoot, "packages", "agentplane");
     expect(resolveRepoRoot(nested)).toBe(repoRoot);
   });
