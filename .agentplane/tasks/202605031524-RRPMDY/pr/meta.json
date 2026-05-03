@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605031524-RRPMDY/batch-worktree-ownership",
+  "created_at": "2026-05-03T16:05:41.673Z",
+  "head_sha": "6a26e9bc38a923f5fa03a2e69dc37c1b06271a50",
+  "last_verified_at": "2026-05-03T16:05:41.590Z",
+  "last_verified_sha": "e2cfd48bac43cdb738a57c1481139533f6be2945",
+  "schema_version": 1,
+  "task_id": "202605031524-RRPMDY",
+  "updated_at": "2026-05-03T16:05:51.349Z",
+  "verify": {
+    "status": "pass"
+  }
+}
