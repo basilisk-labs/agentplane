@@ -292,7 +292,11 @@ export async function createTaskCloseCommit(opts: {
   closeUnstageOthers?: boolean;
   allowPolicy?: boolean;
   closeRefreshTaskArtifacts?: boolean;
+  additionalTaskIds?: string[];
 }): Promise<void> {
+  const additionalTaskAllow = (opts.additionalTaskIds ?? [])
+    .filter((taskId) => taskId && taskId !== opts.taskId)
+    .map((taskId) => `${opts.ctx.config.paths.workflow_dir}/${taskId}`);
   await cmdCommit({
     ctx: opts.ctx,
     cwd: opts.cwd,
@@ -301,7 +305,7 @@ export async function createTaskCloseCommit(opts: {
     taskId: opts.taskId,
     message: "",
     close: true,
-    allow: [],
+    allow: additionalTaskAllow,
     autoAllow: false,
     allowTasks: true,
     allowBase: opts.ctx.config.workflow_mode === "branch_pr",

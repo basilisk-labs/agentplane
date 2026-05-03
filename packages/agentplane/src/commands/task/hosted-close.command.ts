@@ -8,7 +8,12 @@ import { fileExists } from "../../cli/fs-utils.js";
 import { CliError } from "../../shared/errors.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
-import { buildIntegratedPrMeta, parsePrMeta, type PrMeta } from "../shared/pr-meta.js";
+import {
+  buildIntegratedPrMeta,
+  parsePrMeta,
+  resolvePrBatchIncludedTaskIds,
+  type PrMeta,
+} from "../shared/pr-meta.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { createTaskCloseCommit, writeFinishedTasks } from "./finish-shared.js";
 import { resolveHostedMergeTargetFromEvent } from "./hosted-merge-sync.js";
@@ -30,6 +35,51 @@ type HostedCloseOutcome =
   | { outcome: "closed"; taskId: string; mergeHash: string }
   | { outcome: "meta-only"; taskId: string; mergeHash: string };
 
+async function loadHostedBatchTasks(opts: {
+  ctx: CommandContext;
+  primaryTaskId: string;
+  primaryTask: TaskData;
+  includedTaskIds: string[];
+}): Promise<{ taskId: string; task: TaskData }[]> {
+  const loaded = [{ taskId: opts.primaryTaskId, task: opts.primaryTask }];
+  for (const taskId of opts.includedTaskIds) {
+    const task = await loadTaskFromContext({ ctx: opts.ctx, taskId, preferBranchSnapshot: false });
+    loaded.push({ taskId, task });
+  }
+  return loaded;
+}
+
+function taskIsClosedForMerge(task: TaskData, mergeCommit: string): boolean {
+  return normalizeTaskStatus(task.status) === "DONE" && task.commit?.hash === mergeCommit;
+}
+
+function assertNoConflictingDoneTask(opts: { task: TaskData; mergeCommit: string }): void {
+  const taskStatus = normalizeTaskStatus(opts.task.status);
+  const taskCommitHash = opts.task.commit?.hash ?? "";
+  if (taskStatus !== "DONE" || taskCommitHash === "" || taskCommitHash === opts.mergeCommit) {
+    return;
+  }
+  throw new CliError({
+    exitCode: 3,
+    code: "E_VALIDATION",
+    message:
+      `Hosted task closure found a conflicting DONE commit for ${opts.task.id}: ` +
+      `${opts.task.commit?.hash} != ${opts.mergeCommit}`,
+  });
+}
+
+async function hasHostedBatchArtifactChanges(opts: {
+  gitRoot: string;
+  workflowDir: string;
+  taskIds: string[];
+}): Promise<boolean> {
+  for (const taskId of opts.taskIds) {
+    const taskDirRelative = path.join(opts.workflowDir, taskId);
+    if (await hasTaskArtifactChanges({ gitRoot: opts.gitRoot, taskDirRelative })) return true;
+  }
+  return false;
+}
+
 async function closeHostedTask(opts: {
   ctx: CommandContext;
   cwd: string;
@@ -46,6 +96,7 @@ async function closeHostedTask(opts: {
   if (!target?.mergedPr.mergeCommit?.oid) {
     return { outcome: "noop", detail: "event is not a merged task PR" };
   }
+  const mergeCommitOid = target.mergedPr.mergeCommit.oid;
 
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const taskDirRelative = path.join(opts.ctx.config.paths.workflow_dir, target.taskId);
@@ -59,7 +110,7 @@ async function closeHostedTask(opts: {
   const existingMetaAlreadyMerged =
     existingMeta?.status === "MERGED" &&
     existingMergeCommit.length > 0 &&
-    existingMergeCommit === target.mergedPr.mergeCommit.oid;
+    existingMergeCommit === mergeCommitOid;
   let task: TaskData;
   try {
     task = await loadTaskFromContext({
@@ -73,7 +124,7 @@ async function closeHostedTask(opts: {
     if (existingMetaAlreadyMerged) {
       return {
         outcome: "noop",
-        detail: `${target.taskId} is already closed for merge ${target.mergedPr.mergeCommit.oid.slice(0, 12)}`,
+        detail: `${target.taskId} is already closed for merge ${mergeCommitOid.slice(0, 12)}`,
       };
     }
     const recovered = await buildHostedTaskFromTrackedPrArtifacts({
@@ -93,48 +144,49 @@ async function closeHostedTask(opts: {
     taskDirRelative,
     target,
   });
-  const taskStatus = normalizeTaskStatus(task.status);
-  const taskCommitHash = task.commit?.hash ?? "";
-  const alreadyClosed = taskStatus === "DONE" && taskCommitHash === target.mergedPr.mergeCommit.oid;
-  if (
-    taskStatus === "DONE" &&
-    taskCommitHash !== "" &&
-    taskCommitHash !== target.mergedPr.mergeCommit.oid
-  ) {
-    throw new CliError({
-      exitCode: 3,
-      code: "E_VALIDATION",
-      message:
-        `Hosted task closure found a conflicting DONE commit for ${target.taskId}: ` +
-        `${task.commit?.hash} != ${target.mergedPr.mergeCommit.oid}`,
-    });
-  }
-  if (alreadyClosed && existingMetaAlreadyMerged) {
-    return {
-      outcome: "noop",
-      detail: `${target.taskId} is already closed for merge ${target.mergedPr.mergeCommit.oid.slice(0, 12)}`,
-    };
-  }
+  assertNoConflictingDoneTask({ task, mergeCommit: mergeCommitOid });
 
   const nextMeta = buildIntegratedPrMeta({
     meta,
     branch: target.branch,
     base: target.mergedPr.baseRefName ?? meta.base ?? "main",
     mergeStrategy: meta.merge_strategy ?? "merge",
-    mergeHash: target.mergedPr.mergeCommit.oid,
-    branchHeadSha: target.mergedPr.headRefOid ?? meta.head_sha ?? target.mergedPr.mergeCommit.oid,
+    mergeHash: mergeCommitOid,
+    branchHeadSha: target.mergedPr.headRefOid ?? meta.head_sha ?? mergeCommitOid,
     at: target.mergedPr.mergedAt ?? new Date().toISOString(),
     verifyCommands: [],
     shouldRunVerify: false,
     alreadyVerifiedSha: null,
   });
   await writeJsonStableIfChanged(metaPath, nextMeta);
+  const includedTaskIds = resolvePrBatchIncludedTaskIds(nextMeta);
+  const loadedTasks = await loadHostedBatchTasks({
+    ctx: opts.ctx,
+    primaryTaskId: target.taskId,
+    primaryTask: task,
+    includedTaskIds,
+  });
+  for (const loaded of loadedTasks) {
+    assertNoConflictingDoneTask({
+      task: loaded.task,
+      mergeCommit: mergeCommitOid,
+    });
+  }
+  const tasksNeedingClose = loadedTasks.filter(
+    (loaded) => !taskIsClosedForMerge(loaded.task, mergeCommitOid),
+  );
 
-  if (alreadyClosed) {
-    if (!(await hasTaskArtifactChanges({ gitRoot, taskDirRelative }))) {
+  if (tasksNeedingClose.length === 0) {
+    if (
+      !(await hasHostedBatchArtifactChanges({
+        gitRoot,
+        workflowDir: opts.ctx.config.paths.workflow_dir,
+        taskIds: [target.taskId, ...includedTaskIds],
+      }))
+    ) {
       return {
         outcome: "noop",
-        detail: `${target.taskId} is already closed for merge ${target.mergedPr.mergeCommit.oid.slice(0, 12)}`,
+        detail: `${target.taskId} is already closed for merge ${mergeCommitOid.slice(0, 12)}`,
       };
     }
     await createTaskCloseCommit({
@@ -144,11 +196,12 @@ async function closeHostedTask(opts: {
       taskId: target.taskId,
       baseBranchOverride: nextMeta.base ?? "main",
       quiet: opts.quiet,
+      additionalTaskIds: includedTaskIds,
     });
     return {
       outcome: "meta-only",
       taskId: target.taskId,
-      mergeHash: target.mergedPr.mergeCommit.oid,
+      mergeHash: mergeCommitOid,
     };
   }
 
@@ -168,7 +221,7 @@ async function closeHostedTask(opts: {
   });
   await writeFinishedTasks({
     ctx: opts.ctx,
-    loadedTasks: [{ taskId: target.taskId, task }],
+    loadedTasks: tasksNeedingClose,
     metaTaskId: target.taskId,
     author: "INTEGRATOR",
     body: finishBody,
@@ -204,11 +257,12 @@ async function closeHostedTask(opts: {
     baseBranchOverride: nextMeta.base ?? "main",
     quiet: opts.quiet,
     allowPolicy: collectedIncidents.wrote,
+    additionalTaskIds: includedTaskIds,
   });
   return {
     outcome: "closed",
     taskId: target.taskId,
-    mergeHash: target.mergedPr.mergeCommit.oid,
+    mergeHash: mergeCommitOid,
   };
 }
 

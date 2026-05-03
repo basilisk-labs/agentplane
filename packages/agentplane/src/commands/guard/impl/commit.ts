@@ -265,7 +265,7 @@ async function cmdCloseCommit(
   await (opts.closeStageTaskArtifacts === true
     ? stageAllowlist({
         ctx: opts.ctx,
-        allow: [],
+        allow: opts.allow,
         allowTasks: true,
         allowPolicy: opts.allowPolicy,
         tasksPath: opts.ctx.config.paths.tasks_path,
@@ -294,7 +294,7 @@ async function cmdCloseCommit(
     baseBranchOverride: opts.baseBranchOverride ?? null,
     taskId: opts.taskId,
     message: msg.subject,
-    allow: [],
+    allow: opts.allow,
     allowBase: opts.allowBase,
     allowTasks: true,
     allowPolicy: opts.allowPolicy,
