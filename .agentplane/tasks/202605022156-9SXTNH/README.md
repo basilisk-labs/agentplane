@@ -1,10 +1,11 @@
 ---
 id: "202605022156-9SXTNH"
 title: "Fix standalone release scripts under Node 24"
-status: "DOING"
+result_summary: "Standalone release check path verified on main"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-02T21:57:02.130Z"
   updated_by: "CODER"
   note: "Targeted release standalone checks passed: bunx vitest run packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts (4 tests passed)."
-commit: null
+commit:
+  hash: "8f9b00f814b931a2537b5efc9086d39e1445004c"
+  message: "🧪 HTD2WC task: speed up standalone check assets"
 comments:
   -
     author: "CODER"
     body: "Start: Fix Node 24 standalone release pre-push blocker by reducing synthetic check-mode archive generation cost only."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: targeted standalone release checks passed on main worktree; closing Node 24 standalone release task."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Targeted release standalone checks passed: bunx vitest run packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts (4 tests passed)."
+  -
+    type: "status"
+    at: "2026-05-03T05:28:04.828Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: targeted standalone release checks passed on main worktree; closing Node 24 standalone release task."
 doc_version: 3
-doc_updated_at: "2026-05-02T21:57:02.135Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T05:28:04.829Z"
+doc_updated_by: "INTEGRATOR"
 description: "Repair the standalone release distribution check path that blocks pre-push under Node 24."
 sections:
   Summary: |-
