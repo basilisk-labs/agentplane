@@ -25,11 +25,12 @@ Implement repository-managed DCO sign-off behavior using Denis Smirnov <densmirn
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T17:02:27.291Z
+- Updated: 2026-05-03T17:03:41.831Z
 - Branch: task/202605031642-2FVS9C/dco-signoff
-- Head: ac3c36e56cf9
+- Head: 4faa609ed835
 
 ```text
+ .agentplane/WORKFLOW.md                            |  4 ++
  docs/user/cli-reference.generated.mdx              |  1 +
  docs/user/commands.mdx                             |  1 +
  docs/user/workflow.mdx                             |  2 +
@@ -46,7 +47,7 @@ Implement repository-managed DCO sign-off behavior using Denis Smirnov <densmirn
  packages/core/src/config/schema.impl.ts            | 17 ++++++++
  packages/spec/examples/config.json                 |  3 +-
  packages/spec/schemas/config.schema.json           | 46 +++++++++++++++++++++-
- 16 files changed, 249 insertions(+), 7 deletions(-)
+ 17 files changed, 253 insertions(+), 7 deletions(-)
 ```
 
 </details>

@@ -1,3 +1,4 @@
+ .agentplane/WORKFLOW.md                            |  4 ++
  docs/user/cli-reference.generated.mdx              |  1 +
  docs/user/commands.mdx                             |  1 +
  docs/user/workflow.mdx                             |  2 +
@@ -14,4 +15,4 @@
  packages/core/src/config/schema.impl.ts            | 17 ++++++++
  packages/spec/examples/config.json                 |  3 +-
  packages/spec/schemas/config.schema.json           | 46 +++++++++++++++++++++-
- 16 files changed, 249 insertions(+), 7 deletions(-)
+ 17 files changed, 253 insertions(+), 7 deletions(-)
