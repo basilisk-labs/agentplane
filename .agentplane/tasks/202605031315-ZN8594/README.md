@@ -1,10 +1,11 @@
 ---
 id: "202605031315-ZN8594"
 title: "Align public positioning in repo README surfaces"
-status: "DOING"
+result_summary: "Public README and package README positioning are aligned with the CMO revision."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-05-03T13:30:31.487Z"
   updated_by: "DOCS"
   note: "README/package README surfaces use the audit-layer positioning; targeted text check and diff whitespace check passed. docs:site:typecheck was attempted and failed because this nested worktree resolves node_modules to a parent install without Docusaurus/React packages; no README-specific TypeScript errors were produced."
-commit: null
+commit:
+  hash: "319551b3bdd1a41390a210c8ef5a33384b5185d9"
+  message: "📝 ZN8594 docs: align public README surfaces"
 comments:
   -
     author: "DOCS"
     body: "Start: align the repository README surfaces with the approved CMO audit positioning before code and website changes."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: README and package README positioning landed through PR #819; task verification was already recorded before merge."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "README/package README surfaces use the audit-layer positioning; targeted text check and diff whitespace check passed. docs:site:typecheck was attempted and failed because this nested worktree resolves node_modules to a parent install without Docusaurus/React packages; no README-specific TypeScript errors were produced."
+  -
+    type: "status"
+    at: "2026-05-03T14:42:25.357Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: README and package README positioning landed through PR #819; task verification was already recorded before merge."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:30:31.490Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-03T14:42:25.358Z"
+doc_updated_by: "INTEGRATOR"
 description: "Rewrite the root README and package README surfaces around the CMO audit's audit-layer positioning, visceral problem framing, social-proof badges, comparison hook, recipes hook, and reduced introductory role taxonomy."
 sections:
   Summary: |-

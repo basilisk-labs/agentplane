@@ -1,10 +1,11 @@
 ---
 id: "202605031315-VZ15JW"
 title: "Update package discovery metadata"
-status: "DOING"
+result_summary: "Package discovery metadata is updated across the package surface."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-05-03T13:43:04.302Z"
   updated_by: "DOCS"
   note: "Updated public and internal package metadata descriptions, keywords, and homepages to match the audit-layer positioning without changing versions, exports, files, or runtime code. Verified JSON parsing, package tarball policy, and git diff --check."
-commit: null
+commit:
+  hash: "a46ec9782110004f179373c1d0ab0aaeee9168b2"
+  message: "📦 VZ15JW pkg: align discovery metadata"
 comments:
   -
     author: "DOCS"
     body: "Start: update package discovery metadata after README/site positioning has landed."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Package discovery metadata landed through PR #819; task verification was recorded before merge."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Updated public and internal package metadata descriptions, keywords, and homepages to match the audit-layer positioning without changing versions, exports, files, or runtime code. Verified JSON parsing, package tarball policy, and git diff --check."
+  -
+    type: "status"
+    at: "2026-05-03T14:43:25.116Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Package discovery metadata landed through PR #819; task verification was recorded before merge."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:43:04.308Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-03T14:43:25.116Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update package.json descriptions and keywords for repository-owned npm discovery surfaces without doing a breaking package namespace migration in this batch."
 sections:
   Summary: |-

@@ -1,10 +1,11 @@
 ---
 id: "202605031315-GPW9P5"
 title: "Refresh website homepage and metadata positioning"
-status: "DOING"
+result_summary: "Website homepage and metadata now reflect the CMO positioning update."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-05-03T13:41:11.449Z"
   updated_by: "CODER"
   note: "Homepage positioning, metadata, navigation links, and manifest were updated around the audit-layer thesis. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check after adding linked compare/manifesto docs."
-commit: null
+commit:
+  hash: "ad49569d0c8143850c3a21f487f9b83719ce4b94"
+  message: "🎯 GPW9P5 site: reposition homepage audit layer"
 comments:
   -
     author: "CODER"
     body: "Start: proceed after quickstart implementation and verification; branch_pr leaf finish will be recorded from base after integration."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Website homepage and metadata positioning landed through PR #819; task verification was recorded before merge."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Homepage positioning, metadata, navigation links, and manifest were updated around the audit-layer thesis. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check after adding linked compare/manifesto docs."
+  -
+    type: "status"
+    at: "2026-05-03T14:43:20.058Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Website homepage and metadata positioning landed through PR #819; task verification was recorded before merge."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:41:11.452Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T14:43:20.058Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the docs-site homepage content, Docusaurus metadata, and webmanifest to use one canonical public message, pain anchor, recipes section, comparison route, and consistent social metadata."
 sections:
   Summary: |-

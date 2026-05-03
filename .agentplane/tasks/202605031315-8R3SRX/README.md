@@ -1,10 +1,11 @@
 ---
 id: "202605031315-8R3SRX"
 title: "Add repo visual proof and social assets"
-status: "DOING"
+result_summary: "Repo visual proof and social sharing assets are available in the public surface."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-05-03T13:45:52.525Z"
   updated_by: "CREATOR"
   note: "Refreshed the shared 1560x840 header, OpenGraph, Twitter card, and Codex plugin screenshot PNGs around the audit-layer task-trail visual. Verified dimensions and identical SHA-256 across all copied assets, visual rendering via image inspection, docs:site:build, and git diff --check."
-commit: null
+commit:
+  hash: "be7a9eed6431f31ea6c353f3c095e0435b74ee6c"
+  message: "🎨 8R3SRX assets: refresh audit-layer previews"
 comments:
   -
     author: "CREATOR"
     body: "Start: refresh visual proof and social preview assets to match the new audit-layer positioning."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Visual proof and social assets landed through PR #819; task verification was recorded before merge."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "CREATOR"
     state: "ok"
     note: "Refreshed the shared 1560x840 header, OpenGraph, Twitter card, and Codex plugin screenshot PNGs around the audit-layer task-trail visual. Verified dimensions and identical SHA-256 across all copied assets, visual rendering via image inspection, docs:site:build, and git diff --check."
+  -
+    type: "status"
+    at: "2026-05-03T14:43:27.652Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Visual proof and social assets landed through PR #819; task verification was recorded before merge."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:45:52.528Z"
-doc_updated_by: "CREATOR"
+doc_updated_at: "2026-05-03T14:43:27.652Z"
+doc_updated_by: "INTEGRATOR"
 description: "Create or wire repository assets required by the audit: a short CLI demo artifact for README/site use, distinct OG/Twitter/HN social cards, and asset references that do not imply nonexistent external channels."
 sections:
   Summary: |-
