@@ -1,10 +1,11 @@
 ---
 id: "202605031908-E70TF7"
 title: "Launch public-surface ACR task graph"
-status: "DOING"
+result_summary: "Merged via PR #853."
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-03T19:31:52.988Z"
   updated_by: "CODER"
   note: "Command: bun run schemas:check; Result: pass; Evidence: schemas OK. Command: bun run spec:examples:check; Result: pass; Evidence: 6 examples validated. Command: bun run release:demo:check; Result: pass; Evidence: tape/cast/gif present and GIF under 3 MB. Command: bun run test:project core packages/core/src/tasks/task-artifact-schema.test.ts; Result: pass; Evidence: 11 tests passed. Command: bun run test:project agentplane packages/agentplane/src/commands/acr/acr.command.test.ts; Result: pass; Evidence: 4 tests passed. Command: bun run docs:cli:check; Result: pass; Evidence: CLI reference up to date. Command: bun run docs:site:build; Result: pass; Evidence: static files generated. Command: agentplane doctor; Result: pass; Evidence: doctor OK. Residual: npm publish, GitHub social preview upload, and pinned Discussions are external/manual follow-ups."
-commit: null
+commit:
+  hash: "02579b80b963154c24d2a3fbd1e36b697bde978e"
+  message: "🚧 E70TF7 task: Launch public-surface ACR task graph [202605031908-E70TF7]"
 comments:
   -
     author: "CODER"
     body: "Start: coordinating the approved ACR launch backlog from the primary branch_pr batch worktree, with repository-local implementation first and external settings recorded separately when blocked."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #853 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,14 +47,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run schemas:check; Result: pass; Evidence: schemas OK. Command: bun run spec:examples:check; Result: pass; Evidence: 6 examples validated. Command: bun run release:demo:check; Result: pass; Evidence: tape/cast/gif present and GIF under 3 MB. Command: bun run test:project core packages/core/src/tasks/task-artifact-schema.test.ts; Result: pass; Evidence: 11 tests passed. Command: bun run test:project agentplane packages/agentplane/src/commands/acr/acr.command.test.ts; Result: pass; Evidence: 4 tests passed. Command: bun run docs:cli:check; Result: pass; Evidence: CLI reference up to date. Command: bun run docs:site:build; Result: pass; Evidence: static files generated. Command: agentplane doctor; Result: pass; Evidence: doctor OK. Residual: npm publish, GitHub social preview upload, and pinned Discussions are external/manual follow-ups."
+  -
+    type: "status"
+    at: "2026-05-03T20:57:48.936Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #853 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T19:31:52.996Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T20:57:48.941Z"
+doc_updated_by: "INTEGRATOR"
 description: "Umbrella task for the 2026-05-04 AgentPlane ACR launch atomic backlog: correctness, public ACR promotion, trust signals, visual proof, copy polish, llms automation, CLI reference, demo freshness, star-history, and retro template."
 sections:
   Summary: |-
     Launch public-surface ACR task graph
-
+    
     Umbrella task for the 2026-05-04 AgentPlane ACR launch atomic backlog: correctness, public ACR promotion, trust signals, visual proof, copy polish, llms automation, CLI reference, demo freshness, star-history, and retro template.
   Scope: |-
     - In scope: Umbrella task for the 2026-05-04 AgentPlane ACR launch atomic backlog: correctness, public ACR promotion, trust signals, visual proof, copy polish, llms automation, CLI reference, demo freshness, star-history, and retro template.
@@ -61,13 +74,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-03T19:31:52.988Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Command: bun run schemas:check; Result: pass; Evidence: schemas OK. Command: bun run spec:examples:check; Result: pass; Evidence: 6 examples validated. Command: bun run release:demo:check; Result: pass; Evidence: tape/cast/gif present and GIF under 3 MB. Command: bun run test:project core packages/core/src/tasks/task-artifact-schema.test.ts; Result: pass; Evidence: 11 tests passed. Command: bun run test:project agentplane packages/agentplane/src/commands/acr/acr.command.test.ts; Result: pass; Evidence: 4 tests passed. Command: bun run docs:cli:check; Result: pass; Evidence: CLI reference up to date. Command: bun run docs:site:build; Result: pass; Evidence: static files generated. Command: agentplane doctor; Result: pass; Evidence: doctor OK. Residual: npm publish, GitHub social preview upload, and pinned Discussions are external/manual follow-ups.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T19:12:01.987Z, excerpt_hash=sha256:610181169cd7bcd4040bd13a6c137ecd1260f6f3384eb75a115961e57a2310ef
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
