@@ -45,12 +45,21 @@ Recover the useful pending branch deltas, confirm recipe listing behavior, and p
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T05:31:08.989Z
+- Updated: 2026-05-03T05:37:56.649Z
 - Branch: task/202605030530-TB2GDS/next-patch-release-prep
-- Head: f27b0ccdf02f
+- Head: bed382887fc0
 
 ```text
-No changes detected.
+ .github/workflows/publish-distribution-module.yml  |   9 ++
+ .github/workflows/publish.yml                      |   9 ++
+ docs/releases/v0.4.2.md                            | 136 +++++++++++++++++++++
+ .../src/commands/pr/internal/review-template.ts    |  12 +-
+ packages/recipes/src/constants.ts                  |   3 +
+ scripts/publish-external-distribution.mjs          |  62 +++++++++-
+ scripts/render-homebrew-formula.mjs                |  11 +-
+ scripts/render-scoop-manifest.mjs                  |  15 ++-
+ scripts/render-setup-agentplane-action.mjs         |  61 +++++----
+ 9 files changed, 287 insertions(+), 31 deletions(-)
 ```
 
 </details>

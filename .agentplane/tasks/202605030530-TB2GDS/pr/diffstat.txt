@@ -1,0 +1,10 @@
+ .github/workflows/publish-distribution-module.yml  |   9 ++
+ .github/workflows/publish.yml                      |   9 ++
+ docs/releases/v0.4.2.md                            | 136 +++++++++++++++++++++
+ .../src/commands/pr/internal/review-template.ts    |  12 +-
+ packages/recipes/src/constants.ts                  |   3 +
+ scripts/publish-external-distribution.mjs          |  62 +++++++++-
+ scripts/render-homebrew-formula.mjs                |  11 +-
+ scripts/render-scoop-manifest.mjs                  |  15 ++-
+ scripts/render-setup-agentplane-action.mjs         |  61 +++++----
+ 9 files changed, 287 insertions(+), 31 deletions(-)
