@@ -1,10 +1,10 @@
 ---
 id: "202605031118-8PHZZR"
 title: "Embed AgentPlane assets for Bun binary"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,16 +19,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-03T11:46:13.351Z"
+  updated_by: "CODER"
+  note: "Focused verification passed: bun test packages/agentplane/src/shared/package-paths.test.ts (3 tests); bun run build; bun build packages/agentplane/dist/cli.js --compile with embedded version; compiled binary in a temp directory without adjacent assets rendered role CODER from bundled assets."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: implement Bun compiled binary asset embedding/runtime fallback after RF08MQ startup contract landed."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T11:43:47.499Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: implement Bun compiled binary asset embedding/runtime fallback after RF08MQ startup contract landed."
+  -
+    type: "verify"
+    at: "2026-05-03T11:46:13.351Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused verification passed: bun test packages/agentplane/src/shared/package-paths.test.ts (3 tests); bun run build; bun build packages/agentplane/dist/cli.js --compile with embedded version; compiled binary in a temp directory without adjacent assets rendered role CODER from bundled assets."
 doc_version: 3
-doc_updated_at: "2026-05-03T11:19:11.821Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T11:46:13.353Z"
+doc_updated_by: "CODER"
 description: "Replace or supplement filesystem-only asset access with Bun-compatible embedded asset handling so a compiled binary can initialize projects without an npm package assets directory."
 sections:
   Summary: |-
@@ -51,6 +67,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T11:46:13.351Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused verification passed: bun test packages/agentplane/src/shared/package-paths.test.ts (3 tests); bun run build; bun build packages/agentplane/dist/cli.js --compile with embedded version; compiled binary in a temp directory without adjacent assets rendered role CODER from bundled assets.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T11:43:47.499Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -87,6 +111,14 @@ Acceptance: compiled Bun binary can initialize a repository without an npm packa
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T11:46:13.351Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused verification passed: bun test packages/agentplane/src/shared/package-paths.test.ts (3 tests); bun run build; bun build packages/agentplane/dist/cli.js --compile with embedded version; compiled binary in a temp directory without adjacent assets rendered role CODER from bundled assets.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T11:43:47.499Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

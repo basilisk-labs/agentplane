@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605031118-8PHZZR/bun-binary-assets",
+  "created_at": "2026-05-03T11:43:47.534Z",
+  "head_sha": "70ac40da0ac8b7ee1d2ab83f16e8f6d18b9c6dde",
+  "last_verified_at": "2026-05-03T11:46:13.351Z",
+  "last_verified_sha": "720a0bc101b0b5fac31b3bef01ff6987943f3ce5",
+  "schema_version": 1,
+  "task_id": "202605031118-8PHZZR",
+  "updated_at": "2026-05-03T11:51:37.437Z",
+  "verify": {
+    "status": "pass"
+  }
+}

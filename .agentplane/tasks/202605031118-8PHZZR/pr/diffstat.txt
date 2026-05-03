@@ -1,0 +1,4 @@
+ .../src/shared/builtin-assets.generated.ts         | 188 +++++++++++++++++++++
+ .../agentplane/src/shared/package-paths.test.ts    |  31 +++-
+ packages/agentplane/src/shared/package-paths.ts    |  33 +++-
+ 3 files changed, 250 insertions(+), 2 deletions(-)
