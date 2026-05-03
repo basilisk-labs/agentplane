@@ -1,10 +1,11 @@
 ---
 id: "202605031315-E9WZ3G"
 title: "Add comparison manifesto and LLM discovery docs"
-status: "DOING"
+result_summary: "Comparison manifesto and LLM discovery docs are present in the public surface."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-05-03T13:41:18.199Z"
   updated_by: "DOCS"
   note: "Added docs/manifesto.mdx and docs/compare.mdx, placed them in the docs index/sidebar, and refreshed llms.txt plus llms-full.txt around the audit-layer positioning. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check."
-commit: null
+commit:
+  hash: "ee25574b22cb4f28cb70658eef40d913b9d64f63"
+  message: "📝 E9WZ3G docs: add comparison discovery surfaces"
 comments:
   -
     author: "DOCS"
     body: "Start: add comparison, manifesto, and LLM discovery surfaces required by the updated website navigation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Comparison manifesto and LLM discovery docs landed through PR #819; task verification was recorded before merge."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Added docs/manifesto.mdx and docs/compare.mdx, placed them in the docs index/sidebar, and refreshed llms.txt plus llms-full.txt around the audit-layer positioning. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check."
+  -
+    type: "status"
+    at: "2026-05-03T14:43:22.574Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Comparison manifesto and LLM discovery docs landed through PR #819; task verification was recorded before merge."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:41:18.202Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-03T14:43:22.574Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add repository-owned discovery docs from the audit: compare page, manifesto page, llms.txt rewrite, and llms-full freshness or generation contract so LLM and search surfaces teach the same model."
 sections:
   Summary: |-
