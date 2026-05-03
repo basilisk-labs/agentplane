@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T16:38:10Z",
+  "base": "main",
+  "branch": "task/202605031543-422JX3/stale-cli-autobootstrap",
+  "created_at": "2026-05-03T15:44:37.335Z",
+  "head_sha": "1901b8a5f24409a3de8d5702ca019fe98fa00f89",
+  "last_verified_at": "2026-05-03T15:56:11.009Z",
+  "last_verified_sha": "fa58ade804ae0a1539387ba950ee2052a07f04db",
+  "merge_commit": "62e07b0926cf48cf091449857865c5a79cc36d00",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T16:38:10Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605031543-422JX3",
+  "updated_at": "2026-05-03T16:38:10Z",
+  "verify": {
+    "status": "pass"
+  }
+}

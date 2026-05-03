@@ -917,6 +917,45 @@
             "tasks",
             "task"
           ]
+        },
+        "dco": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "name": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "email": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "additionalProperties": true,
+          "default": {
+            "enabled": false,
+            "name": null,
+            "email": null
+          }
         }
       },
       "additionalProperties": true,
@@ -930,7 +969,12 @@
           "update",
           "tasks",
           "task"
-        ]
+        ],
+        "dco": {
+          "enabled": false,
+          "name": null,
+          "email": null
+        }
       }
     },
     "tasks_backend": {

@@ -73,6 +73,10 @@ commit:
     - update
     - tasks
     - task
+  dco:
+    enabled: true
+    name: Denis Smirnov
+    email: densmirnov@me.com
 scheduler:
   concurrency: 1
   poll_interval_ms: 30000

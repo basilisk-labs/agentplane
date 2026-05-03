@@ -93,6 +93,38 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     }
   });
 
+  it("hooks run commit-msg enforces configured DCO sign-off", async () => {
+    const root = await mkGitRepoRoot();
+    await writeConfig(root, {
+      ...defaultConfig(),
+      commit: {
+        ...defaultConfig().commit,
+        dco: { enabled: true, name: "Denis Smirnov", email: "densmirnov@me.com" },
+      },
+    });
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    process.env.AGENTPLANE_TASK_ID = "202601010101-ABCDEF";
+
+    const io = captureStdIO();
+    try {
+      await writeFile(messagePath, "✨ ABCDEF guard: add checks\n", "utf8");
+      expect(await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root])).toBe(5);
+      expect(io.stderr).toContain("DCO sign-off is required");
+
+      await writeFile(
+        messagePath,
+        "✨ ABCDEF guard: add checks\n\nSigned-off-by: Denis Smirnov <densmirnov@me.com>\n",
+        "utf8",
+      );
+      expect(await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root])).toBe(0);
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
+    }
+  });
+
   it("hooks run commit-msg rejects generic subjects even with task env", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

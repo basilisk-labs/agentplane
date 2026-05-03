@@ -421,10 +421,27 @@ export const AgentplaneConfigSchema = z
           "tasks",
           "task",
         ]),
+        dco: z
+          .object({
+            enabled: z.boolean().default(false),
+            name: nonEmptyString().nullable().default(null),
+            email: nonEmptyString().nullable().default(null),
+          })
+          .passthrough()
+          .default({
+            enabled: false,
+            name: null,
+            email: null,
+          }),
       })
       .passthrough()
       .default({
         generic_tokens: ["start", "status", "mark", "done", "wip", "update", "tasks", "task"],
+        dco: {
+          enabled: false,
+          name: null,
+          email: null,
+        },
       }),
     tasks_backend: z
       .object({
