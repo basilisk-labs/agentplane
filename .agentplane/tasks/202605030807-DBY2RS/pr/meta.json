@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605030807-DBY2RS/standalone-doctor-smoke",
+  "created_at": "2026-05-03T08:08:07.052Z",
+  "head_sha": "db9c3bddf6b08ecc5ee1d2e45e17c8f9aa0b99a1",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605030807-DBY2RS",
+  "updated_at": "2026-05-03T08:08:07.052Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
