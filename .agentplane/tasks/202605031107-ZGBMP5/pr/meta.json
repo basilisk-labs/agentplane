@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605031107-ZGBMP5/bun-downstream-blockers",
+  "created_at": "2026-05-03T11:07:48.105Z",
+  "head_sha": "93c3869ab25649c35e6d6873cd0888a66236d790",
+  "last_verified_at": "2026-05-03T11:07:50.035Z",
+  "last_verified_sha": "93c3869ab25649c35e6d6873cd0888a66236d790",
+  "schema_version": 1,
+  "task_id": "202605031107-ZGBMP5",
+  "updated_at": "2026-05-03T11:07:48.105Z",
+  "verify": {
+    "status": "pass"
+  }
+}
