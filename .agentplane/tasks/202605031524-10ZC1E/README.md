@@ -1,10 +1,11 @@
 ---
 id: "202605031524-10ZC1E"
 title: "Add branch_pr batch drift diagnostics and recovery"
-status: "DOING"
+result_summary: "Merged via PR #838."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-05-03T16:19:35.609Z"
   updated_by: "CODER"
   note: "Batch drift diagnostics implemented and verified on current HEAD. Checks: focused doctor test, typecheck, format:check, check:types-files, git diff --check, policy routing."
-commit: null
+commit:
+  hash: "487a6fd81bcb44a9750b25e4d0bdd593cb9cc8e4"
+  message: "Merge pull request #838 from basilisk-labs/task/202605031524-10ZC1E/batch-drift-diagnostics"
 comments:
   -
     author: "CODER"
     body: "Start: add branch_pr batch drift diagnostics and recovery guidance."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #838 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Batch drift diagnostics implemented and verified on current HEAD. Checks: focused doctor test, typecheck, format:check, check:types-files, git diff --check, policy routing."
+  -
+    type: "status"
+    at: "2026-05-03T16:22:53.677Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #838 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T16:19:35.641Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T16:22:53.683Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend doctor and normalize so merged primary PRs with included tasks cannot leave verified leaf tasks open silently, and provide scoped recovery commands with tests."
 sections:
   Summary: |-
