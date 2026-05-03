@@ -42,6 +42,7 @@ export function makeRunFinishHandler(getCtx: (cmd: string) => Promise<CommandCon
       confirmStatusCommit: p.confirmStatusCommit,
       closeCommit: p.closeCommit,
       noCloseCommit: p.noCloseCommit,
+      noWriteAcr: p.noWriteAcr,
       closeUnstageOthers: p.closeUnstageOthers,
       baseBranchOverride: p.baseBranchOverride,
       observation: p.observation,

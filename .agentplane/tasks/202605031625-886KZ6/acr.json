@@ -1,0 +1,275 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605031625-886KZ6",
+  "created_at": "2026-05-03T17:10:08.583Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "ded9f8c8393b41614edfa798be5f88aa78610014",
+    "work_ref": "task/202605031625-886KZ6/acr-core-schema",
+    "work_commit": "764152a152ccb484ac338bd09b9aae50e2103775"
+  },
+  "task": {
+    "task_id": "202605031625-886KZ6",
+    "title": "ACR v0.1 core schema contract",
+    "intent": "Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, synchronized schema artifacts, and schema-focused tests. ACR remains a derived evidence projection from AgentPlane task and Git state.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "CODER",
+    "name": "CODER",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605031625-886KZ6/README.md",
+      "sha256": "sha256:4bc62470e0a1a21c8d4c09d89774faf9ef8e4e50c5bfa6754e5ade53c263f553"
+    },
+    "approved_at": "2026-05-03T16:28:12.695Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "approval_required"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, synchronized schema artifacts, and schema-focused tests. ACR remains a derived evidence projection from AgentPlane task and Git state.",
+    "diff_stats": {
+      "files_changed": 17,
+      "insertions": 2174,
+      "deletions": 0
+    },
+    "files": [
+      {
+        "path": ".agentplane/tasks/202605031625-886KZ6/README.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605031625-886KZ6/pr/diffstat.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605031625-886KZ6/pr/github-body.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605031625-886KZ6/pr/github-title.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605031625-886KZ6/pr/meta.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605031625-886KZ6/pr/notes.jsonl",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605031625-886KZ6/pr/review.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605031625-886KZ6/pr/verify.log",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/core/schemas/acr-v0.1.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/core/src/index.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/core/src/schemas/index.ts",
+        "status": "modified",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/core/src/tasks/index.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/core/src/tasks/task-artifact-schema.acr.ts",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/core/src/tasks/task-artifact-schema.test.ts",
+        "status": "modified",
+        "risk_categories": [
+          "schema",
+          "tests"
+        ]
+      },
+      {
+        "path": "packages/core/src/tasks/task-artifact-schema.ts",
+        "status": "modified",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/spec/schemas/acr-v0.1.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "scripts/sync-schemas.mjs",
+        "status": "modified",
+        "risk_categories": [
+          "schema"
+        ]
+      }
+    ],
+    "risk": {
+      "level": "medium",
+      "categories": [
+        "code",
+        "schema",
+        "evidence"
+      ],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "schema_validation",
+        "command": "bun run schemas:check",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-2",
+        "type": "schema_validation",
+        "command": "bun test packages/core/src/tasks packages/core/src/schemas",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605031625-886KZ6_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-03T16:28:12.695Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605031625-886KZ6/README.md",
+      "sha256": "sha256:4bc62470e0a1a21c8d4c09d89774faf9ef8e4e50c5bfa6754e5ade53c263f553"
+    }
+  ],
+  "result": {
+    "status": "verified",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 764152a152ccb484ac338bd09b9aae50e2103775 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:4ec21969b1415ec5abe6bdd4bf1efc217264e2aba0bf35bb23c3a62c7fcca8d6",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}

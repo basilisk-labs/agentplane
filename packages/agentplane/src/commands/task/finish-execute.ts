@@ -1,5 +1,6 @@
 import { invalidValueMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { generateAcr, writeAcrFile } from "../acr/acr.command.js";
 import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../incidents/shared.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
@@ -89,6 +90,13 @@ export async function executeFinishPlan(opts: {
     taskCommitInfo,
   });
 
+  await refreshAcrOnFinish({
+    ctx,
+    options,
+    loadedTasks: loadedState.loadedTasks,
+    taskCommitInfo,
+  });
+
   const incidentOutcome = await collectIncidentsForLoadedTasks({
     ctx,
     taskIds: options.taskIds,
@@ -135,6 +143,33 @@ export async function executeFinishPlan(opts: {
   }
 
   return 0;
+}
+
+async function refreshAcrOnFinish(opts: {
+  ctx: CommandContext;
+  options: FinishOptions;
+  loadedTasks: LoadedFinishTask[];
+  taskCommitInfo: ResolvedCommitInfo | null;
+}): Promise<void> {
+  if (opts.options.noWriteAcr === true) return;
+  if (opts.ctx.config.acr.enabled !== true || opts.ctx.config.acr.write_on_finish !== true) return;
+  const workCommit = opts.taskCommitInfo?.hash ?? opts.options.commit;
+  if (!workCommit) return;
+  for (const { taskId } of opts.loadedTasks) {
+    const generated = await generateAcr({
+      ctx: opts.ctx,
+      cwd: opts.options.cwd,
+      rootOverride: opts.options.rootOverride,
+      taskId,
+      workCommit,
+      agent: opts.options.author,
+      agentName: opts.options.author,
+      write: true,
+      refresh: true,
+    });
+    if (!generated.acrPath) continue;
+    await writeAcrFile({ acrPath: generated.acrPath, record: generated.record, refresh: true });
+  }
 }
 
 async function appendStructuredFindingIfNeeded(opts: {

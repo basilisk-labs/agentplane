@@ -31,6 +31,7 @@ export type FinishParsed = {
   confirmStatusCommit: boolean;
   closeCommit: boolean;
   noCloseCommit: boolean;
+  noWriteAcr: boolean;
   closeUnstageOthers: boolean;
   baseBranchOverride?: string;
   observation?: string;
@@ -229,6 +230,7 @@ export function parseFinishRaw(raw: ParsedRaw): FinishParsed {
     confirmStatusCommit: raw.opts["confirm-status-commit"] === true,
     closeCommit: raw.opts["close-commit"] === true,
     noCloseCommit: raw.opts["no-close-commit"] === true,
+    noWriteAcr: raw.opts["no-write-acr"] === true,
     closeUnstageOthers: raw.opts["close-unstage-others"] === true,
     baseBranchOverride: typeof raw.opts.base === "string" ? raw.opts.base : undefined,
     observation: typeof raw.opts.observation === "string" ? raw.opts.observation : undefined,

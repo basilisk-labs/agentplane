@@ -9,6 +9,7 @@ export {
 } from "../config/index.js";
 
 export {
+  ACR_VERSION,
   listTaskHandoffSchemaErrors,
   listTaskPrMetaSchemaErrors,
   listTaskReadmeFrontmatterSchemaErrors,

@@ -4,6 +4,13 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 
 ## Index
 
+- ACR
+  - [acr](#acr)
+  - [acr check](#acr-check)
+  - [acr explain](#acr-explain)
+  - [acr generate](#acr-generate)
+  - [acr schema](#acr-schema)
+  - [acr validate](#acr-validate)
 - Backend
   - [backend](#backend)
   - [backend inspect](#backend-inspect)
@@ -159,6 +166,163 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [workflow land](#workflow-land)
   - [workflow restore](#workflow-restore)
   - [workflow sync](#workflow-sync)
+
+## ACR
+
+### acr
+
+Generate, validate, check, explain, and print Agent Change Record artifacts.
+
+This is a command group. Use a subcommand such as \`agentplane acr generate ...\`, \`agentplane acr validate ...\`, or \`agentplane acr schema\`.
+
+Usage:
+
+```text
+agentplane acr [<cmd> ...]
+```
+
+Examples:
+
+```sh
+agentplane acr generate 202605031625-886KZ6 --work-commit HEAD --write
+```
+
+- Generate a task-local ACR.
+
+### acr check
+
+Run the ACR merge-gate check for CI and branch review.
+
+Usage:
+
+```text
+agentplane acr check <task-id> [options]
+```
+
+Options:
+
+- `--mode <ci>`: Check mode. (choices=ci, default=ci)
+- `--require-plan-approved`: Require approved plan. (default=true)
+- `--require-verification`: Require passed verification. (default=true)
+- `--require-policy-pass`: Reject failed policy decisions. (default=true)
+- `--allow-waived-verification`: Allow waived verification with approval. (default=false)
+- `--allow-manual-override`: Allow policy manual_override with approval. (default=false)
+- `--json`: Emit machine-readable result. (default=false)
+
+Examples:
+
+```sh
+agentplane acr check 202605031625-886KZ6 --mode ci
+```
+
+- Run merge gate.
+
+### acr explain
+
+Explain an ACR for human review.
+
+Usage:
+
+```text
+agentplane acr explain <task-id-or-path> [options]
+```
+
+Options:
+
+- `--json`: Emit machine-readable summary. (default=false)
+
+Examples:
+
+```sh
+agentplane acr explain 202605031625-886KZ6
+```
+
+- Summarize ACR readiness.
+
+### acr generate
+
+Generate an Agent Change Record from task, Git, policy, and verification state.
+
+Usage:
+
+```text
+agentplane acr generate <task-id> [options]
+```
+
+Options:
+
+- `--work-commit <rev>`: Implementation revision.
+- `--base-commit <rev>`: Base revision override.
+- `--agent <id>`: AgentPlane role or agent id.
+- `--agent-name <name>`: Human-readable agent name.
+- `--model-provider <provider>`: Model provider. (choices=anthropic|openai|cursor|aider|unknown|custom)
+- `--model-name <name>`: Model name.
+- `--out <path>`: Write ACR to custom path.
+- `--write`: Write task-local ACR. (default=false)
+- `--stdout`: Print ACR JSON to stdout. (default=false)
+- `--refresh`: Overwrite existing ACR. (default=false)
+- `--json`: Emit machine-readable result. (default=false)
+
+Examples:
+
+```sh
+agentplane acr generate 202605031625-886KZ6 --work-commit HEAD --write
+```
+
+- Write \`.agentplane/tasks/&lt;task-id&gt;/acr.json\`.
+
+### acr schema
+
+Print or write the ACR v0.1 JSON Schema.
+
+Usage:
+
+```text
+agentplane acr schema [options]
+```
+
+Options:
+
+- `--version <version>`: ACR schema version. (choices=0.1, default=0.1)
+- `--out <path>`: Write schema to a file instead of stdout.
+
+Examples:
+
+```sh
+agentplane acr schema --version 0.1
+```
+
+- Print the bundled schema.
+
+```sh
+agentplane acr schema --version 0.1 --out schemas/acr-v0.1.schema.json
+```
+
+- Write the bundled schema to a custom path.
+
+### acr validate
+
+Validate an ACR file by schema, local, or CI invariants.
+
+Usage:
+
+```text
+agentplane acr validate <task-id-or-path> [options]
+```
+
+Options:
+
+- `--mode <schema|local|ci>`: Validation mode. (choices=schema|local|ci, default=local)
+- `--strict`: Treat warnings as failures. (default=false)
+- `--json`: Emit machine-readable result. (default=false)
+
+Examples:
+
+```sh
+agentplane acr validate 202605031625-886KZ6 --mode local
+```
+
+- Validate task ACR.
 
 ## Backend
 
@@ -1231,6 +1395,7 @@ Options:
 - `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment or --status-commit). (default=false)
 - `--close-commit`: After finishing, run a deterministic close commit for the task README (single-task only). (default=false)
 - `--no-close-commit`: Disable the default deterministic close commit in direct mode (single-task only). (default=false)
+- `--no-write-acr`: Disable automatic ACR refresh for this finish call when acr.write_on_finish is enabled. (default=false)
 - `--close-unstage-others`: With --close-commit: unstage any currently staged paths before staging the task README. (default=false)
 - `--base <branch>`: Optional explicit base branch override for branch_pr finish validation and close-commit reconciliation.
 - `--observation <text>`: Structured finding observation to append with the verification.

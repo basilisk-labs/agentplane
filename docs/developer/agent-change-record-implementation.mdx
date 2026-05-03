@@ -89,15 +89,13 @@ Existing ACR files should not be overwritten unless `--refresh` is passed.
 
 ### Finish integration
 
-Roll out in stages:
+`agentplane finish ...` automatically refreshes `.agentplane/tasks/<task-id>/acr.json` when
+`acr.enabled=true` and `acr.write_on_finish=true`. The escape hatch is `--no-write-acr` for
+one-off manual recovery or compatibility cases.
 
-1. `acr generate`, `acr validate --mode schema`, and `acr validate --mode local`.
-2. `acr check --mode ci`.
-3. `finish --write-acr` as opt-in evidence generation.
-4. Config-controlled write-on-finish behavior.
-5. Optional branch_pr/team profile requirement.
-
-Do not make ACR mandatory in the first implementation release.
+ACR generation is automatic; ACR enforcement is policy-controlled. `acr.require_for_pr_check`
+decides whether PR/CI checks require the task-local ACR. This keeps the first implementation useful
+without breaking existing repositories that still have old or partial task records.
 
 ## Proposed config surface
 
@@ -109,7 +107,7 @@ The future config surface should be explicit and safe by default:
     "enabled": true,
     "version": "0.1.0",
     "write_on_finish": true,
-    "require_for_pr_check": true,
+    "require_for_pr_check": false,
     "default_validation_mode": "local",
     "include_model_identity": "when_known",
     "include_prompts": false,

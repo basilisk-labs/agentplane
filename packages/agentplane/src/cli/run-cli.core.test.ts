@@ -172,6 +172,18 @@ describe("runCli", () => {
     }
   });
 
+  it("keeps command-scoped --version options distinct from the global version flag", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["acr", "schema", "--version", "0.1"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain('"$id": "https://agentplane.dev/schemas/acr-v0.1.schema.json"');
+      expect(io.stdout).toContain('"version"');
+    } finally {
+      io.restore();
+    }
+  });
+
   it("does not load .env for group/root commands that do not require project context", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

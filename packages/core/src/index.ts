@@ -14,6 +14,7 @@ export {
   setByDottedKey,
   validateConfig,
   type AgentplaneConfig,
+  type AcrConfig,
   type ExecutionProfile,
   type LoadedConfig,
   type ReasoningEffort,
@@ -29,6 +30,7 @@ export {
 } from "./config/config.js";
 
 export {
+  ACR_VERSION,
   AGENTPLANE_CONFIG_SCHEMA,
   listAcrSchemaErrors,
   AgentplaneConfigSchema,

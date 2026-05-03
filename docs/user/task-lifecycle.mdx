@@ -70,8 +70,9 @@ A task moves through the same core stages in both modes:
 5. **Implement**: code, docs, and artifacts are produced.
 6. **Verify**: checks are run (if configured) and a verification outcome is recorded.
 7. **Commit**: changes are committed with the task ID suffix.
-8. **Finish**: the task is closed with a Verified note and commit metadata.
-9. **Evidence projection (planned)**: generate an Agent Change Record from task, policy,
+8. **Finish**: the task is closed with a Verified note, commit metadata, and an Agent Change Record
+   refresh when `acr.write_on_finish=true`.
+9. **Evidence projection**: validate the task-local Agent Change Record against task, policy,
    verification, finish, and Git evidence.
 10. **Export (optional)**: export a task snapshot for integrations (for example `agentplane task export`).
 
@@ -136,7 +137,8 @@ sequenceDiagram
   CLI->>G: Create commit
   E->>CLI: finish <task-id> --author <id> --body <text> --result <one-line>
   CLI->>B: Close task + store commit metadata
-  E->>CLI: acr generate / task export (optional)
+  CLI->>B: Refresh task-local acr.json when enabled
+  E->>CLI: acr validate / acr explain / task export (optional)
 ```
 
 ## branch_pr mode
@@ -192,7 +194,8 @@ sequenceDiagram
   CLI->>B: Refresh diffstat + README summary
   I->>CLI: finish <task-id> --author <id> --body <text> --result <one-line>
   CLI->>B: Close task + store commit metadata
-  I->>CLI: acr generate / task export (optional)
+  CLI->>B: Refresh task-local acr.json when enabled
+  I->>CLI: acr validate / acr explain / task export (optional)
 ```
 
 ## Guardrails and policies
@@ -220,9 +223,9 @@ sequenceDiagram
 - **Primary-tag verification policy**:
   - Verify-step and verification requirements are controlled by `tasks.verify.require_steps_for_primary` and `tasks.verify.require_verification_for_primary`.
 - **branch_pr verify logs**: `agentplane integrate --run-verify` executes frontmatter `verify:` commands and appends output to `.agentplane/tasks/<task-id>/pr/verify.log`.
-- **Agent Change Record (planned)**: ACR should be generated from the same lifecycle evidence,
-  defaulting to `.agentplane/tasks/<task-id>/acr.json`; it must validate against task state rather
-  than become a separate task source of truth.
+- **Agent Change Record**: ACR is generated from the same lifecycle evidence, defaulting to
+  `.agentplane/tasks/<task-id>/acr.json`; it must validate against task state rather than become a
+  separate task source of truth.
 - **Commit policy**: commit subjects must include the task ID suffix.
 - **Duplicate closure shortcut**: for accidental duplicate tasks, use one command:
   - `agentplane task close-duplicate <task-id> --of <canonical-task-id> --author <ROLE>`

@@ -28,6 +28,7 @@ export type FinishOptions = {
   confirmStatusCommit: boolean;
   closeCommit?: boolean;
   noCloseCommit?: boolean;
+  noWriteAcr?: boolean;
   closeUnstageOthers?: boolean;
   baseBranchOverride?: string;
   observation?: string;

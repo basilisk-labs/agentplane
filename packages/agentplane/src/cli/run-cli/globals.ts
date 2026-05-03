@@ -30,7 +30,7 @@ type GlobalFlagDef = {
 
 const GLOBAL_FLAGS: readonly GlobalFlagDef[] = [
   { key: "help", forms: ["--help", "-h"], takesValue: false, scoped: false },
-  { key: "version", forms: ["--version", "-v"], takesValue: false, scoped: false },
+  { key: "version", forms: ["--version", "-v"], takesValue: false, scoped: true },
   { key: "noUpdateCheck", forms: ["--no-update-check"], takesValue: false, scoped: false },
   { key: "allowNetwork", forms: ["--allow-network"], takesValue: false, scoped: true },
   { key: "jsonErrors", forms: ["--json-errors"], takesValue: false, scoped: true },

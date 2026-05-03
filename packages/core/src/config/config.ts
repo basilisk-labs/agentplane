@@ -37,3 +37,4 @@ export type RunnerTraceConfig = {
   redact_patterns?: string[];
 };
 export type RunnerTimeoutConfig = AgentplaneConfig["runner"]["timeouts"];
+export type AcrConfig = AgentplaneConfig["acr"];
