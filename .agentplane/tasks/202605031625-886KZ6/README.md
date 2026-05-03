@@ -4,7 +4,7 @@ title: "ACR v0.1 core schema contract"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-03T16:41:42.045Z"
+  updated_at: "2026-05-03T16:43:25.739Z"
   updated_by: "CODER"
-  note: "Command: bun run schemas:check. Result: pass. Evidence: schemas OK. Scope: synchronized ACR v0.1 schema artifacts in packages/spec and packages/core. Command: bun test packages/core/src/tasks/task-artifact-schema.test.ts. Result: pass. Evidence: 10 tests passed, including ACR valid record and invalid top-level/path/digest cases. Scope: ACR schema contract. Command: bun run test:project core packages/core/src/tasks packages/core/src/schemas. Result: pass. Evidence: 9 files and 75 tests passed. Scope: declared core task/schema test bucket through the repo Vitest runner. Command: bun run --filter=@agentplaneorg/core typecheck. Result: pass. Evidence: core typecheck exited 0. Scope: exported ACR types/helpers. Command: bunx prettier --check changed ACR/schema files. Result: pass. Evidence: all matched files use Prettier style. Scope: changed source and generated schema artifacts. Note: raw 'bun test packages/core/src/tasks packages/core/src/schemas' was attempted first and failed in existing task-store tests because Bun's vi shim lacks setSystemTime; the repo Vitest route for the same core bucket passed."
+  note: "Command: bun run schemas:check. Result: pass. Evidence: schemas OK. Scope: synchronized ACR v0.1 schema artifacts. Command: bun run test:project core packages/core/src/tasks packages/core/src/schemas. Result: pass. Evidence: 9 files and 75 tests passed. Scope: core task/schema bucket. Command: bun run --filter=@agentplaneorg/core typecheck. Result: pass. Evidence: core typecheck exited 0. Scope: exported ACR types/helpers. Command: bunx prettier --check changed ACR/schema files. Result: pass. Evidence: all matched files use Prettier style. Scope: changed source and generated schema artifacts."
 commit: null
 comments:
   -
@@ -44,8 +44,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run schemas:check. Result: pass. Evidence: schemas OK. Scope: synchronized ACR v0.1 schema artifacts in packages/spec and packages/core. Command: bun test packages/core/src/tasks/task-artifact-schema.test.ts. Result: pass. Evidence: 10 tests passed, including ACR valid record and invalid top-level/path/digest cases. Scope: ACR schema contract. Command: bun run test:project core packages/core/src/tasks packages/core/src/schemas. Result: pass. Evidence: 9 files and 75 tests passed. Scope: declared core task/schema test bucket through the repo Vitest runner. Command: bun run --filter=@agentplaneorg/core typecheck. Result: pass. Evidence: core typecheck exited 0. Scope: exported ACR types/helpers. Command: bunx prettier --check changed ACR/schema files. Result: pass. Evidence: all matched files use Prettier style. Scope: changed source and generated schema artifacts. Note: raw 'bun test packages/core/src/tasks packages/core/src/schemas' was attempted first and failed in existing task-store tests because Bun's vi shim lacks setSystemTime; the repo Vitest route for the same core bucket passed."
+  -
+    type: "verify"
+    at: "2026-05-03T16:43:25.739Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run schemas:check. Result: pass. Evidence: schemas OK. Scope: synchronized ACR v0.1 schema artifacts. Command: bun run test:project core packages/core/src/tasks packages/core/src/schemas. Result: pass. Evidence: 9 files and 75 tests passed. Scope: core task/schema bucket. Command: bun run --filter=@agentplaneorg/core typecheck. Result: pass. Evidence: core typecheck exited 0. Scope: exported ACR types/helpers. Command: bunx prettier --check changed ACR/schema files. Result: pass. Evidence: all matched files use Prettier style. Scope: changed source and generated schema artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T16:41:42.259Z"
+doc_updated_at: "2026-05-03T16:43:25.757Z"
 doc_updated_by: "CODER"
 description: "Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, synchronized schema artifacts, and schema-focused tests. ACR remains a derived evidence projection from AgentPlane task and Git state."
 sections:
@@ -71,6 +77,14 @@ sections:
     Note: Command: bun run schemas:check. Result: pass. Evidence: schemas OK. Scope: synchronized ACR v0.1 schema artifacts in packages/spec and packages/core. Command: bun test packages/core/src/tasks/task-artifact-schema.test.ts. Result: pass. Evidence: 10 tests passed, including ACR valid record and invalid top-level/path/digest cases. Scope: ACR schema contract. Command: bun run test:project core packages/core/src/tasks packages/core/src/schemas. Result: pass. Evidence: 9 files and 75 tests passed. Scope: declared core task/schema test bucket through the repo Vitest runner. Command: bun run --filter=@agentplaneorg/core typecheck. Result: pass. Evidence: core typecheck exited 0. Scope: exported ACR types/helpers. Command: bunx prettier --check changed ACR/schema files. Result: pass. Evidence: all matched files use Prettier style. Scope: changed source and generated schema artifacts. Note: raw 'bun test packages/core/src/tasks packages/core/src/schemas' was attempted first and failed in existing task-store tests because Bun's vi shim lacks setSystemTime; the repo Vitest route for the same core bucket passed.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T16:32:47.484Z, excerpt_hash=sha256:a5ac24bc830ebeee219d3ee957b3fec45f3b6164604fed986291e63b486783a2
+    
+    ### 2026-05-03T16:43:25.739Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run schemas:check. Result: pass. Evidence: schemas OK. Scope: synchronized ACR v0.1 schema artifacts. Command: bun run test:project core packages/core/src/tasks packages/core/src/schemas. Result: pass. Evidence: 9 files and 75 tests passed. Scope: core task/schema bucket. Command: bun run --filter=@agentplaneorg/core typecheck. Result: pass. Evidence: core typecheck exited 0. Scope: exported ACR types/helpers. Command: bunx prettier --check changed ACR/schema files. Result: pass. Evidence: all matched files use Prettier style. Scope: changed source and generated schema artifacts.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T16:41:42.259Z, excerpt_hash=sha256:a5ac24bc830ebeee219d3ee957b3fec45f3b6164604fed986291e63b486783a2
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -111,6 +125,14 @@ By: CODER
 Note: Command: bun run schemas:check. Result: pass. Evidence: schemas OK. Scope: synchronized ACR v0.1 schema artifacts in packages/spec and packages/core. Command: bun test packages/core/src/tasks/task-artifact-schema.test.ts. Result: pass. Evidence: 10 tests passed, including ACR valid record and invalid top-level/path/digest cases. Scope: ACR schema contract. Command: bun run test:project core packages/core/src/tasks packages/core/src/schemas. Result: pass. Evidence: 9 files and 75 tests passed. Scope: declared core task/schema test bucket through the repo Vitest runner. Command: bun run --filter=@agentplaneorg/core typecheck. Result: pass. Evidence: core typecheck exited 0. Scope: exported ACR types/helpers. Command: bunx prettier --check changed ACR/schema files. Result: pass. Evidence: all matched files use Prettier style. Scope: changed source and generated schema artifacts. Note: raw 'bun test packages/core/src/tasks packages/core/src/schemas' was attempted first and failed in existing task-store tests because Bun's vi shim lacks setSystemTime; the repo Vitest route for the same core bucket passed.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T16:32:47.484Z, excerpt_hash=sha256:a5ac24bc830ebeee219d3ee957b3fec45f3b6164604fed986291e63b486783a2
+
+### 2026-05-03T16:43:25.739Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run schemas:check. Result: pass. Evidence: schemas OK. Scope: synchronized ACR v0.1 schema artifacts. Command: bun run test:project core packages/core/src/tasks packages/core/src/schemas. Result: pass. Evidence: 9 files and 75 tests passed. Scope: core task/schema bucket. Command: bun run --filter=@agentplaneorg/core typecheck. Result: pass. Evidence: core typecheck exited 0. Scope: exported ACR types/helpers. Command: bunx prettier --check changed ACR/schema files. Result: pass. Evidence: all matched files use Prettier style. Scope: changed source and generated schema artifacts.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T16:41:42.259Z, excerpt_hash=sha256:a5ac24bc830ebeee219d3ee957b3fec45f3b6164604fed986291e63b486783a2
 
 <!-- END VERIFICATION RESULTS -->
 
