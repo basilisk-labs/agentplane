@@ -1,10 +1,11 @@
 ---
 id: "202605031543-422JX3"
 title: "Auto-bootstrap stale framework CLI for diagnostics"
-status: "DOING"
+result_summary: "Merged via PR #837."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-03T15:56:11.009Z"
   updated_by: "CODER"
   note: "Verified: stale framework CLI diagnostics now auto-bootstrap before rerun; WORKFLOW.md-only bootstrap root detection works; targeted tests, routing, doctor, eslint, and diff check passed."
-commit: null
+commit:
+  hash: "62e07b0926cf48cf091449857865c5a79cc36d00"
+  message: "Merge pull request #837 from basilisk-labs/task/202605031543-422JX3/stale-cli-autobootstrap"
 comments:
   -
     author: "CODER"
     body: "Start: implement stale framework CLI auto-bootstrap for diagnostic commands and fix WORKFLOW.md-only bootstrap root detection."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #837 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: stale framework CLI diagnostics now auto-bootstrap before rerun; WORKFLOW.md-only bootstrap root detection works; targeted tests, routing, doctor, eslint, and diff check passed."
+  -
+    type: "status"
+    at: "2026-05-03T16:38:49.997Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #837 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T15:56:11.041Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T16:38:50.002Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make framework-checkout stale runtime handling rebuild or stop instead of returning stale config for diagnostic commands."
 sections:
   Summary: |-
