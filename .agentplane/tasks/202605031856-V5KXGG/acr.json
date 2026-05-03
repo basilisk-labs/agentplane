@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605031856-V5KXGG",
+  "created_at": "2026-05-03T19:29:33.975Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "ddcaf000741259312262042049fba87115537778",
+    "work_ref": "main",
+    "work_commit": "ddcaf000741259312262042049fba87115537778"
+  },
+  "task": {
+    "task_id": "202605031856-V5KXGG",
+    "title": "ACR docs and release checks refresh",
+    "intent": "Update AgentPlane user/developer ACR documentation and generated CLI reference for validation classes, standard repo alignment, canonical digest semantics, and config-gated CI enforcement.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605031856-V5KXGG/README.md",
+      "sha256": "sha256:0dc3f72350bd7e96e0ce0c0b1da0655d42145d24af16dd3fb15af74aec16bd76"
+    },
+    "approved_at": "2026-05-03T18:57:53.794Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "approval_required"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "ACR user/developer docs now reflect validation classes, canonical digest semantics, automatic export, and config-gated CI enforcement.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605031856-V5KXGG_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-03T18:57:53.794Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605031856-V5KXGG/README.md",
+      "sha256": "sha256:0dc3f72350bd7e96e0ce0c0b1da0655d42145d24af16dd3fb15af74aec16bd76"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605031856-V5KXGG/README.md",
+      "sha256": "sha256:0dc3f72350bd7e96e0ce0c0b1da0655d42145d24af16dd3fb15af74aec16bd76"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605031856-V5KXGG/README.md",
+      "sha256": "sha256:0dc3f72350bd7e96e0ce0c0b1da0655d42145d24af16dd3fb15af74aec16bd76"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit ddcaf000741259312262042049fba87115537778 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:aeac54a7304d872882a1e252324b68601192161598e39553785be81a45a972d8",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
