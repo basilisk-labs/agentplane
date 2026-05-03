@@ -3,6 +3,7 @@ import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { renderDiagnosticFinding } from "../shared/diagnostics.js";
+import { parsePrMeta, resolvePrBatchIncludedTaskIds } from "../shared/pr-meta.js";
 import { backendUsesLocalTaskStore, type CommandContext } from "../shared/task-backend.js";
 import {
   findDoneBranchPrTasksWithOpenPrArtifacts,
@@ -90,6 +91,59 @@ export async function checkBranchPrDoneTaskOpenPrDrift(ctx?: CommandContext): Pr
   ];
 }
 
+export async function checkBranchPrBatchIncludedTaskDrift(ctx?: CommandContext): Promise<string[]> {
+  if (!ctx || !backendUsesLocalTaskStore(ctx) || ctx.config.workflow_mode !== "branch_pr") {
+    return [];
+  }
+
+  let tasks: TaskData[] = [];
+  try {
+    tasks = await ctx.taskBackend.listTasks();
+  } catch {
+    return [];
+  }
+  if (tasks.length === 0) return [];
+
+  const byId = new Map(tasks.map((task) => [task.id, task]));
+  const matches: string[] = [];
+  for (const primary of tasks) {
+    if (String(primary.status).toUpperCase() !== "DONE") continue;
+    const meta = await readTaskPrMeta(ctx, primary.id);
+    if (!meta || meta.status !== "MERGED") continue;
+    const includedTaskIds = resolvePrBatchIncludedTaskIds(meta);
+    if (includedTaskIds.length === 0) continue;
+    const primaryCommit = primary.commit?.hash?.trim() ?? meta.merge_commit?.trim() ?? "";
+    for (const includedTaskId of includedTaskIds) {
+      const included = byId.get(includedTaskId) ?? null;
+      const includedStatus = String(included?.status ?? "MISSING").toUpperCase();
+      const includedCommit = included?.commit?.hash?.trim() ?? "";
+      if (includedStatus === "DONE" && includedCommit === primaryCommit) continue;
+      matches.push(
+        `${primary.id}->${includedTaskId} primary_commit=${primaryCommit.slice(0, 12) || "-"} included_status=${includedStatus} included_commit=${includedCommit.slice(0, 12) || "-"}`,
+      );
+    }
+  }
+  if (matches.length === 0) return [];
+
+  return [
+    renderDiagnosticFinding({
+      severity: "WARN",
+      state: "branch_pr batch included tasks are not closed with their primary PR",
+      likelyCause:
+        "a primary branch_pr batch PR was closed, but one or more included task ids from pr/meta.json were not reconciled to the same merge commit",
+      nextAction: {
+        command: "agentplane task hosted-close-pr <primary-task-id>",
+        reason:
+          "open or recover the hosted task-close PR for the primary batch task, then verify included tasks record the same merge commit",
+      },
+      details: [
+        `Affected included tasks: ${matches.length}`,
+        `Examples: ${matches.slice(0, 5).join(", ")}`,
+      ],
+    }),
+  ];
+}
+
 async function readDoneTaskSnapshot(ctx: CommandContext): Promise<TaskData[]> {
   try {
     const tasks = await ctx.taskBackend.listTasks();
@@ -108,6 +162,21 @@ async function readDoneTaskSnapshot(ctx: CommandContext): Promise<TaskData[]> {
     return parsed.tasks.filter((task): task is TaskData => isTaskDataLike(task));
   } catch {
     return [];
+  }
+}
+
+async function readTaskPrMeta(ctx: CommandContext, taskId: string) {
+  const metaPath = path.join(
+    ctx.resolvedProject.gitRoot,
+    ctx.config.paths.workflow_dir,
+    taskId,
+    "pr",
+    "meta.json",
+  );
+  try {
+    return parsePrMeta(await readFile(metaPath, "utf8"), taskId);
+  } catch {
+    return null;
   }
 }
 

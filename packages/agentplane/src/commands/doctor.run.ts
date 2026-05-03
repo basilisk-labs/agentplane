@@ -7,6 +7,7 @@ import type { DoctorParsed } from "./doctor.spec.js";
 import { loadCommandContext } from "./shared/task-backend.js";
 import { checkDoneTaskCommitInvariants } from "./doctor/archive.js";
 import {
+  checkBranchPrBatchIncludedTaskDrift,
   checkBranchPrDoneTaskOpenPrDrift,
   checkBranchPrShippedTaskDrift,
 } from "./doctor/branch-pr.js";
@@ -37,6 +38,7 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
       ...(await checkWorkspace(repoRoot, { ctx: commandCtx })),
       ...(await checkBranchPrShippedTaskDrift(commandCtx)),
       ...(await checkBranchPrDoneTaskOpenPrDrift(commandCtx)),
+      ...(await checkBranchPrBatchIncludedTaskDrift(commandCtx)),
       ...checkRuntimeSourceFacts(ctx.cwd, loadedConfig.config),
       ...(await checkPromptGraphFacts(resolved)),
       ...(await checkDoneTaskCommitInvariants(repoRoot, { fullArchive: p.archiveFull })),
