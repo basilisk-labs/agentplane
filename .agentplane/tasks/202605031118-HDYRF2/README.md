@@ -1,10 +1,11 @@
 ---
 id: "202605031118-HDYRF2"
 title: "Add Bun binary smoke coverage"
-status: "DOING"
+result_summary: "Merged via PR #805."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T11:57:47.444Z"
   updated_by: "CODER"
   note: "Focused verification passed: bun run build; node scripts/smoke-bun-compiled-cli.mjs --json compiled the CLI and checked --version, quickstart, and role CODER; bun test packages/agentplane/src/commands/release/bun-compiled-cli-smoke-script.test.ts passed."
-commit: null
+commit:
+  hash: "5ab60679b50fdfdffa289f1f9ad2b1565dd006c3"
+  message: "Merge pull request #805 from basilisk-labs/task/202605031118-HDYRF2/bun-binary-smoke"
 comments:
   -
     author: "CODER"
     body: "Start: add reusable Bun compiled binary smoke coverage for startup and embedded asset reads."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #805 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused verification passed: bun run build; node scripts/smoke-bun-compiled-cli.mjs --json compiled the CLI and checked --version, quickstart, and role CODER; bun test packages/agentplane/src/commands/release/bun-compiled-cli-smoke-script.test.ts passed."
+  -
+    type: "status"
+    at: "2026-05-03T12:06:25.563Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #805 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T11:57:47.446Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T12:06:25.568Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a binary-specific smoke script/test route that builds a Bun executable and verifies version, quickstart, init, and doctor without relying on Node/Bun being present at runtime."
 sections:
   Summary: |-
