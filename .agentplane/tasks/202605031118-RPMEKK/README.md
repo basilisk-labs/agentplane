@@ -4,7 +4,7 @@ title: "Add installer opt-in for Bun channel"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-03T12:23:19.428Z"
+  updated_at: "2026-05-03T12:38:43.125Z"
   updated_by: "CODER"
-  note: "Focused verification passed: bun test packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts and node scripts/generate-release-distribution.mjs --check. Install scripts keep standalone as default and expose AGENTPLANE_INSTALL_CHANNEL=bun as an explicit opt-in channel."
+  note: "Review follow-up verification passed: Windows installer now selects bin\\agentplane.cmd for standalone and bin\\agentplane.exe for AGENTPLANE_INSTALL_CHANNEL=bun; focused generator test and release distribution check passed."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused verification passed: bun test packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts and node scripts/generate-release-distribution.mjs --check. Install scripts keep standalone as default and expose AGENTPLANE_INSTALL_CHANNEL=bun as an explicit opt-in channel."
+  -
+    type: "verify"
+    at: "2026-05-03T12:38:43.125Z"
+    author: "CODER"
+    state: "ok"
+    note: "Review follow-up verification passed: Windows installer now selects bin\\agentplane.cmd for standalone and bin\\agentplane.exe for AGENTPLANE_INSTALL_CHANNEL=bun; focused generator test and release distribution check passed."
 doc_version: 3
-doc_updated_at: "2026-05-03T12:23:19.431Z"
+doc_updated_at: "2026-05-03T12:38:43.144Z"
 doc_updated_by: "CODER"
 description: "Add install.sh/install.ps1 opt-in support for Bun executable assets while keeping standalone Node archives as the default channel until release evidence proves parity."
 sections:
@@ -73,6 +79,14 @@ sections:
     Note: Focused verification passed: bun test packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts and node scripts/generate-release-distribution.mjs --check. Install scripts keep standalone as default and expose AGENTPLANE_INSTALL_CHANNEL=bun as an explicit opt-in channel.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T12:20:19.387Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    ### 2026-05-03T12:38:43.125Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Review follow-up verification passed: Windows installer now selects bin\agentplane.cmd for standalone and bin\agentplane.exe for AGENTPLANE_INSTALL_CHANNEL=bun; focused generator test and release distribution check passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T12:23:19.431Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -116,6 +130,14 @@ By: CODER
 Note: Focused verification passed: bun test packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts and node scripts/generate-release-distribution.mjs --check. Install scripts keep standalone as default and expose AGENTPLANE_INSTALL_CHANNEL=bun as an explicit opt-in channel.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T12:20:19.387Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+### 2026-05-03T12:38:43.125Z — VERIFY — ok
+
+By: CODER
+
+Note: Review follow-up verification passed: Windows installer now selects bin\agentplane.cmd for standalone and bin\agentplane.exe for AGENTPLANE_INSTALL_CHANNEL=bun; focused generator test and release distribution check passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T12:23:19.431Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 <!-- END VERIFICATION RESULTS -->
 
