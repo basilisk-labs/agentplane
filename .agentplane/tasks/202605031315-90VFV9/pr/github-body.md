@@ -25,11 +25,19 @@ Coordinate the repository-owned portion of the CMO audit: align README/package d
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T13:48:58.741Z
+- Updated: 2026-05-03T13:53:54.960Z
 - Branch: task/202605031315-90VFV9/cmo-public-surface-revision
-- Head: 46a0ec7482d7
+- Head: 01cd61e8afaa
 
 ```text
+ .agentplane/tasks/202605031255-92K2Q0/README.md    |  10 +-
+ .agentplane/tasks/202605031255-E1YFBV/README.md    |  10 +-
+ .agentplane/tasks/202605031255-GV0N4K/README.md    |  18 +--
+ .agentplane/tasks/202605031255-H9WWA0/README.md    |  10 +-
+ .agentplane/tasks/202605031255-TWKAW3/README.md    |  10 +-
+ .agentplane/tasks/202605031255-XM1W31/README.md    |  10 +-
+ .agentplane/tasks/202605031256-2HEMDS/README.md    |  10 +-
+ .agentplane/tasks/202605031256-758Q7Z/README.md    |  10 +-
  .agentplane/tasks/202605031315-6DPX1F/README.md    | 129 +++++++++++++++
  .agentplane/tasks/202605031315-8R3SRX/README.md    | 133 +++++++++++++++
  .agentplane/tasks/202605031315-E9WZ3G/README.md    | 128 +++++++++++++++
@@ -43,7 +51,7 @@ Coordinate the repository-owned portion of the CMO audit: align README/package d
  docs/compare.mdx                                   |  53 ++++++
  docs/index.mdx                                     |  22 +--
  docs/manifesto.mdx                                 |  74 +++++++++
- packages/agentplane/README.md                      | 161 ++++++------------
+ packages/agentplane/README.md                      | 149 +++++------------
  .../assets/codex-plugin/assets/header.png          | Bin 25895 -> 170586 bytes
  packages/agentplane/package.json                   |   6 +-
  packages/agentplane/src/cli/command-guide.test.ts  |   3 +
@@ -59,7 +67,7 @@ Coordinate the repository-owned portion of the CMO audit: align README/package d
  ...-05-03-coding-agent-audit-layer-and-recipes.mdx | 100 ++++++++++++
  website/docusaurus.config.ts                       |  26 ++-
  website/sidebars.ts                                |   2 +
- website/src/data/homepage-content.ts               |  90 ++++++++---
+ website/src/data/homepage-content.ts               |  93 ++++++++---
  website/src/pages/_home.module.css                 | 123 +++++++++++++-
  website/src/pages/index.tsx                        |  38 ++++-
  website/static/img/header.png                      | Bin 25895 -> 170586 bytes
@@ -68,7 +76,7 @@ Coordinate the repository-owned portion of the CMO audit: align README/package d
  website/static/llms-full.txt                       |  95 ++++++++---
  website/static/llms.txt                            |  14 +-
  website/static/site.webmanifest                    |   4 +-
- 38 files changed, 1867 insertions(+), 326 deletions(-)
+ 46 files changed, 1908 insertions(+), 364 deletions(-)
 ```
 
 </details>
