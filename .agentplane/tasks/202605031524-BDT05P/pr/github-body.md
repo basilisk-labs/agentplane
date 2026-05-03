@@ -25,12 +25,15 @@ Add validation for included batch tasks so pr open/update rejects missing, alrea
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T15:47:41.293Z
+- Updated: 2026-05-03T15:48:03.240Z
 - Branch: task/202605031524-BDT05P/batch-pr-validation
-- Head: fa58ade804ae
+- Head: e8032079ae64
 
 ```text
-No changes detected.
+ .../commands/pr/internal/batch-validation.test.ts  | 110 +++++++++++++++++++
+ .../src/commands/pr/internal/batch-validation.ts   | 117 +++++++++++++++++++++
+ .../agentplane/src/commands/pr/internal/sync.ts    |  14 ++-
+ 3 files changed, 238 insertions(+), 3 deletions(-)
 ```
 
 </details>
