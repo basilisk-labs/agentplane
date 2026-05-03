@@ -1,10 +1,11 @@
 ---
 id: "202605031524-HNAHQK"
 title: "Make branch_pr batch metadata first-class"
-status: "DOING"
+result_summary: "Merged via PR #826."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T15:31:22.293Z"
   updated_by: "CODER"
   note: "Structured branch_pr batch metadata implemented and focused checks passed."
-commit: null
+commit:
+  hash: "006e5d0794f5421d467f06ff37863395defb02f8"
+  message: "Merge pull request #826 from basilisk-labs/task/202605031524-HNAHQK/batch-metadata-contract"
 comments:
   -
     author: "CODER"
     body: "Start: implement first-class branch_pr batch metadata before closure behavior changes."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #826 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Structured branch_pr batch metadata implemented and focused checks passed."
+  -
+    type: "status"
+    at: "2026-05-03T15:35:01.215Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #826 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T15:31:22.300Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T15:35:01.220Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend branch_pr PR metadata and artifact rendering so a primary PR records included task ids as a structured batch membership contract, with tests proving stable preservation across pr open/update."
 sections:
   Summary: |-
