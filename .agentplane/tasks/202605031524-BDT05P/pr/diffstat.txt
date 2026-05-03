@@ -1,0 +1,4 @@
+ .../commands/pr/internal/batch-validation.test.ts  | 110 +++++++++++++++++++
+ .../src/commands/pr/internal/batch-validation.ts   | 117 +++++++++++++++++++++
+ .../agentplane/src/commands/pr/internal/sync.ts    |  14 ++-
+ 3 files changed, 238 insertions(+), 3 deletions(-)

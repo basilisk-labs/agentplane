@@ -20,6 +20,7 @@ import {
 } from "../../shared/task-backend.js";
 import { resolvePrPaths } from "./pr-paths.js";
 import { readPrHandoffNotes } from "./note-store.js";
+import { validateBranchPrBatchIncludedTasks } from "./batch-validation.js";
 import {
   currentBranchMatchesTask,
   resolvePrSyncBranch,
@@ -267,8 +268,6 @@ export async function syncPrArtifacts(opts: {
         });
       }
 
-      await mkdir(prDir, { recursive: true });
-
       const existingMeta =
         metaExists && (await fileExists(metaPath))
           ? parsePrMeta(await readFile(metaPath, "utf8"), task.id)
@@ -279,6 +278,15 @@ export async function syncPrArtifacts(opts: {
         cliBaseOpt: null,
         mode: config.workflow_mode,
       });
+      const validatedIncludedTaskIds = await validateBranchPrBatchIncludedTasks({
+        ctx,
+        primaryTaskId: task.id,
+        includeTaskIds: opts.includeTaskIds,
+        primaryBranch: branch,
+      });
+
+      await mkdir(prDir, { recursive: true });
+
       const common = await buildPrSyncCommonState({
         task,
         resolved,
@@ -294,7 +302,7 @@ export async function syncPrArtifacts(opts: {
         githubBodyPath,
         artifactsLanguage: config.artifacts_language,
         existingMeta,
-        relatedTaskIds: opts.includeTaskIds,
+        relatedTaskIds: validatedIncludedTaskIds,
         branch,
         baseBranch,
       });
