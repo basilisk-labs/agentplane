@@ -45,12 +45,13 @@ Regenerate docs/recipes-inventory.json so the pre-push and CI recipes inventory 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T14:46:54.659Z
+- Updated: 2026-05-03T14:46:58.422Z
 - Branch: task/202605031445-0MGNSR/refresh-recipes-inventory
-- Head: 9f3999832eae
+- Head: 37d7354800dc
 
 ```text
-No changes detected.
+ docs/recipes-inventory.json | 29 -----------------------------
+ 1 file changed, 29 deletions(-)
 ```
 
 </details>
