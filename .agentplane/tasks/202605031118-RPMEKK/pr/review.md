@@ -45,12 +45,14 @@ Add install.sh/install.ps1 opt-in support for Bun executable assets while keepin
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T12:20:19.427Z
+- Updated: 2026-05-03T12:30:03.965Z
 - Branch: task/202605031118-RPMEKK/bun-installer-opt-in
-- Head: 33b4f5cb746c
+- Head: b90cf84b75d2
 
 ```text
-No changes detected.
+ .../generate-release-distribution-script.test.ts       |  4 ++++
+ scripts/generate-release-distribution.mjs              | 18 ++++++++++++++++--
+ 2 files changed, 20 insertions(+), 2 deletions(-)
 ```
 
 </details>
