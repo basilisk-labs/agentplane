@@ -367,13 +367,11 @@ describe("manifest script publish-result command", () => {
       };
     };
     expect(payload.success).toBe(false);
-    expect(payload.external.modules).toContainEqual(
-      expect.objectContaining({
-        name: "homebrew",
-        status: "pr_opened",
-        metadata: { ok: false },
-      }),
-    );
+    expect(payload.external.modules.find((module) => module.name === "homebrew")).toMatchObject({
+      name: "homebrew",
+      status: "pr_opened",
+      metadata: { ok: false },
+    });
     expect(payload.failures).toContain(
       "external distribution scoop not confirmed (status=skipped_missing_credentials reason=missing_credentials)",
     );
