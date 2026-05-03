@@ -25,12 +25,20 @@ Switch Homebrew, Scoop, and setup-agentplane to Bun binaries only after the expe
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T12:56:59.157Z
+- Updated: 2026-05-03T13:05:22.654Z
 - Branch: task/202605031118-HVF230/bun-external-channel-switch-gate
-- Head: 049ee1131120
+- Head: b0b13a908bdd
 
 ```text
-No changes detected.
+ docs/recipes-inventory.json                        | 29 ----------------------
+ .../generate-release-distribution-script.test.ts   | 16 ++++++++++++
+ .../release/render-homebrew-formula-script.test.ts |  8 ++++++
+ ...ender-scoop-and-setup-standalone-script.test.ts | 10 ++++++++
+ scripts/generate-release-distribution.mjs          | 12 +++++++++
+ scripts/render-homebrew-formula.mjs                |  1 +
+ scripts/render-scoop-manifest.mjs                  |  1 +
+ scripts/render-setup-agentplane-action.mjs         |  1 +
+ 8 files changed, 49 insertions(+), 29 deletions(-)
 ```
 
 </details>
