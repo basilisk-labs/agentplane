@@ -40,4 +40,21 @@ describe("package path resolution", () => {
       );
     });
   });
+
+  it("resolves a compiled Bun executable to the binary-adjacent runtime root", () => {
+    const previous = process.env[ACTIVE_BIN_ENV];
+    delete process.env[ACTIVE_BIN_ENV];
+
+    try {
+      expect(resolveAgentplanePackageRoot("file:///$bunfs/root/agentplane-bun")).toBe(
+        path.dirname(path.resolve(process.execPath)),
+      );
+    } finally {
+      if (previous === undefined) {
+        delete process.env[ACTIVE_BIN_ENV];
+      } else {
+        process.env[ACTIVE_BIN_ENV] = previous;
+      }
+    }
+  });
 });

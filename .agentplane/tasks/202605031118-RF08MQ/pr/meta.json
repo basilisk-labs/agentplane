@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605031118-RF08MQ/bun-binary-runtime-contract",
+  "created_at": "2026-05-03T11:19:33.286Z",
+  "head_sha": "53bc3f4468f7cdc057242f4f890d75e897d88073",
+  "last_verified_at": "2026-05-03T11:21:34.995Z",
+  "last_verified_sha": "53bc3f4468f7cdc057242f4f890d75e897d88073",
+  "schema_version": 1,
+  "task_id": "202605031118-RF08MQ",
+  "updated_at": "2026-05-03T11:19:33.286Z",
+  "verify": {
+    "status": "pass"
+  }
+}
