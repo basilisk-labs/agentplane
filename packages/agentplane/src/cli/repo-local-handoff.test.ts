@@ -6,6 +6,7 @@ import {
   mkdir,
   readFile,
   readdir,
+  realpath,
   rm,
   writeFile,
 } from "node:fs/promises";
@@ -239,10 +240,14 @@ describe("repo-local handoff wrapper", () => {
       path.join(workspaceRoot, "packages", "agentplane", "package.json"),
     );
     const resolvedCore = requireFromAgentplane.resolve("@agentplaneorg/core");
-    const relativeCore = path.relative(path.join(workspaceRoot, "packages", "core"), resolvedCore);
+    const resolvedCoreRealPath = await realpath(resolvedCore);
+    const coreRoot = await realpath(path.join(workspaceRoot, "packages", "core"));
+    const relativeCore = path.relative(coreRoot, resolvedCoreRealPath);
     expect(
       relativeCore === path.join("dist", "index.js") ||
-        relativeCore === path.join("src", "index.ts"),
+        relativeCore === path.join("src", "index.ts") ||
+        resolvedCoreRealPath.endsWith(path.join("packages", "core", "dist", "index.js")) ||
+        resolvedCoreRealPath.endsWith(path.join("packages", "core", "src", "index.ts")),
     ).toBe(true);
   });
 

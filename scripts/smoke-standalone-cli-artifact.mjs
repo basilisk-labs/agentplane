@@ -143,6 +143,10 @@ function runCli(rootDir, target, args, cwd) {
   });
 }
 
+function isDoctorOkOutput(output) {
+  return output.includes("doctor OK") || output.includes("doctor (OK)");
+}
+
 function initTempGitRepo() {
   const repo = mkdtempSync(path.join(os.tmpdir(), "agentplane-standalone-smoke-repo-"));
   run("git", ["init", "-q", "-b", "main"], { cwd: repo });
@@ -181,7 +185,9 @@ function runCliCommands(rootDir, target, args) {
       throw new Error("init smoke did not create .agentplane");
     }
     const doctorOutput = runCli(rootDir, target, ["doctor"], repo);
-    if (!doctorOutput.includes("doctor OK")) throw new Error("doctor smoke did not pass");
+    if (!isDoctorOkOutput(doctorOutput)) {
+      throw new Error(`doctor smoke did not pass:\n${doctorOutput.trim()}`);
+    }
   } finally {
     rmSync(repo, { recursive: true, force: true });
   }
