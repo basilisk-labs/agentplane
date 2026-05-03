@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605031445-0MGNSR/refresh-recipes-inventory",
+  "created_at": "2026-05-03T14:46:54.659Z",
+  "head_sha": "37d7354800dc97cff6eba4711f30c13c71f7c5eb",
+  "last_verified_at": "2026-05-03T14:46:54.622Z",
+  "last_verified_sha": "9f3999832eae5d371db11bcba76a16e556d04539",
+  "schema_version": 1,
+  "task_id": "202605031445-0MGNSR",
+  "updated_at": "2026-05-03T14:46:58.422Z",
+  "verify": {
+    "status": "pass"
+  }
+}
