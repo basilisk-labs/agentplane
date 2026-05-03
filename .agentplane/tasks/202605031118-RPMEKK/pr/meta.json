@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T12:38:51Z",
   "base": "main",
   "branch": "task/202605031118-RPMEKK/bun-installer-opt-in",
   "created_at": "2026-05-03T12:20:19.427Z",
-  "head_sha": "b90cf84b75d2f746fb3ad35226948bd8a5db31c5",
+  "head_sha": "099508913a273468c84ed6f520fb8efced0cc847",
   "last_verified_at": "2026-05-03T12:23:19.428Z",
   "last_verified_sha": "33b4f5cb746c32769a20ae287e8f92ff75187916",
+  "merge_commit": "2c163b783901448ee99550202c21ce9fdfa837f8",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T12:38:51Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605031118-RPMEKK",
-  "updated_at": "2026-05-03T12:30:03.965Z",
+  "updated_at": "2026-05-03T12:38:51Z",
   "verify": {
     "status": "pass"
   }

@@ -1,10 +1,11 @@
 ---
 id: "202605031118-RPMEKK"
 title: "Add installer opt-in for Bun channel"
-status: "DOING"
+result_summary: "Merged via PR #809."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T12:23:19.428Z"
   updated_by: "CODER"
   note: "Focused verification passed: bun test packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts and node scripts/generate-release-distribution.mjs --check. Install scripts keep standalone as default and expose AGENTPLANE_INSTALL_CHANNEL=bun as an explicit opt-in channel."
-commit: null
+commit:
+  hash: "2c163b783901448ee99550202c21ce9fdfa837f8"
+  message: "Merge pull request #809 from basilisk-labs/task/202605031118-RPMEKK/bun-installer-opt-in"
 comments:
   -
     author: "CODER"
     body: "Start: add opt-in installer channel for Bun executable assets while keeping bundled-Node standalone as default."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #809 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused verification passed: bun test packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts and node scripts/generate-release-distribution.mjs --check. Install scripts keep standalone as default and expose AGENTPLANE_INSTALL_CHANNEL=bun as an explicit opt-in channel."
+  -
+    type: "status"
+    at: "2026-05-03T12:39:32.210Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #809 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T12:23:19.431Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T12:39:32.216Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add install.sh/install.ps1 opt-in support for Bun executable assets while keeping standalone Node archives as the default channel until release evidence proves parity."
 sections:
   Summary: |-
