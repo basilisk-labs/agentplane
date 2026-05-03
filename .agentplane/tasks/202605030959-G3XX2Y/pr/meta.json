@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T11:05:45Z",
   "base": "main",
   "branch": "task/202605030959-G3XX2Y/bun-executable-compatibility",
   "created_at": "2026-05-03T11:03:23.674Z",
-  "head_sha": "bd6054f279ff65ef8d54e2f6298a8228f97dbcbe",
+  "head_sha": "f8d5f281271d45412ba393e510d22918acd303e0",
   "last_verified_at": "2026-05-03T11:04:59.221Z",
   "last_verified_sha": "bd6054f279ff65ef8d54e2f6298a8228f97dbcbe",
+  "merge_commit": "5fb9b1d5a9dbbec1efc2daa9420578405ef7d604",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T11:05:45Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605030959-G3XX2Y",
-  "updated_at": "2026-05-03T11:03:23.674Z",
+  "updated_at": "2026-05-03T11:05:45Z",
   "verify": {
     "status": "pass"
   }
