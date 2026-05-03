@@ -25,7 +25,7 @@ Extend doctor and normalize so merged primary PRs with included tasks cannot lea
 ### Current Status
 
 - State: ok
-- Note: doctor now reports branch_pr batch included-task closure drift.
+- Note: Batch drift diagnostics implemented and verified on current HEAD. Checks: focused doctor test, typecheck, format:check, check:types-files, git diff --check, policy routing.
 
 ## Risks
 

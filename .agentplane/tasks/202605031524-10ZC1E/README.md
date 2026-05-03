@@ -4,7 +4,7 @@ title: "Add branch_pr batch drift diagnostics and recovery"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-03T16:15:19.895Z"
+  updated_at: "2026-05-03T16:19:35.609Z"
   updated_by: "CODER"
-  note: "doctor now reports branch_pr batch included-task closure drift."
+  note: "Batch drift diagnostics implemented and verified on current HEAD. Checks: focused doctor test, typecheck, format:check, check:types-files, git diff --check, policy routing."
 commit: null
 comments:
   -
@@ -44,8 +44,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "doctor now reports branch_pr batch included-task closure drift."
+  -
+    type: "verify"
+    at: "2026-05-03T16:19:35.609Z"
+    author: "CODER"
+    state: "ok"
+    note: "Batch drift diagnostics implemented and verified on current HEAD. Checks: focused doctor test, typecheck, format:check, check:types-files, git diff --check, policy routing."
 doc_version: 3
-doc_updated_at: "2026-05-03T16:15:19.914Z"
+doc_updated_at: "2026-05-03T16:19:35.641Z"
 doc_updated_by: "CODER"
 description: "Extend doctor and normalize so merged primary PRs with included tasks cannot leave verified leaf tasks open silently, and provide scoped recovery commands with tests."
 sections:
@@ -70,6 +76,14 @@ sections:
     Note: doctor now reports branch_pr batch included-task closure drift.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T16:12:51.021Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    ### 2026-05-03T16:19:35.609Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Batch drift diagnostics implemented and verified on current HEAD. Checks: focused doctor test, typecheck, format:check, check:types-files, git diff --check, policy routing.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T16:15:19.914Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -112,6 +126,14 @@ By: CODER
 Note: doctor now reports branch_pr batch included-task closure drift.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T16:12:51.021Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+### 2026-05-03T16:19:35.609Z — VERIFY — ok
+
+By: CODER
+
+Note: Batch drift diagnostics implemented and verified on current HEAD. Checks: focused doctor test, typecheck, format:check, check:types-files, git diff --check, policy routing.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T16:15:19.914Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 <!-- END VERIFICATION RESULTS -->
 
