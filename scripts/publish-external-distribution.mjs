@@ -169,9 +169,10 @@ async function publishExternal(args) {
   function classifyMetadataError(error) {
     const stdout = String(error?.stdout ?? "").trim();
     const stderr = String(error?.stderr ?? "").trim();
-    const message = `${stderr}\n${stdout}\n${error instanceof Error ? error.message : String(error)}`
-      .trim()
-      .replaceAll(/\n+/gu, "\n");
+    const message =
+      `${stderr}\n${stdout}\n${error instanceof Error ? error.message : String(error)}`
+        .trim()
+        .replaceAll(/\n+/gu, "\n");
     if (/HTTP 403|Resource not accessible by personal access token/iu.test(message)) {
       return {
         status: "permission_denied",
