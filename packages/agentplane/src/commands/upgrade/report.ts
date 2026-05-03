@@ -69,7 +69,8 @@ export async function writeUpgradeAgentReview(opts: {
     `- .agentplane/tasks/** (task data)\n` +
     `- .agentplane/tasks.json (export snapshot)\n` +
     `- .agentplane/backends/** (backend configuration)\n` +
-    `- .agentplane/config.json (project config)\n` +
+    `- .agentplane/WORKFLOW.md (project workflow/config contract)\n` +
+    `- .agentplane/config.json (legacy project config import)\n` +
     `- .git/**\n\n` +
     `## Notes\n\n` +
     `- The upgrade bundle is validated against framework.manifest.json.\n` +

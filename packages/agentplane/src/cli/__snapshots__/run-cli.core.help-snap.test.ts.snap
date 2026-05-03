@@ -26,11 +26,11 @@ Commands:
     codex plugin  Install and inspect bundled Codex plugin integrations.
     codex plugin install  Install the bundled AgentPlane plugin into a local Codex marketplace.
   Config:
-    config set  Update project config (dotted keys).
-    config show  Print resolved config JSON.
+    config set  Update WORKFLOW front matter config (dotted keys).
+    config show  Print resolved WORKFLOW-backed config JSON.
     mode get  Print workflow mode.
     mode set  Set workflow mode.
-    profile set  Apply setup profile presets to config.
+    profile set  Apply setup profile presets to WORKFLOW config.
   Core:
     agents  List agent definitions under .agentplane/agents.
     help  Show help for a command.

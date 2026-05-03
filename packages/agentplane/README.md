@@ -31,12 +31,12 @@ Requirements: Node.js 20+, Git, and a local terminal.
 ## What you get after `agentplane init`
 
 ```text
-AGENTS.md or CLAUDE.md   Repository policy gateway
-.agentplane/
-  config.json            Workflow configuration
-  WORKFLOW.md            Materialized workflow contract
-  agents/                Agent profiles
-  tasks/                 Task plans, verification, PR artifacts, and finish state
+AGENTS.md or CLAUDE.md   Policy gateway for the repository
+.agentplane/            Repo-local workflow workspace
+.agentplane/WORKFLOW.md Current workflow/config contract
+.agentplane/agents/     Installed agent profiles
+.agentplane/tasks/      Per-task records and evidence
+.agentplane/workflows/  Last-known-good workflow snapshot
 ```
 
 AgentPlane does not run a hosted control plane. It records the task trail inside the repository you

@@ -55,12 +55,19 @@ export const workflowBuildSpec: CommandSpec<WorkflowBuildParsed> = {
   }),
 };
 
-async function maybeReadOverride(paths: { workflowDir: string }): Promise<string | undefined> {
+async function maybeReadOverride(paths: {
+  workflowDir: string;
+  workflowPath: string;
+}): Promise<string | undefined> {
   const overridePath = path.join(paths.workflowDir, "template.override.md");
   try {
     return await fs.readFile(overridePath, "utf8");
   } catch {
-    return undefined;
+    try {
+      return await fs.readFile(paths.workflowPath, "utf8");
+    } catch {
+      return undefined;
+    }
   }
 }
 

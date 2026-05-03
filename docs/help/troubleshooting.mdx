@@ -11,7 +11,7 @@ description: "Fix common setup and workflow issues when using Agent Plane locall
 ## command fails with config validation errors
 
 - Symptom: commands like `agentplane config show` or `agentplane task list` fail with a schema error.
-- Why this happens: `.agentplane/config.json` contains invalid values.
+- Why this happens: `.agentplane/WORKFLOW.md` front matter contains invalid values.
 - What to do:
 - Validate the config shape against `packages/spec/schemas/config.schema.json` in this repository.
 - Use `agentplane init --yes` to regenerate defaults if the repository can be reset to a clean baseline.

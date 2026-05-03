@@ -174,7 +174,7 @@ export function renderQuickstart(): string {
   return [
     "# agentplane quickstart",
     "",
-    "The policy gateway file (AGENTS.md or CLAUDE.md) is the source of truth for workflow/process policy.",
+    "The policy gateway file (AGENTS.md or CLAUDE.md) is the source of truth for agent policy; `.agentplane/WORKFLOW.md` is the source of truth for workflow/config state.",
     "Keep this first screen short: use it for startup only, then go deeper with `agentplane role <ROLE>` or `agentplane help <command>`.",
     "Do not edit `.agentplane/tasks.json` by hand.",
     "If the repository is not initialized yet, stop and run `agentplane init` first.",
@@ -192,7 +192,7 @@ export function renderQuickstart(): string {
     `- \`branch_pr\`: start from \`agentplane help work start\`, keep local PR artifacts current with \`agentplane pr ...\`, ${BRANCH_PR_HOSTED_GATE_GUIDANCE}, then integrate on base.`,
     `- \`direct\`: task setup is \`${BOOTSTRAP_TASK_PREP_COMMANDS[0]}\` -> \`${BOOTSTRAP_TASK_PREP_COMMANDS[1]}\` -> \`${BOOTSTRAP_TASK_PREP_COMMANDS[2]}\`.`,
     `- \`direct\`: execution is \`${COMMAND_SNIPPETS.core.startTask}\` -> \`${COMMAND_SNIPPETS.core.taskVerifyShow}\` -> \`${COMMAND_SNIPPETS.core.verifyTask}\` -> \`${COMMAND_SNIPPETS.core.finishTask}\` with \`--result "..." \`.`,
-    "- In `direct`, `finish` creates the deterministic close commit by default; do not assume that route is the repository default when `workflow_mode=branch_pr`.",
+    "- In `direct`, `finish` creates the deterministic close commit by default; do not assume that route is the repository default when `workflow.mode=branch_pr`.",
     "",
     "## First visible payoff",
     "",

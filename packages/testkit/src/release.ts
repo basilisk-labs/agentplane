@@ -1,6 +1,8 @@
-import { mkdir, mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+
+import { loadConfig, saveConfig, setByDottedKey } from "@agentplaneorg/core/config";
 
 export async function writePackageJson(
   root: string,
@@ -46,10 +48,11 @@ export async function listReleasePlanRuns(root: string): Promise<string[]> {
 }
 
 export async function writeWorkflowMode(root: string, mode: "direct" | "branch_pr"): Promise<void> {
-  const configPath = path.join(root, ".agentplane", "config.json");
-  const raw = JSON.parse(await readFile(configPath, "utf8")) as Record<string, unknown>;
-  raw.workflow_mode = mode;
-  await writeFile(configPath, `${JSON.stringify(raw, null, 2)}\n`, "utf8");
+  const agentplaneDir = path.join(root, ".agentplane");
+  const loaded = await loadConfig(agentplaneDir);
+  const raw = { ...loaded.raw };
+  setByDottedKey(raw, "workflow_mode", mode);
+  await saveConfig(agentplaneDir, raw);
 }
 
 export async function writeReleasePushScripts(opts: {

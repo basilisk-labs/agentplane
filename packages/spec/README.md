@@ -10,9 +10,10 @@ the CLI instead:
 npm install -g agentplane
 ```
 
-v1 focuses on stabilizing:
+v1 preserves legacy schemas and export contracts:
 
-- `.agentplane/config.json`
+- legacy `.agentplane/config.json`
+- `.agentplane/WORKFLOW.md` front matter as the current project source of truth
 - Task README frontmatter (YAML, represented here as a JSON object schema)
 - `tasks.json` export snapshot (including checksum metadata)
 - PR artifact metadata (`pr/meta.json`)

@@ -13,14 +13,16 @@ import {
   validateWorkflowAtPath,
 } from "./index.js";
 
-async function setupRepo(): Promise<string> {
+async function setupRepo(opts?: { writeWorkflowConfig?: boolean }): Promise<string> {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "agentplane-workflow-"));
   const agentplaneDir = path.join(root, ".agentplane");
   await fs.mkdir(path.join(agentplaneDir, "agents"), { recursive: true });
   await fs.writeFile(path.join(agentplaneDir, "agents", "ORCHESTRATOR.json"), "{}\n", "utf8");
-  const cfg = defaultConfig();
-  cfg.workflow_mode = "direct";
-  await saveConfig(agentplaneDir, cfg);
+  if (opts?.writeWorkflowConfig !== false) {
+    const cfg = defaultConfig();
+    cfg.workflow_mode = "direct";
+    await saveConfig(agentplaneDir, cfg);
+  }
   return root;
 }
 
@@ -45,7 +47,7 @@ describe("workflow-runtime/file-ops", () => {
   });
 
   it("restores workflow from last-known-good", async () => {
-    const root = await setupRepo();
+    const root = await setupRepo({ writeWorkflowConfig: false });
     try {
       const paths = resolveWorkflowPaths(root);
       await publishWorkflowCandidate(root, DEFAULT_WORKFLOW_TEMPLATE);
@@ -62,7 +64,7 @@ describe("workflow-runtime/file-ops", () => {
   });
 
   it("does not read legacy root WORKFLOW.md as a fallback", async () => {
-    const root = await setupRepo();
+    const root = await setupRepo({ writeWorkflowConfig: false });
     try {
       await fs.writeFile(path.join(root, "WORKFLOW.md"), DEFAULT_WORKFLOW_TEMPLATE, "utf8");
 

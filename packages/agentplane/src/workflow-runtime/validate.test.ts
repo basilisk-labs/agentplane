@@ -4,16 +4,39 @@ import { parseWorkflowMarkdown } from "./markdown.js";
 import { validateWorkflowDocument } from "./validate.js";
 
 describe("workflow-runtime/validate", () => {
-  it("accepts canonical workflow front matter", () => {
+  it("accepts canonical WORKFLOW v2 front matter", () => {
     const parsed = parseWorkflowMarkdown(`---
-version: 1
-mode: direct
+version: 2
+workflow:
+  mode: direct
+  status_commit_policy: warn
 owners:
   orchestrator: ORCHESTRATOR
 approvals:
   require_plan: true
   require_verify: true
   require_network: true
+workspace:
+  agents_dir: .agentplane/agents
+  tasks_path: .agentplane/tasks.json
+  workflow_dir: .agentplane/tasks
+  worktrees_dir: .agentplane/worktrees
+tasks:
+  backend:
+    config_path: .agentplane/backends/local/backend.json
+runner:
+  default_adapter: codex
+scheduler:
+  concurrency: 1
+  retry_policy:
+    normal_exit_continuation: true
+    abnormal_backoff: exponential
+    max_attempts: 5
+evaluator:
+  verdicts:
+    - pass
+observability:
+  runs_dir: .agentplane/runs
 retry_policy:
   normal_exit_continuation: true
   abnormal_backoff: exponential
