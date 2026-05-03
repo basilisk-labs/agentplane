@@ -1,0 +1,26 @@
+---
+slug: release-0-4-1-hosted-close-and-release-evidence
+title: "AgentPlane 0.4.1: hosted close and release evidence"
+authors: [team]
+tags: [release]
+description: "AgentPlane 0.4.1 tightened branch_pr closure, release evidence, and hosted PR handoff."
+---
+
+AgentPlane 0.4.1 was a small release with one important theme: make closure easier to prove.
+
+<!-- truncate -->
+
+The `branch_pr` workflow already separates implementation work from base-branch integration. 0.4.1
+tightened the hosted-close path so protected `main` repositories can hand off to GitHub PR merges
+without pretending that a local integrate command mutated the base branch.
+
+The release also improved the evidence trail around publishing. Release tasks now preserve clearer
+notes about what was checked, which artifact or channel was prepared, and what still requires a
+hosted action. That matters because release failures are rarely one command. They are a chain of
+version parity, generated assets, package metadata, remote checks, and final publication.
+
+For users, the visible effect is quieter: fewer ambiguous close states, better release notes, and a
+workflow that treats protected branches as a real boundary instead of a nuisance.
+
+That is the direction of the 0.4 line: keep AgentPlane local-first, but make every important state
+transition explain itself.

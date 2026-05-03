@@ -1,0 +1,8 @@
+{"version":2,"width":96,"height":26,"timestamp":1777831800,"env":{"SHELL":"/bin/zsh","TERM":"xterm-256color"}}
+[0.0,"o","$ agentplane init\n"]
+[1.0,"o","$ agentplane quickstart\n"]
+[2.0,"o","$ agentplane task new --title \"Fix parser edge case\"\n"]
+[3.0,"o","$ agentplane verify <task-id> --ok --note \"Focused tests passed.\"\n"]
+[4.0,"o","$ agentplane finish <task-id> --result \"Parser rejects empty labels.\" --commit HEAD\n"]
+[5.0,"o","$ agentplane acr generate <task-id> --write\n"]
+[6.0,"o","$ cat .agentplane/tasks/<task-id>/acr.json\n{\"acr_version\":\"0.1.0\",\"record_type\":\"agent_change_record\"}\n"]

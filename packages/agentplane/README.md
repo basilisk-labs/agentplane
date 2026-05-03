@@ -11,6 +11,10 @@ work into reviewable, reversible Git artifacts.
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/basilisk-labs/agentplane/blob/main/LICENSE)
 [![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](https://agentplane.org/docs/user/prerequisites)
 
+[![SLSA v1 provenance](https://img.shields.io/badge/SLSA-v1-success)](https://registry.npmjs.org/-/npm/v1/attestations/agentplane@latest)
+[![Trusted publisher](https://img.shields.io/badge/npm-trusted%20publisher-blue)](https://docs.npmjs.com/generating-provenance-statements)
+[![Recipes signed: Ed25519](https://img.shields.io/badge/recipes-Ed25519%20signed-111827)](https://agentplane.org/docs/recipes)
+
 ## Install in 30 seconds
 
 ```bash
@@ -45,17 +49,34 @@ already review.
 ## One task loop
 
 ```bash
-agentplane task new --title "Fix parser edge case" --description "Reject empty labels" --owner CODER --tag code
-agentplane task plan set <task-id> --text "Add a fixture, tighten validation, and run focused tests." --updated-by CODER
-agentplane task start-ready <task-id> --author CODER --body "Start: implement parser validation with focused tests."
+agentplane task new --title "Fix parser edge case" --description "Reject empty labels."
+agentplane task plan set <task-id> --text "Add a fixture, tighten validation, and run focused tests."
+agentplane task start-ready <task-id> --body "Start: implementing parser validation."
 # Run Claude Code, Codex, Cursor, Aider, or edit manually.
 agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok --by CODER --note "Focused tests passed."
-agentplane finish <task-id> --author CODER --body "Verified: focused tests passed." --result "Parser rejects empty labels." --commit <git-rev>
+agentplane verify <task-id> --ok --note "Focused tests passed."
+agentplane finish <task-id> --result "Parser rejects empty labels." --commit <git-rev>
 ```
 
 The visible output is the point: a reviewer can inspect task intent, plan, verification, and closure
 from Git-visible files.
+
+Roles like `CODER` and `ORCHESTRATOR` are configurable agent IDs. See
+[Agents](https://agentplane.org/docs/user/agents).
+
+## Agent Change Record
+
+Every task can produce an **Agent Change Record (ACR)**, a deterministic JSON evidence projection
+of intent, accepted plan, verification result, policy decisions, and closure commit.
+
+```bash
+agentplane acr generate <task-id> --work-commit HEAD --write
+agentplane acr validate .agentplane/tasks/<task-id>/acr.json
+agentplane acr check <task-id> --require-plan-approved --require-verification
+agentplane acr --help
+```
+
+Schema: https://agentplane.org/schemas/acr-v0.1.schema.json
 
 ## Workflow modes
 

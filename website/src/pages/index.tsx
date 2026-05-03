@@ -125,29 +125,6 @@ function ActionsRow({ actions }: { actions: readonly Action[] }): ReactNode {
   );
 }
 
-const heroMotionNodes = [
-  { label: "task", className: "motionNodeTask" },
-  { label: "plan", className: "motionNodePlan" },
-  { label: "verify", className: "motionNodeVerify" },
-  { label: "finish", className: "motionNodeFinish" },
-] as const;
-
-function HeroMotion(): ReactNode {
-  return (
-    <div className={styles.heroMotion} aria-hidden="true">
-      <span className={`${styles.motionRail} ${styles.motionRailOne}`} />
-      <span className={`${styles.motionRail} ${styles.motionRailTwo}`} />
-      <span className={`${styles.motionRail} ${styles.motionRailThree}`} />
-      <span className={styles.motionCursor} />
-      {heroMotionNodes.map((node) => (
-        <span key={node.label} className={`${styles.motionNode} ${styles[node.className]}`}>
-          {node.label}
-        </span>
-      ))}
-    </div>
-  );
-}
-
 function TerminalPreview({
   title,
   lines,
@@ -422,7 +399,6 @@ export default function Home(): ReactNode {
     <Layout title={seo.title} description={seo.description}>
       <main className={styles.page}>
         <section className={styles.heroStage}>
-          <HeroMotion />
           <div className={styles.shell}>
             <div className={styles.heroGrid}>
               <article className={styles.heroCopy}>
@@ -444,7 +420,11 @@ export default function Home(): ReactNode {
                 </ul>
               </article>
 
-              <TerminalPreview title={hero.terminal.title} lines={hero.terminal.lines} compact />
+              <img
+                className={styles.heroDemo}
+                src="/img/agentplane-demo.gif"
+                alt="AgentPlane CLI demo showing task evidence and ACR generation"
+              />
             </div>
           </div>
         </section>

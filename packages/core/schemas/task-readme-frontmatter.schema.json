@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://agentplane.dev/schemas/task-readme-frontmatter.schema.json",
+  "$id": "https://agentplane.org/schemas/task-readme-frontmatter.schema.json",
   "title": "Task README frontmatter (v1)",
   "description": "Task READMEs are Markdown with YAML frontmatter. This schema describes the frontmatter keys.",
   "type": "object",

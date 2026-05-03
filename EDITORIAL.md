@@ -18,6 +18,9 @@ Default explainer:
 **AgentPlane adds task state, approvals, verification, and deterministic closure to agent work inside
 real Git repositories.**
 
+Every AgentPlane task can produce an Agent Change Record (ACR): a deterministic, machine-readable
+summary of intent, plan, verification, and closure.
+
 Use **AgentPlane** for the product and `agentplane` for CLI commands, package names, and paths.
 
 ## Audience Lanes
@@ -76,6 +79,8 @@ Prefer:
 - governed,
 - scoped,
 - traceable.
+- Agent Change Record (ACR): the named, machine-readable evidence projection of a task.
+- `acr`: CLI namespace for generating, validating, checking, explaining, and printing ACRs.
 
 Use carefully after context is established:
 

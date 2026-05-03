@@ -5,9 +5,10 @@ docs: https://agentplane.org/docs
 blog: https://agentplane.org/blog
 repo: https://github.com/basilisk-labs/agentplane
 
-summary: Open-source audit layer for coding agents; gives Claude Code, Codex, Cursor, Aider, and other coding-agent tools a repository-native task, policy, verification, branch, and closure lifecycle.
+summary: Open-source audit layer for coding agents; gives Claude Code, Codex, Cursor, Aider, and other coding-agent tools a repository-native task, policy, verification, branch, closure, and Agent Change Record lifecycle.
 not: hosted agent runtime, model provider, IDE, CI replacement, pull-request replacement.
 capabilities: task planning, policy routing, approval-gated execution, verification evidence, branch_pr worktrees, pull-request handoff, release/publish automation, recipe modules.
+acr-schema: https://agentplane.org/schemas/acr-v0.1.schema.json
 
 index:
 - https://agentplane.org/docs/manifesto
@@ -16,6 +17,7 @@ index:
 - https://agentplane.org/docs/user/setup
 - https://agentplane.org/docs/user/workflow
 - https://agentplane.org/docs/user/commands
+- https://agentplane.org/docs/user/agent-change-record
 - https://agentplane.org/docs/workflow-guides/claude-code
 - https://agentplane.org/docs/workflow-guides/codex
 - https://agentplane.org/docs/workflow-guides/cursor

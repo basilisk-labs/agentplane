@@ -1,0 +1,60 @@
+---
+slug: introducing-acr-v0-1
+title: "Introducing Agent Change Record v0.1"
+authors: [team]
+tags: [release, workflow]
+description: "ACR v0.1 gives coding-agent work a deterministic, machine-readable evidence artifact."
+---
+
+Coding agents can now produce large, plausible diffs faster than reviewers can reconstruct the work
+behind them. The missing object is not another dashboard. It is a durable artifact that travels with
+the repository.
+
+Agent Change Record v0.1 is that artifact.
+
+<!-- truncate -->
+
+An ACR is a deterministic JSON projection of one AgentPlane task. It records the task intent, the
+accepted plan, the agent and toolchain context, policy decisions, changed files, verification
+results, approvals, evidence pointers, and closure state. It is generated from the same task
+lifecycle that AgentPlane already writes into `.agentplane/tasks/<task-id>/`.
+
+The point of naming it is practical. Review tools, CI gates, security scanners, and future agent
+runners need a stable thing to parse. "The agent said it ran tests" is not stable. A repo-local
+`acr.json` validated against an open schema is.
+
+Generate one:
+
+```bash
+agentplane acr generate <task-id> --work-commit HEAD --write
+```
+
+Validate it:
+
+```bash
+agentplane acr validate .agentplane/tasks/<task-id>/acr.json
+```
+
+Use it as a merge gate:
+
+```bash
+agentplane acr check <task-id> --require-plan-approved --require-verification
+```
+
+ACR v0.1 is intentionally narrow. It does not store prompts, transcripts, private tool output, or
+model internals. It stores evidence pointers and hashes: enough for review, audit, and handoff
+without turning agent context into a second source of truth.
+
+The trust model stays local-first. The repository remains the record. AgentPlane derives the ACR
+from task files, policy state, verification evidence, and Git revisions, then validates the result
+against `@agentplane/spec`.
+
+The schema is public:
+
+```text
+https://agentplane.org/schemas/acr-v0.1.schema.json
+```
+
+In 0.5, the runner work can build on this artifact instead of inventing a separate reporting layer.
+Runner execution should produce the same kind of durable evidence that human-supervised agent work
+does today. ACR is the shared record that makes that possible.

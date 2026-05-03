@@ -5,6 +5,9 @@ description: "Why coding-agent work needs a repository-native audit layer instea
 
 Coding agents made code generation cheap. They did not make agent work reviewable.
 
+In 2024 we got coding agents. In 2025 we let them touch real repos. In 2026 every team needs an
+audit layer for that before "the agent did it" becomes the new "Heroku ate my homework."
+
 AgentPlane exists for the gap between a generated diff and an accountable engineering change: the task that justified it, the plan that constrained it, the checks that verified it, and the handoff that made it safe to close.
 
 ## The failure mode
@@ -35,6 +38,19 @@ It gives Claude Code, Codex, Cursor, Aider, and other coding-agent tools a share
 - generated documentation and reference surfaces for humans and agents
 
 The result is not a replacement for Git, pull requests, CI, or the coding agent. It is the missing control plane around them.
+
+## The artifact: Agent Change Record
+
+A named artifact matters because reviewers and tools need a stable thing to inspect. Agent Change
+Record (ACR) is that thing: a deterministic JSON projection of task intent, accepted plan,
+verification, policy decisions, changed files, and closure state.
+
+`acr_version: 0.1.0` is intentionally narrow. It does not try to preserve prompts, transcripts, or
+tool output. It records evidence pointers, hashes, and decisions that can survive review without
+turning private agent context into a public data dump.
+
+External tools can consume ACRs without depending on AgentPlane internals. Generate an ACR, validate
+it against the open schema, then use it as a merge gate, audit input, or portable handoff record.
 
 ## What AgentPlane refuses
 

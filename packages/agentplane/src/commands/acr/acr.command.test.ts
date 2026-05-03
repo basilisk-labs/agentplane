@@ -1,7 +1,17 @@
+import { mkdtemp, readFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { computeAcrRecordDigest, type AgentChangeRecord } from "@agentplaneorg/core/schemas";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { assertAcrCiSemantics } from "./acr.command.js";
+import {
+  acrCheckSpec,
+  acrGenerateSpec,
+  acrSchemaSpec,
+  acrValidateSpec,
+  assertAcrCiSemantics,
+  makeRunAcrSchemaHandler,
+} from "./acr.command.js";
 
 const ciOptions = {
   requirePlanApproved: true,
@@ -174,5 +184,80 @@ describe("ACR CI semantics", () => {
     expect(() => assertAcrCiSemantics(record, ciOptions)).toThrow(
       "ACR_E_VERIFICATION_CHECK_REQUIRED",
     );
+  });
+});
+
+describe("acr command specs", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("parses acr generate flags", () => {
+    const parsed = acrGenerateSpec.parse({
+      args: { "task-id": "202605031625-886KZ6" },
+      opts: {
+        "work-commit": "HEAD",
+        write: true,
+        refresh: true,
+        agent: "CODER",
+        "model-provider": "openai",
+      },
+    });
+
+    expect(parsed).toMatchObject({
+      taskId: "202605031625-886KZ6",
+      workCommit: "HEAD",
+      write: true,
+      refresh: true,
+      agent: "CODER",
+      modelProvider: "openai",
+    });
+  });
+
+  it("parses acr validate against an example path", () => {
+    expect(
+      acrValidateSpec.parse({
+        args: { "task-id-or-path": "packages/spec/examples/acr.json" },
+        opts: { mode: "schema", strict: true },
+      }),
+    ).toEqual({
+      target: "packages/spec/examples/acr.json",
+      mode: "schema",
+      strict: true,
+      json: false,
+    });
+  });
+
+  it("parses acr check defaults and failure-gate overrides", () => {
+    expect(
+      acrCheckSpec.parse({
+        args: { "task-id": "202605031625-886KZ6" },
+        opts: { "require-policy-pass": false, "allow-manual-override": true },
+      }),
+    ).toMatchObject({
+      taskId: "202605031625-886KZ6",
+      requirePlanApproved: true,
+      requireVerification: true,
+      requirePolicyPass: false,
+      allowManualOverride: true,
+    });
+  });
+
+  it("writes the canonical ACR schema", async () => {
+    const dir = await mkdtemp(path.join(os.tmpdir(), "agentplane-acr-schema-"));
+    const out = path.join(dir, "acr-v0.1.schema.json");
+    const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await expect(
+      makeRunAcrSchemaHandler()(
+        { cwd: dir } as Parameters<ReturnType<typeof makeRunAcrSchemaHandler>>[0],
+        acrSchemaSpec.parse({ args: {}, opts: { out } }),
+      ),
+    ).resolves.toBe(0);
+
+    const schema = JSON.parse(await readFile(out, "utf8")) as { $id?: string; title?: string };
+    expect(schema.$id).toBe("https://agentplane.org/schemas/acr-v0.1.schema.json");
+    expect(schema.title).toBe("Agent Change Record (ACR) v0.1");
+    expect(stdout).toHaveBeenCalledWith(`${out}\n`);
   });
 });
