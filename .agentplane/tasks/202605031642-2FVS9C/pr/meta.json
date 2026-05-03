@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605031642-2FVS9C/dco-signoff",
+  "created_at": "2026-05-03T16:43:32.193Z",
+  "head_sha": "6858dd704c9f5cb2bf3b11a659e48430c2919b52",
+  "last_verified_at": "2026-05-03T17:01:49.660Z",
+  "last_verified_sha": "6858dd704c9f5cb2bf3b11a659e48430c2919b52",
+  "schema_version": 1,
+  "task_id": "202605031642-2FVS9C",
+  "updated_at": "2026-05-03T16:43:32.193Z",
+  "verify": {
+    "status": "pass"
+  }
+}

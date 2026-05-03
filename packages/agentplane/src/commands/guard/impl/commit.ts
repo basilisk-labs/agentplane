@@ -15,6 +15,7 @@ import { stageAllowlist } from "./allow.js";
 import { resolveIgnoredDirectCloseDirtyPaths } from "./close-dirt.js";
 import { buildCloseCommitMessage, taskReadmePathForTask } from "./close-message.js";
 import { asCommitFailure } from "./commit-diagnostics.js";
+import { appendDcoSignoff } from "./dco.js";
 import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "./env.js";
 import {
   commitRefreshedTaskArtifacts,
@@ -147,7 +148,11 @@ export async function cmdCommit(opts: {
       allowCI: opts.allowCI,
       gitIdentity: await resolveCanonicalGitIdentity(),
     });
-    await ctx.git.commit({ message: opts.message, env });
+    await ctx.git.commit({
+      message: opts.message,
+      body: appendDcoSignoff({ config: ctx.config }),
+      env,
+    });
     const primaryCommit = await ctx.git.headHashSubject();
     await refreshBranchPrArtifactsAfterTaskCommit({
       ctx,
@@ -317,7 +322,11 @@ async function cmdCloseCommit(
     allowStaleDist: true,
     gitIdentity: await resolveCanonicalGitIdentity(),
   });
-  await opts.ctx.git.commit({ message: msg.subject, body: msg.body, env });
+  await opts.ctx.git.commit({
+    message: msg.subject,
+    body: appendDcoSignoff({ config: opts.ctx.config, body: msg.body }),
+    env,
+  });
 
   if (!opts.quiet) {
     const { hash, subject } = await opts.ctx.git.headHashSubject();

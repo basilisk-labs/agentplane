@@ -72,3 +72,35 @@ describe("guard/impl/env", () => {
     expect(identity).toEqual({ name: "Ambient User", email: "ambient@example.com" });
   });
 });
+
+describe("guard/impl/dco", () => {
+  it("appends the configured DCO sign-off trailer once", async () => {
+    const { appendDcoSignoff } = await import("./dco.js");
+    const config = {
+      commit: {
+        dco: { enabled: true, name: "Denis Smirnov", email: "densmirnov@me.com" },
+      },
+    } as never;
+
+    expect(appendDcoSignoff({ config, body: "Body" })).toBe(
+      "Body\n\nSigned-off-by: Denis Smirnov <densmirnov@me.com>",
+    );
+    expect(
+      appendDcoSignoff({
+        config,
+        body: "Body\n\nSigned-off-by: Denis Smirnov <densmirnov@me.com>",
+      }),
+    ).toBe("Body\n\nSigned-off-by: Denis Smirnov <densmirnov@me.com>");
+  });
+
+  it("does not append a sign-off when DCO is disabled", async () => {
+    const { appendDcoSignoff } = await import("./dco.js");
+    const config = {
+      commit: {
+        dco: { enabled: false, name: "Denis Smirnov", email: "densmirnov@me.com" },
+      },
+    } as never;
+
+    expect(appendDcoSignoff({ config, body: "Body" })).toBe("Body");
+  });
+});
