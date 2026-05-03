@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605031625-886KZ6/acr-core-schema",
+  "created_at": "2026-05-03T16:32:47.928Z",
+  "head_sha": "d2e5c50be7e634119a010b701f399ae0dde48ba0",
+  "last_verified_at": "2026-05-03T16:41:42.045Z",
+  "last_verified_sha": "ded9f8c8393b41614edfa798be5f88aa78610014",
+  "schema_version": 1,
+  "task_id": "202605031625-886KZ6",
+  "updated_at": "2026-05-03T16:42:26.573Z",
+  "verify": {
+    "status": "pass"
+  }
+}

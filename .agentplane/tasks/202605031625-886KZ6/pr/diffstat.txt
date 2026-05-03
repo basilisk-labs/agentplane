@@ -1,0 +1,10 @@
+ packages/core/schemas/acr-v0.1.schema.json         | 684 +++++++++++++++++++++
+ packages/core/src/index.ts                         |   4 +
+ packages/core/src/schemas/index.ts                 |   4 +
+ packages/core/src/tasks/index.ts                   |   8 +
+ .../core/src/tasks/task-artifact-schema.acr.ts     | 310 ++++++++++
+ .../core/src/tasks/task-artifact-schema.test.ts    | 168 +++++
+ packages/core/src/tasks/task-artifact-schema.ts    |  22 +
+ packages/spec/schemas/acr-v0.1.schema.json         | 684 +++++++++++++++++++++
+ scripts/sync-schemas.mjs                           |   9 +
+ 9 files changed, 1893 insertions(+)
