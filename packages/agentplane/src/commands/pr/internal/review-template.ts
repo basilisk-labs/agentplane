@@ -12,7 +12,8 @@ const VERIFICATION_SECTION = "## Verification";
 const RISKS_SECTION = "## Risks";
 const HANDOFF_NOTES_MARKER = "## Handoff Notes";
 const TASK_ID_SUFFIX_PATTERN = /\s*\[[^\]]+\]\s*$/u;
-const CYRILLIC_CHARACTERS = /[\u0400-\u04FF]/u;
+const COMMON_NON_ENGLISH_LATIN_MARKERS =
+  /\b(?:avec|dans|des|est|este|esta|las|les|los|para|pero|por|que|sans|sont|una|une)\b/iu;
 
 function sectionText(task: TaskData, name: string, fallback: string): string {
   const value = typeof task.sections?.[name] === "string" ? task.sections[name].trim() : "";
@@ -371,13 +372,20 @@ export function validateArtifactsLanguage(opts: {
 }): void {
   if (opts.artifactsLanguage !== "en") return;
 
-  if (opts.texts.reviewText && CYRILLIC_CHARACTERS.test(opts.texts.reviewText)) {
+  if (opts.texts.reviewText && containsLikelyNonEnglishText(opts.texts.reviewText)) {
     opts.errors.push(`Non-English text in ${opts.relReviewPath}`);
   }
-  if (opts.texts.githubTitleText && CYRILLIC_CHARACTERS.test(opts.texts.githubTitleText)) {
+  if (opts.texts.githubTitleText && containsLikelyNonEnglishText(opts.texts.githubTitleText)) {
     opts.errors.push(`Non-English text in ${opts.relGithubTitlePath}`);
   }
-  if (opts.texts.githubBodyText && CYRILLIC_CHARACTERS.test(opts.texts.githubBodyText)) {
+  if (opts.texts.githubBodyText && containsLikelyNonEnglishText(opts.texts.githubBodyText)) {
     opts.errors.push(`Non-English text in ${opts.relGithubBodyPath}`);
   }
+}
+
+function containsLikelyNonEnglishText(text: string): boolean {
+  for (const char of text) {
+    if (/\p{Letter}/u.test(char) && !/[A-Za-z]/u.test(char)) return true;
+  }
+  return COMMON_NON_ENGLISH_LATIN_MARKERS.test(text);
 }

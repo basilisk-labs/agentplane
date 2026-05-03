@@ -131,4 +131,29 @@ describe("validateSnapshotContents", () => {
     expect(errors).toContain("Non-English text in .agentplane/tasks/T-1/pr/github-title.txt");
     expect(errors).toContain("Non-English text in .agentplane/tasks/T-1/pr/github-body.md");
   });
+
+  it("fails non-cyrillic non-English artifacts when language is en", () => {
+    const { errors } = validateSnapshotContents({
+      texts: makeTexts({
+        reviewText:
+          "## Summary\n- Este cambio valida artefactos\n## Scope\n- Test\n## Verification\n- State: pending\n## Risks\n- Risk level: low\n## Handoff Notes\n- No notes\n<!-- BEGIN AUTO SUMMARY -->\n<details><summary>Raw evidence</summary></details>\n<!-- END AUTO SUMMARY -->",
+        githubTitleText: "🧩 1 task: Résumé update [T-1]",
+        githubBodyText:
+          "Task: `T-1`\nTitle: Sample\n\n## Summary\n- Ceci est un exemple\n## Scope\n- Test\n## Verification\n- State: pending\n<details><summary>Raw evidence</summary></details>\n## Handoff Notes\n- No notes\n",
+      }),
+      relPrDir,
+      relMetaPath,
+      relDiffstatPath,
+      relVerifyLogPath,
+      relReviewPath,
+      relGithubTitlePath,
+      relGithubBodyPath,
+      taskId: "T-1",
+      artifactsLanguage: "en",
+    });
+
+    expect(errors).toContain("Non-English text in .agentplane/tasks/T-1/pr/review.md");
+    expect(errors).toContain("Non-English text in .agentplane/tasks/T-1/pr/github-title.txt");
+    expect(errors).toContain("Non-English text in .agentplane/tasks/T-1/pr/github-body.md");
+  });
 });
