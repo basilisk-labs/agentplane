@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T18:31:39Z",
   "base": "main",
   "branch": "task/202605031827-9F0RW9/dco-identity-fallback",
   "created_at": "2026-05-03T18:27:56.576Z",
-  "head_sha": "ce48d65237a553e9dae356352147c763ef2f8f95",
+  "head_sha": "9afecabe5fa197f832215b9b2ca69ec0521f687e",
   "last_verified_at": "2026-05-03T18:29:21.635Z",
   "last_verified_sha": "eda55d00831b4af6848474616e6eac89ece25eab",
+  "merge_commit": "a2a5743bd39878344cdc890aee446c88f6415fa7",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T18:31:39Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605031827-9F0RW9",
-  "updated_at": "2026-05-03T18:29:38.426Z",
+  "updated_at": "2026-05-03T18:31:39Z",
   "verify": {
     "status": "pass"
   }
