@@ -78,7 +78,7 @@ export const commitSpec: CommandSpec<CommitParsed> = {
       name: "allow-tasks",
       default: false,
       description:
-        "Allow the tasks export snapshot plus artifacts under the active task subtree; standalone path scope.",
+        "Allow the optional tasks export snapshot plus artifacts under the active task subtree; standalone path scope.",
     },
     {
       kind: "boolean",
@@ -135,7 +135,7 @@ export const commitSpec: CommandSpec<CommitParsed> = {
   notes: [
     "Repository-managed task commits use the canonical subject format `<emoji> <suffix> <scope>: <summary>`; non-task commits use `<emoji> <scope>: <summary>`.",
     "Repository-managed commit paths resolve author/committer identity from global git `user.name` and `user.email` before falling back to ambient git env.",
-    "When `commit.dco.enabled=true`, repository-managed commits append the configured `Signed-off-by` trailer and `commit-msg` rejects manual commits that omit it.",
+    "When `commit.dco.enabled=true`, repository-managed commits append the configured `Signed-off-by` trailer and `commit-msg` rejects manual commits without any valid `Signed-off-by` trailer.",
     "Protected path-scoped overrides can stand alone without a duplicate explicit prefix: `--allow-tasks`, `--allow-policy`, `--allow-config`, `--allow-hooks`, and `--allow-ci` each admit their own path family.",
     "Top-level `agentplane commit` can auto-stage those protected path scopes when the git index starts empty.",
     "`--allow-base` is different: it only overrides base-branch protection and never selects file paths by itself.",

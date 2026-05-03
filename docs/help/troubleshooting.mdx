@@ -5,7 +5,7 @@ description: "Fix common setup and workflow issues when using Agent Plane locall
 
 ## exported tasks.json looks stale
 
-- Why this happens: `.agentplane/tasks.json` is an export artifact, not the live task store.
+- Why this happens: `.agentplane/tasks.json` is an optional export artifact, not the live task store.
 - What to do: run `agentplane task export` and then re-check your downstream tool.
 
 ## command fails with config validation errors

@@ -38,7 +38,11 @@ export async function stageActiveTaskArtifactsFromAllowTasks(opts: {
   );
   if (taskArtifactPaths.length === 0) return [];
 
-  const unique = [...new Set(taskArtifactPaths)].toSorted((a, b) => a.localeCompare(b));
+  const staged = new Set(await opts.ctx.git.statusStagedPaths());
+  const unique = [...new Set(taskArtifactPaths)]
+    .filter((relPath) => !staged.has(relPath))
+    .toSorted((a, b) => a.localeCompare(b));
+  if (unique.length === 0) return [];
   await opts.ctx.git.stage(unique);
   return unique;
 }

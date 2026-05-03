@@ -15,7 +15,7 @@ Install-first runtime model:
 - `agentplane` keeps a local task projection under `.agentplane/`.
 - Ordinary task reads (`task list`, `task show`, `doctor`) use the local projection by default.
 - `agentplane backend sync redmine --direction pull` refreshes the projection from Redmine.
-- `agentplane task export` writes `.agentplane/tasks.json` from the current projection.
+- `agentplane task export` can generate `.agentplane/tasks.json` from the current projection when an integration needs a local snapshot.
 
 ## Required environment keys
 

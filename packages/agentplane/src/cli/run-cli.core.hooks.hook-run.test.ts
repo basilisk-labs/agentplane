@@ -93,7 +93,7 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     }
   });
 
-  it("hooks run commit-msg enforces configured DCO sign-off", async () => {
+  it("hooks run commit-msg requires a valid DCO sign-off without forcing one identity", async () => {
     const root = await mkGitRepoRoot();
     await writeConfig(root, {
       ...defaultConfig(),
@@ -114,7 +114,7 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
 
       await writeFile(
         messagePath,
-        "✨ ABCDEF guard: add checks\n\nSigned-off-by: Denis Smirnov <densmirnov@me.com>\n",
+        "✨ ABCDEF guard: add checks\n\nSigned-off-by: Ada Lovelace <ada@example.com>\n",
         "utf8",
       );
       expect(await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root])).toBe(0);

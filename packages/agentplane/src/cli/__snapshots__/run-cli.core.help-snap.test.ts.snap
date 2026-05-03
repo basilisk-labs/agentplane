@@ -111,7 +111,7 @@ Commands:
     task doc  Task doc commands (show/set).
     task doc set  Update a task README section.
     task doc show  Print task README content (entire doc or one section).
-    task export  Export tasks to the configured tasks export path (typically .agentplane/tasks.json).
+    task export  Generate an optional tasks export snapshot at the configured path.
     task findings  Structured Findings/Notes commands (incident promotion is default unless --local-only).
     task findings add  Append a structured Findings/Notes block; incident promotion is default unless --local-only.
     task handoff  Task handoff commands (record/show).

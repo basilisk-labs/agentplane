@@ -23,7 +23,7 @@ Task backends now follow one install-first contract:
 - **canonical source**: where the authoritative task state lives
 - **local projection**: the task state that ordinary CLI reads use
 - **sync boundary**: explicit refresh/push operations between projection and canonical source
-- **export snapshot**: `.agentplane/tasks.json` for integrations
+- **optional export snapshot**: `.agentplane/tasks.json` for integrations
 
 For `local`, the canonical source and projection are the same repository state.
 
@@ -105,7 +105,7 @@ Operational split:
 
 ## Export snapshot
 
-An export-only snapshot is written to `.agentplane/tasks.json` for integrations (gitignored by default).
+An optional export-only snapshot can be generated at `.agentplane/tasks.json` for integrations (gitignored by default).
 
 ```bash
 agentplane task export
