@@ -24,8 +24,8 @@ Recovery workflow must publish external distribution modules from the immutable 
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Focused verification passed: bun test packages/agentplane/src/commands/release/publish-workflow-contract.test.ts (7 tests, 158 expects); node .agentplane/policy/check-routing.mjs (policy routing OK).
 
 ## Risks
 

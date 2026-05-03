@@ -4,7 +4,7 @@ title: "Fix release recovery checksum source"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-03T10:52:43.594Z"
+  updated_by: "CODER"
+  note: "Focused verification passed: bun test packages/agentplane/src/commands/release/publish-workflow-contract.test.ts (7 tests, 158 expects); node .agentplane/policy/check-routing.mjs (policy routing OK)."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Fix recovery distribution publishing so reruns for an existing tag use immutable release-owned checksums instead of regenerating hashes from the current runtime checkout."
+  -
+    type: "verify"
+    at: "2026-05-03T10:52:43.594Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused verification passed: bun test packages/agentplane/src/commands/release/publish-workflow-contract.test.ts (7 tests, 158 expects); node .agentplane/policy/check-routing.mjs (policy routing OK)."
 doc_version: 3
-doc_updated_at: "2026-05-03T10:50:04.282Z"
+doc_updated_at: "2026-05-03T10:52:43.596Z"
 doc_updated_by: "CODER"
 description: "Recovery workflow must publish external distribution modules from the immutable release payload, not from whatever runtime checkout is used to rerun the workflow. Prevent checksum drift when rerunning external module publication for an existing tag."
 sections:
@@ -61,6 +67,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T10:52:43.594Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused verification passed: bun test packages/agentplane/src/commands/release/publish-workflow-contract.test.ts (7 tests, 158 expects); node .agentplane/policy/check-routing.mjs (policy routing OK).
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T10:50:04.282Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -97,6 +111,14 @@ Acceptance: rerunning external module recovery for an existing tag uses release-
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T10:52:43.594Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused verification passed: bun test packages/agentplane/src/commands/release/publish-workflow-contract.test.ts (7 tests, 158 expects); node .agentplane/policy/check-routing.mjs (policy routing OK).
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T10:50:04.282Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
