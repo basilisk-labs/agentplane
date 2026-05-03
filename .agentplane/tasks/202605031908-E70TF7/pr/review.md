@@ -45,11 +45,16 @@ Umbrella task for the 2026-05-04 AgentPlane ACR launch atomic backlog: correctne
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T19:31:53.051Z
+- Updated: 2026-05-03T19:55:55.125Z
 - Branch: task/202605031908-E70TF7/acr-launch-backlog
-- Head: 06327cacb22f
+- Head: 0a6bcd79adaf
 
 ```text
+ .agentplane/policy/incidents.md                    |    1 +
+ .agentplane/tasks/202605031856-CKQ0TG/README.md    |   23 +-
+ .agentplane/tasks/202605031856-CKQ0TG/acr.json     |  149 ++
+ .agentplane/tasks/202605031856-V5KXGG/README.md    |   23 +-
+ .agentplane/tasks/202605031856-V5KXGG/acr.json     |  149 ++
  .agentplane/tasks/202605031908-1D4BT9/README.md    |   86 ++
  .agentplane/tasks/202605031908-5E28XJ/README.md    |   93 ++
  .agentplane/tasks/202605031908-5MH36B/README.md    |   95 ++
@@ -93,7 +98,7 @@ Umbrella task for the 2026-05-04 AgentPlane ACR launch atomic backlog: correctne
  .github/ISSUE_TEMPLATE/recipe_submission.yml       |   28 +
  EDITORIAL.md                                       |    5 +
  README.md                                          |   61 +-
- bun.lock                                           |   10 +-
+ bun.lock                                           |    8 +-
  docs/assets/agentplane-demo.cast                   |    8 +
  docs/assets/agentplane-demo.gif                    |  Bin 0 -> 59788 bytes
  docs/assets/agentplane-demo.tape                   |   24 +
@@ -107,11 +112,13 @@ Umbrella task for the 2026-05-04 AgentPlane ACR launch atomic backlog: correctne
  docs/reference/generated-reference.mdx             |    6 +-
  docs/releases/v0.4.3.md                            |   16 +
  docs/showcase.mdx                                  |    6 +
- package.json                                       |    3 +-
+ package.json                                       |    5 +-
  packages/agentplane/README.md                      |   31 +-
  packages/agentplane/package.json                   |    6 +-
  packages/agentplane/src/cli/run-cli.core.test.ts   |    2 +-
- .../src/commands/acr/acr.command.test.ts           |   87 ++
+ .../src/commands/acr/acr.command.test.ts           |   89 +-
+ .../commands/pr/internal/batch-validation.test.ts  |   36 +-
+ .../commands/task/finish.validation.unit.test.ts   |    2 +-
  packages/core/package.json                         |    2 +-
  packages/core/schemas/acr-v0.1.schema.json         |    2 +-
  packages/core/schemas/config.schema.json           |    2 +-
@@ -122,6 +129,7 @@ Umbrella task for the 2026-05-04 AgentPlane ACR launch atomic backlog: correctne
  packages/core/src/config/schema.impl.ts            |    2 +-
  packages/core/src/tasks/task-artifact-schema.ts    |   10 +-
  packages/recipes/package.json                      |    2 +-
+ packages/recipes/src/index.ts                      |    2 +-
  packages/spec/examples/acr.json                    |  145 ++
  packages/spec/schemas/acr-v0.1.schema.json         |    2 +-
  packages/spec/schemas/config.schema.json           |    2 +-
@@ -129,9 +137,12 @@ Umbrella task for the 2026-05-04 AgentPlane ACR launch atomic backlog: correctne
  packages/spec/schemas/task-handoff.schema.json     |    2 +-
  .../schemas/task-readme-frontmatter.schema.json    |    2 +-
  packages/spec/schemas/tasks-export.schema.json     |    2 +-
+ packages/testkit/package.json                      |    2 +-
+ scripts/README.md                                  |   81 +-
  scripts/check-release-demo.mjs                     |   39 +
  scripts/check-spec-examples.mjs                    |    1 +
  scripts/generate-llms-full.mjs                     |   50 +
+ scripts/oversized-test-baseline.json               |   10 +-
  ...ase-0-4-1-hosted-close-and-release-evidence.mdx |   26 +
  website/blog/2026-05-04-introducing-acr-v0-1.mdx   |   60 +
  website/sidebars.ts                                |    5 +
@@ -145,7 +156,7 @@ Umbrella task for the 2026-05-04 AgentPlane ACR launch atomic backlog: correctne
  website/static/llms-full.txt                       | 1457 +++++++++++++++++++-
  website/static/llms.txt                            |    4 +-
  website/static/site.webmanifest                    |    4 +-
- 95 files changed, 5543 insertions(+), 162 deletions(-)
+ 106 files changed, 5946 insertions(+), 239 deletions(-)
 ```
 
 </details>
