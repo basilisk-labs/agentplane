@@ -25,9 +25,9 @@ Split AgentPlane default sign-off identity from repo-wide manual DCO validation 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T18:03:17.908Z
+- Updated: 2026-05-03T18:17:04.500Z
 - Branch: task/202605031737-9A4FWX/dco-tasks-export-optional
-- Head: 4d4bf84a31e3
+- Head: fe21cf574a2e
 
 ```text
  .agentplane/tasks.json                             | 42043 -------------------

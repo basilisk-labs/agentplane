@@ -2,12 +2,12 @@
   "base": "main",
   "branch": "task/202605031737-9A4FWX/dco-tasks-export-optional",
   "created_at": "2026-05-03T17:38:51.241Z",
-  "head_sha": "4d4bf84a31e3f09b5b60989420ee41e1fee552e2",
+  "head_sha": "fe21cf574a2ee8324dc7a2140a924ff4bc296731",
   "last_verified_at": "2026-05-03T18:04:00.678Z",
   "last_verified_sha": "4d4bf84a31e3f09b5b60989420ee41e1fee552e2",
   "schema_version": 1,
   "task_id": "202605031737-9A4FWX",
-  "updated_at": "2026-05-03T18:03:17.908Z",
+  "updated_at": "2026-05-03T18:17:04.500Z",
   "verify": {
     "status": "pass"
   }
