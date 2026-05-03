@@ -4,7 +4,7 @@ title: "ACR v0.1 core schema contract"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-03T17:25:33.749Z"
+  updated_at: "2026-05-03T17:31:46.271Z"
   updated_by: "CODER"
-  note: "Command: final branch verification after ACR evidence commit. Result: pass. Evidence: ACR batch implementation commit 0e0995c9 and final ACR evidence commit 9d5ac328 are present on task branch; prior schema/typecheck/build/core tests/docs freshness/ACR CLI smokes passed. Scope: final primary task verification before PR publication."
+  note: "Command: post-merge verification after syncing origin/main. Result: pass. Evidence: bun run schemas:check, bun run docs:cli:check, bun run --filter=agentplane typecheck, bun run --filter=@agentplaneorg/core typecheck, and framework:dev:bootstrap all passed after resolving config schema merge conflicts. Scope: ACR batch rebased/merged onto current main."
 commit: null
 comments:
   -
@@ -68,8 +68,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: final branch verification after ACR evidence commit. Result: pass. Evidence: ACR batch implementation commit 0e0995c9 and final ACR evidence commit 9d5ac328 are present on task branch; prior schema/typecheck/build/core tests/docs freshness/ACR CLI smokes passed. Scope: final primary task verification before PR publication."
+  -
+    type: "verify"
+    at: "2026-05-03T17:31:46.271Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: post-merge verification after syncing origin/main. Result: pass. Evidence: bun run schemas:check, bun run docs:cli:check, bun run --filter=agentplane typecheck, bun run --filter=@agentplaneorg/core typecheck, and framework:dev:bootstrap all passed after resolving config schema merge conflicts. Scope: ACR batch rebased/merged onto current main."
 doc_version: 3
-doc_updated_at: "2026-05-03T17:25:33.770Z"
+doc_updated_at: "2026-05-03T17:31:46.289Z"
 doc_updated_by: "CODER"
 description: "Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, synchronized schema artifacts, and schema-focused tests. ACR remains a derived evidence projection from AgentPlane task and Git state."
 sections:
@@ -127,6 +133,14 @@ sections:
     Note: Command: final branch verification after ACR evidence commit. Result: pass. Evidence: ACR batch implementation commit 0e0995c9 and final ACR evidence commit 9d5ac328 are present on task branch; prior schema/typecheck/build/core tests/docs freshness/ACR CLI smokes passed. Scope: final primary task verification before PR publication.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T17:24:32.278Z, excerpt_hash=sha256:a5ac24bc830ebeee219d3ee957b3fec45f3b6164604fed986291e63b486783a2
+    
+    ### 2026-05-03T17:31:46.271Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: post-merge verification after syncing origin/main. Result: pass. Evidence: bun run schemas:check, bun run docs:cli:check, bun run --filter=agentplane typecheck, bun run --filter=@agentplaneorg/core typecheck, and framework:dev:bootstrap all passed after resolving config schema merge conflicts. Scope: ACR batch rebased/merged onto current main.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T17:25:33.770Z, excerpt_hash=sha256:a5ac24bc830ebeee219d3ee957b3fec45f3b6164604fed986291e63b486783a2
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -199,6 +213,14 @@ By: CODER
 Note: Command: final branch verification after ACR evidence commit. Result: pass. Evidence: ACR batch implementation commit 0e0995c9 and final ACR evidence commit 9d5ac328 are present on task branch; prior schema/typecheck/build/core tests/docs freshness/ACR CLI smokes passed. Scope: final primary task verification before PR publication.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T17:24:32.278Z, excerpt_hash=sha256:a5ac24bc830ebeee219d3ee957b3fec45f3b6164604fed986291e63b486783a2
+
+### 2026-05-03T17:31:46.271Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: post-merge verification after syncing origin/main. Result: pass. Evidence: bun run schemas:check, bun run docs:cli:check, bun run --filter=agentplane typecheck, bun run --filter=@agentplaneorg/core typecheck, and framework:dev:bootstrap all passed after resolving config schema merge conflicts. Scope: ACR batch rebased/merged onto current main.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T17:25:33.770Z, excerpt_hash=sha256:a5ac24bc830ebeee219d3ee957b3fec45f3b6164604fed986291e63b486783a2
 
 <!-- END VERIFICATION RESULTS -->
 

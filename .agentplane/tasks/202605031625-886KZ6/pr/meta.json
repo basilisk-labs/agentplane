@@ -16,9 +16,9 @@
   },
   "branch": "task/202605031625-886KZ6/acr-core-schema",
   "created_at": "2026-05-03T16:32:47.928Z",
-  "head_sha": "0e0995c9aa97187f924672e4896ae6772d1fbfe1",
-  "last_verified_at": "2026-05-03T17:25:33.749Z",
-  "last_verified_sha": "0e0995c9aa97187f924672e4896ae6772d1fbfe1",
+  "head_sha": "bdd4eab5aa4105240a25886160d602b1f68e0a98",
+  "last_verified_at": "2026-05-03T17:31:46.271Z",
+  "last_verified_sha": "bdd4eab5aa4105240a25886160d602b1f68e0a98",
   "related_task_ids": [
     "202605031625-BM686J",
     "202605031626-83YQTA",
@@ -30,7 +30,7 @@
   ],
   "schema_version": 1,
   "task_id": "202605031625-886KZ6",
-  "updated_at": "2026-05-03T17:24:32.400Z",
+  "updated_at": "2026-05-03T17:31:46.537Z",
   "verify": {
     "status": "pass"
   }

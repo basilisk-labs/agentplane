@@ -38,7 +38,7 @@ Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, 
 ### Current Status
 
 - State: ok
-- Note: Command: final branch verification after ACR evidence commit. Result: pass. Evidence: ACR batch implementation commit 0e0995c9 and final ACR evidence commit 9d5ac328 are present on task branch; prior schema/typecheck/build/core tests/docs freshness/ACR CLI smokes passed. Scope: final primary task verification before PR publication.
+- Note: Command: post-merge verification after syncing origin/main. Result: pass. Evidence: bun run schemas:check, bun run docs:cli:check, bun run --filter=agentplane typecheck, bun run --filter=@agentplaneorg/core typecheck, and framework:dev:bootstrap all passed after resolving config schema merge conflicts. Scope: ACR batch rebased/merged onto current main.
 
 ## Risks
 
@@ -58,9 +58,9 @@ Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T17:24:32.400Z
+- Updated: 2026-05-03T17:31:46.537Z
 - Branch: task/202605031625-886KZ6/acr-core-schema
-- Head: 0e0995c9aa97
+- Head: bdd4eab5aa41
 
 ```text
  .agentplane/tasks/202605031624-H1PV7F/README.md    | 129 +++
