@@ -45,12 +45,14 @@ Extend doctor and normalize so merged primary PRs with included tasks cannot lea
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T16:15:20.083Z
+- Updated: 2026-05-03T16:15:31.953Z
 - Branch: task/202605031524-10ZC1E/batch-drift-diagnostics
-- Head: 137ea686bc78
+- Head: e373a956f6d4
 
 ```text
-No changes detected.
+ packages/agentplane/src/commands/doctor.run.ts     |  2 +
+ .../agentplane/src/commands/doctor/branch-pr.ts    | 69 ++++++++++++++++++++++
+ 2 files changed, 71 insertions(+)
 ```
 
 </details>

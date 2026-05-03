@@ -1,0 +1,3 @@
+ packages/agentplane/src/commands/doctor.run.ts     |  2 +
+ .../agentplane/src/commands/doctor/branch-pr.ts    | 69 ++++++++++++++++++++++
+ 2 files changed, 71 insertions(+)
