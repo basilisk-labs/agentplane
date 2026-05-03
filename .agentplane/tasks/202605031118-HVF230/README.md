@@ -1,10 +1,11 @@
 ---
 id: "202605031118-HVF230"
 title: "Switch external channels after Bun parity"
-status: "DOING"
+result_summary: "Merged via PR #815."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T12:56:59.125Z"
   updated_by: "CODER"
   note: "Focused verification passed: release distribution manifest now records an externalChannelSwitchGate with Bun default disabled until parity evidence exists; Homebrew, Scoop, and setup-agentplane evidence copy the gate while preserving standalone_bundled_node defaults. Ran targeted release distribution and external renderer tests plus check-mode renderers."
-commit: null
+commit:
+  hash: "0879fb8a5a2524a6b12fa1176c0b83d2905692d4"
+  message: "Merge pull request #815 from basilisk-labs/task/202605031118-HVF230/bun-external-channel-switch-gate"
 comments:
   -
     author: "CODER"
     body: "Start: record an explicit Bun parity switch gate for external channels; do not switch Homebrew, Scoop, or setup-agentplane defaults until release-cycle Bun parity evidence exists."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #815 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused verification passed: release distribution manifest now records an externalChannelSwitchGate with Bun default disabled until parity evidence exists; Homebrew, Scoop, and setup-agentplane evidence copy the gate while preserving standalone_bundled_node defaults. Ran targeted release distribution and external renderer tests plus check-mode renderers."
+  -
+    type: "status"
+    at: "2026-05-03T13:07:48.893Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #815 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T12:56:59.127Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T13:07:48.898Z"
+doc_updated_by: "INTEGRATOR"
 description: "Switch Homebrew, Scoop, and setup-agentplane to Bun binaries only after the experimental Bun channel has passed binary smoke/parity checks in a release cycle."
 sections:
   Summary: |-

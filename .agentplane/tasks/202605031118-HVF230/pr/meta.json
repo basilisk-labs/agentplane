@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T13:07:06Z",
   "base": "main",
   "branch": "task/202605031118-HVF230/bun-external-channel-switch-gate",
   "created_at": "2026-05-03T12:56:59.157Z",
-  "head_sha": "b0b13a908bddb0d27bc866241688a18dd6f570e6",
+  "head_sha": "69c241a058a7ad015789ac1c18b633d1f4d1115b",
   "last_verified_at": "2026-05-03T12:56:59.125Z",
   "last_verified_sha": "049ee113112001cdd3704f8f328893a6c7bcdf06",
+  "merge_commit": "0879fb8a5a2524a6b12fa1176c0b83d2905692d4",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T13:07:06Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605031118-HVF230",
-  "updated_at": "2026-05-03T13:05:22.654Z",
+  "updated_at": "2026-05-03T13:07:06Z",
   "verify": {
     "status": "pass"
   }
