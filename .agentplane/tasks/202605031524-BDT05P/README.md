@@ -1,10 +1,11 @@
 ---
 id: "202605031524-BDT05P"
 title: "Validate branch_pr batch included tasks before PR publication"
-status: "DOING"
+result_summary: "Merged via PR #828."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-05-03T15:47:41.124Z"
   updated_by: "CODER"
   note: "branch_pr batch include-task validation implemented and focused checks passed."
-commit: null
+commit:
+  hash: "96a41977c3ab31df00def384cc5407e6edb41a88"
+  message: "Merge pull request #828 from basilisk-labs/task/202605031524-BDT05P/batch-pr-validation"
 comments:
   -
     author: "CODER"
     body: "Start: validate branch_pr batch included tasks before PR publication."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #828 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "branch_pr batch include-task validation implemented and focused checks passed."
+  -
+    type: "status"
+    at: "2026-05-03T15:51:00.395Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #828 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T15:47:41.136Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T15:51:00.399Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add validation for included batch tasks so pr open/update rejects missing, already done, unverified, duplicate, or conflicting included task ids before a primary PR can advertise a batch."
 sections:
   Summary: |-
