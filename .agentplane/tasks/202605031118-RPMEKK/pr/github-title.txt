@@ -1,0 +1,1 @@
+🚧 RPMEKK task: Add installer opt-in for Bun channel [202605031118-RPMEKK]
