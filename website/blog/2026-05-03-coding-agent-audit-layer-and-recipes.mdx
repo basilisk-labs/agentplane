@@ -1,0 +1,100 @@
+---
+slug: coding-agent-audit-layer-and-recipes
+title: "Why coding agents need an audit layer"
+description: "AgentPlane's 0.4 recipe work is not just extensibility. It is the start of a repository-native audit layer for coding-agent changes."
+authors: [team]
+tags: [workflow, operations, docs]
+---
+
+![AgentPlane audit-layer preview](/img/header.png)
+
+Coding agents are already good enough to change real repositories.
+
+The weak part is not always the code they write. The weak part is the trail around the code: why the task existed, which plan constrained it, who owned the execution, which checks ran, and what made the work safe to close.
+
+<!-- truncate -->
+
+That is the product boundary AgentPlane is built around. It is not another coding agent. It is the audit layer around coding-agent work.
+
+## The diff is too small a record
+
+A pull request can show the final files. It usually cannot show the agent's full operating context.
+
+That context matters when work is bigger than a one-line edit:
+
+- a task needs a durable ID,
+- a plan needs approval before mutation,
+- an agent needs role-specific constraints,
+- verification needs evidence,
+- integration needs a clear handoff,
+- closure needs to say what actually passed.
+
+Without that trail, reviewers end up reconstructing intent from a diff, a branch name, and whatever still exists in a chat window.
+
+AgentPlane makes the trail a repository artifact.
+
+## What changed in 0.4
+
+The `0.4` line moved AgentPlane toward a more explicit recipe and prompt-module system.
+
+The important part is not the internal architecture by itself. The important part is what it enables: narrow behavior modules that can be inspected, validated, and composed without replacing an entire instruction surface.
+
+That matters for recipes because useful recipes should be specific.
+
+A recipe should be able to add a code-map workflow, constrain a role, bind a policy module, or validate a prompt graph without asking the project to trust an opaque blob of instructions.
+
+## Recipes are audit behavior
+
+Recipes are easy to describe as automation. That is incomplete.
+
+In AgentPlane, a useful recipe is repeatable audit behavior:
+
+- it declares what behavior it adds,
+- it can be installed into a repository,
+- it can be checked against local policy,
+- it can produce reviewable task artifacts,
+- it can stay inside the same Git-based lifecycle as normal work.
+
+That is different from a script pile. The recipe is not only "run these commands." It is "add this repeatable behavior to the agent workflow and keep it inspectable."
+
+## Why this belongs in the repository
+
+Agent workflows become harder to trust when the durable record lives outside the repo.
+
+AgentPlane keeps the important parts close to the code:
+
+- `AGENTS.md` is the policy gateway,
+- `.agentplane/policy/` holds canonical rules,
+- `.agentplane/tasks/<task-id>/` records task state and evidence,
+- branch and pull request artifacts connect work to Git review,
+- generated references and discovery files help humans and agents find the right path.
+
+The repository remains the source of truth. Hosted tools can still help, but the audit record does not depend on them.
+
+## Where this fits with coding agents
+
+Claude Code, Codex, Cursor, and Aider are execution surfaces. They help generate, edit, and explain code.
+
+AgentPlane gives those agents an operating contract:
+
+1. load the right policy,
+2. create or use a task,
+3. approve the plan,
+4. execute inside scope,
+5. record verification,
+6. hand off integration cleanly.
+
+That contract is intentionally boring. Boring is useful when an agent can mutate a repository.
+
+## What to read next
+
+Start with the short product framing:
+
+- [Why AgentPlane exists](/docs/manifesto)
+- [How AgentPlane compares](/docs/compare)
+- [Recipes overview](/docs/recipes)
+- [AgentPlane 0.4.0 release notes](/docs/releases/v0.4.0)
+
+The practical test is simple: after the agent finishes, can another human or agent understand why the change happened and why it was closed?
+
+If the answer is no, the workflow is missing an audit layer.

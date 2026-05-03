@@ -1,10 +1,10 @@
 ---
 id: "202605031315-HZQGRZ"
 title: "Add reader-grade release and recipes blog post"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +22,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-03T13:47:18.450Z"
+  updated_by: "DOCS"
+  note: "Added a reader-grade blog post that connects the shipped 0.4 recipe/prompt-module work to the audit-layer positioning without claiming unshipped Runner behavior. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "DOCS"
+    body: "Start: add reader-grade blog post connecting the release/recipes work to the audit-layer positioning."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T13:46:31.504Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: add reader-grade blog post connecting the release/recipes work to the audit-layer positioning."
+  -
+    type: "verify"
+    at: "2026-05-03T13:47:18.450Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Added a reader-grade blog post that connects the shipped 0.4 recipe/prompt-module work to the audit-layer positioning without claiming unshipped Runner behavior. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:15:46.304Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T13:47:18.454Z"
+doc_updated_by: "DOCS"
 description: "Add a short website blog post that translates the 0.4.2 recipes/trust/distribution work into reader-grade positioning and links to technical release evidence."
 sections:
   Summary: |-
@@ -48,11 +64,22 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T13:47:18.450Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Added a reader-grade blog post that connects the shipped 0.4 recipe/prompt-module work to the audit-layer positioning without claiming unshipped Runner behavior. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:46:31.504Z, excerpt_hash=sha256:8d7da2ac5c81faa72d4a7970ad04261491733014423a019b4f8bd7822c080d5f
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Docusaurus build resolved all new links and reused the refreshed /img/header.png blog visual; the existing vscode-languageserver-types warning remains non-blocking.
+      Impact: The blog now gives readers a narrative bridge from coding-agent pain to AgentPlane recipes and audit artifacts.
+      Resolution: Keep future release/recipe posts grounded in shipped docs and release notes.
 id_source: "generated"
 ---
 ## Summary
@@ -79,6 +106,14 @@ Add a reader-grade website blog post for the 0.4.2 recipes/trust/distribution st
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T13:47:18.450Z — VERIFY — ok
+
+By: DOCS
+
+Note: Added a reader-grade blog post that connects the shipped 0.4 recipe/prompt-module work to the audit-layer positioning without claiming unshipped Runner behavior. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:46:31.504Z, excerpt_hash=sha256:8d7da2ac5c81faa72d4a7970ad04261491733014423a019b4f8bd7822c080d5f
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -87,3 +122,7 @@ Add a reader-grade website blog post for the 0.4.2 recipes/trust/distribution st
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Docusaurus build resolved all new links and reused the refreshed /img/header.png blog visual; the existing vscode-languageserver-types warning remains non-blocking.
+  Impact: The blog now gives readers a narrative bridge from coding-agent pain to AgentPlane recipes and audit artifacts.
+  Resolution: Keep future release/recipe posts grounded in shipped docs and release notes.
