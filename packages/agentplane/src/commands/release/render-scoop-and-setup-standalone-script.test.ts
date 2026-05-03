@@ -10,6 +10,11 @@ const execFileAsync = promisify(execFile);
 const SCOOP_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/render-scoop-manifest.mjs");
 const SETUP_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/render-setup-agentplane-action.mjs");
 const tempRoots: string[] = [];
+const externalChannelSwitchGate = {
+  defaultInstallStrategy: "standalone_bundled_node",
+  candidateInstallStrategy: "bun_single_file_executable",
+  bunDefaultEligible: false,
+};
 
 async function makeTempRoot() {
   const root = await mkdtemp(path.join(tmpdir(), "agentplane-standalone-consumers-"));
@@ -52,6 +57,7 @@ async function writeManifest(root: string) {
         tag: "v0.4.1",
         sha: "abc123",
         repository: "basilisk-labs/agentplane",
+        externalChannelSwitchGate,
         platformAssets: [
           platformAsset("darwin", "arm64", "tar.gz"),
           platformAsset("darwin", "x64", "tar.gz"),
@@ -95,6 +101,7 @@ describe("standalone consumer renderers", () => {
     };
     const evidence = JSON.parse(await readFile(path.join(outDir, "scoop-result.json"), "utf8")) as {
       installStrategy: string;
+      externalChannelSwitchGate: { bunDefaultEligible: boolean };
       assets: { win32X64: { name: string } };
     };
 
@@ -103,6 +110,7 @@ describe("standalone consumer renderers", () => {
     expect(scoop.architecture["64bit"].url).toContain("agentplane-v0.4.1-win32-x64.zip");
     expect(scoop.bin).toEqual([[String.raw`bin\agentplane.cmd`, "agentplane"]]);
     expect(evidence.installStrategy).toBe("standalone_bundled_node");
+    expect(evidence.externalChannelSwitchGate.bunDefaultEligible).toBe(false);
     expect(evidence.assets.win32X64.name).toBe("agentplane-v0.4.1-win32-x64.zip");
   });
 
@@ -121,6 +129,7 @@ describe("standalone consumer renderers", () => {
       await readFile(path.join(outDir, "setup-agentplane-result.json"), "utf8"),
     ) as {
       installStrategy: string;
+      externalChannelSwitchGate: { bunDefaultEligible: boolean };
       assets: { linuxX64: { name: string }; win32X64: { name: string } };
     };
 
@@ -133,6 +142,7 @@ describe("standalone consumer renderers", () => {
     expect(action).not.toContain("install.sh");
     expect(readme).toContain("standalone bundled-runtime archive checksum");
     expect(evidence.installStrategy).toBe("standalone_bundled_node");
+    expect(evidence.externalChannelSwitchGate.bunDefaultEligible).toBe(false);
     expect(evidence.assets.linuxX64.name).toBe("agentplane-v0.4.1-linux-x64.tar.gz");
     expect(evidence.assets.win32X64.name).toBe("agentplane-v0.4.1-win32-x64.zip");
   });

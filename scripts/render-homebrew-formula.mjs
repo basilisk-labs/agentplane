@@ -145,6 +145,7 @@ async function renderHomebrew(repoRoot, args) {
       darwinX64: findPlatformAsset(manifest, "darwin", "x64"),
     },
     installStrategy: "standalone_bundled_node",
+    externalChannelSwitchGate: manifest.externalChannelSwitchGate ?? null,
     nextAction:
       channel.status === "skipped_missing_credentials"
         ? "Add HOMEBREW_TAP_TOKEN and rerun the Homebrew tap publication module for this manifest."

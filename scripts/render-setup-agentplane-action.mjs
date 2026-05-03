@@ -222,6 +222,7 @@ async function renderSetupAction(repoRoot, args) {
     readmePath,
     assets: setupAssets(manifest),
     installStrategy: "standalone_bundled_node",
+    externalChannelSwitchGate: manifest.externalChannelSwitchGate ?? null,
     nextAction:
       channel.status === "skipped_missing_credentials"
         ? "Add SETUP_AGENTPLANE_TOKEN and rerun the setup-agentplane publication module for this manifest."

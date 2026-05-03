@@ -479,6 +479,18 @@ async function buildDistribution(repoRoot, args) {
     platformAssets: standaloneAssets,
     bunAssets,
     releaseAssets,
+    externalChannelSwitchGate: {
+      defaultInstallStrategy: "standalone_bundled_node",
+      candidateInstallStrategy: "bun_single_file_executable",
+      bunDefaultEligible: false,
+      requiredEvidence: [
+        "published_release_contains_all_bun_assets",
+        "bun_assets_pass_release_cycle_smoke",
+        "external_channel_rollback_to_standalone_is_documented",
+      ],
+      nextAction:
+        "Keep Homebrew, Scoop, and setup-agentplane on standalone archives until a published release records Bun binary parity evidence.",
+    },
     channels: {
       npm: { status: "pending", required: true },
       githubRelease: { status: "pending", required: true },
