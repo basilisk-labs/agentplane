@@ -1,10 +1,10 @@
 ---
 id: "202605031626-83YQTA"
 title: "Automatic ACR export on finish"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +25,16 @@ verification:
   updated_at: "2026-05-03T17:21:43.676Z"
   updated_by: "CODER"
   note: "Command: agentplane finish --help. Result: pass. Evidence: help exposes --no-write-acr and finish options. Scope: finish integration surface. Command: bun run --filter=agentplane typecheck. Result: pass. Evidence: typecheck exited 0. Scope: finish-execute imports and noWriteAcr plumbing. Command: node packages/agentplane/dist/cli.js acr generate 202605031625-886KZ6 --work-commit HEAD --write --refresh --json. Result: pass. Evidence: task-local acr.json refreshed successfully. Scope: shared writer used by automatic finish export."
-commit: null
+commit:
+  hash: "cbdff74c58993d0f586646fe698e742e4255c7dc"
+  message: "Merge pull request #843 from basilisk-labs/task/202605031625-886KZ6/acr-core-schema"
 comments:
   -
     author: "CODER"
     body: "Start: implement this ACR v0.1 scope inside the approved batch worktree and verify it with the shared ACR CLI, schema, docs, and lifecycle checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #843 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: agentplane finish --help. Result: pass. Evidence: help exposes --no-write-acr and finish options. Scope: finish integration surface. Command: bun run --filter=agentplane typecheck. Result: pass. Evidence: typecheck exited 0. Scope: finish-execute imports and noWriteAcr plumbing. Command: node packages/agentplane/dist/cli.js acr generate 202605031625-886KZ6 --work-commit HEAD --write --refresh --json. Result: pass. Evidence: task-local acr.json refreshed successfully. Scope: shared writer used by automatic finish export."
+  -
+    type: "status"
+    at: "2026-05-03T18:07:56.992Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #843 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T17:21:43.702Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T18:07:56.993Z"
+doc_updated_by: "INTEGRATOR"
 description: "Integrate ACR generation into agentplane finish so successful finish automatically refreshes .agentplane/tasks/<task-id>/acr.json when acr.write_on_finish is enabled. Add config defaults, --no-write-acr escape hatch, and preserve work_commit semantics from --commit."
 sections:
   Summary: |-
