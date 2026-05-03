@@ -9,7 +9,10 @@ import { promisify } from "node:util";
 import { renderTaskReadme } from "@agentplaneorg/core/tasks";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { checkBranchPrDoneTaskOpenPrDrift } from "./doctor/branch-pr.js";
+import {
+  checkBranchPrBatchIncludedTaskDrift,
+  checkBranchPrDoneTaskOpenPrDrift,
+} from "./doctor/branch-pr.js";
 import { runDoctor } from "./doctor.run.js";
 
 type TestWorkspace = {
@@ -913,6 +916,69 @@ describe(
 
       const findings = await checkBranchPrDoneTaskOpenPrDrift(ctx);
       expect(findings).toHaveLength(0);
+    });
+
+    it("warns when a closed branch_pr batch primary left included tasks open", async () => {
+      const ws = await mkWorkspace();
+      const primaryTaskId = "202604051100-PRIMARY";
+      const includedTaskId = "202604051100-INCLUD";
+      const mergeCommit = "abc1234567890abc1234567890abc1234567890";
+      await mkdir(path.join(ws.root, ".agentplane", "tasks", primaryTaskId, "pr"), {
+        recursive: true,
+      });
+      await writeFile(
+        path.join(ws.root, ".agentplane", "tasks", primaryTaskId, "pr", "meta.json"),
+        JSON.stringify(
+          {
+            schema_version: 1,
+            task_id: primaryTaskId,
+            branch: `task/${primaryTaskId}/batch`,
+            batch: {
+              schema_version: 1,
+              primary_task_id: primaryTaskId,
+              included_task_ids: [includedTaskId],
+              closure_policy: "all_or_fail",
+            },
+            created_at: "2026-04-05T09:00:00.000Z",
+            updated_at: "2026-04-05T09:00:00.000Z",
+            status: "MERGED",
+            merge_commit: mergeCommit,
+            merged_at: "2026-04-05T10:00:00.000Z",
+            verify: { status: "pass" },
+          },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+
+      const ctx = {
+        backendId: "local",
+        config: {
+          workflow_mode: "branch_pr",
+          paths: { workflow_dir: ".agentplane/tasks" },
+        },
+        resolvedProject: { gitRoot: ws.root },
+        taskBackend: {
+          listTasks: vi.fn().mockResolvedValue([
+            {
+              id: primaryTaskId,
+              status: "DONE",
+              commit: { hash: mergeCommit, message: "Merge primary" },
+            },
+            {
+              id: includedTaskId,
+              status: "DOING",
+              commit: null,
+            },
+          ]),
+        },
+      } as unknown as Parameters<typeof checkBranchPrBatchIncludedTaskDrift>[0];
+
+      const findings = await checkBranchPrBatchIncludedTaskDrift(ctx);
+      expect(findings).toHaveLength(1);
+      expect(findings[0]).toContain("branch_pr batch included tasks are not closed");
+      expect(findings[0]).toContain(`${primaryTaskId}->${includedTaskId}`);
     });
 
     it("ignores duplicate no-op and stacked-root DONE branch_pr records in open-PR drift checks", async () => {
