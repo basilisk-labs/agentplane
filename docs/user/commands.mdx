@@ -167,7 +167,9 @@ agentplane acr schema --version 0.1
 These commands derive `.agentplane/tasks/<task-id>/acr.json` from existing
 task lifecycle evidence. `finish` refreshes the task-local ACR automatically when
 `acr.write_on_finish=true`; use `--no-write-acr` only for explicit recovery cases. ACR remains a
-derived projection, not a second source of truth. See [Agent Change Record](agent-change-record).
+derived projection, not a second source of truth. `acr validate --mode schema` checks only JSON
+shape; `acr check --mode ci` enforces merge-ready semantics. See
+[Agent Change Record](agent-change-record).
 
 ## Backend sync (remote backends)
 

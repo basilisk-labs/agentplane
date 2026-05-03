@@ -1,0 +1,22 @@
+ .agentplane/tasks/202605031856-CKQ0TG/README.md    | 129 +++++++++++
+ .agentplane/tasks/202605031856-V5KXGG/README.md    | 128 +++++++++++
+ bun.lock                                           |   9 +-
+ .../agent-change-record-implementation.mdx         |  43 ++--
+ docs/user/agent-change-record.mdx                  |  21 +-
+ docs/user/commands.mdx                             |   4 +-
+ docs/user/configuration.mdx                        |   4 +-
+ packages/agentplane/assets/policy/incidents.md     |   1 +
+ .../src/commands/acr/acr.command.test.ts           | 178 +++++++++++++++
+ .../agentplane/src/commands/acr/acr.command.ts     | 248 +++++++++++++++------
+ packages/agentplane/src/commands/pr/check.ts       |  22 ++
+ .../agentplane/src/commands/task/finish-execute.ts |  38 ++--
+ packages/core/package.json                         |   1 +
+ packages/core/schemas/acr-v0.1.schema.json         |  57 ++++-
+ packages/core/src/index.ts                         |   3 +-
+ packages/core/src/schemas/index.ts                 |   1 +
+ packages/core/src/tasks/index.ts                   |   1 +
+ .../core/src/tasks/task-artifact-schema.acr.ts     |  44 +++-
+ .../core/src/tasks/task-artifact-schema.test.ts    | 241 +++++++++++---------
+ packages/core/src/tasks/task-artifact-schema.ts    |   2 +-
+ packages/spec/schemas/acr-v0.1.schema.json         |  57 ++++-
+ 21 files changed, 996 insertions(+), 236 deletions(-)

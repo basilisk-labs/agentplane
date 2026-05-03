@@ -22,7 +22,7 @@ export type {
 
 export type { TaskPrMeta } from "./task-artifact-schema.pr-metadata.js";
 export type { AgentChangeRecord } from "./task-artifact-schema.acr.js";
-export { ACR_VERSION } from "./task-artifact-schema.acr.js";
+export { ACR_VERSION, computeAcrRecordDigest } from "./task-artifact-schema.acr.js";
 export { withTaskReadmeFrontmatterDefaults } from "./task-artifact-schema.task.js";
 
 export const ACR_SCHEMA = buildJsonSchemaDocument(ACR_ZOD_SCHEMA, {

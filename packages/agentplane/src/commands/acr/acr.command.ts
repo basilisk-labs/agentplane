@@ -1,5 +1,6 @@
 import {
   ACR_VERSION,
+  computeAcrRecordDigest,
   renderAcrSchemaJson,
   validateAcr,
   type AgentChangeRecord,
@@ -24,6 +25,14 @@ import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 
 type AcrMode = "schema" | "local" | "ci";
+type AcrCiSemanticOptions = Pick<
+  AcrCheckParsed,
+  | "requirePlanApproved"
+  | "requireVerification"
+  | "requirePolicyPass"
+  | "allowWaivedVerification"
+  | "allowManualOverride"
+>;
 
 export type AcrGenerateParsed = {
   taskId: string;
@@ -316,18 +325,20 @@ export function makeRunAcrHandler(_getCtx: (cmd: string) => Promise<CommandConte
 }
 
 export function makeRunAcrSchemaHandler() {
-  return async (ctx: CommandCtx, p: AcrSchemaParsed): Promise<number> => {
-    const text = renderAcrSchemaJson();
-    if (p.out) {
-      const outPath = path.resolve(ctx.cwd, p.out);
-      await mkdir(path.dirname(outPath), { recursive: true });
-      await writeTextIfChanged(outPath, text);
-      process.stdout.write(`${outPath}\n`);
-      return 0;
-    }
-    process.stdout.write(text);
+  return runAcrSchemaHandler;
+}
+
+async function runAcrSchemaHandler(ctx: CommandCtx, p: AcrSchemaParsed): Promise<number> {
+  const text = renderAcrSchemaJson();
+  if (p.out) {
+    const outPath = path.resolve(ctx.cwd, p.out);
+    await mkdir(path.dirname(outPath), { recursive: true });
+    await writeTextIfChanged(outPath, text);
+    process.stdout.write(`${outPath}\n`);
     return 0;
-  };
+  }
+  process.stdout.write(text);
+  return 0;
 }
 
 export function makeRunAcrGenerateHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
@@ -469,7 +480,7 @@ export async function generateAcr(opts: {
     () => "unknown",
   );
   const remote = await gitOutput(gitRoot, ["config", "--get", "remote.origin.url"]).catch(
-    () => undefined,
+    () => null,
   );
   const diff = await readDiffSummary(gitRoot, baseCommit, workCommit);
   const taskHash = await hashFile(taskReadmePath).catch(() => null);
@@ -480,19 +491,19 @@ export async function generateAcr(opts: {
     planState === "approved"
       ? [
           {
-            approval_id: `approval_${opts.taskId.replace(/[^A-Za-z0-9_-]/g, "_")}_plan`,
+            approval_id: `approval_${opts.taskId.replaceAll(/[^A-Za-z0-9_-]/g, "_")}_plan`,
             type: "plan_approval" as const,
             decision: "approved" as const,
             approved_by: {
               type: "agentplane_role",
-              id: task.plan_approval?.updated_by || "ORCHESTRATOR",
+              id: task.plan_approval?.updated_by ?? "ORCHESTRATOR",
             },
-            approved_at: task.plan_approval?.updated_at || now,
+            approved_at: task.plan_approval?.updated_at ?? now,
             scope: "task",
           },
         ]
       : [];
-  const recordId = `acr_${opts.taskId.replace(/[^A-Za-z0-9_-]/g, "_")}`;
+  const recordId = `acr_${opts.taskId.replaceAll(/[^A-Za-z0-9_-]/g, "_")}`;
   const taskPath = path.relative(gitRoot, taskReadmePath);
   const evidence = taskHash
     ? [
@@ -501,8 +512,40 @@ export async function generateAcr(opts: {
           path: taskPath,
           sha256: taskHash,
         },
+        ...(planState === "approved"
+          ? [
+              {
+                type: "plan" as const,
+                path: taskPath,
+                sha256: taskHash,
+              },
+            ]
+          : []),
+        ...(verificationState === "ok"
+          ? [
+              {
+                type: "verification_log" as const,
+                path: taskPath,
+                sha256: taskHash,
+              },
+            ]
+          : []),
       ]
     : [];
+  const verificationChecks = (task.verify ?? []).map((command, index) => ({
+    check_id: `verify-${index + 1}`,
+    type: inferCheckType(command),
+    command,
+    status: verificationState === "ok" ? ("passed" as const) : ("unknown" as const),
+  }));
+  const residualRisks = buildResidualRisks({
+    taskHash,
+    planState,
+    verificationState,
+    verificationChecks,
+    evidence,
+  });
+  const mergeReady = residualRisks.length === 0;
   const recordWithoutDigest: AgentChangeRecord = {
     acr_version: ACR_VERSION,
     record_type: "agent_change_record",
@@ -583,12 +626,12 @@ export async function generateAcr(opts: {
       ],
     },
     changes: {
-      summary: task.result_summary || task.description || task.title,
+      summary: task.result_summary ?? task.description ?? task.title,
       diff_stats: diff.diff_stats,
       files: diff.files,
       risk: {
         level: task.risk_level === "high" ? "high" : task.risk_level === "low" ? "low" : "medium",
-        categories: [...new Set([...(task.tags ?? []), "evidence"])],
+        categories: [...new Set(diff.files.flatMap((file) => file.risk_categories ?? []))],
         protected_paths_touched: diff.files.some(
           (file) => file.path.startsWith(".github/") || file.path.startsWith("secrets/"),
         ),
@@ -601,12 +644,7 @@ export async function generateAcr(opts: {
           : verificationState === "needs_rework"
             ? "failed"
             : "not_run",
-      checks: (task.verify ?? []).map((command, index) => ({
-        check_id: `verify-${index + 1}`,
-        type: inferCheckType(command),
-        command,
-        status: verificationState === "ok" ? "passed" : "unknown",
-      })),
+      checks: verificationChecks,
     },
     approvals,
     evidence,
@@ -617,8 +655,8 @@ export async function generateAcr(opts: {
           : verificationState === "ok"
             ? "verified"
             : "implemented",
-      merge_ready: planState === "approved" && verificationState === "ok",
-      residual_risks: [],
+      merge_ready: mergeReady,
+      residual_risks: residualRisks,
       rollback: {
         available: true,
         notes: `Revert work_commit ${workCommit} if downstream validation fails.`,
@@ -626,7 +664,7 @@ export async function generateAcr(opts: {
     },
     integrity: {
       digest_algorithm: "sha256",
-      record_digest: "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      record_digest: null,
       canonicalization: "rfc8785-jcs",
       signatures: [],
     },
@@ -635,7 +673,7 @@ export async function generateAcr(opts: {
     ...recordWithoutDigest,
     integrity: {
       ...recordWithoutDigest.integrity,
-      record_digest: digestRecord(recordWithoutDigest),
+      record_digest: computeAcrRecordDigest(recordWithoutDigest),
     },
   };
   validateAcr(record);
@@ -664,7 +702,7 @@ export async function writeAcrFile(opts: {
   await writeFile(opts.acrPath, `${JSON.stringify(opts.record, null, 2)}\n`, "utf8");
 }
 
-async function validateAcrTarget(opts: {
+export async function validateAcrTarget(opts: {
   ctx: CommandContext;
   target: string;
   mode: AcrMode;
@@ -714,7 +752,11 @@ async function validateAcrTarget(opts: {
         );
       }
     }
-    if (digestRecord(resolved.record) !== resolved.record.integrity.record_digest) {
+    if (resolved.record.integrity.record_digest === null) {
+      warnings.push("ACR record digest is not finalized.");
+    } else if (
+      computeAcrRecordDigest(resolved.record) !== resolved.record.integrity.record_digest
+    ) {
       throw acrValidationError(
         "ACR_E_DIGEST_MISMATCH",
         "ACR record digest does not match record content.",
@@ -722,31 +764,7 @@ async function validateAcrTarget(opts: {
     }
   }
   if (opts.mode === "ci") {
-    if (opts.requirePlanApproved && resolved.record.plan.status !== "approved") {
-      throw acrValidationError("ACR_E_PLAN_NOT_APPROVED", "ACR plan status is not approved.");
-    }
-    if (opts.requireVerification && resolved.record.verification.status !== "passed") {
-      if (!(opts.allowWaivedVerification && resolved.record.verification.status === "waived")) {
-        throw acrValidationError(
-          "ACR_E_VERIFICATION_REQUIRED",
-          "ACR verification status is not passed.",
-        );
-      }
-    }
-    if (opts.requirePolicyPass) {
-      const failed = resolved.record.policy.decisions.find((item) => item.decision === "fail");
-      if (failed)
-        throw acrValidationError("ACR_E_POLICY_FAILED", `Policy failed: ${failed.rule_id}`);
-      const manual = resolved.record.policy.decisions.find(
-        (item) => item.decision === "manual_override",
-      );
-      if (manual && !opts.allowManualOverride) {
-        throw acrValidationError(
-          "ACR_E_MANUAL_OVERRIDE_NOT_ALLOWED",
-          `Manual override not allowed: ${manual.rule_id}`,
-        );
-      }
-    }
+    assertAcrCiSemantics(resolved.record, opts);
   }
   if (opts.strict && warnings.length > 0) {
     throw acrValidationError("ACR_E_STRICT_WARNING", warnings.join("; "));
@@ -758,6 +776,65 @@ async function validateAcrTarget(opts: {
     record_id: resolved.record.record_id,
     warnings,
   };
+}
+
+export function assertAcrCiSemantics(record: AgentChangeRecord, opts: AcrCiSemanticOptions): void {
+  if (!record.result.merge_ready) {
+    throw acrValidationError("ACR_E_NOT_MERGE_READY", "ACR result.merge_ready is not true.");
+  }
+  if (record.integrity.record_digest === null) {
+    throw acrValidationError("ACR_E_DIGEST_REQUIRED", "Merge-ready ACR requires record_digest.");
+  }
+  if (record.evidence.length === 0) {
+    throw acrValidationError("ACR_E_EVIDENCE_REQUIRED", "Merge-ready ACR requires evidence.");
+  }
+  if (opts.requirePlanApproved && record.plan.status !== "approved") {
+    if (record.plan.status === "waived") {
+      assertApproval(record, "plan_waiver", "ACR_E_PLAN_WAIVER_REQUIRED");
+    } else {
+      throw acrValidationError("ACR_E_PLAN_NOT_APPROVED", "ACR plan status is not approved.");
+    }
+  }
+  if (record.plan.status === "approved") {
+    assertApproval(record, "plan_approval", "ACR_E_PLAN_APPROVAL_REQUIRED");
+    assertEvidence(record, "plan", "ACR_E_PLAN_EVIDENCE_REQUIRED");
+  }
+  if (
+    opts.requireVerification &&
+    record.verification.status !== "passed" &&
+    !(opts.allowWaivedVerification && record.verification.status === "waived")
+  ) {
+    throw acrValidationError(
+      "ACR_E_VERIFICATION_REQUIRED",
+      "ACR verification status is not passed.",
+    );
+  }
+  if (record.verification.status === "passed") {
+    if (record.verification.checks.length === 0) {
+      throw acrValidationError(
+        "ACR_E_VERIFICATION_CHECK_REQUIRED",
+        "Passed verification requires at least one check.",
+      );
+    }
+    assertEvidence(record, "verification_log", "ACR_E_VERIFICATION_EVIDENCE_REQUIRED");
+  }
+  if (record.verification.status === "waived") {
+    assertApproval(record, "verification_waiver", "ACR_E_VERIFICATION_WAIVER_REQUIRED");
+  }
+  if (opts.requirePolicyPass) {
+    const failed = record.policy.decisions.find((item) => item.decision === "fail");
+    if (failed) throw acrValidationError("ACR_E_POLICY_FAILED", `Policy failed: ${failed.rule_id}`);
+    const manual = record.policy.decisions.find((item) => item.decision === "manual_override");
+    if (manual) {
+      assertApproval(record, "policy_override", "ACR_E_POLICY_OVERRIDE_REQUIRED");
+    }
+    if (manual && !opts.allowManualOverride) {
+      throw acrValidationError(
+        "ACR_E_MANUAL_OVERRIDE_NOT_ALLOWED",
+        `Manual override not allowed: ${manual.rule_id}`,
+      );
+    }
+  }
 }
 
 async function readAcrTarget(
@@ -940,8 +1017,12 @@ function mapGitStatus(status: string): AgentChangeRecord["changes"]["files"][num
   return "unknown";
 }
 
-function inferRiskCategories(filePath: string): string[] {
-  const categories = new Set<string>();
+function inferRiskCategories(
+  filePath: string,
+): NonNullable<AgentChangeRecord["changes"]["files"][number]["risk_categories"]> {
+  const categories = new Set<
+    NonNullable<AgentChangeRecord["changes"]["files"][number]["risk_categories"]>[number]
+  >();
   if (filePath.includes("schema")) categories.add("schema");
   if (filePath.startsWith("docs/")) categories.add("docs");
   if (filePath.includes("/test") || filePath.endsWith(".test.ts")) categories.add("tests");
@@ -967,22 +1048,47 @@ async function hashFile(filePath: string): Promise<string> {
   return `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
 }
 
-function digestRecord(record: AgentChangeRecord): string {
-  const clone = structuredClone(record) as AgentChangeRecord;
-  clone.integrity.record_digest =
-    "sha256:0000000000000000000000000000000000000000000000000000000000000000";
-  clone.integrity.signatures = [];
-  return `sha256:${createHash("sha256").update(stableStringify(clone)).digest("hex")}`;
+function buildResidualRisks(opts: {
+  taskHash: string | null;
+  planState: string;
+  verificationState: string;
+  verificationChecks: AgentChangeRecord["verification"]["checks"];
+  evidence: AgentChangeRecord["evidence"];
+}): string[] {
+  const risks: string[] = [];
+  if (opts.planState !== "approved") risks.push("Plan is not approved.");
+  if (opts.verificationState !== "ok") risks.push("Verification is not recorded as ok.");
+  if (opts.verificationState === "ok" && opts.verificationChecks.length === 0) {
+    risks.push("Passed verification has no checks.");
+  }
+  if (!opts.taskHash) risks.push("Task README evidence is missing.");
+  if (!opts.evidence.some((item) => item.type === "plan")) risks.push("Plan evidence is missing.");
+  if (!opts.evidence.some((item) => item.type === "verification_log")) {
+    risks.push("Verification log evidence is missing.");
+  }
+  return risks;
 }
 
-function stableStringify(value: unknown): string {
-  if (value === null || typeof value !== "object") return JSON.stringify(value);
-  if (Array.isArray(value)) return `[${value.map((item) => stableStringify(item)).join(",")}]`;
-  const record = value as Record<string, unknown>;
-  return `{${Object.keys(record)
-    .sort()
-    .map((key) => `${JSON.stringify(key)}:${stableStringify(record[key])}`)
-    .join(",")}}`;
+function assertApproval(
+  record: AgentChangeRecord,
+  type: AgentChangeRecord["approvals"][number]["type"],
+  code: string,
+): void {
+  if (
+    !record.approvals.some((approval) => approval.type === type && approval.decision !== "rejected")
+  ) {
+    throw acrValidationError(code, `Missing approval: ${type}.`);
+  }
+}
+
+function assertEvidence(
+  record: AgentChangeRecord,
+  type: AgentChangeRecord["evidence"][number]["type"],
+  code: string,
+): void {
+  if (!record.evidence.some((evidence) => evidence.type === type)) {
+    throw acrValidationError(code, `Missing evidence: ${type}.`);
+  }
 }
 
 function acrValidationError(code: string, message: string): CliError {

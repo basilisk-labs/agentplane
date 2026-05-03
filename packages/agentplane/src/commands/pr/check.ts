@@ -9,6 +9,7 @@ import {
   loadCommandContext,
   type CommandContext,
 } from "../shared/task-backend.js";
+import { validateAcrTarget } from "../acr/acr.command.js";
 
 import { resolvePrPaths } from "./internal/pr-paths.js";
 import {
@@ -184,6 +185,27 @@ export async function cmdPrCheck(opts: {
         exitCode: exitCodeForError("E_VALIDATION"),
         code: "E_VALIDATION",
         message: errors.join("\n"),
+      });
+    }
+
+    if (config.acr.require_for_pr_check) {
+      if (!config.acr.enabled) {
+        throw new CliError({
+          exitCode: exitCodeForError("E_VALIDATION"),
+          code: "E_VALIDATION",
+          message: "ACR is required for pr check but acr.enabled=false.",
+        });
+      }
+      await validateAcrTarget({
+        ctx,
+        target: task.id,
+        mode: "ci",
+        strict: true,
+        requirePlanApproved: true,
+        requireVerification: true,
+        requirePolicyPass: true,
+        allowWaivedVerification: false,
+        allowManualOverride: false,
       });
     }
 

@@ -32,10 +32,11 @@ export {
 export {
   ACR_VERSION,
   AGENTPLANE_CONFIG_SCHEMA,
-  listAcrSchemaErrors,
   AgentplaneConfigSchema,
+  computeAcrRecordDigest,
   defaultAgentplaneConfig,
   formatAgentplaneConfigIssues,
+  listAcrSchemaErrors,
   listTaskHandoffSchemaErrors,
   listTaskPrMetaSchemaErrors,
   listTaskReadmeFrontmatterSchemaErrors,

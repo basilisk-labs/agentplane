@@ -19,122 +19,123 @@ import {
   withTaskReadmeFrontmatterDefaults,
 } from "../index.js";
 
-describe("task-artifact-schema", () => {
-  const validAcr = () => ({
-    acr_version: "0.1.0",
-    record_type: "agent_change_record",
-    record_id: "acr_01HXEXAMPLE",
-    created_at: "2026-05-03T12:00:00.000Z",
-    producer: { name: "agentplane", version: "0.4.2" },
-    repository: {
-      vcs: "git",
-      base_ref: "main",
-      base_commit: "abc123",
-      work_ref: "task/202605031625-886KZ6/acr-core-schema",
-      work_commit: "def456",
+const validAcr = () => ({
+  acr_version: "0.1.0",
+  record_type: "agent_change_record",
+  record_id: "acr_01HXEXAMPLE",
+  created_at: "2026-05-03T12:00:00.000Z",
+  producer: { name: "agentplane", version: "0.4.2" },
+  repository: {
+    vcs: "git",
+    base_ref: "main",
+    base_commit: "1111111111111111111111111111111111111111",
+    work_ref: "task/202605031625-886KZ6/acr-core-schema",
+    work_commit: "2222222222222222222222222222222222222222",
+  },
+  task: {
+    task_id: "202605031625-886KZ6",
+    title: "ACR v0.1 core schema contract",
+    intent: "Add the Agent Change Record v0.1 schema contract.",
+  },
+  agent: {
+    id: "CODER",
+    name: "Codex",
+    agent_type: "coding_agent",
+    model: { provider: "openai", name: "unknown", version: "unknown" },
+    toolchain: [{ name: "agentplane", version: "0.4.2" }],
+  },
+  plan: {
+    status: "approved",
+    artifact: {
+      path: ".agentplane/tasks/202605031625-886KZ6/README.md",
+      sha256: "sha256:1111111111111111111111111111111111111111111111111111111111111111",
     },
-    task: {
-      task_id: "202605031625-886KZ6",
-      title: "ACR v0.1 core schema contract",
-      intent: "Add the Agent Change Record v0.1 schema contract.",
+    approved_at: "2026-05-03T12:10:00.000Z",
+    approved_by: { type: "agentplane_role", id: "ORCHESTRATOR" },
+  },
+  permissions: {
+    filesystem: {
+      allowed_paths: ["packages/**"],
+      protected_paths: [".github/**", "secrets/**"],
     },
-    agent: {
-      id: "CODER",
-      name: "Codex",
-      agent_type: "coding_agent",
-      model: { provider: "openai", name: "unknown", version: "unknown" },
-      toolchain: [{ name: "agentplane", version: "0.4.2" }],
-    },
-    plan: {
-      status: "approved",
-      artifact: {
-        path: ".agentplane/tasks/202605031625-886KZ6/README.md",
-        sha256: "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    network: { mode: "disabled" },
+    secrets: { access: "none" },
+    tools: [{ name: "shell", allowed: true }],
+  },
+  policy: {
+    policy_version: "0.1.0",
+    decisions: [
+      {
+        rule_id: "plan.required",
+        decision: "pass",
+        reason: "Approved plan artifact exists.",
       },
-      approved_at: "2026-05-03T12:10:00.000Z",
+    ],
+  },
+  changes: {
+    summary: "Added ACR v0.1 schema support.",
+    diff_stats: { files_changed: 3, insertions: 120, deletions: 0 },
+    files: [
+      {
+        path: "packages/core/src/tasks/task-artifact-schema.acr.ts",
+        status: "added",
+        risk_categories: ["schema", "evidence"],
+      },
+    ],
+    risk: {
+      level: "medium",
+      categories: ["schema"],
+      protected_paths_touched: false,
+    },
+  },
+  verification: {
+    status: "passed",
+    checks: [
+      {
+        check_id: "schemas-check",
+        type: "schema_validation",
+        command: "bun run schemas:check",
+        status: "passed",
+        exit_code: 0,
+      },
+    ],
+  },
+  approvals: [
+    {
+      approval_id: "approval_01HXEXAMPLE",
+      type: "plan_approval",
+      decision: "approved",
       approved_by: { type: "agentplane_role", id: "ORCHESTRATOR" },
+      approved_at: "2026-05-03T12:10:00.000Z",
+      scope: "task",
     },
-    permissions: {
-      filesystem: {
-        allowed_paths: ["packages/**"],
-        protected_paths: [".github/**", "secrets/**"],
-      },
-      network: { mode: "disabled" },
-      secrets: { access: "none" },
-      tools: [{ name: "shell", allowed: true }],
+  ],
+  evidence: [
+    {
+      type: "plan",
+      path: ".agentplane/tasks/202605031625-886KZ6/README.md",
+      sha256: "sha256:1111111111111111111111111111111111111111111111111111111111111111",
     },
-    policy: {
-      policy_version: "0.1.0",
-      decisions: [
-        {
-          rule_id: "plan.required",
-          decision: "pass",
-          reason: "Approved plan artifact exists.",
-        },
-      ],
+  ],
+  result: {
+    status: "verified",
+    merge_ready: true,
+    residual_risks: [],
+    rollback: {
+      available: true,
+      notes:
+        "Revert work_commit 2222222222222222222222222222222222222222 if downstream validation fails.",
     },
-    changes: {
-      summary: "Added ACR v0.1 schema support.",
-      diff_stats: { files_changed: 3, insertions: 120, deletions: 0 },
-      files: [
-        {
-          path: "packages/core/src/tasks/task-artifact-schema.acr.ts",
-          status: "added",
-          risk_categories: ["schema", "evidence"],
-        },
-      ],
-      risk: {
-        level: "medium",
-        categories: ["schema"],
-        protected_paths_touched: false,
-      },
-    },
-    verification: {
-      status: "passed",
-      checks: [
-        {
-          check_id: "schemas-check",
-          type: "schema_validation",
-          command: "bun run schemas:check",
-          status: "passed",
-          exit_code: 0,
-        },
-      ],
-    },
-    approvals: [
-      {
-        approval_id: "approval_01HXEXAMPLE",
-        type: "plan_approval",
-        decision: "approved",
-        approved_by: { type: "agentplane_role", id: "ORCHESTRATOR" },
-        approved_at: "2026-05-03T12:10:00.000Z",
-        scope: "task",
-      },
-    ],
-    evidence: [
-      {
-        type: "plan",
-        path: ".agentplane/tasks/202605031625-886KZ6/README.md",
-        sha256: "sha256:1111111111111111111111111111111111111111111111111111111111111111",
-      },
-    ],
-    result: {
-      status: "verified",
-      merge_ready: true,
-      residual_risks: [],
-      rollback: {
-        available: true,
-        notes: "Revert work_commit def456 if downstream validation fails.",
-      },
-    },
-    integrity: {
-      digest_algorithm: "sha256",
-      record_digest: "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-      canonicalization: "rfc8785-jcs",
-      signatures: [],
-    },
-  });
+  },
+  integrity: {
+    digest_algorithm: "sha256",
+    record_digest: "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+    canonicalization: "rfc8785-jcs",
+    signatures: [],
+  },
+});
 
+describe("task-artifact-schema", () => {
   it("published task artifact schema artifacts match the runtime schema source", async () => {
     const specAcrUrl = new URL("../../../spec/schemas/acr-v0.1.schema.json", import.meta.url);
     const specTaskReadmeUrl = new URL(
@@ -234,7 +235,7 @@ describe("task-artifact-schema", () => {
 
   it("rejects Windows-style ACR evidence paths", () => {
     const windowsTraversal = validAcr();
-    windowsTraversal.evidence[0].path = "..\\outside.txt";
+    windowsTraversal.evidence[0].path = String.raw`..\outside.txt`;
 
     const windowsTraversalErrors = listAcrSchemaErrors(windowsTraversal);
 
@@ -242,7 +243,7 @@ describe("task-artifact-schema", () => {
     expect(windowsTraversalErrors[0]).toContain("evidence[0].path");
 
     const windowsAbsolute = validAcr();
-    windowsAbsolute.evidence[0].path = "C:\\tmp\\acr.json";
+    windowsAbsolute.evidence[0].path = String.raw`C:\tmp\acr.json`;
 
     const windowsAbsoluteErrors = listAcrSchemaErrors(windowsAbsolute);
 
@@ -258,6 +259,34 @@ describe("task-artifact-schema", () => {
 
     expect(errors).toHaveLength(1);
     expect(errors[0]).toContain("integrity.record_digest");
+  });
+
+  it("accepts null ACR record digest for draft/schema-only records", () => {
+    const acr = validAcr();
+    acr.result.merge_ready = false;
+    acr.integrity.record_digest = null;
+
+    expect(() => validateAcr(acr)).not.toThrow();
+  });
+
+  it("enforces Git object id shape for ACR repository commits", () => {
+    const acr = validAcr();
+    acr.repository.work_commit = "def456";
+
+    const errors = listAcrSchemaErrors(acr);
+
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("repository.work_commit");
+  });
+
+  it("rejects unknown ACR risk categories", () => {
+    const acr = validAcr();
+    acr.changes.risk.categories = ["code"];
+
+    const errors = listAcrSchemaErrors(acr);
+
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("changes.risk.categories[0]");
   });
 
   it("runtime validators accept the published spec examples", async () => {

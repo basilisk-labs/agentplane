@@ -1,5 +1,6 @@
 import { invalidValueMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { emitTraceEvent } from "../../shared/trace-events.js";
 import { generateAcr, writeAcrFile } from "../acr/acr.command.js";
 import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../incidents/shared.js";
 import type { CommandContext } from "../shared/task-backend.js";
@@ -157,19 +158,30 @@ async function refreshAcrOnFinish(opts: {
     const workCommit =
       opts.taskCommitInfo?.hash ?? opts.options.commit ?? existingCommitInfo(task)?.hash;
     if (!workCommit) continue;
-    const generated = await generateAcr({
-      ctx: opts.ctx,
-      cwd: opts.options.cwd,
-      rootOverride: opts.options.rootOverride,
-      taskId,
-      workCommit,
-      agent: opts.options.author,
-      agentName: opts.options.author,
-      write: true,
-      refresh: true,
-    });
-    if (!generated.acrPath) continue;
-    await writeAcrFile({ acrPath: generated.acrPath, record: generated.record, refresh: true });
+    try {
+      const generated = await generateAcr({
+        ctx: opts.ctx,
+        cwd: opts.options.cwd,
+        rootOverride: opts.options.rootOverride,
+        taskId,
+        workCommit,
+        agent: opts.options.author,
+        agentName: opts.options.author,
+        write: true,
+        refresh: true,
+      });
+      if (!generated.acrPath) continue;
+      await writeAcrFile({ acrPath: generated.acrPath, record: generated.record, refresh: true });
+    } catch (err) {
+      emitTraceEvent({
+        component: "acr",
+        event: "acr_finish_refresh_failed",
+        details: {
+          task_id: taskId,
+          error: err instanceof Error ? err.message : String(err),
+        },
+      });
+    }
   }
 }
 
