@@ -1,10 +1,11 @@
 ---
 id: "202605031642-2FVS9C"
 title: "Add DCO sign-off identity support"
-status: "DOING"
+result_summary: "Merged via PR #841."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T17:01:49.660Z"
   updated_by: "CODER"
   note: "Command: bun run framework:dev:bootstrap. Result: pass. Evidence: core, agentplane, and testkit built; repo-local runtime resolved 0.4.2. Scope: rebuilt CLI after DCO/config changes. Command: bun x vitest run focused DCO/commit tests. Result: pass, 27 passed. Scope: DCO helper, commit paths, close commits, commit-msg enforcement. Command: bunx eslint touched TS files. Result: pass. Scope: changed implementation/tests. Command: bun run schemas:check; bun run spec:examples:check; bun run docs:cli:check; bun run format:check; bun run typecheck; node .agentplane/policy/check-routing.mjs; git diff --check. Result: pass. Scope: generated schemas/docs, formatting, type safety, policy routing."
-commit: null
+commit:
+  hash: "b41ad96642f7b0c453a0591dd7548069c759c968"
+  message: "Merge pull request #841 from basilisk-labs/task/202605031642-2FVS9C/dco-signoff"
 comments:
   -
     author: "CODER"
     body: "Start: implement repository-managed DCO sign-off support for AgentPlane-created commits and commit-msg guidance using Denis Smirnov <densmirnov@me.com>; keep tasks.json deletion out of scope."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #841 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run framework:dev:bootstrap. Result: pass. Evidence: core, agentplane, and testkit built; repo-local runtime resolved 0.4.2. Scope: rebuilt CLI after DCO/config changes. Command: bun x vitest run focused DCO/commit tests. Result: pass, 27 passed. Scope: DCO helper, commit paths, close commits, commit-msg enforcement. Command: bunx eslint touched TS files. Result: pass. Scope: changed implementation/tests. Command: bun run schemas:check; bun run spec:examples:check; bun run docs:cli:check; bun run format:check; bun run typecheck; node .agentplane/policy/check-routing.mjs; git diff --check. Result: pass. Scope: generated schemas/docs, formatting, type safety, policy routing."
+  -
+    type: "status"
+    at: "2026-05-03T17:07:16.251Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #841 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T17:01:49.682Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T17:07:16.257Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement repository-managed DCO sign-off behavior using Denis Smirnov <densmirnov@me.com> as the configured sign-off identity, update commit/hook behavior and docs, and keep tasks.json removal out of scope as a separate migration risk."
 sections:
   Summary: |-
