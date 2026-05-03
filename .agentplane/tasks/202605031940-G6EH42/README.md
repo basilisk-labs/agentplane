@@ -1,10 +1,11 @@
 ---
 id: "202605031940-G6EH42"
 title: "Fix WORKFLOW-only test config assumptions"
-status: "DOING"
+result_summary: "Merged via PR #855."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-03T19:55:37.144Z"
   updated_by: "CODER"
   note: "Command: bun run test:project agentplane. Result: pass. Evidence: 243 test files passed, 1346 tests passed, 2 skipped after build generated dist/cli.js. Scope: broad agentplane project tests covering WORKFLOW-only config migration, release/upgrade staging, doctor/runtime checks, and CLI regressions."
-commit: null
+commit:
+  hash: "53022a6a0e089486193a9d0ab464b8acc8ad3fe4"
+  message: "Merge pull request #855 from basilisk-labs/task/202605031940-G6EH42/workflow-only-test-config"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce and fix stale test assumptions that require a committed .agentplane/config.json after the repository moved to WORKFLOW.md as the managed source of truth."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #855 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run test:project agentplane. Result: pass. Evidence: 243 test files passed, 1346 tests passed, 2 skipped after build generated dist/cli.js. Scope: broad agentplane project tests covering WORKFLOW-only config migration, release/upgrade staging, doctor/runtime checks, and CLI regressions."
+  -
+    type: "status"
+    at: "2026-05-03T19:58:55.166Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #855 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T19:55:37.150Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T19:58:55.172Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update test fixtures/setup so broad project tests do not require committed .agentplane/config.json; tests that need legacy config must generate it explicitly."
 sections:
   Summary: |-
