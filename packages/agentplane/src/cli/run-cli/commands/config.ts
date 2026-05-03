@@ -1,9 +1,7 @@
-import fs from "node:fs/promises";
 import path from "node:path";
 
 import {
   buildExecutionProfile,
-  loadConfig,
   saveConfig,
   setByDottedKey,
 } from "@agentplaneorg/core/config";
@@ -11,7 +9,6 @@ import {
 import { createCliEmitter } from "../../output.js";
 import { usageError } from "../../spec/errors.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
-import { ensureWorkflowArtifacts } from "../../../shared/workflow-artifacts.js";
 import { ensureActionApproved } from "../../../commands/shared/approval-requirements.js";
 import type { RunDeps } from "../command-catalog/kernel.js";
 import { wrapCommand } from "./wrap-command.js";
@@ -23,8 +20,8 @@ type ConfigShowParsed = Record<string, never>;
 export const configShowSpec: CommandSpec<ConfigShowParsed> = {
   id: ["config", "show"],
   group: "Config",
-  summary: "Print resolved config JSON.",
-  examples: [{ cmd: "agentplane config show", why: "Show the active config." }],
+  summary: "Print resolved WORKFLOW-backed config JSON.",
+  examples: [{ cmd: "agentplane config show", why: "Show the active WORKFLOW config." }],
   parse: () => ({}),
 };
 
@@ -44,45 +41,12 @@ export function makeRunConfigShowHandler(deps: RunDeps): CommandHandler<ConfigSh
   return (ctx) => cmdConfigShow({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, deps });
 }
 
-function shouldRefreshWorkflowArtifactsForKey(key: string): boolean {
-  const normalized = key.trim();
-  return normalized === "workflow_mode" || normalized.startsWith("agents.approvals.");
-}
-
-async function syncWorkflowArtifactsFromSavedConfig(opts: {
-  gitRoot: string;
-  agentplaneDir: string;
-}): Promise<boolean> {
-  try {
-    const agentEntries = await fs.readdir(path.join(opts.agentplaneDir, "agents"), {
-      withFileTypes: true,
-    });
-    if (!agentEntries.some((entry) => entry.isFile() && entry.name.endsWith(".json"))) {
-      return false;
-    }
-  } catch {
-    return false;
-  }
-
-  const refreshed = await loadConfig(opts.agentplaneDir);
-  await ensureWorkflowArtifacts({
-    gitRoot: opts.gitRoot,
-    workflowMode: refreshed.config.workflow_mode,
-    approvals: {
-      requirePlanApproval: refreshed.config.agents?.approvals?.require_plan ?? true,
-      requireVerifyApproval: refreshed.config.agents?.approvals?.require_verify ?? true,
-      requireNetworkApproval: refreshed.config.agents?.approvals?.require_network ?? true,
-    },
-  });
-  return true;
-}
-
 type ConfigSetParsed = { key: string; value: string };
 
 export const configSetSpec: CommandSpec<ConfigSetParsed> = {
   id: ["config", "set"],
   group: "Config",
-  summary: "Update project config (dotted keys).",
+  summary: "Update WORKFLOW front matter config (dotted keys).",
   args: [
     { name: "key", required: true, valueHint: "<key>" },
     { name: "value", required: true, valueHint: "<value>" },
@@ -122,15 +86,7 @@ async function cmdConfigSet(opts: {
       const raw = { ...loaded.raw };
       setByDottedKey(raw, opts.key, opts.value);
       await saveConfig(resolved.agentplaneDir, raw);
-      if (shouldRefreshWorkflowArtifactsForKey(opts.key)) {
-        await syncWorkflowArtifactsFromSavedConfig({
-          gitRoot: resolved.gitRoot,
-          agentplaneDir: resolved.agentplaneDir,
-        });
-      }
-      output.line(
-        path.relative(resolved.gitRoot, path.join(resolved.agentplaneDir, "config.json")),
-      );
+      output.line(path.relative(resolved.gitRoot, path.join(resolved.agentplaneDir, "WORKFLOW.md")));
       return 0;
     },
   );
@@ -217,10 +173,6 @@ async function cmdModeSet(opts: {
       const raw = { ...loaded.raw };
       setByDottedKey(raw, "workflow_mode", opts.mode);
       await saveConfig(resolved.agentplaneDir, raw);
-      await syncWorkflowArtifactsFromSavedConfig({
-        gitRoot: resolved.gitRoot,
-        agentplaneDir: resolved.agentplaneDir,
-      });
       output.line(opts.mode);
       return 0;
     },
@@ -284,7 +236,7 @@ function normalizeProfile(value: string): "light" | "normal" | "full-harness" | 
 export const profileSetSpec: CommandSpec<ProfileSetParsed> = {
   id: ["profile", "set"],
   group: "Config",
-  summary: "Apply setup profile presets to config.",
+  summary: "Apply setup profile presets to WORKFLOW config.",
   args: [{ name: "profile", required: true, valueHint: "<light|normal|full-harness>" }],
   examples: [
     { cmd: "agentplane profile set light", why: "Apply flexible defaults." },
@@ -330,10 +282,6 @@ async function cmdProfileSet(opts: {
       setByDottedKey(raw, "execution", JSON.stringify(execution));
 
       await saveConfig(resolved.agentplaneDir, raw);
-      await syncWorkflowArtifactsFromSavedConfig({
-        gitRoot: resolved.gitRoot,
-        agentplaneDir: resolved.agentplaneDir,
-      });
       output.line(opts.profile);
       return 0;
     },

@@ -25,7 +25,8 @@ export function buildWorkflowRuntimeContext(opts: {
   return {
     workflow: {
       mode: opts.workflowMode,
-      version: 1,
+      version: 2,
+      source: ".agentplane/WORKFLOW.md",
       approvals: {
         require_plan: opts.approvals.requirePlanApproval,
         require_verify: opts.approvals.requireVerifyApproval,
@@ -62,7 +63,7 @@ export async function ensureWorkflowArtifacts(opts: {
 
   const built = buildWorkflowFromTemplates({
     baseTemplate: DEFAULT_WORKFLOW_TEMPLATE,
-    projectOverrideTemplate: opts.projectOverrideTemplate,
+    projectOverrideTemplate: opts.projectOverrideTemplate ?? beforeWorkflow ?? undefined,
     runtimeContext: buildWorkflowRuntimeContext({
       gitRoot: opts.gitRoot,
       workflowMode: opts.workflowMode,

@@ -14,8 +14,21 @@ import {
 const ROOT_KEYS = new Set([
   "version",
   "mode",
+  "workflow",
   "owners",
   "approvals",
+  "workspace",
+  "paths",
+  "tasks",
+  "branch",
+  "framework",
+  "execution",
+  "runner",
+  "recipes",
+  "commit",
+  "scheduler",
+  "evaluator",
+  "observability",
   "retry_policy",
   "timeouts",
   "in_scope_paths",
@@ -43,15 +56,16 @@ function validateUnknownKeys(diags: WorkflowDiagnostic[], raw: Record<string, un
 function validateMode(
   diags: WorkflowDiagnostic[],
   value: unknown,
+  path = "front_matter.mode",
 ): "direct" | "branch_pr" | undefined {
-  const mode = expectString(diags, value, "front_matter.mode", true);
+  const mode = expectString(diags, value, path, true);
   if (!mode) return undefined;
   if (mode !== "direct" && mode !== "branch_pr") {
     pushDiagnostic(diags, {
       code: "WF_SCHEMA_ENUM",
       severity: "ERROR",
-      path: "front_matter.mode",
-      message: "front_matter.mode must be one of: direct, branch_pr.",
+      path,
+      message: `${path} must be one of: direct, branch_pr.`,
     });
     return undefined;
   }
@@ -261,7 +275,7 @@ function validateConfigParity(
     pushDiagnostic(diags, {
       code: "WF_POLICY_MISMATCH",
       severity: "ERROR",
-      path: "front_matter.mode",
+      path: "front_matter.workflow.mode",
       message: `workflow mode mismatch: WORKFLOW.md=${opts.mode}, config=${opts.config.workflow_mode}`,
     });
   }
@@ -274,7 +288,7 @@ function validateConfigParity(
       code: "WF_POLICY_MISMATCH",
       severity: "WARN",
       path: "front_matter.approvals.require_plan",
-      message: "Approval mismatch with .agentplane/config.json (require_plan).",
+      message: "Approval mismatch with resolved AgentPlane config (require_plan).",
     });
   }
   if (cfgApprovals.require_verify !== opts.approvals.require_verify) {
@@ -282,7 +296,7 @@ function validateConfigParity(
       code: "WF_POLICY_MISMATCH",
       severity: "WARN",
       path: "front_matter.approvals.require_verify",
-      message: "Approval mismatch with .agentplane/config.json (require_verify).",
+      message: "Approval mismatch with resolved AgentPlane config (require_verify).",
     });
   }
   if (cfgApprovals.require_network !== opts.approvals.require_network) {
@@ -290,7 +304,7 @@ function validateConfigParity(
       code: "WF_POLICY_MISMATCH",
       severity: "WARN",
       path: "front_matter.approvals.require_network",
-      message: "Approval mismatch with .agentplane/config.json (require_network).",
+      message: "Approval mismatch with resolved AgentPlane config (require_network).",
     });
   }
 }
@@ -301,6 +315,8 @@ export function validateWorkflowFrontMatter(
   opts?: WorkflowFrontMatterValidationOptions,
 ): WorkflowFrontMatter | undefined {
   validateUnknownKeys(diags, raw);
+  const workflow = isRecord(raw.workflow) ? raw.workflow : undefined;
+  const scheduler = isRecord(raw.scheduler) ? raw.scheduler : undefined;
 
   const version = expectIntegerInRange(
     diags,
@@ -310,11 +326,17 @@ export function validateWorkflowFrontMatter(
     Number.MAX_SAFE_INTEGER,
     true,
   );
-  const mode = validateMode(diags, raw.mode);
+  const mode =
+    workflow !== undefined
+      ? validateMode(diags, workflow.mode, "front_matter.workflow.mode")
+      : validateMode(diags, raw.mode);
   const owners = validateOwners(diags, raw.owners, opts?.knownAgentIds ?? null);
   const approvals = validateApprovals(diags, raw.approvals);
-  const retry_policy = validateRetryPolicy(diags, raw.retry_policy);
-  const timeouts = validateTimeouts(diags, raw.timeouts);
+  const retry_policy = validateRetryPolicy(
+    diags,
+    raw.retry_policy ?? scheduler?.retry_policy,
+  );
+  const timeouts = validateTimeouts(diags, raw.timeouts ?? scheduler?.timeouts);
   const in_scope_paths = validateScopePaths(diags, raw.in_scope_paths, opts?.repoRoot);
 
   validateConfigParity(diags, { mode, approvals, config: opts?.config });

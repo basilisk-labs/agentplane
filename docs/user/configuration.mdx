@@ -1,11 +1,13 @@
 ---
 title: "Configuration"
-description: "How .agentplane/config.json works and how to change it safely."
+description: "How .agentplane/WORKFLOW.md works and how to change it safely."
 ---
 
 ## Overview
 
-Agent Plane reads `.agentplane/config.json` and validates it against the config schema.
+Agent Plane reads `.agentplane/WORKFLOW.md` and validates the YAML front matter as the project source of truth.
+The CLI still accepts legacy `.agentplane/config.json` as an import fallback for older workspaces, but saves
+changes back to `WORKFLOW.md`.
 
 Use CLI commands to read and update values safely:
 
@@ -16,7 +18,7 @@ agentplane config set workflow_mode branch_pr
 
 ## High-impact keys
 
-### workflow_mode
+### workflow.mode
 
 - `direct`: single checkout workflow.
 - `branch_pr`: per-task branches and PR artifacts.
@@ -32,7 +34,7 @@ agentplane config set workflow_mode branch_pr
 - `false` by default.
 - `init` sets it to `true` for `branch_pr`, `false` for `direct`.
 
-### agents.approvals
+### approvals
 
 - `require_plan`
 - `require_network`
@@ -41,12 +43,12 @@ agentplane config set workflow_mode branch_pr
 
 These keys control approval gates; they do not add or remove CLI capabilities.
 
-### paths
+### workspace
 
-- `paths.agents_dir`
-- `paths.workflow_dir`
-- `paths.worktrees_dir`
-- `paths.tasks_path` (export-only snapshot path)
+- `workspace.agents_dir`
+- `workspace.workflow_dir`
+- `workspace.worktrees_dir`
+- `workspace.tasks_path` (export-only snapshot path)
 
 ### tasks.tags (primary tag model)
 
@@ -68,9 +70,9 @@ Task policy resolves exactly one primary tag per task. Secondary tags remain fre
 Compatibility note: `tasks.verify.required_tags` still exists in schema and may be present in older configs.
 Current enforcement should be documented and configured through primary-based keys.
 
-### tasks_backend
+### tasks.backend
 
-- `tasks_backend.config_path` points to the active backend config file.
+- `tasks.backend.config_path` points to the active backend config file.
 
 ### execution
 

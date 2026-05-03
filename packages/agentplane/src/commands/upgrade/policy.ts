@@ -3,9 +3,11 @@ import type { FrameworkManifestEntry } from "./types.js";
 export const INCIDENTS_POLICY_PATH = ".agentplane/policy/incidents.md";
 export const INCIDENTS_APPEND_MARKER = "<!-- AGENTPLANE:UPGRADE-APPEND incidents.md -->";
 export const CONFIG_REL_PATH = ".agentplane/config.json";
+export const WORKFLOW_REL_PATH = ".agentplane/WORKFLOW.md";
 
 export function isDeniedUpgradePath(relPath: string): boolean {
   if (relPath === CONFIG_REL_PATH) return true;
+  if (relPath === WORKFLOW_REL_PATH) return true;
   if (relPath === ".agentplane/tasks.json") return true;
   if (relPath.startsWith(".agentplane/backends/")) return true;
   if (relPath.startsWith(".agentplane/worktrees/")) return true;

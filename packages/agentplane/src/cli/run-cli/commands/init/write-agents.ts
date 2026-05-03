@@ -220,7 +220,7 @@ export async function ensureAgentsFiles(opts: {
   agentplaneDir: string;
   workflow: WorkflowMode;
   policyGateway: PolicyGatewayFlavor;
-  configPathAbs: string;
+  workflowPathAbs: string;
   backendPathAbs: string;
 }): Promise<{ installPaths: string[] }> {
   const gatewayFileName = policyGatewayFileName(opts.policyGateway);
@@ -230,7 +230,7 @@ export async function ensureAgentsFiles(opts: {
   });
   const agentsPath = path.join(opts.gitRoot, gatewayFileName);
   const installPaths: string[] = [
-    path.relative(opts.gitRoot, opts.configPathAbs),
+    path.relative(opts.gitRoot, opts.workflowPathAbs),
     path.relative(opts.gitRoot, opts.backendPathAbs),
   ];
   const installedManagedPaths: string[] = [];

@@ -1,8 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { loadConfig } from "@agentplaneorg/core/config";
-
 import { parseWorkflowMarkdown } from "./markdown.js";
 import { emitWorkflowEvent } from "./observability.js";
 import { resolveWorkflowPaths } from "./paths.js";
@@ -78,12 +76,11 @@ export async function validateWorkflowAtPath(
     };
   }
 
-  const loaded = await loadConfig(path.join(repoRoot, ".agentplane"));
   const knownAgentIds = await listAgentIds(path.join(repoRoot, ".agentplane"));
   const validated = validateWorkflowDocument(read.document, {
     repoRoot,
     knownAgentIds,
-    config: loaded.config,
+    config: null,
   });
   diagnostics.push(...validated.diagnostics);
 
@@ -98,12 +95,11 @@ export async function validateWorkflowText(
   workflowText: string,
 ): Promise<WorkflowValidationResult> {
   const parsed = parseWorkflowMarkdown(workflowText);
-  const loaded = await loadConfig(path.join(repoRoot, ".agentplane"));
   const knownAgentIds = await listAgentIds(path.join(repoRoot, ".agentplane"));
   const validated = validateWorkflowDocument(parsed.document, {
     repoRoot,
     knownAgentIds,
-    config: loaded.config,
+    config: null,
   });
   return {
     ok: [...parsed.diagnostics, ...validated.diagnostics].every((d) => d.severity !== "ERROR"),
@@ -119,11 +115,10 @@ export async function publishWorkflowCandidate(
   const tempPath = `${paths.workflowPath}.tmp.${Date.now()}`;
 
   const parsed = parseWorkflowMarkdown(candidateText, paths.workflowPath);
-  const configLoaded = await loadConfig(path.join(repoRoot, ".agentplane"));
   const validation = validateWorkflowDocument(parsed.document, {
     repoRoot,
     knownAgentIds: await listAgentIds(path.join(repoRoot, ".agentplane")),
-    config: configLoaded.config,
+    config: null,
   });
   const diagnostics = [...parsed.diagnostics, ...validation.diagnostics];
 
@@ -202,11 +197,10 @@ export async function restoreWorkflowFromLastKnownGood(
   }
 
   const parsed = parseWorkflowMarkdown(lkgText, paths.lastKnownGoodPath);
-  const configLoaded = await loadConfig(path.join(repoRoot, ".agentplane"));
   const validated = validateWorkflowDocument(parsed.document, {
     repoRoot,
     knownAgentIds: await listAgentIds(path.join(repoRoot, ".agentplane")),
-    config: configLoaded.config,
+    config: null,
   });
   const diagnostics = [...parsed.diagnostics, ...validated.diagnostics];
   if (diagnostics.some((d) => d.severity === "ERROR")) {

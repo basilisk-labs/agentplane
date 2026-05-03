@@ -1,7 +1,6 @@
-import { mkdir, readFile } from "node:fs/promises";
+import { mkdir, readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
-import { atomicWriteFile } from "../fs/atomic-write.js";
 import { defaultConfig, isConfigRecord } from "./defaults.js";
 import type { AgentplaneConfig } from "./validation.js";
 import {
@@ -9,6 +8,10 @@ import {
   validateConfig,
   warnDeprecatedConfigKeys,
 } from "./validation.js";
+import {
+  readWorkflowConfigRaw,
+  writeWorkflowConfigRaw,
+} from "./workflow-file.js";
 
 export type LoadedConfig = {
   path: string;
@@ -24,9 +27,28 @@ function toErrnoException(err: unknown): NodeJS.ErrnoException | null {
 }
 
 export async function loadConfig(agentplaneDir: string): Promise<LoadedConfig> {
-  const filePath = path.join(agentplaneDir, "config.json");
+  const workflowPath = path.join(agentplaneDir, "WORKFLOW.md");
+  const legacyConfigPath = path.join(agentplaneDir, "config.json");
   try {
-    const rawText = await readFile(filePath, "utf8");
+    const workflowRaw = await readWorkflowConfigRaw(agentplaneDir);
+    if (workflowRaw.exists) {
+      const sanitized = stripDeprecatedConfigKeys(workflowRaw.raw);
+      if (sanitized.removed.length > 0) warnDeprecatedConfigKeys(sanitized.removed);
+      const validated = validateConfig(sanitized.sanitized);
+      return {
+        path: workflowRaw.path,
+        exists: true,
+        config: validated,
+        raw: sanitized.sanitized,
+      };
+    }
+  } catch (err) {
+    const errno = toErrnoException(err);
+    if (errno?.code !== "ENOENT") throw err;
+  }
+
+  try {
+    const rawText = await readFile(legacyConfigPath, "utf8");
     const parsed = JSON.parse(rawText) as unknown;
     const rawRecord = isConfigRecord(parsed) ? parsed : null;
     const sanitized = rawRecord
@@ -35,7 +57,7 @@ export async function loadConfig(agentplaneDir: string): Promise<LoadedConfig> {
     if (sanitized.removed.length > 0) warnDeprecatedConfigKeys(sanitized.removed);
     const validated = validateConfig(sanitized.sanitized);
     return {
-      path: filePath,
+      path: legacyConfigPath,
       exists: true,
       config: validated,
       raw: (sanitized.sanitized ?? parsed) as Record<string, unknown>,
@@ -45,7 +67,7 @@ export async function loadConfig(agentplaneDir: string): Promise<LoadedConfig> {
     if (errno?.code === "ENOENT") {
       const def = defaultConfig();
       return {
-        path: filePath,
+        path: workflowPath,
         exists: false,
         config: def,
         raw: def as unknown as Record<string, unknown>,
@@ -63,8 +85,7 @@ export async function saveConfig(
   if (sanitized.removed.length > 0) warnDeprecatedConfigKeys(sanitized.removed);
   const validated = validateConfig(sanitized.sanitized);
   await mkdir(agentplaneDir, { recursive: true });
-  const filePath = path.join(agentplaneDir, "config.json");
-  const text = `${JSON.stringify(sanitized.sanitized, null, 2)}\n`;
-  await atomicWriteFile(filePath, text, "utf8");
+  await writeWorkflowConfigRaw(agentplaneDir, sanitized.sanitized);
+  await rm(path.join(agentplaneDir, "config.json"), { force: true });
   return validated;
 }

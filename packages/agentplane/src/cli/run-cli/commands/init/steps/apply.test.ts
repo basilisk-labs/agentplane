@@ -158,7 +158,7 @@ describe("init apply wrapper", () => {
       const agentplaneDir = path.join(root, ".agentplane");
       const agentsDir = path.join(agentplaneDir, "agents");
       const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
-      const configPath = path.join(agentplaneDir, "config.json");
+      const workflowPath = path.join(agentplaneDir, "WORKFLOW.md");
       await mkdir(agentsDir, { recursive: true });
       await mkdir(path.dirname(backendPath), { recursive: true });
 
@@ -167,7 +167,7 @@ describe("init apply wrapper", () => {
         agentplaneDir,
         workflow: "branch_pr",
         policyGateway: "claude",
-        configPathAbs: configPath,
+        workflowPathAbs: workflowPath,
         backendPathAbs: backendPath,
       });
 

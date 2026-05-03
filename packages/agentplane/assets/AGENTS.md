@@ -21,7 +21,7 @@ Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
 - Repository type: user project initialized with `agentplane`.
 - Gateway role: keep this file compact and deterministic; move scenario-specific details to policy modules.
 - CLI rule: use `agentplane` from `PATH`; if unavailable, stop and request installation guidance (do not invent repo-local entrypoints).
-- Startup shortcut: run `## COMMANDS -> Preflight`, then use `agentplane quickstart`; activate `agentplane role ORCHESTRATOR` for planning and `agentplane role <ROLE>` for the active owner before owner-scoped execution; then apply `## LOAD RULES` before any mutation. The guarded route is determined by `workflow_mode` in `.agentplane/config.json`; use `agentplane quickstart` as the canonical summary of the active path before mutating. In `branch_pr`, start from `agentplane work start ... --worktree`; in `direct`, stay in the current checkout and use the task lifecycle route.
+- Startup shortcut: run `## COMMANDS -> Preflight`, then use `agentplane quickstart`; activate `agentplane role ORCHESTRATOR` for planning and `agentplane role <ROLE>` for the active owner before owner-scoped execution; then apply `## LOAD RULES` before any mutation. The guarded route is determined by `workflow.mode` in `.agentplane/WORKFLOW.md`; use `agentplane quickstart` as the canonical summary of the active path before mutating. In `branch_pr`, start from `agentplane work start ... --worktree`; in `direct`, stay in the current checkout and use the task lifecycle route.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.agents.source_of_truth.sources.of.truth" slot="source_of_truth" mutability="replaceable" -->
@@ -33,7 +33,7 @@ Priority order (highest first):
 1. Enforcement: CI, tests, linters, hooks, CLI validations.
 2. Policy gateway: `AGENTS.md`.
 3. Canonical policy modules from `## CANONICAL DOCS`.
-4. CLI guidance: `agentplane quickstart`, `agentplane role <ROLE>`, `.agentplane/config.json`.
+4. CLI guidance: `agentplane quickstart`, `agentplane role <ROLE>`, `.agentplane/WORKFLOW.md`.
 5. Reference examples from `## REFERENCE EXAMPLES`.
 
 Conflict rule:
@@ -135,8 +135,8 @@ Condition: task includes mutation (file edits, task-state changes, commits, merg
 
 ### Conditional imports (linear IF -> LOAD contract)
 
-1. IF `workflow_mode=direct` THEN LOAD `@.agentplane/policy/workflow.direct.md`.
-2. IF `workflow_mode=branch_pr` THEN LOAD `@.agentplane/policy/workflow.branch_pr.md`.
+1. IF `workflow.mode=direct` THEN LOAD `@.agentplane/policy/workflow.direct.md`.
+2. IF `workflow.mode=branch_pr` THEN LOAD `@.agentplane/policy/workflow.branch_pr.md`.
 3. IF task touches release/version/publish THEN LOAD `@.agentplane/policy/workflow.release.md`.
 4. IF task runs `agentplane upgrade` or touches `.agentplane/.upgrade/**` THEN LOAD `@.agentplane/policy/workflow.upgrade.md`.
 5. IF task modifies implementation code paths THEN LOAD `@.agentplane/policy/dod.code.md`.

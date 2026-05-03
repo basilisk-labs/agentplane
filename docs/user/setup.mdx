@@ -60,11 +60,10 @@ agentplane init
 `init` creates:
 
 - `AGENTS.md` in repo root.
-- `.agentplane/config.json`.
+- `.agentplane/WORKFLOW.md` (validated workflow/config contract).
 - `.agentplane/agents/*`.
 - `.agentplane/backends/<selected-backend>/backend.json`.
 - `.agentplane/tasks/` workspace directories.
-- `.agentplane/WORKFLOW.md` (validated contract).
 - `.agentplane/workflows/last-known-good.md` (rollback snapshot).
 
 If `.git` does not exist in that folder, `init` creates a new git repository there.

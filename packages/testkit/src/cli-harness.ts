@@ -1,11 +1,11 @@
 import { execFile } from "node:child_process";
-import { access, cp, mkdir, mkdtemp, readdir, rm, writeFile } from "node:fs/promises";
+import { access, cp, mkdir, mkdtemp, readdir, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 
-import { defaultConfig } from "@agentplaneorg/core/config";
+import { defaultConfig, saveConfig } from "@agentplaneorg/core/config";
 
 import { resetRecipeArchiveCache } from "./cli-harness/recipe-archives.js";
 import { runCliSilent, silenceStdIO } from "./cli-harness/stdio.js";
@@ -158,8 +158,7 @@ export async function mkTempDir(): Promise<string> {
 export async function writeDefaultConfig(root: string): Promise<void> {
   const agentplaneDir = path.join(root, ".agentplane");
   await mkdir(agentplaneDir, { recursive: true });
-  const configPath = path.join(agentplaneDir, "config.json");
-  await writeFile(configPath, JSON.stringify(defaultConfig(), null, 2), "utf8");
+  await saveConfig(agentplaneDir, defaultConfig() as unknown as Record<string, unknown>);
 }
 
 export async function writeAndConfigureRoot(): Promise<string> {
@@ -228,8 +227,7 @@ export async function writeConfig(
 ): Promise<void> {
   const agentplaneDir = path.join(root, ".agentplane");
   await mkdir(agentplaneDir, { recursive: true });
-  const configPath = path.join(agentplaneDir, "config.json");
-  await writeFile(configPath, JSON.stringify(config, null, 2), "utf8");
+  await saveConfig(agentplaneDir, config as unknown as Record<string, unknown>);
 }
 
 export async function resetAgentplaneHomeRecipes(): Promise<void> {
