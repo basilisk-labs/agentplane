@@ -166,33 +166,77 @@ async function publishExternal(args) {
     };
   }
 
+  function classifyMetadataError(error) {
+    const stdout = String(error?.stdout ?? "").trim();
+    const stderr = String(error?.stderr ?? "").trim();
+    const message = `${stderr}\n${stdout}\n${error instanceof Error ? error.message : String(error)}`
+      .trim()
+      .replaceAll(/\n+/gu, "\n");
+    if (/HTTP 403|Resource not accessible by personal access token/iu.test(message)) {
+      return {
+        status: "permission_denied",
+        reasonCode: "external_metadata_permission_denied",
+        message,
+      };
+    }
+    return {
+      status: "failed",
+      reasonCode: "external_metadata_update_failed",
+      message,
+    };
+  }
+
   async function syncRepositoryMetadata(cloneDir) {
+    const updates = [];
+    const warnings = [];
     const repoFlags = [];
     if (args.topics.length > 0) {
       repoFlags.push("-f", `names=${JSON.stringify(args.topics)}`);
-      await run(
-        "gh",
-        [
-          "api",
-          "--method",
-          "PUT",
-          `/repos/${args.repo}/topics`,
-          "-H",
-          "Accept: application/vnd.github+json",
-          ...repoFlags,
-        ],
-        { cwd: cloneDir, env },
-      );
+      try {
+        await run(
+          "gh",
+          [
+            "api",
+            "--method",
+            "PUT",
+            `/repos/${args.repo}/topics`,
+            "-H",
+            "Accept: application/vnd.github+json",
+            ...repoFlags,
+          ],
+          { cwd: cloneDir, env },
+        );
+        updates.push("topics");
+      } catch (error) {
+        warnings.push({
+          target: "topics",
+          ...classifyMetadataError(error),
+        });
+      }
     }
     const patchFields = [];
     if (args.description) patchFields.push("-f", `description=${args.description}`);
     if (args.homepage) patchFields.push("-f", `homepage=${args.homepage}`);
     if (patchFields.length > 0) {
-      await run("gh", ["api", "--method", "PATCH", `/repos/${args.repo}`, ...patchFields], {
-        cwd: cloneDir,
-        env,
-      });
+      try {
+        await run("gh", ["api", "--method", "PATCH", `/repos/${args.repo}`, ...patchFields], {
+          cwd: cloneDir,
+          env,
+        });
+        updates.push("repository");
+      } catch (error) {
+        warnings.push({
+          target: "repository",
+          ...classifyMetadataError(error),
+        });
+      }
     }
+    return {
+      attempted: args.topics.length > 0 || patchFields.length > 0,
+      updated: updates,
+      warnings,
+      ok: warnings.length === 0,
+    };
   }
 
   const tempRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-external-dist-"));
@@ -202,7 +246,6 @@ async function publishExternal(args) {
   try {
     await run("gh", ["repo", "clone", args.repo, cloneDir, "--", "--depth", "1"], { env });
     await run("gh", ["auth", "setup-git", "--hostname", "github.com"], { cwd: cloneDir, env });
-    await syncRepositoryMetadata(cloneDir);
     await run("git", ["switch", "-C", branch], { cwd: cloneDir, env });
     await copyArtifacts({
       sourceDir: args.sourceDir,
@@ -214,10 +257,12 @@ async function publishExternal(args) {
       env,
     });
     if (!statusStdout.trim()) {
+      const metadata = await syncRepositoryMetadata(cloneDir);
       return {
         ...baseEvidence,
         status: "unchanged",
         branch,
+        metadata,
         nextAction: "No external distribution repository changes were needed.",
       };
     }
@@ -278,11 +323,13 @@ async function publishExternal(args) {
       createdPrUrl = createdPr.stdout.trim();
     }
     const prUrl = existingPrUrl || createdPrUrl;
+    const metadata = await syncRepositoryMetadata(cloneDir);
     return {
       ...baseEvidence,
       status: "pr_opened",
       branch,
       prUrl,
+      metadata,
       nextAction: `Review and merge ${prUrl}.`,
     };
   } finally {

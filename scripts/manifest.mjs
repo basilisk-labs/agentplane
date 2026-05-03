@@ -125,6 +125,7 @@ function publishResultUsage() {
     "  --tag <tag>                 Release tag (vX.Y.Z)",
     "  --release-ready-run-id <id> Core CI run id that produced release-ready",
     "  --distribution-manifest <path> Optional release-distribution.json path",
+    "  --external-result <path>    Optional external distribution module result JSON path; repeatable",
     "  --job-status <status>       Current GitHub job status",
     "  --core-prepublished <bool>  Whether @agentplaneorg/core was already published before this run",
     "  --recipes-prepublished <bool> Whether @agentplaneorg/recipes was already published before this run",
@@ -169,6 +170,7 @@ function parsePublishResultArgs(argv) {
     tag: null,
     releaseReadyRunId: null,
     distributionManifestPath: null,
+    externalResultPaths: [],
     jobStatus: process.env.AGENTPLANE_PUBLISH_JOB_STATUS ?? null,
     corePrepublished: false,
     recipesPrepublished: false,
@@ -214,6 +216,11 @@ function parsePublishResultArgs(argv) {
     }
     if (arg === "--distribution-manifest") {
       out.distributionManifestPath = next ? path.resolve(next) : out.distributionManifestPath;
+      index += 1;
+      continue;
+    }
+    if (arg === "--external-result") {
+      if (next) out.externalResultPaths.push(path.resolve(next));
       index += 1;
       continue;
     }
@@ -344,6 +351,14 @@ function buildPublishResultManifest(args) {
   if (args.distribution?.requested && !args.distribution.loaded) {
     failures.push(`release distribution manifest unavailable (${args.distribution.reason})`);
   }
+  const externalModules = args.external?.modules ?? [];
+  for (const module of externalModules) {
+    if (module.loaded && ["pr_opened", "unchanged"].includes(module.status)) continue;
+    const detail = module.loaded
+      ? `status=${module.status}${module.reasonCode ? ` reason=${module.reasonCode}` : ""}`
+      : `unavailable (${module.reason})`;
+    failures.push(`external distribution ${module.name} not confirmed (${detail})`);
+  }
 
   const success = failures.length === 0;
 
@@ -369,6 +384,10 @@ function buildPublishResultManifest(args) {
       path: null,
       reason: "not_requested",
       manifest: null,
+    },
+    external: args.external ?? {
+      requested: false,
+      modules: [],
     },
     packages: {
       core,
@@ -447,14 +466,64 @@ async function loadDistributionManifest(filePath) {
   }
 }
 
+async function loadExternalResult(filePath) {
+  try {
+    const payload = JSON.parse(await readFile(filePath, "utf8"));
+    return {
+      requested: true,
+      loaded: true,
+      path: filePath,
+      name: payload.module ?? path.basename(filePath),
+      repository: payload.repository ?? null,
+      status: payload.status ?? "unknown",
+      reasonCode: payload.reasonCode ?? null,
+      prUrl: payload.prUrl ?? null,
+      branch: payload.branch ?? null,
+      metadata: payload.metadata ?? null,
+      nextAction: payload.nextAction ?? null,
+    };
+  } catch (error) {
+    return {
+      requested: true,
+      loaded: false,
+      path: filePath,
+      name: path.basename(filePath),
+      repository: null,
+      status: "unavailable",
+      reasonCode: "external_result_unavailable",
+      reason: error instanceof Error ? error.message : String(error),
+      prUrl: null,
+      branch: null,
+      metadata: null,
+      nextAction: null,
+    };
+  }
+}
+
+async function loadExternalResults(paths) {
+  if (!Array.isArray(paths) || paths.length === 0) {
+    return {
+      requested: false,
+      modules: [],
+    };
+  }
+  return {
+    requested: true,
+    modules: await Promise.all(paths.map((filePath) => loadExternalResult(filePath))),
+  };
+}
+
 async function runPublishResultManifest(argv) {
   const args = parsePublishResultArgs(argv);
   if (args.help) {
     process.stdout.write(`${publishResultUsage()}\n`);
     return;
   }
-  const distribution = await loadDistributionManifest(args.distributionManifestPath);
-  const manifest = buildPublishResultManifest({ ...args, distribution });
+  const [distribution, external] = await Promise.all([
+    loadDistributionManifest(args.distributionManifestPath),
+    loadExternalResults(args.externalResultPaths),
+  ]);
+  const manifest = buildPublishResultManifest({ ...args, distribution, external });
   if (args.outPath) {
     await mkdir(path.dirname(args.outPath), { recursive: true });
     await writeFile(args.outPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
