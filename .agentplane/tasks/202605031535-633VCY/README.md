@@ -4,7 +4,7 @@ title: "Document Agent Change Record standard"
 status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-03T15:48:16.378Z"
+  updated_at: "2026-05-03T15:59:39.909Z"
   updated_by: "DOCS"
-  note: "Docs verification: policy routing passed; doctor passed with one unrelated warning for task 202605031524-HNAHQK; Prettier check passed; ACR doc link smoke passed. docs:site:typecheck and docs:site:build were attempted but blocked by missing Docusaurus/React dependencies in this task worktree, not by ACR content."
+  note: "Follow-up docs IA verification passed after adding ACR docs to docs/index.mdx: node scripts/check-docs-ia.mjs, Prettier check, and policy routing all pass."
 commit: null
 comments:
   -
@@ -40,8 +40,14 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Docs verification: policy routing passed; doctor passed with one unrelated warning for task 202605031524-HNAHQK; Prettier check passed; ACR doc link smoke passed. docs:site:typecheck and docs:site:build were attempted but blocked by missing Docusaurus/React dependencies in this task worktree, not by ACR content."
+  -
+    type: "verify"
+    at: "2026-05-03T15:59:39.909Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Follow-up docs IA verification passed after adding ACR docs to docs/index.mdx: node scripts/check-docs-ia.mjs, Prettier check, and policy routing all pass."
 doc_version: 3
-doc_updated_at: "2026-05-03T15:48:16.420Z"
+doc_updated_at: "2026-05-03T15:59:39.943Z"
 doc_updated_by: "DOCS"
 description: "Document Agent Change Record v0.1 in AgentPlane docs before implementation and repository publication."
 sections:
@@ -70,6 +76,14 @@ sections:
     Note: Docs verification: policy routing passed; doctor passed with one unrelated warning for task 202605031524-HNAHQK; Prettier check passed; ACR doc link smoke passed. docs:site:typecheck and docs:site:build were attempted but blocked by missing Docusaurus/React dependencies in this task worktree, not by ACR content.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T15:38:03.315Z, excerpt_hash=sha256:bacd74d5687126ce276cf347fe0898d367a2ec076b01cce5a9e5edbfff93107d
+    
+    ### 2026-05-03T15:59:39.909Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Follow-up docs IA verification passed after adding ACR docs to docs/index.mdx: node scripts/check-docs-ia.mjs, Prettier check, and policy routing all pass.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T15:48:16.420Z, excerpt_hash=sha256:bacd74d5687126ce276cf347fe0898d367a2ec076b01cce5a9e5edbfff93107d
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -112,6 +126,14 @@ By: DOCS
 Note: Docs verification: policy routing passed; doctor passed with one unrelated warning for task 202605031524-HNAHQK; Prettier check passed; ACR doc link smoke passed. docs:site:typecheck and docs:site:build were attempted but blocked by missing Docusaurus/React dependencies in this task worktree, not by ACR content.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T15:38:03.315Z, excerpt_hash=sha256:bacd74d5687126ce276cf347fe0898d367a2ec076b01cce5a9e5edbfff93107d
+
+### 2026-05-03T15:59:39.909Z — VERIFY — ok
+
+By: DOCS
+
+Note: Follow-up docs IA verification passed after adding ACR docs to docs/index.mdx: node scripts/check-docs-ia.mjs, Prettier check, and policy routing all pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T15:48:16.420Z, excerpt_hash=sha256:bacd74d5687126ce276cf347fe0898d367a2ec076b01cce5a9e5edbfff93107d
 
 <!-- END VERIFICATION RESULTS -->
 

@@ -15,7 +15,7 @@ Document Agent Change Record v0.1 in AgentPlane docs before implementation and r
 ## Verification
 
 - State: ok
-- Note: Docs verification: policy routing passed; doctor passed with one unrelated warning for task 202605031524-HNAHQK; Prettier check passed; ACR doc link smoke passed. docs:site:typecheck and docs:site:build were attempted but blocked by missing Docusaurus/React dependencies in this task worktree, not by ACR content.
+- Note: Follow-up docs IA verification passed after adding ACR docs to docs/index.mdx: node scripts/check-docs-ia.mjs, Prettier check, and policy routing all pass.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
@@ -25,20 +25,21 @@ Document Agent Change Record v0.1 in AgentPlane docs before implementation and r
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T15:48:52.453Z
+- Updated: 2026-05-03T16:00:03.501Z
 - Branch: task/202605031535-633VCY/acr-standard-docs
-- Head: ade32a1c9750
+- Head: 9047a13ae48a
 
 ```text
  .../agent-change-record-implementation.mdx         | 239 ++++++++++++++++++++
  docs/developer/architecture.mdx                    |   4 +
+ docs/index.mdx                                     |   6 +
  docs/user/agent-change-record.mdx                  | 249 +++++++++++++++++++++
  docs/user/commands.mdx                             |  16 ++
  docs/user/configuration.mdx                        |  23 ++
  docs/user/overview.mdx                             |   4 +
  docs/user/task-lifecycle.mdx                       |  11 +-
  website/sidebars.ts                                |   5 +
- 8 files changed, 548 insertions(+), 3 deletions(-)
+ 9 files changed, 554 insertions(+), 3 deletions(-)
 ```
 
 </details>
