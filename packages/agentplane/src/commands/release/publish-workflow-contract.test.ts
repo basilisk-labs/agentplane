@@ -235,7 +235,20 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("sha:");
     expect(workflow).toContain("module:");
     expect(workflow).toContain("ref: ${{ github.event.inputs.sha }}");
+    expect(workflow).toContain("name: Checkout current workflow runtime");
+    expect(workflow).toContain("path: .agentplane/.release/runtime");
     expect(workflow).toContain("node scripts/generate-release-distribution.mjs");
+    expect(workflow).toContain("name: Download release-owned distribution manifest");
+    expect(workflow).toContain('gh release download "$RELEASE_TAG"');
+    expect(workflow).toContain("--pattern release-distribution.json");
+    expect(workflow).toContain("release manifest sha mismatch");
+    expect(workflow).toContain('RUNTIME_SCRIPTS=".agentplane/.release/runtime/scripts"');
+    expect(workflow).toContain('node "${RUNTIME_SCRIPTS}/render-homebrew-formula.mjs"');
+    expect(workflow).toContain('node "${RUNTIME_SCRIPTS}/render-scoop-manifest.mjs"');
+    expect(workflow).toContain('node "${RUNTIME_SCRIPTS}/render-setup-agentplane-action.mjs"');
+    expect(workflow).toContain(
+      "node .agentplane/.release/runtime/scripts/publish-external-distribution.mjs",
+    );
     expect(workflow).toContain("Publish GitHub Release assets");
     expect(workflow).toContain("Publish GHCR image");
     expect(workflow).toContain("Publish Homebrew tap PR");

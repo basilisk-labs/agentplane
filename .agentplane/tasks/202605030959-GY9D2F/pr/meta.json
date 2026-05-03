@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605030959-GY9D2F/release-recovery-checksum-source",
+  "created_at": "2026-05-03T10:50:04.318Z",
+  "head_sha": "9239d1fc060204356d79a4a99b0f39a61e0bfe7f",
+  "last_verified_at": "2026-05-03T10:52:43.594Z",
+  "last_verified_sha": "9239d1fc060204356d79a4a99b0f39a61e0bfe7f",
+  "schema_version": 1,
+  "task_id": "202605030959-GY9D2F",
+  "updated_at": "2026-05-03T10:51:48.475Z",
+  "verify": {
+    "status": "pass"
+  }
+}
