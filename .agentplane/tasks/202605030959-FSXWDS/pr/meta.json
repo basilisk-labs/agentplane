@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T10:58:37Z",
   "base": "main",
   "branch": "task/202605030959-FSXWDS/bun-executable-migration-plan",
   "created_at": "2026-05-03T10:57:38.171Z",
-  "head_sha": "e4e3c1e94236aa72eb7040ef36c17e5487f06917",
+  "head_sha": "694edc65baf3e6ce0c84027c128edbbc2175aa60",
   "last_verified_at": "2026-05-03T10:57:40.348Z",
   "last_verified_sha": "b8c26b66c059bfea04c177e33c7008e3c8f4fdc5",
+  "merge_commit": "9f2d0757760ad0af65fd646125fb28192b3fb607",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T10:58:37Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605030959-FSXWDS",
-  "updated_at": "2026-05-03T10:57:49.487Z",
+  "updated_at": "2026-05-03T10:58:37Z",
   "verify": {
     "status": "pass"
   }
