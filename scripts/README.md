@@ -33,6 +33,7 @@ Grouping policy: `ci`, `release`, `docs`, `test`, `coverage`, `arch`, `bench`, `
 | `release:check`                 | `bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && bun run --filter=@agentplane/testkit build && node scripts/release-check.mjs` | Run release workflow: check.                 |
 | `release:check:registry`        | `node scripts/check-npm-version-availability.mjs`                                                                                                                 | Run release workflow: check registry.        |
 | `release:ci-check`              | `bun run ci:contract && bun run ci:release-extras`                                                                                                                | Run release workflow: ci-check.              |
+| `release:demo:check`            | `node scripts/check-release-demo.mjs`                                                                                                                             | Run release workflow: demo check.            |
 | `release:distribution:check`    | `node scripts/generate-release-distribution.mjs --check`                                                                                                          | Run release workflow: distribution check.    |
 | `release:distribution:generate` | `node scripts/generate-release-distribution.mjs`                                                                                                                  | Run release workflow: distribution generate. |
 | `release:e2e:local`             | `node scripts/run-local-release-e2e.mjs`                                                                                                                          | Run release workflow: e2e local.             |
@@ -67,7 +68,7 @@ Grouping policy: `ci`, `release`, `docs`, `test`, `coverage`, `arch`, `bench`, `
 | `docs:site:build`         | `bun run --cwd website build`                                                                                            | Run docs workflow: site build.                     |
 | `docs:site:check`         | `bun run docs:site:generate && bun run docs:site:typecheck && bun run docs:site:build && bun run docs:site:check:design` | Run docs workflow: site check.                     |
 | `docs:site:check:design`  | `node scripts/check-design-language.mjs`                                                                                 | Run docs workflow: site check design.              |
-| `docs:site:generate`      | `node scripts/generate-website-docs.mjs`                                                                                 | Run docs workflow: site generate.                  |
+| `docs:site:generate`      | `node scripts/generate-website-docs.mjs && node scripts/generate-llms-full.mjs`                                          | Run docs workflow: site generate.                  |
 | `docs:site:start`         | `bun run --cwd website start`                                                                                            | Run docs workflow: site start.                     |
 | `docs:site:typecheck`     | `bun run --cwd website typecheck`                                                                                        | Run docs workflow: site typecheck.                 |
 
