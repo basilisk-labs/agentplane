@@ -1,6 +1,7 @@
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { resolveBaseBranch } from "@agentplaneorg/core/git";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 
 import { mapBackendError } from "../../../cli/error-map.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
@@ -48,6 +49,7 @@ async function buildPrSyncCommonState(opts: {
   reviewPath: string;
   githubTitlePath: string;
   githubBodyPath: string;
+  artifactsLanguage: AgentplaneConfig["artifacts_language"];
   existingMeta: PrMeta | null;
   relatedTaskIds?: string[];
   branch: string;
@@ -102,6 +104,7 @@ async function buildPrSyncCommonState(opts: {
     reviewPath: opts.reviewPath,
     githubTitlePath: opts.githubTitlePath,
     githubBodyPath: opts.githubBodyPath,
+    artifactsLanguage: opts.artifactsLanguage,
     existingMeta: opts.existingMeta,
     relatedTaskIds: normalizeRelatedTaskIds(opts.relatedTaskIds, opts.task.id),
     handoffNotes,
@@ -289,6 +292,7 @@ export async function syncPrArtifacts(opts: {
         reviewPath,
         githubTitlePath,
         githubBodyPath,
+        artifactsLanguage: config.artifacts_language,
         existingMeta,
         relatedTaskIds: opts.includeTaskIds,
         branch,

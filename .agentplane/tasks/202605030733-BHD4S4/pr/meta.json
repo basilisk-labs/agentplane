@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605030733-BHD4S4/artifacts-language-validation",
+  "created_at": "2026-05-03T07:33:40.046Z",
+  "head_sha": "988c7d2426d0ef18d53c9aa95a121258eaa9d56f",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605030733-BHD4S4",
+  "updated_at": "2026-05-03T07:33:40.046Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

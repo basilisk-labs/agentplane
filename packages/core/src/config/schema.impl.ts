@@ -95,6 +95,8 @@ const TASK_DOC_REQUIRED_SECTIONS_DEFAULT = [
   "Rollback Plan",
 ] as string[];
 
+const ARTIFACTS_LANGUAGE = z.enum(["any", "en"]).default("any");
+
 const COMMENT_POLICY_SCHEMA = z
   .object({
     prefix: nonEmptyString(),
@@ -393,6 +395,7 @@ export const AgentplaneConfigSchema = z
       })
       .passthrough()
       .default({ config_path: ".agentplane/backends/local/backend.json" }),
+    artifacts_language: ARTIFACTS_LANGUAGE,
     closure_commit_requires_approval: z.boolean().default(false),
   })
   .passthrough();

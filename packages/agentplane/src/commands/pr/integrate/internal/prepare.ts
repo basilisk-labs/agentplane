@@ -145,6 +145,7 @@ export async function prepareIntegrate(opts: {
     resolved,
     prDir,
     branch,
+    artifactsLanguage: loadedConfig.artifacts_language,
   });
 
   const worktreePath = await findWorktreeForBranch(resolved.gitRoot, branch);
@@ -175,6 +176,7 @@ export async function prepareIntegrate(opts: {
     prDir,
     metaPath,
     branch,
+    artifactsLanguage: loadedConfig.artifacts_language,
     taskId: opts.taskId,
   });
   // readAndValidatePrArtifacts() throws if verify.log is missing; keep this non-null downstream.
@@ -236,6 +238,7 @@ export async function prepareIntegrate(opts: {
         prDir,
         metaPath,
         branch,
+        artifactsLanguage: loadedConfig.artifacts_language,
         taskId: opts.taskId,
       });
       verifyLogText = repairedArtifacts.verifyLogText ?? verifyLogText;

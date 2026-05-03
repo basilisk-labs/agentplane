@@ -163,12 +163,14 @@ describe("config", () => {
     setByDottedKey(cfg, "close_commit.direct_dirty_policy", "strict");
     setByDottedKey(cfg, "tasks.id_suffix_length_default", "12");
     setByDottedKey(cfg, "tasks.verify.required_tags", '["code","backend"]');
+    setByDottedKey(cfg, "artifacts_language", "en");
 
     const validated = validateConfig(cfg);
     expect(validated.finish_auto_status_commit).toBe(false);
     expect(validated.close_commit.direct_dirty_policy).toBe("strict");
     expect(validated.tasks.id_suffix_length_default).toBe(12);
     expect(validated.tasks.verify.required_tags).toEqual(["code", "backend"]);
+    expect(validated.artifacts_language).toBe("en");
   });
 
   it("default execution profile values are present", () => {
@@ -492,6 +494,11 @@ describe("config", () => {
         "closure_commit_requires_approval",
         (raw) => (raw.closure_commit_requires_approval = "nope"),
         /closure_commit_requires_approval/,
+      ],
+      [
+        "artifacts_language",
+        (raw) => (raw.artifacts_language = "de"),
+        schemaPath("artifacts_language"),
       ],
       [
         "paths.agents_dir",

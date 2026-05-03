@@ -1,4 +1,5 @@
 import type { TaskData } from "../../../backends/task-backend.js";
+import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import type { PrHandoffNote } from "./note-store.js";
 import { extractTaskSuffix, parseTaskSubjectTemplate } from "@agentplaneorg/core/commit";
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
@@ -11,6 +12,7 @@ const VERIFICATION_SECTION = "## Verification";
 const RISKS_SECTION = "## Risks";
 const HANDOFF_NOTES_MARKER = "## Handoff Notes";
 const TASK_ID_SUFFIX_PATTERN = /\s*\[[^\]]+\]\s*$/u;
+const CYRILLIC_CHARACTERS = /[\u0400-\u04FF]/u;
 
 function sectionText(task: TaskData, name: string, fallback: string): string {
   const value = typeof task.sections?.[name] === "string" ? task.sections[name].trim() : "";
@@ -350,5 +352,32 @@ export function validateGithubPrTitleContents(
   const expectedSuffix = extractTaskSuffix(taskId);
   if (expectedSuffix && parsed.suffix.toLowerCase() !== expectedSuffix.toLowerCase()) {
     errors.push("GitHub PR title suffix does not match task id");
+  }
+}
+
+type PrArtifactTexts = {
+  reviewText: string | null;
+  githubTitleText: string | null;
+  githubBodyText: string | null;
+};
+
+export function validateArtifactsLanguage(opts: {
+  texts: PrArtifactTexts;
+  relReviewPath: string;
+  relGithubTitlePath: string;
+  relGithubBodyPath: string;
+  artifactsLanguage: AgentplaneConfig["artifacts_language"];
+  errors: string[];
+}): void {
+  if (opts.artifactsLanguage !== "en") return;
+
+  if (opts.texts.reviewText && CYRILLIC_CHARACTERS.test(opts.texts.reviewText)) {
+    opts.errors.push(`Non-English text in ${opts.relReviewPath}`);
+  }
+  if (opts.texts.githubTitleText && CYRILLIC_CHARACTERS.test(opts.texts.githubTitleText)) {
+    opts.errors.push(`Non-English text in ${opts.relGithubTitlePath}`);
+  }
+  if (opts.texts.githubBodyText && CYRILLIC_CHARACTERS.test(opts.texts.githubBodyText)) {
+    opts.errors.push(`Non-English text in ${opts.relGithubBodyPath}`);
   }
 }

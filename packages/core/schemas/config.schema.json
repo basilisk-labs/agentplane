@@ -726,6 +726,11 @@
         "config_path": ".agentplane/backends/local/backend.json"
       }
     },
+    "artifacts_language": {
+      "type": "string",
+      "enum": ["any", "en"],
+      "default": "any"
+    },
     "closure_commit_requires_approval": {
       "type": "boolean",
       "default": false
