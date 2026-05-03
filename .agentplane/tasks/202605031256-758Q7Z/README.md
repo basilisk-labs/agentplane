@@ -1,10 +1,10 @@
 ---
 id: "202605031256-758Q7Z"
 title: "Remove config.json from managed repository state"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +22,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-03T13:28:32.271Z"
+  updated_by: "CODER"
+  note: ".agentplane/config.json is deleted; saveConfig removes legacy config.json; doctor requires WORKFLOW.md; testkit writes WORKFLOW-backed config."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Removed .agentplane/config.json from managed repository state and adjusted doctor/testkit/docs surfaces."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T13:28:31.903Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Removed .agentplane/config.json from managed repository state and adjusted doctor/testkit/docs surfaces."
+  -
+    type: "verify"
+    at: "2026-05-03T13:28:32.271Z"
+    author: "CODER"
+    state: "ok"
+    note: ".agentplane/config.json is deleted; saveConfig removes legacy config.json; doctor requires WORKFLOW.md; testkit writes WORKFLOW-backed config."
 doc_version: 3
-doc_updated_at: "2026-05-03T12:57:21.269Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T13:28:32.274Z"
+doc_updated_by: "CODER"
 description: "Delete .agentplane/config.json as a generated/managed artifact for current repositories, migrate examples and docs to WORKFLOW.md v2, remove config.json schema expectations from setup output, and keep only legacy import/upgrade support where needed."
 sections:
   Summary: |-
@@ -50,6 +66,14 @@ sections:
     5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T13:28:32.271Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: .agentplane/config.json is deleted; saveConfig removes legacy config.json; doctor requires WORKFLOW.md; testkit writes WORKFLOW-backed config.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:28:31.903Z, excerpt_hash=sha256:490bacaf83ca0bf66c46d1a6828dc8fd7c50d3dc6237ee12682d4f131751a8d9
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -83,6 +107,14 @@ Remove config.json from managed current repository state. Migrate docs, examples
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T13:28:32.271Z — VERIFY — ok
+
+By: CODER
+
+Note: .agentplane/config.json is deleted; saveConfig removes legacy config.json; doctor requires WORKFLOW.md; testkit writes WORKFLOW-backed config.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:28:31.903Z, excerpt_hash=sha256:490bacaf83ca0bf66c46d1a6828dc8fd7c50d3dc6237ee12682d4f131751a8d9
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

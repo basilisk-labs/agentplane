@@ -24,8 +24,8 @@ Design the WORKFLOW.md v2 contract as the only project source of truth for Agent
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: WORKFLOW v2 source-of-truth contract implemented in fb39a8d8 with CLI-owned front matter, legacy config import fallback, startup docs, and validation coverage.
 
 ## Risks
 
@@ -45,19 +45,60 @@ Design the WORKFLOW.md v2 contract as the only project source of truth for Agent
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T13:01:45.805Z
+- Updated: 2026-05-03T13:27:42.824Z
 - Branch: task/202605031255-GV0N4K/workflow-md-v2-source-contract
-- Head: cdba98debdf1
+- Head: fb39a8d8bc7f
 
 ```text
- .agentplane/tasks/202605031255-92K2Q0/README.md | 94 ++++++++++++++++++++++++
- .agentplane/tasks/202605031255-E1YFBV/README.md | 94 ++++++++++++++++++++++++
- .agentplane/tasks/202605031255-H9WWA0/README.md | 91 +++++++++++++++++++++++
- .agentplane/tasks/202605031255-TWKAW3/README.md | 94 ++++++++++++++++++++++++
- .agentplane/tasks/202605031255-XM1W31/README.md | 94 ++++++++++++++++++++++++
- .agentplane/tasks/202605031256-2HEMDS/README.md | 97 +++++++++++++++++++++++++
- .agentplane/tasks/202605031256-758Q7Z/README.md | 93 ++++++++++++++++++++++++
- 7 files changed, 657 insertions(+)
+ .agentplane/WORKFLOW.md                            | 110 +++++++++--
+ .agentplane/config.json                            |  88 ---------
+ .agentplane/tasks/202605031255-92K2Q0/README.md    |  94 ++++++++++
+ .agentplane/tasks/202605031255-E1YFBV/README.md    |  94 ++++++++++
+ .agentplane/tasks/202605031255-H9WWA0/README.md    |  91 ++++++++++
+ .agentplane/tasks/202605031255-TWKAW3/README.md    |  94 ++++++++++
+ .agentplane/tasks/202605031255-XM1W31/README.md    |  94 ++++++++++
+ .agentplane/tasks/202605031256-2HEMDS/README.md    |  97 ++++++++++
+ .agentplane/tasks/202605031256-758Q7Z/README.md    |  93 ++++++++++
+ docs/help/troubleshooting-by-symptom.mdx           |   2 +-
+ docs/help/troubleshooting.mdx                      |   2 +-
+ docs/user/agents.mdx                               |   2 +-
+ docs/user/backends.mdx                             |   4 +-
+ docs/user/backends/local.mdx                       |   2 +-
+ docs/user/branching-and-pr-artifacts.mdx           |   2 +-
+ docs/user/commands.mdx                             |   2 +-
+ docs/user/configuration.mdx                        |  24 +--
+ docs/user/overview.mdx                             |   2 +-
+ docs/user/setup.mdx                                |   3 +-
+ docs/user/tasks-and-backends.mdx                   |   2 +-
+ packages/agentplane/README.md                      |   4 +-
+ packages/agentplane/assets/AGENTS.md               |   8 +-
+ .../run-cli.core.help-snap.test.ts.snap            |   6 +-
+ packages/agentplane/src/cli/command-guide.ts       |   4 +-
+ ...n-cli.core.branch-meta.workflow-profile.test.ts |  20 +-
+ .../agentplane/src/cli/run-cli/commands/config.ts  |  62 +------
+ .../src/cli/run-cli/commands/init/execution.ts     |  10 +-
+ .../cli/run-cli/commands/init/steps/apply.test.ts  |   4 +-
+ .../commands/init/steps/conflict-resolver.test.ts  |   6 +-
+ .../src/cli/run-cli/commands/init/write-agents.ts  |   4 +-
+ .../agentplane/src/commands/doctor/workspace.ts    |   2 +-
+ packages/agentplane/src/commands/upgrade/policy.ts |   2 +
+ packages/agentplane/src/commands/upgrade/report.ts |   3 +-
+ .../src/commands/workflow-build.command.ts         |  11 +-
+ .../agentplane/src/shared/workflow-artifacts.ts    |   5 +-
+ .../agentplane/src/workflow-runtime/build.test.ts  |   7 +-
+ packages/agentplane/src/workflow-runtime/build.ts  |  54 +++++-
+ .../src/workflow-runtime/file-ops.test.ts          |  14 +-
+ .../agentplane/src/workflow-runtime/file-ops.ts    |  14 +-
+ .../src/workflow-runtime/validate-frontmatter.ts   |  42 ++++-
+ .../src/workflow-runtime/validate.test.ts          |  29 ++-
+ packages/core/src/config/config.test.ts            |  23 ++-
+ packages/core/src/config/config.ts                 |   8 +
+ packages/core/src/config/io.ts                     |  39 +++-
+ packages/core/src/config/workflow-file.ts          | 202 +++++++++++++++++++++
+ packages/spec/README.md                            |   5 +-
+ packages/testkit/src/cli-harness.ts                |  10 +-
+ packages/testkit/src/release.ts                    |  13 +-
+ 48 files changed, 1230 insertions(+), 283 deletions(-)
 ```
 
 </details>

@@ -1,10 +1,10 @@
 ---
 id: "202605031255-92K2Q0"
 title: "Migrate config CLI and init to WORKFLOW.md only"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -23,16 +23,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-03T13:28:30.498Z"
+  updated_by: "CODER"
+  note: "config set/mode/profile now save WORKFLOW.md; init resolves WORKFLOW.md as the setup artifact; tests updated for WORKFLOW-only config writes."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Migrated config CLI and init paths so writes target WORKFLOW.md and init conflicts use WORKFLOW.md."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T13:28:30.133Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Migrated config CLI and init paths so writes target WORKFLOW.md and init conflicts use WORKFLOW.md."
+  -
+    type: "verify"
+    at: "2026-05-03T13:28:30.498Z"
+    author: "CODER"
+    state: "ok"
+    note: "config set/mode/profile now save WORKFLOW.md; init resolves WORKFLOW.md as the setup artifact; tests updated for WORKFLOW-only config writes."
 doc_version: 3
-doc_updated_at: "2026-05-03T12:57:02.812Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T13:28:30.501Z"
+doc_updated_by: "CODER"
 description: "Update init, config show, config set, upgrade, doctor, and generated docs so migrated configuration keys are read and written through WORKFLOW.md v2. config set must patch managed YAML front matter, preserve Markdown body, and stop writing .agentplane/config.json for new repositories."
 sections:
   Summary: |-
@@ -51,6 +67,14 @@ sections:
     5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T13:28:30.498Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: config set/mode/profile now save WORKFLOW.md; init resolves WORKFLOW.md as the setup artifact; tests updated for WORKFLOW-only config writes.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:28:30.133Z, excerpt_hash=sha256:7c1b90ce8dd2f8b78e961ec22edfaff780a299d451196424a0bfc1e882f3aa92
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -84,6 +108,14 @@ Migrate CLI write/read surfaces to WORKFLOW.md. config show must report resolved
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T13:28:30.498Z — VERIFY — ok
+
+By: CODER
+
+Note: config set/mode/profile now save WORKFLOW.md; init resolves WORKFLOW.md as the setup artifact; tests updated for WORKFLOW-only config writes.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:28:30.133Z, excerpt_hash=sha256:7c1b90ce8dd2f8b78e961ec22edfaff780a299d451196424a0bfc1e882f3aa92
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

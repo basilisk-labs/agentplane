@@ -1,10 +1,10 @@
 ---
 id: "202605031255-H9WWA0"
 title: "Add WORKFLOW.md v2 schema and managed front matter writer"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +22,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-03T13:28:11.106Z"
+  updated_by: "CODER"
+  note: "Implemented packages/core/src/config/workflow-file.ts and v2 front matter validation; covered by config and workflow-runtime tests."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Implemented WORKFLOW.md v2 front matter schema support and a managed YAML front matter writer in the core config layer."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T13:28:10.702Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Implemented WORKFLOW.md v2 front matter schema support and a managed YAML front matter writer in the core config layer."
+  -
+    type: "verify"
+    at: "2026-05-03T13:28:11.106Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented packages/core/src/config/workflow-file.ts and v2 front matter validation; covered by config and workflow-runtime tests."
 doc_version: 3
-doc_updated_at: "2026-05-03T12:56:51.676Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T13:28:11.109Z"
+doc_updated_by: "CODER"
 description: "Implement the typed WORKFLOW.md v2 front matter schema, parser, serializer, and CLI-owned formatting path for workflow, tasks, workspace, runner, scheduler, evaluator, observability, and prompt_template metadata without changing runtime precedence yet."
 sections:
   Summary: |-
@@ -49,6 +65,14 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T13:28:11.106Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Implemented packages/core/src/config/workflow-file.ts and v2 front matter validation; covered by config and workflow-runtime tests.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:28:10.702Z, excerpt_hash=sha256:de8cd1593f93100da4fe4df9cc83bd719895beb114580cd2f4c08acfaaa87a5e
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -81,6 +105,14 @@ Implement WORKFLOW.md v2 schema, parser, serializer, and managed YAML front matt
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T13:28:11.106Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented packages/core/src/config/workflow-file.ts and v2 front matter validation; covered by config and workflow-runtime tests.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:28:10.702Z, excerpt_hash=sha256:de8cd1593f93100da4fe4df9cc83bd719895beb114580cd2f4c08acfaaa87a5e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
