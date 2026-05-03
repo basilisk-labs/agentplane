@@ -1,10 +1,11 @@
 ---
 id: "202605031856-V5KXGG"
 title: "ACR docs and release checks refresh"
-status: "DOING"
+result_summary: "ACR user/developer docs now reflect validation classes, canonical digest semantics, automatic export, and config-gated CI enforcement."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-03T19:21:41.909Z"
   updated_by: "DOCS"
   note: "Verified ACR documentation refresh: user/developer docs updated; CLI reference regenerated and fresh; formatting and policy routing checks passed."
-commit: null
+commit:
+  hash: "ddcaf000741259312262042049fba87115537778"
+  message: "✨ H059JF task: harden ACR validation contract"
 comments:
   -
     author: "DOCS"
     body: "Start: refresh ACR user and developer docs after the standard schema, semantic validation, and CI gate changes land in this batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: ACR docs and release checks shipped via PR #849; docs CLI, schema, format, and policy routing checks passed."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified ACR documentation refresh: user/developer docs updated; CLI reference regenerated and fresh; formatting and policy routing checks passed."
+  -
+    type: "status"
+    at: "2026-05-03T19:29:33.871Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: ACR docs and release checks shipped via PR #849; docs CLI, schema, format, and policy routing checks passed."
 doc_version: 3
-doc_updated_at: "2026-05-03T19:21:41.925Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-03T19:29:33.872Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update AgentPlane user/developer ACR documentation and generated CLI reference for validation classes, standard repo alignment, canonical digest semantics, and config-gated CI enforcement."
 sections:
   Summary: |-
