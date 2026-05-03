@@ -2,6 +2,14 @@
 
 This package hosts **versioned specifications** (JSON Schemas + examples) for `agentplane`.
 
+It is the repository contract for files AgentPlane writes into a project: configuration, task
+README frontmatter, task exports, PR metadata, and handoff metadata. If you are an end user, install
+the CLI instead:
+
+```bash
+npm install -g agentplane
+```
+
 v1 focuses on stabilizing:
 
 - `.agentplane/config.json`
