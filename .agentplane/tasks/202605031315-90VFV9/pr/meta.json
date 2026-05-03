@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605031315-90VFV9/cmo-public-surface-revision",
+  "created_at": "2026-05-03T13:21:58.401Z",
+  "head_sha": "9d64c2902bb1abca0a52f7463c525ced08d47c54",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605031315-90VFV9",
+  "updated_at": "2026-05-03T13:21:58.401Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
