@@ -10,6 +10,9 @@ machine-readable change records. The AgentPlane lifecycle already records task, 
 verification, finish, policy, and Git state. ACR v0.1 turns that lifecycle into one portable,
 machine-readable record.
 
+The vendor-neutral standard lives in the Basilisk Labs `agent-change-record` repository. AgentPlane
+is one producer and validator for that standard, not the canonical store for the standard itself.
+
 ## Purpose
 
 ACR is a repo-local evidence manifest for AI-authored software changes.
@@ -104,6 +107,9 @@ Automatic export is enabled by default through `acr.write_on_finish=true`. A suc
 
 ## Validation modes
 
+Schema-valid does not mean merge-ready. Schema validation only proves that the JSON has the right
+shape. Merge readiness is a semantic property checked by local and CI validation.
+
 ### `schema`
 
 Checks only the file shape:
@@ -125,7 +131,7 @@ Checks schema plus repository evidence:
 - evidence paths are repository-relative
 - evidence hashes match the referenced files
 - verification state is internally consistent
-- record digest matches canonicalized content
+- record digest matches RFC8785/JCS canonicalized content when present
 
 ### `ci`
 
@@ -133,10 +139,14 @@ Checks local mode plus merge expectations:
 
 - ACR lives at `.agentplane/tasks/<task-id>/acr.json` unless a path override is explicit.
 - current branch or PR contains `work_commit`
-- required plan approval exists
-- required verification is passed
+- `result.merge_ready=true`
+- `integrity.record_digest` is non-null and matches canonicalized content
+- approved plans include `plan_approval`
+- waived plans include `plan_waiver`
+- passed verification includes at least one check and verification evidence
+- waived verification includes `verification_waiver` and explicit CLI allowance
 - no policy decision is `fail`
-- manual override and verification waiver are rejected unless explicitly allowed and approved
+- `manual_override` requires `policy_override` and explicit CLI allowance
 
 ## Record shape
 
@@ -176,10 +186,13 @@ not override core fields.
 `result.merge_ready=true` requires all of the following:
 
 - plan is approved or explicitly waived with approval
+- approved plans have `plan_approval`
 - verification passed or was explicitly waived with approval
+- passed verification has at least one check
 - no policy decision is `fail`
 - no unapproved `manual_override` exists
 - referenced evidence is present and hash-valid in `local` and `ci` validation modes
+- `integrity.record_digest` is finalized and valid
 
 This keeps ACR useful as a merge gate rather than only as a retrospective report.
 

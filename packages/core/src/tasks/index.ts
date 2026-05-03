@@ -1,5 +1,6 @@
 export {
   ACR_VERSION,
+  computeAcrRecordDigest,
   listAcrSchemaErrors,
   renderAcrSchemaJson,
   validateAcr,

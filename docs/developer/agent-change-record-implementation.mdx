@@ -13,13 +13,15 @@ ACR support must fit the existing lifecycle:
 task -> plan -> approve -> start -> implement -> verify -> finish
 ```
 
-It must not create a parallel task source of truth.
+It must not create a parallel task source of truth. AgentPlane follows the vendor-neutral
+`agent-change-record` v0.1 validation contract and derives records from task, approval,
+verification, policy, and Git state.
 
 ## Code changes
 
 ### Command group
 
-Add a new command group under the spec-driven CLI:
+The command group under the spec-driven CLI is:
 
 ```bash
 agentplane acr generate <task-id> [options]
@@ -61,20 +63,17 @@ ACR validation reusable from CLI, tests, and future CI integration points.
 
 ### Schema and examples
 
-Add the v0.1 schema as a first-class artifact:
-
-```text
-schemas/acr/v0.1/acr.schema.json
-```
-
-or, if the spec package owns public schemas:
+The v0.1 schema is a first-class generated artifact:
 
 ```text
 packages/spec/schemas/acr-v0.1.schema.json
+packages/core/schemas/acr-v0.1.schema.json
 ```
 
-The exact path should follow the current schema-generation ownership at implementation time. The
-public schema must also be exported by `agentplane acr schema --version 0.1`.
+The public schema must also be exported by `agentplane acr schema --version 0.1`.
+
+Schema changes must be made in `packages/core/src/tasks/task-artifact-schema.acr.ts`, then synced
+with `bun run schemas:sync`.
 
 ### Default output path
 
@@ -94,8 +93,8 @@ Existing ACR files should not be overwritten unless `--refresh` is passed.
 one-off manual recovery or compatibility cases.
 
 ACR generation is automatic; ACR enforcement is policy-controlled. `acr.require_for_pr_check`
-decides whether PR/CI checks require the task-local ACR. This keeps the first implementation useful
-without breaking existing repositories that still have old or partial task records.
+decides whether `agentplane pr check <task-id>` requires the task-local ACR and runs CI semantic
+validation. This keeps ACR useful without making it universally mandatory in v0.1.
 
 ## Proposed config surface
 
@@ -145,7 +144,10 @@ ACR_E_VERIFICATION_REQUIRED
 ACR_E_VERIFICATION_FAILED
 ACR_E_POLICY_FAILED
 ACR_E_MANUAL_OVERRIDE_NOT_ALLOWED
+ACR_E_POLICY_OVERRIDE_REQUIRED
 ACR_E_WAIVER_NOT_ALLOWED
+ACR_E_NOT_MERGE_READY
+ACR_E_DIGEST_REQUIRED
 ACR_E_GIT_COMMIT_MISSING
 ACR_E_GIT_RANGE_INVALID
 ACR_E_EVIDENCE_NOT_FOUND
@@ -170,16 +172,23 @@ Schema validation is necessary but insufficient.
 - evidence paths are relative and do not contain `..`
 - evidence hashes match current files
 - verification and policy status are internally consistent
-- record digest matches the canonical JSON representation
+- record digest matches the canonical JSON representation when present
+
+The canonical record digest is `sha256` over RFC8785/JCS canonical JSON after setting
+`integrity.record_digest=null` and `integrity.signatures=[]`.
 
 `ci` mode must add:
 
 - expected task-local ACR path unless an explicit path is provided
 - branch or PR contains `work_commit`
-- required plan approval exists
-- required verification is passed
+- `result.merge_ready=true`
+- non-null record digest
+- approved plan requires `plan_approval`
+- waived plan requires `plan_waiver`
+- passed verification requires at least one check and `verification_log` evidence
+- waived verification requires `verification_waiver` and explicit allowance
 - failed policy decisions block merge
-- waivers and overrides are rejected unless explicitly allowed and approved
+- manual overrides require `policy_override` and explicit allowance
 
 ## Tests
 

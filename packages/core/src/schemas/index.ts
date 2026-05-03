@@ -10,6 +10,7 @@ export {
 
 export {
   ACR_VERSION,
+  computeAcrRecordDigest,
   listTaskHandoffSchemaErrors,
   listTaskPrMetaSchemaErrors,
   listTaskReadmeFrontmatterSchemaErrors,

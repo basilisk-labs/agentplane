@@ -1,3 +1,5 @@
+import canonicalize from "canonicalize";
+import { createHash } from "node:crypto";
 import { z } from "zod";
 
 import { ISO_UTC_TIMESTAMP, NON_EMPTY_STRING } from "./task-artifact-schema.shared.js";
@@ -5,10 +7,31 @@ import { ISO_UTC_TIMESTAMP, NON_EMPTY_STRING } from "./task-artifact-schema.shar
 export const ACR_VERSION = "0.1.0";
 
 const SHA256_DIGEST_SCHEMA = z.string().regex(/^sha256:[0-9a-f]{64}$/);
+const GIT_OID_SCHEMA = z.string().regex(/^[a-f0-9]{7,64}$/);
 const REPOSITORY_RELATIVE_PATH_SCHEMA = z
   .string()
   .min(1)
   .regex(/^(?!\/)(?!\\)(?![A-Za-z]:)(?!.*\\)(?!.*(?:^|\/)\.\.(?:\/|$)).+$/);
+const ACR_RISK_CATEGORY_SCHEMA = z.enum([
+  "auth",
+  "secrets",
+  "payments",
+  "infra",
+  "ci",
+  "dependencies",
+  "data_model",
+  "security",
+  "generated_code",
+  "public_api",
+  "docs",
+  "tests",
+  "tooling",
+  "cli",
+  "schema",
+  "policy",
+  "evidence",
+  "custom",
+]);
 
 const PRINCIPAL_SCHEMA = z
   .object({
@@ -50,9 +73,9 @@ const ACR_REPOSITORY_SCHEMA = z
     vcs: z.literal("git"),
     remote: NON_EMPTY_STRING.optional(),
     base_ref: NON_EMPTY_STRING.optional(),
-    base_commit: NON_EMPTY_STRING,
+    base_commit: GIT_OID_SCHEMA,
     work_ref: NON_EMPTY_STRING.optional(),
-    work_commit: NON_EMPTY_STRING,
+    work_commit: GIT_OID_SCHEMA,
     change_request: z
       .object({
         provider: z.enum(["github", "gitlab", "unknown", "custom"]),
@@ -171,14 +194,14 @@ const ACR_CHANGES_SCHEMA = z
             "type_changed",
             "unknown",
           ]),
-          risk_categories: z.array(NON_EMPTY_STRING).optional(),
+          risk_categories: z.array(ACR_RISK_CATEGORY_SCHEMA).optional(),
         })
         .strict(),
     ),
     risk: z
       .object({
         level: z.enum(["low", "medium", "high", "critical", "unknown"]),
-        categories: z.array(NON_EMPTY_STRING),
+        categories: z.array(ACR_RISK_CATEGORY_SCHEMA),
         protected_paths_touched: z.boolean(),
       })
       .strict(),
@@ -276,7 +299,7 @@ const ACR_RESULT_SCHEMA = z
 const ACR_INTEGRITY_SCHEMA = z
   .object({
     digest_algorithm: z.literal("sha256"),
-    record_digest: SHA256_DIGEST_SCHEMA,
+    record_digest: SHA256_DIGEST_SCHEMA.nullable(),
     canonicalization: z.literal("rfc8785-jcs"),
     signatures: z.array(z.unknown()).optional(),
   })
@@ -308,3 +331,14 @@ export const ACR_ZOD_SCHEMA = z
   .strict();
 
 export type AgentChangeRecord = z.infer<typeof ACR_ZOD_SCHEMA>;
+
+export function computeAcrRecordDigest(record: AgentChangeRecord): string {
+  const clone = structuredClone(record);
+  clone.integrity.record_digest = null;
+  clone.integrity.signatures = [];
+  const canonical = canonicalize(clone);
+  if (typeof canonical !== "string") {
+    throw new Error("Unable to canonicalize ACR record.");
+  }
+  return `sha256:${createHash("sha256").update(canonical).digest("hex")}`;
+}

@@ -53,7 +53,7 @@
         },
         "base_commit": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^[a-f0-9]{7,64}$"
         },
         "work_ref": {
           "type": "string",
@@ -61,7 +61,7 @@
         },
         "work_commit": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^[a-f0-9]{7,64}$"
         },
         "change_request": {
           "type": "object",
@@ -395,7 +395,26 @@
                 "type": "array",
                 "items": {
                   "type": "string",
-                  "minLength": 1
+                  "enum": [
+                    "auth",
+                    "secrets",
+                    "payments",
+                    "infra",
+                    "ci",
+                    "dependencies",
+                    "data_model",
+                    "security",
+                    "generated_code",
+                    "public_api",
+                    "docs",
+                    "tests",
+                    "tooling",
+                    "cli",
+                    "schema",
+                    "policy",
+                    "evidence",
+                    "custom"
+                  ]
                 }
               }
             },
@@ -414,7 +433,26 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "minLength": 1
+                "enum": [
+                  "auth",
+                  "secrets",
+                  "payments",
+                  "infra",
+                  "ci",
+                  "dependencies",
+                  "data_model",
+                  "security",
+                  "generated_code",
+                  "public_api",
+                  "docs",
+                  "tests",
+                  "tooling",
+                  "cli",
+                  "schema",
+                  "policy",
+                  "evidence",
+                  "custom"
+                ]
               }
             },
             "protected_paths_touched": {
@@ -638,8 +676,15 @@
           "const": "sha256"
         },
         "record_digest": {
-          "type": "string",
-          "pattern": "^sha256:[0-9a-f]{64}$"
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "canonicalization": {
           "type": "string",
