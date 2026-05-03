@@ -4,7 +4,7 @@ title: "Define WORKFLOW.md v2 canonical source contract"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-03T13:27:42.785Z"
+  updated_at: "2026-05-03T13:32:06.416Z"
   updated_by: "PLANNER"
-  note: "WORKFLOW v2 source-of-truth contract implemented in fb39a8d8 with CLI-owned front matter, legacy config import fallback, startup docs, and validation coverage."
+  note: "Verified: current PR head d3f396d1 contains implementation commits, task artifacts, CLI reference refresh, and PR artifact refresh. Targeted typecheck/tests, workflow build, doctor, policy routing, and pre-push checks passed up to unrelated recipes inventory drift."
 commit: null
 comments:
   -
@@ -44,8 +44,14 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "WORKFLOW v2 source-of-truth contract implemented in fb39a8d8 with CLI-owned front matter, legacy config import fallback, startup docs, and validation coverage."
+  -
+    type: "verify"
+    at: "2026-05-03T13:32:06.416Z"
+    author: "PLANNER"
+    state: "ok"
+    note: "Verified: current PR head d3f396d1 contains implementation commits, task artifacts, CLI reference refresh, and PR artifact refresh. Targeted typecheck/tests, workflow build, doctor, policy routing, and pre-push checks passed up to unrelated recipes inventory drift."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:27:42.790Z"
+doc_updated_at: "2026-05-03T13:32:06.423Z"
 doc_updated_by: "PLANNER"
 description: "Design the WORKFLOW.md v2 contract as the only project source of truth for AgentPlane workflow/config state. Specify startup contract behavior for IDE agents, CLI-owned front matter formatting, AGENTS.md policy-gateway boundaries, config.json removal strategy, migration phases, and source-of-truth conflict rules."
 sections:
@@ -70,6 +76,14 @@ sections:
     Note: WORKFLOW v2 source-of-truth contract implemented in fb39a8d8 with CLI-owned front matter, legacy config import fallback, startup docs, and validation coverage.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:01:43.671Z, excerpt_hash=sha256:c7a25d62accdf1554e2bcb64329211617b2b73fba29d3b8d70e4579e3dbfebbb
+    
+    ### 2026-05-03T13:32:06.416Z — VERIFY — ok
+    
+    By: PLANNER
+    
+    Note: Verified: current PR head d3f396d1 contains implementation commits, task artifacts, CLI reference refresh, and PR artifact refresh. Targeted typecheck/tests, workflow build, doctor, policy routing, and pre-push checks passed up to unrelated recipes inventory drift.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:27:42.790Z, excerpt_hash=sha256:c7a25d62accdf1554e2bcb64329211617b2b73fba29d3b8d70e4579e3dbfebbb
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -114,6 +128,14 @@ By: PLANNER
 Note: WORKFLOW v2 source-of-truth contract implemented in fb39a8d8 with CLI-owned front matter, legacy config import fallback, startup docs, and validation coverage.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:01:43.671Z, excerpt_hash=sha256:c7a25d62accdf1554e2bcb64329211617b2b73fba29d3b8d70e4579e3dbfebbb
+
+### 2026-05-03T13:32:06.416Z — VERIFY — ok
+
+By: PLANNER
+
+Note: Verified: current PR head d3f396d1 contains implementation commits, task artifacts, CLI reference refresh, and PR artifact refresh. Targeted typecheck/tests, workflow build, doctor, policy routing, and pre-push checks passed up to unrelated recipes inventory drift.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:27:42.790Z, excerpt_hash=sha256:c7a25d62accdf1554e2bcb64329211617b2b73fba29d3b8d70e4579e3dbfebbb
 
 <!-- END VERIFICATION RESULTS -->
 
