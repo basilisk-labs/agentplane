@@ -1,0 +1,3 @@
+ .github/workflows/publish-distribution-module.yml  | 44 +++++++++++++++++++---
+ .../release/publish-workflow-contract.test.ts      | 13 +++++++
+ 2 files changed, 51 insertions(+), 6 deletions(-)
