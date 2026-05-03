@@ -1,4 +1,6 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T18:07:12Z",
   "base": "main",
   "batch": {
     "closure_policy": "all_or_fail",
@@ -16,9 +18,12 @@
   },
   "branch": "task/202605031625-886KZ6/acr-core-schema",
   "created_at": "2026-05-03T16:32:47.928Z",
-  "head_sha": "5ec69b47132ad03b72f08ddba751495e1b1c0ad2",
+  "head_sha": "122a423fd6d4aab7f39cf6a019e489440569e230",
   "last_verified_at": "2026-05-03T17:34:21.039Z",
   "last_verified_sha": "5ec69b47132ad03b72f08ddba751495e1b1c0ad2",
+  "merge_commit": "cbdff74c58993d0f586646fe698e742e4255c7dc",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T18:07:12Z",
   "related_task_ids": [
     "202605031625-BM686J",
     "202605031626-83YQTA",
@@ -29,8 +34,9 @@
     "202605031626-ZN55PB"
   ],
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605031625-886KZ6",
-  "updated_at": "2026-05-03T17:34:21.187Z",
+  "updated_at": "2026-05-03T18:07:12Z",
   "verify": {
     "status": "pass"
   }

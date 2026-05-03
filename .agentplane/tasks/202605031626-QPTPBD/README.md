@@ -1,10 +1,10 @@
 ---
 id: "202605031626-QPTPBD"
 title: "ACR docs examples and release gates"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +26,16 @@ verification:
   updated_at: "2026-05-03T17:22:17.230Z"
   updated_by: "DOCS"
   note: "Command: bun run docs:cli:check. Result: pass. Evidence: CLI reference is up to date. Scope: generated ACR commands and finish --no-write-acr docs. Command: bunx prettier --check changed ACR docs and CLI reference. Result: pass. Evidence: all matched files use Prettier code style. Scope: docs formatting. Command: rg -n 'Agent Change Record|ACR|planned|opt-in|when .*lands' docs/user docs/developer -g '*.mdx'. Result: pass by review. Evidence: remaining planned hits are unrelated roadmap/eval or title text; ACR docs describe active behavior. Scope: ACR docs drift."
-commit: null
+commit:
+  hash: "cbdff74c58993d0f586646fe698e742e4255c7dc"
+  message: "Merge pull request #843 from basilisk-labs/task/202605031625-886KZ6/acr-core-schema"
 comments:
   -
     author: "DOCS"
     body: "Start: document the shipped ACR v0.1 behavior, examples, configuration defaults, generated CLI reference, and release-gate expectations from confirmed runtime output."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #843 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -45,9 +50,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: bun run docs:cli:check. Result: pass. Evidence: CLI reference is up to date. Scope: generated ACR commands and finish --no-write-acr docs. Command: bunx prettier --check changed ACR docs and CLI reference. Result: pass. Evidence: all matched files use Prettier code style. Scope: docs formatting. Command: rg -n 'Agent Change Record|ACR|planned|opt-in|when .*lands' docs/user docs/developer -g '*.mdx'. Result: pass by review. Evidence: remaining planned hits are unrelated roadmap/eval or title text; ACR docs describe active behavior. Scope: ACR docs drift."
+  -
+    type: "status"
+    at: "2026-05-03T18:07:57.001Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #843 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T17:22:17.255Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-03T18:07:57.002Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update AgentPlane user and developer documentation for ACR, generated CLI reference, examples/fixtures, and release verification gates. Document automatic finish export, optional PR requirement policy, README plus ACR parallel evidence model, and privacy limits."
 sections:
   Summary: |-

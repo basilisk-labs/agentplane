@@ -1,10 +1,10 @@
 ---
 id: "202605031626-ZN55PB"
 title: "ACR reviewer explain surface"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +25,16 @@ verification:
   updated_at: "2026-05-03T17:21:59.127Z"
   updated_by: "CODER"
   note: "Command: agentplane acr explain --help. Result: pass. Evidence: help exposes task-id-or-path and json output. Scope: reviewer explain surface. Command: node packages/agentplane/dist/cli.js acr explain 202605031625-886KZ6. Result: pass. Evidence: printed task id/title, policy pass counts, verification passed, merge ready yes, and digest. Scope: human reviewer summary. Command: node packages/agentplane/dist/cli.js acr validate 202605031625-886KZ6 --mode local --json. Result: pass. Evidence: ok=true. Scope: explain uses valid ACR input."
-commit: null
+commit:
+  hash: "cbdff74c58993d0f586646fe698e742e4255c7dc"
+  message: "Merge pull request #843 from basilisk-labs/task/202605031625-886KZ6/acr-core-schema"
 comments:
   -
     author: "CODER"
     body: "Start: implement this ACR v0.1 scope inside the approved batch worktree and verify it with the shared ACR CLI, schema, docs, and lifecycle checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #843 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: agentplane acr explain --help. Result: pass. Evidence: help exposes task-id-or-path and json output. Scope: reviewer explain surface. Command: node packages/agentplane/dist/cli.js acr explain 202605031625-886KZ6. Result: pass. Evidence: printed task id/title, policy pass counts, verification passed, merge ready yes, and digest. Scope: human reviewer summary. Command: node packages/agentplane/dist/cli.js acr validate 202605031625-886KZ6 --mode local --json. Result: pass. Evidence: ok=true. Scope: explain uses valid ACR input."
+  -
+    type: "status"
+    at: "2026-05-03T18:07:57.008Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #843 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T17:21:59.163Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T18:07:57.009Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement agentplane acr explain <task-id-or-path> with reviewer-oriented output summarizing task identity, agent/toolchain, plan status, work range, policy decisions, verification, residual risks, and merge readiness."
 sections:
   Summary: |-

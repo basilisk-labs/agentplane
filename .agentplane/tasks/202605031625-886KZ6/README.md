@@ -1,10 +1,11 @@
 ---
 id: "202605031625-886KZ6"
 title: "ACR v0.1 core schema contract"
-status: "DOING"
+result_summary: "Merged via PR #843."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-05-03T17:34:21.039Z"
   updated_by: "CODER"
   note: "Command: final verification after formatting merged schema artifacts. Result: pass. Evidence: bun run schemas:check passed after Prettier formatting of packages/core and packages/spec config schemas; working tree clean before verification. Scope: current task branch head before push."
-commit: null
+commit:
+  hash: "cbdff74c58993d0f586646fe698e742e4255c7dc"
+  message: "Merge pull request #843 from basilisk-labs/task/202605031625-886KZ6/acr-core-schema"
 comments:
   -
     author: "CODER"
     body: "Start: implement the ACR v0.1 core schema contract, generated schema renderer, synchronized schema artifacts, and focused schema tests without touching CLI command behavior yet."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #843 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -80,9 +86,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: final verification after formatting merged schema artifacts. Result: pass. Evidence: bun run schemas:check passed after Prettier formatting of packages/core and packages/spec config schemas; working tree clean before verification. Scope: current task branch head before push."
+  -
+    type: "status"
+    at: "2026-05-03T18:07:56.978Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #843 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T17:34:21.060Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T18:07:56.982Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, synchronized schema artifacts, and schema-focused tests. ACR remains a derived evidence projection from AgentPlane task and Git state."
 sections:
   Summary: |-

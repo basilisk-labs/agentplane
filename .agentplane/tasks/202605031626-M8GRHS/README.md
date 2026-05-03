@@ -1,10 +1,10 @@
 ---
 id: "202605031626-M8GRHS"
 title: "ACR generation engine"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -25,11 +25,16 @@ verification:
   updated_at: "2026-05-03T17:21:00.745Z"
   updated_by: "CODER"
   note: "Command: agentplane acr generate --help. Result: pass. Evidence: help lists work-commit/base-commit/out/write/stdout/refresh/json options. Scope: generation command surface. Command: node packages/agentplane/dist/cli.js acr generate 202605031625-886KZ6 --work-commit HEAD --write --refresh --json. Result: pass. Evidence: wrote .agentplane/tasks/202605031625-886KZ6/acr.json with record_digest sha256:4ec21969b1415ec5abe6bdd4bf1efc217264e2aba0bf35bb23c3a62c7fcca8d6 and no warnings. Scope: generation engine. Command: bun run test:project core packages/core/src/tasks packages/core/src/schemas. Result: pass. Evidence: 9 files and 75 tests passed. Scope: task/schema evidence consumed by generation."
-commit: null
+commit:
+  hash: "cbdff74c58993d0f586646fe698e742e4255c7dc"
+  message: "Merge pull request #843 from basilisk-labs/task/202605031625-886KZ6/acr-core-schema"
 comments:
   -
     author: "CODER"
     body: "Start: implement this ACR v0.1 scope inside the approved batch worktree and verify it with the shared ACR CLI, schema, docs, and lifecycle checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #843 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: agentplane acr generate --help. Result: pass. Evidence: help lists work-commit/base-commit/out/write/stdout/refresh/json options. Scope: generation command surface. Command: node packages/agentplane/dist/cli.js acr generate 202605031625-886KZ6 --work-commit HEAD --write --refresh --json. Result: pass. Evidence: wrote .agentplane/tasks/202605031625-886KZ6/acr.json with record_digest sha256:4ec21969b1415ec5abe6bdd4bf1efc217264e2aba0bf35bb23c3a62c7fcca8d6 and no warnings. Scope: generation engine. Command: bun run test:project core packages/core/src/tasks packages/core/src/schemas. Result: pass. Evidence: 9 files and 75 tests passed. Scope: task/schema evidence consumed by generation."
+  -
+    type: "status"
+    at: "2026-05-03T18:07:56.998Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #843 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T17:21:00.770Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T18:07:57.000Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement agentplane acr generate <task-id> using task records, Git range data, policy/config facts, verification summaries, evidence references, and safe defaults. Default write path is .agentplane/tasks/<task-id>/acr.json."
 sections:
   Summary: |-
