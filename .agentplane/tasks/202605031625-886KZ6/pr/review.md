@@ -3,18 +3,6 @@
 Created: 2026-05-03T16:32:47.928Z
 Branch: task/202605031625-886KZ6/acr-core-schema
 
-## Batch Tasks
-
-- Primary: `202605031625-886KZ6`
-- Closure policy: `all_or_fail`
-- Included: `202605031625-BM686J`
-- Included: `202605031626-83YQTA`
-- Included: `202605031626-EQYR7H`
-- Included: `202605031626-M8GRHS`
-- Included: `202605031626-QPTPBD`
-- Included: `202605031626-RX30C6`
-- Included: `202605031626-ZN55PB`
-
 ## Summary
 
 ACR v0.1 core schema contract
@@ -38,7 +26,7 @@ Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, 
 ### Current Status
 
 - State: ok
-- Note: Command: node packages/agentplane/dist/cli.js acr generate 202605031625-886KZ6 --work-commit HEAD --write --refresh --json. Result: pass. Evidence: refreshed task-local acr.json after implementation commit; digest sha256:836e5f483582c393caed74090dc9a9ee0fcc43aed8b08799e30819d1ff7cdbb7. Scope: final ACR evidence for the committed batch.
+- Note: Command: final branch verification after ACR evidence commit. Result: pass. Evidence: ACR batch implementation commit 0e0995c9 and final ACR evidence commit 9d5ac328 are present on task branch; prior schema/typecheck/build/core tests/docs freshness/ACR CLI smokes passed. Scope: final primary task verification before PR publication.
 
 ## Risks
 
@@ -64,7 +52,7 @@ Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, 
 
 ```text
  .agentplane/tasks/202605031624-H1PV7F/README.md    | 129 +++
- .agentplane/tasks/202605031625-886KZ6/acr.json     | 275 ++++++
+ .agentplane/tasks/202605031625-886KZ6/acr.json     | 499 +++++++++++
  .agentplane/tasks/202605031625-BM686J/README.md    | 122 +++
  .agentplane/tasks/202605031626-83YQTA/README.md    | 122 +++
  .agentplane/tasks/202605031626-EQYR7H/README.md    | 122 +++
@@ -104,7 +92,7 @@ Add the Agent Change Record v0.1 TypeScript/Zod contract, JSON Schema renderer, 
  packages/spec/schemas/acr-v0.1.schema.json         | 684 ++++++++++++++
  packages/spec/schemas/config.schema.json           | 298 +++++-
  scripts/sync-schemas.mjs                           |   9 +
- 41 files changed, 5019 insertions(+), 119 deletions(-)
+ 41 files changed, 5243 insertions(+), 119 deletions(-)
 ```
 
 </details>

@@ -1,5 +1,5 @@
  .agentplane/tasks/202605031624-H1PV7F/README.md    | 129 +++
- .agentplane/tasks/202605031625-886KZ6/acr.json     | 275 ++++++
+ .agentplane/tasks/202605031625-886KZ6/acr.json     | 499 +++++++++++
  .agentplane/tasks/202605031625-BM686J/README.md    | 122 +++
  .agentplane/tasks/202605031626-83YQTA/README.md    | 122 +++
  .agentplane/tasks/202605031626-EQYR7H/README.md    | 122 +++
@@ -39,4 +39,4 @@
  packages/spec/schemas/acr-v0.1.schema.json         | 684 ++++++++++++++
  packages/spec/schemas/config.schema.json           | 298 +++++-
  scripts/sync-schemas.mjs                           |   9 +
- 41 files changed, 5019 insertions(+), 119 deletions(-)
+ 41 files changed, 5243 insertions(+), 119 deletions(-)
