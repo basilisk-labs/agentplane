@@ -45,12 +45,13 @@ Update docs/releases/v0.4.3.md to satisfy the publish release-notes gate, verify
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T21:12:21.806Z
+- Updated: 2026-05-03T21:13:13.741Z
 - Branch: task/202605032112-19AZ8M/fix-043-release-notes
-- Head: fa1a9689db62
+- Head: 17db19835f0f
 
 ```text
-No changes detected.
+ docs/releases/v0.4.3.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 ```
 
 </details>
