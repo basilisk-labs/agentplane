@@ -1,5 +1,6 @@
 import type { TaskFrontmatter } from "./task-store.js";
 import type { TasksExportSnapshot } from "./tasks-export.js";
+import { ACR_ZOD_SCHEMA, type AgentChangeRecord } from "./task-artifact-schema.acr.js";
 import { TASK_HANDOFF_ZOD_SCHEMA, type TaskHandoff } from "./task-artifact-schema.handoff.js";
 import { TASK_PR_META_ZOD_SCHEMA, type TaskPrMeta } from "./task-artifact-schema.pr-metadata.js";
 import {
@@ -20,7 +21,16 @@ export type {
 } from "./task-artifact-schema.handoff.js";
 
 export type { TaskPrMeta } from "./task-artifact-schema.pr-metadata.js";
+export type { AgentChangeRecord } from "./task-artifact-schema.acr.js";
+export { ACR_VERSION } from "./task-artifact-schema.acr.js";
 export { withTaskReadmeFrontmatterDefaults } from "./task-artifact-schema.task.js";
+
+export const ACR_SCHEMA = buildJsonSchemaDocument(ACR_ZOD_SCHEMA, {
+  $id: "https://agentplane.dev/schemas/acr-v0.1.schema.json",
+  title: "Agent Change Record (ACR) v0.1",
+  description:
+    "ACR is a machine-readable evidence projection derived from AgentPlane task, policy, verification, and Git state.",
+});
 
 export const TASK_README_FRONTMATTER_SCHEMA = buildJsonSchemaDocument(
   TASK_README_FRONTMATTER_ZOD_SCHEMA,
@@ -49,6 +59,14 @@ export const TASK_HANDOFF_SCHEMA = buildJsonSchemaDocument(TASK_HANDOFF_ZOD_SCHE
 
 export function listTaskReadmeFrontmatterSchemaErrors(value: unknown): string[] {
   return schemaErrors("task README frontmatter", TASK_README_FRONTMATTER_ZOD_SCHEMA, value);
+}
+
+export function listAcrSchemaErrors(value: unknown): string[] {
+  return schemaErrors("ACR v0.1", ACR_ZOD_SCHEMA, value);
+}
+
+export function validateAcr(value: unknown): AgentChangeRecord {
+  return assertValid("ACR v0.1", ACR_ZOD_SCHEMA, value);
 }
 
 export function validateTaskReadmeFrontmatter(value: unknown): TaskFrontmatter {
@@ -81,6 +99,10 @@ export function validateTaskHandoff(value: unknown): TaskHandoff {
 
 export function renderTaskReadmeFrontmatterSchemaJson(): string {
   return `${JSON.stringify(TASK_README_FRONTMATTER_SCHEMA, null, 2)}\n`;
+}
+
+export function renderAcrSchemaJson(): string {
+  return `${JSON.stringify(ACR_SCHEMA, null, 2)}\n`;
 }
 
 export function renderTasksExportSchemaJson(): string {
