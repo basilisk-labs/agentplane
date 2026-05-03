@@ -82,7 +82,7 @@ describe("policy/evaluatePolicy", () => {
     );
   });
 
-  it("enforces branch_pr base constraints", () => {
+  it("does not treat the optional tasks export snapshot as branch_pr single-writer state", () => {
     const cfg = defaultConfig();
     cfg.workflow_mode = "branch_pr";
     const res = evaluatePolicy(
@@ -96,8 +96,27 @@ describe("policy/evaluatePolicy", () => {
         allow: { prefixes: [cfg.paths.tasks_path], allowTasks: true },
       }),
     );
+    expect(res.ok).toBe(true);
+  });
+
+  it("enforces branch_pr base constraints for normal files", () => {
+    const cfg = defaultConfig();
+    cfg.workflow_mode = "branch_pr";
+    const res = evaluatePolicy(
+      makeCtx({
+        config: cfg,
+        git: {
+          stagedPaths: ["packages/agentplane/src/index.ts"],
+          currentBranch: "main",
+          baseBranch: "main",
+        },
+        allow: { prefixes: ["packages/agentplane/src"] },
+      }),
+    );
     expect(res.ok).toBe(false);
-    expect(res.errors.map((e) => e.message).join("\n")).toContain("commits are allowed only on");
+    expect(res.errors.map((e) => e.message).join("\n")).toContain(
+      "Code commits are forbidden on main",
+    );
   });
 
   it("allows a non-README artifact under the active task subtree when --allow-tasks is set", () => {

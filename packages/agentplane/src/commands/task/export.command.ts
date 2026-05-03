@@ -8,8 +8,13 @@ export type TaskExportParsed = Record<string, never>;
 export const taskExportSpec: CommandSpec<TaskExportParsed> = {
   id: ["task", "export"],
   group: "Task",
-  summary: "Export tasks to the configured tasks export path (typically .agentplane/tasks.json).",
-  examples: [{ cmd: "agentplane task export", why: "Write tasks export JSON and print the path." }],
+  summary: "Generate an optional tasks export snapshot at the configured path.",
+  examples: [
+    {
+      cmd: "agentplane task export",
+      why: "Write the optional tasks export JSON and print the path.",
+    },
+  ],
   parse: () => ({}),
 };
 

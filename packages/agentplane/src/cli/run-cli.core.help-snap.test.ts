@@ -106,7 +106,7 @@ describe("runCli help snapshots (cli2)", () => {
         "Create a git commit after validating policy and allowlist; if the index is empty, stage matching allowlist paths first.",
       );
       expect(io.stdout).toContain(
-        "Allow the tasks export snapshot plus artifacts under the active task subtree; standalone path scope.",
+        "Allow the optional tasks export snapshot plus artifacts under the active task subtree; standalone path scope.",
       );
       expect(io.stdout).toContain("Allow CI workflow edits; standalone path scope.");
       expect(io.stdout).toContain(
@@ -126,7 +126,7 @@ describe("runCli help snapshots (cli2)", () => {
       const code = await runCli(["help", "guard", "commit", "--compact"]);
       expect(code).toBe(0);
       expect(io.stdout).toContain(
-        "Allow the tasks export snapshot plus artifacts under the active task subtree; standalone path scope.",
+        "Allow the optional tasks export snapshot plus artifacts under the active task subtree; standalone path scope.",
       );
       expect(io.stdout).toContain("Allow CI workflow edits; standalone path scope.");
       expect(io.stdout).toContain(

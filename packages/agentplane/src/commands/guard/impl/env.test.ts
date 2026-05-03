@@ -93,6 +93,44 @@ describe("guard/impl/dco", () => {
     ).toBe("Body\n\nSigned-off-by: Denis Smirnov <densmirnov@me.com>");
   });
 
+  it("validates any well-formed DCO sign-off for manual commits", async () => {
+    const { assertDcoSignoff } = await import("./dco.js");
+    const config = {
+      commit: {
+        dco: { enabled: true, name: "Denis Smirnov", email: "densmirnov@me.com" },
+      },
+    } as Parameters<typeof assertDcoSignoff>[0]["config"];
+
+    expect(() =>
+      assertDcoSignoff({
+        config,
+        message: "Subject\n\nSigned-off-by: Ada Lovelace <ada@example.com>",
+      }),
+    ).not.toThrow();
+    expect(() => assertDcoSignoff({ config, message: "Subject\n\nBody" })).toThrow(
+      "DCO sign-off is required",
+    );
+  });
+
+  it("requires manual DCO sign-off even when no default AgentPlane identity is configured", async () => {
+    const { assertDcoSignoff } = await import("./dco.js");
+    const config = {
+      commit: {
+        dco: { enabled: true, name: null, email: null },
+      },
+    } as Parameters<typeof assertDcoSignoff>[0]["config"];
+
+    expect(() => assertDcoSignoff({ config, message: "Subject\n\nBody" })).toThrow(
+      "DCO sign-off is required",
+    );
+    expect(() =>
+      assertDcoSignoff({
+        config,
+        message: "Subject\n\nSigned-off-by: Grace Hopper <grace@example.com>",
+      }),
+    ).not.toThrow();
+  });
+
   it("does not append a sign-off when DCO is disabled", async () => {
     const { appendDcoSignoff } = await import("./dco.js");
     const config = {

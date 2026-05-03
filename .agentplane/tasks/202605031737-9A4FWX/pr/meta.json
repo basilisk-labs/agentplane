@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605031737-9A4FWX/dco-tasks-export-optional",
+  "created_at": "2026-05-03T17:38:51.241Z",
+  "head_sha": "cb1999a0d4e4dbee09a57fb839a416dab422d155",
+  "last_verified_at": "2026-05-03T18:04:00.678Z",
+  "last_verified_sha": "4d4bf84a31e3f09b5b60989420ee41e1fee552e2",
+  "schema_version": 1,
+  "task_id": "202605031737-9A4FWX",
+  "updated_at": "2026-05-03T18:20:03.138Z",
+  "verify": {
+    "status": "pass"
+  }
+}

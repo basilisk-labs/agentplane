@@ -54,7 +54,7 @@ export const guardCommitSpec: CommandSpec<GuardCommitParsed> = {
       name: "allow-tasks",
       default: false,
       description:
-        "Allow the tasks export snapshot plus artifacts under the active task subtree; standalone path scope.",
+        "Allow the optional tasks export snapshot plus artifacts under the active task subtree; standalone path scope.",
     },
     {
       kind: "boolean",

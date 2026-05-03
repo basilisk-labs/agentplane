@@ -152,7 +152,7 @@ Subject format:
 
 Body format includes `Task`, `Primary`, `Status`, `Comment`.
 
-If `commit.dco.enabled=true`, AgentPlane appends the configured `Signed-off-by` trailer to repository-managed commits. Manual commits must include the same trailer or the `commit-msg` hook fails.
+If `commit.dco.enabled=true`, AgentPlane appends the configured `Signed-off-by` trailer to repository-managed commits. Manual commits must include a valid `Signed-off-by` trailer, but it can belong to the actual human author instead of the configured AgentPlane default identity.
 
 ## Verification model
 

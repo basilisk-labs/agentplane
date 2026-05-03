@@ -7,7 +7,6 @@ export function branchPrBaseRule(ctx: PolicyContext): PolicyResult {
   const baseBranch = ctx.git.baseBranch;
   const currentBranch = ctx.git.currentBranch;
   const staged = ctx.git.stagedPaths ?? [];
-  const tasksPath = ctx.config.paths.tasks_path;
 
   if (!baseBranch) {
     return {
@@ -25,19 +24,7 @@ export function branchPrBaseRule(ctx: PolicyContext): PolicyResult {
   }
 
   const allowBase = ctx.allow?.allowBase === true;
-  const tasksStaged = staged.includes(tasksPath);
-  const nonTasks = staged.filter((p) => p !== tasksPath);
-
-  if (tasksStaged && currentBranch !== baseBranch) {
-    return {
-      ok: false,
-      errors: [
-        gitError(`${tasksPath} commits are allowed only on ${baseBranch} in branch_pr mode`),
-      ],
-      warnings: [],
-    };
-  }
-  if (nonTasks.length > 0 && currentBranch === baseBranch && !allowBase) {
+  if (staged.length > 0 && currentBranch === baseBranch && !allowBase) {
     return {
       ok: false,
       errors: [gitError(`Code commits are forbidden on ${baseBranch} in branch_pr mode`)],

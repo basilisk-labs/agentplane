@@ -194,15 +194,6 @@ export async function prepareIntegrate(opts: {
   });
 
   const changedPaths = await gitDiffNames(resolved.gitRoot, base, branch);
-  const tasksPath = loadedConfig.paths.tasks_path;
-  if (changedPaths.includes(tasksPath)) {
-    throw new CliError({
-      exitCode: 5,
-      code: "E_GIT",
-      message: `Branch ${branch} modifies ${tasksPath} (single-writer violation)`,
-    });
-  }
-
   const branchHeadSha = await gitRevParse(resolved.gitRoot, [branch]);
   let freshness = await assessPrArtifactFreshness({
     gitRoot: resolved.gitRoot,

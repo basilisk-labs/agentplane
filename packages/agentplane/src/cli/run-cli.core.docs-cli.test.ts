@@ -53,7 +53,7 @@ describe("runCli docs cli", () => {
       expect(text).toContain("## Task");
       expect(text).toContain("### task new");
       expect(text).toContain(
-        "Allow the tasks export snapshot plus artifacts under the active task subtree; standalone path scope.",
+        "Allow the optional tasks export snapshot plus artifacts under the active task subtree; standalone path scope.",
       );
       expect(text).toContain(
         "Allow base branch edits; branch override only, not a path allowlist.",

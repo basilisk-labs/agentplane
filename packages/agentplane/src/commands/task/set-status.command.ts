@@ -98,7 +98,7 @@ export const taskSetStatusSpec: CommandSpec<TaskSetStatusParsed> = {
       name: "commit-allow-tasks",
       default: true,
       description:
-        "Allow the tasks export snapshot plus artifacts under the active task subtree when commit-from-comment is used.",
+        "Allow the optional tasks export snapshot plus artifacts under the active task subtree when commit-from-comment is used.",
     },
     {
       kind: "boolean",

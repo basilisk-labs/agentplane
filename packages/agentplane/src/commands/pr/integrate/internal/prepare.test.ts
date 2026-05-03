@@ -227,15 +227,21 @@ describe("pr/integrate/internal/prepare", () => {
     });
   });
 
-  it("rejects single-writer violation when tasks_path is modified", async () => {
+  it("allows branches to remove the optional tasks export snapshot from tracked state", async () => {
     const { prepareIntegrate } = await import("./prepare.js");
     seedCommon();
     mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
     mocks.gitDiffNames.mockResolvedValue([".agentplane/tasks.json"]);
+    mocks.parsePrMeta.mockReturnValue({
+      branch: "task/T-1",
+      head_sha: "deadbeef",
+      last_verified_sha: null,
+    });
     await expect(
       prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
-    ).rejects.toMatchObject<CliError>({
-      code: "E_GIT",
+    ).resolves.toMatchObject({
+      branch: "task/T-1",
+      base: "main",
     });
   });
 

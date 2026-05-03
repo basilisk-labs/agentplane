@@ -10,7 +10,7 @@ The local backend stores tasks in the repository under `.agentplane/tasks/` and 
 ## Storage layout
 
 - Task data: `.agentplane/tasks/<task-id>/README.md`
-- Snapshot export (export-only, gitignored by default): `.agentplane/tasks.json`
+- Optional snapshot export (export-only, gitignored by default): generated tasks JSON
 
 The README file is the single source of truth for a task and includes metadata, comments, append-only events, and doc sections.
 
@@ -33,4 +33,4 @@ Example:
 ## Notes
 
 - Local backend supports full task CRUD and doc updates.
-- Use `agentplane task export` to generate `.agentplane/tasks.json` for integrations.
+- Use `agentplane task export` to generate a tasks JSON snapshot for integrations when needed.
