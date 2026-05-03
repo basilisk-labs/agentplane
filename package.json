@@ -117,7 +117,9 @@
     "docs:site:check:design": "node scripts/check-design-language.mjs",
     "docs:site:check": "bun run docs:site:generate && bun run docs:site:typecheck && bun run docs:site:build && bun run docs:site:check:design",
     "logging:check": "node scripts/check-no-console.mjs",
-    "release:bun:smoke": "node scripts/smoke-bun-compiled-cli.mjs"
+    "release:bun:smoke": "node scripts/smoke-bun-compiled-cli.mjs",
+    "release:bun:generate": "node scripts/generate-bun-cli-assets.mjs",
+    "release:bun:check": "node scripts/generate-bun-cli-assets.mjs --check"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

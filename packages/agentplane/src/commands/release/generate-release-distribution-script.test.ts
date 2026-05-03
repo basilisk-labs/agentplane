@@ -58,6 +58,14 @@ describe("generate-release-distribution script", () => {
         entrypoint: string;
       }[];
       releaseAssets: { name: string; kind: string }[];
+      bunAssets: {
+        name: string;
+        kind: string;
+        platform: string;
+        arch: string;
+        installStrategy: string;
+        entrypoint: string;
+      }[];
     };
     const checksums = await readFile(path.join(outDir, "SHA256SUMS"), "utf8");
     const installSh = await readFile(path.join(outDir, "install.sh"), "utf8");
@@ -85,7 +93,34 @@ describe("generate-release-distribution script", () => {
       }),
     );
     expect(manifest.releaseAssets.map((asset) => asset.name)).toContain("standalone-assets.json");
+    expect(manifest.releaseAssets.map((asset) => asset.name)).toContain("bun-assets.json");
+    expect(manifest.bunAssets).toHaveLength(5);
+    expect(manifest.bunAssets).toContainEqual(
+      expect.objectContaining({
+        name: "agentplane-bun-v1.2.3-darwin-arm64.tar.gz",
+        kind: "bun_executable",
+        platform: "darwin",
+        arch: "arm64",
+        installStrategy: "bun_single_file_executable",
+        entrypoint: "bin/agentplane",
+      }),
+    );
+    expect(manifest.bunAssets).toContainEqual(
+      expect.objectContaining({
+        name: "agentplane-bun-v1.2.3-win32-x64.zip",
+        kind: "bun_executable",
+        platform: "win32",
+        arch: "x64",
+        installStrategy: "bun_single_file_executable",
+        entrypoint: "bin/agentplane.exe",
+      }),
+    );
     for (const asset of manifest.platformAssets) {
+      expect(manifest.releaseAssets.map((releaseAsset) => releaseAsset.name)).toContain(asset.name);
+      expect(checksums).toContain(asset.name);
+      expect(existsSync(path.join(outDir, asset.name))).toBe(true);
+    }
+    for (const asset of manifest.bunAssets) {
       expect(manifest.releaseAssets.map((releaseAsset) => releaseAsset.name)).toContain(asset.name);
       expect(checksums).toContain(asset.name);
       expect(existsSync(path.join(outDir, asset.name))).toBe(true);

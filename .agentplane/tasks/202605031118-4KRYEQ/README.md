@@ -1,10 +1,10 @@
 ---
 id: "202605031118-4KRYEQ"
 title: "Generate Bun executable release assets"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,16 +19,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-03T12:10:42.948Z"
+  updated_by: "CODER"
+  note: "Focused verification passed: bun run build; node scripts/generate-bun-cli-assets.mjs --check generated 5 Bun executable assets; bun test packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts passed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: add Bun executable release asset generation as a parallel artifact channel."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T12:07:47.528Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: add Bun executable release asset generation as a parallel artifact channel."
+  -
+    type: "verify"
+    at: "2026-05-03T12:10:42.948Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused verification passed: bun run build; node scripts/generate-bun-cli-assets.mjs --check generated 5 Bun executable assets; bun test packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts passed."
 doc_version: 3
-doc_updated_at: "2026-05-03T11:19:12.745Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T12:10:42.950Z"
+doc_updated_by: "CODER"
 description: "Add release asset generation for Bun compiled executables as an experimental parallel channel with manifest and checksum entries, preserving the existing standalone Node archive channel."
 sections:
   Summary: |-
@@ -51,6 +67,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T12:10:42.948Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused verification passed: bun run build; node scripts/generate-bun-cli-assets.mjs --check generated 5 Bun executable assets; bun test packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T12:07:47.528Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -87,6 +111,14 @@ Acceptance: release workflow can publish Bun executable artifacts alongside curr
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T12:10:42.948Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused verification passed: bun run build; node scripts/generate-bun-cli-assets.mjs --check generated 5 Bun executable assets; bun test packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T12:07:47.528Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

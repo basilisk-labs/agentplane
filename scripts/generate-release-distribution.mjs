@@ -17,6 +17,7 @@ const INSTALL_PS1_NAME = "install.ps1";
 const SHA256SUMS_NAME = "SHA256SUMS";
 const DISTRIBUTION_MANIFEST_NAME = "release-distribution.json";
 const STANDALONE_ASSETS_MANIFEST_NAME = "standalone-assets.json";
+const BUN_ASSETS_MANIFEST_NAME = "bun-assets.json";
 
 function usage() {
   return [
@@ -350,6 +351,29 @@ function generateStandaloneAssets(repoRoot, outDir, context) {
   return JSON.parse(readFileSync(path.join(outDir, STANDALONE_ASSETS_MANIFEST_NAME), "utf8"));
 }
 
+function generateBunAssets(repoRoot, outDir, context) {
+  const args = [
+    "scripts/generate-bun-cli-assets.mjs",
+    "--out",
+    outDir,
+    "--version",
+    context.version,
+    "--tag",
+    context.tag,
+    "--sha",
+    context.sha,
+  ];
+  if (context.check || context.standaloneCheckMode) {
+    args.push("--synthetic-binary");
+  }
+  execFileSync("node", args, {
+    cwd: repoRoot,
+    stdio: "ignore",
+    env: process.env,
+  });
+  return JSON.parse(readFileSync(path.join(outDir, BUN_ASSETS_MANIFEST_NAME), "utf8"));
+}
+
 function publicReleaseAssetUrl(repo, tag, assetName) {
   return `https://github.com/${repo}/releases/download/${tag}/${assetName}`;
 }
@@ -383,21 +407,36 @@ async function buildDistribution(repoRoot, args) {
     standaloneCheckMode: args.standaloneCheckMode,
   });
   const standaloneAssets = standaloneManifest.assets ?? [];
+  const bunManifest = generateBunAssets(repoRoot, outDir, {
+    version,
+    tag,
+    sha,
+    standaloneCheckMode: args.standaloneCheckMode,
+    check: args.check,
+  });
+  const bunAssets = bunManifest.assets ?? [];
   const checksumManifest = await writeChecksums(outDir, [
     upgradeBundle,
     ...installerAssets,
     ...standaloneAssets,
+    ...bunAssets,
   ]);
 
   const releaseAssets = [
     upgradeBundle,
     ...installerAssets,
     ...standaloneAssets,
+    ...bunAssets,
     checksumManifest,
     {
       name: STANDALONE_ASSETS_MANIFEST_NAME,
       kind: "standalone_manifest",
       sha256: sha256File(path.join(outDir, STANDALONE_ASSETS_MANIFEST_NAME)),
+    },
+    {
+      name: BUN_ASSETS_MANIFEST_NAME,
+      kind: "bun_manifest",
+      sha256: sha256File(path.join(outDir, BUN_ASSETS_MANIFEST_NAME)),
     },
   ].map((asset) => ({
     name: asset.name,
@@ -421,6 +460,7 @@ async function buildDistribution(repoRoot, args) {
       },
     },
     platformAssets: standaloneAssets,
+    bunAssets,
     releaseAssets,
     channels: {
       npm: { status: "pending", required: true },
@@ -456,6 +496,7 @@ function assertDistributionOutputs(outDir, manifest) {
     SHA256SUMS_NAME,
     DISTRIBUTION_MANIFEST_NAME,
     STANDALONE_ASSETS_MANIFEST_NAME,
+    BUN_ASSETS_MANIFEST_NAME,
   ];
   for (const name of required) {
     const target = path.join(outDir, name);
@@ -464,8 +505,11 @@ function assertDistributionOutputs(outDir, manifest) {
   if (manifest.platformAssets.length !== 5) {
     throw new Error(`Expected 5 standalone platform assets, got ${manifest.platformAssets.length}`);
   }
-  if (manifest.releaseAssets.length !== 10) {
-    throw new Error(`Expected 10 public release assets, got ${manifest.releaseAssets.length}`);
+  if (manifest.bunAssets.length !== 5) {
+    throw new Error(`Expected 5 Bun executable assets, got ${manifest.bunAssets.length}`);
+  }
+  if (manifest.releaseAssets.length !== 16) {
+    throw new Error(`Expected 16 public release assets, got ${manifest.releaseAssets.length}`);
   }
   const names = new Set(manifest.releaseAssets.map((asset) => asset.name));
   for (const name of [
@@ -474,7 +518,9 @@ function assertDistributionOutputs(outDir, manifest) {
     INSTALL_PS1_NAME,
     SHA256SUMS_NAME,
     STANDALONE_ASSETS_MANIFEST_NAME,
+    BUN_ASSETS_MANIFEST_NAME,
     ...manifest.platformAssets.map((asset) => asset.name),
+    ...manifest.bunAssets.map((asset) => asset.name),
   ]) {
     if (!names.has(name)) throw new Error(`release-distribution.json missing asset ${name}`);
   }
