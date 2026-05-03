@@ -25,7 +25,7 @@ Add install.sh/install.ps1 opt-in support for Bun executable assets while keepin
 ### Current Status
 
 - State: ok
-- Note: Focused verification passed: bun test packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts and node scripts/generate-release-distribution.mjs --check. Install scripts keep standalone as default and expose AGENTPLANE_INSTALL_CHANNEL=bun as an explicit opt-in channel.
+- Note: Review follow-up verification passed: Windows installer now selects bin\agentplane.cmd for standalone and bin\agentplane.exe for AGENTPLANE_INSTALL_CHANNEL=bun; focused generator test and release distribution check passed.
 
 ## Risks
 
