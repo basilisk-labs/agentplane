@@ -15,7 +15,7 @@ Split AgentPlane default sign-off identity from repo-wide manual DCO validation 
 ## Verification
 
 - State: ok
-- Note: Implemented multi-author DCO validation and optional tasks export snapshot handling. Verification: env/export unit tests passed (2 files, 9 tests); selected commit-msg DCO hook test passed; CLI help/docs/export tests passed (3 files, 17 tests); typecheck passed; docs:cli:check passed; format:check passed; policy routing passed; doctor ended OK after auto-bootstrap with one unrelated existing archive warning for 202605031624-H1PV7F.
+- Note: Final verification after optional tasks export branch_pr guard adjustments and commit-stage fix.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
