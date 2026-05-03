@@ -1,10 +1,11 @@
 ---
 id: "202605031737-9A4FWX"
 title: "Make DCO multi-author safe and optionalize tasks export snapshot"
-status: "DOING"
+result_summary: "Merged via PR #845."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T18:04:00.678Z"
   updated_by: "CODER"
   note: "Final verification after optional tasks export branch_pr guard adjustments and commit-stage fix."
-commit: null
+commit:
+  hash: "eda55d00831b4af6848474616e6eac89ece25eab"
+  message: "Merge pull request #845 from basilisk-labs/task/202605031737-9A4FWX/dco-tasks-export-optional"
 comments:
   -
     author: "CODER"
     body: "Start: implement multi-author DCO validation and make the tasks export snapshot optional while preserving explicit export generation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #845 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Final verification after optional tasks export branch_pr guard adjustments and commit-stage fix."
+  -
+    type: "status"
+    at: "2026-05-03T18:27:03.597Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #845 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T18:04:00.719Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T18:27:03.603Z"
+doc_updated_by: "INTEGRATOR"
 description: "Split AgentPlane default sign-off identity from repo-wide manual DCO validation and make .agentplane/tasks.json an optional generated export snapshot rather than tracked required state."
 sections:
   Summary: |-
