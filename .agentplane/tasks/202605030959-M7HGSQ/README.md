@@ -1,10 +1,11 @@
 ---
 id: "202605030959-M7HGSQ"
 title: "Switch external channels to Bun binaries"
-status: "TODO"
+result_summary: "Superseded by HVF230 externalChannelSwitchGate; external channels remain standalone until Bun parity evidence exists."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,16 +20,44 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
-comments: []
-events: []
+  state: "ok"
+  updated_at: "2026-05-03T14:24:22.025Z"
+  updated_by: "CODER"
+  note: "Verified: superseded by 202605031118-HVF230. External channels intentionally remain standalone by default; Bun switch is gated on published parity evidence."
+commit:
+  hash: "0879fb8a5a2524a6b12fa1176c0b83d2905692d4"
+  message: "Merge pull request #815 from basilisk-labs/task/202605031118-HVF230/bun-external-channel-switch-gate"
+comments:
+  -
+    author: "CODER"
+    body: "Start: close stale external Bun switch placeholder as superseded by the explicit external channel parity gate."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: stale placeholder closed because external channel switching is now represented by HVF230 gate, not an unsafe immediate default switch."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T14:24:20.888Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: close stale external Bun switch placeholder as superseded by the explicit external channel parity gate."
+  -
+    type: "verify"
+    at: "2026-05-03T14:24:22.025Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: superseded by 202605031118-HVF230. External channels intentionally remain standalone by default; Bun switch is gated on published parity evidence."
+  -
+    type: "status"
+    at: "2026-05-03T14:24:22.474Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: stale placeholder closed because external channel switching is now represented by HVF230 gate, not an unsafe immediate default switch."
 doc_version: 3
-doc_updated_at: "2026-05-03T11:07:07.037Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T14:24:22.474Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update Homebrew, Scoop, setup-agentplane, and installer templates to consume Bun executable artifacts after binary smoke tests and checksum manifest parity are proven."
 sections:
   Summary: |-
@@ -51,6 +80,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T14:24:22.025Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: superseded by 202605031118-HVF230. External channels intentionally remain standalone by default; Bun switch is gated on published parity evidence.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T14:24:20.888Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -87,6 +124,14 @@ Acceptance: all external channels consume the same immutable release-owned Bun b
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T14:24:22.025Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: superseded by 202605031118-HVF230. External channels intentionally remain standalone by default; Bun switch is gated on published parity evidence.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T14:24:20.888Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
