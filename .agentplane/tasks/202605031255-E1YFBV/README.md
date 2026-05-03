@@ -1,10 +1,11 @@
 ---
 id: "202605031255-E1YFBV"
 title: "Enforce strict WORKFLOW prompt template variables"
-status: "DOING"
+result_summary: "Strict WORKFLOW prompt template diagnostics remain enforced."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-05-03T13:28:31.681Z"
   updated_by: "CODER"
   note: "workflow build continues validateTemplateStrict/renderTemplateStrict with strictVariables and strictFilters; tests cover unknown variable/filter diagnostics and v2 build behavior."
-commit: null
+commit:
+  hash: "c02111e054b00ac06e7277733a65e88cbb557391"
+  message: "✅ GV0N4K close: Merged via PR #814. (202605031255-GV0N4K) [config,docs,workflow] (#817)"
 comments:
   -
     author: "CODER"
     body: "Start: Kept strict WORKFLOW prompt template validation fail-closed for unknown variables and filters while preserving v2 rendering."
+  -
+    author: "CODER"
+    body: "Verified: strict prompt template variable/filter validation remains fail-closed for WORKFLOW build/render."
 events:
   -
     type: "status"
@@ -46,8 +52,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "workflow build continues validateTemplateStrict/renderTemplateStrict with strictVariables and strictFilters; tests cover unknown variable/filter diagnostics and v2 build behavior."
+  -
+    type: "status"
+    at: "2026-05-03T13:40:46.135Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: strict prompt template variable/filter validation remains fail-closed for WORKFLOW build/render."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:28:31.684Z"
+doc_updated_at: "2026-05-03T13:40:46.136Z"
 doc_updated_by: "CODER"
 description: "Define the allowed Prompt Template runtime context for task, workspace, git, workflow, policy, checks, attempt, runner, and evaluator data. Add workflow vars/render/validate diagnostics that fail on unknown variables or filters before a runner or IDE agent receives a broken prompt."
 sections:
