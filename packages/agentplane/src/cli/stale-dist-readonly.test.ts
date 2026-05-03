@@ -9,6 +9,7 @@ import { afterEach, describe, expect, it } from "vitest";
 const execFileAsync = promisify(execFile);
 const tempRoots: string[] = [];
 const workspaceRoot = process.cwd();
+const warnOnlyEnv = { ...process.env, AGENTPLANE_DEV_AUTO_BOOTSTRAP: "0" };
 
 async function setupFrameworkCheckout() {
   const repoRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-stale-readonly-"));
@@ -97,6 +98,78 @@ async function setupFrameworkCheckout() {
   return { repoRoot, repoBin };
 }
 
+async function setupFakeBootstrapBin() {
+  const binRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-fake-bun-"));
+  tempRoots.push(binRoot);
+  const fakeBun = path.join(binRoot, "bun");
+  const script = String.raw`
+#!/usr/bin/env node
+import { createHash } from "node:crypto";
+import { chmodSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
+
+const repoRoot = process.cwd();
+const packageRoot = path.join(repoRoot, "packages", "agentplane");
+const distDir = path.join(packageRoot, "dist");
+const watchedPaths = [
+  "src",
+  "bin/agentplane.js",
+  "bin/dist-guard.js",
+  "bin/runtime-context.js",
+  "bin/stale-dist-policy.js",
+];
+const files = [];
+function hashContent(content) {
+  return createHash("sha256").update(content).digest("hex");
+}
+function snapshotHash(items) {
+  const digest = createHash("sha256");
+  for (const item of items) {
+    digest.update(item.path);
+    digest.update(":");
+    digest.update(item.sha256);
+    digest.update("\n");
+  }
+  return digest.digest("hex");
+}
+for (const relativePath of [
+  "src/cli.ts",
+  "src/index.ts",
+  "bin/agentplane.js",
+  "bin/dist-guard.js",
+  "bin/runtime-context.js",
+  "bin/stale-dist-policy.js",
+]) {
+  const absolutePath = path.join(packageRoot, relativePath);
+  const content = readFileSync(absolutePath);
+  files.push({ path: relativePath, sha256: hashContent(content), size_bytes: content.byteLength });
+}
+writeFileSync(
+  path.join(distDir, "cli.js"),
+  [
+    "#!/usr/bin/env node",
+    'process.stdout.write("BOOTSTRAPPED" + JSON.stringify({ args: process.argv.slice(2), cwd: process.cwd() }) + "\\n");',
+    "",
+  ].join("\n"),
+);
+chmodSync(path.join(distDir, "cli.js"), 0o755);
+writeFileSync(
+  path.join(distDir, ".build-manifest.json"),
+  JSON.stringify({
+    schema_version: 1,
+    git_head: "fake",
+    watched_runtime_paths: watchedPaths,
+    watched_runtime_files: files,
+    watched_runtime_snapshot_hash: snapshotHash(files),
+  }) + "\n",
+);
+writeFileSync(path.join(repoRoot, "fake-bootstrap-ran"), process.argv.slice(2).join(" "));
+`;
+  await writeFile(fakeBun, script.trimStart(), "utf8");
+  await chmod(fakeBun, 0o755);
+  return binRoot;
+}
+
 afterEach(async () => {
   while (tempRoots.length > 0) {
     const root = tempRoots.pop();
@@ -112,6 +185,7 @@ describe("stale-dist warn-and-run command policy", { timeout: 180_000 }, () => {
     const { stdout, stderr } = await execFileAsync(process.execPath, [repoBin, "doctor"], {
       cwd: repoRoot,
       encoding: "utf8",
+      env: warnOnlyEnv,
     });
 
     expect(stdout).toContain("DIST");
@@ -132,6 +206,7 @@ describe("stale-dist warn-and-run command policy", { timeout: 180_000 }, () => {
       {
         cwd: repoRoot,
         encoding: "utf8",
+        env: warnOnlyEnv,
       },
     );
 
@@ -147,6 +222,7 @@ describe("stale-dist warn-and-run command policy", { timeout: 180_000 }, () => {
     const { stdout, stderr } = await execFileAsync(process.execPath, [repoBin, "task", "list"], {
       cwd: repoRoot,
       encoding: "utf8",
+      env: warnOnlyEnv,
     });
 
     expect(stdout).toContain("DIST");
@@ -164,6 +240,7 @@ describe("stale-dist warn-and-run command policy", { timeout: 180_000 }, () => {
       {
         cwd: repoRoot,
         encoding: "utf8",
+        env: warnOnlyEnv,
       },
     );
 
@@ -182,6 +259,7 @@ describe("stale-dist warn-and-run command policy", { timeout: 180_000 }, () => {
       {
         cwd: repoRoot,
         encoding: "utf8",
+        env: warnOnlyEnv,
       },
     );
 
@@ -200,6 +278,7 @@ describe("stale-dist warn-and-run command policy", { timeout: 180_000 }, () => {
       {
         cwd: repoRoot,
         encoding: "utf8",
+        env: warnOnlyEnv,
       },
     );
 
@@ -221,6 +300,7 @@ describe("stale-dist warn-and-run command policy", { timeout: 180_000 }, () => {
       {
         cwd: repoRoot,
         encoding: "utf8",
+        env: warnOnlyEnv,
       },
     );
 
@@ -241,6 +321,7 @@ describe("stale-dist warn-and-run command policy", { timeout: 180_000 }, () => {
       {
         cwd: repoRoot,
         encoding: "utf8",
+        env: warnOnlyEnv,
       },
     );
 
@@ -261,6 +342,7 @@ describe("stale-dist warn-and-run command policy", { timeout: 180_000 }, () => {
       {
         cwd: repoRoot,
         encoding: "utf8",
+        env: warnOnlyEnv,
       },
     );
 
@@ -268,5 +350,26 @@ describe("stale-dist warn-and-run command policy", { timeout: 180_000 }, () => {
     expect(stdout).toContain('"args":["finish","20260307-ABC123"]');
     expect(stderr).toContain("allowing task-artifact lifecycle command");
     expect(stderr).toContain("command: finish 20260307-ABC123");
+  });
+
+  it("auto-bootstraps and reruns stale diagnostic commands by default", async () => {
+    const { repoRoot, repoBin } = await setupFrameworkCheckout();
+    const fakeBinRoot = await setupFakeBootstrapBin();
+
+    const { stdout, stderr } = await execFileAsync(process.execPath, [repoBin, "config", "show"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        PATH: `${fakeBinRoot}${path.delimiter}${process.env.PATH ?? ""}`,
+      },
+    });
+
+    expect(stdout).toContain("BOOTSTRAPPED");
+    expect(stdout).toContain('"args":["config","show"]');
+    expect(stderr).toContain("stale repo build detected; running framework dev bootstrap");
+    expect(await readFile(path.join(repoRoot, "fake-bootstrap-ran"), "utf8")).toBe(
+      "run framework:dev:bootstrap",
+    );
   });
 });

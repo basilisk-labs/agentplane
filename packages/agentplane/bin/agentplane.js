@@ -2,7 +2,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { stat } from "node:fs/promises";
+import { mkdir, rm, stat } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { distExists, isPackageBuildFresh } from "./dist-guard.js";
@@ -186,6 +186,95 @@ function renderStalePolicyWarning(reason) {
   return "warning: allowing read-only diagnostic command to run with a stale repo build inside the framework checkout.\n";
 }
 
+function staleAutoBootstrapEnabled() {
+  return (process.env.AGENTPLANE_DEV_AUTO_BOOTSTRAP ?? "1").trim() !== "0";
+}
+
+function alreadyTriedStaleAutoBootstrap() {
+  return (process.env.AGENTPLANE_DEV_AUTO_BOOTSTRAPPED ?? "").trim() === "1";
+}
+
+async function withBootstrapLock(repoRoot, fn) {
+  const lockParent = path.join(repoRoot, ".agentplane", "cache");
+  const lockDir = path.join(lockParent, "framework-dev-bootstrap.lock");
+  await mkdir(lockParent, { recursive: true });
+  try {
+    await mkdir(lockDir, { recursive: false });
+  } catch (error) {
+    if (error?.code !== "EEXIST") throw error;
+    process.stderr.write(
+      "error: another framework dev bootstrap is already running.\n" +
+        `Retry after the lock is released: ${path.relative(repoRoot, lockDir)}\n`,
+    );
+    process.exitCode = 2;
+    return false;
+  }
+
+  try {
+    return await fn();
+  } finally {
+    await rm(lockDir, { recursive: true, force: true });
+  }
+}
+
+async function autoBootstrapAndRerun(repoRoot, staleReasons, commandPolicy) {
+  if (!staleAutoBootstrapEnabled() || alreadyTriedStaleAutoBootstrap()) return false;
+
+  const commandText = process.argv
+    .slice(2)
+    .map((value) => String(value ?? "").trim())
+    .filter(Boolean)
+    .join(" ");
+  process.stderr.write(
+    "info: stale repo build detected; running framework dev bootstrap before command.\n" +
+      `command: ${commandText || "<unknown>"}\n` +
+      `detected: ${staleReasons.join(", ")}\n` +
+      `reason: ${commandPolicy.reason}\n`,
+  );
+
+  return await withBootstrapLock(repoRoot, async () => {
+    const bootstrap = spawnSync("bun", ["run", "framework:dev:bootstrap"], {
+      cwd: repoRoot,
+      stdio: "inherit",
+      env: {
+        ...process.env,
+        AGENTPLANE_DEV_AUTO_BOOTSTRAP: "0",
+      },
+    });
+
+    if (bootstrap.error || bootstrap.status !== 0) {
+      const reason = bootstrap.error?.message ?? `exit ${bootstrap.status ?? "unknown"}`;
+      process.stderr.write(
+        `error: automatic framework dev bootstrap failed (${reason}).\n` +
+          "Manual fallback:\n" +
+          FRAMEWORK_DEV_MANUAL_REPAIR_COMMANDS.map((command) => `  ${command}\n`).join(""),
+      );
+      process.exitCode = bootstrap.status ?? 2;
+      return true;
+    }
+
+    const rerun = spawnSync(
+      process.execPath,
+      [fileURLToPath(import.meta.url), ...process.argv.slice(2)],
+      {
+        cwd: process.cwd(),
+        stdio: "inherit",
+        env: {
+          ...process.env,
+          AGENTPLANE_DEV_AUTO_BOOTSTRAPPED: "1",
+        },
+      },
+    );
+    if (rerun.error) {
+      process.stderr.write(`error: failed to rerun after bootstrap: ${rerun.error.message}\n`);
+      process.exitCode = 2;
+      return true;
+    }
+    process.exitCode = rerun.status ?? (rerun.signal ? 1 : 0);
+    return true;
+  });
+}
+
 function missingRepoRuntimeDependencies(agentplaneRoot) {
   const requireFromAgentplane = createRequire(path.join(agentplaneRoot, "package.json"));
   const frameworkRoot = path.resolve(agentplaneRoot, "..", "..");
@@ -300,6 +389,10 @@ async function assertDistUpToDate() {
 
     const commandPolicy = classifyStaleDistPolicy(process.argv);
     if (commandPolicy.mode === "warn_and_run") {
+      if (await autoBootstrapAndRerun(repoRoot, staleReasons, commandPolicy)) {
+        return false;
+      }
+
       const commandText = process.argv
         .slice(2)
         .map((value) => String(value ?? "").trim())
