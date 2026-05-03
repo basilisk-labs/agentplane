@@ -12,10 +12,12 @@ import {
 
 const envSnapshot = { ...process.env };
 const workspaceRoot = process.cwd();
-const repoConfig = JSON.parse(
-  fs.readFileSync(path.join(workspaceRoot, ".agentplane", "config.json"), "utf8"),
-) as { framework?: { cli?: { expected_version?: string } } };
-const repoExpectedCliVersion = repoConfig.framework?.cli?.expected_version ?? "0.0.0";
+const repoWorkflowText = fs.readFileSync(
+  path.join(workspaceRoot, ".agentplane", "WORKFLOW.md"),
+  "utf8",
+);
+const repoExpectedCliVersion =
+  repoWorkflowText.match(/expected_version:\s+"?([^"\n]+)"?/u)?.[1]?.trim() ?? "0.0.0";
 const repoPackageVersion = JSON.parse(
   fs.readFileSync(path.join(workspaceRoot, "packages", "agentplane", "package.json"), "utf8"),
 ) as { version: string };

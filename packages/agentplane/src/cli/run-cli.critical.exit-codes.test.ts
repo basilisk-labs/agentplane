@@ -22,7 +22,7 @@ describeCritical("critical: exit codes contract", () => {
 
       const first = await runCli(["init", "--yes"], { cwd: root });
       expect(first.code).toBe(0);
-      expect(await pathExists(path.join(root, ".agentplane", "config.json"))).toBe(true);
+      expect(await pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).toBe(true);
 
       const second = await runCli(["init", "--yes"], { cwd: root });
       expectCliError(second, 4, "E_IO");
@@ -89,7 +89,7 @@ describeCritical("critical: exit codes contract", () => {
 
       expect(result.code).toBe(0);
       expect(result.stderr).not.toContain("Invalid field manifest.scenarios[0]");
-      expect(await pathExists(path.join(root, ".agentplane", "config.json"))).toBe(true);
+      expect(await pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).toBe(true);
     },
     CRITICAL_EXIT_CODES_TIMEOUT_MS,
   );

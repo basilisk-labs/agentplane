@@ -27,7 +27,7 @@ describeCritical("critical: scope leak", () => {
     expect(res.code).toBe(0);
 
     expect(await pathExists(path.join(child, ".git"))).toBe(true);
-    expect(await pathExists(path.join(child, ".agentplane", "config.json"))).toBe(true);
+    expect(await pathExists(path.join(child, ".agentplane", "WORKFLOW.md"))).toBe(true);
     expect(await pathExists(path.join(parent, ".agentplane"))).toBe(false);
   });
 
@@ -96,7 +96,7 @@ describeCritical("critical: scope leak", () => {
       expect(res.code).toBe(0);
 
       expect(await pathExists(path.join(child, ".git"))).toBe(true);
-      expect(await pathExists(path.join(child, ".agentplane", "config.json"))).toBe(true);
+      expect(await pathExists(path.join(child, ".agentplane", "WORKFLOW.md"))).toBe(true);
       expect(await pathExists(path.join(root, ".git"))).toBe(false);
       expect(await pathExists(path.join(root, ".agentplane"))).toBe(false);
 

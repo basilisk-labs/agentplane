@@ -59,8 +59,8 @@ describe("release-critical direct lifecycle", () => {
       ]);
       expect(init.code).toBe(0);
 
-      const config = await readFile(path.join(root, ".agentplane", "config.json"), "utf8");
-      expect(config).toContain('"workflow_mode": "direct"');
+      const workflow = await readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8");
+      expect(workflow).toContain("mode: direct");
 
       const taskNew = await runCliWithOutput(root, [
         "task",

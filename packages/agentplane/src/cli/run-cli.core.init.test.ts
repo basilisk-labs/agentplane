@@ -15,7 +15,12 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
-import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
+import {
+  defaultConfig,
+  loadConfig,
+  extractTaskSuffix,
+  type ResolvedProject,
+} from "./core-imports.js";
 import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
@@ -81,9 +86,9 @@ describe("runCli", () => {
       io.restore();
     }
 
-    const configPath = path.join(root, ".agentplane", "config.json");
-    const text = await readFile(configPath, "utf8");
-    expect(text).toContain('"workflow_mode": "branch_pr"');
+    const workflowPath = path.join(root, ".agentplane", "WORKFLOW.md");
+    const text = await readFile(workflowPath, "utf8");
+    expect(text).toContain('mode: "branch_pr"');
 
     const io2 = captureStdIO();
     try {
@@ -206,7 +211,7 @@ describe("runCli", () => {
       io.restore();
     }
 
-    const configPath = path.join(root, ".agentplane", "config.json");
+    const workflowPath = path.join(root, ".agentplane", "WORKFLOW.md");
     const backendPath = path.join(root, ".agentplane", "backends", "local", "backend.json");
     const redmineBackendPath = path.join(
       root,
@@ -234,7 +239,7 @@ describe("runCli", () => {
       "policy",
       "workflow.md",
     );
-    expect(await pathExists(configPath)).toBe(true);
+    expect(await pathExists(workflowPath)).toBe(true);
     expect(await pathExists(backendPath)).toBe(true);
     expect(await pathExists(redmineBackendPath)).toBe(false);
     expect(await pathExists(agentsPath)).toBe(true);
@@ -245,8 +250,7 @@ describe("runCli", () => {
     expect(await readFile(baselineAgentsPath, "utf8")).toBe(await readFile(agentsPath, "utf8"));
     expect(await readFile(baselinePolicyPath, "utf8")).toBe(await readFile(policyPath, "utf8"));
 
-    const configText = await readFile(configPath, "utf8");
-    const config = JSON.parse(configText) as Record<string, unknown>;
+    const { config } = await loadConfig(path.join(root, ".agentplane"));
     expect(config.workflow_mode).toBe("direct");
     expect(config.status_commit_policy).toBe("warn");
     expect(config.commit_automation).toBe("finish_only");
@@ -295,12 +299,11 @@ describe("runCli", () => {
       io.restore();
     }
 
-    const configPath = path.join(root, ".agentplane", "config.json");
-    const configText = await readFile(configPath, "utf8");
-    expect(configText).toContain('"require_plan": false');
-    expect(configText).toContain('"require_network": false');
-    expect(configText).toContain('"require_verify": false');
-    expect(configText).toContain('"profile": "aggressive"');
+    const workflowText = await readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8");
+    expect(workflowText).toContain("require_plan: false");
+    expect(workflowText).toContain("require_network: false");
+    expect(workflowText).toContain("require_verify: false");
+    expect(workflowText).toContain('profile: "aggressive"');
 
     const hookShimPath = path.join(root, ".agentplane", "bin", "agentplane");
     const commitMsgHookPath = path.join(root, ".git", "hooks", "commit-msg");
@@ -449,7 +452,6 @@ describe("runCli", () => {
       io.restore();
     }
 
-    const configPath = path.join(root, ".agentplane", "config.json");
     const localBackendPath = path.join(root, ".agentplane", "backends", "local", "backend.json");
     const redmineBackendPath = path.join(
       root,
@@ -458,8 +460,7 @@ describe("runCli", () => {
       "redmine",
       "backend.json",
     );
-    const configText = await readFile(configPath, "utf8");
-    const config = JSON.parse(configText) as Record<string, unknown>;
+    const { config } = await loadConfig(path.join(root, ".agentplane"));
     expect(
       normalizeSlashes(String((config.tasks_backend as Record<string, unknown>)?.config_path)),
     ).toBe(".agentplane/backends/redmine/backend.json");
