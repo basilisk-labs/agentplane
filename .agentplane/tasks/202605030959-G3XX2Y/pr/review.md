@@ -50,7 +50,8 @@ Prototype Bun executable output for the AgentPlane CLI entrypoint and runtime as
 - Head: bd6054f279ff
 
 ```text
-No changes detected.
+ .../bun-executable-compatibility.md                | 66 ++++++++++++++++++++++
+ 1 file changed, 66 insertions(+)
 ```
 
 </details>
