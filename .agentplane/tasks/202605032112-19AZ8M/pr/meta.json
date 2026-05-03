@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T21:15:13Z",
   "base": "main",
   "branch": "task/202605032112-19AZ8M/fix-043-release-notes",
   "created_at": "2026-05-03T21:12:21.806Z",
-  "head_sha": "17db19835f0ffd6261f446a707567908440eedd9",
+  "head_sha": "4eed2dcb9e1b711c02fd6ff068348c44211f105d",
   "last_verified_at": "2026-05-03T21:12:51.385Z",
   "last_verified_sha": "fa1a9689db62a9d1ac8e6254e281b825f2482b1a",
+  "merge_commit": "04ccc002125560cd2ec87094e20cd5a9907d2016",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T21:15:13Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605032112-19AZ8M",
-  "updated_at": "2026-05-03T21:13:13.741Z",
+  "updated_at": "2026-05-03T21:15:13Z",
   "verify": {
     "status": "pass"
   }
