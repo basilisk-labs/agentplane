@@ -25,7 +25,7 @@ Design the WORKFLOW.md v2 contract as the only project source of truth for Agent
 ### Current Status
 
 - State: ok
-- Note: WORKFLOW v2 source-of-truth contract implemented in fb39a8d8 with CLI-owned front matter, legacy config import fallback, startup docs, and validation coverage.
+- Note: Verified: current PR head d3f396d1 contains implementation commits, task artifacts, CLI reference refresh, and PR artifact refresh. Targeted typecheck/tests, workflow build, doctor, policy routing, and pre-push checks passed up to unrelated recipes inventory drift.
 
 ## Risks
 
