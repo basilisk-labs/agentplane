@@ -74,7 +74,7 @@ describeCritical("critical: symlink root", () => {
     expect(res.code).toBe(0);
 
     expect(await pathExists(path.join(realChild, ".git"))).toBe(true);
-    expect(await pathExists(path.join(realChild, ".agentplane", "config.json"))).toBe(true);
+    expect(await pathExists(path.join(realChild, ".agentplane", "WORKFLOW.md"))).toBe(true);
     expect(await pathExists(path.join(realParent, ".agentplane"))).toBe(false);
 
     const show = await runCli(["config", "show"], { cwd: linkChild });

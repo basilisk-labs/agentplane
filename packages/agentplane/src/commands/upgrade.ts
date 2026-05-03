@@ -25,6 +25,7 @@ import { materializeUpgradeSource, type MaterializedUpgrade } from "./upgrade/ma
 import { planManagedUpgrade } from "./upgrade/plan.js";
 import {
   CONFIG_REL_PATH,
+  WORKFLOW_REL_PATH,
   normalizeVersionForConfig,
   toUpgradeBaselineKey,
 } from "./upgrade/policy.js";
@@ -261,7 +262,7 @@ export async function cmdUpgradeParsed(opts: {
           ...updates,
           ...migratedTaskDocs.changedPaths,
           ...workflowArtifacts.commitPaths,
-          ...(shouldMutateConfig ? [CONFIG_REL_PATH] : []),
+          ...(shouldMutateConfig ? [WORKFLOW_REL_PATH] : []),
         ]),
       ];
       const commit = await createUpgradeCommit({

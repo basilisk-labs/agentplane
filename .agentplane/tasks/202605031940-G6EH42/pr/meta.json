@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605031940-G6EH42/workflow-only-test-config",
+  "created_at": "2026-05-03T19:40:29.847Z",
+  "head_sha": "301a8b54af9e470e57c1362879425e18a41c54b7",
+  "last_verified_at": "2026-05-03T19:55:37.144Z",
+  "last_verified_sha": "1b233d5a1c78cafdc7a7126fe3953e66726f9f30",
+  "schema_version": 1,
+  "task_id": "202605031940-G6EH42",
+  "updated_at": "2026-05-03T19:56:09.179Z",
+  "verify": {
+    "status": "pass"
+  }
+}

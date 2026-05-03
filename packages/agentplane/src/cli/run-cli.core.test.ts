@@ -1026,9 +1026,9 @@ describe("runCli", () => {
       io.restore();
     }
 
-    const configPath = path.join(root, ".agentplane", "config.json");
-    const text = await readFile(configPath, "utf8");
-    expect(text).toContain('"workflow_mode": "branch_pr"');
+    const workflowPath = path.join(root, ".agentplane", "WORKFLOW.md");
+    const text = await readFile(workflowPath, "utf8");
+    expect(text).toContain("mode: branch_pr");
     const workflowText = await readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8");
     const lastKnownGoodText = await readFile(
       path.join(root, ".agentplane", "workflows", "last-known-good.md"),

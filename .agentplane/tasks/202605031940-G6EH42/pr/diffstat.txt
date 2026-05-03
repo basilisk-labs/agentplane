@@ -1,0 +1,24 @@
+ .../agentplane/src/agents/agents-template.test.ts  |  2 +-
+ packages/agentplane/src/cli/core-imports.ts        |  2 +-
+ .../src/cli/release-critical-lifecycle.test.ts     |  4 +-
+ .../src/cli/run-cli.core.hooks.hook-run.test.ts    |  2 +-
+ .../agentplane/src/cli/run-cli.core.init.test.ts   | 35 +++++++--------
+ .../run-cli.core.pr-flow.integrate-merge.test.ts   |  4 +-
+ ...n-cli.core.pr-flow.integrate-validation.test.ts |  4 +-
+ .../run-cli.core.tasks.normalize-migrate.test.ts   |  6 +--
+ packages/agentplane/src/cli/run-cli.core.test.ts   |  6 +--
+ .../src/cli/run-cli.critical.exit-codes.test.ts    |  4 +-
+ .../src/cli/run-cli.critical.scope-leak.test.ts    |  4 +-
+ .../src/cli/run-cli.critical.symlink-root.test.ts  |  2 +-
+ .../src/commands/doctor.command.open-pr.test.ts    | 50 +++++++++-------------
+ .../src/commands/doctor.command.runtime.test.ts    | 47 ++++++--------------
+ .../agentplane/src/commands/doctor.fast.test.ts    | 12 +++---
+ .../commands/release/apply.pipeline/mutation.ts    |  2 +-
+ .../release/apply.version-mutation.test.ts         |  6 +--
+ .../src/commands/runtime.command.test.ts           | 10 +++--
+ .../src/commands/shared/task-backend.test.ts       |  4 +-
+ .../commands/upgrade.json-merge.stability.test.ts  |  2 +-
+ .../agentplane/src/commands/upgrade.merge.test.ts  | 21 +++++----
+ packages/agentplane/src/commands/upgrade.ts        |  3 +-
+ packages/core/src/git/git-utils.test.ts            |  2 +-
+ 23 files changed, 103 insertions(+), 131 deletions(-)

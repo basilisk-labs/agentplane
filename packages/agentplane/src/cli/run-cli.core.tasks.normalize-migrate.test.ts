@@ -804,7 +804,7 @@ describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => 
 
       await execFileAsync("git", ["checkout", "-b", "main"], { cwd: root, env: cleanGitEnv() });
       await writeFile(path.join(root, "feature.txt"), "shipped payload\n", "utf8");
-      await execFileAsync("git", ["add", "feature.txt", ".agentplane/config.json"], {
+      await execFileAsync("git", ["add", "feature.txt", ".agentplane/WORKFLOW.md"], {
         cwd: root,
         env: cleanGitEnv(),
       });
@@ -949,7 +949,7 @@ describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => 
 
       await execFileAsync("git", ["checkout", "-b", "main"], { cwd: root, env: cleanGitEnv() });
       await writeFile(path.join(root, "feature.txt"), "shipped payload\n", "utf8");
-      await execFileAsync("git", ["add", "feature.txt", ".agentplane/config.json"], {
+      await execFileAsync("git", ["add", "feature.txt", ".agentplane/WORKFLOW.md"], {
         cwd: root,
         env: cleanGitEnv(),
       });
@@ -1085,7 +1085,7 @@ describe("runCli", { timeout: NORMALIZE_MIGRATE_INTEGRATION_TIMEOUT_MS }, () => 
 
       await execFileAsync("git", ["checkout", "-b", "main"], { cwd: root, env: cleanGitEnv() });
       await writeFile(path.join(root, "feature.txt"), "targeted shipped payload\n", "utf8");
-      await execFileAsync("git", ["add", "feature.txt", ".agentplane/config.json"], {
+      await execFileAsync("git", ["add", "feature.txt", ".agentplane/WORKFLOW.md"], {
         cwd: root,
         env: cleanGitEnv(),
       });

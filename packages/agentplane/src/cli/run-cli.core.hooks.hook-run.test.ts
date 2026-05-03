@@ -816,7 +816,7 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
         "utf8",
       );
       const execFileAsync = promisify(execFile);
-      await execFileAsync("git", ["add", "package.json", "scripts", ".agentplane/config.json"], {
+      await execFileAsync("git", ["add", "package.json", "scripts", ".agentplane/WORKFLOW.md"], {
         cwd: root,
         env: cleanGitEnv(),
       });

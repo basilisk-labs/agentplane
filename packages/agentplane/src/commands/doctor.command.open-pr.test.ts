@@ -86,6 +86,13 @@ Workflow mode: {{ workflow.mode }}
 last_known_good: .agentplane/workflows/last-known-good.md
 `;
 
+function workflowWithRedmineBackend(): string {
+  return VALID_WORKFLOW.replace(
+    "retry_policy:\n",
+    'tasks:\n  backend:\n    config_path: ".agentplane/backends/redmine/backend.json"\nretry_policy:\n',
+  );
+}
+
 async function mkWorkspace(): Promise<TestWorkspace> {
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-doctor-"));
   workspaces.push(root);
@@ -95,7 +102,7 @@ async function mkWorkspace(): Promise<TestWorkspace> {
   await writeFile(path.join(root, "AGENTS.md"), "# AGENTS\n", "utf8");
   await writeFile(
     path.join(root, ".agentplane", "config.json"),
-    '{\n  "version": 1,\n  "workflow_mode": "direct",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
+    '{\n  "schema_version": 1,\n  "workflow_mode": "direct",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
     "utf8",
   );
   await writeFile(
@@ -135,25 +142,8 @@ async function configureRedmineBackend(
 ): Promise<void> {
   await mkdir(path.join(root, ".agentplane", "backends", "redmine"), { recursive: true });
   await writeFile(
-    path.join(root, ".agentplane", "config.json"),
-    JSON.stringify(
-      {
-        version: 1,
-        workflow_mode: "direct",
-        agents: {
-          approvals: {
-            require_plan: false,
-            require_verify: false,
-            require_network: true,
-          },
-        },
-        tasks_backend: {
-          config_path: ".agentplane/backends/redmine/backend.json",
-        },
-      },
-      null,
-      2,
-    ),
+    path.join(root, ".agentplane", "WORKFLOW.md"),
+    workflowWithRedmineBackend(),
     "utf8",
   );
   await writeFile(
@@ -280,9 +270,10 @@ describe(
       expect(rc).toBe(0);
     });
 
-    it("supports workflow kill-switch for emergency rollback", async () => {
+    it("keeps WORKFLOW.md presence required even when workflow contract checks are disabled", async () => {
       const ws = await mkWorkspace();
       await rm(path.join(ws.root, ".agentplane", "WORKFLOW.md"), { force: true });
+      const stderr = spyOnStderrWrite();
       const prev = process.env.AGENTPLANE_WORKFLOW_ENFORCEMENT;
       process.env.AGENTPLANE_WORKFLOW_ENFORCEMENT = "off";
       try {
@@ -290,8 +281,11 @@ describe(
           { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
           { fix: false, dev: false },
         );
-        expect(rc).toBe(0);
+        expect(rc).toBe(1);
+        const output = stderr.mock.calls.flat().join("\n");
+        expect(output).toContain("Missing required file: .agentplane/WORKFLOW.md");
       } finally {
+        stderr.mockRestore();
         if (prev === undefined) delete process.env.AGENTPLANE_WORKFLOW_ENFORCEMENT;
         else process.env.AGENTPLANE_WORKFLOW_ENFORCEMENT = prev;
       }
@@ -320,7 +314,7 @@ describe(
       const shippedHash = await gitInitWithCommit(ws.root, "feat: shipped payload");
       await writeFile(
         path.join(ws.root, ".agentplane", "config.json"),
-        '{\n  "version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
+        '{\n  "schema_version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
         "utf8",
       );
       const branchPrWorkflow = VALID_WORKFLOW.replace("mode: direct", 'mode: "branch_pr"');
@@ -452,7 +446,6 @@ describe(
         "git",
         [
           "add",
-          ".agentplane/config.json",
           ".agentplane/WORKFLOW.md",
           ".agentplane/workflows/last-known-good.md",
           ".agentplane/tasks.json",
@@ -488,7 +481,7 @@ describe(
       const shippedHash = await gitInitWithCommit(ws.root, "feat: shipped payload");
       await writeFile(
         path.join(ws.root, ".agentplane", "config.json"),
-        '{\n  "version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
+        '{\n  "schema_version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
         "utf8",
       );
       const branchPrWorkflow = VALID_WORKFLOW.replace("mode: direct", 'mode: "branch_pr"');
@@ -621,7 +614,6 @@ describe(
         "git",
         [
           "add",
-          ".agentplane/config.json",
           ".agentplane/WORKFLOW.md",
           ".agentplane/workflows/last-known-good.md",
           ".agentplane/tasks.json",
@@ -657,7 +649,7 @@ describe(
       const shippedHash = await gitInitWithCommit(ws.root, "feat: projection-only shipped payload");
       await writeFile(
         path.join(ws.root, ".agentplane", "config.json"),
-        '{\n  "version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
+        '{\n  "schema_version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
         "utf8",
       );
       const branchPrWorkflow = VALID_WORKFLOW.replace("mode: direct", 'mode: "branch_pr"');
@@ -785,7 +777,7 @@ describe(
       const shippedHash = await gitInitWithCommit(ws.root, "feat: already-shipped payload");
       await writeFile(
         path.join(ws.root, ".agentplane", "config.json"),
-        '{\n  "version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
+        '{\n  "schema_version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
         "utf8",
       );
       const branchPrWorkflow = VALID_WORKFLOW.replace("mode: direct", 'mode: "branch_pr"');
@@ -986,7 +978,7 @@ describe(
       const shippedHash = await gitInitWithCommit(ws.root, "feat: stacked root shipped payload");
       await writeFile(
         path.join(ws.root, ".agentplane", "config.json"),
-        '{\n  "version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
+        '{\n  "schema_version": 1,\n  "workflow_mode": "branch_pr",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
         "utf8",
       );
       const branchPrWorkflow = VALID_WORKFLOW.replace("mode: direct", 'mode: "branch_pr"');

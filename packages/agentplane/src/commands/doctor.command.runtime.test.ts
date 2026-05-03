@@ -89,6 +89,13 @@ Workflow mode: {{ workflow.mode }}
 last_known_good: .agentplane/workflows/last-known-good.md
 `;
 
+function workflowWithExpectedCliVersion(version: string): string {
+  return VALID_WORKFLOW.replace(
+    "owners:\n",
+    `framework:\n  source: "https://github.com/basilisk-labs/agentplane"\n  last_update: null\n  cli:\n    expected_version: "${version}"\nowners:\n`,
+  );
+}
+
 async function mkWorkspace(): Promise<TestWorkspace> {
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-doctor-"));
   workspaces.push(root);
@@ -98,7 +105,7 @@ async function mkWorkspace(): Promise<TestWorkspace> {
   await writeFile(path.join(root, "AGENTS.md"), "# AGENTS\n", "utf8");
   await writeFile(
     path.join(root, ".agentplane", "config.json"),
-    '{\n  "version": 1,\n  "workflow_mode": "direct",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
+    '{\n  "schema_version": 1,\n  "workflow_mode": "direct",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
     "utf8",
   );
   await writeFile(
@@ -632,23 +639,8 @@ describe(
       const ws = await mkWorkspace();
       const stderr = captureStderr();
       await writeFile(
-        path.join(ws.root, ".agentplane", "config.json"),
-        JSON.stringify(
-          {
-            schema_version: 1,
-            workflow_mode: "direct",
-            framework: {
-              source: "https://github.com/basilisk-labs/agentplane",
-              last_update: null,
-              cli: { expected_version: "9.9.9" },
-            },
-            agents: {
-              approvals: { require_plan: false, require_verify: false, require_network: true },
-            },
-          },
-          null,
-          2,
-        ),
+        path.join(ws.root, ".agentplane", "WORKFLOW.md"),
+        workflowWithExpectedCliVersion("9.9.9"),
         "utf8",
       );
 
@@ -671,23 +663,8 @@ describe(
       const ws = await mkWorkspace();
       const stderr = captureStderr();
       await writeFile(
-        path.join(ws.root, ".agentplane", "config.json"),
-        JSON.stringify(
-          {
-            schema_version: 1,
-            workflow_mode: "direct",
-            framework: {
-              source: "https://github.com/basilisk-labs/agentplane",
-              last_update: null,
-              cli: { expected_version: currentCliVersion },
-            },
-            agents: {
-              approvals: { require_plan: false, require_verify: false, require_network: true },
-            },
-          },
-          null,
-          2,
-        ),
+        path.join(ws.root, ".agentplane", "WORKFLOW.md"),
+        workflowWithExpectedCliVersion(currentCliVersion),
         "utf8",
       );
 

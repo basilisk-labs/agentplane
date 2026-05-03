@@ -118,7 +118,7 @@ describeWhenNotHook(
           path.join(root, "packages", "agentplane", "package.json"),
           "utf8",
         );
-        const configText = await readFile(path.join(root, ".agentplane", "config.json"), "utf8");
+        const workflowText = await readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8");
         expect(coreText).toContain('"version": "0.2.7"');
         expect(recipesText).toContain('"version": "0.2.7"');
         expect(recipesRuntimeText).toContain('RECIPES_VERSION = "0.2.7"');
@@ -126,7 +126,7 @@ describeWhenNotHook(
         expect(agentplaneText).toContain('"@agentplaneorg/core": "0.2.7"');
         expect(agentplaneText).toContain('"@agentplaneorg/recipes": "0.2.7"');
         expect(testkitText).toContain('"@agentplaneorg/core": "0.2.7"');
-        expect(configText).toContain('"expected_version": "0.2.7"');
+        expect(workflowText).toContain("expected_version: 0.2.7");
 
         const { stdout: tagOut } = await execFileAsync("git", ["tag", "--list", "v0.2.7"], {
           cwd: root,
@@ -138,7 +138,7 @@ describeWhenNotHook(
           ["show", "--name-only", "--format=", "HEAD"],
           { cwd: root },
         );
-        expect(committedFiles).toContain(".agentplane/config.json");
+        expect(committedFiles).toContain(".agentplane/WORKFLOW.md");
         expect(committedFiles).toContain("packages/recipes/package.json");
         expect(committedFiles).toContain("packages/recipes/src/index.ts");
         expect(committedFiles).toContain("packages/testkit/package.json");

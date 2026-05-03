@@ -109,7 +109,7 @@ describe(
 
       const execFileAsync = promisify(execFile);
       await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
-      await execFileAsync("git", ["add", "seed.txt", ".agentplane/config.json"], { cwd: root });
+      await execFileAsync("git", ["add", "seed.txt", ".agentplane/WORKFLOW.md"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
       const created = await createTask({
         cwd: root,
@@ -163,7 +163,7 @@ describe(
 
       const execFileAsync = promisify(execFile);
       await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
-      await execFileAsync("git", ["add", "seed.txt", ".agentplane/config.json"], { cwd: root });
+      await execFileAsync("git", ["add", "seed.txt", ".agentplane/WORKFLOW.md"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
       const { stdout: baseShaText } = await execFileAsync("git", ["rev-parse", "HEAD"], {
         cwd: root,

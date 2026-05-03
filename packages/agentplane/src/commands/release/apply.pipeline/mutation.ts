@@ -81,7 +81,7 @@ export async function applyReleaseMutation(opts: {
     stagePaths.push("packages/testkit/package.json");
   }
   if (expectedCliVersionPersisted) {
-    stagePaths.push(".agentplane/config.json");
+    stagePaths.push(".agentplane/WORKFLOW.md");
   }
   if (generatedReferenceExists) {
     stagePaths.push("docs/reference/generated-reference.mdx");

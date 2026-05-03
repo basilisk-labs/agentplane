@@ -14,9 +14,9 @@ describe("upgrade merge behavior", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
-    // Existing local config should not be overwritten by upgrade bundle.
-    const configPath = path.join(root, ".agentplane", "config.json");
-    const originalConfig = await readFile(configPath, "utf8");
+    // Existing workflow config should not be overwritten by upgrade bundle.
+    const workflowPath = path.join(root, ".agentplane", "WORKFLOW.md");
+    const originalWorkflow = await readFile(workflowPath, "utf8");
 
     // Existing AGENTS.md with local-only edits.
     const agentsPath = path.join(root, "AGENTS.md");
@@ -106,14 +106,13 @@ describe("upgrade merge behavior", () => {
     expect(mergedCoder.workflow).toEqual(["upstream-step", "new-step"]);
     expect(mergedCoder.local_only).toBeUndefined();
 
-    const finalConfig = await readFile(configPath, "utf8");
-    // config.json should not be overwritten by the bundle; it may be updated by upgrade itself
-    // (e.g. framework.last_update), so assert structure is preserved and no bundle-only fields appear.
-    expect(finalConfig).not.toContain('"ignored"');
-    const parsedOriginal = JSON.parse(originalConfig) as Record<string, unknown>;
-    const parsedFinal = JSON.parse(finalConfig) as Record<string, unknown>;
-    expect(parsedFinal.schema_version).toBe(parsedOriginal.schema_version);
-    expect(parsedFinal.paths).toEqual(parsedOriginal.paths);
+    const finalWorkflow = await readFile(workflowPath, "utf8");
+    // WORKFLOW.md should not be overwritten by the bundle; it may be refreshed by upgrade itself
+    // (e.g. framework.last_update), so assert the managed workflow structure is preserved.
+    expect(finalWorkflow).not.toContain('"ignored"');
+    expect(finalWorkflow).toContain("version:");
+    expect(finalWorkflow).toContain("workflow:");
+    expect(originalWorkflow).toContain("workflow:");
 
     const { stdout: commitBodyOut } = await execFileAsync("git", ["log", "-1", "--pretty=%B"], {
       cwd: root,

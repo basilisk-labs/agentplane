@@ -242,7 +242,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
     await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
     await stageGitignoreIfPresent(root);
-    await execFileAsync("git", ["add", "README.md", ".agentplane/config.json"], { cwd: root });
+    await execFileAsync("git", ["add", "README.md", ".agentplane/WORKFLOW.md"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
 
     let taskId = "";
@@ -323,7 +323,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
     await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
     await stageGitignoreIfPresent(root);
-    await execFileAsync("git", ["add", "README.md", ".agentplane/config.json"], { cwd: root });
+    await execFileAsync("git", ["add", "README.md", ".agentplane/WORKFLOW.md"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
     await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
       cwd: root,
