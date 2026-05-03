@@ -132,6 +132,7 @@ async function renderScoop(repoRoot, args) {
       win32X64: findPlatformAsset(manifest, "win32", "x64"),
     },
     installStrategy: "standalone_bundled_node",
+    externalChannelSwitchGate: manifest.externalChannelSwitchGate ?? null,
     nextAction:
       channel.status === "skipped_missing_credentials"
         ? "Add SCOOP_BUCKET_TOKEN and rerun the Scoop bucket publication module for this manifest."

@@ -9,6 +9,11 @@ import { afterEach, describe, expect, it } from "vitest";
 const execFileAsync = promisify(execFile);
 const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/render-homebrew-formula.mjs");
 const tempRoots: string[] = [];
+const externalChannelSwitchGate = {
+  defaultInstallStrategy: "standalone_bundled_node",
+  candidateInstallStrategy: "bun_single_file_executable",
+  bunDefaultEligible: false,
+};
 
 async function makeTempRoot() {
   const root = await mkdtemp(path.join(tmpdir(), "agentplane-homebrew-formula-"));
@@ -37,6 +42,7 @@ describe("render-homebrew-formula script", () => {
           version: "0.4.1",
           tag: "v0.4.1",
           sha: "abc123",
+          externalChannelSwitchGate,
           platformAssets: [
             {
               name: "agentplane-v0.4.1-darwin-arm64.tar.gz",
@@ -78,6 +84,7 @@ describe("render-homebrew-formula script", () => {
       await readFile(path.join(outDir, "homebrew-result.json"), "utf8"),
     ) as {
       installStrategy: string;
+      externalChannelSwitchGate: { bunDefaultEligible: boolean };
       assets: { darwinArm64: { name: string }; darwinX64: { name: string } };
     };
     expect(formula).toContain('version "0.4.1"');
@@ -91,6 +98,7 @@ describe("render-homebrew-formula script", () => {
     expect(formula).not.toContain("std_npm_args");
     expect(formula).not.toContain("--min-release-age");
     expect(evidence.installStrategy).toBe("standalone_bundled_node");
+    expect(evidence.externalChannelSwitchGate.bunDefaultEligible).toBe(false);
     expect(evidence.assets.darwinArm64.name).toBe("agentplane-v0.4.1-darwin-arm64.tar.gz");
     expect(evidence.assets.darwinX64.name).toBe("agentplane-v0.4.1-darwin-x64.tar.gz");
   });

@@ -1,0 +1,9 @@
+ docs/recipes-inventory.json                        | 29 ----------------------
+ .../generate-release-distribution-script.test.ts   | 16 ++++++++++++
+ .../release/render-homebrew-formula-script.test.ts |  8 ++++++
+ ...ender-scoop-and-setup-standalone-script.test.ts | 10 ++++++++
+ scripts/generate-release-distribution.mjs          | 12 +++++++++
+ scripts/render-homebrew-formula.mjs                |  1 +
+ scripts/render-scoop-manifest.mjs                  |  1 +
+ scripts/render-setup-agentplane-action.mjs         |  1 +
+ 8 files changed, 49 insertions(+), 29 deletions(-)

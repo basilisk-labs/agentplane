@@ -66,6 +66,12 @@ describe("generate-release-distribution script", () => {
         installStrategy: string;
         entrypoint: string;
       }[];
+      externalChannelSwitchGate: {
+        defaultInstallStrategy: string;
+        candidateInstallStrategy: string;
+        bunDefaultEligible: boolean;
+        requiredEvidence: string[];
+      };
     };
     const checksums = await readFile(path.join(outDir, "SHA256SUMS"), "utf8");
     const installSh = await readFile(path.join(outDir, "install.sh"), "utf8");
@@ -114,6 +120,16 @@ describe("generate-release-distribution script", () => {
         installStrategy: "bun_single_file_executable",
         entrypoint: "bin/agentplane.exe",
       }),
+    );
+    expect(manifest.externalChannelSwitchGate).toEqual(
+      expect.objectContaining({
+        defaultInstallStrategy: "standalone_bundled_node",
+        candidateInstallStrategy: "bun_single_file_executable",
+        bunDefaultEligible: false,
+      }),
+    );
+    expect(manifest.externalChannelSwitchGate.requiredEvidence).toContain(
+      "bun_assets_pass_release_cycle_smoke",
     );
     for (const asset of manifest.platformAssets) {
       expect(manifest.releaseAssets.map((releaseAsset) => releaseAsset.name)).toContain(asset.name);
