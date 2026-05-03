@@ -81,7 +81,7 @@ The framework layer is the reusable control plane that recipes and runner-specif
 
 ## Runtime data flow
 
-1. CLI resolves project root, runtime mode, and `.agentplane/config.json`.
+1. CLI resolves project root, runtime mode, and `.agentplane/WORKFLOW.md`.
 2. `runtime/harness` resolves the repo-level contract into `ResolvedHarnessContract`.
 3. `runtime/execution-context.ts` assembles the canonical execution context around that harness.
 4. Behavior, capability, approval, execution-profile, task-intake, explain, and protocol modules derive reusable runtime inputs from the canonical context.
