@@ -1,10 +1,11 @@
 ---
 id: "202605031524-SDCTFM"
 title: "Cascade hosted branch_pr closure across batch tasks"
-status: "DOING"
+result_summary: "Merged via PR #831."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-05-03T16:01:08.728Z"
   updated_by: "CODER"
   note: "hosted-close now cascades branch_pr batch closure to included tasks."
-commit: null
+commit:
+  hash: "250062787dd23288a1120488d7ebe901257bd7fc"
+  message: "Merge pull request #831 from basilisk-labs/task/202605031524-SDCTFM/batch-hosted-close-cascade"
 comments:
   -
     author: "CODER"
     body: "Start: cascade hosted branch_pr closure across primary and included batch tasks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #831 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "hosted-close now cascades branch_pr batch closure to included tasks."
+  -
+    type: "status"
+    at: "2026-05-03T16:05:33.128Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #831 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T16:01:08.736Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T16:05:33.133Z"
+doc_updated_by: "INTEGRATOR"
 description: "Teach integrate/hosted-close/hosted-close-pr recovery to close primary and included batch tasks atomically after a merged primary PR, recording DONE status, commit evidence, and task README close artifacts for every included task."
 sections:
   Summary: |-
