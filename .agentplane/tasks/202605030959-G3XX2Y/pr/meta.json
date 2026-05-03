@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605030959-G3XX2Y/bun-executable-compatibility",
+  "created_at": "2026-05-03T11:03:23.674Z",
+  "head_sha": "bd6054f279ff65ef8d54e2f6298a8228f97dbcbe",
+  "last_verified_at": "2026-05-03T11:04:59.221Z",
+  "last_verified_sha": "bd6054f279ff65ef8d54e2f6298a8228f97dbcbe",
+  "schema_version": 1,
+  "task_id": "202605030959-G3XX2Y",
+  "updated_at": "2026-05-03T11:03:23.674Z",
+  "verify": {
+    "status": "pass"
+  }
+}
