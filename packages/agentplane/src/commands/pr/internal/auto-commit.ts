@@ -2,6 +2,7 @@ import path from "node:path";
 
 import { buildTaskArtifactRefreshCommitSubject } from "@agentplaneorg/core/commit";
 
+import { appendDcoSignoff } from "../../guard/impl/dco.js";
 import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "../../guard/impl/env.js";
 import { toGitPath, gitEnv } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
@@ -73,6 +74,7 @@ export async function maybeAutoCommitTaskPrArtifacts(opts: {
   await opts.ctx.git.stage(taskPacketPaths);
   await opts.ctx.git.commit({
     message: buildTaskArtifactRefreshCommitSubject({ taskId: opts.taskId }),
+    body: appendDcoSignoff({ config: opts.ctx.config }),
     env: buildGitCommitEnv({
       taskId: opts.taskId,
       allowTasks: true,

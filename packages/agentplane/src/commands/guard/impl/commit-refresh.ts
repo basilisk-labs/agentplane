@@ -10,6 +10,7 @@ import { refreshBranchPrArtifactsAfterTaskCommit } from "../../shared/post-commi
 import { isTaskLocalAdvancePath } from "../../shared/task-local-freshness.js";
 import { type CommandContext } from "../../shared/task-backend.js";
 import { stageAllowlist } from "./allow.js";
+import { appendDcoSignoff } from "./dco.js";
 import { buildGitCommitEnv, resolveCanonicalGitIdentity } from "./env.js";
 import { guardCommitCheck } from "./policy.js";
 
@@ -118,7 +119,11 @@ export async function commitRefreshedTaskArtifacts(opts: {
     allowCI: false,
     gitIdentity: await resolveCanonicalGitIdentity(),
   });
-  await opts.ctx.git.commit({ message, env });
+  await opts.ctx.git.commit({
+    message,
+    body: appendDcoSignoff({ config: opts.ctx.config }),
+    env,
+  });
   return await opts.ctx.git.headHashSubject();
 }
 

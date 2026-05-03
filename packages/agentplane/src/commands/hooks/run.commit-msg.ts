@@ -7,6 +7,7 @@ import { evaluatePolicy } from "../../policy/evaluate.js";
 import { CliError } from "../../shared/errors.js";
 import { throwIfPolicyDenied } from "../shared/policy-deny.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
+import { assertDcoSignoff } from "../guard/impl/dco.js";
 import { parseTaskIdFromBranch, parseTaskIdFromCloseBranch } from "@agentplaneorg/core/git";
 import type { HooksRunOptions } from "./run.js";
 
@@ -79,5 +80,14 @@ export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
     commit: { subject },
   });
   throwIfPolicyDenied(res);
+  try {
+    assertDcoSignoff({ config: loaded.config, message: raw });
+  } catch (err) {
+    throw new CliError({
+      exitCode: 5,
+      code: "E_GIT",
+      message: err instanceof Error ? err.message : String(err),
+    });
+  }
   return 0;
 }

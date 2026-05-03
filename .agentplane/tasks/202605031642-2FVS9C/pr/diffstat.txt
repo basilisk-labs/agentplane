@@ -1,0 +1,18 @@
+ .agentplane/WORKFLOW.md                            |  4 ++
+ docs/user/cli-reference.generated.mdx              |  1 +
+ docs/user/commands.mdx                             |  1 +
+ docs/user/workflow.mdx                             |  2 +
+ .../src/cli/run-cli.core.hooks.hook-run.test.ts    | 32 +++++++++++++++
+ packages/agentplane/src/commands/commit.spec.ts    |  1 +
+ .../src/commands/guard/impl/comment-commit.ts      |  7 +++-
+ .../src/commands/guard/impl/commit-refresh.ts      |  7 +++-
+ .../agentplane/src/commands/guard/impl/commit.ts   | 13 +++++-
+ packages/agentplane/src/commands/guard/impl/dco.ts | 36 +++++++++++++++++
+ .../agentplane/src/commands/guard/impl/env.test.ts | 32 +++++++++++++++
+ .../src/commands/hooks/run.commit-msg.ts           | 10 +++++
+ .../src/commands/pr/internal/auto-commit.ts        |  2 +
+ packages/core/schemas/config.schema.json           | 46 +++++++++++++++++++++-
+ packages/core/src/config/schema.impl.ts            | 17 ++++++++
+ packages/spec/examples/config.json                 |  3 +-
+ packages/spec/schemas/config.schema.json           | 46 +++++++++++++++++++++-
+ 17 files changed, 253 insertions(+), 7 deletions(-)
