@@ -142,7 +142,7 @@ agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 
 ## Task export (optional)
 
-Generate an optional integration snapshot (typically `.agentplane/tasks.json`):
+Generate an optional integration snapshot:
 
 ```bash
 agentplane task export
@@ -238,7 +238,7 @@ For any commit-capable command (`commit`, `guard commit`, `start/block/finish ..
 
 - Always pass explicit allowlist prefixes (`--allow` / `--commit-allow` / `--status-commit-allow`).
 - Top-level `agentplane commit` can auto-stage changed paths that match the provided allowlist when the git index starts empty.
-- `--allow-tasks` is intentionally task-scoped: it covers the optional exported `.agentplane/tasks.json` snapshot plus artifacts under the active task subtree, not unrelated `.agentplane/tasks/**` directories.
+- `--allow-tasks` is intentionally task-scoped: it covers the optional exported tasks snapshot plus artifacts under the active task subtree, not unrelated `.agentplane/tasks/**` directories.
 - Path-scoped protected overrides can also stand alone without a duplicate explicit prefix: `--allow-policy`, `--allow-config`, `--allow-hooks`, and `--allow-ci` each admit their own protected path family for `commit` auto-stage and `guard commit` policy checks.
 - `--allow-base` is different: it is only a branch-level override for base-branch edits and does not select any file paths by itself.
 - `agentplane guard commit` remains staged-only; it validates the current index and never stages files for you.

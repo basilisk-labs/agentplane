@@ -86,7 +86,7 @@ The framework layer is the reusable control plane that recipes and runner-specif
 3. `runtime/execution-context.ts` assembles the canonical execution context around that harness.
 4. Behavior, capability, approval, execution-profile, task-intake, explain, and protocol modules derive reusable runtime inputs from the canonical context.
 5. Command handlers and runner usecases consume the same context instead of rebuilding ad hoc task/repo/config helpers.
-6. Backend mutation and task projection update `.agentplane/tasks/<task-id>/README.md` and optional exported caches such as `.agentplane/tasks.json`.
+6. Backend mutation and task projection update `.agentplane/tasks/<task-id>/README.md` and optional generated export snapshots.
 7. Shared runner flows persist run artifacts under `.agentplane/tasks/<task-id>/runs/<run-id>/`, including machine-readable framework explain/protocol payloads in the bundle.
 8. Agent Change Record support derives `.agentplane/tasks/<task-id>/acr.json` from the same task,
    policy, verification, finish, and Git evidence instead of adding a parallel task source of truth.
