@@ -1,10 +1,11 @@
 ---
 id: "202605031445-0MGNSR"
 title: "Refresh recipes inventory after CMO close drift"
-status: "DOING"
+result_summary: "Merged via PR #823."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T14:46:54.622Z"
   updated_by: "DOCS"
   note: "Regenerated docs/recipes-inventory.json from the current recipe tree; bun run docs:recipes:check passes."
-commit: null
+commit:
+  hash: "4278ac2cca8ab60d28859be033170f68e1c5caba"
+  message: "Merge pull request #823 from basilisk-labs/task/202605031445-0MGNSR/refresh-recipes-inventory"
 comments:
   -
     author: "DOCS"
     body: "Start: refresh stale recipes inventory so closure branches can pass the configured freshness gate."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #823 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Regenerated docs/recipes-inventory.json from the current recipe tree; bun run docs:recipes:check passes."
+  -
+    type: "status"
+    at: "2026-05-03T14:49:39.654Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #823 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T14:46:54.625Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-03T14:49:39.659Z"
+doc_updated_by: "INTEGRATOR"
 description: "Regenerate docs/recipes-inventory.json so the pre-push and CI recipes inventory freshness gate matches the current recipe tree before CMO leaf task closure branches are published."
 sections:
   Summary: |-
