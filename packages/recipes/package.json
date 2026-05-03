@@ -1,10 +1,13 @@
 {
   "name": "@agentplaneorg/recipes",
   "version": "0.4.2",
-  "description": "Recipe runtime helpers for the Agent Plane CLI.",
+  "description": "Recipe modules for repeatable AgentPlane audit-layer workflows.",
   "keywords": [
     "agentplane",
     "agentplane-framework",
+    "coding-agent",
+    "agent-audit",
+    "git-workflow",
     "recipes",
     "automation",
     "cli"
@@ -15,7 +18,7 @@
     "type": "git",
     "url": "https://github.com/basilisk-labs/agentplane.git"
   },
-  "homepage": "https://github.com/basilisk-labs/agentplane",
+  "homepage": "https://agentplane.org",
   "bugs": {
     "url": "https://github.com/basilisk-labs/agentplane/issues"
   },

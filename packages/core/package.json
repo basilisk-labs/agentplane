@@ -1,10 +1,13 @@
 {
   "name": "@agentplaneorg/core",
   "version": "0.4.2",
-  "description": "Core utilities and models for the Agent Plane CLI.",
+  "description": "Core libraries for AgentPlane repository-native task, policy, and verification workflows.",
   "keywords": [
     "agentplane",
     "agentplane-framework",
+    "coding-agent",
+    "agent-audit",
+    "git-workflow",
     "core",
     "tasks",
     "workflow",
@@ -16,7 +19,7 @@
     "type": "git",
     "url": "git+https://github.com/basilisk-labs/agentplane.git"
   },
-  "homepage": "https://github.com/basilisk-labs/agentplane",
+  "homepage": "https://agentplane.org",
   "bugs": {
     "url": "https://github.com/basilisk-labs/agentplane/issues"
   },

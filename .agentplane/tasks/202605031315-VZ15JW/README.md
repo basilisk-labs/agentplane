@@ -1,10 +1,10 @@
 ---
 id: "202605031315-VZ15JW"
 title: "Update package discovery metadata"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +22,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-03T13:43:04.302Z"
+  updated_by: "DOCS"
+  note: "Updated public and internal package metadata descriptions, keywords, and homepages to match the audit-layer positioning without changing versions, exports, files, or runtime code. Verified JSON parsing, package tarball policy, and git diff --check."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "DOCS"
+    body: "Start: update package discovery metadata after README/site positioning has landed."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T13:42:03.599Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: update package discovery metadata after README/site positioning has landed."
+  -
+    type: "verify"
+    at: "2026-05-03T13:43:04.302Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Updated public and internal package metadata descriptions, keywords, and homepages to match the audit-layer positioning without changing versions, exports, files, or runtime code. Verified JSON parsing, package tarball policy, and git diff --check."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:15:45.778Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T13:43:04.308Z"
+doc_updated_by: "DOCS"
 description: "Update package.json descriptions and keywords for repository-owned npm discovery surfaces without doing a breaking package namespace migration in this batch."
 sections:
   Summary: |-
@@ -49,11 +65,22 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T13:43:04.302Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Updated public and internal package metadata descriptions, keywords, and homepages to match the audit-layer positioning without changing versions, exports, files, or runtime code. Verified JSON parsing, package tarball policy, and git diff --check.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:42:03.599Z, excerpt_hash=sha256:aa48f03f6fc3016e945cd9fcc0100a733ad38cf5e874d4f47e8dd9375b37ed3b
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: package:tarball:check passed for @agentplaneorg/core, @agentplaneorg/recipes, and agentplane after metadata edits.
+      Impact: npm/package discovery now uses the same coding-agent audit-layer category as the README and website surfaces.
+      Resolution: Keep package metadata changes scoped to discovery fields; publication still requires the normal release path.
 id_source: "generated"
 ---
 ## Summary
@@ -81,6 +108,14 @@ Update package.json description/keywords for packages/agentplane, packages/core,
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T13:43:04.302Z — VERIFY — ok
+
+By: DOCS
+
+Note: Updated public and internal package metadata descriptions, keywords, and homepages to match the audit-layer positioning without changing versions, exports, files, or runtime code. Verified JSON parsing, package tarball policy, and git diff --check.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:42:03.599Z, excerpt_hash=sha256:aa48f03f6fc3016e945cd9fcc0100a733ad38cf5e874d4f47e8dd9375b37ed3b
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -89,3 +124,7 @@ Update package.json description/keywords for packages/agentplane, packages/core,
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: package:tarball:check passed for @agentplaneorg/core, @agentplaneorg/recipes, and agentplane after metadata edits.
+  Impact: npm/package discovery now uses the same coding-agent audit-layer category as the README and website surfaces.
+  Resolution: Keep package metadata changes scoped to discovery fields; publication still requires the normal release path.

@@ -1,10 +1,11 @@
 {
   "name": "@agentplane/testkit",
   "version": "0.0.0",
-  "description": "Test helpers for Agent Plane packages (internal package).",
+  "description": "Test helpers for AgentPlane audit-layer packages (internal package).",
   "keywords": [
     "agentplane",
     "agentplane-framework",
+    "agent-audit",
     "testing",
     "testkit",
     "cli"
@@ -15,7 +16,7 @@
     "type": "git",
     "url": "https://github.com/basilisk-labs/agentplane.git"
   },
-  "homepage": "https://github.com/basilisk-labs/agentplane",
+  "homepage": "https://agentplane.org",
   "bugs": {
     "url": "https://github.com/basilisk-labs/agentplane/issues"
   },
