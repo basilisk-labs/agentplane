@@ -1,5 +1,5 @@
- packages/agentplane/bin/agentplane.js              |  95 ++++++++++++++++++-
- .../src/cli/bootstrap-framework-dev-script.test.ts |  18 ++++
- .../agentplane/src/cli/stale-dist-readonly.test.ts | 103 +++++++++++++++++++++
+ packages/agentplane/bin/agentplane.js              |  95 +++++++++++++++-
+ .../src/cli/bootstrap-framework-dev-script.test.ts |  18 +++
+ .../agentplane/src/cli/stale-dist-readonly.test.ts | 124 +++++++++++++++++++++
  scripts/bootstrap-framework-dev.mjs                |   5 +-
- 4 files changed, 219 insertions(+), 2 deletions(-)
+ 4 files changed, 240 insertions(+), 2 deletions(-)

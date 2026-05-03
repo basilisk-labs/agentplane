@@ -45,16 +45,16 @@ Make framework-checkout stale runtime handling rebuild or stop instead of return
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T15:56:35.667Z
+- Updated: 2026-05-03T16:20:42.505Z
 - Branch: task/202605031543-422JX3/stale-cli-autobootstrap
-- Head: 0fd7fdecc1f6
+- Head: 857d85ebe273
 
 ```text
- packages/agentplane/bin/agentplane.js              |  95 ++++++++++++++++++-
- .../src/cli/bootstrap-framework-dev-script.test.ts |  18 ++++
- .../agentplane/src/cli/stale-dist-readonly.test.ts | 103 +++++++++++++++++++++
+ packages/agentplane/bin/agentplane.js              |  95 +++++++++++++++-
+ .../src/cli/bootstrap-framework-dev-script.test.ts |  18 +++
+ .../agentplane/src/cli/stale-dist-readonly.test.ts | 124 +++++++++++++++++++++
  scripts/bootstrap-framework-dev.mjs                |   5 +-
- 4 files changed, 219 insertions(+), 2 deletions(-)
+ 4 files changed, 240 insertions(+), 2 deletions(-)
 ```
 
 </details>
