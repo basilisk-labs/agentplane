@@ -2,6 +2,8 @@ export const githubUrl = "https://github.com/basilisk-labs/agentplane";
 export const docsUrl = "/docs/user/overview";
 export const workflowGuidesUrl = "/docs/workflow-guides";
 export const recipesUrl = "/docs/recipes";
+export const comparisonUrl = "/docs/compare";
+export const manifestoUrl = "/docs/manifesto";
 export const workflowDocsUrl = "/docs/user/workflow";
 export const quickstartUrl = "/docs/user/setup";
 export const installCommand = "npm i -g agentplane";
@@ -10,40 +12,73 @@ export const recipesIndexUrl =
 
 export const homepageContent = {
   seo: {
-    title: "Use coding agents without losing Git discipline",
+    title: "AgentPlane: the audit layer for coding agents",
     description:
-      "AgentPlane is a local CLI that makes coding-agent work reviewable inside Git repositories.",
+      "Open-source CLI that turns Claude Code, Codex, Cursor, and Aider into reviewable, reversible work inside Git repositories.",
   },
   hero: {
-    eyebrow: "Local CLI for reviewable coding-agent work",
-    title: "Use coding agents without losing Git discipline.",
+    eyebrow: "Open-source audit layer for coding agents",
+    title: "AgentPlane",
     subtitle:
-      "AgentPlane makes Claude Code, Codex, Cursor, Aider, and similar coding-agent work auditable inside your Git repository.",
+      "Turn Claude Code, Codex, Cursor, Aider, and similar coding-agent work into reviewable, reversible Git artifacts.",
     flow: "task → plan → approve → implement → verify → finish",
-    assurances: ["No hosted runtime", "No hidden state", "Everything stays in your repo"],
+    assurances: ["No hosted runtime", "No telemetry", "Everything stays in your repo"],
     terminal: {
-      title: "Command preview",
+      title: "Install path",
       lines: [installCommand, "agentplane init", "agentplane quickstart"],
     },
   },
+  problem: {
+    title: "The diff is not the whole story.",
+    text: "A coding agent can edit 47 files before a reviewer sees the trail. AgentPlane records the task, plan, verification, and finish state before that context disappears into chat history.",
+    bullets: [
+      "What was the agent asked to do?",
+      "Which plan was accepted?",
+      "What checks actually ran?",
+      "Why is this safe to merge or revert?",
+    ],
+  },
   demo: {
-    title: "See an agent task become reviewable.",
-    text: "AgentPlane records the task, plan, verification, and finish state around coding-agent work so reviewers can reconstruct what happened from Git-visible artifacts.",
+    title: "See the task trail before the diff grows.",
+    text: "Quickstart now shows a harmless demo-task path and the repo-visible artifact shape before you let an agent touch product code.",
     terminal: {
-      title: "Terminal walkthrough",
+      title: "First visible payoff",
       lines: [
-        'agentplane task new --title "Fix parser test" --owner CODER --tag frontend',
-        'agentplane task plan set <task-id> --text "..."',
-        'agentplane verify <task-id> --ok --note "Tests passed"',
-        'agentplane finish <task-id> --result "Verified change" --commit <git-rev>',
+        'agentplane task new --title "Demo task" --owner DOCS --tag docs',
+        'agentplane task plan set <task-id> --text "Inspect the artifact."',
+        'agentplane task start-ready <task-id> --author DOCS --body "Start: inspect artifacts."',
+        "agentplane task verify-show <task-id>",
         "ls .agentplane/tasks/<task-id>/",
       ],
     },
     tryCommands: [installCommand, "agentplane init", "agentplane quickstart"],
   },
+  comparison: {
+    title: "Not another coding agent.",
+    text: "AgentPlane is the workflow envelope around the tools you already use.",
+    rows: [
+      {
+        label: "Claude Code / Codex / Cursor / Aider",
+        value: "They generate or edit code; AgentPlane records the review trail around the work.",
+      },
+      {
+        label: "AGENTS.md alone",
+        value: "Policy text tells agents what to do; AgentPlane records task state and gates.",
+      },
+      {
+        label: "Git alone",
+        value: "Git stores the final diff; AgentPlane stores task intent, plan, verification, and closure.",
+      },
+      {
+        label: "Hosted dashboards",
+        value: "They centralize workflow state elsewhere; AgentPlane keeps artifacts in the repository.",
+      },
+    ],
+    action: { label: "Read comparison", to: comparisonUrl },
+  },
   workflow: {
-    title: "A thin workflow layer around your coding agent.",
-    text: "Your agent writes code. AgentPlane records the workflow around that code.",
+    title: "A thin audit workflow around your coding agent.",
+    text: "Your agent writes code. AgentPlane records the evidence around that code.",
     note: "AgentPlane does not replace your agent, editor, terminal, or Git.",
     items: [
       {
@@ -87,12 +122,17 @@ export const homepageContent = {
     ],
   },
   recipesCatalog: {
-    title: "Recipes",
-    text: "Installable recipe packages add ready-to-run workflows and guardrails from a remote catalog.",
-    stepText: "Each card shows what the recipe does and the CLI command to cache it locally.",
+    title: "Recipes are signed behavior modules.",
+    text: "Recipes add named agent profiles, prompt modules, skills, scenario assets, and expected project artifacts from a remote catalog.",
+    stepText: "Each card shows what the recipe does and the exact CLI command to install it locally.",
+  },
+  whyNow: {
+    title: "Coding agents need an audit layer now.",
+    text: "Agents moved from demos into real repositories. The next failure mode is not whether they can edit code; it is whether teams can reconstruct what happened after they do.",
+    action: { label: "Read why", to: manifestoUrl },
   },
   nextSteps: {
-    title: "Choose your next step.",
+    title: "Choose the next artifact.",
     items: [
       {
         title: "Get started",
@@ -113,10 +153,10 @@ export const homepageContent = {
         to: recipesUrl,
       },
       {
-        title: "Understand the workflow",
-        text: "Learn how task, plan, verification, and finish state work.",
-        action: "Read workflow docs",
-        to: workflowDocsUrl,
+        title: "Compare alternatives",
+        text: "See how AgentPlane relates to raw AGENTS.md, Git-only workflows, and agent tools.",
+        action: "Read comparison",
+        to: comparisonUrl,
       },
       {
         title: "View the source",
@@ -128,6 +168,6 @@ export const homepageContent = {
     ],
   },
   closing: {
-    title: "Put coding agents on a visible Git workflow.",
+    title: "Audit every agent change in Git.",
   },
 } as const;

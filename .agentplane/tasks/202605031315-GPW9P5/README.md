@@ -1,10 +1,10 @@
 ---
 id: "202605031315-GPW9P5"
 title: "Refresh website homepage and metadata positioning"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on:
@@ -22,16 +22,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-03T13:41:11.449Z"
+  updated_by: "CODER"
+  note: "Homepage positioning, metadata, navigation links, and manifest were updated around the audit-layer thesis. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check after adding linked compare/manifesto docs."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: proceed after quickstart implementation and verification; branch_pr leaf finish will be recorded from base after integration."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T13:33:37.514Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: proceed after quickstart implementation and verification; branch_pr leaf finish will be recorded from base after integration."
+  -
+    type: "verify"
+    at: "2026-05-03T13:41:11.449Z"
+    author: "CODER"
+    state: "ok"
+    note: "Homepage positioning, metadata, navigation links, and manifest were updated around the audit-layer thesis. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check after adding linked compare/manifesto docs."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:15:45.249Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T13:41:11.452Z"
+doc_updated_by: "CODER"
 description: "Update the docs-site homepage content, Docusaurus metadata, and webmanifest to use one canonical public message, pain anchor, recipes section, comparison route, and consistent social metadata."
 sections:
   Summary: |-
@@ -49,11 +65,22 @@ sections:
     4. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T13:41:11.449Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Homepage positioning, metadata, navigation links, and manifest were updated around the audit-layer thesis. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check after adding linked compare/manifesto docs.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:33:37.514Z, excerpt_hash=sha256:f53dfb2fd5999892b5090d69f7a0500d0fc397dc096124d59de1378cceb7ef36
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: The production build succeeds; it reports an existing webpack warning from vscode-languageserver-types dynamic require, not a broken route or changed source file.
+      Impact: The website can ship the new public positioning without broken links to /docs/manifesto or /docs/compare.
+      Resolution: Keep the dependency warning as residual build noise outside this task scope.
 id_source: "generated"
 ---
 ## Summary
@@ -81,6 +108,14 @@ Update website/src/data/homepage-content.ts, website/docusaurus.config.ts, and w
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T13:41:11.449Z — VERIFY — ok
+
+By: CODER
+
+Note: Homepage positioning, metadata, navigation links, and manifest were updated around the audit-layer thesis. Verified with bun run docs:site:typecheck, bun run docs:site:build, and git diff --check after adding linked compare/manifesto docs.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:33:37.514Z, excerpt_hash=sha256:f53dfb2fd5999892b5090d69f7a0500d0fc397dc096124d59de1378cceb7ef36
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -89,3 +124,7 @@ Update website/src/data/homepage-content.ts, website/docusaurus.config.ts, and w
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: The production build succeeds; it reports an existing webpack warning from vscode-languageserver-types dynamic require, not a broken route or changed source file.
+  Impact: The website can ship the new public positioning without broken links to /docs/manifesto or /docs/compare.
+  Resolution: Keep the dependency warning as residual build noise outside this task scope.

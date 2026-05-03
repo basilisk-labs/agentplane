@@ -415,7 +415,8 @@ function NextStepCard({
 }
 
 export default function Home(): ReactNode {
-  const { seo, hero, demo, workflow, artifacts, nextSteps, closing } = homepageContent;
+  const { seo, hero, problem, demo, comparison, workflow, artifacts, whyNow, nextSteps, closing } =
+    homepageContent;
 
   return (
     <Layout title={seo.title} description={seo.description}>
@@ -448,6 +449,17 @@ export default function Home(): ReactNode {
           </div>
         </section>
 
+        <section className={`${styles.section} ${styles.shell}`}>
+          <div className={styles.problemBand}>
+            <SectionLead label="Problem" title={problem.title} text={problem.text} />
+            <ul className={styles.problemList}>
+              {problem.bullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
         <section className={`${styles.section} ${styles.demoSection}`}>
           <div className={styles.shell}>
             <SectionLead label="Demo / proof" title={demo.title} text={demo.text} />
@@ -467,6 +479,21 @@ export default function Home(): ReactNode {
         </section>
 
         <RecipesCatalogSection />
+
+        <section className={`${styles.section} ${styles.shell}`}>
+          <SectionLead label="Comparison" title={comparison.title} text={comparison.text} />
+          <div className={styles.comparisonList}>
+            {comparison.rows.map((row) => (
+              <article key={row.label} className={styles.comparisonRow}>
+                <h3>{row.label}</h3>
+                <p>{row.value}</p>
+              </article>
+            ))}
+          </div>
+          <Link className={`${styles.action} ${styles.actionSecondary}`} to={comparison.action.to}>
+            {comparison.action.label}
+          </Link>
+        </section>
 
         <section className={`${styles.section} ${styles.shell}`}>
           <SectionLead label="Core workflow" title={workflow.title} text={workflow.text} />
@@ -498,6 +525,15 @@ export default function Home(): ReactNode {
                 </Link>
               </div>
             </div>
+          </div>
+        </section>
+
+        <section className={`${styles.section} ${styles.whyNowSection}`}>
+          <div className={styles.shell}>
+            <SectionLead label="Why now" title={whyNow.title} text={whyNow.text} />
+            <Link className={`${styles.action} ${styles.actionPrimary}`} to={whyNow.action.to}>
+              {whyNow.action.label}
+            </Link>
           </div>
         </section>
 

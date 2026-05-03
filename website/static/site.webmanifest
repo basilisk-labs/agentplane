@@ -1,7 +1,7 @@
 {
   "name": "AgentPlane",
   "short_name": "AgentPlane",
-  "description": "Deterministic agent workflows with auditable guardrails.",
+  "description": "The open-source audit layer for coding agents.",
   "icons": [
     {
       "src": "/img/android-chrome-192x192.png",
@@ -14,7 +14,7 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#0084b8",
+  "theme_color": "#0055ff",
   "background_color": "#ffffff",
   "display": "standalone"
 }

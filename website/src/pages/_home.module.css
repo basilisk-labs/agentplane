@@ -485,6 +485,48 @@
   padding: 4.75rem 0 0;
 }
 
+.problemBand {
+  background:
+    linear-gradient(90deg, rgb(var(--surface)), rgb(255 255 255)),
+    linear-gradient(rgb(var(--fg) / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--fg) / 0.04) 1px, transparent 1px);
+  background-size:
+    auto,
+    36px 36px,
+    36px 36px;
+  border: 1px solid rgb(var(--border));
+  border-radius: 22px;
+  padding: 1.2rem;
+}
+
+.problemBand .sectionLead {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.problemList {
+  border-top: 1px solid rgb(var(--border));
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+}
+
+.problemList li {
+  border-left: 1px solid rgb(var(--border));
+  color: rgb(var(--fg));
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  padding: 1rem;
+}
+
+.problemList li:first-child {
+  border-left: 0;
+}
+
 .demoSection {
   background: rgb(var(--bg));
 }
@@ -591,6 +633,37 @@
   padding-left: 0.9rem;
 }
 
+.comparisonList {
+  border-top: 1px solid rgb(var(--border));
+  display: grid;
+  margin: 1.5rem 0 1rem;
+}
+
+.comparisonRow {
+  border-bottom: 1px solid rgb(var(--border));
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(14rem, 0.42fr) minmax(0, 1fr);
+  padding: 1.05rem 0;
+}
+
+.comparisonRow h3 {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.86rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.comparisonRow p {
+  color: rgb(var(--muted));
+  font-size: 0.98rem;
+  font-weight: 300;
+  line-height: 1.6;
+  margin: 0;
+}
+
 .artifactSection {
   background: rgb(var(--surface));
   border-top: 1px solid rgb(var(--border));
@@ -662,6 +735,37 @@
   gap: 0;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   margin-top: 1.5rem;
+}
+
+.whyNowSection {
+  background: rgb(var(--fg));
+  color: rgb(255 255 255);
+  margin-top: 4.75rem;
+  padding: 4.75rem 0;
+}
+
+.whyNowSection .sectionLead {
+  border-top-color: rgb(255 255 255 / 0.24);
+}
+
+.whyNowSection .sectionLead h2,
+.whyNowSection .sectionLead p,
+.whyNowSection .sectionLabel {
+  color: rgb(255 255 255);
+}
+
+.whyNowSection .sectionLead p {
+  color: rgb(255 255 255 / 0.72);
+}
+
+.whyNowSection .action {
+  margin-top: 1.25rem;
+}
+
+.whyNowSection .actionPrimary {
+  background: rgb(255 255 255);
+  border-color: rgb(255 255 255);
+  color: rgb(var(--fg));
 }
 
 .nextStepCard {
@@ -893,8 +997,13 @@
   }
 
   .workflowGrid,
-  .nextStepsGrid {
+  .nextStepsGrid,
+  .problemList {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .comparisonRow {
+    grid-template-columns: 1fr;
   }
 
   .heroCopy h1 {
@@ -966,8 +1075,18 @@
   }
 
   .workflowGrid,
-  .nextStepsGrid {
+  .nextStepsGrid,
+  .problemList {
     grid-template-columns: 1fr;
+  }
+
+  .problemList li {
+    border-left: 0;
+    border-top: 1px solid rgb(var(--border));
+  }
+
+  .problemList li:first-child {
+    border-top: 0;
   }
 
   .nextStepCard {
