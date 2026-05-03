@@ -1,10 +1,11 @@
 ---
 id: "202605031256-758Q7Z"
 title: "Remove config.json from managed repository state"
-status: "DOING"
+result_summary: "config.json removed from managed repository state."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-05-03T13:28:32.271Z"
   updated_by: "CODER"
   note: ".agentplane/config.json is deleted; saveConfig removes legacy config.json; doctor requires WORKFLOW.md; testkit writes WORKFLOW-backed config."
-commit: null
+commit:
+  hash: "c02111e054b00ac06e7277733a65e88cbb557391"
+  message: "✅ GV0N4K close: Merged via PR #814. (202605031255-GV0N4K) [config,docs,workflow] (#817)"
 comments:
   -
     author: "CODER"
     body: "Start: Removed .agentplane/config.json from managed repository state and adjusted doctor/testkit/docs surfaces."
+  -
+    author: "CODER"
+    body: "Verified: managed config.json is removed and only explicit legacy import support remains."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "CODER"
     state: "ok"
     note: ".agentplane/config.json is deleted; saveConfig removes legacy config.json; doctor requires WORKFLOW.md; testkit writes WORKFLOW-backed config."
+  -
+    type: "status"
+    at: "2026-05-03T13:40:48.166Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: managed config.json is removed and only explicit legacy import support remains."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:38:01.915Z"
+doc_updated_at: "2026-05-03T13:40:48.166Z"
 doc_updated_by: "CODER"
 description: "Delete .agentplane/config.json as a generated/managed artifact for current repositories, migrate examples and docs to WORKFLOW.md v2, remove config.json schema expectations from setup output, and keep only legacy import/upgrade support where needed."
 sections:
