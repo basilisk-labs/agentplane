@@ -69,8 +69,8 @@ import { renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 ## Stability
 
-| Surface                  | Stability                                    |
-| ------------------------ | -------------------------------------------- |
+| Surface                   | Stability                                    |
+| ------------------------- | -------------------------------------------- |
 | Published subpath exports | Stable across patch releases                 |
 | Root aggregate export     | Backward compatible until a breaking release |
 | Internal file layout      | Not public API                               |

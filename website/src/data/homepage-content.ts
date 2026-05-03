@@ -67,11 +67,13 @@ export const homepageContent = {
       },
       {
         label: "Git alone",
-        value: "Git stores the final diff; AgentPlane stores task intent, plan, verification, and closure.",
+        value:
+          "Git stores the final diff; AgentPlane stores task intent, plan, verification, and closure.",
       },
       {
         label: "Hosted dashboards",
-        value: "They centralize workflow state elsewhere; AgentPlane keeps artifacts in the repository.",
+        value:
+          "They centralize workflow state elsewhere; AgentPlane keeps artifacts in the repository.",
       },
     ],
     action: { label: "Read comparison", to: comparisonUrl },
@@ -124,7 +126,8 @@ export const homepageContent = {
   recipesCatalog: {
     title: "Recipes are signed behavior modules.",
     text: "Recipes add named agent profiles, prompt modules, skills, scenario assets, and expected project artifacts from a remote catalog.",
-    stepText: "Each card shows what the recipe does and the exact CLI command to install it locally.",
+    stepText:
+      "Each card shows what the recipe does and the exact CLI command to install it locally.",
   },
   whyNow: {
     title: "Coding agents need an audit layer now.",

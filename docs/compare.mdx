@@ -15,14 +15,14 @@ Do not use it as a replacement for an editor, model provider, pull request syste
 
 ## Comparison
 
-| Surface | What it is good at | What it does not preserve by itself | Where AgentPlane fits |
-| --- | --- | --- | --- |
-| Claude Code, Codex, Cursor, Aider | Generating, editing, and explaining code | A durable repository-native task lifecycle with policy, verification, and closure evidence | Gives those agents an executable workflow contract |
-| `AGENTS.md` alone | Describing local policy and instructions | Task state, plan approval, verification records, branch handoff | Turns policy into lifecycle commands and artifacts |
-| Git alone | Recording file history, commits, branches, and reviews | Why an agent made a change, which checks ran, whether scope was approved | Adds intent and verification around Git history |
-| CI alone | Enforcing automated checks | Human or agent reasoning about scope, plan, ownership, and closure | Records CI as evidence inside the task lifecycle |
-| Hosted dashboards | Centralizing status views | A fully repository-owned audit trail without hosted runtime dependence | Keeps the durable record in repo files and Git |
-| Dev harnesses and coding-agent frameworks | Running agents or test harnesses | Cross-agent governance and reviewable task provenance | Provides the governance layer around execution |
+| Surface                                   | What it is good at                                     | What it does not preserve by itself                                                        | Where AgentPlane fits                              |
+| ----------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| Claude Code, Codex, Cursor, Aider         | Generating, editing, and explaining code               | A durable repository-native task lifecycle with policy, verification, and closure evidence | Gives those agents an executable workflow contract |
+| `AGENTS.md` alone                         | Describing local policy and instructions               | Task state, plan approval, verification records, branch handoff                            | Turns policy into lifecycle commands and artifacts |
+| Git alone                                 | Recording file history, commits, branches, and reviews | Why an agent made a change, which checks ran, whether scope was approved                   | Adds intent and verification around Git history    |
+| CI alone                                  | Enforcing automated checks                             | Human or agent reasoning about scope, plan, ownership, and closure                         | Records CI as evidence inside the task lifecycle   |
+| Hosted dashboards                         | Centralizing status views                              | A fully repository-owned audit trail without hosted runtime dependence                     | Keeps the durable record in repo files and Git     |
+| Dev harnesses and coding-agent frameworks | Running agents or test harnesses                       | Cross-agent governance and reviewable task provenance                                      | Provides the governance layer around execution     |
 
 ## What AgentPlane adds
 
