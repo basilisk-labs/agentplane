@@ -1,10 +1,11 @@
 ---
 id: "202605031315-6DPX1F"
 title: "Verify public-surface coherence after CMO revision"
-status: "DOING"
+result_summary: "Public-surface coherence verification is recorded for the full CMO revision batch."
+status: "DONE"
 priority: "high"
 owner: "REVIEWER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-05-03T13:48:29.873Z"
   updated_by: "REVIEWER"
   note: "Final coherence review passed for the public-surface revision branch. Verified task graph artifacts, homepage/docs/discovery/blog/package/assets alignment, docs IA, design-language guard, docs site typecheck/build, package tarball policy from the package task, policy routing, agentplane doctor, and git diff --check."
-commit: null
+commit:
+  hash: "46a0ec7482d76b8b15e99c06eb3b3b2b5394b2b9"
+  message: "✅ 6DPX1F review: verify public-surface coherence"
 comments:
   -
     author: "REVIEWER"
     body: "Start: run final coherence review across README, package metadata, website, docs discovery, social assets, and blog surfaces."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Public-surface coherence check landed through PR #819 and final hosted checks passed after merge."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Final coherence review passed for the public-surface revision branch. Verified task graph artifacts, homepage/docs/discovery/blog/package/assets alignment, docs IA, design-language guard, docs site typecheck/build, package tarball policy from the package task, policy routing, agentplane doctor, and git diff --check."
+  -
+    type: "status"
+    at: "2026-05-03T14:43:32.787Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Public-surface coherence check landed through PR #819 and final hosted checks passed after merge."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:48:29.880Z"
-doc_updated_by: "REVIEWER"
+doc_updated_at: "2026-05-03T14:43:32.788Z"
+doc_updated_by: "INTEGRATOR"
 description: "Review the completed repo-owned public surfaces for one canonical message, no broken local links, no unverified external community claims, and no drift from the repo's editorial constraints."
 sections:
   Summary: |-
