@@ -25,9 +25,9 @@ Coordinate the repository-owned portion of the CMO audit: align README/package d
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T13:55:29.212Z
+- Updated: 2026-05-03T13:58:14.849Z
 - Branch: task/202605031315-90VFV9/cmo-public-surface-revision
-- Head: b5da4f16604c
+- Head: 50db4ea1ed1d
 
 ```text
  .agentplane/tasks/202605031255-92K2Q0/README.md    |  10 +-
@@ -57,8 +57,10 @@ Coordinate the repository-owned portion of the CMO audit: align README/package d
  packages/agentplane/package.json                   |   6 +-
  packages/agentplane/src/cli/command-guide.test.ts  |   3 +
  packages/agentplane/src/cli/command-guide.ts       |  21 +++
+ .../src/workflow-runtime/validate-frontmatter.ts   |   6 +-
  packages/core/README.md                            |  64 ++++----
  packages/core/package.json                         |   7 +-
+ packages/core/src/config/workflow-file.ts          |   7 +-
  packages/recipes/README.md                         |  29 +++-
  packages/recipes/package.json                      |   7 +-
  packages/spec/README.md                            |   8 +
@@ -77,7 +79,7 @@ Coordinate the repository-owned portion of the CMO audit: align README/package d
  website/static/llms-full.txt                       |  95 ++++++++---
  website/static/llms.txt                            |  14 +-
  website/static/site.webmanifest                    |   4 +-
- 47 files changed, 1937 insertions(+), 364 deletions(-)
+ 49 files changed, 1945 insertions(+), 369 deletions(-)
 ```
 
 </details>
