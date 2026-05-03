@@ -43,14 +43,11 @@ export function hasDcoSignoff(message: string): boolean {
 }
 
 export function assertDcoSignoff(opts: { config: AgentplaneConfig; message: string }): void {
-  if (!dcoIsEnabled(opts.config)) return;
   const signoff = resolveDcoSignoff(opts.config);
+  if (!signoff) return;
   if (hasDcoSignoff(opts.message)) return;
 
-  const trailerText = signoff
-    ? `AgentPlane default trailer:\n  ${signoff}\n`
-    : "AgentPlane has no configured default trailer.\n";
   throw new Error(
-    `DCO sign-off is required.\n${trailerText}Hint: use git commit -s or include a valid Signed-off-by trailer for the commit author.`,
+    `DCO sign-off is required.\nAgentPlane default trailer:\n  ${signoff}\nHint: use git commit -s or include a valid Signed-off-by trailer for the commit author.`,
   );
 }

@@ -112,7 +112,7 @@ describe("guard/impl/dco", () => {
     );
   });
 
-  it("requires manual DCO sign-off even when no default AgentPlane identity is configured", async () => {
+  it("does not enforce DCO when no default AgentPlane identity is configured", async () => {
     const { assertDcoSignoff } = await import("./dco.js");
     const config = {
       commit: {
@@ -120,15 +120,7 @@ describe("guard/impl/dco", () => {
       },
     } as Parameters<typeof assertDcoSignoff>[0]["config"];
 
-    expect(() => assertDcoSignoff({ config, message: "Subject\n\nBody" })).toThrow(
-      "DCO sign-off is required",
-    );
-    expect(() =>
-      assertDcoSignoff({
-        config,
-        message: "Subject\n\nSigned-off-by: Grace Hopper <grace@example.com>",
-      }),
-    ).not.toThrow();
+    expect(() => assertDcoSignoff({ config, message: "Subject\n\nBody" })).not.toThrow();
   });
 
   it("does not append a sign-off when DCO is disabled", async () => {
