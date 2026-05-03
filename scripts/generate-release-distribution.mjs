@@ -241,6 +241,7 @@ function renderInstallPs1({ version, repo, tag }) {
   const defaultInstallDir = String.raw`".agentplane\standalone\$Version"`;
   const checksumSplitPattern = String.raw`'\s+'`;
   const agentplaneCmd = String.raw`"bin\agentplane.cmd"`;
+  const agentplaneExe = String.raw`"bin\agentplane.exe"`;
   return `$ErrorActionPreference = "Stop"
 
 $Version = "${version}"
@@ -261,9 +262,11 @@ New-Item -ItemType Directory -Path $TempDir | Out-Null
 try {
   if ($Channel -eq "standalone") {
     $Asset = "agentplane-v$Version-win32-x64.zip"
+    $AgentplaneBin = ${agentplaneCmd}
   }
   elseif ($Channel -eq "bun") {
     $Asset = "agentplane-bun-v$Version-win32-x64.zip"
+    $AgentplaneBin = ${agentplaneExe}
   }
   else {
     throw "agentplane install: unsupported channel: $Channel (expected standalone or bun)"
@@ -288,7 +291,7 @@ try {
   }
   New-Item -ItemType Directory -Path $InstallDir | Out-Null
   Expand-Archive -Path $Archive -DestinationPath $InstallDir -Force
-  & (Join-Path $InstallDir ${agentplaneCmd}) --version
+  & (Join-Path $InstallDir $AgentplaneBin) --version
   Write-Output (Join-Path $InstallDir "bin")
 }
 finally {

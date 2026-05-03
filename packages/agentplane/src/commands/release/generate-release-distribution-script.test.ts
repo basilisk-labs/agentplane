@@ -138,6 +138,8 @@ describe("generate-release-distribution script", () => {
     expect(installPs1).toContain('"agentplane-bun-v$Version-win32-x64.zip"');
     expect(installPs1).toContain(String.raw`-split '\s+'`);
     expect(installPs1).toContain(String.raw`"bin\agentplane.cmd"`);
+    expect(installPs1).toContain(String.raw`"bin\agentplane.exe"`);
+    expect(installPs1).toContain("Join-Path $InstallDir $AgentplaneBin");
     expect(installPs1).not.toContain("npm install");
     expect(installPs1).not.toContain('Require-Command "node"');
   }, 90_000);
