@@ -25,12 +25,15 @@ Define the migration path from the current standalone Node runtime archives to B
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T10:57:38.171Z
+- Updated: 2026-05-03T10:57:49.487Z
 - Branch: task/202605030959-FSXWDS/bun-executable-migration-plan
-- Head: b8c26b66c059
+- Head: e4e3c1e94236
 
 ```text
-No changes detected.
+ .agentplane/tasks/202605030959-33YED6/README.md | 97 +++++++++++++++++++++++++
+ .agentplane/tasks/202605030959-G3XX2Y/README.md | 97 +++++++++++++++++++++++++
+ .agentplane/tasks/202605030959-M7HGSQ/README.md | 97 +++++++++++++++++++++++++
+ 3 files changed, 291 insertions(+)
 ```
 
 </details>
