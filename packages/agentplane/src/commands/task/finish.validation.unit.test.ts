@@ -241,7 +241,7 @@ describe("task finish validation", () => {
       acrPath: "/repo/.agentplane/tasks/T-1/acr.json",
       record: { record_type: "agent_change_record" },
     });
-    mocks.writeAcrFile.mockResolvedValue(undefined);
+    mocks.writeAcrFile.mockResolvedValue();
     mocks.commitFromComment.mockResolvedValue({
       hash: "new-hash",
       message: "✅ T-1 task: verified",
