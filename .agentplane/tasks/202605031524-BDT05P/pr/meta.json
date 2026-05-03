@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605031524-BDT05P/batch-pr-validation",
+  "created_at": "2026-05-03T15:47:41.293Z",
+  "head_sha": "fa58ade804ae0a1539387ba950ee2052a07f04db",
+  "last_verified_at": "2026-05-03T15:47:41.124Z",
+  "last_verified_sha": "fa58ade804ae0a1539387ba950ee2052a07f04db",
+  "schema_version": 1,
+  "task_id": "202605031524-BDT05P",
+  "updated_at": "2026-05-03T15:47:41.293Z",
+  "verify": {
+    "status": "pass"
+  }
+}
