@@ -25,12 +25,16 @@ Teach integrate/hosted-close/hosted-close-pr recovery to close primary and inclu
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T16:01:08.820Z
+- Updated: 2026-05-03T16:01:25.887Z
 - Branch: task/202605031524-SDCTFM/batch-hosted-close-cascade
-- Head: e2cfd48bac43
+- Head: ccfe5b3420bd
 
 ```text
-No changes detected.
+ .../src/cli/run-cli.core.task-hosted-close.test.ts | 158 +++++++++++++++++++++
+ .../agentplane/src/commands/guard/impl/commit.ts   |   4 +-
+ .../agentplane/src/commands/task/finish-shared.ts  |   6 +-
+ .../src/commands/task/hosted-close.command.ts      | 120 +++++++++++-----
+ 4 files changed, 252 insertions(+), 36 deletions(-)
 ```
 
 </details>
