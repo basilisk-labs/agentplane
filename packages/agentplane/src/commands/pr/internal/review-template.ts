@@ -1,7 +1,7 @@
 import type { TaskData } from "../../../backends/task-backend.js";
 import type { PrHandoffNote } from "./note-store.js";
-import { defaultCommitEmojiForStatus } from "../../task/shared/transitions.js";
 import { extractTaskSuffix, parseTaskSubjectTemplate } from "@agentplaneorg/core/commit";
+import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 const AUTO_SUMMARY_START = "<!-- BEGIN AUTO SUMMARY -->";
 const AUTO_SUMMARY_END = "<!-- END AUTO SUMMARY -->";
@@ -21,6 +21,14 @@ function normalizeOneLine(value: string, maxChars: number): string {
   const trimmed = value.trim().replaceAll(/\s+/g, " ");
   if (!trimmed) return "";
   return trimmed.length > maxChars ? `${trimmed.slice(0, Math.max(1, maxChars - 3))}...` : trimmed;
+}
+
+function defaultPrTitleEmojiForStatus(status: string): string {
+  const normalized = normalizeTaskStatus(status);
+  if (normalized === "DOING") return "🚧";
+  if (normalized === "DONE") return "✅";
+  if (normalized === "BLOCKED") return "⛔";
+  return "🧩";
 }
 
 function renderVerificationSummary(task: TaskData): string {
@@ -153,7 +161,7 @@ function renderGithubBodySections(opts: {
 export function buildGithubPrTitle(task: TaskData): string {
   const title = normalizeOneLine(task.title, 96) || "Untitled task";
   const suffix = extractTaskSuffix(task.id);
-  return `${defaultCommitEmojiForStatus(task.status)} ${suffix || task.id} task: ${title} [${task.id}]`;
+  return `${defaultPrTitleEmojiForStatus(task.status)} ${suffix || task.id} task: ${title} [${task.id}]`;
 }
 
 export function renderPrAutoSummary(opts: {

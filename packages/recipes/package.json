@@ -1,6 +1,6 @@
 {
   "name": "@agentplaneorg/recipes",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Recipe runtime helpers for the Agent Plane CLI.",
   "keywords": [
     "agentplane",

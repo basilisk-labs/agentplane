@@ -1,4 +1,4 @@
-export const RECIPES_VERSION = "0.4.1";
+export const RECIPES_VERSION = "0.4.2";
 
 export * from "./constants.js";
 export * from "./manifest.js";

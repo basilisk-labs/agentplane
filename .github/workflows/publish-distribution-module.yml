@@ -151,6 +151,9 @@ jobs:
             --repo basilisk-labs/homebrew-tap \
             --source .agentplane/.release/publish/homebrew \
             --copy Formula/agentplane.rb:Formula/agentplane.rb \
+            --repo-topics "agentplane,homebrew,brew,cli" \
+            --repo-description "Homebrew tap for AgentPlane CLI distributed with standalone release assets." \
+            --repo-homepage "https://github.com/basilisk-labs/homebrew-tap" \
             --version "${{ steps.release.outputs.version }}" \
             --tag "$RELEASE_TAG" \
             --sha "$RELEASE_SHA" \
@@ -166,6 +169,9 @@ jobs:
             --repo basilisk-labs/scoop-bucket \
             --source .agentplane/.release/publish/scoop \
             --copy agentplane.json:bucket/agentplane.json \
+            --repo-topics "agentplane,scoop,windows,cli" \
+            --repo-description "Scoop bucket for AgentPlane CLI packages and release manifests." \
+            --repo-homepage "https://github.com/basilisk-labs/scoop-bucket" \
             --version "${{ steps.release.outputs.version }}" \
             --tag "$RELEASE_TAG" \
             --sha "$RELEASE_SHA" \
@@ -182,6 +188,9 @@ jobs:
             --source .agentplane/.release/publish/setup-agentplane \
             --copy action.yml:action.yml \
             --copy README.md:README.md \
+            --repo-topics "agentplane,github-actions,installer,cli" \
+            --repo-description "GitHub Action that installs AgentPlane in CI runners from official standalone release assets." \
+            --repo-homepage "https://github.com/basilisk-labs/setup-agentplane" \
             --version "${{ steps.release.outputs.version }}" \
             --tag "$RELEASE_TAG" \
             --sha "$RELEASE_SHA" \

@@ -67,14 +67,25 @@ function renderScoopManifest(manifest) {
   const win32X64 = findPlatformAsset(manifest, "win32", "x64");
   return {
     version,
-    description: "Git-native CLI harness for auditable coding-agent workflows",
-    homepage: "https://agentplane.org",
+    description: "CLI for auditable coding-agent workflows",
+    homepage: "https://github.com/basilisk-labs/agentplane",
     license: "MIT",
+    notes: [
+      "Run `agentplane quickstart` after install to initialize repository conventions.",
+      "Use `agentplane --version` to verify reproducibility.",
+    ],
     architecture: {
       "64bit": {
         url: win32X64.url,
         hash: win32X64.sha256,
       },
+    },
+    checkver: {
+      github: "https://github.com/basilisk-labs/agentplane/releases",
+      regex: String.raw`v([\\d.]+)`,
+    },
+    autoupdate: {
+      url: "https://github.com/basilisk-labs/agentplane/releases/download/v${version}/agentplane-v${version}-win32-x64.zip",
     },
     bin: [[String.raw`bin\agentplane.cmd`, "agentplane"]],
   };

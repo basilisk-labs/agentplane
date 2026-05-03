@@ -93,11 +93,11 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        version="$\{{ inputs.version }}"
-        version="$\{version#v}"
+        version="\${inputs.version}"
+        version="\${version#v}"
         tmp_dir="$(mktemp -d)"
         trap 'rm -rf "$tmp_dir"' EXIT INT TERM
-        case "$\{RUNNER_OS}-$\{RUNNER_ARCH}" in
+        case "\${RUNNER_OS}-\${RUNNER_ARCH}" in
           macOS-ARM64)
             asset_url="${assets.darwinArm64.url}"
             asset_sha256="${assets.darwinArm64.sha256}"
@@ -119,27 +119,27 @@ runs:
             asset_sha256="${assets.win32X64.sha256}"
             ;;
           *)
-            echo "Unsupported runner: $\{RUNNER_OS}-$\{RUNNER_ARCH}" >&2
+            echo "Unsupported runner: \${RUNNER_OS}-\${RUNNER_ARCH}" >&2
             exit 2
             ;;
         esac
-        archive="$tmp_dir/$\{asset_url##*/}"
-        install_dir="$tmp_dir/agentplane"
-        mkdir -p "$install_dir"
-        curl -fsSL "$asset_url" -o "$archive"
-        actual_sha256="$(shasum -a 256 "$archive" | awk '{print $1}')"
-        if [ "$actual_sha256" != "$asset_sha256" ]; then
+        archive="\${tmp_dir}/\${asset_url##*/}"
+        install_dir="\${tmp_dir}/agentplane"
+        mkdir -p "\${install_dir}"
+        curl -fsSL "\${asset_url}" -o "\${archive}"
+        actual_sha256="$(shasum -a 256 "\${archive}" | awk '{print $1}')"
+        if [ "\${actual_sha256}" != "\${asset_sha256}" ]; then
           echo "agentplane archive checksum mismatch" >&2
           exit 2
         fi
-        if [[ "$archive" == *.zip ]]; then
-          powershell -NoProfile -Command "Expand-Archive -LiteralPath '$archive' -DestinationPath '$install_dir' -Force"
+        if [[ "\${archive}" == *.zip ]]; then
+          powershell -NoProfile -Command "Expand-Archive -LiteralPath '\${archive}' -DestinationPath '\${install_dir}' -Force"
         else
-          tar -xzf "$archive" -C "$install_dir"
+          tar -xzf "\${archive}" -C "\${install_dir}"
         fi
-        echo "$install_dir/bin" >> "$GITHUB_PATH"
-        if [ "$\{{ inputs.verify }}" = "true" ]; then
-          "$install_dir/bin/agentplane" --version | grep -Fx "$\{version}"
+        echo "\${install_dir}/bin" >> "$GITHUB_PATH"
+        if [ "\${{ inputs.verify }}" = "true" ]; then
+          "\${install_dir}/bin/agentplane" --version | grep -Fx "\${version}"
         fi
 `;
 }
@@ -150,17 +150,30 @@ function renderReadme(manifest) {
     process.env.SETUP_AGENTPLANE_REPOSITORY ?? "basilisk-labs/setup-agentplane";
   return `# setup-agentplane
 
+[![CI](https://github.com/${actionRepository}/actions/workflows/ci.yml/badge.svg)](https://github.com/${actionRepository}/actions/workflows/ci.yml)
+![release](https://img.shields.io/github/v/release/${actionRepository}?sort=semver)
+![release-channel](https://img.shields.io/github/release-date/${actionRepository})
+
 Install AgentPlane in GitHub Actions.
 
-\`\`\`yaml
-steps:
-  - uses: ${actionRepository}@v${version}
-    with:
-      version: ${version}
-\`\`\`
+${`\`\`\`yaml\n- uses: ${actionRepository}@v${version}\n  with:\n    version: ${version}\n\`\`\``}
 
-This generated action installs AgentPlane through the release \`install.sh\` asset, which verifies
-the standalone bundled-runtime archive checksum before adding the CLI wrapper to \`PATH\`.
+This composite action installs AgentPlane from the official standalone archives and validates each standalone bundled-runtime archive checksum before adding \`agentplane\` to PATH.
+
+## Capabilities
+
+- Deterministic install by release asset pin (run uses release asset URL)
+- Cross-platform: macOS/Linux/Windows
+- Smoke check with agentplane --version
+- Explicit version control (no floating tags needed)
+
+## Quick start
+
+\`\`\`yaml\nsteps:\n  - uses: ${actionRepository}@v${version}\n    with:\n      version: ${version}\n\`\`\`
+
+## Smoke check
+
+\`\`\`bash\nagentplane --version\n\`\`\`
 `;
 }
 
