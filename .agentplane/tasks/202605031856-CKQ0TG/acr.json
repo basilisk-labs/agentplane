@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605031856-CKQ0TG",
+  "created_at": "2026-05-03T19:28:09.942Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "ddcaf000741259312262042049fba87115537778",
+    "work_ref": "main",
+    "work_commit": "ddcaf000741259312262042049fba87115537778"
+  },
+  "task": {
+    "task_id": "202605031856-CKQ0TG",
+    "title": "ACR semantic validation and CI gate",
+    "intent": "Implement AgentPlane ACR semantic validation classes for schema, local, and CI modes; enforce merge-ready invariants in acr check; wire acr.require_for_pr_check into pr check without making ACR universally mandatory.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605031856-CKQ0TG/README.md",
+      "sha256": "sha256:413155e7d023995c4ef9215e84efd09c3b0d65cc440839ef5f3826b6d88d9159"
+    },
+    "approved_at": "2026-05-03T18:57:49.434Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "approval_required"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "ACR semantic validation and config-gated PR check enforcement are merged in main.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605031856-CKQ0TG_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-03T18:57:49.434Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605031856-CKQ0TG/README.md",
+      "sha256": "sha256:413155e7d023995c4ef9215e84efd09c3b0d65cc440839ef5f3826b6d88d9159"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605031856-CKQ0TG/README.md",
+      "sha256": "sha256:413155e7d023995c4ef9215e84efd09c3b0d65cc440839ef5f3826b6d88d9159"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605031856-CKQ0TG/README.md",
+      "sha256": "sha256:413155e7d023995c4ef9215e84efd09c3b0d65cc440839ef5f3826b6d88d9159"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit ddcaf000741259312262042049fba87115537778 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:b5a33e9947b77d30a9ccef0e97aea265cea08295ae875b41d8122862c27f6066",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}

@@ -1,10 +1,11 @@
 ---
 id: "202605031856-CKQ0TG"
 title: "ACR semantic validation and CI gate"
-status: "DOING"
+result_summary: "ACR semantic validation and config-gated PR check enforcement are merged in main."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T19:21:28.324Z"
   updated_by: "CODER"
   note: "Verified semantic ACR validation and PR gate: agentplane typecheck passed; focused ACR semantic tests passed; focused finish regression tests passed; docs CLI and schema checks passed."
-commit: null
+commit:
+  hash: "ddcaf000741259312262042049fba87115537778"
+  message: "✨ H059JF task: harden ACR validation contract"
 comments:
   -
     author: "CODER"
     body: "Start: implement ACR semantic validation classes and config-gated PR check enforcement in the same approved batch worktree; dependency is being handled in this approved batch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: ACR semantic validation and CI gate shipped via PR #849; focused semantic/finish tests and pr check passed."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified semantic ACR validation and PR gate: agentplane typecheck passed; focused ACR semantic tests passed; focused finish regression tests passed; docs CLI and schema checks passed."
+  -
+    type: "status"
+    at: "2026-05-03T19:27:07.888Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: ACR semantic validation and CI gate shipped via PR #849; focused semantic/finish tests and pr check passed."
 doc_version: 3
-doc_updated_at: "2026-05-03T19:21:28.335Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T19:27:07.889Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement AgentPlane ACR semantic validation classes for schema, local, and CI modes; enforce merge-ready invariants in acr check; wire acr.require_for_pr_check into pr check without making ACR universally mandatory."
 sections:
   Summary: |-
