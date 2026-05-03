@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-03T21:12:51.385Z"
-  updated_by: "DOCS"
-  note: "Release notes gate fixed and checked: docs/releases/v0.4.3.md now uses the required Release Notes heading; node scripts/check-release-notes.mjs --tag v0.4.3 exits 0; git diff --check passes. docs:site:build could not run in this worktree because the local website docusaurus binary is not installed."
+  updated_at: "2026-05-03T21:21:33.213Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.4.3."
 commit:
   hash: "04ccc002125560cd2ec87094e20cd5a9907d2016"
   message: "🚧 19AZ8M task: Fix v0.4.3 release notes heading [202605032112-19AZ8M]"
@@ -55,8 +55,8 @@ events:
     to: "DONE"
     note: "Verified: PR #860 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T21:15:52.947Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-05-03T21:21:33.213Z"
+doc_updated_by: "DEUS"
 description: "Update docs/releases/v0.4.3.md to satisfy the publish release-notes gate, verify locally, merge through branch_pr, and rerun 0.4.3 publish."
 sections:
   Summary: |-
@@ -73,14 +73,19 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
-    ### 2026-05-03T21:12:51.385Z — VERIFY — ok
-    
-    By: DOCS
-    
-    Note: Release notes gate fixed and checked: docs/releases/v0.4.3.md now uses the required Release Notes heading; node scripts/check-release-notes.mjs --tag v0.4.3 exits 0; git diff --check passes. docs:site:build could not run in this worktree because the local website docusaurus binary is not installed.
-    
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T21:12:21.771Z, excerpt_hash=sha256:867ee4e24064856af3300c411e251070508e1c960e167eeb670f901c77afa4ee
-    
+    - State: ok
+    - Note: Hosted publish confirmed for v0.4.3.
+    - Details:
+      - release_sha: 04ccc002125560cd2ec87094e20cd5a9907d2016
+      - version: 0.4.3
+      - tag: v0.4.3
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.4.3
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/25291047611
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -112,14 +117,19 @@ Update docs/releases/v0.4.3.md to satisfy the publish release-notes gate, verify
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
-### 2026-05-03T21:12:51.385Z — VERIFY — ok
-
-By: DOCS
-
-Note: Release notes gate fixed and checked: docs/releases/v0.4.3.md now uses the required Release Notes heading; node scripts/check-release-notes.mjs --tag v0.4.3 exits 0; git diff --check passes. docs:site:build could not run in this worktree because the local website docusaurus binary is not installed.
-
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T21:12:21.771Z, excerpt_hash=sha256:867ee4e24064856af3300c411e251070508e1c960e167eeb670f901c77afa4ee
-
+- State: ok
+- Note: Hosted publish confirmed for v0.4.3.
+- Details:
+  - release_sha: 04ccc002125560cd2ec87094e20cd5a9907d2016
+  - version: 0.4.3
+  - tag: v0.4.3
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.4.3
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/25291047611
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
