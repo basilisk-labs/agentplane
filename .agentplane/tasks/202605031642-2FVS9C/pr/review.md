@@ -45,12 +45,28 @@ Implement repository-managed DCO sign-off behavior using Denis Smirnov <densmirn
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T16:43:32.193Z
+- Updated: 2026-05-03T17:02:27.291Z
 - Branch: task/202605031642-2FVS9C/dco-signoff
-- Head: 6858dd704c9f
+- Head: ac3c36e56cf9
 
 ```text
-No changes detected.
+ docs/user/cli-reference.generated.mdx              |  1 +
+ docs/user/commands.mdx                             |  1 +
+ docs/user/workflow.mdx                             |  2 +
+ .../src/cli/run-cli.core.hooks.hook-run.test.ts    | 32 +++++++++++++++
+ packages/agentplane/src/commands/commit.spec.ts    |  1 +
+ .../src/commands/guard/impl/comment-commit.ts      |  7 +++-
+ .../src/commands/guard/impl/commit-refresh.ts      |  7 +++-
+ .../agentplane/src/commands/guard/impl/commit.ts   | 13 +++++-
+ packages/agentplane/src/commands/guard/impl/dco.ts | 36 +++++++++++++++++
+ .../agentplane/src/commands/guard/impl/env.test.ts | 32 +++++++++++++++
+ .../src/commands/hooks/run.commit-msg.ts           | 10 +++++
+ .../src/commands/pr/internal/auto-commit.ts        |  2 +
+ packages/core/schemas/config.schema.json           | 46 +++++++++++++++++++++-
+ packages/core/src/config/schema.impl.ts            | 17 ++++++++
+ packages/spec/examples/config.json                 |  3 +-
+ packages/spec/schemas/config.schema.json           | 46 +++++++++++++++++++++-
+ 16 files changed, 249 insertions(+), 7 deletions(-)
 ```
 
 </details>
