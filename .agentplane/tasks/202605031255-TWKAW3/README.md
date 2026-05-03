@@ -1,10 +1,11 @@
 ---
 id: "202605031255-TWKAW3"
 title: "Wire WORKFLOW.md into startup and prompt assembly"
-status: "DOING"
+result_summary: "WORKFLOW.md is wired into startup and prompt assembly."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-05-03T13:28:31.086Z"
   updated_by: "CODER"
   note: "quickstart, bundled AGENTS, docs, workflow artifacts, and workflow build now point to WORKFLOW.md as workflow/config source."
-commit: null
+commit:
+  hash: "c02111e054b00ac06e7277733a65e88cbb557391"
+  message: "✅ GV0N4K close: Merged via PR #814. (202605031255-GV0N4K) [config,docs,workflow] (#817)"
 comments:
   -
     author: "CODER"
     body: "Start: Wired WORKFLOW.md into startup surfaces, quickstart guidance, prompt artifact runtime context, and docs."
+  -
+    author: "CODER"
+    body: "Verified: startup, quickstart, bundled AGENTS, workflow artifacts, and docs point agents to WORKFLOW.md."
 events:
   -
     type: "status"
@@ -46,8 +52,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "quickstart, bundled AGENTS, docs, workflow artifacts, and workflow build now point to WORKFLOW.md as workflow/config source."
+  -
+    type: "status"
+    at: "2026-05-03T13:40:44.317Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: startup, quickstart, bundled AGENTS, workflow artifacts, and docs point agents to WORKFLOW.md."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:28:31.088Z"
+doc_updated_at: "2026-05-03T13:40:44.317Z"
 doc_updated_by: "CODER"
 description: "Make WORKFLOW.md v2 part of the shared startup contract for any IDE or CLI agent working in the folder. Ensure quickstart, AGENTS.md gateway guidance, runtime context, base prompt assembly, and runner bundles expose the workflow contract without copying AGENTS.md into the Prompt Template."
 sections:

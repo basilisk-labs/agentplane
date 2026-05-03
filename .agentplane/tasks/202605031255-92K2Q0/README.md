@@ -1,10 +1,11 @@
 ---
 id: "202605031255-92K2Q0"
 title: "Migrate config CLI and init to WORKFLOW.md only"
-status: "DOING"
+result_summary: "config CLI/init migrated to WORKFLOW.md-only writes."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-05-03T13:28:30.498Z"
   updated_by: "CODER"
   note: "config set/mode/profile now save WORKFLOW.md; init resolves WORKFLOW.md as the setup artifact; tests updated for WORKFLOW-only config writes."
-commit: null
+commit:
+  hash: "c02111e054b00ac06e7277733a65e88cbb557391"
+  message: "✅ GV0N4K close: Merged via PR #814. (202605031255-GV0N4K) [config,docs,workflow] (#817)"
 comments:
   -
     author: "CODER"
     body: "Start: Migrated config CLI and init paths so writes target WORKFLOW.md and init conflicts use WORKFLOW.md."
+  -
+    author: "CODER"
+    body: "Verified: config CLI and init write WORKFLOW.md only, with tests and docs updated."
 events:
   -
     type: "status"
@@ -46,8 +52,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "config set/mode/profile now save WORKFLOW.md; init resolves WORKFLOW.md as the setup artifact; tests updated for WORKFLOW-only config writes."
+  -
+    type: "status"
+    at: "2026-05-03T13:40:42.427Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: config CLI and init write WORKFLOW.md only, with tests and docs updated."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:28:30.501Z"
+doc_updated_at: "2026-05-03T13:40:42.428Z"
 doc_updated_by: "CODER"
 description: "Update init, config show, config set, upgrade, doctor, and generated docs so migrated configuration keys are read and written through WORKFLOW.md v2. config set must patch managed YAML front matter, preserve Markdown body, and stop writing .agentplane/config.json for new repositories."
 sections:

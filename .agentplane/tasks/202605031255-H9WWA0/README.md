@@ -1,10 +1,11 @@
 ---
 id: "202605031255-H9WWA0"
 title: "Add WORKFLOW.md v2 schema and managed front matter writer"
-status: "DOING"
+result_summary: "WORKFLOW.md v2 schema and managed front matter writer are implemented."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-05-03T13:28:11.106Z"
   updated_by: "CODER"
   note: "Implemented packages/core/src/config/workflow-file.ts and v2 front matter validation; covered by config and workflow-runtime tests."
-commit: null
+commit:
+  hash: "c02111e054b00ac06e7277733a65e88cbb557391"
+  message: "✅ GV0N4K close: Merged via PR #814. (202605031255-GV0N4K) [config,docs,workflow] (#817)"
 comments:
   -
     author: "CODER"
     body: "Start: Implemented WORKFLOW.md v2 front matter schema support and a managed YAML front matter writer in the core config layer."
+  -
+    author: "CODER"
+    body: "Verified: WORKFLOW v2 schema/front matter writer is merged through PR #814 and covered by config/workflow-runtime tests."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented packages/core/src/config/workflow-file.ts and v2 front matter validation; covered by config and workflow-runtime tests."
+  -
+    type: "status"
+    at: "2026-05-03T13:40:26.715Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: WORKFLOW v2 schema/front matter writer is merged through PR #814 and covered by config/workflow-runtime tests."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:28:11.109Z"
+doc_updated_at: "2026-05-03T13:40:26.716Z"
 doc_updated_by: "CODER"
 description: "Implement the typed WORKFLOW.md v2 front matter schema, parser, serializer, and CLI-owned formatting path for workflow, tasks, workspace, runner, scheduler, evaluator, observability, and prompt_template metadata without changing runtime precedence yet."
 sections:

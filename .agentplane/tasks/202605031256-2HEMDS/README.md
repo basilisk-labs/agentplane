@@ -1,10 +1,11 @@
 ---
 id: "202605031256-2HEMDS"
 title: "Add WORKFLOW-only migration and release gate"
-status: "DOING"
+result_summary: "WORKFLOW-only migration gates are in place."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -28,11 +29,16 @@ verification:
   updated_at: "2026-05-03T13:28:32.858Z"
   updated_by: "CODER"
   note: "upgrade policy denies .agentplane/WORKFLOW.md and legacy config.json, workflow build preserves existing WORKFLOW.md as override, and release/test helpers use WORKFLOW-backed config."
-commit: null
+commit:
+  hash: "c02111e054b00ac06e7277733a65e88cbb557391"
+  message: "✅ GV0N4K close: Merged via PR #814. (202605031255-GV0N4K) [config,docs,workflow] (#817)"
 comments:
   -
     author: "CODER"
     body: "Start: Added WORKFLOW-only migration and release/upgrade gates so managed updates do not overwrite project workflow state."
+  -
+    author: "CODER"
+    body: "Verified: WORKFLOW-only migration and upgrade/release gates are merged and CI checks passed."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "upgrade policy denies .agentplane/WORKFLOW.md and legacy config.json, workflow build preserves existing WORKFLOW.md as override, and release/test helpers use WORKFLOW-backed config."
+  -
+    type: "status"
+    at: "2026-05-03T13:40:50.113Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: WORKFLOW-only migration and upgrade/release gates are merged and CI checks passed."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:28:32.861Z"
+doc_updated_at: "2026-05-03T13:40:50.114Z"
 doc_updated_by: "CODER"
 description: "Add the final integration gate for the WORKFLOW-only architecture: migrate an existing config.json repository to WORKFLOW.md v2, verify no new repository writes config.json, run full doctor/routing/schema checks, and document rollback behavior for legacy imports."
 sections:
