@@ -14,7 +14,7 @@
     {
       "id": "code-map",
       "name": "Code Map",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "summary": "Adds a lightweight code-map discipline to agent development work.",
       "source": "agentplane-recipes/recipes/code-map",
       "self_contained": true,
