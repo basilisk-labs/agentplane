@@ -1,10 +1,11 @@
 ---
 id: "202605030959-FSXWDS"
 title: "Plan Bun executable migration"
-status: "DOING"
+result_summary: "Merged via PR #795."
+status: "DONE"
 priority: "med"
 owner: "PLANNER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T10:57:40.348Z"
   updated_by: "PLANNER"
   note: "Planning verification passed: Bun executable migration is decomposed into compatibility spike, artifact generation, and external channel switch tasks with release gates and rollback boundaries recorded in task plans."
-commit: null
+commit:
+  hash: "9f2d0757760ad0af65fd646125fb28192b3fb607"
+  message: "🧭 FSXWDS plan: record Bun executable migration graph"
 comments:
   -
     author: "PLANNER"
     body: "Start: Publish the approved Bun executable migration task graph to main with explicit ordering, gates, and rollback boundaries before implementation begins."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #795 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Planning verification passed: Bun executable migration is decomposed into compatibility spike, artifact generation, and external channel switch tasks with release gates and rollback boundaries recorded in task plans."
+  -
+    type: "status"
+    at: "2026-05-03T10:59:17.123Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #795 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T10:57:40.353Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T10:59:17.129Z"
+doc_updated_by: "INTEGRATOR"
 description: "Define the migration path from the current standalone Node runtime archives to Bun-built executable artifacts, including compatibility risks, artifact matrix, release workflow changes, external channels, and verification gates."
 sections:
   Summary: |-
