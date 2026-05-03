@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T07:26:34Z",
   "base": "main",
   "branch": "task/202605030530-TB2GDS/next-patch-release-prep",
   "created_at": "2026-05-03T05:31:08.989Z",
-  "head_sha": "2b51f851920f05fb0830ef821fab85cceb5e3b24",
+  "head_sha": "409955f6a2e2d87069e8057d398b19cf09268501",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "13f32a51175f900000cad44f3da24e11b4780bf8",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T07:26:34Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605030530-TB2GDS",
-  "updated_at": "2026-05-03T07:15:02.840Z",
+  "updated_at": "2026-05-03T07:26:34Z",
   "verify": {
     "status": "skipped"
   }
