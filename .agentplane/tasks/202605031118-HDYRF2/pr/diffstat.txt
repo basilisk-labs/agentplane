@@ -1,0 +1,5 @@
+ package.json                                       |   3 +-
+ .../release/bun-compiled-cli-smoke-script.test.ts  |  26 ++++
+ scripts/README.md                                  |   1 +
+ scripts/smoke-bun-compiled-cli.mjs                 | 132 +++++++++++++++++++++
+ 4 files changed, 161 insertions(+), 1 deletion(-)
