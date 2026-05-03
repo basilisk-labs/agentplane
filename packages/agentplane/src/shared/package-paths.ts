@@ -1,11 +1,19 @@
 import fs from "node:fs";
 import { createRequire } from "node:module";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
+import {
+  BUILTIN_AGENTPLANE_ASSETS,
+  BUILTIN_AGENTPLANE_ASSETS_HASH,
+} from "./builtin-assets.generated.js";
+
 const PACKAGE_NAME = "agentplane";
 const ACTIVE_BIN_ENV = "AGENTPLANE_RUNTIME_ACTIVE_BIN";
+const FORCE_BUILTIN_ASSETS_ENV = "AGENTPLANE_FORCE_BUILTIN_ASSETS";
 const BUNFS_PREFIX = "/$bunfs/";
+const MODULE_IS_BUN_COMPILED = isBunCompiledPath(fileURLToPath(import.meta.url));
 
 type PackageJsonLike = {
   name?: unknown;
@@ -73,6 +81,26 @@ function resolveFromCompiledBinary(entryPath: string): string | null {
   return path.dirname(path.resolve(execPath));
 }
 
+function materializeBuiltinAssets(): string {
+  const root = path.join(
+    os.tmpdir(),
+    "agentplane-builtin-assets",
+    BUILTIN_AGENTPLANE_ASSETS_HASH,
+    "assets",
+  );
+  const marker = path.join(root, ".agentplane-builtin-assets-ready");
+  if (pathExists(marker)) return root;
+
+  fs.mkdirSync(root, { recursive: true });
+  for (const asset of BUILTIN_AGENTPLANE_ASSETS) {
+    const assetPath = path.join(root, asset.path);
+    fs.mkdirSync(path.dirname(assetPath), { recursive: true });
+    fs.writeFileSync(assetPath, Buffer.from(asset.base64, "base64"));
+  }
+  fs.writeFileSync(marker, `${BUILTIN_AGENTPLANE_ASSETS_HASH}\n`, "utf8");
+  return root;
+}
+
 export function resolveAgentplanePackageRoot(entryModuleUrl = import.meta.url): string {
   const entryPath = fileURLToPath(entryModuleUrl);
   const packageRoot =
@@ -91,7 +119,11 @@ export function resolveAgentplanePackageJsonPath(entryModuleUrl = import.meta.ur
 }
 
 export function resolveAgentplaneAssetPath(...segments: string[]): string {
-  return path.join(resolveAgentplanePackageRoot(), "assets", ...segments);
+  const packageAssetPath = path.join(resolveAgentplanePackageRoot(), "assets", ...segments);
+  const useBuiltinAssets =
+    MODULE_IS_BUN_COMPILED || process.env[FORCE_BUILTIN_ASSETS_ENV] === "1";
+  if (pathExists(packageAssetPath) || !useBuiltinAssets) return packageAssetPath;
+  return path.join(materializeBuiltinAssets(), ...segments);
 }
 
 export function resolveAgentplaneAssetUrl(...segments: string[]): URL {
