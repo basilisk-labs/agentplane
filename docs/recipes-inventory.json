@@ -39,6 +39,35 @@
           }
         }
       ]
+    },
+    {
+      "id": "llm-wiki",
+      "name": "LLM Wiki",
+      "version": "0.1.0",
+      "summary": "Adds an agent-maintained project wiki with raw-source ingestion, query routing, and stale-input guardrails.",
+      "source": "agentplane-recipes/recipes/llm-wiki",
+      "self_contained": true,
+      "scenarios": [
+        {
+          "id": "llm-wiki",
+          "summary": "Create the llm-wiki structure or assimilate incoming source files before project work continues.",
+          "use_when": [
+            "The project has no llm-wiki namespace yet.",
+            "llm-wiki/_input or the configured input directory contains unprocessed files.",
+            "A request depends on project knowledge that should be routed through llm-wiki/index.md."
+          ],
+          "required_inputs": ["wiki_root", "input_dir"],
+          "outputs": ["wiki_root", "input_dir", "assimilated_files", "updated_index"],
+          "agents_involved": ["llm-wiki-operator"],
+          "skills_used": ["llm-wiki-discipline"],
+          "tools_used": [],
+          "run_profile": {
+            "mode": "analysis",
+            "sandbox": "workspace-write",
+            "writes_artifacts_to": ["llm-wiki/"]
+          }
+        }
+      ]
     }
   ]
 }
