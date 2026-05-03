@@ -4,7 +4,7 @@ title: "Switch external channels to Bun binaries"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -27,7 +27,7 @@ commit: null
 comments: []
 events: []
 doc_version: 3
-doc_updated_at: "2026-05-03T10:00:17.899Z"
+doc_updated_at: "2026-05-03T11:07:07.037Z"
 doc_updated_by: "PLANNER"
 description: "Update Homebrew, Scoop, setup-agentplane, and installer templates to consume Bun executable artifacts after binary smoke tests and checksum manifest parity are proven."
 sections:
@@ -55,7 +55,7 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: "Blocked by 202605030959-G3XX2Y compatibility spike: external channels must not switch to Bun binaries until Bun executable artifacts pass binary-specific smoke tests and use release-owned checksums. Current safe external channel remains standalone Node runtime archives."
 id_source: "generated"
 ---
 ## Summary
@@ -95,3 +95,5 @@ Acceptance: all external channels consume the same immutable release-owned Bun b
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+Blocked by 202605030959-G3XX2Y compatibility spike: external channels must not switch to Bun binaries until Bun executable artifacts pass binary-specific smoke tests and use release-owned checksums. Current safe external channel remains standalone Node runtime archives.
