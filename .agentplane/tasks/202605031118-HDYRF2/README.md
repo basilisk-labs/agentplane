@@ -1,10 +1,10 @@
 ---
 id: "202605031118-HDYRF2"
 title: "Add Bun binary smoke coverage"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,16 +19,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-03T11:57:47.444Z"
+  updated_by: "CODER"
+  note: "Focused verification passed: bun run build; node scripts/smoke-bun-compiled-cli.mjs --json compiled the CLI and checked --version, quickstart, and role CODER; bun test packages/agentplane/src/commands/release/bun-compiled-cli-smoke-script.test.ts passed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: add reusable Bun compiled binary smoke coverage for startup and embedded asset reads."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T11:56:18.503Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: add reusable Bun compiled binary smoke coverage for startup and embedded asset reads."
+  -
+    type: "verify"
+    at: "2026-05-03T11:57:47.444Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused verification passed: bun run build; node scripts/smoke-bun-compiled-cli.mjs --json compiled the CLI and checked --version, quickstart, and role CODER; bun test packages/agentplane/src/commands/release/bun-compiled-cli-smoke-script.test.ts passed."
 doc_version: 3
-doc_updated_at: "2026-05-03T11:19:12.296Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T11:57:47.446Z"
+doc_updated_by: "CODER"
 description: "Add a binary-specific smoke script/test route that builds a Bun executable and verifies version, quickstart, init, and doctor without relying on Node/Bun being present at runtime."
 sections:
   Summary: |-
@@ -50,6 +66,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T11:57:47.444Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused verification passed: bun run build; node scripts/smoke-bun-compiled-cli.mjs --json compiled the CLI and checked --version, quickstart, and role CODER; bun test packages/agentplane/src/commands/release/bun-compiled-cli-smoke-script.test.ts passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T11:56:18.503Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -85,6 +109,14 @@ Acceptance: binary smoke fails on package-root/assets regressions and passes for
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T11:57:47.444Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused verification passed: bun run build; node scripts/smoke-bun-compiled-cli.mjs --json compiled the CLI and checked --version, quickstart, and role CODER; bun test packages/agentplane/src/commands/release/bun-compiled-cli-smoke-script.test.ts passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T11:56:18.503Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

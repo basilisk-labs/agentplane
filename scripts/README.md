@@ -27,6 +27,7 @@ Grouping policy: `ci`, `release`, `docs`, `test`, `coverage`, `arch`, `bench`, `
 
 | Script                          | Command                                                                                                                                                           | Purpose                                      |
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `release:bun:smoke`             | `node scripts/smoke-bun-compiled-cli.mjs`                                                                                                                         | Run release workflow: bun smoke.             |
 | `release:check`                 | `bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && bun run --filter=@agentplane/testkit build && node scripts/release-check.mjs` | Run release workflow: check.                 |
 | `release:check:registry`        | `node scripts/check-npm-version-availability.mjs`                                                                                                                 | Run release workflow: check registry.        |
 | `release:ci-check`              | `bun run ci:contract && bun run ci:release-extras`                                                                                                                | Run release workflow: ci-check.              |
