@@ -1,10 +1,11 @@
 ---
 id: "202605031827-9F0RW9"
 title: "Preserve DCO no-identity fallback"
-status: "DOING"
+result_summary: "Merged via PR #847."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-03T18:29:21.635Z"
   updated_by: "CODER"
   note: "Preserved AgentPlane-managed commit behavior when DCO has no configured identity."
-commit: null
+commit:
+  hash: "a2a5743bd39878344cdc890aee446c88f6415fa7"
+  message: "Merge pull request #847 from basilisk-labs/task/202605031827-9F0RW9/dco-identity-fallback"
 comments:
   -
     author: "CODER"
     body: "Start: apply the DCO identity fallback review fix and verify focused DCO behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #847 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Preserved AgentPlane-managed commit behavior when DCO has no configured identity."
+  -
+    type: "status"
+    at: "2026-05-03T18:32:14.413Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #847 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T18:29:21.639Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T18:32:14.418Z"
+doc_updated_by: "INTEGRATOR"
 description: "Keep commit-msg DCO enforcement aligned with AgentPlane-managed commit behavior when commit.dco.enabled=true but no default sign-off identity is configured."
 sections:
   Summary: |-
