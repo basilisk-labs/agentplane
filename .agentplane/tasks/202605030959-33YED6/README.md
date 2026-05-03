@@ -4,7 +4,7 @@ title: "Add Bun executable release artifacts"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -27,7 +27,7 @@ commit: null
 comments: []
 events: []
 doc_version: 3
-doc_updated_at: "2026-05-03T10:00:17.638Z"
+doc_updated_at: "2026-05-03T11:07:06.742Z"
 doc_updated_by: "PLANNER"
 description: "Add Bun executable artifact generation to the release pipeline behind an explicit migration gate, preserving current standalone artifacts until verification proves parity."
 sections:
@@ -55,7 +55,7 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: "Blocked by 202605030959-G3XX2Y compatibility spike: Bun --compile can produce an executable, but the current CLI fails at startup because package-root resolution expects an npm/filesystem package layout and cannot resolve from Bun $bunfs. Do not add Bun executable release artifacts until a binary runtime contract exists for package metadata, assets, smoke tests, and rollback."
 id_source: "generated"
 ---
 ## Summary
@@ -95,3 +95,5 @@ Acceptance: release workflow can produce Bun executable artifacts reproducibly, 
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+Blocked by 202605030959-G3XX2Y compatibility spike: Bun --compile can produce an executable, but the current CLI fails at startup because package-root resolution expects an npm/filesystem package layout and cannot resolve from Bun $bunfs. Do not add Bun executable release artifacts until a binary runtime contract exists for package metadata, assets, smoke tests, and rollback.
