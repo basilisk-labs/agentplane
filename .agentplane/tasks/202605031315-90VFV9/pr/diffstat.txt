@@ -19,6 +19,7 @@
  docs/compare.mdx                                   |  53 ++++++
  docs/index.mdx                                     |  22 +--
  docs/manifesto.mdx                                 |  74 +++++++++
+ docs/recipes-inventory.json                        |  29 ++++
  packages/agentplane/README.md                      | 149 +++++------------
  .../assets/codex-plugin/assets/header.png          | Bin 25895 -> 170586 bytes
  packages/agentplane/package.json                   |   6 +-
@@ -44,4 +45,4 @@
  website/static/llms-full.txt                       |  95 ++++++++---
  website/static/llms.txt                            |  14 +-
  website/static/site.webmanifest                    |   4 +-
- 46 files changed, 1908 insertions(+), 364 deletions(-)
+ 47 files changed, 1937 insertions(+), 364 deletions(-)

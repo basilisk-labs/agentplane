@@ -45,9 +45,9 @@ Coordinate the repository-owned portion of the CMO audit: align README/package d
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T13:53:54.960Z
+- Updated: 2026-05-03T13:55:29.212Z
 - Branch: task/202605031315-90VFV9/cmo-public-surface-revision
-- Head: 01cd61e8afaa
+- Head: b5da4f16604c
 
 ```text
  .agentplane/tasks/202605031255-92K2Q0/README.md    |  10 +-
@@ -71,6 +71,7 @@ Coordinate the repository-owned portion of the CMO audit: align README/package d
  docs/compare.mdx                                   |  53 ++++++
  docs/index.mdx                                     |  22 +--
  docs/manifesto.mdx                                 |  74 +++++++++
+ docs/recipes-inventory.json                        |  29 ++++
  packages/agentplane/README.md                      | 149 +++++------------
  .../assets/codex-plugin/assets/header.png          | Bin 25895 -> 170586 bytes
  packages/agentplane/package.json                   |   6 +-
@@ -96,7 +97,7 @@ Coordinate the repository-owned portion of the CMO audit: align README/package d
  website/static/llms-full.txt                       |  95 ++++++++---
  website/static/llms.txt                            |  14 +-
  website/static/site.webmanifest                    |   4 +-
- 46 files changed, 1908 insertions(+), 364 deletions(-)
+ 47 files changed, 1937 insertions(+), 364 deletions(-)
 ```
 
 </details>
