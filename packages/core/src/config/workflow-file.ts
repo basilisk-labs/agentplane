@@ -57,7 +57,9 @@ function workflowSection(raw: Record<string, unknown>): Record<string, unknown> 
   return isRecord(raw.workflow) ? raw.workflow : raw;
 }
 
-export function workflowFrontMatterToConfigRaw(frontMatter: Record<string, unknown>): Record<string, unknown> {
+export function workflowFrontMatterToConfigRaw(
+  frontMatter: Record<string, unknown>,
+): Record<string, unknown> {
   const workflow = workflowSection(frontMatter);
   const approvals = cloneRecord(frontMatter.approvals);
   const workspace = cloneRecord(frontMatter.workspace);
@@ -105,7 +107,9 @@ export function workflowFrontMatterToConfigRaw(frontMatter: Record<string, unkno
   return raw;
 }
 
-export function configRawToWorkflowFrontMatter(raw: Record<string, unknown>): Record<string, unknown> {
+export function configRawToWorkflowFrontMatter(
+  raw: Record<string, unknown>,
+): Record<string, unknown> {
   const config = raw as unknown as AgentplaneConfig & Record<string, unknown>;
   const paths = cloneRecord(config.paths);
   const agents = cloneRecord(config.agents);

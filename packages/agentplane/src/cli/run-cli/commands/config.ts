@@ -1,10 +1,6 @@
 import path from "node:path";
 
-import {
-  buildExecutionProfile,
-  saveConfig,
-  setByDottedKey,
-} from "@agentplaneorg/core/config";
+import { buildExecutionProfile, saveConfig, setByDottedKey } from "@agentplaneorg/core/config";
 
 import { createCliEmitter } from "../../output.js";
 import { usageError } from "../../spec/errors.js";
@@ -86,7 +82,9 @@ async function cmdConfigSet(opts: {
       const raw = { ...loaded.raw };
       setByDottedKey(raw, opts.key, opts.value);
       await saveConfig(resolved.agentplaneDir, raw);
-      output.line(path.relative(resolved.gitRoot, path.join(resolved.agentplaneDir, "WORKFLOW.md")));
+      output.line(
+        path.relative(resolved.gitRoot, path.join(resolved.agentplaneDir, "WORKFLOW.md")),
+      );
       return 0;
     },
   );

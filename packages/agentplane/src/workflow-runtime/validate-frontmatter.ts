@@ -332,10 +332,7 @@ export function validateWorkflowFrontMatter(
       : validateMode(diags, raw.mode);
   const owners = validateOwners(diags, raw.owners, opts?.knownAgentIds ?? null);
   const approvals = validateApprovals(diags, raw.approvals);
-  const retry_policy = validateRetryPolicy(
-    diags,
-    raw.retry_policy ?? scheduler?.retry_policy,
-  );
+  const retry_policy = validateRetryPolicy(diags, raw.retry_policy ?? scheduler?.retry_policy);
   const timeouts = validateTimeouts(diags, raw.timeouts ?? scheduler?.timeouts);
   const in_scope_paths = validateScopePaths(diags, raw.in_scope_paths, opts?.repoRoot);
 

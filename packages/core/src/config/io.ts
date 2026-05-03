@@ -8,10 +8,7 @@ import {
   validateConfig,
   warnDeprecatedConfigKeys,
 } from "./validation.js";
-import {
-  readWorkflowConfigRaw,
-  writeWorkflowConfigRaw,
-} from "./workflow-file.js";
+import { readWorkflowConfigRaw, writeWorkflowConfigRaw } from "./workflow-file.js";
 
 export type LoadedConfig = {
   path: string;
