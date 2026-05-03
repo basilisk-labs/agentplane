@@ -1,10 +1,11 @@
 ---
 id: "202605031107-ZGBMP5"
 title: "Record Bun downstream blockers"
-status: "DOING"
+result_summary: "Merged via PR #799."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T11:07:50.035Z"
   updated_by: "CODER"
   note: "Verified blocker notes recorded on 202605030959-33YED6 and 202605030959-M7HGSQ; both downstream implementation tasks remain open and current safe channel remains standalone Node archives."
-commit: null
+commit:
+  hash: "505c1fff2e97416cc04d329fd49699218b69949c"
+  message: "🧭 ZGBMP5 bun: record downstream blockers"
 comments:
   -
     author: "CODER"
     body: "Start: Record blocker notes on downstream Bun release tasks without closing those implementation tasks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #799 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified blocker notes recorded on 202605030959-33YED6 and 202605030959-M7HGSQ; both downstream implementation tasks remain open and current safe channel remains standalone Node archives."
+  -
+    type: "status"
+    at: "2026-05-03T11:09:06.710Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #799 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T11:07:50.038Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T11:09:06.715Z"
+doc_updated_by: "INTEGRATOR"
 description: "Record that Bun release artifact and external-channel implementation tasks are blocked by the compatibility spike until AgentPlane has a binary runtime contract for package metadata, embedded assets, smoke tests, and rollback."
 sections:
   Summary: |-

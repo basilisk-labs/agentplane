@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T11:08:35Z",
   "base": "main",
   "branch": "task/202605031107-ZGBMP5/bun-downstream-blockers",
   "created_at": "2026-05-03T11:07:48.105Z",
-  "head_sha": "93c3869ab25649c35e6d6873cd0888a66236d790",
+  "head_sha": "7a042952d749de8dc6f4eac64cc6336c0a674a25",
   "last_verified_at": "2026-05-03T11:07:50.035Z",
   "last_verified_sha": "93c3869ab25649c35e6d6873cd0888a66236d790",
+  "merge_commit": "505c1fff2e97416cc04d329fd49699218b69949c",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T11:08:35Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605031107-ZGBMP5",
-  "updated_at": "2026-05-03T11:07:48.105Z",
+  "updated_at": "2026-05-03T11:08:35Z",
   "verify": {
     "status": "pass"
   }
