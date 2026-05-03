@@ -5,6 +5,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const PACKAGE_NAME = "agentplane";
 const ACTIVE_BIN_ENV = "AGENTPLANE_RUNTIME_ACTIVE_BIN";
+const BUNFS_PREFIX = "/$bunfs/";
 
 type PackageJsonLike = {
   name?: unknown;
@@ -61,10 +62,24 @@ function resolveFromPackageJson(entryModuleUrl: string): string | null {
   }
 }
 
+function isBunCompiledPath(absPath: string): boolean {
+  return absPath.includes(BUNFS_PREFIX);
+}
+
+function resolveFromCompiledBinary(entryPath: string): string | null {
+  if (!isBunCompiledPath(entryPath)) return null;
+  const execPath = typeof process.execPath === "string" ? process.execPath.trim() : "";
+  if (!execPath) return null;
+  return path.dirname(path.resolve(execPath));
+}
+
 export function resolveAgentplanePackageRoot(entryModuleUrl = import.meta.url): string {
   const entryPath = fileURLToPath(entryModuleUrl);
   const packageRoot =
-    resolveFromActiveBin() ?? findPackageRoot(entryPath) ?? resolveFromPackageJson(entryModuleUrl);
+    resolveFromActiveBin() ??
+    findPackageRoot(entryPath) ??
+    resolveFromPackageJson(entryModuleUrl) ??
+    resolveFromCompiledBinary(entryPath);
   if (!packageRoot) {
     throw new Error("Unable to resolve agentplane package root.");
   }
