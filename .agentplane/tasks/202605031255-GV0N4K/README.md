@@ -1,10 +1,11 @@
 ---
 id: "202605031255-GV0N4K"
 title: "Define WORKFLOW.md v2 canonical source contract"
-status: "DOING"
+result_summary: "Merged via PR #814."
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-05-03T13:32:06.416Z"
   updated_by: "PLANNER"
   note: "Verified: current PR head d3f396d1 contains implementation commits, task artifacts, CLI reference refresh, and PR artifact refresh. Targeted typecheck/tests, workflow build, doctor, policy routing, and pre-push checks passed up to unrelated recipes inventory drift."
-commit: null
+commit:
+  hash: "ecd6be0efb8cab7db96673ba2cd9ab95fc7990a1"
+  message: "🧩 GV0N4K task: Define WORKFLOW.md v2 canonical source contract [202605031255-GV0N4K]"
 comments:
   -
     author: "PLANNER"
     body: "Start: Begin WORKFLOW.md v2 source-of-truth contract design on the primary branch for the dependent migration task graph; implementation tasks remain dependency-gated until this contract is accepted."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #814 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Verified: current PR head d3f396d1 contains implementation commits, task artifacts, CLI reference refresh, and PR artifact refresh. Targeted typecheck/tests, workflow build, doctor, policy routing, and pre-push checks passed up to unrelated recipes inventory drift."
+  -
+    type: "status"
+    at: "2026-05-03T13:38:56.635Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #814 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:32:06.423Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T13:38:56.644Z"
+doc_updated_by: "INTEGRATOR"
 description: "Design the WORKFLOW.md v2 contract as the only project source of truth for AgentPlane workflow/config state. Specify startup contract behavior for IDE agents, CLI-owned front matter formatting, AGENTS.md policy-gateway boundaries, config.json removal strategy, migration phases, and source-of-truth conflict rules."
 sections:
   Summary: |-
