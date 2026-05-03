@@ -1,10 +1,11 @@
 ---
 id: "202605032100-8HPPGC"
 title: "Finalize 0.4.3 release state"
-status: "DOING"
+result_summary: "Merged via PR #858."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-03T21:06:44.631Z"
   updated_by: "CODER"
   note: "Release finalization checks passed: doctor OK, routing OK, release parity OK, release:check OK, release:bun:check OK for five v0.4.3 assets, release:bun:smoke OK with compiled CLI version 0.4.3, release:demo:check OK, spec examples OK, docs CLI reference fresh, and npm README link grep confirmed ACR/docs surfaces."
-commit: null
+commit:
+  hash: "9ea84bb858758ec116a2384d048b5eb9134ebc37"
+  message: "🚧 8HPPGC task: Finalize 0.4.3 release state [202605032100-8HPPGC]"
 comments:
   -
     author: "CODER"
     body: "Start: finalize release state after merged ACR launch PR and prepare hosted 0.4.3 publication."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #858 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,14 +47,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release finalization checks passed: doctor OK, routing OK, release parity OK, release:check OK, release:bun:check OK for five v0.4.3 assets, release:bun:smoke OK with compiled CLI version 0.4.3, release:demo:check OK, spec examples OK, docs CLI reference fresh, and npm README link grep confirmed ACR/docs surfaces."
+  -
+    type: "status"
+    at: "2026-05-03T21:08:46.800Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #858 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T21:06:44.636Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T21:08:46.805Z"
+doc_updated_by: "INTEGRATOR"
 description: "Close merged ACR launch leaf tasks, align repository expected CLI version with 0.4.3, verify Bun binary/version surfaces, and prepare hosted publish."
 sections:
   Summary: |-
     Finalize 0.4.3 release state
-
+    
     Close merged ACR launch leaf tasks, align repository expected CLI version with 0.4.3, verify Bun binary/version surfaces, and prepare hosted publish.
   Scope: |-
     - In scope: Close merged ACR launch leaf tasks, align repository expected CLI version with 0.4.3, verify Bun binary/version surfaces, and prepare hosted publish.
@@ -61,13 +74,13 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-03T21:06:44.631Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Release finalization checks passed: doctor OK, routing OK, release parity OK, release:check OK, release:bun:check OK for five v0.4.3 assets, release:bun:smoke OK with compiled CLI version 0.4.3, release:demo:check OK, spec examples OK, docs CLI reference fresh, and npm README link grep confirmed ACR/docs surfaces.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T21:01:02.392Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
