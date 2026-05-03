@@ -371,7 +371,7 @@ describe("manifest script publish-result command", () => {
       expect.objectContaining({
         name: "homebrew",
         status: "pr_opened",
-        metadata: expect.objectContaining({ ok: false }),
+        metadata: { ok: false },
       }),
     );
     expect(payload.failures).toContain(
