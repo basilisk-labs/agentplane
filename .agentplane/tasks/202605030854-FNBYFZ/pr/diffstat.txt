@@ -1,0 +1,8 @@
+ .agentplane/policy/incidents.md                    |   1 +
+ .github/workflows/publish.yml                      |   5 +-
+ packages/agentplane/assets/policy/incidents.md     |   1 +
+ .../publish-external-distribution-script.test.ts   | 100 ++++++++++++++++++++-
+ .../write-publish-result-manifest-script.test.ts   |  91 +++++++++++++++++++
+ scripts/manifest.mjs                               |  73 ++++++++++++++-
+ scripts/publish-external-distribution.mjs          |  84 +++++++++++++----
+ 7 files changed, 333 insertions(+), 22 deletions(-)

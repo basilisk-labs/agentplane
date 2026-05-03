@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605030854-FNBYFZ/external-distribution-publish",
+  "created_at": "2026-05-03T08:55:10.222Z",
+  "head_sha": "00c3d81386a4ea17ba3323e05f54c94fc8dd75b4",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605030854-FNBYFZ",
+  "updated_at": "2026-05-03T09:39:44.620Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
