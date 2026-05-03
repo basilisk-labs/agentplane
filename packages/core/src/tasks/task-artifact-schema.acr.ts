@@ -8,7 +8,7 @@ const SHA256_DIGEST_SCHEMA = z.string().regex(/^sha256:[0-9a-f]{64}$/);
 const REPOSITORY_RELATIVE_PATH_SCHEMA = z
   .string()
   .min(1)
-  .regex(/^(?!\/)(?!.*(?:^|\/)\.\.(?:\/|$)).+$/);
+  .regex(/^(?!\/)(?!\\)(?![A-Za-z]:)(?!.*\\)(?!.*(?:^|\/)\.\.(?:\/|$)).+$/);
 
 const PRINCIPAL_SCHEMA = z
   .object({

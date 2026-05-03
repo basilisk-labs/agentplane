@@ -153,9 +153,10 @@ async function refreshAcrOnFinish(opts: {
 }): Promise<void> {
   if (opts.options.noWriteAcr === true) return;
   if (opts.ctx.config.acr.enabled !== true || opts.ctx.config.acr.write_on_finish !== true) return;
-  const workCommit = opts.taskCommitInfo?.hash ?? opts.options.commit;
-  if (!workCommit) return;
-  for (const { taskId } of opts.loadedTasks) {
+  for (const { taskId, task } of opts.loadedTasks) {
+    const workCommit =
+      opts.taskCommitInfo?.hash ?? opts.options.commit ?? existingCommitInfo(task)?.hash;
+    if (!workCommit) continue;
     const generated = await generateAcr({
       ctx: opts.ctx,
       cwd: opts.options.cwd,

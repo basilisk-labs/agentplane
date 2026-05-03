@@ -232,6 +232,24 @@ describe("task-artifact-schema", () => {
     expect(errors[0]).toContain("changes.files[0].path");
   });
 
+  it("rejects Windows-style ACR evidence paths", () => {
+    const windowsTraversal = validAcr();
+    windowsTraversal.evidence[0].path = "..\\outside.txt";
+
+    const windowsTraversalErrors = listAcrSchemaErrors(windowsTraversal);
+
+    expect(windowsTraversalErrors).toHaveLength(1);
+    expect(windowsTraversalErrors[0]).toContain("evidence[0].path");
+
+    const windowsAbsolute = validAcr();
+    windowsAbsolute.evidence[0].path = "C:\\tmp\\acr.json";
+
+    const windowsAbsoluteErrors = listAcrSchemaErrors(windowsAbsolute);
+
+    expect(windowsAbsoluteErrors).toHaveLength(1);
+    expect(windowsAbsoluteErrors[0]).toContain("evidence[0].path");
+  });
+
   it("rejects malformed ACR sha256 digests", () => {
     const acr = validAcr();
     acr.integrity.record_digest = "sha256:not-a-digest";
