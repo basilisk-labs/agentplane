@@ -1,10 +1,11 @@
 ---
 id: "202605031315-90VFV9"
 title: "Revise repo public surfaces from CMO audit"
-status: "DOING"
+result_summary: "Merged via PR #819."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-05-03T13:49:41.466Z"
   updated_by: "REVIEWER"
   note: "Primary public-surface revision task verified after all dependent leaves completed and final coherence review passed. Evidence includes scoped commits for README/package docs, quickstart, website, comparison/manifesto/LLM discovery, package metadata, visual assets, blog, and final review."
-commit: null
+commit:
+  hash: "91060f1a610ea99eedc8c5f187cd691098410638"
+  message: "Merge pull request #819 from basilisk-labs/task/202605031315-90VFV9/cmo-public-surface-revision"
 comments:
   -
     author: "CODER"
     body: "Start: record the approved CMO public-surface task graph in the dedicated branch worktree before implementation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #819 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Primary public-surface revision task verified after all dependent leaves completed and final coherence review passed. Evidence includes scoped commits for README/package docs, quickstart, website, comparison/manifesto/LLM discovery, package metadata, visual assets, blog, and final review."
+  -
+    type: "status"
+    at: "2026-05-03T14:06:02.489Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #819 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:49:41.473Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T14:06:02.493Z"
+doc_updated_by: "INTEGRATOR"
 description: "Coordinate the repository-owned portion of the CMO audit: align README/package docs, website surfaces, discovery metadata, visual proof assets, and the quickstart first-win path while excluding off-repo launch operations."
 sections:
   Summary: |-

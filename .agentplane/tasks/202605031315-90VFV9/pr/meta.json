@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T14:05:29Z",
   "base": "main",
   "branch": "task/202605031315-90VFV9/cmo-public-surface-revision",
   "created_at": "2026-05-03T13:21:58.401Z",
-  "head_sha": "50db4ea1ed1d3929c3d3bc5354df55f06147f815",
+  "head_sha": "fcddbedc2fc21a80d9a08c37c16b519c2948c382",
   "last_verified_at": "2026-05-03T13:49:41.466Z",
   "last_verified_sha": "46a0ec7482d76b8b15e99c06eb3b3b2b5394b2b9",
+  "merge_commit": "91060f1a610ea99eedc8c5f187cd691098410638",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T14:05:29Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605031315-90VFV9",
-  "updated_at": "2026-05-03T13:58:14.849Z",
+  "updated_at": "2026-05-03T14:05:29Z",
   "verify": {
     "status": "pass"
   }
