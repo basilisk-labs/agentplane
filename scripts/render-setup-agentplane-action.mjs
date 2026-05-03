@@ -158,7 +158,7 @@ Install AgentPlane in GitHub Actions.
 
 ${`\`\`\`yaml\n- uses: ${actionRepository}@v${version}\n  with:\n    version: ${version}\n\`\`\``}
 
-This composite action installs AgentPlane from the official standalone archives and validates archive checksums before adding \`agentplane\` to PATH.
+This composite action installs AgentPlane from the official standalone archives and validates each standalone bundled-runtime archive checksum before adding \`agentplane\` to PATH.
 
 ## Capabilities
 
