@@ -4,7 +4,7 @@ title: "Revise repo public surfaces from CMO audit"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-03T13:49:41.466Z"
+  updated_by: "REVIEWER"
+  note: "Primary public-surface revision task verified after all dependent leaves completed and final coherence review passed. Evidence includes scoped commits for README/package docs, quickstart, website, comparison/manifesto/LLM discovery, package metadata, visual assets, blog, and final review."
 commit: null
 comments:
   -
@@ -39,8 +39,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: record the approved CMO public-surface task graph in the dedicated branch worktree before implementation."
+  -
+    type: "verify"
+    at: "2026-05-03T13:49:41.466Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Primary public-surface revision task verified after all dependent leaves completed and final coherence review passed. Evidence includes scoped commits for README/package docs, quickstart, website, comparison/manifesto/LLM discovery, package metadata, visual assets, blog, and final review."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:21:58.363Z"
+doc_updated_at: "2026-05-03T13:49:41.473Z"
 doc_updated_by: "CODER"
 description: "Coordinate the repository-owned portion of the CMO audit: align README/package docs, website surfaces, discovery metadata, visual proof assets, and the quickstart first-win path while excluding off-repo launch operations."
 sections:
@@ -83,11 +89,22 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T13:49:41.466Z — VERIFY — ok
+    
+    By: REVIEWER
+    
+    Note: Primary public-surface revision task verified after all dependent leaves completed and final coherence review passed. Evidence includes scoped commits for README/package docs, quickstart, website, comparison/manifesto/LLM discovery, package metadata, visual assets, blog, and final review.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:21:58.363Z, excerpt_hash=sha256:eea0ee5d9bff8de0dfafef29c29cac4979974119d2ff4b3a68ab7231b498acfe
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Protected main prevented local integrate and created a protected-base handoff route; GitHub PR merge plus Task Hosted Close is required for final branch_pr closure.
+      Impact: The task branch is ready for PR publication and protected-base merge review.
+      Resolution: Open/update the GitHub PR for task/202605031315-90VFV9/cmo-public-surface-revision, then use hosted close after merge.
 id_source: "generated"
 ---
 ## Summary
@@ -138,6 +155,14 @@ Use one related-task batch worktree owned by this primary task because the repo-
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T13:49:41.466Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Primary public-surface revision task verified after all dependent leaves completed and final coherence review passed. Evidence includes scoped commits for README/package docs, quickstart, website, comparison/manifesto/LLM discovery, package metadata, visual assets, blog, and final review.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T13:21:58.363Z, excerpt_hash=sha256:eea0ee5d9bff8de0dfafef29c29cac4979974119d2ff4b3a68ab7231b498acfe
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -146,3 +171,7 @@ Use one related-task batch worktree owned by this primary task because the repo-
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Protected main prevented local integrate and created a protected-base handoff route; GitHub PR merge plus Task Hosted Close is required for final branch_pr closure.
+  Impact: The task branch is ready for PR publication and protected-base merge review.
+  Resolution: Open/update the GitHub PR for task/202605031315-90VFV9/cmo-public-surface-revision, then use hosted close after merge.
