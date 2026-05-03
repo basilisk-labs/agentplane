@@ -1,6 +1,18 @@
 Task: `202605031625-886KZ6`
 Title: ACR v0.1 core schema contract
 
+## Batch Tasks
+
+- Primary: `202605031625-886KZ6`
+- Closure policy: `all_or_fail`
+- Included: `202605031625-BM686J`
+- Included: `202605031626-83YQTA`
+- Included: `202605031626-EQYR7H`
+- Included: `202605031626-M8GRHS`
+- Included: `202605031626-QPTPBD`
+- Included: `202605031626-RX30C6`
+- Included: `202605031626-ZN55PB`
+
 ## Summary
 
 ACR v0.1 core schema contract
