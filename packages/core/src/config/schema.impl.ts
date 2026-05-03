@@ -77,6 +77,26 @@ const RUNNER_TIMEOUT_DEFAULTS: {
   terminate_grace_ms: 1500,
 };
 
+const ACR_DEFAULTS: {
+  enabled: boolean;
+  version: "0.1.0";
+  write_on_finish: boolean;
+  require_for_pr_check: boolean;
+  default_validation_mode: "local";
+  include_model_identity: "when_known";
+  include_prompts: false;
+  include_tool_outputs: false;
+} = {
+  enabled: true,
+  version: "0.1.0",
+  write_on_finish: true,
+  require_for_pr_check: false,
+  default_validation_mode: "local",
+  include_model_identity: "when_known",
+  include_prompts: false,
+  include_tool_outputs: false,
+};
+
 const TASK_DOC_SECTIONS_DEFAULT = [
   "Summary",
   "Scope",
@@ -254,6 +274,23 @@ export const AgentplaneConfigSchema = z
         },
         timeouts: { ...RUNNER_TIMEOUT_DEFAULTS },
       }),
+    acr: z
+      .object({
+        enabled: z.boolean().default(ACR_DEFAULTS.enabled),
+        version: z.literal("0.1.0").default(ACR_DEFAULTS.version),
+        write_on_finish: z.boolean().default(ACR_DEFAULTS.write_on_finish),
+        require_for_pr_check: z.boolean().default(ACR_DEFAULTS.require_for_pr_check),
+        default_validation_mode: z
+          .enum(["schema", "local", "ci"])
+          .default(ACR_DEFAULTS.default_validation_mode),
+        include_model_identity: z
+          .enum(["never", "when_known", "always"])
+          .default(ACR_DEFAULTS.include_model_identity),
+        include_prompts: z.literal(false).default(ACR_DEFAULTS.include_prompts),
+        include_tool_outputs: z.literal(false).default(ACR_DEFAULTS.include_tool_outputs),
+      })
+      .passthrough()
+      .default({ ...ACR_DEFAULTS }),
     paths: z
       .object({
         agents_dir: nonEmptyString().default(".agentplane/agents"),

@@ -1,5 +1,13 @@
 import { syncSpec } from "../../../commands/sync.command.js";
 import {
+  acrCheckSpec,
+  acrExplainSpec,
+  acrGenerateSpec,
+  acrSchemaSpec,
+  acrSpec,
+  acrValidateSpec,
+} from "../../../commands/acr/acr.command.js";
+import {
   backendInspectSpec,
   backendMigrateCanonicalStateSpec,
   backendSpec,
@@ -79,9 +87,21 @@ import {
   loadPrCloseSupersededSpec,
   loadPrNoteSpec,
   loadIntegrateSpec,
+  loadAcrSpec,
+  loadAcrSchemaSpec,
+  loadAcrGenerateSpec,
+  loadAcrValidateSpec,
+  loadAcrCheckSpec,
+  loadAcrExplainSpec,
 } from "../command-loaders/project.js";
 
 export const PROJECT_COMMANDS = [
+  declareCommand(acrSpec, { load: loadAcrSpec, needs: "none" }),
+  declareCommand(acrSchemaSpec, { load: loadAcrSchemaSpec, needs: "none" }),
+  declareCommand(acrGenerateSpec, { load: loadAcrGenerateSpec }),
+  declareCommand(acrValidateSpec, { load: loadAcrValidateSpec }),
+  declareCommand(acrCheckSpec, { load: loadAcrCheckSpec }),
+  declareCommand(acrExplainSpec, { load: loadAcrExplainSpec }),
   declareCommand(workStartSpec, { load: loadWorkStartSpec }),
   fromCommandsRecipesRecipesCommand(recipesSpec, "runRecipes", { needs: "none" }),
   fromCommandsRecipesCacheCommand(recipesCacheSpec, "runRecipesCache", { needs: "none" }),

@@ -340,6 +340,59 @@
         }
       }
     },
+    "acr": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "version": {
+          "type": "string",
+          "const": "0.1.0",
+          "default": "0.1.0"
+        },
+        "write_on_finish": {
+          "type": "boolean",
+          "default": true
+        },
+        "require_for_pr_check": {
+          "type": "boolean",
+          "default": false
+        },
+        "default_validation_mode": {
+          "type": "string",
+          "enum": ["schema", "local", "ci"],
+          "default": "local"
+        },
+        "include_model_identity": {
+          "type": "string",
+          "enum": ["never", "when_known", "always"],
+          "default": "when_known"
+        },
+        "include_prompts": {
+          "type": "boolean",
+          "const": false,
+          "default": false
+        },
+        "include_tool_outputs": {
+          "type": "boolean",
+          "const": false,
+          "default": false
+        }
+      },
+      "additionalProperties": true,
+      "default": {
+        "enabled": true,
+        "version": "0.1.0",
+        "write_on_finish": true,
+        "require_for_pr_check": false,
+        "default_validation_mode": "local",
+        "include_model_identity": "when_known",
+        "include_prompts": false,
+        "include_tool_outputs": false
+      }
+    },
     "paths": {
       "type": "object",
       "properties": {

@@ -3,6 +3,7 @@ import { findDriftedRenderedArtifacts, syncRenderedArtifacts } from "./lib/sync-
 import { defineScript, parseCheckSyncMode, runScriptMain } from "./lib/script-runtime.mjs";
 
 import {
+  renderAcrSchemaJson,
   renderAgentplaneConfigSchemaJson,
   renderTaskHandoffSchemaJson,
   renderTaskPrMetaSchemaJson,
@@ -17,6 +18,14 @@ const main = defineScript({
 
     const repoRoot = process.cwd();
     const artifacts = [
+      {
+        label: "ACR v0.1 schema",
+        rendered: renderAcrSchemaJson(),
+        targets: [
+          path.join(repoRoot, "packages", "spec", "schemas", "acr-v0.1.schema.json"),
+          path.join(repoRoot, "packages", "core", "schemas", "acr-v0.1.schema.json"),
+        ],
+      },
       {
         label: "config schema",
         rendered: renderAgentplaneConfigSchemaJson(),

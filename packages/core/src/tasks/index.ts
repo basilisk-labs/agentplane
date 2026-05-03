@@ -1,4 +1,12 @@
 export {
+  ACR_VERSION,
+  listAcrSchemaErrors,
+  renderAcrSchemaJson,
+  validateAcr,
+  type AgentChangeRecord,
+} from "./task-artifact-schema.js";
+
+export {
   buildDefaultTaskDoc,
   DEFAULT_TASK_DOC_VERSION,
   getTaskDocContract,

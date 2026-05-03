@@ -5,12 +5,10 @@ description: "ACR v0.1 as a repo-local evidence contract for agent-authored soft
 
 ## Status
 
-Agent Change Record, abbreviated ACR, is a proposed AgentPlane evidence format. The current
-AgentPlane lifecycle already records task, plan, approval, verification, finish, policy, and Git
-state. ACR v0.1 turns that lifecycle into one portable, machine-readable record.
-
-ACR is not implemented as a CLI command yet. This page defines the standard AgentPlane should
-produce and validate.
+Agent Change Record, abbreviated ACR, is the AgentPlane evidence format for task-local,
+machine-readable change records. The AgentPlane lifecycle already records task, plan, approval,
+verification, finish, policy, and Git state. ACR v0.1 turns that lifecycle into one portable,
+machine-readable record.
 
 ## Purpose
 
@@ -79,9 +77,9 @@ base_commit -> work_commit -> evidence_commit
 The required field is `repository.work_commit`. Requiring "the commit that contains this ACR" would
 create a self-reference problem: the hash is unknown until after the ACR is committed.
 
-## Minimal CLI surface
+## CLI surface
 
-The proposed AgentPlane command group is:
+The AgentPlane command group is:
 
 ```bash
 agentplane acr generate <task-id> --work-commit <rev> --write
@@ -99,8 +97,10 @@ Expected behavior:
 - `explain` prints a concise reviewer summary.
 - `schema` emits the bundled JSON Schema.
 
-The first implementation should be opt-in. A later release can wire ACR into `finish` through an
-explicit `--write-acr` flag and then a config-controlled `write_on_finish` default.
+Automatic export is enabled by default through `acr.write_on_finish=true`. A successful
+`agentplane finish ...` refreshes `.agentplane/tasks/<task-id>/acr.json` unless
+`--no-write-acr` is passed. Requiring ACR as a PR/CI gate remains config-controlled through
+`acr.require_for_pr_check`.
 
 ## Validation modes
 

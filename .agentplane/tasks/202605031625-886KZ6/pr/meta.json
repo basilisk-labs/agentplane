@@ -1,0 +1,37 @@
+{
+  "base": "main",
+  "batch": {
+    "closure_policy": "all_or_fail",
+    "included_task_ids": [
+      "202605031625-BM686J",
+      "202605031626-83YQTA",
+      "202605031626-EQYR7H",
+      "202605031626-M8GRHS",
+      "202605031626-QPTPBD",
+      "202605031626-RX30C6",
+      "202605031626-ZN55PB"
+    ],
+    "primary_task_id": "202605031625-886KZ6",
+    "schema_version": 1
+  },
+  "branch": "task/202605031625-886KZ6/acr-core-schema",
+  "created_at": "2026-05-03T16:32:47.928Z",
+  "head_sha": "5ec69b47132ad03b72f08ddba751495e1b1c0ad2",
+  "last_verified_at": "2026-05-03T17:34:21.039Z",
+  "last_verified_sha": "5ec69b47132ad03b72f08ddba751495e1b1c0ad2",
+  "related_task_ids": [
+    "202605031625-BM686J",
+    "202605031626-83YQTA",
+    "202605031626-EQYR7H",
+    "202605031626-M8GRHS",
+    "202605031626-QPTPBD",
+    "202605031626-RX30C6",
+    "202605031626-ZN55PB"
+  ],
+  "schema_version": 1,
+  "task_id": "202605031625-886KZ6",
+  "updated_at": "2026-05-03T17:34:21.187Z",
+  "verify": {
+    "status": "pass"
+  }
+}

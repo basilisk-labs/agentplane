@@ -1,5 +1,24 @@
 import { commandModule, type RunDeps } from "../command-catalog/kernel.js";
 
+export const loadAcrSpec = (deps: RunDeps) =>
+  import("../../../commands/acr/acr.command.js").then((m) => m.makeRunAcrHandler(deps.getCtx));
+export const loadAcrSchemaSpec = () =>
+  import("../../../commands/acr/acr.command.js").then((m) => m.makeRunAcrSchemaHandler());
+export const loadAcrGenerateSpec = (deps: RunDeps) =>
+  import("../../../commands/acr/acr.command.js").then((m) =>
+    m.makeRunAcrGenerateHandler(deps.getCtx),
+  );
+export const loadAcrValidateSpec = (deps: RunDeps) =>
+  import("../../../commands/acr/acr.command.js").then((m) =>
+    m.makeRunAcrValidateHandler(deps.getCtx),
+  );
+export const loadAcrCheckSpec = (deps: RunDeps) =>
+  import("../../../commands/acr/acr.command.js").then((m) => m.makeRunAcrCheckHandler(deps.getCtx));
+export const loadAcrExplainSpec = (deps: RunDeps) =>
+  import("../../../commands/acr/acr.command.js").then((m) =>
+    m.makeRunAcrExplainHandler(deps.getCtx),
+  );
+
 export const fromCommandsRecipesRecipesCommand = commandModule(
   () => import("../../../commands/recipes/recipes.command.js"),
 );

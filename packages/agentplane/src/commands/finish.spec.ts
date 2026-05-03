@@ -164,6 +164,13 @@ export const finishSpec: CommandSpec<FinishParsed> = {
     },
     {
       kind: "boolean",
+      name: "no-write-acr",
+      default: false,
+      description:
+        "Disable automatic ACR refresh for this finish call when acr.write_on_finish is enabled.",
+    },
+    {
+      kind: "boolean",
       name: "close-unstage-others",
       default: false,
       description:

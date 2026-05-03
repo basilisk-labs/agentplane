@@ -22,6 +22,8 @@ const mocks = vi.hoisted(() => ({
   execFileAsync: vi.fn(),
   gitBranchExists: vi.fn(),
   gitCurrentBranch: vi.fn(),
+  generateAcr: vi.fn(),
+  writeAcrFile: vi.fn(),
 }));
 
 vi.mock("../guard/impl/comment-commit.js", () => ({
@@ -41,6 +43,10 @@ vi.mock("../shared/task-backend.js", () => ({
 vi.mock("../shared/git-ops.js", () => ({
   gitBranchExists: mocks.gitBranchExists,
   gitCurrentBranch: mocks.gitCurrentBranch,
+}));
+vi.mock("../acr/acr.command.js", () => ({
+  generateAcr: mocks.generateAcr,
+  writeAcrFile: mocks.writeAcrFile,
 }));
 vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
@@ -215,6 +221,8 @@ describe("task finish validation", () => {
     mocks.execFileAsync.mockReset();
     mocks.gitBranchExists.mockReset();
     mocks.gitCurrentBranch.mockReset();
+    mocks.generateAcr.mockReset();
+    mocks.writeAcrFile.mockReset();
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
     mocks.readCommitInfo.mockResolvedValue({ hash: "hc", message: "mc" });
@@ -229,6 +237,11 @@ describe("task finish validation", () => {
     });
     mocks.gitBranchExists.mockResolvedValue(false);
     mocks.gitCurrentBranch.mockResolvedValue("main");
+    mocks.generateAcr.mockResolvedValue({
+      acrPath: "/repo/.agentplane/tasks/T-1/acr.json",
+      record: { record_type: "agent_change_record" },
+    });
+    mocks.writeAcrFile.mockResolvedValue(undefined);
     mocks.commitFromComment.mockResolvedValue({
       hash: "new-hash",
       message: "✅ T-1 task: verified",
@@ -971,6 +984,58 @@ describe("task finish validation", () => {
       quiet: true,
     });
     expect(mocks.readCommitInfo).not.toHaveBeenCalled();
+  });
+
+  it("refreshes ACR from existing task commit metadata", async () => {
+    const ctx = mkCtx();
+    ctx.config.acr.enabled = true;
+    ctx.config.acr.write_on_finish = true;
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        id: "T-1",
+        status: "DOING",
+        tags: ["code"],
+        commit: { hash: "existing-hash", message: "existing" },
+      }),
+    );
+
+    const { cmdFinish } = await import("./finish-command.js");
+    await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: this is long enough",
+      result: "ok",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: true,
+    });
+
+    expect(mocks.generateAcr).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-1",
+        workCommit: "existing-hash",
+        write: true,
+        refresh: true,
+      }),
+    );
+    expect(mocks.writeAcrFile).toHaveBeenCalledWith(
+      expect.objectContaining({
+        acrPath: "/repo/.agentplane/tasks/T-1/acr.json",
+        refresh: true,
+      }),
+    );
   });
 
   it("rejects combining --commit-from-comment with --status-commit", async () => {
