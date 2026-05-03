@@ -1,10 +1,11 @@
 ---
 id: "202605031255-XM1W31"
 title: "Resolve project config from WORKFLOW.md v2"
-status: "DOING"
+result_summary: "Project config now resolves from WORKFLOW.md v2 with legacy config.json fallback only."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-05-03T13:28:29.910Z"
   updated_by: "CODER"
   note: "loadConfig now prefers WORKFLOW.md, maps v2 front matter to validated config shape, and falls back to legacy config.json only when WORKFLOW.md is absent."
-commit: null
+commit:
+  hash: "c02111e054b00ac06e7277733a65e88cbb557391"
+  message: "✅ GV0N4K close: Merged via PR #814. (202605031255-GV0N4K) [config,docs,workflow] (#817)"
 comments:
   -
     author: "CODER"
     body: "Start: Resolved project config from WORKFLOW.md v2 first, while preserving legacy config.json as import fallback only."
+  -
+    author: "CODER"
+    body: "Verified: WORKFLOW-backed config resolution is merged through PR #814 and config show resolves from WORKFLOW.md."
 events:
   -
     type: "status"
@@ -46,8 +52,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "loadConfig now prefers WORKFLOW.md, maps v2 front matter to validated config shape, and falls back to legacy config.json only when WORKFLOW.md is absent."
+  -
+    type: "status"
+    at: "2026-05-03T13:40:40.411Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: WORKFLOW-backed config resolution is merged through PR #814 and config show resolves from WORKFLOW.md."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:28:29.913Z"
+doc_updated_at: "2026-05-03T13:40:40.412Z"
 doc_updated_by: "CODER"
 description: "Replace config.json as the canonical config source by building internal ResolvedConfig from WORKFLOW.md v2. Keep only temporary compatibility reads for legacy repositories during migration, and fail on conflicting generated or legacy config state."
 sections:
