@@ -152,6 +152,22 @@ agentplane task lint
 The exported snapshot is derived from the current backend projection. It is not the canonical
 source of truth.
 
+## Agent Change Record (planned)
+
+ACR commands are proposed, not implemented in the current CLI:
+
+```bash
+agentplane acr generate <task-id> --work-commit <rev> --write
+agentplane acr validate <task-id> --mode local
+agentplane acr check <task-id> --mode ci
+agentplane acr explain <task-id>
+agentplane acr schema --version 0.1
+```
+
+When implemented, these commands should derive `.agentplane/tasks/<task-id>/acr.json` from existing
+task lifecycle evidence. They must not make ACR a second source of truth. See
+[Agent Change Record](agent-change-record).
+
 ## Backend sync (remote backends)
 
 For remote backends (for example Redmine), use explicit sync:

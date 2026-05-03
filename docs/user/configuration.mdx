@@ -126,6 +126,29 @@ If wrapper mode is configured, inspect `agentplane task run <task-id> --dry-run`
 lines. They surface the configured wrapper mode, capability level, and supported sandbox values
 without requiring a manual read of `bundle.json`.
 
+### acr (planned)
+
+Agent Change Record support is not active yet. The intended config surface is:
+
+```json
+{
+  "acr": {
+    "enabled": true,
+    "version": "0.1.0",
+    "write_on_finish": true,
+    "require_for_pr_check": true,
+    "default_validation_mode": "local",
+    "include_model_identity": "when_known",
+    "include_prompts": false,
+    "include_tool_outputs": false
+  }
+}
+```
+
+This config must remain privacy-safe by default. ACR should record evidence pointers, hashes, Git
+revisions, policy decisions, and verification status; it should not commit prompts, transcripts, or
+raw tool output by default. See [Agent Change Record](agent-change-record).
+
 ## Examples
 
 Set primary tags that require Verify Steps:

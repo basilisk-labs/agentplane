@@ -83,6 +83,11 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "Agent Change Record",
+      items: ["user/agent-change-record", "developer/agent-change-record-implementation"],
+    },
+    {
+      type: "category",
       label: "Upgrade & recover",
       items: [
         "user/breaking-changes",
