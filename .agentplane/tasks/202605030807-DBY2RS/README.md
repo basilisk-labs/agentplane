@@ -4,7 +4,7 @@ title: "Fix standalone release doctor smoke marker"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-03T08:09:13.786Z"
+  updated_by: "CODER"
+  note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts --pool=forks --maxWorkers 1 --testTimeout 120000 --hookTimeout 120000; Result: pass; Evidence: 1 file, 5 tests passed. Command: node scripts/check-release-parity.mjs && git diff --check; Result: pass; Evidence: release parity OK and no whitespace errors."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: fixing the standalone release smoke doctor marker that blocked v0.4.2 publication before npm or tag publication."
+  -
+    type: "verify"
+    at: "2026-05-03T08:09:13.786Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts --pool=forks --maxWorkers 1 --testTimeout 120000 --hookTimeout 120000; Result: pass; Evidence: 1 file, 5 tests passed. Command: node scripts/check-release-parity.mjs && git diff --check; Result: pass; Evidence: release parity OK and no whitespace errors."
 doc_version: 3
-doc_updated_at: "2026-05-03T08:08:07.009Z"
+doc_updated_at: "2026-05-03T08:09:13.789Z"
 doc_updated_by: "CODER"
 description: "Update standalone release artifact smoke testing to accept the current doctor OK output and surface doctor output on failures so v0.4.2 publish can complete."
 sections:
@@ -55,11 +61,24 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T08:09:13.786Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts --pool=forks --maxWorkers 1 --testTimeout 120000 --hookTimeout 120000; Result: pass; Evidence: 1 file, 5 tests passed. Command: node scripts/check-release-parity.mjs && git diff --check; Result: pass; Evidence: release parity OK and no whitespace errors.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T08:08:07.009Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Publish run 25273723107 failed before npm/tag at standalone linux-x64 doctor smoke because the script expected 'doctor OK' but current CLI emits 'doctor (OK)'.
+      Impact: v0.4.2 publish can be retried without changing package version or release payload semantics.
+      Resolution: Smoke now accepts both legacy and current doctor OK markers and includes doctor output on failure.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -86,6 +105,14 @@ Plan: update scripts/smoke-standalone-cli-artifact.mjs to accept current doctor 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T08:09:13.786Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts --pool=forks --maxWorkers 1 --testTimeout 120000 --hookTimeout 120000; Result: pass; Evidence: 1 file, 5 tests passed. Command: node scripts/check-release-parity.mjs && git diff --check; Result: pass; Evidence: release parity OK and no whitespace errors.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T08:08:07.009Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -94,3 +121,9 @@ Plan: update scripts/smoke-standalone-cli-artifact.mjs to accept current doctor 
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Publish run 25273723107 failed before npm/tag at standalone linux-x64 doctor smoke because the script expected 'doctor OK' but current CLI emits 'doctor (OK)'.
+  Impact: v0.4.2 publish can be retried without changing package version or release payload semantics.
+  Resolution: Smoke now accepts both legacy and current doctor OK markers and includes doctor output on failure.
+  Promotion: incident-candidate
+  Fixability: external

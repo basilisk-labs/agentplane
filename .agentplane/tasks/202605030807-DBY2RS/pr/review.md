@@ -24,8 +24,8 @@ Update standalone release artifact smoke testing to accept the current doctor OK
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts --pool=forks --maxWorkers 1 --testTimeout 120000 --hookTimeout 120000; Result: pass; Evidence: 1 file, 5 tests passed. Command: node scripts/check-release-parity.mjs && git diff --check; Result: pass; Evidence: release parity OK and no whitespace errors.
 
 ## Risks
 
@@ -45,12 +45,13 @@ Update standalone release artifact smoke testing to accept the current doctor OK
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T08:08:07.052Z
+- Updated: 2026-05-03T08:09:13.813Z
 - Branch: task/202605030807-DBY2RS/standalone-doctor-smoke
-- Head: db9c3bddf6b0
+- Head: 4960313bb41b
 
 ```text
-No changes detected.
+ scripts/smoke-standalone-cli-artifact.mjs | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 ```
 
 </details>
