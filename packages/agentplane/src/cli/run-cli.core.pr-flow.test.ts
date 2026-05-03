@@ -420,6 +420,78 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
   );
 
   it(
+    "work start rejects duplicate branch ownership for the same task",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+      await seedRepoLocalBinArtifacts(root);
+      await seedRepoLocalNodeModules(root);
+      await seedRepoLocalCorePackage(root);
+      await seedRepoLocalDistArtifacts(root);
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Duplicate work start task",
+          "--description",
+          "Work start must reject duplicate branch ownership",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+      await approveTaskPlan(root, taskId);
+      await execFileAsync("git", ["branch", `task/${taskId}/first-owner`, "main"], {
+        cwd: root,
+      });
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "work",
+          "start",
+          taskId,
+          "--agent",
+          "CODER",
+          "--slug",
+          "second-owner",
+          "--worktree",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(5);
+        expect(io.stderr).toContain("already has active branch ownership");
+        expect(io.stderr).toContain(`task/${taskId}/first-owner`);
+      } finally {
+        io.restore();
+      }
+    },
+    WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
+  );
+
+  it(
     "work start rejects a base branch that is behind its upstream tracking ref",
     async () => {
       const root = await mkGitRepoRootWithBranch("main");

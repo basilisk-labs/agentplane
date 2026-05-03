@@ -6,7 +6,7 @@ import { fileExists } from "../../cli/fs-utils.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
-import { gitEnv } from "@agentplaneorg/core/git";
+import { gitEnv, gitListTaskBranches, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
 import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
 import { isPathWithin } from "../shared/path.js";
 import {
@@ -35,6 +35,27 @@ import {
   materializeRepoLocalDistForWorktree,
   materializeRepoLocalInstallLayoutForWorktree,
 } from "./work-start.materialize.js";
+
+async function ensureSingleTaskBranchOwnership(opts: {
+  gitRoot: string;
+  taskPrefix: string;
+  taskId: string;
+  branchName: string;
+}): Promise<void> {
+  const branches = await gitListTaskBranches(opts.gitRoot, opts.taskPrefix);
+  const ownedBranches = branches.filter(
+    (branch) =>
+      parseTaskIdFromBranch(opts.taskPrefix, branch) === opts.taskId && branch !== opts.branchName,
+  );
+  if (ownedBranches.length === 0) return;
+  throw new CliError({
+    exitCode: 5,
+    code: "E_GIT",
+    message:
+      `Task ${opts.taskId} already has active branch ownership: ${ownedBranches.join(", ")}. ` +
+      "Finish or clean up that branch before starting another worktree for the same task.",
+  });
+}
 
 export async function cmdWorkStart(opts: {
   ctx?: CommandContext;
@@ -130,6 +151,12 @@ export async function cmdWorkStart(opts: {
 
     const prefix = config.branch.task_prefix;
     const branchName = `${prefix}/${opts.taskId}/${opts.slug.trim()}`;
+    await ensureSingleTaskBranchOwnership({
+      gitRoot: resolved.gitRoot,
+      taskPrefix: prefix,
+      taskId: opts.taskId,
+      branchName,
+    });
 
     const branchExists = await gitBranchExists(resolved.gitRoot, branchName);
     let worktreePath = "";
