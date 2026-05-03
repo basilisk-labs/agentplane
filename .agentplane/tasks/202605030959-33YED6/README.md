@@ -1,10 +1,11 @@
 ---
 id: "202605030959-33YED6"
 title: "Add Bun executable release artifacts"
-status: "TODO"
+result_summary: "Superseded by completed Bun binary release asset chain; primary implementation commit f85da16d5cdc."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,16 +20,44 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
-comments: []
-events: []
+  state: "ok"
+  updated_at: "2026-05-03T14:24:10.328Z"
+  updated_by: "CODER"
+  note: "Verified: superseded by 202605031118-4KRYEQ, which generated Bun executable release assets, and by follow-up Bun smoke/installer tasks merged to main."
+commit:
+  hash: "f85da16d5cdc4cc859d17721b7862ef317474563"
+  message: "Merge pull request #807 from basilisk-labs/task/202605031118-4KRYEQ/bun-binary-release-assets"
+comments:
+  -
+    author: "CODER"
+    body: "Start: close stale Bun release artifact placeholder as superseded by completed Bun binary release asset tasks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: stale placeholder closed because Bun executable release assets are implemented in 202605031118-4KRYEQ and merged to main."
+events:
+  -
+    type: "status"
+    at: "2026-05-03T14:24:09.901Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: close stale Bun release artifact placeholder as superseded by completed Bun binary release asset tasks."
+  -
+    type: "verify"
+    at: "2026-05-03T14:24:10.328Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: superseded by 202605031118-4KRYEQ, which generated Bun executable release assets, and by follow-up Bun smoke/installer tasks merged to main."
+  -
+    type: "status"
+    at: "2026-05-03T14:24:10.781Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: stale placeholder closed because Bun executable release assets are implemented in 202605031118-4KRYEQ and merged to main."
 doc_version: 3
-doc_updated_at: "2026-05-03T11:07:06.742Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-03T14:24:10.782Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add Bun executable artifact generation to the release pipeline behind an explicit migration gate, preserving current standalone artifacts until verification proves parity."
 sections:
   Summary: |-
@@ -51,6 +80,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-03T14:24:10.328Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: superseded by 202605031118-4KRYEQ, which generated Bun executable release assets, and by follow-up Bun smoke/installer tasks merged to main.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T14:24:09.901Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -87,6 +124,14 @@ Acceptance: release workflow can produce Bun executable artifacts reproducibly, 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-03T14:24:10.328Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: superseded by 202605031118-4KRYEQ, which generated Bun executable release assets, and by follow-up Bun smoke/installer tasks merged to main.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-03T14:24:09.901Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
