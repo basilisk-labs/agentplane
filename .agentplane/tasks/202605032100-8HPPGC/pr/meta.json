@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T21:08:08Z",
   "base": "main",
   "branch": "task/202605032100-8HPPGC/finalize-043-release",
   "created_at": "2026-05-03T21:01:02.427Z",
-  "head_sha": "ab1e6355abe4047d1d1c2c04f0c673b10f525021",
+  "head_sha": "6d9a87a53311a8bee6c3fcbb1366a147a980b4f6",
   "last_verified_at": "2026-05-03T21:06:44.631Z",
   "last_verified_sha": "6e3966215e4b0562925c03ff3fac6ba9175a7229",
+  "merge_commit": "9ea84bb858758ec116a2384d048b5eb9134ebc37",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T21:08:08Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605032100-8HPPGC",
-  "updated_at": "2026-05-03T21:07:21.359Z",
+  "updated_at": "2026-05-03T21:08:08Z",
   "verify": {
     "status": "pass"
   }
