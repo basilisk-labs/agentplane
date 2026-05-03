@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T09:48:56Z",
   "base": "main",
   "branch": "task/202605030854-FNBYFZ/external-distribution-publish",
   "created_at": "2026-05-03T08:55:10.222Z",
-  "head_sha": "00c3d81386a4ea17ba3323e05f54c94fc8dd75b4",
+  "head_sha": "9e490fc3e4a6e1c12bcfa82f22edb604db194be6",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "aaa7dd163e77fec4f64e03499ce110385bc83285",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T09:48:56Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605030854-FNBYFZ",
-  "updated_at": "2026-05-03T09:39:44.620Z",
+  "updated_at": "2026-05-03T09:48:56Z",
   "verify": {
     "status": "skipped"
   }

@@ -1,10 +1,11 @@
 ---
 id: "202605030854-FNBYFZ"
 title: "Harden external distribution publishing"
-status: "DOING"
+result_summary: "Merged via PR #791."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "aaa7dd163e77fec4f64e03499ce110385bc83285"
+  message: "Merge PR #791: 🛠 FNBYFZ release: harden external distribution publish"
 comments:
   -
     author: "CODER"
     body: "Start: harden external distribution publication so Homebrew, Scoop, and setup-agentplane PRs are created even when optional repository metadata updates fail."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #791 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -35,9 +41,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: harden external distribution publication so Homebrew, Scoop, and setup-agentplane PRs are created even when optional repository metadata updates fail."
+  -
+    type: "status"
+    at: "2026-05-03T09:49:34.077Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #791 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T08:55:10.181Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T09:49:34.082Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make Homebrew/Scoop/setup-agentplane external distribution publication open PRs even when repository metadata updates are denied, and make publish reporting distinguish metadata permission failures from missing credentials."
 sections:
   Summary: |-
