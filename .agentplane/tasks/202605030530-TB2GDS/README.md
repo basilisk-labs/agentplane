@@ -1,10 +1,11 @@
 ---
 id: "202605030530-TB2GDS"
 title: "Prepare next patch release after task cleanup"
-status: "DOING"
+result_summary: "Merged via PR #785."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "13f32a51175f900000cad44f3da24e11b4780bf8"
+  message: "Merge pull request #785 from basilisk-labs/task/202605030530-TB2GDS/next-patch-release-prep"
 comments:
   -
     author: "CODER"
     body: "Start: recovering pending release and recipes trust deltas on a fresh branch_pr worktree before preparing the next patch release candidate."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #785 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -36,9 +42,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: recovering pending release and recipes trust deltas on a fresh branch_pr worktree before preparing the next patch release candidate."
+  -
+    type: "status"
+    at: "2026-05-03T07:27:13.418Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #785 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T05:31:08.916Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T07:27:13.423Z"
+doc_updated_by: "INTEGRATOR"
 description: "Recover the useful pending branch deltas, confirm recipe listing behavior, and prepare the next patch release candidate."
 sections:
   Summary: |-
