@@ -170,6 +170,7 @@ VERSION="${version}"
 REPO="${repo}"
 TAG="${tag}"
 BASE_URL="https://github.com/$REPO/releases/download/$TAG"
+CHANNEL="\${AGENTPLANE_INSTALL_CHANNEL:-standalone}"
 INSTALL_DIR="\${AGENTPLANE_INSTALL_DIR:-$HOME/.agentplane/standalone/$VERSION}"
 
 need() {
@@ -197,7 +198,11 @@ case "$(uname -m)" in
   *) echo "agentplane install: unsupported architecture: $(uname -m)" >&2; exit 1 ;;
 esac
 
-asset="agentplane-v$VERSION-$platform-$arch.tar.gz"
+case "$CHANNEL" in
+  standalone) asset="agentplane-v$VERSION-$platform-$arch.tar.gz" ;;
+  bun) asset="agentplane-bun-v$VERSION-$platform-$arch.tar.gz" ;;
+  *) echo "agentplane install: unsupported channel: $CHANNEL (expected standalone or bun)" >&2; exit 1 ;;
+esac
 archive="$tmp_dir/$asset"
 checksums="$tmp_dir/SHA256SUMS"
 
@@ -241,6 +246,7 @@ function renderInstallPs1({ version, repo, tag }) {
 $Version = "${version}"
 $Repo = "${repo}"
 $Tag = "${tag}"
+$Channel = if ($env:AGENTPLANE_INSTALL_CHANNEL) { $env:AGENTPLANE_INSTALL_CHANNEL } else { "standalone" }
 $BaseUrl = "https://github.com/$Repo/releases/download/$Tag"
 $InstallDir = if ($env:AGENTPLANE_INSTALL_DIR) { $env:AGENTPLANE_INSTALL_DIR } else { Join-Path $HOME ${defaultInstallDir} }
 
@@ -253,7 +259,15 @@ function Require-Command($Name) {
 $TempDir = Join-Path ([System.IO.Path]::GetTempPath()) ("agentplane-install-" + [System.Guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $TempDir | Out-Null
 try {
-  $Asset = "agentplane-v$Version-win32-x64.zip"
+  if ($Channel -eq "standalone") {
+    $Asset = "agentplane-v$Version-win32-x64.zip"
+  }
+  elseif ($Channel -eq "bun") {
+    $Asset = "agentplane-bun-v$Version-win32-x64.zip"
+  }
+  else {
+    throw "agentplane install: unsupported channel: $Channel (expected standalone or bun)"
+  }
   $Archive = Join-Path $TempDir $Asset
   $Checksums = Join-Path $TempDir "SHA256SUMS"
   Invoke-WebRequest -Uri "$BaseUrl/SHA256SUMS" -OutFile $Checksums

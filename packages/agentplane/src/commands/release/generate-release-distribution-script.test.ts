@@ -126,12 +126,16 @@ describe("generate-release-distribution script", () => {
       expect(existsSync(path.join(outDir, asset.name))).toBe(true);
     }
     expect(installSh).toContain("SHA256SUMS");
+    expect(installSh).toContain('CHANNEL="${AGENTPLANE_INSTALL_CHANNEL:-standalone}"');
     expect(installSh).toContain('asset="agentplane-v$VERSION-$platform-$arch.tar.gz"');
+    expect(installSh).toContain('asset="agentplane-bun-v$VERSION-$platform-$arch.tar.gz"');
     expect(installSh).toContain('"$INSTALL_DIR/bin/agentplane" --version');
     expect(installSh).not.toContain("npm install");
     expect(installSh).not.toContain("need node");
     expect(installPs1).toContain("SHA256SUMS");
+    expect(installPs1).toContain("$Channel = if ($env:AGENTPLANE_INSTALL_CHANNEL)");
     expect(installPs1).toContain('"agentplane-v$Version-win32-x64.zip"');
+    expect(installPs1).toContain('"agentplane-bun-v$Version-win32-x64.zip"');
     expect(installPs1).toContain(String.raw`-split '\s+'`);
     expect(installPs1).toContain(String.raw`"bin\agentplane.cmd"`);
     expect(installPs1).not.toContain("npm install");
