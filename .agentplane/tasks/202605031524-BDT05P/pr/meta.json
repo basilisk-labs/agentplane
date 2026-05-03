@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-03T15:50:22Z",
   "base": "main",
   "branch": "task/202605031524-BDT05P/batch-pr-validation",
   "created_at": "2026-05-03T15:47:41.293Z",
-  "head_sha": "e8032079ae64747665887a0ac0ceac51039c6a60",
+  "head_sha": "e8b0aecf65b6ebf325a80a1a6bb190d3ff3d3e99",
   "last_verified_at": "2026-05-03T15:47:41.124Z",
   "last_verified_sha": "fa58ade804ae0a1539387ba950ee2052a07f04db",
+  "merge_commit": "96a41977c3ab31df00def384cc5407e6edb41a88",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-03T15:50:22Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605031524-BDT05P",
-  "updated_at": "2026-05-03T15:48:03.240Z",
+  "updated_at": "2026-05-03T15:50:22Z",
   "verify": {
     "status": "pass"
   }
