@@ -1,0 +1,3 @@
+ packages/agentplane/src/commands/guard/impl/dco.ts      |  7 ++-----
+ packages/agentplane/src/commands/guard/impl/env.test.ts | 12 ++----------
+ 2 files changed, 4 insertions(+), 15 deletions(-)
