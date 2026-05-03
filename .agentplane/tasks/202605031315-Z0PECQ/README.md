@@ -1,10 +1,11 @@
 ---
 id: "202605031315-Z0PECQ"
 title: "Add quickstart first-win demo path"
-status: "DOING"
+result_summary: "Quickstart now exposes the first-win demo path from the CMO revision."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-05-03T13:33:17.255Z"
   updated_by: "CODER"
   note: "Quickstart now shows a safe first-visible-payoff path and artifact tree; targeted renderer tests, live quickstart output, docs-site typecheck, and diff whitespace checks passed."
-commit: null
+commit:
+  hash: "3264e1c2a90b2633623d6ab78d2f44d0d0fc4ad4"
+  message: "✨ Z0PECQ cli: show quickstart artifact payoff"
 comments:
   -
     author: "CODER"
     body: "Start: proceed after ZN8594 implementation and verification; branch_pr leaf finish will be recorded from base after integration."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Quickstart first-win demo path landed through PR #819; task verification was recorded before merge."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Quickstart now shows a safe first-visible-payoff path and artifact tree; targeted renderer tests, live quickstart output, docs-site typecheck, and diff whitespace checks passed."
+  -
+    type: "status"
+    at: "2026-05-03T14:43:17.220Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Quickstart first-win demo path landed through PR #819; task verification was recorded before merge."
 doc_version: 3
-doc_updated_at: "2026-05-03T13:33:17.260Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T14:43:17.221Z"
+doc_updated_by: "INTEGRATOR"
 description: "Improve the CLI quickstart/onboarding path so a first-time user can see a safe fake-task artifact quickly enough to support the README and website demo promise."
 sections:
   Summary: |-
