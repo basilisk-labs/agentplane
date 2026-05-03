@@ -39,6 +39,10 @@ jobs:
           ref: ${{ github.event.inputs.sha }}
           fetch-depth: 0
           submodules: recursive
+      - name: Checkout current workflow runtime
+        uses: actions/checkout@v6
+        with:
+          path: .agentplane/.release/runtime
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.3.6"
@@ -72,6 +76,7 @@ jobs:
           node scripts/check-release-version.mjs --tag "$RELEASE_TAG"
           bun run release:check
       - name: Generate release distribution assets
+        if: contains(fromJSON('["github-release","ghcr","all"]'), github.event.inputs.module)
         shell: bash
         run: |
           set -euo pipefail
@@ -81,17 +86,44 @@ jobs:
             --tag "$RELEASE_TAG" \
             --sha "$RELEASE_SHA" \
             --repo "${{ github.repository }}"
-      - name: Render module artifacts
+      - name: Download release-owned distribution manifest
+        if: contains(fromJSON('["homebrew","scoop","setup-agentplane","external"]'), github.event.inputs.module)
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          node scripts/render-homebrew-formula.mjs \
+          mkdir -p .agentplane/.release/publish/distribution
+          gh release download "$RELEASE_TAG" \
+            --repo "${{ github.repository }}" \
+            --pattern release-distribution.json \
+            --dir .agentplane/.release/publish/distribution \
+            --clobber
+          node - <<'EOF'
+          const fs = require("node:fs");
+          const manifest = JSON.parse(
+            fs.readFileSync(".agentplane/.release/publish/distribution/release-distribution.json", "utf8"),
+          );
+          if (manifest.tag !== process.env.RELEASE_TAG) {
+            throw new Error(`release manifest tag mismatch: ${manifest.tag} !== ${process.env.RELEASE_TAG}`);
+          }
+          if (manifest.sha !== process.env.RELEASE_SHA) {
+            throw new Error(`release manifest sha mismatch: ${manifest.sha} !== ${process.env.RELEASE_SHA}`);
+          }
+          EOF
+      - name: Render module artifacts
+        if: contains(fromJSON('["homebrew","scoop","setup-agentplane","external","all"]'), github.event.inputs.module)
+        shell: bash
+        run: |
+          set -euo pipefail
+          RUNTIME_SCRIPTS=".agentplane/.release/runtime/scripts"
+          node "${RUNTIME_SCRIPTS}/render-homebrew-formula.mjs" \
             --manifest .agentplane/.release/publish/distribution/release-distribution.json \
             --out .agentplane/.release/publish/homebrew
-          node scripts/render-scoop-manifest.mjs \
+          node "${RUNTIME_SCRIPTS}/render-scoop-manifest.mjs" \
             --manifest .agentplane/.release/publish/distribution/release-distribution.json \
             --out .agentplane/.release/publish/scoop
-          node scripts/render-setup-agentplane-action.mjs \
+          node "${RUNTIME_SCRIPTS}/render-setup-agentplane-action.mjs" \
             --manifest .agentplane/.release/publish/distribution/release-distribution.json \
             --out .agentplane/.release/publish/setup-agentplane
       - name: Publish GitHub Release assets
@@ -146,7 +178,7 @@ jobs:
         env:
           HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN || '' }}
         run: |
-          node scripts/publish-external-distribution.mjs \
+          node .agentplane/.release/runtime/scripts/publish-external-distribution.mjs \
             --module homebrew \
             --repo basilisk-labs/homebrew-tap \
             --source .agentplane/.release/publish/homebrew \
@@ -164,7 +196,7 @@ jobs:
         env:
           SCOOP_BUCKET_TOKEN: ${{ secrets.SCOOP_BUCKET_TOKEN || '' }}
         run: |
-          node scripts/publish-external-distribution.mjs \
+          node .agentplane/.release/runtime/scripts/publish-external-distribution.mjs \
             --module scoop \
             --repo basilisk-labs/scoop-bucket \
             --source .agentplane/.release/publish/scoop \
@@ -182,7 +214,7 @@ jobs:
         env:
           SETUP_AGENTPLANE_TOKEN: ${{ secrets.SETUP_AGENTPLANE_TOKEN || '' }}
         run: |
-          node scripts/publish-external-distribution.mjs \
+          node .agentplane/.release/runtime/scripts/publish-external-distribution.mjs \
             --module setup-agentplane \
             --repo basilisk-labs/setup-agentplane \
             --source .agentplane/.release/publish/setup-agentplane \
