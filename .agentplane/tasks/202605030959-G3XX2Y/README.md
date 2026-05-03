@@ -1,10 +1,11 @@
 ---
 id: "202605030959-G3XX2Y"
 title: "Spike Bun executable compatibility"
-status: "DOING"
+result_summary: "Merged via PR #797."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T11:04:59.221Z"
   updated_by: "CODER"
   note: "Compatibility spike completed: bun run build passed; bun build packages/agentplane/dist/cli.js --compile produced an executable; executing --version/quickstart failed at startup with 'Unable to resolve agentplane package root' under Bun $bunfs, so direct release migration is no-go until binary runtime contract work lands."
-commit: null
+commit:
+  hash: "5fb9b1d5a9dbbec1efc2daa9420578405ef7d604"
+  message: "🧪 G3XX2Y bun: record executable compatibility spike"
 comments:
   -
     author: "CODER"
     body: "Start: Prototype Bun executable output for the real AgentPlane CLI entrypoint and record compatibility blockers before changing release artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #797 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Compatibility spike completed: bun run build passed; bun build packages/agentplane/dist/cli.js --compile produced an executable; executing --version/quickstart failed at startup with 'Unable to resolve agentplane package root' under Bun $bunfs, so direct release migration is no-go until binary runtime contract work lands."
+  -
+    type: "status"
+    at: "2026-05-03T11:06:25.314Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #797 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T11:04:59.224Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T11:06:25.320Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prototype Bun executable output for the AgentPlane CLI entrypoint and runtime assets, identify unsupported Node APIs or packaging assumptions, and produce a compatibility report before release workflow changes."
 sections:
   Summary: |-
