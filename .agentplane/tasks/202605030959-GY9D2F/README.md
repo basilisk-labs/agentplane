@@ -1,10 +1,11 @@
 ---
 id: "202605030959-GY9D2F"
 title: "Fix release recovery checksum source"
-status: "DOING"
+result_summary: "Merged via PR #793."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-03T10:52:43.594Z"
   updated_by: "CODER"
   note: "Focused verification passed: bun test packages/agentplane/src/commands/release/publish-workflow-contract.test.ts (7 tests, 158 expects); node .agentplane/policy/check-routing.mjs (policy routing OK)."
-commit: null
+commit:
+  hash: "d8915ef439897428dec8723ebed31e761a9a82f3"
+  message: "🛠 GY9D2F release: pin recovery checksums to release payload"
 comments:
   -
     author: "CODER"
     body: "Start: Fix recovery distribution publishing so reruns for an existing tag use immutable release-owned checksums instead of regenerating hashes from the current runtime checkout."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #793 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused verification passed: bun test packages/agentplane/src/commands/release/publish-workflow-contract.test.ts (7 tests, 158 expects); node .agentplane/policy/check-routing.mjs (policy routing OK)."
+  -
+    type: "status"
+    at: "2026-05-03T10:56:11.671Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #793 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-03T10:52:43.596Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-03T10:56:11.676Z"
+doc_updated_by: "INTEGRATOR"
 description: "Recovery workflow must publish external distribution modules from the immutable release payload, not from whatever runtime checkout is used to rerun the workflow. Prevent checksum drift when rerunning external module publication for an existing tag."
 sections:
   Summary: |-
