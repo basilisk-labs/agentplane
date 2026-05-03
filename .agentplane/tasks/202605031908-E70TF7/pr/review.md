@@ -24,8 +24,8 @@ Umbrella task for the 2026-05-04 AgentPlane ACR launch atomic backlog: correctne
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Command: bun run schemas:check; Result: pass; Evidence: schemas OK. Command: bun run spec:examples:check; Result: pass; Evidence: 6 examples validated. Command: bun run release:demo:check; Result: pass; Evidence: tape/cast/gif present and GIF under 3 MB. Command: bun run test:project core packages/core/src/tasks/task-artifact-schema.test.ts; Result: pass; Evidence: 11 tests passed. Command: bun run test:project agentplane packages/agentplane/src/commands/acr/acr.command.test.ts; Result: pass; Evidence: 4 tests passed. Command: bun run docs:cli:check; Result: pass; Evidence: CLI reference up to date. Command: bun run docs:site:build; Result: pass; Evidence: static files generated. Command: agentplane doctor; Result: pass; Evidence: doctor OK. Residual: npm publish, GitHub social preview upload, and pinned Discussions are external/manual follow-ups.
 
 ## Risks
 
@@ -45,12 +45,107 @@ Umbrella task for the 2026-05-04 AgentPlane ACR launch atomic backlog: correctne
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-03T19:12:02.241Z
+- Updated: 2026-05-03T19:31:53.051Z
 - Branch: task/202605031908-E70TF7/acr-launch-backlog
-- Head: 1dd26609e24d
+- Head: 06327cacb22f
 
 ```text
-No changes detected.
+ .agentplane/tasks/202605031908-1D4BT9/README.md    |   86 ++
+ .agentplane/tasks/202605031908-5E28XJ/README.md    |   93 ++
+ .agentplane/tasks/202605031908-5MH36B/README.md    |   95 ++
+ .agentplane/tasks/202605031908-6H68QN/README.md    |   87 ++
+ .agentplane/tasks/202605031908-6V1G82/README.md    |   95 ++
+ .agentplane/tasks/202605031908-75KN06/README.md    |   86 ++
+ .agentplane/tasks/202605031908-85TGHC/README.md    |   95 ++
+ .agentplane/tasks/202605031908-89DJCW/README.md    |   86 ++
+ .agentplane/tasks/202605031908-N5J7HT/README.md    |   86 ++
+ .agentplane/tasks/202605031908-N84X3P/README.md    |   86 ++
+ .agentplane/tasks/202605031908-TE8H0C/README.md    |   95 ++
+ .agentplane/tasks/202605031908-TFYQJ0/README.md    |   87 ++
+ .agentplane/tasks/202605031908-V9335S/README.md    |   86 ++
+ .agentplane/tasks/202605031908-Z2FSSG/README.md    |   86 ++
+ .agentplane/tasks/202605031908-ZHHV9H/README.md    |   86 ++
+ .agentplane/tasks/202605031909-1BB2W6/README.md    |   86 ++
+ .agentplane/tasks/202605031909-1ZYQQB/README.md    |   86 ++
+ .agentplane/tasks/202605031909-7K0J0W/README.md    |   86 ++
+ .agentplane/tasks/202605031909-7WXAF0/README.md    |   95 ++
+ .agentplane/tasks/202605031909-A0VV91/README.md    |   88 ++
+ .agentplane/tasks/202605031909-ANM372/README.md    |   95 ++
+ .agentplane/tasks/202605031909-BQK467/README.md    |   86 ++
+ .agentplane/tasks/202605031909-ERW8W2/README.md    |   95 ++
+ .agentplane/tasks/202605031909-FK03GC/README.md    |   86 ++
+ .agentplane/tasks/202605031909-H7RHY7/README.md    |   87 ++
+ .agentplane/tasks/202605031909-J0P0AF/README.md    |   87 ++
+ .agentplane/tasks/202605031909-MTGHR1/README.md    |   86 ++
+ .agentplane/tasks/202605031909-TNJ2F9/README.md    |   95 ++
+ .agentplane/tasks/202605031909-WFVRQW/README.md    |   86 ++
+ .agentplane/tasks/202605031909-WZSSX0/README.md    |   95 ++
+ .agentplane/tasks/202605031909-XE0Z6D/README.md    |   95 ++
+ .agentplane/tasks/202605031909-XH1NXW/README.md    |   95 ++
+ .agentplane/tasks/202605031909-Y2C3XK/README.md    |   88 ++
+ .agentplane/tasks/202605031909-Z9HW54/README.md    |   95 ++
+ .agentplane/tasks/202605031910-83ZWBM/README.md    |   95 ++
+ .agentplane/tasks/202605031910-ARP6NS/README.md    |   86 ++
+ .agentplane/tasks/202605031910-K95AMB/README.md    |   95 ++
+ .github/ISSUE_TEMPLATE/bug.yml                     |   33 +
+ .github/ISSUE_TEMPLATE/compatibility_report.yml    |   43 +
+ .github/ISSUE_TEMPLATE/feature_request.yml         |   24 +-
+ .github/ISSUE_TEMPLATE/recipe_submission.yml       |   28 +
+ EDITORIAL.md                                       |    5 +
+ README.md                                          |   61 +-
+ bun.lock                                           |   10 +-
+ docs/assets/agentplane-demo.cast                   |    8 +
+ docs/assets/agentplane-demo.gif                    |  Bin 0 -> 59788 bytes
+ docs/assets/agentplane-demo.tape                   |   24 +
+ docs/assets/social/hn-card.svg                     |    1 +
+ docs/assets/social/og-image.svg                    |    1 +
+ docs/assets/social/twitter-card.svg                |    1 +
+ docs/compare.mdx                                   |   34 +-
+ docs/help/glossary.mdx                             |    7 +
+ docs/launch/retro-template.md                      |   44 +
+ docs/manifesto.mdx                                 |   16 +
+ docs/reference/generated-reference.mdx             |    6 +-
+ docs/releases/v0.4.3.md                            |   16 +
+ docs/showcase.mdx                                  |    6 +
+ package.json                                       |    3 +-
+ packages/agentplane/README.md                      |   31 +-
+ packages/agentplane/package.json                   |    6 +-
+ packages/agentplane/src/cli/run-cli.core.test.ts   |    2 +-
+ .../src/commands/acr/acr.command.test.ts           |   87 ++
+ packages/core/package.json                         |    2 +-
+ packages/core/schemas/acr-v0.1.schema.json         |    2 +-
+ packages/core/schemas/config.schema.json           |    2 +-
+ packages/core/schemas/pr-meta.schema.json          |    2 +-
+ packages/core/schemas/task-handoff.schema.json     |    2 +-
+ .../schemas/task-readme-frontmatter.schema.json    |    2 +-
+ packages/core/schemas/tasks-export.schema.json     |    2 +-
+ packages/core/src/config/schema.impl.ts            |    2 +-
+ packages/core/src/tasks/task-artifact-schema.ts    |   10 +-
+ packages/recipes/package.json                      |    2 +-
+ packages/spec/examples/acr.json                    |  145 ++
+ packages/spec/schemas/acr-v0.1.schema.json         |    2 +-
+ packages/spec/schemas/config.schema.json           |    2 +-
+ packages/spec/schemas/pr-meta.schema.json          |    2 +-
+ packages/spec/schemas/task-handoff.schema.json     |    2 +-
+ .../schemas/task-readme-frontmatter.schema.json    |    2 +-
+ packages/spec/schemas/tasks-export.schema.json     |    2 +-
+ scripts/check-release-demo.mjs                     |   39 +
+ scripts/check-spec-examples.mjs                    |    1 +
+ scripts/generate-llms-full.mjs                     |   50 +
+ ...ase-0-4-1-hosted-close-and-release-evidence.mdx |   26 +
+ website/blog/2026-05-04-introducing-acr-v0-1.mdx   |   60 +
+ website/sidebars.ts                                |    5 +
+ website/src/data/homepage-content.ts               |   16 +-
+ website/src/pages/_home.module.css                 |    8 +
+ website/src/pages/index.tsx                        |   30 +-
+ website/static/img/agentplane-demo.gif             |  Bin 0 -> 59788 bytes
+ website/static/img/hn-card.png                     |  Bin 0 -> 50649 bytes
+ website/static/img/og-image.png                    |  Bin 170586 -> 40910 bytes
+ website/static/img/twitter-card.png                |  Bin 170586 -> 46988 bytes
+ website/static/llms-full.txt                       | 1457 +++++++++++++++++++-
+ website/static/llms.txt                            |    4 +-
+ website/static/site.webmanifest                    |    4 +-
+ 95 files changed, 5543 insertions(+), 162 deletions(-)
 ```
 
 </details>
