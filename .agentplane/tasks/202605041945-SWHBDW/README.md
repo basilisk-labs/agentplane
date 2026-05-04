@@ -1,10 +1,11 @@
 ---
 id: "202605041945-SWHBDW"
 title: "Expand blueprint implementation specification"
-status: "DOING"
+result_summary: "Merged via PR #887."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-04T19:50:50.625Z"
   updated_by: "DOCS"
   note: "Docs updated and verified. Checks passed: node .agentplane/policy/check-routing.mjs; agentplane doctor; bun run docs:ia:check; bun run format:check -- docs/developer/blueprints.mdx; git diff --check. Doctor still reports an unrelated existing warning for two shipped branch_pr tasks on base branch."
-commit: null
+commit:
+  hash: "409cf0e07b6ae1a228eac19b92719cf0dd92cbc8"
+  message: "Merge pull request #887 from basilisk-labs/task/202605041945-SWHBDW/blueprint-implementation-spec"
 comments:
   -
     author: "DOCS"
     body: "Start: expand blueprint documentation into an implementation-ready v0 specification with methodology references, model contracts, validation invariants, resolver I/O, and rollout sequence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #887 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Docs updated and verified. Checks passed: node .agentplane/policy/check-routing.mjs; agentplane doctor; bun run docs:ia:check; bun run format:check -- docs/developer/blueprints.mdx; git diff --check. Doctor still reports an unrelated existing warning for two shipped branch_pr tasks on base branch."
+  -
+    type: "status"
+    at: "2026-05-04T20:02:19.785Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #887 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T19:50:50.630Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-04T20:02:19.792Z"
+doc_updated_by: "INTEGRATOR"
 description: "Expand docs/developer/blueprints.mdx with implementation-ready references, v0 module plan, validation invariants, resolver contract, test matrix, and rollout sequence."
 sections:
   Summary: |-
