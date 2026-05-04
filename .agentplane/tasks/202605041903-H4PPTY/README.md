@@ -1,7 +1,8 @@
 ---
 id: "202605041903-H4PPTY"
 title: "Document blueprint execution-route contracts"
-status: "DOING"
+result_summary: "Shipped on main and reconciled from local branch_pr state."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 revision: 6
@@ -21,7 +22,9 @@ verification:
   updated_at: "2026-05-04T19:05:54.510Z"
   updated_by: "DOCS"
   note: "Blueprint developer specification docs passed verification."
-commit: null
+commit:
+  hash: "83c5d227897bd8dd81ad0dcd59af0be15875b9f7"
+  message: "Shipped on main before canonical task closure"
 comments:
   -
     author: "DOCS"
@@ -40,9 +43,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Blueprint developer specification docs passed verification."
+  -
+    type: "status"
+    at: "2026-05-04T20:28:07.994Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Local branch_pr reconciliation detected task commit 83c5d227897b on base main; canonical task state normalized after shipment."
 doc_version: 3
-doc_updated_at: "2026-05-04T19:05:54.520Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-04T20:28:07.994Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a detailed developer specification for AgentPlane blueprints as task-specific execution-route contracts, including layer boundaries, node catalog, built-in blueprint routes, recipe extension rules, evidence, ACR relationship, runner relationship, stop rules, non-goals, and implementation backlog."
 sections:
   Summary: |-
