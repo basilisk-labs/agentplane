@@ -50,15 +50,15 @@ function requireString(value, label) {
 }
 
 function findPlatformAsset(manifest, platform, arch) {
-  const asset = (manifest.platformAssets ?? []).find(
+  const asset = (manifest.bunAssets ?? manifest.platformAssets ?? []).find(
     (entry) =>
-      entry?.kind === "standalone_cli" && entry?.platform === platform && entry?.arch === arch,
+      entry?.kind === "bun_executable" && entry?.platform === platform && entry?.arch === arch,
   );
-  if (!asset) throw new Error(`Missing standalone platform asset: ${platform}-${arch}`);
+  if (!asset) throw new Error(`Missing Bun platform asset: ${platform}-${arch}`);
   return {
-    url: requireString(asset.url, `${platform}-${arch} standalone URL`),
-    sha256: requireString(asset.sha256, `${platform}-${arch} standalone sha256`),
-    name: requireString(asset.name, `${platform}-${arch} standalone asset name`),
+    url: requireString(asset.url, `${platform}-${arch} Bun URL`),
+    sha256: requireString(asset.sha256, `${platform}-${arch} Bun sha256`),
+    name: requireString(asset.name, `${platform}-${arch} Bun asset name`),
   };
 }
 
@@ -85,9 +85,9 @@ function renderScoopManifest(manifest) {
       regex: String.raw`v([\\d.]+)`,
     },
     autoupdate: {
-      url: "https://github.com/basilisk-labs/agentplane/releases/download/v${version}/agentplane-v${version}-win32-x64.zip",
+      url: "https://github.com/basilisk-labs/agentplane/releases/download/v${version}/agentplane-bun-v${version}-win32-x64.zip",
     },
-    bin: [[String.raw`bin\agentplane.cmd`, "agentplane"]],
+    bin: [[String.raw`bin\agentplane.exe`, "agentplane"]],
   };
 }
 
@@ -131,7 +131,7 @@ async function renderScoop(repoRoot, args) {
     assets: {
       win32X64: findPlatformAsset(manifest, "win32", "x64"),
     },
-    installStrategy: "standalone_bundled_node",
+    installStrategy: "bun_single_file_executable",
     externalChannelSwitchGate: manifest.externalChannelSwitchGate ?? null,
     nextAction:
       channel.status === "skipped_missing_credentials"

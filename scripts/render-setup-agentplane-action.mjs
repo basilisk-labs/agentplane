@@ -50,15 +50,15 @@ function requireString(value, label) {
 }
 
 function findPlatformAsset(manifest, platform, arch) {
-  const asset = (manifest.platformAssets ?? []).find(
+  const asset = (manifest.bunAssets ?? manifest.platformAssets ?? []).find(
     (entry) =>
-      entry?.kind === "standalone_cli" && entry?.platform === platform && entry?.arch === arch,
+      entry?.kind === "bun_executable" && entry?.platform === platform && entry?.arch === arch,
   );
-  if (!asset) throw new Error(`Missing standalone platform asset: ${platform}-${arch}`);
+  if (!asset) throw new Error(`Missing Bun platform asset: ${platform}-${arch}`);
   return {
-    url: requireString(asset.url, `${platform}-${arch} standalone URL`),
-    sha256: requireString(asset.sha256, `${platform}-${arch} standalone sha256`),
-    name: requireString(asset.name, `${platform}-${arch} standalone asset name`),
+    url: requireString(asset.url, `${platform}-${arch} Bun URL`),
+    sha256: requireString(asset.sha256, `${platform}-${arch} Bun sha256`),
+    name: requireString(asset.name, `${platform}-${arch} Bun asset name`),
   };
 }
 
@@ -158,7 +158,7 @@ Install AgentPlane in GitHub Actions.
 
 ${`\`\`\`yaml\n- uses: ${actionRepository}@v${version}\n  with:\n    version: ${version}\n\`\`\``}
 
-This composite action installs AgentPlane from the official standalone archives and validates each standalone bundled-runtime archive checksum before adding \`agentplane\` to PATH.
+This composite action installs AgentPlane from the official Bun single-file executable archives and validates each archive checksum before adding \`agentplane\` to PATH.
 
 ## Capabilities
 
@@ -221,7 +221,7 @@ async function renderSetupAction(repoRoot, args) {
     actionPath,
     readmePath,
     assets: setupAssets(manifest),
-    installStrategy: "standalone_bundled_node",
+    installStrategy: "bun_single_file_executable",
     externalChannelSwitchGate: manifest.externalChannelSwitchGate ?? null,
     nextAction:
       channel.status === "skipped_missing_credentials"
@@ -238,7 +238,7 @@ async function renderSetupAction(repoRoot, args) {
       throw new Error("setup-agentplane action must be a composite action");
     }
     if (!action.includes("asset_sha256") || action.includes("install.sh")) {
-      throw new Error("setup-agentplane action must install verified standalone archives");
+      throw new Error("setup-agentplane action must install verified Bun executable archives");
     }
     rmSync(tempRoot, { recursive: true, force: true });
   }

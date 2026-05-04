@@ -16,7 +16,6 @@ const INSTALL_SH_NAME = "install.sh";
 const INSTALL_PS1_NAME = "install.ps1";
 const SHA256SUMS_NAME = "SHA256SUMS";
 const DISTRIBUTION_MANIFEST_NAME = "release-distribution.json";
-const STANDALONE_ASSETS_MANIFEST_NAME = "standalone-assets.json";
 const BUN_ASSETS_MANIFEST_NAME = "bun-assets.json";
 
 function usage() {
@@ -170,8 +169,8 @@ VERSION="${version}"
 REPO="${repo}"
 TAG="${tag}"
 BASE_URL="https://github.com/$REPO/releases/download/$TAG"
-CHANNEL="\${AGENTPLANE_INSTALL_CHANNEL:-standalone}"
-INSTALL_DIR="\${AGENTPLANE_INSTALL_DIR:-$HOME/.agentplane/standalone/$VERSION}"
+CHANNEL="\${AGENTPLANE_INSTALL_CHANNEL:-bun}"
+INSTALL_DIR="\${AGENTPLANE_INSTALL_DIR:-$HOME/.agentplane/bun/$VERSION}"
 
 need() {
   command -v "$1" >/dev/null 2>&1 || {
@@ -199,9 +198,8 @@ case "$(uname -m)" in
 esac
 
 case "$CHANNEL" in
-  standalone) asset="agentplane-v$VERSION-$platform-$arch.tar.gz" ;;
   bun) asset="agentplane-bun-v$VERSION-$platform-$arch.tar.gz" ;;
-  *) echo "agentplane install: unsupported channel: $CHANNEL (expected standalone or bun)" >&2; exit 1 ;;
+  *) echo "agentplane install: unsupported channel: $CHANNEL (expected bun)" >&2; exit 1 ;;
 esac
 archive="$tmp_dir/$asset"
 checksums="$tmp_dir/SHA256SUMS"
@@ -238,7 +236,7 @@ printf '%s\\n' "$INSTALL_DIR/bin"
 }
 
 function renderInstallPs1({ version, repo, tag }) {
-  const defaultInstallDir = String.raw`".agentplane\standalone\$Version"`;
+  const defaultInstallDir = String.raw`".agentplane\bun\$Version"`;
   const checksumSplitPattern = String.raw`'\s+'`;
   const agentplaneCmd = String.raw`"bin\agentplane.cmd"`;
   const agentplaneExe = String.raw`"bin\agentplane.exe"`;
@@ -247,7 +245,7 @@ function renderInstallPs1({ version, repo, tag }) {
 $Version = "${version}"
 $Repo = "${repo}"
 $Tag = "${tag}"
-$Channel = if ($env:AGENTPLANE_INSTALL_CHANNEL) { $env:AGENTPLANE_INSTALL_CHANNEL } else { "standalone" }
+$Channel = if ($env:AGENTPLANE_INSTALL_CHANNEL) { $env:AGENTPLANE_INSTALL_CHANNEL } else { "bun" }
 $BaseUrl = "https://github.com/$Repo/releases/download/$Tag"
 $InstallDir = if ($env:AGENTPLANE_INSTALL_DIR) { $env:AGENTPLANE_INSTALL_DIR } else { Join-Path $HOME ${defaultInstallDir} }
 
@@ -260,16 +258,12 @@ function Require-Command($Name) {
 $TempDir = Join-Path ([System.IO.Path]::GetTempPath()) ("agentplane-install-" + [System.Guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $TempDir | Out-Null
 try {
-  if ($Channel -eq "standalone") {
-    $Asset = "agentplane-v$Version-win32-x64.zip"
-    $AgentplaneBin = ${agentplaneCmd}
-  }
-  elseif ($Channel -eq "bun") {
+  if ($Channel -eq "bun") {
     $Asset = "agentplane-bun-v$Version-win32-x64.zip"
     $AgentplaneBin = ${agentplaneExe}
   }
   else {
-    throw "agentplane install: unsupported channel: $Channel (expected standalone or bun)"
+    throw "agentplane install: unsupported channel: $Channel (expected bun)"
   }
   $Archive = Join-Path $TempDir $Asset
   $Checksums = Join-Path $TempDir "SHA256SUMS"
@@ -342,32 +336,6 @@ async function writeChecksums(outDir, assets) {
     kind: "checksum_manifest",
   };
 }
-
-function generateStandaloneAssets(repoRoot, outDir, context) {
-  const args = [
-    "scripts/generate-standalone-cli-assets.mjs",
-    "--out",
-    outDir,
-    "--version",
-    context.version,
-    "--tag",
-    context.tag,
-    "--sha",
-    context.sha,
-    "--repo",
-    context.repo,
-  ];
-  if (context.check || context.standaloneCheckMode) {
-    args.push("--synthetic-node", "--skip-install");
-  }
-  execFileSync("node", args, {
-    cwd: repoRoot,
-    stdio: "ignore",
-    env: process.env,
-  });
-  return JSON.parse(readFileSync(path.join(outDir, STANDALONE_ASSETS_MANIFEST_NAME), "utf8"));
-}
-
 function generateBunAssets(repoRoot, outDir, context) {
   const args = [
     "scripts/generate-bun-cli-assets.mjs",
@@ -415,15 +383,6 @@ async function buildDistribution(repoRoot, args) {
     repo: args.repo,
     tag,
   });
-  const standaloneManifest = generateStandaloneAssets(repoRoot, outDir, {
-    version,
-    tag,
-    sha,
-    repo: args.repo,
-    check: args.check,
-    standaloneCheckMode: args.standaloneCheckMode,
-  });
-  const standaloneAssets = standaloneManifest.assets ?? [];
   const bunManifest = generateBunAssets(repoRoot, outDir, {
     version,
     tag,
@@ -431,25 +390,21 @@ async function buildDistribution(repoRoot, args) {
     standaloneCheckMode: args.standaloneCheckMode,
     check: args.check,
   });
-  const bunAssets = bunManifest.assets ?? [];
+  const bunAssets = (bunManifest.assets ?? []).map((asset) => ({
+    ...asset,
+    url: publicReleaseAssetUrl(args.repo, tag, asset.name),
+  }));
   const checksumManifest = await writeChecksums(outDir, [
     upgradeBundle,
     ...installerAssets,
-    ...standaloneAssets,
     ...bunAssets,
   ]);
 
   const releaseAssets = [
     upgradeBundle,
     ...installerAssets,
-    ...standaloneAssets,
     ...bunAssets,
     checksumManifest,
-    {
-      name: STANDALONE_ASSETS_MANIFEST_NAME,
-      kind: "standalone_manifest",
-      sha256: sha256File(path.join(outDir, STANDALONE_ASSETS_MANIFEST_NAME)),
-    },
     {
       name: BUN_ASSETS_MANIFEST_NAME,
       kind: "bun_manifest",
@@ -476,20 +431,20 @@ async function buildDistribution(repoRoot, args) {
         npmTarballSha256: cliTarball.sha256,
       },
     },
-    platformAssets: standaloneAssets,
+    platformAssets: bunAssets,
     bunAssets,
     releaseAssets,
     externalChannelSwitchGate: {
-      defaultInstallStrategy: "standalone_bundled_node",
+      defaultInstallStrategy: "bun_single_file_executable",
       candidateInstallStrategy: "bun_single_file_executable",
-      bunDefaultEligible: false,
+      bunDefaultEligible: true,
       requiredEvidence: [
         "published_release_contains_all_bun_assets",
         "bun_assets_pass_release_cycle_smoke",
-        "external_channel_rollback_to_standalone_is_documented",
+        "external_channels_reference_bun_assets",
       ],
       nextAction:
-        "Keep Homebrew, Scoop, and setup-agentplane on standalone archives until a published release records Bun binary parity evidence.",
+        "Keep GitHub Release, install scripts, Homebrew, Scoop, and setup-agentplane on Bun single-file executable assets.",
     },
     channels: {
       npm: { status: "pending", required: true },
@@ -524,21 +479,20 @@ function assertDistributionOutputs(outDir, manifest) {
     INSTALL_PS1_NAME,
     SHA256SUMS_NAME,
     DISTRIBUTION_MANIFEST_NAME,
-    STANDALONE_ASSETS_MANIFEST_NAME,
     BUN_ASSETS_MANIFEST_NAME,
   ];
   for (const name of required) {
     const target = path.join(outDir, name);
     if (!existsSync(target)) throw new Error(`Missing release distribution output: ${name}`);
   }
-  if (manifest.platformAssets.length !== 5) {
-    throw new Error(`Expected 5 standalone platform assets, got ${manifest.platformAssets.length}`);
-  }
   if (manifest.bunAssets.length !== 5) {
     throw new Error(`Expected 5 Bun executable assets, got ${manifest.bunAssets.length}`);
   }
-  if (manifest.releaseAssets.length !== 16) {
-    throw new Error(`Expected 16 public release assets, got ${manifest.releaseAssets.length}`);
+  if (manifest.platformAssets.length !== 5) {
+    throw new Error(`Expected 5 Bun platform assets, got ${manifest.platformAssets.length}`);
+  }
+  if (manifest.releaseAssets.length !== 10) {
+    throw new Error(`Expected 10 public release assets, got ${manifest.releaseAssets.length}`);
   }
   const names = new Set(manifest.releaseAssets.map((asset) => asset.name));
   for (const name of [
@@ -546,9 +500,7 @@ function assertDistributionOutputs(outDir, manifest) {
     INSTALL_SH_NAME,
     INSTALL_PS1_NAME,
     SHA256SUMS_NAME,
-    STANDALONE_ASSETS_MANIFEST_NAME,
     BUN_ASSETS_MANIFEST_NAME,
-    ...manifest.platformAssets.map((asset) => asset.name),
     ...manifest.bunAssets.map((asset) => asset.name),
   ]) {
     if (!names.has(name)) throw new Error(`release-distribution.json missing asset ${name}`);

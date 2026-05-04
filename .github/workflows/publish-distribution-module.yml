@@ -133,18 +133,18 @@ jobs:
           tag_name: ${{ github.event.inputs.tag }}
           body_path: docs/releases/${{ github.event.inputs.tag }}.md
           files: |
-            .agentplane/.release/publish/distribution/agentplane-v${{ steps.release.outputs.version }}-darwin-arm64.tar.gz
-            .agentplane/.release/publish/distribution/agentplane-v${{ steps.release.outputs.version }}-darwin-x64.tar.gz
-            .agentplane/.release/publish/distribution/agentplane-v${{ steps.release.outputs.version }}-linux-arm64.tar.gz
-            .agentplane/.release/publish/distribution/agentplane-v${{ steps.release.outputs.version }}-linux-x64.tar.gz
-            .agentplane/.release/publish/distribution/agentplane-v${{ steps.release.outputs.version }}-win32-x64.zip
+            .agentplane/.release/publish/distribution/agentplane-bun-v${{ steps.release.outputs.version }}-darwin-arm64.tar.gz
+            .agentplane/.release/publish/distribution/agentplane-bun-v${{ steps.release.outputs.version }}-darwin-x64.tar.gz
+            .agentplane/.release/publish/distribution/agentplane-bun-v${{ steps.release.outputs.version }}-linux-arm64.tar.gz
+            .agentplane/.release/publish/distribution/agentplane-bun-v${{ steps.release.outputs.version }}-linux-x64.tar.gz
+            .agentplane/.release/publish/distribution/agentplane-bun-v${{ steps.release.outputs.version }}-win32-x64.zip
             .agentplane/.release/publish/distribution/agentplane-upgrade.tar.gz
             .agentplane/.release/publish/distribution/agentplane-upgrade.tar.gz.sha256
             .agentplane/.release/publish/distribution/install.sh
             .agentplane/.release/publish/distribution/install.ps1
             .agentplane/.release/publish/distribution/SHA256SUMS
             .agentplane/.release/publish/distribution/release-distribution.json
-            .agentplane/.release/publish/distribution/standalone-assets.json
+            .agentplane/.release/publish/distribution/bun-assets.json
       - name: Publish GHCR image
         if: contains(fromJSON('["ghcr","all"]'), github.event.inputs.module)
         shell: bash
