@@ -1,0 +1,3 @@
+export declare const RUNTIME_GITIGNORE_LINES: readonly ["# agentplane: ignore runtime/transient workspace artifacts", ".env", ".agentplane/worktrees", ".agentplane/cache", ".agentplane/recipes-cache", ".agentplane/.upgrade", ".agentplane/.release", ".agentplane/upgrade", ".agentplane/tasks.json", "AGENTS.md.bak-*", "CLAUDE.md.bak-*", ".agentplane/agents/*.bak-*", ".agentplane/policy/**/*.bak-*"];
+export declare const AGENT_PROMPT_GITIGNORE_LINES: readonly ["# agentplane: ignore local agent prompts/templates", "AGENTS.md", "CLAUDE.md", ".agentplane/agents/", ".agentplane/policy/"];
+//# sourceMappingURL=runtime-artifacts.d.ts.map
