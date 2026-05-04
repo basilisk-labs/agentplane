@@ -1332,13 +1332,14 @@ Transition a task to BLOCKED and record a structured Blocked comment.
 Usage:
 
 ```text
-agentplane block <task-id> --author <id> --body <text> [options]
+agentplane block <task-id> --author <id> [options]
 ```
 
 Options:
 
 - `--author <id>`: Comment author id (e.g. CODER). (required)
-- `--body <text>`: Structured comment body (must match the configured Blocked: prefix). (required)
+- `--body <text>`: Structured comment body (must match the configured Blocked: prefix). Use --body-file for Markdown or shell-sensitive text.
+- `--body-file <path>`: Read the structured comment body from a file path (mutually exclusive with --body).
 - `--commit-from-comment`: Create a status commit using the comment body. (default=false)
 - `--commit-emoji <emoji>`: Override the status commit emoji (used with --commit-from-comment).
 - `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected. (repeatable)
@@ -1370,14 +1371,16 @@ Mark task(s) as DONE and record a structured Verified comment.
 Usage:
 
 ```text
-agentplane finish <task-id> ... --author <id> --body <text> [options]
+agentplane finish <task-id> ... --author <id> [options]
 ```
 
 Options:
 
 - `--author <id>`: Comment author id (e.g. INTEGRATOR). (required)
-- `--body <text>`: Structured comment body (must match the configured Verified: prefix). (required)
-- `--result <one-line>`: One-line result summary stored in task metadata (required for non-spike tasks when finishing a single task).
+- `--body <text>`: Structured comment body (must match the configured Verified: prefix). Use --body-file for Markdown or shell-sensitive text.
+- `--body-file <path>`: Read the structured comment body from a file path (mutually exclusive with --body).
+- `--result <one-line>`: One-line result summary stored in task metadata (required for non-spike tasks when finishing a single task). Use --result-file for shell-sensitive text.
+- `--result-file <path>`: Read the result summary from a file path (mutually exclusive with --result).
 - `--risk <low|med|high>`: Optional. Risk level stored in task metadata. (choices=low|med|high)
 - `--breaking`: Optional. Mark the change as breaking in task metadata. (default=false)
 - `--commit <hash>`: Commit hash to record on the task (optional).
@@ -1438,13 +1441,14 @@ Transition a task to DOING and record a structured Start comment.
 Usage:
 
 ```text
-agentplane start <task-id> --author <id> --body <text> [options]
+agentplane start <task-id> --author <id> [options]
 ```
 
 Options:
 
 - `--author <id>`: Comment author id (e.g. CODER). (required)
-- `--body <text>`: Structured comment body (must match the configured Start: prefix). (required)
+- `--body <text>`: Structured comment body (must match the configured Start: prefix). Use --body-file for Markdown or shell-sensitive text.
+- `--body-file <path>`: Read the structured comment body from a file path (mutually exclusive with --body).
 - `--commit-from-comment`: Create a status commit using the comment body. (default=false)
 - `--commit-emoji <emoji>`: Override the status commit emoji (used with --commit-from-comment).
 - `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected. (repeatable)
@@ -1458,7 +1462,7 @@ Options:
 Examples:
 
 ```sh
-agentplane start 202602030608-F1Q8AB --author CODER --body "Start: implement spec-driven CLI"
+agentplane start 202602030608-F1Q8AB --author CODER --body-file ./start-note.txt
 ```
 
 - Start work on a task.
@@ -1746,13 +1750,14 @@ Append a handoff note into PR review.md.
 Usage:
 
 ```text
-agentplane pr note <task-id> --author <id> --body <text>
+agentplane pr note <task-id> --author <id> [options]
 ```
 
 Options:
 
 - `--author <id>`: Author id (e.g. REVIEWER). (required)
-- `--body <text>`: Note body text. (required)
+- `--body <text>`: Note body text. Use --body-file for Markdown or shell-sensitive text.
+- `--body-file <path>`: Read the note body from a file path (mutually exclusive with --body).
 
 Examples:
 
@@ -1825,6 +1830,7 @@ Options:
 
 - `--fix`: Apply safe fixes. (default=false)
 - `--dev`: Run monorepo source-layer checks (requires packages/agentplane/src). (default=false)
+- `--deep`: Run expensive full task README body drift diagnostics. (default=false)
 - `--archive-full`: Run the full historical task archive audit instead of the bounded recent scan. (default=false)
 
 Examples:
@@ -1840,6 +1846,12 @@ agentplane doctor --archive-full
 ```
 
 - Also scan the full historical task archive for older commit anomalies.
+
+```sh
+agentplane doctor --deep
+```
+
+- Also scan every task README body for canonical projection drift.
 
 ```sh
 agentplane doctor --dev
@@ -2686,13 +2698,14 @@ Append a comment to a task.
 Usage:
 
 ```text
-agentplane task comment <task-id> --author <id> --body <text>
+agentplane task comment <task-id> --author <id> [options]
 ```
 
 Options:
 
 - `--author <id>`: Comment author id (e.g. CODER). (required)
-- `--body <text>`: Comment body text. (required)
+- `--body <text>`: Comment body text. Use --body-file for Markdown or shell-sensitive text.
+- `--body-file <path>`: Read the comment body from a file path (mutually exclusive with --body).
 
 Examples:
 
@@ -3657,7 +3670,8 @@ agentplane task set-status <task-id> <TODO|DOING|DONE|BLOCKED> [options]
 Options:
 
 - `--author <id>`: Optional. Comment/event author (requires --body).
-- `--body <text>`: Optional. Comment/event body (requires --author).
+- `--body <text>`: Optional. Comment/event body (requires --author). Use --body-file for Markdown or shell-sensitive text.
+- `--body-file <path>`: Read the comment/event body from a file path (mutually exclusive with --body).
 - `--commit <hash>`: Optional. Record an existing commit hash/message into task metadata.
 - `--force`: Allow unsafe transitions (and DONE without using agentplane finish). (default=false)
 - `--yes`: Auto-approve force-action approval checks when required. (default=false)
@@ -3715,13 +3729,14 @@ Run readiness checks and start a task in one deterministic command.
 Usage:
 
 ```text
-agentplane task start-ready <task-id> --author <id> --body <text> [options]
+agentplane task start-ready <task-id> --author <id> [options]
 ```
 
 Options:
 
 - `--author <id>`: Comment author id (e.g. CODER). (required)
-- `--body <text>`: Structured Start comment body. (required)
+- `--body <text>`: Structured Start comment body. Use --body-file for Markdown or shell-sensitive text.
+- `--body-file <path>`: Read the Start comment body from a file path (mutually exclusive with --body).
 - `--force`: Override readiness and transition checks. (default=false)
 - `--yes`: Auto-approve force-action checks when required. (default=false)
 - `--quiet`: Suppress output. (default=false)
