@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-04T19:20:36Z",
   "base": "main",
   "branch": "task/202605041844-6DB6T4/text-payload-transport",
   "created_at": "2026-05-04T18:45:18.859Z",
-  "head_sha": "8ef1e1d31f747d53417b6c006a5e6155b35e12dc",
+  "head_sha": "e7d91a0d1e7484661f2395b69d2907adb8513b0c",
   "last_verified_at": "2026-05-04T19:08:37.304Z",
   "last_verified_sha": "2d399599d7b290178b3087ab88408da0e66e49bf",
+  "merge_commit": "c3a6ea81f890f0969cd90a7981a2fe9a64195a46",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-04T19:20:36Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605041844-6DB6T4",
-  "updated_at": "2026-05-04T19:12:41.716Z",
+  "updated_at": "2026-05-04T19:20:36Z",
   "verify": {
     "status": "pass"
   }
