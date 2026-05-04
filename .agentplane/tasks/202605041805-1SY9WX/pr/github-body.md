@@ -25,11 +25,24 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-04T18:26:31.849Z
+- Updated: 2026-05-04T18:33:00.019Z
 - Branch: task/202605041805-1SY9WX/ap-agent-mode
-- Head: d8095eeb4369
+- Head: bf949d467267
 
 ```text
+ .agentplane/agents/CODER.json                      |  4 +-
+ .agentplane/agents/CREATOR.json                    |  4 +-
+ .agentplane/agents/DOCS.json                       |  6 +-
+ .agentplane/agents/EVALUATOR.json                  |  2 +-
+ .agentplane/agents/INTEGRATOR.json                 |  6 +-
+ .agentplane/agents/ORCHESTRATOR.json               |  4 +-
+ .agentplane/agents/PLANNER.json                    |  4 +-
+ .agentplane/agents/REDMINE.json                    |  2 +-
+ .agentplane/agents/REVIEWER.json                   |  4 +-
+ .agentplane/agents/SKILL_EXTRACTOR.json            |  4 +-
+ .agentplane/agents/TESTER.json                     |  4 +-
+ .agentplane/agents/UPDATER.json                    |  2 +-
+ .agentplane/agents/UPGRADER.json                   |  6 +-
  packages/agentplane/README.md                      | 11 ++++
  packages/agentplane/assets/AGENTS.md               | 54 ++++++++---------
  packages/agentplane/assets/RUNNER.md               |  4 +-
@@ -57,7 +70,7 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
  scripts/check-local-tarball-install-smoke.mjs      |  9 +++
  scripts/check-package-tarball.mjs                  |  1 +
  scripts/lib/generated-artifacts.mjs                |  1 +
- 27 files changed, 258 insertions(+), 67 deletions(-)
+ 40 files changed, 284 insertions(+), 93 deletions(-)
 ```
 
 </details>
