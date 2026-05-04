@@ -64,7 +64,9 @@ function assertEqualBlock(actual, expected, label) {
 }
 
 function normalizeAgentplaneAlias(command) {
-  return command.replace(/^ap(?=\s)/u, "agentplane");
+  return command
+    .replace(/^ap(?=\s)/u, "agentplane")
+    .replace(/^agentplane vshow(?=\s)/u, "agentplane task verify-show");
 }
 
 function assertEqualCommandBlock(actual, expected, label) {
