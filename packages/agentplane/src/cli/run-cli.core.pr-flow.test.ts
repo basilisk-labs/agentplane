@@ -799,7 +799,10 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
         ],
         {
           cwd: worktreePath,
-          env: cleanGitEnv({ PATH: process.env.PATH ?? "" }),
+          env: cleanGitEnv({
+            PATH: process.env.PATH ?? "",
+            AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
+          }),
           encoding: "utf8",
         },
       );
@@ -921,7 +924,10 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
         ],
         {
           cwd: worktreePath,
-          env: cleanGitEnv({ PATH: process.env.PATH ?? "" }),
+          env: cleanGitEnv({
+            PATH: process.env.PATH ?? "",
+            AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
+          }),
           encoding: "utf8",
         },
       );
@@ -1031,7 +1037,10 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
         ],
         {
           cwd: worktreePath,
-          env: cleanGitEnv({ PATH: process.env.PATH ?? "" }),
+          env: cleanGitEnv({
+            PATH: process.env.PATH ?? "",
+            AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
+          }),
           encoding: "utf8",
         },
       );
@@ -1141,7 +1150,10 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
         ],
         {
           cwd: worktreePath,
-          env: cleanGitEnv({ PATH: process.env.PATH ?? "" }),
+          env: cleanGitEnv({
+            PATH: process.env.PATH ?? "",
+            AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
+          }),
           encoding: "utf8",
         },
       );
