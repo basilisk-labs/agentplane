@@ -46,9 +46,9 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-04T18:33:00.019Z
+- Updated: 2026-05-04T18:40:25.083Z
 - Branch: task/202605041805-1SY9WX/ap-agent-mode
-- Head: bf949d467267
+- Head: f12212c50ff7
 
 ```text
  .agentplane/agents/CODER.json                      |  4 +-
@@ -84,14 +84,13 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
  packages/agentplane/bin/ap.js                      |  7 +++
  packages/agentplane/bin/runtime-watch.js           |  1 +
  packages/agentplane/package.json                   |  2 +
- .../src/cli/run-cli.core.installed-smoke.test.ts   | 16 +++++
- packages/agentplane/src/cli/run-cli.core.test.ts   | 67 +++++++++++++++++++++
+ .../src/cli/run-cli.core.installed-smoke.test.ts   | 20 +++++++
  packages/agentplane/src/cli/run-cli.ts             |  8 ++-
  packages/agentplane/src/cli/run-cli/agent-mode.ts  | 70 ++++++++++++++++++++++
  scripts/check-local-tarball-install-smoke.mjs      |  9 +++
  scripts/check-package-tarball.mjs                  |  1 +
  scripts/lib/generated-artifacts.mjs                |  1 +
- 40 files changed, 284 insertions(+), 93 deletions(-)
+ 39 files changed, 221 insertions(+), 93 deletions(-)
 ```
 
 </details>
