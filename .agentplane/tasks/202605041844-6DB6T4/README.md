@@ -1,10 +1,11 @@
 ---
 id: "202605041844-6DB6T4"
 title: "Harden lifecycle text payload transport"
-status: "DOING"
+result_summary: "Merged via PR #880."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-04T19:08:37.304Z"
   updated_by: "CODER"
   note: "Verified: payload transport changes pass focused CLI lifecycle tests, typecheck, lint, diff check, policy routing, and doctor."
-commit: null
+commit:
+  hash: "c3a6ea81f890f0969cd90a7981a2fe9a64195a46"
+  message: "Merge pull request #880 from basilisk-labs/task/202605041844-6DB6T4/text-payload-transport"
 comments:
   -
     author: "CODER"
     body: "Start: implement safer lifecycle text payload transport and shell risk diagnostics in the task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #880 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: payload transport changes pass focused CLI lifecycle tests, typecheck, lint, diff check, policy routing, and doctor."
+  -
+    type: "status"
+    at: "2026-05-04T19:21:17.690Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #880 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T19:08:37.319Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-04T19:21:17.697Z"
+doc_updated_by: "INTEGRATOR"
 description: "Reduce shell quoting failures by adding safe file/stdin transport and risky inline payload diagnostics for lifecycle text fields."
 sections:
   Summary: |-
