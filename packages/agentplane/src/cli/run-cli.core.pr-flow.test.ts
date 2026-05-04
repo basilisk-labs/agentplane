@@ -57,6 +57,14 @@ installRunCliIntegrationHarness();
 const WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS = 180_000;
 const workspaceRoot = process.cwd();
 
+function staleDistRuntimeEnv(): NodeJS.ProcessEnv {
+  return {
+    ...cleanGitEnv(),
+    PATH: process.env.PATH ?? "",
+    AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
+  };
+}
+
 async function seedRepoLocalDistArtifacts(root: string): Promise<void> {
   const agentplaneDist = path.join(root, "packages", "agentplane", "dist");
   const coreDist = path.join(root, "packages", "core", "dist");
@@ -799,10 +807,7 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
         ],
         {
           cwd: worktreePath,
-          env: cleanGitEnv({
-            PATH: process.env.PATH ?? "",
-            AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
-          }),
+          env: staleDistRuntimeEnv(),
           encoding: "utf8",
         },
       );
@@ -814,7 +819,7 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
         ["runtime", "explain"],
         {
           cwd: worktreePath,
-          env: cleanGitEnv({ PATH: process.env.PATH ?? "" }),
+          env: staleDistRuntimeEnv(),
           encoding: "utf8",
         },
       );
@@ -898,7 +903,7 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
         ],
         {
           cwd: root,
-          env: cleanGitEnv({ PATH: process.env.PATH ?? "" }),
+          env: staleDistRuntimeEnv(),
           encoding: "utf8",
         },
       );
@@ -924,10 +929,7 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
         ],
         {
           cwd: worktreePath,
-          env: cleanGitEnv({
-            PATH: process.env.PATH ?? "",
-            AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
-          }),
+          env: staleDistRuntimeEnv(),
           encoding: "utf8",
         },
       );
@@ -1011,7 +1013,7 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
         ],
         {
           cwd: root,
-          env: cleanGitEnv({ PATH: process.env.PATH ?? "" }),
+          env: staleDistRuntimeEnv(),
           encoding: "utf8",
         },
       );
@@ -1037,10 +1039,7 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
         ],
         {
           cwd: worktreePath,
-          env: cleanGitEnv({
-            PATH: process.env.PATH ?? "",
-            AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
-          }),
+          env: staleDistRuntimeEnv(),
           encoding: "utf8",
         },
       );
@@ -1124,7 +1123,7 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
         ],
         {
           cwd: root,
-          env: cleanGitEnv({ PATH: process.env.PATH ?? "" }),
+          env: staleDistRuntimeEnv(),
           encoding: "utf8",
         },
       );
@@ -1150,10 +1149,7 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
         ],
         {
           cwd: worktreePath,
-          env: cleanGitEnv({
-            PATH: process.env.PATH ?? "",
-            AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
-          }),
+          env: staleDistRuntimeEnv(),
           encoding: "utf8",
         },
       );
