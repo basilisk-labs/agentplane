@@ -223,7 +223,7 @@
       "types": [
         {
           "name": "NextAction",
-          "line": 16,
+          "line": 17,
           "col": 13
         }
       ]
@@ -269,6 +269,16 @@
         {
           "name": "ReasonCodeMeta",
           "line": 10,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/cli/run-cli/agent-mode.ts",
+      "types": [
+        {
+          "name": "AgentModeResolution",
+          "line": 7,
           "col": 13
         }
       ]
@@ -495,6 +505,26 @@
       ]
     },
     {
+      "file": "packages/agentplane/src/commands/guard/impl/dco.ts",
+      "exports": [
+        {
+          "name": "dcoIsEnabled",
+          "line": 10,
+          "col": 17
+        },
+        {
+          "name": "hasDcoSignoff",
+          "line": 37,
+          "col": 17
+        },
+        {
+          "name": "resolveDcoSignoff",
+          "line": 14,
+          "col": 17
+        }
+      ]
+    },
+    {
       "file": "packages/agentplane/src/commands/guard/impl/env.ts",
       "types": [
         {
@@ -539,7 +569,7 @@
       "exports": [
         {
           "name": "isUnknownRevisionError",
-          "line": 19,
+          "line": 25,
           "col": 17
         }
       ]
@@ -559,17 +589,17 @@
       "exports": [
         {
           "name": "renderPrHandoffNotes",
-          "line": 203,
+          "line": 215,
           "col": 17
         },
         {
           "name": "updateAutoSummaryBlock",
-          "line": 181,
+          "line": 193,
           "col": 17
         },
         {
           "name": "updateHandoffNotesBlock",
-          "line": 212,
+          "line": 224,
           "col": 17
         }
       ]
@@ -623,7 +653,7 @@
       "types": [
         {
           "name": "PrRemoteMode",
-          "line": 38,
+          "line": 40,
           "col": 30
         }
       ]
@@ -1129,13 +1159,18 @@
       "types": [
         {
           "name": "DiagnosticInfo",
-          "line": 7,
+          "line": 13,
           "col": 13
         },
         {
           "name": "DiagnosticNextAction",
-          "line": 1,
+          "line": 7,
           "col": 13
+        },
+        {
+          "name": "DiagnosticRemediation",
+          "line": 5,
+          "col": 15
         }
       ]
     },
@@ -1189,22 +1224,27 @@
       "types": [
         {
           "name": "ObservedGithubPrState",
-          "line": 10,
+          "line": 11,
           "col": 13
         },
         {
           "name": "PrArtifactState",
-          "line": 32,
+          "line": 33,
           "col": 13
         },
         {
           "name": "PrArtifactTextState",
-          "line": 26,
+          "line": 27,
+          "col": 13
+        },
+        {
+          "name": "PrBatchMeta",
+          "line": 10,
           "col": 13
         },
         {
           "name": "ShellInvocation",
-          "line": 283,
+          "line": 308,
           "col": 13
         }
       ]
@@ -1214,17 +1254,17 @@
       "exports": [
         {
           "name": "backendHasLocalCanonicalSource",
-          "line": 130,
+          "line": 131,
           "col": 17
         },
         {
           "name": "backendWritesTaskReadmes",
-          "line": 134,
+          "line": 135,
           "col": 17
         },
         {
           "name": "getTaskBackendCapabilities",
-          "line": 109,
+          "line": 110,
           "col": 17
         }
       ]
@@ -1335,6 +1375,16 @@
           "name": "TaskStoreReader",
           "line": 99,
           "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/text-payload.ts",
+      "exports": [
+        {
+          "name": "riskyInlineTextReason",
+          "line": 21,
+          "col": 17
         }
       ]
     },
@@ -1744,6 +1794,11 @@
       "file": "packages/agentplane/src/commands/upgrade/policy.ts",
       "exports": [
         {
+          "name": "CONFIG_REL_PATH",
+          "line": 5,
+          "col": 14
+        },
+        {
           "name": "INCIDENTS_APPEND_MARKER",
           "line": 4,
           "col": 14
@@ -2017,7 +2072,7 @@
       "exports": [
         {
           "name": "loadFrameworkRunnerPrompt",
-          "line": 251,
+          "line": 268,
           "col": 10
         }
       ]
@@ -2027,12 +2082,12 @@
       "exports": [
         {
           "name": "compileRunnerPromptBlocksThroughModules",
-          "line": 21,
+          "line": 22,
           "col": 3
         },
         {
           "name": "runnerPromptBlockToModule",
-          "line": 24,
+          "line": 25,
           "col": 3
         }
       ]
@@ -2042,7 +2097,7 @@
       "exports": [
         {
           "name": "ensureTrailingNewline",
-          "line": 39,
+          "line": 40,
           "col": 17
         },
         {
@@ -2057,7 +2112,7 @@
       "exports": [
         {
           "name": "runnerPromptBlockToModule",
-          "line": 122,
+          "line": 125,
           "col": 17
         }
       ],
@@ -2964,6 +3019,16 @@
       ]
     },
     {
+      "file": "packages/agentplane/src/shared/builtin-assets.generated.ts",
+      "types": [
+        {
+          "name": "BuiltinAgentplaneAsset",
+          "line": 4,
+          "col": 13
+        }
+      ]
+    },
+    {
       "file": "packages/agentplane/src/shared/errors.ts",
       "exports": [
         {
@@ -3025,7 +3090,7 @@
       "exports": [
         {
           "name": "readWorkflowDocument",
-          "line": 37,
+          "line": 35,
           "col": 23
         }
       ]
@@ -3051,11 +3116,85 @@
       ]
     },
     {
+      "file": "packages/agentplane/src/workflow-runtime/validation-helpers.ts",
+      "exports": [
+        {
+          "name": "remediationForWorkflowDiagnostic",
+          "line": 11,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/core/src/config/config.ts",
+      "exports": [
+        {
+          "name": "configRawToWorkflowFrontMatter",
+          "line": 8,
+          "col": 3
+        },
+        {
+          "name": "readWorkflowConfigRaw",
+          "line": 9,
+          "col": 3
+        },
+        {
+          "name": "readWorkflowMarkdown",
+          "line": 10,
+          "col": 3
+        },
+        {
+          "name": "workflowFrontMatterToConfigRaw",
+          "line": 11,
+          "col": 3
+        },
+        {
+          "name": "writeWorkflowConfigRaw",
+          "line": 12,
+          "col": 3
+        }
+      ],
+      "types": [
+        {
+          "name": "WorkflowMarkdown",
+          "line": 13,
+          "col": 8
+        }
+      ]
+    },
+    {
       "file": "packages/core/src/config/defaults.ts",
       "types": [
         {
           "name": "AgentplaneConfig",
           "line": 47,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/core/src/config/workflow-file.ts",
+      "exports": [
+        {
+          "name": "configRawToWorkflowFrontMatter",
+          "line": 110,
+          "col": 17
+        },
+        {
+          "name": "readWorkflowMarkdown",
+          "line": 47,
+          "col": 23
+        },
+        {
+          "name": "workflowFrontMatterToConfigRaw",
+          "line": 60,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "WorkflowMarkdown",
+          "line": 9,
           "col": 13
         }
       ]
@@ -3081,23 +3220,28 @@
       "file": "packages/core/src/tasks/task-artifact-schema.ts",
       "exports": [
         {
+          "name": "ACR_SCHEMA",
+          "line": 28,
+          "col": 14
+        },
+        {
           "name": "TASK_HANDOFF_SCHEMA",
-          "line": 45,
+          "line": 55,
           "col": 14
         },
         {
           "name": "TASK_PR_META_SCHEMA",
-          "line": 40,
+          "line": 50,
           "col": 14
         },
         {
           "name": "TASK_README_FRONTMATTER_SCHEMA",
-          "line": 25,
+          "line": 35,
           "col": 14
         },
         {
           "name": "TASKS_EXPORT_SCHEMA",
-          "line": 35,
+          "line": 45,
           "col": 14
         }
       ]
@@ -3120,10 +3264,10 @@
   ],
   "counts": {
     "files": 5,
-    "exports": 159,
-    "types": 290,
+    "exports": 174,
+    "types": 296,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 454
+    "total": 475
   }
 }
