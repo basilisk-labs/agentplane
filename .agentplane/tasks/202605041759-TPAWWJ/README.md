@@ -1,10 +1,11 @@
 ---
 id: "202605041759-TPAWWJ"
 title: "Refresh README demo tape and social assets"
-status: "DOING"
+result_summary: "Merged via PR #871."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-05-04T18:02:16.677Z"
   updated_by: "DOCS"
   note: "Command: vhs docs/assets/agentplane-demo.tape | Result: pass | Evidence: generated docs/assets/agentplane-demo.gif as 960x540 GIF. Command: git diff --check | Result: pass | Evidence: no whitespace errors. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: agentplane doctor | Result: pass | Evidence: doctor OK with only informational runtime handoff entries."
-commit: null
+commit:
+  hash: "b54285710d7e1321753fe59d8045b3c8298e6ec9"
+  message: "Merge pull request #871 from basilisk-labs/task/202605041759-TPAWWJ/readme-demo-assets"
 comments:
   -
     author: "DOCS"
     body: "Start: refresh the README demo tape, generated GIF, and visual social/header assets under the approved docs scope."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #871 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: vhs docs/assets/agentplane-demo.tape | Result: pass | Evidence: generated docs/assets/agentplane-demo.gif as 960x540 GIF. Command: git diff --check | Result: pass | Evidence: no whitespace errors. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: agentplane doctor | Result: pass | Evidence: doctor OK with only informational runtime handoff entries."
+  -
+    type: "status"
+    at: "2026-05-04T18:07:54.210Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #871 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T18:02:16.685Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-04T18:07:54.214Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace the README demo VHS tape/GIF with a working ACR-ready scenario and include refreshed social/header assets."
 sections:
   Summary: |-

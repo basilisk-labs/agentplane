@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-04T18:07:08Z",
   "base": "main",
   "branch": "task/202605041759-TPAWWJ/readme-demo-assets",
   "created_at": "2026-05-04T17:59:41.276Z",
-  "head_sha": "a1dead881c961047c095ea74a38bd204462dc9e2",
+  "head_sha": "9b51d324af2ba3be80e86236a2bb33a6b2fcf123",
   "last_verified_at": "2026-05-04T18:02:16.677Z",
   "last_verified_sha": "4e774ca2e75485f48d414ce36b61458362f477e8",
+  "merge_commit": "b54285710d7e1321753fe59d8045b3c8298e6ec9",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-04T18:07:08Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605041759-TPAWWJ",
-  "updated_at": "2026-05-04T18:02:58.770Z",
+  "updated_at": "2026-05-04T18:07:08Z",
   "verify": {
     "status": "pass"
   }
