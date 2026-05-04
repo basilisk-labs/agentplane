@@ -1,0 +1,29 @@
+{
+  "base": "main",
+  "batch": {
+    "closure_policy": "all_or_fail",
+    "included_task_ids": [
+      "202605041827-N44VNX",
+      "202605041828-1XBD16",
+      "202605041828-P4V1R1"
+    ],
+    "primary_task_id": "202605041827-RCSMN7",
+    "schema_version": 1
+  },
+  "branch": "task/202605041827-RCSMN7/cli-performance-doctor",
+  "created_at": "2026-05-04T18:29:19.168Z",
+  "head_sha": "c2291d7c89dfe8afe6d62a2e4d2ddb35e793c70d",
+  "last_verified_at": "2026-05-04T18:39:51.606Z",
+  "last_verified_sha": "2d399599d7b290178b3087ab88408da0e66e49bf",
+  "related_task_ids": [
+    "202605041827-N44VNX",
+    "202605041828-1XBD16",
+    "202605041828-P4V1R1"
+  ],
+  "schema_version": 1,
+  "task_id": "202605041827-RCSMN7",
+  "updated_at": "2026-05-04T18:41:20.175Z",
+  "verify": {
+    "status": "pass"
+  }
+}
