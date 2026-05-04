@@ -1,10 +1,11 @@
 ---
 id: "202605040756-SV9YYN"
 title: "Align ACR example version with release"
-status: "DOING"
+result_summary: "DONE: ACR example version aligns with 0.4.3 and guard is shipped."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-04T08:07:54.799Z"
   updated_by: "CODER"
   note: "ACR example fixture now matches 0.4.3 and release-time drift guard passes."
-commit: null
+commit:
+  hash: "30cc08324ed2c2ecbf8707e2dfaa5255096cfe57"
+  message: "Merge pull request #892 from basilisk-labs/task/202605040755-KF1EWC/launch-punch-list"
 comments:
   -
     author: "CODER"
     body: "Start: aligning the ACR example fixture with package version 0.4.3 and adding a focused drift check for future release-time validation."
+  -
+    author: "CODER"
+    body: "Verified: ACR example version guard shipped via PR #892 and is present on main."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "ACR example fixture now matches 0.4.3 and release-time drift guard passes."
+  -
+    type: "status"
+    at: "2026-05-04T20:53:59.650Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: ACR example version guard shipped via PR #892 and is present on main."
 doc_version: 3
-doc_updated_at: "2026-05-04T08:07:54.808Z"
+doc_updated_at: "2026-05-04T20:53:59.650Z"
 doc_updated_by: "CODER"
 description: "Update the ACR example fixture version to the current 0.4.3 release and add a release-time guard that prevents future fixture/package version drift."
 sections:
