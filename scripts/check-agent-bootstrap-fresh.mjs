@@ -70,7 +70,11 @@ function normalizeAgentplaneAlias(command) {
 }
 
 function assertEqualCommandBlock(actual, expected, label) {
-  assertEqualBlock(actual.map(normalizeAgentplaneAlias), expected, label);
+  assertEqualBlock(
+    actual.map((command) => normalizeAgentplaneAlias(command)),
+    expected,
+    label,
+  );
 }
 
 function assertIncludesAll(source, expected, label) {

@@ -238,7 +238,6 @@ printf '%s\\n' "$INSTALL_DIR/bin"
 function renderInstallPs1({ version, repo, tag }) {
   const defaultInstallDir = String.raw`".agentplane\bun\$Version"`;
   const checksumSplitPattern = String.raw`'\s+'`;
-  const agentplaneCmd = String.raw`"bin\agentplane.cmd"`;
   const agentplaneExe = String.raw`"bin\agentplane.exe"`;
   return `$ErrorActionPreference = "Stop"
 
