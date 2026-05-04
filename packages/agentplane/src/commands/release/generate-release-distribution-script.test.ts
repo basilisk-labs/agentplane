@@ -26,7 +26,7 @@ afterEach(async () => {
 });
 
 describe("generate-release-distribution script", () => {
-  it("embeds standalone platform assets in the release distribution manifest", async () => {
+  it("embeds Bun platform assets in the release distribution manifest", async () => {
     const outDir = path.join(await makeTempRoot(), "distribution");
 
     await execFileAsync(
@@ -80,25 +80,27 @@ describe("generate-release-distribution script", () => {
     expect(manifest.platformAssets).toHaveLength(5);
     expect(manifest.platformAssets).toContainEqual(
       expect.objectContaining({
-        name: "agentplane-v1.2.3-darwin-arm64.tar.gz",
-        kind: "standalone_cli",
+        name: "agentplane-bun-v1.2.3-darwin-arm64.tar.gz",
+        kind: "bun_executable",
         platform: "darwin",
         arch: "arm64",
-        installStrategy: "bundled_node",
+        installStrategy: "bun_single_file_executable",
         entrypoint: "bin/agentplane",
       }),
     );
     expect(manifest.platformAssets).toContainEqual(
       expect.objectContaining({
-        name: "agentplane-v1.2.3-win32-x64.zip",
-        kind: "standalone_cli",
+        name: "agentplane-bun-v1.2.3-win32-x64.zip",
+        kind: "bun_executable",
         platform: "win32",
         arch: "x64",
-        installStrategy: "bundled_node",
-        entrypoint: "bin/agentplane.cmd",
+        installStrategy: "bun_single_file_executable",
+        entrypoint: "bin/agentplane.exe",
       }),
     );
-    expect(manifest.releaseAssets.map((asset) => asset.name)).toContain("standalone-assets.json");
+    expect(manifest.releaseAssets.map((asset) => asset.name)).not.toContain(
+      "standalone-assets.json",
+    );
     expect(manifest.releaseAssets.map((asset) => asset.name)).toContain("bun-assets.json");
     expect(manifest.bunAssets).toHaveLength(5);
     expect(manifest.bunAssets).toContainEqual(
@@ -123,9 +125,9 @@ describe("generate-release-distribution script", () => {
     );
     expect(manifest.externalChannelSwitchGate).toEqual(
       expect.objectContaining({
-        defaultInstallStrategy: "standalone_bundled_node",
+        defaultInstallStrategy: "bun_single_file_executable",
         candidateInstallStrategy: "bun_single_file_executable",
-        bunDefaultEligible: false,
+        bunDefaultEligible: true,
       }),
     );
     expect(manifest.externalChannelSwitchGate.requiredEvidence).toContain(
@@ -142,18 +144,18 @@ describe("generate-release-distribution script", () => {
       expect(existsSync(path.join(outDir, asset.name))).toBe(true);
     }
     expect(installSh).toContain("SHA256SUMS");
-    expect(installSh).toContain('CHANNEL="${AGENTPLANE_INSTALL_CHANNEL:-standalone}"');
-    expect(installSh).toContain('asset="agentplane-v$VERSION-$platform-$arch.tar.gz"');
+    expect(installSh).toContain('CHANNEL="${AGENTPLANE_INSTALL_CHANNEL:-bun}"');
+    expect(installSh).not.toContain('asset="agentplane-v$VERSION-$platform-$arch.tar.gz"');
     expect(installSh).toContain('asset="agentplane-bun-v$VERSION-$platform-$arch.tar.gz"');
     expect(installSh).toContain('"$INSTALL_DIR/bin/agentplane" --version');
     expect(installSh).not.toContain("npm install");
     expect(installSh).not.toContain("need node");
     expect(installPs1).toContain("SHA256SUMS");
     expect(installPs1).toContain("$Channel = if ($env:AGENTPLANE_INSTALL_CHANNEL)");
-    expect(installPs1).toContain('"agentplane-v$Version-win32-x64.zip"');
+    expect(installPs1).not.toContain('"agentplane-v$Version-win32-x64.zip"');
     expect(installPs1).toContain('"agentplane-bun-v$Version-win32-x64.zip"');
     expect(installPs1).toContain(String.raw`-split '\s+'`);
-    expect(installPs1).toContain(String.raw`"bin\agentplane.cmd"`);
+    expect(installPs1).not.toContain(String.raw`"bin\agentplane.cmd"`);
     expect(installPs1).toContain(String.raw`"bin\agentplane.exe"`);
     expect(installPs1).toContain("Join-Path $InstallDir $AgentplaneBin");
     expect(installPs1).not.toContain("npm install");
