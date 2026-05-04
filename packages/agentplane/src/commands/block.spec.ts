@@ -4,13 +4,15 @@ import {
   findRepoWideAllowPrefixes,
   repoWideAllowPrefixMessage,
 } from "./shared/allow-prefix-policy.js";
+import { validateTextPayloadSource } from "./shared/text-payload.js";
 
 import { toStringList } from "../cli/spec/parse-utils.js";
 
 export type BlockParsed = {
   taskId: string;
   author: string;
-  body: string;
+  body?: string;
+  bodyFile?: string;
   commitFromComment: boolean;
   commitEmoji?: string;
   commitAllow: string[];
@@ -47,8 +49,15 @@ export const blockSpec: CommandSpec<BlockParsed> = {
       kind: "string",
       name: "body",
       valueHint: "<text>",
-      required: true,
-      description: "Structured comment body (must match the configured Blocked: prefix).",
+      description:
+        "Structured comment body (must match the configured Blocked: prefix). Use --body-file for Markdown or shell-sensitive text.",
+    },
+    {
+      kind: "string",
+      name: "body-file",
+      valueHint: "<path>",
+      description:
+        "Read the structured comment body from a file path (mutually exclusive with --body).",
     },
     {
       kind: "boolean",
@@ -125,11 +134,15 @@ export const blockSpec: CommandSpec<BlockParsed> = {
   ],
   validateRaw: (raw) => {
     const author = typeof raw.opts.author === "string" ? raw.opts.author.trim() : "";
-    const body = typeof raw.opts.body === "string" ? raw.opts.body.trim() : "";
     const commitAllow = toStringList(raw.opts["commit-allow"]);
     if (!author)
       throw usageError({ spec: blockSpec, message: "Invalid value for --author: empty." });
-    if (!body) throw usageError({ spec: blockSpec, message: "Invalid value for --body: empty." });
+    validateTextPayloadSource(
+      raw,
+      blockSpec,
+      { inline: "body", file: "body-file", label: "structured comment body" },
+      { required: true },
+    );
     if (findRepoWideAllowPrefixes(commitAllow).length > 0) {
       throw usageError({
         spec: blockSpec,
@@ -153,7 +166,8 @@ export const blockSpec: CommandSpec<BlockParsed> = {
   parse: (raw) => ({
     taskId: typeof raw.args["task-id"] === "string" ? raw.args["task-id"] : "",
     author: raw.opts.author as string,
-    body: raw.opts.body as string,
+    body: typeof raw.opts.body === "string" ? raw.opts.body : undefined,
+    bodyFile: typeof raw.opts["body-file"] === "string" ? raw.opts["body-file"] : undefined,
     commitFromComment: raw.opts["commit-from-comment"] === true,
     commitEmoji: raw.opts["commit-emoji"] as string | undefined,
     commitAllow: toStringList(raw.opts["commit-allow"]),

@@ -30,15 +30,28 @@ export const finishSpec: CommandSpec<FinishParsed> = {
       kind: "string",
       name: "body",
       valueHint: "<text>",
-      required: true,
-      description: "Structured comment body (must match the configured Verified: prefix).",
+      description:
+        "Structured comment body (must match the configured Verified: prefix). Use --body-file for Markdown or shell-sensitive text.",
+    },
+    {
+      kind: "string",
+      name: "body-file",
+      valueHint: "<path>",
+      description:
+        "Read the structured comment body from a file path (mutually exclusive with --body).",
     },
     {
       kind: "string",
       name: "result",
       valueHint: "<one-line>",
       description:
-        "One-line result summary stored in task metadata (required for non-spike tasks when finishing a single task).",
+        "One-line result summary stored in task metadata (required for non-spike tasks when finishing a single task). Use --result-file for shell-sensitive text.",
+    },
+    {
+      kind: "string",
+      name: "result-file",
+      valueHint: "<path>",
+      description: "Read the result summary from a file path (mutually exclusive with --result).",
     },
     {
       kind: "string",

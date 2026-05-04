@@ -5,6 +5,7 @@ import {
   type GroupCommandParsed,
 } from "../../cli/group-command.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { resolveTextPayload } from "../shared/text-payload.js";
 import {
   prSpec,
   type PrCheckParsed,
@@ -87,13 +88,19 @@ export function makeRunPrCheckHandler(getCtx: (cmd: string) => Promise<CommandCo
 
 export function makeRunPrNoteHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, p: PrNoteParsed): Promise<number> => {
+    const body = await resolveTextPayload({
+      cwd: ctx.cwd,
+      inline: p.body,
+      file: p.bodyFile,
+      label: "PR note body",
+    });
     return await cmdPrNote({
       ctx: await getCtx("pr note"),
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       taskId: p.taskId,
       author: p.author,
-      body: p.body,
+      body,
     });
   };
 }

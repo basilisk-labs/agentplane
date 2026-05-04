@@ -30,7 +30,7 @@ export const BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS = [
   COMMAND_SNIPPETS.core.startTask,
   COMMAND_SNIPPETS.core.taskVerifyShow,
   COMMAND_SNIPPETS.core.verifyTask,
-  'agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>',
+  "agentplane finish <task-id> --author <ROLE> --body-file ./verified-note.txt --result-file ./result.txt --commit <git-rev>",
 ] as const;
 
 export const BOOTSTRAP_VERIFICATION_COMMANDS = [

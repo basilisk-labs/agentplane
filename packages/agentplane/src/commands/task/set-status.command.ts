@@ -6,6 +6,7 @@ import {
   repoWideAllowPrefixMessage,
 } from "../shared/allow-prefix-policy.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { resolveTextPayload, validateTextPayloadSource } from "../shared/text-payload.js";
 
 import { cmdTaskSetStatus } from "./set-status.js";
 
@@ -14,6 +15,7 @@ export type TaskSetStatusParsed = {
   status: string;
   author?: string;
   body?: string;
+  bodyFile?: string;
   commit?: string;
   force: boolean;
   yes: boolean;
@@ -46,7 +48,14 @@ export const taskSetStatusSpec: CommandSpec<TaskSetStatusParsed> = {
       kind: "string",
       name: "body",
       valueHint: "<text>",
-      description: "Optional. Comment/event body (requires --author).",
+      description:
+        "Optional. Comment/event body (requires --author). Use --body-file for Markdown or shell-sensitive text.",
+    },
+    {
+      kind: "string",
+      name: "body-file",
+      valueHint: "<path>",
+      description: "Read the comment/event body from a file path (mutually exclusive with --body).",
     },
     {
       kind: "string",
@@ -133,8 +142,17 @@ export const taskSetStatusSpec: CommandSpec<TaskSetStatusParsed> = {
   validateRaw: (raw) => {
     const author = raw.opts.author;
     const body = raw.opts.body;
+    const bodyFile = raw.opts["body-file"];
     const hasAuthor = typeof author === "string" && author.trim() !== "";
-    const hasBody = typeof body === "string" && body.trim() !== "";
+    const hasBody =
+      (typeof body === "string" && body.trim() !== "") ||
+      (typeof bodyFile === "string" && bodyFile.trim() !== "");
+    validateTextPayloadSource(
+      raw,
+      taskSetStatusSpec,
+      { inline: "body", file: "body-file", label: "comment/event body" },
+      { required: false },
+    );
     if (hasAuthor !== hasBody) {
       throw usageError({
         spec: taskSetStatusSpec,
@@ -183,6 +201,7 @@ export const taskSetStatusSpec: CommandSpec<TaskSetStatusParsed> = {
       status: String(raw.args.status),
       author: typeof raw.opts.author === "string" ? raw.opts.author : undefined,
       body: typeof raw.opts.body === "string" ? raw.opts.body : undefined,
+      bodyFile: typeof raw.opts["body-file"] === "string" ? raw.opts["body-file"] : undefined,
       commit: typeof raw.opts.commit === "string" ? raw.opts.commit : undefined,
       force: raw.opts.force === true,
       yes: raw.opts.yes === true,
@@ -201,6 +220,15 @@ export const taskSetStatusSpec: CommandSpec<TaskSetStatusParsed> = {
 
 export function makeRunTaskSetStatusHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, p: TaskSetStatusParsed): Promise<number> => {
+    const body =
+      typeof p.body === "string" || typeof p.bodyFile === "string"
+        ? await resolveTextPayload({
+            cwd: ctx.cwd,
+            inline: p.body,
+            file: p.bodyFile,
+            label: "task set-status body",
+          })
+        : undefined;
     return await cmdTaskSetStatus({
       ctx: await getCtx("task set-status"),
       cwd: ctx.cwd,
@@ -208,7 +236,7 @@ export function makeRunTaskSetStatusHandler(getCtx: (cmd: string) => Promise<Com
       taskId: p.taskId,
       status: p.status,
       author: p.author,
-      body: p.body,
+      body,
       commit: p.commit,
       force: p.force,
       yes: p.yes,
