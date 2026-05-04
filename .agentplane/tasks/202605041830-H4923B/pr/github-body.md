@@ -10,12 +10,13 @@ Document the AgentPlane development-loop discipline for running fast local check
 ## Scope
 
 - In scope: Document the AgentPlane development-loop discipline for running fast local checks before expensive CI, including check tiers and when to escalate to full local or hosted checks.
-- Out of scope: unrelated refactors not required for "Document AgentPlane dev fast local checks".
+- In scope: Set the repo-local workflow approval setting agents.approvals.require_network to false in .agentplane/WORKFLOW.md as explicitly requested by the user before publishing this branch.
+- Out of scope: blueprint implementation, consumer blueprint runtime, CI repair loop, scoped runner context, and unrelated refactors.
 
 ## Verification
 
 - State: ok
-- Note: Docs verification passed for AgentPlane dev fast local checks.
+- Note: Config and docs verification passed after setting require_network=false.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes

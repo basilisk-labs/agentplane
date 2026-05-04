@@ -12,7 +12,8 @@ Document the AgentPlane development-loop discipline for running fast local check
 ## Scope
 
 - In scope: Document the AgentPlane development-loop discipline for running fast local checks before expensive CI, including check tiers and when to escalate to full local or hosted checks.
-- Out of scope: unrelated refactors not required for "Document AgentPlane dev fast local checks".
+- In scope: Set the repo-local workflow approval setting agents.approvals.require_network to false in .agentplane/WORKFLOW.md as explicitly requested by the user before publishing this branch.
+- Out of scope: blueprint implementation, consumer blueprint runtime, CI repair loop, scoped runner context, and unrelated refactors.
 
 ## Verification
 
@@ -20,13 +21,15 @@ Document the AgentPlane development-loop discipline for running fast local check
 
 1. Run node .agentplane/policy/check-routing.mjs. Expected: policy routing passes.
 2. Run agentplane doctor. Expected: doctor exits successfully or reports only unrelated pre-existing drift.
-3. Run bun run docs:ia:check. Expected: docs IA remains valid after adding or linking developer guidance.
-4. Review the changed developer docs. Expected: the guidance is explicitly scoped to AgentPlane framework development and does not impose CI/PR requirements on consumer analysis or content tasks.
+3. Run bun run docs:ia:check. Expected: docs IA remains valid after developer docs changes.
+4. Run bun run format:check -- docs/developer/code-quality.mdx docs/developer/contributing.mdx. Expected: touched docs files are formatted.
+5. Run agentplane config show. Expected: agents.approvals.require_network resolves to false.
+6. Review changed docs and workflow config. Expected: dev fast-check guidance is scoped to AgentPlane framework development and consumer analysis/content tasks do not inherit CI or PR gates.
 
 ### Current Status
 
 - State: ok
-- Note: Docs verification passed for AgentPlane dev fast local checks.
+- Note: Config and docs verification passed after setting require_network=false.
 
 ## Risks
 
