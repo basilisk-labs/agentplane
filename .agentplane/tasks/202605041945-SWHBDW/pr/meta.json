@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605041945-SWHBDW/blueprint-implementation-spec",
+  "created_at": "2026-05-04T19:46:29.077Z",
+  "head_sha": "de2a586b35509559fe17fc8d798064b3743377ea",
+  "last_verified_at": "2026-05-04T19:50:50.625Z",
+  "last_verified_sha": "a9f6a0a6f4f353e0c62b19275ecaadece51b9a68",
+  "schema_version": 1,
+  "task_id": "202605041945-SWHBDW",
+  "updated_at": "2026-05-04T19:59:03.637Z",
+  "verify": {
+    "status": "pass"
+  }
+}
