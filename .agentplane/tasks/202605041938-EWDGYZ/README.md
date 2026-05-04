@@ -1,10 +1,11 @@
 ---
 id: "202605041938-EWDGYZ"
 title: "Expose public schemas from root catalog"
-status: "DOING"
+result_summary: "Merged via PR #885."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-04T19:48:53.646Z"
   updated_by: "CODER"
   note: "Command: bun run schemas:check -> pass (schemas OK). Command: bunx prettier --check <changed files> -> pass. Command: node .agentplane/policy/check-routing.mjs -> pass (policy routing OK). Command: agentplane doctor -> pass with one unrelated warning about two pre-existing shipped open tasks."
-commit: null
+commit:
+  hash: "08a5bc5b2d3307096ce0d43eddd782f84ae9332b"
+  message: "🧩 EWDGYZ task: Expose root schema catalog [202605041938-EWDGYZ]"
 comments:
   -
     author: "CODER"
     body: "Start: Extend schema synchronization so root schemas/ exposes generated public schemas, then update schema discovery docs and verify parity."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #885 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run schemas:check -> pass (schemas OK). Command: bunx prettier --check <changed files> -> pass. Command: node .agentplane/policy/check-routing.mjs -> pass (policy routing OK). Command: agentplane doctor -> pass with one unrelated warning about two pre-existing shipped open tasks."
+  -
+    type: "status"
+    at: "2026-05-04T19:52:31.899Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #885 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T19:48:53.650Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-04T19:52:31.904Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make root schemas/ include generated public schema mirrors such as ACR so README and hosted schema paths are discoverable from the repository root."
 sections:
   Summary: |-

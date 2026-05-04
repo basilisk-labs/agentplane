@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-04T19:51:48Z",
   "base": "main",
   "branch": "task/202605041938-EWDGYZ/root-schema-catalog",
   "created_at": "2026-05-04T19:46:06.172Z",
-  "head_sha": "916252748ea387ed752d54322ff258e663f09696",
+  "head_sha": "c0b99c7ea4ea74abdba86cb5c3bd422403bd7025",
   "last_verified_at": "2026-05-04T19:48:53.646Z",
   "last_verified_sha": "a9f6a0a6f4f353e0c62b19275ecaadece51b9a68",
+  "merge_commit": "08a5bc5b2d3307096ce0d43eddd782f84ae9332b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-04T19:51:48Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605041938-EWDGYZ",
-  "updated_at": "2026-05-04T19:49:24.140Z",
+  "updated_at": "2026-05-04T19:51:48Z",
   "verify": {
     "status": "pass"
   }
