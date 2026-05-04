@@ -33,7 +33,7 @@
     },
     {
       "file": "packages/agentplane/src/cli/run-cli.core.test.ts",
-      "lines": 1041
+      "lines": 1046
     },
     {
       "file": "packages/agentplane/src/commands/doctor.command.open-pr.test.ts",
