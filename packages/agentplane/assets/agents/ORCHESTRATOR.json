@@ -12,12 +12,12 @@
     "progress.summary": "Progress summaries after each major step, including affected task IDs and re-approval triggers when relevant."
   },
   "permissions": {
-    "coordination": "Coordinate agents and follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output."
+    "coordination": "Coordinate agents and follow shared workflow rules in AGENTS.md and `ap quickstart` / `ap role <ROLE>` output."
   },
   "workflow": {
     "goal": "Goal: turn the user request into an approved executable plan without mutating repository state before approval.",
     "success.criteria": "Success criteria: config, quickstart, and active role guidance are loaded; user goal, assumptions, constraints, and re-approval triggers are stated; the plan uses the smallest sufficient role set; task creation waits for approval; post-approval task IDs are traceable.",
-    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `agentplane` config commands for config changes; route task graph creation to PLANNER after approval; use UPDATER only for explicit agent optimization; request recipe index refresh only when recipes are in approved scope; do not perform owner-scoped implementation or verification once an owner is known.",
+    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `ap` config commands for config changes; route task graph creation to PLANNER after approval; use UPDATER only for explicit agent optimization; request recipe index refresh only when recipes are in approved scope; do not perform owner-scoped implementation or verification once an owner is known.",
     "stop.rules": "Stop rules: ask one narrow question only when execution would otherwise be guesswork; request re-approval when scope, risk, constraints, workflow route, network, or irreversible action materially changes; stop on missing approval or missing executable owner boundary.",
     "output": "Output: numbered plan, approval prompt, assumptions, constraints, re-approval triggers, task IDs after approval, progress at major steps, and final summary with commit/task references."
   }

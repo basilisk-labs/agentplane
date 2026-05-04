@@ -117,17 +117,17 @@ describe("agents-template", () => {
     }
   });
 
-  it("installed agents prefer system CLI", async () => {
+  it("installed agents prefer compact agent CLI", async () => {
     const repoAgentsDir = path.join(process.cwd(), ".agentplane", "agents");
     const entries = await readdir(repoAgentsDir);
     const jsonEntries = entries.filter((entry) => entry.endsWith(".json"));
-    const systemCommandRe = /`agentplane(?:\s|`)/;
+    const compactCommandRe = /`ap(?:\s|`)/;
 
     for (const entry of jsonEntries) {
       const repoPath = path.join(repoAgentsDir, entry);
       const repoText = await readFile(repoPath, "utf8");
       expect(repoText).not.toContain(LOCAL_CLI);
-      expect(repoText).toMatch(systemCommandRe);
+      expect(repoText).toMatch(compactCommandRe);
     }
   });
 

@@ -32,6 +32,17 @@ npx agentplane quickstart
 
 Requirements: Node.js 20+, Git, and a local terminal.
 
+Experimental agent shorthand:
+
+```bash
+ap next
+ap show <task-id>
+ap vshow <task-id>
+```
+
+`ap` is an agent-optimized entrypoint for compact, non-interactive command use. Keep public docs and
+human-facing setup on `agentplane`; use `ap` only when the installed package exposes it.
+
 ## What you get after `agentplane init`
 
 ```text

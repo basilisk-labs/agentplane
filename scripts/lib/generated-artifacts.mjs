@@ -130,6 +130,7 @@ export async function assertAgentplaneCliDistFreshForDocs(root = ROOT) {
   const freshness = await isPackageBuildFresh(packageRoot, {
     watchedPaths: [
       "src",
+      "bin/ap.js",
       "bin/agentplane.js",
       "bin/runtime-context.js",
       "bin/stale-dist-policy.js",

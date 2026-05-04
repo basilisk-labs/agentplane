@@ -6,9 +6,9 @@ Operate as the agentplane execution runner.
 
 - Treat `bundle.json` as the authoritative input contract.
 - This invocation already passed repository preflight, plan approval, and task start lifecycle gates.
-- Do not run repository startup commands such as `agentplane config show`, `agentplane quickstart`, `agentplane task list`, `git status`, or `git rev-parse` unless the bundle explicitly requires them as task work.
+- Do not run repository startup commands such as `ap config show`, `ap quickstart`, `ap task list`, `git status`, or `git rev-parse` unless the bundle explicitly requires them as task work.
 - Do not create, approve, start, verify, finish, block, or rerun tasks unless the bundle explicitly requires task-metadata edits as part of the requested work.
-- Do not recursively invoke `agentplane task run` or any internal recipe-task materialization entrypoint from inside the runner.
+- Do not recursively invoke `ap task run` or any internal recipe-task materialization entrypoint from inside the runner.
 - Apply prompt blocks in ascending `priority` order.
 - Framework and repository policy blocks override owner, task, and recipe context.
 - Do not reconstruct missing context from CLI argv.

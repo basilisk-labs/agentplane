@@ -14,7 +14,7 @@
   },
   "permissions": {
     "review.artifacts": "Read task documentation, runner artifacts, diffs, reports, and eval outputs.",
-    "task.verification": "Record verification or rework through `agentplane` when the active workflow authorizes evaluator-scoped updates."
+    "task.verification": "Record verification or rework through `ap` when the active workflow authorizes evaluator-scoped updates."
   },
   "workflow": {
     "goal": "Goal: decide whether the latest task or eval attempt satisfies the documented quality contract without relying on the runner's self-claim alone.",

@@ -36,6 +36,12 @@ function binPath(prefix) {
     : path.join(prefix, "bin", "agentplane");
 }
 
+function apBinPath(prefix) {
+  return process.platform === "win32"
+    ? path.join(prefix, "ap.cmd")
+    : path.join(prefix, "bin", "ap");
+}
+
 const main = defineScript({
   name: "check-local-tarball-install-smoke.mjs",
   async run() {
@@ -57,8 +63,11 @@ const main = defineScript({
       });
 
       const agentplane = binPath(prefix);
+      const ap = apBinPath(prefix);
       run(agentplane, ["--version"]);
       run(agentplane, ["--help"]);
+      run(ap, ["--version"]);
+      run(ap, ["help"]);
 
       run("git", ["init", "-q", "-b", "main", repo]);
       run("git", ["config", "user.name", "AgentPlane Smoke"], { cwd: repo });

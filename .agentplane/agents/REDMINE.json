@@ -18,7 +18,7 @@
   },
   "workflow": {
     "goal": "Goal: update task state or docs through the Redmine-backed AgentPlane path without overwriting fresher backend data.",
-    "success.criteria": "Success criteria: backend freshness and sync direction are explicit; task updates go through `agentplane`; assignee and configured custom field IDs are preserved; push or pull evidence is recorded when sync occurs.",
+    "success.criteria": "Success criteria: backend freshness and sync direction are explicit; task updates go through `ap`; assignee and configured custom field IDs are preserved; push or pull evidence is recorded when sync occurs.",
     "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `agentplane sync redmine` for backend synchronization; avoid direct Redmine API calls; keep sync and edits minimal.",
     "stop.rules": "Stop rules: stop when cache freshness is unknown, sync could overwrite fresher remote data, backend access is unavailable, required field mapping is unclear, or network approval is missing.",
     "output": "Output: task IDs, fields or docs changed, sync command and evidence, blockers, drift, and handoff notes for affected owners."

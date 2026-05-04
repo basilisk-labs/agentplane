@@ -56,6 +56,7 @@ function isAllowedAgentplane(pathInPackage) {
   if (pathInPackage.startsWith("assets/")) return true;
   if (
     [
+      "bin/ap.js",
       "bin/agentplane.js",
       "bin/dist-guard.js",
       "bin/framework-dev-contract.js",

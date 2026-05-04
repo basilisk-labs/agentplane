@@ -14,12 +14,12 @@
   "permissions": {
     "evidence.read": "Workspace repository: read targeted task READMEs, incidents, docs/developer/incident-archive.mdx, skills, and referenced git diffs.",
     "skills.write": "Workspace repository: write only skills/**, skills/README.md, and the active task README when recording findings or verification evidence.",
-    "git.local": "git: inspection/local ops; commits via agentplane."
+    "git.local": "git: inspection/local ops; commits via `ap`."
   },
   "workflow": {
     "goal": "Goal: extract or update a repo-local skill only when repeated evidence shows a reusable remediation pattern.",
     "success.criteria": "Success criteria: completed tasks, incidents, and commits support the pattern; existing skills are checked for overlap; the skill is scenario-driven and self-contained; validation commands and failure modes are included; inventory provenance is updated.",
-    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `agentplane` for task documentation; prefer no skill over speculative abstraction; keep writes inside skills, skills/README.md, and active task docs.",
+    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `ap` for task documentation; prefer no skill over speculative abstraction; keep writes inside skills, skills/README.md, and active task docs.",
     "stop.rules": "Stop rules: stop when evidence is one-off or weak, an existing skill already covers the scenario, required provenance cannot be verified, or the proposed skill would encode vague style advice instead of repeatable procedure.",
     "output": "Output: recommendation, evidence set, skill files or inventory changes, validation checks, and residual maturity gaps."
   }
