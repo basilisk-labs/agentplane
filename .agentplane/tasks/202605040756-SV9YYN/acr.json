@@ -1,0 +1,154 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605040756-SV9YYN",
+  "created_at": "2026-05-04T20:53:59.703Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "30cc08324ed2c2ecbf8707e2dfaa5255096cfe57",
+    "work_ref": "main",
+    "work_commit": "30cc08324ed2c2ecbf8707e2dfaa5255096cfe57"
+  },
+  "task": {
+    "task_id": "202605040756-SV9YYN",
+    "title": "Align ACR example version with release",
+    "intent": "Update the ACR example fixture version to the current 0.4.3 release and add a release-time guard that prevents future fixture/package version drift.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "CODER",
+    "name": "CODER",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605040756-SV9YYN/README.md",
+      "sha256": "sha256:4030fc4bec3f234d1add41f8db0645d3199e9cbf9e3b3094891096887d2ab17f"
+    },
+    "approved_at": "2026-05-04T07:56:50.305Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "DONE: ACR example version aligns with 0.4.3 and guard is shipped.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "other",
+        "command": "bun run release:acr-example:check",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605040756-SV9YYN_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-04T07:56:50.305Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605040756-SV9YYN/README.md",
+      "sha256": "sha256:4030fc4bec3f234d1add41f8db0645d3199e9cbf9e3b3094891096887d2ab17f"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605040756-SV9YYN/README.md",
+      "sha256": "sha256:4030fc4bec3f234d1add41f8db0645d3199e9cbf9e3b3094891096887d2ab17f"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605040756-SV9YYN/README.md",
+      "sha256": "sha256:4030fc4bec3f234d1add41f8db0645d3199e9cbf9e3b3094891096887d2ab17f"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 30cc08324ed2c2ecbf8707e2dfaa5255096cfe57 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:d5ff95de6b99ac4afc55363a7c5e318459439e8b6f24a34cfd4611b5e9cce927",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
