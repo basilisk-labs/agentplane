@@ -1,10 +1,11 @@
 ---
 id: "202605041618-E011A7"
 title: "Improve doctor performance and progress"
-status: "DOING"
+result_summary: "Merged via PR #866."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-04T16:24:44.331Z"
   updated_by: "CODER"
   note: "Focused doctor tests, typecheck, formatting, routing, and live doctor check passed; live doctor completed in 10.90s with phase progress output."
-commit: null
+commit:
+  hash: "9b96103d3db0aa8686a2ac2548e3849fb7c04870"
+  message: "Merge pull request #866 from basilisk-labs/task/202605041618-E011A7/doctor-progress-perf"
 comments:
   -
     author: "CODER"
     body: "Start: implement doctor progress and performance improvements for large branch_pr task archives with focused regression coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #866 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused doctor tests, typecheck, formatting, routing, and live doctor check passed; live doctor completed in 10.90s with phase progress output."
+  -
+    type: "status"
+    at: "2026-05-04T16:50:26.856Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #866 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T16:24:44.340Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-04T16:50:26.861Z"
+doc_updated_by: "INTEGRATOR"
 description: "Reduce agentplane doctor silence and repeated expensive branch_pr scans on large task archives while preserving existing diagnostics."
 sections:
   Summary: "Improve agentplane doctor performance and progress behavior on large local task archives without changing the diagnostic contract."

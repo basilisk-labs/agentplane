@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-04T16:49:35Z",
   "base": "main",
   "branch": "task/202605041618-E011A7/doctor-progress-perf",
   "created_at": "2026-05-04T16:19:19.385Z",
-  "head_sha": "48ad79ac9d7030783a95485322c9d19a7e61be1f",
+  "head_sha": "a0bbda6b6979093032cf7707bf29394d4aab557d",
   "last_verified_at": "2026-05-04T16:24:44.331Z",
   "last_verified_sha": "3fb4f08093591735d79a6234967866cc71440f32",
+  "merge_commit": "9b96103d3db0aa8686a2ac2548e3849fb7c04870",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-04T16:49:35Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605041618-E011A7",
-  "updated_at": "2026-05-04T16:25:11.596Z",
+  "updated_at": "2026-05-04T16:49:35Z",
   "verify": {
     "status": "pass"
   }
