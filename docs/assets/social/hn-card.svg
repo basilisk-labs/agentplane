@@ -1,1 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640"><rect width="1280" height="640" fill="#f6f6ef"/><text x="74" y="116" font-family="Verdana" font-size="54" fill="#111827">Show HN: AgentPlane</text><text x="74" y="176" font-family="Verdana" font-size="42" fill="#0055FF">ACRs for coding agents</text><rect x="74" y="230" width="1132" height="300" fill="#111827"/><text x="108" y="290" font-family="Inconsolata" font-size="28" fill="#e5e7eb">{</text><text x="144" y="336" font-family="Inconsolata" font-size="28" fill="#e5e7eb">&quot;acr_version&quot;: &quot;0.1.0&quot;,</text><text x="144" y="382" font-family="Inconsolata" font-size="28" fill="#e5e7eb">&quot;record_type&quot;: &quot;agent_change_record&quot;,</text><text x="144" y="428" font-family="Inconsolata" font-size="28" fill="#e5e7eb">&quot;verification&quot;: { &quot;status&quot;: &quot;passed&quot; }</text><text x="108" y="474" font-family="Inconsolata" font-size="28" fill="#e5e7eb">}</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640">
+<style>
+  .display { font-family: 'Inter Display', 'Inter', 'Arial', sans-serif; }
+  .sans { font-family: 'Inter', 'Arial', sans-serif; }
+  .mono { font-family: 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+</style>
+<rect width="1280" height="640" fill="#F6F6EF"/>
+
+    <g transform="translate(74,70) scale(0.76)">
+      <line x1="0" y1="0" x2="278" y2="0" stroke="#DCD9D1" stroke-width="2"/>
+      <line x1="0" y1="0" x2="18" y2="0" stroke="#005CFF" stroke-width="2"/>
+      <text class="display" x="14" y="36" font-size="42" fill="#070707" letter-spacing="-1.2">
+        <tspan font-weight="850">agent/</tspan><tspan font-weight="520">plane</tspan>
+      </text>
+    </g>
+<text class="display" x="74" y="192" font-size="44" fill="#070707" font-weight="780" letter-spacing="-1.4">Show HN: AgentPlane</text>
+<text class="mono" x="76" y="254" font-size="32" fill="#005CFF">ACRs for coding agents</text>
+<text class="sans" x="78" y="326" font-size="25" fill="#404650" font-weight="430">Task scope · approved plan · verification evidence</text>
+<text class="sans" x="78" y="366" font-size="25" fill="#404650" font-weight="430">branch handoff · closure in Git</text>
+<text class="mono" x="78" y="432" font-size="24" fill="#070707">.agentplane/tasks/&lt;task-id&gt;/acr.json</text>
+<rect x="598" y="414" width="10" height="3" fill="#005CFF" rx="1.5"/>
+<line x1="78" y1="466" x2="646" y2="466" stroke="#DCD9D1" stroke-width="1.4"/>
+<rect x="720" y="112" width="440" height="416" fill="#07111F" rx="21.84"/>
+<text class="mono" x="756.96" y="162.4" font-size="20.16" fill="#E9EEF7">acr.json</text>
+<line x1="756.96" y1="189.28" x2="1123.04" y2="189.28" stroke="#3A465A" stroke-width="1"/>
+<text class="mono" x="756.96" y="238.0" font-size="15.959999999999999" fill="#E9EEF7">{</text>
+<text class="mono" x="756.96" y="275.8" font-size="15.959999999999999" fill="#E9EEF7">  &quot;record_type&quot;: &quot;agent_change_record&quot;,</text>
+<text class="mono" x="756.96" y="313.6" font-size="15.959999999999999" fill="#E9EEF7">  &quot;verification&quot;: &quot;passed&quot;,</text>
+<text class="mono" x="756.96" y="351.4" font-size="15.959999999999999" fill="#E9EEF7">  &quot;evidence&quot;: &quot;reviewable&quot;</text>
+<text class="mono" x="756.96" y="389.2" font-size="15.959999999999999" fill="#E9EEF7">}</text>
+</svg>

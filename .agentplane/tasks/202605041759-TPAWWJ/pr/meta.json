@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605041759-TPAWWJ/readme-demo-assets",
+  "created_at": "2026-05-04T17:59:41.276Z",
+  "head_sha": "4e774ca2e75485f48d414ce36b61458362f477e8",
+  "last_verified_at": "2026-05-04T18:02:16.677Z",
+  "last_verified_sha": "4e774ca2e75485f48d414ce36b61458362f477e8",
+  "schema_version": 1,
+  "task_id": "202605041759-TPAWWJ",
+  "updated_at": "2026-05-04T17:59:41.276Z",
+  "verify": {
+    "status": "pass"
+  }
+}
