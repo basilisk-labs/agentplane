@@ -1,10 +1,10 @@
 ---
 id: "202605041827-N44VNX"
 title: "Make task projection cache read safe under parallel CLI"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +23,16 @@ verification:
   updated_at: "2026-05-04T18:40:02.439Z"
   updated_by: "CODER"
   note: "Focused backend cache tests, task list smoke, typecheck, formatting, and lint passed for read-safe projection cache behavior."
-commit: null
+commit:
+  hash: "81a80a2f532b83fd3dcef088ee5fe1c383c26f4c"
+  message: "🚧 RCSMN7 task: Add fast doctor tier for large task archives [202605041827-RCSMN7]"
 comments:
   -
     author: "CODER"
     body: "Start: implement read-safe projection cache behavior in the same approved performance batch worktree owned by the primary task branch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #874 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused backend cache tests, task list smoke, typecheck, formatting, and lint passed for read-safe projection cache behavior."
+  -
+    type: "status"
+    at: "2026-05-04T18:49:58.101Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #874 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T18:40:02.446Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-04T18:49:58.104Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent read-heavy commands from contending on task projection cache writes by separating read-only projection reads from explicit cache rebuilds and preserving correctness on stale cache fallback."
 sections:
   Summary: |-

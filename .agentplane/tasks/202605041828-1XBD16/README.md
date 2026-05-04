@@ -1,10 +1,10 @@
 ---
 id: "202605041828-1XBD16"
 title: "Batch branch_pr doctor git checks"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,16 @@ verification:
   updated_at: "2026-05-04T18:40:10.931Z"
   updated_by: "CODER"
   note: "Focused branch_pr doctor tests, live doctor, typecheck, formatting, and lint passed for cached git probes."
-commit: null
+commit:
+  hash: "81a80a2f532b83fd3dcef088ee5fe1c383c26f4c"
+  message: "🚧 RCSMN7 task: Add fast doctor tier for large task archives [202605041827-RCSMN7]"
 comments:
   -
     author: "CODER"
     body: "Start: reduce branch_pr doctor git subprocess overhead while preserving existing drift diagnostics in the approved batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #874 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused branch_pr doctor tests, live doctor, typecheck, formatting, and lint passed for cached git probes."
+  -
+    type: "status"
+    at: "2026-05-04T18:49:58.109Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #874 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T18:40:10.938Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-04T18:49:58.111Z"
+doc_updated_by: "INTEGRATOR"
 description: "Reduce branch_pr doctor drift latency by narrowing actionable candidates before git subprocess checks and batching repeated ref/base lookups where possible."
 sections:
   Summary: |-
