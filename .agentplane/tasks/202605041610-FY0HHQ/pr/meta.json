@@ -2,6 +2,15 @@
   "artifact_state": "merged",
   "artifact_state_updated_at": "2026-05-04T16:32:56Z",
   "base": "main",
+  "batch": {
+    "closure_policy": "all_or_fail",
+    "included_task_ids": [
+      "202605041610-RPW8E0",
+      "202605041611-7TM53Y"
+    ],
+    "primary_task_id": "202605041610-FY0HHQ",
+    "schema_version": 1
+  },
   "branch": "task/202605041610-FY0HHQ/docs-legacy-prune",
   "created_at": "2026-05-04T16:17:34.186Z",
   "head_sha": "3916ea9916c9e74b3ff63b6b32fdb64302cba4d7",

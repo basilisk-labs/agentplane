@@ -1,10 +1,10 @@
 ---
 id: "202605041610-RPW8E0"
 title: "Refresh active docs for v0.4 line"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,16 @@ verification:
   updated_at: "2026-05-04T16:25:37.823Z"
   updated_by: "DOCS"
   note: "Command: rg -n active `0.3|active v0.3|v0.3 recipe|v0.3 vocabulary|0.3 stabilization|ADR 0011 is reserved|Lifecycle and close taxonomy v0.3 docs/developer docs/user. Result: pass. Evidence: no stale active-v0.3 wording remains in active developer/user docs. Command: bun run docs:site:typecheck. Result: pass. Command: bunx eslint scripts/check-docs-ia.mjs website/sidebars.ts website/src/data/homepage-content.ts. Result: pass. Command: git diff --check. Result: pass."
-commit: null
+commit:
+  hash: "c9d936ca997544bc04dfae3edb1aeef2fdcedf97"
+  message: "Merge pull request #863 from basilisk-labs/task/202605041610-FY0HHQ/docs-legacy-prune"
 comments:
   -
     author: "DOCS"
     body: "Start: refresh active documentation wording so current developer and user guidance describes the v0.4 line instead of old v0.3 stabilization."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #863 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +45,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: rg -n active `0.3|active v0.3|v0.3 recipe|v0.3 vocabulary|0.3 stabilization|ADR 0011 is reserved|Lifecycle and close taxonomy v0.3 docs/developer docs/user. Result: pass. Evidence: no stale active-v0.3 wording remains in active developer/user docs. Command: bun run docs:site:typecheck. Result: pass. Command: bunx eslint scripts/check-docs-ia.mjs website/sidebars.ts website/src/data/homepage-content.ts. Result: pass. Command: git diff --check. Result: pass."
+  -
+    type: "status"
+    at: "2026-05-04T16:40:57.351Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #863 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T16:25:37.830Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-04T16:40:57.354Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update active architecture, topology, recipe, and lifecycle documentation so current guidance no longer describes v0.3 stabilization as active work."
 sections:
   Summary: |-

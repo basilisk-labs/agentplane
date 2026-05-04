@@ -1,10 +1,10 @@
 ---
 id: "202605041611-7TM53Y"
 title: "Remove stale config.json public surfaces"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +21,16 @@ verification:
   updated_at: "2026-05-04T16:25:49.055Z"
   updated_by: "DOCS"
   note: "Command: rg -n .agentplane/config.json|config.json website/src/data/homepage-content.ts DESIGN.md packages/spec/README.md docs/user/configuration.mdx docs/adr/0013-zod-contract-ssot.md. Result: pass. Evidence: config.json appears only as legacy import fallback or compatibility example; homepage and design public artifact surfaces are WORKFLOW.md-first. Command: node scripts/check-docs-ia.mjs. Result: pass. Command: bun run docs:site:typecheck. Result: pass. Command: node packages/agentplane/bin/agentplane.js doctor. Result: pass."
-commit: null
+commit:
+  hash: "c9d936ca997544bc04dfae3edb1aeef2fdcedf97"
+  message: "Merge pull request #863 from basilisk-labs/task/202605041610-FY0HHQ/docs-legacy-prune"
 comments:
   -
     author: "DOCS"
     body: "Start: remove stale config.json public-surface examples and keep WORKFLOW.md as the current configuration artifact."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #863 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +45,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: rg -n .agentplane/config.json|config.json website/src/data/homepage-content.ts DESIGN.md packages/spec/README.md docs/user/configuration.mdx docs/adr/0013-zod-contract-ssot.md. Result: pass. Evidence: config.json appears only as legacy import fallback or compatibility example; homepage and design public artifact surfaces are WORKFLOW.md-first. Command: node scripts/check-docs-ia.mjs. Result: pass. Command: bun run docs:site:typecheck. Result: pass. Command: node packages/agentplane/bin/agentplane.js doctor. Result: pass."
+  -
+    type: "status"
+    at: "2026-05-04T16:40:57.359Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #863 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T16:25:49.064Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-04T16:40:57.361Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace stale public-facing config.json examples with WORKFLOW.md-first wording while keeping legacy import compatibility documented only where relevant."
 sections:
   Summary: |-
