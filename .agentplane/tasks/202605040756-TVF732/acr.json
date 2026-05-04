@@ -1,0 +1,154 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605040756-TVF732",
+  "created_at": "2026-05-04T20:54:03.769Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "30cc08324ed2c2ecbf8707e2dfaa5255096cfe57",
+    "work_ref": "main",
+    "work_commit": "30cc08324ed2c2ecbf8707e2dfaa5255096cfe57"
+  },
+  "task": {
+    "task_id": "202605040756-TVF732",
+    "title": "Refresh README header asset tagline",
+    "intent": "Regenerate the README header asset so the first GitHub visual matches the current tagline: The audit layer for coding agents.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "CODER",
+    "name": "CODER",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605040756-TVF732/README.md",
+      "sha256": "sha256:c1cda744da5fd1a85ca65244358f57f5afc3187ee09196dfb12c9fc95b9fbb55"
+    },
+    "approved_at": "2026-05-04T07:56:42.634Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "DONE: header assets refreshed and shipped in main.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "other",
+        "command": "shasum -a 256 docs/assets/header.png website/static/img/header.png website/static/img/og-image.png website/static/img/twitter-card.png website/static/img/hn-card.png",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605040756-TVF732_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-04T07:56:42.634Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605040756-TVF732/README.md",
+      "sha256": "sha256:c1cda744da5fd1a85ca65244358f57f5afc3187ee09196dfb12c9fc95b9fbb55"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605040756-TVF732/README.md",
+      "sha256": "sha256:c1cda744da5fd1a85ca65244358f57f5afc3187ee09196dfb12c9fc95b9fbb55"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605040756-TVF732/README.md",
+      "sha256": "sha256:c1cda744da5fd1a85ca65244358f57f5afc3187ee09196dfb12c9fc95b9fbb55"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 30cc08324ed2c2ecbf8707e2dfaa5255096cfe57 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:c41441625d7d8bf26c5db03b739aafe59e40081606c85122fc20e67fd3682672",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
