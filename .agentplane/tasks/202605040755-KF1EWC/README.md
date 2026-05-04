@@ -4,7 +4,7 @@ title: "Fix launch README example role leakage"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-04T08:07:19.427Z"
+  updated_at: "2026-05-04T08:09:25.981Z"
   updated_by: "DOCS"
-  note: "Public examples no longer expose concrete internal role IDs; targeted homepage import and lint passed."
+  note: "Verified: launch punch-list branch checks passed at current PR-artifact head."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Public examples no longer expose concrete internal role IDs; targeted homepage import and lint passed."
+  -
+    type: "verify"
+    at: "2026-05-04T08:09:25.981Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Verified: launch punch-list branch checks passed at current PR-artifact head."
 doc_version: 3
-doc_updated_at: "2026-05-04T08:07:19.439Z"
+doc_updated_at: "2026-05-04T08:09:25.989Z"
 doc_updated_by: "DOCS"
 description: "Replace public quickstart examples that foreground internal role IDs with role-free commands and a single configurable-agents note."
 sections:
@@ -70,6 +76,14 @@ sections:
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T08:01:44.770Z, excerpt_hash=sha256:4db061bd72b1ef4d23f9dd76ca963cc5571cada5709b8f98343db57d348090f8
     
+    ### 2026-05-04T08:09:25.981Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Verified: launch punch-list branch checks passed at current PR-artifact head.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T08:07:19.439Z, excerpt_hash=sha256:4db061bd72b1ef4d23f9dd76ca963cc5571cada5709b8f98343db57d348090f8
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -78,6 +92,10 @@ sections:
     - Observation: Commands: rg -n -e 'CODER|DOCS|ORCHESTRATOR' README.md packages/agentplane/README.md website/src/data/homepage-content.ts returned no matches; node -e import('./website/src/data/homepage-content.ts') passed with module-type warning only; node_modules/.bin/eslint website/src/data/homepage-content.ts passed; bun run docs:site:typecheck passed after offline dependency materialization. Full lint:website still fails on pre-existing unrelated website files outside this change.
       Impact: T05 public-command conversion is verified; residual full website lint debt is unrelated to touched lines.
       Resolution: Keep full lint failure task-local; do not widen this launch punch-list scope.
+    
+    - Observation: Commands at branch head: rg concrete role IDs in public examples returned no matches; launch artifact and Discord invite/badge checks passed; bun run release:acr-example:check, spec:examples:check, docs:scripts:check, release:demo:check passed; bun run docs:site:typecheck passed; node .agentplane/policy/check-routing.mjs and agentplane doctor passed. Full lint:website and lint:core still fail on unrelated pre-existing lint debt outside touched lines; targeted eslint checks for changed TS/script files passed.
+      Impact: Primary batch task is verified at current local branch head for the approved scope.
+      Resolution: Do not widen scope to unrelated lint debt.
 id_source: "generated"
 ---
 ## Summary
@@ -113,6 +131,14 @@ Note: Public examples no longer expose concrete internal role IDs; targeted home
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T08:01:44.770Z, excerpt_hash=sha256:4db061bd72b1ef4d23f9dd76ca963cc5571cada5709b8f98343db57d348090f8
 
+### 2026-05-04T08:09:25.981Z — VERIFY — ok
+
+By: DOCS
+
+Note: Verified: launch punch-list branch checks passed at current PR-artifact head.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T08:07:19.439Z, excerpt_hash=sha256:4db061bd72b1ef4d23f9dd76ca963cc5571cada5709b8f98343db57d348090f8
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -125,3 +151,7 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T08:01:44.770Z, excerpt_
 - Observation: Commands: rg -n -e 'CODER|DOCS|ORCHESTRATOR' README.md packages/agentplane/README.md website/src/data/homepage-content.ts returned no matches; node -e import('./website/src/data/homepage-content.ts') passed with module-type warning only; node_modules/.bin/eslint website/src/data/homepage-content.ts passed; bun run docs:site:typecheck passed after offline dependency materialization. Full lint:website still fails on pre-existing unrelated website files outside this change.
   Impact: T05 public-command conversion is verified; residual full website lint debt is unrelated to touched lines.
   Resolution: Keep full lint failure task-local; do not widen this launch punch-list scope.
+
+- Observation: Commands at branch head: rg concrete role IDs in public examples returned no matches; launch artifact and Discord invite/badge checks passed; bun run release:acr-example:check, spec:examples:check, docs:scripts:check, release:demo:check passed; bun run docs:site:typecheck passed; node .agentplane/policy/check-routing.mjs and agentplane doctor passed. Full lint:website and lint:core still fail on unrelated pre-existing lint debt outside touched lines; targeted eslint checks for changed TS/script files passed.
+  Impact: Primary batch task is verified at current local branch head for the approved scope.
+  Resolution: Do not widen scope to unrelated lint debt.

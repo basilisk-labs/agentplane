@@ -3,14 +3,6 @@
 Created: 2026-05-04T07:57:07.226Z
 Branch: task/202605040755-KF1EWC/launch-punch-list
 
-## Batch Tasks
-
-- Primary: `202605040755-KF1EWC`
-- Closure policy: `all_or_fail`
-- Included: `202605040755-SM1KH2`
-- Included: `202605040756-SV9YYN`
-- Included: `202605040756-TVF732`
-
 ## Summary
 
 Fix launch README example role leakage
@@ -34,7 +26,7 @@ Replace public quickstart examples that foreground internal role IDs with role-f
 ### Current Status
 
 - State: ok
-- Note: Public examples no longer expose concrete internal role IDs; targeted homepage import and lint passed.
+- Note: Verified: launch punch-list branch checks passed at current PR-artifact head.
 
 ## Risks
 
