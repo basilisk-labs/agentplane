@@ -1,0 +1,18 @@
+ .gitmodules                         |   3 +
+ .prettierignore                     |   1 +
+ DESIGN.md                           | 565 ------------------------------------
+ EDITORIAL.md                        | 102 -------
+ docs/README.md                      |   5 +-
+ docs/assets/header.svg              |  40 ---
+ docs/assets/social/hn-card.svg      |  31 --
+ docs/assets/social/og-image.svg     |  38 ---
+ docs/assets/social/twitter-card.svg |  37 ---
+ docs/compare.mdx                    |  67 +----
+ docs/launch/retro-template.md       |  44 ---
+ docs/listing.md                     | 125 +-------
+ docs/manifesto.mdx                  |  88 +-----
+ docs/showcase.mdx                   |   8 +-
+ docs/user/website-ia.mdx            |  76 +----
+ marketing                           |   1 +
+ website/static/llms-full.txt        | 159 +---------
+ 17 files changed, 42 insertions(+), 1348 deletions(-)

@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605041840-QWGDPB/marketing-repo-submodule",
+  "created_at": "2026-05-04T18:41:17.290Z",
+  "head_sha": "e4893ab85acbc203d29c7a11d860721c009d52a4",
+  "last_verified_at": "2026-05-04T18:57:04.220Z",
+  "last_verified_sha": "6e7f7c640db9c82738cb1d32afacc272bf4ad7ba",
+  "schema_version": 1,
+  "task_id": "202605041840-QWGDPB",
+  "updated_at": "2026-05-04T19:10:00.240Z",
+  "verify": {
+    "status": "pass"
+  }
+}
