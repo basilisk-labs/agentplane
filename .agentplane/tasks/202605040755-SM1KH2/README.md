@@ -1,10 +1,11 @@
 ---
 id: "202605040755-SM1KH2"
 title: "Add launch-day copy artifacts"
-status: "DOING"
+result_summary: "DONE: docs/launch artifacts shipped in main."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-04T08:07:30.855Z"
   updated_by: "DOCS"
   note: "Launch artifacts landed under docs/launch with ACR-first copy and no Discord invite or badge."
-commit: null
+commit:
+  hash: "30cc08324ed2c2ecbf8707e2dfaa5255096cfe57"
+  message: "Merge pull request #892 from basilisk-labs/task/202605040755-KF1EWC/launch-punch-list"
 comments:
   -
     author: "DOCS"
     body: "Start: creating launch-day copy artifacts under docs/launch without Discord scope, using ACR-first positioning and explicit off-repo confirmation slots."
+  -
+    author: "DOCS"
+    body: "Verified: launch-day copy artifacts shipped via PR #892 and are present on main."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Launch artifacts landed under docs/launch with ACR-first copy and no Discord invite or badge."
+  -
+    type: "status"
+    at: "2026-05-04T20:53:55.205Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: launch-day copy artifacts shipped via PR #892 and are present on main."
 doc_version: 3
-doc_updated_at: "2026-05-04T08:07:30.863Z"
+doc_updated_at: "2026-05-04T20:53:55.205Z"
 doc_updated_by: "DOCS"
 description: "Create HN, Twitter/X, Reddit, and launch checklist artifacts under docs/launch with ACR-first launch copy and explicit off-repo confirmation slots."
 sections:
