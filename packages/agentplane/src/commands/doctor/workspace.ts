@@ -115,7 +115,7 @@ function checkBackendReadiness(ctx?: CommandContext): string[] {
 
 export async function checkWorkspace(
   repoRoot: string,
-  opts?: { ctx?: CommandContext },
+  opts?: { ctx?: CommandContext; deep?: boolean },
 ): Promise<string[]> {
   const problems: string[] = [];
   const requiredFiles = [path.join(repoRoot, ".agentplane", "WORKFLOW.md")];
@@ -173,7 +173,7 @@ export async function checkWorkspace(
     ...(await checkManagedHookShimReadiness(repoRoot)),
     ...(await checkTaskReadmeMigrationState(repoRoot, opts?.ctx)),
     ...(await checkDoneTaskReadmeArchiveDrift(repoRoot, opts?.ctx)),
-    ...(await checkTaskProjectionDrift(repoRoot, opts?.ctx)),
+    ...(opts?.deep ? await checkTaskProjectionDrift(repoRoot, opts?.ctx) : []),
   );
   return problems;
 }

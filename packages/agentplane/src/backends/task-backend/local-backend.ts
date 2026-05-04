@@ -67,7 +67,9 @@ export class LocalBackend implements TaskBackend {
   }
 
   async listProjectionTasks(): Promise<TaskSummary[]> {
-    return (await listLocalTasks(this.backendContext(), "projection")) as TaskSummary[];
+    return (await listLocalTasks(this.backendContext(), "projection", {
+      writeIndex: false,
+    })) as TaskSummary[];
   }
 
   getLastListWarnings(): string[] {

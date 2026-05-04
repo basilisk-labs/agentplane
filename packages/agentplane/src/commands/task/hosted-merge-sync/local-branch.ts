@@ -29,6 +29,40 @@ async function gitRefExists(opts: { cwd: string; ref: string }): Promise<boolean
   }
 }
 
+type BranchPrGitProbe = {
+  refExists(ref: string): Promise<boolean>;
+  resolveBase(meta: TaskPrMeta | null): Promise<string | null>;
+  isAncestor(ancestor: string, descendant: string): Promise<boolean>;
+};
+
+function createBranchPrGitProbe(ctx: CommandContext): BranchPrGitProbe {
+  const cwd = ctx.resolvedProject.gitRoot;
+  const refExistsCache = new Map<string, Promise<boolean>>();
+  const baseCache = new Map<string, Promise<string | null>>();
+  const ancestryCache = new Map<string, Promise<boolean>>();
+
+  return {
+    async refExists(ref: string): Promise<boolean> {
+      const cached = refExistsCache.get(ref) ?? gitRefExists({ cwd, ref });
+      refExistsCache.set(ref, cached);
+      return await cached;
+    },
+    async resolveBase(meta: TaskPrMeta | null): Promise<string | null> {
+      const fromMeta = meta?.base?.trim() ?? "";
+      const key = fromMeta || "__resolved__";
+      const cached = baseCache.get(key) ?? resolveSyncBaseBranch({ ctx, meta });
+      baseCache.set(key, cached);
+      return await cached;
+    },
+    async isAncestor(ancestor: string, descendant: string): Promise<boolean> {
+      const key = `${ancestor}\u0000${descendant}`;
+      const cached = ancestryCache.get(key) ?? gitIsAncestor({ cwd, ancestor, descendant });
+      ancestryCache.set(key, cached);
+      return await cached;
+    },
+  };
+}
+
 async function gitIsAncestor(opts: {
   cwd: string;
   ancestor: string;
@@ -78,6 +112,7 @@ export async function findLocallyShippedBranchPrTasks(opts: {
   }
 
   const matches: LocalBranchPrSyncCandidate[] = [];
+  const git = createBranchPrGitProbe(opts.ctx);
   for (const task of opts.tasks) {
     const currentStatus = normalizeTaskStatus(task.status);
     const prMetaRecord = await readPrMetaIfPresent({ ctx: opts.ctx, taskId: task.id });
@@ -94,20 +129,14 @@ export async function findLocallyShippedBranchPrTasks(opts: {
     const commitHash =
       task.commit?.hash?.trim() ?? meta?.merge_commit?.trim() ?? meta?.head_sha?.trim() ?? "";
     if (!commitHash) continue;
-    if (!(await gitRefExists({ cwd: opts.ctx.resolvedProject.gitRoot, ref: commitHash }))) {
+    if (!(await git.refExists(commitHash))) {
       continue;
     }
 
-    const base = await resolveSyncBaseBranch({ ctx: opts.ctx, meta });
+    const base = await git.resolveBase(meta);
     if (!base) continue;
-    if (!(await gitRefExists({ cwd: opts.ctx.resolvedProject.gitRoot, ref: base }))) continue;
-    if (
-      !(await gitIsAncestor({
-        cwd: opts.ctx.resolvedProject.gitRoot,
-        ancestor: commitHash,
-        descendant: base,
-      }))
-    ) {
+    if (!(await git.refExists(base))) continue;
+    if (!(await git.isAncestor(commitHash, base))) {
       continue;
     }
 
@@ -135,6 +164,7 @@ export async function findDoneBranchPrTasksWithOpenPrArtifacts(opts: {
   }
 
   const matches: LocalDoneBranchPrDrift[] = [];
+  const git = createBranchPrGitProbe(opts.ctx);
   for (const task of opts.tasks) {
     const currentStatus = normalizeTaskStatus(task.status);
     if (currentStatus !== "DONE") continue;
@@ -146,15 +176,14 @@ export async function findDoneBranchPrTasksWithOpenPrArtifacts(opts: {
     const branch = meta.branch?.trim() ?? "";
     if (!branch) continue;
     const branchStillExists =
-      (await gitRefExists({ cwd: opts.ctx.resolvedProject.gitRoot, ref: branch })) ||
-      (await gitRefExists({ cwd: opts.ctx.resolvedProject.gitRoot, ref: `origin/${branch}` }));
+      (await git.refExists(branch)) || (await git.refExists(`origin/${branch}`));
     if (!branchStillExists) continue;
     if (isStackedBranchAliasDoneTask({ task, branch })) continue;
 
     const commitHash = task.commit?.hash?.trim() ?? "";
     if (!commitHash) continue;
 
-    const base = await resolveSyncBaseBranch({ ctx: opts.ctx, meta });
+    const base = await git.resolveBase(meta);
     if (!base) continue;
 
     matches.push({

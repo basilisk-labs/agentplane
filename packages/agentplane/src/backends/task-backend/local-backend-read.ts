@@ -69,8 +69,10 @@ async function readRequiredTask(context: LocalBackendContext, taskId: string): P
 export async function listLocalTasks(
   context: LocalBackendContext,
   mode: "full" | "projection",
+  opts: { writeIndex?: boolean } = {},
 ): Promise<TaskData[] | TaskSummary[]> {
   const projectionOnly = mode === "projection";
+  const writeIndex = opts.writeIndex ?? true;
   const tasks: (TaskData | TaskSummary)[] = [];
   const warnings: string[] = [];
   const entries = await readdir(context.root, { withFileTypes: true }).catch(() => []);
@@ -189,7 +191,7 @@ export async function listLocalTasks(
     }
   }
 
-  if (indexDirty) {
+  if (indexDirty && writeIndex) {
     try {
       await saveTaskIndex(indexPath, { schema_version: 2, byId: nextById, byPath: nextByPath });
     } catch {
