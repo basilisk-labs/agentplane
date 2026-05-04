@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605040755-KF1EWC/launch-punch-list",
+  "created_at": "2026-05-04T07:57:07.226Z",
+  "head_sha": "da0a0606181be98ab79d8a437cdbef36eda4351f",
+  "last_verified_at": "2026-05-04T08:09:25.981Z",
+  "last_verified_sha": "da0a0606181be98ab79d8a437cdbef36eda4351f",
+  "schema_version": 1,
+  "task_id": "202605040755-KF1EWC",
+  "updated_at": "2026-05-04T08:08:46.737Z",
+  "verify": {
+    "status": "pass"
+  }
+}

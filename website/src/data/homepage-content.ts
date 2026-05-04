@@ -40,13 +40,13 @@ export const homepageContent = {
   },
   demo: {
     title: "See the task trail before the diff grows.",
-    text: "Quickstart now shows a harmless demo-task path and the repo-visible artifact shape before you let an agent touch product code.",
+    text: "Quickstart shows a harmless demo-task path and the repo-visible artifact shape before you let an agent touch product code. Agent IDs are configurable profiles.",
     terminal: {
       title: "First visible payoff",
       lines: [
-        'agentplane task new --title "Demo task" --owner DOCS --tag docs',
+        'agentplane task new --title "Demo task" --owner <agent-id> --tag docs',
         'agentplane task plan set <task-id> --text "Inspect the artifact."',
-        'agentplane task start-ready <task-id> --author DOCS --body "Start: inspect artifacts."',
+        'agentplane task start-ready <task-id> --author <agent-id> --body "Start: inspect artifacts."',
         "agentplane task verify-show <task-id>",
         "ls .agentplane/tasks/<task-id>/",
       ],
