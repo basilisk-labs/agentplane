@@ -163,6 +163,9 @@ function isGeneratedOrHistoricalDoc(file) {
 }
 
 function isNavigableDoc(file) {
+  if (isGeneratedOrHistoricalDoc(file)) {
+    return false;
+  }
   const id = docIdFromDocsPath(file);
   if (id === "README" || id === "index" || id.startsWith("adr/")) {
     return false;

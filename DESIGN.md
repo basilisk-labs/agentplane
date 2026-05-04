@@ -426,9 +426,8 @@ Recommended rows:
 
 - `AGENTS.md` — policy gateway.
 - `CLAUDE.md` — alternate policy gateway where relevant.
-- `.agentplane/config.json` — repo configuration.
+- `.agentplane/WORKFLOW.md` — workflow and configuration contract.
 - `.agentplane/tasks/` — task records.
-- `.agentplane/WORKFLOW.md` — workflow contract.
 - `.agentplane/tasks.json` — exported task projection.
 
 Use a square card with a mono label column, subtle row dividers, and one blue active marker for the currently explained artifact.

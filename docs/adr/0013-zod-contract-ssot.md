@@ -34,11 +34,14 @@ Agent Plane now uses **Zod in `packages/core/src/**` as the single source of tru
 
 This decision applies to:
 
-1. `.agentplane/config.json`;
+1. `.agentplane/WORKFLOW.md` front matter;
 2. task README frontmatter;
 3. `.agentplane/tasks.json`;
 4. task PR metadata;
 5. task handoff metadata.
+
+Legacy `.agentplane/config.json` remains covered only as an import-fallback compatibility schema for
+older workspaces, not as the current managed project source of truth.
 
 Operationally, that means:
 
