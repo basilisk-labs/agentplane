@@ -4,7 +4,11 @@ import path from "node:path";
 import type { TaskData } from "../../backends/task-backend.js";
 import { renderDiagnosticFinding } from "../shared/diagnostics.js";
 import { parsePrMeta, resolvePrBatchIncludedTaskIds } from "../shared/pr-meta.js";
-import { backendUsesLocalTaskStore, type CommandContext } from "../shared/task-backend.js";
+import {
+  backendUsesLocalTaskStore,
+  listTasksMemo,
+  type CommandContext,
+} from "../shared/task-backend.js";
 import {
   findDoneBranchPrTasksWithOpenPrArtifacts,
   findLocallyShippedBranchPrTasks,
@@ -17,7 +21,7 @@ export async function checkBranchPrShippedTaskDrift(ctx?: CommandContext): Promi
 
   let tasks: TaskData[] = [];
   try {
-    tasks = await ctx.taskBackend.listTasks();
+    tasks = await listTasksMemo(ctx);
   } catch {
     return [];
   }
@@ -98,7 +102,7 @@ export async function checkBranchPrBatchIncludedTaskDrift(ctx?: CommandContext):
 
   let tasks: TaskData[] = [];
   try {
-    tasks = await ctx.taskBackend.listTasks();
+    tasks = await listTasksMemo(ctx);
   } catch {
     return [];
   }
@@ -146,7 +150,7 @@ export async function checkBranchPrBatchIncludedTaskDrift(ctx?: CommandContext):
 
 async function readDoneTaskSnapshot(ctx: CommandContext): Promise<TaskData[]> {
   try {
-    const tasks = await ctx.taskBackend.listTasks();
+    const tasks = await listTasksMemo(ctx);
     if (tasks.length > 0) {
       return tasks;
     }

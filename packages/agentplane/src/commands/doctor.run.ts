@@ -33,21 +33,35 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
     config: loadedConfig.config,
   });
 
+  const reportProgress = (message: string): void => {
+    process.stderr.write(`ℹ️ doctor: ${message}\n`);
+  };
+
   const runChecks = async (): Promise<string[]> => {
-    let checks = [
-      ...(await checkWorkspace(repoRoot, { ctx: commandCtx })),
+    const checks: string[] = [];
+    reportProgress("checking workspace");
+    checks.push(...(await checkWorkspace(repoRoot, { ctx: commandCtx })));
+    reportProgress("checking branch_pr drift");
+    checks.push(
       ...(await checkBranchPrShippedTaskDrift(commandCtx)),
       ...(await checkBranchPrDoneTaskOpenPrDrift(commandCtx)),
       ...(await checkBranchPrBatchIncludedTaskDrift(commandCtx)),
-      ...checkRuntimeSourceFacts(ctx.cwd, loadedConfig.config),
-      ...(await checkPromptGraphFacts(resolved)),
-      ...(await checkDoneTaskCommitInvariants(repoRoot, { fullArchive: p.archiveFull })),
-    ];
+    );
+    reportProgress("checking runtime source");
+    checks.push(...checkRuntimeSourceFacts(ctx.cwd, loadedConfig.config));
+    reportProgress("checking prompt graph");
+    checks.push(...(await checkPromptGraphFacts(resolved)));
+    reportProgress(
+      p.archiveFull ? "checking full historical task archive" : "checking recent task archive",
+    );
+    checks.push(...(await checkDoneTaskCommitInvariants(repoRoot, { fullArchive: p.archiveFull })));
     if (!isWorkflowEnforcementDisabled()) {
-      checks = [...checks, ...(await checkWorkflowContract(repoRoot))];
+      reportProgress("checking workflow contract");
+      checks.push(...(await checkWorkflowContract(repoRoot)));
     }
     if (p.dev) {
-      checks = [...checks, ...(await checkLayering(repoRoot))];
+      reportProgress("checking source layering");
+      checks.push(...(await checkLayering(repoRoot)));
     }
     return checks;
   };

@@ -1,0 +1,6 @@
+ .../src/commands/doctor.command.open-pr.test.ts    | 25 ++++++++++++++++++
+ packages/agentplane/src/commands/doctor.run.ts     | 30 ++++++++++++++++------
+ .../agentplane/src/commands/doctor/branch-pr.ts    | 12 ++++++---
+ .../agentplane/src/commands/shared/task-backend.ts |  7 +++++
+ .../task/hosted-merge-sync/local-branch.ts         | 10 ++++----
+ 5 files changed, 67 insertions(+), 17 deletions(-)
