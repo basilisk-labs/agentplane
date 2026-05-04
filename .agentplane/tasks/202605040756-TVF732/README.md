@@ -1,10 +1,11 @@
 ---
 id: "202605040756-TVF732"
 title: "Refresh README header asset tagline"
-status: "DOING"
+result_summary: "DONE: header assets refreshed and shipped in main."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-04T08:07:43.406Z"
   updated_by: "CODER"
   note: "README header asset now uses the current tagline and both committed copies match."
-commit: null
+commit:
+  hash: "30cc08324ed2c2ecbf8707e2dfaa5255096cfe57"
+  message: "Merge pull request #892 from basilisk-labs/task/202605040755-KF1EWC/launch-punch-list"
 comments:
   -
     author: "CODER"
     body: "Start: refreshing the README header asset in the shared launch punch-list worktree and checking for existing generation scripts before changing binary assets."
+  -
+    author: "CODER"
+    body: "Verified: README header asset tagline refresh shipped via PR #892 and is present on main."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "README header asset now uses the current tagline and both committed copies match."
+  -
+    type: "status"
+    at: "2026-05-04T20:54:03.715Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: README header asset tagline refresh shipped via PR #892 and is present on main."
 doc_version: 3
-doc_updated_at: "2026-05-04T08:07:43.420Z"
+doc_updated_at: "2026-05-04T20:54:03.716Z"
 doc_updated_by: "CODER"
 description: "Regenerate the README header asset so the first GitHub visual matches the current tagline: The audit layer for coding agents."
 sections:
