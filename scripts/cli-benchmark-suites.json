@@ -51,6 +51,29 @@
           "argv": ["preflight", "--mode", "all", "--root", "{root}"]
         }
       ]
+    },
+    {
+      "id": "doctor-large-archive",
+      "mode": "cli_perf_v1",
+      "description": "Doctor and parallel CLI probes for large local task archives.",
+      "commands": [
+        {
+          "id": "doctor_default",
+          "description": "Default doctor path should stay bounded for normal agent startup.",
+          "argv": ["doctor", "--root", "{root}"]
+        },
+        {
+          "id": "doctor_deep",
+          "description": "Explicit deep doctor path scans full task README body drift.",
+          "argv": ["doctor", "--deep", "--root", "{root}"]
+        },
+        {
+          "id": "parallel_task_list_4",
+          "description": "Four concurrent read-heavy task list invocations against the same task archive.",
+          "argv": ["task", "list", "--root", "{root}"],
+          "parallel": 4
+        }
+      ]
     }
   ]
 }

@@ -3,6 +3,7 @@ import type { CommandSpec } from "../cli/spec/spec.js";
 export type DoctorParsed = {
   fix: boolean;
   dev: boolean;
+  deep?: boolean;
   archiveFull?: boolean;
 };
 
@@ -21,6 +22,12 @@ export const doctorSpec: CommandSpec<DoctorParsed> = {
     },
     {
       kind: "boolean",
+      name: "deep",
+      default: false,
+      description: "Run expensive full task README body drift diagnostics.",
+    },
+    {
+      kind: "boolean",
       name: "archive-full",
       default: false,
       description: "Run the full historical task archive audit instead of the bounded recent scan.",
@@ -32,12 +39,17 @@ export const doctorSpec: CommandSpec<DoctorParsed> = {
       cmd: "agentplane doctor --archive-full",
       why: "Also scan the full historical task archive for older commit anomalies.",
     },
+    {
+      cmd: "agentplane doctor --deep",
+      why: "Also scan every task README body for canonical projection drift.",
+    },
     { cmd: "agentplane doctor --dev", why: "Also run monorepo source-layer checks." },
     { cmd: "agentplane doctor --fix", why: "Apply safe-only fixes (idempotent)." },
   ],
   parse: (raw) => ({
     fix: raw.opts.fix === true,
     dev: raw.opts.dev === true,
+    deep: raw.opts.deep === true,
     archiveFull: raw.opts["archive-full"] === true,
   }),
 };

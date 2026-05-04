@@ -252,6 +252,39 @@ async function runCommand(cliPath, argv) {
   }
 }
 
+async function runCommandGroup(cliPath, argv, parallel) {
+  const count = Math.max(1, Math.floor(Number(parallel ?? 1)));
+  if (count === 1) {
+    const result = await runCommand(cliPath, argv);
+    return {
+      ...result,
+      parallel: 1,
+    };
+  }
+
+  const startedAt = performance.now();
+  const results = await Promise.all(
+    Array.from({ length: count }, async () => await runCommand(cliPath, argv)),
+  );
+  let stdout = "";
+  let stderr = "";
+  let exitCode = 0;
+  for (const result of results) {
+    stdout += result.stdout;
+    stderr += result.stderr;
+    if (result.exitCode !== 0 && exitCode === 0) {
+      exitCode = result.exitCode;
+    }
+  }
+  return {
+    exitCode,
+    stdout,
+    stderr,
+    durationMs: roundMs(performance.now() - startedAt),
+    parallel: count,
+  };
+}
+
 export async function measureSuite(options) {
   const raw = readSuiteConfig(options.suiteConfig);
   const selected = raw.suites.get(options.suite) ?? raw.suites.get(raw.defaultSuite);
@@ -275,14 +308,15 @@ export async function measureSuite(options) {
   const commands = [];
   for (const spec of commandSpecs) {
     const argv = interpolateArgs(spec.argv, vars);
+    const parallel = Math.max(1, Math.floor(Number(spec.parallel ?? 1)));
     for (let i = 0; i < options.warmups; i += 1) {
-      await runCommand(options.cliPath, argv);
+      await runCommandGroup(options.cliPath, argv, parallel);
     }
 
     const durations = [];
     let lastResult = null;
     for (let i = 0; i < options.runs; i += 1) {
-      lastResult = await runCommand(options.cliPath, argv);
+      lastResult = await runCommandGroup(options.cliPath, argv, parallel);
       durations.push(lastResult.durationMs);
     }
 
@@ -290,6 +324,7 @@ export async function measureSuite(options) {
       id: spec.id,
       description: spec.description ?? null,
       argv,
+      parallel,
       runs: options.runs,
       warmups: options.warmups,
       durations_ms: durations,

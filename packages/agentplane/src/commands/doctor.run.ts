@@ -39,8 +39,8 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
 
   const runChecks = async (): Promise<string[]> => {
     const checks: string[] = [];
-    reportProgress("checking workspace");
-    checks.push(...(await checkWorkspace(repoRoot, { ctx: commandCtx })));
+    reportProgress(p.deep ? "checking workspace deeply" : "checking workspace");
+    checks.push(...(await checkWorkspace(repoRoot, { ctx: commandCtx, deep: p.deep === true })));
     reportProgress("checking branch_pr drift");
     checks.push(
       ...(await checkBranchPrShippedTaskDrift(commandCtx)),
