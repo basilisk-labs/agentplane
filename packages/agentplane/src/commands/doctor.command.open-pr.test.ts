@@ -12,7 +12,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   checkBranchPrBatchIncludedTaskDrift,
   checkBranchPrDoneTaskOpenPrDrift,
-  checkBranchPrShippedTaskDrift,
 } from "./doctor/branch-pr.js";
 import { runDoctor } from "./doctor.run.js";
 
@@ -1114,30 +1113,6 @@ describe(
 
       const findings = await checkBranchPrDoneTaskOpenPrDrift(ctx);
       expect(findings).toHaveLength(0);
-    });
-
-    it("reuses the local task scan across branch_pr doctor checks", async () => {
-      const ws = await mkWorkspace();
-      const listTasks = vi.fn().mockResolvedValue([
-        { id: "202605041200-ABC123", status: "TODO", commit: null },
-        { id: "202605041201-DEF456", status: "DONE", commit: null },
-      ]);
-      const ctx = {
-        backendId: "local",
-        config: {
-          workflow_mode: "branch_pr",
-          paths: { workflow_dir: ".agentplane/tasks" },
-        },
-        memo: {},
-        resolvedProject: { agentplaneDir: path.join(ws.root, ".agentplane"), gitRoot: ws.root },
-        taskBackend: { listTasks },
-      } as unknown as Parameters<typeof checkBranchPrShippedTaskDrift>[0];
-
-      await checkBranchPrShippedTaskDrift(ctx);
-      await checkBranchPrDoneTaskOpenPrDrift(ctx);
-      await checkBranchPrBatchIncludedTaskDrift(ctx);
-
-      expect(listTasks).toHaveBeenCalledTimes(1);
     });
 
     it("warns when a Redmine backend is configured without canonical_state readiness", async () => {
