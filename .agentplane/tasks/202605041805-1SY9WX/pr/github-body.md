@@ -15,7 +15,7 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
 ## Verification
 
 - State: ok
-- Note: Lint blockers from broad pre-push were fixed; lint:core, installed smoke, diff whitespace, and oversized baseline checks passed.
+- Note: Updated tests that still asserted old agentplane prompt/runtime-watch contracts; targeted agents-template/runtime-watch tests and lint passed.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes

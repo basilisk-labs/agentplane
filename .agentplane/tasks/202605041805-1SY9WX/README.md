@@ -4,7 +4,7 @@ title: "Add experimental ap agent mode"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-04T18:53:14.731Z"
+  updated_at: "2026-05-04T19:04:20.404Z"
   updated_by: "CODER"
-  note: "Lint blockers from broad pre-push were fixed; lint:core, installed smoke, diff whitespace, and oversized baseline checks passed."
+  note: "Updated tests that still asserted old agentplane prompt/runtime-watch contracts; targeted agents-template/runtime-watch tests and lint passed."
 commit: null
 comments:
   -
@@ -64,8 +64,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Lint blockers from broad pre-push were fixed; lint:core, installed smoke, diff whitespace, and oversized baseline checks passed."
+  -
+    type: "verify"
+    at: "2026-05-04T19:04:20.404Z"
+    author: "CODER"
+    state: "ok"
+    note: "Updated tests that still asserted old agentplane prompt/runtime-watch contracts; targeted agents-template/runtime-watch tests and lint passed."
 doc_version: 3
-doc_updated_at: "2026-05-04T18:53:14.807Z"
+doc_updated_at: "2026-05-04T19:04:20.411Z"
 doc_updated_by: "CODER"
 description: "Add an experimental short ap entrypoint with agent-oriented defaults, non-interactive guardrails, and focused verification for the next release."
 sections:
@@ -129,6 +135,14 @@ sections:
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:40:08.646Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
 
+    ### 2026-05-04T19:04:20.404Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Updated tests that still asserted old agentplane prompt/runtime-watch contracts; targeted agents-template/runtime-watch tests and lint passed.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:53:14.807Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -155,6 +169,12 @@ sections:
     - Observation: Added switch-case braces/nullish coalescing in agent-mode, repaired two broad lint findings, and kept ap coverage in installed smoke.
       Impact: Branch can satisfy broad pre-push without bypassing hooks.
       Resolution: Ready to re-run git push with standard pre-push checks.
+      Promotion: incident-candidate
+      Fixability: external
+
+    - Observation: agents-template now expects ap in installed agent cards; runtime-watch expects bin/ap.js in watched paths.
+      Impact: Broad fast CI expectations now match the experimental ap agent mode surface.
+      Resolution: Ready for another standard push attempt.
       Promotion: incident-candidate
       Fixability: external
 id_source: "generated"
@@ -228,6 +248,14 @@ Note: Lint blockers from broad pre-push were fixed; lint:core, installed smoke, 
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:40:08.646Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
 
+### 2026-05-04T19:04:20.404Z — VERIFY — ok
+
+By: CODER
+
+Note: Updated tests that still asserted old agentplane prompt/runtime-watch contracts; targeted agents-template/runtime-watch tests and lint passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:53:14.807Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -258,5 +286,11 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:40:08.646Z, excerpt_
 - Observation: Added switch-case braces/nullish coalescing in agent-mode, repaired two broad lint findings, and kept ap coverage in installed smoke.
   Impact: Branch can satisfy broad pre-push without bypassing hooks.
   Resolution: Ready to re-run git push with standard pre-push checks.
+  Promotion: incident-candidate
+  Fixability: external
+
+- Observation: agents-template now expects ap in installed agent cards; runtime-watch expects bin/ap.js in watched paths.
+  Impact: Broad fast CI expectations now match the experimental ap agent mode surface.
+  Resolution: Ready for another standard push attempt.
   Promotion: incident-candidate
   Fixability: external

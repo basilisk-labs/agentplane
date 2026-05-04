@@ -82,6 +82,7 @@ describe("runtime-watch", () => {
   it("returns explicit watched runtime paths for agentplane", () => {
     expect(getWatchedRuntimePathsForPackage("agentplane")).toEqual([
       "src",
+      "bin/ap.js",
       "bin/agentplane.js",
       "bin/dist-guard.js",
       "bin/runtime-context.js",
