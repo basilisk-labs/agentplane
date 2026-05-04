@@ -20,10 +20,7 @@ const COMMAND_INVOCATIONS = new Map<string, string>([
   ["task plan approve", "agentplane task plan approve <task-id> --by ORCHESTRATOR"],
   ["task plan set", 'agentplane task plan set <task-id> --text "..." --updated-by <ROLE>'],
   ["task show", "agentplane task show <task-id>"],
-  [
-    "task start-ready",
-    'agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."',
-  ],
+  ["task start-ready", 'agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."'],
   ["task verify-show", "agentplane task verify-show <task-id>"],
   [
     "verify",

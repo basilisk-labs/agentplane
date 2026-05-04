@@ -1,3 +1,0 @@
-export { AGENTPLANE_PROTOCOL_COMPATIBILITY, buildFrameworkExplainProtocolResult, buildFrameworkProtocolSurface, buildProtocolErrorResult, buildProtocolSuccessResult, } from "./resolve.js";
-export { AGENTPLANE_PROTOCOL_SCHEMA_VERSION, type AgentplaneProtocolBase, type AgentplaneProtocolCompatibility, type AgentplaneProtocolError, type AgentplaneProtocolErrorResult, type AgentplaneProtocolKind, type AgentplaneProtocolResult, type AgentplaneProtocolSchemaVersion, type AgentplaneProtocolStatus, type AgentplaneProtocolSuccessResult, type FrameworkExplainProtocolResult, type FrameworkProtocolSurface, } from "./model.js";
-//# sourceMappingURL=index.d.ts.map

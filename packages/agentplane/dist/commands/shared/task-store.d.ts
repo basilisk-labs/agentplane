@@ -1,4 +1,0 @@
-export type { TaskStoreDocPatch, TaskStoreIntent, TaskStoreIntentResult, TaskStoreLike, TaskStoreMutationOptions, TaskStorePatch, TaskStoreTaskPatch, } from "./task-store/types.js";
-export { appendTaskCommentIntent, appendTaskCommentsIntent, appendTaskEventIntent, appendTaskEventsIntent, applyTaskStoreIntentsToTask, mutateTaskStore, replaceTaskDocIntent, setTaskFieldsIntent, setTaskSectionIntent, taskStorePatchFromIntents, touchTaskDocMetaIntent, } from "./task-store/intents.js";
-export { TaskStore, backendIsLocalFileBackend, getTaskStore } from "./task-store/store.js";
-//# sourceMappingURL=task-store.d.ts.map

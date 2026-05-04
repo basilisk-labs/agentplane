@@ -1,3 +1,0 @@
-import { type CommandEntry } from "./kernel.js";
-export declare const CORE_COMMANDS: readonly [CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry];
-//# sourceMappingURL=core.d.ts.map

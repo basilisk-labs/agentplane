@@ -1,3 +1,0 @@
-import { type CommandEntry } from "./kernel.js";
-export declare const PROJECT_COMMANDS: readonly [CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry, CommandEntry];
-//# sourceMappingURL=project.d.ts.map
