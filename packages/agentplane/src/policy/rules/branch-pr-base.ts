@@ -31,5 +31,14 @@ export function branchPrBaseRule(ctx: PolicyContext): PolicyResult {
       warnings: [],
     };
   }
+  if (staged.includes(ctx.config.paths.tasks_path) && currentBranch !== baseBranch) {
+    return {
+      ok: false,
+      errors: [
+        gitError(`${ctx.config.paths.tasks_path} updates are allowed only on ${baseBranch}`),
+      ],
+      warnings: [],
+    };
+  }
   return okResult();
 }
