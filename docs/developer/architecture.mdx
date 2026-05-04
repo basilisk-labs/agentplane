@@ -9,9 +9,9 @@ Agent Plane has three layers with different responsibilities:
 
 1. CLI runtime (`packages/agentplane/src`)
 2. Shared models and config (`packages/core/src`)
-3. Generated schema/spec layer (`packages/spec/schemas`)
+3. Generated schema/spec layer (`schemas` and `packages/spec/schemas`)
 
-The runtime layer owns command behavior. The core layer owns parsing, defaults, validators, and shared contracts. The spec layer is a generated mirror for tooling and external consumers, synchronized from runtime code into both `packages/spec/schemas` and `packages/core/schemas`.
+The runtime layer owns command behavior. The core layer owns parsing, defaults, validators, and shared contracts. The root `schemas/` directory is the repository discovery surface for generated public schemas. The spec layer is a generated mirror for tooling and external consumers, synchronized from runtime code into `schemas`, `packages/spec/schemas`, and `packages/core/schemas`.
 
 Durable config and task artifact contracts now use Zod in `packages/core/src/**` as the single source of truth, with generated JSON Schema mirrors emitted for tooling and external consumers.
 

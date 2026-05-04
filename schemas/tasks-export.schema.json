@@ -1,0 +1,608 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentplane.org/schemas/tasks-export.schema.json",
+  "title": "tasks.json export snapshot (v1)",
+  "type": "object",
+  "properties": {
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "result_summary": {
+            "type": "string"
+          },
+          "risk_level": {
+            "type": "string",
+            "enum": ["low", "med", "high"]
+          },
+          "breaking": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["low", "normal", "med", "high"]
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "origin": {
+            "type": "object",
+            "properties": {
+              "system": {
+                "type": "string",
+                "minLength": 1
+              },
+              "issue_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "url": {
+                "type": "string",
+                "minLength": 1
+              },
+              "recipe_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "scenario_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "recipe_version": {
+                "type": "string",
+                "minLength": 1
+              },
+              "run_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": ["system"],
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "runner": {
+            "type": "object",
+            "properties": {
+              "run_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "type": "string",
+                "enum": ["prepared", "running", "success", "failed", "cancelled"]
+              },
+              "adapter_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "mode": {
+                "type": "string",
+                "enum": ["execute", "dry_run"]
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "started_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "ended_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "exit_code": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "target": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": ["task", "recipe_scenario"]
+                  },
+                  "task_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "recipe_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "scenario_id": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": ["kind"],
+                "additionalProperties": true
+              },
+              "summary": {
+                "type": "string"
+              },
+              "output_paths": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "stdout_summary": {
+                "type": "string"
+              },
+              "stderr_summary": {
+                "type": "string"
+              },
+              "metrics": {
+                "type": "object",
+                "properties": {
+                  "duration_ms": {
+                    "type": "number"
+                  },
+                  "stdout_bytes": {
+                    "type": "number"
+                  },
+                  "stderr_bytes": {
+                    "type": "number"
+                  },
+                  "output_last_message_bytes": {
+                    "type": ["number", "null"]
+                  }
+                },
+                "additionalProperties": true
+              },
+              "evidence": {
+                "type": "object",
+                "properties": {
+                  "evidence_paths": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "changed_paths": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "files_changed_count": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "tests_run": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "verification_candidates": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                },
+                "additionalProperties": true
+              },
+              "history": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "run_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": ["prepared", "running", "success", "failed", "cancelled"]
+                    },
+                    "adapter_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "mode": {
+                      "type": "string",
+                      "enum": ["execute", "dry_run"]
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "started_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "ended_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "exit_code": {
+                      "anyOf": [
+                        {
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "target": {
+                      "type": "object",
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "enum": ["task", "recipe_scenario"]
+                        },
+                        "task_id": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "recipe_id": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "scenario_id": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "required": ["kind"],
+                      "additionalProperties": true
+                    },
+                    "summary": {
+                      "type": "string"
+                    },
+                    "output_paths": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "stdout_summary": {
+                      "type": "string"
+                    },
+                    "stderr_summary": {
+                      "type": "string"
+                    },
+                    "metrics": {
+                      "type": "object",
+                      "properties": {
+                        "duration_ms": {
+                          "type": "number"
+                        },
+                        "stdout_bytes": {
+                          "type": "number"
+                        },
+                        "stderr_bytes": {
+                          "type": "number"
+                        },
+                        "output_last_message_bytes": {
+                          "type": ["number", "null"]
+                        }
+                      },
+                      "additionalProperties": true
+                    },
+                    "evidence": {
+                      "type": "object",
+                      "properties": {
+                        "evidence_paths": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "changed_paths": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "files_changed_count": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "tests_run": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "verification_candidates": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        }
+                      },
+                      "additionalProperties": true
+                    }
+                  },
+                  "required": [
+                    "run_id",
+                    "status",
+                    "adapter_id",
+                    "mode",
+                    "updated_at",
+                    "exit_code",
+                    "target"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            },
+            "required": [
+              "run_id",
+              "status",
+              "adapter_id",
+              "mode",
+              "updated_at",
+              "exit_code",
+              "target"
+            ],
+            "additionalProperties": true
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "verify": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "plan_approval": {
+            "type": "object",
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": ["pending", "approved", "rejected"]
+              },
+              "updated_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "updated_by": {
+                "type": ["string", "null"]
+              },
+              "note": {
+                "type": ["string", "null"]
+              }
+            },
+            "required": ["state", "updated_at", "updated_by", "note"],
+            "additionalProperties": true
+          },
+          "verification": {
+            "type": "object",
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": ["pending", "ok", "needs_rework"]
+              },
+              "updated_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "updated_by": {
+                "type": ["string", "null"]
+              },
+              "note": {
+                "type": ["string", "null"]
+              }
+            },
+            "required": ["state", "updated_at", "updated_by", "note"],
+            "additionalProperties": true
+          },
+          "commit": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "hash": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "message": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": ["hash", "message"],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "comments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "author": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "body": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": ["author", "body"],
+              "additionalProperties": false
+            }
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["status", "comment", "verify"]
+                },
+                "at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "author": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "from": {
+                  "type": "string"
+                },
+                "to": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "body": {
+                  "type": "string"
+                }
+              },
+              "required": ["type", "at", "author"],
+              "additionalProperties": true
+            }
+          },
+          "doc_version": {
+            "type": "number",
+            "const": 3
+          },
+          "doc_updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "doc_updated_by": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "dirty": {
+            "type": "boolean"
+          },
+          "id_source": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "status",
+          "priority",
+          "owner",
+          "depends_on",
+          "tags",
+          "verify",
+          "plan_approval",
+          "verification",
+          "commit",
+          "comments",
+          "doc_version",
+          "doc_updated_at",
+          "doc_updated_by",
+          "description",
+          "dirty",
+          "id_source"
+        ],
+        "additionalProperties": true
+      }
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "number",
+          "const": 1
+        },
+        "managed_by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checksum_algo": {
+          "type": "string",
+          "const": "sha256"
+        },
+        "checksum": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["schema_version", "managed_by", "checksum_algo", "checksum"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["tasks", "meta"],
+  "additionalProperties": false
+}
