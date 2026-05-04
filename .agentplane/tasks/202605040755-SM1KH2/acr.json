@@ -1,0 +1,154 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605040755-SM1KH2",
+  "created_at": "2026-05-04T20:53:55.260Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "30cc08324ed2c2ecbf8707e2dfaa5255096cfe57",
+    "work_ref": "main",
+    "work_commit": "30cc08324ed2c2ecbf8707e2dfaa5255096cfe57"
+  },
+  "task": {
+    "task_id": "202605040755-SM1KH2",
+    "title": "Add launch-day copy artifacts",
+    "intent": "Create HN, Twitter/X, Reddit, and launch checklist artifacts under docs/launch with ACR-first launch copy and explicit off-repo confirmation slots.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "DOCS",
+    "name": "DOCS",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605040755-SM1KH2/README.md",
+      "sha256": "sha256:a278e75a7dafd195da1223bedb38b5545e156b4fe155e400ec2532cdeca48069"
+    },
+    "approved_at": "2026-05-04T07:56:35.604Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "DONE: docs/launch artifacts shipped in main.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "test",
+        "command": "test -f docs/launch/hn.md && test -f docs/launch/twitter.md && test -f docs/launch/reddit.md && test -f docs/launch/checklist.md",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605040755-SM1KH2_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-04T07:56:35.604Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605040755-SM1KH2/README.md",
+      "sha256": "sha256:a278e75a7dafd195da1223bedb38b5545e156b4fe155e400ec2532cdeca48069"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605040755-SM1KH2/README.md",
+      "sha256": "sha256:a278e75a7dafd195da1223bedb38b5545e156b4fe155e400ec2532cdeca48069"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605040755-SM1KH2/README.md",
+      "sha256": "sha256:a278e75a7dafd195da1223bedb38b5545e156b4fe155e400ec2532cdeca48069"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 30cc08324ed2c2ecbf8707e2dfaa5255096cfe57 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:54151e8d7ed98dc01d9aa86566bdcb5af16cfb9165df2e967c7e929a7129b08b",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
