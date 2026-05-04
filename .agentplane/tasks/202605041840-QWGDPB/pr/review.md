@@ -24,8 +24,8 @@ Create basilisk-labs/agentplane-marketing, initialize AgentPlane in it, move mar
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Command: non-ASCII scan of agentplane-marketing current tree and git rev-list history. Result: pass; no Cyrillic text remained after the English-only orphan history rewrite and force-push. Command: bun run docs:ia:check; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane doctor in marketing repo; bun run docs:site:generate && bun run docs:site:build; bun run docs:site:check:design; git diff --check. Result: pass. Note: bun run docs:site:check is not final evidence because website typecheck emits JS files that create duplicate Docusaurus routes before build.
 
 ## Risks
 

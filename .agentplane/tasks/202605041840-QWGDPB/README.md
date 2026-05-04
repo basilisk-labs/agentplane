@@ -4,7 +4,7 @@ title: "Extract marketing docs repository"
 status: "DOING"
 priority: "high"
 owner: "DOCS"
-revision: 4
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -17,10 +17,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-04T18:57:04.220Z"
+  updated_by: "DOCS"
+  note: "Command: non-ASCII scan of agentplane-marketing current tree and git rev-list history. Result: pass; no Cyrillic text remained after the English-only orphan history rewrite and force-push. Command: bun run docs:ia:check; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane doctor in marketing repo; bun run docs:site:generate && bun run docs:site:build; bun run docs:site:check:design; git diff --check. Result: pass. Note: bun run docs:site:check is not final evidence because website typecheck emits JS files that create duplicate Docusaurus routes before build."
 commit: null
 comments:
   -
@@ -34,8 +34,20 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: creating the dedicated marketing repository, moving approved positioning and public-surface documents, and wiring the result back as a Git submodule with focused docs verification."
+  -
+    type: "verify"
+    at: "2026-05-04T18:55:54.619Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Command: non-ASCII scan of the current tree and git rev-list history in agentplane-marketing. Result: pass; no Cyrillic remained in current tree or branch history after orphan force-push. Command: bun run docs:ia:check; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane doctor in marketing repo; bun run docs:site:generate && bun run docs:site:build; bun run docs:site:check:design; git diff --check. Result: pass. Note: bun run docs:site:check was not used as final evidence because website typecheck emits JS files that create duplicate Docusaurus routes before build."
+  -
+    type: "verify"
+    at: "2026-05-04T18:57:04.220Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Command: non-ASCII scan of agentplane-marketing current tree and git rev-list history. Result: pass; no Cyrillic text remained after the English-only orphan history rewrite and force-push. Command: bun run docs:ia:check; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane doctor in marketing repo; bun run docs:site:generate && bun run docs:site:build; bun run docs:site:check:design; git diff --check. Result: pass. Note: bun run docs:site:check is not final evidence because website typecheck emits JS files that create duplicate Docusaurus routes before build."
 doc_version: 3
-doc_updated_at: "2026-05-04T18:41:17.150Z"
+doc_updated_at: "2026-05-04T18:57:04.234Z"
 doc_updated_by: "DOCS"
 description: "Create basilisk-labs/agentplane-marketing, initialize AgentPlane in it, move marketing and positioning documents there, and add it back to AgentPlane as a submodule."
 sections:
@@ -53,6 +65,22 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-04T18:55:54.619Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Command: non-ASCII scan of the current tree and git rev-list history in agentplane-marketing. Result: pass; no Cyrillic remained in current tree or branch history after orphan force-push. Command: bun run docs:ia:check; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane doctor in marketing repo; bun run docs:site:generate && bun run docs:site:build; bun run docs:site:check:design; git diff --check. Result: pass. Note: bun run docs:site:check was not used as final evidence because website typecheck emits JS files that create duplicate Docusaurus routes before build.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:41:17.150Z, excerpt_hash=sha256:67c019ad7382b87695ab76561875d293eb8b36ec34260766e9778c4389f5500e
+    
+    ### 2026-05-04T18:57:04.220Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Command: non-ASCII scan of agentplane-marketing current tree and git rev-list history. Result: pass; no Cyrillic text remained after the English-only orphan history rewrite and force-push. Command: bun run docs:ia:check; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane doctor in marketing repo; bun run docs:site:generate && bun run docs:site:build; bun run docs:site:check:design; git diff --check. Result: pass. Note: bun run docs:site:check is not final evidence because website typecheck emits JS files that create duplicate Docusaurus routes before build.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:55:54.630Z, excerpt_hash=sha256:67c019ad7382b87695ab76561875d293eb8b36ec34260766e9778c4389f5500e
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -84,6 +112,22 @@ Create basilisk-labs/agentplane-marketing, initialize AgentPlane in it, move mar
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-04T18:55:54.619Z — VERIFY — ok
+
+By: DOCS
+
+Note: Command: non-ASCII scan of the current tree and git rev-list history in agentplane-marketing. Result: pass; no Cyrillic remained in current tree or branch history after orphan force-push. Command: bun run docs:ia:check; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane doctor in marketing repo; bun run docs:site:generate && bun run docs:site:build; bun run docs:site:check:design; git diff --check. Result: pass. Note: bun run docs:site:check was not used as final evidence because website typecheck emits JS files that create duplicate Docusaurus routes before build.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:41:17.150Z, excerpt_hash=sha256:67c019ad7382b87695ab76561875d293eb8b36ec34260766e9778c4389f5500e
+
+### 2026-05-04T18:57:04.220Z — VERIFY — ok
+
+By: DOCS
+
+Note: Command: non-ASCII scan of agentplane-marketing current tree and git rev-list history. Result: pass; no Cyrillic text remained after the English-only orphan history rewrite and force-push. Command: bun run docs:ia:check; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane doctor in marketing repo; bun run docs:site:generate && bun run docs:site:build; bun run docs:site:check:design; git diff --check. Result: pass. Note: bun run docs:site:check is not final evidence because website typecheck emits JS files that create duplicate Docusaurus routes before build.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:55:54.630Z, excerpt_hash=sha256:67c019ad7382b87695ab76561875d293eb8b36ec34260766e9778c4389f5500e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
