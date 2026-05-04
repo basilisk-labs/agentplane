@@ -1,4 +1,5 @@
  .gitmodules                         |   3 +
+ .prettierignore                     |   1 +
  DESIGN.md                           | 565 ------------------------------------
  EDITORIAL.md                        | 102 -------
  docs/README.md                      |   5 +-
@@ -14,4 +15,4 @@
  docs/user/website-ia.mdx            |  76 +----
  marketing                           |   1 +
  website/static/llms-full.txt        | 159 +---------
- 16 files changed, 41 insertions(+), 1348 deletions(-)
+ 17 files changed, 42 insertions(+), 1348 deletions(-)

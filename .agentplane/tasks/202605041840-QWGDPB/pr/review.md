@@ -45,12 +45,13 @@ Create basilisk-labs/agentplane-marketing, initialize AgentPlane in it, move mar
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-04T19:04:26.609Z
+- Updated: 2026-05-04T19:10:00.240Z
 - Branch: task/202605041840-QWGDPB/marketing-repo-submodule
-- Head: 109a10a7e763
+- Head: e4893ab85acb
 
 ```text
  .gitmodules                         |   3 +
+ .prettierignore                     |   1 +
  DESIGN.md                           | 565 ------------------------------------
  EDITORIAL.md                        | 102 -------
  docs/README.md                      |   5 +-
@@ -66,7 +67,7 @@ Create basilisk-labs/agentplane-marketing, initialize AgentPlane in it, move mar
  docs/user/website-ia.mdx            |  76 +----
  marketing                           |   1 +
  website/static/llms-full.txt        | 159 +---------
- 16 files changed, 41 insertions(+), 1348 deletions(-)
+ 17 files changed, 42 insertions(+), 1348 deletions(-)
 ```
 
 </details>
