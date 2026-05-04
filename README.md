@@ -76,7 +76,7 @@ agentplane acr validate .agentplane/tasks/<task-id>/acr.json
 agentplane acr check <task-id> --require-plan-approved --require-verification
 ```
 
-Schema: [`packages/spec/schemas/acr-v0.1.schema.json`](packages/spec/schemas/acr-v0.1.schema.json).
+Schema: [`schemas/acr-v0.1.schema.json`](schemas/acr-v0.1.schema.json).
 
 ## First task flow
 

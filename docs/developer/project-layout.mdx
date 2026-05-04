@@ -9,6 +9,7 @@ description: "How the repository is structured and where key components live."
 - `packages/core/`: published `@agentplaneorg/core` package
 - `packages/spec/`: generated schema mirrors and examples
 - `packages/recipes/`: recipe runtime helpers
+- `schemas/`: root discovery catalog for public JSON Schemas
 - `packages/testkit/`: shared test helpers
 - `docs/`: user and developer documentation
 - `scripts/`: repository maintenance and sync scripts
@@ -27,6 +28,7 @@ description: "How the repository is structured and where key components live."
 ## Core and spec layout
 
 - `packages/core/src/config/**` and `packages/core/src/tasks/**`: canonical durable contract sources, now defined in Zod and rendered into runtime validators plus schema mirrors
+- `schemas/*.schema.json`: root discovery catalog for generated public schemas
 - `packages/spec/schemas/*.schema.json`: generated schema mirrors for tooling and published distribution
 - `packages/core/schemas/*.schema.json`: synchronized runtime-package mirrors
 - `scripts/sync-schemas.mjs`: sync/check tool for schema parity
