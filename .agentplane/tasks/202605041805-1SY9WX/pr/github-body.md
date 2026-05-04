@@ -25,9 +25,9 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-04T18:40:25.083Z
+- Updated: 2026-05-04T18:53:34.504Z
 - Branch: task/202605041805-1SY9WX/ap-agent-mode
-- Head: f12212c50ff7
+- Head: 0016b95f57d1
 
 ```text
  .agentplane/agents/CODER.json                      |  4 +-
@@ -44,7 +44,7 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
  .agentplane/agents/UPDATER.json                    |  2 +-
  .agentplane/agents/UPGRADER.json                   |  6 +-
  packages/agentplane/README.md                      | 11 ++++
- packages/agentplane/assets/AGENTS.md               | 54 ++++++++---------
+ packages/agentplane/assets/AGENTS.md               | 54 +++++++--------
  packages/agentplane/assets/RUNNER.md               |  4 +-
  packages/agentplane/assets/agents/CODER.json       |  4 +-
  packages/agentplane/assets/agents/CREATOR.json     |  4 +-
@@ -60,16 +60,18 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
  packages/agentplane/assets/agents/UPDATER.json     |  2 +-
  packages/agentplane/assets/agents/UPGRADER.json    |  6 +-
  .../assets/codex-plugin/skills/agentplane/SKILL.md | 22 +++----
- packages/agentplane/bin/ap.js                      |  7 +++
+ packages/agentplane/bin/ap.js                      |  7 ++
  packages/agentplane/bin/runtime-watch.js           |  1 +
  packages/agentplane/package.json                   |  2 +
- .../src/cli/run-cli.core.installed-smoke.test.ts   | 20 +++++++
+ .../src/cli/run-cli.core.installed-smoke.test.ts   | 20 ++++++
  packages/agentplane/src/cli/run-cli.ts             |  8 ++-
- packages/agentplane/src/cli/run-cli/agent-mode.ts  | 70 ++++++++++++++++++++++
+ packages/agentplane/src/cli/run-cli/agent-mode.ts  | 76 ++++++++++++++++++++++
+ .../src/commands/runtime.command.test.ts           |  2 +-
+ packages/agentplane/src/commands/upgrade.ts        |  1 -
  scripts/check-local-tarball-install-smoke.mjs      |  9 +++
  scripts/check-package-tarball.mjs                  |  1 +
  scripts/lib/generated-artifacts.mjs                |  1 +
- 39 files changed, 221 insertions(+), 93 deletions(-)
+ 41 files changed, 228 insertions(+), 95 deletions(-)
 ```
 
 </details>
