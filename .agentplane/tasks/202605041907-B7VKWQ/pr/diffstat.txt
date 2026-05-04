@@ -19,5 +19,7 @@
  docs/developer/code-quality.mdx                    |  26 +-
  docs/developer/contributing.mdx                    |  12 +-
  docs/index.mdx                                     |  31 +-
+ .../src/commands/runtime.command.test.ts           |   2 +-
+ packages/agentplane/src/commands/upgrade.ts        |   1 -
  website/sidebars.ts                                |   1 +
- 22 files changed, 1059 insertions(+), 18 deletions(-)
+ 24 files changed, 1060 insertions(+), 20 deletions(-)

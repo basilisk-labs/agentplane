@@ -45,9 +45,9 @@ Fix the two ESLint errors blocking pre-push on the docs branch: prefer RegExp.ex
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-04T19:10:02.393Z
+- Updated: 2026-05-04T19:11:16.012Z
 - Branch: task/202605041830-H4923B/dev-fast-local-checks
-- Head: 936c5c9d0840
+- Head: 7d4834fbe9a2
 
 ```text
  .agentplane/WORKFLOW.md                            |   2 +-
@@ -71,8 +71,10 @@ Fix the two ESLint errors blocking pre-push on the docs branch: prefer RegExp.ex
  docs/developer/code-quality.mdx                    |  26 +-
  docs/developer/contributing.mdx                    |  12 +-
  docs/index.mdx                                     |  31 +-
+ .../src/commands/runtime.command.test.ts           |   2 +-
+ packages/agentplane/src/commands/upgrade.ts        |   1 -
  website/sidebars.ts                                |   1 +
- 22 files changed, 1059 insertions(+), 18 deletions(-)
+ 24 files changed, 1060 insertions(+), 20 deletions(-)
 ```
 
 </details>
