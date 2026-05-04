@@ -25,12 +25,26 @@ Remove v0.3 archive planning ledgers from active docs navigation while preservin
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-04T16:17:34.186Z
+- Updated: 2026-05-04T16:26:29.807Z
 - Branch: task/202605041610-FY0HHQ/docs-legacy-prune
-- Head: 3fb4f0809359
+- Head: e4c327c7fc88
 
 ```text
-No changes detected.
+ .agentplane/tasks/202605041610-RPW8E0/README.md | 116 ++++++++++++++++++++++++
+ .agentplane/tasks/202605041611-7TM53Y/README.md | 116 ++++++++++++++++++++++++
+ DESIGN.md                                       |   3 +-
+ docs/adr/0013-zod-contract-ssot.md              |   5 +-
+ docs/developer/architecture.mdx                 |  14 ++-
+ docs/developer/close-taxonomy.mdx               |   7 +-
+ docs/developer/module-topology.mdx              |   4 +-
+ docs/developer/recipes-spec.mdx                 |   2 +-
+ docs/index.mdx                                  |  32 +++----
+ docs/user/task-lifecycle.mdx                    |   4 +-
+ packages/spec/README.md                         |   6 +-
+ scripts/check-docs-ia.mjs                       |   3 +
+ website/sidebars.ts                             |  10 +-
+ website/src/data/homepage-content.ts            |   5 +-
+ 14 files changed, 272 insertions(+), 55 deletions(-)
 ```
 
 </details>
