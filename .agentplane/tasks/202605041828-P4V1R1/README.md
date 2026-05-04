@@ -1,10 +1,10 @@
 ---
 id: "202605041828-P4V1R1"
 title: "Add doctor and parallel CLI performance regression suite"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,16 @@ verification:
   updated_at: "2026-05-04T18:40:19.911Z"
   updated_by: "CODER"
   note: "New doctor-large-archive benchmark suite passed smoke runs for default doctor, deep doctor, and parallel task list; script help exposes the suite."
-commit: null
+commit:
+  hash: "81a80a2f532b83fd3dcef088ee5fe1c383c26f4c"
+  message: "🚧 RCSMN7 task: Add fast doctor tier for large task archives [202605041827-RCSMN7]"
 comments:
   -
     author: "CODER"
     body: "Start: add bounded doctor and parallel CLI performance benchmark coverage without making regular CI slow or network-dependent."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #874 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "New doctor-large-archive benchmark suite passed smoke runs for default doctor, deep doctor, and parallel task list; script help exposes the suite."
+  -
+    type: "status"
+    at: "2026-05-04T18:49:58.114Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #874 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T18:40:19.919Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-04T18:49:58.117Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add benchmark coverage for large task archive doctor latency and parallel read/mutation CLI behavior so future refactors can detect regressions."
 sections:
   Summary: |-
