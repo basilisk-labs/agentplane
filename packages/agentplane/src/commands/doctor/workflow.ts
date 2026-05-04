@@ -8,12 +8,11 @@ import {
   safeAutofixWorkflowText,
   validateWorkflowAtPath,
 } from "../../workflow-runtime/index.js";
+import { renderWorkflowDiagnostic } from "../../workflow-runtime/validation-helpers.js";
 
 export async function checkWorkflowContract(repoRoot: string): Promise<string[]> {
   const result = await validateWorkflowAtPath(repoRoot);
-  const findings = result.diagnostics.map(
-    (d) => `[${d.severity}] ${d.code} ${d.path}: ${d.message}`,
-  );
+  const findings = result.diagnostics.map((d) => renderWorkflowDiagnostic(d));
   emitWorkflowEvent({
     event: "workflow_doctor_check",
     details: { ok: result.ok, findings: result.diagnostics.length },

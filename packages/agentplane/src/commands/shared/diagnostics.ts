@@ -1,3 +1,9 @@
+import {
+  renderRemediationLines,
+  type DiagnosticRemediation,
+} from "../../shared/diagnostic-remediation.js";
+export type { DiagnosticRemediation } from "../../shared/diagnostic-remediation.js";
+
 export type DiagnosticNextAction = {
   command: string;
   reason: string;
@@ -9,6 +15,7 @@ export type DiagnosticInfo = {
   likelyCause: string;
   nextAction?: DiagnosticNextAction;
   hint?: string;
+  remediation?: DiagnosticRemediation;
 };
 
 type DiagnosticContextRecord = Record<string, unknown>;
@@ -27,6 +34,15 @@ export function withDiagnosticContext(
     diagnostic_state: diagnostic.state,
     diagnostic_likely_cause: diagnostic.likelyCause,
     ...(diagnostic.hint ? { diagnostic_hint: diagnostic.hint } : {}),
+    ...(diagnostic.remediation
+      ? {
+          diagnostic_code: diagnostic.remediation.code,
+          diagnostic_why: diagnostic.remediation.why,
+          diagnostic_fix: diagnostic.remediation.fix,
+          diagnostic_safe_command: diagnostic.remediation.safeCommand,
+          diagnostic_stop_condition: diagnostic.remediation.stopCondition,
+        }
+      : {}),
     ...(diagnostic.nextAction
       ? {
           diagnostic_next_action_command: diagnostic.nextAction.command,
@@ -48,11 +64,26 @@ export function readDiagnosticContext(
   const nextActionCommand = readString(context?.diagnostic_next_action_command);
   const nextActionReason = readString(context?.diagnostic_next_action_reason);
   const nextActionReasonCode = readString(context?.diagnostic_next_action_reason_code);
+  const diagnosticCode = readString(context?.diagnostic_code);
+  const why = readString(context?.diagnostic_why);
+  const fix = readString(context?.diagnostic_fix);
+  const safeCommand = readString(context?.diagnostic_safe_command);
+  const stopCondition = readString(context?.diagnostic_stop_condition);
 
   return {
     state,
     likelyCause,
     hint,
+    remediation:
+      diagnosticCode && why && fix && safeCommand && stopCondition
+        ? {
+            code: diagnosticCode,
+            why,
+            fix,
+            safeCommand,
+            stopCondition,
+          }
+        : undefined,
     nextAction:
       nextActionCommand && nextActionReason
         ? {
@@ -69,9 +100,13 @@ export function renderDiagnosticFinding(opts: {
   state: string;
   likelyCause: string;
   nextAction?: DiagnosticNextAction;
+  remediation?: DiagnosticRemediation;
   details?: string[];
 }): string {
   const lines = [`[${opts.severity}] State: ${opts.state}`, `Likely cause: ${opts.likelyCause}`];
+  if (opts.remediation) {
+    lines.push(...renderRemediationLines(opts.remediation));
+  }
   if (opts.nextAction) {
     lines.push(`Next action: ${opts.nextAction.command} (${opts.nextAction.reason})`);
   }

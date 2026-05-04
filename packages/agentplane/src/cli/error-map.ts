@@ -12,6 +12,7 @@ import {
 import type { CliError } from "../shared/errors.js";
 import { BackendError } from "../backends/task-backend.js";
 import { getReasonCodeMeta } from "./reason-codes.js";
+import { renderRemediationLines } from "../shared/diagnostic-remediation.js";
 
 export type NextAction = {
   command: string;
@@ -23,6 +24,13 @@ type ErrorGuidance = {
   state?: string;
   likelyCause?: string;
   hint?: string;
+  remediation?: {
+    code: string;
+    why: string;
+    fix: string;
+    safeCommand: string;
+    stopCondition: string;
+  };
   nextAction?: NextAction;
 };
 
@@ -98,6 +106,7 @@ export function writeError(err: CliError, jsonErrors: boolean): void {
         state: guidance.state,
         likelyCause: guidance.likelyCause,
         hint: guidance.hint,
+        remediation: guidance.remediation,
         nextAction: guidance.nextAction,
         reasonDecode,
       })}\n`,
@@ -119,6 +128,11 @@ export function writeError(err: CliError, jsonErrors: boolean): void {
   }
   if (guidance.hint) {
     process.stderr.write(`hint: ${guidance.hint}\n`);
+  }
+  if (guidance.remediation) {
+    for (const line of renderRemediationLines(guidance.remediation)) {
+      process.stderr.write(`${line}\n`);
+    }
   }
   if (guidance.nextAction) {
     process.stderr.write(
@@ -143,6 +157,7 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
     state: explicit.state ?? fallback.state,
     likelyCause: explicit.likelyCause ?? fallback.likelyCause,
     hint: explicit.hint ?? fallback.hint,
+    remediation: explicit.remediation ?? fallback.remediation,
     nextAction: explicit.nextAction ?? fallback.nextAction,
   });
   switch (err.code) {
