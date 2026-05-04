@@ -4,6 +4,7 @@ coverage
 .agentplane
 .agent-plane
 agentplane-recipes
+marketing
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
