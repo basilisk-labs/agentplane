@@ -25,12 +25,28 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-04T18:15:34.119Z
+- Updated: 2026-05-04T18:26:31.849Z
 - Branch: task/202605041805-1SY9WX/ap-agent-mode
-- Head: 6060986634c3
+- Head: d8095eeb4369
 
 ```text
  packages/agentplane/README.md                      | 11 ++++
+ packages/agentplane/assets/AGENTS.md               | 54 ++++++++---------
+ packages/agentplane/assets/RUNNER.md               |  4 +-
+ packages/agentplane/assets/agents/CODER.json       |  4 +-
+ packages/agentplane/assets/agents/CREATOR.json     |  4 +-
+ packages/agentplane/assets/agents/DOCS.json        |  6 +-
+ packages/agentplane/assets/agents/EVALUATOR.json   |  2 +-
+ packages/agentplane/assets/agents/INTEGRATOR.json  |  6 +-
+ .../agentplane/assets/agents/ORCHESTRATOR.json     |  4 +-
+ packages/agentplane/assets/agents/PLANNER.json     |  4 +-
+ packages/agentplane/assets/agents/REDMINE.json     |  2 +-
+ packages/agentplane/assets/agents/REVIEWER.json    |  4 +-
+ .../agentplane/assets/agents/SKILL_EXTRACTOR.json  |  4 +-
+ packages/agentplane/assets/agents/TESTER.json      |  4 +-
+ packages/agentplane/assets/agents/UPDATER.json     |  2 +-
+ packages/agentplane/assets/agents/UPGRADER.json    |  6 +-
+ .../assets/codex-plugin/skills/agentplane/SKILL.md | 22 +++----
  packages/agentplane/bin/ap.js                      |  7 +++
  packages/agentplane/bin/runtime-watch.js           |  1 +
  packages/agentplane/package.json                   |  2 +
@@ -41,7 +57,7 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
  scripts/check-local-tarball-install-smoke.mjs      |  9 +++
  scripts/check-package-tarball.mjs                  |  1 +
  scripts/lib/generated-artifacts.mjs                |  1 +
- 11 files changed, 192 insertions(+), 1 deletion(-)
+ 27 files changed, 258 insertions(+), 67 deletions(-)
 ```
 
 </details>
