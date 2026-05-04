@@ -25,9 +25,9 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-04T19:23:38.990Z
+- Updated: 2026-05-04T19:24:49.010Z
 - Branch: task/202605041805-1SY9WX/ap-agent-mode
-- Head: 1fddd152c511
+- Head: 098f9b657551
 
 ```text
  .agentplane/agents/CODER.json                      |  4 +-
@@ -64,7 +64,7 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
  packages/agentplane/bin/runtime-watch.js           |  1 +
  packages/agentplane/package.json                   |  2 +
  .../agentplane/src/agents/agents-template.test.ts  |  6 +-
- .../agentplane/src/cli/run-cli.agent-mode.test.ts  | 34 ++++++++++
+ .../src/cli/run-cli.core.agent-mode.test.ts        | 34 ++++++++++
  .../src/cli/run-cli.core.installed-smoke.test.ts   | 20 ++++++
  packages/agentplane/src/cli/run-cli.ts             | 10 ++-
  .../agentplane/src/cli/run-cli/agent-mode.test.ts  | 28 ++++++++

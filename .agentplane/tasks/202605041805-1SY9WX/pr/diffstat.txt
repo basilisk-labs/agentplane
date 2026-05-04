@@ -32,7 +32,7 @@
  packages/agentplane/bin/runtime-watch.js           |  1 +
  packages/agentplane/package.json                   |  2 +
  .../agentplane/src/agents/agents-template.test.ts  |  6 +-
- .../agentplane/src/cli/run-cli.agent-mode.test.ts  | 34 ++++++++++
+ .../src/cli/run-cli.core.agent-mode.test.ts        | 34 ++++++++++
  .../src/cli/run-cli.core.installed-smoke.test.ts   | 20 ++++++
  packages/agentplane/src/cli/run-cli.ts             | 10 ++-
  .../agentplane/src/cli/run-cli/agent-mode.test.ts  | 28 ++++++++
