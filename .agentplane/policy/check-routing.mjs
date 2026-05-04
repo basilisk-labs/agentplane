@@ -34,6 +34,46 @@ function assertFilesExist(repoRoot, paths, label, errors) {
   }
 }
 
+function remediationForRoutingError(error) {
+  if (error.includes("exceeds policy budget")) {
+    return {
+      code: "POLICY_ROUTING_BUDGET",
+      why: "Large gateway or policy modules make agent startup context harder to route deterministically.",
+      fix: "Move scenario-specific detail into the correct canonical module or shorten duplicate rule text.",
+      safeCommand: "node .agentplane/policy/check-routing.mjs",
+      stopCondition:
+        "Stop if the size reduction would remove a hard constraint or source-of-truth rule.",
+    };
+  }
+  if (error.includes("path does not exist") || error.includes("Missing canonical")) {
+    return {
+      code: "POLICY_ROUTING_MISSING_PATH",
+      why: "AGENTS.md references a policy file that agents cannot load.",
+      fix: "Restore the referenced file or update the gateway reference to the canonical existing path.",
+      safeCommand: "agentplane doctor",
+      stopCondition: "Stop if the missing file is a policy module deleted by another active task.",
+    };
+  }
+  return {
+    code: "POLICY_ROUTING_FAILED",
+    why: "The policy gateway no longer matches the deterministic load-rule contract.",
+    fix: "Repair AGENTS.md load rules, canonical docs, examples, or policy module layout.",
+    safeCommand: "node .agentplane/policy/check-routing.mjs",
+    stopCondition: "Stop if the repair changes workflow mode, approval gates, or policy ownership.",
+  };
+}
+
+function renderRemediation(error) {
+  const r = remediationForRoutingError(error);
+  return [
+    `  Code: ${r.code}`,
+    `  Why: ${r.why}`,
+    `  Fix: ${r.fix}`,
+    `  Safe command: ${r.safeCommand}`,
+    `  Stop condition: ${r.stopCondition}`,
+  ].join("\n");
+}
+
 function listFilesRecursive(dirPath, relPrefix = "") {
   if (!fs.existsSync(dirPath)) return [];
   const entries = fs.readdirSync(dirPath).toSorted((a, b) => a.localeCompare(b));
@@ -171,7 +211,11 @@ function main() {
   }
 
   if (errors.length > 0) {
-    throw new Error(`Policy routing check failed:\n- ${errors.join("\n- ")}`);
+    throw new Error(
+      `Policy routing check failed:\n${errors
+        .map((error) => `- ${error}\n${renderRemediation(error)}`)
+        .join("\n")}`,
+    );
   }
 
   process.stdout.write("policy routing OK\n");
