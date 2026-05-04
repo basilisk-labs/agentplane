@@ -82,7 +82,7 @@ describe("policy/evaluatePolicy", () => {
     );
   });
 
-  it("does not treat the optional tasks export snapshot as branch_pr single-writer state", () => {
+  it("treats the optional tasks export snapshot as branch_pr single-writer state", () => {
     const cfg = defaultConfig();
     cfg.workflow_mode = "branch_pr";
     const res = evaluatePolicy(
@@ -96,7 +96,10 @@ describe("policy/evaluatePolicy", () => {
         allow: { prefixes: [cfg.paths.tasks_path], allowTasks: true },
       }),
     );
-    expect(res.ok).toBe(true);
+    expect(res.ok).toBe(false);
+    expect(res.errors.map((e) => e.message).join("\n")).toContain(
+      `${cfg.paths.tasks_path} updates are allowed only on main`,
+    );
   });
 
   it("enforces branch_pr base constraints for normal files", () => {
