@@ -131,6 +131,13 @@ export type JsonErrorGuidance = {
   state?: string;
   likelyCause?: string;
   hint?: string;
+  remediation?: {
+    code: string;
+    why: string;
+    fix: string;
+    safeCommand: string;
+    stopCondition: string;
+  };
   nextAction?: {
     command: string;
     reason: string;
@@ -154,6 +161,15 @@ export function formatJsonError(err: CliError, guidance?: JsonErrorGuidance): st
         state: guidance?.state,
         likely_cause: guidance?.likelyCause,
         hint: guidance?.hint,
+        remediation: guidance?.remediation
+          ? {
+              code: guidance.remediation.code,
+              why: guidance.remediation.why,
+              fix: guidance.remediation.fix,
+              safe_command: guidance.remediation.safeCommand,
+              stop_condition: guidance.remediation.stopCondition,
+            }
+          : undefined,
         next_action: guidance?.nextAction,
         reason_decode: guidance?.reasonDecode,
       },

@@ -297,7 +297,7 @@ function missingRepoRuntimeDependencies(agentplaneRoot) {
   const requiredSpecifiers = ["@agentplaneorg/core"];
   return requiredSpecifiers.filter((specifier) => {
     try {
-      const resolved = requireFromAgentplane.resolve(specifier);
+      const resolved = requireFromAgentplane.resolve(`${specifier}/package.json`);
       if (isPathInside(frameworkRoot, resolved)) return false;
       return !existsSync(path.join(agentplaneRoot, "node_modules", ...specifier.split("/")));
     } catch {
@@ -332,6 +332,11 @@ async function assertDistUpToDate() {
   if (missingDeps.length > 0) {
     process.stderr.write(
       "error: repo-local runtime dependencies are missing for this framework checkout.\n" +
+        "Code: FRAMEWORK_RUNTIME_DEPENDENCY_MISSING\n" +
+        "Why: the repo-local CLI cannot resolve its workspace runtime packages from this checkout.\n" +
+        "Fix: restore the framework install layout, then rebuild the repo-local packages.\n" +
+        `Safe command: ${FRAMEWORK_DEV_BOOTSTRAP_COMMAND}\n` +
+        "Stop condition: stop if the missing package resolves outside this repository or bun install would need unapproved network access.\n" +
         "This worktree is not bootstrapped yet.\n" +
         "Missing module resolution:\n" +
         missingDeps.map((specifier) => `  ${specifier}\n`).join("") +

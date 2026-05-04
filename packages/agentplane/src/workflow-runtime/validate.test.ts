@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { parseWorkflowMarkdown } from "./markdown.js";
 import { validateWorkflowDocument } from "./validate.js";
+import { renderWorkflowDiagnostic } from "./validation-helpers.js";
 
 describe("workflow-runtime/validate", () => {
   it("accepts canonical WORKFLOW v2 front matter", () => {
@@ -98,5 +99,11 @@ x
     expect(result.diagnostics.some((d) => d.code === "WF_SCHEMA_UNKNOWN_KEY")).toBe(true);
     expect(result.diagnostics.some((d) => d.code === "WF_SCHEMA_TYPE")).toBe(true);
     expect(result.diagnostics.some((d) => d.code === "WF_SCHEMA_ENUM")).toBe(true);
+    const typeDiagnostic = result.diagnostics.find((d) => d.code === "WF_SCHEMA_TYPE");
+    expect(typeDiagnostic?.remediation).toMatchObject({
+      code: "WF_SCHEMA_TYPE",
+      safeCommand: "agentplane doctor",
+    });
+    expect(renderWorkflowDiagnostic(typeDiagnostic!)).toContain("Stop condition:");
   });
 });

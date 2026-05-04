@@ -66,6 +66,13 @@ export type WorkflowDiagnostic = {
   severity: WorkflowSeverity;
   path: string;
   message: string;
+  remediation?: {
+    code: WorkflowErrorCode;
+    why: string;
+    fix: string;
+    safeCommand: string;
+    stopCondition: string;
+  };
 };
 
 export type WorkflowValidationResult = {
