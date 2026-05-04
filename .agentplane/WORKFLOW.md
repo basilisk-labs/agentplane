@@ -13,7 +13,7 @@ owners:
   orchestrator: ORCHESTRATOR
 approvals:
   require_plan: false
-  require_network: true
+  require_network: false
   require_verify: false
 workspace:
   agents_dir: .agentplane/agents
