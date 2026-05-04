@@ -25,9 +25,9 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-04T19:04:33.217Z
+- Updated: 2026-05-04T19:23:10.537Z
 - Branch: task/202605041805-1SY9WX/ap-agent-mode
-- Head: f716c100b1a9
+- Head: 3b573bcd8d8d
 
 ```text
  .agentplane/agents/CODER.json                      |  4 +-
@@ -64,16 +64,18 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
  packages/agentplane/bin/runtime-watch.js           |  1 +
  packages/agentplane/package.json                   |  2 +
  .../agentplane/src/agents/agents-template.test.ts  |  6 +-
- .../src/cli/run-cli.core.installed-smoke.test.ts   | 20 ++++++
- packages/agentplane/src/cli/run-cli.ts             |  8 ++-
- packages/agentplane/src/cli/run-cli/agent-mode.ts  | 76 ++++++++++++++++++++++
+ .../agentplane/src/cli/run-cli.agent-mode.test.ts  | 34 ++++++++++
+ .../src/cli/run-cli.core.installed-smoke.test.ts   | 21 ++++++
+ packages/agentplane/src/cli/run-cli.ts             | 10 ++-
+ .../agentplane/src/cli/run-cli/agent-mode.test.ts  | 28 ++++++++
+ packages/agentplane/src/cli/run-cli/agent-mode.ts  | 77 ++++++++++++++++++++++
  packages/agentplane/src/cli/runtime-watch.test.ts  |  1 +
  .../src/commands/runtime.command.test.ts           |  2 +-
  packages/agentplane/src/commands/upgrade.ts        |  1 -
  scripts/check-local-tarball-install-smoke.mjs      |  9 +++
  scripts/check-package-tarball.mjs                  |  1 +
  scripts/lib/generated-artifacts.mjs                |  1 +
- 43 files changed, 232 insertions(+), 98 deletions(-)
+ 45 files changed, 297 insertions(+), 99 deletions(-)
 ```
 
 </details>
