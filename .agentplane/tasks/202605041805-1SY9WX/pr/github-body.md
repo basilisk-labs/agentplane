@@ -15,7 +15,7 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
 ## Verification
 
 - State: ok
-- Note: Prompt assets now prefer compact ap agent commands with agentplane fallback; routing, focused ap tests, typecheck, bootstrap, tarball check, and doctor passed.
+- Note: Current installed .agentplane/agents role cards now prefer ap command notation; doctor, routing, and diff whitespace checks passed.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes

@@ -4,7 +4,7 @@ title: "Add experimental ap agent mode"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-04T18:25:10.376Z"
+  updated_at: "2026-05-04T18:32:32.981Z"
   updated_by: "CODER"
-  note: "Prompt assets now prefer compact ap agent commands with agentplane fallback; routing, focused ap tests, typecheck, bootstrap, tarball check, and doctor passed."
+  note: "Current installed .agentplane/agents role cards now prefer ap command notation; doctor, routing, and diff whitespace checks passed."
 commit: null
 comments:
   -
@@ -46,8 +46,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Prompt assets now prefer compact ap agent commands with agentplane fallback; routing, focused ap tests, typecheck, bootstrap, tarball check, and doctor passed."
+  -
+    type: "verify"
+    at: "2026-05-04T18:32:32.981Z"
+    author: "CODER"
+    state: "ok"
+    note: "Current installed .agentplane/agents role cards now prefer ap command notation; doctor, routing, and diff whitespace checks passed."
 doc_version: 3
-doc_updated_at: "2026-05-04T18:25:10.396Z"
+doc_updated_at: "2026-05-04T18:32:32.998Z"
 doc_updated_by: "CODER"
 description: "Add an experimental short ap entrypoint with agent-oriented defaults, non-interactive guardrails, and focused verification for the next release."
 sections:
@@ -84,9 +90,17 @@ sections:
     By: CODER
 
     Note: Prompt assets now prefer compact ap agent commands with agentplane fallback; routing, focused ap tests, typecheck, bootstrap, tarball check, and doctor passed.
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:15:08.012Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
-    
+
+    ### 2026-05-04T18:32:32.981Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Current installed .agentplane/agents role cards now prefer ap command notation; doctor, routing, and diff whitespace checks passed.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:25:10.396Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -95,6 +109,12 @@ sections:
     - Observation: Updated installed AGENTS gateway, runner prompt, agent role cards, and bundled Codex AgentPlane skill to use ap for agent-oriented command examples.
       Impact: Agents spend fewer prompt tokens on repeated command prefixes while keeping compatibility through explicit agentplane fallback.
       Resolution: Kept public README human-facing and scoped shorthand replacement to agent-facing assets.
+      Promotion: incident-candidate
+      Fixability: external
+
+    - Observation: Synchronized .agentplane/agents/*.json from updated package agent assets so the current checkout prompt graph matches next init/upgrade assets.
+      Impact: Agents in this repository now receive ap-oriented role-card guidance immediately, not only after a future package install or upgrade.
+      Resolution: Left canonical .agentplane/policy modules in long-form agentplane notation as a separate policy contract surface.
       Promotion: incident-candidate
       Fixability: external
 id_source: "generated"
@@ -144,6 +164,14 @@ Note: Prompt assets now prefer compact ap agent commands with agentplane fallbac
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:15:08.012Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
 
+### 2026-05-04T18:32:32.981Z — VERIFY — ok
+
+By: CODER
+
+Note: Current installed .agentplane/agents role cards now prefer ap command notation; doctor, routing, and diff whitespace checks passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:25:10.396Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -156,5 +184,11 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:15:08.012Z, excerpt_
 - Observation: Updated installed AGENTS gateway, runner prompt, agent role cards, and bundled Codex AgentPlane skill to use ap for agent-oriented command examples.
   Impact: Agents spend fewer prompt tokens on repeated command prefixes while keeping compatibility through explicit agentplane fallback.
   Resolution: Kept public README human-facing and scoped shorthand replacement to agent-facing assets.
+  Promotion: incident-candidate
+  Fixability: external
+
+- Observation: Synchronized .agentplane/agents/*.json from updated package agent assets so the current checkout prompt graph matches next init/upgrade assets.
+  Impact: Agents in this repository now receive ap-oriented role-card guidance immediately, not only after a future package install or upgrade.
+  Resolution: Left canonical .agentplane/policy modules in long-form agentplane notation as a separate policy contract surface.
   Promotion: incident-candidate
   Fixability: external

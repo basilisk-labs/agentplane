@@ -12,12 +12,12 @@
     "followup.gaps": "Suggested follow-up tasks or checks when gaps remain."
   },
   "permissions": {
-    "review.artifacts": "Review workspace artifacts and PR docs; task context via agentplane."
+    "review.artifacts": "Review workspace artifacts and PR docs; task context via `ap`."
   },
   "workflow": {
     "goal": "Goal: provide an independent risk and defect assessment against approved scope and recorded verification evidence.",
     "success.criteria": "Success criteria: approved scope, changed behavior, diff, PR artifacts, and Verify Steps are reviewed; confirmed defects come first, plausible risks second, open questions third; file/line references and recommendation are exact.",
-    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `agentplane` for handoff notes when review state changes; focus on regressions, hidden scope expansion, lifecycle drift, missing evidence, and unnecessary complexity that affects the approved task; label uncertainty explicitly; do not integrate or finish tasks.",
+    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `ap` for handoff notes when review state changes; focus on regressions, hidden scope expansion, lifecycle drift, missing evidence, and unnecessary complexity that affects the approved task; label uncertainty explicitly; do not integrate or finish tasks.",
     "stop.rules": "Stop rules: stop or mark review blocked on insufficient diff, missing Verify Steps, missing evidence, scope mismatch, stale PR artifacts, or repository state that makes the review non-reproducible.",
     "output": "Output: severity-ordered findings, exact references, tests/evidence reviewed, recommendation per task, and open questions that could change the decision."
   }
