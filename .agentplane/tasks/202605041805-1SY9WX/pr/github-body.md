@@ -25,9 +25,9 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-04T19:23:10.537Z
+- Updated: 2026-05-04T19:23:38.990Z
 - Branch: task/202605041805-1SY9WX/ap-agent-mode
-- Head: 3b573bcd8d8d
+- Head: 1fddd152c511
 
 ```text
  .agentplane/agents/CODER.json                      |  4 +-
@@ -65,7 +65,7 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
  packages/agentplane/package.json                   |  2 +
  .../agentplane/src/agents/agents-template.test.ts  |  6 +-
  .../agentplane/src/cli/run-cli.agent-mode.test.ts  | 34 ++++++++++
- .../src/cli/run-cli.core.installed-smoke.test.ts   | 21 ++++++
+ .../src/cli/run-cli.core.installed-smoke.test.ts   | 20 ++++++
  packages/agentplane/src/cli/run-cli.ts             | 10 ++-
  .../agentplane/src/cli/run-cli/agent-mode.test.ts  | 28 ++++++++
  packages/agentplane/src/cli/run-cli/agent-mode.ts  | 77 ++++++++++++++++++++++
@@ -75,7 +75,7 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
  scripts/check-local-tarball-install-smoke.mjs      |  9 +++
  scripts/check-package-tarball.mjs                  |  1 +
  scripts/lib/generated-artifacts.mjs                |  1 +
- 45 files changed, 297 insertions(+), 99 deletions(-)
+ 45 files changed, 296 insertions(+), 99 deletions(-)
 ```
 
 </details>
