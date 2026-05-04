@@ -38,27 +38,33 @@ function compactHelpByDefault(argv: string[]): string[] {
 function expandAgentShorthand(argv: string[]): string[] {
   const [command, ...tail] = argv;
   switch (command) {
-    case undefined:
+    case undefined: {
       return ["help", "--compact"];
-    case "tasks":
+    }
+    case "tasks": {
       return ["task", "next", "--quiet", ...tail];
-    case "next":
+    }
+    case "next": {
       return [
         "task",
         "next",
         ...withDefaultOption(withDefaultOption(tail, "--limit", "1"), "--quiet"),
       ];
-    case "show":
+    }
+    case "show": {
       return ["task", "show", ...tail];
-    case "vshow":
+    }
+    case "vshow": {
       return ["task", "verify-show", ...withDefaultOption(tail, "--quiet")];
-    default:
+    }
+    default: {
       return argv;
+    }
   }
 }
 
 export function resolveAgentModeArgv(argv: readonly string[]): AgentModeResolution {
-  const alias = process.env[CLI_ALIAS_ENV]?.trim() || null;
+  const alias = process.env[CLI_ALIAS_ENV]?.trim() ?? null;
   const enabled = envFlagEnabled(AGENT_MODE_ENV) || alias === "ap";
   if (!enabled) return { argv: [...argv], enabled: false, alias };
 

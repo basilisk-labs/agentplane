@@ -4,7 +4,7 @@ title: "Add experimental ap agent mode"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-04T18:40:08.630Z"
+  updated_at: "2026-05-04T18:53:14.731Z"
   updated_by: "CODER"
-  note: "Reduced ap test coverage footprint to satisfy oversized-test baseline while preserving installed ap entrypoint and shorthand coverage; installed smoke and oversized baseline checks passed."
+  note: "Lint blockers from broad pre-push were fixed; lint:core, installed smoke, diff whitespace, and oversized baseline checks passed."
 commit: null
 comments:
   -
@@ -58,8 +58,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Reduced ap test coverage footprint to satisfy oversized-test baseline while preserving installed ap entrypoint and shorthand coverage; installed smoke and oversized baseline checks passed."
+  -
+    type: "verify"
+    at: "2026-05-04T18:53:14.731Z"
+    author: "CODER"
+    state: "ok"
+    note: "Lint blockers from broad pre-push were fixed; lint:core, installed smoke, diff whitespace, and oversized baseline checks passed."
 doc_version: 3
-doc_updated_at: "2026-05-04T18:40:08.646Z"
+doc_updated_at: "2026-05-04T18:53:14.807Z"
 doc_updated_by: "CODER"
 description: "Add an experimental short ap entrypoint with agent-oriented defaults, non-interactive guardrails, and focused verification for the next release."
 sections:
@@ -115,6 +121,14 @@ sections:
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:32:32.998Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
 
+    ### 2026-05-04T18:53:14.731Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Lint blockers from broad pre-push were fixed; lint:core, installed smoke, diff whitespace, and oversized baseline checks passed.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:40:08.646Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -135,6 +149,12 @@ sections:
     - Observation: Moved shorthand coverage from oversized run-cli.core.test.ts into run-cli.core.installed-smoke.test.ts, where the real ap binary is exercised.
       Impact: Pre-push hotspot baseline can pass without weakening ap behavior verification.
       Resolution: run-cli.core.test.ts is now 1040 lines, below the 1041-line baseline.
+      Promotion: incident-candidate
+      Fixability: external
+
+    - Observation: Added switch-case braces/nullish coalescing in agent-mode, repaired two broad lint findings, and kept ap coverage in installed smoke.
+      Impact: Branch can satisfy broad pre-push without bypassing hooks.
+      Resolution: Ready to re-run git push with standard pre-push checks.
       Promotion: incident-candidate
       Fixability: external
 id_source: "generated"
@@ -200,6 +220,14 @@ Note: Reduced ap test coverage footprint to satisfy oversized-test baseline whil
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:32:32.998Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
 
+### 2026-05-04T18:53:14.731Z — VERIFY — ok
+
+By: CODER
+
+Note: Lint blockers from broad pre-push were fixed; lint:core, installed smoke, diff whitespace, and oversized baseline checks passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:40:08.646Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -224,5 +252,11 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:32:32.998Z, excerpt_
 - Observation: Moved shorthand coverage from oversized run-cli.core.test.ts into run-cli.core.installed-smoke.test.ts, where the real ap binary is exercised.
   Impact: Pre-push hotspot baseline can pass without weakening ap behavior verification.
   Resolution: run-cli.core.test.ts is now 1040 lines, below the 1041-line baseline.
+  Promotion: incident-candidate
+  Fixability: external
+
+- Observation: Added switch-case braces/nullish coalescing in agent-mode, repaired two broad lint findings, and kept ap coverage in installed smoke.
+  Impact: Branch can satisfy broad pre-push without bypassing hooks.
+  Resolution: Ready to re-run git push with standard pre-push checks.
   Promotion: incident-candidate
   Fixability: external

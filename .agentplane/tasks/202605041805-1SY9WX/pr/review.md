@@ -26,7 +26,7 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
 ### Current Status
 
 - State: ok
-- Note: Reduced ap test coverage footprint to satisfy oversized-test baseline while preserving installed ap entrypoint and shorthand coverage; installed smoke and oversized baseline checks passed.
+- Note: Lint blockers from broad pre-push were fixed; lint:core, installed smoke, diff whitespace, and oversized baseline checks passed.
 
 ## Risks
 
