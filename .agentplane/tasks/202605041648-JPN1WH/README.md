@@ -1,10 +1,11 @@
 ---
 id: "202605041648-JPN1WH"
 title: "Fix docs site SSG route conflicts"
-status: "DOING"
+result_summary: "Merged via PR #868."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-04T16:55:45.968Z"
   updated_by: "CODER"
   note: "Command: bun run docs:site:build. Result: pass. Evidence: Docusaurus compiled client/server and generated static files in website/build; the duplicate / and /blog/ SSG failure no longer reproduces on current origin/main. Scope: public docs site SSG route generation. Command: bun run docs:site:typecheck. Result: pass. Evidence: tsc exited 0. Scope: website TypeScript page/theme code. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Scope: repository policy routing. Command: agentplane doctor. Result: pass with warning. Evidence: doctor OK, warning only reports unrelated 202605041618-E011A7 branch_pr closure drift. Scope: workflow health."
-commit: null
+commit:
+  hash: "55b6749bc1ee9fdfa19623997d6f4852af345440"
+  message: "Merge pull request #868 from basilisk-labs/task/202605041648-JPN1WH/docs-ssg-routes"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce and fix the existing docs site SSG route conflict for / and /blog/ in the dedicated branch_pr worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #868 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run docs:site:build. Result: pass. Evidence: Docusaurus compiled client/server and generated static files in website/build; the duplicate / and /blog/ SSG failure no longer reproduces on current origin/main. Scope: public docs site SSG route generation. Command: bun run docs:site:typecheck. Result: pass. Evidence: tsc exited 0. Scope: website TypeScript page/theme code. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Scope: repository policy routing. Command: agentplane doctor. Result: pass with warning. Evidence: doctor OK, warning only reports unrelated 202605041618-E011A7 branch_pr closure drift. Scope: workflow health."
+  -
+    type: "status"
+    at: "2026-05-04T16:57:47.357Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #868 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T16:55:45.977Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-04T16:57:47.361Z"
+doc_updated_by: "INTEGRATOR"
 description: "Resolve the existing Docusaurus SSG failure caused by duplicate / and /blog/ routes or missing default page exports so the docs site build can complete."
 sections:
   Summary: |-
