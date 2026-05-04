@@ -39,10 +39,10 @@ When a repository is intentionally configured for direct mode, use one short rou
 - `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>`
 - `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>`
 - `agentplane task plan approve <task-id> --by ORCHESTRATOR`
-- `agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."`
+- `agentplane task start-ready <task-id> --author <ROLE> --body-file ./start-note.txt`
 - `agentplane task verify-show <task-id>`
 - `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]`
-- `agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>`
+- `agentplane finish <task-id> --author <ROLE> --body-file ./verified-note.txt --result-file ./result.txt --commit <git-rev>`
 
 - Use `agentplane role ORCHESTRATOR` during planning, then switch to `agentplane role <OWNER>` before owner-scoped execution.
 - Use `task doc set` to fill required README sections before approval.
