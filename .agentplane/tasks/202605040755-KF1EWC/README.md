@@ -1,10 +1,11 @@
 ---
 id: "202605040755-KF1EWC"
 title: "Fix launch README example role leakage"
-status: "DOING"
+result_summary: "Merged via PR #892."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-04T08:09:25.981Z"
   updated_by: "DOCS"
   note: "Verified: launch punch-list branch checks passed at current PR-artifact head."
-commit: null
+commit:
+  hash: "30cc08324ed2c2ecbf8707e2dfaa5255096cfe57"
+  message: "Merge pull request #892 from basilisk-labs/task/202605040755-KF1EWC/launch-punch-list"
 comments:
   -
     author: "DOCS"
     body: "Start: updating public README and homepage example commands in the primary launch punch-list worktree, with included task IDs tracked in the approved plan."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #892 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified: launch punch-list branch checks passed at current PR-artifact head."
+  -
+    type: "status"
+    at: "2026-05-04T20:51:30.935Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #892 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T08:09:25.989Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-04T20:51:30.940Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace public quickstart examples that foreground internal role IDs with role-free commands and a single configurable-agents note."
 sections:
   Summary: |-

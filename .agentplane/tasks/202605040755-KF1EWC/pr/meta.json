@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-04T20:50:53Z",
   "base": "main",
   "branch": "task/202605040755-KF1EWC/launch-punch-list",
   "created_at": "2026-05-04T07:57:07.226Z",
-  "head_sha": "da0a0606181be98ab79d8a437cdbef36eda4351f",
+  "head_sha": "0259f0ac53466712d46c80ced18644a0f2824469",
   "last_verified_at": "2026-05-04T08:09:25.981Z",
   "last_verified_sha": "da0a0606181be98ab79d8a437cdbef36eda4351f",
+  "merge_commit": "30cc08324ed2c2ecbf8707e2dfaa5255096cfe57",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-04T20:50:53Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605040755-KF1EWC",
-  "updated_at": "2026-05-04T08:08:46.737Z",
+  "updated_at": "2026-05-04T20:50:53Z",
   "verify": {
     "status": "pass"
   }
