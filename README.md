@@ -83,26 +83,26 @@ Schema: [`packages/spec/schemas/acr-v0.1.schema.json`](packages/spec/schemas/acr
 Create a task:
 
 ```bash
-agentplane task new --title "Fix parser edge case" --description "Reject empty labels." --owner CODER --tag code
+agentplane task new --title "Fix parser edge case" --description "Reject empty labels." --owner <agent-id> --tag code
 ```
 
 Record the plan and approval:
 
 ```bash
-agentplane task plan set <task-id> --text "Add a fixture, tighten validation, and run focused tests." --updated-by CODER
-agentplane task plan approve <task-id> --by ORCHESTRATOR
+agentplane task plan set <task-id> --text "Add a fixture, tighten validation, and run focused tests." --updated-by <agent-id>
+agentplane task plan approve <task-id> --by <reviewer-id>
 ```
 
 Then start, verify, and finish:
 
 ```bash
-agentplane task start-ready <task-id> --author CODER --body "Start: implementing parser validation with focused tests."
+agentplane task start-ready <task-id> --author <agent-id> --body "Start: implementing parser validation with focused tests."
 agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok --by CODER --note "Focused parser tests passed."
-agentplane finish <task-id> --author CODER --result "Parser rejects empty labels." --commit <git-rev>
+agentplane verify <task-id> --ok --by <agent-id> --note "Focused parser tests passed."
+agentplane finish <task-id> --author <agent-id> --result "Parser rejects empty labels." --commit <git-rev>
 ```
 
-Roles like `CODER` and `ORCHESTRATOR` are configurable agent IDs. See
+Agent IDs are configurable profiles. See
 [Agents](docs/user/agents.mdx).
 
 ## Why AgentPlane
