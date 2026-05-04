@@ -1,0 +1,70 @@
+# PR Review
+
+Created: 2026-05-04T19:05:55.236Z
+Branch: task/202605041830-H4923B/dev-fast-local-checks
+
+## Summary
+
+Document blueprint execution-route contracts
+
+Add a detailed developer specification for AgentPlane blueprints as task-specific execution-route contracts, including layer boundaries, node catalog, built-in blueprint routes, recipe extension rules, evidence, ACR relationship, runner relationship, stop rules, non-goals, and implementation backlog.
+
+## Scope
+
+- In scope: Add a detailed developer specification for AgentPlane blueprints as task-specific execution-route contracts, including layer boundaries, node catalog, built-in blueprint routes, recipe extension rules, evidence, ACR relationship, runner relationship, stop rules, non-goals, and implementation backlog.
+- Out of scope: unrelated refactors not required for "Document blueprint execution-route contracts".
+
+## Verification
+
+### Plan
+
+1. Run node .agentplane/policy/check-routing.mjs. Expected: policy routing passes.
+2. Run agentplane doctor. Expected: doctor exits successfully or reports only unrelated pre-existing drift.
+3. Run bun run docs:ia:check. Expected: docs IA and sidebar references include the new developer page.
+4. Run bun run format:check -- docs/developer/blueprints.mdx docs/index.mdx website/sidebars.ts. Expected: touched docs and sidebar files are formatted.
+5. Review docs/developer/blueprints.mdx. Expected: the spec clearly separates blueprints from recipes, task lifecycle, runner execution, and ACR, and explicitly prevents code PR/CI pipelines from becoming the default for analysis/content tasks.
+
+### Current Status
+
+- State: ok
+- Note: Blueprint developer specification docs passed verification.
+
+## Risks
+
+- Risk level: not recorded
+- Breaking change: no
+
+### Rollback
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-04T19:05:55.236Z
+- Branch: task/202605041830-H4923B/dev-fast-local-checks
+- Head: 81a384d447b1
+
+```text
+ .agentplane/WORKFLOW.md                            |   2 +-
+ .agentplane/tasks/202605041830-H4923B/README.md    | 171 +++++++++++++++++++++
+ .../tasks/202605041830-H4923B/pr/diffstat.txt      |   4 +
+ .../tasks/202605041830-H4923B/pr/github-body.md    |  40 +++++
+ .../tasks/202605041830-H4923B/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202605041830-H4923B/pr/meta.json |  14 ++
+ .../tasks/202605041830-H4923B/pr/notes.jsonl       |   0
+ .agentplane/tasks/202605041830-H4923B/pr/review.md |  64 ++++++++
+ .../tasks/202605041830-H4923B/pr/verify.log        |   0
+ docs/developer/code-quality.mdx                    |  26 +++-
+ docs/developer/contributing.mdx                    |  12 +-
+ 11 files changed, 331 insertions(+), 3 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->
