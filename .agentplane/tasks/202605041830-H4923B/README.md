@@ -1,10 +1,11 @@
 ---
 id: "202605041830-H4923B"
 title: "Document AgentPlane dev fast local checks"
-status: "DOING"
+result_summary: "Merged via PR #882."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-04T18:42:18.090Z"
   updated_by: "DOCS"
   note: "Config and docs verification passed after setting require_network=false."
-commit: null
+commit:
+  hash: "8a301992c80d049dde69b1f19f94dd0f33fc2405"
+  message: "Merge pull request #882 from basilisk-labs/task/202605041830-H4923B/dev-fast-local-checks"
 comments:
   -
     author: "DOCS"
     body: "Start: document the AgentPlane framework development fast-check discipline in the task worktree, keeping scope limited to developer docs and task evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #882 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Config and docs verification passed after setting require_network=false."
+  -
+    type: "status"
+    at: "2026-05-04T19:30:04.759Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #882 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T18:42:18.105Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-04T19:30:04.766Z"
+doc_updated_by: "INTEGRATOR"
 description: "Document the AgentPlane development-loop discipline for running fast local checks before expensive CI, including check tiers and when to escalate to full local or hosted checks."
 sections:
   Summary: |-
