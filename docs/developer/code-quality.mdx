@@ -7,6 +7,30 @@ This repository targets a high-signal, strict quality baseline for the Node.js/T
 
 The rules below are **required** for any change that touches code under `packages/**`.
 
+## Fast local checks first
+
+Use the local selector before pushing to hosted CI:
+
+```bash
+bun run ci:local:fast
+```
+
+This is the default first gate for AgentPlane framework development. It is intentionally narrower
+than hosted CI: it selects the cheapest useful checks for the current diff and catches formatting,
+lint, workflow, docs, and focused test failures before a remote run is needed.
+
+Escalate only when the cheaper tier is clean or when the touched scope requires a broader gate:
+
+| Tier | When to use it                                                    | Commands                                                                             |
+| ---- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| 0    | Quick hygiene and runtime drift checks for any task-scoped change | `git diff --check`, `node .agentplane/policy/check-routing.mjs`, `agentplane doctor` |
+| 1    | Default development loop before PR publication or hosted CI       | `bun run ci:local:fast`                                                              |
+| 2    | Cross-package, workflow, or broad code changes                    | `bun run ci:local:full`, `bun run typecheck`, `bun run test:fast`                    |
+| 3    | Merge, release, or externally visible readiness                   | hosted required checks, release gates, publish/recovery checks                       |
+
+Do not treat this as a consumer-task rule. Analysis, content, and other non-code AgentPlane tasks
+should declare evidence-based verification instead of inheriting CI or PR gates by default.
+
 ## Required gates (must pass)
 
 Run from repo root:
@@ -22,7 +46,7 @@ bun run coverage
 bun run coverage:significant
 ```
 
-`bun run ci` is the recommended single command.
+`bun run ci` is the recommended full local command after the fast local selector is clean.
 
 ## Scoped checks (faster dev loop)
 

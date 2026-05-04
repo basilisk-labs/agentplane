@@ -7,7 +7,7 @@ description: "How to contribute changes to Agent Plane."
 
 ```bash
 bun install
-bun run test:fast
+bun run ci:local:fast
 ```
 
 ## Workflow expectations
@@ -16,6 +16,7 @@ bun run test:fast
 - Use `agentplane` CLI for task operations (no manual edits to tasks).
 - Keep commits tied to a task ID.
 - Follow the configured workflow mode (`direct` or `branch_pr`).
+- Run the fast local selector before hosted CI for AgentPlane framework development.
 - For code changes, keep `dist/` in sync before commit when required by hooks.
 
 ## Where to change things
@@ -26,6 +27,15 @@ bun run test:fast
 - Documentation: `docs/`
 
 ## Testing
+
+Start with the local selector:
+
+```bash
+bun run ci:local:fast
+```
+
+Use broader checks only after the fast gate is clean or when your touched scope requires them. See
+[Code quality](code-quality) for the tiered local-to-hosted check discipline.
 
 Run the CLI tests:
 
