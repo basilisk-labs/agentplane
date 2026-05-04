@@ -17,7 +17,7 @@ const repoWorkflowText = fs.readFileSync(
   "utf8",
 );
 const repoExpectedCliVersion =
-  repoWorkflowText.match(/expected_version:\s+"?([^"\n]+)"?/u)?.[1]?.trim() ?? "0.0.0";
+  /expected_version:\s+"?([^"\n]+)"?/u.exec(repoWorkflowText)?.[1]?.trim() ?? "0.0.0";
 const repoPackageVersion = JSON.parse(
   fs.readFileSync(path.join(workspaceRoot, "packages", "agentplane", "package.json"), "utf8"),
 ) as { version: string };
