@@ -1,10 +1,11 @@
 ---
 id: "202605041610-FY0HHQ"
 title: "Prune legacy v0.3 archive navigation"
-status: "DOING"
+result_summary: "Merged via PR #863."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-04T16:25:25.265Z"
   updated_by: "DOCS"
   note: "Command: rg -n archive/v0-3|framework-refactor-program|cli-bug-ledger-v0-3 docs/index.mdx website/sidebars.ts docs/developer/architecture.mdx. Result: pass. Evidence: no active navigation references remain. Command: node scripts/check-docs-ia.mjs. Result: pass. Evidence: docs IA, sidebar coverage, and current path references are aligned. Command: bun run docs:site:typecheck. Result: pass. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Command: node packages/agentplane/bin/agentplane.js doctor. Result: pass. Note: extra docs:site:build compiled client/server but failed during SSG on existing duplicate / route default-export issue; not introduced by archive navigation cleanup."
-commit: null
+commit:
+  hash: "c9d936ca997544bc04dfae3edb1aeef2fdcedf97"
+  message: "Merge pull request #863 from basilisk-labs/task/202605041610-FY0HHQ/docs-legacy-prune"
 comments:
   -
     author: "DOCS"
     body: "Start: prune legacy v0.3 archive navigation in the primary batch worktree while preserving release notes and ADR history."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #863 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: rg -n archive/v0-3|framework-refactor-program|cli-bug-ledger-v0-3 docs/index.mdx website/sidebars.ts docs/developer/architecture.mdx. Result: pass. Evidence: no active navigation references remain. Command: node scripts/check-docs-ia.mjs. Result: pass. Evidence: docs IA, sidebar coverage, and current path references are aligned. Command: bun run docs:site:typecheck. Result: pass. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Command: node packages/agentplane/bin/agentplane.js doctor. Result: pass. Note: extra docs:site:build compiled client/server but failed during SSG on existing duplicate / route default-export issue; not introduced by archive navigation cleanup."
+  -
+    type: "status"
+    at: "2026-05-04T16:33:35.055Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #863 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T16:25:25.276Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-04T16:33:35.059Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove v0.3 archive planning ledgers from active docs navigation while preserving release notes and ADR history."
 sections:
   Summary: |-
