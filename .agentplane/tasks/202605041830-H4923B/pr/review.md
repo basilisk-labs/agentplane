@@ -46,12 +46,14 @@ Document the AgentPlane development-loop discipline for running fast local check
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-04T18:33:08.891Z
+- Updated: 2026-05-04T18:38:43.974Z
 - Branch: task/202605041830-H4923B/dev-fast-local-checks
-- Head: 2d399599d7b2
+- Head: f9d5b9f9736c
 
 ```text
-No changes detected.
+ docs/developer/code-quality.mdx | 26 +++++++++++++++++++++++++-
+ docs/developer/contributing.mdx | 12 +++++++++++-
+ 2 files changed, 36 insertions(+), 2 deletions(-)
 ```
 
 </details>
