@@ -1,10 +1,11 @@
 ---
 id: "202605041840-QWGDPB"
 title: "Extract marketing docs repository"
-status: "DOING"
+result_summary: "Merged via PR #876."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-04T18:57:04.220Z"
   updated_by: "DOCS"
   note: "Command: non-ASCII scan of agentplane-marketing current tree and git rev-list history. Result: pass; no Cyrillic text remained after the English-only orphan history rewrite and force-push. Command: bun run docs:ia:check; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane doctor in marketing repo; bun run docs:site:generate && bun run docs:site:build; bun run docs:site:check:design; git diff --check. Result: pass. Note: bun run docs:site:check is not final evidence because website typecheck emits JS files that create duplicate Docusaurus routes before build."
-commit: null
+commit:
+  hash: "1ebf780ba394cc27da48ed3bb7db0bda65e30ae1"
+  message: "📝 QWGDPB docs: move marketing sources to submodule"
 comments:
   -
     author: "DOCS"
     body: "Start: creating the dedicated marketing repository, moving approved positioning and public-surface documents, and wiring the result back as a Git submodule with focused docs verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #876 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: non-ASCII scan of agentplane-marketing current tree and git rev-list history. Result: pass; no Cyrillic text remained after the English-only orphan history rewrite and force-push. Command: bun run docs:ia:check; node .agentplane/policy/check-routing.mjs; agentplane doctor; agentplane doctor in marketing repo; bun run docs:site:generate && bun run docs:site:build; bun run docs:site:check:design; git diff --check. Result: pass. Note: bun run docs:site:check is not final evidence because website typecheck emits JS files that create duplicate Docusaurus routes before build."
+  -
+    type: "status"
+    at: "2026-05-04T19:11:25.737Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #876 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T18:57:04.234Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-04T19:11:25.742Z"
+doc_updated_by: "INTEGRATOR"
 description: "Create basilisk-labs/agentplane-marketing, initialize AgentPlane in it, move marketing and positioning documents there, and add it back to AgentPlane as a submodule."
 sections:
   Summary: |-
