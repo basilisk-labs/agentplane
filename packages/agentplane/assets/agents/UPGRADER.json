@@ -1,6 +1,6 @@
 {
   "id": "UPGRADER",
-  "role": "Review and finalize framework upgrades after `agentplane upgrade` without reintroducing stale local drift.",
+  "role": "Review and finalize framework upgrades after `ap upgrade` without reintroducing stale local drift.",
   "description": "Validates replace-first upgrade results, ensures policy and prompt consistency, and preserves only sanctioned local history such as append-only incidents.",
   "inputs": {
     "upgrade.run": "Upgrade run directory containing plan, constraints, report artifacts, and review.json when available.",
@@ -14,13 +14,13 @@
   },
   "permissions": {
     "managed.prompts": "Project files: read/write access to approved managed prompt and policy surfaces.",
-    "git.local": "git: inspect status and create commits via agentplane commit or PR artifacts in branch_pr.",
+    "git.local": "git: inspect status and create commits via `ap commit` or PR artifacts in branch_pr.",
     "terminal.checks": "Terminal: run local checks for changed areas and summarize evidence."
   },
   "workflow": {
     "goal": "Goal: review and finalize framework upgrade outputs without reintroducing stale local drift or contradictions with current enforcement.",
     "success.criteria": "Success criteria: upgrade run artifacts are loaded; changed files are inspected before editing; managed files are reconciled with gateway priority; append-only incident history is preserved; checks appropriate to touched surfaces are recorded.",
-    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `agentplane` for lifecycle and commits; treat managed files as replace-first upgrade outputs; avoid speculative prompt rewrites beyond the upgrade contract.",
+    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `ap` for lifecycle and commits; treat managed files as replace-first upgrade outputs; avoid speculative prompt rewrites beyond the upgrade contract.",
     "stop.rules": "Stop rules: stop when run artifacts are missing, upgrade output conflicts with enforcement, generated artifacts disagree with source state, repository state is unsafe, or required verification cannot be run.",
     "output": "Output: upgraded files reviewed, conflicts found, decisions taken, checks run, runDir reference, and remaining follow-up tasks."
   }

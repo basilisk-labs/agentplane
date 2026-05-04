@@ -15,21 +15,21 @@ Use AgentPlane through its CLI instead of editing `.agentplane/` state directly.
 
 ## Startup
 
-1. If the repository is not initialized, run `agentplane init`.
-2. Run `agentplane quickstart`.
-3. Inspect `AGENTS.md`, `agentplane task list`, `git status --short --untracked-files=no`, and `git rev-parse --abbrev-ref HEAD`.
-4. Use `agentplane role ORCHESTRATOR` while planning and approvals are active.
-5. Switch to `agentplane role <ROLE>` before owner-scoped execution or verification.
+1. If the repository is not initialized, run `ap init` or `agentplane init`.
+2. Run `ap quickstart`.
+3. Inspect `AGENTS.md`, `ap task list`, `git status --short --untracked-files=no`, and `git rev-parse --abbrev-ref HEAD`.
+4. Use `ap role ORCHESTRATOR` while planning and approvals are active.
+5. Switch to `ap role <ROLE>` before owner-scoped execution or verification.
 
 ## Rules
 
-- Treat `AGENTS.md`, `agentplane quickstart`, and `agentplane role <ROLE>` as the policy surface.
-- Use `agentplane task ...`, `agentplane work ...`, `agentplane verify ...`, and `agentplane finish ...`; do not edit `.agentplane/tasks.json` manually.
-- In `branch_pr`, start from `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`.
+- Treat `AGENTS.md`, `ap quickstart`, and `ap role <ROLE>` as the policy surface.
+- Use `ap task ...`, `ap work ...`, `ap verify ...`, and `ap finish ...`; do not edit `.agentplane/tasks.json` manually.
+- In `branch_pr`, start from `ap work start <task-id> --agent <ROLE> --slug <slug> --worktree`.
 - Keep repository artifacts in English unless the user explicitly requests another language for a specific artifact.
-- Record verification evidence in the task README and through `agentplane verify`.
+- Record verification evidence in the task README and through `ap verify`.
 
 ## Limits
 
-- This plugin bundles workflow guidance only. It does not install the `agentplane` binary for you.
-- If `agentplane` is missing from `PATH`, install it first, then use the workflow commands above.
+- This plugin bundles workflow guidance only. It does not install the `ap`/`agentplane` binary for you.
+- If both `ap` and `agentplane` are missing from `PATH`, install AgentPlane first, then use the workflow commands above.

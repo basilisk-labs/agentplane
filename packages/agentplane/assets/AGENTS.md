@@ -20,8 +20,8 @@ Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
 
 - Repository type: user project initialized with `agentplane`.
 - Gateway role: keep this file compact and deterministic; move scenario-specific details to policy modules.
-- CLI rule: use `agentplane` from `PATH`; if unavailable, stop and request installation guidance (do not invent repo-local entrypoints).
-- Startup shortcut: run `## COMMANDS -> Preflight`, then use `agentplane quickstart`; activate `agentplane role ORCHESTRATOR` for planning and `agentplane role <ROLE>` for the active owner before owner-scoped execution; then apply `## LOAD RULES` before any mutation. The guarded route is determined by `workflow.mode` in `.agentplane/WORKFLOW.md`; use `agentplane quickstart` as the canonical summary of the active path before mutating. In `branch_pr`, start from `agentplane work start ... --worktree`; in `direct`, stay in the current checkout and use the task lifecycle route.
+- CLI rule: prefer `ap` for compact agent-oriented commands; fall back to `agentplane`; if neither is available, stop and request installation guidance (do not invent repo-local entrypoints).
+- Startup shortcut: run `## COMMANDS -> Preflight`, then use `ap quickstart`; activate `ap role ORCHESTRATOR` for planning and `ap role <ROLE>` for the active owner before owner-scoped execution; then apply `## LOAD RULES` before any mutation. The guarded route is determined by `workflow.mode` in `.agentplane/WORKFLOW.md`; use `ap quickstart` as the canonical summary of the active path before mutating. In `branch_pr`, start from `ap work start ... --worktree`; in `direct`, stay in the current checkout and use the task lifecycle route.
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="gateway.agents.source_of_truth.sources.of.truth" slot="source_of_truth" mutability="replaceable" -->
@@ -33,7 +33,7 @@ Priority order (highest first):
 1. Enforcement: CI, tests, linters, hooks, CLI validations.
 2. Policy gateway: `AGENTS.md`.
 3. Canonical policy modules from `## CANONICAL DOCS`.
-4. CLI guidance: `agentplane quickstart`, `agentplane role <ROLE>`, `.agentplane/WORKFLOW.md`.
+4. CLI guidance: `ap quickstart`, `ap role <ROLE>`, `.agentplane/WORKFLOW.md`.
 5. Reference examples from `## REFERENCE EXAMPLES`.
 
 Conflict rule:
@@ -58,9 +58,9 @@ Conflict rule:
 ### Preflight
 
 ```bash
-agentplane config show
-agentplane quickstart
-agentplane task list
+ap config show
+ap quickstart
+ap task list
 git status --short --untracked-files=no
 git rev-parse --abbrev-ref HEAD
 ```
@@ -68,32 +68,32 @@ git rev-parse --abbrev-ref HEAD
 ### Task lifecycle
 
 ```bash
-agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>
-agentplane task plan set <task-id> --text "..." --updated-by <ROLE>
-agentplane task plan approve <task-id> --by ORCHESTRATOR
-agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
-agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]
-agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>
+ap task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>
+ap task plan set <task-id> --text "..." --updated-by <ROLE>
+ap task plan approve <task-id> --by ORCHESTRATOR
+ap task start-ready <task-id> --author <ROLE> --body "Start: ..."
+ap verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]
+ap finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>
 ```
 
 ### branch_pr lifecycle
 
 ```bash
-agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree
-agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
-agentplane pr update <task-id>
-agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
+ap work start <task-id> --agent <ROLE> --slug <slug> --worktree
+ap pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
+ap pr update <task-id>
+ap integrate <task-id> --branch task/<task-id>/<slug> --run-verify
+ap finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 ```
 
 ### Verification
 
 ```bash
-agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]
-agentplane incidents advise <task-id>
-agentplane incidents collect <task-id> --check
-agentplane doctor
+ap vshow <task-id>
+ap verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]
+ap incidents advise <task-id>
+ap incidents collect <task-id> --check
+ap doctor
 node .agentplane/policy/check-routing.mjs
 ```
 
@@ -103,7 +103,7 @@ node .agentplane/policy/check-routing.mjs
 ## TOOLING
 
 - Use `## COMMANDS` as the canonical command source.
-- Use `agentplane quickstart` as the canonical installed startup path and `agentplane role <ROLE>` to activate the current role before role-scoped planning or execution.
+- Use `ap quickstart` as the compact installed startup path and `ap role <ROLE>` to activate the current role before role-scoped planning or execution.
 - For policy changes, routing validation MUST pass via `node .agentplane/policy/check-routing.mjs`.
 
 <!-- /ap:fragment -->
@@ -138,7 +138,7 @@ Condition: task includes mutation (file edits, task-state changes, commits, merg
 1. IF `workflow.mode=direct` THEN LOAD `@.agentplane/policy/workflow.direct.md`.
 2. IF `workflow.mode=branch_pr` THEN LOAD `@.agentplane/policy/workflow.branch_pr.md`.
 3. IF task touches release/version/publish THEN LOAD `@.agentplane/policy/workflow.release.md`.
-4. IF task runs `agentplane upgrade` or touches `.agentplane/.upgrade/**` THEN LOAD `@.agentplane/policy/workflow.upgrade.md`.
+4. IF task runs CLI upgrade or touches `.agentplane/.upgrade/**` THEN LOAD `@.agentplane/policy/workflow.upgrade.md`.
 5. IF task modifies implementation code paths THEN LOAD `@.agentplane/policy/dod.code.md`.
 6. IF task modifies docs/policy-only paths (`AGENTS.md`, docs, `.agentplane/policy/**`) THEN LOAD `@.agentplane/policy/dod.docs.md`.
 7. IF task modifies policy files (`AGENTS.md` or `.agentplane/policy/**`) THEN LOAD `@.agentplane/policy/governance.md`.
@@ -161,9 +161,9 @@ Routing constraints:
 - MUST start with ORCHESTRATOR preflight and plan summary.
 - MUST NOT perform mutating actions before explicit user approval.
 - MUST create/reuse executable task IDs for any repo-state mutation.
-- MUST use `agentplane` commands for task lifecycle updates; MUST NOT manually edit `.agentplane/tasks.json`.
-- MUST run `agentplane task plan approve ...` and `agentplane task start-ready ...` sequentially (never in parallel).
-- MUST activate `agentplane role ORCHESTRATOR` for planning and `agentplane role <ROLE>` for the active task owner before owner-scoped execution or verification.
+- MUST use `ap`/`agentplane` commands for task lifecycle updates; MUST NOT manually edit `.agentplane/tasks.json`.
+- MUST run `ap task plan approve ...` and `ap task start-ready ...` sequentially (never in parallel).
+- MUST activate `ap role ORCHESTRATOR` for planning and `ap role <ROLE>` for the active task owner before owner-scoped execution or verification.
 - MUST keep repository artifacts in English by default (unless user explicitly requests another language for a specific artifact).
 - MUST NOT fabricate repository facts.
 - MUST stage/commit only intentional changes for the active task scope.

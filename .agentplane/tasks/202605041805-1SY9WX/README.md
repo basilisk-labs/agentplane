@@ -4,7 +4,7 @@ title: "Add experimental ap agent mode"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-04T18:15:08.006Z"
+  updated_at: "2026-05-04T18:25:10.376Z"
   updated_by: "CODER"
-  note: "Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.test.ts -t 'experimental ap|ap init' | Result: pass | Evidence: 3 ap tests passed; compact help, shorthand expansion, non-interactive init structured error covered. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts | Result: pass | Evidence: 3 installed smoke tests passed, including experimental ap entrypoint. Command: bun run typecheck | Result: pass | Evidence: tsc -b exited 0. Command: bun run framework:dev:bootstrap | Result: pass | Evidence: core, agentplane, and testkit built; repo-local runtime ready. Command: node packages/agentplane/bin/ap.js next --help | Result: pass | Evidence: compact task next help printed without Examples section. Command: bun run package:tarball:check | Result: pass | Evidence: package tarball policy OK; agentplane=48 files including bin/ap.js. Command: bun run package:install-smoke | Result: pass | Evidence: local tarball install smoke OK and exercised ap. Command: git diff --check | Result: pass | Evidence: no whitespace errors. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: agentplane doctor | Result: pass | Evidence: doctor OK with informational runtime handoff entries only. Observation: full run-cli.core.test.ts was also attempted and failed in two broad existing cases before command execution (schema validation fixture and last-known-good fixture); targeted ap cases passed."
+  note: "Prompt assets now prefer compact ap agent commands with agentplane fallback; routing, focused ap tests, typecheck, bootstrap, tarball check, and doctor passed."
 commit: null
 comments:
   -
@@ -40,14 +40,20 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.test.ts -t 'experimental ap|ap init' | Result: pass | Evidence: 3 ap tests passed; compact help, shorthand expansion, non-interactive init structured error covered. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts | Result: pass | Evidence: 3 installed smoke tests passed, including experimental ap entrypoint. Command: bun run typecheck | Result: pass | Evidence: tsc -b exited 0. Command: bun run framework:dev:bootstrap | Result: pass | Evidence: core, agentplane, and testkit built; repo-local runtime ready. Command: node packages/agentplane/bin/ap.js next --help | Result: pass | Evidence: compact task next help printed without Examples section. Command: bun run package:tarball:check | Result: pass | Evidence: package tarball policy OK; agentplane=48 files including bin/ap.js. Command: bun run package:install-smoke | Result: pass | Evidence: local tarball install smoke OK and exercised ap. Command: git diff --check | Result: pass | Evidence: no whitespace errors. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: agentplane doctor | Result: pass | Evidence: doctor OK with informational runtime handoff entries only. Observation: full run-cli.core.test.ts was also attempted and failed in two broad existing cases before command execution (schema validation fixture and last-known-good fixture); targeted ap cases passed."
+  -
+    type: "verify"
+    at: "2026-05-04T18:25:10.376Z"
+    author: "CODER"
+    state: "ok"
+    note: "Prompt assets now prefer compact ap agent commands with agentplane fallback; routing, focused ap tests, typecheck, bootstrap, tarball check, and doctor passed."
 doc_version: 3
-doc_updated_at: "2026-05-04T18:15:08.012Z"
+doc_updated_at: "2026-05-04T18:25:10.396Z"
 doc_updated_by: "CODER"
 description: "Add an experimental short ap entrypoint with agent-oriented defaults, non-interactive guardrails, and focused verification for the next release."
 sections:
   Summary: |-
     Add experimental ap agent mode
-    
+
     Add an experimental short ap entrypoint with agent-oriented defaults, non-interactive guardrails, and focused verification for the next release.
   Scope: |-
     - In scope: Add an experimental short ap entrypoint with agent-oriented defaults, non-interactive guardrails, and focused verification for the next release.
@@ -66,18 +72,31 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-04T18:15:08.006Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.test.ts -t 'experimental ap|ap init' | Result: pass | Evidence: 3 ap tests passed; compact help, shorthand expansion, non-interactive init structured error covered. Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts | Result: pass | Evidence: 3 installed smoke tests passed, including experimental ap entrypoint. Command: bun run typecheck | Result: pass | Evidence: tsc -b exited 0. Command: bun run framework:dev:bootstrap | Result: pass | Evidence: core, agentplane, and testkit built; repo-local runtime ready. Command: node packages/agentplane/bin/ap.js next --help | Result: pass | Evidence: compact task next help printed without Examples section. Command: bun run package:tarball:check | Result: pass | Evidence: package tarball policy OK; agentplane=48 files including bin/ap.js. Command: bun run package:install-smoke | Result: pass | Evidence: local tarball install smoke OK and exercised ap. Command: git diff --check | Result: pass | Evidence: no whitespace errors. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: agentplane doctor | Result: pass | Evidence: doctor OK with informational runtime handoff entries only. Observation: full run-cli.core.test.ts was also attempted and failed in two broad existing cases before command execution (schema validation fixture and last-known-good fixture); targeted ap cases passed.
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:14:47.172Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
+
+    ### 2026-05-04T18:25:10.376Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Prompt assets now prefer compact ap agent commands with agentplane fallback; routing, focused ap tests, typecheck, bootstrap, tarball check, and doctor passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:15:08.012Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Updated installed AGENTS gateway, runner prompt, agent role cards, and bundled Codex AgentPlane skill to use ap for agent-oriented command examples.
+      Impact: Agents spend fewer prompt tokens on repeated command prefixes while keeping compatibility through explicit agentplane fallback.
+      Resolution: Kept public README human-facing and scoped shorthand replacement to agent-facing assets.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -117,6 +136,14 @@ Note: Command: bun run test:project -- cli-core packages/agentplane/src/cli/run-
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:14:47.172Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
 
+### 2026-05-04T18:25:10.376Z — VERIFY — ok
+
+By: CODER
+
+Note: Prompt assets now prefer compact ap agent commands with agentplane fallback; routing, focused ap tests, typecheck, bootstrap, tarball check, and doctor passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:15:08.012Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -125,3 +152,9 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:14:47.172Z, excerpt_
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Updated installed AGENTS gateway, runner prompt, agent role cards, and bundled Codex AgentPlane skill to use ap for agent-oriented command examples.
+  Impact: Agents spend fewer prompt tokens on repeated command prefixes while keeping compatibility through explicit agentplane fallback.
+  Resolution: Kept public README human-facing and scoped shorthand replacement to agent-facing assets.
+  Promotion: incident-candidate
+  Fixability: external

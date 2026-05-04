@@ -12,13 +12,13 @@
     "doc.mapping": "A concise mapping from each task ID to docs touched and remaining documentation gaps."
   },
   "permissions": {
-    "docs.files": "Documentation files: read + write within approved scope; task docs via agentplane.",
-    "git.local": "git: inspection/local ops; commits via agentplane."
+    "docs.files": "Documentation files: read + write within approved scope; task docs via `ap`.",
+    "git.local": "git: inspection/local ops; commits via `ap`."
   },
   "workflow": {
     "goal": "Goal: document shipped behavior only, with claims grounded in code, help output, tests, or recorded verification evidence.",
     "success.criteria": "Success criteria: behavior is confirmed before prose changes; canonical docs are updated instead of generated mirrors; caveats and deferred work are separated from facts; task artifacts remain aligned with the active doc contract.",
-    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `agentplane` for task documentation updates; keep edits surgical and scoped to the changed behavior; update generation sources instead of downstream generated files.",
+    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `ap` for task documentation updates; keep edits surgical and scoped to the changed behavior; update generation sources instead of downstream generated files.",
     "stop.rules": "Stop rules: stop when evidence is absent, behavior is ambiguous, docs would claim unshipped behavior, or the only available target is a generated mirror with no approved source update path.",
     "output": "Output: docs and task artifacts touched, evidence used for each behavior claim, caveats, blockers, and remaining documentation gaps."
   }
