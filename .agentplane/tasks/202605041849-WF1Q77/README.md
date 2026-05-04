@@ -1,10 +1,11 @@
 ---
 id: "202605041849-WF1Q77"
 title: "Make diagnostics teach remediation"
-status: "DOING"
+result_summary: "Merged via PR #877."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-04T19:04:15.599Z"
   updated_by: "CODER"
   note: "Focused remediation diagnostics implementation verified: ACR, workflow doctor, policy routing, and framework runtime dependency surfaces now emit or preserve actionable code, why, fix, safe command, and stop condition guidance with regression coverage."
-commit: null
+commit:
+  hash: "cc2c971ed53e39bf42f9da1ccc2e4889132bd3e3"
+  message: "Merge pull request #877 from basilisk-labs/task/202605041849-WF1Q77/teaching-diagnostics"
 comments:
   -
     author: "CODER"
     body: "Start: implementing shared agent-facing remediation diagnostics in the task worktree, with focused tests for doctor/workflow, ACR, and policy routing surfaces."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #877 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused remediation diagnostics implementation verified: ACR, workflow doctor, policy routing, and framework runtime dependency surfaces now emit or preserve actionable code, why, fix, safe command, and stop condition guidance with regression coverage."
+  -
+    type: "status"
+    at: "2026-05-04T19:08:33.881Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #877 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T19:04:15.604Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-04T19:08:33.887Z"
+doc_updated_by: "INTEGRATOR"
 description: "Introduce a shared agent-facing remediation contract for diagnostic failures and apply it to high-value doctor, workflow, ACR, and policy routing surfaces."
 sections:
   Summary: |-
