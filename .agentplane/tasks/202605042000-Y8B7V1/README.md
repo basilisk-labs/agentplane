@@ -1,10 +1,11 @@
 ---
 id: "202605042000-Y8B7V1"
 title: "Generate per-doc social images"
-status: "DOING"
+result_summary: "Merged via PR #889."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-04T20:16:15.108Z"
   updated_by: "CODER"
   note: "Generated per-doc social cards and verified docs social metadata."
-commit: null
+commit:
+  hash: "97d4dd813207b9712fcee0d6099c54defe822567"
+  message: "Merge pull request #889 from basilisk-labs/task/202605042000-Y8B7V1/docs-social-images"
 comments:
   -
     author: "CODER"
     body: "Start: Implement build-time per-doc social image generation and include the user-provided refreshed website image assets in the same task branch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #889 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Generated per-doc social cards and verified docs social metadata."
+  -
+    type: "status"
+    at: "2026-05-04T20:24:45.223Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #889 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-04T20:16:15.112Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-04T20:24:45.229Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a minimal Docusaurus docs social-image generator that renders official AgentPlane branding and page-specific section/title cards at build time."
 sections:
   Summary: |-
