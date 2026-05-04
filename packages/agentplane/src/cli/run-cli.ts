@@ -47,7 +47,7 @@ export async function runCli(argv: string[]): Promise<number> {
   try {
     const agentMode = resolveAgentModeArgv(argv);
     const parsedGlobals = parseGlobalArgs(agentMode.argv);
-    jsonErrors = parsedGlobals.jsonErrorMode;
+    jsonErrors = agentMode.enabled || parsedGlobals.jsonErrorMode;
     if (parsedGlobals.error) {
       throw parsedGlobals.error;
     }

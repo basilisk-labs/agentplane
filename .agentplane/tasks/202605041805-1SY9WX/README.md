@@ -4,7 +4,7 @@ title: "Add experimental ap agent mode"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-04T19:04:20.404Z"
+  updated_at: "2026-05-04T19:22:53.498Z"
   updated_by: "CODER"
-  note: "Updated tests that still asserted old agentplane prompt/runtime-watch contracts; targeted agents-template/runtime-watch tests and lint passed."
+  note: "Addressed Codex review blockers for ap shorthand and agent-mode JSON global parse errors; targeted agent-mode tests, installed smoke, lint, and diff check passed."
 commit: null
 comments:
   -
@@ -70,8 +70,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Updated tests that still asserted old agentplane prompt/runtime-watch contracts; targeted agents-template/runtime-watch tests and lint passed."
+  -
+    type: "verify"
+    at: "2026-05-04T19:22:53.498Z"
+    author: "CODER"
+    state: "ok"
+    note: "Addressed Codex review blockers for ap shorthand and agent-mode JSON global parse errors; targeted agent-mode tests, installed smoke, lint, and diff check passed."
 doc_version: 3
-doc_updated_at: "2026-05-04T19:04:20.411Z"
+doc_updated_at: "2026-05-04T19:22:53.505Z"
 doc_updated_by: "CODER"
 description: "Add an experimental short ap entrypoint with agent-oriented defaults, non-interactive guardrails, and focused verification for the next release."
 sections:
@@ -143,6 +149,14 @@ sections:
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:53:14.807Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
 
+    ### 2026-05-04T19:22:53.498Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Addressed Codex review blockers for ap shorthand and agent-mode JSON global parse errors; targeted agent-mode tests, installed smoke, lint, and diff check passed.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T19:04:20.411Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -175,6 +189,12 @@ sections:
     - Observation: agents-template now expects ap in installed agent cards; runtime-watch expects bin/ap.js in watched paths.
       Impact: Broad fast CI expectations now match the experimental ap agent mode surface.
       Resolution: Ready for another standard push attempt.
+      Promotion: incident-candidate
+      Fixability: external
+
+    - Observation: Recognize --option=value when deciding whether to append defaults; enable jsonErrors before throwing global parse failures in agent mode.
+      Impact: ap next --limit=3 no longer receives a duplicate --limit default, and ap global usage errors are structured JSON.
+      Resolution: Ready to push review-fix commit and re-check mergeability.
       Promotion: incident-candidate
       Fixability: external
 id_source: "generated"
@@ -256,6 +276,14 @@ Note: Updated tests that still asserted old agentplane prompt/runtime-watch cont
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:53:14.807Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
 
+### 2026-05-04T19:22:53.498Z — VERIFY — ok
+
+By: CODER
+
+Note: Addressed Codex review blockers for ap shorthand and agent-mode JSON global parse errors; targeted agent-mode tests, installed smoke, lint, and diff check passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T19:04:20.411Z, excerpt_hash=sha256:fde26f864f5f56195648b2280b07169a53430436ec82d5d4b80deb6f582f0c8d
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -292,5 +320,11 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-04T18:53:14.807Z, excerpt_
 - Observation: agents-template now expects ap in installed agent cards; runtime-watch expects bin/ap.js in watched paths.
   Impact: Broad fast CI expectations now match the experimental ap agent mode surface.
   Resolution: Ready for another standard push attempt.
+  Promotion: incident-candidate
+  Fixability: external
+
+- Observation: Recognize --option=value when deciding whether to append defaults; enable jsonErrors before throwing global parse failures in agent mode.
+  Impact: ap next --limit=3 no longer receives a duplicate --limit default, and ap global usage errors are structured JSON.
+  Resolution: Ready to push review-fix commit and re-check mergeability.
   Promotion: incident-candidate
   Fixability: external

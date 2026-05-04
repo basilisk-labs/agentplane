@@ -20,7 +20,8 @@ function hasAny(tokens: readonly string[], flags: ReadonlySet<string>): boolean 
 }
 
 function hasOption(tokens: readonly string[], option: string): boolean {
-  return tokens.includes(option);
+  const optionPrefix = `${option}=`;
+  return tokens.some((token) => token === option || token.startsWith(optionPrefix));
 }
 
 function withDefaultOption(tokens: string[], option: string, value?: string): string[] {

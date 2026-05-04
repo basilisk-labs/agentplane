@@ -15,7 +15,7 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
 ## Verification
 
 - State: ok
-- Note: Updated tests that still asserted old agentplane prompt/runtime-watch contracts; targeted agents-template/runtime-watch tests and lint passed.
+- Note: Addressed Codex review blockers for ap shorthand and agent-mode JSON global parse errors; targeted agent-mode tests, installed smoke, lint, and diff check passed.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes
