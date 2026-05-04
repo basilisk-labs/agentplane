@@ -95,7 +95,11 @@ async function collectDocs(directory, files = []) {
       continue;
     }
 
-    if (!/\.(md|mdx)$/.test(entry.name) || entry.name === "README.md" || entry.name.startsWith("_")) {
+    if (
+      !/\.(md|mdx)$/.test(entry.name) ||
+      entry.name === "README.md" ||
+      entry.name.startsWith("_")
+    ) {
       continue;
     }
 
@@ -127,7 +131,10 @@ function outputPathFromRoute(route) {
 }
 
 function labelsFromRoute(route, title) {
-  const parts = route.replace(/^\/docs\/?/, "").split("/").filter(Boolean);
+  const parts = route
+    .replace(/^\/docs\/?/, "")
+    .split("/")
+    .filter(Boolean);
   const section = parts[0] ? titleCase(parts[0]) : "Docs";
   const breadcrumb = ["docs", ...parts].join(" / ");
 
@@ -211,7 +218,9 @@ async function main() {
   for (const doc of docs) {
     const source = await readFile(doc, "utf8");
     const route = routeFromDocPath(doc);
-    const fallbackTitle = titleCase(path.parse(doc).name === "index" ? "Docs" : path.parse(doc).name);
+    const fallbackTitle = titleCase(
+      path.parse(doc).name === "index" ? "Docs" : path.parse(doc).name,
+    );
     const title = readFrontMatterTitle(source) ?? fallbackTitle;
 
     entries.push({

@@ -1,7 +1,8 @@
 ---
 id: "202605041907-B7VKWQ"
 title: "Fix lint blockers for docs branch push"
-status: "DOING"
+result_summary: "Shipped on main and reconciled from local branch_pr state."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 6
@@ -21,7 +22,9 @@ verification:
   updated_at: "2026-05-04T19:09:59.462Z"
   updated_by: "CODER"
   note: "Focused lint blockers fixed and verified."
-commit: null
+commit:
+  hash: "7d4834fbe9a28ff98437d465c87a1220fb35088d"
+  message: "Shipped on main before canonical task closure"
 comments:
   -
     author: "CODER"
@@ -40,9 +43,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused lint blockers fixed and verified."
+  -
+    type: "status"
+    at: "2026-05-04T20:28:07.994Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Local branch_pr reconciliation detected task commit 7d4834fbe9a2 on base main; canonical task state normalized after shipment."
 doc_version: 3
-doc_updated_at: "2026-05-04T19:09:59.466Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-04T20:28:07.994Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix the two ESLint errors blocking pre-push on the docs branch: prefer RegExp.exec in runtime.command.test.ts and remove the unused CONFIG_REL_PATH import in upgrade.ts."
 sections:
   Summary: |-
