@@ -47,8 +47,7 @@ function parseArgs(argv, repoRoot) {
   });
   return {
     help: Boolean(flags.help),
-    artifact:
-      typeof flags.artifact === "string" ? path.resolve(repoRoot, flags.artifact) : null,
+    artifact: typeof flags.artifact === "string" ? path.resolve(repoRoot, flags.artifact) : null,
     entry:
       typeof flags.entry === "string"
         ? path.resolve(repoRoot, flags.entry)
