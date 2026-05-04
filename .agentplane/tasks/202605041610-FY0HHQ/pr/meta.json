@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605041610-FY0HHQ/docs-legacy-prune",
+  "created_at": "2026-05-04T16:17:34.186Z",
+  "head_sha": "3fb4f08093591735d79a6234967866cc71440f32",
+  "last_verified_at": "2026-05-04T16:25:25.265Z",
+  "last_verified_sha": "3fb4f08093591735d79a6234967866cc71440f32",
+  "schema_version": 1,
+  "task_id": "202605041610-FY0HHQ",
+  "updated_at": "2026-05-04T16:17:34.186Z",
+  "verify": {
+    "status": "pass"
+  }
+}
