@@ -85,7 +85,6 @@ const config = {
         content:
           "Open-source CLI that turns Claude Code, Codex, Cursor, and Aider into reviewable, reversible work inside Git repositories.",
       },
-      { property: "og:image", content: "https://agentplane.org/img/og-image.png" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "AgentPlane: the audit layer for coding agents" },
       {
@@ -93,7 +92,6 @@ const config = {
         content:
           "Open-source CLI that records task, plan, verification, and closure evidence for coding-agent work.",
       },
-      { name: "twitter:image", content: "https://agentplane.org/img/twitter-card.png" },
       { name: "twitter:site", content: "@agentplaneorg" },
     ],
     colorMode: {

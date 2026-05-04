@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605042000-Y8B7V1/docs-social-images",
+  "created_at": "2026-05-04T20:02:53.103Z",
+  "head_sha": "a6089353c846c0918e5421ff25bb64f5a9147aed",
+  "last_verified_at": "2026-05-04T20:16:15.108Z",
+  "last_verified_sha": "3f746fa047918df9804ad769420a7d3bf1631683",
+  "schema_version": 1,
+  "task_id": "202605042000-Y8B7V1",
+  "updated_at": "2026-05-04T20:18:17.760Z",
+  "verify": {
+    "status": "pass"
+  }
+}
