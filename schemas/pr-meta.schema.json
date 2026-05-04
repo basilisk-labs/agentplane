@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentplane.org/schemas/pr-meta.schema.json",
+  "title": "PR artifact meta.json (v1)",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "number",
+      "const": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "related_task_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "batch": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "type": "number",
+          "const": 1
+        },
+        "primary_task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "included_task_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "closure_policy": {
+          "type": "string",
+          "enum": ["all_or_fail"]
+        }
+      },
+      "required": ["schema_version", "primary_task_id", "included_task_ids", "closure_policy"],
+      "additionalProperties": false
+    },
+    "branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pr_number": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "pr_url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["OPEN", "CLOSED", "MERGED"]
+    },
+    "artifact_state": {
+      "type": "string",
+      "enum": ["open", "merged", "handoff", "remote_staged", "remote_failed"]
+    },
+    "artifact_state_reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_state_updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "merge_strategy": {
+      "type": "string",
+      "enum": ["squash", "merge", "rebase"]
+    },
+    "merged_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "merge_commit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "head_sha": {
+      "type": "string",
+      "minLength": 1
+    },
+    "last_verified_sha": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 7
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "last_verified_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "verify": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pass", "fail", "skipped"]
+        },
+        "command": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "required": ["schema_version", "task_id", "created_at", "updated_at"],
+  "additionalProperties": true
+}

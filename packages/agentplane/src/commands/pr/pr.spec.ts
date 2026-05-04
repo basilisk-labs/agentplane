@@ -1,6 +1,7 @@
 import { parseGroupCommand, type GroupCommandParsed } from "../../cli/group-command.js";
 import { usageError } from "../../cli/spec/errors.js";
 import type { CommandSpec } from "../../cli/spec/spec.js";
+import { validateTextPayloadSource } from "../shared/text-payload.js";
 
 export type PrGroupParsed = GroupCommandParsed;
 
@@ -141,7 +142,7 @@ export const prCheckSpec: CommandSpec<PrCheckParsed> = {
   parse: (raw) => ({ taskId: String(raw.args["task-id"]) }),
 };
 
-export type PrNoteParsed = { taskId: string; author: string; body: string };
+export type PrNoteParsed = { taskId: string; author: string; body?: string; bodyFile?: string };
 
 export const prNoteSpec: CommandSpec<PrNoteParsed> = {
   id: ["pr", "note"],
@@ -160,8 +161,13 @@ export const prNoteSpec: CommandSpec<PrNoteParsed> = {
       kind: "string",
       name: "body",
       valueHint: "<text>",
-      required: true,
-      description: "Note body text.",
+      description: "Note body text. Use --body-file for Markdown or shell-sensitive text.",
+    },
+    {
+      kind: "string",
+      name: "body-file",
+      valueHint: "<path>",
+      description: "Read the note body from a file path (mutually exclusive with --body).",
     },
   ],
   examples: [
@@ -172,18 +178,21 @@ export const prNoteSpec: CommandSpec<PrNoteParsed> = {
   ],
   validateRaw: (raw) => {
     const author = typeof raw.opts.author === "string" ? raw.opts.author.trim() : "";
-    const body = typeof raw.opts.body === "string" ? raw.opts.body.trim() : "";
     if (!author) {
       throw usageError({ spec: prNoteSpec, message: "Invalid value for --author: empty." });
     }
-    if (!body) {
-      throw usageError({ spec: prNoteSpec, message: "Invalid value for --body: empty." });
-    }
+    validateTextPayloadSource(
+      raw,
+      prNoteSpec,
+      { inline: "body", file: "body-file", label: "PR note body" },
+      { required: true },
+    );
   },
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     author: String(raw.opts.author),
-    body: String(raw.opts.body),
+    body: typeof raw.opts.body === "string" ? raw.opts.body : undefined,
+    bodyFile: typeof raw.opts["body-file"] === "string" ? raw.opts["body-file"] : undefined,
   }),
 };
 

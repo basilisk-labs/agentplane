@@ -12,7 +12,7 @@ This page describes how to apply that decision in day-to-day repository work.
 Agent Plane now uses:
 
 1. Zod contracts in `packages/core/src/config/**` and `packages/core/src/tasks/**` for durable repository artifacts;
-2. generated schema mirrors in `packages/spec/schemas/*.schema.json` and `packages/core/schemas/*.schema.json` for tooling and external consumers;
+2. generated schema mirrors in `schemas/*.schema.json`, `packages/spec/schemas/*.schema.json`, and `packages/core/schemas/*.schema.json` for tooling and external consumers;
 3. narrow decoders or guards for transient/internal JSON that is not a durable public contract.
 
 ## Current facts

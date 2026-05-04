@@ -1,0 +1,264 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentplane.org/schemas/task-handoff.schema.json",
+  "title": "Task handoff artifact (v1)",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "number",
+      "const": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "from_role": {
+      "type": "string",
+      "minLength": 1
+    },
+    "to_role": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "note": {
+      "type": "string"
+    },
+    "branch": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "base_branch": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "head_sha": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 7
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "workspace_root": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pr_branch": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "runner": {
+      "type": "object",
+      "properties": {
+        "run_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": ["prepared", "running", "success", "failed", "cancelled"]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "heartbeat_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "next_action": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": ["run", "resume", "retry", "wait", "cancel_then_resume", "none"]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "next_command": {
+          "type": ["string", "null"]
+        },
+        "resume_command": {
+          "type": ["string", "null"]
+        },
+        "retry_command": {
+          "type": ["string", "null"]
+        },
+        "state_path": {
+          "type": ["string", "null"]
+        },
+        "trace_path": {
+          "type": ["string", "null"]
+        }
+      },
+      "additionalProperties": true
+    },
+    "route": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["protected_base_integrate"]
+        },
+        "status": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": ["awaiting_github_merge"]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "local_mutation": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": ["not_performed"]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "finalize_via": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": ["github_pr_merge_then_hosted_close"]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pr_number": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pr_url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "handoff_show_command": {
+          "type": ["string", "null"]
+        },
+        "base_pull_command": {
+          "type": ["string", "null"]
+        }
+      },
+      "required": ["kind"],
+      "additionalProperties": true
+    },
+    "next_actions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "evidence_paths": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "required": ["schema_version", "task_id", "created_at", "from_role", "reason"],
+  "additionalProperties": true
+}

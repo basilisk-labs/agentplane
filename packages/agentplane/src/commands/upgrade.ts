@@ -24,7 +24,6 @@ import {
 import { materializeUpgradeSource, type MaterializedUpgrade } from "./upgrade/materialize.js";
 import { planManagedUpgrade } from "./upgrade/plan.js";
 import {
-  CONFIG_REL_PATH,
   WORKFLOW_REL_PATH,
   normalizeVersionForConfig,
   toUpgradeBaselineKey,

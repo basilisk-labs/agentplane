@@ -134,8 +134,10 @@ const sidebars: SidebarsConfig = {
         "developer/workflow-contract",
         "developer/workflow-harness-test-matrix",
         "developer/harness-engineering",
+        "developer/blueprints",
         "developer/evaluation-and-recursive-improvement",
         "developer/close-taxonomy",
+        "developer/incident-archive",
         "developer/modular-prompt-assembly",
         "developer/schema-validation-strategy",
         "developer/typescript-esm-imports",
@@ -159,15 +161,6 @@ const sidebars: SidebarsConfig = {
       type: "category",
       label: "Help",
       items: ["help/broken-workflow-runbook", "help/glossary"],
-    },
-    {
-      type: "category",
-      label: "Archive",
-      items: [
-        "archive/v0-3/cli-bug-ledger-v0-3-x",
-        "archive/v0-3/framework-refactor-program",
-        "developer/incident-archive",
-      ],
     },
   ],
 };

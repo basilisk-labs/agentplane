@@ -13,12 +13,12 @@
   },
   "permissions": {
     "agent.prompt.files": "AGENTS.md and .agentplane/agents: read + write within approved prompt-policy scope.",
-    "git.local": "git: inspection/local ops; commits via agentplane."
+    "git.local": "git: inspection/local ops; commits via `ap`."
   },
   "workflow": {
     "goal": "Goal: create or revise a specialist agent only when the existing role set has a concrete, repeated capability gap.",
     "success.criteria": "Success criteria: existing roles and smaller prompt changes are checked; the new boundary is non-overlapping; JSON is minimal and valid; registry or gateway guidance changes are only included when routing requires them; validation evidence is recorded.",
-    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `agentplane` for lifecycle updates; prefer a smaller change to an existing role when it satisfies the need; keep role IDs uppercase snake case; avoid speculative agents for hypothetical future flexibility.",
+    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `ap` for lifecycle updates; prefer a smaller change to an existing role when it satisfies the need; keep role IDs uppercase snake case; avoid speculative agents for hypothetical future flexibility.",
     "stop.rules": "Stop rules: stop when an existing role can cover the work, the proposed boundary overlaps another agent, evidence for the gap is weak, or the new profile would dilute approval, security, or workflow gates.",
     "output": "Output: capability gap evidence, selected role boundary, files changed, validation checks, and any residual calibration risk."
   }

@@ -1,12 +1,14 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { resolveTextPayload, validateTextPayloadSource } from "../shared/text-payload.js";
 import { cmdTaskStartReady } from "./start-ready.js";
 
 type TaskStartReadyParsed = {
   taskId: string;
   author: string;
-  body: string;
+  body?: string;
+  bodyFile?: string;
   force: boolean;
   yes: boolean;
   quiet: boolean;
@@ -29,8 +31,14 @@ export const taskStartReadySpec: CommandSpec<TaskStartReadyParsed> = {
       kind: "string",
       name: "body",
       valueHint: "<text>",
-      required: true,
-      description: "Structured Start comment body.",
+      description:
+        "Structured Start comment body. Use --body-file for Markdown or shell-sensitive text.",
+    },
+    {
+      kind: "string",
+      name: "body-file",
+      valueHint: "<path>",
+      description: "Read the Start comment body from a file path (mutually exclusive with --body).",
     },
     {
       kind: "boolean",
@@ -55,18 +63,22 @@ export const taskStartReadySpec: CommandSpec<TaskStartReadyParsed> = {
   validateRaw: (raw) => {
     const taskId = typeof raw.args["task-id"] === "string" ? raw.args["task-id"].trim() : "";
     const author = typeof raw.opts.author === "string" ? raw.opts.author.trim() : "";
-    const body = typeof raw.opts.body === "string" ? raw.opts.body.trim() : "";
     if (!taskId)
       throw usageError({ spec: taskStartReadySpec, message: "Invalid value for task-id: empty." });
     if (!author)
       throw usageError({ spec: taskStartReadySpec, message: "Invalid value for --author: empty." });
-    if (!body)
-      throw usageError({ spec: taskStartReadySpec, message: "Invalid value for --body: empty." });
+    validateTextPayloadSource(
+      raw,
+      taskStartReadySpec,
+      { inline: "body", file: "body-file", label: "Start comment body" },
+      { required: true },
+    );
   },
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     author: String(raw.opts.author),
-    body: String(raw.opts.body),
+    body: typeof raw.opts.body === "string" ? raw.opts.body : undefined,
+    bodyFile: typeof raw.opts["body-file"] === "string" ? raw.opts["body-file"] : undefined,
     force: raw.opts.force === true,
     yes: raw.opts.yes === true,
     quiet: raw.opts.quiet === true,
@@ -75,13 +87,19 @@ export const taskStartReadySpec: CommandSpec<TaskStartReadyParsed> = {
 
 export function makeRunTaskStartReadyHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, p: TaskStartReadyParsed): Promise<number> => {
+    const body = await resolveTextPayload({
+      cwd: ctx.cwd,
+      inline: p.body,
+      file: p.bodyFile,
+      label: "task start-ready body",
+    });
     return await cmdTaskStartReady({
       ctx: await getCtx("task start-ready"),
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       taskId: p.taskId,
       author: p.author,
-      body: p.body,
+      body,
       force: p.force,
       yes: p.yes,
       quiet: p.quiet,

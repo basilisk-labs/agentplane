@@ -12,6 +12,8 @@ import {
   assertAcrCiSemantics,
   makeRunAcrSchemaHandler,
 } from "./acr.command.js";
+import { CliError } from "../../shared/errors.js";
+import { readDiagnosticContext } from "../shared/diagnostics.js";
 
 const ciOptions = {
   requirePlanApproved: true,
@@ -136,6 +138,17 @@ describe("ACR CI semantics", () => {
     record.approvals = [];
 
     expect(() => assertAcrCiSemantics(record, ciOptions)).toThrow("ACR_E_PLAN_APPROVAL_REQUIRED");
+    try {
+      assertAcrCiSemantics(record, ciOptions);
+    } catch (err) {
+      expect(err).toBeInstanceOf(CliError);
+      const diagnostic = readDiagnosticContext((err as CliError).context);
+      expect(diagnostic.remediation).toMatchObject({
+        code: "ACR_E_PLAN_APPROVAL_REQUIRED",
+        safeCommand: "agentplane task plan approve <task-id> --by ORCHESTRATOR",
+      });
+      expect(diagnostic.remediation?.stopCondition).toContain("Stop");
+    }
   });
 
   it("rejects null digest on merge-ready records", () => {

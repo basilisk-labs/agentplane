@@ -9,9 +9,9 @@ Agent Plane has three layers with different responsibilities:
 
 1. CLI runtime (`packages/agentplane/src`)
 2. Shared models and config (`packages/core/src`)
-3. Generated schema/spec layer (`packages/spec/schemas`)
+3. Generated schema/spec layer (`schemas` and `packages/spec/schemas`)
 
-The runtime layer owns command behavior. The core layer owns parsing, defaults, validators, and shared contracts. The spec layer is a generated mirror for tooling and external consumers, synchronized from runtime code into both `packages/spec/schemas` and `packages/core/schemas`.
+The runtime layer owns command behavior. The core layer owns parsing, defaults, validators, and shared contracts. The root `schemas/` directory is the repository discovery surface for generated public schemas. The spec layer is a generated mirror for tooling and external consumers, synchronized from runtime code into `schemas`, `packages/spec/schemas`, and `packages/core/schemas`.
 
 Durable config and task artifact contracts now use Zod in `packages/core/src/**` as the single source of truth, with generated JSON Schema mirrors emitted for tooling and external consumers.
 
@@ -19,12 +19,11 @@ For the architectural decision and practical boundary guidance, see [ADR: Zod Co
 
 ## Current priority
 
-This page describes the current implementation surfaces. It is not an endorsement of expanding
-recipe, runner, or prompt-assembly scope immediately.
+This page describes the current `0.4` implementation surfaces. It is not an endorsement of expanding
+recipe, runner, or prompt-assembly scope outside an approved task plan.
 
-For the active `0.3` line, the priority is to harden existing task, workflow, PR/integrate,
-backend, and CLI contracts first. Deeper prompt-assembly and recipe-domain redesign remains
-deferred until that foundation work settles.
+The former `0.3` stabilization backlog is historical. Current work should treat release notes, ADRs,
+tests, and the runtime contracts below as the active evidence source.
 
 ## Framework control plane
 
@@ -140,8 +139,8 @@ Policy enforcement now resolves through the framework layer and is then consumed
 - `ResolvedExecutionProfileRuntime` carries approval escalation, budgets, stop/handoff conditions, trace policy, and timeout policy.
 - Runner and recipe-adjacent flows receive the same resolved policy inputs through the canonical context and persisted runner bundle.
 
-The existence of these shared surfaces should not be read as an active mandate to broaden the
-runner or recipe architecture during `0.3` stabilization.
+The existence of these shared surfaces should not be read as an active mandate to broaden runner or
+recipe architecture without a scoped task and verification plan.
 
 ## Release flow
 
@@ -156,7 +155,6 @@ Release is split into planning and apply:
 
 - [Project layout](project-layout)
 - [Module topology](module-topology)
-- [Historical v0.3 refactor program](../archive/v0-3/framework-refactor-program)
 - [CLI contract](cli-contract)
 - [Release and publishing](release-and-publishing)
 - [Tasks and backends](../user/tasks-and-backends)

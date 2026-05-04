@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605041830-H4923B/dev-fast-local-checks",
+  "created_at": "2026-05-04T19:05:55.236Z",
+  "head_sha": "83c5d227897bd8dd81ad0dcd59af0be15875b9f7",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "83c5d227897bd8dd81ad0dcd59af0be15875b9f7",
+  "merged_at": "2026-05-04T20:28:07.993Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605041903-H4PPTY",
+  "updated_at": "2026-05-04T20:28:07.993Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

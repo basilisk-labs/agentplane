@@ -121,6 +121,7 @@ describe("LocalBackend", () => {
       doc: "## Summary\n\nProjection body",
     };
     await backend.writeTask(task);
+    await backend.listTasks();
 
     const firstProjection = await backend.listProjectionTasks();
     const readmePath = path.join(tempDir, task.id, "README.md");
@@ -148,6 +149,30 @@ describe("LocalBackend", () => {
     expect(cachedProjection[0]).not.toHaveProperty("doc");
     expect(cachedProjection[0]).not.toHaveProperty("sections");
     expect(cachedProjection[0]).not.toHaveProperty("events");
+  });
+
+  it("does not rebuild a missing task index cache from projection-only reads", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const task: TaskData = {
+      id: "202601300009-ABCD",
+      title: "Read only projection",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: [],
+      verify: [],
+      doc: "## Summary\n\nProjection body",
+    };
+    await backend.writeTask(task);
+    const indexPath = path.join(tempDir, ".cache", "tasks-index.v2.json");
+    await rm(indexPath, { force: true });
+
+    const projection = await backend.listProjectionTasks();
+
+    expect(projection.map((entry) => entry.id)).toEqual([task.id]);
+    await expect(stat(indexPath)).rejects.toMatchObject({ code: "ENOENT" });
   });
 
   it("reparses projection entries after README invalidation", async () => {

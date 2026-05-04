@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-04T19:07:47Z",
+  "base": "main",
+  "branch": "task/202605041849-WF1Q77/teaching-diagnostics",
+  "created_at": "2026-05-04T18:55:16.828Z",
+  "head_sha": "16c36fed319b371c39e98160419c33770d6abd9a",
+  "last_verified_at": "2026-05-04T19:04:15.599Z",
+  "last_verified_sha": "45a242eec857f4ff5c4c8849f8e0c3d378a598fd",
+  "merge_commit": "cc2c971ed53e39bf42f9da1ccc2e4889132bd3e3",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-04T19:07:47Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605041849-WF1Q77",
+  "updated_at": "2026-05-04T19:07:47Z",
+  "verify": {
+    "status": "pass"
+  }
+}

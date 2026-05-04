@@ -5,6 +5,7 @@ import type { CommandContext } from "./shared/task-backend.js";
 import { cmdFinish } from "./task/finish-command.js";
 import type { FinishParsed } from "./finish.spec.shared.js";
 import { finishSpec } from "./finish.spec.js";
+import { resolveTextPayload } from "./shared/text-payload.js";
 
 export function makeRunFinishHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, p: FinishParsed): Promise<number> => {
@@ -15,14 +16,29 @@ export function makeRunFinishHandler(getCtx: (cmd: string) => Promise<CommandCon
         message: "Missing required argument: task-id",
       });
     }
+    const body = await resolveTextPayload({
+      cwd: ctx.cwd,
+      inline: p.body,
+      file: p.bodyFile,
+      label: "finish body",
+    });
+    const result =
+      typeof p.result === "string" || typeof p.resultFile === "string"
+        ? await resolveTextPayload({
+            cwd: ctx.cwd,
+            inline: p.result,
+            file: p.resultFile,
+            label: "finish result",
+          })
+        : undefined;
     return await cmdFinish({
       ctx: await getCtx("finish"),
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       taskIds: p.taskIds,
       author: p.author,
-      body: p.body,
-      result: p.result,
+      body,
+      result,
       risk: p.risk,
       breaking: p.breaking,
       commit: p.commit,

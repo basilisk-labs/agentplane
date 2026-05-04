@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-04T16:57:01Z",
+  "base": "main",
+  "branch": "task/202605041648-JPN1WH/docs-ssg-routes",
+  "created_at": "2026-05-04T16:53:16.281Z",
+  "head_sha": "801f6e0f72a977077ed00bcc5359bf8d9d3508f1",
+  "last_verified_at": "2026-05-04T16:55:45.968Z",
+  "last_verified_sha": "9b96103d3db0aa8686a2ac2548e3849fb7c04870",
+  "merge_commit": "55b6749bc1ee9fdfa19623997d6f4852af345440",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-04T16:57:01Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605041648-JPN1WH",
+  "updated_at": "2026-05-04T16:57:01Z",
+  "verify": {
+    "status": "pass"
+  }
+}

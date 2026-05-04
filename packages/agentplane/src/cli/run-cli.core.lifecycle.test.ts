@@ -113,6 +113,83 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
     }
   });
 
+  it("start rejects shell-risky inline bodies before lifecycle mutation", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "start",
+        "202601010101-ABCDEF",
+        "--author",
+        "CODER",
+        "--body",
+        "Start: use `agentplane task list` output carefully",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Inline --body contains backticks");
+      expect(io.stderr).toContain("use --body-file");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("start reads structured comment bodies from files", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Start task",
+        "--description",
+        "File-backed body",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+    await approveTaskPlan(root, taskId);
+    const bodyPath = path.join(root, "start-body.txt");
+    await writeFile(
+      bodyPath,
+      "Start: read lifecycle text from a file so Markdown `code` stays literal.",
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "start",
+        taskId,
+        "--author",
+        "CODER",
+        "--body-file",
+        bodyPath,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
   it("start accepts --commit-require-clean flag without commit-from-comment", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

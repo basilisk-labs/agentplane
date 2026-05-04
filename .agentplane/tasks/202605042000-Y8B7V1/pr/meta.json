@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-04T20:24:07Z",
+  "base": "main",
+  "branch": "task/202605042000-Y8B7V1/docs-social-images",
+  "created_at": "2026-05-04T20:02:53.103Z",
+  "head_sha": "5fedbf0f88a432d3b5dad00db1b0f3b7a7b95784",
+  "last_verified_at": "2026-05-04T20:16:15.108Z",
+  "last_verified_sha": "3f746fa047918df9804ad769420a7d3bf1631683",
+  "merge_commit": "97d4dd813207b9712fcee0d6099c54defe822567",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-04T20:24:07Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605042000-Y8B7V1",
+  "updated_at": "2026-05-04T20:24:07Z",
+  "verify": {
+    "status": "pass"
+  }
+}

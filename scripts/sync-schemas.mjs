@@ -17,54 +17,42 @@ const main = defineScript({
     const mode = parseCheckSyncMode(argv, "scripts/sync-schemas.mjs");
 
     const repoRoot = process.cwd();
+    const schemaTargets = (fileName) => [
+      path.join(repoRoot, "schemas", fileName),
+      path.join(repoRoot, "packages", "spec", "schemas", fileName),
+      path.join(repoRoot, "packages", "core", "schemas", fileName),
+    ];
+
     const artifacts = [
       {
         label: "ACR v0.1 schema",
         rendered: renderAcrSchemaJson(),
-        targets: [
-          path.join(repoRoot, "packages", "spec", "schemas", "acr-v0.1.schema.json"),
-          path.join(repoRoot, "packages", "core", "schemas", "acr-v0.1.schema.json"),
-        ],
+        targets: schemaTargets("acr-v0.1.schema.json"),
       },
       {
         label: "config schema",
         rendered: renderAgentplaneConfigSchemaJson(),
-        targets: [
-          path.join(repoRoot, "packages", "spec", "schemas", "config.schema.json"),
-          path.join(repoRoot, "packages", "core", "schemas", "config.schema.json"),
-        ],
+        targets: schemaTargets("config.schema.json"),
       },
       {
         label: "task README frontmatter schema",
         rendered: renderTaskReadmeFrontmatterSchemaJson(),
-        targets: [
-          path.join(repoRoot, "packages", "spec", "schemas", "task-readme-frontmatter.schema.json"),
-          path.join(repoRoot, "packages", "core", "schemas", "task-readme-frontmatter.schema.json"),
-        ],
+        targets: schemaTargets("task-readme-frontmatter.schema.json"),
       },
       {
         label: "tasks export schema",
         rendered: renderTasksExportSchemaJson(),
-        targets: [
-          path.join(repoRoot, "packages", "spec", "schemas", "tasks-export.schema.json"),
-          path.join(repoRoot, "packages", "core", "schemas", "tasks-export.schema.json"),
-        ],
+        targets: schemaTargets("tasks-export.schema.json"),
       },
       {
         label: "pr meta schema",
         rendered: renderTaskPrMetaSchemaJson(),
-        targets: [
-          path.join(repoRoot, "packages", "spec", "schemas", "pr-meta.schema.json"),
-          path.join(repoRoot, "packages", "core", "schemas", "pr-meta.schema.json"),
-        ],
+        targets: schemaTargets("pr-meta.schema.json"),
       },
       {
         label: "task handoff schema",
         rendered: renderTaskHandoffSchemaJson(),
-        targets: [
-          path.join(repoRoot, "packages", "spec", "schemas", "task-handoff.schema.json"),
-          path.join(repoRoot, "packages", "core", "schemas", "task-handoff.schema.json"),
-        ],
+        targets: schemaTargets("task-handoff.schema.json"),
       },
     ];
 

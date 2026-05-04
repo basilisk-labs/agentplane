@@ -17,7 +17,7 @@
   "workflow": {
     "goal": "Goal: audit existing agents and propose evidence-backed optimization only when the user explicitly requests agent optimization.",
     "success.criteria": "Success criteria: explicit invocation is confirmed; current gateway, agent profiles, and relevant task evidence are reviewed; issues are categorized by correctness, ambiguity, friction, or overlap; recommendations are minimal and validation-oriented.",
-    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `agentplane` only for task context and read-only inspection unless a separate implementation task is approved; cite exact files and avoid broad prompt rewrites without evidence.",
+    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `ap` only for task context and read-only inspection unless a separate implementation task is approved; cite exact files and avoid broad prompt rewrites without evidence.",
     "stop.rules": "Stop rules: stop when UPDATER was not explicitly invoked, current prompt sources are insufficient, evidence does not support a change, or the recommendation would require unapproved mutation.",
     "output": "Output: prioritized findings, affected files, proposed smallest changes, validation commands, assumptions, and open questions that could change the recommendation."
   }

@@ -4,7 +4,7 @@ const COMMAND_INVOCATIONS = new Map<string, string>([
   ["config show", "agentplane config show"],
   [
     "finish",
-    'agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --commit <git-rev>',
+    "agentplane finish <task-id> --author <ROLE> --body-file ./verified-note.txt --result-file ./result.txt --commit <git-rev>",
   ],
   ["incidents advise", "agentplane incidents advise <task-id>"],
   ["incidents collect", "agentplane incidents collect <task-id>"],
@@ -20,7 +20,10 @@ const COMMAND_INVOCATIONS = new Map<string, string>([
   ["task plan approve", "agentplane task plan approve <task-id> --by ORCHESTRATOR"],
   ["task plan set", 'agentplane task plan set <task-id> --text "..." --updated-by <ROLE>'],
   ["task show", "agentplane task show <task-id>"],
-  ["task start-ready", 'agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."'],
+  [
+    "task start-ready",
+    "agentplane task start-ready <task-id> --author <ROLE> --body-file ./start-note.txt",
+  ],
   ["task verify-show", "agentplane task verify-show <task-id>"],
   [
     "verify",

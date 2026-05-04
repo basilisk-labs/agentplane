@@ -5,6 +5,7 @@ import path from "node:path";
 const WATCHED_RUNTIME_PATHS = {
   agentplane: [
     "src",
+    "bin/ap.js",
     "bin/agentplane.js",
     "bin/dist-guard.js",
     "bin/runtime-context.js",

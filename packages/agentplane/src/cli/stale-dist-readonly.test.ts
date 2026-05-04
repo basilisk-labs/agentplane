@@ -1,5 +1,15 @@
 import { execFile } from "node:child_process";
-import { chmod, copyFile, mkdtemp, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import {
+  chmod,
+  copyFile,
+  mkdtemp,
+  mkdir,
+  readFile,
+  rm,
+  stat,
+  symlink,
+  writeFile,
+} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -96,6 +106,48 @@ async function setupFrameworkCheckout() {
   await writeFile(cliPath, `${current}export const dirty = true;\n`, "utf8");
 
   return { repoRoot, repoBin };
+}
+
+async function setupFrameworkCheckoutWithWorkspaceDependency() {
+  const setup = await setupFrameworkCheckout();
+  const packageRoot = path.join(setup.repoRoot, "packages", "agentplane");
+  const coreRoot = path.join(setup.repoRoot, "packages", "core");
+  await mkdir(path.join(packageRoot, "node_modules", "@agentplaneorg"), { recursive: true });
+  await mkdir(coreRoot, { recursive: true });
+  await writeFile(
+    path.join(packageRoot, "package.json"),
+    JSON.stringify(
+      {
+        type: "module",
+        dependencies: {
+          "@agentplaneorg/core": "workspace:*",
+        },
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
+  await writeFile(
+    path.join(coreRoot, "package.json"),
+    JSON.stringify(
+      {
+        name: "@agentplaneorg/core",
+        type: "module",
+        exports: {
+          ".": "./dist/index.js",
+          "./package.json": "./package.json",
+        },
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
+  await mkdir(path.join(coreRoot, "dist"), { recursive: true });
+  await writeFile(path.join(coreRoot, "dist", "index.js"), "export {};\n", "utf8");
+  await symlink("../../../core", path.join(packageRoot, "node_modules", "@agentplaneorg", "core"));
+  return setup;
 }
 
 async function setupFakeBootstrapBin() {
@@ -392,5 +444,17 @@ describe("stale-dist warn-and-run command policy", { timeout: 180_000 }, () => {
     expect(execError.stdout).toBe("");
     expect(typeof execError.stderr).toBe("string");
     expect(execError.stderr).toContain("another framework dev bootstrap is already running");
+  });
+
+  it("accepts workspace dependency packages that only expose package.json", async () => {
+    const { repoRoot, repoBin } = await setupFrameworkCheckoutWithWorkspaceDependency();
+
+    const { stdout } = await execFileAsync(process.execPath, [repoBin, "config", "show"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+      env: warnOnlyEnv,
+    });
+
+    expect(stdout).toContain("DIST");
   });
 });
