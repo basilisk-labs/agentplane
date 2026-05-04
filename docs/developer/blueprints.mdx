@@ -1,15 +1,16 @@
 ---
 title: "Blueprints"
-description: "Execution-route contracts for task-specific AgentPlane harness flows."
+description: "Typed execution-route contracts for task-specific AgentPlane harness flows."
 ---
 
 Blueprints are a planned AgentPlane harness layer. This page is a developer specification for the
-implementation work, not a claim that blueprint resolution or execution already ships.
+first implementation work, not a claim that blueprint resolution or execution already ships.
 
 ## Definition
 
-A blueprint is a typed execution-route contract for a task. It describes which harness nodes should
-run, in which order, under which stop rules, and what evidence must be recorded.
+A blueprint is a typed execution-route contract for a task. It describes the harness route that
+should be followed, the evidence that must be produced, and the stop rules that prevent the wrong
+route from being used.
 
 A blueprint is not:
 
@@ -17,28 +18,63 @@ A blueprint is not:
 - a recipe;
 - a task status;
 - a CI pipeline;
+- a general workflow engine;
 - a replacement for `direct` or `branch_pr`;
 - a requirement that every task uses git, PRs, CI, or code checks.
 
-The purpose is to let AgentPlane choose a task-specific route. Analysis, content, documentation,
-code, release, and operational tasks should not all inherit the same code-oriented PR flow.
+The purpose is to let AgentPlane select a task-specific route. Analysis, content, documentation,
+code, release, and operational tasks should not inherit the same code-oriented PR flow.
 
-## Problem
+## Design Premises
 
-The current lifecycle is intentionally broad:
+Blueprints are useful only if they preserve the difference between task classes.
+
+Facts:
+
+- AgentPlane already has an outer task lifecycle, workflow modes, role contracts, policy modules,
+  and verification records.
+- Recipes already provide domain-specific guidance.
+- Some tasks mutate repositories and need git topology, checks, PR artifacts, or release gates.
+- Some tasks are read-only analysis or content generation and need evidence, assumptions, and
+  final output, not CI.
+
+Inferences:
+
+- The missing layer is not another prompt. It is a structured route between the task lifecycle and
+  recipe guidance.
+- The route must be inspectable before work starts, otherwise it cannot explain why context,
+  policies, tools, or checks were loaded.
+- The first implementation should model and validate routes before it tries to execute them.
+
+Hard constraint:
+
+- Do not make one code PR pipeline the default route. `analysis.light` must stay lightweight:
 
 ```text
-task -> plan -> start -> work -> verify -> finish
+intake -> scope -> context_resolve -> work_unit -> evidence -> final
 ```
 
-That lifecycle gives traceability, but it does not describe the internal route for different work
-types. A code change may require a task worktree, fast checks, PR artifacts, hosted checks, and
-integration. An article analysis may require source selection, assumptions, confidence, weak links,
-and a final evidence-backed answer, with no git mutation at all.
+In the v0 node catalog, `evidence -> final` is the human shorthand for
+`artifact_write -> verify_record -> finish`.
 
-Recipes can provide domain context, templates, tools, and checks, but recipes must not become
-unbounded alternate lifecycles. Blueprints fill the gap between the outer task lifecycle and
-domain-specific recipe guidance.
+No CI, PR, worktree, hosted checks, or merge gates appear unless the task meaning requires them.
+
+## Methodology References
+
+Blueprints should reuse proven workflow and governance ideas without copying their full complexity.
+
+| Reference                                                                                                           | Useful idea                                                                 | How AgentPlane should use it                                                   |
+| ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| [BPMN](https://www.omg.org/spec/BPMN/2.0/About-BPMN/)                                                               | Explicit processes, gateways, events, and handoffs                          | Treat blueprints as visible process contracts, not prose-only policy text      |
+| [Workflow Patterns](https://www.workflowpatterns.com/patterns/control/)                                             | Named control-flow patterns such as sequence, split, join, and cancellation | Keep node graphs simple, explicit, and testable                                |
+| [Amazon States Language](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html) | State-machine definitions as structured data                                | Represent routes as JSON-like data that can be validated before execution      |
+| [Temporal](https://docs.temporal.io/)                                                                               | Deterministic workflow history and resumable execution                      | Keep future execution replayable, with durable evidence and explicit decisions |
+| [Open Policy Agent](https://www.openpolicyagent.org/docs/latest/)                                                   | Policy-as-code and separated authorization decisions                        | Keep route selection and permission gates explainable and auditable            |
+| [CUE](https://cuelang.org/)                                                                                         | Schema, validation, and data constraints in one model                       | Use schema-first validation and reject invalid route definitions early         |
+
+The v0 implementation should be closer to a typed state-machine registry than to BPMN or Temporal.
+Those systems justify the shape of the model, but AgentPlane should keep the first surface small:
+model, built-in registry, validator, resolver, and explain output.
 
 ## Layer Model
 
@@ -54,41 +90,232 @@ domain-specific recipe guidance.
 The task lifecycle remains the outer contract. A blueprint is the internal trajectory for a task
 while it is being planned, executed, verified, and closed.
 
-## Blueprint Anatomy
+## Package Boundary
 
-The v0 contract should be schema-first and small enough to validate before any runner executes it.
+The first code PR should add types, built-in blueprints, validation, and resolution data. It should
+not add command execution or a workflow executor.
+
+Proposed future module layout inside the AgentPlane CLI source package:
+
+```text
+blueprints/
+  model.ts
+  builtins.ts
+  registry.ts
+  validate.ts
+  resolve.ts
+  explain.ts
+  index.ts
+  *.test.ts
+```
+
+Initial responsibilities:
+
+| File          | Responsibility                                                                 |
+| ------------- | ------------------------------------------------------------------------------ |
+| `model.ts`    | Pure types, string unions, and small helper predicates                         |
+| `builtins.ts` | Built-in blueprint definitions and node catalog                                |
+| `registry.ts` | Registry lookup, duplicate detection, and built-in export                      |
+| `validate.ts` | Structural validation and invariant checks                                     |
+| `resolve.ts`  | Select a blueprint from task metadata, workflow mode, mutation, risk, recipes  |
+| `explain.ts`  | Convert resolved blueprint data into stable human-readable explanation objects |
+| `index.ts`    | Public internal exports for CLI and verification integrations                  |
+
+Do not place route logic inside command handlers. Commands should call the resolver and formatter.
+
+## Core Model
+
+The v0 model should be schema-first and small enough to validate before any runner sees it.
 
 ```ts
-type Blueprint = {
-  id: string;
-  version: number;
-  task_kinds: TaskKind[];
-  workflow_modes?: WorkflowMode[];
+export type BlueprintId =
+  | "analysis.light"
+  | "content.light"
+  | "docs.change"
+  | "code.direct"
+  | "code.branch_pr"
+  | "release.strict"
+  | "ops.approval";
+
+export type TaskKind = "analysis" | "content" | "docs" | "code" | "release" | "ops";
+
+export type WorkflowMode = "direct" | "branch_pr";
+
+export type BlueprintNodeKind =
+  | "intake"
+  | "scope"
+  | "context_resolve"
+  | "approval_gate"
+  | "worktree_start"
+  | "work_unit"
+  | "deterministic_check"
+  | "fast_local_checks"
+  | "artifact_write"
+  | "pr_artifact"
+  | "hosted_checks"
+  | "publish_or_integrate"
+  | "verify_record"
+  | "handoff"
+  | "finish";
+
+export type BlueprintNodeMode = "deterministic" | "agentic" | "approval" | "record";
+
+export type EvidenceKind =
+  | "sources"
+  | "assumptions"
+  | "context_manifest"
+  | "changed_paths"
+  | "check_result"
+  | "artifact"
+  | "approval"
+  | "external_link"
+  | "commit"
+  | "final_output"
+  | "weak_links"
+  | "rollback";
+
+export type Blueprint = {
+  id: BlueprintId;
+  version: 1;
+  title: string;
+  description: string;
+  taskKinds: TaskKind[];
+  workflowModes?: WorkflowMode[];
   nodes: BlueprintNode[];
   edges: BlueprintEdge[];
-  required_evidence: EvidenceRequirement[];
-  stop_rules: StopRule[];
-  recipe_extension_points?: RecipeExtensionPoint[];
+  requiredEvidence: EvidenceRequirement[];
+  stopRules: StopRule[];
+  recipeExtensionPoints?: RecipeExtensionPoint[];
 };
 
-type BlueprintNode = {
+export type BlueprintNode = {
   id: string;
   kind: BlueprintNodeKind;
-  mode: "deterministic" | "agentic" | "approval" | "record";
+  mode: BlueprintNodeMode;
   required: boolean;
+  protected?: boolean;
   inputs?: string[];
   outputs?: string[];
-  evidence?: string[];
-  recipe_extensions?: RecipeExtensionKind[];
+  evidence?: EvidenceKind[];
+  recipeExtensions?: RecipeExtensionKind[];
+};
+
+export type BlueprintEdge = {
+  from: string;
+  to: string;
+  condition?: string;
+};
+
+export type EvidenceRequirement = {
+  id: string;
+  kind: EvidenceKind;
+  required: boolean;
+  producedBy: string;
+  description: string;
+};
+
+export type StopRule = {
+  id: string;
+  reason: string;
+  severity: "stop" | "approval_required" | "warn";
+};
+
+export type RecipeExtensionKind =
+  | "context_hint"
+  | "check_suggestion"
+  | "output_schema"
+  | "artifact_template"
+  | "risk_hint";
+
+export type RecipeExtensionPoint = {
+  nodeKind: BlueprintNodeKind;
+  allowed: RecipeExtensionKind[];
+  rejected: string[];
 };
 ```
 
 These names are design targets, not committed public API. The important invariant is that the route
 is structured data that can be explained, validated, and later executed.
 
+## Resolved Model
+
+The resolver should not mutate tasks. It should return a decision object that command and
+verification surfaces can display.
+
+```ts
+export type BlueprintResolveInput = {
+  taskId?: string;
+  title?: string;
+  description?: string;
+  tags: string[];
+  owner?: string;
+  workflowMode?: WorkflowMode;
+  mutation: "none" | "docs" | "code" | "release" | "ops" | "unknown";
+  touchedPaths?: string[];
+  recipeHints?: RecipeHint[];
+  riskFlags?: RiskFlag[];
+  explicitBlueprintId?: BlueprintId;
+};
+
+export type RecipeHint = {
+  recipeId: string;
+  kind: RecipeExtensionKind;
+  targetNodeKind?: BlueprintNodeKind;
+  value: unknown;
+};
+
+export type RiskFlag =
+  | "network"
+  | "credentials"
+  | "deploy"
+  | "publish"
+  | "merge"
+  | "security"
+  | "external_system";
+
+export type ResolvedBlueprint = {
+  blueprint: Blueprint;
+  activeNodes: BlueprintNode[];
+  skippedNodes: SkippedNode[];
+  requiredEvidence: EvidenceRequirement[];
+  selectionReasons: string[];
+  acceptedRecipeExtensions: AcceptedRecipeExtension[];
+  rejectedRecipeExtensions: RejectedRecipeExtension[];
+  stopReasons: StopReason[];
+};
+
+export type SkippedNode = {
+  node: BlueprintNode;
+  reason: string;
+};
+
+export type AcceptedRecipeExtension = {
+  recipeId: string;
+  nodeKind: BlueprintNodeKind;
+  kind: RecipeExtensionKind;
+  reason: string;
+};
+
+export type RejectedRecipeExtension = {
+  recipeId: string;
+  nodeKind?: BlueprintNodeKind;
+  kind: RecipeExtensionKind;
+  reason: string;
+};
+
+export type StopReason = {
+  id: string;
+  severity: "stop" | "approval_required" | "warn";
+  reason: string;
+};
+```
+
+The resolver may return stop reasons. A stopped resolution is still useful because it explains why a
+runner must ask for approval, narrow scope, or choose a different route.
+
 ## Node Catalog
 
-Blueprint nodes are the reusable building blocks. They are not task statuses. A task can remain in
+Blueprint nodes are reusable building blocks. They are not task statuses. A task can remain in
 `DOING` while many blueprint nodes run inside that state.
 
 | Node kind              | Purpose                                                           | Mode          | Evidence                                  |
@@ -97,33 +324,32 @@ Blueprint nodes are the reusable building blocks. They are not task statuses. A 
 | `scope`                | Fix boundaries, assumptions, constraints, and stop rules          | deterministic | approved scope and unresolved ambiguity   |
 | `context_resolve`      | Select relevant policy, docs, files, recipes, and tools           | deterministic | context manifest and selection reasons    |
 | `approval_gate`        | Require explicit approval for risky actions                       | approval      | approval source and approved action       |
+| `worktree_start`       | Create branch/worktree when `branch_pr` mutation requires it      | deterministic | branch and worktree path                  |
 | `work_unit`            | Perform the main analysis, writing, coding, or operational work   | agentic       | produced artifact, diff, or answer        |
 | `deterministic_check`  | Run a fixed command or validation step                            | deterministic | command, result, output summary           |
+| `fast_local_checks`    | Run cheap local checks before expensive hosted checks             | deterministic | command bundle and result                 |
 | `artifact_write`       | Write a task artifact, report, PR artifact, or generated output   | deterministic | artifact path and content summary         |
+| `pr_artifact`          | Prepare PR title, body, labels, and review context                | deterministic | PR metadata or draft artifact             |
+| `hosted_checks`        | Observe hosted checks when required                               | deterministic | provider, status, URL                     |
+| `publish_or_integrate` | Push, publish, merge, release, or integrate when required         | deterministic | target, result, external link or commit   |
 | `verify_record`        | Record verification evidence in the task artifact                 | record        | verification state and evidence reference |
 | `handoff`              | Transfer unresolved work to a human or another owner              | record        | reason, next owner, remaining work        |
-| `publish_or_integrate` | Push, publish, merge, release, or integrate when required         | deterministic | target, result, external link or commit   |
 | `finish`               | Close the task through the active AgentPlane lifecycle            | deterministic | close result and final task state         |
-
-### Node Extension Rules
-
-Recipes may add hints to some nodes, but they must not redefine protected lifecycle behavior.
-
-| Node kind              | Recipe may extend                              | Recipe must not do                                 |
-| ---------------------- | ---------------------------------------------- | -------------------------------------------------- |
-| `intake`               | suggest task kind or scenario labels           | force a privileged route without resolver approval |
-| `context_resolve`      | add docs, examples, schemas, or tool hints     | bypass policy load rules or permissions            |
-| `work_unit`            | provide templates, examples, and output schema | replace task lifecycle transitions                 |
-| `deterministic_check`  | suggest checks relevant to the recipe          | disable required core checks                       |
-| `artifact_write`       | provide artifact templates                     | write outside approved scope                       |
-| `approval_gate`        | declare risks needing approval                 | remove an approval gate                            |
-| `publish_or_integrate` | provide publish metadata                       | publish or merge without core approval             |
-| `finish`               | provide summary hints                          | replace `agentplane finish` semantics              |
 
 ## Built-in Blueprints v0
 
 The first implementation should ship a small registry. The goal is route clarity, not a complete
 workflow language.
+
+| Blueprint        | Default use case                                       | Workflow modes        | Must not include by default               |
+| ---------------- | ------------------------------------------------------ | --------------------- | ----------------------------------------- |
+| `analysis.light` | Read-only analysis, research, review synthesis         | any                   | worktree, PR, CI, merge, publish          |
+| `content.light`  | Drafts, launch text, release-note drafts, editorial UX | any                   | code checks, PR, CI, merge, publish       |
+| `docs.change`    | Repository docs and policy-adjacent prose              | `direct`, `branch_pr` | hosted checks unless repo policy requires |
+| `code.direct`    | Code mutation in direct mode                           | `direct`              | branch PR lifecycle                       |
+| `code.branch_pr` | Code mutation in branch PR mode                        | `branch_pr`           | release publishing unless task is release |
+| `release.strict` | Version, package, publish, distribution                | `direct`, `branch_pr` | silent publish, skipped approval          |
+| `ops.approval`   | External systems, deploys, credentials, config changes | any                   | unapproved external mutation              |
 
 ### `analysis.light`
 
@@ -146,11 +372,12 @@ No git, PR, CI, or code checks are required by default.
 
 ### `content.light`
 
-For content drafts, copy, launch text, release notes drafts, and editorial artifacts that do not
+For content drafts, copy, launch text, release-note drafts, and editorial artifacts that do not
 change product code.
 
 ```text
-intake -> scope -> context_resolve -> work_unit -> deterministic_check -> artifact_write -> verify_record -> finish
+intake -> scope -> context_resolve -> work_unit -> deterministic_check -> artifact_write
+-> verify_record -> finish
 ```
 
 Expected evidence:
@@ -165,7 +392,8 @@ Expected evidence:
 For repository documentation changes.
 
 ```text
-intake -> scope -> context_resolve -> work_unit -> deterministic_check -> artifact_write -> verify_record -> finish
+intake -> scope -> context_resolve -> work_unit -> deterministic_check -> artifact_write
+-> verify_record -> finish
 ```
 
 Expected evidence:
@@ -180,7 +408,8 @@ Expected evidence:
 For code changes in repositories configured for direct workflow mode.
 
 ```text
-intake -> scope -> approval_gate -> context_resolve -> work_unit -> deterministic_check -> verify_record -> finish
+intake -> scope -> approval_gate -> context_resolve -> work_unit -> deterministic_check
+-> verify_record -> finish
 ```
 
 Expected evidence:
@@ -196,7 +425,8 @@ For code changes in repositories configured for branch PR workflow mode.
 
 ```text
 intake -> scope -> approval_gate -> context_resolve -> worktree_start -> work_unit
--> fast_local_checks -> pr_artifact -> hosted_checks -> integrate -> verify_record -> finish
+-> fast_local_checks -> pr_artifact -> hosted_checks -> publish_or_integrate
+-> verify_record -> finish
 ```
 
 Expected evidence:
@@ -215,7 +445,7 @@ For release, publish, version, package, and distribution work.
 
 ```text
 intake -> scope -> approval_gate -> context_resolve -> deterministic_check
--> release_candidate -> hosted_checks -> publish_or_integrate -> verify_record -> finish
+-> publish_or_integrate -> verify_record -> finish
 ```
 
 Expected evidence:
@@ -251,24 +481,30 @@ blueprint.
 Selection inputs:
 
 - explicit user intent;
+- task title and description;
 - task tags;
 - owner role;
 - workflow mode;
 - mutation scope;
-- touched paths;
+- touched paths, when known;
 - recipe hints;
-- risk level;
-- required evidence.
+- risk flags;
+- required evidence;
+- explicit blueprint id, when supplied.
 
 Resolver rules:
 
 1. Prefer the least powerful route that satisfies the task.
 2. Do not resolve consumer analysis or content tasks to code PR routes unless code mutation is
    explicitly in scope.
-3. If blueprint ambiguity changes mutation, network, publish, merge, or security risk, require a
-   user approval or a narrower task.
+3. If blueprint ambiguity changes mutation, network, publish, merge, deployment, or security risk,
+   require approval or a narrower task.
 4. Workflow mode constrains mutation topology. A blueprint cannot ignore `direct` or `branch_pr`.
 5. Recipes can influence selection but cannot override protected route decisions.
+6. Explicit blueprint ids are requests, not absolute commands. The resolver still validates
+   compatibility.
+7. Unknown mutation scope may resolve to `analysis.light` only for read-only tasks. For repository
+   mutation it must stop or request scope clarification.
 
 Example:
 
@@ -279,6 +515,41 @@ Route: intake -> scope -> context_resolve -> work_unit -> artifact_write -> veri
 Not required: PR, CI, code checks, release gates.
 Evidence: sources, assumptions, conclusions, weak links.
 ```
+
+## Validation Invariants
+
+`validateBlueprint()` should reject invalid definitions before resolver tests run.
+
+Structural invariants:
+
+- `id` is unique in the registry.
+- `version` is supported.
+- every node id is unique within the blueprint.
+- every edge references existing node ids.
+- at least one `intake`, one `scope`, one `context_resolve`, one `work_unit`, one `verify_record`,
+  and one `finish` node exists unless the blueprint is explicitly marked experimental.
+- v0 graphs are acyclic.
+- v0 graphs have a single entry node unless a future version adds explicit multi-entry semantics.
+- required evidence points to existing producer nodes.
+- protected nodes cannot be optional.
+
+Semantic invariants:
+
+- `analysis.light` and `content.light` cannot contain `worktree_start`, `pr_artifact`,
+  `hosted_checks`, or `publish_or_integrate`.
+- `code.branch_pr` requires `workflowModes: ["branch_pr"]`.
+- `code.direct` requires `workflowModes: ["direct"]`.
+- `release.strict` requires an approval gate.
+- `ops.approval` requires an approval gate and rollback evidence.
+- recipe extension points cannot target protected lifecycle replacement.
+- every stop rule has stable id, reason, and severity.
+
+Registry invariants:
+
+- built-in blueprint ids are stable.
+- built-in blueprint versions start at `1`.
+- registry lookup by id is total for built-ins.
+- duplicate built-ins fail at module load or registry construction time.
 
 ## Recipes Relationship
 
@@ -293,7 +564,8 @@ Recipes may provide:
 - deterministic check suggestions;
 - artifact templates;
 - tool profile hints;
-- evidence requirements.
+- evidence requirements;
+- risk hints.
 
 Recipes must not:
 
@@ -303,7 +575,8 @@ Recipes must not:
 - publish, merge, deploy, or access network without core approval;
 - convert analysis or content work into a code PR pipeline without resolver selection;
 - mutate protected task state directly;
-- hide required evidence.
+- hide required evidence;
+- add policy modules outside resolved route boundaries.
 
 The resolver should treat recipe data as input. It should emit a resolved blueprint with selection
 reasons, accepted recipe extensions, rejected recipe extensions, and any approval requirements.
@@ -322,6 +595,53 @@ Blueprints define expected evidence before work starts. Evidence is not always a
 | `ops.approval`   | approval source, target system, action log, rollback path                          |
 
 This keeps non-code tasks rigorous without forcing CI semantics onto them.
+
+## Explain Output
+
+The first user-visible surface should be explanation, not execution.
+
+Potential CLI shape:
+
+```text
+agentplane blueprint explain <task-id>
+agentplane blueprint explain --kind analysis --mutation none
+```
+
+Expected explain fields:
+
+```text
+blueprint_id
+blueprint_version
+route
+selection_reasons
+workflow_mode
+required_evidence
+accepted_recipe_extensions
+rejected_recipe_extensions
+stop_reasons
+not_required
+```
+
+Example:
+
+```text
+Blueprint: analysis.light@1
+Route: intake -> scope -> context_resolve -> work_unit -> artifact_write -> verify_record -> finish
+Reasons:
+- task has no repository mutation
+- task intent is analysis
+- workflow mode does not require PR lifecycle for read-only work
+Required evidence:
+- sources
+- assumptions
+- weak links
+- final output
+Not required:
+- worktree
+- PR
+- CI
+- merge
+```
 
 ## ACR Relationship
 
@@ -346,29 +666,158 @@ record enough structured evidence to audit which route was used and why the resu
 
 Runner support should be incremental.
 
-v0 should support explain and verification surfaces:
+v0 should support model, registry, validation, resolution, and explanation:
 
 ```text
-agentplane blueprint resolve <task-id>
-agentplane blueprint explain <task-id>
-agentplane task verify-show <task-id> --from-blueprint
+validate built-ins
+resolve from task metadata
+explain resolved route
+surface expected evidence
 ```
 
-A later executor can consume the resolved blueprint as a graph. The first implementation should not
-attempt a full workflow engine.
+Later runner work can consume the resolved blueprint as a graph. The first implementation should
+not attempt a full workflow engine.
+
+## Context Relationship
+
+Blueprints should eventually constrain context loading, but that is not part of the first code PR.
+
+Future context contract:
+
+- `context_resolve` records why each policy module, recipe, file group, or tool profile was loaded.
+- runner bundles expose a context budget and loaded context manifest.
+- validation rejects policy modules that are unrelated to the resolved blueprint.
+- ACR records context manifest references, not full raw context.
+
+This is broader than ACR. ACR records what happened after execution; the runner bundle and resolver
+must explain why context was available before execution.
 
 ## Stop Rules
 
 Blueprint resolution must stop or require re-approval when:
 
 - route ambiguity changes mutation behavior;
-- route ambiguity changes network, publish, merge, or deployment behavior;
+- route ambiguity changes network, publish, merge, deployment, or security behavior;
 - recipe data tries to override a protected node;
 - required evidence cannot be produced;
 - task kind conflicts with workflow mode;
 - analysis or content accidentally resolves to a code PR pipeline;
 - runner context would include more policy, tools, or files than the resolved route allows;
 - a requested route would bypass existing task lifecycle commands.
+
+## First Implementation Plan
+
+Implement in small PRs. The first PR should avoid commands and execution.
+
+### PR 1: Model, built-ins, registry, validation
+
+Scope:
+
+- add the blueprint `model.ts` module;
+- add the blueprint `builtins.ts` module;
+- add the blueprint `registry.ts` module;
+- add the blueprint `validate.ts` module;
+- export the new module set from the blueprint `index.ts`;
+- add focused tests for built-ins and validation failures.
+
+Acceptance:
+
+- all built-in blueprints validate;
+- duplicate node ids fail;
+- unknown edge targets fail;
+- missing required core nodes fail;
+- protected optional nodes fail;
+- analysis/content blueprints with PR or CI nodes fail;
+- `code.direct` and `code.branch_pr` workflow-mode mismatches fail;
+- no CLI commands are added.
+
+### PR 2: Resolver
+
+Scope:
+
+- add `resolve.ts`;
+- map task metadata to blueprint selection;
+- accept recipe hints as data;
+- emit selection reasons, accepted extensions, rejected extensions, and stop reasons.
+
+Acceptance:
+
+- read-only analysis resolves to `analysis.light`;
+- content-only work resolves to `content.light`;
+- docs mutation resolves to `docs.change`;
+- code mutation in `direct` resolves to `code.direct`;
+- code mutation in `branch_pr` resolves to `code.branch_pr`;
+- release/publish risk resolves to `release.strict` or stops for approval;
+- external-system risk resolves to `ops.approval` or stops for approval;
+- recipe attempts to remove protected nodes are rejected.
+
+### PR 3: Explain command
+
+Scope:
+
+- add `agentplane blueprint explain`;
+- load task metadata;
+- call resolver;
+- print route, reasons, required evidence, stop reasons, and not-required gates.
+
+Acceptance:
+
+- explain works for task id input;
+- explain works for synthetic kind/mutation input if that CLI shape is accepted;
+- output is stable enough for tests;
+- no node execution is performed.
+
+### PR 4: Verification surface
+
+Scope:
+
+- include blueprint expected evidence in `task verify-show`;
+- optionally record selected blueprint in task artifacts;
+- keep ACR changes minimal.
+
+Acceptance:
+
+- verify-show displays expected evidence for resolved blueprint;
+- non-code tasks do not show CI/PR expectations;
+- code PR tasks show fast local checks and PR evidence when appropriate.
+
+### PR 5: Recipe extension contract
+
+Scope:
+
+- formalize recipe hint schema;
+- validate accepted and rejected extension points;
+- expose recipe contribution reasons in explain output.
+
+Acceptance:
+
+- recipes can add context hints, check suggestions, output schemas, and artifact templates;
+- recipes cannot override workflow mode, approvals, protected nodes, or finish semantics.
+
+### PR 6: ACR and runner handoff
+
+Scope:
+
+- record blueprint id, version, route, skipped nodes, evidence refs, and stop reason in ACR;
+- pass resolved blueprint summary to runner bundles.
+
+Acceptance:
+
+- ACR is audit-friendly without storing full prompts or transcripts;
+- runner bundle can explain why context and checks are present.
+
+## Test Matrix
+
+| Area       | Tests                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------- |
+| Model      | type guards, node kind coverage, evidence kind coverage                                     |
+| Built-ins  | every built-in validates; routes match documented node order                                |
+| Registry   | duplicate ids fail; lookup succeeds for built-ins; unknown ids return typed miss            |
+| Validation | duplicate nodes, unknown edges, cycles, missing core nodes, optional protected nodes        |
+| Semantics  | analysis/content reject PR/CI nodes; release/ops require approval gates                     |
+| Resolver   | analysis/content/docs/code/release/ops selection; workflow-mode compatibility; stop reasons |
+| Recipes    | accepted hints attach to allowed nodes; rejected hints explain protected override attempts  |
+| Explain    | stable output fields; not-required gates displayed; stopped resolution displays reason      |
 
 ## Non-goals for v0
 
@@ -381,41 +830,22 @@ Blueprint v0 should not include:
 - full prompt or transcript capture in ACR;
 - replacement of `direct` or `branch_pr`;
 - replacement of task status transitions;
-- cross-repository orchestration.
+- cross-repository orchestration;
+- automatic policy-module loading enforcement.
 
-## Implementation Backlog
+## Enterprise Implication
 
-1. Add blueprint domain model.
-   - Define `Blueprint`, `BlueprintNode`, `BlueprintEdge`, `NodeKind`, `TaskKind`, `StopRule`, and
-     `EvidenceRequirement`.
-   - Keep it schema-first and independent of runner execution.
-2. Add built-in blueprint registry.
-   - Start with `analysis.light`, `content.light`, `docs.change`, `code.direct`,
-     `code.branch_pr`, `release.strict`, and `ops.approval`.
-3. Add blueprint resolver.
-   - Resolve from task tags, workflow mode, owner role, mutation scope, touched paths, recipe hints,
-     and risk level.
-   - Emit selection reasons.
-4. Add blueprint explain command.
-   - Show selected blueprint, active nodes, skipped nodes, required evidence, and recipe
-     extensions.
-5. Integrate with task verification.
-   - Let `task verify-show` include blueprint-derived verification expectations.
-6. Add recipe extension contract.
-   - Allow recipes to add context hints, check suggestions, output schemas, and artifact templates.
-   - Reject protected lifecycle overrides.
-7. Extend ACR.
-   - Record blueprint id, version, resolved nodes, skipped nodes, evidence refs, and stop reason.
-8. Add runner handoff later.
-   - Pass resolved blueprint summaries to runners before building a full executor.
+Blueprints can become the foundation for governed custom agents, but only if the core remains
+constrained.
 
-## Critical Constraint
+Enterprise-relevant properties:
 
-Do not make one code PR pipeline the default route. Blueprints exist to make AgentPlane more
-flexible. A lightweight analysis task should remain lightweight:
+- routes are formalized instead of being hidden in prose prompts;
+- custom agents can choose from approved blueprints;
+- recipes can extend context and outputs without overriding protected lifecycle gates;
+- auditors can inspect route, evidence, approvals, and stop reasons;
+- non-code departments can use lightweight analysis or content routes without inheriting developer
+  PR ceremony.
 
-```text
-intake -> scope -> context_resolve -> work_unit -> evidence -> final
-```
-
-No CI, PR, worktree, or hosted checks should appear unless the task meaning requires them.
+The target is not arbitrary agents with arbitrary lifecycles. The target is custom agents assembled
+from approved route contracts, policy modules, recipes, and evidence requirements.
