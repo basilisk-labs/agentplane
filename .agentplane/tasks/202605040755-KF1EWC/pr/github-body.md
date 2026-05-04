@@ -1,6 +1,14 @@
 Task: `202605040755-KF1EWC`
 Title: Fix launch README example role leakage
 
+## Batch Tasks
+
+- Primary: `202605040755-KF1EWC`
+- Closure policy: `all_or_fail`
+- Included: `202605040755-SM1KH2`
+- Included: `202605040756-SV9YYN`
+- Included: `202605040756-TVF732`
+
 ## Summary
 
 Fix launch README example role leakage
