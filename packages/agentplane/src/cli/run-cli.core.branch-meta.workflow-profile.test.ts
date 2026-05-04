@@ -68,7 +68,7 @@ describe("runCli", () => {
       expect(await pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).toBe(true);
       expect(
         await pathExists(path.join(root, ".agentplane", "workflows", "last-known-good.md")),
-      ).toBe(false);
+      ).toBe(true);
     } finally {
       io.restore();
     }
@@ -110,6 +110,7 @@ describe("runCli", () => {
   it("workflow restore fails with actionable error when snapshot is missing", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
+    await rm(path.join(root, ".agentplane", "workflows", "last-known-good.md"), { force: true });
     const io = captureStdIO();
     try {
       const code = await runCli(["workflow", "restore", "--root", root]);
