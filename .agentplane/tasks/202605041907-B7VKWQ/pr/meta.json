@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605041830-H4923B/dev-fast-local-checks",
+  "created_at": "2026-05-04T19:10:02.393Z",
+  "head_sha": "936c5c9d0840e9e969c8803f1348cbefd3d11d61",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605041907-B7VKWQ",
+  "updated_at": "2026-05-04T19:10:02.393Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

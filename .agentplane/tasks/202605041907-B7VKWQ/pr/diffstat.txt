@@ -1,0 +1,23 @@
+ .agentplane/WORKFLOW.md                            |   2 +-
+ .agentplane/tasks/202605041830-H4923B/README.md    | 171 +++++++++
+ .../tasks/202605041830-H4923B/pr/diffstat.txt      |   4 +
+ .../tasks/202605041830-H4923B/pr/github-body.md    |  40 ++
+ .../tasks/202605041830-H4923B/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202605041830-H4923B/pr/meta.json |  14 +
+ .../tasks/202605041830-H4923B/pr/notes.jsonl       |   0
+ .agentplane/tasks/202605041830-H4923B/pr/review.md |  64 ++++
+ .../tasks/202605041830-H4923B/pr/verify.log        |   0
+ .agentplane/tasks/202605041903-H4PPTY/README.md    | 137 +++++++
+ .../tasks/202605041903-H4PPTY/pr/diffstat.txt      |  15 +
+ .../tasks/202605041903-H4PPTY/pr/github-body.md    |  50 +++
+ .../tasks/202605041903-H4PPTY/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202605041903-H4PPTY/pr/meta.json |  14 +
+ .../tasks/202605041903-H4PPTY/pr/notes.jsonl       |   0
+ .agentplane/tasks/202605041903-H4PPTY/pr/review.md |  73 ++++
+ .../tasks/202605041903-H4PPTY/pr/verify.log        |   0
+ docs/developer/blueprints.mdx                      | 421 +++++++++++++++++++++
+ docs/developer/code-quality.mdx                    |  26 +-
+ docs/developer/contributing.mdx                    |  12 +-
+ docs/index.mdx                                     |  31 +-
+ website/sidebars.ts                                |   1 +
+ 22 files changed, 1059 insertions(+), 18 deletions(-)
