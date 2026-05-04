@@ -63,6 +63,10 @@ async function createPseudoInstalledAgentplane(): Promise<string> {
   return realpath(path.join(installRoot, "bin", "agentplane.js"));
 }
 
+function apBinFromAgentplaneBin(binPath: string): string {
+  return path.join(path.dirname(binPath), "ap.js");
+}
+
 function runInstalled(
   binPath: string,
   args: readonly string[],
@@ -159,6 +163,18 @@ async function approvePlan(binPath: string, root: string, taskId: string): Promi
 }
 
 describe("installed AgentPlane smoke", { timeout: INSTALLED_SMOKE_TIMEOUT_MS }, () => {
+  it("exposes the experimental ap agent-mode entrypoint", async () => {
+    const binPath = await createPseudoInstalledAgentplane();
+    const apBin = apBinFromAgentplaneBin(binPath);
+
+    const version = await expectInstalledOk(apBin, ["--version"], process.cwd());
+    expect(version.stdout.trim()).toMatch(/^\d+\.\d+\.\d+/u);
+
+    const help = await expectInstalledOk(apBin, ["help"], process.cwd());
+    expect(help.stdout).toContain("Usage:");
+    expect(help.stdout).not.toContain("Examples:");
+  });
+
   it("initializes a clean direct project and leaves managed pre-push hooks usable", async () => {
     const binPath = await createPseudoInstalledAgentplane();
     const root = await createSeedRepo();

@@ -52,6 +52,27 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 
+async function withApAgentMode<T>(fn: () => Promise<T>): Promise<T> {
+  const previousAlias = process.env.AGENTPLANE_CLI_ALIAS;
+  const previousAgentMode = process.env.AGENTPLANE_AGENT_MODE;
+  const previousPrompts = process.env.AGENTPLANE_PROMPTS;
+  const previousNoUpdateCheck = process.env.AGENTPLANE_NO_UPDATE_CHECK;
+  try {
+    process.env.AGENTPLANE_CLI_ALIAS = "ap";
+    process.env.AGENTPLANE_AGENT_MODE = "1";
+    return await fn();
+  } finally {
+    if (previousAlias === undefined) delete process.env.AGENTPLANE_CLI_ALIAS;
+    else process.env.AGENTPLANE_CLI_ALIAS = previousAlias;
+    if (previousAgentMode === undefined) delete process.env.AGENTPLANE_AGENT_MODE;
+    else process.env.AGENTPLANE_AGENT_MODE = previousAgentMode;
+    if (previousPrompts === undefined) delete process.env.AGENTPLANE_PROMPTS;
+    else process.env.AGENTPLANE_PROMPTS = previousPrompts;
+    if (previousNoUpdateCheck === undefined) delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
+    else process.env.AGENTPLANE_NO_UPDATE_CHECK = previousNoUpdateCheck;
+  }
+}
+
 describe("runCli", () => {
   it("prints help on --help", async () => {
     const io = captureStdIO();
@@ -170,6 +191,52 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
+  });
+
+  it("uses compact help by default in experimental ap agent mode", async () => {
+    await withApAgentMode(async () => {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["help", "task"]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("Usage:");
+        expect(io.stdout).toContain("agentplane task <subcommand> [args] [options]");
+        expect(io.stdout).not.toContain("Examples:");
+      } finally {
+        io.restore();
+      }
+    });
+  });
+
+  it("expands experimental ap task shorthands before command matching", async () => {
+    await withApAgentMode(async () => {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["next", "--help"]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("agentplane task next [options]");
+        expect(io.stdout).not.toContain("Examples:");
+      } finally {
+        io.restore();
+      }
+    });
+  });
+
+  it("keeps ap init non-interactive and emits structured errors by default", async () => {
+    await withApAgentMode(async () => {
+      const root = await mkTempDir();
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["init", "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stdout).toContain('"code": "E_USAGE"');
+        expect(io.stdout).toContain("Non-interactive init requires");
+        expect(process.env.AGENTPLANE_PROMPTS).toBe("plain");
+        expect(process.env.AGENTPLANE_NO_UPDATE_CHECK).toBe("1");
+      } finally {
+        io.restore();
+      }
+    });
   });
 
   it("keeps command-scoped --version options distinct from the global version flag", async () => {

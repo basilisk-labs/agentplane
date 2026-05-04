@@ -15,6 +15,7 @@ import { suggestOne } from "./spec/suggest.js";
 import { COMMANDS, matchCommandCatalog } from "./run-cli/command-catalog.js";
 import { parseGlobalArgs, resolveOutputMode, runWithOutputMode } from "./run-cli/globals.js";
 import { maybeWarnOnUpdate } from "./run-cli/update-warning.js";
+import { resolveAgentModeArgv } from "./run-cli/agent-mode.js";
 const HELP_TAIL_OPTIONS = new Set(["--compact", "--json"]);
 
 type CliResolvedProject = Awaited<ReturnType<typeof resolveProject>>;
@@ -44,13 +45,18 @@ async function maybeResolveProject(opts: {
 export async function runCli(argv: string[]): Promise<number> {
   let jsonErrors = false;
   try {
-    const parsedGlobals = parseGlobalArgs(argv);
+    const agentMode = resolveAgentModeArgv(argv);
+    const parsedGlobals = parseGlobalArgs(agentMode.argv);
     jsonErrors = parsedGlobals.jsonErrorMode;
     if (parsedGlobals.error) {
       throw parsedGlobals.error;
     }
 
     const { globals, rest } = parsedGlobals;
+    if (agentMode.enabled) {
+      globals.noUpdateCheck = true;
+      globals.jsonErrors = true;
+    }
     const outputMode = resolveOutputMode(globals.outputMode);
     jsonErrors = globals.jsonErrors || outputMode === "json";
     const cwd = process.cwd();
