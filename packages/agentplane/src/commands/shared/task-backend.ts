@@ -23,6 +23,7 @@ export {
 } from "./task-backend-branch-snapshot.js";
 
 export type CommandMemo = {
+  tasks?: Promise<TaskData[]>;
   taskProjection?: Promise<TaskSummary[]>;
   changedPaths?: Promise<string[]>;
   headCommit?: Promise<string>;
@@ -281,6 +282,12 @@ export async function listTaskSummariesMemo(ctx: CommandContext): Promise<TaskSu
     return tasks.map((task) => toTaskSummary(task));
   })();
   return await ctx.memo.taskProjection;
+}
+
+export async function listTasksMemo(ctx: CommandContext): Promise<TaskData[]> {
+  ctx.memo ??= {};
+  ctx.memo.tasks ??= ctx.taskBackend.listTasks();
+  return await ctx.memo.tasks;
 }
 
 export async function listTaskProjection(ctx: CommandContext): Promise<TaskSummary[] | null> {

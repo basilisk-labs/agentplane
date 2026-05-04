@@ -86,6 +86,11 @@ export async function findLocallyShippedBranchPrTasks(opts: {
     if (!branch) continue;
 
     const verificationSource = hasTaskVerificationForLocalSync({ task, meta });
+    const metaNeedsSync = Boolean(meta && meta.status !== "MERGED");
+    const taskNeedsSync = currentStatus !== "DONE" && verificationSource !== null;
+    if (!taskNeedsSync && !metaNeedsSync) continue;
+    if (!taskNeedsSync && currentStatus !== "DONE") continue;
+
     const commitHash =
       task.commit?.hash?.trim() ?? meta?.merge_commit?.trim() ?? meta?.head_sha?.trim() ?? "";
     if (!commitHash) continue;
@@ -105,11 +110,6 @@ export async function findLocallyShippedBranchPrTasks(opts: {
     ) {
       continue;
     }
-
-    const metaNeedsSync = Boolean(meta && meta.status !== "MERGED");
-    const taskNeedsSync = currentStatus !== "DONE" && verificationSource !== null;
-    if (!taskNeedsSync && !metaNeedsSync) continue;
-    if (!taskNeedsSync && currentStatus !== "DONE") continue;
 
     matches.push({
       taskId: task.id,
