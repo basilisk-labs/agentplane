@@ -99,9 +99,7 @@ describe("render-homebrew-formula script", () => {
     expect(formula).not.toContain("--min-release-age");
     expect(evidence.installStrategy).toBe("bun_single_file_executable");
     expect(evidence.externalChannelSwitchGate.bunDefaultEligible).toBe(true);
-    expect(evidence.assets.darwinArm64.name).toBe(
-      "agentplane-bun-v0.4.1-darwin-arm64.tar.gz",
-    );
+    expect(evidence.assets.darwinArm64.name).toBe("agentplane-bun-v0.4.1-darwin-arm64.tar.gz");
     expect(evidence.assets.darwinX64.name).toBe("agentplane-bun-v0.4.1-darwin-x64.tar.gz");
   });
 });
