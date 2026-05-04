@@ -15,7 +15,7 @@ Add an experimental short ap entrypoint with agent-oriented defaults, non-intera
 ## Verification
 
 - State: ok
-- Note: Current installed .agentplane/agents role cards now prefer ap command notation; doctor, routing, and diff whitespace checks passed.
+- Note: Reduced ap test coverage footprint to satisfy oversized-test baseline while preserving installed ap entrypoint and shorthand coverage; installed smoke and oversized baseline checks passed.
 - Full verification checklist lives in local review.md.
 
 ## Handoff Notes

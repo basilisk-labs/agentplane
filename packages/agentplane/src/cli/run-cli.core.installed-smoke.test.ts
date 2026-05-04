@@ -173,6 +173,10 @@ describe("installed AgentPlane smoke", { timeout: INSTALLED_SMOKE_TIMEOUT_MS }, 
     const help = await expectInstalledOk(apBin, ["help"], process.cwd());
     expect(help.stdout).toContain("Usage:");
     expect(help.stdout).not.toContain("Examples:");
+
+    const nextHelp = await expectInstalledOk(apBin, ["next", "--help"], process.cwd());
+    expect(nextHelp.stdout).toContain("agentplane task next [options]");
+    expect(nextHelp.stdout).not.toContain("Examples:");
   });
 
   it("initializes a clean direct project and leaves managed pre-push hooks usable", async () => {
