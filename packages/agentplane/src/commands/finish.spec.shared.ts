@@ -5,13 +5,16 @@ import {
   findRepoWideAllowPrefixes,
   repoWideAllowPrefixMessage,
 } from "./shared/allow-prefix-policy.js";
+import { validateTextPayloadSource } from "./shared/text-payload.js";
 import { validateVerifyFindingSource } from "./task/verify-command-shared.js";
 
 export type FinishParsed = {
   taskIds: string[];
   author: string;
-  body: string;
+  body?: string;
+  bodyFile?: string;
   result?: string;
+  resultFile?: string;
   risk?: "low" | "med" | "high";
   breaking: boolean;
   commit?: string;
@@ -72,6 +75,18 @@ export function validateFinishRaw(raw: ParsedRaw, spec: CommandSpec<FinishParsed
   const statusCommitAllow = toStringList(raw.opts["status-commit-allow"]);
   const commitAutoAllow = raw.opts["commit-auto-allow"] === true;
   const statusCommitAutoAllow = raw.opts["status-commit-auto-allow"] === true;
+  validateTextPayloadSource(
+    raw,
+    spec,
+    { inline: "body", file: "body-file", label: "structured verified comment body" },
+    { required: true, command: "finish" },
+  );
+  validateTextPayloadSource(
+    raw,
+    spec,
+    { inline: "result", file: "result-file", label: "result summary" },
+    { command: "finish" },
+  );
 
   if (findRepoWideAllowPrefixes(commitAllow).length > 0) {
     throw usageError({
@@ -209,8 +224,10 @@ export function parseFinishRaw(raw: ParsedRaw): FinishParsed {
       ? raw.args["task-id"].filter((x): x is string => typeof x === "string")
       : [],
     author: raw.opts.author as string,
-    body: raw.opts.body as string,
-    result: raw.opts.result as string | undefined,
+    body: typeof raw.opts.body === "string" ? raw.opts.body : undefined,
+    bodyFile: typeof raw.opts["body-file"] === "string" ? raw.opts["body-file"] : undefined,
+    result: typeof raw.opts.result === "string" ? raw.opts.result : undefined,
+    resultFile: typeof raw.opts["result-file"] === "string" ? raw.opts["result-file"] : undefined,
     risk: raw.opts.risk as FinishParsed["risk"],
     breaking: raw.opts.breaking === true,
     commit: raw.opts.commit as string | undefined,
