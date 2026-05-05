@@ -24,12 +24,25 @@ Created: 2026-05-05T18:43:07.892Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T18:43:07.892Z
+- Updated: 2026-05-05T19:10:50.039Z
 - Branch: task/202605051842-BEJAY8/blueprint-core-model
-- Head: 8dd6eaa8801f
+- Head: 10b9c2af6987
 
 ```text
-No changes detected.
+ .agentplane/policy/incidents.md                    |   1 +
+ docs/developer/blueprints.mdx                      |   4 +-
+ .../documentation-information-architecture.mdx     |  36 +--
+ docs/index.mdx                                     |  16 +-
+ packages/agentplane/assets/policy/incidents.md     |   1 +
+ .../src/backends/task-backend.cloud.test.ts        |  23 +-
+ .../src/backends/task-backend/cloud-backend.ts     |  16 +-
+ packages/agentplane/src/blueprints/builtins.ts     | 307 +++++++++++++++++++
+ packages/agentplane/src/blueprints/index.ts        |  27 ++
+ packages/agentplane/src/blueprints/model.ts        | 138 +++++++++
+ packages/agentplane/src/blueprints/registry.ts     |  48 +++
+ .../agentplane/src/blueprints/validate.test.ts     | 198 +++++++++++++
+ packages/agentplane/src/blueprints/validate.ts     | 326 +++++++++++++++++++++
+ 13 files changed, 1094 insertions(+), 47 deletions(-)
 ```
 
 </details>
