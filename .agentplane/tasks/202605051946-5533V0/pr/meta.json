@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-05T19:59:02Z",
   "base": "main",
   "branch": "task/202605051946-5533V0/v05-roadmaps",
   "created_at": "2026-05-05T19:47:26.447Z",
-  "head_sha": "d99a99e264b6098d2ad0a481f6614a03f66c9dbf",
+  "head_sha": "ff5b5e947163fc9816672926f8bbd7985826c3cc",
   "last_verified_at": "2026-05-05T19:57:39.881Z",
   "last_verified_sha": "d99a99e264b6098d2ad0a481f6614a03f66c9dbf",
+  "merge_commit": "f2bad0ed32bed75b512069f0fa10ce8e079845f2",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-05T19:59:02Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605051946-5533V0",
-  "updated_at": "2026-05-05T19:50:49.033Z",
+  "updated_at": "2026-05-05T19:59:02Z",
   "verify": {
     "status": "pass"
   }
