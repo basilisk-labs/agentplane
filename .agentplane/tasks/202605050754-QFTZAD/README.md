@@ -1,10 +1,11 @@
 ---
 id: "202605050754-QFTZAD"
 title: "Generate Obsidian task navigation"
-status: "DOING"
+result_summary: "Merged via PR #907."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-05T09:11:32.494Z"
   updated_by: "CODER"
   note: "Expanded scope to resolve task-readme review blockers. Verified Obsidian projection plus README v3 canonical sections behavior, task-store no-op handling, release evidence audit, docs gates, doctor, and ci:local:fast."
-commit: null
+commit:
+  hash: "2708fff14ac954180b5f099bc26086465ee6e903"
+  message: "🧭 QFTZAD task: Generate Obsidian task navigation [202605050754-QFTZAD]"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved Obsidian task navigation projection in this task worktree, keeping task README files canonical and limiting generated Markdown outputs to the requested navigation layer."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #907 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -52,14 +58,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Expanded scope to resolve task-readme review blockers. Verified Obsidian projection plus README v3 canonical sections behavior, task-store no-op handling, release evidence audit, docs gates, doctor, and ci:local:fast."
+  -
+    type: "status"
+    at: "2026-05-05T09:52:18.885Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #907 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-05T09:11:32.509Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T09:52:18.890Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add an Obsidian-friendly generated Markdown projection under .agentplane so task READMEs remain canonical while users and agents can browse tasks by status, tag, owner, and dependency links."
 sections:
   Summary: |-
     Generate Obsidian task navigation
-
+    
     Add an Obsidian-friendly generated Markdown projection under .agentplane so task READMEs remain canonical while users and agents can browse tasks by status, tag, owner, and dependency links.
   Scope: |-
     - In scope: Add an Obsidian-friendly generated Markdown projection under .agentplane so task READMEs remain canonical while users and agents can browse tasks by status, tag, owner, and dependency links.
@@ -78,29 +91,29 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-05T08:07:02.785Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Implemented Obsidian Markdown task navigation and passed focused tests, typecheck, docs CLI freshness, repo-local doctor, policy routing, and generated projection smoke.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T07:54:54.370Z, excerpt_hash=sha256:1a70b84addbbbccad9ae64c15414191ea5fc4e9d9b7dc6c3f9af11525dcda6fb
-
+    
     ### 2026-05-05T08:10:49.571Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Reverified after fixing Docs CI IA handling for generated Obsidian navigation paths.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T08:07:40.204Z, excerpt_hash=sha256:1a70b84addbbbccad9ae64c15414191ea5fc4e9d9b7dc6c3f9af11525dcda6fb
-
+    
     ### 2026-05-05T09:11:32.494Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Expanded scope to resolve task-readme review blockers. Verified Obsidian projection plus README v3 canonical sections behavior, task-store no-op handling, release evidence audit, docs gates, doctor, and ci:local:fast.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T08:10:49.576Z, excerpt_hash=sha256:1a70b84addbbbccad9ae64c15414191ea5fc4e9d9b7dc6c3f9af11525dcda6fb
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -114,11 +127,11 @@ sections:
     - Command: node packages/agentplane/bin/agentplane.js doctor. Result: pass. Evidence: errors=0 warnings=0. Scope: repo-local runtime health.
     - Command: node packages/agentplane/bin/agentplane.js task obsidian. Result: pass. Evidence: files=247 tasks=2399. Scope: generated Obsidian projection smoke.
     - Residual: global `agentplane doctor` still reports global-in-framework runtime warnings in this shell; repo-local binary doctor is clean after bootstrap. This is environment/PATH state, not a task regression.
-
+    
     - Observation: Command: bun run docs:ia:check; Result: pass; Evidence: docs IA, sidebar coverage, and current path references are aligned. Command: bun run docs:cli:check; Result: pass. Command: bun test packages/agentplane/src/commands/task/obsidian.unit.test.ts; Result: pass, 3 tests. Command: bun run typecheck; Result: pass. Command: node packages/agentplane/bin/agentplane.js doctor; Result: pass with zero warnings. Command: node packages/agentplane/bin/agentplane.js task obsidian; Result: pass, files=247 tasks=2399.
       Impact: Docs CI now accepts the generated, gitignored Obsidian projection paths without weakening general stale-path detection.
       Resolution: Allow only the explicit .agentplane Obsidian projection patterns in the docs IA generated-path allowlist.
-
+    
     - Observation: Codex review threads flagged partial frontmatter.sections truncating body-only task-doc sections and pruning freeform Markdown context around canonical task sections.
       Impact: taskReadmeDocBody now merges partial canonical sections with body sections; renderTaskReadme preserves non-canonical/freeform context while pruning stale canonical sections; task-store comparison is canonical-aware.
       Resolution: Added regression coverage and updated tests/scripts to consume canonical README v3 sections rather than raw duplicated Markdown headings.
