@@ -24,12 +24,18 @@ Created: 2026-05-05T06:47:03.275Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T07:33:38.385Z
+- Updated: 2026-05-05T07:34:18.597Z
 - Branch: task/202605050639-SK2B26/readme-context-layer
-- Head: acb31646cdc0
+- Head: 7108af0ca8e6
 
 ```text
-No changes detected.
+ .../src/backends/task-backend.local.test.ts        |  6 +-
+ .../src/commands/task/migrate-doc.test.ts          | 20 +++--
+ packages/core/src/tasks/task-readme.test.ts        | 86 +++++++++++++++++++++-
+ packages/core/src/tasks/task-readme.ts             | 80 ++++++++++++++++++--
+ packages/core/src/tasks/task-store.test.ts         | 38 +++++++---
+ packages/core/src/tasks/task-store.ts              |  9 ++-
+ 6 files changed, 206 insertions(+), 33 deletions(-)
 ```
 
 </details>
