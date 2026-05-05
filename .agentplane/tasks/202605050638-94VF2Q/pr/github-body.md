@@ -1,6 +1,5 @@
 Task: `202605050638-94VF2Q`
 Title: Make github-body.md a minimal hosted PR projection
-Canonical task record: `.agentplane/tasks/202605050638-94VF2Q/README.md`
 
 ## Summary
 
@@ -17,7 +16,11 @@ Trim branch_pr pr/github-body.md to the hosted-review payload only: task id, tit
 
 - State: ok
 - Note: Focused review-template tests, artifact snapshot tests, ESLint, Prettier, routing check, and local-base PR evidence regeneration passed.
-- Canonical workflow state lives in the task README.
+- Full verification checklist lives in local review.md.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
 
 <details>
 <summary>Raw evidence</summary>
@@ -27,10 +30,39 @@ Trim branch_pr pr/github-body.md to the hosted-review payload only: task id, tit
 - Head: 9a76a25386fa
 
 ```text
- .../commands/pr/internal/review-template.test.ts   | 40 ++++++++++++++++++++++
- .../src/commands/pr/internal/review-template.ts    | 37 ++++++++------------
- .../src/commands/pr/internal/sync-branch.ts        | 21 +++++++++++-
- 3 files changed, 75 insertions(+), 23 deletions(-)
+ .agentplane/tasks/202605050638-BA00XR/README.md    | 139 +++++++++++++++++++
+ .agentplane/tasks/202605050638-BA00XR/acr.json     | 149 +++++++++++++++++++++
+ .../tasks/202605050638-BA00XR/pr/diffstat.txt      |   2 +
+ .../tasks/202605050638-BA00XR/pr/github-body.md    |  37 +++++
+ .../tasks/202605050638-BA00XR/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202605050638-BA00XR/pr/meta.json |  14 ++
+ .../tasks/202605050638-BA00XR/pr/notes.jsonl       |   0
+ .agentplane/tasks/202605050638-BA00XR/pr/review.md |  58 ++++++++
+ .../tasks/202605050638-BA00XR/pr/verify.log        |   0
+ .agentplane/tasks/202605050638-F7A5MV/README.md    | 139 +++++++++++++++++++
+ .agentplane/tasks/202605050638-F7A5MV/acr.json     | 149 +++++++++++++++++++++
+ .../tasks/202605050638-F7A5MV/pr/diffstat.txt      |  25 ++++
+ .../tasks/202605050638-F7A5MV/pr/github-body.md    |  60 +++++++++
+ .../tasks/202605050638-F7A5MV/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202605050638-F7A5MV/pr/meta.json |  14 ++
+ .agentplane/tasks/202605050638-F7A5MV/pr/review.md |  81 +++++++++++
+ .agentplane/tasks/202605050638-Y1MR6T/README.md    | 139 +++++++++++++++++++
+ .agentplane/tasks/202605050638-Y1MR6T/acr.json     | 149 +++++++++++++++++++++
+ .../tasks/202605050638-Y1MR6T/pr/diffstat.txt      |  16 +++
+ .../tasks/202605050638-Y1MR6T/pr/github-body.md    |  51 +++++++
+ .../tasks/202605050638-Y1MR6T/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202605050638-Y1MR6T/pr/meta.json |  14 ++
+ .agentplane/tasks/202605050638-Y1MR6T/pr/review.md |  72 ++++++++++
+ docs/user/branching-and-pr-artifacts.mdx           |  17 ++-
+ .../src/commands/pr/integrate/artifacts.ts         |  15 ---
+ .../src/commands/pr/integrate/internal/prepare.ts  |   4 +-
+ .../pr/internal/pr-artifact-snapshot.test.ts       |  24 +++-
+ .../commands/pr/internal/pr-artifact-snapshot.ts   |   1 -
+ .../commands/pr/internal/review-template.test.ts   |  93 ++++++++++++-
+ .../src/commands/pr/internal/review-template.ts    | 128 ++++++------------
+ .../src/commands/pr/internal/sync-branch.ts        |  21 ++-
+ .../src/commands/pr/internal/sync-open-step.ts     |   7 -
+ 32 files changed, 1502 insertions(+), 119 deletions(-)
 ```
 
 </details>

@@ -1,10 +1,11 @@
 ---
 id: "202605050638-94VF2Q"
 title: "Make github-body.md a minimal hosted PR projection"
-status: "DOING"
+result_summary: "Reduced github-body.md to a hosted PR projection and prevented stale upstream base from adding old task noise to PR evidence."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-05T07:19:17.702Z"
   updated_by: "CODER"
   note: "Focused review-template tests, artifact snapshot tests, ESLint, Prettier, routing check, and local-base PR evidence regeneration passed."
-commit: null
+commit:
+  hash: "4f4a0026cd695f311009fe742f084ad7c4094e3f"
+  message: "🔀 94VF2Q integrate: Minimize hosted PR body"
 comments:
   -
     author: "CODER"
     body: "Start: trimming github-body.md to a minimal hosted PR projection while keeping canonical review and lifecycle detail in task artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged minimal hosted PR body into main after focused renderer, artifact snapshot, lint, format, routing, and local-base PR evidence checks."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused review-template tests, artifact snapshot tests, ESLint, Prettier, routing check, and local-base PR evidence regeneration passed."
+  -
+    type: "status"
+    at: "2026-05-05T07:19:44.539Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged minimal hosted PR body into main after focused renderer, artifact snapshot, lint, format, routing, and local-base PR evidence checks."
 doc_version: 3
-doc_updated_at: "2026-05-05T07:19:17.709Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T07:19:44.540Z"
+doc_updated_by: "INTEGRATOR"
 description: "Trim branch_pr pr/github-body.md to the hosted-review payload only: task id, title, summary/scope, verification status, and raw evidence. Avoid copying the full local review document or rollback/risk content that already lives in the task README."
 sections:
   Summary: |-
