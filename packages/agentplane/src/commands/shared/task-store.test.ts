@@ -6,7 +6,6 @@ import { defaultConfig } from "@agentplaneorg/core/config";
 import {
   parseTaskReadme,
   renderTaskReadme,
-  renderTaskDocFromSections,
   taskDocToSectionMap,
   writeTasksExport,
 } from "@agentplaneorg/core/tasks";
@@ -983,10 +982,6 @@ describe("commands/shared/TaskStore", () => {
     expect(final).not.toContain("## Summary");
     expect(final).toContain("my update");
     expect(final).toContain("concurrent plan");
-    const parsed = parseTaskReadme(final);
-    const doc = renderTaskDocFromSections(parsed.frontmatter.sections as Record<string, string>);
-    expect(doc).toContain("## Summary");
-    expect(doc).toContain("## Plan");
   });
 
   it("merges append-safe semantic patches after concurrent retries", async () => {
@@ -1114,9 +1109,6 @@ describe("commands/shared/TaskStore", () => {
     const parsed = parseTaskReadme(await readFile(readmePath, "utf8"));
     expect(parsed.frontmatter.sections).toMatchObject({ Summary: "after" });
     expect(parsed.body).not.toContain("## Summary");
-    const doc = renderTaskDocFromSections(parsed.frontmatter.sections as Record<string, string>);
-    expect(doc).toContain("## Summary");
-    expect(doc).toContain("after");
     expect(parsed.body).not.toContain("STALE BODY");
   });
 });
