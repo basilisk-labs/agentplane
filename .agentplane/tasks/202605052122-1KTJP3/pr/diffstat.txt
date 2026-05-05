@@ -1,3 +1,11 @@
+ .agentplane/tasks/202605052122-1KTJP3/README.md    | 125 +++++++++++++
+ .../tasks/202605052122-1KTJP3/pr/diffstat.txt      |  32 ++++
+ .../tasks/202605052122-1KTJP3/pr/github-body.md    |  67 +++++++
+ .../tasks/202605052122-1KTJP3/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202605052122-1KTJP3/pr/meta.json |  14 ++
+ .../tasks/202605052122-1KTJP3/pr/notes.jsonl       |   0
+ .agentplane/tasks/202605052122-1KTJP3/pr/review.md |  88 +++++++++
+ .../tasks/202605052122-1KTJP3/pr/verify.log        |   0
  docs/developer/blueprints.mdx                      | 100 ++++++++++
  docs/user/cli-reference.generated.mdx              |  11 +-
  .../src/backends/task-backend/shared/record.ts     |  46 +++++
@@ -29,4 +37,4 @@
  packages/spec/schemas/tasks-export.schema.json     | 207 ++++++++++++++++++---
  schemas/task-readme-frontmatter.schema.json        | 205 +++++++++++++++++---
  schemas/tasks-export.schema.json                   | 207 ++++++++++++++++++---
- 31 files changed, 1778 insertions(+), 181 deletions(-)
+ 39 files changed, 2105 insertions(+), 181 deletions(-)

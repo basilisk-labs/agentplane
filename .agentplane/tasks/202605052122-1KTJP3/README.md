@@ -1,10 +1,11 @@
 ---
 id: "202605052122-1KTJP3"
 title: "Add structured blueprint intent contract"
-status: "DOING"
+result_summary: "integrate: rebase task/202605052122-1KTJP3/structured-blueprint-intent"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-05T21:33:05.785Z"
   updated_by: "CODER"
   note: "Verified: structured blueprint intent fields, resolver precedence, task creation flags, commit-scope synchronization, schema/docs generation, and focused regression tests passed."
-commit: null
+commit:
+  hash: "58f0cf660f3b9ce8184dcf2019d4eccfe513059e"
+  message: "🧪 1KTJP3 task: record verification evidence"
 comments:
   -
     author: "CODER"
     body: "Start: Implement structured blueprint intent fields, resolver precedence, commit-scope synchronization checks, and documentation in the dedicated task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via rebase; verify=skipped(no commands); pr=.agentplane/tasks/202605052122-1KTJP3/pr."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: structured blueprint intent fields, resolver precedence, task creation flags, commit-scope synchronization, schema/docs generation, and focused regression tests passed."
+  -
+    type: "status"
+    at: "2026-05-05T21:36:15.445Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via rebase; verify=skipped(no commands); pr=.agentplane/tasks/202605052122-1KTJP3/pr."
 doc_version: 3
-doc_updated_at: "2026-05-05T21:33:05.789Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T21:36:15.447Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement structured task intent fields for blueprint resolution, synchronize commit scope vocabulary with resolved blueprint semantics, and document the authoring path without adding Quint."
 sections:
   Summary: |-

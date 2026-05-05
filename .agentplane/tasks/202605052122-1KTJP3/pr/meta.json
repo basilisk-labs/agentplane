@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-05T21:36:15.414Z",
   "base": "main",
   "branch": "task/202605052122-1KTJP3/structured-blueprint-intent",
   "created_at": "2026-05-05T21:23:02.413Z",
-  "head_sha": "56a624633c72610de8847fd7978926ca40fd995a",
+  "head_sha": "58f0cf660f3b9ce8184dcf2019d4eccfe513059e",
   "last_verified_at": "2026-05-05T21:33:05.785Z",
   "last_verified_sha": "56a624633c72610de8847fd7978926ca40fd995a",
+  "merge_commit": "58f0cf660f3b9ce8184dcf2019d4eccfe513059e",
+  "merge_strategy": "rebase",
+  "merged_at": "2026-05-05T21:36:15.414Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605052122-1KTJP3",
-  "updated_at": "2026-05-05T21:32:47.578Z",
+  "updated_at": "2026-05-05T21:36:15.414Z",
   "verify": {
     "status": "pass"
   }
