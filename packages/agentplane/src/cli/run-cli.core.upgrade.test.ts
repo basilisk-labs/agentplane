@@ -196,6 +196,57 @@ describe("runCli", () => {
   );
 
   it(
+    "upgrade commits tracked legacy config removal when migrating to WORKFLOW-only config",
+    { timeout: WORKFLOW_RUNTIME_ARTIFACTS_TIMEOUT_MS },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await configureGitUser(root);
+
+      const configPath = path.join(root, ".agentplane", "config.json");
+      const workflowPath = path.join(root, ".agentplane", "WORKFLOW.md");
+      const lastKnownGoodPath = path.join(root, ".agentplane", "workflows", "last-known-good.md");
+      await mkdir(path.dirname(configPath), { recursive: true });
+      await writeFile(configPath, JSON.stringify(defaultConfig(), null, 2) + "\n", "utf8");
+      await commitAll(root, "✨ fixture: tracked legacy config");
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["upgrade", "--yes", "--no-backup", "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("Upgrade commit:");
+      } finally {
+        io.restore();
+      }
+
+      await expect(pathExists(configPath)).resolves.toBe(false);
+      await expect(pathExists(workflowPath)).resolves.toBe(true);
+      await expect(pathExists(lastKnownGoodPath)).resolves.toBe(true);
+
+      const execFileAsync = promisify(execFile);
+      const { stdout: statusOut } = await execFileAsync(
+        "git",
+        ["status", "--short", "--untracked-files=no"],
+        {
+          cwd: root,
+          env: cleanGitEnv(),
+        },
+      );
+      expect(String(statusOut ?? "").trim()).toBe("");
+
+      const { stdout: showOut } = await execFileAsync(
+        "git",
+        ["show", "--name-status", "--format=", "--no-renames", "HEAD"],
+        {
+          cwd: root,
+          env: cleanGitEnv(),
+        },
+      );
+      expect(String(showOut ?? "")).toContain("D\t.agentplane/config.json");
+      expect(String(showOut ?? "")).toContain("A\t.agentplane/WORKFLOW.md");
+    },
+  );
+
+  it(
     "recovers a legacy README v2 task after upgrade via task migrate-doc and export",
     { timeout: 60_000 },
     async () => {
