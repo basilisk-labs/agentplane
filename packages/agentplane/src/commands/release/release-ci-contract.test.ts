@@ -24,10 +24,16 @@ describe("release CI contract", () => {
     const scripts = packageJson.scripts ?? {};
     const releaseCiCheck = scripts["release:ci-check"] ?? "";
     const releaseExtras = scripts["ci:release-extras"] ?? "";
+    const releaseCheck = scripts["release:check"] ?? "";
 
     expect(scripts.ci).toBe("bun run ci:contract && bun run ci:test");
     expect(releaseCiCheck).toBe("bun run ci:contract && bun run ci:release-extras");
+    expect(releaseCheck).toContain("bun run release:incidents:check");
+    expect(releaseCheck.indexOf("bun run release:incidents:check")).toBeLessThan(
+      releaseCheck.indexOf("bun run release:acr-example:check"),
+    );
     expect(scripts["ci:contract"]).toContain("bun run release:parity");
+    expect(scripts["release:incidents:check"]).toBe("node scripts/check-release-incidents.mjs");
     expect(scripts["ci:test"]).toContain("bun run typecheck");
     expect(releaseExtras).toContain("bun run coverage:workflow-suite");
     expect(releaseExtras).toContain("bun run coverage:significant-suite");
@@ -119,5 +125,6 @@ describe("release CI contract", () => {
     const docsText = await readRootText("docs/developer/release-and-publishing.mdx");
     expect(docsText).toContain("workflow/harness coverage guard");
     expect(docsText).toContain("significant-file coverage guard");
+    expect(docsText).toContain("release incident registry cleanup gate");
   });
 });

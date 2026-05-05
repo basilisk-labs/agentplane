@@ -72,6 +72,17 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
+      - name: Release incidents (check)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f scripts/check-release-incidents.mjs ]; then
+            node scripts/check-release-incidents.mjs
+          elif [ -f .agentplane/.release/runtime/scripts/check-release-incidents.mjs ]; then
+            node .agentplane/.release/runtime/scripts/check-release-incidents.mjs
+          else
+            echo "release incident gate skipped: no compatible script exists for this historical target"
+          fi
       - name: Resolve release-ready source
         id: source
         env:

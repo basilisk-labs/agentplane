@@ -28,6 +28,7 @@ describe("Core CI workflow contract", () => {
       "if: github.event_name == 'workflow_dispatch' && github.event.inputs.sha != ''",
     );
     expect(workflow).toContain("Release parity (check)");
+    expect(workflow).toContain("Release incidents (check)");
     expect(workflow).toContain("Build packages (dist + manifests)");
     expect(workflow).toContain("release-ready:");
     expect(workflow).toContain("name: Release-ready manifest");
@@ -50,6 +51,9 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("needs.test-windows.result == 'success'");
     expect(workflow).toContain("needs.changes.outputs.core != 'true'");
     expect(workflow).toContain("node scripts/manifest.mjs release-ready");
+    expect(workflow).toContain("[ -f scripts/check-release-incidents.mjs ]");
+    expect(workflow).toContain("node scripts/check-release-incidents.mjs");
+    expect(workflow).toContain("target ref predates scripts/check-release-incidents.mjs");
     expect(workflow).toContain("--out .agentplane/.release/ready/release-ready.json");
     expect(workflow).toContain('--sha "${{ steps.target.outputs.sha }}"');
     expect(workflow).toContain('--ref "${AGENTPLANE_CI_REF}"');

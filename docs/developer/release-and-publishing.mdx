@@ -24,7 +24,17 @@ Requirements:
 
 ## Standard flow
 
-1. Generate release plan:
+1. Resolve active incidents before release planning.
+
+Every release must start with a dedicated task that reviews `.agentplane/policy/incidents.md`,
+applies or fixes relevant advice, preserves final evidence in `docs/developer/incident-archive.mdx`,
+and cleans the active incident registry.
+
+```bash
+bun run release:incidents:check
+```
+
+2. Generate release plan:
 
 ```bash
 agentplane release plan
@@ -34,8 +44,8 @@ If the workspace version is already ahead of the latest published/tagged patch r
 now fails instead of proposing a skipped future patch. Recover and publish the missing patch chain
 first, then plan the next release.
 
-2. Draft notes from plan artifacts.
-3. Run local release gate (must match publish prerequisites):
+3. Draft notes from plan artifacts.
+4. Run local release gate (must match publish prerequisites):
 
 ```bash
 bun run release:prepublish
@@ -47,7 +57,7 @@ Optional fast parity check before the full gate:
 bun run release:parity
 ```
 
-4. Prepare the release commit:
+5. Prepare the release commit:
 
 ```bash
 AGENTPLANE_RELEASE_DRY_RUN=1 agentplane release apply
@@ -60,7 +70,7 @@ candidate on a dedicated non-base branch instead:
 AGENTPLANE_RELEASE_DRY_RUN=1 agentplane release candidate
 ```
 
-5. Real release:
+6. Real release:
 
 ```bash
 agentplane release apply --push --yes
@@ -88,10 +98,12 @@ gated on merge to the protected base branch and hosted publish from `main`.
 - build
 - lint
 - release-focused Linux test base
+- release incident registry cleanup gate
 - workflow/harness coverage guard
 - significant-file coverage guard
 - release-critical smoke/recovery checks
 - `release:check`:
+- release incident registry cleanup gate
 - package builds
 - npm dry-run pack for both packages
 

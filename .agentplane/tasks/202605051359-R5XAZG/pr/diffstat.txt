@@ -1,0 +1,16 @@
+ .agentplane/policy/workflow.release.md             | 12 ++--
+ .github/workflows/ci.yml                           |  9 +++
+ .github/workflows/prepublish.yml                   |  2 +
+ .github/workflows/publish.yml                      | 11 ++++
+ docs/developer/release-and-publishing.mdx          | 22 +++++--
+ package.json                                       |  3 +-
+ .../agentplane/assets/policy/workflow.release.md   | 12 ++--
+ .../commands/release/ci-workflow-contract.test.ts  |  4 ++
+ .../src/commands/release/plan.command.ts           | 50 ++++++++++++++++
+ .../agentplane/src/commands/release/plan.test.ts   | 34 ++++++++++-
+ .../release/publish-workflow-contract.test.ts      |  6 ++
+ .../commands/release/release-ci-contract.test.ts   |  7 +++
+ .../release/release-incidents-script.test.ts       | 67 ++++++++++++++++++++++
+ scripts/README.md                                  | 53 ++++++++---------
+ scripts/check-release-incidents.mjs                | 50 ++++++++++++++++
+ 15 files changed, 299 insertions(+), 43 deletions(-)
