@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { writeJsonStableIfChanged } from "../../../../shared/write-if-changed.js";
 import { getVersion } from "../../../../meta/version.js";
+import type { InitBackend } from "./model.js";
 
 type InitExecutionConfig = {
   profile: "conservative" | "balanced" | "aggressive";
@@ -21,7 +22,7 @@ type InitExecutionConfig = {
 
 export async function ensureAgentplaneDirs(
   agentplaneDir: string,
-  backend: "local" | "redmine",
+  backend: InitBackend,
 ): Promise<void> {
   await mkdir(agentplaneDir, { recursive: true });
   await mkdir(path.join(agentplaneDir, "tasks"), { recursive: true });
@@ -71,7 +72,7 @@ export async function writeInitConfig(opts: {
 }
 
 export async function writeBackendStubs(opts: {
-  backend: "local" | "redmine";
+  backend: InitBackend;
   backendPath: string;
 }): Promise<void> {
   const localBackendPayload = {
@@ -87,6 +88,19 @@ export async function writeBackendStubs(opts: {
       custom_fields: { task_id: 1 },
     },
   };
-  const payload = opts.backend === "redmine" ? redmineBackendPayload : localBackendPayload;
+  const cloudBackendPayload = {
+    id: "cloud",
+    version: 1,
+    settings: {
+      cache_dir: ".agentplane/tasks",
+      stale_after_seconds: 300,
+    },
+  };
+  const payload =
+    opts.backend === "redmine"
+      ? redmineBackendPayload
+      : opts.backend === "cloud"
+        ? cloudBackendPayload
+        : localBackendPayload;
   await writeJsonStableIfChanged(opts.backendPath, payload);
 }

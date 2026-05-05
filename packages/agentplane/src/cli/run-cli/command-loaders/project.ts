@@ -99,6 +99,10 @@ export const loadBackendInspectSpec = (deps: RunDeps) =>
   import("../../../commands/backend/sync.command.js").then((m) =>
     m.makeRunBackendInspectHandler(deps.getCtx),
   );
+export const loadBackendConnectSpec = (deps: RunDeps) =>
+  import("../../../commands/backend/sync.command.js").then((m) =>
+    m.makeRunBackendConnectHandler(deps.getCtx),
+  );
 export const loadBackendMigrateCanonicalStateSpec = (deps: RunDeps) =>
   import("../../../commands/backend/sync.command.js").then((m) =>
     m.makeRunBackendMigrateCanonicalStateHandler(deps.getCtx),

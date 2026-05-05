@@ -6,6 +6,7 @@ import type { PolicyGatewayFlavor } from "../../../../shared/policy-gateway.js";
 export type InitIde = "codex" | "cursor" | "windsurf";
 
 export type SetupProfilePreset = "light" | "normal" | "full-harness";
+export type InitBackend = "local" | "redmine" | "cloud";
 
 export type InitFlags = {
   setupProfile?: SetupProfilePreset;
@@ -13,7 +14,7 @@ export type InitFlags = {
   ide?: InitIde;
   workflow?: "direct" | "branch_pr";
   directCloseDirtyPolicy?: "allow_other_task_readmes" | "strict";
-  backend?: "local" | "redmine";
+  backend?: InitBackend;
   hooks?: boolean;
   gitignoreAgents?: boolean;
   requirePlanApproval?: boolean;

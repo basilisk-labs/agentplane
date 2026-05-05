@@ -515,6 +515,39 @@ describe("runCli", () => {
     expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE=");
   });
 
+  it("init --backend cloud sets backend config path", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--backend", "cloud", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const cloudBackendPath = path.join(root, ".agentplane", "backends", "cloud", "backend.json");
+    const { config } = await loadConfig(path.join(root, ".agentplane"));
+    expect(
+      normalizeSlashes(String((config.tasks_backend as Record<string, unknown>)?.config_path)),
+    ).toBe(".agentplane/backends/cloud/backend.json");
+    expect(await pathExists(cloudBackendPath)).toBe(true);
+    const cloudText = await readFile(cloudBackendPath, "utf8");
+    const cloud = JSON.parse(cloudText) as Record<string, unknown>;
+    expect(cloud).toMatchObject({ id: "cloud", version: 1 });
+    const settings = (cloud.settings ?? {}) as Record<string, unknown>;
+    expect(settings.cache_dir).toBe(".agentplane/tasks");
+    expect(settings.stale_after_seconds).toBe(300);
+
+    const dotEnvExampleText = await readFile(path.join(root, ".env.example"), "utf8");
+    expect(dotEnvExampleText).toContain(
+      "AGENTPLANE_CLOUD_ENDPOINT=https://agentplane-cloud.example",
+    );
+    expect(dotEnvExampleText).toContain("AGENTPLANE_CLOUD_TOKEN=replace-me");
+    expect(dotEnvExampleText).toContain("AGENTPLANE_CLOUD_PROJECT_ID=replace-me");
+    expect(dotEnvExampleText).toContain("AGENTPLANE_CLOUD_PROVIDER=");
+  });
+
   it("init bootstraps git repo and commits install when git is missing", async () => {
     const root = await mkTempDir();
     const originalEnv = {

@@ -50,12 +50,16 @@ agentplane init --backend cloud
 Connect the local project to a cloud project:
 
 ```bash
-agentplane backend connect cloud
+agentplane backend connect cloud \
+  --endpoint https://sync.example.test \
+  --project-id proj_456 \
+  --provider github-projects
 ```
 
-The connect command opens a browser flow at the configured provider URL. The browser flow handles
-workspace selection, project selection, and connector setup. For example, if the selected connector
-is GitHub Projects, the cloud service handles the GitHub App installation and project selection.
+The connect command stores non-secret connection metadata in the backend JSON. The cloud service
+handles workspace selection, project selection, and connector setup outside the repository. For
+example, if the selected connector is GitHub Projects, the cloud service handles the GitHub App
+installation and project selection.
 
 After connect, the backend JSON should contain non-secret connection metadata:
 
@@ -64,26 +68,28 @@ After connect, the backend JSON should contain non-secret connection metadata:
   "id": "cloud",
   "version": 1,
   "settings": {
-    "provider_url": "https://sync.agentplane.cloud",
-    "workspace_id": "ws_123",
+    "endpoint": "https://sync.example.test",
     "project_id": "proj_456",
+    "provider": "github-projects",
     "cache_dir": ".agentplane/tasks",
-    "stale_after_seconds": 900
+    "stale_after_seconds": 300
   }
 }
 ```
 
 Secrets do not belong in backend JSON. If the cloud service requires a token for CLI access, provide
-it through environment or local credential storage.
+it through environment or local credential storage:
+
+```bash
+export AGENTPLANE_CLOUD_TOKEN=...
+```
 
 ## Endpoint selection
 
-Use the default provider URL when your project uses the standard cloud service.
-
-Use an override when your environment exposes a different endpoint:
+Set the endpoint explicitly when connecting:
 
 ```bash
-agentplane backend connect cloud --provider-url https://sync.example.test
+agentplane backend connect cloud --endpoint https://sync.example.test --project-id proj_456
 ```
 
 Recommended precedence for implementations:
@@ -91,7 +97,6 @@ Recommended precedence for implementations:
 1. command flag;
 2. environment variable;
 3. backend JSON setting;
-4. default provider URL.
 
 ## Sync
 
@@ -123,15 +128,18 @@ agentplane backend inspect cloud --yes
 
 Expected output should include:
 
-- provider URL;
-- workspace id;
+- endpoint;
 - project id;
-- connector display name;
+- provider name;
 - connection status;
-- last pull/push timestamps;
+- missing environment keys;
+- last checked timestamp;
 - projection freshness;
-- conflict count;
-- next safe command.
+- local state path.
+
+The current cloud backend records `last_checked_at` after successful sync. If that timestamp is older
+than `stale_after_seconds`, `backend inspect cloud --yes` marks the projection stale. Task commands
+still read the local projection; sync remains explicit.
 
 ## Connected views
 
@@ -141,4 +149,3 @@ requiring a new AgentPlane backend id.
 
 For GitHub Projects, the cloud service can map AgentPlane tasks to GitHub Issues and Project fields.
 AgentPlane still treats the cloud backend as `cloud`, not `github-projects`.
-

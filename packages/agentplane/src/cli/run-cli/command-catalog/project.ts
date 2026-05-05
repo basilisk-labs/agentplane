@@ -9,6 +9,7 @@ import {
 } from "../../../commands/acr/acr.command.js";
 import {
   backendInspectSpec,
+  backendConnectSpec,
   backendMigrateCanonicalStateSpec,
   backendSpec,
   backendSyncSpec,
@@ -77,6 +78,7 @@ import {
   loadBackendSpec,
   loadBackendSyncSpec,
   loadBackendInspectSpec,
+  loadBackendConnectSpec,
   loadBackendMigrateCanonicalStateSpec,
   loadSyncSpec,
   loadPrSpec,
@@ -129,6 +131,7 @@ export const PROJECT_COMMANDS = [
   declareCommand(backendSpec, { load: loadBackendSpec, needs: "none" }),
   declareCommand(backendSyncSpec, { load: loadBackendSyncSpec }),
   declareCommand(backendInspectSpec, { load: loadBackendInspectSpec }),
+  declareCommand(backendConnectSpec, { load: loadBackendConnectSpec }),
   declareCommand(backendMigrateCanonicalStateSpec, { load: loadBackendMigrateCanonicalStateSpec }),
   declareCommand(syncSpec, { load: loadSyncSpec }),
   declareCommand(prSpec, { load: loadPrSpec, needs: "none" }),

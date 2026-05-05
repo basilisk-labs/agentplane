@@ -44,5 +44,6 @@ export {
 export { LocalBackend } from "./task-backend/local-backend.js";
 
 export { RedmineBackend } from "./task-backend/redmine-backend.js";
+export { CloudBackend } from "./task-backend/cloud-backend.js";
 
 export { loadTaskBackend } from "./task-backend/load.js";
