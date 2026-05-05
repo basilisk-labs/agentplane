@@ -1,6 +1,5 @@
 import path from "node:path";
 
-import { fileExists } from "../../../cli/fs-utils.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../../shared/write-if-changed.js";
 import { CliError } from "../../../shared/errors.js";
@@ -186,12 +185,6 @@ export async function runPrOpenSync(
   }
   await writeJsonStableIfChanged(common.metaPath, nextMeta);
   await writeTextIfChanged(common.diffstatPath, diffstat ? `${diffstat}\n` : "");
-  if (!(await fileExists(common.notesPath))) {
-    await writeTextIfChanged(common.notesPath, "");
-  }
-  if (!(await fileExists(common.verifyLogPath))) {
-    await writeTextIfChanged(common.verifyLogPath, "");
-  }
   await writeTextIfChanged(common.reviewPath, nextReview);
   await writeTextIfChanged(common.githubTitlePath, `${githubTitle}\n`);
   await writeTextIfChanged(common.githubBodyPath, nextGithubBody);
