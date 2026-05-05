@@ -3,8 +3,11 @@ title: "Blueprints"
 description: "Typed execution-route contracts for task-specific AgentPlane harness flows."
 ---
 
-Blueprints are a planned AgentPlane harness layer. This page is a developer specification for the
-first implementation work, not a claim that blueprint resolution or execution already ships.
+Blueprints are AgentPlane's typed route contracts for task-specific harness behavior.
+
+v0.5 rc1 ships the model, built-in registry, validation, resolver, explain output, recipe hint
+bridge, task verification visibility, and ACR summary extension. It does not ship blueprint node
+execution or a runner workflow engine.
 
 ## Definition
 
@@ -92,10 +95,10 @@ while it is being planned, executed, verified, and closed.
 
 ## Package Boundary
 
-The first code PR should add types, built-in blueprints, validation, and resolution data. It should
-not add command execution or a workflow executor.
+The current implementation adds types, built-in blueprints, validation, resolution, explanation, and
+read-only CLI surfaces. It does not add command execution or a workflow executor.
 
-Proposed future module layout inside the AgentPlane CLI source package:
+Current module layout inside the AgentPlane CLI source package:
 
 ```text
 blueprints/
@@ -105,21 +108,23 @@ blueprints/
   validate.ts
   resolve.ts
   explain.ts
+  recipe-hints.ts
   index.ts
   *.test.ts
 ```
 
 Initial responsibilities:
 
-| File          | Responsibility                                                                 |
-| ------------- | ------------------------------------------------------------------------------ |
-| `model.ts`    | Pure types, string unions, and small helper predicates                         |
-| `builtins.ts` | Built-in blueprint definitions and node catalog                                |
-| `registry.ts` | Registry lookup, duplicate detection, and built-in export                      |
-| `validate.ts` | Structural validation and invariant checks                                     |
-| `resolve.ts`  | Select a blueprint from task metadata, workflow mode, mutation, risk, recipes  |
-| `explain.ts`  | Convert resolved blueprint data into stable human-readable explanation objects |
-| `index.ts`    | Public internal exports for CLI and verification integrations                  |
+| File              | Responsibility                                                                 |
+| ----------------- | ------------------------------------------------------------------------------ |
+| `model.ts`        | Pure types, string unions, and small helper predicates                         |
+| `builtins.ts`     | Built-in blueprint definitions and node catalog                                |
+| `registry.ts`     | Registry lookup, duplicate detection, and built-in export                      |
+| `validate.ts`     | Structural validation and invariant checks                                     |
+| `resolve.ts`      | Select a blueprint from task metadata, workflow mode, mutation, risk, recipes  |
+| `explain.ts`      | Convert resolved blueprint data into stable human-readable explanation objects |
+| `recipe-hints.ts` | Convert normalized recipe blueprint extensions into resolver hints             |
+| `index.ts`        | Public internal exports for CLI and verification integrations                  |
 
 Do not place route logic inside command handlers. Commands should call the resolver and formatter.
 
@@ -222,10 +227,12 @@ export type StopRule = {
 
 export type RecipeExtensionKind =
   | "context_hint"
+  | "evidence_requirement"
   | "check_suggestion"
   | "output_schema"
   | "artifact_template"
-  | "risk_hint";
+  | "risk_hint"
+  | "preferred_blueprint";
 
 export type RecipeExtensionPoint = {
   nodeKind: BlueprintNodeKind;
@@ -259,6 +266,10 @@ export type BlueprintResolveInput = {
 
 export type RecipeHint = {
   recipeId: string;
+  recipeVersion?: string;
+  recipeName?: string;
+  extensionId?: string;
+  summary?: string;
   kind: RecipeExtensionKind;
   targetNodeKind?: BlueprintNodeKind;
   value: unknown;
@@ -291,15 +302,25 @@ export type SkippedNode = {
 
 export type AcceptedRecipeExtension = {
   recipeId: string;
+  recipeVersion?: string;
+  recipeName?: string;
+  extensionId?: string;
   nodeKind: BlueprintNodeKind;
   kind: RecipeExtensionKind;
+  summary?: string;
+  value?: unknown;
   reason: string;
 };
 
 export type RejectedRecipeExtension = {
   recipeId: string;
+  recipeVersion?: string;
+  recipeName?: string;
+  extensionId?: string;
   nodeKind?: BlueprintNodeKind;
   kind: RecipeExtensionKind;
+  summary?: string;
+  value?: unknown;
   reason: string;
 };
 
@@ -566,6 +587,7 @@ Recipes may provide:
 - tool profile hints;
 - evidence requirements;
 - risk hints.
+- preferred blueprint hints.
 
 Recipes must not:
 
@@ -578,8 +600,24 @@ Recipes must not:
 - hide required evidence;
 - add policy modules outside resolved route boundaries.
 
+`preferred_blueprint` is a request, not an override. The resolver accepts it only when the requested
+blueprint is compatible with the inferred task kind and workflow mode, and only when stronger risk or
+explicit user selection has not already chosen a safer route.
+
 The resolver should treat recipe data as input. It should emit a resolved blueprint with selection
 reasons, accepted recipe extensions, rejected recipe extensions, and any approval requirements.
+
+Allowed recipe extension targets in v0.5 rc1:
+
+| Extension kind         | Default target          | Meaning                                      |
+| ---------------------- | ----------------------- | -------------------------------------------- |
+| `context_hint`         | `context_resolve`       | Additional domain context to consider        |
+| `risk_hint`            | `context_resolve`       | Domain risk to surface during route choice   |
+| `output_schema`        | `work_unit`             | Expected shape for the produced artifact     |
+| `artifact_template`    | `work_unit`             | Suggested artifact template                  |
+| `check_suggestion`     | `deterministic_check`   | Additional check suggestion                  |
+| `evidence_requirement` | `verify_record`         | Expected verification evidence               |
+| `preferred_blueprint`  | route selection request | Compatible route preference, never execution |
 
 ## Evidence Model
 
@@ -598,13 +636,15 @@ This keeps non-code tasks rigorous without forcing CI semantics onto them.
 
 ## Explain Output
 
-The first user-visible surface should be explanation, not execution.
+The first user-visible surface is explanation, not execution.
 
-Potential CLI shape:
+CLI shape:
 
 ```text
+agentplane blueprint list
 agentplane blueprint explain <task-id>
 agentplane blueprint explain --kind analysis --mutation none
+agentplane blueprint explain <task-id> --json
 ```
 
 Expected explain fields:
@@ -619,7 +659,6 @@ required_evidence
 accepted_recipe_extensions
 rejected_recipe_extensions
 stop_reasons
-not_required
 ```
 
 Example:
@@ -647,16 +686,17 @@ Not required:
 
 Blueprints are pre-execution and during-execution contracts. ACR is post-execution evidence.
 
-ACR should eventually record:
+v0.5 rc1 records a compact `extensions["agentplane.blueprint"]` object:
 
 ```text
 blueprint_id
 blueprint_version
-resolved_nodes
-skipped_nodes
-stop_reason
-evidence_refs
-recipe_extensions
+workflow_mode
+route
+required_evidence
+accepted_recipe_extensions
+rejected_recipe_extensions
+stop_reasons
 ```
 
 ACR should not store full prompts, full transcripts, or raw context bundles by default. It should
@@ -705,11 +745,14 @@ Blueprint resolution must stop or require re-approval when:
 - runner context would include more policy, tools, or files than the resolved route allows;
 - a requested route would bypass existing task lifecycle commands.
 
-## First Implementation Plan
+## Implementation Status
 
-Implement in small PRs. The first PR should avoid commands and execution.
+The first implementation is split into small surfaces. v0.5 rc1 completes PR 1 through PR 5 and the
+minimal ACR part of PR 6. Runner execution remains deferred.
 
 ### PR 1: Model, built-ins, registry, validation
+
+Status: shipped in rc1.
 
 Scope:
 
@@ -733,6 +776,8 @@ Acceptance:
 
 ### PR 2: Resolver
 
+Status: shipped in rc1.
+
 Scope:
 
 - add `resolve.ts`;
@@ -753,6 +798,8 @@ Acceptance:
 
 ### PR 3: Explain command
 
+Status: shipped in rc1.
+
 Scope:
 
 - add `agentplane blueprint explain`;
@@ -769,6 +816,8 @@ Acceptance:
 
 ### PR 4: Verification surface
 
+Status: shipped in rc1 for `task verify-show`; task-local `blueprint.json` snapshots remain deferred.
+
 Scope:
 
 - include blueprint expected evidence in `task verify-show`;
@@ -783,6 +832,8 @@ Acceptance:
 
 ### PR 5: Recipe extension contract
 
+Status: shipped in rc1.
+
 Scope:
 
 - formalize recipe hint schema;
@@ -795,6 +846,8 @@ Acceptance:
 - recipes cannot override workflow mode, approvals, protected nodes, or finish semantics.
 
 ### PR 6: ACR and runner handoff
+
+Status: shipped in rc1 for ACR summary fields only; runner bundle handoff remains deferred.
 
 Scope:
 

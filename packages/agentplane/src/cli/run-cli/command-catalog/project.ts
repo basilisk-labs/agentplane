@@ -8,6 +8,11 @@ import {
   acrValidateSpec,
 } from "../../../commands/acr/acr.command.js";
 import {
+  blueprintExplainSpec,
+  blueprintListSpec,
+  blueprintSpec,
+} from "../../../commands/blueprint/blueprint.command.js";
+import {
   backendInspectSpec,
   backendConnectSpec,
   backendMigrateCanonicalStateSpec,
@@ -95,6 +100,9 @@ import {
   loadAcrValidateSpec,
   loadAcrCheckSpec,
   loadAcrExplainSpec,
+  loadBlueprintSpec,
+  loadBlueprintListSpec,
+  loadBlueprintExplainSpec,
 } from "../command-loaders/project.js";
 
 export const PROJECT_COMMANDS = [
@@ -104,6 +112,9 @@ export const PROJECT_COMMANDS = [
   declareCommand(acrValidateSpec, { load: loadAcrValidateSpec }),
   declareCommand(acrCheckSpec, { load: loadAcrCheckSpec }),
   declareCommand(acrExplainSpec, { load: loadAcrExplainSpec }),
+  declareCommand(blueprintSpec, { load: loadBlueprintSpec, needs: "none" }),
+  declareCommand(blueprintListSpec, { load: loadBlueprintListSpec, needs: "none" }),
+  declareCommand(blueprintExplainSpec, { load: loadBlueprintExplainSpec }),
   declareCommand(workStartSpec, { load: loadWorkStartSpec }),
   fromCommandsRecipesRecipesCommand(recipesSpec, "runRecipes", { needs: "none" }),
   fromCommandsRecipesCacheCommand(recipesCacheSpec, "runRecipesCache", { needs: "none" }),

@@ -51,7 +51,7 @@ Minimum required fields:
 - `description`
 
 First-class sections include `compatibility`, `overlay`, `skills`, `tools`, `agents`, `scenarios`,
-`prompt_modules`, and `prompt_mutation_sets`.
+`prompt_modules`, `prompt_mutation_sets`, and `blueprint_extensions`.
 
 Contract notes:
 
@@ -72,6 +72,54 @@ Contract notes:
   or safety invariants.
 - User-authored behavior belongs in `gateway.user.instructions`, normally backed by
   the optional user instructions file under `.agentplane/` (`user-instructions.md`), instead of direct edits to managed prompt files.
+
+## Blueprint extensions
+
+`blueprint_extensions` are advisory route inputs. They let a recipe contribute context, evidence,
+checks, output shape, artifact templates, risk notes, or a compatible blueprint preference without
+owning lifecycle execution.
+
+Supported extension kinds:
+
+| Kind                   | Fields                                  | Resolver behavior                                    |
+| ---------------------- | --------------------------------------- | ---------------------------------------------------- |
+| `context_hint`         | `value`, optional `target_node_kind`    | Attaches to `context_resolve` when allowed           |
+| `risk_hint`            | `risk`, optional `target_node_kind`     | Attaches to `context_resolve` when allowed           |
+| `output_schema`        | `value`, optional `target_node_kind`    | Attaches to `work_unit` when allowed                 |
+| `artifact_template`    | `value`, optional `target_node_kind`    | Attaches to `work_unit` when allowed                 |
+| `check_suggestion`     | `command`, optional `target_node_kind`  | Attaches to `deterministic_check` when allowed       |
+| `evidence_requirement` | `evidence`, optional `target_node_kind` | Attaches to `verify_record` when allowed             |
+| `preferred_blueprint`  | `blueprint_id`                          | Accepted only when compatible with task and workflow |
+
+Example:
+
+```json
+{
+  "blueprint_extensions": [
+    {
+      "id": "market-research.sources",
+      "kind": "evidence_requirement",
+      "summary": "Require explicit market source evidence.",
+      "evidence": ["sources", "assumptions"],
+      "when": { "tags_any": ["research", "analysis"] }
+    },
+    {
+      "id": "market-research.route",
+      "kind": "preferred_blueprint",
+      "summary": "Prefer the lightweight analysis route for research tasks.",
+      "blueprint_id": "analysis.light",
+      "when": { "tags_any": ["research", "analysis"] }
+    }
+  ]
+}
+```
+
+Hard boundaries:
+
+- recipes cannot disable approvals, workflow-mode constraints, verification, finish, or policy gates;
+- a `preferred_blueprint` that would turn analysis/content into `code.branch_pr` is rejected;
+- stronger risk routing, such as publish or external-system risk, outranks recipe preference;
+- accepted and rejected extensions are visible in blueprint explain output and ACR summaries.
 
 ## CLI surface
 

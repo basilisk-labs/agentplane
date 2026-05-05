@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { explainResolvedBlueprint, formatBlueprintExplain } from "./explain.js";
 import type { BlueprintResolveInput } from "./model.js";
+import { recipeBlueprintExtensionsToHints } from "./recipe-hints.js";
 import { createBlueprintRegistry, requireBlueprint } from "./registry.js";
 import { inferBlueprintTaskKind, resolveBlueprint } from "./resolve.js";
 
@@ -113,12 +114,13 @@ describe("resolveBlueprint", () => {
     });
 
     expect(resolved.acceptedRecipeExtensions).toEqual([
-      {
+      expect.objectContaining({
         recipeId: "docs-recipe",
         nodeKind: "context_resolve",
         kind: "context_hint",
         reason: "Recipe hint context_hint accepted for context_resolve.",
-      },
+        value: { docs: ["docs/developer/blueprints.mdx"] },
+      }),
     ]);
     expect(resolved.rejectedRecipeExtensions).toHaveLength(1);
     expect(resolved.rejectedRecipeExtensions[0]?.nodeKind).toBe("finish");
@@ -129,6 +131,127 @@ describe("resolveBlueprint", () => {
 
     expect(resolved.blueprint.id).toBe("analysis.light");
     expect(resolved.stopReasons.map((reason) => reason.id)).toContain("unknown_mutation_scope");
+  });
+
+  it("accepts evidence requirements only through verify_record", () => {
+    const resolved = resolve({
+      mutation: "none",
+      recipeHints: [
+        {
+          recipeId: "analysis-recipe",
+          recipeVersion: "1.0.0",
+          recipeName: "Analysis recipe",
+          extensionId: "sources-required",
+          kind: "evidence_requirement",
+          summary: "Require source list.",
+          value: { evidence: ["sources"] },
+        },
+      ],
+    });
+
+    expect(resolved.acceptedRecipeExtensions).toEqual([
+      expect.objectContaining({
+        recipeId: "analysis-recipe",
+        recipeVersion: "1.0.0",
+        extensionId: "sources-required",
+        nodeKind: "verify_record",
+        kind: "evidence_requirement",
+        value: { evidence: ["sources"] },
+      }),
+    ]);
+  });
+
+  it("uses compatible recipe preferred blueprints as route hints", () => {
+    const resolved = resolve({
+      tags: ["content"],
+      mutation: "none",
+      recipeHints: [
+        {
+          recipeId: "content-recipe",
+          kind: "preferred_blueprint",
+          value: { blueprint_id: "content.light" },
+        },
+      ],
+    });
+
+    expect(resolved.blueprint.id).toBe("content.light");
+    expect(resolved.selectionReasons).toContain(
+      "recipe preferred compatible blueprint: content.light",
+    );
+    expect(resolved.acceptedRecipeExtensions[0]).toEqual(
+      expect.objectContaining({ kind: "preferred_blueprint", nodeKind: "intake" }),
+    );
+  });
+
+  it("rejects incompatible recipe preferred blueprints without forcing code PR flow", () => {
+    const resolved = resolve({
+      title: "Analyze a market note",
+      mutation: "none",
+      workflowMode: "branch_pr",
+      recipeHints: [
+        {
+          recipeId: "code-recipe",
+          kind: "preferred_blueprint",
+          value: { blueprint_id: "code.branch_pr" },
+        },
+      ],
+    });
+
+    expect(resolved.blueprint.id).toBe("analysis.light");
+    expect(resolved.activeNodes.map((node) => node.kind)).not.toContain("pr_artifact");
+    expect(resolved.rejectedRecipeExtensions[0]).toEqual(
+      expect.objectContaining({ recipeId: "code-recipe", kind: "preferred_blueprint" }),
+    );
+  });
+
+  it("keeps risk routes stronger than recipe preferred blueprints", () => {
+    const resolved = resolve({
+      tags: ["content"],
+      mutation: "none",
+      riskFlags: ["publish"],
+      recipeHints: [
+        {
+          recipeId: "content-recipe",
+          kind: "preferred_blueprint",
+          value: { blueprint_id: "content.light" },
+        },
+      ],
+    });
+
+    expect(resolved.blueprint.id).toBe("release.strict");
+    expect(resolved.selectionReasons[0]).toContain("risk flags require release.strict");
+  });
+
+  it("bridges normalized recipe blueprint extensions into resolver hints", () => {
+    const hints = recipeBlueprintExtensionsToHints([
+      {
+        recipe_id: "research",
+        recipe_version: "0.1.0",
+        recipe_name: "Research",
+        extension_id: "prefer-analysis",
+        kind: "preferred_blueprint",
+        summary: "Prefer analysis for research recipes.",
+        value: { blueprint_id: "analysis.light" },
+        reasons: ["extension matched task context"],
+      },
+    ]);
+
+    const resolved = resolve({
+      title: "Inspect market context",
+      mutation: "none",
+      recipeHints: hints,
+    });
+
+    expect(resolved.blueprint.id).toBe("analysis.light");
+    expect(resolved.acceptedRecipeExtensions[0]).toEqual(
+      expect.objectContaining({
+        recipeId: "research",
+        recipeVersion: "0.1.0",
+        recipeName: "Research",
+        extensionId: "prefer-analysis",
+        kind: "preferred_blueprint",
+      }),
+    );
   });
 
   it("infers task kind without constructing a resolved blueprint", () => {

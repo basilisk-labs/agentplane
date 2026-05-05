@@ -11,6 +11,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { explainResolvedBlueprint, resolveBlueprint } from "../../blueprints/index.js";
 import {
   loadDirectSubcommandNames,
   parseGroupCommand,
@@ -22,6 +23,7 @@ import { usageError } from "../../cli/spec/errors.js";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
+import { blueprintResolveInputFromTask } from "../blueprint/task-input.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { withDiagnosticContext } from "../shared/diagnostics.js";
 
@@ -547,6 +549,10 @@ export async function generateAcr(opts: {
     evidence,
   });
   const mergeReady = residualRisks.length === 0;
+  const blueprint = buildAcrBlueprintExtension({
+    task,
+    ctx: opts.ctx,
+  });
   const recordWithoutDigest: AgentChangeRecord = {
     acr_version: ACR_VERSION,
     record_type: "agent_change_record",
@@ -669,6 +675,9 @@ export async function generateAcr(opts: {
       canonicalization: "rfc8785-jcs",
       signatures: [],
     },
+    extensions: {
+      "agentplane.blueprint": blueprint,
+    },
   };
   const record = {
     ...recordWithoutDigest,
@@ -684,6 +693,49 @@ export async function generateAcr(opts: {
       ? defaultAcrPath(opts.ctx, opts.taskId)
       : null;
   return { record, acrPath, warnings: [] };
+}
+
+function buildAcrBlueprintExtension(opts: {
+  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+  ctx: CommandContext;
+}) {
+  const input = blueprintResolveInputFromTask({ task: opts.task, config: opts.ctx.config });
+  const resolved = resolveBlueprint({ input });
+  const explained = explainResolvedBlueprint({ resolved, workflowMode: input.workflowMode });
+  return {
+    blueprint_id: explained.blueprintId,
+    blueprint_version: explained.blueprintVersion,
+    workflow_mode: explained.workflowMode ?? null,
+    route: explained.route.map((node) => node.kind),
+    required_evidence: explained.requiredEvidence.map((item) => ({
+      id: item.id,
+      kind: item.kind,
+      produced_by: item.producedBy,
+      required: item.required,
+    })),
+    accepted_recipe_extensions: explained.acceptedRecipeExtensions.map((item) => ({
+      recipe_id: item.recipeId,
+      recipe_version: item.recipeVersion ?? null,
+      extension_id: item.extensionId ?? null,
+      kind: item.kind,
+      node_kind: item.nodeKind,
+      summary: item.summary ?? null,
+    })),
+    rejected_recipe_extensions: explained.rejectedRecipeExtensions.map((item) => ({
+      recipe_id: item.recipeId,
+      recipe_version: item.recipeVersion ?? null,
+      extension_id: item.extensionId ?? null,
+      kind: item.kind,
+      node_kind: item.nodeKind ?? null,
+      summary: item.summary ?? null,
+      reason: item.reason,
+    })),
+    stop_reasons: explained.stopReasons.map((item) => ({
+      id: item.id,
+      severity: item.severity,
+      reason: item.reason,
+    })),
+  };
 }
 
 export async function writeAcrFile(opts: {
@@ -875,6 +927,9 @@ function emitValidationResult(
 }
 
 function summarizeAcr(record: AgentChangeRecord) {
+  const blueprint = record.extensions?.["agentplane.blueprint"] as
+    | { blueprint_id?: unknown; route?: unknown }
+    | undefined;
   return {
     task_id: record.task.task_id,
     title: record.task.title,
@@ -890,6 +945,15 @@ function summarizeAcr(record: AgentChangeRecord) {
     },
     verification: record.verification.status,
     merge_ready: record.result.merge_ready,
+    blueprint:
+      typeof blueprint?.blueprint_id === "string"
+        ? {
+            id: blueprint.blueprint_id,
+            route: Array.isArray(blueprint.route)
+              ? blueprint.route.filter((item): item is string => typeof item === "string")
+              : [],
+          }
+        : null,
     record_digest: record.integrity.record_digest,
   };
 }
@@ -905,6 +969,12 @@ function renderAcrSummary(summary: ReturnType<typeof summarizeAcr>): string {
     `Policy: ${summary.policy.pass} pass, ${summary.policy.fail} fail, ${summary.policy.warning} warning, ${summary.policy.manual_override} manual override`,
     `Verification: ${summary.verification}`,
     `Merge ready: ${summary.merge_ready ? "yes" : "no"}`,
+    ...(summary.blueprint
+      ? [
+          `Blueprint: ${summary.blueprint.id}`,
+          `Blueprint route: ${summary.blueprint.route.join(" -> ")}`,
+        ]
+      : []),
     `Digest: ${summary.record_digest}`,
     "",
   ].join("\n");

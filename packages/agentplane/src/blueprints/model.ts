@@ -46,10 +46,12 @@ export type EvidenceKind =
 
 export type RecipeExtensionKind =
   | "context_hint"
+  | "evidence_requirement"
   | "check_suggestion"
   | "output_schema"
   | "artifact_template"
-  | "risk_hint";
+  | "risk_hint"
+  | "preferred_blueprint";
 
 export type StopRuleSeverity = "stop" | "approval_required" | "warn";
 
@@ -150,6 +152,10 @@ export type BlueprintRegistry = {
 
 export type RecipeHint = {
   recipeId: string;
+  recipeVersion?: string;
+  recipeName?: string;
+  extensionId?: string;
+  summary?: string;
   kind: RecipeExtensionKind;
   targetNodeKind?: BlueprintNodeKind;
   value: unknown;
@@ -176,15 +182,25 @@ export type SkippedNode = {
 
 export type AcceptedRecipeExtension = {
   recipeId: string;
+  recipeVersion?: string;
+  recipeName?: string;
+  extensionId?: string;
   nodeKind: BlueprintNodeKind;
   kind: RecipeExtensionKind;
+  summary?: string;
+  value?: unknown;
   reason: string;
 };
 
 export type RejectedRecipeExtension = {
   recipeId: string;
+  recipeVersion?: string;
+  recipeName?: string;
+  extensionId?: string;
   nodeKind?: BlueprintNodeKind;
   kind: RecipeExtensionKind;
+  summary?: string;
+  value?: unknown;
   reason: string;
 };
 

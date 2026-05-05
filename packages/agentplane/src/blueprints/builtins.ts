@@ -122,6 +122,11 @@ function blueprint(opts: {
         allowed: ["check_suggestion"],
         rejected: ["required_check_disable"],
       },
+      {
+        nodeKind: "verify_record",
+        allowed: ["evidence_requirement"],
+        rejected: ["verification_bypass"],
+      },
     ],
   };
 }
