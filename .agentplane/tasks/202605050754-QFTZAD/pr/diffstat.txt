@@ -1,0 +1,12 @@
+ .gitignore                                         |   5 +
+ docs/user/cli-reference.generated.mdx              |  25 ++
+ docs/user/commands.mdx                             |  12 +
+ docs/user/tasks-and-backends.mdx                   |  24 ++
+ .../src/cli/run-cli/command-catalog/task.ts        |   3 +
+ .../src/cli/run-cli/command-loaders/task.ts        |   4 +
+ packages/agentplane/src/commands/task/index.ts     |   1 +
+ .../src/commands/task/obsidian.command.ts          |  44 +++
+ packages/agentplane/src/commands/task/obsidian.ts  | 345 +++++++++++++++++++++
+ .../src/commands/task/obsidian.unit.test.ts        | 173 +++++++++++
+ .../src/runtime/shared/runtime-artifacts.ts        |   5 +
+ 11 files changed, 641 insertions(+)
