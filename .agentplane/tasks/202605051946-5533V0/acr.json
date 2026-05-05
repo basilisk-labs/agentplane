@@ -1,0 +1,129 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605051946-5533V0",
+  "created_at": "2026-05-05T19:59:37.097Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "f2bad0ed32bed75b512069f0fa10ce8e079845f2",
+    "work_ref": "main",
+    "work_commit": "f2bad0ed32bed75b512069f0fa10ce8e079845f2"
+  },
+  "task": {
+    "task_id": "202605051946-5533V0",
+    "title": "Draft v0.5 blueprint and recipe roadmaps",
+    "intent": "Create a temporary roadmap document that captures recipe work needed for v0.5 and the blueprint roadmap to v0.5 without changing the canonical roadmap.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "pending_approval",
+    "artifact": {
+      "path": ".agentplane/tasks/202605051946-5533V0/README.md",
+      "sha256": "sha256:d0259754d5eace43e16b66735abec3bd6eecf8d70974f04af4f2ae3fed563101"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "warning",
+        "reason": "Plan is not approved."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #936.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605051946-5533V0/README.md",
+      "sha256": "sha256:d0259754d5eace43e16b66735abec3bd6eecf8d70974f04af4f2ae3fed563101"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605051946-5533V0/README.md",
+      "sha256": "sha256:d0259754d5eace43e16b66735abec3bd6eecf8d70974f04af4f2ae3fed563101"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Plan is not approved.",
+      "Passed verification has no checks.",
+      "Plan evidence is missing."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit f2bad0ed32bed75b512069f0fa10ce8e079845f2 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:8bece1662ce1fcf3b4d01e57d3e884cd4b42cccbc369bbf67688328b4aaddd25",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
