@@ -1,10 +1,11 @@
 ---
 id: "202605050638-BA00XR"
 title: "Define branch_pr artifact roles and drift rules"
-status: "DOING"
+result_summary: "Documented branch_pr artifact roles and drift rules"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-05T06:51:48.908Z"
   updated_by: "CODER"
   note: "Command: ap task verify-show 202605050638-BA00XR -> pass, reviewed generated Verify Steps. Command: node .agentplane/policy/check-routing.mjs -> pass (policy routing OK). Command: ap doctor -> pass with warnings only about existing hook/runtime shim state, no errors. Scope: docs/user/branching-and-pr-artifacts.mdx artifact role and drift-rule documentation."
-commit: null
+commit:
+  hash: "dae8d467af7e067bf25df2a43af2154cd25824f1"
+  message: "🔀 BA00XR integrate: Define branch_pr artifact roles and drift rules"
 comments:
   -
     author: "CODER"
     body: "Start: defining explicit branch_pr artifact roles and drift rules so canonical records, evidence snapshots, projections, and optional sidecars are not treated interchangeably."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged artifact-role contract into main after policy routing, pr check, and doctor completed with no errors."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: ap task verify-show 202605050638-BA00XR -> pass, reviewed generated Verify Steps. Command: node .agentplane/policy/check-routing.mjs -> pass (policy routing OK). Command: ap doctor -> pass with warnings only about existing hook/runtime shim state, no errors. Scope: docs/user/branching-and-pr-artifacts.mdx artifact role and drift-rule documentation."
+  -
+    type: "status"
+    at: "2026-05-05T06:54:13.706Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged artifact-role contract into main after policy routing, pr check, and doctor completed with no errors."
 doc_version: 3
-doc_updated_at: "2026-05-05T06:51:48.925Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T06:54:13.707Z"
+doc_updated_by: "INTEGRATOR"
 description: "Document and enforce the distinction between canonical records, evidence snapshots, and rendered projections for branch_pr artifacts, so generated files have explicit freshness, regeneration, and drift semantics."
 sections:
   Summary: |-

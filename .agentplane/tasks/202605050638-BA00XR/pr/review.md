@@ -45,12 +45,13 @@ Document and enforce the distinction between canonical records, evidence snapsho
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T06:48:39.244Z
+- Updated: 2026-05-05T06:54:14.486Z
 - Branch: task/202605050638-BA00XR/artifact-role-contract
-- Head: e9329848ba41
+- Head: f642dad1d50c
 
 ```text
-No changes detected.
+ docs/user/branching-and-pr-artifacts.mdx | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 ```
 
 </details>
