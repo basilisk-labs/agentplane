@@ -1,10 +1,11 @@
 ---
 id: "202605051959-VCZB8M"
 title: "Add blueprint explain CLI surface"
-status: "DOING"
+result_summary: "Merged via PR #942. Blueprint list and explain CLI surfaces are available on main."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-05-05T20:44:39.075Z"
   updated_by: "CODER"
   note: "Blueprint CLI verified: blueprint list, synthetic blueprint explain, task-based blueprint explain --json, and generated CLI reference all pass. Checks: CLI smoke commands; docs:cli:check; ci:local:fast."
-commit: null
+commit:
+  hash: "c8c9cbe086a86a9c396eeef9e26ff35027260159"
+  message: "🔀 5WRJZK integrate: Bridge recipe hints into blueprint resolver"
 comments:
   -
     author: "CODER"
     body: "Start: Adding read-only blueprint list and explain CLI surfaces for task-based and synthetic resolver inputs without executing blueprint nodes."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #942 merged into main with blueprint list and explain CLI surfaces verified locally and by hosted checks."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Blueprint CLI verified: blueprint list, synthetic blueprint explain, task-based blueprint explain --json, and generated CLI reference all pass. Checks: CLI smoke commands; docs:cli:check; ci:local:fast."
+  -
+    type: "status"
+    at: "2026-05-05T20:52:06.290Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #942 merged into main with blueprint list and explain CLI surfaces verified locally and by hosted checks."
 doc_version: 3
-doc_updated_at: "2026-05-05T20:44:39.094Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T20:52:06.292Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add agentplane blueprint list and agentplane blueprint explain with task-id and synthetic inputs, JSON output, and command/help tests so resolved routes are visible before execution."
 sections:
   Summary: |-
