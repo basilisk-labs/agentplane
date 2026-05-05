@@ -354,7 +354,7 @@ agentplane backend sync local --direction pull
 
 ### backend connect
 
-Configure a cloud backend connection without storing secrets.
+Configure a cloud backend connection.
 
 Usage:
 
@@ -367,16 +367,17 @@ Options:
 - `--endpoint <url>`: Cloud sync service endpoint.
 - `--project-id <id>`: Cloud sync service project identifier.
 - `--provider <name>`: Optional remote projection provider selected in the cloud service.
+- `--token <token>`: Cloud CLI token. Stored only in ignored project .env, not backend JSON.
 - `--yes`: Reserved for future browser flow approval. (default=false)
 - `--quiet`: Reduce output noise. (default=false)
 
 Examples:
 
 ```sh
-agentplane backend connect cloud --endpoint https://sync.example.test --project-id proj_123 --provider github-projects
+agentplane backend connect cloud --endpoint https://sync.agentplane.cloud --project-id proj_123 --token apc_...
 ```
 
-- Attach this repository to a cloud sync project without committing a token.
+- Attach this repository to a cloud sync project and keep the token in ignored .env.
 
 ### backend inspect
 
@@ -3248,6 +3249,10 @@ Options:
 - `--owner <id>`: Owner id (e.g. CODER). (required)
 - `--priority <low|normal|med|high>`: Task priority (default: med). (choices=low|normal|med|high, default=med)
 - `--tag <tag>`: Repeatable. Adds a tag (must provide at least one). (repeatable)
+- `--task-kind <analysis|content|docs|code|release|ops>`: Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops)
+- `--mutation-scope <none|docs|code|release|ops|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|unknown)
+- `--risk <risk>`: Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
+- `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|release.strict|ops.approval)
 - `--depends-on <task-id>`: Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
 - `--verify <command>`: Repeatable. Verification commands/checks to run for this task. (repeatable)
 - `--allow-duplicate`: Allow creating a task even when an open task with a highly similar title already exists. (default=false)

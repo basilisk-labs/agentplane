@@ -1,5 +1,8 @@
 import { resolveProject } from "@agentplaneorg/core/project";
+import { parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { readFile } from "node:fs/promises";
+import path from "node:path";
+import type { CommitTaskIntent } from "@agentplaneorg/core/commit";
 
 import { loadConfig } from "@agentplaneorg/core/config";
 
@@ -34,6 +37,48 @@ function readCommitSubject(message: string): string {
   return "";
 }
 
+function stringValue<T extends string>(value: unknown, allowed: Set<string>): T | undefined {
+  return typeof value === "string" && allowed.has(value) ? (value as T) : undefined;
+}
+
+async function readTaskIntent(opts: {
+  gitRoot: string;
+  workflowDir: string;
+  taskId: string;
+}): Promise<CommitTaskIntent | undefined> {
+  const taskReadmePath = path.join(opts.gitRoot, opts.workflowDir, opts.taskId, "README.md");
+  let parsed;
+  try {
+    parsed = parseTaskReadme(await readFile(taskReadmePath, "utf8"));
+  } catch {
+    return undefined;
+  }
+  const fm = parsed.frontmatter;
+  const intent: CommitTaskIntent = {
+    taskKind: stringValue(
+      fm.task_kind,
+      new Set(["analysis", "content", "docs", "code", "release", "ops"]),
+    ),
+    mutationScope: stringValue(
+      fm.mutation_scope,
+      new Set(["none", "docs", "code", "release", "ops", "unknown"]),
+    ),
+    blueprintRequest: stringValue(
+      fm.blueprint_request,
+      new Set([
+        "analysis.light",
+        "content.light",
+        "docs.change",
+        "code.direct",
+        "code.branch_pr",
+        "release.strict",
+        "ops.approval",
+      ]),
+    ),
+  };
+  return intent.taskKind || intent.mutationScope || intent.blueprintRequest ? intent : undefined;
+}
+
 export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
   const messagePath = opts.args[0];
   if (!messagePath) {
@@ -59,6 +104,13 @@ export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
       taskPrefix: loaded.config.branch.task_prefix,
     }));
   const statusTo = (process.env.AGENTPLANE_STATUS_TO ?? "").trim().toUpperCase();
+  const taskIntent = taskId
+    ? await readTaskIntent({
+        gitRoot: resolved.gitRoot,
+        workflowDir: loaded.config.paths.workflow_dir,
+        taskId,
+      })
+    : undefined;
 
   const emoji = subject.split(/\s+/).find(Boolean) ?? "";
   if (taskId && statusTo === "DONE" && emoji !== "✅") {
@@ -77,7 +129,7 @@ export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
     config: loaded.config,
     taskId,
     git: { stagedPaths: [] },
-    commit: { subject },
+    commit: { subject, taskIntent },
   });
   throwIfPolicyDenied(res);
   try {

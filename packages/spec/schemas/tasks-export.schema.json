@@ -393,6 +393,41 @@
               "minLength": 1
             }
           },
+          "task_kind": {
+            "type": "string",
+            "enum": ["analysis", "content", "docs", "code", "release", "ops"]
+          },
+          "mutation_scope": {
+            "type": "string",
+            "enum": ["none", "docs", "code", "release", "ops", "unknown"]
+          },
+          "risk_flags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "network",
+                "credentials",
+                "deploy",
+                "publish",
+                "merge",
+                "security",
+                "external_system"
+              ]
+            }
+          },
+          "blueprint_request": {
+            "type": "string",
+            "enum": [
+              "analysis.light",
+              "content.light",
+              "docs.change",
+              "code.direct",
+              "code.branch_pr",
+              "release.strict",
+              "ops.approval"
+            ]
+          },
           "verify": {
             "type": "array",
             "items": {

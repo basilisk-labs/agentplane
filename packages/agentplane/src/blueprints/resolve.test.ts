@@ -31,6 +31,34 @@ describe("resolveBlueprint", () => {
     expect(resolved.blueprint.id).toBe("content.light");
   });
 
+  it("prefers structured task intent over weak title and tag fallback", () => {
+    const resolved = resolve({
+      title: "Write implementation notes",
+      tags: ["content"],
+      taskKind: "analysis",
+      mutation: "unknown",
+      mutationScope: "none",
+    });
+
+    expect(resolved.blueprint.id).toBe("analysis.light");
+    expect(resolved.selectionReasons).toContain("task kind resolved to analysis");
+    expect(resolved.selectionReasons).toContain("task intent kind: analysis");
+    expect(resolved.selectionReasons).toContain("task intent mutation scope: none");
+  });
+
+  it("treats structured blueprint requests as validated requests", () => {
+    const resolved = resolve({
+      taskKind: "code",
+      mutation: "code",
+      workflowMode: "branch_pr",
+      blueprintRequest: "code.direct",
+    });
+
+    expect(resolved.blueprint.id).toBe("code.direct");
+    expect(resolved.selectionReasons).toContain("explicit blueprint requested: code.direct");
+    expect(resolved.stopReasons.map((reason) => reason.id)).toContain("workflow_mode_incompatible");
+  });
+
   it("resolves docs mutation to docs.change", () => {
     const resolved = resolve({
       tags: ["docs"],

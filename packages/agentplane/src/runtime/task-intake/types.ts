@@ -111,6 +111,10 @@ export type TaskGraphDraftTask = {
   priority: TaskData["priority"];
   origin?: TaskOrigin | null;
   tags: string[];
+  task_kind?: TaskData["task_kind"];
+  mutation_scope?: TaskData["mutation_scope"];
+  risk_flags?: TaskData["risk_flags"];
+  blueprint_request?: TaskData["blueprint_request"];
   verify: string[];
   depends_on: string[];
   doc: string;

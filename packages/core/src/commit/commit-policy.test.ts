@@ -7,8 +7,10 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildTaskArtifactRefreshCommitSubject,
+  commitScopesForTaskIntent,
   extractTaskSuffix,
   isGenericSubject,
+  isTaskIntentCommitScope,
   isTaskArtifactRefreshCommitSubject,
   parseTaskSubjectTemplate,
   validateCommitSubject,
@@ -100,6 +102,38 @@ describe("commit-policy", () => {
       genericTokens: ["update", "tasks"],
     });
     expect(result.ok).toBe(true);
+  });
+
+  it("derives task-intent commit scopes without using the commit as the selector", () => {
+    expect(
+      commitScopesForTaskIntent({
+        taskKind: "analysis",
+        mutationScope: "none",
+        blueprintRequest: "analysis.light",
+      }),
+    ).toEqual(["analysis"]);
+    expect(
+      isTaskIntentCommitScope({
+        scope: "code/resolver",
+        intent: { taskKind: "code", mutationScope: "code" },
+      }),
+    ).toBe(true);
+  });
+
+  it("rejects task commit scopes that contradict structured task intent", () => {
+    const result = validateCommitSubject({
+      subject: "✨ ABCDEF code: implement resolver",
+      taskId: "202601010101-ABCDEF",
+      genericTokens: ["update", "tasks"],
+      taskIntent: {
+        taskKind: "analysis",
+        mutationScope: "none",
+        blueprintRequest: "analysis.light",
+      },
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.errors.join("\n")).toContain("commit scope 'code' does not match task intent");
   });
 
   it("rejects subjects that do not match the required template", () => {

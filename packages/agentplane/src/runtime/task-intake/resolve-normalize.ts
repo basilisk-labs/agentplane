@@ -99,6 +99,12 @@ export function normalizeDraftTasks(tasks: readonly TaskGraphDraftTask[]): TaskG
       priority: task.priority,
       ...(task.origin ? { origin: structuredClone(task.origin) } : {}),
       tags: dedupeTrimmed(task.tags).toSorted(),
+      ...(task.task_kind ? { task_kind: task.task_kind } : {}),
+      ...(task.mutation_scope ? { mutation_scope: task.mutation_scope } : {}),
+      ...(task.risk_flags && task.risk_flags.length > 0
+        ? { risk_flags: dedupeTrimmed(task.risk_flags).toSorted() as typeof task.risk_flags }
+        : {}),
+      ...(task.blueprint_request ? { blueprint_request: task.blueprint_request } : {}),
       verify: dedupeTrimmed(task.verify).toSorted(),
       depends_on: dedupeTrimmed(task.depends_on).toSorted(),
       doc,

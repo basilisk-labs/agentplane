@@ -66,6 +66,13 @@ export type RiskFlag =
   | "security"
   | "external_system";
 
+export type BlueprintTaskIntent = {
+  taskKind?: TaskKind;
+  mutationScope?: MutationKind;
+  riskFlags?: readonly RiskFlag[];
+  blueprintRequest?: BlueprintId;
+};
+
 export type Blueprint = {
   id: BlueprintId;
   version: 1;
@@ -167,12 +174,15 @@ export type BlueprintResolveInput = {
   description?: string;
   tags: readonly string[];
   owner?: string;
+  taskKind?: TaskKind;
   workflowMode?: WorkflowMode;
   mutation: MutationKind;
+  mutationScope?: MutationKind;
   touchedPaths?: readonly string[];
   recipeHints?: readonly RecipeHint[];
   riskFlags?: readonly RiskFlag[];
   explicitBlueprintId?: BlueprintId;
+  blueprintRequest?: BlueprintId;
 };
 
 export type SkippedNode = {

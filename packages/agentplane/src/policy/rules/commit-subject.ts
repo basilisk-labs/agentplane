@@ -13,6 +13,7 @@ export function commitSubjectRule(ctx: PolicyContext): PolicyResult {
     subject,
     taskId: (ctx.taskId ?? "").trim() || undefined,
     genericTokens: ctx.config.commit.generic_tokens,
+    taskIntent: ctx.commit?.taskIntent,
   });
   if (!policy.ok) {
     return {

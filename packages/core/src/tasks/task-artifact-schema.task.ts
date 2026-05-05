@@ -16,6 +16,26 @@ import { TASK_STATUS_VALUES } from "./task-status.js";
 
 const TASK_PRIORITY_VALUES = ["low", "normal", "med", "high"] as const;
 const TASK_RISK_LEVEL_VALUES = ["low", "med", "high"] as const;
+const TASK_KIND_VALUES = ["analysis", "content", "docs", "code", "release", "ops"] as const;
+const TASK_MUTATION_SCOPE_VALUES = ["none", "docs", "code", "release", "ops", "unknown"] as const;
+const TASK_RISK_FLAG_VALUES = [
+  "network",
+  "credentials",
+  "deploy",
+  "publish",
+  "merge",
+  "security",
+  "external_system",
+] as const;
+const TASK_BLUEPRINT_REQUEST_VALUES = [
+  "analysis.light",
+  "content.light",
+  "docs.change",
+  "code.direct",
+  "code.branch_pr",
+  "release.strict",
+  "ops.approval",
+] as const;
 const RUNNER_OUTCOME_STATUS_VALUES = [
   "prepared",
   "running",
@@ -29,6 +49,10 @@ const RUNNER_TARGET_KIND_VALUES = ["task", "recipe_scenario"] as const;
 const TASK_STATUS_SCHEMA = z.enum(TASK_STATUS_VALUES);
 const TASK_PRIORITY_SCHEMA = z.enum(TASK_PRIORITY_VALUES);
 const TASK_RISK_LEVEL_SCHEMA = z.enum(TASK_RISK_LEVEL_VALUES);
+const TASK_KIND_SCHEMA = z.enum(TASK_KIND_VALUES);
+const TASK_MUTATION_SCOPE_SCHEMA = z.enum(TASK_MUTATION_SCOPE_VALUES);
+const TASK_RISK_FLAGS_SCHEMA = z.array(z.enum(TASK_RISK_FLAG_VALUES));
+const TASK_BLUEPRINT_REQUEST_SCHEMA = z.enum(TASK_BLUEPRINT_REQUEST_VALUES);
 
 const TASK_ORIGIN_SCHEMA = z
   .object({
@@ -116,6 +140,10 @@ export const TASK_README_FRONTMATTER_ZOD_SCHEMA = z
     origin: TASK_ORIGIN_SCHEMA.optional(),
     depends_on: z.array(NON_EMPTY_STRING),
     tags: z.array(NON_EMPTY_STRING),
+    task_kind: TASK_KIND_SCHEMA.optional(),
+    mutation_scope: TASK_MUTATION_SCOPE_SCHEMA.optional(),
+    risk_flags: TASK_RISK_FLAGS_SCHEMA.optional(),
+    blueprint_request: TASK_BLUEPRINT_REQUEST_SCHEMA.optional(),
     verify: z.array(NON_EMPTY_STRING),
     plan_approval: TASK_PLAN_APPROVAL_SCHEMA,
     verification: TASK_VERIFICATION_SCHEMA,
@@ -148,6 +176,10 @@ const TASKS_EXPORT_TASK_SCHEMA = z
     runner: RUNNER_OUTCOME_SCHEMA.optional(),
     depends_on: z.array(NON_EMPTY_STRING),
     tags: z.array(NON_EMPTY_STRING),
+    task_kind: TASK_KIND_SCHEMA.optional(),
+    mutation_scope: TASK_MUTATION_SCOPE_SCHEMA.optional(),
+    risk_flags: TASK_RISK_FLAGS_SCHEMA.optional(),
+    blueprint_request: TASK_BLUEPRINT_REQUEST_SCHEMA.optional(),
     verify: z.array(NON_EMPTY_STRING),
     plan_approval: TASK_PLAN_APPROVAL_SCHEMA,
     verification: TASK_VERIFICATION_SCHEMA,

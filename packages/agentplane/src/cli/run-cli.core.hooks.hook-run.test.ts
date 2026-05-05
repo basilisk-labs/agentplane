@@ -145,6 +145,53 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     }
   });
 
+  it("hooks run commit-msg rejects scopes that contradict structured task intent", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202601010101-ABCDEF";
+    await mkdir(path.join(root, ".agentplane", "tasks", taskId), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      [
+        "---",
+        `id: "${taskId}"`,
+        'title: "Analysis task"',
+        'status: "TODO"',
+        'priority: "med"',
+        'owner: "CODER"',
+        "depends_on: []",
+        'tags: ["content"]',
+        'task_kind: "analysis"',
+        'mutation_scope: "none"',
+        'blueprint_request: "analysis.light"',
+        "verify: []",
+        "comments: []",
+        "doc_version: 3",
+        'doc_updated_at: "2026-01-01T00:00:00.000Z"',
+        'doc_updated_by: "CODER"',
+        'description: "Read-only analysis."',
+        "---",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    await writeFile(messagePath, "✨ ABCDEF code: implement resolver\n", "utf8");
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    process.env.AGENTPLANE_TASK_ID = taskId;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("commit scope 'code' does not match task intent");
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
+    }
+  });
+
   it("hooks run rejects unknown hook", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
