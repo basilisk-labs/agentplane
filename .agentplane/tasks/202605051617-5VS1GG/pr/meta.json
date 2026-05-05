@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-05T16:20:01Z",
   "base": "main",
   "branch": "task/202605051617-5VS1GG/commit-stranded-qftzad-acr",
   "created_at": "2026-05-05T16:17:46.917Z",
-  "head_sha": "e9c448c9a3bcbab3c479f4a7e2ebb30340711185",
+  "head_sha": "8e9094b59ac7f0612bc09f2287512799d97b669d",
   "last_verified_at": "2026-05-05T16:18:46.090Z",
   "last_verified_sha": "831a0cc6116d432eae86343bd49eb8ee24dfc5ea",
+  "merge_commit": "c859f16562808d5abb02fa71fb8cb46262cedce3",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-05T16:20:01Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605051617-5VS1GG",
-  "updated_at": "2026-05-05T16:18:56.130Z",
+  "updated_at": "2026-05-05T16:20:01Z",
   "verify": {
     "status": "pass"
   }
