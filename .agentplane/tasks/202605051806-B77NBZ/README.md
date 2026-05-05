@@ -1,10 +1,11 @@
 ---
 id: "202605051806-B77NBZ"
 title: "Add cloud backend runtime skeleton"
-status: "DOING"
+result_summary: "Cloud backend runtime skeleton landed on main via merge commit a7b14d3e."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-05T18:21:02.086Z"
   updated_by: "CODER"
   note: "Verified: CloudBackend runtime skeleton delegates projection reads/writes to LocalBackend, exposes remote-cache capabilities, syncs through the cloud HTTP surface, and records last_checked_at state."
-commit: null
+commit:
+  hash: "a7b14d3e4fc80ed21ad8bba703f582e716130861"
+  message: "🔀 RZ8SA1 integrate: Add cloud backend init contract"
 comments:
   -
     author: "CODER"
     body: "Start: Implement the cloud backend runtime skeleton in the shared batch worktree, preserving LocalBackend cache behavior and explicit remote capability reporting."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Cloud backend runtime skeleton merged to main after backend tests, typecheck, arch check, doctor, and hosted PR checks."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: CloudBackend runtime skeleton delegates projection reads/writes to LocalBackend, exposes remote-cache capabilities, syncs through the cloud HTTP surface, and records last_checked_at state."
+  -
+    type: "status"
+    at: "2026-05-05T18:26:57.021Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Cloud backend runtime skeleton merged to main after backend tests, typecheck, arch check, doctor, and hosted PR checks."
 doc_version: 3
-doc_updated_at: "2026-05-05T18:21:02.092Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T18:26:57.022Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement a cloud task backend shell that stores local cache state, advertises remote capabilities, validates endpoint/token configuration, and exposes inspect/sync behavior ready for the external sync service API."
 sections:
   Summary: |-
