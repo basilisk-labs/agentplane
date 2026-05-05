@@ -55,6 +55,33 @@ const REDMINE_ENV_TEMPLATE: EnvTemplateEntry[] = [
   },
 ];
 
+const CLOUD_ENV_TEMPLATE: EnvTemplateEntry[] = [
+  {
+    key: "AGENTPLANE_CLOUD_ENDPOINT",
+    value: "https://agentplane-cloud.example",
+    comment: "Cloud sync service base URL.",
+    required: true,
+  },
+  {
+    key: "AGENTPLANE_CLOUD_TOKEN",
+    value: "replace-me",
+    comment: "Cloud sync service access token.",
+    required: true,
+  },
+  {
+    key: "AGENTPLANE_CLOUD_PROJECT_ID",
+    value: "replace-me",
+    comment: "Cloud sync service project identifier.",
+    required: true,
+  },
+  {
+    key: "AGENTPLANE_CLOUD_PROVIDER",
+    value: "",
+    comment: "Optional remote projection provider selected in the cloud service.",
+    required: false,
+  },
+];
+
 async function readTextIfExists(filePath: string): Promise<string | null> {
   try {
     return await readFile(filePath, "utf8");
@@ -76,9 +103,14 @@ function collectDefinedEnvKeys(dotEnvText: string): Set<string> {
   return keys;
 }
 
-function buildTemplateBlock(existing: string): string {
+function buildTemplateBlock(opts: {
+  existing: string;
+  entries: EnvTemplateEntry[];
+  heading: string;
+}): string {
+  const { existing, entries, heading } = opts;
   const definedKeys = collectDefinedEnvKeys(existing);
-  const missing = REDMINE_ENV_TEMPLATE.filter((entry) => !definedKeys.has(entry.key));
+  const missing = entries.filter((entry) => !definedKeys.has(entry.key));
   if (missing.length === 0) return existing;
 
   const required = missing.filter((item) => item.required);
@@ -97,7 +129,7 @@ function buildTemplateBlock(existing: string): string {
           ...optional.flatMap((entry) => [`# ${entry.comment}`, `${entry.key}=${entry.value}`]),
         ];
   const lines = [
-    "# agentplane: redmine backend configuration",
+    `# agentplane: ${heading}`,
     "# Required values:",
     ...requiredLines,
     ...optionalLines,
@@ -112,7 +144,27 @@ function buildTemplateBlock(existing: string): string {
 export async function ensureInitRedmineEnvTemplate(opts: { gitRoot: string }): Promise<void> {
   const dotEnvExamplePath = path.join(opts.gitRoot, ".env.example");
   const existingExample = (await readTextIfExists(dotEnvExamplePath)) ?? "";
-  const nextExample = buildTemplateBlock(existingExample);
+  const nextExample = buildTemplateBlock({
+    existing: existingExample,
+    entries: REDMINE_ENV_TEMPLATE,
+    heading: "redmine backend configuration",
+  });
+  await writeTextIfChanged(dotEnvExamplePath, nextExample);
+
+  const dotEnvPath = path.join(opts.gitRoot, ".env");
+  const existingEnv = await readTextIfExists(dotEnvPath);
+  if (existingEnv !== null) return;
+  await writeTextIfChanged(dotEnvPath, nextExample);
+}
+
+export async function ensureInitCloudEnvTemplate(opts: { gitRoot: string }): Promise<void> {
+  const dotEnvExamplePath = path.join(opts.gitRoot, ".env.example");
+  const existingExample = (await readTextIfExists(dotEnvExamplePath)) ?? "";
+  const nextExample = buildTemplateBlock({
+    existing: existingExample,
+    entries: CLOUD_ENV_TEMPLATE,
+    heading: "cloud backend configuration",
+  });
   await writeTextIfChanged(dotEnvExamplePath, nextExample);
 
   const dotEnvPath = path.join(opts.gitRoot, ".env");

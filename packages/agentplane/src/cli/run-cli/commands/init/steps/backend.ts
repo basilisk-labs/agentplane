@@ -10,6 +10,7 @@ const backendOptions: {
   hint: string;
 }[] = [
   { value: "local", label: "Local", hint: "Store task data in .agentplane." },
+  { value: "cloud", label: "Cloud", hint: "Use a hosted sync service with a local cache." },
   { value: "redmine", label: "Redmine", hint: "Prepare Redmine backend stubs." },
 ];
 

@@ -16,7 +16,7 @@ import type { InitPromptClack } from "./steps/contracts.js";
 import { previewInstall } from "./ui.js";
 import { ensureAgentsFiles } from "./write-agents.js";
 import { ensureAgentplaneDirs, writeBackendStubs, writeInitConfig } from "./write-config.js";
-import { ensureInitRedmineEnvTemplate } from "./write-env.js";
+import { ensureInitCloudEnvTemplate, ensureInitRedmineEnvTemplate } from "./write-env.js";
 import { ensureInitGitignore } from "./write-gitignore.js";
 import { ensureInitWorkflow } from "./write-workflow.js";
 import { assertConfirmed } from "./answers.js";
@@ -46,7 +46,13 @@ export async function resolveInitPaths(opts: {
   const workflowPath = path.join(agentplaneDir, "WORKFLOW.md");
   const localBackendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
   const redmineBackendPath = path.join(agentplaneDir, "backends", "redmine", "backend.json");
-  const backendPath = opts.backend === "redmine" ? redmineBackendPath : localBackendPath;
+  const cloudBackendPath = path.join(agentplaneDir, "backends", "cloud", "backend.json");
+  const backendPath =
+    opts.backend === "redmine"
+      ? redmineBackendPath
+      : opts.backend === "cloud"
+        ? cloudBackendPath
+        : localBackendPath;
   return { gitRoot, gitRootExisted, agentplaneDir, workflowPath, backendPath };
 }
 
@@ -170,6 +176,10 @@ export async function applyInitPlan(opts: {
         });
         if (opts.answers.backend === "redmine") {
           await ensureInitRedmineEnvTemplate({ gitRoot: opts.paths.gitRoot });
+          installPaths.push(".env.example");
+        }
+        if (opts.answers.backend === "cloud") {
+          await ensureInitCloudEnvTemplate({ gitRoot: opts.paths.gitRoot });
           installPaths.push(".env.example");
         }
         return installPaths;

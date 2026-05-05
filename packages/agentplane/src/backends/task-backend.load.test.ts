@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
   LocalBackend,
+  CloudBackend,
   RedmineBackend,
   buildTasksExportSnapshotFromTasks,
   loadTaskBackend,
@@ -36,12 +37,21 @@ describe("loadTaskBackend", () => {
     "AGENTPLANE_REDMINE_BATCH_PAUSE",
     "AGENTPLANE_REDMINE_EXTRA",
   ] as const;
+  const cloudEnvKeys = [
+    "AGENTPLANE_CLOUD_ENDPOINT",
+    "AGENTPLANE_CLOUD_TOKEN",
+    "AGENTPLANE_CLOUD_PROJECT_ID",
+    "AGENTPLANE_CLOUD_PROVIDER",
+  ] as const;
 
   beforeEach(async () => {
     restoreStdIO = silenceStdIO();
     tempDir = await mkTempDir();
     originalEnv = { ...process.env };
     for (const key of redmineEnvKeys) {
+      delete process.env[key];
+    }
+    for (const key of cloudEnvKeys) {
       delete process.env[key];
     }
     await mkdir(path.join(tempDir, ".git"), { recursive: true });
@@ -129,6 +139,46 @@ describe("loadTaskBackend", () => {
     expect(result.backend).toBeInstanceOf(RedmineBackend);
     expect(result.backend.capabilities.supports_task_revisions).toBe(true);
     expect(result.backend.capabilities.supports_revision_guarded_writes).toBe(true);
+  });
+
+  it("loads cloud backend with local cache and .env connection settings", async () => {
+    const agentplaneDir = path.join(tempDir, ".agentplane");
+    const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
+    await mkdir(path.dirname(backendPath), { recursive: true });
+    await writeFile(
+      backendPath,
+      JSON.stringify({
+        id: "cloud",
+        settings: {
+          cache_dir: "cloud-cache",
+          stale_after_seconds: 60,
+        },
+      }),
+      "utf8",
+    );
+    await writeFile(
+      path.join(tempDir, ".env"),
+      [
+        "AGENTPLANE_CLOUD_ENDPOINT=https://cloud.example/",
+        "AGENTPLANE_CLOUD_TOKEN=token",
+        "AGENTPLANE_CLOUD_PROJECT_ID=project-1",
+        "AGENTPLANE_CLOUD_PROVIDER=github-projects",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const result = await loadTaskBackend({ cwd: tempDir });
+    expect(result.backendId).toBe("cloud");
+    expect(result.backend).toBeInstanceOf(CloudBackend);
+    expect(result.backend.capabilities.canonical_source).toBe("remote");
+    expect(result.backend.capabilities.projection).toBe("cache");
+    expect(process.env.AGENTPLANE_CLOUD_ENDPOINT).toBe("https://cloud.example/");
+
+    const cloud = result.backend as CloudBackend;
+    expect(cloud.endpoint).toBe("https://cloud.example");
+    expect(cloud.projectId).toBe("project-1");
+    expect(cloud.provider).toBe("github-projects");
+    expect(cloud.cache.root).toBe(path.join(tempDir, "cloud-cache"));
   });
 
   it("parses quoted .env values and resolves backend directories", async () => {

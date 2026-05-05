@@ -10,6 +10,7 @@ import { isRecord } from "../../shared/guards.js";
 
 import { LocalBackend } from "./local-backend.js";
 import { RedmineBackend, type RedmineSettings } from "./redmine-backend.js";
+import { CloudBackend, type CloudBackendSettings } from "./cloud-backend.js";
 import { toStringSafe, type TaskBackend } from "./shared.js";
 
 type BackendConfig = {
@@ -75,9 +76,26 @@ async function loadRedmineTaskBackend(
   };
 }
 
+async function loadCloudTaskBackend(
+  ctx: TaskBackendLoaderContext,
+): Promise<TaskBackendLoaderResult> {
+  const cacheDirRaw = resolveMaybeRelative(ctx.resolved.gitRoot, ctx.settings.cache_dir);
+  const cacheDir = cacheDirRaw ?? path.join(ctx.resolved.gitRoot, ctx.config.paths.workflow_dir);
+  const cache = new LocalBackend({ dir: cacheDir });
+  return {
+    backend: await CloudBackend.create({
+      root: ctx.resolved.gitRoot,
+      settings: ctx.settings as CloudBackendSettings,
+      cache,
+    }),
+    backendId: "cloud",
+  };
+}
+
 const TASK_BACKEND_LOADERS: Record<string, TaskBackendLoader> = {
   local: loadLocalTaskBackend,
   redmine: loadRedmineTaskBackend,
+  cloud: loadCloudTaskBackend,
 };
 
 function resolveTaskBackendLoader(backendId: string): TaskBackendLoader {

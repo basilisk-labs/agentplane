@@ -14,6 +14,7 @@ Commands:
     acr validate  Validate an ACR file by schema, local, or CI invariants.
   Backend:
     backend  Backend-related operations.
+    backend connect  Configure a cloud backend connection without storing secrets.
     backend inspect  Inspect visible backend readiness facts without mutating remote state.
     backend migrate-canonical-state  Backfill canonical_state for issues in the configured backend.
     backend sync  Sync the configured backend (push or pull).
@@ -318,3 +319,4 @@ exports[`runCli help snapshots (cli2) > help work start --json snapshot 1`] = `
   ],
 }
 `;
+

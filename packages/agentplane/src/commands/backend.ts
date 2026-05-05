@@ -1,3 +1,5 @@
+import { readFile, writeFile } from "node:fs/promises";
+
 import { backendNotSupportedMessage, createCliEmitter } from "../cli/output.js";
 import { mapBackendError } from "../cli/error-map.js";
 import { CliError } from "../shared/errors.js";
@@ -30,6 +32,15 @@ export type BackendMigrateCanonicalStateParsed = {
 
 export type BackendInspectParsed = {
   backendId: string;
+  yes: boolean;
+  quiet: boolean;
+};
+
+export type BackendConnectParsed = {
+  backendId: string;
+  endpoint: string | null;
+  projectId: string | null;
+  provider: string | null;
   yes: boolean;
   quiet: boolean;
 };
@@ -219,6 +230,21 @@ export async function cmdBackendInspectParsed(opts: {
     output.line(
       `canonical_state configured=${result.canonicalState.configuredFieldId ?? "unset"} visible=${result.canonicalState.visibleFieldId ?? "absent"}`,
     );
+    if (result.connection) {
+      output.line(
+        `connection endpoint=${result.connection.endpoint ?? "unset"} project=${result.connection.projectId ?? "unset"} connected=${result.connection.connected}`,
+      );
+      if (result.connection.provider) output.line(`provider ${result.connection.provider}`);
+      if (result.connection.missing.length > 0) {
+        output.line(`missing ${result.connection.missing.join(",")}`);
+      }
+    }
+    if (result.freshness) {
+      output.line(
+        `freshness last_checked_at=${result.freshness.lastCheckedAt ?? "never"} stale=${result.freshness.stale} stale_after_seconds=${result.freshness.staleAfterSeconds ?? "unset"}`,
+      );
+      if (result.freshness.statePath) output.line(`state ${result.freshness.statePath}`);
+    }
     for (const drift of result.configuredFieldNameDrift) {
       output.line(
         `drift key=${drift.key} configured-id=${drift.configuredId} visible-name=${JSON.stringify(drift.visibleName)}`,
@@ -234,4 +260,75 @@ export async function cmdBackendInspectParsed(opts: {
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "backend inspect", root: opts.rootOverride ?? null });
   }
+}
+
+export async function cmdBackendConnectParsed(opts: {
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  flags: BackendConnectParsed;
+}): Promise<number> {
+  try {
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    if (opts.flags.backendId !== "cloud") {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "backend connect currently supports cloud only",
+        context: { command: "backend connect", reason_code: "connect_backend_unsupported" },
+      });
+    }
+    if (ctx.backendId !== "cloud") {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Configured backend is "${ctx.backendId}", not "cloud"`,
+        context: { command: "backend connect", reason_code: "connect_backend_mismatch" },
+      });
+    }
+    const current = await readBackendConfig(ctx.backendConfigPath);
+    const settings = isRecord(current.settings) ? current.settings : {};
+    const next = {
+      ...current,
+      id: "cloud",
+      version: typeof current.version === "number" ? current.version : 1,
+      settings: {
+        ...settings,
+        ...(opts.flags.endpoint ? { endpoint: opts.flags.endpoint.replaceAll(/\/+$/gu, "") } : {}),
+        ...(opts.flags.projectId ? { project_id: opts.flags.projectId } : {}),
+        ...(opts.flags.provider ? { provider: opts.flags.provider } : {}),
+      },
+    };
+    await writeFile(ctx.backendConfigPath, `${JSON.stringify(next, null, 2)}\n`, "utf8");
+    if (!opts.flags.quiet) {
+      output.success(
+        "backend connect",
+        undefined,
+        `backend=cloud endpoint=${opts.flags.endpoint ?? "unchanged"} project=${opts.flags.projectId ?? "unchanged"}`,
+      );
+      output.line("set AGENTPLANE_CLOUD_TOKEN in the environment or local secret store");
+      output.line("next: agentplane backend inspect cloud --yes");
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapBackendError(err, { command: "backend connect", root: opts.rootOverride ?? null });
+  }
+}
+
+async function readBackendConfig(configPath: string): Promise<Record<string, unknown>> {
+  try {
+    const raw = JSON.parse(await readFile(configPath, "utf8")) as unknown;
+    return isRecord(raw) ? raw : {};
+  } catch (err) {
+    const code = (err as { code?: string } | null)?.code;
+    if (code === "ENOENT") return {};
+    throw err;
+  }
+}
+
+function isRecord(input: unknown): input is Record<string, unknown> {
+  return Boolean(input && typeof input === "object" && !Array.isArray(input));
 }

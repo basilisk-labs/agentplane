@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605051806-RZ8SA1/cloud-backend-contract",
+  "created_at": "2026-05-05T18:07:34.386Z",
+  "head_sha": "a23c4baaf64d02334baa7e95e00b634afff770d9",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605051806-RZ8SA1",
+  "updated_at": "2026-05-05T18:07:34.386Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

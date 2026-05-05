@@ -8,9 +8,11 @@ import {
 } from "../../cli/group-command.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import {
+  cmdBackendConnectParsed,
   cmdBackendInspectParsed,
   cmdBackendMigrateCanonicalStateParsed,
   cmdBackendSyncParsed,
+  type BackendConnectParsed,
   type BackendInspectParsed,
   type BackendMigrateCanonicalStateParsed,
   type BackendSyncParsed,
@@ -21,7 +23,7 @@ export const backendSpec: CommandSpec<GroupCommandParsed> = {
   group: "Backend",
   summary: "Backend-related operations.",
   description:
-    "This is a command group. Use a subcommand such as `agentplane backend sync ...`, `agentplane backend inspect ...`, or `agentplane backend migrate-canonical-state ...`.",
+    "This is a command group. Use a subcommand such as `agentplane backend sync ...`, `agentplane backend inspect ...`, `agentplane backend connect ...`, or `agentplane backend migrate-canonical-state ...`.",
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [{ cmd: COMMAND_SNIPPETS.backendSync.pullLocal, why: "Sync the backend." }],
   parse: (raw) => parseGroupCommand(raw),
@@ -112,6 +114,54 @@ export const backendInspectSpec: CommandSpec<BackendInspectParsed> = {
   }),
 };
 
+export const backendConnectSpec: CommandSpec<BackendConnectParsed> = {
+  id: ["backend", "connect"],
+  group: "Backend",
+  summary: "Configure a cloud backend connection without storing secrets.",
+  args: [{ name: "id", required: true, valueHint: "<id>", description: "Configured backend id." }],
+  options: [
+    {
+      kind: "string",
+      name: "endpoint",
+      valueHint: "<url>",
+      description: "Cloud sync service endpoint.",
+    },
+    {
+      kind: "string",
+      name: "project-id",
+      valueHint: "<id>",
+      description: "Cloud sync service project identifier.",
+    },
+    {
+      kind: "string",
+      name: "provider",
+      valueHint: "<name>",
+      description: "Optional remote projection provider selected in the cloud service.",
+    },
+    {
+      kind: "boolean",
+      name: "yes",
+      default: false,
+      description: "Reserved for future browser flow approval.",
+    },
+    { kind: "boolean", name: "quiet", default: false, description: "Reduce output noise." },
+  ],
+  examples: [
+    {
+      cmd: "agentplane backend connect cloud --endpoint https://sync.example.test --project-id proj_123 --provider github-projects",
+      why: "Attach this repository to a cloud sync project without committing a token.",
+    },
+  ],
+  parse: (raw) => ({
+    backendId: String(raw.args.id),
+    endpoint: typeof raw.opts.endpoint === "string" ? raw.opts.endpoint.trim() : null,
+    projectId: typeof raw.opts["project-id"] === "string" ? raw.opts["project-id"].trim() : null,
+    provider: typeof raw.opts.provider === "string" ? raw.opts.provider.trim() : null,
+    yes: raw.opts.yes === true,
+    quiet: raw.opts.quiet === true,
+  }),
+};
+
 async function runBackendRootGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
   throwGroupCommandUsage({
     spec: backendSpec,
@@ -142,6 +192,18 @@ export function makeRunBackendInspectHandler(getCtx: (cmd: string) => Promise<Co
   return async (ctx: CommandCtx, p: BackendInspectParsed): Promise<number> => {
     const commandCtx = await getCtx("backend inspect");
     return await cmdBackendInspectParsed({
+      ctx: commandCtx,
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride,
+      flags: p,
+    });
+  };
+}
+
+export function makeRunBackendConnectHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+  return async (ctx: CommandCtx, p: BackendConnectParsed): Promise<number> => {
+    const commandCtx = await getCtx("backend connect");
+    return await cmdBackendConnectParsed({
       ctx: commandCtx,
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,

@@ -118,6 +118,19 @@ export type TaskBackendInspectionResult = {
     visibleFieldId: number | null;
   };
   configuredFieldNameDrift: TaskBackendFieldNameDrift[];
+  connection?: {
+    endpoint: string | null;
+    projectId: string | null;
+    connected: boolean;
+    missing: string[];
+    provider?: string | null;
+  };
+  freshness?: {
+    lastCheckedAt: string | null;
+    staleAfterSeconds: number | null;
+    stale: boolean;
+    statePath?: string | null;
+  };
 };
 
 export type TaskBackendBase = {

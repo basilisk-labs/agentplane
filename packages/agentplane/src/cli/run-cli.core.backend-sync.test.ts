@@ -240,6 +240,68 @@ describe("runCli", () => {
     }
   });
 
+  it("backend connect cloud writes non-secret connection metadata", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const backendConfigPath = path.join(root, ".agentplane", "backends", "cloud", "backend.json");
+    await mkdir(path.dirname(backendConfigPath), { recursive: true });
+    await writeFile(
+      backendConfigPath,
+      JSON.stringify({ id: "cloud", version: 1, settings: { cache_dir: ".agentplane/tasks" } }),
+      "utf8",
+    );
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: stubTaskBackend({ id: "cloud" }),
+      backendId: "cloud",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath,
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "backend",
+        "connect",
+        "cloud",
+        "--endpoint",
+        "https://sync.example.test/",
+        "--project-id",
+        "proj_123",
+        "--provider",
+        "github-projects",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("backend connect");
+      expect(io.stdout).toContain("AGENTPLANE_CLOUD_TOKEN");
+      const written = JSON.parse(await readFile(backendConfigPath, "utf8")) as Record<
+        string,
+        unknown
+      >;
+      expect(written).toMatchObject({
+        id: "cloud",
+        version: 1,
+        settings: {
+          cache_dir: ".agentplane/tasks",
+          endpoint: "https://sync.example.test",
+          project_id: "proj_123",
+          provider: "github-projects",
+        },
+      });
+      expect(JSON.stringify(written)).not.toContain("token");
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
   it("backend inspect requires --yes in non-tty mode when require_network=true and backend is non-local", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

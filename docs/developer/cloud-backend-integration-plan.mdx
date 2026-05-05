@@ -51,6 +51,9 @@ Verification:
 - init parser tests for accepted backend ids;
 - docs routing check.
 
+Status: implemented in the first AgentPlane layer. `agentplane init --backend cloud` now writes
+`.agentplane/backends/cloud/backend.json` and cloud `.env.example` keys.
+
 ### C002: Implement CloudBackend as a remote-cache backend
 
 Scope:
@@ -65,6 +68,9 @@ Verification:
 - backend capability unit tests;
 - projection read/write tests with mocked cloud client.
 
+Status: implemented in the first AgentPlane layer. `CloudBackend` wraps `LocalBackend` as a cache
+and reports a remote canonical source.
+
 ### C003: Add cloud API client
 
 Scope:
@@ -77,6 +83,11 @@ Verification:
 
 - mocked HTTP tests;
 - error-code mapping tests.
+
+Status: partially implemented. The first API surface posts to
+`/api/agentplane/v1/tasks/sync` with `project_id`, `provider`, `direction`, `conflict`, and local
+tasks for push sync. The external service should keep this endpoint or provide an adapter before
+public release.
 
 ### C004: Add backend connect command
 
@@ -93,6 +104,10 @@ Verification:
 - non-interactive output tests;
 - config write tests.
 
+Status: implemented as non-interactive metadata configuration:
+`agentplane backend connect cloud --endpoint ... --project-id ... --provider ...`. Browser-based
+authorization remains owned by the cloud service.
+
 ### C005: Add stale projection guard
 
 Scope:
@@ -106,6 +121,10 @@ Verification:
 - task mutation tests for fresh/stale cloud state;
 - read-command warning tests.
 
+Status: partially implemented. Cloud sync records `.agentplane/backends/cloud/state.json` with
+`last_checked_at`; `backend inspect cloud --yes` reports stale/fresh state. Mutation blocking is a
+follow-up task.
+
 ### C006: Add sync and inspect behavior
 
 Scope:
@@ -118,6 +137,10 @@ Verification:
 
 - backend sync CLI tests;
 - backend inspect CLI tests.
+
+Status: partially implemented. `backend sync cloud` uses the backend sync port; `backend inspect
+cloud --yes` shows connection and freshness metadata. Conflict count is a follow-up service/API
+field.
 
 ### C007: Update init UX and docs
 
@@ -141,4 +164,3 @@ Stop before implementation if:
 - a task requires connector-specific logic in the public CLI;
 - a command would need to store tokens in backend JSON;
 - stale projection behavior cannot be enforced consistently across task mutations.
-
