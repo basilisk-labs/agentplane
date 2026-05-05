@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605051959-VCZB8M",
+  "created_at": "2026-05-05T20:52:06.448Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "c8c9cbe086a86a9c396eeef9e26ff35027260159",
+    "work_ref": "main",
+    "work_commit": "c8c9cbe086a86a9c396eeef9e26ff35027260159"
+  },
+  "task": {
+    "task_id": "202605051959-VCZB8M",
+    "title": "Add blueprint explain CLI surface",
+    "intent": "Add agentplane blueprint list and agentplane blueprint explain with task-id and synthetic inputs, JSON output, and command/help tests so resolved routes are visible before execution.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605051959-VCZB8M/README.md",
+      "sha256": "sha256:f1145978e619903b6214b6d77317399158e4446a6404f44bd477183fe84838f9"
+    },
+    "approved_at": "2026-05-05T20:00:06.364Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #942. Blueprint list and explain CLI surfaces are available on main.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605051959-VCZB8M_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T20:00:06.364Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605051959-VCZB8M/README.md",
+      "sha256": "sha256:f1145978e619903b6214b6d77317399158e4446a6404f44bd477183fe84838f9"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605051959-VCZB8M/README.md",
+      "sha256": "sha256:f1145978e619903b6214b6d77317399158e4446a6404f44bd477183fe84838f9"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605051959-VCZB8M/README.md",
+      "sha256": "sha256:f1145978e619903b6214b6d77317399158e4446a6404f44bd477183fe84838f9"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit c8c9cbe086a86a9c396eeef9e26ff35027260159 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:ab9b3839522375fd8fc052193865084023452494959c0726898fd2e5e99ad8cd",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
