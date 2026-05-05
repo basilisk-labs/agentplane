@@ -30,30 +30,7 @@ Connect normalized recipe blueprint hints to the blueprint resolver and explain 
 - Head: 7bbfbcd05e1d
 
 ```text
- .agentplane/policy/incidents.md                    |   1 +
- .agentplane/tasks/202605051958-M6BW7B/README.md    | 120 +++++++++++
- .agentplane/tasks/202605051958-R7ZV0H/README.md    | 119 +++++++++++
- .agentplane/tasks/202605051958-Y1FYT3/README.md    | 119 +++++++++++
- .agentplane/tasks/202605051959-VCZB8M/README.md    | 119 +++++++++++
- docs/developer/blueprints.mdx                      | 105 +++++++---
- docs/developer/recipes-spec.mdx                    |  50 ++++-
- docs/releases/v0.5.0-rc.1.md                       |  47 +++++
- docs/user/cli-reference.generated.mdx              | 121 ++++++++++-
- packages/agentplane/assets/policy/incidents.md     |   1 +
- packages/agentplane/src/blueprints/builtins.ts     |   5 +
- packages/agentplane/src/blueprints/index.ts        |   4 +
- packages/agentplane/src/blueprints/model.ts        |  18 +-
- packages/agentplane/src/blueprints/recipe-hints.ts |  26 +++
- packages/agentplane/src/blueprints/resolve.test.ts | 127 +++++++++++-
- packages/agentplane/src/blueprints/resolve.ts      | 154 ++++++++++++--
- .../src/cli/run-cli/command-catalog/project.ts     |  11 +
- .../src/cli/run-cli/command-loaders/project.ts     |  11 +
- .../agentplane/src/commands/acr/acr.command.ts     |  70 +++++++
- .../src/commands/blueprint/blueprint.command.ts    | 225 +++++++++++++++++++++
- .../src/commands/blueprint/task-input.ts           |  52 +++++
- .../src/commands/task/verify-show.command.ts       |  13 +-
- packages/recipes/src/blueprint-extensions.ts       |  11 +-
- 23 files changed, 1474 insertions(+), 55 deletions(-)
+No changes detected.
 ```
 
 </details>

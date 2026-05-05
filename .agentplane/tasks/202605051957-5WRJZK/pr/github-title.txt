@@ -1,1 +1,1 @@
-🚧 5WRJZK task: Bridge recipe hints into blueprint resolver [202605051957-5WRJZK]
+✅ 5WRJZK task: Bridge recipe hints into blueprint resolver [202605051957-5WRJZK]

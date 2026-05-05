@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605051957-5WRJZK",
+  "created_at": "2026-05-05T20:51:31.983Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "c8c9cbe086a86a9c396eeef9e26ff35027260159",
+    "work_ref": "main",
+    "work_commit": "c8c9cbe086a86a9c396eeef9e26ff35027260159"
+  },
+  "task": {
+    "task_id": "202605051957-5WRJZK",
+    "title": "Bridge recipe hints into blueprint resolver",
+    "intent": "Connect normalized recipe blueprint hints to the blueprint resolver and explain output, including accepted/rejected extension details and safety rejection tests.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605051957-5WRJZK/README.md",
+      "sha256": "sha256:f9d22fb43042dce2f2c84b9d256383f7d8e2ff8a5f7e92f4a14d61be7f43d620"
+    },
+    "approved_at": "2026-05-05T20:25:38.256Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #942. v0.5 rc1 blueprint recipe bridge, CLI explain, verify evidence, ACR summary, and docs are on main.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605051957-5WRJZK_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T20:25:38.256Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605051957-5WRJZK/README.md",
+      "sha256": "sha256:f9d22fb43042dce2f2c84b9d256383f7d8e2ff8a5f7e92f4a14d61be7f43d620"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605051957-5WRJZK/README.md",
+      "sha256": "sha256:f9d22fb43042dce2f2c84b9d256383f7d8e2ff8a5f7e92f4a14d61be7f43d620"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605051957-5WRJZK/README.md",
+      "sha256": "sha256:f9d22fb43042dce2f2c84b9d256383f7d8e2ff8a5f7e92f4a14d61be7f43d620"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit c8c9cbe086a86a9c396eeef9e26ff35027260159 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:bcbc8a0c24e2d65ea07a5be059e1e3756e7e329de523a8f9e7ac2c42954842b1",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
