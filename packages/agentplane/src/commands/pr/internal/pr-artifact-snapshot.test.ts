@@ -29,11 +29,12 @@ function makeTexts(
     reviewText?: string;
     githubBodyText?: string;
     githubTitleText?: string;
+    verifyLogText?: string | null;
   } = {},
 ): {
   metaText: string;
   diffstatText: string;
-  verifyLogText: string;
+  verifyLogText: string | null;
   reviewText: string;
   githubTitleText: string;
   githubBodyText: string;
@@ -57,7 +58,7 @@ function makeTexts(
   return {
     metaText: makeMetaText(),
     diffstatText: "A..B\n",
-    verifyLogText: "",
+    verifyLogText: overrides.verifyLogText ?? "",
     reviewText:
       overrides.reviewText ??
       [
@@ -104,6 +105,25 @@ describe("validateSnapshotContents", () => {
     });
 
     expect(meta).not.toBeNull();
+    expect(errors).toHaveLength(0);
+  });
+
+  it("accepts missing optional verify log sidecar", () => {
+    const { meta, errors } = validateSnapshotContents({
+      texts: makeTexts({ verifyLogText: null }),
+      relPrDir,
+      relMetaPath,
+      relDiffstatPath,
+      relVerifyLogPath,
+      relReviewPath,
+      relGithubTitlePath,
+      relGithubBodyPath,
+      taskId: "T-1",
+      artifactsLanguage: "en",
+    });
+
+    expect(meta).not.toBeNull();
+    expect(errors).not.toContain("Missing .agentplane/tasks/T-1/pr/verify.log");
     expect(errors).toHaveLength(0);
   });
 

@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605050638-BA00XR",
+  "created_at": "2026-05-05T06:54:13.798Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "dae8d467af7e067bf25df2a43af2154cd25824f1",
+    "work_ref": "main",
+    "work_commit": "dae8d467af7e067bf25df2a43af2154cd25824f1"
+  },
+  "task": {
+    "task_id": "202605050638-BA00XR",
+    "title": "Define branch_pr artifact roles and drift rules",
+    "intent": "Document and enforce the distinction between canonical records, evidence snapshots, and rendered projections for branch_pr artifacts, so generated files have explicit freshness, regeneration, and drift semantics.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605050638-BA00XR/README.md",
+      "sha256": "sha256:f5826278221b680afbe859bb29ab17dc90d8a38003194e8a25233d0b560c5d7d"
+    },
+    "approved_at": "2026-05-05T06:39:51.256Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Documented branch_pr artifact roles and drift rules",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605050638-BA00XR_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T06:39:51.256Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605050638-BA00XR/README.md",
+      "sha256": "sha256:f5826278221b680afbe859bb29ab17dc90d8a38003194e8a25233d0b560c5d7d"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605050638-BA00XR/README.md",
+      "sha256": "sha256:f5826278221b680afbe859bb29ab17dc90d8a38003194e8a25233d0b560c5d7d"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605050638-BA00XR/README.md",
+      "sha256": "sha256:f5826278221b680afbe859bb29ab17dc90d8a38003194e8a25233d0b560c5d7d"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit dae8d467af7e067bf25df2a43af2154cd25824f1 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:4766ff14be77f26dc2ec4d1932e437144a4ba6252685745a131dd1ccd2f38c51",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}

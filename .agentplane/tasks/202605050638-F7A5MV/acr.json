@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605050638-F7A5MV",
+  "created_at": "2026-05-05T07:07:14.242Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "492829396289052136f6aec69ce7053c75ba434a",
+    "work_ref": "main",
+    "work_commit": "492829396289052136f6aec69ce7053c75ba434a"
+  },
+  "task": {
+    "task_id": "202605050638-F7A5MV",
+    "title": "Reduce branch_pr review.md to a compact review index",
+    "intent": "Replace the full duplicated branch_pr pr/review.md projection with a compact review index that references the canonical task README and preserves only review-specific facts: branch, related tasks, handoff notes, and raw evidence links or summary.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605050638-F7A5MV/README.md",
+      "sha256": "sha256:cda0a9d0158b18068d3afa6635cacd372e139f9ccfbc4b73996cf9e9537052f6"
+    },
+    "approved_at": "2026-05-05T06:39:44.168Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Reduced branch_pr review.md to a compact local index while preserving legacy review validation.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605050638-F7A5MV_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T06:39:44.168Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605050638-F7A5MV/README.md",
+      "sha256": "sha256:cda0a9d0158b18068d3afa6635cacd372e139f9ccfbc4b73996cf9e9537052f6"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605050638-F7A5MV/README.md",
+      "sha256": "sha256:cda0a9d0158b18068d3afa6635cacd372e139f9ccfbc4b73996cf9e9537052f6"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605050638-F7A5MV/README.md",
+      "sha256": "sha256:cda0a9d0158b18068d3afa6635cacd372e139f9ccfbc4b73996cf9e9537052f6"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 492829396289052136f6aec69ce7053c75ba434a if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:e22c10da0b8308f1f75039e8eb2559eb177e87955ed1d127fdb6447193151370",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}

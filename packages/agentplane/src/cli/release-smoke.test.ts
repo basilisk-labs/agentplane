@@ -236,7 +236,8 @@ Legacy verification plan.
       expect(migratedReadme).toContain("doc_version: 3");
       expect(migratedReadme).toContain("revision: 1");
       expect(migratedReadme).toContain("sections:");
-      expect(migratedReadme).toContain("## Findings");
+      expect(migratedReadme).toContain("Findings:");
+      expect(migratedReadme).not.toContain("## Findings");
       expect(migratedReadme).not.toContain("## Notes");
       expect(migratedReadme).not.toContain("### Plan");
       expect(migratedReadme).not.toContain("### Results");
@@ -428,7 +429,8 @@ Legacy verification plan.
       expect(await pathExists(missingPolicyPath)).toBe(true);
       const migratedReadme = await readFile(readmePath, "utf8");
       expect(migratedReadme).toContain("doc_version: 3");
-      expect(migratedReadme).toContain("## Findings");
+      expect(migratedReadme).toContain("Findings:");
+      expect(migratedReadme).not.toContain("## Findings");
       expect(migratedReadme).not.toContain("## Notes");
 
       io = captureStdIO();

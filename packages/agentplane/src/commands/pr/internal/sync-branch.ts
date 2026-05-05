@@ -81,10 +81,29 @@ export async function resolvePrDiffBaseRef(opts: {
       cwd: opts.gitRoot,
       env: gitEnv(),
     });
-    return stdout.trim() ? candidate : opts.baseBranch;
+    if (!stdout.trim()) return opts.baseBranch;
+    if (await isAncestor(opts.gitRoot, candidate, opts.baseBranch)) return opts.baseBranch;
+    return candidate;
   } catch (err) {
     if (!isUnknownRevisionError(err)) throw err;
     return opts.baseBranch;
+  }
+}
+
+async function isAncestor(gitRoot: string, ancestor: string, descendant: string): Promise<boolean> {
+  try {
+    await execFileAsync("git", ["merge-base", "--is-ancestor", ancestor, descendant], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    return true;
+  } catch (err) {
+    const exitCode = (err as { code?: unknown; exitCode?: unknown } | null)?.code;
+    const normalizedExitCode =
+      typeof exitCode === "number" ? exitCode : (err as { exitCode?: unknown } | null)?.exitCode;
+    if (normalizedExitCode === 1) return false;
+    if (!isUnknownRevisionError(err)) throw err;
+    return false;
   }
 }
 

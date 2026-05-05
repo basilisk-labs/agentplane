@@ -104,7 +104,6 @@ export function validateSnapshotContents(opts: {
   }
 
   if (opts.texts.diffstatText === null) errors.push(`Missing ${opts.relDiffstatPath}`);
-  if (opts.texts.verifyLogText === null) errors.push(`Missing ${opts.relVerifyLogPath}`);
   if (opts.texts.reviewText) {
     validateReviewContents(opts.texts.reviewText, errors);
   } else {

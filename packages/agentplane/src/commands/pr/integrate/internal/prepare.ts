@@ -179,8 +179,8 @@ export async function prepareIntegrate(opts: {
     artifactsLanguage: loadedConfig.artifacts_language,
     taskId: opts.taskId,
   });
-  // readAndValidatePrArtifacts() throws if verify.log is missing; keep this non-null downstream.
-  let verifyLogText = verifyLogTextMaybe!;
+  // verify.log is an optional sidecar; downstream verify freshness treats absence as no log evidence.
+  let verifyLogText = verifyLogTextMaybe ?? "";
 
   const task = await loadTaskFromContext({
     ctx,

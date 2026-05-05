@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605050639-SK2B26",
+  "created_at": "2026-05-05T07:36:33.577Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "8e4cb5236ca4b0da14397d019c8401498c554514",
+    "work_ref": "main",
+    "work_commit": "8e4cb5236ca4b0da14397d019c8401498c554514"
+  },
+  "task": {
+    "task_id": "202605050639-SK2B26",
+    "title": "Separate task README canonical state from contextual prose",
+    "intent": "Optimize task README storage by separating canonical lifecycle/task state from contextual prose. Keep frontmatter and structured sections as the machine-readable source of truth for workflow gates, and make the Markdown body a non-duplicating contextual layer for rationale, tradeoffs, references, examples, and migration notes.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605050639-SK2B26/README.md",
+      "sha256": "sha256:e3cfb5a04bc1a9be32dd06a6774ed58011fd8dfb15201b79888241ea438e147c"
+    },
+    "approved_at": "2026-05-05T06:46:44.819Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Made frontmatter sections the canonical task state while keeping Markdown body as non-duplicating contextual prose and preserving API render-projection compatibility.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605050639-SK2B26_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T06:46:44.819Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605050639-SK2B26/README.md",
+      "sha256": "sha256:e3cfb5a04bc1a9be32dd06a6774ed58011fd8dfb15201b79888241ea438e147c"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605050639-SK2B26/README.md",
+      "sha256": "sha256:e3cfb5a04bc1a9be32dd06a6774ed58011fd8dfb15201b79888241ea438e147c"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605050639-SK2B26/README.md",
+      "sha256": "sha256:e3cfb5a04bc1a9be32dd06a6774ed58011fd8dfb15201b79888241ea438e147c"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 8e4cb5236ca4b0da14397d019c8401498c554514 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:9348206d8896a0449af06246d95a39baeb14d1ea945054e127df7079ee72c929",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}

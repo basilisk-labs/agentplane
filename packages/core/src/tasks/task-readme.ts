@@ -1,20 +1,31 @@
 import { parse as parseYaml } from "yaml";
-import { TASK_DOC_SECTION_ORDER } from "./task-doc-contract.js";
-import { renderTaskDocFromSections } from "./task-doc.js";
+import { getTaskDocContract, TASK_DOC_SECTION_ORDER } from "./task-doc-contract.js";
+import { parseDocSections, renderTaskDocFromSections } from "./task-doc.js";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
-function normalizeCanonicalSections(value: unknown): Record<string, string> | null {
+function normalizeCanonicalSections(
+  value: unknown,
+  docVersion: unknown = 3,
+): Record<string, string> | null {
   if (!isRecord(value)) return null;
+  const allowedSections = new Set(getTaskDocContract(docVersion).sections);
   const out: Record<string, string> = {};
   for (const [title, text] of Object.entries(value)) {
     const normalizedTitle = title.trim();
     if (!normalizedTitle || typeof text !== "string") continue;
+    if (!allowedSections.has(normalizedTitle)) continue;
     out[normalizedTitle] = text.replaceAll("\r\n", "\n").trimEnd();
   }
   return Object.keys(out).length > 0 ? out : null;
+}
+
+function frontmatterForRender(frontmatter: Record<string, unknown>): Record<string, unknown> {
+  const sections = normalizeCanonicalSections(frontmatter.sections, frontmatter.doc_version);
+  if (!sections) return frontmatter;
+  return { ...frontmatter, sections };
 }
 
 function orderedKeys(
@@ -276,8 +287,86 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
   return `---\n${lines.join("\n")}\n---\n`;
 }
 
+function escapeRegExp(value: string): string {
+  return value.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+}
+
+function normalizeMarkdownBody(value: string): string {
+  return value.replaceAll("\r\n", "\n").trim();
+}
+
+function canonicalTaskDocSectionTitles(docVersion: unknown): Set<string> {
+  return new Set(getTaskDocContract(docVersion).sections);
+}
+
+function containsCanonicalTaskDocHeading(body: string, docVersion: unknown): boolean {
+  return [...canonicalTaskDocSectionTitles(docVersion)].some((title) => {
+    const escaped = escapeRegExp(title);
+    return new RegExp(String.raw`^##\s+${escaped}\s*$`, "imu").test(body);
+  });
+}
+
+function isCanonicalTaskDocSection(title: string, canonicalTitles: ReadonlySet<string>): boolean {
+  return canonicalTitles.has(title);
+}
+
+function pushContextSection(
+  lines: string[],
+  section: { title: string; lines: string[] },
+  canonicalTitles: ReadonlySet<string>,
+): void {
+  if (isCanonicalTaskDocSection(section.title, canonicalTitles)) return;
+  lines.push(`## ${section.title}`, "");
+  const sectionText = section.lines.join("\n").trim();
+  if (sectionText) lines.push(...sectionText.split("\n"));
+  lines.push("");
+}
+
+function renderContextSections(body: string, docVersion: unknown): string {
+  const canonicalTitles = canonicalTaskDocSectionTitles(docVersion);
+  const preambleEnd = body.search(/^##\s+.*$/mu);
+  const preamble = preambleEnd === -1 ? body : body.slice(0, preambleEnd);
+  const parsed = parseDocSections(body);
+  const lines: string[] = [];
+  const preambleText = preamble.trimEnd();
+  if (preambleText) {
+    lines.push(...preambleText.split("\n"), "");
+  }
+  for (const key of parsed.order) {
+    const section = parsed.sections.get(key);
+    if (section) pushContextSection(lines, section, canonicalTitles);
+  }
+  return lines.join("\n").trimEnd();
+}
+
+export function taskReadmeDocBody(frontmatter: Record<string, unknown>, body: string): string {
+  const canonicalSections = normalizeCanonicalSections(
+    frontmatter.sections,
+    frontmatter.doc_version,
+  );
+  return canonicalSections ? renderTaskDocFromSections(canonicalSections) : body;
+}
+
+function renderContextualBody(frontmatter: Record<string, unknown>, body: string): string {
+  const canonicalSections = normalizeCanonicalSections(
+    frontmatter.sections,
+    frontmatter.doc_version,
+  );
+  if (!canonicalSections) return body;
+
+  const normalizedBody = normalizeMarkdownBody(body);
+  if (!normalizedBody) return "";
+
+  const renderedCanonicalBody = normalizeMarkdownBody(renderTaskDocFromSections(canonicalSections));
+  if (normalizedBody === renderedCanonicalBody) return "";
+
+  if (containsCanonicalTaskDocHeading(body, frontmatter.doc_version)) {
+    return renderContextSections(body, frontmatter.doc_version);
+  }
+  return body;
+}
+
 export function renderTaskReadme(frontmatter: Record<string, unknown>, body: string): string {
-  const canonicalSections = normalizeCanonicalSections(frontmatter.sections);
-  const effectiveBody = canonicalSections ? renderTaskDocFromSections(canonicalSections) : body;
-  return `${renderTaskFrontmatter(frontmatter)}${effectiveBody}`;
+  const renderedFrontmatter = frontmatterForRender(frontmatter);
+  return `${renderTaskFrontmatter(renderedFrontmatter)}${renderContextualBody(frontmatter, body)}`;
 }

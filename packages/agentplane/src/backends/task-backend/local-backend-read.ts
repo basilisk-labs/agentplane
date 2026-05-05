@@ -1,5 +1,7 @@
+import { execFile } from "node:child_process";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 import type { TaskRecord } from "@agentplaneorg/core/tasks";
 import { parseTaskReadme, taskReadmePath } from "@agentplaneorg/core/tasks";
 import {
@@ -24,6 +26,8 @@ import {
   type TaskSummary,
 } from "./shared.js";
 import { type LocalBackendContext } from "./local-backend-state.js";
+
+const execFileAsync = promisify(execFile);
 
 function resolveTaskFrontmatterId(
   frontmatter: Record<string, unknown>,
@@ -66,6 +70,42 @@ async function readRequiredTask(context: LocalBackendContext, taskId: string): P
   });
 }
 
+function sortedCachedProjection(cachedIndex: {
+  byId: Record<string, TaskIndexEntry>;
+}): TaskSummary[] {
+  return Object.values(cachedIndex.byId)
+    .map((entry) => entry.task)
+    .toSorted((a, b) => a.id.localeCompare(b.id));
+}
+
+async function hasGitTaskReadmeChanges(tasksDir: string): Promise<boolean | null> {
+  try {
+    const { stdout } = await execFileAsync(
+      "git",
+      ["-C", tasksDir, "status", "--porcelain", "--untracked-files=all", "--", tasksDir],
+      { encoding: "utf8", maxBuffer: 1024 * 1024 },
+    );
+    return stdout
+      .split("\n")
+      .some((line) => line.trim().length > 0 && /(^|[/\\])README\.md"?$/u.test(line.trim()));
+  } catch {
+    return null;
+  }
+}
+
+async function readFreshCachedProjection(opts: {
+  context: LocalBackendContext;
+  cachedIndex: Awaited<ReturnType<typeof loadTaskIndex>>;
+}): Promise<TaskSummary[] | null> {
+  if (!opts.cachedIndex) return null;
+
+  const hasReadmeChanges = await hasGitTaskReadmeChanges(opts.context.root);
+  if (hasReadmeChanges !== false) return null;
+
+  opts.context.setLastListWarnings?.([]);
+  return sortedCachedProjection(opts.cachedIndex);
+}
+
 export async function listLocalTasks(
   context: LocalBackendContext,
   mode: "full" | "projection",
@@ -78,6 +118,10 @@ export async function listLocalTasks(
   const entries = await readdir(context.root, { withFileTypes: true }).catch(() => []);
   const indexPath = resolveTaskIndexPath(context.root);
   const cachedIndex = await loadTaskIndex(indexPath);
+  if (projectionOnly) {
+    const cachedProjection = await readFreshCachedProjection({ context, cachedIndex });
+    if (cachedProjection) return cachedProjection;
+  }
   const cachedEntryByPath = new Map<string, TaskIndexEntry>();
   if (cachedIndex) {
     for (const [readmePath, taskId] of Object.entries(cachedIndex.byPath)) {

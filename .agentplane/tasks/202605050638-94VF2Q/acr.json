@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605050638-94VF2Q",
+  "created_at": "2026-05-05T07:19:44.628Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "4f4a0026cd695f311009fe742f084ad7c4094e3f",
+    "work_ref": "main",
+    "work_commit": "4f4a0026cd695f311009fe742f084ad7c4094e3f"
+  },
+  "task": {
+    "task_id": "202605050638-94VF2Q",
+    "title": "Make github-body.md a minimal hosted PR projection",
+    "intent": "Trim branch_pr pr/github-body.md to the hosted-review payload only: task id, title, summary/scope, verification status, and raw evidence. Avoid copying the full local review document or rollback/risk content that already lives in the task README.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605050638-94VF2Q/README.md",
+      "sha256": "sha256:c5318b56c464f0c67d3c4fd2a257dc458413517ffeb6e32a18a107ea2fedd64c"
+    },
+    "approved_at": "2026-05-05T06:39:47.734Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Reduced github-body.md to a hosted PR projection and prevented stale upstream base from adding old task noise to PR evidence.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605050638-94VF2Q_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T06:39:47.734Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605050638-94VF2Q/README.md",
+      "sha256": "sha256:c5318b56c464f0c67d3c4fd2a257dc458413517ffeb6e32a18a107ea2fedd64c"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605050638-94VF2Q/README.md",
+      "sha256": "sha256:c5318b56c464f0c67d3c4fd2a257dc458413517ffeb6e32a18a107ea2fedd64c"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605050638-94VF2Q/README.md",
+      "sha256": "sha256:c5318b56c464f0c67d3c4fd2a257dc458413517ffeb6e32a18a107ea2fedd64c"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 4f4a0026cd695f311009fe742f084ad7c4094e3f if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:58f2d4a9b01e1cb829f331515e33fc055b8a8f7beb2bafc44966fbdbc974a1b5",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}

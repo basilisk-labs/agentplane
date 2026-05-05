@@ -59,10 +59,13 @@ Keep scope.
     expect(migrated).toContain("plan_approval:");
     expect(migrated).toContain("verification:");
     expect(migrated).toContain("doc_version: 3");
-    expect(migrated).toContain("## Plan");
-    expect(migrated).toContain("## Verify Steps");
-    expect(migrated).toContain("## Verification");
-    expect(migrated).toContain("## Findings");
+    expect(migrated).toContain("Plan:");
+    expect(migrated).toContain("Verify Steps:");
+    expect(migrated).toContain("Verification:");
+    expect(migrated).toContain("Findings:");
+    expect(migrated).not.toContain("## Plan");
+    expect(migrated).not.toContain("## Verify Steps");
+    expect(migrated).not.toContain("## Verification");
     expect(migrated).not.toContain("## Notes");
     expect(migrated).not.toContain("### Plan");
     expect(migrated).not.toContain("### Results");
@@ -309,9 +312,10 @@ Legacy verification notes.
     expect(code).toBe(0);
 
     const migrated = await readFile(readmePath, "utf8");
-    expect(migrated).toContain("## Verification");
+    expect(migrated).toContain("Verification: |-");
     expect(migrated).toContain("Legacy verification notes.");
     expect(migrated).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
+    expect(migrated).not.toContain("## Verification");
     expect(migrated).not.toContain("### Plan");
     expect(migrated).not.toContain("### Results");
   });
@@ -374,8 +378,9 @@ Stale rendered scope.
     const migrated = await readFile(readmePath, "utf8");
     expect(migrated).toContain("revision: 1");
     expect(migrated).toContain('Summary: "Canonical summary."');
-    expect(migrated).toContain("## Summary\n\nCanonical summary.");
-    expect(migrated).toContain("## Findings\n\nCanonical finding.");
+    expect(migrated).toContain('Findings: "Canonical finding."');
+    expect(migrated).not.toContain("## Summary");
+    expect(migrated).not.toContain("## Findings");
     expect(migrated).not.toContain("Stale rendered summary.");
     expect(migrated).not.toContain("Stale rendered scope.");
   });
@@ -450,7 +455,6 @@ ${String.raw`Line one\n\nLine two`}
     expect(migrated).toContain("description: |-");
     expect(migrated).toContain("  Line one");
     expect(migrated).toContain("  Line two");
-    expect(migrated).toContain("Line one\n\nLine two");
     expect(migrated).not.toContain(String.raw`Line one\n\nLine two`);
     expect(migrated).toContain("body: |-");
   });

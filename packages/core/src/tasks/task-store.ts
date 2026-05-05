@@ -8,7 +8,7 @@ import {
   validateTaskReadmeFrontmatter,
   withTaskReadmeFrontmatterDefaults,
 } from "./task-artifact-schema.js";
-import { parseTaskReadme, renderTaskReadme } from "./task-readme.js";
+import { parseTaskReadme, renderTaskReadme, taskReadmeDocBody } from "./task-readme.js";
 import { updateTaskReadmeAtomic } from "./task-readme-io.js";
 import { taskDocToSectionMap } from "./task-doc.js";
 import {
@@ -265,9 +265,10 @@ export async function setTaskDocSection(opts: {
   await updateTaskReadmeAtomic(readmePath, (parsed) => {
     const docVersion = normalizeTaskDocVersion(parsed.frontmatter.doc_version);
     const requiredSections = [...getTaskDocContract(docVersion).sections];
+    const canonicalDoc = taskReadmeDocBody(parsed.frontmatter, parsed.body);
     const mutation = applyTaskDocMutations(
       {
-        doc: parsed.body,
+        doc: canonicalDoc,
         doc_version: docVersion,
         doc_updated_by: parsed.frontmatter.doc_updated_by,
         owner: parsed.frontmatter.owner,
@@ -328,7 +329,7 @@ export async function readTask(opts: {
   return {
     id: opts.taskId,
     frontmatter,
-    body: parsed.body,
+    body: taskReadmeDocBody(frontmatter as unknown as Record<string, unknown>, parsed.body),
     readmePath,
   };
 }
@@ -363,7 +364,7 @@ export async function listTasks(opts: {
       tasks.push({
         id,
         frontmatter,
-        body: parsed.body,
+        body: taskReadmeDocBody(frontmatter as unknown as Record<string, unknown>, parsed.body),
         readmePath,
       });
     } catch {
