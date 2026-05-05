@@ -50,15 +50,7 @@ Fix the finish/close lifecycle so automatically generated task-local acr.json fi
 - Head: 7bb8eb4cbb90
 
 ```text
- .../src/cli/run-cli.core.task-hosted-close.test.ts |  9 ++++
- .../pr/integrate/internal/finalize.test.ts         |  9 ++++
- .../src/commands/pr/integrate/internal/finalize.ts | 17 ++++++-
- .../commands/pr/integrate/internal/merge.test.ts   |  1 +
- .../src/commands/pr/integrate/internal/merge.ts    |  1 +
- .../agentplane/src/commands/task/finish-execute.ts | 49 +++-----------------
- .../agentplane/src/commands/task/finish-shared.ts  | 53 ++++++++++++++++++++++
- .../src/commands/task/hosted-close.command.ts      | 14 +++++-
- 8 files changed, 107 insertions(+), 46 deletions(-)
+No changes detected.
 ```
 
 </details>

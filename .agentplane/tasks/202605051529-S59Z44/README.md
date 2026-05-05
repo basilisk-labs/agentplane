@@ -1,10 +1,11 @@
 ---
 id: "202605051529-S59Z44"
 title: "Commit automatic ACR artifacts on finish"
-status: "DOING"
+result_summary: "Merged via PR #915."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-05T15:41:27.895Z"
   updated_by: "CODER"
   note: "Additional blocker fixed: branch_pr merge integrate now passes --signoff so repo DCO hooks accept AgentPlane-managed merge commits. Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts. Result: pass. Evidence: 11 tests passed. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Command: eslint on touched integrate/finish files and git diff --check. Result: pass. Scope: DCO-safe integrate merge plus ACR refresh finalization."
-commit: null
+commit:
+  hash: "0d1ca8c9e0b877cf45361773f2d932f9abe83c0c"
+  message: "Merge pull request #915 from basilisk-labs/task/202605051529-S59Z44/commit-auto-acr-artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved lifecycle fix in this task worktree so automatic ACR artifacts generated during finish are staged and committed with deterministic close artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #915 merged on GitHub main at 0d1ca8c9 after required PR checks passed; local main fast-forwarded and repo-local runtime bootstrapped. Residual main Core CI failure is the pre-existing release incident gate, not this task's code path."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Additional blocker fixed: branch_pr merge integrate now passes --signoff so repo DCO hooks accept AgentPlane-managed merge commits. Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts. Result: pass. Evidence: 11 tests passed. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Command: eslint on touched integrate/finish files and git diff --check. Result: pass. Scope: DCO-safe integrate merge plus ACR refresh finalization."
+  -
+    type: "status"
+    at: "2026-05-05T16:11:30.664Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #915 merged on GitHub main at 0d1ca8c9 after required PR checks passed; local main fast-forwarded and repo-local runtime bootstrapped. Residual main Core CI failure is the pre-existing release incident gate, not this task's code path."
 doc_version: 3
-doc_updated_at: "2026-05-05T15:41:27.906Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T16:11:30.666Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix the finish/close lifecycle so automatically generated task-local acr.json files are staged and committed with the deterministic task close artifacts instead of being left untracked."
 sections:
   Summary: |-
