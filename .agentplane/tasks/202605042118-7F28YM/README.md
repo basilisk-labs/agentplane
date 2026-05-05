@@ -5,7 +5,7 @@ result_summary: "Merged via PR #897."
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-05T00:30:22.679Z"
+  updated_by: "INTEGRATOR"
+  note: "Release v0.4.4 published on npm, GitHub Release Bun assets, GHCR hosted publish step, Homebrew tap, Scoop bucket, and setup-agentplane. Publish run: https://github.com/basilisk-labs/agentplane/actions/runs/25351042144."
 commit:
   hash: "a117e4b5bed136a753feb5b11d590518d3161f4a"
   message: "Merge pull request #897 from basilisk-labs/task/202605042118-7F28YM/bun-patch-release"
@@ -48,8 +48,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: PR #897 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+  -
+    type: "verify"
+    at: "2026-05-05T00:30:22.679Z"
+    author: "INTEGRATOR"
+    state: "ok"
+    note: "Release v0.4.4 published on npm, GitHub Release Bun assets, GHCR hosted publish step, Homebrew tap, Scoop bucket, and setup-agentplane. Publish run: https://github.com/basilisk-labs/agentplane/actions/runs/25351042144."
 doc_version: 3
-doc_updated_at: "2026-05-05T00:17:42.619Z"
+doc_updated_at: "2026-05-05T00:30:22.682Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare and publish the next patch release using Bun single-file executable assets as the binary distribution channel for all platforms and external installers."
 sections:
@@ -67,6 +73,14 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-05T00:30:22.679Z — VERIFY — ok
+    
+    By: INTEGRATOR
+    
+    Note: Release v0.4.4 published on npm, GitHub Release Bun assets, GHCR hosted publish step, Homebrew tap, Scoop bucket, and setup-agentplane. Publish run: https://github.com/basilisk-labs/agentplane/actions/runs/25351042144.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T00:17:42.619Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -98,6 +112,14 @@ Release plan: version=0.4.4, tag=v0.4.4, scope=patch release; switch binary dist
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-05T00:30:22.679Z — VERIFY — ok
+
+By: INTEGRATOR
+
+Note: Release v0.4.4 published on npm, GitHub Release Bun assets, GHCR hosted publish step, Homebrew tap, Scoop bucket, and setup-agentplane. Publish run: https://github.com/basilisk-labs/agentplane/actions/runs/25351042144.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T00:17:42.619Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
