@@ -1,10 +1,11 @@
 ---
 id: "202605052303-N37XQ0"
 title: "Validate blueprint plan state transitions"
-status: "DOING"
+result_summary: "Merged blueprint plan state transition validation in PR #955."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-05T23:12:39.369Z"
   updated_by: "CODER"
   note: "Implemented and tested validate-only blueprint plan state transition checks."
-commit: null
+commit:
+  hash: "87a7923dc678d8f1f37803cc1a5fdcd46bdbad94"
+  message: "Merge pull request #955 from basilisk-labs/task/202605052303-QWE78P/blueprint-plan-validation"
 comments:
   -
     author: "CODER"
     body: "Start: batch execution in QWE78P worktree; implement validate-only blueprint plan state transition checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #955 merged after required checks passed; merge commit 87a7923dc678d8f1f37803cc1a5fdcd46bdbad94."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented and tested validate-only blueprint plan state transition checks."
+  -
+    type: "status"
+    at: "2026-05-05T23:18:48.550Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #955 merged after required checks passed; merge commit 87a7923dc678d8f1f37803cc1a5fdcd46bdbad94."
 doc_version: 3
-doc_updated_at: "2026-05-05T23:12:39.375Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T23:18:48.551Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add validate-only checks for materialized blueprint plan state order against the selected blueprint edge graph, including duplicate/missing/unknown state transition diagnostics."
 sections:
   Summary: |-
