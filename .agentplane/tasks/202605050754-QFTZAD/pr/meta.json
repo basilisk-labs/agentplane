@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-05T09:51:39Z",
   "base": "main",
   "branch": "task/202605050754-QFTZAD/obsidian-task-index",
   "created_at": "2026-05-05T07:54:54.410Z",
-  "head_sha": "6c7e76cb3099503e729d50f11ae9926b35659280",
+  "head_sha": "d060b18538ece9c3119c05d9d80f6f9c30878aae",
   "last_verified_at": "2026-05-05T09:11:32.494Z",
   "last_verified_sha": "e4eb0ad154255b1ff66540eb5ac34de2dee4614e",
+  "merge_commit": "2708fff14ac954180b5f099bc26086465ee6e903",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-05T09:51:39Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605050754-QFTZAD",
-  "updated_at": "2026-05-05T09:12:11.669Z",
+  "updated_at": "2026-05-05T09:51:39Z",
   "verify": {
     "status": "pass"
   }
