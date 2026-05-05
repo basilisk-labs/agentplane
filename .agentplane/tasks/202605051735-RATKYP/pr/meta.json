@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605051735-RATKYP/cloud-backend-docs",
+  "created_at": "2026-05-05T17:35:39.373Z",
+  "head_sha": "b1585df09c78f210b83b9db53c647514ac7b485f",
+  "last_verified_at": "2026-05-05T17:39:48.371Z",
+  "last_verified_sha": "b1585df09c78f210b83b9db53c647514ac7b485f",
+  "schema_version": 1,
+  "task_id": "202605051735-RATKYP",
+  "updated_at": "2026-05-05T17:39:48.405Z",
+  "verify": {
+    "status": "pass"
+  }
+}

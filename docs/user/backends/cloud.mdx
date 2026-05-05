@@ -1,0 +1,144 @@
+---
+title: "Cloud backend"
+description: "Remote backend option that connects AgentPlane to a cloud sync service."
+---
+
+## Overview
+
+The cloud backend is a remote task backend option for projects that want AgentPlane task state to
+sync through a cloud service.
+
+The local backend stores the canonical task state in the repository. The cloud backend keeps the
+same local projection model, but the canonical state and connector-specific sync state live behind a
+remote service.
+
+AgentPlane still reads ordinary task commands from the local projection by default:
+
+- `agentplane task list`
+- `agentplane task show <task-id>`
+- `agentplane doctor`
+
+Network refresh is explicit through backend sync commands.
+
+## What the cloud service owns
+
+The cloud service owns connector-specific details:
+
+- connector authorization;
+- connector webhooks;
+- connector field mapping;
+- sync cursors;
+- conflict records;
+- remote freshness state.
+
+AgentPlane owns the CLI workflow:
+
+- local projection cache;
+- task lifecycle commands;
+- explicit pull/push sync;
+- freshness warnings before using stale projection data;
+- local task rendering and export behavior.
+
+## Connect flow
+
+Initialize with the cloud backend:
+
+```bash
+agentplane init --backend cloud
+```
+
+Connect the local project to a cloud project:
+
+```bash
+agentplane backend connect cloud
+```
+
+The connect command opens a browser flow at the configured provider URL. The browser flow handles
+workspace selection, project selection, and connector setup. For example, if the selected connector
+is GitHub Projects, the cloud service handles the GitHub App installation and project selection.
+
+After connect, the backend JSON should contain non-secret connection metadata:
+
+```json
+{
+  "id": "cloud",
+  "version": 1,
+  "settings": {
+    "provider_url": "https://sync.agentplane.cloud",
+    "workspace_id": "ws_123",
+    "project_id": "proj_456",
+    "cache_dir": ".agentplane/tasks",
+    "stale_after_seconds": 900
+  }
+}
+```
+
+Secrets do not belong in backend JSON. If the cloud service requires a token for CLI access, provide
+it through environment or local credential storage.
+
+## Endpoint selection
+
+Use the default provider URL when your project uses the standard cloud service.
+
+Use an override when your environment exposes a different endpoint:
+
+```bash
+agentplane backend connect cloud --provider-url https://sync.example.test
+```
+
+Recommended precedence for implementations:
+
+1. command flag;
+2. environment variable;
+3. backend JSON setting;
+4. default provider URL.
+
+## Sync
+
+Refresh the local projection from the cloud service:
+
+```bash
+agentplane backend sync cloud --direction pull
+```
+
+Push local dirty task state to the cloud service:
+
+```bash
+agentplane backend sync cloud --direction push --yes
+```
+
+Operational rule:
+
+- use `pull` before local task mutations when the projection is stale;
+- use `push --yes` when local task state should become visible to connected remote views;
+- ordinary task reads do not implicitly refresh from the network.
+
+## Inspection
+
+Inspect the active connection:
+
+```bash
+agentplane backend inspect cloud --yes
+```
+
+Expected output should include:
+
+- provider URL;
+- workspace id;
+- project id;
+- connector display name;
+- connection status;
+- last pull/push timestamps;
+- projection freshness;
+- conflict count;
+- next safe command.
+
+## Connected views
+
+The cloud backend is connector-neutral from the CLI perspective. Connector setup happens in the
+cloud service. A connected view can be GitHub Projects, Redmine, or another task system without
+requiring a new AgentPlane backend id.
+
+For GitHub Projects, the cloud service can map AgentPlane tasks to GitHub Issues and Project fields.
+AgentPlane still treats the cloud backend as `cloud`, not `github-projects`.
+

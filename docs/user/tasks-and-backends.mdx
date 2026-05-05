@@ -27,9 +27,13 @@ Task backends now follow one install-first contract:
 
 For `local`, the canonical source and projection are the same repository state.
 
+For `cloud`, the cloud service is the canonical remote source and `.agentplane/` holds the local
+projection. Connector setup happens in the cloud service, so AgentPlane still uses the `cloud`
+backend id even when the connected view is GitHub Projects, Redmine, or another task system.
+
 For `redmine`, Redmine is the canonical source and `.agentplane/` holds the local projection.
-`task list`, `task show`, and `doctor` read the projection by default; `backend sync redmine
---direction pull` refreshes it from Redmine.
+`task list`, `task show`, and `doctor` read the projection by default; `backend sync <id>
+--direction pull` refreshes it from the remote source.
 
 ## README contract versions
 
@@ -151,7 +155,8 @@ Backend routing comes from `.agentplane/WORKFLOW.md`:
 }
 ```
 
-`tasks_backend.config_path` points to backend config (`local` or `redmine`).
+`tasks_backend.config_path` points to backend config (`local`, `cloud`, or another configured
+backend).
 
 ## Sync
 
@@ -159,6 +164,8 @@ Backend routing comes from `.agentplane/WORKFLOW.md`:
 agentplane sync redmine
 agentplane sync redmine --direction pull
 agentplane sync redmine --direction push --yes
+agentplane backend sync cloud --direction pull
+agentplane backend sync cloud --direction push --yes
 agentplane backend sync <id> --direction pull
 agentplane backend sync <id> --direction push --yes
 ```
