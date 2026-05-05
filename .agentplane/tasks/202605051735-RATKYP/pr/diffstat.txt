@@ -1,0 +1,10 @@
+ docs/developer/cloud-backend-integration-plan.mdx  | 144 +++++++++++++++++++++
+ .../documentation-information-architecture.mdx     |   2 +-
+ docs/index.mdx                                     |  34 ++---
+ docs/user/backends.mdx                             |  13 +-
+ docs/user/backends/cloud.mdx                       | 144 +++++++++++++++++++++
+ docs/user/commands.mdx                             |   6 +-
+ docs/user/setup.mdx                                |  25 ++++
+ docs/user/tasks-and-backends.mdx                   |  13 +-
+ website/sidebars.ts                                |   2 +
+ 9 files changed, 360 insertions(+), 23 deletions(-)
