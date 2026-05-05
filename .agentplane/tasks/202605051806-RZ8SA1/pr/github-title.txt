@@ -1,1 +1,1 @@
-🚧 RZ8SA1 task: Add cloud backend init contract [202605051806-RZ8SA1]
+✅ RZ8SA1 task: Add cloud backend init contract [202605051806-RZ8SA1]
