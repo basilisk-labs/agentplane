@@ -1,0 +1,144 @@
+---
+title: "Cloud backend integration plan"
+description: "Atomic implementation plan for adding the cloud backend to the public AgentPlane CLI."
+---
+
+## Goal
+
+Add a `cloud` task backend to AgentPlane without embedding connector-specific logic in the public
+CLI.
+
+The public CLI should expose local and cloud backend choices. The cloud service decides which
+connector is attached to a cloud project.
+
+## Boundary
+
+Public AgentPlane owns:
+
+- `cloud` backend id and config loading;
+- local projection cache;
+- cloud API client;
+- `backend connect cloud`;
+- explicit `backend sync cloud --direction pull|push`;
+- `backend inspect cloud`;
+- stale projection guard before task mutations;
+- user docs and generated CLI reference.
+
+The cloud service owns:
+
+- connector authorization;
+- connector webhooks;
+- connector field mapping;
+- connector API calls;
+- sync queue;
+- conflict records;
+- service deployment.
+
+## Atomic tasks
+
+### C001: Add cloud backend config contract
+
+Scope:
+
+- add `cloud` backend id to init/config typing;
+- define backend JSON settings;
+- document non-secret backend JSON boundaries;
+- add schema/examples for cloud backend config.
+
+Verification:
+
+- config schema check;
+- init parser tests for accepted backend ids;
+- docs routing check.
+
+### C002: Implement CloudBackend as a remote-cache backend
+
+Scope:
+
+- add `CloudBackend` under `packages/agentplane/src/backends/task-backend/`;
+- use `LocalBackend` as the projection cache;
+- expose remote-cache capabilities;
+- keep ordinary task reads on the projection.
+
+Verification:
+
+- backend capability unit tests;
+- projection read/write tests with mocked cloud client.
+
+### C003: Add cloud API client
+
+Scope:
+
+- implement connector-neutral HTTP client for inspect, pull, push, state, and conflicts;
+- map service errors into teaching CLI diagnostics;
+- keep authentication outside committed config.
+
+Verification:
+
+- mocked HTTP tests;
+- error-code mapping tests.
+
+### C004: Add backend connect command
+
+Scope:
+
+- add `agentplane backend connect cloud`;
+- support provider URL override;
+- open/browser-print onboarding URL;
+- write returned workspace/project connection metadata.
+
+Verification:
+
+- command parser tests;
+- non-interactive output tests;
+- config write tests.
+
+### C005: Add stale projection guard
+
+Scope:
+
+- warn on stale remote-cache projections for read commands;
+- block local task mutations when cloud projection is stale;
+- show the next safe pull command.
+
+Verification:
+
+- task mutation tests for fresh/stale cloud state;
+- read-command warning tests.
+
+### C006: Add sync and inspect behavior
+
+Scope:
+
+- wire `backend sync cloud --direction pull|push`;
+- wire `backend inspect cloud`;
+- surface connection status, connector display name, freshness, and conflicts.
+
+Verification:
+
+- backend sync CLI tests;
+- backend inspect CLI tests.
+
+### C007: Update init UX and docs
+
+Scope:
+
+- make `local` and `cloud` the primary backend choices in onboarding;
+- keep direct Redmine backend support available for explicit/advanced usage;
+- update setup, backend docs, generated CLI reference, and navigation.
+
+Verification:
+
+- init interactive tests;
+- docs IA check;
+- generated CLI reference check if command text changes.
+
+## Stop rules
+
+Stop before implementation if:
+
+- the cloud service API contract is not stable enough to mock;
+- a task requires connector-specific logic in the public CLI;
+- a command would need to store tokens in backend JSON;
+- stale projection behavior cannot be enforced consistently across task mutations.
+

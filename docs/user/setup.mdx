@@ -102,12 +102,37 @@ agentplane init \
   --yes
 ```
 
+Backend choice:
+
+- `local` stores tasks in the repository and is the default setup.
+- `cloud` connects the repository to a cloud sync service while ordinary task reads continue to use
+  a local projection.
+- Direct backend integrations such as `redmine` are available when a project needs that specific
+  backend.
+
 You can switch profile later without re-running init:
 
 ```bash
 agentplane profile set light
 agentplane profile set normal
 agentplane profile set full-harness
+```
+
+## Cloud backend connect flow
+
+When `--backend cloud` is selected, init creates cloud backend config with non-secret connection
+settings. Run the connect command next:
+
+```bash
+agentplane backend connect cloud
+```
+
+The connect flow opens the configured provider URL in a browser. The cloud service handles
+workspace selection, project selection, and connector setup. After connect, refresh the local
+projection:
+
+```bash
+agentplane backend sync cloud --direction pull
 ```
 
 ## Redmine env files on init

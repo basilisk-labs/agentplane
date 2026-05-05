@@ -12,11 +12,19 @@ A backend defines task storage and sync behavior.
 ## Available backends
 
 - [Local backend](./backends/local)
-- [Redmine backend](./backends/redmine)
+- [Cloud backend](./backends/cloud)
+- [Redmine backend](./backends/redmine) for direct Redmine setups
 
 ## Remote backends
 
 Remote backends are optional and must be configured explicitly.
+
+The local/backend choice is intentionally small:
+
+- `local` keeps the canonical task state in the repository;
+- `cloud` connects the project to a cloud sync service and keeps local reads on a projection;
+- direct backend integrations such as `redmine` may remain available for explicit setups that need
+  them.
 
 ## Sync model
 
@@ -39,6 +47,9 @@ Remote backends follow the same install-first model as the local backend:
 Do not assume ordinary task reads will hit the network implicitly.
 
 Prefer `agentplane backend sync` in docs and automation.
+
+For the cloud backend, connector selection happens in the cloud service. AgentPlane uses `cloud` as
+the backend id even when the connected view is GitHub Projects, Redmine, or another task system.
 
 ## Conflict strategies
 
