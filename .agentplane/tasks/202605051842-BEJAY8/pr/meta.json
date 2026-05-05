@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-05T19:14:54Z",
   "base": "main",
   "branch": "task/202605051842-BEJAY8/blueprint-core-model",
   "created_at": "2026-05-05T18:43:07.892Z",
-  "head_sha": "10b9c2af698746adc77086ef1dd4cb79216a21f5",
+  "head_sha": "7a8289fe02e3091d827410544329f964a3d2033e",
   "last_verified_at": "2026-05-05T19:10:21.287Z",
   "last_verified_sha": "8dd6eaa8801f8670457397cf047fc7a1b9f298af",
+  "merge_commit": "bb8a4df88b37362fea7d0fb156594f2f09a9dd62",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-05T19:14:54Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605051842-BEJAY8",
-  "updated_at": "2026-05-05T19:10:50.039Z",
+  "updated_at": "2026-05-05T19:14:54Z",
   "verify": {
     "status": "pass"
   }
