@@ -15,7 +15,15 @@ import type {
   TaskKind,
   WorkflowMode,
 } from "./model.js";
-import { createBlueprintRegistry, getBlueprint, requireBlueprint } from "./registry.js";
+import { createBlueprintRegistry, getBlueprint } from "./registry.js";
+
+const RISK_ROUTE_PRIORITY = [
+  "credentials",
+  "security",
+  "external_system",
+  "deploy",
+  "publish",
+] as const satisfies readonly RiskFlag[];
 
 const RISK_ROUTE: Partial<Record<RiskFlag, BlueprintId>> = {
   credentials: "ops.approval",
@@ -107,6 +115,14 @@ function riskStops(riskFlags: readonly RiskFlag[]): StopReason[] {
   return stops;
 }
 
+function selectRiskBlueprintId(riskFlags: readonly RiskFlag[]): BlueprintId | undefined {
+  for (const risk of RISK_ROUTE_PRIORITY) {
+    const blueprintId = RISK_ROUTE[risk];
+    if (blueprintId && riskFlags.includes(risk)) return blueprintId;
+  }
+  return undefined;
+}
+
 function selectBlueprint(opts: { input: BlueprintResolveInput; registry: BlueprintRegistry }): {
   blueprint: Blueprint;
   reasons: string[];
@@ -114,12 +130,15 @@ function selectBlueprint(opts: { input: BlueprintResolveInput; registry: Bluepri
 } {
   const input = opts.input;
   const riskFlags = input.riskFlags ?? [];
-  const riskBlueprintId = riskFlags.map((risk) => RISK_ROUTE[risk]).find(Boolean);
+  const riskBlueprintId = selectRiskBlueprintId(riskFlags);
   const taskKind = inferTaskKind(input);
   const inferredBlueprintId = riskBlueprintId ?? blueprintForTaskKind(taskKind, input.workflowMode);
   const requestedBlueprintId = input.explicitBlueprintId;
   const selectedId = requestedBlueprintId ?? inferredBlueprintId;
-  const blueprint = getBlueprint(selectedId, opts.registry) ?? requireBlueprint(selectedId);
+  const blueprint = getBlueprint(selectedId, opts.registry);
+  if (!blueprint) {
+    throw new Error(`Unknown blueprint in registry: ${selectedId}`);
+  }
   const reasons: string[] = [];
   const stopReasons: StopReason[] = [];
 

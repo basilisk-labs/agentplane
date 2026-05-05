@@ -25,7 +25,7 @@ Implement the next blueprint layer: pure resolver inputs/results, deterministic 
 ### Current Status
 
 - State: ok
-- Note: Implemented pure blueprint resolver and explain formatter without CLI command or runner wiring. Commands passed: agentplane task verify-show 202605051928-26C18X; bun test packages/agentplane/src/blueprints/resolve.test.ts packages/agentplane/src/blueprints/validate.test.ts (25 pass); bun run typecheck; bunx eslint packages/agentplane/src/blueprints; bunx prettier --check touched blueprint files; bun run agents:check; node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin/agentplane.js doctor (OK with pre-existing WCPBCX branch_pr drift warning in task worktree); AGENTPLANE_FAST_CHANGED_FILES=... bun run ci:local:fast (passed: cold baseline OK after retry, build, fast unit suite 274 files/1585 passed/2 skipped, critical suite 5 files/14 passed).
+- Note: Review fix verified: resolver risk routing is deterministic, supplied registries no longer fall back to built-ins, focused blueprint tests, formatting, typecheck, lint, and policy routing all pass.
 
 ## Risks
 

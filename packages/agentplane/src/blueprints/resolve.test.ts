@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { explainResolvedBlueprint, formatBlueprintExplain } from "./explain.js";
 import type { BlueprintResolveInput } from "./model.js";
+import { createBlueprintRegistry, requireBlueprint } from "./registry.js";
 import { inferBlueprintTaskKind, resolveBlueprint } from "./resolve.js";
 
 function resolve(input: Partial<BlueprintResolveInput>) {
@@ -55,6 +56,30 @@ describe("resolveBlueprint", () => {
     expect(resolve({ mutation: "docs", riskFlags: ["external_system"] }).blueprint.id).toBe(
       "ops.approval",
     );
+  });
+
+  it("selects risk routes by stable priority instead of input order", () => {
+    expect(resolve({ mutation: "code", riskFlags: ["publish", "credentials"] }).blueprint.id).toBe(
+      "ops.approval",
+    );
+    expect(resolve({ mutation: "code", riskFlags: ["credentials", "publish"] }).blueprint.id).toBe(
+      "ops.approval",
+    );
+  });
+
+  it("does not fall back outside a supplied registry", () => {
+    const registry = createBlueprintRegistry([requireBlueprint("analysis.light")]);
+
+    expect(() =>
+      resolveBlueprint({
+        registry,
+        input: {
+          tags: [],
+          mutation: "code",
+          workflowMode: "branch_pr",
+        },
+      }),
+    ).toThrow("Unknown blueprint in registry: code.branch_pr");
   });
 
   it("keeps explicit blueprint ids as requests with compatibility stops", () => {

@@ -4,7 +4,7 @@ title: "Add blueprint resolver and explain output"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-05T19:41:53.743Z"
+  updated_at: "2026-05-05T19:49:55.543Z"
   updated_by: "CODER"
-  note: "Implemented pure blueprint resolver and explain formatter without CLI command or runner wiring. Commands passed: agentplane task verify-show 202605051928-26C18X; bun test packages/agentplane/src/blueprints/resolve.test.ts packages/agentplane/src/blueprints/validate.test.ts (25 pass); bun run typecheck; bunx eslint packages/agentplane/src/blueprints; bunx prettier --check touched blueprint files; bun run agents:check; node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin/agentplane.js doctor (OK with pre-existing WCPBCX branch_pr drift warning in task worktree); AGENTPLANE_FAST_CHANGED_FILES=... bun run ci:local:fast (passed: cold baseline OK after retry, build, fast unit suite 274 files/1585 passed/2 skipped, critical suite 5 files/14 passed)."
+  note: "Review fix verified: resolver risk routing is deterministic, supplied registries no longer fall back to built-ins, focused blueprint tests, formatting, typecheck, lint, and policy routing all pass."
 commit: null
 comments:
   -
@@ -41,8 +41,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented pure blueprint resolver and explain formatter without CLI command or runner wiring. Commands passed: agentplane task verify-show 202605051928-26C18X; bun test packages/agentplane/src/blueprints/resolve.test.ts packages/agentplane/src/blueprints/validate.test.ts (25 pass); bun run typecheck; bunx eslint packages/agentplane/src/blueprints; bunx prettier --check touched blueprint files; bun run agents:check; node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin/agentplane.js doctor (OK with pre-existing WCPBCX branch_pr drift warning in task worktree); AGENTPLANE_FAST_CHANGED_FILES=... bun run ci:local:fast (passed: cold baseline OK after retry, build, fast unit suite 274 files/1585 passed/2 skipped, critical suite 5 files/14 passed)."
+  -
+    type: "verify"
+    at: "2026-05-05T19:49:55.543Z"
+    author: "CODER"
+    state: "ok"
+    note: "Review fix verified: resolver risk routing is deterministic, supplied registries no longer fall back to built-ins, focused blueprint tests, formatting, typecheck, lint, and policy routing all pass."
 doc_version: 3
-doc_updated_at: "2026-05-05T19:41:53.751Z"
+doc_updated_at: "2026-05-05T19:49:55.552Z"
 doc_updated_by: "CODER"
 description: "Implement the next blueprint layer: pure resolver inputs/results, deterministic blueprint selection, recipe hint acceptance/rejection, stop reasons, explanation formatting, and focused tests without adding a CLI command or runner execution."
 sections:
@@ -68,11 +74,22 @@ sections:
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T19:29:03.927Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
+    ### 2026-05-05T19:49:55.543Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Review fix verified: resolver risk routing is deterministic, supplied registries no longer fall back to built-ins, focused blueprint tests, formatting, typecheck, lint, and policy routing all pass.
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T19:41:53.751Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Command: bun test packages/agentplane/src/blueprints/resolve.test.ts packages/agentplane/src/blueprints/validate.test.ts; Result: pass; Evidence: 27 tests passed. Command: bunx prettier --check packages/agentplane/src/blueprints/resolve.ts packages/agentplane/src/blueprints/resolve.test.ts; Result: pass; Evidence: all matched files use Prettier style. Command: bun run typecheck; Result: pass; Evidence: tsc -b completed with exit 0. Command: bunx eslint packages/agentplane/src/blueprints; Result: pass; Evidence: eslint completed with exit 0. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK.
+      Impact: Covers PR review findings for deterministic risk precedence and registry isolation in the blueprint resolver.
+      Resolution: Implemented stable risk route priority, removed fallback outside the supplied registry, and added regression tests for both behaviors.
 id_source: "generated"
 ---
 ## Summary
@@ -107,6 +124,14 @@ Note: Implemented pure blueprint resolver and explain formatter without CLI comm
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T19:29:03.927Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
+### 2026-05-05T19:49:55.543Z — VERIFY — ok
+
+By: CODER
+
+Note: Review fix verified: resolver risk routing is deterministic, supplied registries no longer fall back to built-ins, focused blueprint tests, formatting, typecheck, lint, and policy routing all pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T19:41:53.751Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -115,3 +140,7 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T19:29:03.927Z, excerpt_
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Command: bun test packages/agentplane/src/blueprints/resolve.test.ts packages/agentplane/src/blueprints/validate.test.ts; Result: pass; Evidence: 27 tests passed. Command: bunx prettier --check packages/agentplane/src/blueprints/resolve.ts packages/agentplane/src/blueprints/resolve.test.ts; Result: pass; Evidence: all matched files use Prettier style. Command: bun run typecheck; Result: pass; Evidence: tsc -b completed with exit 0. Command: bunx eslint packages/agentplane/src/blueprints; Result: pass; Evidence: eslint completed with exit 0. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK.
+  Impact: Covers PR review findings for deterministic risk precedence and registry isolation in the blueprint resolver.
+  Resolution: Implemented stable risk route priority, removed fallback outside the supplied registry, and added regression tests for both behaviors.
