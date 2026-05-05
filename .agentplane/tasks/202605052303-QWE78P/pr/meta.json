@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-05T23:16:21Z",
   "base": "main",
   "branch": "task/202605052303-QWE78P/blueprint-plan-validation",
   "created_at": "2026-05-05T23:04:26.057Z",
-  "head_sha": "3212ba2b0830bcc33d66bbd0a53467aa81d54e68",
+  "head_sha": "2f3ac943c53dbfc336e6731e92e69b46bd6fad5e",
   "last_verified_at": "2026-05-05T23:12:30.006Z",
   "last_verified_sha": "95ac0d6a3459dcc8292cbddd93c6d23acd07bdd0",
+  "merge_commit": "87a7923dc678d8f1f37803cc1a5fdcd46bdbad94",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-05T23:16:21Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605052303-QWE78P",
-  "updated_at": "2026-05-05T23:13:44.651Z",
+  "updated_at": "2026-05-05T23:16:21Z",
   "verify": {
     "status": "pass"
   }
