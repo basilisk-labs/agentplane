@@ -1,6 +1,7 @@
 import type { RunnerTraceConfig, RunnerTimeoutConfig } from "@agentplaneorg/core/config";
 
 import type { TaskData, TaskEvent } from "../../backends/task-backend.js";
+import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
 import type { AgentplaneCapabilityRegistry } from "../../runtime/capabilities/index.js";
 import type { ResolvedExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
 import type { FrameworkExplainPayload } from "../../runtime/explain/index.js";
@@ -115,5 +116,6 @@ export type RunnerContextBundle = {
   repository: RunnerRepositoryContext;
   task?: RunnerTaskContext;
   recipe?: RunnerRecipeContext;
+  blueprint?: BlueprintPlanArtifact;
   execution: RunnerExecutionContract;
 };

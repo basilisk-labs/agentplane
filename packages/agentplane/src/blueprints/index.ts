@@ -6,6 +6,7 @@ export {
   requireBlueprint,
 } from "./registry.js";
 export { explainResolvedBlueprint, formatBlueprintExplain } from "./explain.js";
+export { blueprintPlanEvidence, blueprintPlanState, buildBlueprintPlanArtifact } from "./plan.js";
 export {
   recipeBlueprintExtensionToHint,
   recipeBlueprintExtensionsToHints,
@@ -15,11 +16,17 @@ export { validateBlueprint, validateBlueprintRegistry } from "./validate.js";
 export type {
   AcceptedRecipeExtension,
   Blueprint,
+  BlueprintContextBudget,
+  BlueprintContextManifestEntry,
+  BlueprintDefinition,
   BlueprintEdge,
   BlueprintExplainEvidence,
   BlueprintExplainNode,
   BlueprintExplainOutput,
   BlueprintId,
+  BlueprintPlanArtifact,
+  BlueprintPlanState,
+  BlueprintState,
   BlueprintTaskIntent,
   BlueprintNode,
   BlueprintNodeKind,

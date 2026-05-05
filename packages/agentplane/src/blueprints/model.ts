@@ -73,6 +73,15 @@ export type BlueprintTaskIntent = {
   blueprintRequest?: BlueprintId;
 };
 
+export type BlueprintContextBudget = {
+  maxPolicyModules: number;
+  maxPromptBlocks?: number;
+  rationale: string;
+};
+
+export type BlueprintDefinition = Blueprint;
+export type BlueprintState = BlueprintNode;
+
 export type Blueprint = {
   id: BlueprintId;
   version: 1;
@@ -80,6 +89,9 @@ export type Blueprint = {
   description: string;
   taskKinds: readonly TaskKind[];
   workflowModes?: readonly WorkflowMode[];
+  allowedCommands: readonly string[];
+  policyModules: readonly string[];
+  contextBudget: BlueprintContextBudget;
   nodes: readonly BlueprintNode[];
   edges: readonly BlueprintEdge[];
   requiredEvidence: readonly EvidenceRequirement[];
@@ -93,6 +105,8 @@ export type BlueprintNode = {
   mode: BlueprintNodeMode;
   required: boolean;
   protected?: boolean;
+  allowedCommands?: readonly string[];
+  policyModules?: readonly string[];
   inputs?: readonly string[];
   outputs?: readonly string[];
   evidence?: readonly EvidenceKind[];
@@ -231,12 +245,52 @@ export type ResolvedBlueprint = {
   stopReasons: readonly StopReason[];
 };
 
+export type BlueprintPlanState = {
+  id: string;
+  kind: BlueprintNodeKind;
+  mode: BlueprintNodeMode;
+  required: boolean;
+  protected: boolean;
+  allowedCommands: readonly string[];
+  policyModules: readonly string[];
+  evidenceKinds: readonly EvidenceKind[];
+};
+
+export type BlueprintContextManifestEntry = {
+  id: string;
+  kind: "prompt" | "policy_module" | "recipe" | "task" | "repository";
+  reason: string;
+  source?: string;
+};
+
+export type BlueprintPlanArtifact = {
+  schemaVersion: 1;
+  blueprintId: BlueprintId;
+  blueprintVersion: 1;
+  title: string;
+  taskId?: string;
+  workflowMode?: WorkflowMode;
+  taskIntent: BlueprintTaskIntent;
+  whySelected: readonly string[];
+  states: readonly BlueprintPlanState[];
+  requiredEvidence: readonly BlueprintExplainEvidence[];
+  policyModules: readonly string[];
+  allowedCommands: readonly string[];
+  contextBudget: BlueprintContextBudget;
+  contextManifest: readonly BlueprintContextManifestEntry[];
+  acceptedRecipeExtensions: readonly AcceptedRecipeExtension[];
+  rejectedRecipeExtensions: readonly RejectedRecipeExtension[];
+  stopReasons: readonly StopReason[];
+};
+
 export type BlueprintExplainNode = {
   id: string;
   kind: BlueprintNodeKind;
   mode: BlueprintNodeMode;
   required: boolean;
   protected: boolean;
+  allowedCommands: readonly string[];
+  policyModules: readonly string[];
 };
 
 export type BlueprintExplainEvidence = {
@@ -255,6 +309,7 @@ export type BlueprintExplainOutput = {
   route: readonly BlueprintExplainNode[];
   skippedNodes: readonly SkippedNode[];
   requiredEvidence: readonly BlueprintExplainEvidence[];
+  plan: BlueprintPlanArtifact;
   selectionReasons: readonly string[];
   acceptedRecipeExtensions: readonly AcceptedRecipeExtension[];
   rejectedRecipeExtensions: readonly RejectedRecipeExtension[];

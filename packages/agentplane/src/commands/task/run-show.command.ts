@@ -142,6 +142,26 @@ export const runTaskRunShow: CommandHandler<TaskRunShowParsed> = async (
         value: JSON.stringify(inspection.state.policy_decision?.refusal_reason ?? null),
       },
       ...formatRunnerPolicyFieldSummaryLines(inspection.state.policy_decision),
+      { label: "blueprint", value: inspection.bundle.blueprint?.blueprintId ?? "none" },
+      { label: "recipe", value: inspection.bundle.recipe?.recipe_id ?? "none" },
+      {
+        label: "context_budget",
+        value: JSON.stringify(inspection.bundle.blueprint?.contextBudget ?? null),
+      },
+      {
+        label: "policy_modules",
+        value: JSON.stringify(inspection.bundle.blueprint?.policyModules ?? []),
+      },
+      {
+        label: "context_manifest",
+        value: JSON.stringify(inspection.bundle.blueprint?.contextManifest ?? []),
+      },
+      {
+        label: "evidence_checklist",
+        value: JSON.stringify(
+          inspection.bundle.blueprint?.requiredEvidence.map((item) => item.id) ?? [],
+        ),
+      },
     );
     if (inspection.state.result?.summary) {
       entries.push({ label: "summary", value: inspection.state.result.summary });

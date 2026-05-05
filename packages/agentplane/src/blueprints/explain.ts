@@ -1,10 +1,11 @@
 import type {
-  BlueprintExplainEvidence,
   BlueprintExplainNode,
   BlueprintExplainOutput,
+  BlueprintResolveInput,
   ResolvedBlueprint,
   WorkflowMode,
 } from "./model.js";
+import { blueprintPlanEvidence, buildBlueprintPlanArtifact } from "./plan.js";
 
 function explainNode(node: ResolvedBlueprint["activeNodes"][number]): BlueprintExplainNode {
   return {
@@ -13,25 +14,17 @@ function explainNode(node: ResolvedBlueprint["activeNodes"][number]): BlueprintE
     mode: node.mode,
     required: node.required,
     protected: node.protected ?? false,
-  };
-}
-
-function explainEvidence(
-  evidence: ResolvedBlueprint["requiredEvidence"][number],
-): BlueprintExplainEvidence {
-  return {
-    id: evidence.id,
-    kind: evidence.kind,
-    producedBy: evidence.producedBy,
-    required: evidence.required,
-    description: evidence.description,
+    allowedCommands: [...(node.allowedCommands ?? [])],
+    policyModules: [...(node.policyModules ?? [])],
   };
 }
 
 export function explainResolvedBlueprint(opts: {
   resolved: ResolvedBlueprint;
+  input?: BlueprintResolveInput;
   workflowMode?: WorkflowMode;
 }): BlueprintExplainOutput {
+  const plan = buildBlueprintPlanArtifact(opts);
   return {
     blueprintId: opts.resolved.blueprint.id,
     blueprintVersion: opts.resolved.blueprint.version,
@@ -39,7 +32,10 @@ export function explainResolvedBlueprint(opts: {
     ...(opts.workflowMode ? { workflowMode: opts.workflowMode } : {}),
     route: opts.resolved.activeNodes.map((node) => explainNode(node)),
     skippedNodes: [...opts.resolved.skippedNodes],
-    requiredEvidence: opts.resolved.requiredEvidence.map((evidence) => explainEvidence(evidence)),
+    requiredEvidence: opts.resolved.requiredEvidence.map((evidence) =>
+      blueprintPlanEvidence(evidence),
+    ),
+    plan,
     selectionReasons: [...opts.resolved.selectionReasons],
     acceptedRecipeExtensions: [...opts.resolved.acceptedRecipeExtensions],
     rejectedRecipeExtensions: [...opts.resolved.rejectedRecipeExtensions],
@@ -54,6 +50,14 @@ export function formatBlueprintExplain(output: BlueprintExplainOutput): string {
     ...(output.workflowMode ? [`workflow_mode: ${output.workflowMode}`] : []),
     `route: ${output.route.map((node) => node.kind).join(" -> ")}`,
     `selection_reasons: ${output.selectionReasons.join("; ") || "none"}`,
+    `policy_modules: ${output.plan.policyModules.join(", ") || "none"}`,
+    `allowed_commands: ${output.plan.allowedCommands.join("; ") || "none"}`,
+    `context_budget: max_policy_modules=${output.plan.contextBudget.maxPolicyModules}${
+      output.plan.contextBudget.maxPromptBlocks
+        ? ` max_prompt_blocks=${output.plan.contextBudget.maxPromptBlocks}`
+        : ""
+    }`,
+    `context_manifest: ${output.plan.contextManifest.length}`,
     `required_evidence: ${output.requiredEvidence.map((item) => item.kind).join(", ")}`,
     `accepted_recipe_extensions: ${output.acceptedRecipeExtensions.length}`,
     `rejected_recipe_extensions: ${output.rejectedRecipeExtensions.length}`,

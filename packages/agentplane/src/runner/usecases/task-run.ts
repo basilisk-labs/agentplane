@@ -1,8 +1,17 @@
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+import { resolveRecipeBlueprintExtensions, type RecipeManifest } from "@agentplaneorg/recipes";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
+import { blueprintResolveInputFromTask } from "../../commands/blueprint/task-input.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  buildBlueprintPlanArtifact,
+  type BlueprintContextManifestEntry,
+  inferBlueprintTaskKind,
+  recipeBlueprintExtensionsToHints,
+  resolveBlueprint,
+} from "../../blueprints/index.js";
 import { resolveRunnerAdapterCapabilityRegistry } from "../../runtime/capabilities/index.js";
 import { consumeExecutionProfileBudget } from "../../runtime/execution-profile/index.js";
 import {
@@ -30,6 +39,7 @@ import {
   type RunnerExecutionContract,
   type RunnerInvocation,
   type RunnerRecipeContext,
+  type RunnerPromptBlock,
   type RunnerResult,
   type RunnerRunState,
   type RunnerTarget,
@@ -113,6 +123,83 @@ function assertRunnerPolicyCompatibility(bundle: RunnerContextBundle): void {
   if (profile.writes_artifacts_to && profile.writes_artifacts_to.length > 0) {
     normalizeRecipeArtifactPrefixes(profile.writes_artifacts_to);
   }
+}
+
+function recipeManifestFromContext(recipe: RunnerRecipeContext | undefined): RecipeManifest | null {
+  if (!recipe?.manifest || typeof recipe.manifest !== "object") return null;
+  return recipe.manifest as RecipeManifest;
+}
+
+function resolveRunnerBlueprintPlan(opts: {
+  taskEnvelope: Awaited<ReturnType<typeof assembleRunnerTaskContext>>;
+  config: CommandContext["config"];
+  recipe?: RunnerRecipeContext;
+  basePrompts: readonly RunnerPromptBlock[];
+}): RunnerContextBundle["blueprint"] {
+  const input = blueprintResolveInputFromTask({
+    task: opts.taskEnvelope.task.data,
+    config: opts.config,
+  });
+  const manifest = recipeManifestFromContext(opts.recipe);
+  if (manifest) {
+    const taskKind = inferBlueprintTaskKind(input);
+    const recipeExtensions = resolveRecipeBlueprintExtensions({
+      recipes: [{ manifest }],
+      runtime: {
+        task_kind: taskKind,
+        command: "task run",
+        tags: input.tags ? [...input.tags] : [],
+      },
+      includeIncompatible: true,
+    });
+    input.recipeHints = recipeBlueprintExtensionsToHints(recipeExtensions.accepted);
+  }
+  const resolved = resolveBlueprint({ input });
+  return buildBlueprintPlanArtifact({
+    resolved,
+    input,
+    workflowMode: input.workflowMode,
+    contextManifest: buildRunnerBlueprintContextManifest({
+      basePrompts: opts.basePrompts,
+      recipe: opts.recipe,
+      policyModules: resolved.blueprint.policyModules,
+    }),
+  });
+}
+
+function buildRunnerBlueprintContextManifest(opts: {
+  basePrompts: readonly RunnerPromptBlock[];
+  recipe?: RunnerRecipeContext;
+  policyModules: readonly string[];
+}): BlueprintContextManifestEntry[] {
+  const entries: BlueprintContextManifestEntry[] = opts.basePrompts.map((prompt) => ({
+    id: prompt.id,
+    kind: prompt.id.includes("policy") ? "policy_module" : "prompt",
+    reason: prompt.resolution
+      ? `Resolved from ${prompt.resolution.winner.source}.`
+      : "Loaded as part of the runner base prompt bundle.",
+    ...(prompt.source ? { source: prompt.source } : {}),
+  }));
+  for (const policyModule of opts.policyModules) {
+    if (entries.some((entry) => entry.source === policyModule || entry.id === policyModule)) {
+      continue;
+    }
+    entries.push({
+      id: policyModule,
+      kind: "policy_module",
+      reason: "Allowed by the resolved blueprint policy module budget.",
+      source: policyModule,
+    });
+  }
+  if (opts.recipe) {
+    entries.push({
+      id: opts.recipe.recipe_id,
+      kind: "recipe",
+      reason: "Selected recipe context attached to this runner invocation.",
+      ...(opts.recipe.recipe_dir ? { source: opts.recipe.recipe_dir } : {}),
+    });
+  }
+  return entries;
 }
 
 async function writeRunnerRefusalArtifacts(opts: {
@@ -251,6 +338,12 @@ export async function prepareTaskRunnerExecution(opts: {
     harness: executionContext.harness,
     execution_profile: executionProfile,
   });
+  const blueprint = resolveRunnerBlueprintPlan({
+    taskEnvelope,
+    config: executionContext.config,
+    recipe: opts.recipe,
+    basePrompts: base_prompts,
+  });
   const framework_explain = appendFrameworkExplainBehaviorInputs(
     executionContext.frameworkExplain,
     collectFrameworkExplainBehaviorInputs(base_prompts),
@@ -278,6 +371,7 @@ export async function prepareTaskRunnerExecution(opts: {
     repository: taskEnvelope.repository,
     task: taskEnvelope.task,
     recipe: opts.recipe,
+    blueprint,
     execution: {
       adapter_id: configured_adapter_id,
       mode: opts.mode,

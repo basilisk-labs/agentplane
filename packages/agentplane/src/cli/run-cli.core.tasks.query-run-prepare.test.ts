@@ -172,6 +172,12 @@ describe("runCli task run preparation", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS },
       expect(io.stdout).toContain("policy_effective: {}");
       expect(io.stdout).toContain("policy_fields:");
       expect(io.stdout).toContain("policy_refusal: null");
+      expect(io.stdout).toContain("blueprint: docs.change");
+      expect(io.stdout).toContain("recipe: none");
+      expect(io.stdout).toContain('"maxPolicyModules":3');
+      expect(io.stdout).toContain(".agentplane/policy/dod.docs.md");
+      expect(io.stdout).toContain("context_manifest:");
+      expect(io.stdout).toContain('"docs.check"');
       expect(io.stdout).toContain(
         "policy_field[sandbox]: status=not_requested capability=native channel=argv supported=read-only,workspace-write,danger-full-access",
       );
@@ -272,6 +278,13 @@ describe("runCli task run preparation", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS },
             refusal_reason?: { policy_field?: string } | null;
           };
         };
+        blueprint?: {
+          blueprintId?: string;
+          policyModules?: string[];
+          contextBudget?: { maxPolicyModules?: number };
+          contextManifest?: { id?: string; kind?: string; reason?: string; source?: string }[];
+          requiredEvidence?: { id?: string }[];
+        };
         task: { task_id: string };
       };
       const bootstrap = await readFile(bootstrapPath, "utf8");
@@ -366,6 +379,21 @@ describe("runCli task run preparation", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS },
           },
         },
       });
+      expect(bundle.blueprint).toMatchObject({
+        blueprintId: "docs.change",
+        contextBudget: { maxPolicyModules: 3 },
+      });
+      expect(bundle.blueprint?.policyModules?.includes(".agentplane/policy/dod.docs.md")).toBe(
+        true,
+      );
+      expect(bundle.blueprint?.requiredEvidence?.map((item) => item.id)).toContain("docs.check");
+      expect(bundle.blueprint?.contextManifest?.length).toBeGreaterThan(0);
+      expect(
+        bundle.blueprint?.contextManifest?.some(
+          (item) =>
+            item.kind === "policy_module" && item.source === ".agentplane/policy/dod.docs.md",
+        ),
+      ).toBe(true);
       expect(bundle.task.task_id).toBe(taskId);
       expect(bootstrap).toContain(
         "This invocation is already inside an approved runner execution.",

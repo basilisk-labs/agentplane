@@ -127,6 +127,15 @@ function validateRequiredText(blueprint: Blueprint, errors: BlueprintValidationP
   if (blueprint.taskKinds.length === 0) {
     errors.push(problem("empty_field", "Blueprint taskKinds must be non-empty.", "taskKinds"));
   }
+  if (!hasText(blueprint.contextBudget.rationale)) {
+    errors.push(
+      problem(
+        "empty_field",
+        "Blueprint context budget rationale must be non-empty.",
+        "contextBudget",
+      ),
+    );
+  }
 }
 
 function validateGraph(blueprint: Blueprint, errors: BlueprintValidationProblem[]): void {
