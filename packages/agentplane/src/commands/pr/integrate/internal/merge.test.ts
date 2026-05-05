@@ -185,6 +185,7 @@ describe("pr/integrate/internal/merge", () => {
     expect(mergeCall?.[1]).toEqual([
       "merge",
       "--no-ff",
+      "--signoff",
       "task/T-3",
       "-m",
       "🔀 ABC123 integrate: Improve PR UX",

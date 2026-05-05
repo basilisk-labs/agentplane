@@ -4,7 +4,7 @@ title: "Commit automatic ACR artifacts on finish"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-05T15:37:00.310Z"
+  updated_at: "2026-05-05T15:41:27.895Z"
   updated_by: "CODER"
-  note: "Command: bunx vitest run packages/agentplane/src/commands/task/finish.validation.unit.test.ts. Result: pass. Evidence: 19 tests passed. Scope: finish validation and ACR refresh status invalidation. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts. Result: pass. Evidence: 4 tests passed and hosted-close now asserts tracked acr.json. Scope: hosted close lifecycle. Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts. Result: pass. Evidence: 6 tests passed. Scope: integrate finalization ACR refresh handoff. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: workspace TypeScript. Command: eslint/prettier/git diff --check/check-routing/doctor. Result: pass. Evidence: lint clean, Prettier matched, policy routing OK, doctor OK with 0 errors and 0 warnings. Scope: touched files and repo policy health."
+  note: "Additional blocker fixed: branch_pr merge integrate now passes --signoff so repo DCO hooks accept AgentPlane-managed merge commits. Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts. Result: pass. Evidence: 11 tests passed. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Command: eslint on touched integrate/finish files and git diff --check. Result: pass. Scope: DCO-safe integrate merge plus ACR refresh finalization."
 commit: null
 comments:
   -
@@ -40,8 +40,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/commands/task/finish.validation.unit.test.ts. Result: pass. Evidence: 19 tests passed. Scope: finish validation and ACR refresh status invalidation. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts. Result: pass. Evidence: 4 tests passed and hosted-close now asserts tracked acr.json. Scope: hosted close lifecycle. Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts. Result: pass. Evidence: 6 tests passed. Scope: integrate finalization ACR refresh handoff. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: workspace TypeScript. Command: eslint/prettier/git diff --check/check-routing/doctor. Result: pass. Evidence: lint clean, Prettier matched, policy routing OK, doctor OK with 0 errors and 0 warnings. Scope: touched files and repo policy health."
+  -
+    type: "verify"
+    at: "2026-05-05T15:41:27.895Z"
+    author: "CODER"
+    state: "ok"
+    note: "Additional blocker fixed: branch_pr merge integrate now passes --signoff so repo DCO hooks accept AgentPlane-managed merge commits. Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts. Result: pass. Evidence: 11 tests passed. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Command: eslint on touched integrate/finish files and git diff --check. Result: pass. Scope: DCO-safe integrate merge plus ACR refresh finalization."
 doc_version: 3
-doc_updated_at: "2026-05-05T15:37:00.320Z"
+doc_updated_at: "2026-05-05T15:41:27.906Z"
 doc_updated_by: "CODER"
 description: "Fix the finish/close lifecycle so automatically generated task-local acr.json files are staged and committed with the deterministic task close artifacts instead of being left untracked."
 sections:
@@ -70,6 +76,14 @@ sections:
     Note: Command: bunx vitest run packages/agentplane/src/commands/task/finish.validation.unit.test.ts. Result: pass. Evidence: 19 tests passed. Scope: finish validation and ACR refresh status invalidation. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts. Result: pass. Evidence: 4 tests passed and hosted-close now asserts tracked acr.json. Scope: hosted close lifecycle. Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts. Result: pass. Evidence: 6 tests passed. Scope: integrate finalization ACR refresh handoff. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: workspace TypeScript. Command: eslint/prettier/git diff --check/check-routing/doctor. Result: pass. Evidence: lint clean, Prettier matched, policy routing OK, doctor OK with 0 errors and 0 warnings. Scope: touched files and repo policy health.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T15:29:48.527Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    ### 2026-05-05T15:41:27.895Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Additional blocker fixed: branch_pr merge integrate now passes --signoff so repo DCO hooks accept AgentPlane-managed merge commits. Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts. Result: pass. Evidence: 11 tests passed. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Command: eslint on touched integrate/finish files and git diff --check. Result: pass. Scope: DCO-safe integrate merge plus ACR refresh finalization.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T15:37:00.320Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -112,6 +126,14 @@ By: CODER
 Note: Command: bunx vitest run packages/agentplane/src/commands/task/finish.validation.unit.test.ts. Result: pass. Evidence: 19 tests passed. Scope: finish validation and ACR refresh status invalidation. Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts. Result: pass. Evidence: 4 tests passed and hosted-close now asserts tracked acr.json. Scope: hosted close lifecycle. Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts. Result: pass. Evidence: 6 tests passed. Scope: integrate finalization ACR refresh handoff. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: workspace TypeScript. Command: eslint/prettier/git diff --check/check-routing/doctor. Result: pass. Evidence: lint clean, Prettier matched, policy routing OK, doctor OK with 0 errors and 0 warnings. Scope: touched files and repo policy health.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T15:29:48.527Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+### 2026-05-05T15:41:27.895Z — VERIFY — ok
+
+By: CODER
+
+Note: Additional blocker fixed: branch_pr merge integrate now passes --signoff so repo DCO hooks accept AgentPlane-managed merge commits. Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts. Result: pass. Evidence: 11 tests passed. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Command: eslint on touched integrate/finish files and git diff --check. Result: pass. Scope: DCO-safe integrate merge plus ACR refresh finalization.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T15:37:00.320Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 <!-- END VERIFICATION RESULTS -->
 
