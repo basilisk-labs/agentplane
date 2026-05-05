@@ -10,11 +10,12 @@ Use this module when task touches release/version/publish flows.
 ## Required sequence
 
 1. CHECKPOINT A: confirm clean tracked tree and approved scope.
-2. CHECKPOINT B: generate release plan and freeze version/tag target.
-3. Generate release notes with complete human-readable coverage of all task-level changes.
-4. Run release prepublish checks.
-5. CHECKPOINT C: choose the workflow-specific publication route after all gates pass.
-6. Record release evidence (commands, outputs, resulting version/tag).
+2. CHECKPOINT B: review/fix active `.agentplane/policy/incidents.md` entries through a dedicated task, archive final evidence, and clean the active incident registry.
+3. CHECKPOINT C: generate release plan and freeze version/tag target.
+4. Generate release notes with complete human-readable coverage of all task-level changes.
+5. Run release prepublish checks.
+6. CHECKPOINT D: choose the workflow-specific publication route after all gates pass.
+7. Record release evidence (commands, outputs, resulting version/tag).
 
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.release.commands.command.contract" slot="commands" mutability="replaceable" -->
@@ -38,6 +39,7 @@ agentplane finish <task-id> --author <ROLE> --body "Verified: release" --result 
 ## Constraints
 
 - MUST NOT perform irreversible release actions before explicit approval.
+- MUST NOT start release planning, prepublish, or publish while `.agentplane/policy/incidents.md` contains active incident entries.
 - MUST NOT skip parity/version checks.
 - MUST NOT bypass required notes validation.
 - MUST stop and request re-approval if release scope/tag/version changes.

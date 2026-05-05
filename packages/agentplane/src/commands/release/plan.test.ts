@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { expect, it } from "vitest";
@@ -88,6 +88,38 @@ describeWhenNotHook("release plan", () => {
       await expect(
         runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false }),
       ).rejects.toThrow(/v0\.2\.7, v0\.2\.8/i);
+    } finally {
+      await repo.cleanup();
+    }
+  }, 60_000);
+
+  it("blocks release planning until active incidents are cleaned", async () => {
+    const repo = await tempRepo({ withDefaultConfig: true });
+    const { root } = repo;
+    try {
+      await seedReleaseWorkspace(root, {
+        coreVersion: "0.2.6",
+        cliVersion: "0.2.6",
+        dependencyVersion: "0.2.6",
+      });
+      await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+      await writeFile(
+        path.join(root, ".agentplane", "policy", "incidents.md"),
+        [
+          "# Policy Incidents Log",
+          "",
+          "- Append-only. Required fields: `id`.",
+          "- id: INC-20260505-01 | date: 2026-05-05 | scope: release | failure: still active | rule: fix first | evidence: task T | enforcement: manual | state: open",
+          "",
+        ].join("\n"),
+        "utf8",
+      );
+      await commitAll(root, "seed");
+      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+
+      await expect(
+        runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false }),
+      ).rejects.toThrow(/Release planning blocked.*INC-20260505-01/i);
     } finally {
       await repo.cleanup();
     }

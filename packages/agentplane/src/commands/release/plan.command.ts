@@ -5,6 +5,7 @@ import { resolveProject } from "@agentplaneorg/core/project";
 import { createCliEmitter } from "../../cli/output.js";
 import type { CommandHandler } from "../../cli/spec/spec.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
+import { withDiagnosticContext } from "../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";
@@ -112,6 +113,54 @@ async function readCoreDependencyVersion(pkgJsonPath: string): Promise<string> {
   return version;
 }
 
+function listIncidentEntries(text: string): string[] {
+  return text
+    .split(/\r?\n/u)
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith("- id:"));
+}
+
+function incidentId(entry: string): string {
+  const match = /\bid:\s*([^|]+)/u.exec(entry);
+  return match?.[1]?.trim() || "(missing id)";
+}
+
+async function ensureReleaseIncidentsClean(gitRoot: string): Promise<void> {
+  const incidentsPath = path.join(gitRoot, ".agentplane", "policy", "incidents.md");
+  let text = "";
+  try {
+    text = await readFile(incidentsPath, "utf8");
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") return;
+    throw err;
+  }
+
+  const entries = listIncidentEntries(text);
+  if (entries.length === 0) return;
+
+  throw new CliError({
+    exitCode: exitCodeForError("E_VALIDATION"),
+    code: "E_VALIDATION",
+    message:
+      `Release planning blocked: .agentplane/policy/incidents.md contains ${entries.length} active incident entr${entries.length === 1 ? "y" : "ies"}: ` +
+      entries.map(incidentId).join(", "),
+    context: withDiagnosticContext(
+      { command: "release plan" },
+      {
+        state: "release planning cannot start while the active incident registry is non-empty",
+        likelyCause:
+          "release work must be preceded by a dedicated incident review/fix task that archives final evidence and cleans incidents.md",
+        nextAction: {
+          command: "node scripts/check-release-incidents.mjs",
+          reason:
+            "list the active incident entries that must be resolved or archived before generating release tasks",
+          reasonCode: "release_incidents_not_cleared",
+        },
+      },
+    ),
+  });
+}
+
 async function getLatestSemverTag(gitRoot: string): Promise<string | null> {
   try {
     const { stdout } = await execFileAsync(
@@ -192,6 +241,7 @@ function releaseInstructions(opts: {
 export const runReleasePlan: CommandHandler<ReleasePlanParsed> = async (ctx, flags) => {
   const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
   const gitRoot = resolved.gitRoot;
+  await ensureReleaseIncidentsClean(gitRoot);
 
   const corePkgPath = path.join(gitRoot, "packages", "core", "package.json");
   const agentplanePkgPath = path.join(gitRoot, "packages", "agentplane", "package.json");

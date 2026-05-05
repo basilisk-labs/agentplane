@@ -72,6 +72,8 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
+      - name: Release incidents (check)
+        run: node scripts/check-release-incidents.mjs
       - name: Resolve release-ready source
         id: source
         env:

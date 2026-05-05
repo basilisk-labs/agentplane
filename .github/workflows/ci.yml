@@ -239,6 +239,8 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
+      - name: Release incidents (check)
+        run: node scripts/check-release-incidents.mjs
       - name: Generate release-ready manifest
         id: manifest
         shell: bash
