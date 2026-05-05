@@ -232,7 +232,11 @@ Hello world.
     });
   });
 
-  it("renders body from canonical sections instead of preserving stale body text", () => {
+  it("keeps canonical sections in frontmatter without duplicating them into the body", () => {
+    const canonicalBody = renderTaskDocFromSections({
+      Summary: "Canonical summary",
+      Findings: "Canonical finding",
+    });
     const rendered = renderTaskReadme(
       {
         id: "202603130000-TEST",
@@ -256,11 +260,87 @@ Hello world.
           Findings: "Canonical finding",
         },
       },
+      canonicalBody,
+    );
+
+    expect(rendered).toContain("sections:");
+    expect(rendered).toContain('Summary: "Canonical summary"');
+    expect(rendered).not.toContain("## Summary");
+    expect(rendered).not.toContain("## Findings");
+  });
+
+  it("drops stale rendered task-doc body when canonical sections exist", () => {
+    const rendered = renderTaskReadme(
+      {
+        id: "202603130001-TEST",
+        title: "Schema sample",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        revision: 1,
+        depends_on: [],
+        tags: [],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-03-13T00:00:00.000Z",
+        doc_updated_by: "CODER",
+        description: "sample",
+        sections: {
+          Summary: "Canonical summary",
+          Findings: "Canonical finding",
+        },
+      },
       "## Summary\n\nstale body\n",
     );
 
-    expect(rendered).toContain("## Summary\n\nCanonical summary");
-    expect(rendered).toContain("## Findings\n\nCanonical finding");
+    expect(rendered).toContain('Summary: "Canonical summary"');
+    expect(rendered).not.toContain("## Summary");
     expect(rendered).not.toContain("stale body");
+  });
+
+  it("preserves contextual prose body when canonical sections exist", () => {
+    const contextualBody = [
+      "# Context",
+      "",
+      "This README keeps only non-canonical reading context in Markdown.",
+      "",
+      "## References",
+      "",
+      "- docs/user/branching-and-pr-artifacts.mdx",
+      "",
+    ].join("\n");
+    const rendered = renderTaskReadme(
+      {
+        id: "202603130002-TEST",
+        title: "Schema sample",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        revision: 1,
+        depends_on: [],
+        tags: [],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-03-13T00:00:00.000Z",
+        doc_updated_by: "CODER",
+        description: "sample",
+        sections: {
+          Summary: "Canonical summary",
+          Findings: "Canonical finding",
+        },
+      },
+      contextualBody,
+    );
+
+    expect(rendered).toContain('Summary: "Canonical summary"');
+    expect(rendered).toContain("# Context");
+    expect(rendered).toContain("## References");
+    expect(rendered).not.toContain("## Summary");
   });
 });
