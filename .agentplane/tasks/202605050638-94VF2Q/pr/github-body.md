@@ -22,9 +22,9 @@ Trim branch_pr pr/github-body.md to the hosted-review payload only: task id, tit
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T07:09:27.471Z
+- Updated: 2026-05-05T07:10:22.099Z
 - Branch: task/202605050638-94VF2Q/minimal-github-body
-- Head: b1a8b355b8ad
+- Head: 6843a685dafe
 
 ```text
  .agentplane/tasks/202605050638-BA00XR/README.md    | 139 +++++++++++++++++++
@@ -55,10 +55,10 @@ Trim branch_pr pr/github-body.md to the hosted-review payload only: task id, tit
  .../src/commands/pr/integrate/internal/prepare.ts  |   4 +-
  .../pr/internal/pr-artifact-snapshot.test.ts       |  24 +++-
  .../commands/pr/internal/pr-artifact-snapshot.ts   |   1 -
- .../commands/pr/internal/review-template.test.ts   |  53 +++++++-
- .../src/commands/pr/internal/review-template.ts    |  91 ++++---------
+ .../commands/pr/internal/review-template.test.ts   |  93 ++++++++++++-
+ .../src/commands/pr/internal/review-template.ts    | 128 ++++++------------
  .../src/commands/pr/internal/sync-open-step.ts     |   7 -
- 31 files changed, 1427 insertions(+), 96 deletions(-)
+ 31 files changed, 1482 insertions(+), 118 deletions(-)
 ```
 
 </details>
