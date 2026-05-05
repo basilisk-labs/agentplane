@@ -1,10 +1,11 @@
 ---
 id: "202605050639-SK2B26"
 title: "Separate task README canonical state from contextual prose"
-status: "DOING"
+result_summary: "Made frontmatter sections the canonical task state while keeping Markdown body as non-duplicating contextual prose and preserving API render-projection compatibility."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-05T07:33:38.363Z"
   updated_by: "CODER"
   note: "Focused task README, task store, local backend, doc command, migrate-doc, mutation parity, ESLint, Prettier, and routing checks passed."
-commit: null
+commit:
+  hash: "8e4cb5236ca4b0da14397d019c8401498c554514"
+  message: "🔀 SK2B26 integrate: Separate README state from context"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved task README context-layer contract in its dedicated branch_pr worktree, with canonical workflow fields separated from non-duplicating contextual prose."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged task README state/context separation into main after focused README, store, local backend, doc command, migrate-doc, mutation parity, lint, format, routing, PR artifact, and bootstrap checks."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused task README, task store, local backend, doc command, migrate-doc, mutation parity, ESLint, Prettier, and routing checks passed."
+  -
+    type: "status"
+    at: "2026-05-05T07:36:33.527Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged task README state/context separation into main after focused README, store, local backend, doc command, migrate-doc, mutation parity, lint, format, routing, PR artifact, and bootstrap checks."
 doc_version: 3
-doc_updated_at: "2026-05-05T07:33:38.366Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T07:36:33.528Z"
+doc_updated_by: "INTEGRATOR"
 description: "Optimize task README storage by separating canonical lifecycle/task state from contextual prose. Keep frontmatter and structured sections as the machine-readable source of truth for workflow gates, and make the Markdown body a non-duplicating contextual layer for rationale, tradeoffs, references, examples, and migration notes."
 sections:
   Summary: |-
