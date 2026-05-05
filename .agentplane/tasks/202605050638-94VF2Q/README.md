@@ -4,7 +4,7 @@ title: "Make github-body.md a minimal hosted PR projection"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-05T07:09:27.429Z"
+  updated_at: "2026-05-05T07:19:17.702Z"
   updated_by: "CODER"
-  note: "Focused review-template tests, artifact snapshot tests, ESLint, Prettier, and routing check passed."
+  note: "Focused review-template tests, artifact snapshot tests, ESLint, Prettier, routing check, and local-base PR evidence regeneration passed."
 commit: null
 comments:
   -
@@ -41,8 +41,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused review-template tests, artifact snapshot tests, ESLint, Prettier, and routing check passed."
+  -
+    type: "verify"
+    at: "2026-05-05T07:19:17.702Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused review-template tests, artifact snapshot tests, ESLint, Prettier, routing check, and local-base PR evidence regeneration passed."
 doc_version: 3
-doc_updated_at: "2026-05-05T07:09:27.436Z"
+doc_updated_at: "2026-05-05T07:19:17.709Z"
 doc_updated_by: "CODER"
 description: "Trim branch_pr pr/github-body.md to the hosted-review payload only: task id, title, summary/scope, verification status, and raw evidence. Avoid copying the full local review document or rollback/risk content that already lives in the task README."
 sections:
@@ -72,6 +78,14 @@ sections:
     Note: Focused review-template tests, artifact snapshot tests, ESLint, Prettier, and routing check passed.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T06:48:17.457Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    ### 2026-05-05T07:19:17.702Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Focused review-template tests, artifact snapshot tests, ESLint, Prettier, routing check, and local-base PR evidence regeneration passed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T07:09:27.436Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -115,6 +129,14 @@ By: CODER
 Note: Focused review-template tests, artifact snapshot tests, ESLint, Prettier, and routing check passed.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T06:48:17.457Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+### 2026-05-05T07:19:17.702Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused review-template tests, artifact snapshot tests, ESLint, Prettier, routing check, and local-base PR evidence regeneration passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T07:09:27.436Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 <!-- END VERIFICATION RESULTS -->
 

@@ -13,7 +13,7 @@ Created: 2026-05-05T06:48:17.539Z
 ## Verification
 
 - State: ok
-- Note: Focused review-template tests, artifact snapshot tests, ESLint, Prettier, and routing check passed.
+- Note: Focused review-template tests, artifact snapshot tests, ESLint, Prettier, routing check, and local-base PR evidence regeneration passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

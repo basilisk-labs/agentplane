@@ -16,7 +16,7 @@ Trim branch_pr pr/github-body.md to the hosted-review payload only: task id, tit
 ## Verification
 
 - State: ok
-- Note: Focused review-template tests, artifact snapshot tests, ESLint, Prettier, and routing check passed.
+- Note: Focused review-template tests, artifact snapshot tests, ESLint, Prettier, routing check, and local-base PR evidence regeneration passed.
 - Canonical workflow state lives in the task README.
 
 <details>
