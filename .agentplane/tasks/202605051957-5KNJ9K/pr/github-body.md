@@ -25,12 +25,19 @@ Add recipe blueprint-extension normalization with active recipe filtering, when 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T20:01:23.073Z
+- Updated: 2026-05-05T20:10:20.855Z
 - Branch: task/202605051957-5KNJ9K/normalize-recipe-blueprint-hints
-- Head: 143295bb960b
+- Head: 3d562c209be2
 
 ```text
-No changes detected.
+ packages/recipes/package.json                     |   2 +-
+ packages/recipes/src/blueprint-extensions.test.ts | 125 ++++++++++++++++++++
+ packages/recipes/src/blueprint-extensions.ts      | 136 ++++++++++++++++++++++
+ packages/recipes/src/index.test.ts                |  79 +++++++++++++
+ packages/recipes/src/index.ts                     |   1 +
+ packages/recipes/src/manifest-contracts.ts        |  23 ++++
+ packages/recipes/src/manifest.ts                  | 103 +++++++++++++++-
+ 7 files changed, 466 insertions(+), 3 deletions(-)
 ```
 
 </details>
