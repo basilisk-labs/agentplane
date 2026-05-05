@@ -1,10 +1,11 @@
 ---
 id: "202605051806-TVZ7N4"
 title: "Add cloud backend CLI connection surface"
-status: "DOING"
+result_summary: "Cloud backend CLI connection surface landed on main via merge commit a7b14d3e."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-05T18:21:09.619Z"
   updated_by: "CODER"
   note: "Verified: backend connect cloud writes endpoint/project/provider metadata, leaves tokens out of backend JSON, and backend inspect prints connection/freshness metadata."
-commit: null
+commit:
+  hash: "a7b14d3e4fc80ed21ad8bba703f582e716130861"
+  message: "🔀 RZ8SA1 integrate: Add cloud backend init contract"
 comments:
   -
     author: "CODER"
     body: "Start: Add the neutral cloud backend CLI connection surface in the shared batch worktree, keeping provider-specific setup outside local init."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Cloud backend CLI connection surface merged to main after CLI tests, help snapshot check, and hosted PR checks."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: backend connect cloud writes endpoint/project/provider metadata, leaves tokens out of backend JSON, and backend inspect prints connection/freshness metadata."
+  -
+    type: "status"
+    at: "2026-05-05T18:27:07.815Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Cloud backend CLI connection surface merged to main after CLI tests, help snapshot check, and hosted PR checks."
 doc_version: 3
-doc_updated_at: "2026-05-05T18:21:09.625Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T18:27:07.817Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a neutral CLI surface for configuring a cloud backend endpoint and connection metadata, including actionable inspect output for users who connect AgentPlane to a hosted sync implementation."
 sections:
   Summary: |-
