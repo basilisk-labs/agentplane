@@ -1,10 +1,11 @@
 ---
 id: "202605051957-5WRJZK"
 title: "Bridge recipe hints into blueprint resolver"
-status: "DOING"
+result_summary: "Merged via PR #942. v0.5 rc1 blueprint recipe bridge, CLI explain, verify evidence, ACR summary, and docs are on main."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-05-05T20:44:24.991Z"
   updated_by: "CODER"
   note: "Blueprint resolver bridge verified: recipe hints preserve provenance, evidence requirements bind to verify_record, preferred_blueprint is accepted only when compatible, and risk routes outrank recipe preference. Checks: bun test packages/agentplane/src/blueprints/resolve.test.ts packages/agentplane/src/blueprints/validate.test.ts packages/recipes/src/blueprint-extensions.test.ts; bun run typecheck; bun run lint:core; AGENTPLANE_FAST_CHANGED_FILES=... bun run ci:local:fast."
-commit: null
+commit:
+  hash: "c8c9cbe086a86a9c396eeef9e26ff35027260159"
+  message: "🔀 5WRJZK integrate: Bridge recipe hints into blueprint resolver"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing the rc1 recipe-to-blueprint resolver bridge in the primary batch worktree, including accepted and rejected recipe extension evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #942 merged into main after local ci:local:fast and hosted Core CI, Docs CI, and Socket checks passed for the blueprint recipe bridge batch."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Blueprint resolver bridge verified: recipe hints preserve provenance, evidence requirements bind to verify_record, preferred_blueprint is accepted only when compatible, and risk routes outrank recipe preference. Checks: bun test packages/agentplane/src/blueprints/resolve.test.ts packages/agentplane/src/blueprints/validate.test.ts packages/recipes/src/blueprint-extensions.test.ts; bun run typecheck; bun run lint:core; AGENTPLANE_FAST_CHANGED_FILES=... bun run ci:local:fast."
+  -
+    type: "status"
+    at: "2026-05-05T20:51:31.329Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #942 merged into main after local ci:local:fast and hosted Core CI, Docs CI, and Socket checks passed for the blueprint recipe bridge batch."
 doc_version: 3
-doc_updated_at: "2026-05-05T20:44:25.000Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T20:51:31.331Z"
+doc_updated_by: "INTEGRATOR"
 description: "Connect normalized recipe blueprint hints to the blueprint resolver and explain output, including accepted/rejected extension details and safety rejection tests."
 sections:
   Summary: |-
