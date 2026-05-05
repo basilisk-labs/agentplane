@@ -1,10 +1,11 @@
 ---
 id: "202605050638-F7A5MV"
 title: "Reduce branch_pr review.md to a compact review index"
-status: "DOING"
+result_summary: "Reduced branch_pr review.md to a compact local index while preserving legacy review validation."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-05T07:05:01.777Z"
   updated_by: "CODER"
   note: "Focused review-template tests, artifact snapshot tests, ESLint, Prettier, and routing check passed."
-commit: null
+commit:
+  hash: "492829396289052136f6aec69ce7053c75ba434a"
+  message: "🔀 F7A5MV integrate: Compact branch_pr review index"
 comments:
   -
     author: "CODER"
     body: "Start: reducing branch_pr review.md to a compact review index that avoids copying canonical task sections while preserving review-specific evidence and handoff context."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged compact review index into main after focused renderer, artifact snapshot, lint, format, routing, and PR artifact checks."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused review-template tests, artifact snapshot tests, ESLint, Prettier, and routing check passed."
+  -
+    type: "status"
+    at: "2026-05-05T07:07:14.149Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged compact review index into main after focused renderer, artifact snapshot, lint, format, routing, and PR artifact checks."
 doc_version: 3
-doc_updated_at: "2026-05-05T07:05:01.790Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T07:07:14.150Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace the full duplicated branch_pr pr/review.md projection with a compact review index that references the canonical task README and preserves only review-specific facts: branch, related tasks, handoff notes, and raw evidence links or summary."
 sections:
   Summary: |-

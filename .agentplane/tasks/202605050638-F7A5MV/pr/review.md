@@ -1,20 +1,41 @@
 # PR Review
 
 Created: 2026-05-05T06:47:56.085Z
+Branch: task/202605050638-F7A5MV/compact-review-index
 
-## Task
+## Summary
 
-- Task: `202605050638-F7A5MV`
-- Title: Reduce branch_pr review.md to a compact review index
-- Status: DOING
-- Branch: `task/202605050638-F7A5MV/compact-review-index`
-- Canonical task record: `.agentplane/tasks/202605050638-F7A5MV/README.md`
+Reduce branch_pr review.md to a compact review index
+
+Replace the full duplicated branch_pr pr/review.md projection with a compact review index that references the canonical task README and preserves only review-specific facts: branch, related tasks, handoff notes, and raw evidence links or summary.
+
+## Scope
+
+- In scope: Replace the full duplicated branch_pr pr/review.md projection with a compact review index that references the canonical task README and preserves only review-specific facts: branch, related tasks, handoff notes, and raw evidence links or summary.
+- Out of scope: unrelated refactors not required for "Reduce branch_pr review.md to a compact review index".
 
 ## Verification
 
+### Plan
+
+1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
+3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+
+### Current Status
+
 - State: ok
 - Note: Focused review-template tests, artifact snapshot tests, ESLint, Prettier, and routing check passed.
-- Full verification checklist lives in local review.md.
+
+## Risks
+
+- Risk level: not recorded
+- Breaking change: no
+
+### Rollback
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
 
 ## Handoff Notes
 
