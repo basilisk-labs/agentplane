@@ -1,10 +1,11 @@
 ---
 id: "202605050754-QFTZAD"
 title: "Generate Obsidian task navigation"
-status: "DOING"
+result_summary: "Implemented Obsidian task navigation projection and task README review fixes; merged to main via PR #907."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-05T09:11:32.494Z"
   updated_by: "CODER"
   note: "Expanded scope to resolve task-readme review blockers. Verified Obsidian projection plus README v3 canonical sections behavior, task-store no-op handling, release evidence audit, docs gates, doctor, and ci:local:fast."
-commit: null
+commit:
+  hash: "2708fff14ac954180b5f099bc26086465ee6e903"
+  message: "🧭 QFTZAD task: Generate Obsidian task navigation [202605050754-QFTZAD]"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved Obsidian task navigation projection in this task worktree, keeping task README files canonical and limiting generated Markdown outputs to the requested navigation layer."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #907 merged to main at 2708fff14ac954180b5f099bc26086465ee6e903 after required checks passed and review threads were resolved."
 events:
   -
     type: "status"
@@ -52,9 +58,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Expanded scope to resolve task-readme review blockers. Verified Obsidian projection plus README v3 canonical sections behavior, task-store no-op handling, release evidence audit, docs gates, doctor, and ci:local:fast."
+  -
+    type: "status"
+    at: "2026-05-05T09:52:29.170Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #907 merged to main at 2708fff14ac954180b5f099bc26086465ee6e903 after required checks passed and review threads were resolved."
 doc_version: 3
-doc_updated_at: "2026-05-05T09:11:32.509Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T09:52:29.170Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add an Obsidian-friendly generated Markdown projection under .agentplane so task READMEs remain canonical while users and agents can browse tasks by status, tag, owner, and dependency links."
 sections:
   Summary: |-
