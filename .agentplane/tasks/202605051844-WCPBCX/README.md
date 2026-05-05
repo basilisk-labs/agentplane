@@ -1,10 +1,11 @@
 ---
 id: "202605051844-WCPBCX"
 title: "Update roadmap for blueprint and cloud backend layer"
-status: "DOING"
+result_summary: "Updated ROADMAP.md and the public roadmap blog so v0.5 is the blueprint plus cloud backend layer, v0.6 is Runner, and v0.7 is evaluations."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-05T18:48:21.185Z"
   updated_by: "DOCS"
   note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: ROADMAP.md and roadmap blog update. Links: ROADMAP.md, website/blog/2026-02-24-roadmap-0-5-blueprints-cloud-backend.mdx. Command: ap doctor; Result: pass; Evidence: doctor OK with errors=0 and warnings=4 for pre-existing global-in-framework/hook shim runtime state. Scope: repository policy/runtime health after docs-only change. Links: task README. Command: bunx prettier --check ROADMAP.md website/blog/2026-02-24-roadmap-0-5-blueprints-cloud-backend.mdx; Result: pass; Evidence: All matched files use Prettier code style. Scope: changed roadmap docs. Links: changed docs. Command: git diff --check -- ROADMAP.md website/blog/2026-02-24-roadmap-0-5-blueprints-cloud-backend.mdx; Result: pass; Evidence: no whitespace errors. Scope: changed roadmap docs. Links: changed docs."
-commit: null
+commit:
+  hash: "a69eec4890e805252f62b865bd468e1887718e17"
+  message: "🔀 WCPBCX integrate: Update roadmap for blueprint and cloud backend layer [202605051844-WCPBCX]"
 comments:
   -
     author: "DOCS"
     body: "Start: update the roadmap release sequence so v0.5 covers the blueprint layer and cloud backend sync contour, while runner and evaluation work move to later releases."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: roadmap docs were updated and merged after local policy checks plus hosted PR checks passed; integration used signed merge commit after ap integrate hit a DCO guard."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: ROADMAP.md and roadmap blog update. Links: ROADMAP.md, website/blog/2026-02-24-roadmap-0-5-blueprints-cloud-backend.mdx. Command: ap doctor; Result: pass; Evidence: doctor OK with errors=0 and warnings=4 for pre-existing global-in-framework/hook shim runtime state. Scope: repository policy/runtime health after docs-only change. Links: task README. Command: bunx prettier --check ROADMAP.md website/blog/2026-02-24-roadmap-0-5-blueprints-cloud-backend.mdx; Result: pass; Evidence: All matched files use Prettier code style. Scope: changed roadmap docs. Links: changed docs. Command: git diff --check -- ROADMAP.md website/blog/2026-02-24-roadmap-0-5-blueprints-cloud-backend.mdx; Result: pass; Evidence: no whitespace errors. Scope: changed roadmap docs. Links: changed docs."
+  -
+    type: "status"
+    at: "2026-05-05T18:53:00.186Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: roadmap docs were updated and merged after local policy checks plus hosted PR checks passed; integration used signed merge commit after ap integrate hit a DCO guard."
 doc_version: 3
-doc_updated_at: "2026-05-05T18:48:21.226Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-05T18:53:00.189Z"
+doc_updated_by: "INTEGRATOR"
 description: "Revise ROADMAP.md so v0.5 is the blueprint layer plus cloud backend selection for external platform sync, and move runner and evals to later releases."
 sections:
   Summary: |-

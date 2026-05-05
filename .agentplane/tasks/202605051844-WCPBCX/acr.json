@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605051844-WCPBCX",
+  "created_at": "2026-05-05T18:53:00.515Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "a69eec4890e805252f62b865bd468e1887718e17",
+    "work_ref": "main",
+    "work_commit": "a69eec4890e805252f62b865bd468e1887718e17"
+  },
+  "task": {
+    "task_id": "202605051844-WCPBCX",
+    "title": "Update roadmap for blueprint and cloud backend layer",
+    "intent": "Revise ROADMAP.md so v0.5 is the blueprint layer plus cloud backend selection for external platform sync, and move runner and evals to later releases.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605051844-WCPBCX/README.md",
+      "sha256": "sha256:cf8ce7e9ae8926e2e1cec449901229e9104b3d65f3410a748229d346f68a1dc2"
+    },
+    "approved_at": "2026-05-05T18:44:47.945Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Updated ROADMAP.md and the public roadmap blog so v0.5 is the blueprint plus cloud backend layer, v0.6 is Runner, and v0.7 is evaluations.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605051844-WCPBCX_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T18:44:47.945Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605051844-WCPBCX/README.md",
+      "sha256": "sha256:cf8ce7e9ae8926e2e1cec449901229e9104b3d65f3410a748229d346f68a1dc2"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605051844-WCPBCX/README.md",
+      "sha256": "sha256:cf8ce7e9ae8926e2e1cec449901229e9104b3d65f3410a748229d346f68a1dc2"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605051844-WCPBCX/README.md",
+      "sha256": "sha256:cf8ce7e9ae8926e2e1cec449901229e9104b3d65f3410a748229d346f68a1dc2"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit a69eec4890e805252f62b865bd468e1887718e17 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:b45d9564fc9d4dba9ed8d9cc409562753d2ec8f5eea52f970133e90c8abe13e7",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
