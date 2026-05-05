@@ -1,10 +1,11 @@
 ---
 id: "202605051842-BEJAY8"
 title: "Add blueprint core model and validation"
-status: "DOING"
+result_summary: "Merged via PR #933."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-05T19:10:21.287Z"
   updated_by: "CODER"
   note: "Implemented blueprint core model, built-ins, registry, validation, and focused tests. Checks passed: agentplane task verify-show 202605051842-BEJAY8; bun test packages/agentplane/src/blueprints/validate.test.ts; bun test packages/agentplane/src/backends/task-backend.cloud.test.ts packages/agentplane/src/blueprints/validate.test.ts; bun run typecheck; bunx eslint packages/agentplane/src/blueprints packages/agentplane/src/backends/task-backend/cloud-backend.ts packages/agentplane/src/backends/task-backend.cloud.test.ts; bun run docs:ia:check; node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin/agentplane.js doctor; AGENTPLANE_FAST_CHANGED_FILES=... bun run ci:local:fast."
-commit: null
+commit:
+  hash: "bb8a4df88b37362fea7d0fb156594f2f09a9dd62"
+  message: "Merge pull request #933 from basilisk-labs/task/202605051842-BEJAY8/blueprint-core-model"
 comments:
   -
     author: "CODER"
     body: "Start: implement blueprint core model, built-in registry, validation invariants, and focused tests without resolver, CLI commands, runner execution, or task lifecycle integration."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #933 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented blueprint core model, built-ins, registry, validation, and focused tests. Checks passed: agentplane task verify-show 202605051842-BEJAY8; bun test packages/agentplane/src/blueprints/validate.test.ts; bun test packages/agentplane/src/backends/task-backend.cloud.test.ts packages/agentplane/src/blueprints/validate.test.ts; bun run typecheck; bunx eslint packages/agentplane/src/blueprints packages/agentplane/src/backends/task-backend/cloud-backend.ts packages/agentplane/src/backends/task-backend.cloud.test.ts; bun run docs:ia:check; node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin/agentplane.js doctor; AGENTPLANE_FAST_CHANGED_FILES=... bun run ci:local:fast."
+  -
+    type: "status"
+    at: "2026-05-05T19:15:47.147Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #933 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-05T19:10:21.314Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T19:15:47.152Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement the first blueprint code layer: typed model, built-in blueprint registry, registry lookup, validation invariants, and focused tests without resolver, CLI commands, or execution."
 sections:
   Summary: |-

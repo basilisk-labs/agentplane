@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605051842-BEJAY8",
+  "created_at": "2026-05-05T19:15:47.193Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "bb8a4df88b37362fea7d0fb156594f2f09a9dd62",
+    "work_ref": "main",
+    "work_commit": "bb8a4df88b37362fea7d0fb156594f2f09a9dd62"
+  },
+  "task": {
+    "task_id": "202605051842-BEJAY8",
+    "title": "Add blueprint core model and validation",
+    "intent": "Implement the first blueprint code layer: typed model, built-in blueprint registry, registry lookup, validation invariants, and focused tests without resolver, CLI commands, or execution.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605051842-BEJAY8/README.md",
+      "sha256": "sha256:c5e5e60d6c17dec1e61ec45fea4f80906a4040c302f5a5855cbb799dca606fa7"
+    },
+    "approved_at": "2026-05-05T18:42:53.456Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #933.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605051842-BEJAY8_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T18:42:53.456Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605051842-BEJAY8/README.md",
+      "sha256": "sha256:c5e5e60d6c17dec1e61ec45fea4f80906a4040c302f5a5855cbb799dca606fa7"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605051842-BEJAY8/README.md",
+      "sha256": "sha256:c5e5e60d6c17dec1e61ec45fea4f80906a4040c302f5a5855cbb799dca606fa7"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605051842-BEJAY8/README.md",
+      "sha256": "sha256:c5e5e60d6c17dec1e61ec45fea4f80906a4040c302f5a5855cbb799dca606fa7"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit bb8a4df88b37362fea7d0fb156594f2f09a9dd62 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:fcd93d2f228cce2aa00c0c02656c1b8e234b785c5bf0a89b2d2df5d67966f252",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
