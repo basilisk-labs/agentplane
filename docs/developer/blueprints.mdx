@@ -502,6 +502,7 @@ blueprint.
 Selection inputs:
 
 - explicit user intent;
+- structured task intent fields;
 - task title and description;
 - task tags;
 - owner role;
@@ -512,6 +513,41 @@ Selection inputs:
 - risk flags;
 - required evidence;
 - explicit blueprint id, when supplied.
+
+Structured task intent is preferred over weak text inference. `title`, `description`, and `tags`
+remain fallback signals so existing tasks still resolve, but new tasks should declare intent when
+route choice affects mutation, risk, or evidence.
+
+Task README frontmatter fields:
+
+```yaml
+task_kind: analysis # analysis | content | docs | code | release | ops
+mutation_scope: none # none | docs | code | release | ops | unknown
+risk_flags: [network] # optional: network, credentials, deploy, publish, merge, security, external_system
+blueprint_request: analysis.light # optional request, still validated by the resolver
+```
+
+CLI creation fields:
+
+```bash
+agentplane task new \
+  --title "Market analysis note" \
+  --description "Analyze the current market context without repository mutation" \
+  --owner CODER \
+  --tag content \
+  --task-kind analysis \
+  --mutation-scope none \
+  --risk network \
+  --blueprint-request analysis.light
+```
+
+Resolver precedence:
+
+1. risk flags that force safer routes;
+2. explicit blueprint request, with compatibility stop reasons when unsafe;
+3. structured `task_kind` and `mutation_scope`;
+4. compatible recipe `preferred_blueprint`;
+5. tags, title, description, and verification fallback.
 
 Resolver rules:
 
@@ -536,6 +572,43 @@ Route: intake -> scope -> context_resolve -> work_unit -> artifact_write -> veri
 Not required: PR, CI, code checks, release gates.
 Evidence: sources, assumptions, conclusions, weak links.
 ```
+
+## Commit Scope Synchronization
+
+Commit messages are traceability evidence, not the initial blueprint selector. A task's blueprint is
+resolved before work starts, while a commit is produced after work. The commit subject therefore
+must not be overloaded with every routing field.
+
+Keep the subject compact:
+
+```text
+<emoji> <TASK_SUFFIX> <scope>: <summary>
+```
+
+Use task-intent-aligned root scopes when the task declares structured intent:
+
+| Task intent       | Preferred commit scope examples        |
+| ----------------- | -------------------------------------- |
+| `analysis`        | `analysis`                             |
+| `content`         | `content`                              |
+| `docs`            | `docs`, `docs/site`                    |
+| `code`            | `code`, `code/resolver`, `code/schema` |
+| `release`         | `release`                              |
+| `ops`             | `ops`                                  |
+| lifecycle commits | `task`, `close`, `integrate`           |
+
+Optional commit trailers may mirror the resolved route for review tools:
+
+```text
+Blueprint: code.branch_pr
+Task-Kind: code
+Mutation-Scope: code
+Risk-Flags: none
+```
+
+The commit-message hook reads structured task intent from the task README when available and rejects
+task commit scopes that contradict it. This keeps commit policy synchronized with blueprint routing
+without making commit subjects the source of truth for route selection.
 
 ## Validation Invariants
 
@@ -571,6 +644,33 @@ Registry invariants:
 - built-in blueprint versions start at `1`.
 - registry lookup by id is total for built-ins.
 - duplicate built-ins fail at module load or registry construction time.
+
+## Adding New Blueprints
+
+The current built-in registry is code-backed. Add a new built-in blueprint with this sequence:
+
+1. Add the id to `BlueprintId` in `packages/agentplane/src/blueprints/model.ts`.
+2. Add the blueprint definition to `packages/agentplane/src/blueprints/builtins.ts`.
+3. Reuse existing node kinds where possible; add a new node kind only when an existing node cannot
+   express the route state.
+4. Run validation through `validateBlueprint()` and add focused validator tests for any new semantic
+   invariant.
+5. Add resolver mapping in `packages/agentplane/src/blueprints/resolve.ts`.
+6. Add resolver tests that cover structured task intent, workflow compatibility, risk precedence,
+   and recipe preference behavior.
+7. Update `docs/developer/blueprints.mdx` and generated CLI reference if command flags change.
+
+Efficient authoring path for the next implementation step:
+
+- introduce data-driven specs under `.agentplane/blueprints/*.yaml` or `.json`;
+- add `agentplane blueprint scaffold <id>`;
+- add `agentplane blueprint validate <path>`;
+- load project-local blueprints after built-ins but before recipe hints;
+- generate compatibility fixtures from the registry so every new blueprint gets route, evidence,
+  and stop-rule coverage.
+
+Recipes should not define full lifecycle graphs yet. They may request compatible blueprints and add
+extension hints, but the resolver and registry remain the authority for lifecycle topology.
 
 ## Recipes Relationship
 

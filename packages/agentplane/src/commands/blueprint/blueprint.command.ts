@@ -8,6 +8,7 @@ import {
   type BlueprintResolveInput,
   type MutationKind,
   type RiskFlag,
+  type TaskKind,
   type WorkflowMode,
 } from "../../blueprints/index.js";
 import {
@@ -162,9 +163,9 @@ async function runBlueprintRoot(_ctx: CommandCtx, p: GroupCommandParsed): Promis
 }
 
 function syntheticInput(ctx: CommandContext, p: BlueprintExplainParsed): BlueprintResolveInput {
-  const tags = [...p.tags, ...(p.kind ? [p.kind] : [])];
   return {
-    tags,
+    tags: p.tags,
+    taskKind: p.kind as TaskKind | undefined,
     title: p.title,
     description: p.description,
     workflowMode: p.workflowMode ?? workflowModeFromConfig(ctx.config),

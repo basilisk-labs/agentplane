@@ -20,6 +20,7 @@ export type {
   BlueprintExplainNode,
   BlueprintExplainOutput,
   BlueprintId,
+  BlueprintTaskIntent,
   BlueprintNode,
   BlueprintNodeKind,
   BlueprintNodeMode,

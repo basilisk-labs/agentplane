@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605052122-1KTJP3/structured-blueprint-intent",
+  "created_at": "2026-05-05T21:23:02.413Z",
+  "head_sha": "3bf9207133a3eac8a45b97cfbc60ff250aaadc31",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605052122-1KTJP3",
+  "updated_at": "2026-05-05T21:23:02.413Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

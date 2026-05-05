@@ -3,8 +3,32 @@ export type CommitPolicyResult = {
   errors: string[];
 };
 
+export type CommitTaskIntent = {
+  taskKind?: "analysis" | "content" | "docs" | "code" | "release" | "ops";
+  mutationScope?: "none" | "docs" | "code" | "release" | "ops" | "unknown";
+  blueprintRequest?:
+    | "analysis.light"
+    | "content.light"
+    | "docs.change"
+    | "code.direct"
+    | "code.branch_pr"
+    | "release.strict"
+    | "ops.approval";
+};
+
 const NON_TASK_SUFFIX = "DEV";
 const SCOPE_PATTERN = "[a-z][a-z0-9_-]*(?:/[a-z0-9_-]+)*";
+export const TASK_INTENT_COMMIT_SCOPES = [
+  "analysis",
+  "content",
+  "docs",
+  "code",
+  "release",
+  "ops",
+  "task",
+  "close",
+  "integrate",
+] as const;
 const STATUS_SUMMARY_TOKENS = new Set([
   "todo",
   "doing",
@@ -22,6 +46,36 @@ function stripPunctuation(input: string): string {
 
 function normalizeSummaryText(input: string): string {
   return stripPunctuation(input).toLowerCase().trim().replaceAll(/\s+/g, " ");
+}
+
+function rootScope(scope: string): string {
+  return scope.trim().toLowerCase().split("/")[0] ?? "";
+}
+
+export function commitScopesForTaskIntent(intent: CommitTaskIntent): string[] {
+  const scopes = new Set<string>();
+  if (
+    intent.mutationScope &&
+    intent.mutationScope !== "none" &&
+    intent.mutationScope !== "unknown"
+  ) {
+    scopes.add(intent.mutationScope);
+  }
+  if (intent.taskKind) scopes.add(intent.taskKind);
+  if (intent.blueprintRequest) scopes.add(intent.blueprintRequest.split(".")[0] ?? "");
+  return [...scopes].filter(Boolean).toSorted();
+}
+
+export function isTaskIntentCommitScope(opts: {
+  scope: string;
+  intent: CommitTaskIntent;
+  lifecycleScopes?: readonly string[];
+}): boolean {
+  const normalizedScope = rootScope(opts.scope);
+  const lifecycleScopes = new Set(opts.lifecycleScopes ?? ["task", "close", "integrate"]);
+  if (lifecycleScopes.has(normalizedScope)) return true;
+  const allowed = new Set(commitScopesForTaskIntent(opts.intent));
+  return allowed.size === 0 || allowed.has(normalizedScope);
 }
 
 export function extractTaskSuffix(taskId: string): string {
@@ -115,6 +169,7 @@ export function validateCommitSubject(opts: {
   subject: string;
   taskId?: string;
   genericTokens: string[];
+  taskIntent?: CommitTaskIntent;
 }): CommitPolicyResult {
   const errors: string[] = [];
   const subject = opts.subject.trim();
@@ -135,6 +190,15 @@ export function validateCommitSubject(opts: {
     }
     if (template.suffix.toLowerCase() !== taskSuffix.toLowerCase()) {
       errors.push("commit subject must include the task suffix as the second token");
+    }
+    if (
+      opts.taskIntent &&
+      !isTaskIntentCommitScope({ scope: template.scope, intent: opts.taskIntent })
+    ) {
+      const expected = commitScopesForTaskIntent(opts.taskIntent).join(", ") || "task intent scope";
+      errors.push(
+        `commit scope '${template.scope}' does not match task intent; expected one of: ${expected}, task, close, integrate`,
+      );
     }
   } else {
     // Non-task commits: `<emoji> <scope>: <summary>`.

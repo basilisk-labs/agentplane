@@ -170,6 +170,48 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     expect(task.frontmatter.verify).toContain("bun run ci");
   });
 
+  it("task new stores structured blueprint intent fields", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Market analysis note",
+        "--description",
+        "Analyze the current market context without repository mutation",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "content",
+        "--task-kind",
+        "analysis",
+        "--mutation-scope",
+        "none",
+        "--risk",
+        "network",
+        "--blueprint-request",
+        "analysis.light",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = io.stdout.trim();
+    } finally {
+      io.restore();
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.task_kind).toBe("analysis");
+    expect(task.frontmatter.mutation_scope).toBe("none");
+    expect(task.frontmatter.risk_flags).toEqual(["network"]);
+    expect(task.frontmatter.blueprint_request).toBe("analysis.light");
+  });
+
   it("task new rejects highly similar open task titles unless --allow-duplicate is passed", async () => {
     const root = await mkGitRepoRoot();
     const firstIo = captureStdIO();

@@ -1,4 +1,5 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+import type { CommitTaskIntent } from "@agentplaneorg/core/commit";
 import type { PolicyActionId } from "./taxonomy.js";
 
 export type PolicyAction = PolicyActionId;
@@ -33,6 +34,7 @@ export type PolicyContext = {
 
   commit?: {
     subject?: string;
+    taskIntent?: CommitTaskIntent;
   };
 
   allow?: {

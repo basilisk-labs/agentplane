@@ -37,6 +37,25 @@ export type TaskData = {
   origin?: TaskOrigin | null;
   depends_on: string[];
   tags: string[];
+  task_kind?: "analysis" | "content" | "docs" | "code" | "release" | "ops";
+  mutation_scope?: "none" | "docs" | "code" | "release" | "ops" | "unknown";
+  risk_flags?: (
+    | "network"
+    | "credentials"
+    | "deploy"
+    | "publish"
+    | "merge"
+    | "security"
+    | "external_system"
+  )[];
+  blueprint_request?:
+    | "analysis.light"
+    | "content.light"
+    | "docs.change"
+    | "code.direct"
+    | "code.branch_pr"
+    | "release.strict"
+    | "ops.approval";
   verify: string[];
   plan_approval?: PlanApproval;
   verification?: VerificationResult;

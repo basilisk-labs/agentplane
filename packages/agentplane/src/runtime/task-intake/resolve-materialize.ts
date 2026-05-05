@@ -70,6 +70,14 @@ function buildMaterializedTask(opts: {
       ...opts.internal_dependencies,
     ]).toSorted(),
     tags: [...opts.draftTask.tags],
+    ...(opts.draftTask.task_kind ? { task_kind: opts.draftTask.task_kind } : {}),
+    ...(opts.draftTask.mutation_scope ? { mutation_scope: opts.draftTask.mutation_scope } : {}),
+    ...(opts.draftTask.risk_flags && opts.draftTask.risk_flags.length > 0
+      ? { risk_flags: [...opts.draftTask.risk_flags] }
+      : {}),
+    ...(opts.draftTask.blueprint_request
+      ? { blueprint_request: opts.draftTask.blueprint_request }
+      : {}),
     verify: [...opts.draftTask.verify],
     comments: [],
     events: [],

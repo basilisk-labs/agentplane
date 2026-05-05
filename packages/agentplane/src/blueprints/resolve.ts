@@ -37,20 +37,26 @@ function normalizeTags(tags: readonly string[]): Set<string> {
   return new Set(tags.map((tag) => tag.trim().toLowerCase()).filter(Boolean));
 }
 
+function effectiveMutation(input: BlueprintResolveInput): MutationKind {
+  return input.mutationScope ?? input.mutation;
+}
+
 function includesAny(values: Set<string>, candidates: readonly string[]): boolean {
   return candidates.some((candidate) => values.has(candidate));
 }
 
 function inferTaskKind(input: BlueprintResolveInput): TaskKind {
+  if (input.taskKind) return input.taskKind;
   const tags = normalizeTags(input.tags);
   const title = `${input.title ?? ""} ${input.description ?? ""}`.toLowerCase();
+  const mutation = effectiveMutation(input);
 
-  if (input.mutation === "release" || includesAny(tags, ["release", "publish"])) return "release";
-  if (input.mutation === "ops" || includesAny(tags, ["ops", "deploy", "config"])) return "ops";
-  if (input.mutation === "code" || includesAny(tags, ["code", "backend", "frontend", "cli"])) {
+  if (mutation === "release" || includesAny(tags, ["release", "publish"])) return "release";
+  if (mutation === "ops" || includesAny(tags, ["ops", "deploy", "config"])) return "ops";
+  if (mutation === "code" || includesAny(tags, ["code", "backend", "frontend", "cli"])) {
     return "code";
   }
-  if (input.mutation === "docs" || includesAny(tags, ["docs", "documentation", "roadmap"])) {
+  if (mutation === "docs" || includesAny(tags, ["docs", "documentation", "roadmap"])) {
     return "docs";
   }
   if (includesAny(tags, ["content", "copy", "editorial", "marketing"])) return "content";
@@ -162,7 +168,7 @@ function selectBlueprint(opts: { input: BlueprintResolveInput; registry: Bluepri
   const riskBlueprintId = selectRiskBlueprintId(riskFlags);
   const taskKind = inferTaskKind(input);
   const inferredBlueprintId = riskBlueprintId ?? blueprintForTaskKind(taskKind, input.workflowMode);
-  const requestedBlueprintId = input.explicitBlueprintId;
+  const requestedBlueprintId = input.explicitBlueprintId ?? input.blueprintRequest;
   const preferredId =
     riskBlueprintId || requestedBlueprintId ? undefined : preferredBlueprintId(input);
   const preferredBlueprint = preferredId ? getBlueprint(preferredId, opts.registry) : undefined;
@@ -199,13 +205,18 @@ function selectBlueprint(opts: { input: BlueprintResolveInput; registry: Bluepri
     reasons.push(`task kind resolved to ${taskKind}`);
   }
 
+  if (input.taskKind) reasons.push(`task intent kind: ${input.taskKind}`);
   if (input.workflowMode) reasons.push(`workflow mode: ${input.workflowMode}`);
-  if (input.mutation !== "unknown") reasons.push(`mutation scope: ${input.mutation}`);
+  const mutation = effectiveMutation(input);
+  if (mutation !== "unknown") {
+    const source = input.mutationScope ? "task intent mutation scope" : "mutation scope";
+    reasons.push(`${source}: ${mutation}`);
+  }
   if (input.touchedPaths && input.touchedPaths.length > 0) {
     reasons.push(`touched paths: ${input.touchedPaths.toSorted().join(", ")}`);
   }
 
-  if (input.mutation === "unknown" && taskKind === "analysis") {
+  if (mutation === "unknown" && taskKind === "analysis") {
     stopReasons.push({
       id: "unknown_mutation_scope",
       severity: "warn",
@@ -371,6 +382,8 @@ export function resolveBlueprint(opts: {
 
 export function inferBlueprintTaskKind(input: {
   mutation: MutationKind;
+  mutationScope?: MutationKind;
+  taskKind?: TaskKind;
   tags: readonly string[];
   title?: string;
   description?: string;

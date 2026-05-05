@@ -31,10 +31,35 @@ export type TaskNewParsed = {
   owner: string;
   priority: "low" | "normal" | "med" | "high";
   tags: string[];
+  taskKind?: TaskData["task_kind"];
+  mutationScope?: TaskData["mutation_scope"];
+  riskFlags: NonNullable<TaskData["risk_flags"]>;
+  blueprintRequest?: TaskData["blueprint_request"];
   dependsOn: string[];
   verify: string[];
   allowDuplicate: boolean;
 };
+
+const TASK_KIND_VALUES = new Set(["analysis", "content", "docs", "code", "release", "ops"]);
+const MUTATION_SCOPE_VALUES = new Set(["none", "docs", "code", "release", "ops", "unknown"]);
+const RISK_FLAG_VALUES = new Set([
+  "network",
+  "credentials",
+  "deploy",
+  "publish",
+  "merge",
+  "security",
+  "external_system",
+]);
+const BLUEPRINT_REQUEST_VALUES = new Set([
+  "analysis.light",
+  "content.light",
+  "docs.change",
+  "code.direct",
+  "code.branch_pr",
+  "release.strict",
+  "ops.approval",
+]);
 
 const TASK_NEW_DUPLICATE_THRESHOLD = 0.75;
 const TASK_NEW_DUPLICATE_STOPWORDS = new Set([
@@ -61,6 +86,33 @@ function dedupeTrimmed(values: string[]): string[] {
     if (!value || seen.has(value)) continue;
     seen.add(value);
     out.push(value);
+  }
+  return out;
+}
+
+function validateOptionalEnum<T extends string>(
+  flag: string,
+  value: T | undefined,
+  allowed: Set<string>,
+): T | undefined {
+  if (!value) return undefined;
+  if (allowed.has(value)) return value;
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message: `Invalid value for --${flag}: ${value}.`,
+  });
+}
+
+function validateEnumArray<T extends string>(flag: string, values: T[], allowed: Set<string>): T[] {
+  const out = dedupeTrimmed(values) as T[];
+  const invalid = out.find((value) => !allowed.has(value));
+  if (invalid) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: `Invalid value for --${flag}: ${invalid}.`,
+    });
   }
   return out;
 }
@@ -98,8 +150,32 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
   }
   const dependsOn = dedupeTrimmed(p.dependsOn);
   const verify = dedupeTrimmed(p.verify);
+  const taskKind = validateOptionalEnum("task-kind", p.taskKind, TASK_KIND_VALUES);
+  const mutationScope = validateOptionalEnum(
+    "mutation-scope",
+    p.mutationScope,
+    MUTATION_SCOPE_VALUES,
+  );
+  const riskFlags = validateEnumArray("risk", p.riskFlags, RISK_FLAG_VALUES);
+  const blueprintRequest = validateOptionalEnum(
+    "blueprint-request",
+    p.blueprintRequest,
+    BLUEPRINT_REQUEST_VALUES,
+  );
 
-  return { ...p, title, description, owner, tags, dependsOn, verify };
+  return {
+    ...p,
+    title,
+    description,
+    owner,
+    tags,
+    taskKind,
+    mutationScope,
+    riskFlags,
+    blueprintRequest,
+    dependsOn,
+    verify,
+  };
 }
 
 function normalizeDuplicateTitleTokens(value: string): string[] {
@@ -275,6 +351,10 @@ export async function runTaskNewParsed(opts: {
           priority: p.priority,
           origin: { system: "manual" },
           tags: p.tags,
+          ...(p.taskKind ? { task_kind: p.taskKind } : {}),
+          ...(p.mutationScope ? { mutation_scope: p.mutationScope } : {}),
+          ...(p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
+          ...(p.blueprintRequest ? { blueprint_request: p.blueprintRequest } : {}),
           depends_on: p.dependsOn,
           verify: p.verify,
           doc: taskDoc,

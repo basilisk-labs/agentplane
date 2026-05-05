@@ -20,6 +20,27 @@ import {
 import { toStringArray } from "./strings.js";
 import type { TaskData } from "./types.js";
 
+const TASK_KIND_VALUES = new Set(["analysis", "content", "docs", "code", "release", "ops"]);
+const MUTATION_SCOPE_VALUES = new Set(["none", "docs", "code", "release", "ops", "unknown"]);
+const RISK_FLAG_VALUES = new Set([
+  "network",
+  "credentials",
+  "deploy",
+  "publish",
+  "merge",
+  "security",
+  "external_system",
+]);
+const BLUEPRINT_REQUEST_VALUES = new Set([
+  "analysis.light",
+  "content.light",
+  "docs.change",
+  "code.direct",
+  "code.branch_pr",
+  "release.strict",
+  "ops.approval",
+]);
+
 function normalizeRevision(value: unknown): number | undefined {
   return Number.isInteger(value) && Number(value) > 0 ? Number(value) : undefined;
 }
@@ -33,6 +54,18 @@ function normalizeCanonicalSections(value: unknown): Record<string, string> | un
     out[normalizedTitle] = text.replaceAll("\r\n", "\n").trimEnd();
   }
   return Object.keys(out).length > 0 ? out : undefined;
+}
+
+function stringEnumValue<T extends string>(value: unknown, allowed: Set<string>): T | undefined {
+  return typeof value === "string" && allowed.has(value) ? (value as T) : undefined;
+}
+
+function stringEnumArray<T extends string>(value: unknown, allowed: Set<string>): T[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const out = value
+    .filter((item): item is string => typeof item === "string" && allowed.has(item))
+    .filter((item, index, array) => array.indexOf(item) === index) as T[];
+  return out.length > 0 ? out : undefined;
 }
 
 export function taskRecordToData(record: TaskRecord): TaskData {
@@ -80,6 +113,19 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     origin: origin ?? undefined,
     depends_on: normalizeDependsOn(fm.depends_on),
     tags: toStringArray(fm.tags),
+    task_kind: stringEnumValue<TaskData["task_kind"] & string>(fm.task_kind, TASK_KIND_VALUES),
+    mutation_scope: stringEnumValue<TaskData["mutation_scope"] & string>(
+      fm.mutation_scope,
+      MUTATION_SCOPE_VALUES,
+    ),
+    risk_flags: stringEnumArray<NonNullable<TaskData["risk_flags"]>[number]>(
+      fm.risk_flags,
+      RISK_FLAG_VALUES,
+    ),
+    blueprint_request: stringEnumValue<TaskData["blueprint_request"] & string>(
+      fm.blueprint_request,
+      BLUEPRINT_REQUEST_VALUES,
+    ),
     verify: toStringArray(fm.verify),
     plan_approval: planApproval ?? undefined,
     verification: verification ?? undefined,
