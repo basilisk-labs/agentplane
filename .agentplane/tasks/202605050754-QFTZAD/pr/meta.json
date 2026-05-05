@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605050754-QFTZAD/obsidian-task-index",
+  "created_at": "2026-05-05T07:54:54.410Z",
+  "head_sha": "6c7e76cb3099503e729d50f11ae9926b35659280",
+  "last_verified_at": "2026-05-05T09:11:32.494Z",
+  "last_verified_sha": "e4eb0ad154255b1ff66540eb5ac34de2dee4614e",
+  "schema_version": 1,
+  "task_id": "202605050754-QFTZAD",
+  "updated_at": "2026-05-05T09:12:11.669Z",
+  "verify": {
+    "status": "pass"
+  }
+}

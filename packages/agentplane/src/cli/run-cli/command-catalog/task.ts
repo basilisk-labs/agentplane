@@ -20,6 +20,7 @@ import { taskMigrateDocSpec } from "../../../commands/task/migrate-doc.command.j
 import { taskMigrateSpec } from "../../../commands/task/migrate.command.js";
 import { taskNewSpec } from "../../../commands/task/new.spec.js";
 import { taskNextSpec } from "../../../commands/task/next.spec.js";
+import { taskObsidianSpec } from "../../../commands/task/obsidian.command.js";
 import { taskNormalizeSpec } from "../../../commands/task/normalize.command.js";
 import { taskPlanApproveSpec } from "../../../commands/task/plan-approve.command.js";
 import { taskPlanRejectSpec } from "../../../commands/task/plan-reject.command.js";
@@ -90,6 +91,7 @@ import {
   loadTaskScaffoldSpec,
   loadTaskNormalizeSpec,
   loadTaskExportSpec,
+  loadTaskObsidianSpec,
   loadTaskMigrateSpec,
   fromTaskPlanSpec,
   loadTaskPlanSetSpec,
@@ -150,6 +152,7 @@ export const TASK_COMMANDS = [
   declareCommand(taskScaffoldSpec, { load: loadTaskScaffoldSpec }),
   declareCommand(taskNormalizeSpec, { load: loadTaskNormalizeSpec }),
   declareCommand(taskExportSpec, { load: loadTaskExportSpec }),
+  declareCommand(taskObsidianSpec, { load: loadTaskObsidianSpec }),
   fromCommandsTaskLintCommand(taskLintSpec, "runTaskLint", {}),
   declareCommand(taskMigrateSpec, { load: loadTaskMigrateSpec }),
   fromCommandsTaskMigrateDocCommand(taskMigrateDocSpec, "runTaskMigrateDoc", {}),

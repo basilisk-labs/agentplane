@@ -2,7 +2,6 @@ import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import {
   docChanged,
-  extractTaskDoc,
   mergeTaskDoc,
   normalizeTaskDocVersion,
   parseTaskReadme,
@@ -123,8 +122,8 @@ export async function writeTaskReadme(opts: {
   const { entry, next } = opts;
   const frontmatter = { ...entry.parsed.frontmatter, ...taskDataToFrontmatter(next) };
 
-  let body = taskReadmeDocBody(entry.parsed.frontmatter, entry.parsed.body ?? "");
-  const existingDoc = extractTaskDoc(body);
+  let body = entry.parsed.body ?? "";
+  const existingDoc = taskReadmeDocBody(entry.parsed.frontmatter, body);
   const now = new Date().toISOString();
   const currentDocVersion = normalizeTaskDocVersion(entry.parsed.frontmatter.doc_version);
   const requestedDocVersion = normalizeTaskDocVersion(next.doc_version, currentDocVersion);

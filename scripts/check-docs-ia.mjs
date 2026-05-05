@@ -85,7 +85,11 @@ const projectLocalPrefixes = [
   ".agentplane/worktrees/",
 ];
 
-const generatedRepoPathPatterns = [/^packages\/[^/]+\/dist\//];
+const generatedRepoPathPatterns = [
+  /^packages\/[^/]+\/dist\//,
+  /^\.agentplane\/(?:index|tasks)\.md$/,
+  /^\.agentplane\/by-(?:owner|status|tag)\//,
+];
 
 const filePathExtensionPattern =
   /\.(cjs|css|cts|html|js|json|md|mdx|mjs|mts|sh|toml|ts|tsx|yaml|yml)$/i;

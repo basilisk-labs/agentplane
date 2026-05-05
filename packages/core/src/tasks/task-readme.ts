@@ -310,6 +310,28 @@ function isCanonicalTaskDocSection(title: string, canonicalTitles: ReadonlySet<s
   return canonicalTitles.has(title);
 }
 
+function canonicalSectionsFromBody(body: string, docVersion: unknown): Record<string, string> {
+  const canonicalTitles = canonicalTaskDocSectionTitles(docVersion);
+  const parsed = parseDocSections(body);
+  const out: Record<string, string> = {};
+  for (const key of parsed.order) {
+    const section = parsed.sections.get(key);
+    if (!section || !isCanonicalTaskDocSection(section.title, canonicalTitles)) continue;
+    out[section.title] = section.lines.join("\n").trimEnd();
+  }
+  return out;
+}
+
+function mergeCanonicalSectionsWithBody(
+  canonicalSections: Record<string, string>,
+  body: string,
+  docVersion: unknown,
+): Record<string, string> {
+  const bodySections = canonicalSectionsFromBody(body, docVersion);
+  if (Object.keys(bodySections).length === 0) return canonicalSections;
+  return { ...bodySections, ...canonicalSections };
+}
+
 function pushContextSection(
   lines: string[],
   section: { title: string; lines: string[] },
@@ -344,7 +366,11 @@ export function taskReadmeDocBody(frontmatter: Record<string, unknown>, body: st
     frontmatter.sections,
     frontmatter.doc_version,
   );
-  return canonicalSections ? renderTaskDocFromSections(canonicalSections) : body;
+  return canonicalSections
+    ? renderTaskDocFromSections(
+        mergeCanonicalSectionsWithBody(canonicalSections, body, frontmatter.doc_version),
+      )
+    : body;
 }
 
 function renderContextualBody(frontmatter: Record<string, unknown>, body: string): string {
@@ -357,7 +383,11 @@ function renderContextualBody(frontmatter: Record<string, unknown>, body: string
   const normalizedBody = normalizeMarkdownBody(body);
   if (!normalizedBody) return "";
 
-  const renderedCanonicalBody = normalizeMarkdownBody(renderTaskDocFromSections(canonicalSections));
+  const renderedCanonicalBody = normalizeMarkdownBody(
+    renderTaskDocFromSections(
+      mergeCanonicalSectionsWithBody(canonicalSections, body, frontmatter.doc_version),
+    ),
+  );
   if (normalizedBody === renderedCanonicalBody) return "";
 
   if (containsCanonicalTaskDocHeading(body, frontmatter.doc_version)) {
