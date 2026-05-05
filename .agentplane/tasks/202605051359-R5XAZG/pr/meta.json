@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-05T14:40:06Z",
   "base": "main",
   "branch": "task/202605051359-R5XAZG/release-incident-gate",
   "created_at": "2026-05-05T13:59:31.391Z",
-  "head_sha": "2cf0cd172f1ec2942558939d29e530a2cb4dd333",
+  "head_sha": "da63e64e50199a9493c77d729ad58a7034aa7c61",
   "last_verified_at": "2026-05-05T14:05:48.588Z",
   "last_verified_sha": "98212bb741b6affcaddc29632195cee86519f091",
+  "merge_commit": "42743c894bc6b9c0fd7b664c18515a119f8cda16",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-05T14:40:06Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605051359-R5XAZG",
-  "updated_at": "2026-05-05T14:28:46.512Z",
+  "updated_at": "2026-05-05T14:40:06Z",
   "verify": {
     "status": "pass"
   }
