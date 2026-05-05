@@ -146,11 +146,23 @@ Generate an optional integration snapshot:
 
 ```bash
 agentplane task export
+agentplane task obsidian
 agentplane task lint
 ```
 
 The exported snapshot is derived from the current backend projection. It is not the canonical
 source of truth.
+
+`agentplane task obsidian` writes a Markdown navigation projection under `.agentplane/`:
+
+- `.agentplane/index.md`
+- `.agentplane/tasks.md`
+- `.agentplane/by-status/*.md`
+- `.agentplane/by-tag/*.md`
+- `.agentplane/by-owner/*.md`
+
+Open `.agentplane/` as an Obsidian vault to browse task IDs, statuses, owners, tags, and dependency
+links while keeping `.agentplane/tasks/<task-id>/README.md` as the canonical task record.
 
 ## Agent Change Record
 

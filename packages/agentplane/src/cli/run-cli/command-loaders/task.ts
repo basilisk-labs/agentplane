@@ -127,6 +127,10 @@ export const loadTaskExportSpec = (deps: RunDeps) =>
   import("../../../commands/task/export.command.js").then((m) =>
     m.makeRunTaskExportHandler(deps.getCtx),
   );
+export const loadTaskObsidianSpec = (deps: RunDeps) =>
+  import("../../../commands/task/obsidian.command.js").then((m) =>
+    m.makeRunTaskObsidianHandler(deps.getCtx),
+  );
 export const loadTaskMigrateSpec = (deps: RunDeps) =>
   import("../../../commands/task/migrate.command.js").then((m) =>
     m.makeRunTaskMigrateHandler(deps.getCtx),

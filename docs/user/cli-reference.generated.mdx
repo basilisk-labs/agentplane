@@ -132,6 +132,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task new](#task-new)
   - [task next](#task-next)
   - [task normalize](#task-normalize)
+  - [task obsidian](#task-obsidian)
   - [task plan](#task-plan)
   - [task plan approve](#task-plan-approve)
   - [task plan reject](#task-plan-reject)
@@ -3229,6 +3230,30 @@ agentplane task normalize --sync-hosted-merges --task-id 202604071853-XGX2YJ
 ```
 
 - Reconcile only known stale tasks instead of scanning unrelated historical PR metadata.
+
+### task obsidian
+
+Generate Obsidian-friendly Markdown task navigation under .agentplane.
+
+Writes derived Markdown indexes for browsing tasks by status, tag, owner, and dependencies without changing task READMEs as the canonical source.
+
+Usage:
+
+```text
+agentplane task obsidian [options]
+```
+
+Options:
+
+- `--strict-read`: Fail if task scan skips malformed/unreadable task files. (default=false)
+
+Examples:
+
+```sh
+agentplane task obsidian
+```
+
+- Write .agentplane/index.md, .agentplane/tasks.md, and grouped navigation files.
 
 ### task plan
 
