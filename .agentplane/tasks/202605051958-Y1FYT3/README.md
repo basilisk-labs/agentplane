@@ -1,10 +1,11 @@
 ---
 id: "202605051958-Y1FYT3"
 title: "Surface blueprint evidence in task verification"
-status: "DOING"
+result_summary: "Merged via PR #942. task verify-show now surfaces resolved blueprint expected evidence on main."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-05-05T20:44:44.256Z"
   updated_by: "CODER"
   note: "Verify-show blueprint evidence verified: task verify-show appends resolved blueprint route and required evidence without executing blueprint nodes. Checks: task verify-show smoke; typecheck; lint:core; ci:local:fast."
-commit: null
+commit:
+  hash: "c8c9cbe086a86a9c396eeef9e26ff35027260159"
+  message: "🔀 5WRJZK integrate: Bridge recipe hints into blueprint resolver"
 comments:
   -
     author: "CODER"
     body: "Start: Surfacing resolved blueprint evidence in task verification output while preserving existing task lifecycle semantics."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #942 merged into main with task verify-show blueprint evidence verified locally and by hosted checks."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verify-show blueprint evidence verified: task verify-show appends resolved blueprint route and required evidence without executing blueprint nodes. Checks: task verify-show smoke; typecheck; lint:core; ci:local:fast."
+  -
+    type: "status"
+    at: "2026-05-05T20:52:12.846Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #942 merged into main with task verify-show blueprint evidence verified locally and by hosted checks."
 doc_version: 3
-doc_updated_at: "2026-05-05T20:44:44.278Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T20:52:12.848Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add resolved blueprint expected evidence to task verify-show and optionally write a task-local blueprint.json snapshot without changing task execution semantics."
 sections:
   Summary: |-
