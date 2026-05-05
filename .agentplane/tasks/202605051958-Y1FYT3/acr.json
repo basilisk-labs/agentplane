@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605051958-Y1FYT3",
+  "created_at": "2026-05-05T20:52:13.005Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "c8c9cbe086a86a9c396eeef9e26ff35027260159",
+    "work_ref": "main",
+    "work_commit": "c8c9cbe086a86a9c396eeef9e26ff35027260159"
+  },
+  "task": {
+    "task_id": "202605051958-Y1FYT3",
+    "title": "Surface blueprint evidence in task verification",
+    "intent": "Add resolved blueprint expected evidence to task verify-show and optionally write a task-local blueprint.json snapshot without changing task execution semantics.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605051958-Y1FYT3/README.md",
+      "sha256": "sha256:a2aee862ae03eaa7417fedc9c425cb6ebb42d1e314c1d17eb507b3bf0f831fac"
+    },
+    "approved_at": "2026-05-05T19:58:49.654Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #942. task verify-show now surfaces resolved blueprint expected evidence on main.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605051958-Y1FYT3_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T19:58:49.654Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605051958-Y1FYT3/README.md",
+      "sha256": "sha256:a2aee862ae03eaa7417fedc9c425cb6ebb42d1e314c1d17eb507b3bf0f831fac"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605051958-Y1FYT3/README.md",
+      "sha256": "sha256:a2aee862ae03eaa7417fedc9c425cb6ebb42d1e314c1d17eb507b3bf0f831fac"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605051958-Y1FYT3/README.md",
+      "sha256": "sha256:a2aee862ae03eaa7417fedc9c425cb6ebb42d1e314c1d17eb507b3bf0f831fac"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit c8c9cbe086a86a9c396eeef9e26ff35027260159 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:0ec24783a46f0da16df27577659adb4c6c02fb2c08af505b0cdab48db498d01f",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}

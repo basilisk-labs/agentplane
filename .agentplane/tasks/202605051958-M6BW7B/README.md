@@ -1,10 +1,11 @@
 ---
 id: "202605051958-M6BW7B"
 title: "Prepare v0.5 rc1 documentation"
-status: "DOING"
+result_summary: "Merged via PR #942. v0.5 rc1 blueprint and recipe docs plus release candidate notes are on main."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-05-05T20:44:56.160Z"
   updated_by: "DOCS"
   note: "v0.5 rc1 docs verified: blueprint docs now describe shipped resolver, CLI, verify-show and ACR summary behavior; recipe spec documents blueprint_extensions; release candidate notes added. Checks: docs:cli:check; docs:ia:check; docs:recipes:check; format:check; ci:local:fast."
-commit: null
+commit:
+  hash: "c8c9cbe086a86a9c396eeef9e26ff35027260159"
+  message: "🔀 5WRJZK integrate: Bridge recipe hints into blueprint resolver"
 comments:
   -
     author: "DOCS"
     body: "Start: Updating v0.5 rc1 blueprint and recipe documentation to match implemented resolver, CLI, verification, and ACR behavior without claiming execution support."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #942 merged into main with v0.5 rc1 blueprint and recipe documentation verified locally and by hosted checks."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "v0.5 rc1 docs verified: blueprint docs now describe shipped resolver, CLI, verify-show and ACR summary behavior; recipe spec documents blueprint_extensions; release candidate notes added. Checks: docs:cli:check; docs:ia:check; docs:recipes:check; format:check; ci:local:fast."
+  -
+    type: "status"
+    at: "2026-05-05T20:52:28.934Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #942 merged into main with v0.5 rc1 blueprint and recipe documentation verified locally and by hosted checks."
 doc_version: 3
-doc_updated_at: "2026-05-05T20:44:56.167Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-05T20:52:28.935Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update blueprint and recipe docs plus release-candidate notes so v0.5 rc1 describes resolver, recipe hint, verify evidence, and ACR behavior without claiming runner execution."
 sections:
   Summary: |-
