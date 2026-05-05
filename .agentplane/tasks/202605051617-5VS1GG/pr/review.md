@@ -50,8 +50,7 @@ Commit the already-generated acr.json artifact for historical task 202605050754-
 - Head: e9c448c9a3bc
 
 ```text
- .agentplane/tasks/202605050754-QFTZAD/acr.json | 149 +++++++++++++++++++++++++
- 1 file changed, 149 insertions(+)
+No changes detected.
 ```
 
 </details>

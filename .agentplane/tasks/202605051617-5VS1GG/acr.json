@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605051617-5VS1GG",
+  "created_at": "2026-05-05T16:20:40.330Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "c859f16562808d5abb02fa71fb8cb46262cedce3",
+    "work_ref": "main",
+    "work_commit": "c859f16562808d5abb02fa71fb8cb46262cedce3"
+  },
+  "task": {
+    "task_id": "202605051617-5VS1GG",
+    "title": "Commit stranded QFTZAD ACR artifact",
+    "intent": "Commit the already-generated acr.json artifact for historical task 202605050754-QFTZAD so the repository no longer leaves this task-local ACR file untracked.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605051617-5VS1GG/README.md",
+      "sha256": "sha256:e73b5ac145cf5431ec7c97a0cb79fbad55d5c212df0edfb334ac2c93d28eb35c"
+    },
+    "approved_at": "2026-05-05T16:17:35.456Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #918.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605051617-5VS1GG_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T16:17:35.456Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605051617-5VS1GG/README.md",
+      "sha256": "sha256:e73b5ac145cf5431ec7c97a0cb79fbad55d5c212df0edfb334ac2c93d28eb35c"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605051617-5VS1GG/README.md",
+      "sha256": "sha256:e73b5ac145cf5431ec7c97a0cb79fbad55d5c212df0edfb334ac2c93d28eb35c"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605051617-5VS1GG/README.md",
+      "sha256": "sha256:e73b5ac145cf5431ec7c97a0cb79fbad55d5c212df0edfb334ac2c93d28eb35c"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit c859f16562808d5abb02fa71fb8cb46262cedce3 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:4f0504ed89ed17554d279d69fb461d3b5591e96992533e41167a3a3019e3a07e",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}

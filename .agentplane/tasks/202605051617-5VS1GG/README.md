@@ -1,10 +1,11 @@
 ---
 id: "202605051617-5VS1GG"
 title: "Commit stranded QFTZAD ACR artifact"
-status: "DOING"
+result_summary: "Merged via PR #918."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-05T16:18:46.090Z"
   updated_by: "CODER"
   note: "Command: jq -e '.record_id == \"acr_202605050754-QFTZAD\" and .task.task_id == \"202605050754-QFTZAD\"' .agentplane/tasks/202605050754-QFTZAD/acr.json. Result: pass. Evidence: true. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Command: node packages/agentplane/bin/agentplane.js doctor. Result: pass. Evidence: doctor OK with repo-local runtime; one hook-shim warning is unrelated to this docs artifact cleanup."
-commit: null
+commit:
+  hash: "c859f16562808d5abb02fa71fb8cb46262cedce3"
+  message: "Merge pull request #918 from basilisk-labs/task/202605051617-5VS1GG/commit-stranded-qftzad-acr"
 comments:
   -
     author: "CODER"
     body: "Start: commit the stranded QFTZAD ACR artifact without including unrelated local untracked files."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #918 merged on GitHub main at c859f165 after required PR checks passed; the historical QFTZAD acr.json is now tracked on main."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: jq -e '.record_id == \"acr_202605050754-QFTZAD\" and .task.task_id == \"202605050754-QFTZAD\"' .agentplane/tasks/202605050754-QFTZAD/acr.json. Result: pass. Evidence: true. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Command: node packages/agentplane/bin/agentplane.js doctor. Result: pass. Evidence: doctor OK with repo-local runtime; one hook-shim warning is unrelated to this docs artifact cleanup."
+  -
+    type: "status"
+    at: "2026-05-05T16:20:39.892Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #918 merged on GitHub main at c859f165 after required PR checks passed; the historical QFTZAD acr.json is now tracked on main."
 doc_version: 3
-doc_updated_at: "2026-05-05T16:18:46.102Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T16:20:39.898Z"
+doc_updated_by: "INTEGRATOR"
 description: "Commit the already-generated acr.json artifact for historical task 202605050754-QFTZAD so the repository no longer leaves this task-local ACR file untracked."
 sections:
   Summary: |-
