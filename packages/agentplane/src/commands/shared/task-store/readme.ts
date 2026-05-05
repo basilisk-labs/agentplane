@@ -7,6 +7,7 @@ import {
   normalizeTaskDocVersion,
   parseTaskReadme,
   renderTaskReadme,
+  taskReadmeDocBody,
 } from "@agentplaneorg/core/tasks";
 
 import { taskRecordToData, type TaskData } from "../../../backends/task-backend.js";
@@ -122,7 +123,7 @@ export async function writeTaskReadme(opts: {
   const { entry, next } = opts;
   const frontmatter = { ...entry.parsed.frontmatter, ...taskDataToFrontmatter(next) };
 
-  let body = entry.parsed.body ?? "";
+  let body = taskReadmeDocBody(entry.parsed.frontmatter, entry.parsed.body ?? "");
   const existingDoc = extractTaskDoc(body);
   const now = new Date().toISOString();
   const currentDocVersion = normalizeTaskDocVersion(entry.parsed.frontmatter.doc_version);

@@ -74,6 +74,7 @@ export {
   parseTaskReadme,
   renderTaskFrontmatter,
   renderTaskReadme,
+  taskReadmeDocBody,
   type ParsedTaskReadme,
 } from "./tasks/task-readme.js";
 
