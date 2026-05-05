@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605051958-R7ZV0H",
+  "created_at": "2026-05-05T20:52:19.427Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "c8c9cbe086a86a9c396eeef9e26ff35027260159",
+    "work_ref": "main",
+    "work_commit": "c8c9cbe086a86a9c396eeef9e26ff35027260159"
+  },
+  "task": {
+    "task_id": "202605051958-R7ZV0H",
+    "title": "Add minimal blueprint ACR bridge",
+    "intent": "Record optional resolved blueprint summary fields in ACR generation and validation without storing full prompts, transcripts, or runner bundles.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605051958-R7ZV0H/README.md",
+      "sha256": "sha256:cfd2af18363556496213c2a11ee5e61cdf10e47b8ff0ac5a4512dbf106803b29"
+    },
+    "approved_at": "2026-05-05T19:58:50.482Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #942. ACR generation now records compact blueprint summary fields on main.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605051958-R7ZV0H_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T19:58:50.482Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605051958-R7ZV0H/README.md",
+      "sha256": "sha256:cfd2af18363556496213c2a11ee5e61cdf10e47b8ff0ac5a4512dbf106803b29"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605051958-R7ZV0H/README.md",
+      "sha256": "sha256:cfd2af18363556496213c2a11ee5e61cdf10e47b8ff0ac5a4512dbf106803b29"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605051958-R7ZV0H/README.md",
+      "sha256": "sha256:cfd2af18363556496213c2a11ee5e61cdf10e47b8ff0ac5a4512dbf106803b29"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit c8c9cbe086a86a9c396eeef9e26ff35027260159 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:8a26fdd75f3787d24fb56182b632723ef07a2b5b8788cc6a9a68bd0aa65f767b",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
