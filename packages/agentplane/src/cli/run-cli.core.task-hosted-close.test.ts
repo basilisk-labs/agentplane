@@ -311,6 +311,15 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
       );
       expect(metaRaw).toContain('"status": "MERGED"');
       expect(metaRaw).toContain(`"merge_commit": "${mergeSha}"`);
+      const acrPath = path.join(root, ".agentplane", "tasks", taskId, "acr.json");
+      const acrRaw = await readFile(acrPath, "utf8");
+      expect(acrRaw).toContain(`"task_id": "${taskId}"`);
+      const { stdout: trackedAcrStdout } = await execFileAsync(
+        "git",
+        ["ls-files", "--", path.relative(root, acrPath)],
+        { cwd: root },
+      );
+      expect(trackedAcrStdout.trim()).toBe(path.relative(root, acrPath));
       const incidents = await readFile(
         path.join(root, ".agentplane", "policy", "incidents.md"),
         "utf8",

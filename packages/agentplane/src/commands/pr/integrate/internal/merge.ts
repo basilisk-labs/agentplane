@@ -277,6 +277,7 @@ export async function runMergeCommit(opts: {
       [
         "merge",
         "--no-ff",
+        "--signoff",
         opts.branch,
         "-m",
         `🔀 ${suffix} integrate: ${fallbackIntegrateSummary(opts)}`,

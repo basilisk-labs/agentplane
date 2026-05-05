@@ -18,7 +18,11 @@ import {
   type PrMeta,
 } from "../../../shared/pr-meta.js";
 import { readCommitInfo } from "../../../task/shared.js";
-import { createTaskCloseCommit, writeFinishedTasks } from "../../../task/finish-shared.js";
+import {
+  createTaskCloseCommit,
+  refreshAcrArtifactsForFinishedTasks,
+  writeFinishedTasks,
+} from "../../../task/finish-shared.js";
 import type { CommandContext } from "../../../shared/task-backend.js";
 import {
   collectTaskIncidents,
@@ -112,9 +116,10 @@ export async function finalizeIntegrate(opts: {
   });
   if (!taskAlreadyDone) {
     const taskCommitInfo = await readCommitInfo(opts.gitRoot, opts.mergeHash);
+    const loadedTasks = [{ taskId: opts.taskId, task: opts.task }];
     await writeFinishedTasks({
       ctx: opts.ctx,
-      loadedTasks: [{ taskId: opts.taskId, task: opts.task }],
+      loadedTasks,
       metaTaskId: opts.taskId,
       author: "INTEGRATOR",
       body: finishBody,
@@ -124,6 +129,14 @@ export async function finalizeIntegrate(opts: {
       riskLevel: undefined,
       breaking: false,
       taskCommitInfo,
+    });
+    await refreshAcrArtifactsForFinishedTasks({
+      ctx: opts.ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      loadedTasks,
+      taskCommitInfo,
+      author: "INTEGRATOR",
     });
   }
   const collectedIncidents = await collectTaskIncidents({

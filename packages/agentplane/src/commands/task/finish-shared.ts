@@ -2,6 +2,8 @@ import { ensureDocSections, normalizeTaskStatus } from "@agentplaneorg/core/task
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import { emitTraceEvent } from "../../shared/trace-events.js";
+import { generateAcr, writeAcrFile } from "../acr/acr.command.js";
 import { cmdCommit } from "../guard/impl/commit.js";
 import {
   backendUsesLocalTaskStore,
@@ -280,6 +282,57 @@ export async function writeFinishedTasks(opts: {
       loaded.task = execution.nextTask;
     }
   }
+}
+
+export async function refreshAcrArtifactsForFinishedTasks(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  loadedTasks: LoadedFinishTask[];
+  taskCommitInfo: ResolvedCommitInfo | null;
+  author: string;
+  noWriteAcr?: boolean;
+}): Promise<string[]> {
+  if (opts.noWriteAcr === true) return [];
+  if (opts.ctx.config.acr.enabled !== true || opts.ctx.config.acr.write_on_finish !== true) {
+    return [];
+  }
+
+  const writtenPaths: string[] = [];
+  for (const { taskId, task } of opts.loadedTasks) {
+    const workCommit = opts.taskCommitInfo?.hash ?? existingCommitInfo(task)?.hash;
+    if (!workCommit) continue;
+    try {
+      const generated = await generateAcr({
+        ctx: opts.ctx,
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        taskId,
+        workCommit,
+        agent: opts.author,
+        agentName: opts.author,
+        write: true,
+        refresh: true,
+      });
+      if (!generated.acrPath) continue;
+      await writeAcrFile({ acrPath: generated.acrPath, record: generated.record, refresh: true });
+      writtenPaths.push(generated.acrPath);
+    } catch (err) {
+      emitTraceEvent({
+        component: "acr",
+        event: "acr_finish_refresh_failed",
+        details: {
+          task_id: taskId,
+          error: err instanceof Error ? err.message : String(err),
+        },
+      });
+    }
+  }
+
+  if (writtenPaths.length > 0) {
+    opts.ctx.git.invalidateStatus();
+  }
+  return writtenPaths;
 }
 
 export async function createTaskCloseCommit(opts: {
