@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605052303-FXGCNC",
+  "created_at": "2026-05-05T23:18:56.946Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "87a7923dc678d8f1f37803cc1a5fdcd46bdbad94",
+    "work_ref": "main",
+    "work_commit": "87a7923dc678d8f1f37803cc1a5fdcd46bdbad94"
+  },
+  "task": {
+    "task_id": "202605052303-FXGCNC",
+    "title": "Persist task-local blueprint plan snapshots",
+    "intent": "Persist selected blueprint plan snapshots as task-local artifacts when a route is materialized, so task audits can read a stable blueprint.json without re-resolving mutable inputs.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605052303-FXGCNC/README.md",
+      "sha256": "sha256:f690de86a5b1a2ea42eb6a7417d1606b0d4ab23dbf6759f9a58d7d4c77e0205b"
+    },
+    "approved_at": "2026-05-05T23:03:56.480Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged task-local blueprint plan snapshots in PR #955.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605052303-FXGCNC_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T23:03:56.480Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605052303-FXGCNC/README.md",
+      "sha256": "sha256:f690de86a5b1a2ea42eb6a7417d1606b0d4ab23dbf6759f9a58d7d4c77e0205b"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605052303-FXGCNC/README.md",
+      "sha256": "sha256:f690de86a5b1a2ea42eb6a7417d1606b0d4ab23dbf6759f9a58d7d4c77e0205b"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605052303-FXGCNC/README.md",
+      "sha256": "sha256:f690de86a5b1a2ea42eb6a7417d1606b0d4ab23dbf6759f9a58d7d4c77e0205b"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 87a7923dc678d8f1f37803cc1a5fdcd46bdbad94 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:19b158e049bdaa4ba2a43fad61d43acae57593f6bdde76453b8aaaf4e0ff7e15",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}

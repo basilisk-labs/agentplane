@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605052303-N37XQ0",
+  "created_at": "2026-05-05T23:18:48.636Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "87a7923dc678d8f1f37803cc1a5fdcd46bdbad94",
+    "work_ref": "main",
+    "work_commit": "87a7923dc678d8f1f37803cc1a5fdcd46bdbad94"
+  },
+  "task": {
+    "task_id": "202605052303-N37XQ0",
+    "title": "Validate blueprint plan state transitions",
+    "intent": "Add validate-only checks for materialized blueprint plan state order against the selected blueprint edge graph, including duplicate/missing/unknown state transition diagnostics.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605052303-N37XQ0/README.md",
+      "sha256": "sha256:3ada1c1d2906d922095d583cccca0bafa86090e580c447c52b881d28fa9d2b6e"
+    },
+    "approved_at": "2026-05-05T23:03:50.027Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged blueprint plan state transition validation in PR #955.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605052303-N37XQ0_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T23:03:50.027Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605052303-N37XQ0/README.md",
+      "sha256": "sha256:3ada1c1d2906d922095d583cccca0bafa86090e580c447c52b881d28fa9d2b6e"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605052303-N37XQ0/README.md",
+      "sha256": "sha256:3ada1c1d2906d922095d583cccca0bafa86090e580c447c52b881d28fa9d2b6e"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605052303-N37XQ0/README.md",
+      "sha256": "sha256:3ada1c1d2906d922095d583cccca0bafa86090e580c447c52b881d28fa9d2b6e"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 87a7923dc678d8f1f37803cc1a5fdcd46bdbad94 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:1ca0a53f47f506f97a76749f88b76d9d1f275eb6fa0710cf1d52ed5a764a02aa",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605052303-1CEGJD",
+  "created_at": "2026-05-05T23:19:06.832Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "87a7923dc678d8f1f37803cc1a5fdcd46bdbad94",
+    "work_ref": "main",
+    "work_commit": "87a7923dc678d8f1f37803cc1a5fdcd46bdbad94"
+  },
+  "task": {
+    "task_id": "202605052303-1CEGJD",
+    "title": "Add project-local blueprint validation command",
+    "intent": "Add a validate-only CLI path for project-local blueprint JSON definitions, reusing the built-in blueprint validation contract without executing or registering custom routes by default.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605052303-1CEGJD/README.md",
+      "sha256": "sha256:69023fd036673db111ad69cbba6be55773d043392930593f9ca847c3b19c015a"
+    },
+    "approved_at": "2026-05-05T23:04:02.222Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged project-local blueprint validation command in PR #955.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605052303-1CEGJD_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T23:04:02.222Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605052303-1CEGJD/README.md",
+      "sha256": "sha256:69023fd036673db111ad69cbba6be55773d043392930593f9ca847c3b19c015a"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605052303-1CEGJD/README.md",
+      "sha256": "sha256:69023fd036673db111ad69cbba6be55773d043392930593f9ca847c3b19c015a"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605052303-1CEGJD/README.md",
+      "sha256": "sha256:69023fd036673db111ad69cbba6be55773d043392930593f9ca847c3b19c015a"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 87a7923dc678d8f1f37803cc1a5fdcd46bdbad94 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:5479185fd880030235a41eb4d1675314171106b46e3129ccc06453d50aa6037e",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}

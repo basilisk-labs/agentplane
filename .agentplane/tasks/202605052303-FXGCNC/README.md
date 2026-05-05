@@ -1,10 +1,11 @@
 ---
 id: "202605052303-FXGCNC"
 title: "Persist task-local blueprint plan snapshots"
-status: "DOING"
+result_summary: "Merged task-local blueprint plan snapshots in PR #955."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-05T23:12:50.427Z"
   updated_by: "CODER"
   note: "Implemented and tested task-local blueprint plan snapshots."
-commit: null
+commit:
+  hash: "87a7923dc678d8f1f37803cc1a5fdcd46bdbad94"
+  message: "Merge pull request #955 from basilisk-labs/task/202605052303-QWE78P/blueprint-plan-validation"
 comments:
   -
     author: "CODER"
     body: "Start: batch execution in QWE78P worktree; persist selected blueprint plan snapshots as task-local artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #955 merged after required checks passed; merge commit 87a7923dc678d8f1f37803cc1a5fdcd46bdbad94."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented and tested task-local blueprint plan snapshots."
+  -
+    type: "status"
+    at: "2026-05-05T23:18:56.860Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #955 merged after required checks passed; merge commit 87a7923dc678d8f1f37803cc1a5fdcd46bdbad94."
 doc_version: 3
-doc_updated_at: "2026-05-05T23:12:50.433Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T23:18:56.861Z"
+doc_updated_by: "INTEGRATOR"
 description: "Persist selected blueprint plan snapshots as task-local artifacts when a route is materialized, so task audits can read a stable blueprint.json without re-resolving mutable inputs."
 sections:
   Summary: |-

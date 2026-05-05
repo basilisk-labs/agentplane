@@ -324,11 +324,11 @@ function stableJson(input: unknown): string {
 }
 
 function sortJson(input: unknown): unknown {
-  if (Array.isArray(input)) return input.map(sortJson);
+  if (Array.isArray(input)) return input.map((item) => sortJson(item));
   if (!isRecord(input)) return input;
   return Object.fromEntries(
     Object.entries(input)
-      .sort(([left], [right]) => left.localeCompare(right))
+      .toSorted(([left], [right]) => left.localeCompare(right))
       .map(([key, value]) => [key, sortJson(value)]),
   );
 }

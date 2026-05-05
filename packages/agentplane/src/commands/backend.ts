@@ -364,7 +364,7 @@ async function upsertDotEnvValues(filePath: string, values: Record<string, strin
     return `${key}=${quoteDotEnvValue(value)}`;
   });
 
-  if (nextLines.length > 0 && nextLines[nextLines.length - 1] === "") {
+  if (nextLines.length > 0 && nextLines.at(-1) === "") {
     nextLines.pop();
   }
   for (const [key, value] of pending) {
