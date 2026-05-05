@@ -4,7 +4,7 @@ title: "Document cloud backend integration contract"
 status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-05T18:21:18.788Z"
+  updated_by: "CODER"
+  note: "Verified: cloud backend user and developer docs now match the implemented init, connect, sync, inspect, and freshness behavior using neutral terminology."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Update cloud backend docs in the shared batch worktree after the code contract is implemented, keeping terms neutral and implementation-focused."
+  -
+    type: "verify"
+    at: "2026-05-05T18:21:18.788Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: cloud backend user and developer docs now match the implemented init, connect, sync, inspect, and freshness behavior using neutral terminology."
 doc_version: 3
-doc_updated_at: "2026-05-05T18:07:50.757Z"
+doc_updated_at: "2026-05-05T18:21:18.806Z"
 doc_updated_by: "CODER"
 description: "Update AgentPlane documentation so local and cloud backend flows describe the init choice, endpoint configuration, GitHub App interaction through the cloud service, sync freshness checks, and current limitations."
 sections:
@@ -55,11 +61,24 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-05T18:21:18.788Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: cloud backend user and developer docs now match the implemented init, connect, sync, inspect, and freshness behavior using neutral terminology.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T18:07:50.757Z, excerpt_hash=sha256:54ad0e7007f29ce876b15f4c29294bf14b5b972f37cf0851508d49ca0ae31fa6
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: git diff --check; Result: pass; Evidence: no whitespace errors. Command: node packages/agentplane/bin/agentplane.js doctor; Result: pass; Evidence: doctor OK with repo-local runtime.
+      Impact: Docs no longer describe an unimplemented browser connect command as local CLI behavior.
+      Resolution: Browser authorization and provider choice remain cloud-service responsibilities; local AgentPlane documents the metadata and token boundary.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -86,6 +105,14 @@ Epic E4: Cloud backend documentation contract. Scope: update public docs for loc
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-05T18:21:18.788Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: cloud backend user and developer docs now match the implemented init, connect, sync, inspect, and freshness behavior using neutral terminology.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T18:07:50.757Z, excerpt_hash=sha256:54ad0e7007f29ce876b15f4c29294bf14b5b972f37cf0851508d49ca0ae31fa6
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -94,3 +121,9 @@ Epic E4: Cloud backend documentation contract. Scope: update public docs for loc
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: git diff --check; Result: pass; Evidence: no whitespace errors. Command: node packages/agentplane/bin/agentplane.js doctor; Result: pass; Evidence: doctor OK with repo-local runtime.
+  Impact: Docs no longer describe an unimplemented browser connect command as local CLI behavior.
+  Resolution: Browser authorization and provider choice remain cloud-service responsibilities; local AgentPlane documents the metadata and token boundary.
+  Promotion: incident-candidate
+  Fixability: external

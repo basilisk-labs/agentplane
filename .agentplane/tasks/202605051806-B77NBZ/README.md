@@ -4,7 +4,7 @@ title: "Add cloud backend runtime skeleton"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-05T18:21:02.086Z"
+  updated_by: "CODER"
+  note: "Verified: CloudBackend runtime skeleton delegates projection reads/writes to LocalBackend, exposes remote-cache capabilities, syncs through the cloud HTTP surface, and records last_checked_at state."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implement the cloud backend runtime skeleton in the shared batch worktree, preserving LocalBackend cache behavior and explicit remote capability reporting."
+  -
+    type: "verify"
+    at: "2026-05-05T18:21:02.086Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: CloudBackend runtime skeleton delegates projection reads/writes to LocalBackend, exposes remote-cache capabilities, syncs through the cloud HTTP surface, and records last_checked_at state."
 doc_version: 3
-doc_updated_at: "2026-05-05T18:07:41.751Z"
+doc_updated_at: "2026-05-05T18:21:02.092Z"
 doc_updated_by: "CODER"
 description: "Implement a cloud task backend shell that stores local cache state, advertises remote capabilities, validates endpoint/token configuration, and exposes inspect/sync behavior ready for the external sync service API."
 sections:
@@ -55,11 +61,24 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-05T18:21:02.086Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: CloudBackend runtime skeleton delegates projection reads/writes to LocalBackend, exposes remote-cache capabilities, syncs through the cloud HTTP surface, and records last_checked_at state.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T18:07:41.751Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Command: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts packages/agentplane/src/backends/task-backend.load.test.ts; Result: pass; Evidence: 14 pass, 0 fail. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0.
+      Impact: AgentPlane can load a cloud backend without connector-specific GitHub Projects logic in the CLI.
+      Resolution: The external service owns provider mapping; AgentPlane owns cache, sync call shape, and freshness state.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -86,6 +105,14 @@ Epic E2: Cloud backend runtime skeleton. Scope: add a CloudBackend implementatio
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-05T18:21:02.086Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: CloudBackend runtime skeleton delegates projection reads/writes to LocalBackend, exposes remote-cache capabilities, syncs through the cloud HTTP surface, and records last_checked_at state.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T18:07:41.751Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -94,3 +121,9 @@ Epic E2: Cloud backend runtime skeleton. Scope: add a CloudBackend implementatio
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Command: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts packages/agentplane/src/backends/task-backend.load.test.ts; Result: pass; Evidence: 14 pass, 0 fail. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0.
+  Impact: AgentPlane can load a cloud backend without connector-specific GitHub Projects logic in the CLI.
+  Resolution: The external service owns provider mapping; AgentPlane owns cache, sync call shape, and freshness state.
+  Promotion: incident-candidate
+  Fixability: external

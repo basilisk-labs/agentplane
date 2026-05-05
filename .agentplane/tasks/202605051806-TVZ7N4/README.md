@@ -4,7 +4,7 @@ title: "Add cloud backend CLI connection surface"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-05T18:21:09.619Z"
+  updated_by: "CODER"
+  note: "Verified: backend connect cloud writes endpoint/project/provider metadata, leaves tokens out of backend JSON, and backend inspect prints connection/freshness metadata."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Add the neutral cloud backend CLI connection surface in the shared batch worktree, keeping provider-specific setup outside local init."
+  -
+    type: "verify"
+    at: "2026-05-05T18:21:09.619Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: backend connect cloud writes endpoint/project/provider metadata, leaves tokens out of backend JSON, and backend inspect prints connection/freshness metadata."
 doc_version: 3
-doc_updated_at: "2026-05-05T18:07:45.663Z"
+doc_updated_at: "2026-05-05T18:21:09.625Z"
 doc_updated_by: "CODER"
 description: "Add a neutral CLI surface for configuring a cloud backend endpoint and connection metadata, including actionable inspect output for users who connect AgentPlane to a hosted sync implementation."
 sections:
@@ -55,11 +61,24 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-05T18:21:09.619Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: backend connect cloud writes endpoint/project/provider metadata, leaves tokens out of backend JSON, and backend inspect prints connection/freshness metadata.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T18:07:45.663Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Command: bun test packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts; Result: pass; Evidence: 14 pass, 0 fail. Command: bun test packages/agentplane/src/cli/run-cli.core.help-snap.test.ts; Result: pass before generated duplicate snapshot cleanup; Evidence: 14 pass, 0 fail.
+      Impact: Users get a neutral cloud connection surface without choosing GitHub Projects in local init.
+      Resolution: Use AGENTPLANE_CLOUD_TOKEN or local secret storage for auth; backend JSON remains non-secret.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -86,6 +105,14 @@ Epic E3: Cloud backend CLI connection surface. Scope: expose neutral CLI support
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-05T18:21:09.619Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: backend connect cloud writes endpoint/project/provider metadata, leaves tokens out of backend JSON, and backend inspect prints connection/freshness metadata.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T18:07:45.663Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -94,3 +121,9 @@ Epic E3: Cloud backend CLI connection surface. Scope: expose neutral CLI support
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Command: bun test packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts; Result: pass; Evidence: 14 pass, 0 fail. Command: bun test packages/agentplane/src/cli/run-cli.core.help-snap.test.ts; Result: pass before generated duplicate snapshot cleanup; Evidence: 14 pass, 0 fail.
+  Impact: Users get a neutral cloud connection surface without choosing GitHub Projects in local init.
+  Resolution: Use AGENTPLANE_CLOUD_TOKEN or local secret storage for auth; backend JSON remains non-secret.
+  Promotion: incident-candidate
+  Fixability: external

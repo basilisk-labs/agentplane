@@ -24,8 +24,8 @@ Add cloud as a first-class backend selection in agentplane init, generated backe
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: init accepts cloud backend and writes cloud config/env templates; targeted init cloud test, typecheck, arch check, policy routing, git diff check, and repo-local doctor passed.
 
 ## Risks
 
