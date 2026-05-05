@@ -85,13 +85,54 @@ describe("CloudBackend", () => {
     const firstCall = fetchImpl.mock.calls[0];
     if (!firstCall) throw new Error("Expected cloud backend to call fetch");
     const [url, init] = firstCall;
-    expect(url).toBe("https://cloud.example/api/agentplane/v1/tasks/sync");
+    expect(url).toBe("https://cloud.example/v1/projects/project-1/sync/push");
     expect(init?.method).toBe("POST");
-    expect(init?.body).toContain('"project_id":"project-1"');
+    expect(init?.body).toContain('"direction":"push"');
     const stateText = await readFile(
       path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"),
       "utf8",
     );
     expect(stateText).toContain("2026-05-06T00:00:00.000Z");
+  });
+
+  it("pull sync does not rewrite identical local projection tasks", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    const task: TaskData = {
+      id: "202605051806-C1D2",
+      title: "Cloud task",
+      description: "Sync this task",
+      status: "TODO",
+      priority: "med",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["cloud"],
+      verify: [],
+    };
+    await cache.writeTask(task);
+    const localTasks = await cache.listTasks();
+    const taskPath = path.join(tempDir, ".agentplane", "tasks", task.id, "README.md");
+    const before = await readFile(taskPath, "utf8");
+    const fetchImpl = vi.fn<typeof fetch>(() =>
+      Promise.resolve(
+        Response.json({
+          data: {
+            tasks: localTasks,
+            last_checked_at: "2026-05-06T00:00:00.000Z",
+          },
+        }),
+      ),
+    );
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example/",
+        token: "token",
+        project_id: "project-1",
+      },
+      { root: tempDir, cache, fetchImpl },
+    );
+
+    await backend.sync({ direction: "pull", conflict: "diff", quiet: true, confirm: true });
+
+    await expect(readFile(taskPath, "utf8")).resolves.toBe(before);
   });
 });
