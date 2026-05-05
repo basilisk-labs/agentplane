@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605050638-Y1MR6T/lazy-pr-sidecars",
+  "created_at": "2026-05-05T06:47:32.062Z",
+  "head_sha": "fe92528c94c8a6e0b9b1f4d659bfefbc82e75486",
+  "last_verified_at": "2026-05-05T06:58:05.874Z",
+  "last_verified_sha": "f683a8fce39aae75a5c80fdb03abf0e39950ff3f",
+  "schema_version": 1,
+  "task_id": "202605050638-Y1MR6T",
+  "updated_at": "2026-05-05T06:59:40.216Z",
+  "verify": {
+    "status": "pass"
+  }
+}

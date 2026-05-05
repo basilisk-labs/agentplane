@@ -33,7 +33,6 @@ export async function readAndValidatePrArtifacts(opts: {
   const readPrArtifactTyped = readPrArtifact as (o: ReadPrArtifactOpts) => Promise<string | null>;
   const { prDir } = opts;
   const diffstatPath = path.join(prDir, "diffstat.txt");
-  const verifyLogPath = path.join(prDir, "verify.log");
   const reviewPath = path.join(prDir, "review.md");
   const githubTitlePath = path.join(prDir, "github-title.txt");
   const githubBodyPath = path.join(prDir, "github-body.md");
@@ -41,7 +40,6 @@ export async function readAndValidatePrArtifacts(opts: {
 
   const errors: string[] = [];
   const relDiffstat = path.relative(opts.resolved.gitRoot, diffstatPath);
-  const relVerifyLog = path.relative(opts.resolved.gitRoot, verifyLogPath);
   const relReview = path.relative(opts.resolved.gitRoot, reviewPath);
   const relGithubTitle = path.relative(opts.resolved.gitRoot, githubTitlePath);
   const relGithubBody = path.relative(opts.resolved.gitRoot, githubBodyPath);
@@ -62,7 +60,6 @@ export async function readAndValidatePrArtifacts(opts: {
     branch: opts.branch,
     worktreePath,
   });
-  if (verifyLogText === null) errors.push(`Missing ${relVerifyLog}`);
 
   const reviewText = await readPrArtifactTyped({
     resolved: opts.resolved,
@@ -128,7 +125,6 @@ export async function ensureCommittedPrArtifactsOnBranch(opts: {
   ) => Promise<string | null>;
   const { prDir } = opts;
   const diffstatPath = path.join(prDir, "diffstat.txt");
-  const verifyLogPath = path.join(prDir, "verify.log");
   const reviewPath = path.join(prDir, "review.md");
   const metaPath = path.join(prDir, "meta.json");
   const githubTitlePath = path.join(prDir, "github-title.txt");
@@ -137,7 +133,6 @@ export async function ensureCommittedPrArtifactsOnBranch(opts: {
   const errors: string[] = [];
   const relMeta = path.relative(opts.resolved.gitRoot, metaPath);
   const relDiffstat = path.relative(opts.resolved.gitRoot, diffstatPath);
-  const relVerifyLog = path.relative(opts.resolved.gitRoot, verifyLogPath);
   const relReview = path.relative(opts.resolved.gitRoot, reviewPath);
   const relGithubTitle = path.relative(opts.resolved.gitRoot, githubTitlePath);
   const relGithubBody = path.relative(opts.resolved.gitRoot, githubBodyPath);
@@ -158,16 +153,6 @@ export async function ensureCommittedPrArtifactsOnBranch(opts: {
   });
   if (diffstatText === null) {
     errors.push(`Missing committed ${relDiffstat} on branch ${opts.branch}`);
-  }
-
-  const verifyLogText = await readCommittedPrArtifact({
-    resolved: opts.resolved,
-    prDir,
-    fileName: "verify.log",
-    branch: opts.branch,
-  });
-  if (verifyLogText === null) {
-    errors.push(`Missing committed ${relVerifyLog} on branch ${opts.branch}`);
   }
 
   const reviewText = await readCommittedPrArtifact({

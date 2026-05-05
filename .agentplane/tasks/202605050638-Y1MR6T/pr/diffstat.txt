@@ -1,0 +1,16 @@
+ .agentplane/tasks/202605050638-BA00XR/README.md    | 139 +++++++++++++++++++
+ .agentplane/tasks/202605050638-BA00XR/acr.json     | 149 +++++++++++++++++++++
+ .../tasks/202605050638-BA00XR/pr/diffstat.txt      |   2 +
+ .../tasks/202605050638-BA00XR/pr/github-body.md    |  37 +++++
+ .../tasks/202605050638-BA00XR/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202605050638-BA00XR/pr/meta.json |  14 ++
+ .../tasks/202605050638-BA00XR/pr/notes.jsonl       |   0
+ .agentplane/tasks/202605050638-BA00XR/pr/review.md |  58 ++++++++
+ .../tasks/202605050638-BA00XR/pr/verify.log        |   0
+ docs/user/branching-and-pr-artifacts.mdx           |  17 ++-
+ .../src/commands/pr/integrate/artifacts.ts         |  15 ---
+ .../src/commands/pr/integrate/internal/prepare.ts  |   4 +-
+ .../pr/internal/pr-artifact-snapshot.test.ts       |  24 +++-
+ .../commands/pr/internal/pr-artifact-snapshot.ts   |   1 -
+ .../src/commands/pr/internal/sync-open-step.ts     |   7 -
+ 15 files changed, 440 insertions(+), 28 deletions(-)
