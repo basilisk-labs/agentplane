@@ -25,9 +25,9 @@ Stop pre-creating empty branch_pr sidecar files such as pr/verify.log and pr/not
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T06:58:05.949Z
+- Updated: 2026-05-05T06:59:40.216Z
 - Branch: task/202605050638-Y1MR6T/lazy-pr-sidecars
-- Head: f683a8fce39a
+- Head: fe92528c94c8
 
 ```text
  .agentplane/tasks/202605050638-BA00XR/README.md    | 139 +++++++++++++++++++
@@ -40,7 +40,12 @@ Stop pre-creating empty branch_pr sidecar files such as pr/verify.log and pr/not
  .agentplane/tasks/202605050638-BA00XR/pr/review.md |  58 ++++++++
  .../tasks/202605050638-BA00XR/pr/verify.log        |   0
  docs/user/branching-and-pr-artifacts.mdx           |  17 ++-
- 10 files changed, 416 insertions(+), 1 deletion(-)
+ .../src/commands/pr/integrate/artifacts.ts         |  15 ---
+ .../src/commands/pr/integrate/internal/prepare.ts  |   4 +-
+ .../pr/internal/pr-artifact-snapshot.test.ts       |  24 +++-
+ .../commands/pr/internal/pr-artifact-snapshot.ts   |   1 -
+ .../src/commands/pr/internal/sync-open-step.ts     |   7 -
+ 15 files changed, 440 insertions(+), 28 deletions(-)
 ```
 
 </details>
