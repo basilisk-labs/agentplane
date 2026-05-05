@@ -1,0 +1,8 @@
+ packages/recipes/package.json                     |   2 +-
+ packages/recipes/src/blueprint-extensions.test.ts | 125 ++++++++++++++++++++
+ packages/recipes/src/blueprint-extensions.ts      | 136 ++++++++++++++++++++++
+ packages/recipes/src/index.test.ts                |  79 +++++++++++++
+ packages/recipes/src/index.ts                     |   1 +
+ packages/recipes/src/manifest-contracts.ts        |  23 ++++
+ packages/recipes/src/manifest.ts                  | 103 +++++++++++++++-
+ 7 files changed, 466 insertions(+), 3 deletions(-)

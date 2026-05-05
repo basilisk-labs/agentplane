@@ -21,6 +21,8 @@ import {
 } from "./normalize.js";
 import type {
   OverlayPromptFragment,
+  RecipeBlueprintExtension,
+  RecipeBlueprintExtensionKind,
   OverlayStrength,
   OverlaySurface,
   OverlayValidator,
@@ -289,6 +291,99 @@ function normalizeOverlayWhen(raw: unknown, field: string): OverlayWhen | undefi
   };
 }
 
+function normalizeBlueprintExtensionKind(
+  raw: unknown,
+  field: string,
+): RecipeBlueprintExtensionKind {
+  const kind = normalizeRequiredString(raw, field);
+  if (
+    kind !== "context_hint" &&
+    kind !== "evidence_requirement" &&
+    kind !== "check_suggestion" &&
+    kind !== "output_schema" &&
+    kind !== "artifact_template" &&
+    kind !== "risk_hint" &&
+    kind !== "preferred_blueprint"
+  ) {
+    throw new Error(invalidFieldMessage(field, "known blueprint extension kind"));
+  }
+  return kind;
+}
+
+function assertNoForbiddenBlueprintExtensionFields(
+  entry: Record<string, unknown>,
+  field: string,
+): void {
+  const forbiddenFields = [
+    "workflow_mode",
+    "approval_bypass",
+    "bypass_approval",
+    "protected_node_removal",
+    "remove_protected_nodes",
+    "finish_override",
+    "task_state_mutation",
+  ];
+  const present = forbiddenFields.filter((key) => key in entry);
+  if (present.length > 0) {
+    throw new Error(invalidFieldMessage(field, `no lifecycle override fields (${present[0]})`));
+  }
+}
+
+function normalizeBlueprintExtensions(raw: unknown): RecipeBlueprintExtension[] | undefined {
+  if (raw === undefined) return undefined;
+  if (!Array.isArray(raw)) {
+    throw new Error(invalidFieldMessage("manifest.blueprint_extensions", "array"));
+  }
+  if (raw.length === 0) {
+    throw new Error(invalidFieldMessage("manifest.blueprint_extensions", "non-empty array"));
+  }
+  return raw.map((entry, index) => {
+    const field = `manifest.blueprint_extensions[${index}]`;
+    if (!isRecord(entry)) throw new Error(invalidFieldMessage(field, "object"));
+    assertNoForbiddenBlueprintExtensionFields(entry, field);
+    const kind = normalizeBlueprintExtensionKind(entry.kind, `${field}.kind`);
+    const extension: RecipeBlueprintExtension = {
+      id: normalizeRequiredString(entry.id, `${field}.id`),
+      kind,
+      summary: normalizeRequiredString(entry.summary, `${field}.summary`),
+      when: normalizeOverlayWhen(entry.when, `${field}.when`),
+      target_node_kind: normalizeOptionalString(
+        entry.target_node_kind,
+        `${field}.target_node_kind`,
+      ),
+    };
+
+    if (kind === "evidence_requirement") {
+      extension.evidence = normalizeStringList(entry.evidence, `${field}.evidence`, {
+        minLength: 1,
+      });
+      return extension;
+    }
+    if (kind === "check_suggestion") {
+      extension.command = normalizeRequiredString(entry.command, `${field}.command`);
+      return extension;
+    }
+    if (kind === "risk_hint") {
+      extension.risk = normalizeRequiredString(entry.risk, `${field}.risk`);
+      return extension;
+    }
+    if (kind === "preferred_blueprint") {
+      extension.blueprint_id = normalizeRequiredString(entry.blueprint_id, `${field}.blueprint_id`);
+      return extension;
+    }
+    if (!("value" in entry)) {
+      throw new Error(invalidFieldMessage(`${field}.value`, "defined value"));
+    }
+    extension.value = entry.value;
+    return extension;
+  });
+}
+
+function assertUniqueBlueprintExtensionIds(items: RecipeBlueprintExtension[] | undefined): void {
+  if (!items) return;
+  assertUniqueIds("manifest.blueprint_extensions", items);
+}
+
 function normalizePrompts(raw: unknown): OverlayPromptFragment[] {
   if (!Array.isArray(raw) || raw.length === 0) {
     throw new Error(invalidFieldMessage("manifest.prompts", "non-empty array"));
@@ -492,17 +587,19 @@ function normalizeProjectOverlay(raw: Record<string, unknown>): ProjectOverlayMa
   });
   const prompt_modules = normalizePromptModuleDefinitions(raw.prompt_modules);
   const prompt_mutation_sets = normalizePromptMutationSetDefinitions(raw.prompt_mutation_sets);
+  const blueprint_extensions = normalizeBlueprintExtensions(raw.blueprint_extensions);
   const tags = normalizeRecipeTags(raw.tags);
   if (
     !prompts?.length &&
     !scenarios?.length &&
     !prompt_modules?.length &&
-    !prompt_mutation_sets?.length
+    !prompt_mutation_sets?.length &&
+    !blueprint_extensions?.length
   ) {
     throw new Error(
       invalidFieldMessage(
         "manifest",
-        "prompts, scenarios, prompt_modules, or prompt_mutation_sets",
+        "prompts, scenarios, prompt_modules, prompt_mutation_sets, or blueprint_extensions",
       ),
     );
   }
@@ -511,6 +608,7 @@ function normalizeProjectOverlay(raw: Record<string, unknown>): ProjectOverlayMa
   if (prompt_mutation_sets) {
     assertUniqueIds("manifest.prompt_mutation_sets", prompt_mutation_sets);
   }
+  assertUniqueBlueprintExtensionIds(blueprint_extensions);
   if (skills) assertUniqueIds("manifest.skills", skills);
   if (validators) assertUniqueIds("manifest.validators", validators);
   if (agents) assertUniqueIds("manifest.agents", agents);
@@ -573,6 +671,7 @@ function normalizeProjectOverlay(raw: Record<string, unknown>): ProjectOverlayMa
     scenarios,
     prompt_modules,
     prompt_mutation_sets,
+    blueprint_extensions,
   };
 }
 

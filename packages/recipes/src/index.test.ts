@@ -141,4 +141,83 @@ describe("@agentplaneorg/recipes", () => {
     expect(manifest.prompt_modules?.[0]?.file).toBe("prompt-modules/policy.json");
     expect(manifest.prompt_mutation_sets?.[0]?.id).toBe("gateway-load-rules");
   });
+
+  it("allows v2 overlays to declare blueprint extensions without prompt assets", () => {
+    const manifest = validateRecipeManifest({
+      schema_version: "2",
+      kind: "project_overlay",
+      id: "market-analysis",
+      version: "1.0.0",
+      name: "Market Analysis",
+      summary: "Evidence hints for market analysis",
+      blueprint_extensions: [
+        {
+          id: "market-analysis.sources",
+          kind: "evidence_requirement",
+          summary: "Require source evidence for market analysis",
+          when: { tags_any: ["market-analysis"] },
+          target_node_kind: "verify_record",
+          evidence: ["sources", "confidence", "weak_links"],
+        },
+        {
+          id: "market-analysis.prefer-analysis",
+          kind: "preferred_blueprint",
+          summary: "Prefer the lightweight analysis route",
+          blueprint_id: "analysis.light",
+        },
+      ],
+    });
+
+    expect(manifest.blueprint_extensions?.map((extension) => extension.id)).toEqual([
+      "market-analysis.sources",
+      "market-analysis.prefer-analysis",
+    ]);
+    expect(manifest.blueprint_extensions?.[0]?.evidence).toEqual([
+      "sources",
+      "confidence",
+      "weak_links",
+    ]);
+  });
+
+  it("rejects recipe blueprint extensions that try to override lifecycle gates", () => {
+    expect(() =>
+      validateRecipeManifest({
+        schema_version: "2",
+        kind: "project_overlay",
+        id: "unsafe",
+        version: "1.0.0",
+        name: "Unsafe",
+        summary: "Unsafe lifecycle override",
+        blueprint_extensions: [
+          {
+            id: "unsafe.approval",
+            kind: "context_hint",
+            summary: "Try to bypass approval",
+            approval_bypass: true,
+            value: "skip approval",
+          },
+        ],
+      }),
+    ).toThrow("no lifecycle override fields");
+  });
+
+  it("rejects empty recipe blueprint extension declarations", () => {
+    expect(() =>
+      validateRecipeManifest({
+        schema_version: "2",
+        kind: "project_overlay",
+        id: "empty",
+        version: "1.0.0",
+        name: "Empty",
+        summary: "Empty blueprint extension",
+        blueprint_extensions: [
+          {
+            id: "empty.context",
+            kind: "context_hint",
+            summary: "Missing value",
+          },
+        ],
+      }),
+    ).toThrow("Invalid field manifest.blueprint_extensions[0].value");
+  });
 });

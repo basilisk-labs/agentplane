@@ -1,6 +1,7 @@
 export const RECIPES_VERSION = "0.4.4";
 
 export * from "./constants.js";
+export * from "./blueprint-extensions.js";
 export * from "./manifest.js";
 export * from "./normalize.js";
 export * from "./overlay.js";
