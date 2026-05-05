@@ -45,12 +45,16 @@ Prevent duplicate local task-close pull requests when hosted close automation ha
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T06:22:07.988Z
+- Updated: 2026-05-05T06:26:59.940Z
 - Branch: task/202605050621-DNQ2XD/closeout-idempotency
-- Head: b4e8cc6193fd
+- Head: 9efb44f9c1d3
 
 ```text
-No changes detected.
+ .../agentplane/src/cli/local-ci-selection.test.ts  | 45 ++++++++++---
+ .../agentplane/src/commands/task/finish-close.ts   | 53 +++++++++++++++
+ .../commands/task/finish.close-tail.unit.test.ts   | 76 ++++++++++++++++++++++
+ scripts/lib/pre-push-scope.mjs                     | 19 ++++--
+ 4 files changed, 178 insertions(+), 15 deletions(-)
 ```
 
 </details>
