@@ -45,10 +45,10 @@ describe("task-store", () => {
     expect(readme).toContain(`id: "${created.id}"`);
     expect(readme).toContain('status: "TODO"');
     expect(readme).toContain("doc_version: 3");
-    expect(readme).toContain("## Findings");
-    expect(readme).toContain("## Verification");
     expect(readme).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
     expect(readme).toContain("<!-- END VERIFICATION RESULTS -->");
+    expect(readme).not.toContain("## Findings");
+    expect(readme).not.toContain("## Verification");
     expect(readme).not.toContain("### Plan");
     expect(readme).not.toContain("### Results");
 
@@ -57,6 +57,8 @@ describe("task-store", () => {
     expect(loaded.frontmatter.owner).toBe("CODER");
     expect(loaded.frontmatter.origin).toEqual({ system: "manual" });
     expect(loaded.frontmatter.tags).toEqual(["nodejs"]);
+    expect(loaded.body).toContain("## Findings");
+    expect(loaded.body).toContain("## Verification");
   });
 
   it("listTasks returns tasks sorted by id", async () => {
@@ -224,8 +226,10 @@ describe("task-store", () => {
       expect(after.frontmatter.doc_updated_by).toBe("CODER");
 
       const readme = await readFile(after.readmePath, "utf8");
-      expect(readme).toContain("## Summary");
       expect(readme).toContain("Hello");
+      expect(readme).not.toContain("## Summary");
+      expect(after.body).toContain("## Summary");
+      expect(after.body).toContain("Hello");
     } finally {
       vi.useRealTimers();
     }
@@ -276,9 +280,15 @@ describe("task-store", () => {
     });
 
     const updated = await readFile(readmePath, "utf8");
-    expect(updated).toContain("## Summary\n\nCanonical summary");
-    expect(updated).toContain("## Findings\n\nCanonical finding");
+    expect(updated).toContain('Summary: "Canonical summary"');
+    expect(updated).toContain('Findings: "Canonical finding"');
+    expect(updated).not.toContain("## Summary");
+    expect(updated).not.toContain("## Findings");
     expect(updated).not.toContain("stale body");
+
+    const loaded = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(loaded.body).toContain("## Summary\n\nCanonical summary");
+    expect(loaded.body).toContain("## Findings\n\nCanonical finding");
   });
 
   it("setTaskDocSection preserves both concurrent section updates", async () => {
@@ -349,9 +359,13 @@ describe("task-store", () => {
     });
 
     const updated = await readFile(created.readmePath, "utf8");
-    expect((updated.match(/^## Summary$/gm) ?? []).length).toBe(1);
-    expect((updated.match(/^## Scope$/gm) ?? []).length).toBe(1);
+    expect((updated.match(/^## Summary$/gm) ?? []).length).toBe(0);
+    expect((updated.match(/^## Scope$/gm) ?? []).length).toBe(0);
     expect(updated).toContain("Updated summary");
+
+    const loaded = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
+    expect((loaded.body.match(/^## Summary$/gm) ?? []).length).toBe(1);
+    expect((loaded.body.match(/^## Scope$/gm) ?? []).length).toBe(1);
   });
 
   it("setTaskDocSection splits concatenated headings", async () => {
@@ -384,9 +398,13 @@ describe("task-store", () => {
 
     const updated = await readFile(created.readmePath, "utf8");
     expect(updated).not.toContain("## Summary## Summary");
-    expect((updated.match(/^## Summary$/gm) ?? []).length).toBe(1);
-    expect((updated.match(/^## Scope$/gm) ?? []).length).toBe(1);
+    expect((updated.match(/^## Summary$/gm) ?? []).length).toBe(0);
+    expect((updated.match(/^## Scope$/gm) ?? []).length).toBe(0);
     expect(updated).toContain("Updated summary");
+
+    const loaded = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
+    expect((loaded.body.match(/^## Summary$/gm) ?? []).length).toBe(1);
+    expect((loaded.body.match(/^## Scope$/gm) ?? []).length).toBe(1);
   });
 
   it("setTaskDocSection defaults doc_updated_by to last comment author", async () => {
@@ -449,7 +467,7 @@ describe("task-store", () => {
     });
 
     const readme = await readFile(created.readmePath, "utf8");
-    expect(readme).toContain("## Findings");
+    expect(readme).not.toContain("## Findings");
     expect(readme).toContain("More details");
 
     await expect(

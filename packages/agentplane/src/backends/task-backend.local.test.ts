@@ -457,7 +457,8 @@ describe("LocalBackend", () => {
 
     await backend.touchTaskDocMetadata(taskId, "touch");
     const repaired = await readFile(path.join(tempDir, taskId, "README.md"), "utf8");
-    expect(repaired).toContain("## Summary\n\nCanonical summary");
+    expect(repaired).toContain('Summary: "Canonical summary"');
+    expect(repaired).not.toContain("## Summary");
     expect(repaired).not.toContain("stale body");
   });
 
@@ -541,7 +542,8 @@ describe("LocalBackend", () => {
     const result = await backend.normalizeTasks();
     const repaired = await readFile(path.join(tempDir, taskId, "README.md"), "utf8");
     expect(result).toEqual({ scanned: 1, changed: 1 });
-    expect(repaired).toContain("## Summary\n\nCanonical summary");
+    expect(repaired).toContain('Summary: "Canonical summary"');
+    expect(repaired).not.toContain("## Summary");
     expect(repaired).not.toContain("stale body");
   });
 
