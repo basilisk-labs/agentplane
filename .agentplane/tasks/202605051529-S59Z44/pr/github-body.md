@@ -25,9 +25,9 @@ Fix the finish/close lifecycle so automatically generated task-local acr.json fi
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T15:42:27.911Z
+- Updated: 2026-05-05T15:47:34.109Z
 - Branch: task/202605051529-S59Z44/commit-auto-acr-artifacts
-- Head: 9795b30d2b17
+- Head: 7bb8eb4cbb90
 
 ```text
  .../src/cli/run-cli.core.task-hosted-close.test.ts |  9 ++++
@@ -37,9 +37,8 @@ Fix the finish/close lifecycle so automatically generated task-local acr.json fi
  .../src/commands/pr/integrate/internal/merge.ts    |  1 +
  .../agentplane/src/commands/task/finish-execute.ts | 49 +++-----------------
  .../agentplane/src/commands/task/finish-shared.ts  | 53 ++++++++++++++++++++++
- .../commands/task/finish.validation.unit.test.ts   |  2 +
  .../src/commands/task/hosted-close.command.ts      | 14 +++++-
- 9 files changed, 109 insertions(+), 46 deletions(-)
+ 8 files changed, 107 insertions(+), 46 deletions(-)
 ```
 
 </details>

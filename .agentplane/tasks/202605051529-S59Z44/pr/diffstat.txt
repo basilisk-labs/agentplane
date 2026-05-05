@@ -5,6 +5,5 @@
  .../src/commands/pr/integrate/internal/merge.ts    |  1 +
  .../agentplane/src/commands/task/finish-execute.ts | 49 +++-----------------
  .../agentplane/src/commands/task/finish-shared.ts  | 53 ++++++++++++++++++++++
- .../commands/task/finish.validation.unit.test.ts   |  2 +
  .../src/commands/task/hosted-close.command.ts      | 14 +++++-
- 9 files changed, 109 insertions(+), 46 deletions(-)
+ 8 files changed, 107 insertions(+), 46 deletions(-)
