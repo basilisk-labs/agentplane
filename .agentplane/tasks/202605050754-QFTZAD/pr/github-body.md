@@ -16,7 +16,7 @@ Add an Obsidian-friendly generated Markdown projection under .agentplane so task
 ## Verification
 
 - State: ok
-- Note: Implemented Obsidian Markdown task navigation and passed focused tests, typecheck, docs CLI freshness, repo-local doctor, policy routing, and generated projection smoke.
+- Note: Reverified after fixing Docs CI IA handling for generated Obsidian navigation paths.
 - Canonical workflow state lives in the task README.
 
 <details>
