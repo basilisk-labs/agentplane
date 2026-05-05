@@ -1,10 +1,10 @@
 ---
 id: "202605052204-50B7J9"
 title: "Show blueprint and context budget in runner bundle"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +24,16 @@ verification:
   updated_at: "2026-05-05T22:19:19.191Z"
   updated_by: "CODER"
   note: "Verified: runner bundle and task run inspection output now surface selected blueprint, selected recipe, context budget, policy modules, context manifest, and evidence checklist."
-commit: null
+commit:
+  hash: "5e16019e1eea4992217e70d12170dc8661de1988"
+  message: "Merge pull request #952 from basilisk-labs/task/202605052203-WH7G6R/executable-blueprint-contracts"
 comments:
   -
     author: "CODER"
     body: "Start: Surface selected blueprint, recipe, context budget, policy modules, and evidence checklist in runner bundle output for the approved batch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #952 merged the dependent executable blueprint registry, plan artifact, explain, recipe binding, and runner bundle visibility tasks into main."
 events:
   -
     type: "status"
@@ -43,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: runner bundle and task run inspection output now surface selected blueprint, selected recipe, context budget, policy modules, context manifest, and evidence checklist."
+  -
+    type: "status"
+    at: "2026-05-05T22:27:39.726Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #952 merged the dependent executable blueprint registry, plan artifact, explain, recipe binding, and runner bundle visibility tasks into main."
 doc_version: 3
-doc_updated_at: "2026-05-05T22:19:19.197Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T22:27:39.726Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add the sixth implementation task for blueprint execution contracts: surface selected blueprint, selected recipe, loaded context rationale, context budget, policy modules, and evidence checklist in runner bundle output for auditability."
 sections:
   Summary: |-

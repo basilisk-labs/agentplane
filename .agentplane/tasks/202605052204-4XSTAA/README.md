@@ -1,10 +1,10 @@
 ---
 id: "202605052204-4XSTAA"
 title: "Expose blueprint plan explain surface"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +24,16 @@ verification:
   updated_at: "2026-05-05T22:18:57.859Z"
   updated_by: "CODER"
   note: "Verified: blueprint explain output now includes materialized plan metadata: policy modules, allowed commands, context budget, context manifest count, evidence, recipe extensions, and stop reasons."
-commit: null
+commit:
+  hash: "5e16019e1eea4992217e70d12170dc8661de1988"
+  message: "Merge pull request #952 from basilisk-labs/task/202605052203-WH7G6R/executable-blueprint-contracts"
 comments:
   -
     author: "CODER"
     body: "Start: Extend blueprint explain output for the approved executable blueprint batch implementation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #952 merged the dependent executable blueprint registry, plan artifact, explain, recipe binding, and runner bundle visibility tasks into main."
 events:
   -
     type: "status"
@@ -43,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: blueprint explain output now includes materialized plan metadata: policy modules, allowed commands, context budget, context manifest count, evidence, recipe extensions, and stop reasons."
+  -
+    type: "status"
+    at: "2026-05-05T22:27:39.722Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #952 merged the dependent executable blueprint registry, plan artifact, explain, recipe binding, and runner bundle visibility tasks into main."
 doc_version: 3
-doc_updated_at: "2026-05-05T22:18:57.866Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T22:27:39.722Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add the fourth implementation task for blueprint execution contracts: extend the blueprint explain surface so it reports the selected blueprint definition, why it was selected, state order, evidence requirements, policy modules, and any fallback or conflict signals."
 sections:
   Summary: |-

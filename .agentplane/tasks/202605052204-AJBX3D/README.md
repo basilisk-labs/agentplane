@@ -1,10 +1,10 @@
 ---
 id: "202605052204-AJBX3D"
 title: "Add initial blueprint registry data"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +24,16 @@ verification:
   updated_at: "2026-05-05T22:18:37.874Z"
   updated_by: "CODER"
   note: "Verified: initial blueprint registry data now carries executable contract metadata for built-in analysis, content, docs, code, release, and ops routes."
-commit: null
+commit:
+  hash: "5e16019e1eea4992217e70d12170dc8661de1988"
+  message: "Merge pull request #952 from basilisk-labs/task/202605052203-WH7G6R/executable-blueprint-contracts"
 comments:
   -
     author: "CODER"
     body: "Start: Implement the initial blueprint registry using the executable definition contract from the primary batch task."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #952 merged the dependent executable blueprint registry, plan artifact, explain, recipe binding, and runner bundle visibility tasks into main."
 events:
   -
     type: "status"
@@ -43,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: initial blueprint registry data now carries executable contract metadata for built-in analysis, content, docs, code, release, and ops routes."
+  -
+    type: "status"
+    at: "2026-05-05T22:27:39.716Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #952 merged the dependent executable blueprint registry, plan artifact, explain, recipe binding, and runner bundle visibility tasks into main."
 doc_version: 3
-doc_updated_at: "2026-05-05T22:18:37.892Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T22:27:39.717Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add the second implementation task for blueprint execution contracts: introduce a registry of initial blueprint definitions for analysis.light, content.light, docs.change, code.branch_pr, release.strict, and ops.approval using the typed contract from the preceding task."
 sections:
   Summary: |-
