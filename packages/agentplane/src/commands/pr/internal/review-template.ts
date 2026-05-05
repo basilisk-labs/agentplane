@@ -86,32 +86,30 @@ function renderGithubVerificationSummary(task: TaskData): string {
   return [
     `- State: ${state}`,
     `- Note: ${statusLine}`,
-    "- Full verification checklist lives in local review.md.",
+    "- Canonical workflow state lives in the task README.",
   ].join("\n");
 }
 
-function renderGithubBodySections(opts: {
-  task: TaskData;
-  handoffNotes: PrHandoffNote[];
-}): string[] {
+function renderGithubBodySections(task: TaskData): string[] {
   return [
     SUMMARY_SECTION,
     "",
-    sectionText(opts.task, "Summary", opts.task.title.trim() || "- Not recorded."),
+    sectionText(task, "Summary", task.title.trim() || "- Not recorded."),
     "",
     SCOPE_SECTION,
     "",
-    sectionText(opts.task, "Scope", "- Not recorded."),
+    sectionText(task, "Scope", "- Not recorded."),
     "",
     VERIFICATION_SECTION,
     "",
-    renderGithubVerificationSummary(opts.task),
-    "",
-    HANDOFF_NOTES_MARKER,
-    "",
-    ...renderPrHandoffNotes(opts.handoffNotes),
+    renderGithubVerificationSummary(task),
     "",
   ];
+}
+
+function renderGithubHandoffSection(notes: PrHandoffNote[]): string[] {
+  if (notes.length === 0) return [];
+  return [HANDOFF_NOTES_MARKER, "", ...renderPrHandoffNotes(notes), ""];
 }
 
 export function buildGithubPrTitle(task: TaskData): string {
@@ -224,15 +222,15 @@ export function renderGithubPrBody(opts: {
   handoffNotes?: PrHandoffNote[];
   autoSummary: string;
 }): string {
+  const handoffNotes = opts.handoffNotes ?? [];
   return [
     `Task: \`${opts.task.id}\``,
     `Title: ${normalizeOneLine(opts.task.title, 120) || "Untitled task"}`,
+    `Canonical task record: \`.agentplane/tasks/${opts.task.id}/README.md\``,
     "",
     ...renderRelatedTasks(opts.task.id, opts.relatedTaskIds ?? []),
-    ...renderGithubBodySections({
-      task: opts.task,
-      handoffNotes: opts.handoffNotes ?? [],
-    }),
+    ...renderGithubBodySections(opts.task),
+    ...renderGithubHandoffSection(handoffNotes),
     opts.autoSummary,
     "",
   ].join("\n");
@@ -263,12 +261,7 @@ export function validateReviewContents(review: string, errors: string[]): void {
 }
 
 export function validateGithubPrBodyContents(body: string, errors: string[]): void {
-  const requiredSections = [
-    SUMMARY_SECTION,
-    SCOPE_SECTION,
-    VERIFICATION_SECTION,
-    HANDOFF_NOTES_MARKER,
-  ];
+  const requiredSections = [SUMMARY_SECTION, SCOPE_SECTION, VERIFICATION_SECTION];
   for (const section of requiredSections) {
     if (!body.includes(section)) errors.push(`Missing section: ${section}`);
   }

@@ -4,6 +4,7 @@ import type { TaskData } from "../../../backends/task-backend.js";
 import {
   renderGithubPrBody,
   renderPrReviewDocument,
+  validateGithubPrBodyContents,
   validateReviewContents,
 } from "./review-template.js";
 
@@ -70,6 +71,45 @@ describe("review-template batch rendering", () => {
     validateReviewContents(legacyReview, errors);
 
     expect(errors).toEqual([]);
+  });
+
+  it("renders github-body.md as a minimal hosted projection without empty handoff notes", () => {
+    const body = renderGithubPrBody({
+      task: makeTask(),
+      autoSummary: "<details><summary>Raw evidence</summary></details>",
+    });
+    const errors: string[] = [];
+
+    validateGithubPrBodyContents(body, errors);
+
+    expect(errors).toEqual([]);
+    expect(body).toContain(
+      "Canonical task record: `.agentplane/tasks/202601010101-ABCDE/README.md`",
+    );
+    expect(body).toContain("## Summary");
+    expect(body).toContain("## Scope");
+    expect(body).toContain("## Verification");
+    expect(body).toContain("- Canonical workflow state lives in the task README.");
+    expect(body).not.toContain("## Handoff Notes");
+    expect(body).not.toContain("No handoff notes recorded yet");
+  });
+
+  it("includes github-body.md handoff notes only when notes exist", () => {
+    const body = renderGithubPrBody({
+      task: makeTask(),
+      handoffNotes: [
+        {
+          schema_version: 1,
+          created_at: "2026-01-27T00:00:00.000Z",
+          author: "CODER",
+          body: "Ready for review.",
+        },
+      ],
+      autoSummary: "<details><summary>Raw evidence</summary></details>",
+    });
+
+    expect(body).toContain("## Handoff Notes");
+    expect(body).toContain("- 2026-01-27T00:00:00Z CODER: Ready for review.");
   });
 
   it("renders included task ids as an explicit branch_pr batch", () => {
