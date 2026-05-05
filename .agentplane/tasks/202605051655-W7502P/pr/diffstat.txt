@@ -1,0 +1,9 @@
+ .../src/backends/task-backend.local.test.ts        |  46 ++++++++-
+ .../backends/task-backend/local-backend-read.ts    | 112 +++++++++++++--------
+ packages/agentplane/src/backends/task-index.ts     |  46 +++++++++
+ .../agentplane/src/cli/run-cli.core.misc.test.ts   |  31 ++----
+ packages/agentplane/src/commands/task/lint.ts      |  22 +++-
+ packages/agentplane/src/commands/workflow.test.ts  |  24 +----
+ packages/core/src/tasks/tasks-lint.test.ts         |  43 ++++++++
+ packages/core/src/tasks/tasks-lint.ts              |  24 ++++-
+ 8 files changed, 262 insertions(+), 86 deletions(-)
