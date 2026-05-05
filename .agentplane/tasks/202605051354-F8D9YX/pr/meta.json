@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-05T14:46:29Z",
   "base": "main",
   "branch": "task/202605051354-F8D9YX/legacy-config-upgrade-commit",
   "created_at": "2026-05-05T13:54:34.142Z",
-  "head_sha": "cf196ded43017346aa741f4abbf0aad94102998e",
+  "head_sha": "4082a4e5a371c91842d2ba96c1914597c2f46922",
   "last_verified_at": "2026-05-05T13:57:57.936Z",
   "last_verified_sha": "98212bb741b6affcaddc29632195cee86519f091",
+  "merge_commit": "f0c0ad9c6fd5a68d4377762cb0c6e8101d5f960b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-05T14:46:29Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605051354-F8D9YX",
-  "updated_at": "2026-05-05T13:58:55.335Z",
+  "updated_at": "2026-05-05T14:46:29Z",
   "verify": {
     "status": "pass"
   }
