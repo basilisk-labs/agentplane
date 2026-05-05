@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605050606-GT1MTJ",
+  "created_at": "2026-05-05T06:12:50.459Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "24eca2c22a72a3472d639a28c6eb4466505b2d7a",
+    "work_ref": "main",
+    "work_commit": "24eca2c22a72a3472d639a28c6eb4466505b2d7a"
+  },
+  "task": {
+    "task_id": "202605050606-GT1MTJ",
+    "title": "Commit refreshed header assets",
+    "intent": "Commit the user-provided refreshed header assets for docs and website surfaces.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605050606-GT1MTJ/README.md",
+      "sha256": "sha256:5067a658e281c4022e2b03efe4d332eeaa6a249ed49bd63bead1c29f3d80a464"
+    },
+    "approved_at": "2026-05-05T06:06:21.102Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #901.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605050606-GT1MTJ_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T06:06:21.102Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605050606-GT1MTJ/README.md",
+      "sha256": "sha256:5067a658e281c4022e2b03efe4d332eeaa6a249ed49bd63bead1c29f3d80a464"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605050606-GT1MTJ/README.md",
+      "sha256": "sha256:5067a658e281c4022e2b03efe4d332eeaa6a249ed49bd63bead1c29f3d80a464"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605050606-GT1MTJ/README.md",
+      "sha256": "sha256:5067a658e281c4022e2b03efe4d332eeaa6a249ed49bd63bead1c29f3d80a464"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 24eca2c22a72a3472d639a28c6eb4466505b2d7a if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:586b6afa6c8f4c642e89ae0d454115ae82c7351ed10875da8af0cee21ae790cb",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}

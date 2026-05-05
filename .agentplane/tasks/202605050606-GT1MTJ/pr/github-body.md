@@ -25,16 +25,12 @@ Commit the user-provided refreshed header assets for docs and website surfaces.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T06:08:38.230Z
+- Updated: 2026-05-05T06:12:51.212Z
 - Branch: task/202605050606-GT1MTJ/refresh-header-assets
 - Head: 1afe4b5d9e7c
 
 ```text
- docs/assets/header.png        | Bin 98544 -> 84547 bytes
- docs/assets/header.svg        |  40 ++++++++++++++++++++++++++++++++++++++++
- website/static/img/header.png | Bin 98544 -> 84547 bytes
- website/static/img/header.svg |  40 ++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 80 insertions(+)
+No changes detected.
 ```
 
 </details>

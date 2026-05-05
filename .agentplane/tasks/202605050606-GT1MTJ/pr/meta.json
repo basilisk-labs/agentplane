@@ -1,13 +1,20 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-05T06:12:51.212Z",
   "base": "main",
   "branch": "task/202605050606-GT1MTJ/refresh-header-assets",
   "created_at": "2026-05-05T06:06:39.196Z",
   "head_sha": "1afe4b5d9e7cf1ad29e250511996edffd443410e",
   "last_verified_at": "2026-05-05T06:07:10.090Z",
   "last_verified_sha": "5912f46bf1b0609c5b7816d67d418e3781c1321f",
+  "merge_commit": "24eca2c22a72a3472d639a28c6eb4466505b2d7a",
+  "merged_at": "2026-05-05T06:12:25Z",
+  "pr_number": 901,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/901",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605050606-GT1MTJ",
-  "updated_at": "2026-05-05T06:08:38.230Z",
+  "updated_at": "2026-05-05T06:12:51.212Z",
   "verify": {
     "status": "pass"
   }

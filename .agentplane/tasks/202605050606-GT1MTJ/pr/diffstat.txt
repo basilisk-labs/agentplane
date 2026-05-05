@@ -1,5 +1,0 @@
- docs/assets/header.png        | Bin 98544 -> 84547 bytes
- docs/assets/header.svg        |  40 ++++++++++++++++++++++++++++++++++++++++
- website/static/img/header.png | Bin 98544 -> 84547 bytes
- website/static/img/header.svg |  40 ++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 80 insertions(+)

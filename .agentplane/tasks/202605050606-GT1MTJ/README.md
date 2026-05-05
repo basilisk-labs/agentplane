@@ -1,10 +1,11 @@
 ---
 id: "202605050606-GT1MTJ"
 title: "Commit refreshed header assets"
-status: "DOING"
+result_summary: "Merged via PR #901."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-05T06:07:10.090Z"
   updated_by: "DOCS"
   note: "Command: shasum -a 256 docs/assets/header.png website/static/img/header.png docs/assets/header.svg website/static/img/header.svg -> pass; docs and website copies match for PNG and SVG. Command: node .agentplane/policy/check-routing.mjs -> pass. Command: agentplane doctor -> pass."
-commit: null
+commit:
+  hash: "24eca2c22a72a3472d639a28c6eb4466505b2d7a"
+  message: "Merge pull request #901 from basilisk-labs/task/202605050606-GT1MTJ/refresh-header-assets"
 comments:
   -
     author: "DOCS"
     body: "Start: committing the user-provided refreshed header assets for docs and website surfaces while excluding unrelated handoff residue."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #901 merged into main with refreshed docs and website header assets."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: shasum -a 256 docs/assets/header.png website/static/img/header.png docs/assets/header.svg website/static/img/header.svg -> pass; docs and website copies match for PNG and SVG. Command: node .agentplane/policy/check-routing.mjs -> pass. Command: agentplane doctor -> pass."
+  -
+    type: "status"
+    at: "2026-05-05T06:12:50.359Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #901 merged into main with refreshed docs and website header assets."
 doc_version: 3
-doc_updated_at: "2026-05-05T06:07:10.098Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-05T06:12:50.360Z"
+doc_updated_by: "INTEGRATOR"
 description: "Commit the user-provided refreshed header assets for docs and website surfaces."
 sections:
   Summary: |-
