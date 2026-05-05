@@ -131,12 +131,17 @@ describe("LocalBackend", () => {
     const brokenStat = await stat(readmePath);
     const cachedIndex = JSON.parse(await readFile(indexPath, "utf8")) as {
       schema_version: number;
-      byId: Record<string, { task: TaskData; readmePath: string; mtimeMs: number }>;
+      readmes?: { entries: { path: string; mtimeMs: number; size: number }[] };
+      byId: Record<string, { task: TaskData; readmePath: string; mtimeMs: number; size?: number }>;
       byPath: Record<string, string>;
     };
     cachedIndex.byId[task.id] = {
       ...cachedIndex.byId[task.id],
       mtimeMs: brokenStat.mtimeMs,
+      size: brokenStat.size,
+    };
+    cachedIndex.readmes = {
+      entries: [{ path: readmePath, mtimeMs: brokenStat.mtimeMs, size: brokenStat.size }],
     };
     await writeFile(indexPath, JSON.stringify(cachedIndex, null, 2), "utf8");
 
@@ -149,6 +154,43 @@ describe("LocalBackend", () => {
     expect(cachedProjection[0]).not.toHaveProperty("doc");
     expect(cachedProjection[0]).not.toHaveProperty("sections");
     expect(cachedProjection[0]).not.toHaveProperty("events");
+  });
+
+  it("invalidates projection cache when the task README set changes without git dirtiness", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const firstTask: TaskData = {
+      id: "202601300010-ABCD",
+      title: "First projection task",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: ["tag"],
+      verify: [],
+      doc: "## Summary\n\nFirst body",
+    };
+    const secondTask: TaskData = {
+      id: "202601300011-ABCD",
+      title: "Second projection task",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: ["tag"],
+      verify: [],
+      doc: "## Summary\n\nSecond body",
+    };
+
+    await backend.writeTask(firstTask);
+    await backend.listTasks();
+    expect(await backend.listProjectionTasks()).toHaveLength(1);
+
+    await backend.writeTask(secondTask);
+    const projection = await backend.listProjectionTasks();
+
+    expect(projection.map((task) => task.id)).toEqual([firstTask.id, secondTask.id]);
   });
 
   it("does not rebuild a missing task index cache from projection-only reads", async () => {
@@ -301,10 +343,12 @@ describe("LocalBackend", () => {
     const indexPath = path.join(tempDir, ".cache", "tasks-index.v2.json");
     const parsed = JSON.parse(await readFile(indexPath, "utf8")) as {
       schema_version: number;
+      readmes?: { entries: unknown[] };
       byId: Record<string, { task: TaskData }>;
       byPath: Record<string, string>;
     };
     expect(parsed.schema_version).toBe(2);
+    expect(parsed.readmes?.entries).toHaveLength(1);
     expect(Object.keys(parsed.byId)).toHaveLength(1);
     expect(parsed.byId[task.id]?.task.id).toBe(task.id);
     expect(parsed.byId[task.id]?.task.comments).toEqual(task.comments);

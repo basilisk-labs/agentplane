@@ -50,7 +50,7 @@ import * as prompts from "./prompts.js";
 installRunCliIntegrationHarness();
 
 describe("runCli", () => {
-  it("task lint reports OK for a valid export", async () => {
+  it("task lint reports OK for the canonical task store without requiring tasks.json", async () => {
     const root = await mkGitRepoRoot();
 
     const io1 = captureStdIO();
@@ -74,13 +74,7 @@ describe("runCli", () => {
       io1.restore();
     }
 
-    const io2 = captureStdIO();
-    try {
-      const code2 = await runCli(["task", "export", "--root", root]);
-      expect(code2).toBe(0);
-    } finally {
-      io2.restore();
-    }
+    await rm(path.join(root, ".agentplane", "tasks.json"), { force: true });
 
     const io3 = captureStdIO();
     try {
@@ -92,7 +86,7 @@ describe("runCli", () => {
     }
   });
 
-  it("task lint returns validation error when checksum is wrong", async () => {
+  it("task lint returns validation error when task README parsing is skipped", async () => {
     const root = await mkGitRepoRoot();
 
     const io1 = captureStdIO();
@@ -116,25 +110,16 @@ describe("runCli", () => {
       io1.restore();
     }
 
-    const io2 = captureStdIO();
-    try {
-      const code2 = await runCli(["task", "export", "--root", root]);
-      expect(code2).toBe(0);
-    } finally {
-      io2.restore();
-    }
-
-    const outPath = path.join(root, ".agentplane", "tasks.json");
-    const text = await readFile(outPath, "utf8");
-    const parsed = JSON.parse(text) as { tasks: unknown[]; meta: { checksum: string } };
-    parsed.meta.checksum = "bad";
-    await writeFile(outPath, `${JSON.stringify(parsed, null, 2)}\n`, "utf8");
+    const brokenPath = path.join(root, ".agentplane", "tasks", "BROKEN", "README.md");
+    await mkdir(path.dirname(brokenPath), { recursive: true });
+    await writeFile(brokenPath, "# missing frontmatter\n", "utf8");
 
     const io3 = captureStdIO();
     try {
       const code3 = await runCli(["task", "lint", "--root", root]);
       expect(code3).toBe(3);
-      expect(io3.stderr).toContain("meta.checksum does not match");
+      expect(io3.stderr).toContain("skipped 1 task files during scan");
+      expect(io3.stderr).toContain("invalid_readme_frontmatter");
     } finally {
       io3.restore();
     }

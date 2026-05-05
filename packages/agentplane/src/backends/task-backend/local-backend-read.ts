@@ -1,7 +1,5 @@
-import { execFile } from "node:child_process";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
-import { promisify } from "node:util";
 import type { TaskRecord } from "@agentplaneorg/core/tasks";
 import { parseTaskReadme, taskReadmePath } from "@agentplaneorg/core/tasks";
 import {
@@ -15,7 +13,10 @@ import {
   loadTaskIndex,
   resolveTaskIndexPath,
   saveTaskIndex,
+  taskReadmeFingerprintEquals,
   type TaskIndexEntry,
+  type TaskIndexReadmeFingerprint,
+  type TaskIndexReadmeFingerprintEntry,
 } from "../task-index.js";
 
 import {
@@ -26,8 +27,6 @@ import {
   type TaskSummary,
 } from "./shared.js";
 import { type LocalBackendContext } from "./local-backend-state.js";
-
-const execFileAsync = promisify(execFile);
 
 function resolveTaskFrontmatterId(
   frontmatter: Record<string, unknown>,
@@ -78,31 +77,33 @@ function sortedCachedProjection(cachedIndex: {
     .toSorted((a, b) => a.id.localeCompare(b.id));
 }
 
-async function hasGitTaskReadmeChanges(tasksDir: string): Promise<boolean | null> {
-  try {
-    const { stdout } = await execFileAsync(
-      "git",
-      ["-C", tasksDir, "status", "--porcelain", "--untracked-files=all", "--", tasksDir],
-      { encoding: "utf8", maxBuffer: 1024 * 1024 },
-    );
-    return stdout
-      .split("\n")
-      .some((line) => line.trim().length > 0 && /(^|[/\\])README\.md"?$/u.test(line.trim()));
-  } catch {
-    return null;
-  }
+type ReadmeStatEntry = {
+  dirName: string;
+  readmePath: string;
+  mtimeMs: number;
+  size: number;
+};
+
+function buildReadmeFingerprint(entries: ReadmeStatEntry[]): TaskIndexReadmeFingerprint {
+  return {
+    entries: entries.map(
+      (entry): TaskIndexReadmeFingerprintEntry => ({
+        path: entry.readmePath,
+        mtimeMs: entry.mtimeMs,
+        size: entry.size,
+      }),
+    ),
+  };
 }
 
-async function readFreshCachedProjection(opts: {
-  context: LocalBackendContext;
+function readFreshCachedProjection(opts: {
   cachedIndex: Awaited<ReturnType<typeof loadTaskIndex>>;
-}): Promise<TaskSummary[] | null> {
+  fingerprint: TaskIndexReadmeFingerprint;
+  hasMissingReadmes: boolean;
+}): TaskSummary[] | null {
   if (!opts.cachedIndex) return null;
-
-  const hasReadmeChanges = await hasGitTaskReadmeChanges(opts.context.root);
-  if (hasReadmeChanges !== false) return null;
-
-  opts.context.setLastListWarnings?.([]);
+  if (opts.hasMissingReadmes) return null;
+  if (!taskReadmeFingerprintEquals(opts.cachedIndex.readmes, opts.fingerprint)) return null;
   return sortedCachedProjection(opts.cachedIndex);
 }
 
@@ -116,11 +117,45 @@ export async function listLocalTasks(
   const tasks: (TaskData | TaskSummary)[] = [];
   const warnings: string[] = [];
   const entries = await readdir(context.root, { withFileTypes: true }).catch(() => []);
+  const dirs = entries
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .toSorted();
+
+  const readmeStats: ReadmeStatEntry[] = [];
+  let hasMissingReadmes = false;
+  for (const dirName of dirs) {
+    const readmePath = path.join(context.root, dirName, "README.md");
+    try {
+      const stats = await stat(readmePath);
+      if (stats.isFile()) {
+        readmeStats.push({
+          dirName,
+          readmePath,
+          mtimeMs: stats.mtimeMs,
+          size: stats.size,
+        });
+      } else {
+        hasMissingReadmes = true;
+      }
+    } catch {
+      hasMissingReadmes = true;
+    }
+  }
+  const readmeStatsByDir = new Map(readmeStats.map((entry) => [entry.dirName, entry]));
+  const readmeFingerprint = buildReadmeFingerprint(readmeStats);
   const indexPath = resolveTaskIndexPath(context.root);
   const cachedIndex = await loadTaskIndex(indexPath);
   if (projectionOnly) {
-    const cachedProjection = await readFreshCachedProjection({ context, cachedIndex });
-    if (cachedProjection) return cachedProjection;
+    const cachedProjection = readFreshCachedProjection({
+      cachedIndex,
+      fingerprint: readmeFingerprint,
+      hasMissingReadmes,
+    });
+    if (cachedProjection) {
+      context.setLastListWarnings?.([]);
+      return cachedProjection;
+    }
   }
   const cachedEntryByPath = new Map<string, TaskIndexEntry>();
   if (cachedIndex) {
@@ -134,11 +169,6 @@ export async function listLocalTasks(
   const nextByPath: Record<string, string> = {};
   const seen = new Set<string>();
 
-  const dirs = entries
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name)
-    .toSorted();
-
   type ListTaskResult = {
     output: TaskData | TaskSummary;
     index: TaskIndexEntry;
@@ -146,17 +176,14 @@ export async function listLocalTasks(
 
   const results = await mapLimit<string, ListTaskResult | null>(dirs, 32, async (dirName) => {
     const readmePath = path.join(context.root, dirName, "README.md");
-    let stats;
-    try {
-      stats = await stat(readmePath);
-    } catch {
+    const stats = readmeStatsByDir.get(dirName);
+    if (!stats) {
       warnings.push(`skip:${dirName}: missing_or_unreadable_readme`);
       return null;
     }
-    if (!stats.isFile()) return null;
 
     const cached = cachedEntryByPath.get(readmePath);
-    if (projectionOnly && cached?.mtimeMs === stats.mtimeMs) {
+    if (projectionOnly && cached?.mtimeMs === stats.mtimeMs && cached.size === stats.size) {
       return { output: cached.task, index: cached };
     }
     if (cached?.mtimeMs !== stats.mtimeMs) {
@@ -199,7 +226,7 @@ export async function listLocalTasks(
       return null;
     }
 
-    const index = buildTaskIndexEntry(task, readmePath, stats.mtimeMs);
+    const index = buildTaskIndexEntry(task, readmePath, stats.mtimeMs, stats.size);
     return {
       output: projectionOnly ? index.task : task,
       index,
@@ -237,7 +264,12 @@ export async function listLocalTasks(
 
   if (indexDirty && writeIndex) {
     try {
-      await saveTaskIndex(indexPath, { schema_version: 2, byId: nextById, byPath: nextByPath });
+      await saveTaskIndex(indexPath, {
+        schema_version: 2,
+        readmes: readmeFingerprint,
+        byId: nextById,
+        byPath: nextByPath,
+      });
     } catch {
       // Best-effort cache; ignore failures.
     }
