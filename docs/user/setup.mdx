@@ -124,12 +124,15 @@ When `--backend cloud` is selected, init creates cloud backend config with non-s
 settings. Run the connect command next:
 
 ```bash
-agentplane backend connect cloud
+agentplane backend connect cloud \
+  --endpoint https://sync.agentplane.cloud \
+  --project-id <project_id> \
+  --token <token>
 ```
 
-The connect flow opens the configured provider URL in a browser. The cloud service handles
-workspace selection, project selection, and connector setup. After connect, refresh the local
-projection:
+The browser connect flow returns the `project_id` and CLI token. The CLI stores the token only in the
+ignored project `.env`, while backend JSON keeps non-secret metadata. After connect, refresh the
+local projection:
 
 ```bash
 agentplane backend sync cloud --direction pull

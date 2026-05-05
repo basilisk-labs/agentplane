@@ -23,6 +23,7 @@ export type CloudBackendSettings = {
 };
 
 type CloudSyncResponse = {
+  data?: unknown;
   tasks?: unknown;
   last_checked_at?: unknown;
 };
@@ -182,24 +183,42 @@ export class CloudBackend implements TaskBackend {
   }): Promise<void> {
     this.assertConfigured();
     const localTasks = await this.cache.listTasks();
-    const response = await this.request<CloudSyncResponse>("/api/agentplane/v1/tasks/sync", {
-      method: "POST",
-      body: JSON.stringify({
-        project_id: this.projectId,
-        provider: this.provider,
-        direction: opts.direction,
-        conflict: opts.conflict,
-        tasks: opts.direction === "push" ? localTasks : undefined,
-      }),
-    });
-    if (opts.direction === "pull" && Array.isArray(response.tasks)) {
-      await this.cache.writeTasks(response.tasks as TaskData[]);
+    const action = opts.direction === "pull" ? "pull" : "push";
+    const response = await this.request<CloudSyncResponse>(
+      `/v1/projects/${encodeURIComponent(this.projectId)}/sync/${action}`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          provider: this.provider,
+          direction: opts.direction,
+          conflict: opts.conflict,
+          tasks: opts.direction === "push" ? localTasks : undefined,
+        }),
+      },
+    );
+    const data = isRecord(response.data) ? response.data : {};
+    const responseTasks = Array.isArray(response.tasks)
+      ? response.tasks
+      : Array.isArray(data.tasks)
+        ? data.tasks
+        : null;
+    if (opts.direction === "pull" && responseTasks) {
+      const currentById = new Map(localTasks.map((task) => [task.id, task]));
+      const changed = (responseTasks as TaskData[]).filter((task) => {
+        const current = currentById.get(task.id);
+        return !current || stableJson(current) !== stableJson(task);
+      });
+      if (changed.length > 0) {
+        await this.cache.writeTasks(changed);
+      }
     }
     await this.writeState({
       last_checked_at:
         typeof response.last_checked_at === "string"
           ? response.last_checked_at
-          : new Date().toISOString(),
+          : typeof data.last_checked_at === "string"
+            ? data.last_checked_at
+            : new Date().toISOString(),
     });
   }
 
@@ -294,6 +313,24 @@ function firstNonEmpty(...values: unknown[]): string {
     if (trimmed) return trimmed;
   }
   return "";
+}
+
+function isRecord(input: unknown): input is Record<string, unknown> {
+  return Boolean(input && typeof input === "object" && !Array.isArray(input));
+}
+
+function stableJson(input: unknown): string {
+  return JSON.stringify(sortJson(input));
+}
+
+function sortJson(input: unknown): unknown {
+  if (Array.isArray(input)) return input.map(sortJson);
+  if (!isRecord(input)) return input;
+  return Object.fromEntries(
+    Object.entries(input)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, value]) => [key, sortJson(value)]),
+  );
 }
 
 function normalizePositiveInteger(input: unknown): number | null {

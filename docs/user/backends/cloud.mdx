@@ -51,15 +51,16 @@ Connect the local project to a cloud project:
 
 ```bash
 agentplane backend connect cloud \
-  --endpoint https://sync.example.test \
+  --endpoint https://sync.agentplane.cloud \
   --project-id proj_456 \
-  --provider github-projects
+  --provider github-projects \
+  --token apc_...
 ```
 
-The connect command stores non-secret connection metadata in the backend JSON. The cloud service
-handles workspace selection, project selection, and connector setup outside the repository. For
-example, if the selected connector is GitHub Projects, the cloud service handles the GitHub App
-installation and project selection.
+The cloud service handles workspace selection, project selection, and connector setup outside the
+repository. For example, if the selected connector is GitHub Projects, the cloud service handles the
+GitHub App installation and project selection. Paste the returned `token` into `--token`; the CLI
+writes it only to the ignored project `.env`.
 
 After connect, the backend JSON should contain non-secret connection metadata:
 
@@ -68,7 +69,7 @@ After connect, the backend JSON should contain non-secret connection metadata:
   "id": "cloud",
   "version": 1,
   "settings": {
-    "endpoint": "https://sync.example.test",
+    "endpoint": "https://sync.agentplane.cloud",
     "project_id": "proj_456",
     "provider": "github-projects",
     "cache_dir": ".agentplane/tasks",
@@ -77,8 +78,8 @@ After connect, the backend JSON should contain non-secret connection metadata:
 }
 ```
 
-Secrets do not belong in backend JSON. If the cloud service requires a token for CLI access, provide
-it through environment or local credential storage:
+Secrets do not belong in backend JSON. The connect command stores the CLI token in ignored `.env` as
+`AGENTPLANE_CLOUD_TOKEN`. You can also provide it through the shell:
 
 ```bash
 export AGENTPLANE_CLOUD_TOKEN=...
@@ -89,7 +90,7 @@ export AGENTPLANE_CLOUD_TOKEN=...
 Set the endpoint explicitly when connecting:
 
 ```bash
-agentplane backend connect cloud --endpoint https://sync.example.test --project-id proj_456
+agentplane backend connect cloud --endpoint https://sync.agentplane.cloud --project-id proj_456
 ```
 
 Recommended precedence for implementations:

@@ -1,3 +1,4 @@
+import path from "node:path";
 import { readFile, writeFile } from "node:fs/promises";
 
 import { backendNotSupportedMessage, createCliEmitter } from "../cli/output.js";
@@ -41,6 +42,7 @@ export type BackendConnectParsed = {
   endpoint: string | null;
   projectId: string | null;
   provider: string | null;
+  token: string | null;
   yes: boolean;
   quiet: boolean;
 };
@@ -302,13 +304,22 @@ export async function cmdBackendConnectParsed(opts: {
       },
     };
     await writeFile(ctx.backendConfigPath, `${JSON.stringify(next, null, 2)}\n`, "utf8");
+    if (opts.flags.token) {
+      await upsertDotEnvValues(path.join(ctx.resolvedProject.gitRoot, ".env"), {
+        AGENTPLANE_CLOUD_TOKEN: opts.flags.token,
+      });
+    }
     if (!opts.flags.quiet) {
       output.success(
         "backend connect",
         undefined,
         `backend=cloud endpoint=${opts.flags.endpoint ?? "unchanged"} project=${opts.flags.projectId ?? "unchanged"}`,
       );
-      output.line("set AGENTPLANE_CLOUD_TOKEN in the environment or local secret store");
+      if (opts.flags.token) {
+        output.line("stored AGENTPLANE_CLOUD_TOKEN in ignored project .env");
+      } else {
+        output.line("set AGENTPLANE_CLOUD_TOKEN in the environment or local secret store");
+      }
       output.line("next: agentplane backend inspect cloud --yes");
     }
     return 0;
@@ -331,4 +342,38 @@ async function readBackendConfig(configPath: string): Promise<Record<string, unk
 
 function isRecord(input: unknown): input is Record<string, unknown> {
   return Boolean(input && typeof input === "object" && !Array.isArray(input));
+}
+
+async function upsertDotEnvValues(filePath: string, values: Record<string, string>): Promise<void> {
+  let existing = "";
+  try {
+    existing = await readFile(filePath, "utf8");
+  } catch (err) {
+    const code = (err as { code?: string } | null)?.code;
+    if (code !== "ENOENT") throw err;
+  }
+
+  const pending = new Map(Object.entries(values));
+  const lines = existing.split(/\r?\n/u);
+  const nextLines = lines.map((line) => {
+    const match = /^([A-Za-z_][A-Za-z0-9_]*)\s*=/u.exec(line);
+    const key = match?.[1];
+    if (!key || !pending.has(key)) return line;
+    const value = pending.get(key) ?? "";
+    pending.delete(key);
+    return `${key}=${quoteDotEnvValue(value)}`;
+  });
+
+  if (nextLines.length > 0 && nextLines[nextLines.length - 1] === "") {
+    nextLines.pop();
+  }
+  for (const [key, value] of pending) {
+    nextLines.push(`${key}=${quoteDotEnvValue(value)}`);
+  }
+  await writeFile(filePath, `${nextLines.join("\n")}\n`, "utf8");
+}
+
+function quoteDotEnvValue(value: string): string {
+  if (/^[A-Za-z0-9_./:@+-]+$/u.test(value)) return value;
+  return JSON.stringify(value);
 }

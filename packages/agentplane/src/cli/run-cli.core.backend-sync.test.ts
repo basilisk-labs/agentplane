@@ -275,6 +275,8 @@ describe("runCli", () => {
         "proj_123",
         "--provider",
         "github-projects",
+        "--token",
+        "apc_test_token",
         "--root",
         root,
       ]);
@@ -296,6 +298,8 @@ describe("runCli", () => {
         },
       });
       expect(JSON.stringify(written)).not.toContain("token");
+      const dotEnvText = await readFile(path.join(root, ".env"), "utf8");
+      expect(dotEnvText).toContain("AGENTPLANE_CLOUD_TOKEN=apc_test_token");
     } finally {
       io.restore();
       spy.mockRestore();

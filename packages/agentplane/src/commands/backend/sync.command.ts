@@ -117,7 +117,7 @@ export const backendInspectSpec: CommandSpec<BackendInspectParsed> = {
 export const backendConnectSpec: CommandSpec<BackendConnectParsed> = {
   id: ["backend", "connect"],
   group: "Backend",
-  summary: "Configure a cloud backend connection without storing secrets.",
+  summary: "Configure a cloud backend connection.",
   args: [{ name: "id", required: true, valueHint: "<id>", description: "Configured backend id." }],
   options: [
     {
@@ -139,6 +139,12 @@ export const backendConnectSpec: CommandSpec<BackendConnectParsed> = {
       description: "Optional remote projection provider selected in the cloud service.",
     },
     {
+      kind: "string",
+      name: "token",
+      valueHint: "<token>",
+      description: "Cloud CLI token. Stored only in ignored project .env, not backend JSON.",
+    },
+    {
       kind: "boolean",
       name: "yes",
       default: false,
@@ -148,8 +154,8 @@ export const backendConnectSpec: CommandSpec<BackendConnectParsed> = {
   ],
   examples: [
     {
-      cmd: "agentplane backend connect cloud --endpoint https://sync.example.test --project-id proj_123 --provider github-projects",
-      why: "Attach this repository to a cloud sync project without committing a token.",
+      cmd: "agentplane backend connect cloud --endpoint https://sync.agentplane.cloud --project-id proj_123 --token apc_...",
+      why: "Attach this repository to a cloud sync project and keep the token in ignored .env.",
     },
   ],
   parse: (raw) => ({
@@ -157,6 +163,7 @@ export const backendConnectSpec: CommandSpec<BackendConnectParsed> = {
     endpoint: typeof raw.opts.endpoint === "string" ? raw.opts.endpoint.trim() : null,
     projectId: typeof raw.opts["project-id"] === "string" ? raw.opts["project-id"].trim() : null,
     provider: typeof raw.opts.provider === "string" ? raw.opts.provider.trim() : null,
+    token: typeof raw.opts.token === "string" ? raw.opts.token.trim() : null,
     yes: raw.opts.yes === true,
     quiet: raw.opts.quiet === true,
   }),

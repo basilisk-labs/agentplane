@@ -104,9 +104,10 @@ Verification:
 - non-interactive output tests;
 - config write tests.
 
-Status: implemented as non-interactive metadata configuration:
-`agentplane backend connect cloud --endpoint ... --project-id ... --provider ...`. Browser-based
-authorization remains owned by the cloud service.
+Status: implemented as non-interactive handoff from the cloud service:
+`agentplane backend connect cloud --endpoint ... --project-id ... --provider ... --token ...`.
+Backend JSON stores only non-secret metadata; the CLI token is written to ignored project `.env` as
+`AGENTPLANE_CLOUD_TOKEN`. Browser-based authorization remains owned by the cloud service.
 
 ### C005: Add stale projection guard
 
