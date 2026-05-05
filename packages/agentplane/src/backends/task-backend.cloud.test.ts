@@ -67,11 +67,9 @@ describe("CloudBackend", () => {
       verify: [],
     };
     await cache.writeTask(task);
-    const fetchImpl = vi.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({ last_checked_at: "2026-05-06T00:00:00.000Z" }),
-    });
+    const fetchImpl = vi.fn<typeof fetch>(() =>
+      Promise.resolve(Response.json({ last_checked_at: "2026-05-06T00:00:00.000Z" })),
+    );
     const backend = new CloudBackend(
       {
         endpoint: "https://cloud.example/",
@@ -79,18 +77,17 @@ describe("CloudBackend", () => {
         project_id: "project-1",
         provider: "github-projects",
       },
-      { root: tempDir, cache, fetchImpl: fetchImpl as unknown as typeof fetch },
+      { root: tempDir, cache, fetchImpl },
     );
 
     await backend.sync({ direction: "push", conflict: "diff", quiet: true, confirm: true });
 
-    expect(fetchImpl).toHaveBeenCalledWith(
-      "https://cloud.example/api/agentplane/v1/tasks/sync",
-      expect.objectContaining({
-        method: "POST",
-        body: expect.stringContaining('"project_id":"project-1"'),
-      }),
-    );
+    const firstCall = fetchImpl.mock.calls[0];
+    if (!firstCall) throw new Error("Expected cloud backend to call fetch");
+    const [url, init] = firstCall;
+    expect(url).toBe("https://cloud.example/api/agentplane/v1/tasks/sync");
+    expect(init?.method).toBe("POST");
+    expect(init?.body).toContain('"project_id":"project-1"');
     const stateText = await readFile(
       path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"),
       "utf8",
