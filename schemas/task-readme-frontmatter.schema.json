@@ -18,32 +18,18 @@
     },
     "risk_level": {
       "type": "string",
-      "enum": [
-        "low",
-        "med",
-        "high"
-      ]
+      "enum": ["low", "med", "high"]
     },
     "breaking": {
       "type": "boolean"
     },
     "status": {
       "type": "string",
-      "enum": [
-        "TODO",
-        "DOING",
-        "DONE",
-        "BLOCKED"
-      ]
+      "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
     },
     "priority": {
       "type": "string",
-      "enum": [
-        "low",
-        "normal",
-        "med",
-        "high"
-      ]
+      "enum": ["low", "normal", "med", "high"]
     },
     "owner": {
       "type": "string",
@@ -85,9 +71,7 @@
           "minLength": 1
         }
       },
-      "required": [
-        "system"
-      ],
+      "required": ["system"],
       "additionalProperties": {
         "type": "string"
       }
@@ -108,25 +92,11 @@
     },
     "task_kind": {
       "type": "string",
-      "enum": [
-        "analysis",
-        "content",
-        "docs",
-        "code",
-        "release",
-        "ops"
-      ]
+      "enum": ["analysis", "content", "docs", "code", "release", "ops"]
     },
     "mutation_scope": {
       "type": "string",
-      "enum": [
-        "none",
-        "docs",
-        "code",
-        "release",
-        "ops",
-        "unknown"
-      ]
+      "enum": ["none", "docs", "code", "release", "ops", "unknown"]
     },
     "risk_flags": {
       "type": "array",
@@ -167,11 +137,7 @@
       "properties": {
         "state": {
           "type": "string",
-          "enum": [
-            "pending",
-            "approved",
-            "rejected"
-          ]
+          "enum": ["pending", "approved", "rejected"]
         },
         "updated_at": {
           "anyOf": [
@@ -185,24 +151,13 @@
           ]
         },
         "updated_by": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "note": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         }
       },
-      "required": [
-        "state",
-        "updated_at",
-        "updated_by",
-        "note"
-      ],
+      "required": ["state", "updated_at", "updated_by", "note"],
       "additionalProperties": true
     },
     "verification": {
@@ -210,11 +165,7 @@
       "properties": {
         "state": {
           "type": "string",
-          "enum": [
-            "pending",
-            "ok",
-            "needs_rework"
-          ]
+          "enum": ["pending", "ok", "needs_rework"]
         },
         "updated_at": {
           "anyOf": [
@@ -228,24 +179,13 @@
           ]
         },
         "updated_by": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         },
         "note": {
-          "type": [
-            "string",
-            "null"
-          ]
+          "type": ["string", "null"]
         }
       },
-      "required": [
-        "state",
-        "updated_at",
-        "updated_by",
-        "note"
-      ],
+      "required": ["state", "updated_at", "updated_by", "note"],
       "additionalProperties": true
     },
     "runner": {
@@ -257,13 +197,7 @@
         },
         "status": {
           "type": "string",
-          "enum": [
-            "prepared",
-            "running",
-            "success",
-            "failed",
-            "cancelled"
-          ]
+          "enum": ["prepared", "running", "success", "failed", "cancelled"]
         },
         "adapter_id": {
           "type": "string",
@@ -271,10 +205,7 @@
         },
         "mode": {
           "type": "string",
-          "enum": [
-            "execute",
-            "dry_run"
-          ]
+          "enum": ["execute", "dry_run"]
         },
         "updated_at": {
           "type": "string",
@@ -303,10 +234,7 @@
           "properties": {
             "kind": {
               "type": "string",
-              "enum": [
-                "task",
-                "recipe_scenario"
-              ]
+              "enum": ["task", "recipe_scenario"]
             },
             "task_id": {
               "type": "string",
@@ -321,9 +249,7 @@
               "minLength": 1
             }
           },
-          "required": [
-            "kind"
-          ],
+          "required": ["kind"],
           "additionalProperties": true
         },
         "summary": {
@@ -355,10 +281,7 @@
               "type": "number"
             },
             "output_last_message_bytes": {
-              "type": [
-                "number",
-                "null"
-              ]
+              "type": ["number", "null"]
             }
           },
           "additionalProperties": true
@@ -412,13 +335,7 @@
               },
               "status": {
                 "type": "string",
-                "enum": [
-                  "prepared",
-                  "running",
-                  "success",
-                  "failed",
-                  "cancelled"
-                ]
+                "enum": ["prepared", "running", "success", "failed", "cancelled"]
               },
               "adapter_id": {
                 "type": "string",
@@ -426,10 +343,7 @@
               },
               "mode": {
                 "type": "string",
-                "enum": [
-                  "execute",
-                  "dry_run"
-                ]
+                "enum": ["execute", "dry_run"]
               },
               "updated_at": {
                 "type": "string",
@@ -458,10 +372,7 @@
                 "properties": {
                   "kind": {
                     "type": "string",
-                    "enum": [
-                      "task",
-                      "recipe_scenario"
-                    ]
+                    "enum": ["task", "recipe_scenario"]
                   },
                   "task_id": {
                     "type": "string",
@@ -476,9 +387,7 @@
                     "minLength": 1
                   }
                 },
-                "required": [
-                  "kind"
-                ],
+                "required": ["kind"],
                 "additionalProperties": true
               },
               "summary": {
@@ -510,10 +419,7 @@
                     "type": "number"
                   },
                   "output_last_message_bytes": {
-                    "type": [
-                      "number",
-                      "null"
-                    ]
+                    "type": ["number", "null"]
                   }
                 },
                 "additionalProperties": true
@@ -570,15 +476,7 @@
           }
         }
       },
-      "required": [
-        "run_id",
-        "status",
-        "adapter_id",
-        "mode",
-        "updated_at",
-        "exit_code",
-        "target"
-      ],
+      "required": ["run_id", "status", "adapter_id", "mode", "updated_at", "exit_code", "target"],
       "additionalProperties": true
     },
     "commit": {
@@ -595,10 +493,7 @@
               "minLength": 1
             }
           },
-          "required": [
-            "hash",
-            "message"
-          ],
+          "required": ["hash", "message"],
           "additionalProperties": false
         },
         {
@@ -620,10 +515,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "author",
-          "body"
-        ],
+        "required": ["author", "body"],
         "additionalProperties": false
       }
     },
@@ -634,11 +526,7 @@
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "status",
-              "comment",
-              "verify"
-            ]
+            "enum": ["status", "comment", "verify"]
           },
           "at": {
             "type": "string",
@@ -664,11 +552,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "type",
-          "at",
-          "author"
-        ],
+        "required": ["type", "at", "author"],
         "additionalProperties": true
       }
     },
