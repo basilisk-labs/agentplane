@@ -66,19 +66,28 @@ export function selectBranchDiffRange(updates, opts = {}) {
   const [update] = branchUpdates;
   if (!update.localSha || !update.remoteSha) return null;
   if (isAllZeroSha(update.localSha)) return null;
+  const fallbackRef =
+    typeof opts.newBranchFallbackRef === "string" ? opts.newBranchFallbackRef.trim() : "";
   if (isAllZeroSha(update.remoteSha)) {
-    const fallbackRef =
-      typeof opts.newBranchFallbackRef === "string" ? opts.newBranchFallbackRef.trim() : "";
     return fallbackRef ? { from: fallbackRef, to: update.localSha } : null;
+  }
+  if (!gitRefExists(update.remoteSha) && fallbackRef) {
+    return { from: fallbackRef, to: update.localSha };
   }
   return { from: update.remoteSha, to: update.localSha };
 }
 
 export function readChangedFilesForRange(range) {
   if (!range) return [];
-  const output = execFileSync("git", ["diff", "--name-only", `${range.from}..${range.to}`], {
-    encoding: "utf8",
-  });
+  let output = "";
+  try {
+    output = execFileSync("git", ["diff", "--name-only", `${range.from}..${range.to}`], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+  } catch {
+    return [];
+  }
   return output
     .split("\n")
     .map((line) => line.trim())

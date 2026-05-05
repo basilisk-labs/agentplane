@@ -42,16 +42,22 @@ const { parseChangedFilesEnv, selectFastCiPlan, shouldRunCliDocsCheck } =
     shouldRunCliDocsCheck: (changedFiles: string[]) => boolean;
   };
 
-const { hasReleaseTagPush, isDeleteOnlyPush, parsePrePushStdin, selectBranchDiffRange } =
-  prePushScopeModule as {
-    hasReleaseTagPush: (updates: PrePushUpdate[]) => boolean;
-    isDeleteOnlyPush: (updates: PrePushUpdate[]) => boolean;
-    parsePrePushStdin: (rawStdin: unknown) => PrePushUpdate[];
-    selectBranchDiffRange: (
-      updates: PrePushUpdate[],
-      opts?: { newBranchFallbackRef?: string | null },
-    ) => { from: string; to: string } | null;
-  };
+const {
+  hasReleaseTagPush,
+  isDeleteOnlyPush,
+  parsePrePushStdin,
+  readChangedFilesForRange,
+  selectBranchDiffRange,
+} = prePushScopeModule as {
+  hasReleaseTagPush: (updates: PrePushUpdate[]) => boolean;
+  isDeleteOnlyPush: (updates: PrePushUpdate[]) => boolean;
+  parsePrePushStdin: (rawStdin: unknown) => PrePushUpdate[];
+  readChangedFilesForRange: (range: { from: string; to: string } | null) => string[];
+  selectBranchDiffRange: (
+    updates: PrePushUpdate[],
+    opts?: { newBranchFallbackRef?: string | null },
+  ) => { from: string; to: string } | null;
+};
 
 describe("local CI fast selection", () => {
   it("treats docs and policy changes as docs-only", () => {
@@ -456,5 +462,24 @@ describe("pre-push scope selection", () => {
       from: "origin/main",
       to: "abc",
     });
+  });
+
+  it("falls back to the default base when the remote old SHA is unavailable locally", () => {
+    const updates = parsePrePushStdin(
+      "refs/heads/task-close/T-1/abc HEAD refs/heads/task-close/T-1/abc missing-old-sha\n",
+    );
+    expect(selectBranchDiffRange(updates, { newBranchFallbackRef: "origin/main" })).toEqual({
+      from: "origin/main",
+      to: "HEAD",
+    });
+  });
+
+  it("returns an empty changed-file list instead of throwing for invalid diff ranges", () => {
+    expect(
+      readChangedFilesForRange({
+        from: "definitely-missing-old-sha",
+        to: "also-missing-new-sha",
+      }),
+    ).toEqual([]);
   });
 });

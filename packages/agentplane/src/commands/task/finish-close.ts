@@ -6,6 +6,7 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
+import { tryLookupExistingGithubPrByBranch } from "../pr/internal/sync-github.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { taskCloseAlreadyRecordedOnBase } from "./close-tail-state.js";
@@ -82,6 +83,45 @@ function branchPrCloseBranchName(taskId: string, headCommitHash: string): string
   return `task-close/${taskId}/${headCommitHash.slice(0, 12)}`;
 }
 
+async function fetchRemoteBaseBestEffort(opts: {
+  gitRoot: string;
+  baseBranch: string;
+}): Promise<void> {
+  try {
+    await execFileAsync("git", ["fetch", "--no-tags", "origin", opts.baseBranch], {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    });
+  } catch {
+    // Local finish remains usable without network/GitHub auth; remote state only makes
+    // the close-tail path idempotent when hosted close already won the race.
+  }
+}
+
+async function closeTailAlreadyHandledRemotely(opts: {
+  gitRoot: string;
+  workflowDir: string;
+  taskId: string;
+  baseBranch: string;
+  closeBranch: string;
+}): Promise<boolean> {
+  const remoteBase = `origin/${opts.baseBranch}`;
+  const recordedOnRemoteBase = await taskCloseAlreadyRecordedOnBase({
+    gitRoot: opts.gitRoot,
+    workflowDir: opts.workflowDir,
+    taskId: opts.taskId,
+    baseBranch: remoteBase,
+  }).catch(() => false);
+  if (recordedOnRemoteBase) return true;
+
+  const observedClosePr = await tryLookupExistingGithubPrByBranch({
+    gitRoot: opts.gitRoot,
+    branch: opts.closeBranch,
+    baseBranch: opts.baseBranch,
+  }).catch(() => null);
+  return observedClosePr?.status === "OPEN" || observedClosePr?.status === "MERGED";
+}
+
 export async function materializeBranchPrCloseTail(opts: {
   ctx: CommandContext;
   cwd: string;
@@ -106,6 +146,19 @@ export async function materializeBranchPrCloseTail(opts: {
 
   const headCommitHash = await readHeadCommitHash(gitRoot);
   const closeBranch = branchPrCloseBranchName(opts.taskId, headCommitHash);
+
+  await fetchRemoteBaseBestEffort({ gitRoot, baseBranch });
+  const alreadyHandledRemotely = await closeTailAlreadyHandledRemotely({
+    gitRoot,
+    workflowDir: opts.ctx.config.paths.workflow_dir,
+    taskId: opts.taskId,
+    baseBranch,
+    closeBranch,
+  });
+  if (alreadyHandledRemotely) {
+    return null;
+  }
+
   const branchExists = await gitBranchExists(gitRoot, closeBranch);
 
   await execFileAsync(
