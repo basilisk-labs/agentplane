@@ -10,7 +10,7 @@ import {
   type TaskSummary,
   type TaskWriteOptions,
 } from "./shared.js";
-import { LocalBackend } from "./local-backend.js";
+import type { LocalBackend } from "./local-backend.js";
 
 export type CloudBackendSettings = {
   endpoint?: string;
@@ -228,13 +228,17 @@ export class CloudBackend implements TaskBackend {
   }
 
   private async request<T>(pathname: string, init: RequestInit): Promise<T> {
+    const headers = new Headers({
+      "content-type": "application/json",
+      authorization: `Bearer ${this.token}`,
+    });
+    for (const [key, value] of new Headers(init.headers)) {
+      headers.set(key, value);
+    }
+
     const res = await this.fetchImpl(`${this.endpoint}${pathname}`, {
       ...init,
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${this.token}`,
-        ...(init.headers ?? {}),
-      },
+      headers,
     });
     if (!res.ok) {
       throw new BackendError(`Cloud backend request failed: HTTP ${res.status}`, "E_BACKEND");
