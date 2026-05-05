@@ -11,9 +11,9 @@ const SCOOP_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/render-scoop-mani
 const SETUP_SCRIPT_PATH = path.resolve(process.cwd(), "scripts/render-setup-agentplane-action.mjs");
 const tempRoots: string[] = [];
 const externalChannelSwitchGate = {
-  defaultInstallStrategy: "standalone_bundled_node",
+  defaultInstallStrategy: "bun_single_file_executable",
   candidateInstallStrategy: "bun_single_file_executable",
-  bunDefaultEligible: false,
+  bunDefaultEligible: true,
 };
 
 async function makeTempRoot() {
@@ -31,10 +31,10 @@ afterEach(async () => {
 });
 
 function platformAsset(platform: string, arch: string, extension: "tar.gz" | "zip") {
-  const name = `agentplane-v0.4.1-${platform}-${arch}.${extension}`;
+  const name = `agentplane-bun-v0.4.1-${platform}-${arch}.${extension}`;
   return {
     name,
-    kind: "standalone_cli",
+    kind: "bun_executable",
     platform,
     arch,
     archive: extension,
@@ -58,7 +58,7 @@ async function writeManifest(root: string) {
         sha: "abc123",
         repository: "basilisk-labs/agentplane",
         externalChannelSwitchGate,
-        platformAssets: [
+        bunAssets: [
           platformAsset("darwin", "arm64", "tar.gz"),
           platformAsset("darwin", "x64", "tar.gz"),
           platformAsset("linux", "arm64", "tar.gz"),
@@ -84,7 +84,7 @@ async function writeManifest(root: string) {
 }
 
 describe("standalone consumer renderers", () => {
-  it("renders Scoop from the Windows standalone asset without nodejs dependency", async () => {
+  it("renders Scoop from the Windows Bun asset without nodejs dependency", async () => {
     const root = await makeTempRoot();
     const manifestPath = await writeManifest(root);
     const outDir = path.join(root, "scoop");
@@ -107,14 +107,14 @@ describe("standalone consumer renderers", () => {
 
     expect(scoop.depends).toBeUndefined();
     expect(scoop.extract_dir).toBeUndefined();
-    expect(scoop.architecture["64bit"].url).toContain("agentplane-v0.4.1-win32-x64.zip");
-    expect(scoop.bin).toEqual([[String.raw`bin\agentplane.cmd`, "agentplane"]]);
-    expect(evidence.installStrategy).toBe("standalone_bundled_node");
-    expect(evidence.externalChannelSwitchGate.bunDefaultEligible).toBe(false);
-    expect(evidence.assets.win32X64.name).toBe("agentplane-v0.4.1-win32-x64.zip");
+    expect(scoop.architecture["64bit"].url).toContain("agentplane-bun-v0.4.1-win32-x64.zip");
+    expect(scoop.bin).toEqual([[String.raw`bin\agentplane.exe`, "agentplane"]]);
+    expect(evidence.installStrategy).toBe("bun_single_file_executable");
+    expect(evidence.externalChannelSwitchGate.bunDefaultEligible).toBe(true);
+    expect(evidence.assets.win32X64.name).toBe("agentplane-bun-v0.4.1-win32-x64.zip");
   });
 
-  it("renders setup-agentplane from standalone assets with checksum verification", async () => {
+  it("renders setup-agentplane from Bun assets with checksum verification", async () => {
     const root = await makeTempRoot();
     const manifestPath = await writeManifest(root);
     const outDir = path.join(root, "setup-agentplane");
@@ -140,10 +140,10 @@ describe("standalone consumer renderers", () => {
     expect(action).toContain("Expand-Archive");
     expect(action).toContain("$GITHUB_PATH");
     expect(action).not.toContain("install.sh");
-    expect(readme).toContain("standalone bundled-runtime archive checksum");
-    expect(evidence.installStrategy).toBe("standalone_bundled_node");
-    expect(evidence.externalChannelSwitchGate.bunDefaultEligible).toBe(false);
-    expect(evidence.assets.linuxX64.name).toBe("agentplane-v0.4.1-linux-x64.tar.gz");
-    expect(evidence.assets.win32X64.name).toBe("agentplane-v0.4.1-win32-x64.zip");
+    expect(readme).toContain("Bun single-file executable archives");
+    expect(evidence.installStrategy).toBe("bun_single_file_executable");
+    expect(evidence.externalChannelSwitchGate.bunDefaultEligible).toBe(true);
+    expect(evidence.assets.linuxX64.name).toBe("agentplane-bun-v0.4.1-linux-x64.tar.gz");
+    expect(evidence.assets.win32X64.name).toBe("agentplane-bun-v0.4.1-win32-x64.zip");
   });
 });

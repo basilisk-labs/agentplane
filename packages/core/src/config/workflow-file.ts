@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import YAML from "yaml";
@@ -197,6 +197,7 @@ export async function writeWorkflowConfigRaw(
   raw: Record<string, unknown>,
 ): Promise<string> {
   const workflowPath = path.join(agentplaneDir, "WORKFLOW.md");
+  const lastKnownGoodPath = path.join(agentplaneDir, "workflows", "last-known-good.md");
   const current = await readWorkflowMarkdown(workflowPath);
   const frontMatter = configRawToWorkflowFrontMatter(raw);
   const yaml = YAML.stringify(frontMatter, { lineWidth: 0, sortMapEntries: false }).trimEnd();
@@ -204,6 +205,9 @@ export async function writeWorkflowConfigRaw(
   const body = (
     currentBody === undefined || currentBody === "" ? DEFAULT_WORKFLOW_BODY : currentBody
   ).trimEnd();
-  await atomicWriteFile(workflowPath, `---\n${yaml}\n---\n\n${body}\n`, "utf8");
+  const workflowText = `---\n${yaml}\n---\n\n${body}\n`;
+  await atomicWriteFile(workflowPath, workflowText, "utf8");
+  await mkdir(path.dirname(lastKnownGoodPath), { recursive: true });
+  await atomicWriteFile(lastKnownGoodPath, workflowText, "utf8");
   return workflowPath;
 }

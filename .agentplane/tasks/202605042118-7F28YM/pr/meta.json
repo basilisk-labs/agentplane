@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605042118-7F28YM/bun-patch-release",
+  "created_at": "2026-05-04T21:18:40.756Z",
+  "head_sha": "1e7d2fa30bb495202478d277c186ff8ced0e043a",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605042118-7F28YM",
+  "updated_at": "2026-05-05T00:13:05.905Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

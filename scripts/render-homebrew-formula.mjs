@@ -50,15 +50,15 @@ function requireString(value, label) {
 }
 
 function findPlatformAsset(manifest, platform, arch) {
-  const asset = (manifest.platformAssets ?? []).find(
+  const asset = (manifest.bunAssets ?? manifest.platformAssets ?? []).find(
     (entry) =>
-      entry?.kind === "standalone_cli" && entry?.platform === platform && entry?.arch === arch,
+      entry?.kind === "bun_executable" && entry?.platform === platform && entry?.arch === arch,
   );
-  if (!asset) throw new Error(`Missing standalone platform asset: ${platform}-${arch}`);
+  if (!asset) throw new Error(`Missing Bun platform asset: ${platform}-${arch}`);
   return {
-    url: requireString(asset.url, `${platform}-${arch} standalone URL`),
-    sha256: requireString(asset.sha256, `${platform}-${arch} standalone sha256`),
-    name: requireString(asset.name, `${platform}-${arch} standalone asset name`),
+    url: requireString(asset.url, `${platform}-${arch} Bun URL`),
+    sha256: requireString(asset.sha256, `${platform}-${arch} Bun sha256`),
+    name: requireString(asset.name, `${platform}-${arch} Bun asset name`),
   };
 }
 
@@ -79,7 +79,7 @@ function renderFormula(manifest) {
     url "${darwinX64.url}"
     sha256 "${darwinX64.sha256}"
   else
-    odie "AgentPlane Homebrew formula currently supports macOS arm64 and x86_64 standalone archives"
+    odie "AgentPlane Homebrew formula currently supports macOS arm64 and x86_64 Bun executable archives"
   end
 
   livecheck do
@@ -144,7 +144,7 @@ async function renderHomebrew(repoRoot, args) {
       darwinArm64: findPlatformAsset(manifest, "darwin", "arm64"),
       darwinX64: findPlatformAsset(manifest, "darwin", "x64"),
     },
-    installStrategy: "standalone_bundled_node",
+    installStrategy: "bun_single_file_executable",
     externalChannelSwitchGate: manifest.externalChannelSwitchGate ?? null,
     nextAction:
       channel.status === "skipped_missing_credentials"
@@ -160,8 +160,8 @@ async function renderHomebrew(repoRoot, args) {
     if (formula.includes('depends_on "node"') || formula.includes("npm")) {
       throw new Error("Homebrew formula must not depend on Node or npm");
     }
-    if (!formula.includes("standalone archives")) {
-      throw new Error("Homebrew formula must describe standalone archive support");
+    if (!formula.includes("Bun executable archives")) {
+      throw new Error("Homebrew formula must describe Bun executable archive support");
     }
     if (!formula.includes('bin.install_symlink libexec/"bin/agentplane"')) {
       throw new Error("Homebrew formula must link the standalone agentplane wrapper");

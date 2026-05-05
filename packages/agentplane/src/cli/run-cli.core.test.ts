@@ -942,7 +942,12 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     const config = defaultConfig() as unknown as { schema_version: number };
     config.schema_version = 99;
-    await writeConfig(root, config as ReturnType<typeof defaultConfig>);
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "config.json"),
+      `${JSON.stringify(config, null, 2)}\n`,
+      "utf8",
+    );
 
     const io = captureStdIO();
     try {
@@ -1034,7 +1039,7 @@ describe("runCli", () => {
       path.join(root, ".agentplane", "workflows", "last-known-good.md"),
       "utf8",
     );
-    expect(workflowText).toContain('mode: "branch_pr"');
-    expect(lastKnownGoodText).toContain('mode: "branch_pr"');
+    expect(workflowText).toContain("mode: branch_pr");
+    expect(lastKnownGoodText).toContain("mode: branch_pr");
   });
 });

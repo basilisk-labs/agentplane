@@ -21,7 +21,9 @@ async function mkGitRepoRoot(): Promise<string> {
   const agentplaneDir = path.join(root, ".agentplane");
   await mkdir(agentplaneDir, { recursive: true });
   await saveConfig(agentplaneDir, defaultConfig());
-  await execFileAsync("git", ["add", ".agentplane/WORKFLOW.md"], { cwd: root });
+  await execFileAsync("git", ["add", ".agentplane/WORKFLOW.md", ".agentplane/workflows"], {
+    cwd: root,
+  });
   await execFileAsync(
     "git",
     [

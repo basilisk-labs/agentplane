@@ -45,8 +45,8 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("path: .agentplane/.release/publish/publish-result.json");
     expect(workflow).toContain("Generate release distribution assets");
     expect(workflow).toContain("node scripts/generate-release-distribution.mjs");
-    expect(workflow).toContain("Smoke standalone release assets");
-    expect(workflow).toContain("scripts/smoke-standalone-cli-artifact.mjs");
+    expect(workflow).toContain("Smoke Bun release assets");
+    expect(workflow).toContain("scripts/smoke-bun-compiled-cli.mjs");
     expect(workflow).toContain('--expected-version "${VERSION}"');
     expect(workflow).toContain('if [[ "${artifact}" != *"-linux-x64.tar.gz" ]]; then');
     expect(workflow).toContain("args+=(--skip-cli-commands)");
@@ -92,21 +92,24 @@ describe("publish workflow contract", () => {
       ".agentplane/.release/publish/distribution/release-distribution.json",
     );
     expect(workflow).toContain(
-      ".agentplane/.release/publish/distribution/agentplane-v${{ needs.detect.outputs.version }}-darwin-arm64.tar.gz",
+      ".agentplane/.release/publish/distribution/agentplane-bun-v${{ needs.detect.outputs.version }}-darwin-arm64.tar.gz",
     );
     expect(workflow).toContain(
-      ".agentplane/.release/publish/distribution/agentplane-v${{ needs.detect.outputs.version }}-darwin-x64.tar.gz",
+      ".agentplane/.release/publish/distribution/agentplane-bun-v${{ needs.detect.outputs.version }}-darwin-x64.tar.gz",
     );
     expect(workflow).toContain(
-      ".agentplane/.release/publish/distribution/agentplane-v${{ needs.detect.outputs.version }}-linux-arm64.tar.gz",
+      ".agentplane/.release/publish/distribution/agentplane-bun-v${{ needs.detect.outputs.version }}-linux-arm64.tar.gz",
     );
     expect(workflow).toContain(
-      ".agentplane/.release/publish/distribution/agentplane-v${{ needs.detect.outputs.version }}-linux-x64.tar.gz",
+      ".agentplane/.release/publish/distribution/agentplane-bun-v${{ needs.detect.outputs.version }}-linux-x64.tar.gz",
     );
     expect(workflow).toContain(
-      ".agentplane/.release/publish/distribution/agentplane-v${{ needs.detect.outputs.version }}-win32-x64.zip",
+      ".agentplane/.release/publish/distribution/agentplane-bun-v${{ needs.detect.outputs.version }}-win32-x64.zip",
     );
-    expect(workflow).toContain(".agentplane/.release/publish/distribution/standalone-assets.json");
+    expect(workflow).not.toContain(
+      ".agentplane/.release/publish/distribution/standalone-assets.json",
+    );
+    expect(workflow).toContain(".agentplane/.release/publish/distribution/bun-assets.json");
     expect(workflow).toContain(".agentplane/.release/publish/distribution/install.sh");
     expect(workflow).toContain(".agentplane/.release/publish/distribution/install.ps1");
     expect(workflow).toContain(".agentplane/.release/publish/distribution/SHA256SUMS");

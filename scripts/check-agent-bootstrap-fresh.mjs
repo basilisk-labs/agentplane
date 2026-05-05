@@ -63,6 +63,20 @@ function assertEqualBlock(actual, expected, label) {
   }
 }
 
+function normalizeAgentplaneAlias(command) {
+  return command
+    .replace(/^ap(?=\s)/u, "agentplane")
+    .replace(/^agentplane vshow(?=\s)/u, "agentplane task verify-show");
+}
+
+function assertEqualCommandBlock(actual, expected, label) {
+  assertEqualBlock(
+    actual.map((command) => normalizeAgentplaneAlias(command)),
+    expected,
+    label,
+  );
+}
+
 function assertIncludesAll(source, expected, label) {
   const missing = expected.filter((fragment) => !source.includes(fragment));
   if (missing.length > 0) {
@@ -143,19 +157,19 @@ const main = defineScript({
       readFile(RELEASE_DOC_PATH, "utf8"),
     ]);
 
-    assertEqualBlock(
+    assertEqualCommandBlock(
       extractCodeBlock(agentsRaw, "### Preflight"),
       [...bootstrapModule.BOOTSTRAP_PREFLIGHT_COMMANDS],
       "AGENTS preflight block",
     );
-    assertEqualBlock(
+    assertEqualCommandBlock(
       extractCodeBlock(agentsRaw, "### Task lifecycle"),
       bootstrapModule.BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS.filter(
         (command) => command !== "agentplane task verify-show <task-id>",
       ),
       "AGENTS task lifecycle block",
     );
-    assertEqualBlock(
+    assertEqualCommandBlock(
       extractCodeBlock(agentsRaw, "### Verification"),
       [...bootstrapModule.BOOTSTRAP_VERIFICATION_COMMANDS],
       "AGENTS verification block",

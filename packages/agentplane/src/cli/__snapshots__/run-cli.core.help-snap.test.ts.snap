@@ -5,6 +5,13 @@ exports[`runCli help snapshots (cli2) > help (registry) snapshot 1`] = `
   agentplane help [<cmd...>] [--compact] [--json]
 
 Commands:
+  ACR:
+    acr  Generate, validate, check, explain, and print Agent Change Record artifacts.
+    acr check  Run the ACR merge-gate check for CI and branch review.
+    acr explain  Explain an ACR for human review.
+    acr generate  Generate an Agent Change Record from task, Git, policy, and verification state.
+    acr schema  Print or write the ACR v0.1 JSON Schema.
+    acr validate  Validate an ACR file by schema, local, or CI invariants.
   Backend:
     backend  Backend-related operations.
     backend inspect  Inspect visible backend readiness facts without mutating remote state.
