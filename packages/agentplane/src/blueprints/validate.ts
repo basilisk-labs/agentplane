@@ -1,6 +1,9 @@
 import type {
   Blueprint,
   BlueprintNodeKind,
+  BlueprintPlanArtifact,
+  BlueprintPlanValidationProblem,
+  BlueprintPlanValidationResult,
   BlueprintRegistry,
   BlueprintValidationProblem,
   BlueprintValidationResult,
@@ -29,6 +32,18 @@ function problem(
   message: string,
   path?: string,
 ): BlueprintValidationProblem {
+  return {
+    code,
+    message,
+    ...(path ? { path } : {}),
+  };
+}
+
+function planProblem(
+  code: BlueprintPlanValidationProblem["code"],
+  message: string,
+  path?: string,
+): BlueprintPlanValidationProblem {
   return {
     code,
     message,
@@ -326,6 +341,148 @@ export function validateBlueprintRegistry(registry: BlueprintRegistry): Blueprin
 
   for (const blueprint of registry.blueprints) {
     errors.push(...validateBlueprint(blueprint).errors);
+  }
+
+  return {
+    ok: errors.length === 0,
+    errors,
+  };
+}
+
+function blueprintPolicyModuleSet(blueprint: Blueprint): Set<string> {
+  return new Set([
+    ...blueprint.policyModules,
+    ...blueprint.nodes.flatMap((node) => node.policyModules ?? []),
+  ]);
+}
+
+function entryNodeIds(blueprint: Blueprint): string[] {
+  return collectEntryNodeIds(blueprint);
+}
+
+function hasEdge(blueprint: Blueprint, from: string, to: string): boolean {
+  return blueprint.edges.some((edge) => edge.from === from && edge.to === to);
+}
+
+function isPolicyModulePath(value: string): boolean {
+  return value.startsWith(".agentplane/policy/");
+}
+
+export function validateBlueprintPlanArtifact(opts: {
+  blueprint: Blueprint;
+  plan: BlueprintPlanArtifact;
+}): BlueprintPlanValidationResult {
+  const errors: BlueprintPlanValidationProblem[] = [];
+  const allowedPolicyModules = blueprintPolicyModuleSet(opts.blueprint);
+  const policyModules = opts.plan.policyModules.filter((item) => item.trim().length > 0);
+  const policyManifestEntries = opts.plan.contextManifest.filter((entry) =>
+    entry.kind === "policy_module" && isPolicyModulePath(entry.source ?? entry.id),
+  );
+
+  if (policyModules.length > opts.plan.contextBudget.maxPolicyModules) {
+    errors.push(
+      planProblem(
+        "plan_policy_budget_exceeded",
+        `Blueprint plan reports ${policyModules.length} policy modules, but the budget allows ${opts.plan.contextBudget.maxPolicyModules}.`,
+        "policyModules",
+      ),
+    );
+  }
+  if (policyManifestEntries.length > opts.plan.contextBudget.maxPolicyModules) {
+    errors.push(
+      planProblem(
+        "plan_policy_budget_exceeded",
+        `Blueprint context manifest reports ${policyManifestEntries.length} policy modules, but the budget allows ${opts.plan.contextBudget.maxPolicyModules}.`,
+        "contextManifest",
+      ),
+    );
+  }
+
+  for (const policyModule of policyModules) {
+    if (!allowedPolicyModules.has(policyModule)) {
+      errors.push(
+        planProblem(
+          "plan_unknown_policy_module",
+          `Blueprint plan reports policy module outside the selected blueprint contract: ${policyModule}`,
+          "policyModules",
+        ),
+      );
+    }
+  }
+  for (const [index, entry] of policyManifestEntries.entries()) {
+    const policyModule = entry.source ?? entry.id;
+    if (!allowedPolicyModules.has(policyModule)) {
+      errors.push(
+        planProblem(
+          "plan_unknown_context_policy_module",
+          `Blueprint context manifest reports policy module outside the selected blueprint contract: ${policyModule}`,
+          `contextManifest.${index}`,
+        ),
+      );
+    }
+  }
+
+  const blueprintNodeIds = nodeIds(opts.blueprint);
+  const seenStateIds = new Set<string>();
+  const duplicateStateIds = new Set<string>();
+  for (const state of opts.plan.states) {
+    if (seenStateIds.has(state.id)) {
+      duplicateStateIds.add(state.id);
+    }
+    seenStateIds.add(state.id);
+    if (!blueprintNodeIds.has(state.id)) {
+      errors.push(
+        planProblem(
+          "plan_unknown_state",
+          `Blueprint plan state is not part of the selected blueprint graph: ${state.id}`,
+          "states",
+        ),
+      );
+    }
+  }
+  for (const duplicate of [...duplicateStateIds].toSorted()) {
+    errors.push(
+      planProblem("plan_duplicate_state", `Blueprint plan contains duplicate state: ${duplicate}`),
+    );
+  }
+
+  for (const entryId of entryNodeIds(opts.blueprint)) {
+    if (!seenStateIds.has(entryId)) {
+      errors.push(
+        planProblem(
+          "plan_missing_entry_state",
+          `Blueprint plan is missing entry state: ${entryId}`,
+          "states",
+        ),
+      );
+    }
+  }
+  const finishIds = opts.blueprint.nodes
+    .filter((node) => node.kind === "finish")
+    .map((node) => node.id);
+  if (!finishIds.some((id) => seenStateIds.has(id))) {
+    errors.push(
+      planProblem(
+        "plan_missing_finish_state",
+        `Blueprint plan is missing finish state; expected one of: ${finishIds.join(", ")}`,
+        "states",
+      ),
+    );
+  }
+
+  for (let index = 0; index < opts.plan.states.length - 1; index += 1) {
+    const from = opts.plan.states[index]?.id;
+    const to = opts.plan.states[index + 1]?.id;
+    if (!from || !to || !blueprintNodeIds.has(from) || !blueprintNodeIds.has(to)) continue;
+    if (!hasEdge(opts.blueprint, from, to)) {
+      errors.push(
+        planProblem(
+          "plan_invalid_state_transition",
+          `Blueprint plan transition is not allowed by the selected blueprint graph: ${from} -> ${to}`,
+          `states.${index}`,
+        ),
+      );
+    }
   }
 
   return {

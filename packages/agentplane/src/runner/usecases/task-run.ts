@@ -1,3 +1,6 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 import { resolveRecipeBlueprintExtensions, type RecipeManifest } from "@agentplaneorg/recipes";
 
@@ -202,6 +205,18 @@ function buildRunnerBlueprintContextManifest(opts: {
   return entries;
 }
 
+async function writeTaskBlueprintSnapshot(bundle: RunnerContextBundle): Promise<void> {
+  if (bundle.target.kind !== "task" || !bundle.blueprint) return;
+  const snapshotPath = path.join(
+    bundle.repository.git_root,
+    bundle.repository.workflow_dir,
+    bundle.target.task_id,
+    "blueprint.json",
+  );
+  await mkdir(path.dirname(snapshotPath), { recursive: true });
+  await writeFile(snapshotPath, `${JSON.stringify(bundle.blueprint, null, 2)}\n`, "utf8");
+}
+
 async function writeRunnerRefusalArtifacts(opts: {
   bundle: RunnerContextBundle;
   error: CliError;
@@ -404,6 +419,7 @@ export async function prepareTaskRunnerExecution(opts: {
     requested: bundle.execution.policy_decision.requested,
   });
   assertRunnerTaskExecutable(bundle);
+  await writeTaskBlueprintSnapshot(bundle);
   try {
     assertRunnerPolicyCompatibility(bundle);
   } catch (err) {

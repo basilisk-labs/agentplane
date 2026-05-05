@@ -192,9 +192,11 @@ describe("runCli task run preparation", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS },
       const bundlePath = path.join(runDir, "bundle.json");
       const bootstrapPath = path.join(runDir, "bootstrap.md");
       const statePath = path.join(runDir, "run-state.json");
+      const blueprintSnapshotPath = path.join(root, ".agentplane", "tasks", taskId, "blueprint.json");
       expect(await pathExists(bundlePath)).toBe(true);
       expect(await pathExists(bootstrapPath)).toBe(true);
       expect(await pathExists(statePath)).toBe(true);
+      expect(await pathExists(blueprintSnapshotPath)).toBe(true);
 
       const bundle = JSON.parse(await readFile(bundlePath, "utf8")) as {
         base_prompts?: { id?: string; title?: string; content?: string }[];
@@ -286,6 +288,11 @@ describe("runCli task run preparation", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS },
           requiredEvidence?: { id?: string }[];
         };
         task: { task_id: string };
+      };
+      const blueprintSnapshot = JSON.parse(await readFile(blueprintSnapshotPath, "utf8")) as {
+        blueprintId?: string;
+        contextBudget?: { maxPolicyModules?: number };
+        policyModules?: string[];
       };
       const bootstrap = await readFile(bootstrapPath, "utf8");
       expect(bundle.execution.mode).toBe("dry_run");
@@ -383,6 +390,11 @@ describe("runCli task run preparation", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS },
         blueprintId: "docs.change",
         contextBudget: { maxPolicyModules: 3 },
       });
+      expect(blueprintSnapshot).toMatchObject({
+        blueprintId: "docs.change",
+        contextBudget: { maxPolicyModules: 3 },
+      });
+      expect(blueprintSnapshot.policyModules).toEqual(bundle.blueprint?.policyModules);
       expect(bundle.blueprint?.policyModules?.includes(".agentplane/policy/dod.docs.md")).toBe(
         true,
       );

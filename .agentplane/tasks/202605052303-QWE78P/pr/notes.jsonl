@@ -1,0 +1,1 @@
+{"schema_version":1,"created_at":"2026-05-05T23:13:27.938Z","author":"CODER","body":"Batch scope includes dependent tasks 202605052303-N37XQ0, 202605052303-FXGCNC, and 202605052303-1CEGJD. The PR covers blueprint plan policy budget validation, plan state transition validation, task-local blueprint snapshots, and project-local blueprint JSON validation."}
