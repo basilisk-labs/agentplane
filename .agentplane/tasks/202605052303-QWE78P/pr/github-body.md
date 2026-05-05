@@ -25,12 +25,27 @@ Add validation that materialized blueprint plans do not report policy modules ou
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T23:04:26.057Z
+- Updated: 2026-05-05T23:13:44.651Z
 - Branch: task/202605052303-QWE78P/blueprint-plan-validation
-- Head: 95ac0d6a3459
+- Head: 3212ba2b0830
 
 ```text
-No changes detected.
+ .agentplane/tasks/202605052303-1CEGJD/README.md    | 129 +++++++++++++++++
+ .agentplane/tasks/202605052303-FXGCNC/README.md    | 129 +++++++++++++++++
+ .agentplane/tasks/202605052303-N37XQ0/README.md    | 129 +++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |  23 +++
+ packages/agentplane/src/blueprints/index.ts        |   8 +-
+ packages/agentplane/src/blueprints/model.ts        |  23 ++-
+ packages/agentplane/src/blueprints/plan.ts         |  15 +-
+ .../agentplane/src/blueprints/validate.test.ts     | 113 ++++++++++++++-
+ packages/agentplane/src/blueprints/validate.ts     | 157 +++++++++++++++++++++
+ .../src/cli/run-cli.core.blueprint.test.ts         |  70 +++++++++
+ .../run-cli.core.tasks.query-run-prepare.test.ts   |  12 ++
+ .../src/cli/run-cli/command-catalog/project.ts     |   3 +
+ .../src/cli/run-cli/command-loaders/project.ts     |   2 +
+ .../src/commands/blueprint/blueprint.command.ts    |  94 ++++++++++++
+ .../agentplane/src/runner/usecases/task-run.ts     |  16 +++
+ 15 files changed, 919 insertions(+), 4 deletions(-)
 ```
 
 </details>
