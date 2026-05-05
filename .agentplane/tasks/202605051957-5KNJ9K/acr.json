@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605051957-5KNJ9K",
+  "created_at": "2026-05-05T20:13:41.565Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "dc785d5c8f2db481e40f80ba464b0c5fb11b009c",
+    "work_ref": "main",
+    "work_commit": "dc785d5c8f2db481e40f80ba464b0c5fb11b009c"
+  },
+  "task": {
+    "task_id": "202605051957-5KNJ9K",
+    "title": "Normalize recipe blueprint hints",
+    "intent": "Add recipe blueprint-extension normalization with active recipe filtering, when matching, deterministic ordering, provenance, and compatibility reporting for resolver input.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605051957-5KNJ9K/README.md",
+      "sha256": "sha256:eb8b6d6b8c7c74030173796268dcd2e875cff5c0e5d708698bfba16f346120ee"
+    },
+    "approved_at": "2026-05-05T19:58:48.125Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #939.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605051957-5KNJ9K_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T19:58:48.125Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605051957-5KNJ9K/README.md",
+      "sha256": "sha256:eb8b6d6b8c7c74030173796268dcd2e875cff5c0e5d708698bfba16f346120ee"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605051957-5KNJ9K/README.md",
+      "sha256": "sha256:eb8b6d6b8c7c74030173796268dcd2e875cff5c0e5d708698bfba16f346120ee"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605051957-5KNJ9K/README.md",
+      "sha256": "sha256:eb8b6d6b8c7c74030173796268dcd2e875cff5c0e5d708698bfba16f346120ee"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit dc785d5c8f2db481e40f80ba464b0c5fb11b009c if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:af61a99cd8bc425cbebca95b8856886f83f94ec53105afa37c4dc16cf1d45f71",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
