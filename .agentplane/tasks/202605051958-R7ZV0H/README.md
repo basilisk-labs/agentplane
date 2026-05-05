@@ -1,10 +1,11 @@
 ---
 id: "202605051958-R7ZV0H"
 title: "Add minimal blueprint ACR bridge"
-status: "DOING"
+result_summary: "Merged via PR #942. ACR generation now records compact blueprint summary fields on main."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-05-05T20:44:46.911Z"
   updated_by: "CODER"
   note: "ACR blueprint bridge verified: acr generate emits extensions[agentplane.blueprint] with blueprint id, route, required evidence, recipe extension summaries, and stop reasons without prompt or transcript storage. Checks: acr generate smoke; typecheck; lint:core; ci:local:fast."
-commit: null
+commit:
+  hash: "c8c9cbe086a86a9c396eeef9e26ff35027260159"
+  message: "🔀 5WRJZK integrate: Bridge recipe hints into blueprint resolver"
 comments:
   -
     author: "CODER"
     body: "Start: Adding minimal ACR blueprint summary fields with no prompt, transcript, or runner-bundle storage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #942 merged into main with ACR blueprint summary extension verified locally and by hosted checks."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "ACR blueprint bridge verified: acr generate emits extensions[agentplane.blueprint] with blueprint id, route, required evidence, recipe extension summaries, and stop reasons without prompt or transcript storage. Checks: acr generate smoke; typecheck; lint:core; ci:local:fast."
+  -
+    type: "status"
+    at: "2026-05-05T20:52:19.237Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #942 merged into main with ACR blueprint summary extension verified locally and by hosted checks."
 doc_version: 3
-doc_updated_at: "2026-05-05T20:44:46.919Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T20:52:19.239Z"
+doc_updated_by: "INTEGRATOR"
 description: "Record optional resolved blueprint summary fields in ACR generation and validation without storing full prompts, transcripts, or runner bundles."
 sections:
   Summary: |-
