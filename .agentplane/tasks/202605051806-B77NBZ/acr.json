@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605051806-B77NBZ",
+  "created_at": "2026-05-05T18:26:57.203Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "a7b14d3e4fc80ed21ad8bba703f582e716130861",
+    "work_ref": "main",
+    "work_commit": "a7b14d3e4fc80ed21ad8bba703f582e716130861"
+  },
+  "task": {
+    "task_id": "202605051806-B77NBZ",
+    "title": "Add cloud backend runtime skeleton",
+    "intent": "Implement a cloud task backend shell that stores local cache state, advertises remote capabilities, validates endpoint/token configuration, and exposes inspect/sync behavior ready for the external sync service API.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605051806-B77NBZ/README.md",
+      "sha256": "sha256:2254f0748738fa4480a66e51b1fe14ffa19eaa08fa44b3015062a10fc3e761a8"
+    },
+    "approved_at": "2026-05-05T18:07:00.730Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Cloud backend runtime skeleton landed on main via merge commit a7b14d3e.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605051806-B77NBZ_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T18:07:00.730Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605051806-B77NBZ/README.md",
+      "sha256": "sha256:2254f0748738fa4480a66e51b1fe14ffa19eaa08fa44b3015062a10fc3e761a8"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605051806-B77NBZ/README.md",
+      "sha256": "sha256:2254f0748738fa4480a66e51b1fe14ffa19eaa08fa44b3015062a10fc3e761a8"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605051806-B77NBZ/README.md",
+      "sha256": "sha256:2254f0748738fa4480a66e51b1fe14ffa19eaa08fa44b3015062a10fc3e761a8"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit a7b14d3e4fc80ed21ad8bba703f582e716130861 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:bbca225524b8294d43701b6f9ea3eb84f29b7329d73040f83d168fefb34af679",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
