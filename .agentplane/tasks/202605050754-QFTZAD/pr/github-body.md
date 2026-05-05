@@ -16,7 +16,7 @@ Add an Obsidian-friendly generated Markdown projection under .agentplane so task
 ## Verification
 
 - State: ok
-- Note: Reverified after fixing Docs CI IA handling for generated Obsidian navigation paths.
+- Note: Expanded scope to resolve task-readme review blockers. Verified Obsidian projection plus README v3 canonical sections behavior, task-store no-op handling, release evidence audit, docs gates, doctor, and ci:local:fast.
 - Canonical workflow state lives in the task README.
 
 <details>

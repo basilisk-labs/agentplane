@@ -2,11 +2,11 @@ import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import {
   docChanged,
-  extractTaskDoc,
   mergeTaskDoc,
   normalizeTaskDocVersion,
   parseTaskReadme,
   renderTaskReadme,
+  taskReadmeDocBody,
 } from "@agentplaneorg/core/tasks";
 
 import { taskRecordToData, type TaskData } from "../../../backends/task-backend.js";
@@ -123,7 +123,7 @@ export async function writeTaskReadme(opts: {
   const frontmatter = { ...entry.parsed.frontmatter, ...taskDataToFrontmatter(next) };
 
   let body = entry.parsed.body ?? "";
-  const existingDoc = extractTaskDoc(body);
+  const existingDoc = taskReadmeDocBody(entry.parsed.frontmatter, body);
   const now = new Date().toISOString();
   const currentDocVersion = normalizeTaskDocVersion(entry.parsed.frontmatter.doc_version);
   const requestedDocVersion = normalizeTaskDocVersion(next.doc_version, currentDocVersion);

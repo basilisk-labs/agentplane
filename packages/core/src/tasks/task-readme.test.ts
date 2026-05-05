@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { renderTaskDocFromSections, taskDocToSectionMap } from "./task-doc.js";
-import { parseTaskReadme, renderTaskReadme } from "./task-readme.js";
+import { parseTaskReadme, renderTaskReadme, taskReadmeDocBody } from "./task-readme.js";
 
 describe("task README frontmatter", () => {
   const sample = `---
@@ -301,6 +301,35 @@ Hello world.
     expect(rendered).not.toContain("stale body");
   });
 
+  it("fills missing canonical frontmatter sections from the README body", () => {
+    const body = [
+      "## Summary",
+      "",
+      "stale summary",
+      "",
+      "## Scope",
+      "",
+      "- Preserve body scope.",
+      "",
+      "## Plan",
+      "",
+      "1. Preserve body plan.",
+      "",
+    ].join("\n");
+    const frontmatter = {
+      doc_version: 3,
+      sections: {
+        Summary: "Canonical summary",
+      },
+    };
+
+    const doc = taskReadmeDocBody(frontmatter, body);
+    expect(doc).toContain("## Summary\n\nCanonical summary");
+    expect(doc).toContain("## Scope\n\n- Preserve body scope.");
+    expect(doc).toContain("## Plan\n\n1. Preserve body plan.");
+    expect(doc).not.toContain("stale summary");
+  });
+
   it("preserves contextual prose body when canonical sections exist", () => {
     const contextualBody = [
       "# Context",
@@ -342,5 +371,62 @@ Hello world.
     expect(rendered).toContain("# Context");
     expect(rendered).toContain("## References");
     expect(rendered).not.toContain("## Summary");
+  });
+
+  it("preserves freeform context when pruning stale canonical task sections", () => {
+    const mixedBody = [
+      "# Context",
+      "",
+      "Introductory prose that is not part of a task-doc section.",
+      "",
+      "## Summary",
+      "",
+      "stale summary",
+      "",
+      "## References",
+      "",
+      "- docs/user/tasks-and-backends.mdx",
+      "",
+      "Trailing prose.",
+      "",
+      "## Verification",
+      "",
+      "stale verification",
+      "",
+    ].join("\n");
+    const rendered = renderTaskReadme(
+      {
+        id: "202603130003-TEST",
+        title: "Schema sample",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        revision: 1,
+        depends_on: [],
+        tags: [],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-03-13T00:00:00.000Z",
+        doc_updated_by: "CODER",
+        description: "sample",
+        sections: {
+          Summary: "Canonical summary",
+          Verification: "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+        },
+      },
+      mixedBody,
+    );
+
+    expect(rendered).toContain("# Context");
+    expect(rendered).toContain("Introductory prose");
+    expect(rendered).toContain("## References");
+    expect(rendered).toContain("Trailing prose.");
+    expect(rendered).not.toContain("## Summary");
+    expect(rendered).not.toContain("stale summary");
+    expect(rendered).not.toContain("## Verification");
+    expect(rendered).not.toContain("stale verification");
   });
 });

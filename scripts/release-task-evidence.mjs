@@ -8,6 +8,7 @@ import {
   renderTaskDocFromSections,
   renderTaskReadme,
   taskDocToSectionMap,
+  taskReadmeDocBody,
   taskReadmePath,
 } from "../packages/core/src/index.ts";
 
@@ -426,7 +427,8 @@ function taskUpdatedAt(frontmatter) {
 }
 
 function hasClosureEvidence(parsed) {
-  const verification = taskDocToSectionMap(parsed.body).Verification ?? "";
+  const doc = taskReadmeDocBody(parsed.frontmatter, parsed.body);
+  const verification = taskDocToSectionMap(doc).Verification ?? "";
   const text = [
     verification,
     String(parsed.frontmatter.result ?? ""),

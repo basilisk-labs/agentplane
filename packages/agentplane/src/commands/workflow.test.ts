@@ -26,6 +26,7 @@ import {
   suggestAllowPrefixes,
 } from "./workflow.js";
 import { defaultConfig } from "@agentplaneorg/core/config";
+import { parseTaskReadme, taskReadmeDocBody } from "@agentplaneorg/core/tasks";
 import * as taskBackend from "../backends/task-backend.js";
 import * as prompts from "../cli/prompts.js";
 import { parseCommandArgv } from "../cli/spec/parse.js";
@@ -172,8 +173,10 @@ describe("commands/workflow", () => {
     if (!created) throw new Error("expected created task");
     const readmePath = path.join(root, ".agentplane", "tasks", created.id, "README.md");
     const readme = await readFile(readmePath, "utf8");
-    expect(readme).toContain("## Verify Steps");
-    expect(readme).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
+    const parsed = parseTaskReadme(readme);
+    const doc = taskReadmeDocBody(parsed.frontmatter, parsed.body);
+    expect(doc).toContain("## Verify Steps");
+    expect(doc).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
   });
 
   it("task new rejects empty required fields after trimming", async () => {

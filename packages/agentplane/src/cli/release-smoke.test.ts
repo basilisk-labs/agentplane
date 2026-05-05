@@ -4,6 +4,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { runCli } from "./run-cli.js";
+import { parseTaskReadme, taskReadmeDocBody } from "@agentplaneorg/core/tasks";
 import {
   captureStdIO,
   commitAll,
@@ -233,13 +234,15 @@ Legacy verification plan.
       }
 
       const migratedReadme = await readFile(readmePath, "utf8");
+      const migratedParsed = parseTaskReadme(migratedReadme);
+      const migratedDoc = taskReadmeDocBody(migratedParsed.frontmatter, migratedParsed.body);
       expect(migratedReadme).toContain("doc_version: 3");
       expect(migratedReadme).toContain("revision: 1");
       expect(migratedReadme).toContain("sections:");
-      expect(migratedReadme).toContain("## Findings");
-      expect(migratedReadme).not.toContain("## Notes");
-      expect(migratedReadme).not.toContain("### Plan");
-      expect(migratedReadme).not.toContain("### Results");
+      expect(migratedDoc).toContain("## Findings");
+      expect(migratedDoc).not.toContain("## Notes");
+      expect(migratedDoc).not.toContain("### Plan");
+      expect(migratedDoc).not.toContain("### Results");
 
       const tasksExportText = await readFile(path.join(root, ".agentplane", "tasks.json"), "utf8");
       const tasksExport = JSON.parse(tasksExportText) as {
@@ -427,9 +430,11 @@ Legacy verification plan.
 
       expect(await pathExists(missingPolicyPath)).toBe(true);
       const migratedReadme = await readFile(readmePath, "utf8");
+      const migratedParsed = parseTaskReadme(migratedReadme);
+      const migratedDoc = taskReadmeDocBody(migratedParsed.frontmatter, migratedParsed.body);
       expect(migratedReadme).toContain("doc_version: 3");
-      expect(migratedReadme).toContain("## Findings");
-      expect(migratedReadme).not.toContain("## Notes");
+      expect(migratedDoc).toContain("## Findings");
+      expect(migratedDoc).not.toContain("## Notes");
 
       io = captureStdIO();
       const doctorAfter = vi.spyOn(console, "error").mockImplementation(() => {
