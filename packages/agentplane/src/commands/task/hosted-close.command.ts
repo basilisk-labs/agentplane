@@ -15,7 +15,11 @@ import {
   type PrMeta,
 } from "../shared/pr-meta.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
-import { createTaskCloseCommit, writeFinishedTasks } from "./finish-shared.js";
+import {
+  createTaskCloseCommit,
+  refreshAcrArtifactsForFinishedTasks,
+  writeFinishedTasks,
+} from "./finish-shared.js";
 import { resolveHostedMergeTargetFromEvent } from "./hosted-merge-sync.js";
 import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../incidents/shared.js";
 import type { TaskData } from "../../backends/task-backend.js";
@@ -231,6 +235,14 @@ async function closeHostedTask(opts: {
     riskLevel: undefined,
     breaking: false,
     taskCommitInfo,
+  });
+  await refreshAcrArtifactsForFinishedTasks({
+    ctx: opts.ctx,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride,
+    loadedTasks: tasksNeedingClose,
+    taskCommitInfo,
+    author: "INTEGRATOR",
   });
   const collectedIncidents = await collectTaskIncidents({
     ctx: opts.ctx,

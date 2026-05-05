@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   buildIntegratedPrMeta: vi.fn(),
   readCommitInfo: vi.fn(),
   writeFinishedTasks: vi.fn(),
+  refreshAcrArtifactsForFinishedTasks: vi.fn(),
   createTaskCloseCommit: vi.fn(),
   collectTaskIncidents: vi.fn(),
 }));
@@ -45,6 +46,7 @@ vi.mock("../../../incidents/shared.js", async (importOriginal) => {
 });
 vi.mock("../../../task/finish-shared.js", () => ({
   writeFinishedTasks: mocks.writeFinishedTasks,
+  refreshAcrArtifactsForFinishedTasks: mocks.refreshAcrArtifactsForFinishedTasks,
   createTaskCloseCommit: mocks.createTaskCloseCommit,
 }));
 
@@ -148,6 +150,13 @@ describe("pr/integrate/internal/finalize", () => {
         loadedTasks: [{ taskId: "T-1", task: { id: "T-1", status: "DOING", title: "Task" } }],
         metaTaskId: "T-1",
         taskCommitInfo: { hash: "deadbeef", message: "merge" },
+      }),
+    );
+    expect(mocks.refreshAcrArtifactsForFinishedTasks).toHaveBeenCalledWith(
+      expect.objectContaining({
+        loadedTasks: [{ taskId: "T-1", task: { id: "T-1", status: "DOING", title: "Task" } }],
+        taskCommitInfo: { hash: "deadbeef", message: "merge" },
+        author: "INTEGRATOR",
       }),
     );
     expect(mocks.createTaskCloseCommit).toHaveBeenCalledWith(

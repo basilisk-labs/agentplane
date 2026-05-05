@@ -988,6 +988,7 @@ describe("task finish validation", () => {
 
   it("refreshes ACR from existing task commit metadata", async () => {
     const ctx = mkCtx();
+    const invalidateStatus = vi.spyOn(ctx.git, "invalidateStatus");
     ctx.config.acr.enabled = true;
     ctx.config.acr.write_on_finish = true;
     mocks.loadTaskFromContext.mockResolvedValue(
@@ -1036,6 +1037,7 @@ describe("task finish validation", () => {
         refresh: true,
       }),
     );
+    expect(invalidateStatus).toHaveBeenCalled();
   });
 
   it("rejects combining --commit-from-comment with --status-commit", async () => {
