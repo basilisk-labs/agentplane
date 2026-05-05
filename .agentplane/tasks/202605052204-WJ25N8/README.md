@@ -1,10 +1,10 @@
 ---
 id: "202605052204-WJ25N8"
 title: "Materialize selected blueprint plans on tasks"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +24,16 @@ verification:
   updated_at: "2026-05-05T22:18:47.757Z"
   updated_by: "CODER"
   note: "Verified: selected blueprint plans are materialized as structured plan objects with selection rationale, states, evidence checklist, policy modules, allowed commands, and context manifest."
-commit: null
+commit:
+  hash: "5e16019e1eea4992217e70d12170dc8661de1988"
+  message: "Merge pull request #952 from basilisk-labs/task/202605052203-WH7G6R/executable-blueprint-contracts"
 comments:
   -
     author: "CODER"
     body: "Start: Materialize selected blueprint plan artifacts as part of the approved executable blueprint batch implementation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #952 merged the dependent executable blueprint registry, plan artifact, explain, recipe binding, and runner bundle visibility tasks into main."
 events:
   -
     type: "status"
@@ -43,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: selected blueprint plans are materialized as structured plan objects with selection rationale, states, evidence checklist, policy modules, allowed commands, and context manifest."
+  -
+    type: "status"
+    at: "2026-05-05T22:27:39.720Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #952 merged the dependent executable blueprint registry, plan artifact, explain, recipe binding, and runner bundle visibility tasks into main."
 doc_version: 3
-doc_updated_at: "2026-05-05T22:18:47.765Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T22:27:39.720Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add the third implementation task for blueprint execution contracts: persist the selected blueprint, selection rationale, ordered states, required evidence, policy modules, and command boundaries as a task artifact when a task route is resolved."
 sections:
   Summary: |-

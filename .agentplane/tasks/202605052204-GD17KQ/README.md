@@ -1,10 +1,10 @@
 ---
 id: "202605052204-GD17KQ"
 title: "Bind recipes to blueprint definitions"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -24,11 +24,16 @@ verification:
   updated_at: "2026-05-05T22:19:07.570Z"
   updated_by: "CODER"
   note: "Verified: recipe blueprint extensions remain bound to typed blueprint definitions and runner bundle preparation now resolves recipe manifest blueprint hints into the selected plan."
-commit: null
+commit:
+  hash: "5e16019e1eea4992217e70d12170dc8661de1988"
+  message: "Merge pull request #952 from basilisk-labs/task/202605052203-WH7G6R/executable-blueprint-contracts"
 comments:
   -
     author: "CODER"
     body: "Start: Bind recipe hints to typed blueprint definitions within the approved executable blueprint batch implementation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #952 merged the dependent executable blueprint registry, plan artifact, explain, recipe binding, and runner bundle visibility tasks into main."
 events:
   -
     type: "status"
@@ -43,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: recipe blueprint extensions remain bound to typed blueprint definitions and runner bundle preparation now resolves recipe manifest blueprint hints into the selected plan."
+  -
+    type: "status"
+    at: "2026-05-05T22:27:39.723Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #952 merged the dependent executable blueprint registry, plan artifact, explain, recipe binding, and runner bundle visibility tasks into main."
 doc_version: 3
-doc_updated_at: "2026-05-05T22:19:07.579Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T22:27:39.723Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add the fifth implementation task for blueprint execution contracts: connect recipe hints to typed blueprint definitions so recipes describe domain method while blueprints describe lifecycle route, without making code PR workflow the default for analysis or content tasks."
 sections:
   Summary: |-
