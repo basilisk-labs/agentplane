@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605051735-RATKYP",
+  "created_at": "2026-05-05T17:41:46.089Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "fa9e5505136bce758678a72bca8ac966e7a28bab",
+    "work_ref": "main",
+    "work_commit": "fa9e5505136bce758678a72bca8ac966e7a28bab"
+  },
+  "task": {
+    "task_id": "202605051735-RATKYP",
+    "title": "Document cloud backend model",
+    "intent": "Document the neutral local/cloud backend model, cloud connection flow, and integration task plan for AgentPlane.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605051735-RATKYP/README.md",
+      "sha256": "sha256:3bf3af44bce0730ad2aea54d27b47b5b7c016035d6175b99e3f0dc2e4fd93a76"
+    },
+    "approved_at": "2026-05-05T17:35:27.168Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #923.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605051735-RATKYP_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T17:35:27.168Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605051735-RATKYP/README.md",
+      "sha256": "sha256:3bf3af44bce0730ad2aea54d27b47b5b7c016035d6175b99e3f0dc2e4fd93a76"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605051735-RATKYP/README.md",
+      "sha256": "sha256:3bf3af44bce0730ad2aea54d27b47b5b7c016035d6175b99e3f0dc2e4fd93a76"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605051735-RATKYP/README.md",
+      "sha256": "sha256:3bf3af44bce0730ad2aea54d27b47b5b7c016035d6175b99e3f0dc2e4fd93a76"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit fa9e5505136bce758678a72bca8ac966e7a28bab if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:2f9b3887a3215e416f110f504795d03c5349688de49c54dab8780e96e8635ecd",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
