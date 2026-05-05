@@ -25,9 +25,9 @@ Add a CI/release gate so every release is preceded by an incident review/fix tas
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T14:22:20.053Z
+- Updated: 2026-05-05T14:28:46.512Z
 - Branch: task/202605051359-R5XAZG/release-incident-gate
-- Head: f255c5d786ab
+- Head: 2cf0cd172f1e
 
 ```text
  .agentplane/policy/workflow.release.md             | 12 ++--
