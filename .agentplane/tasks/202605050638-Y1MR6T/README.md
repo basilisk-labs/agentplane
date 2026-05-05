@@ -1,10 +1,11 @@
 ---
 id: "202605050638-Y1MR6T"
 title: "Create PR sidecar files only when they have content"
-status: "DOING"
+result_summary: "Made branch_pr notes and verify sidecars optional and lazy-created"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-05T06:58:05.874Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts -> pass (24 tests). Command: bunx eslint touched PR artifact files -> pass. Command: bunx prettier --check touched PR artifact files -> pass. Command: node .agentplane/policy/check-routing.mjs -> pass. Scope: optional notes.jsonl/verify.log sidecar creation and validation behavior."
-commit: null
+commit:
+  hash: "5410c1644d9d4b06f41c990ff56a6d20e6d5a5cc"
+  message: "🔀 Y1MR6T integrate: Create PR sidecars only when needed"
 comments:
   -
     author: "CODER"
     body: "Start: implementing lazy creation for optional branch_pr sidecar files so empty verify and handoff artifacts are not pre-created while existing readers stay tolerant."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged lazy optional sidecar behavior into main after focused PR artifact tests, eslint, prettier, policy routing, and pr check."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts -> pass (24 tests). Command: bunx eslint touched PR artifact files -> pass. Command: bunx prettier --check touched PR artifact files -> pass. Command: node .agentplane/policy/check-routing.mjs -> pass. Scope: optional notes.jsonl/verify.log sidecar creation and validation behavior."
+  -
+    type: "status"
+    at: "2026-05-05T07:00:27.360Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged lazy optional sidecar behavior into main after focused PR artifact tests, eslint, prettier, policy routing, and pr check."
 doc_version: 3
-doc_updated_at: "2026-05-05T06:58:05.888Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T07:00:27.361Z"
+doc_updated_by: "INTEGRATOR"
 description: "Stop pre-creating empty branch_pr sidecar files such as pr/verify.log and pr/notes.jsonl; create them lazily on first verification log or handoff note write, while keeping existing readers tolerant of missing files."
 sections:
   Summary: |-

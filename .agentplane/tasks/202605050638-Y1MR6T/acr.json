@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605050638-Y1MR6T",
+  "created_at": "2026-05-05T07:00:27.469Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "5410c1644d9d4b06f41c990ff56a6d20e6d5a5cc",
+    "work_ref": "main",
+    "work_commit": "5410c1644d9d4b06f41c990ff56a6d20e6d5a5cc"
+  },
+  "task": {
+    "task_id": "202605050638-Y1MR6T",
+    "title": "Create PR sidecar files only when they have content",
+    "intent": "Stop pre-creating empty branch_pr sidecar files such as pr/verify.log and pr/notes.jsonl; create them lazily on first verification log or handoff note write, while keeping existing readers tolerant of missing files.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605050638-Y1MR6T/README.md",
+      "sha256": "sha256:41234c193437c0bee012bca1c6b8ad3fc050668c1f032006c4067664b918f549"
+    },
+    "approved_at": "2026-05-05T06:39:41.457Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Made branch_pr notes and verify sidecars optional and lazy-created",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605050638-Y1MR6T_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T06:39:41.457Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605050638-Y1MR6T/README.md",
+      "sha256": "sha256:41234c193437c0bee012bca1c6b8ad3fc050668c1f032006c4067664b918f549"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605050638-Y1MR6T/README.md",
+      "sha256": "sha256:41234c193437c0bee012bca1c6b8ad3fc050668c1f032006c4067664b918f549"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605050638-Y1MR6T/README.md",
+      "sha256": "sha256:41234c193437c0bee012bca1c6b8ad3fc050668c1f032006c4067664b918f549"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 5410c1644d9d4b06f41c990ff56a6d20e6d5a5cc if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:68b190607f030e91119c595da86639dfa0e449d61bfeea0992e567a3e1f5401f",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
