@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605051354-F8D9YX/legacy-config-upgrade-commit",
+  "created_at": "2026-05-05T13:54:34.142Z",
+  "head_sha": "cf196ded43017346aa741f4abbf0aad94102998e",
+  "last_verified_at": "2026-05-05T13:57:57.936Z",
+  "last_verified_sha": "98212bb741b6affcaddc29632195cee86519f091",
+  "schema_version": 1,
+  "task_id": "202605051354-F8D9YX",
+  "updated_at": "2026-05-05T13:58:55.335Z",
+  "verify": {
+    "status": "pass"
+  }
+}

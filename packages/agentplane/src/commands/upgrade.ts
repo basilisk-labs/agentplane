@@ -3,6 +3,8 @@ import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { loadConfig } from "@agentplaneorg/core/config";
+import { gitEnv } from "@agentplaneorg/core/git";
+import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { fileExists } from "../cli/fs-utils.js";
 import { exitCodeForError } from "../cli/exit-codes.js";
@@ -24,6 +26,7 @@ import {
 import { materializeUpgradeSource, type MaterializedUpgrade } from "./upgrade/materialize.js";
 import { planManagedUpgrade } from "./upgrade/plan.js";
 import {
+  CONFIG_REL_PATH,
   WORKFLOW_REL_PATH,
   normalizeVersionForConfig,
   toUpgradeBaselineKey,
@@ -49,6 +52,18 @@ export type UpgradeFlags = {
 };
 
 const ASSETS_DIR_URL = resolveAgentplaneAssetDirUrl();
+
+async function isTrackedFile(gitRoot: string, relPath: string): Promise<boolean> {
+  try {
+    await execFileAsync("git", ["ls-files", "--error-unmatch", "--", relPath], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export async function cmdUpgradeParsed(opts: {
   cwd: string;
@@ -225,6 +240,7 @@ export async function cmdUpgradeParsed(opts: {
       }
 
       const hasManagedMutations = additions.length > 0 || updates.length > 0;
+      const legacyConfigWasTracked = await isTrackedFile(resolved.gitRoot, CONFIG_REL_PATH);
       const shouldMutateConfig = await persistUpgradeState({
         agentplaneDir: resolved.agentplaneDir,
         rawConfig: loaded.raw,
@@ -262,6 +278,7 @@ export async function cmdUpgradeParsed(opts: {
           ...migratedTaskDocs.changedPaths,
           ...workflowArtifacts.commitPaths,
           ...(shouldMutateConfig ? [WORKFLOW_REL_PATH] : []),
+          ...(shouldMutateConfig && legacyConfigWasTracked ? [CONFIG_REL_PATH] : []),
         ]),
       ];
       const commit = await createUpgradeCommit({

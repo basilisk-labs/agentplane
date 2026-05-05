@@ -196,6 +196,57 @@ describe("runCli", () => {
   );
 
   it(
+    "upgrade commits tracked legacy config removal when migrating to WORKFLOW-only config",
+    { timeout: WORKFLOW_RUNTIME_ARTIFACTS_TIMEOUT_MS },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await configureGitUser(root);
+
+      const configPath = path.join(root, ".agentplane", "config.json");
+      const workflowPath = path.join(root, ".agentplane", "WORKFLOW.md");
+      const lastKnownGoodPath = path.join(root, ".agentplane", "workflows", "last-known-good.md");
+      await mkdir(path.dirname(configPath), { recursive: true });
+      await writeFile(configPath, JSON.stringify(defaultConfig(), null, 2) + "\n", "utf8");
+      await commitAll(root, "✨ fixture: tracked legacy config");
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["upgrade", "--yes", "--no-backup", "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("Upgrade commit:");
+      } finally {
+        io.restore();
+      }
+
+      await expect(pathExists(configPath)).resolves.toBe(false);
+      await expect(pathExists(workflowPath)).resolves.toBe(true);
+      await expect(pathExists(lastKnownGoodPath)).resolves.toBe(true);
+
+      const execFileAsync = promisify(execFile);
+      const { stdout: statusOut } = await execFileAsync(
+        "git",
+        ["status", "--short", "--untracked-files=no"],
+        {
+          cwd: root,
+          env: cleanGitEnv(),
+        },
+      );
+      expect(String(statusOut ?? "").trim()).toBe("");
+
+      const { stdout: showOut } = await execFileAsync(
+        "git",
+        ["show", "--name-status", "--format=", "--no-renames", "HEAD"],
+        {
+          cwd: root,
+          env: cleanGitEnv(),
+        },
+      );
+      expect(String(showOut ?? "")).toContain("D\t.agentplane/config.json");
+      expect(String(showOut ?? "")).toContain("A\t.agentplane/WORKFLOW.md");
+    },
+  );
+
+  it(
     "recovers a legacy README v2 task after upgrade via task migrate-doc and export",
     { timeout: 60_000 },
     async () => {
@@ -376,7 +427,7 @@ Legacy verification plan.
       expect(migratedReadme).toContain("doc_version: 3");
       expect(migratedReadme).toContain("revision: 1");
       expect(migratedReadme).toContain("sections:");
-      expect(migratedReadme).toContain("## Findings");
+      expect(migratedReadme).toContain("Findings:");
       expect(migratedReadme).not.toContain("## Notes");
       expect(migratedReadme).not.toContain("### Plan");
       expect(migratedReadme).not.toContain("### Results");
@@ -556,7 +607,7 @@ Legacy verification plan.
       expect(migratedReadme).toContain("doc_version: 3");
       expect(migratedReadme).toContain("revision: 1");
       expect(migratedReadme).toContain("sections:");
-      expect(migratedReadme).toContain("## Findings");
+      expect(migratedReadme).toContain("Findings:");
       expect(migratedReadme).not.toContain("## Notes");
       expect(migratedReadme).not.toContain("### Plan");
       expect(migratedReadme).not.toContain("### Results");
@@ -752,7 +803,7 @@ Legacy verification plan.
       expect(await pathExists(missingPolicyPath)).toBe(true);
       const migratedReadme = await readFile(readmePath, "utf8");
       expect(migratedReadme).toContain("doc_version: 3");
-      expect(migratedReadme).toContain("## Findings");
+      expect(migratedReadme).toContain("Findings:");
       expect(migratedReadme).not.toContain("## Notes");
 
       io = captureStdIO();
@@ -886,11 +937,9 @@ Legacy verification plan.
 
   it("upgrade rejects non-github framework sources", async () => {
     const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const configPath = path.join(root, ".agentplane", "config.json");
-    const config = JSON.parse(await readFile(configPath, "utf8")) as Record<string, unknown>;
+    const config = defaultConfig() as unknown as Record<string, unknown>;
     (config.framework as Record<string, unknown>).source = "https://example.com/agentplane";
-    await writeFile(configPath, JSON.stringify(config, null, 2), "utf8");
+    await writeConfig(root, config as ReturnType<typeof defaultConfig>);
 
     const io = captureStdIO();
     try {
