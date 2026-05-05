@@ -394,6 +394,7 @@ Hello world.
       "stale verification",
       "",
     ].join("\n");
+
     const rendered = renderTaskReadme(
       {
         id: "202603130003-TEST",
@@ -428,5 +429,85 @@ Hello world.
     expect(rendered).not.toContain("stale summary");
     expect(rendered).not.toContain("## Verification");
     expect(rendered).not.toContain("stale verification");
+  });
+
+  it("preserves v3 Notes and Risks as contextual Markdown sections", () => {
+    const rendered = renderTaskReadme(
+      {
+        id: "202603130004-TEST",
+        title: "Schema sample",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        revision: 1,
+        depends_on: [],
+        tags: [],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-03-13T00:00:00.000Z",
+        doc_updated_by: "CODER",
+        description: "sample",
+        sections: { Summary: "Canonical summary", Findings: "Canonical finding" },
+      },
+      [
+        "## Summary",
+        "",
+        "stale",
+        "",
+        "## Notes",
+        "",
+        "Keep notes.",
+        "",
+        "## Risks",
+        "",
+        "Keep risks.",
+      ].join("\n"),
+    );
+
+    expect(rendered).not.toContain("stale");
+    expect(rendered).toContain("## Notes\n\nKeep notes.");
+    expect(rendered).toContain("## Risks\n\nKeep risks.");
+  });
+
+  it("preserves contextual prose before canonical headings", () => {
+    const rendered = renderTaskReadme(
+      {
+        id: "202603130004-TEST",
+        title: "Schema sample",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        revision: 1,
+        depends_on: [],
+        tags: [],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-03-13T00:00:00.000Z",
+        doc_updated_by: "CODER",
+        description: "sample",
+        sections: { Summary: "Canonical summary", Findings: "Canonical finding" },
+      },
+      [
+        "Read this first.",
+        "",
+        "## Summary",
+        "",
+        "stale",
+        "",
+        "## References",
+        "",
+        "- docs/ref",
+      ].join("\n"),
+    );
+
+    expect(rendered).toContain("Read this first.");
+    expect(rendered).toContain("## References\n\n- docs/ref");
+    expect(rendered).not.toContain("stale");
   });
 });

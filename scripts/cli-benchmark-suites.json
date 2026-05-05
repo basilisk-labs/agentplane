@@ -13,11 +13,11 @@
         },
         {
           "id": "task_list",
-          "argv": ["task", "list", "--root", "{root}"]
+          "argv": ["task", "list", "--limit", "50", "--quiet", "--root", "{root}"]
         },
         {
           "id": "task_search",
-          "argv": ["task", "search", "task", "--root", "{root}"]
+          "argv": ["task", "search", "task", "--limit", "50", "--root", "{root}"]
         },
         {
           "id": "task_next",

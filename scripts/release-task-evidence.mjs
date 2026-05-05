@@ -386,7 +386,7 @@ async function runApply(argv) {
 
   const verificationText = renderVerificationSection(manifest, args.repo);
   const sections = {
-    ...taskDocToSectionMap(parsed.body),
+    ...taskDocToSectionMap(taskReadmeDocBody(parsed.frontmatter, parsed.body)),
     Verification: verificationText,
   };
   const body = renderTaskDocFromSections(sections);
@@ -427,8 +427,8 @@ function taskUpdatedAt(frontmatter) {
 }
 
 function hasClosureEvidence(parsed) {
-  const doc = taskReadmeDocBody(parsed.frontmatter, parsed.body);
-  const verification = taskDocToSectionMap(doc).Verification ?? "";
+  const verification =
+    taskDocToSectionMap(taskReadmeDocBody(parsed.frontmatter, parsed.body)).Verification ?? "";
   const text = [
     verification,
     String(parsed.frontmatter.result ?? ""),

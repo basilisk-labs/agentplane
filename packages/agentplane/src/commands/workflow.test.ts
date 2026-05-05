@@ -26,7 +26,7 @@ import {
   suggestAllowPrefixes,
 } from "./workflow.js";
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { parseTaskReadme, taskReadmeDocBody } from "@agentplaneorg/core/tasks";
+import { parseTaskReadme, renderTaskDocFromSections } from "@agentplaneorg/core/tasks";
 import * as taskBackend from "../backends/task-backend.js";
 import * as prompts from "../cli/prompts.js";
 import { parseCommandArgv } from "../cli/spec/parse.js";
@@ -174,9 +174,10 @@ describe("commands/workflow", () => {
     const readmePath = path.join(root, ".agentplane", "tasks", created.id, "README.md");
     const readme = await readFile(readmePath, "utf8");
     const parsed = parseTaskReadme(readme);
-    const doc = taskReadmeDocBody(parsed.frontmatter, parsed.body);
+    const doc = renderTaskDocFromSections(parsed.frontmatter.sections as Record<string, string>);
+    expect(readme).not.toContain("## Verify Steps");
     expect(doc).toContain("## Verify Steps");
-    expect(doc).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
+    expect(readme).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
   });
 
   it("task new rejects empty required fields after trimming", async () => {
@@ -492,7 +493,7 @@ describe("commands/workflow", () => {
     try {
       const code = await cmdTaskListWithFilters({
         cwd: root,
-        filters: { status: [], owner: ["CODER"], tag: ["docs"], quiet: true },
+        filters: { status: [], owner: ["CODER"], tag: ["docs"], limit: 1, quiet: true },
       });
       expect(code).toBe(0);
       expect(ioList.stdout).toContain("202602050900-T1V2");

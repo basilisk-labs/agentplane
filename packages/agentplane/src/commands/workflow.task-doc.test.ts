@@ -11,7 +11,7 @@ import {
   cmdTaskPlanReject,
 } from "./workflow.js";
 import { defaultConfig } from "@agentplaneorg/core/config";
-import { parseTaskReadme, taskReadmeDocBody } from "@agentplaneorg/core/tasks";
+import { parseTaskReadme, renderTaskDocFromSections } from "@agentplaneorg/core/tasks";
 import * as taskBackend from "../backends/task-backend.js";
 import { captureStdIO, mkGitRepoRoot, silenceStdIO, writeDefaultConfig } from "@agentplane/testkit";
 
@@ -137,9 +137,8 @@ describe("commands/workflow", () => {
     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const text = await readFile(readmePath, "utf8");
     const parsed = parseTaskReadme(text);
-    const doc = taskReadmeDocBody(parsed.frontmatter, parsed.body);
-    expect((doc.match(/^## Summary$/gm) ?? []).length).toBe(1);
-    expect(doc).toContain("Hello from file");
+    expect((text.match(/^## Summary$/gm) ?? []).length).toBe(0);
+    expect((parsed.frontmatter.sections as Record<string, string>).Summary).toBe("Hello from file");
   });
 
   it("task doc set accepts full-doc content with multiple headings", async () => {
@@ -162,12 +161,9 @@ describe("commands/workflow", () => {
 
     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const text = await readFile(readmePath, "utf8");
-    const parsed = parseTaskReadme(text);
-    const doc = taskReadmeDocBody(parsed.frontmatter, parsed.body);
-    expect(doc).toContain("## Summary");
-    expect(doc).toContain("Alpha");
-    expect(doc).toContain("## Scope");
-    expect(doc).toContain("Beta");
+    const sections = parseTaskReadme(text).frontmatter.sections as Record<string, string>;
+    expect(sections.Summary).toBe("Alpha");
+    expect(sections.Scope).toBe("Beta");
   });
 
   it("task plan set writes ## Plan and resets plan_approval to pending", async () => {
@@ -191,7 +187,8 @@ describe("commands/workflow", () => {
     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const text = await readFile(readmePath, "utf8");
     const parsed = parseTaskReadme(text);
-    const doc = taskReadmeDocBody(parsed.frontmatter, parsed.body);
+    const doc = renderTaskDocFromSections(parsed.frontmatter.sections as Record<string, string>);
+    expect(text).not.toContain("## Plan");
     expect(doc).toContain("## Plan");
     expect(doc).toContain("Do X then Y.");
     expect(text).toContain("plan_approval:");
@@ -212,7 +209,7 @@ describe("commands/workflow", () => {
     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const text = await readFile(readmePath, "utf8");
     const parsed = parseTaskReadme(text);
-    const doc = taskReadmeDocBody(parsed.frontmatter, parsed.body);
+    const doc = renderTaskDocFromSections(parsed.frontmatter.sections as Record<string, string>);
     expect(doc).toContain("1. Do X\n2. Verify Y");
     expect(text).not.toContain(String.raw`1. Do X\n2. Verify Y`);
   });

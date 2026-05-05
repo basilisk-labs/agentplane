@@ -295,24 +295,28 @@ function normalizeMarkdownBody(value: string): string {
   return value.replaceAll("\r\n", "\n").trim();
 }
 
-function containsCanonicalTaskDocHeading(body: string): boolean {
-  return TASK_DOC_SECTION_ORDER.some((title) => {
+function canonicalTaskDocSectionTitles(docVersion: unknown): Set<string> {
+  return new Set(getTaskDocContract(docVersion).sections);
+}
+
+function containsCanonicalTaskDocHeading(body: string, docVersion: unknown): boolean {
+  return [...canonicalTaskDocSectionTitles(docVersion)].some((title) => {
     const escaped = escapeRegExp(title);
     return new RegExp(String.raw`^##\s+${escaped}\s*$`, "imu").test(body);
   });
 }
 
-function isCanonicalTaskDocSection(title: string): boolean {
-  return (TASK_DOC_SECTION_ORDER as readonly string[]).includes(title);
+function isCanonicalTaskDocSection(title: string, canonicalTitles: ReadonlySet<string>): boolean {
+  return canonicalTitles.has(title);
 }
 
 function canonicalSectionsFromBody(body: string, docVersion: unknown): Record<string, string> {
-  const allowedSections = new Set(getTaskDocContract(docVersion).sections);
+  const canonicalTitles = canonicalTaskDocSectionTitles(docVersion);
   const parsed = parseDocSections(body);
   const out: Record<string, string> = {};
   for (const key of parsed.order) {
     const section = parsed.sections.get(key);
-    if (!section || !allowedSections.has(section.title)) continue;
+    if (!section || !isCanonicalTaskDocSection(section.title, canonicalTitles)) continue;
     out[section.title] = section.lines.join("\n").trimEnd();
   }
   return out;
@@ -328,23 +332,33 @@ function mergeCanonicalSectionsWithBody(
   return { ...bodySections, ...canonicalSections };
 }
 
-function renderNonCanonicalContext(body: string): string {
+function pushContextSection(
+  lines: string[],
+  section: { title: string; lines: string[] },
+  canonicalTitles: ReadonlySet<string>,
+): void {
+  if (isCanonicalTaskDocSection(section.title, canonicalTitles)) return;
+  lines.push(`## ${section.title}`, "");
+  const sectionText = section.lines.join("\n").trim();
+  if (sectionText) lines.push(...sectionText.split("\n"));
+  lines.push("");
+}
+
+function renderContextSections(body: string, docVersion: unknown): string {
+  const canonicalTitles = canonicalTaskDocSectionTitles(docVersion);
+  const preambleEnd = body.search(/^##\s+.*$/mu);
+  const preamble = preambleEnd === -1 ? body : body.slice(0, preambleEnd);
+  const parsed = parseDocSections(body);
   const lines: string[] = [];
-  let skipCanonicalSection = false;
-
-  for (const line of body.replaceAll("\r\n", "\n").split("\n")) {
-    const match = /^##\s+(.*)$/.exec(line.trim());
-    if (match) {
-      const title = match[1]?.trim() ?? "";
-      skipCanonicalSection = isCanonicalTaskDocSection(title);
-      if (skipCanonicalSection) continue;
-    }
-
-    if (skipCanonicalSection) continue;
-    lines.push(line);
+  const preambleText = preamble.trimEnd();
+  if (preambleText) {
+    lines.push(...preambleText.split("\n"), "");
   }
-
-  return lines.join("\n").trim();
+  for (const key of parsed.order) {
+    const section = parsed.sections.get(key);
+    if (section) pushContextSection(lines, section, canonicalTitles);
+  }
+  return lines.join("\n").trimEnd();
 }
 
 export function taskReadmeDocBody(frontmatter: Record<string, unknown>, body: string): string {
@@ -376,7 +390,9 @@ function renderContextualBody(frontmatter: Record<string, unknown>, body: string
   );
   if (normalizedBody === renderedCanonicalBody) return "";
 
-  if (containsCanonicalTaskDocHeading(body)) return renderNonCanonicalContext(body);
+  if (containsCanonicalTaskDocHeading(body, frontmatter.doc_version)) {
+    return renderContextSections(body, frontmatter.doc_version);
+  }
   return body;
 }
 

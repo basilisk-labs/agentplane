@@ -530,10 +530,10 @@ describe("commands/shared/TaskStore", () => {
     const result = await store.update(taskId, (current) => ({ ...current, status: "DOING" }));
 
     expect(result.changed).toBe(true);
-    const parsed = parseTaskReadme(await readFile(readmePath, "utf8"));
-    expect(parsed.frontmatter.sections).toMatchObject({ Summary: "canonical summary" });
-    expect(parsed.body).not.toContain("## Summary");
-    expect(parsed.body).not.toContain("stale body");
+    const final = await readFile(readmePath, "utf8");
+    expect(final).toContain('Summary: "canonical summary"');
+    expect(final).not.toContain("## Summary");
+    expect(final).not.toContain("stale body");
   });
 
   it("reads canonical doc from frontmatter sections when the README body is stale", async () => {
@@ -978,11 +978,10 @@ describe("commands/shared/TaskStore", () => {
     });
 
     expect(result.changed).toBe(true);
-    const parsed = parseTaskReadme(await readFile(readmePath, "utf8"));
-    expect(parsed.frontmatter.sections).toMatchObject({
-      Summary: "my update",
-      Plan: "concurrent plan",
-    });
+    const final = await readFile(readmePath, "utf8");
+    expect(final).not.toContain("## Summary");
+    expect(final).toContain("my update");
+    expect(final).toContain("concurrent plan");
   });
 
   it("merges append-safe semantic patches after concurrent retries", async () => {
@@ -1109,6 +1108,7 @@ describe("commands/shared/TaskStore", () => {
 
     const parsed = parseTaskReadme(await readFile(readmePath, "utf8"));
     expect(parsed.frontmatter.sections).toMatchObject({ Summary: "after" });
+    expect(parsed.body).not.toContain("## Summary");
     expect(parsed.body).not.toContain("STALE BODY");
   });
 });
