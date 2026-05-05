@@ -12,7 +12,11 @@ export {
   recipeBlueprintExtensionsToHints,
 } from "./recipe-hints.js";
 export { inferBlueprintTaskKind, resolveBlueprint } from "./resolve.js";
-export { validateBlueprint, validateBlueprintRegistry } from "./validate.js";
+export {
+  validateBlueprint,
+  validateBlueprintPlanArtifact,
+  validateBlueprintRegistry,
+} from "./validate.js";
 export type {
   AcceptedRecipeExtension,
   Blueprint,
@@ -26,6 +30,8 @@ export type {
   BlueprintId,
   BlueprintPlanArtifact,
   BlueprintPlanState,
+  BlueprintPlanValidationProblem,
+  BlueprintPlanValidationResult,
   BlueprintState,
   BlueprintTaskIntent,
   BlueprintNode,

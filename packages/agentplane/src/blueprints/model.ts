@@ -1,4 +1,4 @@
-export type BlueprintId =
+export type BuiltinBlueprintId =
   | "analysis.light"
   | "content.light"
   | "docs.change"
@@ -6,6 +6,8 @@ export type BlueprintId =
   | "code.branch_pr"
   | "release.strict"
   | "ops.approval";
+
+export type BlueprintId = BuiltinBlueprintId | (string & {});
 
 export type TaskKind = "analysis" | "content" | "docs" | "code" | "release" | "ops";
 
@@ -165,6 +167,25 @@ export type BlueprintValidationProblem = {
 export type BlueprintValidationResult = {
   ok: boolean;
   errors: BlueprintValidationProblem[];
+};
+
+export type BlueprintPlanValidationProblem = {
+  code:
+    | "plan_policy_budget_exceeded"
+    | "plan_unknown_policy_module"
+    | "plan_unknown_context_policy_module"
+    | "plan_duplicate_state"
+    | "plan_unknown_state"
+    | "plan_missing_entry_state"
+    | "plan_missing_finish_state"
+    | "plan_invalid_state_transition";
+  message: string;
+  path?: string;
+};
+
+export type BlueprintPlanValidationResult = {
+  ok: boolean;
+  errors: BlueprintPlanValidationProblem[];
 };
 
 export type BlueprintRegistry = {

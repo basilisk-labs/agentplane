@@ -1,0 +1,36 @@
+Task: `202605052303-QWE78P`
+Title: Validate blueprint plan policy budgets
+
+## Summary
+
+Validate blueprint plan policy budgets
+
+Add validation that materialized blueprint plans do not report policy modules outside the selected blueprint contract or exceed context budget, without executing blueprint states.
+
+## Scope
+
+- In scope: Add validation that materialized blueprint plans do not report policy modules outside the selected blueprint contract or exceed context budget, without executing blueprint states.
+- Out of scope: unrelated refactors not required for "Validate blueprint plan policy budgets".
+
+## Verification
+
+- State: ok
+- Note: Implemented and tested blueprint plan policy budget validation.
+- Full verification checklist lives in local review.md.
+
+## Handoff Notes
+
+- 2026-05-05T23:13:27Z CODER: Batch scope includes dependent tasks 202605052303-N37XQ0, 202605052303-FXGCNC, and 202605052303-1CEGJD. The PR covers blueprint plan policy budget validation, plan state transition validation, task-local blueprint snapshots, and project-local blueprint JSON validation.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-05T23:04:26.057Z
+- Branch: task/202605052303-QWE78P/blueprint-plan-validation
+- Head: 95ac0d6a3459
+
+```text
+No changes detected.
+```
+
+</details>

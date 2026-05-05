@@ -8,7 +8,13 @@ import {
   listBlueprints,
   requireBlueprint,
 } from "./registry.js";
-import { validateBlueprint, validateBlueprintRegistry } from "./validate.js";
+import { buildBlueprintPlanArtifact } from "./plan.js";
+import { resolveBlueprint } from "./resolve.js";
+import {
+  validateBlueprint,
+  validateBlueprintPlanArtifact,
+  validateBlueprintRegistry,
+} from "./validate.js";
 
 function cloneBlueprint(blueprint: Blueprint): Blueprint {
   return structuredClone(blueprint);
@@ -18,6 +24,21 @@ function expectError(blueprint: Blueprint, code: string): void {
   const result = validateBlueprint(blueprint);
   expect(result.ok).toBe(false);
   expect(result.errors.map((error) => error.code)).toContain(code);
+}
+
+function docsPlan() {
+  const resolved = resolveBlueprint({
+    input: {
+      tags: ["docs"],
+      taskKind: "docs",
+      mutation: "docs",
+      workflowMode: "branch_pr",
+    },
+  });
+  return {
+    blueprint: resolved.blueprint,
+    plan: buildBlueprintPlanArtifact({ resolved }),
+  };
 }
 
 describe("blueprint built-ins", () => {
@@ -194,5 +215,95 @@ describe("blueprint validation", () => {
     );
 
     expectError(blueprint, "missing_rollback_evidence");
+  });
+});
+
+describe("blueprint plan validation", () => {
+  it("accepts a materialized plan that matches the selected blueprint contract", () => {
+    const { blueprint, plan } = docsPlan();
+
+    expect(validateBlueprintPlanArtifact({ blueprint, plan })).toEqual({ ok: true, errors: [] });
+  });
+
+  it("rejects policy modules outside the selected blueprint contract", () => {
+    const { blueprint, plan } = docsPlan();
+    const result = validateBlueprintPlanArtifact({
+      blueprint,
+      plan: {
+        ...plan,
+        policyModules: [...plan.policyModules, ".agentplane/policy/workflow.release.md"],
+      },
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.errors.map((error) => error.code)).toContain("plan_unknown_policy_module");
+  });
+
+  it("rejects context policy modules outside the selected blueprint contract", () => {
+    const { blueprint, plan } = docsPlan();
+    const result = validateBlueprintPlanArtifact({
+      blueprint,
+      plan: {
+        ...plan,
+        contextManifest: [
+          ...plan.contextManifest,
+          {
+            id: ".agentplane/policy/workflow.release.md",
+            kind: "policy_module",
+            reason: "Injected unrelated policy.",
+            source: ".agentplane/policy/workflow.release.md",
+          },
+        ],
+      },
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.errors.map((error) => error.code)).toContain(
+      "plan_unknown_context_policy_module",
+    );
+  });
+
+  it("rejects policy module budgets exceeded by the plan or context manifest", () => {
+    const { blueprint, plan } = docsPlan();
+    const result = validateBlueprintPlanArtifact({
+      blueprint,
+      plan: {
+        ...plan,
+        contextBudget: { ...plan.contextBudget, maxPolicyModules: 0 },
+      },
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.errors.map((error) => error.code)).toContain("plan_policy_budget_exceeded");
+  });
+
+  it("rejects duplicate, missing, unknown, and invalidly ordered states", () => {
+    const { blueprint, plan } = docsPlan();
+    const firstState = plan.states[0];
+    const secondState = plan.states[1];
+    if (!firstState || !secondState) throw new Error("docs plan must contain states");
+
+    const result = validateBlueprintPlanArtifact({
+      blueprint,
+      plan: {
+        ...plan,
+        states: [
+          { ...secondState },
+          { ...firstState },
+          { ...firstState },
+          { ...firstState, id: "unknown" },
+        ],
+      },
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.errors.map((error) => error.code)).toEqual(
+      expect.arrayContaining([
+        "plan_duplicate_state",
+        "plan_unknown_state",
+        "plan_missing_finish_state",
+        "plan_invalid_state_transition",
+      ]),
+    );
   });
 });

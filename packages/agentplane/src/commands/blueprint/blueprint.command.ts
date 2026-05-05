@@ -1,9 +1,13 @@
+import { readFile } from "node:fs/promises";
+
 import {
   createBlueprintRegistry,
   explainResolvedBlueprint,
   formatBlueprintExplain,
   listBlueprints,
   resolveBlueprint,
+  validateBlueprint,
+  type Blueprint,
   type BlueprintId,
   type BlueprintResolveInput,
   type MutationKind,
@@ -19,6 +23,7 @@ import {
 } from "../../cli/group-command.js";
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
+import { ValidationError } from "../../shared/errors.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 
 import { blueprintResolveInputFromTask, workflowModeFromConfig } from "./task-input.js";
@@ -37,6 +42,11 @@ export type BlueprintExplainParsed = {
   description?: string;
   riskFlags: RiskFlag[];
   explicitBlueprintId?: BlueprintId;
+  json: boolean;
+};
+
+export type BlueprintValidateParsed = {
+  path: string;
   json: boolean;
 };
 
@@ -152,6 +162,24 @@ export const blueprintExplainSpec: CommandSpec<BlueprintExplainParsed> = {
   }),
 };
 
+export const blueprintValidateSpec: CommandSpec<BlueprintValidateParsed> = {
+  id: ["blueprint", "validate"],
+  group: "Blueprints",
+  summary: "Validate a project-local blueprint JSON file without registering or executing it.",
+  args: [{ name: "path", required: true, valueHint: "<path>" }],
+  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
+  examples: [
+    {
+      cmd: "agentplane blueprint validate .agentplane/blueprints/analysis.json",
+      why: "Validate a local blueprint definition.",
+    },
+  ],
+  parse: (raw) => ({
+    path: String(raw.args.path),
+    json: raw.opts.json === true,
+  }),
+};
+
 async function runBlueprintRoot(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
   throwGroupCommandUsage({
     spec: blueprintSpec,
@@ -173,6 +201,51 @@ function syntheticInput(ctx: CommandContext, p: BlueprintExplainParsed): Bluepri
     riskFlags: p.riskFlags,
     explicitBlueprintId: p.explicitBlueprintId,
   };
+}
+
+function requireObject(value: unknown, path: string): asserts value is Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new ValidationError({
+      message: `Blueprint file ${JSON.stringify(path)} must contain one JSON object.`,
+      context: { path },
+    });
+  }
+}
+
+function requireArrayField(value: Record<string, unknown>, field: string, path: string): void {
+  if (!Array.isArray(value[field])) {
+    throw new ValidationError({
+      message: `Blueprint file ${JSON.stringify(path)} is missing array field ${JSON.stringify(field)}.`,
+      context: { path, field },
+    });
+  }
+}
+
+function parseBlueprintJson(raw: string, path: string): Blueprint {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (err) {
+    throw new ValidationError({
+      message: `Blueprint file ${JSON.stringify(path)} is not valid JSON: ${
+        err instanceof Error ? err.message : String(err)
+      }`,
+      context: { path },
+    });
+  }
+  requireObject(parsed, path);
+  for (const field of [
+    "taskKinds",
+    "allowedCommands",
+    "policyModules",
+    "nodes",
+    "edges",
+    "requiredEvidence",
+    "stopRules",
+  ]) {
+    requireArrayField(parsed, field, path);
+  }
+  return parsed as Blueprint;
 }
 
 export function makeRunBlueprintHandler(_getCtx: (cmd: string) => Promise<CommandContext>) {
@@ -225,3 +298,24 @@ export function makeRunBlueprintExplainHandler(getCtx: (cmd: string) => Promise<
     return 0;
   };
 }
+
+export const runBlueprintValidate: CommandHandler<BlueprintValidateParsed> = async (_ctx, p) => {
+  const blueprint = parseBlueprintJson(await readFile(p.path, "utf8"), p.path);
+  const result = validateBlueprint(blueprint);
+  const output = {
+    ok: result.ok,
+    path: p.path,
+    blueprint_id: typeof blueprint.id === "string" ? blueprint.id : null,
+    errors: result.errors,
+  };
+  if (p.json) {
+    process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
+  } else if (result.ok) {
+    process.stdout.write(`blueprint valid: ${blueprint.id}@${blueprint.version}\n`);
+  } else {
+    for (const error of result.errors) {
+      process.stderr.write(`${error.code}: ${error.message}\n`);
+    }
+  }
+  return result.ok ? 0 : 3;
+};

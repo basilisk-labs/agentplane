@@ -29,6 +29,8 @@ export const loadBlueprintExplainSpec = (deps: RunDeps) =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) =>
     m.makeRunBlueprintExplainHandler(deps.getCtx),
   );
+export const loadBlueprintValidateSpec = () =>
+  import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintValidate);
 
 export const fromCommandsRecipesRecipesCommand = commandModule(
   () => import("../../../commands/recipes/recipes.command.js"),

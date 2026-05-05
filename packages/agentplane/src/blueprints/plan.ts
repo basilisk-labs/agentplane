@@ -8,6 +8,7 @@ import type {
   ResolvedBlueprint,
   WorkflowMode,
 } from "./model.js";
+import { validateBlueprintPlanArtifact } from "./validate.js";
 
 function uniqueSorted(values: readonly string[]): string[] {
   return [...new Set(values.filter((value) => value.trim().length > 0))].toSorted();
@@ -62,7 +63,7 @@ export function buildBlueprintPlanArtifact(opts: {
 }): BlueprintPlanArtifact {
   const statePolicyModules = opts.resolved.activeNodes.flatMap((node) => node.policyModules ?? []);
   const stateCommands = opts.resolved.activeNodes.flatMap((node) => node.allowedCommands ?? []);
-  return {
+  const plan: BlueprintPlanArtifact = {
     schemaVersion: 1,
     blueprintId: opts.resolved.blueprint.id,
     blueprintVersion: opts.resolved.blueprint.version,
@@ -85,4 +86,16 @@ export function buildBlueprintPlanArtifact(opts: {
     rejectedRecipeExtensions: [...opts.resolved.rejectedRecipeExtensions],
     stopReasons: [...opts.resolved.stopReasons],
   };
+  const validation = validateBlueprintPlanArtifact({
+    blueprint: opts.resolved.blueprint,
+    plan,
+  });
+  if (!validation.ok) {
+    throw new Error(
+      `Invalid blueprint plan for ${opts.resolved.blueprint.id}: ${validation.errors
+        .map((error) => error.code)
+        .join(", ")}`,
+    );
+  }
+  return plan;
 }

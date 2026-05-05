@@ -22,6 +22,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [blueprint](#blueprint)
   - [blueprint explain](#blueprint-explain)
   - [blueprint list](#blueprint-list)
+  - [blueprint validate](#blueprint-validate)
 - Branch
   - [branch base](#branch-base)
   - [branch base clear](#branch-base-clear)
@@ -574,6 +575,28 @@ agentplane blueprint list --json
 ```
 
 - Emit machine-readable routes.
+
+### blueprint validate
+
+Validate a project-local blueprint JSON file without registering or executing it.
+
+Usage:
+
+```text
+agentplane blueprint validate <path> [options]
+```
+
+Options:
+
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane blueprint validate .agentplane/blueprints/analysis.json
+```
+
+- Validate a local blueprint definition.
 
 ## Branch
 
