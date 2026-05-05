@@ -4,7 +4,7 @@ title: "Document cloud backend model"
 status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-05T17:39:48.371Z"
+  updated_by: "DOCS"
+  note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass with pre-existing runtime/hook warnings only; Evidence: doctor OK, errors=0 warnings=4 info=7. Command: bun run docs:ia:check; Result: pass; Evidence: docs IA, sidebar coverage, and current path references are aligned. Command: git diff --check; Result: pass; Evidence: no whitespace errors. Additional check: rg forbidden pricing/enterprise terms in touched AgentPlane docs; Result: pass, no matches. Skipped: bun run docs:site:typecheck completed with dependency/tsconfig resolution failures in website workspace before docs-specific validation; Risk: sidebar type-level validation not proven by that command; Mitigation: docs:ia:check and policy routing passed, and generated JS artifacts from the failed command were removed."
 commit: null
 comments:
   -
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Documenting the neutral local/cloud backend model, cloud connection mechanics, and the atomic public AgentPlane integration plan in the dedicated branch_pr worktree."
+  -
+    type: "verify"
+    at: "2026-05-05T17:39:48.371Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass with pre-existing runtime/hook warnings only; Evidence: doctor OK, errors=0 warnings=4 info=7. Command: bun run docs:ia:check; Result: pass; Evidence: docs IA, sidebar coverage, and current path references are aligned. Command: git diff --check; Result: pass; Evidence: no whitespace errors. Additional check: rg forbidden pricing/enterprise terms in touched AgentPlane docs; Result: pass, no matches. Skipped: bun run docs:site:typecheck completed with dependency/tsconfig resolution failures in website workspace before docs-specific validation; Risk: sidebar type-level validation not proven by that command; Mitigation: docs:ia:check and policy routing passed, and generated JS artifacts from the failed command were removed."
 doc_version: 3
-doc_updated_at: "2026-05-05T17:35:39.318Z"
+doc_updated_at: "2026-05-05T17:39:48.378Z"
 doc_updated_by: "DOCS"
 description: "Document the neutral local/cloud backend model, cloud connection flow, and integration task plan for AgentPlane."
 sections:
@@ -55,6 +61,14 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-05T17:39:48.371Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass with pre-existing runtime/hook warnings only; Evidence: doctor OK, errors=0 warnings=4 info=7. Command: bun run docs:ia:check; Result: pass; Evidence: docs IA, sidebar coverage, and current path references are aligned. Command: git diff --check; Result: pass; Evidence: no whitespace errors. Additional check: rg forbidden pricing/enterprise terms in touched AgentPlane docs; Result: pass, no matches. Skipped: bun run docs:site:typecheck completed with dependency/tsconfig resolution failures in website workspace before docs-specific validation; Risk: sidebar type-level validation not proven by that command; Mitigation: docs:ia:check and policy routing passed, and generated JS artifacts from the failed command were removed.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T17:35:39.318Z, excerpt_hash=sha256:7a6145e938f35d1146308cb5b9bd47636bc4b82ab6f634417085cb0f65b9da50
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -86,6 +100,14 @@ Document the neutral local/cloud backend model, cloud connection flow, and integ
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-05T17:39:48.371Z — VERIFY — ok
+
+By: DOCS
+
+Note: Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: agentplane doctor; Result: pass with pre-existing runtime/hook warnings only; Evidence: doctor OK, errors=0 warnings=4 info=7. Command: bun run docs:ia:check; Result: pass; Evidence: docs IA, sidebar coverage, and current path references are aligned. Command: git diff --check; Result: pass; Evidence: no whitespace errors. Additional check: rg forbidden pricing/enterprise terms in touched AgentPlane docs; Result: pass, no matches. Skipped: bun run docs:site:typecheck completed with dependency/tsconfig resolution failures in website workspace before docs-specific validation; Risk: sidebar type-level validation not proven by that command; Mitigation: docs:ia:check and policy routing passed, and generated JS artifacts from the failed command were removed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-05T17:35:39.318Z, excerpt_hash=sha256:7a6145e938f35d1146308cb5b9bd47636bc4b82ab6f634417085cb0f65b9da50
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
