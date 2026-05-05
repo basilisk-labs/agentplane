@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-05T16:10:04Z",
   "base": "main",
   "branch": "task/202605051529-S59Z44/commit-auto-acr-artifacts",
   "created_at": "2026-05-05T15:29:48.806Z",
-  "head_sha": "7bb8eb4cbb901f847fb8e6589e3f4166d38dd194",
+  "head_sha": "7fd9cf5ed29315d1d3ee0d5b4ec3a13c8833807e",
   "last_verified_at": "2026-05-05T15:41:27.895Z",
   "last_verified_sha": "86a43504920426520a51c66f9bf6f3383e358743",
+  "merge_commit": "0d1ca8c9e0b877cf45361773f2d932f9abe83c0c",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-05T16:10:04Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605051529-S59Z44",
-  "updated_at": "2026-05-05T15:47:34.109Z",
+  "updated_at": "2026-05-05T16:10:04Z",
   "verify": {
     "status": "pass"
   }

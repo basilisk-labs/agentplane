@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605051529-S59Z44",
+  "created_at": "2026-05-05T16:10:50.261Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "0d1ca8c9e0b877cf45361773f2d932f9abe83c0c",
+    "work_ref": "main",
+    "work_commit": "0d1ca8c9e0b877cf45361773f2d932f9abe83c0c"
+  },
+  "task": {
+    "task_id": "202605051529-S59Z44",
+    "title": "Commit automatic ACR artifacts on finish",
+    "intent": "Fix the finish/close lifecycle so automatically generated task-local acr.json files are staged and committed with the deterministic task close artifacts instead of being left untracked.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605051529-S59Z44/README.md",
+      "sha256": "sha256:f949391f040c602fe3686030e44e8f451c5a53613ba84080bc6c6c428ec7f05e"
+    },
+    "approved_at": "2026-05-05T15:29:26.291Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #915.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605051529-S59Z44_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T15:29:26.291Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605051529-S59Z44/README.md",
+      "sha256": "sha256:f949391f040c602fe3686030e44e8f451c5a53613ba84080bc6c6c428ec7f05e"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605051529-S59Z44/README.md",
+      "sha256": "sha256:f949391f040c602fe3686030e44e8f451c5a53613ba84080bc6c6c428ec7f05e"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605051529-S59Z44/README.md",
+      "sha256": "sha256:f949391f040c602fe3686030e44e8f451c5a53613ba84080bc6c6c428ec7f05e"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 0d1ca8c9e0b877cf45361773f2d932f9abe83c0c if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:feb4e87b62492cca8108d3338c980cfcbe4c1425acb38a8d707fec74cb4e06e1",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
