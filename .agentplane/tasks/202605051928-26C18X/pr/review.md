@@ -1,0 +1,62 @@
+# PR Review
+
+Created: 2026-05-05T19:29:04.010Z
+Branch: task/202605051928-26C18X/blueprint-resolver-explain
+
+## Summary
+
+Add blueprint resolver and explain output
+
+Implement the next blueprint layer: pure resolver inputs/results, deterministic blueprint selection, recipe hint acceptance/rejection, stop reasons, explanation formatting, and focused tests without adding a CLI command or runner execution.
+
+## Scope
+
+- In scope: Implement the next blueprint layer: pure resolver inputs/results, deterministic blueprint selection, recipe hint acceptance/rejection, stop reasons, explanation formatting, and focused tests without adding a CLI command or runner execution.
+- Out of scope: unrelated refactors not required for "Add blueprint resolver and explain output".
+
+## Verification
+
+### Plan
+
+1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
+3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+
+### Current Status
+
+- State: ok
+- Note: Review fix verified: resolver risk routing is deterministic, supplied registries no longer fall back to built-ins, focused blueprint tests, formatting, typecheck, lint, and policy routing all pass.
+
+## Risks
+
+- Risk level: not recorded
+- Breaking change: no
+
+### Rollback
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-05T19:51:48.372Z
+- Branch: task/202605051928-26C18X/blueprint-resolver-explain
+- Head: 0ed67819cc83
+
+```text
+ packages/agentplane/src/blueprints/explain.ts      |  63 +++++
+ packages/agentplane/src/blueprints/index.ts        |  14 ++
+ packages/agentplane/src/blueprints/model.ts        |  98 ++++++++
+ packages/agentplane/src/blueprints/resolve.test.ts | 155 ++++++++++++
+ packages/agentplane/src/blueprints/resolve.ts      | 263 +++++++++++++++++++++
+ 5 files changed, 593 insertions(+)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->
