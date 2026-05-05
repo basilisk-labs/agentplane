@@ -1,10 +1,11 @@
 ---
 id: "202605051806-RZ8SA1"
 title: "Add cloud backend init contract"
-status: "DOING"
+result_summary: "Cloud backend init/config contract landed on main via merge commit a7b14d3e."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-05T18:20:52.471Z"
   updated_by: "CODER"
   note: "Verified: init accepts cloud backend and writes cloud config/env templates; targeted init cloud test, typecheck, arch check, policy routing, git diff check, and repo-local doctor passed."
-commit: null
+commit:
+  hash: "a7b14d3e4fc80ed21ad8bba703f582e716130861"
+  message: "🔀 RZ8SA1 integrate: Add cloud backend init contract"
 comments:
   -
     author: "CODER"
     body: "Start: Implement cloud as an init/config backend option in the primary batch worktree, including parser/model and generated backend config coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Cloud backend init/config contract merged to main after local verification and green hosted PR checks."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: init accepts cloud backend and writes cloud config/env templates; targeted init cloud test, typecheck, arch check, policy routing, git diff check, and repo-local doctor passed."
+  -
+    type: "status"
+    at: "2026-05-05T18:26:45.100Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Cloud backend init/config contract merged to main after local verification and green hosted PR checks."
 doc_version: 3
-doc_updated_at: "2026-05-05T18:20:52.482Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T18:26:45.100Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add cloud as a first-class backend selection in agentplane init, generated backend config, and init tests without coupling AgentPlane to a specific synchronization provider."
 sections:
   Summary: |-
