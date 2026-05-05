@@ -25,14 +25,14 @@ Add cloud as a first-class backend selection in agentplane init, generated backe
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T18:20:32.439Z
+- Updated: 2026-05-05T18:21:44.753Z
 - Branch: task/202605051806-RZ8SA1/cloud-backend-contract
-- Head: 901b4f88042f
+- Head: 293b237a09cd
 
 ```text
- .agentplane/tasks/202605051806-B77NBZ/README.md    |  96 +++++++
- .agentplane/tasks/202605051806-BW1M39/README.md    |  96 +++++++
- .agentplane/tasks/202605051806-TVZ7N4/README.md    |  96 +++++++
+ .agentplane/tasks/202605051806-B77NBZ/README.md    | 129 +++++++++
+ .agentplane/tasks/202605051806-BW1M39/README.md    | 129 +++++++++
+ .agentplane/tasks/202605051806-TVZ7N4/README.md    | 129 +++++++++
  docs/developer/cloud-backend-integration-plan.mdx  |  24 +-
  docs/user/backends/cloud.mdx                       |  47 ++--
  .../src/backends/task-backend.cloud.test.ts        | 100 +++++++
@@ -54,7 +54,7 @@ Add cloud as a first-class backend selection in agentplane init, generated backe
  .../src/cli/run-cli/commands/init/write-env.ts     |  60 +++-
  packages/agentplane/src/commands/backend.ts        |  97 +++++++
  .../src/commands/backend/sync.command.ts           |  64 ++++-
- 24 files changed, 1180 insertions(+), 34 deletions(-)
+ 24 files changed, 1279 insertions(+), 34 deletions(-)
 ```
 
 </details>
