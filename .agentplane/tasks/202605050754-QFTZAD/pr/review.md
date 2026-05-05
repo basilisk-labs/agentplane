@@ -24,9 +24,9 @@ Created: 2026-05-05T07:54:54.410Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T08:08:15.108Z
+- Updated: 2026-05-05T08:18:04.961Z
 - Branch: task/202605050754-QFTZAD/obsidian-task-index
-- Head: 6334fc47123f
+- Head: e4eb0ad15425
 
 ```text
  .gitignore                                         |   5 +
@@ -40,7 +40,8 @@ Created: 2026-05-05T07:54:54.410Z
  packages/agentplane/src/commands/task/obsidian.ts  | 345 +++++++++++++++++++++
  .../src/commands/task/obsidian.unit.test.ts        | 173 +++++++++++
  .../src/runtime/shared/runtime-artifacts.ts        |   5 +
- 11 files changed, 641 insertions(+)
+ scripts/check-docs-ia.mjs                          |   6 +-
+ 12 files changed, 646 insertions(+), 1 deletion(-)
 ```
 
 </details>

@@ -9,4 +9,5 @@
  packages/agentplane/src/commands/task/obsidian.ts  | 345 +++++++++++++++++++++
  .../src/commands/task/obsidian.unit.test.ts        | 173 +++++++++++
  .../src/runtime/shared/runtime-artifacts.ts        |   5 +
- 11 files changed, 641 insertions(+)
+ scripts/check-docs-ia.mjs                          |   6 +-
+ 12 files changed, 646 insertions(+), 1 deletion(-)
