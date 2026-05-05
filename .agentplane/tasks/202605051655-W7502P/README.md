@@ -1,10 +1,11 @@
 ---
 id: "202605051655-W7502P"
 title: "Harden task parsing and lint checks"
-status: "DOING"
+result_summary: "Merged via PR #921."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-05T17:06:47.685Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/core/src/tasks/task-readme.test.ts packages/core/src/tasks/task-store.test.ts packages/core/src/tasks/tasks-lint.test.ts packages/agentplane/src/backends/task-index.test.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts packages/agentplane/src/commands/workflow.test.ts. Result: pass. Evidence: 9 files, 143 tests passed. Scope: task README parsing, local backend projection cache, listing/query, normalize/migrate, task lint CLI. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: workspace TypeScript. Command: prettier/eslint on touched files and git diff --check. Result: pass. Evidence: formatting, lint, whitespace clean. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Command: node packages/agentplane/bin/agentplane.js task lint && node packages/agentplane/bin/agentplane.js task list --quiet --limit 3 && node packages/agentplane/bin/agentplane.js doctor. Result: pass. Evidence: task lint OK, task list printed first three tasks, doctor OK with repo-local runtime and 0 warnings."
-commit: null
+commit:
+  hash: "1cd426adb958de91970379dd5285374374c3f4c1"
+  message: "Merge pull request #921 from basilisk-labs/task/202605051655-W7502P/harden-task-parsing-lint"
 comments:
   -
     author: "CODER"
     body: "Start: harden task projection cache invalidation and make task lint useful on legacy historical task archives without hiding malformed current task records."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #921 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/core/src/tasks/task-readme.test.ts packages/core/src/tasks/task-store.test.ts packages/core/src/tasks/tasks-lint.test.ts packages/agentplane/src/backends/task-index.test.ts packages/agentplane/src/backends/task-backend.local.test.ts packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts packages/agentplane/src/commands/workflow.test.ts. Result: pass. Evidence: 9 files, 143 tests passed. Scope: task README parsing, local backend projection cache, listing/query, normalize/migrate, task lint CLI. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: workspace TypeScript. Command: prettier/eslint on touched files and git diff --check. Result: pass. Evidence: formatting, lint, whitespace clean. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Command: node packages/agentplane/bin/agentplane.js task lint && node packages/agentplane/bin/agentplane.js task list --quiet --limit 3 && node packages/agentplane/bin/agentplane.js doctor. Result: pass. Evidence: task lint OK, task list printed first three tasks, doctor OK with repo-local runtime and 0 warnings."
+  -
+    type: "status"
+    at: "2026-05-05T17:11:09.951Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #921 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-05T17:06:47.697Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T17:11:09.957Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix task projection parsing/cache invalidation so clean branch switches cannot reuse stale task indexes, and make task lint handle legacy historical task records without failing current health checks."
 sections:
   Summary: |-
