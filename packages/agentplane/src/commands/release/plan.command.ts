@@ -122,7 +122,7 @@ function listIncidentEntries(text: string): string[] {
 
 function incidentId(entry: string): string {
   const match = /\bid:\s*([^|]+)/u.exec(entry);
-  return match?.[1]?.trim() || "(missing id)";
+  return match?.[1]?.trim() ?? "(missing id)";
 }
 
 async function ensureReleaseIncidentsClean(gitRoot: string): Promise<void> {
@@ -143,7 +143,7 @@ async function ensureReleaseIncidentsClean(gitRoot: string): Promise<void> {
     code: "E_VALIDATION",
     message:
       `Release planning blocked: .agentplane/policy/incidents.md contains ${entries.length} active incident entr${entries.length === 1 ? "y" : "ies"}: ` +
-      entries.map(incidentId).join(", "),
+      entries.map((entry) => incidentId(entry)).join(", "),
     context: withDiagnosticContext(
       { command: "release plan" },
       {
