@@ -1,10 +1,11 @@
 ---
 id: "202605052303-1CEGJD"
 title: "Add project-local blueprint validation command"
-status: "DOING"
+result_summary: "Merged project-local blueprint validation command in PR #955."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-05T23:13:00.704Z"
   updated_by: "CODER"
   note: "Implemented and tested validate-only CLI for project-local blueprint JSON."
-commit: null
+commit:
+  hash: "87a7923dc678d8f1f37803cc1a5fdcd46bdbad94"
+  message: "Merge pull request #955 from basilisk-labs/task/202605052303-QWE78P/blueprint-plan-validation"
 comments:
   -
     author: "CODER"
     body: "Start: batch execution in QWE78P worktree; add validate-only CLI for project-local blueprint JSON definitions."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #955 merged after required checks passed; merge commit 87a7923dc678d8f1f37803cc1a5fdcd46bdbad94."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented and tested validate-only CLI for project-local blueprint JSON."
+  -
+    type: "status"
+    at: "2026-05-05T23:19:06.744Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #955 merged after required checks passed; merge commit 87a7923dc678d8f1f37803cc1a5fdcd46bdbad94."
 doc_version: 3
-doc_updated_at: "2026-05-05T23:13:00.711Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T23:19:06.745Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a validate-only CLI path for project-local blueprint JSON definitions, reusing the built-in blueprint validation contract without executing or registering custom routes by default."
 sections:
   Summary: |-
