@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605051655-W7502P",
+  "created_at": "2026-05-05T17:11:10.002Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "1cd426adb958de91970379dd5285374374c3f4c1",
+    "work_ref": "main",
+    "work_commit": "1cd426adb958de91970379dd5285374374c3f4c1"
+  },
+  "task": {
+    "task_id": "202605051655-W7502P",
+    "title": "Harden task parsing and lint checks",
+    "intent": "Fix task projection parsing/cache invalidation so clean branch switches cannot reuse stale task indexes, and make task lint handle legacy historical task records without failing current health checks.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605051655-W7502P/README.md",
+      "sha256": "sha256:13cb755723cc8eebc09ee88b4588560dbf83b470cb6de07bde2fcfd1459746cf"
+    },
+    "approved_at": "2026-05-05T16:55:14.975Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #921.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605051655-W7502P_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-05T16:55:14.975Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605051655-W7502P/README.md",
+      "sha256": "sha256:13cb755723cc8eebc09ee88b4588560dbf83b470cb6de07bde2fcfd1459746cf"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605051655-W7502P/README.md",
+      "sha256": "sha256:13cb755723cc8eebc09ee88b4588560dbf83b470cb6de07bde2fcfd1459746cf"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605051655-W7502P/README.md",
+      "sha256": "sha256:13cb755723cc8eebc09ee88b4588560dbf83b470cb6de07bde2fcfd1459746cf"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 1cd426adb958de91970379dd5285374374c3f4c1 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:0871f1badfa74b2a7030e59b8b7c6d192a40dda634963fc98cf2935330949a16",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
