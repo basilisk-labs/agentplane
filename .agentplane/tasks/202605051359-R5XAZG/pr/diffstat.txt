@@ -11,5 +11,6 @@
  .../release/publish-workflow-contract.test.ts      |  6 ++
  .../commands/release/release-ci-contract.test.ts   |  7 +++
  .../release/release-incidents-script.test.ts       | 67 ++++++++++++++++++++++
+ scripts/README.md                                  | 53 ++++++++---------
  scripts/check-release-incidents.mjs                | 50 ++++++++++++++++
- 14 files changed, 272 insertions(+), 17 deletions(-)
+ 15 files changed, 299 insertions(+), 43 deletions(-)

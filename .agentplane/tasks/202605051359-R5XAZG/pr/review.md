@@ -45,9 +45,9 @@ Add a CI/release gate so every release is preceded by an incident review/fix tas
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T14:20:51.085Z
+- Updated: 2026-05-05T14:22:20.053Z
 - Branch: task/202605051359-R5XAZG/release-incident-gate
-- Head: a07131ca66af
+- Head: f255c5d786ab
 
 ```text
  .agentplane/policy/workflow.release.md             | 12 ++--
@@ -63,8 +63,9 @@ Add a CI/release gate so every release is preceded by an incident review/fix tas
  .../release/publish-workflow-contract.test.ts      |  6 ++
  .../commands/release/release-ci-contract.test.ts   |  7 +++
  .../release/release-incidents-script.test.ts       | 67 ++++++++++++++++++++++
+ scripts/README.md                                  | 53 ++++++++---------
  scripts/check-release-incidents.mjs                | 50 ++++++++++++++++
- 14 files changed, 272 insertions(+), 17 deletions(-)
+ 15 files changed, 299 insertions(+), 43 deletions(-)
 ```
 
 </details>
