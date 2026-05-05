@@ -240,7 +240,14 @@ jobs:
         with:
           node-version: "24"
       - name: Release incidents (check)
-        run: node scripts/check-release-incidents.mjs
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f scripts/check-release-incidents.mjs ]; then
+            node scripts/check-release-incidents.mjs
+          else
+            echo "release incident gate skipped: target ref predates scripts/check-release-incidents.mjs"
+          fi
       - name: Generate release-ready manifest
         id: manifest
         shell: bash
