@@ -45,17 +45,17 @@ Implement the next blueprint layer: pure resolver inputs/results, deterministic 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T19:42:19.922Z
+- Updated: 2026-05-05T19:51:48.372Z
 - Branch: task/202605051928-26C18X/blueprint-resolver-explain
-- Head: 1fb46b5e8c0e
+- Head: 0ed67819cc83
 
 ```text
- packages/agentplane/src/blueprints/explain.ts      |  63 ++++++
+ packages/agentplane/src/blueprints/explain.ts      |  63 +++++
  packages/agentplane/src/blueprints/index.ts        |  14 ++
- packages/agentplane/src/blueprints/model.ts        |  98 +++++++++
- packages/agentplane/src/blueprints/resolve.test.ts | 130 +++++++++++
- packages/agentplane/src/blueprints/resolve.ts      | 244 +++++++++++++++++++++
- 5 files changed, 549 insertions(+)
+ packages/agentplane/src/blueprints/model.ts        |  98 ++++++++
+ packages/agentplane/src/blueprints/resolve.test.ts | 155 ++++++++++++
+ packages/agentplane/src/blueprints/resolve.ts      | 263 +++++++++++++++++++++
+ 5 files changed, 593 insertions(+)
 ```
 
 </details>

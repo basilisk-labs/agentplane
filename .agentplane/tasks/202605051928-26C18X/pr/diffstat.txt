@@ -1,6 +1,6 @@
- packages/agentplane/src/blueprints/explain.ts      |  63 ++++++
+ packages/agentplane/src/blueprints/explain.ts      |  63 +++++
  packages/agentplane/src/blueprints/index.ts        |  14 ++
- packages/agentplane/src/blueprints/model.ts        |  98 +++++++++
- packages/agentplane/src/blueprints/resolve.test.ts | 130 +++++++++++
- packages/agentplane/src/blueprints/resolve.ts      | 244 +++++++++++++++++++++
- 5 files changed, 549 insertions(+)
+ packages/agentplane/src/blueprints/model.ts        |  98 ++++++++
+ packages/agentplane/src/blueprints/resolve.test.ts | 155 ++++++++++++
+ packages/agentplane/src/blueprints/resolve.ts      | 263 +++++++++++++++++++++
+ 5 files changed, 593 insertions(+)
