@@ -25,9 +25,9 @@ Replace the full duplicated branch_pr pr/review.md projection with a compact rev
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-05T07:05:01.870Z
+- Updated: 2026-05-05T07:06:53.162Z
 - Branch: task/202605050638-F7A5MV/compact-review-index
-- Head: e3d86d0725b5
+- Head: a3881c70d0ce
 
 ```text
  .agentplane/tasks/202605050638-BA00XR/README.md    | 139 +++++++++++++++++++
@@ -51,8 +51,10 @@ Replace the full duplicated branch_pr pr/review.md projection with a compact rev
  .../src/commands/pr/integrate/internal/prepare.ts  |   4 +-
  .../pr/internal/pr-artifact-snapshot.test.ts       |  24 +++-
  .../commands/pr/internal/pr-artifact-snapshot.ts   |   1 -
+ .../commands/pr/internal/review-template.test.ts   |  53 +++++++-
+ .../src/commands/pr/internal/review-template.ts    |  91 ++++---------
  .../src/commands/pr/internal/sync-open-step.ts     |   7 -
- 22 files changed, 882 insertions(+), 28 deletions(-)
+ 24 files changed, 958 insertions(+), 96 deletions(-)
 ```
 
 </details>

@@ -19,5 +19,7 @@
  .../src/commands/pr/integrate/internal/prepare.ts  |   4 +-
  .../pr/internal/pr-artifact-snapshot.test.ts       |  24 +++-
  .../commands/pr/internal/pr-artifact-snapshot.ts   |   1 -
+ .../commands/pr/internal/review-template.test.ts   |  53 +++++++-
+ .../src/commands/pr/internal/review-template.ts    |  91 ++++---------
  .../src/commands/pr/internal/sync-open-step.ts     |   7 -
- 22 files changed, 882 insertions(+), 28 deletions(-)
+ 24 files changed, 958 insertions(+), 96 deletions(-)
