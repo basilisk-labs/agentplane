@@ -49,7 +49,10 @@ function extensionValue(extension: RecipeBlueprintExtension): unknown {
   return extension.value;
 }
 
-function matchesWhen(when: OverlayWhen | undefined, runtime: RecipeBlueprintExtensionRuntime): boolean {
+function matchesWhen(
+  when: OverlayWhen | undefined,
+  runtime: RecipeBlueprintExtensionRuntime,
+): boolean {
   return matchOverlayWhen(when, runtime);
 }
 
@@ -103,7 +106,7 @@ export function resolveRecipeBlueprintExtensions(opts: {
         rejected.push({
           ...base,
           reason:
-            source.incompatibility_reasons?.join("; ") ||
+            source.incompatibility_reasons?.join("; ") ??
             "Recipe is incompatible with the current resolver context.",
         });
         continue;
@@ -123,7 +126,9 @@ export function resolveRecipeBlueprintExtensions(opts: {
         value: extensionValue(extension),
         reasons: [
           `recipe ${source.manifest.id}@${source.manifest.version} declared ${extension.kind}`,
-          ...(extension.when ? ["extension matched task context"] : ["extension has no when filter"]),
+          ...(extension.when
+            ? ["extension matched task context"]
+            : ["extension has no when filter"]),
         ],
       });
     }

@@ -13,10 +13,15 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [acr validate](#acr-validate)
 - Backend
   - [backend](#backend)
+  - [backend connect](#backend-connect)
   - [backend inspect](#backend-inspect)
   - [backend migrate-canonical-state](#backend-migrate-canonical-state)
   - [backend sync](#backend-sync)
   - [sync](#sync)
+- Blueprints
+  - [blueprint](#blueprint)
+  - [blueprint explain](#blueprint-explain)
+  - [blueprint list](#blueprint-list)
 - Branch
   - [branch base](#branch-base)
   - [branch base clear](#branch-base-clear)
@@ -331,7 +336,7 @@ agentplane acr validate 202605031625-886KZ6 --mode local
 
 Backend-related operations.
 
-This is a command group. Use a subcommand such as \`agentplane backend sync ...\`, \`agentplane backend inspect ...\`, or \`agentplane backend migrate-canonical-state ...\`.
+This is a command group. Use a subcommand such as \`agentplane backend sync ...\`, \`agentplane backend inspect ...\`, \`agentplane backend connect ...\`, or \`agentplane backend migrate-canonical-state ...\`.
 
 Usage:
 
@@ -346,6 +351,32 @@ agentplane backend sync local --direction pull
 ```
 
 - Sync the backend.
+
+### backend connect
+
+Configure a cloud backend connection without storing secrets.
+
+Usage:
+
+```text
+agentplane backend connect <id> [options]
+```
+
+Options:
+
+- `--endpoint <url>`: Cloud sync service endpoint.
+- `--project-id <id>`: Cloud sync service project identifier.
+- `--provider <name>`: Optional remote projection provider selected in the cloud service.
+- `--yes`: Reserved for future browser flow approval. (default=false)
+- `--quiet`: Reduce output noise. (default=false)
+
+Examples:
+
+```sh
+agentplane backend connect cloud --endpoint https://sync.example.test --project-id proj_123 --provider github-projects
+```
+
+- Attach this repository to a cloud sync project without committing a token.
 
 ### backend inspect
 
@@ -456,6 +487,92 @@ agentplane sync redmine --direction push --yes
 ```
 
 - Push to redmine backend.
+
+## Blueprints
+
+### blueprint
+
+List and explain blueprint routing without executing a task.
+
+This is a command group. Use \`agentplane blueprint list\` or \`agentplane blueprint explain ...\`.
+
+Usage:
+
+```text
+agentplane blueprint [<cmd> ...]
+```
+
+Examples:
+
+```sh
+agentplane blueprint list
+```
+
+- Show built-in blueprint routes.
+
+```sh
+agentplane blueprint explain 202605051957-5WRJZK
+```
+
+- Explain the resolved route for a task.
+
+### blueprint explain
+
+Explain blueprint route selection for a task or synthetic input.
+
+Usage:
+
+```text
+agentplane blueprint explain [<task-id>] [options]
+```
+
+Options:
+
+- `--kind <analysis|content|docs|code|release|ops>`: Synthetic task kind hint.
+- `--mutation <none|docs|code|release|ops|unknown>`: Synthetic mutation scope. (choices=none|docs|code|release|ops|unknown, default=unknown)
+- `--workflow-mode <direct|branch_pr>`: Workflow mode override. (choices=direct|branch_pr)
+- `--tag <tag>`: Synthetic tag.
+- `--title <text>`: Synthetic title.
+- `--description <text>`: Synthetic description.
+- `--risk <risk>`: Risk flag; repeatable.
+- `--blueprint <id>`: Explicit blueprint request.
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane blueprint explain 202605051957-5WRJZK
+```
+
+- Resolve a task.
+
+```sh
+agentplane blueprint explain --kind analysis --mutation none
+```
+
+- Resolve a synthetic analysis route.
+
+### blueprint list
+
+List built-in blueprint routes.
+
+Usage:
+
+```text
+agentplane blueprint list [options]
+```
+
+Options:
+
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane blueprint list --json
+```
+
+- Emit machine-readable routes.
 
 ## Branch
 
@@ -2392,7 +2509,7 @@ Options:
 - `--ide <codex|cursor|windsurf>`: IDE rules integration target (default: codex). (choices=codex|cursor|windsurf)
 - `--workflow <direct|branch_pr>`: Workflow mode (default: direct). (choices=direct|branch_pr)
 - `--direct-close-dirty-policy <allow-other-task-readmes|strict>`: Direct-mode close behavior when tracked dirt exists outside the active task: allow only other active task READMEs, or block on any unrelated tracked change. (choices=allow-other-task-readmes|strict)
-- `--backend <local|redmine>`: Task backend (default: local). (choices=local|redmine)
+- `--backend <local|redmine|cloud>`: Task backend (default: local). (choices=local|redmine|cloud)
 - `--hooks <true|false>`: Install managed git hooks (default by setup profile: light=false, normal/full-harness=true).
 - `--require-plan-approval <true|false>`: Require explicit plan approval before starting work.
 - `--require-network-approval <true|false>`: Require explicit approval before any network operation.

@@ -6,6 +6,10 @@ export {
   requireBlueprint,
 } from "./registry.js";
 export { explainResolvedBlueprint, formatBlueprintExplain } from "./explain.js";
+export {
+  recipeBlueprintExtensionToHint,
+  recipeBlueprintExtensionsToHints,
+} from "./recipe-hints.js";
 export { inferBlueprintTaskKind, resolveBlueprint } from "./resolve.js";
 export { validateBlueprint, validateBlueprintRegistry } from "./validate.js";
 export type {

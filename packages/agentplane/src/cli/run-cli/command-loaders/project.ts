@@ -19,6 +19,17 @@ export const loadAcrExplainSpec = (deps: RunDeps) =>
     m.makeRunAcrExplainHandler(deps.getCtx),
   );
 
+export const loadBlueprintSpec = (deps: RunDeps) =>
+  import("../../../commands/blueprint/blueprint.command.js").then((m) =>
+    m.makeRunBlueprintHandler(deps.getCtx),
+  );
+export const loadBlueprintListSpec = () =>
+  import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintList);
+export const loadBlueprintExplainSpec = (deps: RunDeps) =>
+  import("../../../commands/blueprint/blueprint.command.js").then((m) =>
+    m.makeRunBlueprintExplainHandler(deps.getCtx),
+  );
+
 export const fromCommandsRecipesRecipesCommand = commandModule(
   () => import("../../../commands/recipes/recipes.command.js"),
 );

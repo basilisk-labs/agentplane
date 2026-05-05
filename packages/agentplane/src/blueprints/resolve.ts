@@ -70,6 +70,35 @@ function blueprintForTaskKind(kind: TaskKind, workflowMode?: WorkflowMode): Blue
   return "analysis.light";
 }
 
+function isBlueprintCompatible(opts: {
+  blueprint: Blueprint;
+  taskKind: TaskKind;
+  workflowMode?: WorkflowMode;
+}): boolean {
+  if (!opts.blueprint.taskKinds.includes(opts.taskKind)) return false;
+  if (
+    opts.workflowMode &&
+    opts.blueprint.workflowModes &&
+    !opts.blueprint.workflowModes.includes(opts.workflowMode)
+  ) {
+    return false;
+  }
+  return true;
+}
+
+function preferredBlueprintId(input: BlueprintResolveInput): BlueprintId | undefined {
+  for (const hint of input.recipeHints ?? []) {
+    if (hint.kind !== "preferred_blueprint") continue;
+    const value = hint.value;
+    if (typeof value === "object" && value !== null && "blueprint_id" in value) {
+      const id = (value as { blueprint_id?: unknown }).blueprint_id;
+      if (typeof id === "string" && id.trim()) return id.trim() as BlueprintId;
+    }
+    if (typeof value === "string" && value.trim()) return value.trim() as BlueprintId;
+  }
+  return undefined;
+}
+
 function explicitCompatibilityStop(opts: {
   blueprint: Blueprint;
   input: BlueprintResolveInput;
@@ -134,7 +163,20 @@ function selectBlueprint(opts: { input: BlueprintResolveInput; registry: Bluepri
   const taskKind = inferTaskKind(input);
   const inferredBlueprintId = riskBlueprintId ?? blueprintForTaskKind(taskKind, input.workflowMode);
   const requestedBlueprintId = input.explicitBlueprintId;
-  const selectedId = requestedBlueprintId ?? inferredBlueprintId;
+  const preferredId =
+    riskBlueprintId || requestedBlueprintId ? undefined : preferredBlueprintId(input);
+  const preferredBlueprint = preferredId ? getBlueprint(preferredId, opts.registry) : undefined;
+  const selectedId: BlueprintId =
+    requestedBlueprintId ??
+    (preferredId &&
+    preferredBlueprint &&
+    isBlueprintCompatible({
+      blueprint: preferredBlueprint,
+      taskKind,
+      workflowMode: input.workflowMode,
+    })
+      ? preferredId
+      : inferredBlueprintId);
   const blueprint = getBlueprint(selectedId, opts.registry);
   if (!blueprint) {
     throw new Error(`Unknown blueprint in registry: ${selectedId}`);
@@ -147,6 +189,12 @@ function selectBlueprint(opts: { input: BlueprintResolveInput; registry: Bluepri
     stopReasons.push(...explicitCompatibilityStop({ blueprint, input }));
   } else if (riskBlueprintId) {
     reasons.push(`risk flags require ${riskBlueprintId}: ${riskFlags.join(", ")}`);
+  } else if (preferredId && selectedId === preferredId) {
+    reasons.push(`recipe preferred compatible blueprint: ${preferredId}`);
+  } else if (preferredId && !preferredBlueprint) {
+    reasons.push(`recipe preferred unknown blueprint ignored: ${preferredId}`);
+  } else if (preferredId) {
+    reasons.push(`recipe preferred incompatible blueprint ignored: ${preferredId}`);
   } else {
     reasons.push(`task kind resolved to ${taskKind}`);
   }
@@ -178,11 +226,49 @@ function extensionPointFor(
 }
 
 function targetNodeKindForHint(hint: RecipeHint): BlueprintNodeKind | undefined {
+  if (hint.kind === "preferred_blueprint") return undefined;
   if (hint.targetNodeKind) return hint.targetNodeKind;
   if (hint.kind === "context_hint" || hint.kind === "risk_hint") return "context_resolve";
   if (hint.kind === "check_suggestion") return "deterministic_check";
   if (hint.kind === "output_schema" || hint.kind === "artifact_template") return "work_unit";
+  if (hint.kind === "evidence_requirement") return "verify_record";
   return undefined;
+}
+
+function acceptedRecipeExtension(opts: {
+  hint: RecipeHint;
+  nodeKind: BlueprintNodeKind;
+  reason: string;
+}): AcceptedRecipeExtension {
+  return {
+    recipeId: opts.hint.recipeId,
+    ...(opts.hint.recipeVersion ? { recipeVersion: opts.hint.recipeVersion } : {}),
+    ...(opts.hint.recipeName ? { recipeName: opts.hint.recipeName } : {}),
+    ...(opts.hint.extensionId ? { extensionId: opts.hint.extensionId } : {}),
+    nodeKind: opts.nodeKind,
+    kind: opts.hint.kind,
+    ...(opts.hint.summary ? { summary: opts.hint.summary } : {}),
+    value: opts.hint.value,
+    reason: opts.reason,
+  };
+}
+
+function rejectedRecipeExtension(opts: {
+  hint: RecipeHint;
+  nodeKind?: BlueprintNodeKind;
+  reason: string;
+}): RejectedRecipeExtension {
+  return {
+    recipeId: opts.hint.recipeId,
+    ...(opts.hint.recipeVersion ? { recipeVersion: opts.hint.recipeVersion } : {}),
+    ...(opts.hint.recipeName ? { recipeName: opts.hint.recipeName } : {}),
+    ...(opts.hint.extensionId ? { extensionId: opts.hint.extensionId } : {}),
+    ...(opts.nodeKind ? { nodeKind: opts.nodeKind } : {}),
+    kind: opts.hint.kind,
+    ...(opts.hint.summary ? { summary: opts.hint.summary } : {}),
+    value: opts.hint.value,
+    reason: opts.reason,
+  };
 }
 
 function resolveRecipeExtensions(opts: {
@@ -197,34 +283,64 @@ function resolveRecipeExtensions(opts: {
   const nodeKinds = new Set(opts.blueprint.nodes.map((node) => node.kind));
 
   for (const hint of opts.recipeHints) {
+    if (hint.kind === "preferred_blueprint") {
+      const value = hint.value;
+      const blueprintId =
+        typeof value === "object" && value !== null && "blueprint_id" in value
+          ? (value as { blueprint_id?: unknown }).blueprint_id
+          : value;
+      if (blueprintId === opts.blueprint.id) {
+        acceptedRecipeExtensions.push(
+          acceptedRecipeExtension({
+            hint,
+            nodeKind: "intake",
+            reason: `Recipe preferred blueprint ${opts.blueprint.id} accepted.`,
+          }),
+        );
+      } else {
+        rejectedRecipeExtensions.push(
+          rejectedRecipeExtension({
+            hint,
+            reason: `Recipe preferred blueprint ${
+              typeof blueprintId === "string" ? blueprintId : "unknown"
+            } did not match the resolved safe route ${opts.blueprint.id}.`,
+          }),
+        );
+      }
+      continue;
+    }
+
     const nodeKind = targetNodeKindForHint(hint);
     if (!nodeKind || !nodeKinds.has(nodeKind)) {
-      rejectedRecipeExtensions.push({
-        recipeId: hint.recipeId,
-        nodeKind,
-        kind: hint.kind,
-        reason: "Recipe hint targets a node kind that is not active in the selected blueprint.",
-      });
+      rejectedRecipeExtensions.push(
+        rejectedRecipeExtension({
+          hint,
+          nodeKind,
+          reason: "Recipe hint targets a node kind that is not active in the selected blueprint.",
+        }),
+      );
       continue;
     }
 
     const point = extensionPointFor(opts.blueprint, nodeKind);
     if (!point?.allowed.includes(hint.kind)) {
-      rejectedRecipeExtensions.push({
-        recipeId: hint.recipeId,
-        nodeKind,
-        kind: hint.kind,
-        reason: "Recipe hint is not allowed for this protected route extension point.",
-      });
+      rejectedRecipeExtensions.push(
+        rejectedRecipeExtension({
+          hint,
+          nodeKind,
+          reason: "Recipe hint is not allowed for this protected route extension point.",
+        }),
+      );
       continue;
     }
 
-    acceptedRecipeExtensions.push({
-      recipeId: hint.recipeId,
-      nodeKind,
-      kind: hint.kind,
-      reason: `Recipe hint ${hint.kind} accepted for ${nodeKind}.`,
-    });
+    acceptedRecipeExtensions.push(
+      acceptedRecipeExtension({
+        hint,
+        nodeKind,
+        reason: `Recipe hint ${hint.kind} accepted for ${nodeKind}.`,
+      }),
+    );
   }
 
   return { acceptedRecipeExtensions, rejectedRecipeExtensions };

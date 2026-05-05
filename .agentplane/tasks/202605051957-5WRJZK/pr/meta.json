@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605051957-5WRJZK/v05-rc1-blueprint-bridge",
+  "created_at": "2026-05-05T20:25:47.984Z",
+  "head_sha": "2597a6e9cf5f1f74647e31425b5771d74ed9dc50",
+  "last_verified_at": "2026-05-05T20:44:24.991Z",
+  "last_verified_sha": "2597a6e9cf5f1f74647e31425b5771d74ed9dc50",
+  "schema_version": 1,
+  "task_id": "202605051957-5WRJZK",
+  "updated_at": "2026-05-05T20:25:47.984Z",
+  "verify": {
+    "status": "pass"
+  }
+}

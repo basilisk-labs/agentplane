@@ -1,6 +1,12 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
+import {
+  explainResolvedBlueprint,
+  formatBlueprintExplain,
+  resolveBlueprint,
+} from "../../blueprints/index.js";
 import { backendNotSupportedMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { blueprintResolveInputFromTask } from "../blueprint/task-input.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 
 import { cmdTaskDocShow } from "./doc.js";
@@ -68,7 +74,7 @@ export function makeRunTaskVerifyShowHandler(getCtx: (cmd: string) => Promise<Co
       return 0;
     }
 
-    return await cmdTaskDocShow({
+    const exitCode = await cmdTaskDocShow({
       ctx: commandCtx,
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
@@ -76,5 +82,10 @@ export function makeRunTaskVerifyShowHandler(getCtx: (cmd: string) => Promise<Co
       section: "Verify Steps",
       quiet: p.quiet,
     });
+    const input = blueprintResolveInputFromTask({ task, config: commandCtx.config });
+    const resolved = resolveBlueprint({ input });
+    const output = explainResolvedBlueprint({ resolved, workflowMode: input.workflowMode });
+    process.stdout.write(`\nBlueprint expected evidence\n${formatBlueprintExplain(output)}`);
+    return exitCode;
   };
 }
