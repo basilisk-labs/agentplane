@@ -10,6 +10,7 @@ const SUMMARY_SECTION = "## Summary";
 const SCOPE_SECTION = "## Scope";
 const VERIFICATION_SECTION = "## Verification";
 const RISKS_SECTION = "## Risks";
+const TASK_SECTION = "## Task";
 const HANDOFF_NOTES_MARKER = "## Handoff Notes";
 const TASK_ID_SUFFIX_PATTERN = /\s*\[[^\]]+\]\s*$/u;
 const COMMON_NON_ENGLISH_LATIN_MARKERS =
@@ -34,73 +35,24 @@ function defaultPrTitleEmojiForStatus(status: string): string {
   return "🧩";
 }
 
-function renderVerificationSummary(task: TaskData): string {
-  const state = task.verification?.state ?? "pending";
-  const note = typeof task.verification?.note === "string" ? task.verification.note.trim() : "";
-  const commands = Array.isArray(task.verify)
-    ? task.verify.filter(
-        (value): value is string => typeof value === "string" && value.trim().length > 0,
-      )
-    : [];
-  const plan = sectionText(
-    task,
-    "Verify Steps",
-    commands.length > 0
-      ? commands.map((command) => `- ${command.trim()}`).join("\n")
-      : "- Not recorded.",
-  );
-  const statusLine =
-    state === "ok"
-      ? note || "Recorded as passed."
-      : state === "needs_rework"
-        ? note || "Recorded as needs rework."
-        : note || "Not recorded yet.";
+function renderReviewIndexSections(opts: {
+  task: TaskData;
+  branch: string;
+  handoffNotes: PrHandoffNote[];
+}): string[] {
+  const taskReadmePath = `.agentplane/tasks/${opts.task.id}/README.md`;
   return [
-    "### Plan",
+    TASK_SECTION,
     "",
-    plan,
-    "",
-    "### Current Status",
-    "",
-    `- State: ${state}`,
-    `- Note: ${statusLine}`,
-  ].join("\n");
-}
-
-function renderRiskSummary(task: TaskData): string {
-  const riskLevel = typeof task.risk_level === "string" ? task.risk_level : "not recorded";
-  const rollbackPlan = sectionText(
-    task,
-    "Rollback Plan",
-    "- Revert task-related commit(s) if rollback is required.",
-  );
-  return [
-    `- Risk level: ${riskLevel}`,
-    `- Breaking change: ${task.breaking === true ? "yes" : "no"}`,
-    "",
-    "### Rollback",
-    "",
-    rollbackPlan,
-  ].join("\n");
-}
-
-function renderReviewSections(opts: { task: TaskData; handoffNotes: PrHandoffNote[] }): string[] {
-  return [
-    SUMMARY_SECTION,
-    "",
-    sectionText(opts.task, "Summary", opts.task.title.trim() || "- Not recorded."),
-    "",
-    SCOPE_SECTION,
-    "",
-    sectionText(opts.task, "Scope", "- Not recorded."),
+    `- Task: \`${opts.task.id}\``,
+    `- Title: ${normalizeOneLine(opts.task.title, 120) || "Untitled task"}`,
+    `- Status: ${normalizeTaskStatus(opts.task.status)}`,
+    `- Branch: \`${opts.branch || "UNKNOWN"}\``,
+    `- Canonical task record: \`${taskReadmePath}\``,
     "",
     VERIFICATION_SECTION,
     "",
-    renderVerificationSummary(opts.task),
-    "",
-    RISKS_SECTION,
-    "",
-    renderRiskSummary(opts.task),
+    renderGithubVerificationSummary(opts.task),
     "",
     HANDOFF_NOTES_MARKER,
     "",
@@ -252,11 +204,11 @@ export function renderPrReviewDocument(opts: {
     "# PR Review",
     "",
     `Created: ${opts.createdAt || "UNKNOWN"}`,
-    `Branch: ${opts.branch || "UNKNOWN"}`,
     "",
     ...renderRelatedTasks(opts.task.id, opts.relatedTaskIds ?? []),
-    ...renderReviewSections({
+    ...renderReviewIndexSections({
       task: opts.task,
+      branch: opts.branch,
       handoffNotes: opts.handoffNotes ?? [],
     }),
     AUTO_SUMMARY_START,
@@ -287,15 +239,20 @@ export function renderGithubPrBody(opts: {
 }
 
 export function validateReviewContents(review: string, errors: string[]): void {
-  const requiredSections = [
+  const legacyRequiredSections = [
     SUMMARY_SECTION,
     SCOPE_SECTION,
     VERIFICATION_SECTION,
     RISKS_SECTION,
     HANDOFF_NOTES_MARKER,
   ];
-  for (const section of requiredSections) {
-    if (!review.includes(section)) errors.push(`Missing section: ${section}`);
+  const compactRequiredSections = [TASK_SECTION, VERIFICATION_SECTION, HANDOFF_NOTES_MARKER];
+  const legacyReview = legacyRequiredSections.every((section) => review.includes(section));
+  const compactReview = compactRequiredSections.every((section) => review.includes(section));
+  if (!legacyReview && !compactReview) {
+    for (const section of compactRequiredSections) {
+      if (!review.includes(section)) errors.push(`Missing section: ${section}`);
+    }
   }
   if (!review.includes(AUTO_SUMMARY_START)) {
     errors.push("Missing auto summary start marker");
