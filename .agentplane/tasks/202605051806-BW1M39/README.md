@@ -1,10 +1,11 @@
 ---
 id: "202605051806-BW1M39"
 title: "Document cloud backend integration contract"
-status: "DOING"
+result_summary: "Cloud backend integration documentation landed on main via merge commit a7b14d3e."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-05T18:21:18.788Z"
   updated_by: "CODER"
   note: "Verified: cloud backend user and developer docs now match the implemented init, connect, sync, inspect, and freshness behavior using neutral terminology."
-commit: null
+commit:
+  hash: "a7b14d3e4fc80ed21ad8bba703f582e716130861"
+  message: "🔀 RZ8SA1 integrate: Add cloud backend init contract"
 comments:
   -
     author: "CODER"
     body: "Start: Update cloud backend docs in the shared batch worktree after the code contract is implemented, keeping terms neutral and implementation-focused."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Cloud backend integration documentation merged to main after docs routing, diff check, doctor, and hosted docs checks."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: cloud backend user and developer docs now match the implemented init, connect, sync, inspect, and freshness behavior using neutral terminology."
+  -
+    type: "status"
+    at: "2026-05-05T18:27:20.825Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Cloud backend integration documentation merged to main after docs routing, diff check, doctor, and hosted docs checks."
 doc_version: 3
-doc_updated_at: "2026-05-05T18:21:18.806Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T18:27:20.827Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update AgentPlane documentation so local and cloud backend flows describe the init choice, endpoint configuration, GitHub App interaction through the cloud service, sync freshness checks, and current limitations."
 sections:
   Summary: |-
