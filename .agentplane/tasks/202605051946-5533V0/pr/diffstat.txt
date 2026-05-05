@@ -1,0 +1,15 @@
+ .agentplane/tasks/202605051928-26C18X/README.md    | 117 +++++++++
+ .../tasks/202605051928-26C18X/pr/diffstat.txt      |   6 +
+ .../tasks/202605051928-26C18X/pr/github-body.md    |  41 ++++
+ .../tasks/202605051928-26C18X/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202605051928-26C18X/pr/meta.json |  14 ++
+ .../tasks/202605051928-26C18X/pr/notes.jsonl       |   0
+ .agentplane/tasks/202605051928-26C18X/pr/review.md |  62 +++++
+ .../tasks/202605051928-26C18X/pr/verify.log        |   0
+ .../tmp/roadmaps/v0.5-blueprints-and-recipes.md    | 264 +++++++++++++++++++++
+ packages/agentplane/src/blueprints/explain.ts      |  63 +++++
+ packages/agentplane/src/blueprints/index.ts        |  14 ++
+ packages/agentplane/src/blueprints/model.ts        |  98 ++++++++
+ packages/agentplane/src/blueprints/resolve.test.ts | 130 ++++++++++
+ packages/agentplane/src/blueprints/resolve.ts      | 244 +++++++++++++++++++
+ 14 files changed, 1054 insertions(+)
