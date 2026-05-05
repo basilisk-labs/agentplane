@@ -1,10 +1,11 @@
 ---
 id: "202605050621-DNQ2XD"
 title: "Make branch_pr closeout idempotent"
-status: "DOING"
+result_summary: "Merged via PR #904."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-05T06:26:34.593Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts -> pass (50 tests). Command: bunx eslint packages/agentplane/src/commands/task/finish-close.ts packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts scripts/lib/pre-push-scope.mjs -> pass. Command: bunx prettier --check touched files -> pass. Command: bun run typecheck -> pass. Command: node .agentplane/policy/check-routing.mjs -> pass. Command: bun run framework:dev:bootstrap -> pass. Command: node packages/agentplane/bin/agentplane.js doctor -> pass."
-commit: null
+commit:
+  hash: "47c7c6755d9e0bbb3328310bfef9fdd59db98864"
+  message: "Merge pull request #904 from basilisk-labs/task/202605050621-DNQ2XD/closeout-idempotency"
 comments:
   -
     author: "CODER"
     body: "Start: hardening branch_pr closeout so local finish does not duplicate hosted close PRs, and making pre-push range detection tolerate missing remote SHAs."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #904 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts -> pass (50 tests). Command: bunx eslint packages/agentplane/src/commands/task/finish-close.ts packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/cli/local-ci-selection.test.ts scripts/lib/pre-push-scope.mjs -> pass. Command: bunx prettier --check touched files -> pass. Command: bun run typecheck -> pass. Command: node .agentplane/policy/check-routing.mjs -> pass. Command: bun run framework:dev:bootstrap -> pass. Command: node packages/agentplane/bin/agentplane.js doctor -> pass."
+  -
+    type: "status"
+    at: "2026-05-05T06:37:12.463Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #904 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-05T06:26:34.600Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-05T06:37:12.468Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent duplicate local task-close pull requests when hosted close automation has already closed a merged branch_pr task, and make pre-push range detection robust for new close branches."
 sections:
   Summary: |-
