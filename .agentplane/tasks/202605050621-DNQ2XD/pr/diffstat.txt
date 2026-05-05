@@ -1,0 +1,5 @@
+ .../agentplane/src/cli/local-ci-selection.test.ts  | 45 ++++++++++---
+ .../agentplane/src/commands/task/finish-close.ts   | 53 +++++++++++++++
+ .../commands/task/finish.close-tail.unit.test.ts   | 76 ++++++++++++++++++++++
+ scripts/lib/pre-push-scope.mjs                     | 19 ++++--
+ 4 files changed, 178 insertions(+), 15 deletions(-)
