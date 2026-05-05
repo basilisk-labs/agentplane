@@ -52,6 +52,6 @@
     "prepack": "bun run clean && bun run build && node ../../scripts/manifest.mjs sanitize .",
     "postpack": "node ../../scripts/manifest.mjs build .",
     "prepublishOnly": "node ../../scripts/enforce-github-publish.mjs && npm run prepack",
-    "test": "bun test ./src/index.test.ts ./src/overlay.test.ts"
+    "test": "bun test ./src/index.test.ts ./src/overlay.test.ts ./src/blueprint-extensions.test.ts"
   }
 }

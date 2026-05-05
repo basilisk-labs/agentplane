@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605051957-5KNJ9K/normalize-recipe-blueprint-hints",
+  "created_at": "2026-05-05T20:01:23.073Z",
+  "head_sha": "143295bb960b86fac86ac77ab60d8b2df288f3a8",
+  "last_verified_at": "2026-05-05T20:07:10.624Z",
+  "last_verified_sha": "143295bb960b86fac86ac77ab60d8b2df288f3a8",
+  "schema_version": 1,
+  "task_id": "202605051957-5KNJ9K",
+  "updated_at": "2026-05-05T20:01:23.073Z",
+  "verify": {
+    "status": "pass"
+  }
+}

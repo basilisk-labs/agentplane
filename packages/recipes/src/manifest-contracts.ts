@@ -97,6 +97,28 @@ export type OverlayWhen = {
   repo_types?: string[];
 };
 
+export type RecipeBlueprintExtensionKind =
+  | "context_hint"
+  | "evidence_requirement"
+  | "check_suggestion"
+  | "output_schema"
+  | "artifact_template"
+  | "risk_hint"
+  | "preferred_blueprint";
+
+export type RecipeBlueprintExtension = {
+  id: string;
+  kind: RecipeBlueprintExtensionKind;
+  summary: string;
+  when?: OverlayWhen;
+  target_node_kind?: string;
+  value?: unknown;
+  evidence?: string[];
+  command?: string;
+  risk?: string;
+  blueprint_id?: string;
+};
+
 export type OverlayPromptFragment = {
   id: string;
   surface: OverlaySurface;
@@ -159,6 +181,7 @@ export type ProjectOverlayManifestV2 = {
   conflicts?: { recipe_id: string; reason: string }[];
   prompts?: OverlayPromptFragment[];
   validators?: OverlayValidator[];
+  blueprint_extensions?: RecipeBlueprintExtension[];
   templates?: Record<string, string>;
   skills?: RecipeSkillDefinition[];
   agents?: RecipeAgentDefinition[];
