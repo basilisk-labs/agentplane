@@ -24,8 +24,8 @@ Implement structured task intent fields for blueprint resolution, synchronize co
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: structured blueprint intent fields, resolver precedence, task creation flags, commit-scope synchronization, schema/docs generation, and focused regression tests passed.
 
 ## Risks
 
