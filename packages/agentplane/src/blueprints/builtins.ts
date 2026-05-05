@@ -1,5 +1,6 @@
 import type {
   Blueprint,
+  BlueprintContextBudget,
   BlueprintEdge,
   BlueprintId,
   BlueprintNode,
@@ -16,6 +17,8 @@ type NodeSpec = {
   mode?: BlueprintNode["mode"];
   evidence?: readonly EvidenceKind[];
   protected?: boolean;
+  allowedCommands?: readonly string[];
+  policyModules?: readonly string[];
 };
 
 const CORE_STOP_RULES: readonly StopRule[] = [
@@ -56,6 +59,8 @@ function node(spec: NodeSpec): BlueprintNode {
     mode: spec.mode ?? NODE_MODE_BY_KIND[spec.kind],
     required: true,
     ...(spec.protected ? { protected: true } : {}),
+    ...(spec.allowedCommands ? { allowedCommands: spec.allowedCommands } : {}),
+    ...(spec.policyModules ? { policyModules: spec.policyModules } : {}),
     ...(spec.evidence ? { evidence: spec.evidence } : {}),
   };
 }
@@ -91,6 +96,9 @@ function blueprint(opts: {
   description: string;
   taskKinds: readonly TaskKind[];
   workflowModes?: readonly WorkflowMode[];
+  allowedCommands: readonly string[];
+  policyModules: readonly string[];
+  contextBudget: BlueprintContextBudget;
   nodes: readonly BlueprintNode[];
   requiredEvidence: readonly EvidenceRequirement[];
   stopRules?: readonly StopRule[];
@@ -102,6 +110,9 @@ function blueprint(opts: {
     description: opts.description,
     taskKinds: opts.taskKinds,
     ...(opts.workflowModes ? { workflowModes: opts.workflowModes } : {}),
+    allowedCommands: opts.allowedCommands,
+    policyModules: opts.policyModules,
+    contextBudget: opts.contextBudget,
     nodes: opts.nodes,
     edges: edgesFor(opts.nodes),
     requiredEvidence: opts.requiredEvidence,
@@ -134,7 +145,11 @@ function blueprint(opts: {
 const analysisNodes = [
   node({ kind: "intake" }),
   node({ kind: "scope", evidence: ["assumptions"] }),
-  node({ kind: "context_resolve", evidence: ["context_manifest", "sources"] }),
+  node({
+    kind: "context_resolve",
+    evidence: ["context_manifest", "sources"],
+    policyModules: [],
+  }),
   node({ kind: "work_unit", evidence: ["weak_links", "final_output"] }),
   node({ kind: "artifact_write", evidence: ["artifact"] }),
   node({ kind: "verify_record", evidence: ["final_output"], protected: true }),
@@ -144,7 +159,11 @@ const analysisNodes = [
 const contentNodes = [
   node({ kind: "intake" }),
   node({ kind: "scope", evidence: ["assumptions"] }),
-  node({ kind: "context_resolve", evidence: ["context_manifest", "sources"] }),
+  node({
+    kind: "context_resolve",
+    evidence: ["context_manifest", "sources"],
+    policyModules: [],
+  }),
   node({ kind: "work_unit", evidence: ["artifact", "final_output"] }),
   node({ kind: "deterministic_check", evidence: ["check_result"] }),
   node({ kind: "artifact_write", evidence: ["artifact"] }),
@@ -155,7 +174,15 @@ const contentNodes = [
 const docsNodes = [
   node({ kind: "intake" }),
   node({ kind: "scope", evidence: ["assumptions"] }),
-  node({ kind: "context_resolve", evidence: ["context_manifest"] }),
+  node({
+    kind: "context_resolve",
+    evidence: ["context_manifest"],
+    policyModules: [
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/dod.docs.md",
+    ],
+  }),
   node({ kind: "work_unit", evidence: ["changed_paths", "artifact"] }),
   node({ kind: "deterministic_check", evidence: ["check_result"] }),
   node({ kind: "artifact_write", evidence: ["artifact"] }),
@@ -167,9 +194,22 @@ const codeDirectNodes = [
   node({ kind: "intake" }),
   node({ kind: "scope", evidence: ["assumptions"] }),
   node({ kind: "approval_gate", evidence: ["approval"], protected: true }),
-  node({ kind: "context_resolve", evidence: ["context_manifest"] }),
+  node({
+    kind: "context_resolve",
+    evidence: ["context_manifest"],
+    policyModules: [
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/dod.code.md",
+      ".agentplane/policy/workflow.direct.md",
+    ],
+  }),
   node({ kind: "work_unit", evidence: ["changed_paths"] }),
-  node({ kind: "deterministic_check", evidence: ["check_result"] }),
+  node({
+    kind: "deterministic_check",
+    evidence: ["check_result"],
+    allowedCommands: ["agentplane task verify-show <task-id>", "project focused checks"],
+  }),
   node({ kind: "verify_record", evidence: ["check_result"], protected: true }),
   node({ kind: "finish", evidence: ["commit"], protected: true }),
 ] as const;
@@ -178,13 +218,40 @@ const codeBranchPrNodes = [
   node({ kind: "intake" }),
   node({ kind: "scope", evidence: ["assumptions"] }),
   node({ kind: "approval_gate", evidence: ["approval"], protected: true }),
-  node({ kind: "context_resolve", evidence: ["context_manifest"] }),
-  node({ kind: "worktree_start", evidence: ["changed_paths"], protected: true }),
+  node({
+    kind: "context_resolve",
+    evidence: ["context_manifest"],
+    policyModules: [
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/dod.code.md",
+      ".agentplane/policy/workflow.branch_pr.md",
+    ],
+  }),
+  node({
+    kind: "worktree_start",
+    evidence: ["changed_paths"],
+    protected: true,
+    allowedCommands: ["agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"],
+  }),
   node({ kind: "work_unit", evidence: ["changed_paths"] }),
-  node({ kind: "fast_local_checks", evidence: ["check_result"] }),
-  node({ kind: "pr_artifact", evidence: ["artifact", "external_link"] }),
+  node({
+    kind: "fast_local_checks",
+    evidence: ["check_result"],
+    allowedCommands: ["agentplane task verify-show <task-id>", "project focused checks"],
+  }),
+  node({
+    kind: "pr_artifact",
+    evidence: ["artifact", "external_link"],
+    allowedCommands: ["agentplane pr open <task-id> --branch <branch> --author <ROLE>"],
+  }),
   node({ kind: "hosted_checks", evidence: ["check_result", "external_link"] }),
-  node({ kind: "publish_or_integrate", evidence: ["commit", "external_link"], protected: true }),
+  node({
+    kind: "publish_or_integrate",
+    evidence: ["commit", "external_link"],
+    protected: true,
+    allowedCommands: ["agentplane integrate <task-id> --branch <branch> --run-verify"],
+  }),
   node({ kind: "verify_record", evidence: ["check_result"], protected: true }),
   node({ kind: "finish", evidence: ["commit"], protected: true }),
 ] as const;
@@ -193,7 +260,16 @@ const releaseNodes = [
   node({ kind: "intake" }),
   node({ kind: "scope", evidence: ["assumptions"] }),
   node({ kind: "approval_gate", evidence: ["approval"], protected: true }),
-  node({ kind: "context_resolve", evidence: ["context_manifest"] }),
+  node({
+    kind: "context_resolve",
+    evidence: ["context_manifest"],
+    policyModules: [
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/dod.code.md",
+      ".agentplane/policy/workflow.release.md",
+    ],
+  }),
   node({ kind: "work_unit", evidence: ["artifact"] }),
   node({ kind: "deterministic_check", evidence: ["check_result"] }),
   node({ kind: "publish_or_integrate", evidence: ["commit", "external_link"], protected: true }),
@@ -205,7 +281,11 @@ const opsNodes = [
   node({ kind: "intake" }),
   node({ kind: "scope", evidence: ["assumptions", "rollback"] }),
   node({ kind: "approval_gate", evidence: ["approval"], protected: true }),
-  node({ kind: "context_resolve", evidence: ["context_manifest"] }),
+  node({
+    kind: "context_resolve",
+    evidence: ["context_manifest"],
+    policyModules: [".agentplane/policy/security.must.md", ".agentplane/policy/dod.core.md"],
+  }),
   node({ kind: "work_unit", evidence: ["artifact", "rollback"] }),
   node({ kind: "deterministic_check", evidence: ["check_result"] }),
   node({ kind: "artifact_write", evidence: ["artifact"] }),
@@ -219,6 +299,14 @@ export const BUILTIN_BLUEPRINTS = [
     title: "Lightweight analysis",
     description: "Read-only analysis, research, review synthesis, and evidence-backed answers.",
     taskKinds: ["analysis"],
+    allowedCommands: [],
+    policyModules: [],
+    contextBudget: {
+      maxPolicyModules: 0,
+      maxPromptBlocks: 6,
+      rationale:
+        "Lightweight analysis should load sources and task context without policy modules.",
+    },
     nodes: analysisNodes,
     requiredEvidence: [
       evidence("analysis.sources", "sources", "context_resolve", "Sources used for analysis."),
@@ -232,6 +320,14 @@ export const BUILTIN_BLUEPRINTS = [
     title: "Lightweight content",
     description: "Content drafts and editorial artifacts that do not change product code.",
     taskKinds: ["content"],
+    allowedCommands: ["editorial or formatting checks"],
+    policyModules: [],
+    contextBudget: {
+      maxPolicyModules: 0,
+      maxPromptBlocks: 8,
+      rationale:
+        "Content work should favor source material and recipe context over workflow policy.",
+    },
     nodes: contentNodes,
     requiredEvidence: [
       evidence("content.sources", "sources", "context_resolve", "Source or product facts used."),
@@ -245,6 +341,21 @@ export const BUILTIN_BLUEPRINTS = [
     description: "Repository documentation and policy-adjacent prose changes.",
     taskKinds: ["docs"],
     workflowModes: ["direct", "branch_pr"],
+    allowedCommands: [
+      "agentplane task verify-show <task-id>",
+      "documentation checks",
+      "agentplane verify <task-id> --ok|--rework",
+    ],
+    policyModules: [
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/dod.docs.md",
+    ],
+    contextBudget: {
+      maxPolicyModules: 3,
+      maxPromptBlocks: 10,
+      rationale: "Documentation changes need docs DoD and minimal workflow/security policy.",
+    },
     nodes: docsNodes,
     requiredEvidence: [
       evidence("docs.paths", "changed_paths", "work_unit", "Changed documentation paths."),
@@ -258,6 +369,23 @@ export const BUILTIN_BLUEPRINTS = [
     description: "Code mutation in direct workflow mode.",
     taskKinds: ["code"],
     workflowModes: ["direct"],
+    allowedCommands: [
+      "agentplane task verify-show <task-id>",
+      "project focused checks",
+      "agentplane verify <task-id> --ok|--rework",
+      "agentplane finish <task-id>",
+    ],
+    policyModules: [
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/dod.code.md",
+      ".agentplane/policy/workflow.direct.md",
+    ],
+    contextBudget: {
+      maxPolicyModules: 4,
+      maxPromptBlocks: 12,
+      rationale: "Direct code work needs code DoD plus the active direct workflow contract.",
+    },
     nodes: codeDirectNodes,
     requiredEvidence: [
       evidence("code_direct.paths", "changed_paths", "work_unit", "Changed source paths."),
@@ -271,6 +399,25 @@ export const BUILTIN_BLUEPRINTS = [
     description: "Code mutation in branch PR workflow mode.",
     taskKinds: ["code"],
     workflowModes: ["branch_pr"],
+    allowedCommands: [
+      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
+      "agentplane task verify-show <task-id>",
+      "project focused checks",
+      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
+      "agentplane verify <task-id> --ok|--rework",
+      "agentplane integrate <task-id> --branch <branch> --run-verify",
+    ],
+    policyModules: [
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/dod.code.md",
+      ".agentplane/policy/workflow.branch_pr.md",
+    ],
+    contextBudget: {
+      maxPolicyModules: 4,
+      maxPromptBlocks: 14,
+      rationale: "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks.",
+    },
     nodes: codeBranchPrNodes,
     requiredEvidence: [
       evidence("code_pr.paths", "changed_paths", "work_unit", "Changed source paths."),
@@ -286,6 +433,24 @@ export const BUILTIN_BLUEPRINTS = [
     description: "Version, package, publish, and distribution work.",
     taskKinds: ["release"],
     workflowModes: ["direct", "branch_pr"],
+    allowedCommands: [
+      "agentplane task verify-show <task-id>",
+      "release gates",
+      "publish commands after approval",
+      "agentplane verify <task-id> --ok|--rework",
+    ],
+    policyModules: [
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/dod.code.md",
+      ".agentplane/policy/workflow.release.md",
+    ],
+    contextBudget: {
+      maxPolicyModules: 4,
+      maxPromptBlocks: 16,
+      rationale:
+        "Release work needs strict release policy, approval evidence, and rollback context.",
+    },
     nodes: releaseNodes,
     requiredEvidence: [
       evidence("release.approval", "approval", "approval_gate", "Release approval."),
@@ -301,6 +466,17 @@ export const BUILTIN_BLUEPRINTS = [
     description:
       "Operational changes touching external systems, credentials, deployments, or config.",
     taskKinds: ["ops"],
+    allowedCommands: [
+      "agentplane task verify-show <task-id>",
+      "approved operational command",
+      "agentplane verify <task-id> --ok|--rework",
+    ],
+    policyModules: [".agentplane/policy/security.must.md", ".agentplane/policy/dod.core.md"],
+    contextBudget: {
+      maxPolicyModules: 2,
+      maxPromptBlocks: 12,
+      rationale: "Ops work needs security and rollback context before any external action.",
+    },
     nodes: opsNodes,
     requiredEvidence: [
       evidence("ops.approval", "approval", "approval_gate", "Operational approval."),

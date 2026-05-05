@@ -756,6 +756,9 @@ route
 selection_reasons
 workflow_mode
 required_evidence
+policy_modules
+allowed_commands
+context_budget
 accepted_recipe_extensions
 rejected_recipe_extensions
 stop_reasons
@@ -804,29 +807,31 @@ record enough structured evidence to audit which route was used and why the resu
 
 ## Runner Relationship
 
-Runner support should be incremental.
+Runner support is incremental.
 
-v0 should support model, registry, validation, resolution, and explanation:
+v0.5 supports model, registry, validation, resolution, explanation, and a non-executing
+materialized plan in runner bundles:
 
 ```text
 validate built-ins
 resolve from task metadata
 explain resolved route
 surface expected evidence
+include selected blueprint plan in bundle.json
 ```
 
-Later runner work can consume the resolved blueprint as a graph. The first implementation should
-not attempt a full workflow engine.
+Later runner work can consume the resolved blueprint as a graph. The current implementation still
+does not execute blueprint states automatically.
 
 ## Context Relationship
 
-Blueprints should eventually constrain context loading, but that is not part of the first code PR.
+Blueprints now expose the first context contract in explain output and runner bundles.
 
-Future context contract:
+Current context contract:
 
 - `context_resolve` records why each policy module, recipe, file group, or tool profile was loaded.
 - runner bundles expose a context budget and loaded context manifest.
-- validation rejects policy modules that are unrelated to the resolved blueprint.
+- explain output and runner bundles expose the blueprint's allowed policy modules.
 - ACR records context manifest references, not full raw context.
 
 This is broader than ACR. ACR records what happened after execution; the runner bundle and resolver
@@ -847,8 +852,9 @@ Blueprint resolution must stop or require re-approval when:
 
 ## Implementation Status
 
-The first implementation is split into small surfaces. v0.5 rc1 completes PR 1 through PR 5 and the
-minimal ACR part of PR 6. Runner execution remains deferred.
+The first implementation is split into small surfaces. v0.5 rc1 completed PR 1 through PR 5 and
+the minimal ACR part of PR 6. The follow-up executable-contract layer adds materialized blueprint
+plans to explain output and runner bundles while keeping automatic state execution deferred.
 
 ### PR 1: Model, built-ins, registry, validation
 
@@ -916,7 +922,9 @@ Acceptance:
 
 ### PR 4: Verification surface
 
-Status: shipped in rc1 for `task verify-show`; task-local `blueprint.json` snapshots remain deferred.
+Status: shipped in rc1 for `task verify-show`; materialized blueprint plans now ship through
+`blueprint explain` and runner `bundle.json`. Standalone task-local `blueprint.json` snapshots remain
+deferred.
 
 Scope:
 
@@ -947,12 +955,15 @@ Acceptance:
 
 ### PR 6: ACR and runner handoff
 
-Status: shipped in rc1 for ACR summary fields only; runner bundle handoff remains deferred.
+Status: shipped in rc1 for ACR summary fields; runner bundle handoff now includes the selected
+blueprint plan.
 
 Scope:
 
 - record blueprint id, version, route, skipped nodes, evidence refs, and stop reason in ACR;
-- pass resolved blueprint summary to runner bundles.
+- pass resolved blueprint summary to runner bundles;
+- expose selected recipe, context budget, policy modules, allowed commands, and evidence checklist
+  in runner bundle output.
 
 Acceptance:
 

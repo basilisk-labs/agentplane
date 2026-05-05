@@ -250,6 +250,65 @@ describe("resolveBlueprint", () => {
     expect(resolved.selectionReasons[0]).toContain("risk flags require release.strict");
   });
 
+  it("builds executable plan metadata without adding policy to lightweight analysis", () => {
+    const resolved = resolve({
+      taskId: "202605052204-ANALYS",
+      taskKind: "analysis",
+      mutation: "none",
+      workflowMode: "branch_pr",
+    });
+    const output = explainResolvedBlueprint({
+      resolved,
+      input: {
+        taskId: "202605052204-ANALYS",
+        tags: [],
+        taskKind: "analysis",
+        mutation: "none",
+        workflowMode: "branch_pr",
+      },
+      workflowMode: "branch_pr",
+    });
+
+    expect(output.plan.blueprintId).toBe("analysis.light");
+    expect(output.plan.taskIntent).toEqual({ taskKind: "analysis", mutationScope: "none" });
+    expect(output.plan.policyModules).toEqual([]);
+    expect(output.plan.allowedCommands).toEqual([]);
+    expect(output.plan.states.map((state) => state.kind)).not.toContain("hosted_checks");
+    expect(formatBlueprintExplain(output)).toContain("policy_modules: none");
+    expect(formatBlueprintExplain(output)).toContain("context_budget: max_policy_modules=0");
+  });
+
+  it("builds executable plan metadata for branch PR code routes", () => {
+    const input: BlueprintResolveInput = {
+      tags: ["code"],
+      taskKind: "code",
+      mutation: "code",
+      mutationScope: "code",
+      workflowMode: "branch_pr",
+    };
+    const output = explainResolvedBlueprint({
+      resolved: resolve(input),
+      input,
+      workflowMode: "branch_pr",
+    });
+
+    expect(output.plan.blueprintId).toBe("code.branch_pr");
+    expect(output.plan.policyModules).toEqual([
+      ".agentplane/policy/dod.code.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/workflow.branch_pr.md",
+    ]);
+    expect(output.plan.allowedCommands).toContain(
+      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
+    );
+    expect(
+      output.plan.states
+        .find((state) => state.kind === "context_resolve")
+        ?.policyModules.includes(".agentplane/policy/workflow.branch_pr.md"),
+    ).toBe(true);
+  });
+
   it("bridges normalized recipe blueprint extensions into resolver hints", () => {
     const hints = recipeBlueprintExtensionsToHints([
       {

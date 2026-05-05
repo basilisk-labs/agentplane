@@ -214,6 +214,7 @@ export function makeRunBlueprintExplainHandler(getCtx: (cmd: string) => Promise<
     const resolved = resolveBlueprint({ input });
     const output = explainResolvedBlueprint({
       resolved,
+      input,
       workflowMode: input.workflowMode,
     });
     if (p.json) {

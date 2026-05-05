@@ -64,6 +64,21 @@ export function renderTaskRunDryRunOutput(opts: {
       opts.prepared.bundle.execution.policy_decision?.refusal_reason ?? null,
     )}`,
     ...formatRunnerPolicyFieldSummaryLines(opts.prepared.bundle.execution.policy_decision),
+    `blueprint: ${opts.prepared.bundle.blueprint?.blueprintId ?? "none"}`,
+    `recipe: ${opts.prepared.bundle.recipe?.recipe_id ?? "none"}`,
+    `context_budget: ${JSON.stringify(opts.prepared.bundle.blueprint?.contextBudget ?? null)}`,
+    `policy_modules: ${JSON.stringify(opts.prepared.bundle.blueprint?.policyModules ?? [])}`,
+    `context_manifest: ${JSON.stringify(
+      opts.prepared.bundle.blueprint?.contextManifest.map((item) => ({
+        id: item.id,
+        kind: item.kind,
+        reason: item.reason,
+        source: item.source,
+      })) ?? [],
+    )}`,
+    `evidence_checklist: ${JSON.stringify(
+      opts.prepared.bundle.blueprint?.requiredEvidence.map((item) => item.id) ?? [],
+    )}`,
     `argv: ${opts.prepared.invocation.argv.join(" ")}`,
   ];
   return { stdout: linesToOutput(stdout), stderr: "" };
