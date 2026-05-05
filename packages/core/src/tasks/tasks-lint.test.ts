@@ -113,6 +113,49 @@ describe("tasks-lint", () => {
     expect(joined).toContain("owner must be non-empty");
   });
 
+  it("accepts legacy UTC offsets and no-op DONE records without commits", () => {
+    const config = defaultConfig();
+    const task = {
+      id: "202603140729-ZN5YSS",
+      title: "Bookkeeping duplicate",
+      status: "DONE",
+      priority: "med",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["code"],
+      verify: [],
+      plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+      verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+      commit: null,
+      comments: [
+        {
+          author: "ORCHESTRATOR",
+          body: "Verified: closed as duplicate; no implementation changes are expected.",
+        },
+      ],
+      result_summary: "Closed as duplicate of another task.",
+      doc_version: 3,
+      doc_updated_at: "2026-01-11T08:06:07+00:00",
+      doc_updated_by: "agentctl",
+      description: "Historical duplicate task",
+      dirty: false,
+      id_source: "custom",
+    };
+    const snapshot = {
+      tasks: [task],
+      meta: {
+        schema_version: 1,
+        managed_by: "agentplane",
+        checksum_algo: "sha256",
+        checksum: computeTasksChecksum([task]),
+      },
+    };
+
+    const result = lintTasksSnapshot(snapshot as never, config);
+
+    expect(result.errors).toEqual([]);
+  });
+
   it("lintTasksSnapshot reports meta and task validation errors", () => {
     const config = defaultConfig();
     const now = new Date().toISOString();

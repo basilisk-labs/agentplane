@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -617,25 +617,11 @@ describe("commands/workflow", () => {
     }
   });
 
-  it("task lint rejects invalid tasks.json payloads", async () => {
+  it("task lint rejects malformed task README payloads", async () => {
     const root = await makeRepo();
-    const tasksPath = path.join(root, ".agentplane", "tasks.json");
-    await writeFile(
-      tasksPath,
-      JSON.stringify(
-        {
-          schema_version: 1,
-          updated_at: "2026-02-05T00:00:00Z",
-          tasks: [
-            { id: "202602050900-A1B2", title: "A" },
-            { id: "202602050900-A1B2", title: "B" },
-          ],
-        },
-        null,
-        2,
-      ),
-      "utf8",
-    );
+    const readmePath = path.join(root, ".agentplane", "tasks", "BROKEN", "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(readmePath, "# missing frontmatter\n", "utf8");
 
     await expect(cmdTaskLint({ cwd: root })).rejects.toMatchObject({ code: "E_VALIDATION" });
   });

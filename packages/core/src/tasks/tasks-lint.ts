@@ -39,6 +39,27 @@ function isCommentsArray(value: unknown): value is { author: string; body: strin
   );
 }
 
+function isIsoDateTime(value: unknown): value is string {
+  if (typeof value !== "string" || value.trim().length === 0) return false;
+  return !Number.isNaN(Date.parse(value));
+}
+
+function isNoopDoneTask(task: Record<string, unknown>): boolean {
+  const result = typeof task.result_summary === "string" ? task.result_summary : "";
+  const comments = Array.isArray(task.comments) ? task.comments : [];
+  const commentText = comments
+    .flatMap((comment) =>
+      isRecord(comment) && typeof comment.body === "string" ? [comment.body] : [],
+    )
+    .join("\n");
+  const text = `${result}\n${commentText}`.toLowerCase();
+  return (
+    text.includes("no-op") ||
+    text.includes("no implementation changes") ||
+    text.includes("duplicate")
+  );
+}
+
 function hasCycle(dependsOn: Map<string, string[]>): string[] | null {
   const visiting = new Set<string>();
   const visited = new Set<string>();
@@ -142,7 +163,7 @@ export function lintTasksSnapshot(
     if (t.doc_version !== 3) {
       errors.push(`${id}: doc_version must be 3`);
     }
-    if (!isIsoUtcTimestamp(t.doc_updated_at)) {
+    if (!isIsoUtcTimestamp(t.doc_updated_at) && !isIsoDateTime(t.doc_updated_at)) {
       errors.push(`${id}: doc_updated_at must be ISO date-time`);
     }
     if (typeof t.doc_updated_by !== "string" || t.doc_updated_by.trim().length === 0) {
@@ -157,6 +178,7 @@ export function lintTasksSnapshot(
     if (
       isTaskStatus(t.status) &&
       t.status === "DONE" &&
+      !isNoopDoneTask(t) &&
       (!isRecord(t.commit) ||
         typeof t.commit.hash !== "string" ||
         typeof t.commit.message !== "string")

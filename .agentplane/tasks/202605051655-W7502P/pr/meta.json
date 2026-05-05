@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605051655-W7502P/harden-task-parsing-lint",
+  "created_at": "2026-05-05T16:55:26.629Z",
+  "head_sha": "cc0c8bd4a38c5f662dd91503aa7d484c8cc94997",
+  "last_verified_at": "2026-05-05T17:06:47.685Z",
+  "last_verified_sha": "c1d62ec587af9a88970c70dc36f424ed6d4bfea0",
+  "schema_version": 1,
+  "task_id": "202605051655-W7502P",
+  "updated_at": "2026-05-05T17:07:22.503Z",
+  "verify": {
+    "status": "pass"
+  }
+}

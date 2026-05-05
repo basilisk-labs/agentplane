@@ -8,14 +8,26 @@ import type { TaskData, TaskSummary } from "./task-backend.js";
 export const TASK_INDEX_SCHEMA_VERSION = 2;
 const TASK_INDEX_FILENAME = "tasks-index.v2.json";
 
+export type TaskIndexReadmeFingerprintEntry = {
+  path: string;
+  mtimeMs: number;
+  size: number;
+};
+
+export type TaskIndexReadmeFingerprint = {
+  entries: TaskIndexReadmeFingerprintEntry[];
+};
+
 export type TaskIndexEntry = {
   task: TaskSummary;
   readmePath: string;
   mtimeMs: number;
+  size?: number;
 };
 
 export type TaskIndexFileV2 = {
   schema_version: 2;
+  readmes?: TaskIndexReadmeFingerprint;
   byId: Record<string, TaskIndexEntry>;
   byPath: Record<string, string>;
 };
@@ -56,11 +68,28 @@ function isTaskIndexEntry(value: unknown): value is TaskIndexEntry {
   return true;
 }
 
+function isTaskIndexReadmeFingerprintEntry(
+  value: unknown,
+): value is TaskIndexReadmeFingerprintEntry {
+  if (!isRecord(value)) return false;
+  if (typeof value.path !== "string") return false;
+  if (typeof value.mtimeMs !== "number") return false;
+  if (typeof value.size !== "number") return false;
+  return true;
+}
+
+function isTaskIndexReadmeFingerprint(value: unknown): value is TaskIndexReadmeFingerprint {
+  if (!isRecord(value)) return false;
+  if (!Array.isArray(value.entries)) return false;
+  return value.entries.every((entry) => isTaskIndexReadmeFingerprintEntry(entry));
+}
+
 function isTaskIndexFileV2(value: unknown): value is TaskIndexFileV2 {
   if (!isRecord(value)) return false;
   if (value.schema_version !== 2) return false;
   if (!isRecord(value.byId)) return false;
   if (!isRecord(value.byPath)) return false;
+  if (value.readmes !== undefined && !isTaskIndexReadmeFingerprint(value.readmes)) return false;
 
   // Validate entries shallowly; be lenient so cache can still help even if partially corrupt.
   for (const entry of Object.values(value.byId)) {
@@ -96,10 +125,26 @@ export async function saveTaskIndex(indexPath: string, index: TaskIndexFileV2): 
   await writeJsonStableIfChanged(indexPath, index);
 }
 
+export function taskReadmeFingerprintEquals(
+  left: TaskIndexReadmeFingerprint | undefined,
+  right: TaskIndexReadmeFingerprint,
+): boolean {
+  if (!left) return false;
+  if (left.entries.length !== right.entries.length) return false;
+  for (let i = 0; i < right.entries.length; i += 1) {
+    const a = left.entries[i];
+    const b = right.entries[i];
+    if (!a || !b) return false;
+    if (a.path !== b.path || a.mtimeMs !== b.mtimeMs || a.size !== b.size) return false;
+  }
+  return true;
+}
+
 export function buildTaskIndexEntry(
   task: TaskData,
   readmePath: string,
   mtimeMs: number,
+  size?: number,
 ): TaskIndexEntry {
   const { doc, sections, events, ...summary } = task;
   void doc;
@@ -115,5 +160,6 @@ export function buildTaskIndexEntry(
     task: compactTask,
     readmePath,
     mtimeMs,
+    ...(size === undefined ? {} : { size }),
   };
 }
