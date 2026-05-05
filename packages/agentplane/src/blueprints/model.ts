@@ -53,6 +53,17 @@ export type RecipeExtensionKind =
 
 export type StopRuleSeverity = "stop" | "approval_required" | "warn";
 
+export type MutationKind = "none" | "docs" | "code" | "release" | "ops" | "unknown";
+
+export type RiskFlag =
+  | "network"
+  | "credentials"
+  | "deploy"
+  | "publish"
+  | "merge"
+  | "security"
+  | "external_system";
+
 export type Blueprint = {
   id: BlueprintId;
   version: 1;
@@ -135,4 +146,91 @@ export type BlueprintValidationResult = {
 
 export type BlueprintRegistry = {
   blueprints: readonly Blueprint[];
+};
+
+export type RecipeHint = {
+  recipeId: string;
+  kind: RecipeExtensionKind;
+  targetNodeKind?: BlueprintNodeKind;
+  value: unknown;
+};
+
+export type BlueprintResolveInput = {
+  taskId?: string;
+  title?: string;
+  description?: string;
+  tags: readonly string[];
+  owner?: string;
+  workflowMode?: WorkflowMode;
+  mutation: MutationKind;
+  touchedPaths?: readonly string[];
+  recipeHints?: readonly RecipeHint[];
+  riskFlags?: readonly RiskFlag[];
+  explicitBlueprintId?: BlueprintId;
+};
+
+export type SkippedNode = {
+  node: BlueprintNode;
+  reason: string;
+};
+
+export type AcceptedRecipeExtension = {
+  recipeId: string;
+  nodeKind: BlueprintNodeKind;
+  kind: RecipeExtensionKind;
+  reason: string;
+};
+
+export type RejectedRecipeExtension = {
+  recipeId: string;
+  nodeKind?: BlueprintNodeKind;
+  kind: RecipeExtensionKind;
+  reason: string;
+};
+
+export type StopReason = {
+  id: string;
+  severity: StopRuleSeverity;
+  reason: string;
+};
+
+export type ResolvedBlueprint = {
+  blueprint: Blueprint;
+  activeNodes: readonly BlueprintNode[];
+  skippedNodes: readonly SkippedNode[];
+  requiredEvidence: readonly EvidenceRequirement[];
+  selectionReasons: readonly string[];
+  acceptedRecipeExtensions: readonly AcceptedRecipeExtension[];
+  rejectedRecipeExtensions: readonly RejectedRecipeExtension[];
+  stopReasons: readonly StopReason[];
+};
+
+export type BlueprintExplainNode = {
+  id: string;
+  kind: BlueprintNodeKind;
+  mode: BlueprintNodeMode;
+  required: boolean;
+  protected: boolean;
+};
+
+export type BlueprintExplainEvidence = {
+  id: string;
+  kind: EvidenceKind;
+  producedBy: string;
+  required: boolean;
+  description: string;
+};
+
+export type BlueprintExplainOutput = {
+  blueprintId: BlueprintId;
+  blueprintVersion: 1;
+  title: string;
+  workflowMode?: WorkflowMode;
+  route: readonly BlueprintExplainNode[];
+  skippedNodes: readonly SkippedNode[];
+  requiredEvidence: readonly BlueprintExplainEvidence[];
+  selectionReasons: readonly string[];
+  acceptedRecipeExtensions: readonly AcceptedRecipeExtension[];
+  rejectedRecipeExtensions: readonly RejectedRecipeExtension[];
+  stopReasons: readonly StopReason[];
 };
