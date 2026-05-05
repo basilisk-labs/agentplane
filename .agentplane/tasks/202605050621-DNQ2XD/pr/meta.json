@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-05T06:36:28Z",
   "base": "main",
   "branch": "task/202605050621-DNQ2XD/closeout-idempotency",
   "created_at": "2026-05-05T06:22:07.988Z",
-  "head_sha": "9efb44f9c1d3c11fadc3f44ded62965dc07f8fb9",
+  "head_sha": "33742bae03dc13f0809c01d0f3d2f0832114b5f9",
   "last_verified_at": "2026-05-05T06:26:34.593Z",
   "last_verified_sha": "b4e8cc6193fd552b7189028464e92884fe1dd865",
+  "merge_commit": "47c7c6755d9e0bbb3328310bfef9fdd59db98864",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-05T06:36:28Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605050621-DNQ2XD",
-  "updated_at": "2026-05-05T06:26:59.940Z",
+  "updated_at": "2026-05-05T06:36:28Z",
   "verify": {
     "status": "pass"
   }
