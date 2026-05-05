@@ -1,0 +1,139 @@
+---
+slug: roadmap-0-5-blueprints-cloud-backend
+title: "Roadmap 0.1 -> 0.5: Blueprints and Cloud Backend"
+authors: [team]
+tags: [workflow, operations]
+---
+
+![Agentplane roadmap abstract illustration](/img/blog/roadmap-kandinsky-agentplane.svg)
+
+AgentPlane started as a CLI that keeps repository work honest. The roadmap to `0.5` is not about turning it into a vague “AI platform.” It is about adding explicit execution-route contracts and a cloud backend option without losing the audit trail or the policy boundaries that make the tool usable in a real repo.
+
+<!-- truncate -->
+
+## Why this roadmap exists
+
+Three pressures keep showing up:
+
+- teams want more automation, but they do not want agents freelancing in the repo;
+- task state needs to move between local repositories and external planning surfaces without making every integration a core backend;
+- prompt quality and execution quality have to be treated like product design, not prompt tinkering;
+- extension points need to be explicit, otherwise every serious team ends up forking the framework.
+
+So the order matters. Foundation first. Then contracts. Then extension. Then a blueprint layer that can explain the route a task is taking. Only after that does it make sense to talk about more autonomous execution.
+
+## Version-by-Version Roadmap
+
+## 0.1 Foundation and Baseline Workflow
+
+- Establish the initial AgentPlane CLI baseline and project structure.
+- Define the first end-to-end task lifecycle for local execution.
+- Introduce core task tracking, verification logging, and export conventions.
+
+What that means in practice:
+
+- a team can run a local workflow with explicit task state and an audit trail that actually survives inspection.
+
+## 0.2 Architecture and Codebase Formalization
+
+- Formalize architecture boundaries and core codebase contracts.
+- Modularize subsystems to keep scaling simple and predictable.
+- Formalize operational processes at the CLI level.
+
+What that means in practice:
+
+- less hidden coupling and fewer “why does this command know about that file?” moments.
+
+## 0.3 Prompt System Improvements
+
+- Improve agent prompts for better determinism and execution quality.
+- Formalize process contracts at the agent-prompt level.
+- Deliver a dedicated Claude Code-compatible version.
+
+What that means in practice:
+
+- agents behave more predictably under real repo constraints, not just in clean demos.
+
+## 0.4 Recipes and Plugin Extension Model
+
+- Support custom agents, tools/SKILLS, and scenarios through recipes.
+- Define recipe packaging, versioning, and compatibility rules.
+- Add recipe discovery, installation, and validation flows in CLI.
+
+What that means in practice:
+
+- teams can add domain-specific behavior without patching core every time they need one more tool or scenario.
+
+## 0.5 Blueprints and Cloud Backend
+
+- Add typed blueprint contracts for task execution routes.
+- Ship built-in blueprint definitions, validation, resolver output, and explanation surfaces.
+- Make selected routes visible in task evidence before repository mutation.
+- Allow projects to choose a cloud backend during initialization or configuration.
+- Keep external platform sync behind the cloud backend boundary so GitHub Projects, Redmine, or other planning systems can evolve outside the repo-local task store.
+
+What that means in practice:
+
+- task routing becomes explicit before runner autonomy increases, and cloud-backed projects get one stable AgentPlane backend surface for external platform synchronization.
+
+## 0.6 Agentplane Runner
+
+- Build Agentplane Runner on top of resolved blueprints.
+- Enable coordinated multi-agent execution through blueprint-aware task routes.
+- Provide orchestration primitives for reliable autonomous runs without weakening repo-local policy gates.
+
+What that means in practice:
+
+- autonomous execution starts from a route contract the agent can explain, verify, and record.
+
+## 0.7 Evaluation and Recursive Improvement
+
+- Define repeatable evaluations for agents, recipes, prompt modules, blueprint resolution, runner behavior, and lifecycle flows.
+- Run scenario-based evaluations with reproducible inputs, structured evidence, deterministic gates, and baseline-vs-candidate comparison.
+- Support recursive prompt and recipe improvement only when quality improves without critical regressions.
+
+What that means in practice:
+
+- evals become a release-quality system after the execution route and runner layers are stable enough to measure.
+
+## What changes for users
+
+If the roadmap lands the way it should, users get:
+
+- Faster execution loops with clearer policy boundaries.
+- Clearer task route explanations before mutation.
+- A cloud backend option for teams that want external platform synchronization without replacing repo-local policy.
+- Better reproducibility for planning, implementation, and verification paths.
+- Lower overhead when introducing custom automation patterns.
+- Stronger traceability from intent to repository mutation.
+
+That is the optimistic version. The harder part is making sure the system stays legible while it grows.
+
+## Risks and open questions
+
+The main risks are not mysterious:
+
+- Over-complex extension surfaces can reduce adoption if plugin contracts are not strict enough.
+- Cloud sync can create conflicting sources of truth if the managed backend does not preserve canonical task state and sync timestamps.
+- Autonomous execution can increase failure blast radius if guardrails are not enforced at runtime and tied to the resolved blueprint.
+- Prompt formalization must remain aligned with real execution constraints, not only prompt style.
+
+There are also a few design questions we have not earned the right to hand-wave away:
+
+- Blueprint resolver behavior when task intent, workflow mode, and available backend capabilities point to different routes.
+- Cloud backend connection and sync semantics under intermittent network or external platform changes.
+- Runner execution model under mixed local/remote tool constraints.
+- Cross-recipe compatibility guarantees and version pinning strategy.
+- Default observability contract for multi-agent runs and external sync decisions.
+
+## What comes next
+
+The near-term work is more grounded than a runner-first roadmap would suggest:
+
+- finish the contract surfaces,
+- ship the blueprint layer,
+- expose the cloud backend choice cleanly,
+- ship the milestones one by one,
+- keep the release notes honest as each part lands.
+
+The direction is simple enough. More automation, yes. Sloppier governance, no.
