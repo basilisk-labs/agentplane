@@ -33,7 +33,7 @@ export type TaskNewParsed = {
   tags: string[];
   taskKind?: TaskData["task_kind"];
   mutationScope?: TaskData["mutation_scope"];
-  riskFlags: NonNullable<TaskData["risk_flags"]>;
+  riskFlags?: NonNullable<TaskData["risk_flags"]>;
   blueprintRequest?: TaskData["blueprint_request"];
   dependsOn: string[];
   verify: string[];
@@ -156,7 +156,7 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
     p.mutationScope,
     MUTATION_SCOPE_VALUES,
   );
-  const riskFlags = validateEnumArray("risk", p.riskFlags, RISK_FLAG_VALUES);
+  const riskFlags = validateEnumArray("risk", p.riskFlags ?? [], RISK_FLAG_VALUES);
   const blueprintRequest = validateOptionalEnum(
     "blueprint-request",
     p.blueprintRequest,
@@ -353,7 +353,7 @@ export async function runTaskNewParsed(opts: {
           tags: p.tags,
           ...(p.taskKind ? { task_kind: p.taskKind } : {}),
           ...(p.mutationScope ? { mutation_scope: p.mutationScope } : {}),
-          ...(p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
+          ...(p.riskFlags && p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
           ...(p.blueprintRequest ? { blueprint_request: p.blueprintRequest } : {}),
           depends_on: p.dependsOn,
           verify: p.verify,
