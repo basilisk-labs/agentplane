@@ -375,8 +375,8 @@ export function validateBlueprintPlanArtifact(opts: {
   const errors: BlueprintPlanValidationProblem[] = [];
   const allowedPolicyModules = blueprintPolicyModuleSet(opts.blueprint);
   const policyModules = opts.plan.policyModules.filter((item) => item.trim().length > 0);
-  const policyManifestEntries = opts.plan.contextManifest.filter((entry) =>
-    entry.kind === "policy_module" && isPolicyModulePath(entry.source ?? entry.id),
+  const policyManifestEntries = opts.plan.contextManifest.filter(
+    (entry) => entry.kind === "policy_module" && isPolicyModulePath(entry.source ?? entry.id),
   );
 
   if (policyModules.length > opts.plan.contextBudget.maxPolicyModules) {

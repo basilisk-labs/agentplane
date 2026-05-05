@@ -192,7 +192,13 @@ describe("runCli task run preparation", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS },
       const bundlePath = path.join(runDir, "bundle.json");
       const bootstrapPath = path.join(runDir, "bootstrap.md");
       const statePath = path.join(runDir, "run-state.json");
-      const blueprintSnapshotPath = path.join(root, ".agentplane", "tasks", taskId, "blueprint.json");
+      const blueprintSnapshotPath = path.join(
+        root,
+        ".agentplane",
+        "tasks",
+        taskId,
+        "blueprint.json",
+      );
       expect(await pathExists(bundlePath)).toBe(true);
       expect(await pathExists(bootstrapPath)).toBe(true);
       expect(await pathExists(statePath)).toBe(true);
