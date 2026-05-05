@@ -38,6 +38,7 @@ export const taskListSpec: CommandSpec<TaskListParsed> = {
       default: false,
       description: "Fail if task scan skips malformed/unreadable task files.",
     },
+    { kind: "string", name: "limit", valueHint: "<n>", description: "Max rows to print." },
     { kind: "boolean", name: "quiet", default: false, description: "Suppress summary output." },
   ],
   examples: [
@@ -51,12 +52,29 @@ export const taskListSpec: CommandSpec<TaskListParsed> = {
         throw usageError({ spec: taskListSpec, message: `Invalid value for --${key}: empty.` });
       }
     }
+    if (raw.opts.limit !== undefined) {
+      const limitRaw = raw.opts.limit;
+      if (typeof limitRaw !== "string") {
+        throw usageError({
+          spec: taskListSpec,
+          message: `Invalid value for --limit: ${JSON.stringify(limitRaw)} (expected integer)`,
+        });
+      }
+      const parsed = Number.parseInt(limitRaw, 10);
+      if (!Number.isFinite(parsed)) {
+        throw usageError({
+          spec: taskListSpec,
+          message: `Invalid value for --limit: ${limitRaw} (expected integer)`,
+        });
+      }
+    }
   },
   parse: (raw) => ({
     filters: {
       status: toStringList(raw.opts.status),
       owner: toStringList(raw.opts.owner),
       tag: toStringList(raw.opts.tag),
+      limit: typeof raw.opts.limit === "string" ? Number.parseInt(raw.opts.limit, 10) : undefined,
       quiet: raw.opts.quiet === true,
       strictRead: raw.opts["strict-read"] === true,
     },

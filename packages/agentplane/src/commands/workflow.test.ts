@@ -493,7 +493,7 @@ describe("commands/workflow", () => {
     try {
       const code = await cmdTaskListWithFilters({
         cwd: root,
-        filters: { status: [], owner: ["CODER"], tag: ["docs"], quiet: true },
+        filters: { status: [], owner: ["CODER"], tag: ["docs"], limit: 1, quiet: true },
       });
       expect(code).toBe(0);
       expect(ioList.stdout).toContain("202602050900-T1V2");
