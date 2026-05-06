@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605060730-PW6S0R",
+  "created_at": "2026-05-06T08:15:47.674Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "70ac693ef82c44c51d5dff652e16dfda60411b70",
+    "work_ref": "main",
+    "work_commit": "70ac693ef82c44c51d5dff652e16dfda60411b70"
+  },
+  "task": {
+    "task_id": "202605060730-PW6S0R",
+    "title": "Validate local blueprints in doctor",
+    "intent": "Add doctor coverage for project-local blueprint definitions so invalid .agentplane/blueprints/*.json files are reported before custom routes can be trusted.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605060730-PW6S0R/README.md",
+      "sha256": "sha256:6ba68abb3aee35369909701ee5e179cec759d352cde34306f2f4a6f144425e56"
+    },
+    "approved_at": "2026-05-06T07:31:25.206Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Doctor reports invalid project-local blueprints before custom routes are trusted.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605060730-PW6S0R_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-06T07:31:25.206Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605060730-PW6S0R/README.md",
+      "sha256": "sha256:6ba68abb3aee35369909701ee5e179cec759d352cde34306f2f4a6f144425e56"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605060730-PW6S0R/README.md",
+      "sha256": "sha256:6ba68abb3aee35369909701ee5e179cec759d352cde34306f2f4a6f144425e56"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605060730-PW6S0R/README.md",
+      "sha256": "sha256:6ba68abb3aee35369909701ee5e179cec759d352cde34306f2f4a6f144425e56"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 70ac693ef82c44c51d5dff652e16dfda60411b70 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:a7ca708d9ed6514e8e7a2260e9baaa90cec7410f1e434850485ab0de9ab25181",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}

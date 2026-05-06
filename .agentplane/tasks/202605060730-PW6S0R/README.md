@@ -1,10 +1,11 @@
 ---
 id: "202605060730-PW6S0R"
 title: "Validate local blueprints in doctor"
-status: "DOING"
+result_summary: "Doctor reports invalid project-local blueprints before custom routes are trusted."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-06T07:46:57.051Z"
   updated_by: "CODER"
   note: "Verified: doctor reports invalid project-local blueprints as warnings; doctor test and ci:local:fast passed."
-commit: null
+commit:
+  hash: "70ac693ef82c44c51d5dff652e16dfda60411b70"
+  message: "Merge pull request #958 from basilisk-labs/task/202605060730-B55DQR/local-blueprint-authoring"
 comments:
   -
     author: "CODER"
     body: "Start: batch execution in B55DQR worktree; add doctor validation for local blueprints."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #958 passed required remote checks, review threads were resolved, and hosted merge landed on origin/main."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: doctor reports invalid project-local blueprints as warnings; doctor test and ci:local:fast passed."
+  -
+    type: "status"
+    at: "2026-05-06T08:15:47.589Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #958 passed required remote checks, review threads were resolved, and hosted merge landed on origin/main."
 doc_version: 3
-doc_updated_at: "2026-05-06T07:46:57.057Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T08:15:47.590Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add doctor coverage for project-local blueprint definitions so invalid .agentplane/blueprints/*.json files are reported before custom routes can be trusted."
 sections:
   Summary: |-
