@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605060921-2MK9RC/cloud-bidirectional-pull",
+  "created_at": "2026-05-06T09:22:21.754Z",
+  "head_sha": "6eaebfe043e79ec6d65f77be31cdcdb2fd9cca8d",
+  "last_verified_at": "2026-05-06T09:33:32.013Z",
+  "last_verified_sha": "c32c34453c283bbf7044f3ad55b9fdf6d46ab85a",
+  "schema_version": 1,
+  "task_id": "202605060921-2MK9RC",
+  "updated_at": "2026-05-06T09:36:20.615Z",
+  "verify": {
+    "status": "pass"
+  }
+}

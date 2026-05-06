@@ -1,0 +1,9 @@
+ .agentplane/policy/incidents.md                    |   1 +
+ docs/developer/cloud-backend-integration-plan.mdx  |  30 ++-
+ docs/user/backends/cloud.mdx                       |  25 +-
+ docs/user/tasks-and-backends.mdx                   |   6 +
+ packages/agentplane/assets/policy/incidents.md     |   1 +
+ .../src/backends/task-backend.cloud.test.ts        | 290 ++++++++++++++++++++-
+ .../src/backends/task-backend/cloud-backend.ts     | 215 +++++++++++++--
+ .../src/cli/run-cli.core.backend-sync.test.ts      |  57 ++++
+ 8 files changed, 596 insertions(+), 29 deletions(-)
