@@ -134,6 +134,7 @@ export async function createUpgradeCommit(opts: {
         AGENTPLANE_ALLOW_CONFIG: allow.allowConfig ? "1" : "0",
         AGENTPLANE_ALLOW_HOOKS: allow.allowHooks ? "1" : "0",
         AGENTPLANE_ALLOW_CI: allow.allowCI ? "1" : "0",
+        AGENTPLANE_ALLOW_UPGRADE: "1",
       },
       maxBuffer: 10 * 1024 * 1024,
     });

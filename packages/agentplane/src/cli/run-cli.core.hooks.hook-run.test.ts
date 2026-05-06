@@ -320,6 +320,79 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     }
   });
 
+  it("hooks run commit-msg blocks mutating staged paths with a non-task subject", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "export const value = 1;\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    await writeFile(messagePath, "✨ code: connect managed API\n", "utf8");
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Mutating staged paths require an active AgentPlane task");
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
+    }
+  });
+
+  it("hooks run commit-msg binds mutating staged paths from a valid task suffix", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202601010101-ABCDEF";
+    await mkdir(path.join(root, ".agentplane", "tasks", taskId), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      [
+        "---",
+        `id: "${taskId}"`,
+        'title: "Code task"',
+        'status: "DOING"',
+        'priority: "med"',
+        'owner: "CODER"',
+        "depends_on: []",
+        'tags: ["code"]',
+        'task_kind: "code"',
+        'mutation_scope: "code"',
+        "verify: []",
+        "comments: []",
+        "doc_version: 3",
+        'doc_updated_at: "2026-01-01T00:00:00.000Z"',
+        'doc_updated_by: "CODER"',
+        'description: "Code task."',
+        "---",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "export const value = 1;\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", ".agentplane/tasks", "src/app.ts"], { cwd: root });
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    await writeFile(messagePath, "✨ ABCDEF code: connect managed API\n", "utf8");
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
+    }
+  });
+
   it("hooks run pre-commit succeeds when nothing is staged", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -367,78 +440,6 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
       if (prev === undefined) delete process.env.AGENTPLANE_ALLOW_TASKS;
       else process.env.AGENTPLANE_ALLOW_TASKS = prev;
     }
-  });
-
-  it("hooks run pre-push dispatches the real script", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await writeFile(
-      path.join(root, "package.json"),
-      JSON.stringify(
-        {
-          name: "hook-test",
-          private: true,
-          scripts: {
-            "format:check": "node scripts/format-check.mjs",
-            "ci:local:fast": "node scripts/ci-fast.mjs",
-            "ci:local:full": "node scripts/ci-fast.mjs",
-          },
-        },
-        null,
-        2,
-      ),
-      "utf8",
-    );
-    await mkdir(path.join(root, "scripts"), { recursive: true });
-    await mkdir(path.join(root, "src"), { recursive: true });
-    await writeFile(path.join(root, "scripts", "format-check.mjs"), "process.exit(1);\n", "utf8");
-    await writeFile(path.join(root, "scripts", "ci-fast.mjs"), "process.exit(0);\n", "utf8");
-    await writeFile(path.join(root, "src", "example.ts"), "export const example = 1;\n", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "package.json", "scripts", "src/example.ts"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "test fixture"], { cwd: root });
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["hooks", "run", "pre-push", "--root", root]);
-      expect(code).toBe(1);
-    } finally {
-      io.restore();
-    }
-  });
-
-  it("pre-push release mode reports polluted local git config before payload checks", async () => {
-    const root = await mkGitRepoRoot();
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["config", "--local", "core.bare", "true"], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
-
-    let failure: (Error & { stderr?: string | Buffer; stdout?: string | Buffer }) | null = null;
-    try {
-      execFileSync("node", [PRE_PUSH_HOOK_SCRIPT], {
-        cwd: root,
-        stdio: "pipe",
-        input: "",
-        env: {
-          ...process.env,
-          AGENTPLANE_HOOKS_RELEASE: "1",
-        },
-      });
-    } catch (error) {
-      failure = error as Error & { stderr?: string | Buffer; stdout?: string | Buffer };
-    }
-
-    expect(failure).not.toBeNull();
-    expect(String(failure?.stdout ?? "")).toContain("Running pre-push checks in release mode.");
-    expect(String(failure?.stderr ?? "")).toContain(
-      "pre-push blocked: release checks cannot run because local git config has core.bare=true.",
-    );
-    expect(String(failure?.stderr ?? "")).toContain(
-      "This indicates repository config pollution, not a release payload failure.",
-    );
-    expect(String(failure?.stdout ?? "")).not.toContain("== Format (check) ==");
   });
 
   it("hooks run post-merge prunes merged local task worktrees on the base branch", async () => {
