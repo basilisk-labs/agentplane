@@ -1,10 +1,11 @@
 ---
 id: "202605061631-C38BR9"
 title: "Fix incident promotion and clear active registry"
-status: "DOING"
+result_summary: "Incident promotion is explicit by default, active registry is clean, and task artifacts are merged to main."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-06T16:59:22.789Z"
   updated_by: "CODER"
   note: "Implemented explicit incident promotion: task findings are local by default, --promote/--external/--repo-fixable opt into registry candidates, success verification summaries are excluded from auto-promotion, and the active incident registry is archived/cleared for release."
-commit: null
+commit:
+  hash: "610b6c15047d0d1fae2a26d24c3ca607d6457526"
+  message: "Merge pull request #996 from basilisk-labs/task/202605061631-C38BR9/incident-registry-cleanup"
 comments:
   -
     author: "CODER"
     body: "Start: fix incident promotion so successful verification notes remain task-local, archive current incident evidence, and clear the active registry."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #996 merged into main with all required checks green. Close commit records task completion after merge commit 610b6c15047d0d1fae2a26d24c3ca607d6457526."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented explicit incident promotion: task findings are local by default, --promote/--external/--repo-fixable opt into registry candidates, success verification summaries are excluded from auto-promotion, and the active incident registry is archived/cleared for release."
+  -
+    type: "status"
+    at: "2026-05-06T17:03:45.882Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #996 merged into main with all required checks green. Close commit records task completion after merge commit 610b6c15047d0d1fae2a26d24c3ca607d6457526."
 doc_version: 3
-doc_updated_at: "2026-05-06T16:59:22.801Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T17:03:45.883Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent successful task verification summaries from being auto-promoted into active incidents, archive current incident entries with evidence, and leave the active incidents registry clean for release gates."
 sections:
   Summary: |-
