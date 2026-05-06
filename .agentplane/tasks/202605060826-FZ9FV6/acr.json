@@ -1,0 +1,196 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605060826-FZ9FV6",
+  "created_at": "2026-05-06T08:51:26.752Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "dbfb872a8a2cf8ecae6099b3ddae4e0bc54dff8a",
+    "work_ref": "main",
+    "work_commit": "dbfb872a8a2cf8ecae6099b3ddae4e0bc54dff8a"
+  },
+  "task": {
+    "task_id": "202605060826-FZ9FV6",
+    "title": "Add trusted project-local blueprint config",
+    "intent": "Define and validate an opt-in .agentplane/blueprints/config.json trust gate for project-local blueprint selection.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605060826-FZ9FV6/README.md",
+      "sha256": "sha256:0abca69aa3c3a90380c180935a8f9c275cefcbdf734bff4add0df2f2a07eda51"
+    },
+    "approved_at": "2026-05-06T08:27:11.268Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #963.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605060826-FZ9FV6_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-06T08:27:11.268Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605060826-FZ9FV6/README.md",
+      "sha256": "sha256:0abca69aa3c3a90380c180935a8f9c275cefcbdf734bff4add0df2f2a07eda51"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605060826-FZ9FV6/README.md",
+      "sha256": "sha256:0abca69aa3c3a90380c180935a8f9c275cefcbdf734bff4add0df2f2a07eda51"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605060826-FZ9FV6/README.md",
+      "sha256": "sha256:0abca69aa3c3a90380c180935a8f9c275cefcbdf734bff4add0df2f2a07eda51"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit dbfb872a8a2cf8ecae6099b3ddae4e0bc54dff8a if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:434d958e3f14915a0668f653e530c83c4697aeb321e65d2627c8751fe7767ba9",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "ops.approval",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "ops.approval",
+          "kind": "approval",
+          "produced_by": "approval_gate",
+          "required": true
+        },
+        {
+          "id": "ops.rollback",
+          "kind": "rollback",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "ops.action",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "ops.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": []
+    }
+  }
+}

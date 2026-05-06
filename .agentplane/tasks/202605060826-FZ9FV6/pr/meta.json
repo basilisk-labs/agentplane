@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-06T08:50:43Z",
   "base": "main",
   "branch": "task/202605060826-FZ9FV6/trusted-local-blueprints",
   "created_at": "2026-05-06T08:37:30.269Z",
-  "head_sha": "c2e2e3325b691b6beb1ca20a3be6385dda44325c",
+  "head_sha": "eeabd21f8f6824fc1a81c1e46c9a56bd5ceecd2c",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "dbfb872a8a2cf8ecae6099b3ddae4e0bc54dff8a",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-06T08:50:43Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605060826-FZ9FV6",
-  "updated_at": "2026-05-06T08:45:45.560Z",
+  "updated_at": "2026-05-06T08:50:43Z",
   "verify": {
     "status": "skipped"
   }
