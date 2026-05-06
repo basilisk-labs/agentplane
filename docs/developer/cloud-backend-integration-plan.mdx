@@ -84,10 +84,14 @@ Verification:
 - mocked HTTP tests;
 - error-code mapping tests.
 
-Status: partially implemented. The first API surface posts to
-`/api/agentplane/v1/tasks/sync` with `project_id`, `provider`, `direction`, `conflict`, and local
-tasks for push sync. The external service should keep this endpoint or provide an adapter before
-public release.
+Status: partially implemented. The current API surface posts to
+`/v1/projects/{project_id}/sync/{pull|push}` with `provider`, `direction`, `conflict`, and local
+tasks for push sync.
+
+Bidirectional pull support expects the public CLI to accept both `response.tasks` and
+`response.data.tasks`, preserve `last_checked_at` from either envelope level, and surface service
+remediation fields (`why`, `fix`, `safe_command`, `when_to_stop`) when a service-side direction or
+conflict policy rejects the request.
 
 ### C004: Add backend connect command
 
@@ -122,9 +126,15 @@ Verification:
 - task mutation tests for fresh/stale cloud state;
 - read-command warning tests.
 
-Status: partially implemented. Cloud sync records `.agentplane/backends/cloud/state.json` with
-`last_checked_at`; `backend inspect cloud --yes` reports stale/fresh state. Mutation blocking is a
-follow-up task.
+Status: implemented for local task writes. Cloud sync records
+`.agentplane/backends/cloud/state.json` with `last_checked_at`; `backend inspect cloud --yes`
+reports stale/fresh state. Mutation blocking lives at the cloud backend write boundary: local task
+writes are refused when `state.json` is stale, while explicit sync/inspect commands remain
+available. The safe command shown to operators is:
+
+```bash
+agentplane backend sync cloud --direction pull
+```
 
 ### C006: Add sync and inspect behavior
 
@@ -142,6 +152,12 @@ Verification:
 Status: partially implemented. `backend sync cloud` uses the backend sync port; `backend inspect
 cloud --yes` shows connection and freshness metadata. Conflict count is a follow-up service/API
 field.
+
+For bidirectional projects, pull applies only service-approved operational fields to already known
+local task IDs. Full task documents returned by the service are treated as projection sources for
+those fields only; AgentPlane-owned lifecycle, planning, verification, findings, rollback, comments,
+events, and README content are preserved. Remote-only service items are ignored until a
+`remote_create_policy` exists.
 
 ### C007: Update init UX and docs
 
