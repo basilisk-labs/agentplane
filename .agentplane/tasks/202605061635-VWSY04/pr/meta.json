@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-06T16:43:21Z",
   "base": "main",
   "branch": "task/202605061635-VWSY04/format-blueprint-preview",
   "created_at": "2026-05-06T16:36:20.900Z",
-  "head_sha": "0d81e3e6df47f2d2240a8dbd780f2ef3007ce825",
+  "head_sha": "d762790340ce51f806f7e9fa58b2607b06298925",
   "last_verified_at": "2026-05-06T16:40:17.830Z",
   "last_verified_sha": "abb467e939389fdb00834bf09db3a827e80fb4de",
+  "merge_commit": "67e31318b2fa1d8006700321f82c294a60778c7f",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-06T16:43:21Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605061635-VWSY04",
-  "updated_at": "2026-05-06T16:40:51.908Z",
+  "updated_at": "2026-05-06T16:43:21Z",
   "verify": {
     "status": "pass"
   }
