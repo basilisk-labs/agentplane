@@ -1,7 +1,7 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
-import { cmdTaskObsidian } from "./obsidian.js";
+import { cmdTaskObsidian, cmdTaskObsidianClean } from "./obsidian.js";
 
 export type TaskObsidianParsed = {
   strictRead: boolean;
@@ -32,6 +32,22 @@ export const taskObsidianSpec: CommandSpec<TaskObsidianParsed> = {
   }),
 };
 
+export const taskObsidianCleanSpec: CommandSpec<Record<string, never>> = {
+  id: ["task", "obsidian", "clean"],
+  group: "Task",
+  summary: "Remove generated Obsidian task navigation files under .agentplane.",
+  description:
+    "Deletes only AgentPlane-generated Obsidian projection files and directories while preserving canonical task READMEs and non-generated Markdown files.",
+  options: [],
+  examples: [
+    {
+      cmd: "agentplane task obsidian clean",
+      why: "Remove .agentplane/index.md, .agentplane/tasks.md, and generated grouped navigation files.",
+    },
+  ],
+  parse: () => ({}),
+};
+
 export function makeRunTaskObsidianHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, parsed: TaskObsidianParsed): Promise<number> => {
     return await cmdTaskObsidian({
@@ -39,6 +55,15 @@ export function makeRunTaskObsidianHandler(getCtx: (cmd: string) => Promise<Comm
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       strictRead: parsed.strictRead,
+    });
+  };
+}
+
+export function makeRunTaskObsidianCleanHandler() {
+  return async (ctx: CommandCtx): Promise<number> => {
+    return await cmdTaskObsidianClean({
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride,
     });
   };
 }
