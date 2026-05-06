@@ -37,6 +37,8 @@ export const loadBlueprintDriftSpec = (deps: RunDeps) =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) =>
     m.makeRunBlueprintDriftHandler(deps.getCtx),
   );
+export const loadBlueprintReportSpec = () =>
+  import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintReport);
 export const loadBlueprintValidateSpec = () =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintValidate);
 export const loadBlueprintScaffoldSpec = () =>

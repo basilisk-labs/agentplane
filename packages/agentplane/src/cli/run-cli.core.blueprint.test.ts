@@ -186,6 +186,50 @@ describe("runCli blueprint commands", () => {
     }
   });
 
+  it("blueprint report emits project-local compatibility status", async () => {
+    const root = await mkProject();
+    const blueprintPath = path.join(root, ".agentplane", "blueprints", "analysis.custom.json");
+    await mkdir(path.dirname(blueprintPath), { recursive: true });
+    await writeFile(
+      blueprintPath,
+      `${JSON.stringify(
+        {
+          ...structuredClone(requireBlueprint("analysis.light")),
+          id: "analysis.custom",
+          title: "Custom analysis",
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, ".agentplane", "blueprints", "config.json"),
+      '{\n  "schema_version": 1,\n  "trust_model": "explicit_allowlist",\n  "enabled": true,\n  "allowed_ids": ["analysis.custom"],\n  "selection": "explicit_only"\n}\n',
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["--root", root, "blueprint", "report", "--json"]);
+      expect(code).toBe(0);
+      expect(JSON.parse(io.stdout)).toMatchObject({
+        schemaVersion: 1,
+        compatible: true,
+        trustedBlueprintIds: ["analysis.custom"],
+        blueprints: [
+          {
+            blueprintId: "analysis.custom",
+            trusted: true,
+            ok: true,
+          },
+        ],
+      });
+    } finally {
+      io.restore();
+    }
+  });
+
   it("blueprint explain resolves an explicitly trusted project-local blueprint", async () => {
     const root = await mkProject();
     const blueprintPath = path.join(root, ".agentplane", "blueprints", "analysis.custom.json");

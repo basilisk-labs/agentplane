@@ -11,6 +11,7 @@ import {
   blueprintDriftSpec,
   blueprintExplainSpec,
   blueprintListSpec,
+  blueprintReportSpec,
   blueprintSnapshotSpec,
   blueprintScaffoldSpec,
   blueprintSpec,
@@ -109,6 +110,7 @@ import {
   loadBlueprintDriftSpec,
   loadBlueprintExplainSpec,
   loadBlueprintSnapshotSpec,
+  loadBlueprintReportSpec,
   loadBlueprintValidateSpec,
   loadBlueprintScaffoldSpec,
 } from "../command-loaders/project.js";
@@ -125,6 +127,7 @@ export const PROJECT_COMMANDS = [
   declareCommand(blueprintExplainSpec, { load: loadBlueprintExplainSpec }),
   declareCommand(blueprintSnapshotSpec, { load: loadBlueprintSnapshotSpec }),
   declareCommand(blueprintDriftSpec, { load: loadBlueprintDriftSpec }),
+  declareCommand(blueprintReportSpec, { load: loadBlueprintReportSpec, needs: "none" }),
   declareCommand(blueprintScaffoldSpec, { load: loadBlueprintScaffoldSpec, needs: "none" }),
   declareCommand(blueprintValidateSpec, { load: loadBlueprintValidateSpec, needs: "none" }),
   declareCommand(workStartSpec, { load: loadWorkStartSpec }),

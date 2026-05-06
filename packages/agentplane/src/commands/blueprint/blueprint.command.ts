@@ -3,6 +3,7 @@ import path from "node:path";
 import { resolveProject } from "@agentplaneorg/core/project";
 
 import {
+  buildProjectBlueprintCompatibilityReport,
   createBlueprintRegistry,
   createTrustedProjectBlueprintRegistry,
   explainResolvedBlueprint,
@@ -62,6 +63,10 @@ export type BlueprintExplainParsed = {
 export type BlueprintValidateParsed = {
   path?: string;
   project: boolean;
+  json: boolean;
+};
+
+export type BlueprintReportParsed = {
   json: boolean;
 };
 
@@ -262,6 +267,20 @@ export const blueprintValidateSpec: CommandSpec<BlueprintValidateParsed> = {
     project: raw.opts.project === true,
     json: raw.opts.json === true,
   }),
+};
+
+export const blueprintReportSpec: CommandSpec<BlueprintReportParsed> = {
+  id: ["blueprint", "report"],
+  group: "Blueprints",
+  summary: "Report project-local blueprint trust compatibility.",
+  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
+  examples: [
+    {
+      cmd: "agentplane blueprint report --json",
+      why: "Inspect project-local blueprint trust compatibility before runner materialization.",
+    },
+  ],
+  parse: (raw) => ({ json: raw.opts.json === true }),
 };
 
 export const blueprintScaffoldSpec: CommandSpec<BlueprintScaffoldParsed> = {
@@ -629,6 +648,38 @@ export const runBlueprintValidate: CommandHandler<BlueprintValidateParsed> = asy
     }
   }
   return result.ok ? 0 : 3;
+};
+
+export const runBlueprintReport: CommandHandler<BlueprintReportParsed> = async (ctx, p) => {
+  const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
+  const report = await buildProjectBlueprintCompatibilityReport(resolved.gitRoot);
+  if (p.json) {
+    process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+    return report.compatible ? 0 : 3;
+  }
+  process.stdout.write(`project_blueprints_compatible: ${report.compatible ? "yes" : "no"}\n`);
+  process.stdout.write(`directory: ${report.directory}\n`);
+  process.stdout.write(
+    `trust_config: exists=${report.trustConfig.exists ? "yes" : "no"} enabled=${
+      report.trustConfig.config.enabled ? "yes" : "no"
+    } model=${report.trustConfig.config.trustModel} selection=${report.trustConfig.config.selection}\n`,
+  );
+  process.stdout.write(
+    `trusted_blueprints: ${
+      report.trustedBlueprintIds.length > 0 ? report.trustedBlueprintIds.join(", ") : "none"
+    }\n`,
+  );
+  for (const blueprint of report.blueprints) {
+    process.stdout.write(
+      `blueprint: ${blueprint.blueprintId ?? "<unknown>"} trusted=${
+        blueprint.trusted ? "yes" : "no"
+      } ok=${blueprint.ok ? "yes" : "no"} path=${blueprint.path}\n`,
+    );
+  }
+  for (const error of report.errors) {
+    process.stderr.write(`blueprint_report: ${error.code}: ${error.message}\n`);
+  }
+  return report.compatible ? 0 : 3;
 };
 
 export const runBlueprintScaffold: CommandHandler<BlueprintScaffoldParsed> = async (ctx, p) => {
