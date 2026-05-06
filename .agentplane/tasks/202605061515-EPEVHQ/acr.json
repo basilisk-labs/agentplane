@@ -1,0 +1,203 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605061515-EPEVHQ",
+  "created_at": "2026-05-06T15:37:55.314Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "a0dc137b68ba35ae98648dbf4d9395ef8e8361e5",
+    "work_ref": "main",
+    "work_commit": "a0dc137b68ba35ae98648dbf4d9395ef8e8361e5"
+  },
+  "task": {
+    "task_id": "202605061515-EPEVHQ",
+    "title": "Document blueprint task selection examples",
+    "intent": "Add practical documentation that shows how tasks choose blueprints and how users can inspect route selection.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605061515-EPEVHQ/README.md",
+      "sha256": "sha256:bc38a5852a50b6e62d13e2faf6ad802eb1d473b906e76c2b5292edaffc67e941"
+    },
+    "approved_at": "2026-05-06T15:16:45.189Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Documented blueprint route inspection examples.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605061515-EPEVHQ_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-06T15:16:45.189Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605061515-EPEVHQ/README.md",
+      "sha256": "sha256:bc38a5852a50b6e62d13e2faf6ad802eb1d473b906e76c2b5292edaffc67e941"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605061515-EPEVHQ/README.md",
+      "sha256": "sha256:bc38a5852a50b6e62d13e2faf6ad802eb1d473b906e76c2b5292edaffc67e941"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605061515-EPEVHQ/README.md",
+      "sha256": "sha256:bc38a5852a50b6e62d13e2faf6ad802eb1d473b906e76c2b5292edaffc67e941"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605061515-EPEVHQ/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:344b55f2e58cd00eae97c2ffb649beb1a59c2241f94176d3f13e590aeeee1232"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit a0dc137b68ba35ae98648dbf4d9395ef8e8361e5 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:ed8b94ec67dcd692623f748084eddd4075015b3fbea5a305117ccd4a79a8da11",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "docs.change",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "docs.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "docs.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "docs.artifact",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605061515-EPEVHQ/blueprint/resolved-snapshot.json",
+        "digest": "363b864d93d83941abf67aa2e9210162caf21b467c2f555ea47198eaad02982f",
+        "current_digest": "363b864d93d83941abf67aa2e9210162caf21b467c2f555ea47198eaad02982f",
+        "route_changed": false,
+        "artifact_sha256": "sha256:344b55f2e58cd00eae97c2ffb649beb1a59c2241f94176d3f13e590aeeee1232",
+        "safe_command": "agentplane blueprint snapshot 202605061515-EPEVHQ"
+      }
+    }
+  }
+}
