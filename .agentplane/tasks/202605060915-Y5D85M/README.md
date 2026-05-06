@@ -1,7 +1,8 @@
 ---
 id: "202605060915-Y5D85M"
 title: "Normalize recipe blueprint hints v2"
-status: "DOING"
+result_summary: "Shipped on main and reconciled from local branch_pr state."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 5
@@ -24,7 +25,9 @@ verification:
   updated_at: "2026-05-06T10:12:17.606Z"
   updated_by: "CODER"
   note: "Verified: recipe blueprint hints now normalize to a v2 provenance-bearing contract."
-commit: null
+commit:
+  hash: "0be0fd6e4c4e400cc393ecec9884083b620c0812"
+  message: "Shipped on main before canonical task closure"
 comments:
   -
     author: "CODER"
@@ -43,8 +46,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: recipe blueprint hints now normalize to a v2 provenance-bearing contract."
+  -
+    type: "status"
+    at: "2026-05-06T12:21:33.425Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Local branch_pr reconciliation detected task commit 0be0fd6e4c4e on base main; canonical task state normalized after shipment."
 doc_version: 3
-doc_updated_at: "2026-05-06T10:12:17.611Z"
+doc_updated_at: "2026-05-06T12:21:33.506Z"
 doc_updated_by: "CODER"
 description: "Finalize recipe blueprint hint normalization for v0.5, including preferred_blueprint, risk hints, evidence requirements, output schemas, artifact templates, and context hints."
 sections:

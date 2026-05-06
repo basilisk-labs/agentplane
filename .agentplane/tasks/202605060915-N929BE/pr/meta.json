@@ -5,9 +5,12 @@
   "head_sha": "e7213dda10b2ef460f5a69064281afc82e2abeae",
   "last_verified_at": "2026-05-06T09:40:10.541Z",
   "last_verified_sha": "f09d02c241bedbd9e23192daec6a2f5ea14b766b",
+  "merge_commit": "e7213dda10b2ef460f5a69064281afc82e2abeae",
+  "merged_at": "2026-05-06T12:21:33.423Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605060915-N929BE",
-  "updated_at": "2026-05-06T09:40:26.331Z",
+  "updated_at": "2026-05-06T12:21:33.423Z",
   "verify": {
     "status": "pass"
   }

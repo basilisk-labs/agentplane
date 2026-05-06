@@ -1,7 +1,8 @@
 ---
 id: "202605060915-S7TK13"
 title: "Version project-local blueprint trust config"
-status: "DOING"
+result_summary: "Shipped on main and reconciled from local branch_pr state."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 5
@@ -25,7 +26,9 @@ verification:
   updated_at: "2026-05-06T10:33:58.255Z"
   updated_by: "ENGINEER"
   note: "Project-local blueprint trust config is versioned with backward-compatible allowlist loading."
-commit: null
+commit:
+  hash: "b4a7b2c750754c8e969211fc425b2b4f48092723"
+  message: "Shipped on main before canonical task closure"
 comments:
   -
     author: "ENGINEER"
@@ -44,8 +47,15 @@ events:
     author: "ENGINEER"
     state: "ok"
     note: "Project-local blueprint trust config is versioned with backward-compatible allowlist loading."
+  -
+    type: "status"
+    at: "2026-05-06T12:21:33.425Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Local branch_pr reconciliation detected task commit b4a7b2c75075 on base main; canonical task state normalized after shipment."
 doc_version: 3
-doc_updated_at: "2026-05-06T10:33:58.259Z"
+doc_updated_at: "2026-05-06T12:21:33.506Z"
 doc_updated_by: "ENGINEER"
 description: "Add explicit versioning and migration rules for project-local blueprint trust config so future v0.5 changes can evolve without ambiguous repository behavior."
 sections:

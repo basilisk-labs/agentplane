@@ -20,9 +20,12 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [sync](#sync)
 - Blueprints
   - [blueprint](#blueprint)
+  - [blueprint drift](#blueprint-drift)
   - [blueprint explain](#blueprint-explain)
   - [blueprint list](#blueprint-list)
+  - [blueprint report](#blueprint-report)
   - [blueprint scaffold](#blueprint-scaffold)
+  - [blueprint snapshot](#blueprint-snapshot)
   - [blueprint validate](#blueprint-validate)
 - Branch
   - [branch base](#branch-base)
@@ -525,6 +528,28 @@ agentplane blueprint explain 202605051957-5WRJZK
 
 - Explain the resolved route for a task.
 
+### blueprint drift
+
+Check whether a task resolved blueprint snapshot is current.
+
+Usage:
+
+```text
+agentplane blueprint drift <task-id> [options]
+```
+
+Options:
+
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane blueprint drift 202605060915-3NBTGG
+```
+
+- Check a task-local resolved snapshot before runner materialization.
+
 ### blueprint explain
 
 Explain blueprint route selection for a task or synthetic input.
@@ -591,6 +616,28 @@ agentplane blueprint list --project
 
 - Include project-local blueprint definitions.
 
+### blueprint report
+
+Report project-local blueprint trust compatibility.
+
+Usage:
+
+```text
+agentplane blueprint report [options]
+```
+
+Options:
+
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane blueprint report --json
+```
+
+- Inspect project-local blueprint trust compatibility before runner materialization.
+
 ### blueprint scaffold
 
 Create a project-local blueprint JSON scaffold without enabling it.
@@ -621,6 +668,34 @@ agentplane blueprint scaffold code.custom --from code.branch_pr
 ```
 
 - Start from an existing code workflow route.
+
+### blueprint snapshot
+
+Refresh the resolved blueprint snapshot artifact for a task.
+
+Usage:
+
+```text
+agentplane blueprint snapshot <task-id> [options]
+```
+
+Options:
+
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane blueprint snapshot 202605060915-3NBTGG
+```
+
+- Refresh the task-local resolved blueprint snapshot artifact.
+
+```sh
+agentplane blueprint snapshot 202605060915-3NBTGG --json
+```
+
+- Emit old/new digest details as JSON.
 
 ### blueprint validate
 

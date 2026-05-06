@@ -1,7 +1,8 @@
 ---
 id: "202605060915-0VMVEA"
 title: "Define blueprint node execution interface"
-status: "DOING"
+result_summary: "Shipped on main and reconciled from local branch_pr state."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 5
@@ -25,7 +26,9 @@ verification:
   updated_at: "2026-05-06T10:23:08.744Z"
   updated_by: "ENGINEER"
   note: "Data-only blueprint node execution contracts are implemented and covered by focused tests."
-commit: null
+commit:
+  hash: "c8204419abc877b0d72546489bc3249c4ab48863"
+  message: "Shipped on main before canonical task closure"
 comments:
   -
     author: "ENGINEER"
@@ -44,8 +47,15 @@ events:
     author: "ENGINEER"
     state: "ok"
     note: "Data-only blueprint node execution contracts are implemented and covered by focused tests."
+  -
+    type: "status"
+    at: "2026-05-06T12:21:33.425Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Local branch_pr reconciliation detected task commit c8204419abc8 on base main; canonical task state normalized after shipment."
 doc_version: 3
-doc_updated_at: "2026-05-06T10:23:08.748Z"
+doc_updated_at: "2026-05-06T12:21:33.503Z"
 doc_updated_by: "ENGINEER"
 description: "Define the internal interface for blueprint node execution states, inputs, outputs, evidence production, stop results, and resumable history without enabling arbitrary project-local execution by default."
 sections:

@@ -1,4 +1,5 @@
 import { CliError } from "../../shared/errors.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
@@ -22,7 +23,7 @@ export async function assertBlueprintEvidenceBeforeFinish(opts: {
     }
     if (snapshot.state !== "current") {
       throw new CliError({
-        exitCode: 2,
+        exitCode: exitCodeForError("E_VALIDATION"),
         code: "E_VALIDATION",
         message: [
           "finish requires current blueprint snapshot evidence.",
@@ -39,7 +40,7 @@ export async function assertBlueprintEvidenceBeforeFinish(opts: {
 
     if (!hasSnapshotRef) {
       throw new CliError({
-        exitCode: 2,
+        exitCode: exitCodeForError("E_VALIDATION"),
         code: "E_VALIDATION",
         message: [
           "finish requires recorded blueprint verification evidence.",
