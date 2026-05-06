@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -145,6 +145,37 @@ describe("task-run lifecycle usecases", () => {
     expect(task?.verification?.state).toBe("pending");
     expect(task?.doc).toContain("RUNNER — cancelled");
     expect(task?.doc).toContain("VerificationHint: runner was cancelled");
+  });
+
+  it("refuses runner preparation when project-local blueprint trust is invalid", async () => {
+    const root = await mkGitRepoRoot();
+    await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
+    const configPath = path.join(root, ".agentplane", "blueprints", "config.json");
+    await mkdir(path.dirname(configPath), { recursive: true });
+    await writeFile(
+      configPath,
+      JSON.stringify({
+        schema_version: 1,
+        trust_model: "explicit_allowlist",
+        enabled: true,
+        allowed_ids: ["missing.local"],
+        selection: "explicit_only",
+      }),
+      "utf8",
+    );
+    const taskId = await createDoingTask(root, "Invalid local blueprint trust");
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+
+    await expect(
+      prepareTaskRunnerExecution({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        task_id: taskId,
+        mode: "dry_run",
+        run_id: "run-invalid-blueprint-trust",
+      }),
+    ).rejects.toThrow("Invalid project-local blueprint trust registry");
   });
 
   it("cancel terminates a running execute-mode run via persisted supervision metadata", async () => {

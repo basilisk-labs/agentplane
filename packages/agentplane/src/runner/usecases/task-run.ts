@@ -12,6 +12,7 @@ import {
   buildBlueprintPlanArtifact,
   buildBlueprintExecutionPlanArtifact,
   buildBlueprintExecutionStateArtifact,
+  createTrustedProjectBlueprintRegistry,
   type BlueprintContextManifestEntry,
   inferBlueprintTaskKind,
   recipeBlueprintExtensionsToHints,
@@ -177,9 +178,10 @@ function recipeManifestFromContext(recipe: RunnerRecipeContext | undefined): Rec
 function resolveRunnerBlueprintPlan(opts: {
   taskEnvelope: Awaited<ReturnType<typeof assembleRunnerTaskContext>>;
   config: CommandContext["config"];
+  projectRoot: string;
   recipe?: RunnerRecipeContext;
   basePrompts: readonly RunnerPromptBlock[];
-}): RunnerContextBundle["blueprint"] {
+}): Promise<RunnerContextBundle["blueprint"]> {
   const input = blueprintResolveInputFromTask({
     task: opts.taskEnvelope.task.data,
     config: opts.config,
@@ -198,17 +200,34 @@ function resolveRunnerBlueprintPlan(opts: {
     });
     input.recipeHints = recipeBlueprintExtensionsToHints(recipeExtensions.accepted);
   }
-  const resolved = resolveBlueprint({ input });
-  return buildBlueprintPlanArtifact({
-    resolved,
-    input,
-    workflowMode: input.workflowMode,
-    contextManifest: buildRunnerBlueprintContextManifest({
-      basePrompts: opts.basePrompts,
-      recipe: opts.recipe,
-      policyModules: resolved.blueprint.policyModules,
-    }),
-  });
+  return createTrustedProjectBlueprintRegistry(opts.projectRoot)
+    .then((projectRegistry) => {
+      const resolved = resolveBlueprint({
+        input,
+        registry: projectRegistry.registry,
+        projectBlueprintIds: projectRegistry.projectBlueprintIds,
+      });
+      return buildBlueprintPlanArtifact({
+        resolved,
+        input,
+        workflowMode: input.workflowMode,
+        contextManifest: buildRunnerBlueprintContextManifest({
+          basePrompts: opts.basePrompts,
+          recipe: opts.recipe,
+          policyModules: resolved.blueprint.policyModules,
+        }),
+      });
+    })
+    .catch((err) => {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_VALIDATION",
+        message:
+          err instanceof Error
+            ? err.message
+            : `Invalid project-local blueprint trust registry: ${String(err)}`,
+      });
+    });
 }
 
 function buildRunnerBlueprintContextManifest(opts: {
@@ -424,9 +443,10 @@ export async function prepareTaskRunnerExecution(opts: {
     harness: executionContext.harness,
     execution_profile: executionProfile,
   });
-  const blueprint = resolveRunnerBlueprintPlan({
+  const blueprint = await resolveRunnerBlueprintPlan({
     taskEnvelope,
     config: executionContext.config,
+    projectRoot: executionContext.repo.git_root,
     recipe: opts.recipe,
     basePrompts: base_prompts,
   });
