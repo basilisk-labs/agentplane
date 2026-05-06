@@ -1,10 +1,11 @@
 ---
 id: "202605060826-97XHD3"
 title: "Surface trusted blueprint selection in CLI and doctor"
-status: "DOING"
+result_summary: "Trusted blueprint CLI and doctor surfaces merged via PR #963."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-06T08:36:07.395Z"
   updated_by: "CODER"
   note: "CLI and doctor surfaces report trust config state and trusted selection behavior."
-commit: null
+commit:
+  hash: "dbfb872a8a2cf8ecae6099b3ddae4e0bc54dff8a"
+  message: "Merge pull request #963 from basilisk-labs/task/202605060826-FZ9FV6/trusted-local-blueprints"
 comments:
   -
     author: "CODER"
     body: "Start: surface trusted local blueprint decisions in CLI and doctor after resolver support."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: trusted blueprint CLI and doctor surfaces merged through PR #963 with green hosted checks."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "CLI and doctor surfaces report trust config state and trusted selection behavior."
+  -
+    type: "status"
+    at: "2026-05-06T08:55:46.141Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: trusted blueprint CLI and doctor surfaces merged through PR #963 with green hosted checks."
 doc_version: 3
-doc_updated_at: "2026-05-06T08:36:07.397Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T08:55:46.141Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make blueprint list/explain/validate and doctor expose trusted local blueprint selection decisions and invalid trust config failures."
 sections:
   Summary: |-
