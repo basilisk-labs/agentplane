@@ -1,7 +1,8 @@
 ---
 id: "202605061021-E9TY7J"
 title: "Complete cloud backend E2E integration"
-status: "DOING"
+result_summary: "Merged via PR #973."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 4
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-06T10:34:52.536Z"
   updated_by: "REVIEWER"
   note: "Verified cloud sync-state preflight including numeric open conflict counts, read-only pull diff behavior, repo cloud config, ignored cloud state, and live sync.agentplane.cloud inspect/pull smoke. Focused cloud backend tests, backend-sync CLI tests, typecheck, build, doctor, and policy routing passed. backend-critical remains blocked by pre-existing run-cli.core.tasks.create README v3 expectation failures unrelated to this change."
-commit: null
+commit:
+  hash: "598a4cb2df6446f078f77ef7ec3339244b7666e9"
+  message: "Merge pull request #973 from basilisk-labs/task/202605061021-E9TY7J/cloud-backend-e2e"
 comments:
   -
     author: "CODER"
     body: "Start: implement cloud sync-state preflight, read-only diff summary, documentation alignment, and focused verification in the task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #973 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Verified cloud sync-state preflight including numeric open conflict counts, read-only pull diff behavior, repo cloud config, ignored cloud state, and live sync.agentplane.cloud inspect/pull smoke. Focused cloud backend tests, backend-sync CLI tests, typecheck, build, doctor, and policy routing passed. backend-critical remains blocked by pre-existing run-cli.core.tasks.create README v3 expectation failures unrelated to this change."
+  -
+    type: "status"
+    at: "2026-05-06T13:17:32.893Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #973 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-06T10:34:52.542Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T13:17:32.900Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement the remaining public AgentPlane cloud backend gaps from the cloud service handoff: refresh the repository cloud connection, add sync-state preflight for conflicts, improve read-only diff output, update docs, and verify end-to-end against sync.agentplane.cloud."
 sections:
   Summary: |-
