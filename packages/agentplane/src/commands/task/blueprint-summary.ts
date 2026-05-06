@@ -80,9 +80,7 @@ function joinOrNone(values: string[] | undefined, separator: string): string {
   return values && values.length > 0 ? values.join(separator) : "none";
 }
 
-export function formatTaskBlueprintCreationPreview(
-  summary: TaskBlueprintLifecycleSummary,
-): string {
+export function formatTaskBlueprintCreationPreview(summary: TaskBlueprintLifecycleSummary): string {
   const lines = summary.error
     ? ["Blueprint route preview:", "blueprint_id: unresolved", `error: ${summary.error}`]
     : [
