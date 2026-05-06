@@ -1,10 +1,11 @@
 ---
 id: "202605061518-ZJM8VR"
 title: "Separate framework dev CLI help surface"
-status: "DOING"
+result_summary: "Merged via PR #980."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-06T15:32:28.887Z"
   updated_by: "CODER"
   note: "Verified CLI help surface split: normal help hides release/framework and advanced maintenance commands, framework checkout help exposes Framework Dev, docs reference is fresh, focused tests and typecheck passed."
-commit: null
+commit:
+  hash: "aea6e54eabe7cdfaa686a9087703c76c2ad3a824"
+  message: "Merge pull request #980 from basilisk-labs/task/202605061518-ZJM8VR/cli-help-surfaces"
 comments:
   -
     author: "CODER"
     body: "Start: implement CLI help surface split for installed project versus framework development commands, preserving dispatch compatibility and updating docs/tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #980 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified CLI help surface split: normal help hides release/framework and advanced maintenance commands, framework checkout help exposes Framework Dev, docs reference is fresh, focused tests and typecheck passed."
+  -
+    type: "status"
+    at: "2026-05-06T16:08:10.639Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #980 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-06T15:32:28.939Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T16:08:10.647Z"
+doc_updated_by: "INTEGRATOR"
 description: "Hide AgentPlane framework-maintainer commands such as release from the default installed-project command surface, expose them only in framework checkout/dev help, and organize command help to reduce agent cognitive load."
 sections:
   Summary: |-

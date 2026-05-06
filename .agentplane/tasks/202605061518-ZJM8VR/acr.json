@@ -1,0 +1,219 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605061518-ZJM8VR",
+  "created_at": "2026-05-06T16:08:10.692Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "aea6e54eabe7cdfaa686a9087703c76c2ad3a824",
+    "work_ref": "main",
+    "work_commit": "aea6e54eabe7cdfaa686a9087703c76c2ad3a824"
+  },
+  "task": {
+    "task_id": "202605061518-ZJM8VR",
+    "title": "Separate framework dev CLI help surface",
+    "intent": "Hide AgentPlane framework-maintainer commands such as release from the default installed-project command surface, expose them only in framework checkout/dev help, and organize command help to reduce agent cognitive load.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605061518-ZJM8VR/README.md",
+      "sha256": "sha256:5adb11aa4e17f7b378cb199560f0202026ccd28842c40f12bf5dc3300d4f4e72"
+    },
+    "approved_at": "2026-05-06T15:19:00.364Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #980.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605061518-ZJM8VR_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-06T15:19:00.364Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605061518-ZJM8VR/README.md",
+      "sha256": "sha256:5adb11aa4e17f7b378cb199560f0202026ccd28842c40f12bf5dc3300d4f4e72"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605061518-ZJM8VR/README.md",
+      "sha256": "sha256:5adb11aa4e17f7b378cb199560f0202026ccd28842c40f12bf5dc3300d4f4e72"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605061518-ZJM8VR/README.md",
+      "sha256": "sha256:5adb11aa4e17f7b378cb199560f0202026ccd28842c40f12bf5dc3300d4f4e72"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605061518-ZJM8VR/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:6fd87cc00c1d1e2b66280ce686ce9297a118f7cf1629b9fe131c393a15be9dab"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit aea6e54eabe7cdfaa686a9087703c76c2ad3a824 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:3e38df1bc27ded3288c9173458f43267f825dc99bb211986edc86abbef704139",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605061518-ZJM8VR/blueprint/resolved-snapshot.json",
+        "digest": "8a5049127a55b14e97c2bee7924d679c6e76f45885c3059f7e6f05bee45d6328",
+        "current_digest": "8a5049127a55b14e97c2bee7924d679c6e76f45885c3059f7e6f05bee45d6328",
+        "route_changed": false,
+        "artifact_sha256": "sha256:6fd87cc00c1d1e2b66280ce686ce9297a118f7cf1629b9fe131c393a15be9dab",
+        "safe_command": "agentplane blueprint snapshot 202605061518-ZJM8VR"
+      }
+    }
+  }
+}
