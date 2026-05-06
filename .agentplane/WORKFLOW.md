@@ -24,7 +24,7 @@ workspace:
   cleanup: after_finish
 tasks:
   backend:
-    config_path: .agentplane/backends/cloud/backend.json
+    config_path: .agentplane/backends/local/backend.json
   id_suffix_length_default: 6
   verify:
     required_tags:
@@ -62,7 +62,7 @@ framework:
   source: https://github.com/basilisk-labs/agentplane
   last_update: null
   cli:
-    expected_version: 0.4.4
+    expected_version: 0.5.0-rc.1
 commit:
   generic_tokens:
     - start
