@@ -1,0 +1,205 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605060826-0GB6WB",
+  "created_at": "2026-05-06T08:55:41.436Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "dbfb872a8a2cf8ecae6099b3ddae4e0bc54dff8a",
+    "work_ref": "main",
+    "work_commit": "dbfb872a8a2cf8ecae6099b3ddae4e0bc54dff8a"
+  },
+  "task": {
+    "task_id": "202605060826-0GB6WB",
+    "title": "Resolve trusted project-local blueprints explicitly",
+    "intent": "Allow resolver/explain to use project-local blueprints only when trusted config enables them and the task explicitly requests a compatible id.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605060826-0GB6WB/README.md",
+      "sha256": "sha256:9121772a9e54c603c5943dfbc106c3af7c695d99ae29fea9d1109ee862459657"
+    },
+    "approved_at": "2026-05-06T08:27:11.564Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Trusted project-local blueprint resolver selection merged via PR #963.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605060826-0GB6WB_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-06T08:27:11.564Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605060826-0GB6WB/README.md",
+      "sha256": "sha256:9121772a9e54c603c5943dfbc106c3af7c695d99ae29fea9d1109ee862459657"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605060826-0GB6WB/README.md",
+      "sha256": "sha256:9121772a9e54c603c5943dfbc106c3af7c695d99ae29fea9d1109ee862459657"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605060826-0GB6WB/README.md",
+      "sha256": "sha256:9121772a9e54c603c5943dfbc106c3af7c695d99ae29fea9d1109ee862459657"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit dbfb872a8a2cf8ecae6099b3ddae4e0bc54dff8a if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:6f7339daf5e2b1d6a902cfd40fc8eafe629e154904a776bbb81d7d7131d2a2e3",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": []
+    }
+  }
+}
