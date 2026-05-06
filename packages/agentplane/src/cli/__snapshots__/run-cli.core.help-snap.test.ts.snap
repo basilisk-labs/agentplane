@@ -5,20 +5,51 @@ exports[`runCli help snapshots (cli2) > help (registry) snapshot 1`] = `
   agentplane help [<cmd...>] [--compact] [--json]
 
 Commands:
-  ACR:
-    acr  Generate, validate, check, explain, and print Agent Change Record artifacts.
-    acr check  Run the ACR merge-gate check for CI and branch review.
-    acr explain  Explain an ACR for human review.
-    acr generate  Generate an Agent Change Record from task, Git, policy, and verification state.
-    acr schema  Print or write the ACR v0.1 JSON Schema.
-    acr validate  Validate an ACR file by schema, local, or CI invariants.
-  Backend:
-    backend  Backend-related operations.
-    backend connect  Configure a cloud backend connection.
-    backend inspect  Inspect visible backend readiness facts without mutating remote state.
-    backend migrate-canonical-state  Backfill canonical_state for issues in the configured backend.
-    backend sync  Sync the configured backend (push or pull).
-    sync  Sync the configured backend (alias).
+  Core:
+    agents  List agent definitions under .agentplane/agents.
+    help  Show help for a command.
+    preflight  Run aggregated preflight checks and print a deterministic readiness report.
+    quickstart  Print the canonical agent bootstrap path and startup guidance.
+    role  Show role-specific workflow guidance.
+  Task:
+    ready  Report dependency readiness details for a task.
+    task  Task lifecycle and task-store commands.
+    task comment  Append a comment to a task.
+    task doc  Task doc commands (show/set).
+    task doc set  Update a task README section.
+    task doc show  Print task README content (entire doc or one section).
+    task list  List tasks with compact resolved blueprint route hints.
+    task new  Create a new task (prints the generated task id).
+    task next  List ready tasks (default status=TODO) with optional filters.
+    task plan  Task plan commands (set/approve/reject).
+    task plan approve  Approve the current task plan (enforces Verify Steps gating when configured).
+    task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
+    task run  Prepare or run a task through the shared runner contract.
+    task run show  Inspect persisted runner state and result artifacts for an existing run.
+    task run tail  Print the last N lines from the raw agent trace artifact for an existing runner run.
+    task search  Search tasks by text or regex with optional filters.
+    task show  Print task metadata and resolved blueprint route as JSON.
+    task start-ready  Run readiness checks and start a task in one deterministic command.
+    task verify  Record verification results (ok/rework).
+    task verify ok  Record verification as OK (updates Verification section and verification frontmatter).
+    task verify rework  Record verification as needs rework (resets commit, sets status to DOING, updates Verification).
+    task verify-show  Print the task Verify Steps acceptance contract (alias for task doc show --section "Verify Steps").
+  Lifecycle:
+    block  Transition a task to BLOCKED and record a structured Blocked comment.
+    finish  Mark task(s) as DONE and record a structured Verified comment.
+    start  Transition a task to DOING and record a structured Start comment.
+    verify  Record a verification outcome for a task; incident candidates stay task-local unless collected explicitly.
+  Work:
+    work start  Prepare the workspace for a task (direct: single-stream on current branch; branch_pr: task branch/worktree).
+  PR:
+    integrate  Integrate a task branch into the base branch (branch_pr workflow).
+    pr  Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).
+    pr check  Check that PR artifacts are present and valid.
+    pr close  Close a GitHub PR through REST with optional remote head-branch deletion.
+    pr close-superseded  Close a superseded task PR using task artifacts.
+    pr note  Append a handoff note into PR review.md.
+    pr open  Create PR artifacts for a task and, unless --sync-only is set, publish/link the remote GitHub PR.
+    pr update  Update PR artifacts (review packet, diffstat, and GitHub projections).
   Branch:
     branch base  Manage the pinned base branch used in branch_pr workflow.
     branch base clear  Clear the pinned base branch.
@@ -29,60 +60,26 @@ Commands:
     branch status  Show ahead/behind status for a branch relative to a base branch.
     cleanup  Clean up local branches/worktrees.
     cleanup merged  Delete merged task branches/worktrees (branch_pr workflow).
-  Codex:
-    codex  Codex integration commands.
-    codex plugin  Install and inspect bundled Codex plugin integrations.
-    codex plugin install  Install the bundled AgentPlane plugin into a local Codex marketplace.
+  Backend:
+    backend  Backend-related operations.
+    backend connect  Configure a cloud backend connection.
+    backend inspect  Inspect visible backend readiness facts without mutating remote state.
+    backend sync  Sync the configured backend (push or pull).
+    sync  Sync the configured backend (alias).
   Config:
     config set  Update WORKFLOW front matter config (dotted keys).
     config show  Print resolved WORKFLOW-backed config JSON.
     mode get  Print workflow mode.
     mode set  Set workflow mode.
     profile set  Apply setup profile presets to WORKFLOW config.
-  Core:
-    agents  List agent definitions under .agentplane/agents.
-    help  Show help for a command.
-    preflight  Run aggregated preflight checks and print a deterministic readiness report.
-    quickstart  Print the canonical agent bootstrap path and startup guidance.
-    role  Show role-specific workflow guidance.
+  Setup:
+    init  Initialize agentplane project files under .agentplane/.
+    upgrade  Upgrade the local agentplane framework bundle in the repo.
+  Quality:
+    doctor  Check workspace invariants for a normal agentplane installation (with optional dev source checks).
   Diagnostics:
     runtime  Inspect which agentplane runtime/binary/package sources are active.
     runtime explain  Explain the active binary, runtime mode, and resolved package roots.
-  Docs:
-    docs cli  Generate an MDX CLI reference from the current command spec catalog.
-  Guard:
-    commit  Create a git commit after validating policy and allowlist; if the index is empty, stage matching allowlist paths first.
-    guard  Guard commands (commit checks, git hygiene, and allowlist helpers).
-    guard clean  Ensure the git index has no staged files.
-    guard commit  Validate commit policy and allowlist for staged changes (no commit is created).
-    guard suggest-allow  Suggest minimal --allow prefixes based on staged files.
-  Hooks:
-    hooks  Manage and run git hooks installed by agentplane.
-    hooks install  Install managed git hooks and the agentplane shim.
-    hooks run  Run a managed hook (use \`--\` to pass through additional arguments).
-    hooks uninstall  Uninstall managed git hooks installed by agentplane.
-  IDE:
-    ide sync  Generate IDE entrypoints from policy gateway file (AGENTS.md or CLAUDE.md).
-  Lifecycle:
-    block  Transition a task to BLOCKED and record a structured Blocked comment.
-    finish  Mark task(s) as DONE and record a structured Verified comment.
-    start  Transition a task to DOING and record a structured Start comment.
-    verify  Record a verification outcome for a task; incident candidates stay task-local unless collected explicitly.
-  Policy:
-    incidents  Promote external incident advice and resolve incident hints for analogous tasks.
-    incidents advise  Resolve relevant incident advice for a task or an ad hoc scope/tag query.
-    incidents collect  Promote reusable resolved external findings from a task into the incident registry.
-  PR:
-    integrate  Integrate a task branch into the base branch (branch_pr workflow).
-    pr  Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).
-    pr check  Check that PR artifacts are present and valid.
-    pr close  Close a GitHub PR through REST with optional remote head-branch deletion.
-    pr close-superseded  Close a superseded task PR using task artifacts.
-    pr note  Append a handoff note into PR review.md.
-    pr open  Create PR artifacts for a task and, unless --sync-only is set, publish/link the remote GitHub PR.
-    pr update  Update PR artifacts (review packet, diffstat, and GitHub projections).
-  Quality:
-    doctor  Check workspace invariants for a normal agentplane installation (with optional dev source checks).
   Recipes:
     recipes  Recipe management commands.
     recipes active  List active project overlays.
@@ -100,69 +97,49 @@ Commands:
     recipes list-remote  List recipes from the remote index (or cache).
     recipes remove  Remove a vendored recipe from the current project.
     recipes update  Refresh a vendored recipe from the cached source.
-  Release:
+  Blueprints:
+    blueprint  List and explain blueprint routing without executing a task.
+    blueprint drift  Check whether a task resolved blueprint snapshot is current.
+    blueprint examples  Show practical blueprint route inspection examples.
+    blueprint explain  Explain blueprint route selection for a task or synthetic input.
+    blueprint list  List built-in and optional project-local blueprint routes.
+    blueprint report  Report project-local blueprint trust compatibility.
+    blueprint scaffold  Create a project-local blueprint JSON scaffold without enabling it.
+    blueprint snapshot  Refresh the resolved blueprint snapshot artifact for a task.
+    blueprint validate  Validate project-local blueprint JSON without registering or executing it.
+  ACR:
+    acr  Generate, validate, check, explain, and print Agent Change Record artifacts.
+    acr check  Run the ACR merge-gate check for CI and branch review.
+    acr explain  Explain an ACR for human review.
+    acr generate  Generate an Agent Change Record from task, Git, policy, and verification state.
+    acr schema  Print or write the ACR v0.1 JSON Schema.
+    acr validate  Validate an ACR file by schema, local, or CI invariants.
+  Guard:
+    commit  Create a git commit after validating policy and allowlist; if the index is empty, stage matching allowlist paths first.
+    guard  Guard commands (commit checks, git hygiene, and allowlist helpers).
+    guard clean  Ensure the git index has no staged files.
+    guard commit  Validate commit policy and allowlist for staged changes (no commit is created).
+    guard suggest-allow  Suggest minimal --allow prefixes based on staged files.
+  Hooks:
+    hooks  Manage and run git hooks installed by agentplane.
+    hooks install  Install managed git hooks and the agentplane shim.
+    hooks run  Run a managed hook (use \`--\` to pass through additional arguments).
+    hooks uninstall  Uninstall managed git hooks installed by agentplane.
+  Policy:
+    incidents  Promote external incident advice and resolve incident hints for analogous tasks.
+    incidents advise  Resolve relevant incident advice for a task or an ad hoc scope/tag query.
+    incidents collect  Promote reusable resolved external findings from a task into the incident registry.
+  IDE:
+    ide sync  Generate IDE entrypoints from policy gateway file (AGENTS.md or CLAUDE.md).
+  Framework Dev:
+    codex  Codex integration commands.
+    codex plugin  Install and inspect bundled Codex plugin integrations.
+    codex plugin install  Install the bundled AgentPlane plugin into a local Codex marketplace.
+    docs cli  Generate an MDX CLI reference from the current command spec catalog.
     release  Prepare a release (agent-assisted notes + version bump workflow).
     release apply  Apply a prepared direct-mode release: bump versions, validate notes, commit, and tag.
     release candidate  Prepare a branch_pr release candidate: bump versions, validate notes, commit, and optionally push the candidate branch.
     release plan  Generate an agent-assisted release plan (changes list + next patch version).
-  Setup:
-    init  Initialize agentplane project files under .agentplane/.
-    upgrade  Upgrade the local agentplane framework bundle in the repo.
-  Task:
-    ready  Report dependency readiness details for a task.
-    task  Task lifecycle and task-store commands.
-    task add  Create one or more tasks with explicit ids (prints the created task ids).
-    task close-duplicate  Close a task as a duplicate of another task with no-op bookkeeping metadata.
-    task close-noop  Close a task as a verified no-op in one command.
-    task comment  Append a comment to a task.
-    task derive  Derive an implementation task from a spike task (adds depends_on on the spike).
-    task doc  Task doc commands (show/set).
-    task doc set  Update a task README section.
-    task doc show  Print task README content (entire doc or one section).
-    task export  Generate an optional tasks export snapshot at the configured path.
-    task findings  Structured Findings/Notes commands (incident promotion is default unless --local-only).
-    task findings add  Append a structured Findings/Notes block; incident promotion is default unless --local-only.
-    task handoff  Task handoff commands (record/show).
-    task handoff record  Record a task handoff snapshot with runner recovery hints.
-    task handoff show  Show the latest persisted task handoff snapshot.
-    task hosted-close  Close a branch_pr task on the current branch from a merged hosted PR event payload.
-    task hosted-close-pr  Open one or more follow-up hosted closure PRs from remote task-close branches.
-    task lint  Lint the exported tasks JSON file (schema + invariants).
-    task list  List tasks (optionally filtered by status/owner/tag).
-    task migrate  Import tasks from an exported JSON file into the configured backend.
-    task migrate-doc  Migrate legacy task README docs to the current README v3 template/metadata format.
-    task new  Create a new task (prints the generated task id).
-    task next  List ready tasks (default status=TODO) with optional filters.
-    task normalize  Normalize tasks in the configured backend (stable ordering and formatting).
-    task obsidian  Generate Obsidian-friendly Markdown task navigation under .agentplane.
-    task plan  Task plan commands (set/approve/reject).
-    task plan approve  Approve the current task plan (enforces Verify Steps gating when configured).
-    task plan reject  Reject the current task plan (requires a note).
-    task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
-    task rebuild-index  Rebuild the task index cache for the configured backend (best-effort).
-    task reclaim  Claim an interrupted task and persist a recovery handoff snapshot.
-    task resume-context  Print deterministic recovery context for continuing a task after interruption.
-    task run  Prepare or run a task through the shared runner contract.
-    task run cancel  Cancel an existing runner run and stop the supervised process when present.
-    task run resume  Resume an existing execute-mode runner run in place.
-    task run retry  Retry an existing execute-mode runner run into a new run id.
-    task run show  Inspect persisted runner state and result artifacts for an existing run.
-    task run tail  Print the last N lines from the raw agent trace artifact for an existing runner run.
-    task run trace  Print the raw agent trace artifact for an existing runner run.
-    task scaffold  Write a task README file scaffold (for the current doc template).
-    task scrub  Replace a string across all tasks (frontmatter + docs).
-    task search  Search tasks by text or regex with optional filters.
-    task set-status  Change a task status (optionally committing from the comment body).
-    task show  Print task metadata as JSON (frontmatter shape).
-    task start-ready  Run readiness checks and start a task in one deterministic command.
-    task update  Update an existing task.
-    task verify  Record verification results (ok/rework).
-    task verify ok  Record verification as OK (updates Verification section and verification frontmatter).
-    task verify rework  Record verification as needs rework (resets commit, sets status to DOING, updates Verification).
-    task verify-show  Print the task Verify Steps acceptance contract (alias for task doc show --section "Verify Steps").
-  Work:
-    work start  Prepare the workspace for a task (direct: single-stream on current branch; branch_pr: task branch/worktree).
-  Workflow:
     workflow  Workflow contract commands.
     workflow build  Build WORKFLOW.md from template layers with strict rendering checks.
     workflow debug  Run built-in debug checks and capture workflow evidence.
@@ -239,8 +216,13 @@ Options:
   --owner <id>  Owner id (e.g. CODER). (required)
   --priority <low|normal|med|high>  Task priority (default: med). (choices=low|normal|med|high, default=med)
   --tag <tag>  Repeatable. Adds a tag (must provide at least one). (repeatable, min=1)
+  --task-kind <analysis|content|docs|code|release|ops>  Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops)
+  --mutation-scope <none|docs|code|release|ops|unknown>  Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|unknown)
+  --risk <risk>  Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
+  --blueprint-request <id>  Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|release.strict|ops.approval)
   --depends-on <task-id>  Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
   --verify <command>  Repeatable. Verification commands/checks to run for this task. (repeatable)
+  --show-blueprint  Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
   --allow-duplicate  Allow creating a task even when an open task with a highly similar title already exists. (default=false)
 "
 `;
@@ -319,27 +301,4 @@ exports[`runCli help snapshots (cli2) > help work start --json snapshot 1`] = `
     "agentplane work start <task-id> --agent <ID> --slug <slug> [options]",
   ],
 }
-`;
-
-exports[`runCli help snapshots (cli2) help task new --compact snapshot 1`] = `
-"task new - Create a new task (prints the generated task id).
-
-Usage:
-  agentplane task new --title <text> --description <text> --owner <id> [options]
-
-Options:
-  --title <text>  Task title. (required)
-  --description <text>  Task description. (required)
-  --owner <id>  Owner id (e.g. CODER). (required)
-  --priority <low|normal|med|high>  Task priority (default: med). (choices=low|normal|med|high, default=med)
-  --tag <tag>  Repeatable. Adds a tag (must provide at least one). (repeatable, min=1)
-  --task-kind <analysis|content|docs|code|release|ops>  Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops)
-  --mutation-scope <none|docs|code|release|ops|unknown>  Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|unknown)
-  --risk <risk>  Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
-  --blueprint-request <id>  Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|release.strict|ops.approval)
-  --depends-on <task-id>  Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
-  --verify <command>  Repeatable. Verification commands/checks to run for this task. (repeatable)
-  --show-blueprint  Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
-  --allow-duplicate  Allow creating a task even when an open task with a highly similar title already exists. (default=false)
-"
 `;

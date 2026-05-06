@@ -598,6 +598,8 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
         "Operators can misread a task-branch verify as a shared incidents registry update.",
         "--resolution",
         "Emit an explicit branch_pr locality note during verify.",
+        "--promote",
+        "--external",
         "--root",
         root,
       ]);

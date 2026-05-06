@@ -118,7 +118,7 @@ describe("task verify record (unit)", () => {
       plan: { promotable: [], skipped: [], duplicates: [], issues: [] },
     });
     mocks.renderIncidentCollectionPlanOutcome.mockReturnValue(
-      'incident registry unchanged (plain verify note stayed task-local and did not update incidents.md: add --observation, --impact, and --resolution for a reusable incident, then rerun with --collect-incidents or collect later on the base branch. next: agentplane task findings add T-1 --observation "<observation>" --impact "<impact>" --resolution "<resolution>")',
+      'incident registry unchanged (plain verify note stayed task-local and did not update incidents.md: add --observation, --impact, --resolution, and --promote for a reusable incident, then rerun with --collect-incidents or collect later on the base branch. next: agentplane task findings add T-1 --observation "<observation>" --impact "<impact>" --resolution "<resolution>" --promote --external)',
     );
     mocks.ensurePrArtifactsSynced.mockResolvedValue(false);
     vi.useFakeTimers();
@@ -184,8 +184,9 @@ describe("task verify record (unit)", () => {
 
     expect(writes.join("")).toContain("plain verify note stayed task-local");
     expect(writes.join("")).toContain("did not update incidents.md");
-    expect(writes.join("")).toContain("--observation, --impact, and --resolution");
+    expect(writes.join("")).toContain("--observation, --impact, --resolution, and --promote");
     expect(writes.join("")).toContain("agentplane task findings add T-1");
+    expect(writes.join("")).toContain("--promote --external");
 
     writeSpy.mockRestore();
   });

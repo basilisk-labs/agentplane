@@ -51,14 +51,16 @@ function parseIncidentFindingBlocks(findings: string): (IncidentFindingCandidate
       parseBoolean(currentFields.incidentinternal) || fixability === "repo-fixable";
     const hasPromotionSignal =
       promotion?.toLowerCase() === "incident-candidate" || incidentExternal || incidentInternal;
-    const failureLike = hasFailureSignal([
+    const signalValues = [
       currentFields.observation,
       currentFields.impact,
       currentFields.resolution,
       currentFields.incidentrule,
       currentFields.incidentadvice,
-    ]);
-    const shouldPromote = hasPromotionSignal && failureLike;
+    ];
+    const failureLike = hasFailureSignal(signalValues);
+    const successSummary = hasSuccessSummarySignal(signalValues);
+    const shouldPromote = hasPromotionSignal && failureLike && !successSummary;
     const observation = currentFields.observation?.trim() ?? "";
     if (!observation) {
       currentFields = null;
@@ -142,6 +144,21 @@ function hasFailureSignal(values: readonly (string | null | undefined)[]): boole
     .join(" ");
   if (!text) return false;
   return /\b(blocked|broke|broken|cannot|conflict|could not|deadlock|deadlocked|drift(?:ed|ing)?|error|fail(?:ed|ing|ure)?|flaky|forced|hang(?:ing)?|incorrect|lost|manual recover(?:y|ies)|manual retries|mistak(?:e|es)|missing|mutat(?:e|ed|ion)|pending|pollution|rejected|retry|stalled|timeout|unexpected|violat(?:e|ed|ion)|wrong)\b/u.test(
+    text,
+  );
+}
+
+function hasSuccessSummarySignal(values: readonly (string | null | undefined)[]): boolean {
+  const text = values
+    .map((value) =>
+      String(value ?? "")
+        .trim()
+        .toLowerCase(),
+    )
+    .filter(Boolean)
+    .join(" ");
+  if (!text) return false;
+  return /\b(checks?|commands?|tests?|typecheck|doctor|ci|build|lint)\s+(?:now\s+)?pass(?:ed|es)?\b|\b(?:added|implemented|updated|ported|verified|normalized|surface(?:d)?|validated|documented)\b/u.test(
     text,
   );
 }

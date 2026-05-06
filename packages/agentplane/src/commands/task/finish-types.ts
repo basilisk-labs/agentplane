@@ -34,6 +34,8 @@ export type FinishOptions = {
   observation?: string;
   impact?: string;
   resolution?: string;
+  promote?: boolean;
+  external?: boolean;
   localOnly?: boolean;
   repoFixable?: boolean;
   incidentScope?: string;
@@ -48,6 +50,8 @@ export type FinishStructuredFinding = {
   observation: string;
   impact: string;
   resolution: string;
+  promote: boolean;
+  external: boolean;
   localOnly: boolean;
   repoFixable: boolean;
   incidentScope?: string;

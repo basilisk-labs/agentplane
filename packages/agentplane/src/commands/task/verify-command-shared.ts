@@ -12,6 +12,8 @@ export type VerifyCommonParsed = {
   observation?: string;
   impact?: string;
   resolution?: string;
+  promote: boolean;
+  external: boolean;
   localOnly: boolean;
   repoFixable: boolean;
   incidentScope?: string;
@@ -42,9 +44,22 @@ export const verifyFindingOptions: readonly OptionSpec[] = [
   },
   {
     kind: "boolean",
+    name: "promote",
+    default: false,
+    description: "Mark the structured finding as an incident candidate.",
+  },
+  {
+    kind: "boolean",
+    name: "external",
+    default: false,
+    description: "Mark the incident candidate as external-fixable.",
+  },
+  {
+    kind: "boolean",
     name: "local-only",
     default: false,
-    description: "Keep the finding task-local; omit incident-candidate promotion.",
+    description:
+      "Compatibility no-op. Findings are task-local unless --promote, --external, or --repo-fixable is set.",
   },
   {
     kind: "boolean",
@@ -195,11 +210,21 @@ export function validateVerifyFindingSource<TParsed>(
   spec: CommandSpec<TParsed>,
   opts?: { command?: string },
 ): void {
-  if (raw.opts["local-only"] === true && raw.opts["repo-fixable"] === true) {
+  if (
+    raw.opts["local-only"] === true &&
+    (raw.opts.promote === true || raw.opts.external === true || raw.opts["repo-fixable"] === true)
+  ) {
     throw usageError({
       spec,
       command: opts?.command,
-      message: "--local-only cannot be combined with --repo-fixable.",
+      message: "--local-only cannot be combined with --promote, --external, or --repo-fixable.",
+    });
+  }
+  if (raw.opts.external === true && raw.opts["repo-fixable"] === true) {
+    throw usageError({
+      spec,
+      command: opts?.command,
+      message: "--external and --repo-fixable are mutually exclusive.",
     });
   }
 
@@ -238,6 +263,10 @@ export function validateVerifyFindingSource<TParsed>(
 }
 
 export function parseVerifyCommonOptions(raw: ParsedRaw): VerifyCommonParsed {
+  const localOnly = raw.opts["local-only"] === true;
+  const repoFixable = raw.opts["repo-fixable"] === true;
+  const explicitExternal = raw.opts.external === true;
+  const promote = !localOnly && (raw.opts.promote === true || explicitExternal || repoFixable);
   return {
     by: typeof raw.opts.by === "string" ? raw.opts.by : "",
     note: typeof raw.opts.note === "string" ? raw.opts.note : "",
@@ -249,8 +278,10 @@ export function parseVerifyCommonOptions(raw: ParsedRaw): VerifyCommonParsed {
     observation: typeof raw.opts.observation === "string" ? raw.opts.observation : undefined,
     impact: typeof raw.opts.impact === "string" ? raw.opts.impact : undefined,
     resolution: typeof raw.opts.resolution === "string" ? raw.opts.resolution : undefined,
-    localOnly: raw.opts["local-only"] === true,
-    repoFixable: raw.opts["repo-fixable"] === true,
+    promote,
+    external: promote && !repoFixable,
+    localOnly: !promote,
+    repoFixable,
     incidentScope:
       typeof raw.opts["incident-scope"] === "string" ? raw.opts["incident-scope"] : undefined,
     incidentTags: (raw.opts["incident-tag"] as string[] | undefined) ?? [],

@@ -209,8 +209,8 @@ export const finishSpec: CommandSpec<FinishParsed> = {
       why: "Finish and create a commit from the comment (single-task only).",
     },
     {
-      cmd: 'agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: all checks passed" --commit abcdef123456 --observation "Recurring manual recovery remained easy to miss." --impact "incidents.md stayed stale until a second command." --resolution "Capture the closeout finding during finish itself."',
-      why: "Finish a task while appending a structured finding that can promote into incidents.md.",
+      cmd: 'agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: all checks passed" --commit abcdef123456 --observation "Recurring manual recovery remained easy to miss." --impact "incidents.md stayed stale until a second command." --resolution "Capture the closeout finding during finish itself." --promote --external',
+      why: "Finish a task while appending an explicit incident candidate.",
     },
   ],
   validateRaw: (raw) => validateFinishRaw(raw, finishSpec),

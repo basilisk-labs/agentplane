@@ -911,7 +911,9 @@ Options:
 - `--observation <text>`: Structured finding observation to append with the verification.
 - `--impact <text>`: Structured finding impact to append with the verification.
 - `--resolution <text>`: Structured finding resolution to append with the verification.
-- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
+- `--promote`: Mark the structured finding as an incident candidate. (default=false)
+- `--external`: Mark the incident candidate as external-fixable. (default=false)
+- `--local-only`: Compatibility no-op. Findings are task-local unless --promote, --external, or --repo-fixable is set. (default=false)
 - `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
 - `--incident-scope <text>`: Optional incident scope for the appended finding.
 - `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
@@ -949,7 +951,9 @@ Options:
 - `--observation <text>`: Structured finding observation to append with the verification.
 - `--impact <text>`: Structured finding impact to append with the verification.
 - `--resolution <text>`: Structured finding resolution to append with the verification.
-- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
+- `--promote`: Mark the structured finding as an incident candidate. (default=false)
+- `--external`: Mark the incident candidate as external-fixable. (default=false)
+- `--local-only`: Compatibility no-op. Findings are task-local unless --promote, --external, or --repo-fixable is set. (default=false)
 - `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
 - `--incident-scope <text>`: Optional incident scope for the appended finding.
 - `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
@@ -1080,7 +1084,9 @@ Options:
 - `--observation <text>`: Structured finding observation to append with the verification.
 - `--impact <text>`: Structured finding impact to append with the verification.
 - `--resolution <text>`: Structured finding resolution to append with the verification.
-- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
+- `--promote`: Mark the structured finding as an incident candidate. (default=false)
+- `--external`: Mark the incident candidate as external-fixable. (default=false)
+- `--local-only`: Compatibility no-op. Findings are task-local unless --promote, --external, or --repo-fixable is set. (default=false)
 - `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
 - `--incident-scope <text>`: Optional incident scope for the appended finding.
 - `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
@@ -1104,10 +1110,10 @@ agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: all 
 - Finish and create a commit from the comment (single-task only).
 
 ```sh
-agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: all checks passed" --commit abcdef123456 --observation "Recurring manual recovery remained easy to miss." --impact "incidents.md stayed stale until a second command." --resolution "Capture the closeout finding during finish itself."
+agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: all checks passed" --commit abcdef123456 --observation "Recurring manual recovery remained easy to miss." --impact "incidents.md stayed stale until a second command." --resolution "Capture the closeout finding during finish itself." --promote --external
 ```
 
-- Finish a task while appending a structured finding that can promote into incidents.md.
+- Finish a task while appending an explicit incident candidate.
 
 ### start
 
@@ -1172,7 +1178,9 @@ Options:
 - `--observation <text>`: Structured finding observation to append with the verification.
 - `--impact <text>`: Structured finding impact to append with the verification.
 - `--resolution <text>`: Structured finding resolution to append with the verification.
-- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
+- `--promote`: Mark the structured finding as an incident candidate. (default=false)
+- `--external`: Mark the incident candidate as external-fixable. (default=false)
+- `--local-only`: Compatibility no-op. Findings are task-local unless --promote, --external, or --repo-fixable is set. (default=false)
 - `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
 - `--incident-scope <text>`: Optional incident scope for the appended finding.
 - `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
@@ -1204,7 +1212,7 @@ agentplane verify 202602030608-F1Q8AB --rework --by REVIEWER --note "Needs chang
 agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --observation "Repeated recovery was manual." --impact "Operators needed a second command." --resolution "Append structured findings during verify."
 ```
 
-- Record verification and append a promotable structured finding in one command.
+- Record verification and append a task-local structured finding.
 
 ```sh
 agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --collect-incidents
@@ -3433,22 +3441,22 @@ agentplane task derive 202602070101-ABCD --title "Implement X" --description "Do
 
 ### task findings
 
-Structured Findings/Notes commands (incident promotion is default unless --local-only).
+Structured Findings/Notes commands; incident promotion is explicit opt-in.
 
 Usage:
 
 ```text
-agentplane task findings add <task-id> --observation <text> --impact <text> --resolution <text> [--local-only] [--incident-scope <text>] [--incident-tag <tag>] [--incident-match <term>] [--incident-advice <text>] [--incident-rule <text>] [--updated-by <id>]
+agentplane task findings add <task-id> --observation <text> --impact <text> --resolution <text> [--promote] [--external|--repo-fixable] [--incident-scope <text>] [--incident-tag <tag>] [--incident-match <term>] [--incident-advice <text>] [--incident-rule <text>] [--updated-by <id>]
 ```
 
 ### task findings add
 
-Append a structured Findings/Notes block; incident promotion is default unless --local-only.
+Append a structured task-local Findings/Notes block; use --promote for incidents.
 
 Usage:
 
 ```text
-agentplane task findings add <task-id> --observation <text> --impact <text> --resolution <text> [--local-only] [--repo-fixable] [--incident-scope <text>] [--incident-tag <tag>] [--incident-match <term>] [--incident-advice <text>] [--incident-rule <text>] [--updated-by <id>]
+agentplane task findings add <task-id> --observation <text> --impact <text> --resolution <text> [--promote] [--external|--repo-fixable] [--incident-scope <text>] [--incident-tag <tag>] [--incident-match <term>] [--incident-advice <text>] [--incident-rule <text>] [--updated-by <id>]
 ```
 
 Options:
@@ -3456,10 +3464,10 @@ Options:
 - `--observation <text>`: Required. Observation field.
 - `--impact <text>`: Required. Impact field.
 - `--resolution <text>`: Required. Resolution field.
-- `--promote`: Compatibility flag. Promotion is the default unless \`--local-only\` is set.
-- `--external`: Compatibility flag. External incident metadata is the default unless \`--local-only\` is set.
-- `--repo-fixable`: Mark the structured finding as repo-fixable so it can promote into incidents.md.
-- `--local-only`: Keep the entry task-local only; omit \`Promotion: incident-candidate\` and any explicit fixability marker. (default=false)
+- `--promote`: Mark this structured finding as an incident candidate. (default=false)
+- `--external`: Mark the incident candidate as external-fixable. (default=false)
+- `--repo-fixable`: Mark the structured finding as repo-fixable so it can promote into incidents.md. (default=false)
+- `--local-only`: Compatibility no-op. Structured findings are task-local unless --promote, --external, or --repo-fixable is set. (default=false)
 - `--incident-scope <text>`: Optional. IncidentScope override.
 - `--incident-tag <tag>`: Repeatable. IncidentTags entry. (repeatable)
 - `--incident-match <term>`: Repeatable. IncidentMatch entry. (repeatable)
@@ -3470,16 +3478,16 @@ Options:
 Examples:
 
 ```sh
-agentplane task findings add 202602030608-F1Q8AB --observation "GitHub API EOF retries were manual." --impact "Operators repeated the reconcile loop." --resolution "Switch the retry path to REST polling." --incident-scope "GitHub PR reconciliation" --incident-tag workflow --incident-tag github
+agentplane task findings add 202602030608-F1Q8AB --observation "GitHub API EOF retries were manual." --impact "Operators repeated the reconcile loop." --resolution "Switch the retry path to REST polling." --promote --external --incident-scope "GitHub PR reconciliation" --incident-tag workflow --incident-tag github
 ```
 
-- Append a promotable external incident candidate without hand-editing the README or remembering hidden flags.
+- Append a deliberate promotable external incident candidate.
 
 ```sh
-agentplane task findings add 202602030608-F1Q8AB --observation "One manual follow-up remains." --impact "Task notes should stay local." --resolution "Track it in Findings only." --local-only
+agentplane task findings add 202602030608-F1Q8AB --observation "One manual follow-up remains." --impact "Task notes should stay local." --resolution "Track it in Findings only."
 ```
 
-- Keep an observation task-local when it should not feed incidents collection.
+- Keep an observation task-local without feeding incidents collection.
 
 ### task handoff
 

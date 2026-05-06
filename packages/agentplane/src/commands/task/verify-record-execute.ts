@@ -128,8 +128,8 @@ async function recordVerificationResult(opts: {
           observation: opts.finding.observation,
           impact: opts.finding.impact,
           resolution: opts.finding.resolution,
-          promote: !opts.finding.localOnly,
-          external: !opts.finding.localOnly,
+          promote: opts.finding.promote === true,
+          external: opts.finding.external === true,
           fixability: opts.finding.repoFixable ? "repo-fixable" : null,
           incidentScope: opts.finding.incidentScope,
           incidentTags: opts.finding.incidentTags ?? [],
@@ -198,9 +198,9 @@ async function recordVerificationResult(opts: {
 
   if (!opts.quiet) {
     const findingState = opts.finding
-      ? opts.finding.localOnly
-        ? "task-local"
-        : "incident-candidate"
+      ? opts.finding.promote === true
+        ? "incident-candidate"
+        : "task-local"
       : null;
     const readmePath = path.join(
       resolved.gitRoot,

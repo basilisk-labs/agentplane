@@ -7,6 +7,8 @@ export type FinishStructuredFindingInput = {
   observation: string;
   impact: string;
   resolution: string;
+  promote: boolean;
+  external: boolean;
   localOnly: boolean;
   repoFixable: boolean;
   incidentScope?: string;
@@ -32,8 +34,8 @@ export async function appendFinishStructuredFinding(opts: {
         observation: opts.finding.observation,
         impact: opts.finding.impact,
         resolution: opts.finding.resolution,
-        promote: !opts.finding.localOnly,
-        external: !opts.finding.localOnly,
+        promote: opts.finding.promote,
+        external: opts.finding.external,
         fixability: opts.finding.repoFixable ? "repo-fixable" : null,
         incidentScope: opts.finding.incidentScope,
         incidentTags: opts.finding.incidentTags,

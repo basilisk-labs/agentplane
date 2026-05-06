@@ -16,6 +16,8 @@ export async function cmdTaskVerifyOk(opts: {
   observation?: string;
   impact?: string;
   resolution?: string;
+  promote?: boolean;
+  external?: boolean;
   localOnly: boolean;
   repoFixable: boolean;
   incidentScope?: string;
@@ -37,6 +39,8 @@ export async function cmdTaskVerifyOk(opts: {
             observation: opts.observation,
             impact: opts.impact,
             resolution: opts.resolution,
+            promote: opts.promote === true,
+            external: opts.external === true,
             localOnly: opts.localOnly === true,
             repoFixable: opts.repoFixable === true,
             incidentScope: opts.incidentScope,
@@ -63,6 +67,8 @@ export async function cmdTaskVerifyRework(opts: {
   observation?: string;
   impact?: string;
   resolution?: string;
+  promote?: boolean;
+  external?: boolean;
   localOnly?: boolean;
   repoFixable?: boolean;
   incidentScope?: string;
@@ -84,6 +90,8 @@ export async function cmdTaskVerifyRework(opts: {
             observation: opts.observation,
             impact: opts.impact,
             resolution: opts.resolution,
+            promote: opts.promote === true,
+            external: opts.external === true,
             localOnly: opts.localOnly === true,
             repoFixable: opts.repoFixable === true,
             incidentScope: opts.incidentScope,
@@ -111,6 +119,8 @@ export async function cmdVerifyParsed(opts: {
   observation?: string;
   impact?: string;
   resolution?: string;
+  promote?: boolean;
+  external?: boolean;
   localOnly?: boolean;
   repoFixable?: boolean;
   incidentScope?: string;
@@ -131,6 +141,8 @@ export async function cmdVerifyParsed(opts: {
             observation: opts.observation,
             impact: opts.impact,
             resolution: opts.resolution,
+            promote: opts.promote === true,
+            external: opts.external === true,
             localOnly: opts.localOnly === true,
             repoFixable: opts.repoFixable === true,
             incidentScope: opts.incidentScope,

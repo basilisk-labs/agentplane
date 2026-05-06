@@ -95,6 +95,8 @@ describe("verify flag matrix", () => {
         "Operators repeated the same recovery steps.",
         "--resolution",
         "Document and automate the retry path.",
+        "--promote",
+        "--external",
         "--incident-scope",
         "Hosted PR reconciliation",
         "--incident-tag",
@@ -206,7 +208,7 @@ describe("verify flag matrix", () => {
         "--local-only",
         "--repo-fixable",
       ],
-      message: "--local-only cannot be combined with --repo-fixable.",
+      message: "--local-only cannot be combined with --promote, --external, or --repo-fixable.",
     },
   ])("rejects $label", async ({ args, message }) => {
     const root = await mkGitRepoRoot();

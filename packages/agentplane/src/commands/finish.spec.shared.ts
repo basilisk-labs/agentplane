@@ -40,6 +40,8 @@ export type FinishParsed = {
   observation?: string;
   impact?: string;
   resolution?: string;
+  promote: boolean;
+  external: boolean;
   localOnly: boolean;
   repoFixable: boolean;
   incidentScope?: string;
@@ -219,6 +221,9 @@ export function validateFinishRaw(raw: ParsedRaw, spec: CommandSpec<FinishParsed
 }
 
 export function parseFinishRaw(raw: ParsedRaw): FinishParsed {
+  const finishPromote =
+    raw.opts["local-only"] !== true &&
+    (raw.opts.promote === true || raw.opts.external === true || raw.opts["repo-fixable"] === true);
   return {
     taskIds: Array.isArray(raw.args["task-id"])
       ? raw.args["task-id"].filter((x): x is string => typeof x === "string")
@@ -253,7 +258,9 @@ export function parseFinishRaw(raw: ParsedRaw): FinishParsed {
     observation: typeof raw.opts.observation === "string" ? raw.opts.observation : undefined,
     impact: typeof raw.opts.impact === "string" ? raw.opts.impact : undefined,
     resolution: typeof raw.opts.resolution === "string" ? raw.opts.resolution : undefined,
-    localOnly: raw.opts["local-only"] === true,
+    promote: finishPromote,
+    external: finishPromote && raw.opts["repo-fixable"] !== true,
+    localOnly: !finishPromote,
     repoFixable: raw.opts["repo-fixable"] === true,
     incidentScope:
       typeof raw.opts["incident-scope"] === "string" ? raw.opts["incident-scope"] : undefined,

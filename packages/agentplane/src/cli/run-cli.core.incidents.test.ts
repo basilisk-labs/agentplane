@@ -116,6 +116,47 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
       }
     }
 
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "verify",
+          taskId,
+          "--ok",
+          "--by",
+          "REVIEWER",
+          "--note",
+          "Verified: finish incident promotion setup is ready.",
+          "--root",
+          root,
+        ]);
+        expect(code, `${io.stdout}\n${io.stderr}`).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "doc",
+          "set",
+          taskId,
+          "--section",
+          "Verification",
+          "--text",
+          "BlueprintSnapshotRef:\n- state: current",
+          "--root",
+          root,
+        ]);
+        expect(code, `${io.stdout}\n${io.stderr}`).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -127,7 +168,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
+      expect(code, `${io.stdout}\n${io.stderr}`).toBe(0);
       const payload = JSON.parse(io.stdout) as {
         task_id: string;
         checked_only: boolean;
@@ -202,6 +243,8 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
           "Operators had to remember a second command to preserve findings.",
           "--resolution",
           "Append incident-ready findings during verify.",
+          "--promote",
+          "--external",
           "--root",
           root,
         ]);
@@ -403,7 +446,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
+      expect(code, `${io.stdout}\n${io.stderr}`).toBe(0);
       const payload = JSON.parse(io.stdout) as {
         promotable: { fixability: string | null; state: string; advice: string | null }[];
       };
@@ -478,9 +521,8 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
           root,
         ]);
         expect(code).toBe(0);
-        expect(io.stdout).toContain(
-          "incident registry unchanged (1 promotable external finding stayed task-local in the current task worktree; run verify --collect-incidents, agentplane incidents collect <task-id>, or finish on the base branch to update incidents.md)",
-        );
+        expect(io.stdout).toContain("finding=task-local");
+        expect(io.stdout).toContain("structured finding stayed task-local");
       } finally {
         io.restore();
       }
@@ -506,9 +548,8 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
           root,
         ]);
         expect(code).toBe(0);
-        expect(io.stdout).toContain(
-          "incident registry unchanged (1 promotable external finding validated; rerun without --check to update incidents.md)",
-        );
+        expect(io.stdout).toContain("incident registry unchanged");
+        expect(io.stdout).toContain("structured finding stayed task-local");
       } finally {
         io.restore();
       }
@@ -559,6 +600,8 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
           "Operators no longer need a second collect command for reusable findings.",
           "--resolution",
           "Run incident collection explicitly from verify when requested.",
+          "--promote",
+          "--external",
           "--root",
           root,
         ]);
@@ -886,7 +929,7 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
     }
   });
 
-  it("finish can append and promote a structured finding during closeout", async () => {
+  it("finish does not promote explicit incidents before blueprint evidence is valid", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     const config = defaultConfig();
@@ -996,35 +1039,32 @@ describe("runCli incidents", { timeout: INCIDENTS_CLI_TIMEOUT_MS }, () => {
         "finish finding promoted",
         "--commit",
         headSha,
+        "--force",
         "--observation",
         "Closeout repeatedly surfaced a reusable workflow failure only after implementation was complete.",
         "--impact",
         "incidents.md stayed behind real operator experience until someone ran a second manual command.",
         "--resolution",
         "Allow finish to append and promote the finding in one deterministic flow.",
+        "--promote",
+        "--external",
         "--incident-scope",
         "finish closeout incident capture",
         "--no-close-commit",
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("incident registry updated (1 promoted)");
-      expect(io.stdout).toContain("ids=INC-");
-      expect(io.stdout).toContain("files=.agentplane/policy/incidents.md");
-      expect(io.stdout).toContain("finished");
+      expect(code, `${io.stdout}\n${io.stderr}`).toBe(3);
+      expect(io.stderr).toContain("finish requires recorded blueprint verification evidence");
     } finally {
       io.restore();
     }
 
     const incidentsText = await readFile(path.join(root, ".agentplane", "policy", "incidents.md"));
     const taskReadme = await readFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"));
-    expect(String(incidentsText)).toContain("scope: finish closeout incident capture");
-    expect(String(incidentsText)).toContain(`source_task: ${taskId}`);
-    expect(String(taskReadme)).toContain("Promotion: incident-candidate");
-    expect(String(taskReadme)).toContain(
-      "Resolution: Allow finish to append and promote the finding",
-    );
+    expect(String(incidentsText)).not.toContain("scope: finish closeout incident capture");
+    expect(String(incidentsText)).not.toContain(`source_task: ${taskId}`);
+    expect(String(taskReadme)).not.toContain("Promotion: incident-candidate");
   });
 
   it("incidents collect refuses writes that would push the registry over the policy line budget", async () => {

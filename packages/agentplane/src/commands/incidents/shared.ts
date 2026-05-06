@@ -270,7 +270,7 @@ export function renderIncidentCollectionPlanOutcome(
   const taskId =
     typeof opts?.taskId === "string" && opts.taskId.trim().length > 0 ? opts.taskId.trim() : null;
   const findingsNextStep = taskId
-    ? ` next: agentplane task findings add ${taskId} --observation "<observation>" --impact "<impact>" --resolution "<resolution>"`
+    ? ` next: agentplane task findings add ${taskId} --observation "<observation>" --impact "<impact>" --resolution "<resolution>" --promote --external`
     : "";
 
   if (promoted > 0 && wrote) {
@@ -332,25 +332,25 @@ export function renderIncidentCollectionPlanOutcome(
   }
 
   if (skipped > 0) {
-    return `incident registry unchanged (${skipped} structured finding${skipped === 1 ? "" : "s"} stayed task-local in the current checkout: mark reusable external findings with Promotion: incident-candidate plus Fixability: external, or use task findings add without --local-only)`;
+    return `incident registry unchanged (${skipped} structured finding${skipped === 1 ? "" : "s"} stayed task-local in the current checkout: mark reusable external findings with Promotion: incident-candidate plus Fixability: external, or use task findings add with --promote --external)`;
   }
 
   if (candidates === 0 && structuredFindingCount === 0 && findingsTextPresent) {
-    return "incident registry unchanged (plain Findings text stays task-local in the current checkout and does not update incidents.md: add a structured Observation/Impact/Resolution block for reusable external incidents, or use task findings add without --local-only)";
+    return "incident registry unchanged (plain Findings text stays task-local in the current checkout and does not update incidents.md: add a structured Observation/Impact/Resolution block with --promote --external for reusable external incidents)";
   }
 
   if (candidates === 0) {
     if (context === "verify") {
       return (
         "incident registry unchanged (plain verify note stayed task-local and did not update " +
-        "incidents.md: add --observation, --impact, and --resolution for a reusable incident, " +
+        "incidents.md: add --observation, --impact, --resolution, and --promote for a reusable incident, " +
         `then rerun with --collect-incidents or collect later on the base branch.${findingsNextStep})`
       );
     }
     if (context === "finish") {
       return (
         "incident registry unchanged (plain finish body/result stayed task-local and did not " +
-        "update incidents.md: add --observation, --impact, and --resolution for a reusable " +
+        "update incidents.md: add --observation, --impact, --resolution, and --promote for a reusable " +
         `incident before closeout.${findingsNextStep})`
       );
     }
