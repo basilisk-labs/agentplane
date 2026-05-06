@@ -44,6 +44,8 @@ export type ProjectBlueprintDirectoryResult = {
 };
 
 export type ProjectBlueprintTrustConfig = {
+  schemaVersion: 1;
+  trustModel: "explicit_allowlist";
   enabled: boolean;
   allowedIds: readonly BlueprintId[];
   selection: "explicit_only";
@@ -84,6 +86,8 @@ function problem(
 
 function defaultTrustConfig(): ProjectBlueprintTrustConfig {
   return {
+    schemaVersion: 1,
+    trustModel: "explicit_allowlist",
     enabled: false,
     allowedIds: [],
     selection: "explicit_only",
@@ -127,6 +131,21 @@ function parseTrustConfigJson(raw: string, filePath: string): ProjectBlueprintTr
   }
 
   const errors: ProjectBlueprintProblem[] = [];
+  const schemaVersion = parsed.schema_version === undefined ? 1 : parsed.schema_version;
+  if (schemaVersion !== 1) {
+    errors.push(
+      problem("invalid_trust_config", "Blueprint trust config schema_version must be 1."),
+    );
+  }
+  const trustModel = parsed.trust_model === undefined ? "explicit_allowlist" : parsed.trust_model;
+  if (trustModel !== "explicit_allowlist") {
+    errors.push(
+      problem(
+        "invalid_trust_config",
+        "Blueprint trust config trust_model must be explicit_allowlist.",
+      ),
+    );
+  }
   const enabled = parsed.enabled === true;
   if ("enabled" in parsed && typeof parsed.enabled !== "boolean") {
     errors.push(problem("invalid_trust_config", "Blueprint trust config enabled must be boolean."));
@@ -163,6 +182,8 @@ function parseTrustConfigJson(raw: string, filePath: string): ProjectBlueprintTr
     path: filePath,
     exists: true,
     config: {
+      schemaVersion: 1,
+      trustModel: "explicit_allowlist",
       enabled,
       allowedIds: allowedIds.map((id) => id.trim() as BlueprintId),
       selection: "explicit_only",
