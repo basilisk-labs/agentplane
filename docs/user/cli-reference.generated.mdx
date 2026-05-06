@@ -22,6 +22,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [blueprint](#blueprint)
   - [blueprint explain](#blueprint-explain)
   - [blueprint list](#blueprint-list)
+  - [blueprint scaffold](#blueprint-scaffold)
   - [blueprint validate](#blueprint-validate)
 - Branch
   - [branch base](#branch-base)
@@ -496,7 +497,7 @@ agentplane sync redmine --direction push --yes
 
 List and explain blueprint routing without executing a task.
 
-This is a command group. Use \`agentplane blueprint list\` or \`agentplane blueprint explain ...\`.
+This is a command group. Use \`agentplane blueprint list\`, \`agentplane blueprint explain ...\`, \`agentplane blueprint scaffold ...\`, or \`agentplane blueprint validate ...\`.
 
 Usage:
 
@@ -511,6 +512,12 @@ agentplane blueprint list
 ```
 
 - Show built-in blueprint routes.
+
+```sh
+agentplane blueprint scaffold analysis.custom
+```
+
+- Create a project-local blueprint scaffold.
 
 ```sh
 agentplane blueprint explain 202605051957-5WRJZK
@@ -556,7 +563,7 @@ agentplane blueprint explain --kind analysis --mutation none
 
 ### blueprint list
 
-List built-in blueprint routes.
+List built-in and optional project-local blueprint routes.
 
 Usage:
 
@@ -566,6 +573,7 @@ agentplane blueprint list [options]
 
 Options:
 
+- `--project`: Include validated project-local blueprints from .agentplane/blueprints. (default=false)
 - `--json`: Emit JSON. (default=false)
 
 Examples:
@@ -574,20 +582,58 @@ Examples:
 agentplane blueprint list --json
 ```
 
-- Emit machine-readable routes.
+- Emit machine-readable built-in routes.
 
-### blueprint validate
+```sh
+agentplane blueprint list --project
+```
 
-Validate a project-local blueprint JSON file without registering or executing it.
+- Include project-local blueprint definitions.
+
+### blueprint scaffold
+
+Create a project-local blueprint JSON scaffold without enabling it.
 
 Usage:
 
 ```text
-agentplane blueprint validate <path> [options]
+agentplane blueprint scaffold <blueprint-id> [options]
 ```
 
 Options:
 
+- `--from <builtin-blueprint-id>`: Built-in blueprint to clone as a starting point.
+- `--out <path>`: Output path; defaults to .agentplane/blueprints/&lt;id&gt;.json.
+- `--force`: Overwrite an existing file. (default=false)
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane blueprint scaffold analysis.custom
+```
+
+- Create .agentplane/blueprints/analysis.custom.json from analysis.light.
+
+```sh
+agentplane blueprint scaffold code.custom --from code.branch_pr
+```
+
+- Start from an existing code workflow route.
+
+### blueprint validate
+
+Validate project-local blueprint JSON without registering or executing it.
+
+Usage:
+
+```text
+agentplane blueprint validate [<path>] [options]
+```
+
+Options:
+
+- `--project`: Validate all JSON blueprints in .agentplane/blueprints or the supplied directory. (default=false)
 - `--json`: Emit JSON. (default=false)
 
 Examples:
@@ -597,6 +643,12 @@ agentplane blueprint validate .agentplane/blueprints/analysis.json
 ```
 
 - Validate a local blueprint definition.
+
+```sh
+agentplane blueprint validate --project
+```
+
+- Validate the project-local blueprint registry directory.
 
 ## Branch
 

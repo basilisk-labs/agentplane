@@ -192,6 +192,25 @@ describe("doctor.fast", () => {
     expect(rc).toBe(1);
   });
 
+  it("reports invalid project-local blueprints as doctor warnings", async () => {
+    const ws = await mkWorkspace();
+    await mkdir(path.join(ws.root, ".agentplane", "blueprints"), { recursive: true });
+    await writeFile(path.join(ws.root, ".agentplane", "blueprints", "broken.json"), "{", "utf8");
+    const stderr = spyOnStderrWrite();
+    try {
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain("Project blueprint");
+      expect(output).toContain("invalid_json");
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
   it("fails when DONE task misses implementation commit hash", async () => {
     const ws = await mkWorkspace();
     await gitInitWithCommit(ws.root, "feat: initial");

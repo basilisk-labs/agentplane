@@ -105,6 +105,7 @@ blueprints/
   model.ts
   builtins.ts
   registry.ts
+  project-local.ts
   validate.ts
   resolve.ts
   explain.ts
@@ -115,16 +116,17 @@ blueprints/
 
 Initial responsibilities:
 
-| File              | Responsibility                                                                 |
-| ----------------- | ------------------------------------------------------------------------------ |
-| `model.ts`        | Pure types, string unions, and small helper predicates                         |
-| `builtins.ts`     | Built-in blueprint definitions and node catalog                                |
-| `registry.ts`     | Registry lookup, duplicate detection, and built-in export                      |
-| `validate.ts`     | Structural validation and invariant checks                                     |
-| `resolve.ts`      | Select a blueprint from task metadata, workflow mode, mutation, risk, recipes  |
-| `explain.ts`      | Convert resolved blueprint data into stable human-readable explanation objects |
-| `recipe-hints.ts` | Convert normalized recipe blueprint extensions into resolver hints             |
-| `index.ts`        | Public internal exports for CLI and verification integrations                  |
+| File               | Responsibility                                                                 |
+| ------------------ | ------------------------------------------------------------------------------ |
+| `model.ts`         | Pure types, string unions, and small helper predicates                         |
+| `builtins.ts`      | Built-in blueprint definitions and node catalog                                |
+| `registry.ts`      | Registry lookup, duplicate detection, and built-in export                      |
+| `project-local.ts` | Safe JSON parsing, scaffold writing, and project-local blueprint validation    |
+| `validate.ts`      | Structural validation and invariant checks                                     |
+| `resolve.ts`       | Select a blueprint from task metadata, workflow mode, mutation, risk, recipes  |
+| `explain.ts`       | Convert resolved blueprint data into stable human-readable explanation objects |
+| `recipe-hints.ts`  | Convert normalized recipe blueprint extensions into resolver hints             |
+| `index.ts`         | Public internal exports for CLI and verification integrations                  |
 
 Do not place route logic inside command handlers. Commands should call the resolver and formatter.
 
@@ -662,12 +664,12 @@ The current built-in registry is code-backed. Add a new built-in blueprint with 
 
 Efficient authoring path for the next implementation step:
 
-- introduce data-driven specs under `.agentplane/blueprints/*.yaml` or `.json`;
-- add `agentplane blueprint scaffold <id>`;
-- add `agentplane blueprint validate <path>`;
-- load project-local blueprints after built-ins but before recipe hints;
-- generate compatibility fixtures from the registry so every new blueprint gets route, evidence,
-  and stop-rule coverage.
+- add explicit opt-in resolver support for trusted project-local blueprints;
+- generate compatibility fixtures from the combined registry so every new blueprint gets route,
+  evidence, and stop-rule coverage;
+- add runner bundle visibility for the selected blueprint id, route, context budget, and policy
+  module budget;
+- keep project-local route selection disabled unless the repository explicitly opts in.
 
 Recipes should not define full lifecycle graphs yet. They may request compatible blueprints and add
 extension hints, but the resolver and registry remain the authority for lifecycle topology.
@@ -742,9 +744,13 @@ CLI shape:
 
 ```text
 agentplane blueprint list
+agentplane blueprint list --project
 agentplane blueprint explain <task-id>
 agentplane blueprint explain --kind analysis --mutation none
 agentplane blueprint explain <task-id> --json
+agentplane blueprint scaffold <id>
+agentplane blueprint validate <path>
+agentplane blueprint validate --project
 ```
 
 Expected explain fields:
@@ -784,6 +790,47 @@ Not required:
 - CI
 - merge
 ```
+
+## Project-Local Authoring
+
+Project-local blueprints live under `.agentplane/blueprints/*.json`.
+
+This is an authoring and validation surface, not automatic execution. A local blueprint can be
+scaffolded, listed, and validated, but the resolver does not select it by default and the runner does
+not execute custom node graphs yet. That boundary is intentional: custom lifecycle topology must be
+visible and valid before it can become an execution route.
+
+Safe authoring loop:
+
+```bash
+agentplane blueprint scaffold analysis.custom
+agentplane blueprint validate .agentplane/blueprints/analysis.custom.json
+agentplane blueprint validate --project
+agentplane blueprint list --project
+agentplane doctor
+```
+
+Command semantics:
+
+| Command                                         | Effect                                                                 |
+| ----------------------------------------------- | ---------------------------------------------------------------------- |
+| `blueprint scaffold <id>`                       | Clones a built-in route, defaults to `analysis.light`, and writes JSON |
+| `blueprint scaffold <id> --from code.branch_pr` | Starts from a specific built-in route                                  |
+| `blueprint scaffold <id> --out <path>`          | Writes to a custom path, restricted to the current project             |
+| `blueprint validate <path>`                     | Validates one JSON blueprint file                                      |
+| `blueprint validate --project`                  | Validates every `.json` file under `.agentplane/blueprints`            |
+| `blueprint list --project`                      | Lists built-ins plus valid local definitions                           |
+| `doctor`                                        | Reports invalid local blueprints as warnings                           |
+
+Authoring constraints:
+
+1. Keep the id stable and project-specific, for example `analysis.custom` or `docs.api-review`.
+2. Prefer cloning the closest built-in route instead of inventing a full graph from scratch.
+3. Keep `analysis` and `content` routes lightweight: no PR, CI, hosted checks, merge, or publish
+   nodes unless the task class truly mutates external state.
+4. Validate the full project registry before relying on a custom route in docs or experiments.
+5. Treat custom blueprints as contracts for future execution, not as permission to bypass policy
+   modules, approvals, or workflow mode constraints.
 
 ## ACR Relationship
 
