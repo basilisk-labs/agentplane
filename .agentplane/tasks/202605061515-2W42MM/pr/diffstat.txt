@@ -1,0 +1,16 @@
+ .../blueprint/resolved-snapshot.json               | 498 +++++++++++++++++++++
+ .agentplane/tasks/202605061515-EPEVHQ/README.md    |  87 ++++
+ .../blueprint/resolved-snapshot.json               | 342 ++++++++++++++
+ .agentplane/tasks/202605061515-WJWM2W/README.md    |  88 ++++
+ .../blueprint/resolved-snapshot.json               | 401 +++++++++++++++++
+ docs/developer/blueprints.mdx                      |  37 ++
+ docs/user/cli-reference.generated.mdx              |  37 +-
+ packages/agentplane/src/cli/command-guide.ts       |   1 +
+ .../src/cli/run-cli.core.blueprint.test.ts         |  14 +
+ .../src/cli/run-cli/command-catalog/project.ts     |   3 +
+ .../src/cli/run-cli/command-loaders/project.ts     |   2 +
+ .../src/commands/blueprint/blueprint.command.ts    |  67 +++
+ .../src/commands/blueprint/blueprint.specs.ts      |  25 +-
+ .../release/check-release-version-script.test.ts   |  15 +
+ scripts/check-release-version.mjs                  |   8 +-
+ 15 files changed, 1620 insertions(+), 5 deletions(-)
