@@ -29,7 +29,7 @@ Implement CLI/backend safeguards for bidirectional cloud pull: normalize service
 ### Current Status
 
 - State: ok
-- Note: Verified: focused backend and CLI tests passed; typecheck, diff check, policy routing, and repo-local doctor passed. Doctor has one pre-existing branch_pr normalization warning for 202605051844-WCPBCX.
+- Note: Verified: hosted required checks passed for PR #970 after local verification. Remote check summary: Release-ready manifest, test-windows, recovery-validate, test, docs, Socket checks, and changes all succeeded.
 
 ## Risks
 

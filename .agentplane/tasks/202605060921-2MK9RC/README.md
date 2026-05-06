@@ -4,7 +4,7 @@ title: "Implement cloud bidirectional pull safeguards"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-06T09:30:04.799Z"
+  updated_at: "2026-05-06T09:33:32.013Z"
   updated_by: "CODER"
-  note: "Verified: focused backend and CLI tests passed; typecheck, diff check, policy routing, and repo-local doctor passed. Doctor has one pre-existing branch_pr normalization warning for 202605051844-WCPBCX."
+  note: "Verified: hosted required checks passed for PR #970 after local verification. Remote check summary: Release-ready manifest, test-windows, recovery-validate, test, docs, Socket checks, and changes all succeeded."
 commit: null
 comments:
   -
@@ -48,8 +48,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: focused backend and CLI tests passed; typecheck, diff check, policy routing, and repo-local doctor passed. Doctor has one pre-existing branch_pr normalization warning for 202605051844-WCPBCX."
+  -
+    type: "verify"
+    at: "2026-05-06T09:33:32.013Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: hosted required checks passed for PR #970 after local verification. Remote check summary: Release-ready manifest, test-windows, recovery-validate, test, docs, Socket checks, and changes all succeeded."
 doc_version: 3
-doc_updated_at: "2026-05-06T09:30:04.803Z"
+doc_updated_at: "2026-05-06T09:33:32.019Z"
 doc_updated_by: "CODER"
 description: "Implement CLI/backend safeguards for bidirectional cloud pull: normalize service pull responses, safely apply service-approved operational fields to known local tasks, surface conflict/remediation details, block stale cloud projection before local task mutations, and update user/developer docs."
 sections:
@@ -87,6 +93,14 @@ sections:
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T09:22:21.706Z, excerpt_hash=sha256:b899c6f1d77696f2a917208d78a5307c6bc92710ecd575228ca1ecfb2d29b161
     
+    ### 2026-05-06T09:33:32.013Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: hosted required checks passed for PR #970 after local verification. Remote check summary: Release-ready manifest, test-windows, recovery-validate, test, docs, Socket checks, and changes all succeeded.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T09:30:04.803Z, excerpt_hash=sha256:b899c6f1d77696f2a917208d78a5307c6bc92710ecd575228ca1ecfb2d29b161
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -97,6 +111,10 @@ sections:
       Resolution: Added CloudBackend normalization/apply/guard behavior, focused backend and CLI tests, and cloud backend docs updates.
       Promotion: incident-candidate
       Fixability: external
+    
+    - Observation: Remote CI confirmed the branch after PR publication.
+      Impact: The branch is ready for review/integration from the implementation side.
+      Resolution: No further implementation changes required before review.
 id_source: "generated"
 ---
 ## Summary
@@ -142,6 +160,14 @@ Note: Verified: focused backend and CLI tests passed; typecheck, diff check, pol
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T09:22:21.706Z, excerpt_hash=sha256:b899c6f1d77696f2a917208d78a5307c6bc92710ecd575228ca1ecfb2d29b161
 
+### 2026-05-06T09:33:32.013Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: hosted required checks passed for PR #970 after local verification. Remote check summary: Release-ready manifest, test-windows, recovery-validate, test, docs, Socket checks, and changes all succeeded.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T09:30:04.803Z, excerpt_hash=sha256:b899c6f1d77696f2a917208d78a5307c6bc92710ecd575228ca1ecfb2d29b161
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -156,3 +182,7 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T09:22:21.706Z, excerpt_
   Resolution: Added CloudBackend normalization/apply/guard behavior, focused backend and CLI tests, and cloud backend docs updates.
   Promotion: incident-candidate
   Fixability: external
+
+- Observation: Remote CI confirmed the branch after PR publication.
+  Impact: The branch is ready for review/integration from the implementation side.
+  Resolution: No further implementation changes required before review.
