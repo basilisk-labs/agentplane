@@ -26,6 +26,13 @@ export {
 } from "./recipe-hints.js";
 export { inferBlueprintTaskKind, resolveBlueprint } from "./resolve.js";
 export {
+  blueprintSnapshotDigest,
+  blueprintSnapshotPayloadForDigest,
+  buildBlueprintResolvedSnapshot,
+  stableBlueprintSnapshotJson,
+  validateBlueprintResolvedSnapshot,
+} from "./snapshot.js";
+export {
   validateBlueprint,
   validateBlueprintPlanArtifact,
   validateBlueprintRegistry,
@@ -45,6 +52,12 @@ export type {
   BlueprintPlanState,
   BlueprintPlanValidationProblem,
   BlueprintPlanValidationResult,
+  BlueprintResolvedSnapshotArtifact,
+  BlueprintSnapshotDigest,
+  BlueprintSnapshotResolverInput,
+  BlueprintSnapshotSelectedBlueprint,
+  BlueprintSnapshotValidationProblem,
+  BlueprintSnapshotValidationResult,
   BlueprintState,
   BlueprintTaskIntent,
   BlueprintNode,
