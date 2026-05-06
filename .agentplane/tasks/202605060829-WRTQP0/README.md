@@ -4,7 +4,7 @@ title: "Enforce task-bound mutating commits"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-06T08:38:18.335Z"
+  updated_at: "2026-05-06T08:52:57.622Z"
   updated_by: "CODER"
-  note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/policy/evaluate.test.ts packages/core/src/commit/commit-policy.test.ts; Result: pass; Evidence: 5 files passed, 75 tests passed. Command: bun run typecheck; Result: pass; Evidence: tsc -b completed successfully. Command: bunx eslint on touched TS files; Result: pass; Evidence: no lint output after fixes. Command: bunx prettier --check touched hook files; Result: pass; Evidence: all matched files use Prettier style. Command: git diff --check; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime built and verified. Command: node packages/agentplane/bin/agentplane.js doctor; Result: pass with one unrelated branch_pr normalization warning for WCPBCX."
+  note: "Review follow-up checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/policy/evaluate.test.ts packages/core/src/commit/commit-policy.test.ts passed with 5 files and 77 tests. bun run typecheck passed. Prettier check on touched hook files passed. ESLint on touched hook files passed. git diff --check passed. Review fixes cover detached HEAD with AGENTPLANE_TASK_ID and merge commits in pre-push mutation audits."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/policy/evaluate.test.ts packages/core/src/commit/commit-policy.test.ts; Result: pass; Evidence: 5 files passed, 75 tests passed. Command: bun run typecheck; Result: pass; Evidence: tsc -b completed successfully. Command: bunx eslint on touched TS files; Result: pass; Evidence: no lint output after fixes. Command: bunx prettier --check touched hook files; Result: pass; Evidence: all matched files use Prettier style. Command: git diff --check; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime built and verified. Command: node packages/agentplane/bin/agentplane.js doctor; Result: pass with one unrelated branch_pr normalization warning for WCPBCX."
+  -
+    type: "verify"
+    at: "2026-05-06T08:52:57.622Z"
+    author: "CODER"
+    state: "ok"
+    note: "Review follow-up checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/policy/evaluate.test.ts packages/core/src/commit/commit-policy.test.ts passed with 5 files and 77 tests. bun run typecheck passed. Prettier check on touched hook files passed. ESLint on touched hook files passed. git diff --check passed. Review fixes cover detached HEAD with AGENTPLANE_TASK_ID and merge commits in pre-push mutation audits."
 doc_version: 3
-doc_updated_at: "2026-05-06T08:38:18.341Z"
+doc_updated_at: "2026-05-06T08:52:57.626Z"
 doc_updated_by: "CODER"
 description: "Harden commit hooks so mutating changes require an active task or valid task id, docs-only changes align with docs/content tasks, and emergency hotfixes require backfill evidence."
 sections:
@@ -68,6 +74,14 @@ sections:
     Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/policy/evaluate.test.ts packages/core/src/commit/commit-policy.test.ts; Result: pass; Evidence: 5 files passed, 75 tests passed. Command: bun run typecheck; Result: pass; Evidence: tsc -b completed successfully. Command: bunx eslint on touched TS files; Result: pass; Evidence: no lint output after fixes. Command: bunx prettier --check touched hook files; Result: pass; Evidence: all matched files use Prettier style. Command: git diff --check; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime built and verified. Command: node packages/agentplane/bin/agentplane.js doctor; Result: pass with one unrelated branch_pr normalization warning for WCPBCX.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T08:29:58.718Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    ### 2026-05-06T08:52:57.622Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Review follow-up checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/policy/evaluate.test.ts packages/core/src/commit/commit-policy.test.ts passed with 5 files and 77 tests. bun run typecheck passed. Prettier check on touched hook files passed. ESLint on touched hook files passed. git diff --check passed. Review fixes cover detached HEAD with AGENTPLANE_TASK_ID and merge commits in pre-push mutation audits.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T08:38:18.341Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
@@ -107,6 +121,14 @@ By: CODER
 Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/policy/evaluate.test.ts packages/core/src/commit/commit-policy.test.ts; Result: pass; Evidence: 5 files passed, 75 tests passed. Command: bun run typecheck; Result: pass; Evidence: tsc -b completed successfully. Command: bunx eslint on touched TS files; Result: pass; Evidence: no lint output after fixes. Command: bunx prettier --check touched hook files; Result: pass; Evidence: all matched files use Prettier style. Command: git diff --check; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime built and verified. Command: node packages/agentplane/bin/agentplane.js doctor; Result: pass with one unrelated branch_pr normalization warning for WCPBCX.
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T08:29:58.718Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+### 2026-05-06T08:52:57.622Z — VERIFY — ok
+
+By: CODER
+
+Note: Review follow-up checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/policy/evaluate.test.ts packages/core/src/commit/commit-policy.test.ts passed with 5 files and 77 tests. bun run typecheck passed. Prettier check on touched hook files passed. ESLint on touched hook files passed. git diff --check passed. Review fixes cover detached HEAD with AGENTPLANE_TASK_ID and merge commits in pre-push mutation audits.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T08:38:18.341Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 <!-- END VERIFICATION RESULTS -->
 
