@@ -66,6 +66,47 @@ describe("resolveBlueprint", () => {
     expect(result.rejectedRecipeExtensions[0]?.reason).toContain("not active");
   });
 
+  it("formats accepted and rejected recipe contributions with reasons", () => {
+    const formatted = formatBlueprintExplain(
+      explainResolvedBlueprint({
+        resolved: resolve({
+          title: "Analyze sources",
+          mutation: "none",
+          recipeHints: [
+            {
+              schemaVersion: 2,
+              source: "recipe_blueprint_extension",
+              recipeId: "research",
+              recipeVersion: "1.0.0",
+              extensionId: "research.context",
+              kind: "context_hint",
+              summary: "Research context",
+              value: { docs: ["research.md"] },
+            },
+            {
+              schemaVersion: 2,
+              source: "recipe_blueprint_extension",
+              recipeId: "research",
+              recipeVersion: "1.0.0",
+              extensionId: "research.check",
+              kind: "check_suggestion",
+              summary: "Run check",
+              targetNodeKind: "approval_gate",
+              value: { command: "bun test" },
+            },
+          ],
+        }),
+      }),
+    );
+
+    expect(formatted).toContain(
+      "accepted_recipe_extension: research@1.0.0/research.context kind=context_hint node=context_resolve",
+    );
+    expect(formatted).toContain(
+      "rejected_recipe_extension: research@1.0.0/research.check kind=check_suggestion node=approval_gate",
+    );
+  });
+
   it("resolves content-only work to content.light", () => {
     const resolved = resolve({ tags: ["content"], mutation: "none" });
 
