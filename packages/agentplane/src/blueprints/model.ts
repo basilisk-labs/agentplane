@@ -193,6 +193,8 @@ export type BlueprintRegistry = {
 };
 
 export type RecipeHint = {
+  schemaVersion?: 2;
+  source?: "recipe_blueprint_extension";
   recipeId: string;
   recipeVersion?: string;
   recipeName?: string;
@@ -201,6 +203,7 @@ export type RecipeHint = {
   kind: RecipeExtensionKind;
   targetNodeKind?: BlueprintNodeKind;
   value: unknown;
+  matchReasons?: readonly string[];
 };
 
 export type BlueprintResolveInput = {
