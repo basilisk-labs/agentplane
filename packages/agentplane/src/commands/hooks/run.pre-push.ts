@@ -232,7 +232,7 @@ function readCommitList(gitRoot: string, range: { from: string; to: string } | n
 }
 
 function readCommitFiles(gitRoot: string, commit: string): string[] {
-  return readGitText(gitRoot, ["diff-tree", "--no-commit-id", "--name-only", "-r", commit])
+  return readGitText(gitRoot, ["diff-tree", "--no-commit-id", "--name-only", "-r", "-m", commit])
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);

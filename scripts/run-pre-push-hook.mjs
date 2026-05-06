@@ -176,7 +176,7 @@ function readCommitList(range) {
 }
 
 function readCommitFiles(commit) {
-  return readQuiet("git", ["diff-tree", "--no-commit-id", "--name-only", "-r", commit])
+  return readQuiet("git", ["diff-tree", "--no-commit-id", "--name-only", "-r", "-m", commit])
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);

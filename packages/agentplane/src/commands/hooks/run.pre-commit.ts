@@ -68,6 +68,14 @@ function inferTaskIdFromBranch(branch: string | undefined, taskPrefix: string): 
   return parseTaskIdFromBranch(taskPrefix, value) ?? parseTaskIdFromCloseBranch(value) ?? "";
 }
 
+async function currentBranchOrUndefined(gitRoot: string): Promise<string | undefined> {
+  try {
+    return await gitCurrentBranch(gitRoot);
+  } catch {
+    return undefined;
+  }
+}
+
 export async function runPreCommitHook(opts: HooksRunOptions): Promise<number> {
   const resolved = await resolveProject({
     cwd: opts.cwd,
@@ -86,7 +94,7 @@ export async function runPreCommitHook(opts: HooksRunOptions): Promise<number> {
         mode: loaded.config.workflow_mode,
       })
     : null;
-  const currentBranch = await gitCurrentBranch(resolved.gitRoot);
+  const currentBranch = await currentBranchOrUndefined(resolved.gitRoot);
   const taskId =
     (process.env.AGENTPLANE_TASK_ID ?? "").trim() ||
     inferTaskIdFromBranch(currentBranch, loaded.config.branch.task_prefix);

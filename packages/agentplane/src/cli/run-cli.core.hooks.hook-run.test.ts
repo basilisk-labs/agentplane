@@ -566,6 +566,70 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     expect(String(failure?.stderr ?? "")).toContain("src/app.ts");
   });
 
+  it("pre-push hook includes merge commits in mutating commit audits", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    await writeDefaultConfig(root);
+    await writeFile(
+      path.join(root, "package.json"),
+      JSON.stringify(
+        {
+          name: "hook-test",
+          private: true,
+          scripts: {
+            "format:check": 'node -e "process.exit(0)"',
+            "ci:local:fast": 'node -e "process.exit(0)"',
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await mkdir(path.join(root, ".agentplane", "tasks", "202601010101-ABCDEF"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(root, ".agentplane", "tasks", "202601010101-ABCDEF", "README.md"),
+      "task\n",
+      "utf8",
+    );
+    await commitAll(root, "chore: base");
+    const baseSha = execFileSync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      encoding: "utf8",
+    }).trim();
+
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["checkout", "-b", "feature"], { cwd: root });
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "export const value = 1;\n", "utf8");
+    await commitAll(root, "✨ ABCDEF code: connect managed API");
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await execFileAsync("git", ["merge", "--no-ff", "feature", "-m", "Merge feature branch"], {
+      cwd: root,
+    });
+    const headSha = execFileSync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      encoding: "utf8",
+    }).trim();
+
+    let failure: (Error & { stderr?: string | Buffer; stdout?: string | Buffer }) | null = null;
+    try {
+      execFileSync("node", [PRE_PUSH_HOOK_SCRIPT], {
+        cwd: root,
+        stdio: "pipe",
+        input: `refs/heads/main ${headSha} refs/heads/main ${baseSha}\n`,
+      });
+    } catch (error) {
+      failure = error as Error & { stderr?: string | Buffer; stdout?: string | Buffer };
+    }
+
+    expect(failure).not.toBeNull();
+    expect(String(failure?.stderr ?? "")).toContain("Merge feature branch");
+    expect(String(failure?.stderr ?? "")).toContain("src/app.ts");
+  });
+
   it("pre-push hook accepts emergency hotfix commits with backfill evidence", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
