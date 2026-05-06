@@ -1,10 +1,11 @@
 ---
 id: "202605061635-VWSY04"
 title: "Format task new blueprint preview files"
-status: "DOING"
+result_summary: "Merged via PR #993."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-05-06T16:40:17.830Z"
   updated_by: "CODER"
   note: "Formatting fix verified: Prettier-clean output for the two task new blueprint preview files and focused preview behavior still passes."
-commit: null
+commit:
+  hash: "67e31318b2fa1d8006700321f82c294a60778c7f"
+  message: "Merge pull request #993 from basilisk-labs/task/202605061635-VWSY04/format-blueprint-preview"
 comments:
   -
     author: "CODER"
     body: "Start: Format the task new blueprint preview source and test files that local pre-push reported as not Prettier-clean."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #993 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Formatting fix verified: Prettier-clean output for the two task new blueprint preview files and focused preview behavior still passes."
+  -
+    type: "status"
+    at: "2026-05-06T16:44:02.408Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #993 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-06T16:40:17.842Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T16:44:02.414Z"
+doc_updated_by: "INTEGRATOR"
 description: "Run Prettier on files changed by task new blueprint preview so local pre-push format checks pass."
 sections:
   Summary: |-
