@@ -11,6 +11,7 @@ import {
   renderIncidentCollectionPlanOutcome,
 } from "../incidents/shared.js";
 import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
+import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import { buildVerifiedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
@@ -30,6 +31,42 @@ import type {
   VerifyState,
   VerifyStructuredFindingInput,
 } from "./verify-record.types.js";
+
+function appendDetailsBlock(details: string | null | undefined, lines: readonly string[]): string {
+  const existing = (details ?? "").trim();
+  return [existing, lines.join("\n")].filter(Boolean).join("\n\n");
+}
+
+async function appendBlueprintSnapshotReference(
+  details: string | null | undefined,
+  opts: {
+    ctx: CommandContext;
+    task: Parameters<typeof checkTaskBlueprintSnapshotDrift>[0]["task"];
+  },
+): Promise<string> {
+  try {
+    const snapshot = await checkTaskBlueprintSnapshotDrift(opts);
+    return appendDetailsBlock(details, [
+      "BlueprintSnapshotRef:",
+      `- state: ${snapshot.state}`,
+      `- path: ${snapshot.path}`,
+      `- old_digest: ${snapshot.previous.digest ?? "none"}`,
+      `- current_digest: ${snapshot.current.digest}`,
+      `- route_changed: ${
+        snapshot.routeChanged === null ? "unknown" : snapshot.routeChanged ? "yes" : "no"
+      }`,
+      `- safe_command: ${snapshot.safeCommand}`,
+    ]);
+  } catch (err) {
+    const message = err instanceof Error && err.message.trim() ? err.message.trim() : String(err);
+    return appendDetailsBlock(details, [
+      "BlueprintSnapshotRef:",
+      "- state: unavailable",
+      `- error: ${message}`,
+      `- safe_command: agentplane blueprint snapshot ${opts.task.id}`,
+    ]);
+  }
+}
 
 async function recordVerificationResult(opts: {
   ctx?: CommandContext;
@@ -79,7 +116,7 @@ async function recordVerificationResult(opts: {
         by: opts.by,
         note: opts.note,
         state: opts.state,
-        details: opts.details ?? null,
+        details: await appendBlueprintSnapshotReference(opts.details, { ctx, task: current }),
         doc,
         requiredSections: config.tasks.doc.required_sections,
       });

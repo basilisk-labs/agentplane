@@ -3,6 +3,7 @@ import path from "node:path";
 import { resolveProject } from "@agentplaneorg/core/project";
 
 import {
+  buildProjectBlueprintCompatibilityReport,
   createBlueprintRegistry,
   createTrustedProjectBlueprintRegistry,
   explainResolvedBlueprint,
@@ -34,6 +35,10 @@ import { usageError } from "../../cli/spec/errors.js";
 import { ValidationError } from "../../shared/errors.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 
+import {
+  checkTaskBlueprintSnapshotDrift,
+  refreshTaskBlueprintResolvedSnapshot,
+} from "./snapshot-artifact.js";
 import { blueprintResolveInputFromTask, workflowModeFromConfig } from "./task-input.js";
 
 export type BlueprintListParsed = {
@@ -61,11 +66,25 @@ export type BlueprintValidateParsed = {
   json: boolean;
 };
 
+export type BlueprintReportParsed = {
+  json: boolean;
+};
+
 export type BlueprintScaffoldParsed = {
   id: BlueprintId;
   from?: BlueprintId;
   out?: string;
   force: boolean;
+  json: boolean;
+};
+
+export type BlueprintSnapshotParsed = {
+  taskId: string;
+  json: boolean;
+};
+
+export type BlueprintDriftParsed = {
+  taskId: string;
   json: boolean;
 };
 
@@ -250,6 +269,20 @@ export const blueprintValidateSpec: CommandSpec<BlueprintValidateParsed> = {
   }),
 };
 
+export const blueprintReportSpec: CommandSpec<BlueprintReportParsed> = {
+  id: ["blueprint", "report"],
+  group: "Blueprints",
+  summary: "Report project-local blueprint trust compatibility.",
+  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
+  examples: [
+    {
+      cmd: "agentplane blueprint report --json",
+      why: "Inspect project-local blueprint trust compatibility before runner materialization.",
+    },
+  ],
+  parse: (raw) => ({ json: raw.opts.json === true }),
+};
+
 export const blueprintScaffoldSpec: CommandSpec<BlueprintScaffoldParsed> = {
   id: ["blueprint", "scaffold"],
   group: "Blueprints",
@@ -286,6 +319,46 @@ export const blueprintScaffoldSpec: CommandSpec<BlueprintScaffoldParsed> = {
     from: typeof raw.opts.from === "string" ? (raw.opts.from as BlueprintId) : undefined,
     out: typeof raw.opts.out === "string" ? raw.opts.out : undefined,
     force: raw.opts.force === true,
+    json: raw.opts.json === true,
+  }),
+};
+
+export const blueprintSnapshotSpec: CommandSpec<BlueprintSnapshotParsed> = {
+  id: ["blueprint", "snapshot"],
+  group: "Blueprints",
+  summary: "Refresh the resolved blueprint snapshot artifact for a task.",
+  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
+  examples: [
+    {
+      cmd: "agentplane blueprint snapshot 202605060915-3NBTGG",
+      why: "Refresh the task-local resolved blueprint snapshot artifact.",
+    },
+    {
+      cmd: "agentplane blueprint snapshot 202605060915-3NBTGG --json",
+      why: "Emit old/new digest details as JSON.",
+    },
+  ],
+  parse: (raw) => ({
+    taskId: String(raw.args["task-id"]),
+    json: raw.opts.json === true,
+  }),
+};
+
+export const blueprintDriftSpec: CommandSpec<BlueprintDriftParsed> = {
+  id: ["blueprint", "drift"],
+  group: "Blueprints",
+  summary: "Check whether a task resolved blueprint snapshot is current.",
+  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
+  examples: [
+    {
+      cmd: "agentplane blueprint drift 202605060915-3NBTGG",
+      why: "Check a task-local resolved snapshot before runner materialization.",
+    },
+  ],
+  parse: (raw) => ({
+    taskId: String(raw.args["task-id"]),
     json: raw.opts.json === true,
   }),
 };
@@ -427,6 +500,76 @@ export function makeRunBlueprintExplainHandler(getCtx: (cmd: string) => Promise<
   };
 }
 
+export function makeRunBlueprintSnapshotHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+  return async (_ctx: CommandCtx, p: BlueprintSnapshotParsed): Promise<number> => {
+    const commandCtx = await getCtx("blueprint snapshot");
+    const task = await loadTaskFromContext({ ctx: commandCtx, taskId: p.taskId });
+    const result = await refreshTaskBlueprintResolvedSnapshot({ ctx: commandCtx, task });
+    const output = {
+      task_id: p.taskId,
+      path: result.path,
+      old_digest: result.previous.digest,
+      new_digest: result.next.digest,
+      changed: result.changed,
+      route_changed: result.routeChanged,
+      old_blueprint_id: result.previous.blueprintId,
+      new_blueprint_id: result.next.blueprintId,
+      previous_valid: result.previous.valid,
+      previous_exists: result.previous.exists,
+    };
+    if (p.json) {
+      process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
+      return 0;
+    }
+    process.stdout.write(`blueprint_snapshot: ${output.path}\n`);
+    process.stdout.write(`old_digest: ${output.old_digest ?? "none"}\n`);
+    process.stdout.write(`new_digest: ${output.new_digest}\n`);
+    process.stdout.write(`changed: ${output.changed ? "yes" : "no"}\n`);
+    process.stdout.write(
+      `route_changed: ${
+        output.route_changed === null ? "unknown" : output.route_changed ? "yes" : "no"
+      }\n`,
+    );
+    process.stdout.write(`blueprint: ${output.new_blueprint_id}\n`);
+    return 0;
+  };
+}
+
+export function makeRunBlueprintDriftHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+  return async (_ctx: CommandCtx, p: BlueprintDriftParsed): Promise<number> => {
+    const commandCtx = await getCtx("blueprint drift");
+    const task = await loadTaskFromContext({ ctx: commandCtx, taskId: p.taskId });
+    const result = await checkTaskBlueprintSnapshotDrift({ ctx: commandCtx, task });
+    const output = {
+      task_id: p.taskId,
+      path: result.path,
+      state: result.state,
+      old_digest: result.previous.digest,
+      new_digest: result.current.digest,
+      route_changed: result.routeChanged,
+      old_blueprint_id: result.previous.blueprintId,
+      new_blueprint_id: result.current.blueprintId,
+      errors: result.previous.errors,
+      safe_command: result.safeCommand,
+    };
+    if (p.json) {
+      process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
+      return result.state === "current" ? 0 : 2;
+    }
+    process.stdout.write(`blueprint_snapshot: ${output.path}\n`);
+    process.stdout.write(`state: ${output.state}\n`);
+    process.stdout.write(`old_digest: ${output.old_digest ?? "none"}\n`);
+    process.stdout.write(`new_digest: ${output.new_digest}\n`);
+    process.stdout.write(
+      `route_changed: ${
+        output.route_changed === null ? "unknown" : output.route_changed ? "yes" : "no"
+      }\n`,
+    );
+    process.stdout.write(`safe_command: ${output.safe_command}\n`);
+    return result.state === "current" ? 0 : 2;
+  };
+}
+
 export const runBlueprintValidate: CommandHandler<BlueprintValidateParsed> = async (ctx, p) => {
   if (p.project) {
     const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
@@ -505,6 +648,38 @@ export const runBlueprintValidate: CommandHandler<BlueprintValidateParsed> = asy
     }
   }
   return result.ok ? 0 : 3;
+};
+
+export const runBlueprintReport: CommandHandler<BlueprintReportParsed> = async (ctx, p) => {
+  const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
+  const report = await buildProjectBlueprintCompatibilityReport(resolved.gitRoot);
+  if (p.json) {
+    process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+    return report.compatible ? 0 : 3;
+  }
+  process.stdout.write(`project_blueprints_compatible: ${report.compatible ? "yes" : "no"}\n`);
+  process.stdout.write(`directory: ${report.directory}\n`);
+  process.stdout.write(
+    `trust_config: exists=${report.trustConfig.exists ? "yes" : "no"} enabled=${
+      report.trustConfig.config.enabled ? "yes" : "no"
+    } model=${report.trustConfig.config.trustModel} selection=${report.trustConfig.config.selection}\n`,
+  );
+  process.stdout.write(
+    `trusted_blueprints: ${
+      report.trustedBlueprintIds.length > 0 ? report.trustedBlueprintIds.join(", ") : "none"
+    }\n`,
+  );
+  for (const blueprint of report.blueprints) {
+    process.stdout.write(
+      `blueprint: ${blueprint.blueprintId ?? "<unknown>"} trusted=${
+        blueprint.trusted ? "yes" : "no"
+      } ok=${blueprint.ok ? "yes" : "no"} path=${blueprint.path}\n`,
+    );
+  }
+  for (const error of report.errors) {
+    process.stderr.write(`blueprint_report: ${error.code}: ${error.message}\n`);
+  }
+  return report.compatible ? 0 : 3;
 };
 
 export const runBlueprintScaffold: CommandHandler<BlueprintScaffoldParsed> = async (ctx, p) => {

@@ -663,9 +663,16 @@ describe(
 
       const io = captureStdIO();
       try {
+        const refreshCode = await runCli(["blueprint", "snapshot", taskId, "--root", root]);
+        expect(refreshCode).toBe(0);
         const code = await runCli(["task", "verify-show", taskId, "--root", root]);
         expect(code).toBe(0);
         expect(io.stdout).toContain("Verifier instructions");
+        expect(io.stdout).toContain("Blueprint snapshot evidence");
+        expect(io.stdout).toContain("snapshot_state: current");
+        expect(io.stdout).toContain(
+          `snapshot_safe_command: agentplane blueprint snapshot ${taskId}`,
+        );
       } finally {
         io.restore();
       }

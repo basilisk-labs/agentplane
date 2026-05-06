@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605060915-N3MJJ1/blueprint-runner-context",
+  "created_at": "2026-05-06T10:01:42.667Z",
+  "head_sha": "3fab8a1567fdc36a5b5f5f76c81573e5e0739e53",
+  "last_verified_at": "2026-05-06T10:04:05.272Z",
+  "last_verified_sha": "3fab8a1567fdc36a5b5f5f76c81573e5e0739e53",
+  "schema_version": 1,
+  "task_id": "202605060915-N3MJJ1",
+  "updated_at": "2026-05-06T10:01:42.667Z",
+  "verify": {
+    "status": "pass"
+  }
+}
