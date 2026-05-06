@@ -138,6 +138,11 @@ async function runCommentScenario(mode: BackendMode) {
     loadCommandContext: vi.fn(),
     loadTaskFromContext,
   }));
+  vi.doMock("../blueprint/snapshot-artifact.js", () => ({
+    writeTaskBlueprintResolvedSnapshot: vi.fn(() =>
+      Promise.resolve({ path: "/repo/.agentplane/tasks/T-1/blueprint/resolved-snapshot.json" }),
+    ),
+  }));
   vi.doMock("../shared/task-store.js", async () => {
     const actual = await vi.importActual("../shared/task-store.js");
     return {

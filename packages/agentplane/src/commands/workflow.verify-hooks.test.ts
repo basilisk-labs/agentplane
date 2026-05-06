@@ -17,9 +17,10 @@ import {
 import * as taskBackend from "../backends/task-backend.js";
 import { parseCommandArgv } from "../cli/spec/parse.js";
 import { captureStdIO, mkGitRepoRoot, silenceStdIO, writeDefaultConfig } from "@agentplane/testkit";
-import { loadCommandContext } from "./shared/task-backend.js";
+import { loadCommandContext, loadTaskFromContext } from "./shared/task-backend.js";
 import { verifySpec } from "./verify.spec.js";
 import { cmdVerifyParsed } from "./task/verify-record.js";
+import { writeTaskBlueprintResolvedSnapshot } from "./blueprint/snapshot-artifact.js";
 
 const execFileAsync = promisify(execFile);
 const VERIFY_REWORK_FULL_GATE_TIMEOUT_MS = 60_000;
@@ -242,6 +243,10 @@ describe("commands/workflow", () => {
       await addTask(root, taskId);
       await gitCommitFile(root, "seed.txt", "chore: seed");
       const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+      await writeTaskBlueprintResolvedSnapshot({
+        ctx,
+        task: await loadTaskFromContext({ ctx, taskId }),
+      });
       await cmdVerifyParsed({
         ctx,
         cwd: root,

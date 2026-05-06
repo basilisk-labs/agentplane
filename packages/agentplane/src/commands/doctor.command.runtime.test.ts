@@ -675,7 +675,8 @@ describe(
         );
         expect(rc).toBe(0);
         const output = stderr.output();
-        expect(output).not.toContain("doctor findings:");
+        expect(output).not.toContain("[WARN]");
+        expect(output).not.toContain("[ERROR]");
         expect(output).not.toContain("Repository expected agentplane CLI");
       } finally {
         stderr.restore();
