@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   RUNNER_BOOTSTRAP_FILENAME,
+  RUNNER_BLUEPRINT_PLAN_FILENAME,
   RUNNER_BUNDLE_FILENAME,
   RUNNER_EVENTS_FILENAME,
   RUNNER_RESULT_FILENAME,
@@ -26,6 +27,7 @@ describe("resolveTaskRunnerPaths", () => {
       "/repo/.agentplane/tasks/202603231310-NT5V5C/runs/2026-03-23T13-00-00-000Z",
     );
     expect(paths.bundle_path).toBe(`${paths.run_dir}/${RUNNER_BUNDLE_FILENAME}`);
+    expect(paths.blueprint_plan_path).toBe(`${paths.run_dir}/${RUNNER_BLUEPRINT_PLAN_FILENAME}`);
     expect(paths.bootstrap_path).toBe(`${paths.run_dir}/${RUNNER_BOOTSTRAP_FILENAME}`);
     expect(paths.state_path).toBe(`${paths.run_dir}/${RUNNER_STATE_FILENAME}`);
     expect(paths.events_path).toBe(`${paths.run_dir}/${RUNNER_EVENTS_FILENAME}`);

@@ -75,6 +75,7 @@ export function makeRunnerContextBundle(
     artifact_paths: {
       run_dir: runDir,
       bundle_path: path.join(runDir, "bundle.json"),
+      blueprint_plan_path: path.join(runDir, "blueprint-plan.json"),
       bootstrap_path: path.join(runDir, "bootstrap.md"),
       state_path: path.join(runDir, "run-state.json"),
       events_path: path.join(runDir, "events.jsonl"),

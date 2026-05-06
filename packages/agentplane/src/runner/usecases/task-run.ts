@@ -207,12 +207,7 @@ function buildRunnerBlueprintContextManifest(opts: {
 
 async function writeTaskBlueprintSnapshot(bundle: RunnerContextBundle): Promise<void> {
   if (bundle.target.kind !== "task" || !bundle.blueprint) return;
-  const snapshotPath = path.join(
-    bundle.repository.git_root,
-    bundle.repository.workflow_dir,
-    bundle.target.task_id,
-    "blueprint.json",
-  );
+  const snapshotPath = bundle.execution.artifact_paths.blueprint_plan_path;
   await mkdir(path.dirname(snapshotPath), { recursive: true });
   await writeFile(snapshotPath, `${JSON.stringify(bundle.blueprint, null, 2)}\n`, "utf8");
 }
