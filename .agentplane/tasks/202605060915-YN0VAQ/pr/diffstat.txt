@@ -1,0 +1,5 @@
+ packages/agentplane/src/blueprints/index.ts        |  13 +
+ packages/agentplane/src/blueprints/model.ts        |  70 +++++
+ .../agentplane/src/blueprints/snapshot.test.ts     | 137 ++++++++++
+ packages/agentplane/src/blueprints/snapshot.ts     | 296 +++++++++++++++++++++
+ 4 files changed, 516 insertions(+)

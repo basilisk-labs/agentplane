@@ -24,6 +24,7 @@ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { blueprintResolveInputFromTask } from "../blueprint/task-input.js";
+import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { withDiagnosticContext } from "../shared/diagnostics.js";
 
@@ -508,7 +509,7 @@ export async function generateAcr(opts: {
       : [];
   const recordId = `acr_${opts.taskId.replaceAll(/[^A-Za-z0-9_-]/g, "_")}`;
   const taskPath = path.relative(gitRoot, taskReadmePath);
-  const evidence = taskHash
+  const taskEvidence = taskHash
     ? [
         {
           type: "task" as const,
@@ -535,6 +536,24 @@ export async function generateAcr(opts: {
           : []),
       ]
     : [];
+  const blueprint = await buildAcrBlueprintExtension({
+    task,
+    ctx: opts.ctx,
+  });
+  const evidence = [
+    ...taskEvidence,
+    ...(blueprint.snapshot?.state === "current" &&
+    blueprint.snapshot.path &&
+    blueprint.snapshot.artifact_sha256
+      ? [
+          {
+            type: "other" as const,
+            path: blueprint.snapshot.path,
+            sha256: blueprint.snapshot.artifact_sha256,
+          },
+        ]
+      : []),
+  ];
   const verificationChecks = (task.verify ?? []).map((command, index) => ({
     check_id: `verify-${index + 1}`,
     type: inferCheckType(command),
@@ -549,10 +568,6 @@ export async function generateAcr(opts: {
     evidence,
   });
   const mergeReady = residualRisks.length === 0;
-  const blueprint = buildAcrBlueprintExtension({
-    task,
-    ctx: opts.ctx,
-  });
   const recordWithoutDigest: AgentChangeRecord = {
     acr_version: ACR_VERSION,
     record_type: "agent_change_record",
@@ -695,13 +710,17 @@ export async function generateAcr(opts: {
   return { record, acrPath, warnings: [] };
 }
 
-function buildAcrBlueprintExtension(opts: {
+async function buildAcrBlueprintExtension(opts: {
   task: Awaited<ReturnType<typeof loadTaskFromContext>>;
   ctx: CommandContext;
 }) {
   const input = blueprintResolveInputFromTask({ task: opts.task, config: opts.ctx.config });
   const resolved = resolveBlueprint({ input });
   const explained = explainResolvedBlueprint({ resolved, workflowMode: input.workflowMode });
+  const snapshot = await buildAcrBlueprintSnapshotProjection({
+    task: opts.task,
+    ctx: opts.ctx,
+  });
   return {
     blueprint_id: explained.blueprintId,
     blueprint_version: explained.blueprintVersion,
@@ -735,7 +754,48 @@ function buildAcrBlueprintExtension(opts: {
       severity: item.severity,
       reason: item.reason,
     })),
+    snapshot,
   };
+}
+
+async function buildAcrBlueprintSnapshotProjection(opts: {
+  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+  ctx: CommandContext;
+}): Promise<{
+  state: "current" | "missing" | "invalid" | "stale" | "unavailable";
+  path: string | null;
+  digest: string | null;
+  current_digest: string | null;
+  route_changed: boolean | null;
+  artifact_sha256: string | null;
+  safe_command: string;
+}> {
+  const safeCommand = `agentplane blueprint snapshot ${opts.task.id}`;
+  try {
+    const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: opts.ctx, task: opts.task });
+    const relativePath = path.relative(opts.ctx.resolvedProject.gitRoot, snapshot.path);
+    const artifactSha256 =
+      snapshot.state === "current" ? await hashFile(snapshot.path).catch(() => null) : null;
+    return {
+      state: snapshot.state,
+      path: relativePath,
+      digest: snapshot.previous.digest,
+      current_digest: snapshot.current.digest,
+      route_changed: snapshot.routeChanged,
+      artifact_sha256: artifactSha256,
+      safe_command: snapshot.safeCommand,
+    };
+  } catch {
+    return {
+      state: "unavailable",
+      path: null,
+      digest: null,
+      current_digest: null,
+      route_changed: null,
+      artifact_sha256: null,
+      safe_command: safeCommand,
+    };
+  }
 }
 
 export async function writeAcrFile(opts: {

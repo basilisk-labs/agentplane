@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605060915-S7TK13/blueprint-local-governance",
+  "created_at": "2026-05-06T10:32:31.110Z",
+  "head_sha": "b4a7b2c750754c8e969211fc425b2b4f48092723",
+  "last_verified_at": "2026-05-06T10:33:58.255Z",
+  "last_verified_sha": "b4a7b2c750754c8e969211fc425b2b4f48092723",
+  "merge_commit": "b4a7b2c750754c8e969211fc425b2b4f48092723",
+  "merged_at": "2026-05-06T12:21:33.424Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605060915-S7TK13",
+  "updated_at": "2026-05-06T12:21:33.424Z",
+  "verify": {
+    "status": "pass"
+  }
+}

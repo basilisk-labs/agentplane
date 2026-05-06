@@ -6,6 +6,8 @@ export function recipeBlueprintExtensionToHint(
   extension: ResolvedRecipeBlueprintExtension,
 ): RecipeHint {
   return {
+    schemaVersion: 2,
+    source: "recipe_blueprint_extension",
     recipeId: extension.recipe_id,
     recipeVersion: extension.recipe_version,
     recipeName: extension.recipe_name,
@@ -16,6 +18,7 @@ export function recipeBlueprintExtensionToHint(
       ? { targetNodeKind: extension.target_node_kind as BlueprintNodeKind }
       : {}),
     value: extension.value,
+    matchReasons: [...extension.reasons],
   };
 }
 

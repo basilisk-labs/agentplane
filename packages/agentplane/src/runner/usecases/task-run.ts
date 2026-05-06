@@ -10,6 +10,9 @@ import { blueprintResolveInputFromTask } from "../../commands/blueprint/task-inp
 import { CliError } from "../../shared/errors.js";
 import {
   buildBlueprintPlanArtifact,
+  buildBlueprintExecutionPlanArtifact,
+  buildBlueprintExecutionStateArtifact,
+  createTrustedProjectBlueprintRegistry,
   type BlueprintContextManifestEntry,
   inferBlueprintTaskKind,
   recipeBlueprintExtensionsToHints,
@@ -35,6 +38,8 @@ import { persistRunnerOutcomeToTask } from "../task-state.js";
 import { RunnerRunRepository } from "../run-repository.js";
 import { createRunnerRunId, resolveTaskRunnerPaths } from "../task-run-paths.js";
 import { normalizeRecipeArtifactPrefixes } from "../result-manifest-policy.js";
+import { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
+export { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
 import {
   RUNNER_API_VERSION,
   RUNNER_BUNDLE_SCHEMA_VERSION,
@@ -128,6 +133,45 @@ function assertRunnerPolicyCompatibility(bundle: RunnerContextBundle): void {
   }
 }
 
+function isBlueprintPolicyModuleEntry(entry: {
+  kind: string;
+  source?: string;
+  id: string;
+}): boolean {
+  const source = entry.source ?? entry.id;
+  return entry.kind === "policy_module" && source.startsWith(".agentplane/policy/");
+}
+
+export function assertRunnerBlueprintPolicyModuleBudget(bundle: RunnerContextBundle): void {
+  const blueprint = bundle.blueprint;
+  if (!blueprint) return;
+  const maxPolicyModules = blueprint.contextBudget.maxPolicyModules;
+  const policyModules = blueprint.policyModules.filter((item) => item.trim().length > 0);
+  const policyManifestEntries = blueprint.contextManifest.filter((entry) =>
+    isBlueprintPolicyModuleEntry(entry),
+  );
+  const actualCount = Math.max(policyModules.length, policyManifestEntries.length);
+  if (actualCount <= maxPolicyModules) return;
+  throw new CliError({
+    exitCode: exitCodeForError("E_VALIDATION"),
+    code: "E_VALIDATION",
+    message: [
+      "Runner blueprint policy module budget exceeded.",
+      `blueprint=${blueprint.blueprintId}`,
+      `policy_modules=${policyModules.length}`,
+      `context_manifest_policy_modules=${policyManifestEntries.length}`,
+      `max_policy_modules=${maxPolicyModules}`,
+      "Fix: remove unrelated policy modules from the runner context or select a blueprint with a larger explicit budget.",
+    ].join("\n"),
+    context: {
+      blueprint_id: blueprint.blueprintId,
+      policy_modules: policyModules.length,
+      context_manifest_policy_modules: policyManifestEntries.length,
+      max_policy_modules: maxPolicyModules,
+    },
+  });
+}
+
 function recipeManifestFromContext(recipe: RunnerRecipeContext | undefined): RecipeManifest | null {
   if (!recipe?.manifest || typeof recipe.manifest !== "object") return null;
   return recipe.manifest as RecipeManifest;
@@ -136,9 +180,10 @@ function recipeManifestFromContext(recipe: RunnerRecipeContext | undefined): Rec
 function resolveRunnerBlueprintPlan(opts: {
   taskEnvelope: Awaited<ReturnType<typeof assembleRunnerTaskContext>>;
   config: CommandContext["config"];
+  projectRoot: string;
   recipe?: RunnerRecipeContext;
   basePrompts: readonly RunnerPromptBlock[];
-}): RunnerContextBundle["blueprint"] {
+}): Promise<RunnerContextBundle["blueprint"]> {
   const input = blueprintResolveInputFromTask({
     task: opts.taskEnvelope.task.data,
     config: opts.config,
@@ -157,17 +202,34 @@ function resolveRunnerBlueprintPlan(opts: {
     });
     input.recipeHints = recipeBlueprintExtensionsToHints(recipeExtensions.accepted);
   }
-  const resolved = resolveBlueprint({ input });
-  return buildBlueprintPlanArtifact({
-    resolved,
-    input,
-    workflowMode: input.workflowMode,
-    contextManifest: buildRunnerBlueprintContextManifest({
-      basePrompts: opts.basePrompts,
-      recipe: opts.recipe,
-      policyModules: resolved.blueprint.policyModules,
-    }),
-  });
+  return createTrustedProjectBlueprintRegistry(opts.projectRoot)
+    .then((projectRegistry) => {
+      const resolved = resolveBlueprint({
+        input,
+        registry: projectRegistry.registry,
+        projectBlueprintIds: projectRegistry.projectBlueprintIds,
+      });
+      return buildBlueprintPlanArtifact({
+        resolved,
+        input,
+        workflowMode: input.workflowMode,
+        contextManifest: buildRunnerBlueprintContextManifest({
+          basePrompts: opts.basePrompts,
+          recipe: opts.recipe,
+          policyModules: resolved.blueprint.policyModules,
+        }),
+      });
+    })
+    .catch((err) => {
+      throw new CliError({
+        exitCode: exitCodeForError("E_VALIDATION"),
+        code: "E_VALIDATION",
+        message:
+          err instanceof Error
+            ? err.message
+            : `Invalid project-local blueprint trust registry: ${String(err)}`,
+      });
+    });
 }
 
 function buildRunnerBlueprintContextManifest(opts: {
@@ -207,14 +269,36 @@ function buildRunnerBlueprintContextManifest(opts: {
 
 async function writeTaskBlueprintSnapshot(bundle: RunnerContextBundle): Promise<void> {
   if (bundle.target.kind !== "task" || !bundle.blueprint) return;
-  const snapshotPath = path.join(
-    bundle.repository.git_root,
-    bundle.repository.workflow_dir,
-    bundle.target.task_id,
-    "blueprint.json",
-  );
+  const snapshotPath = bundle.execution.artifact_paths.blueprint_plan_path;
+  const executionPlanPath = bundle.execution.artifact_paths.blueprint_execution_plan_path;
+  const executionStatePath = bundle.execution.artifact_paths.blueprint_execution_state_path;
   await mkdir(path.dirname(snapshotPath), { recursive: true });
+  const executionPlan = buildBlueprintExecutionPlanArtifact({
+    plan: bundle.blueprint,
+    runId: bundle.execution.run_id,
+    generatedAt: bundle.execution.run_id,
+  });
   await writeFile(snapshotPath, `${JSON.stringify(bundle.blueprint, null, 2)}\n`, "utf8");
+  await writeFile(executionPlanPath, `${JSON.stringify(executionPlan, null, 2)}\n`, "utf8");
+  await writeFile(
+    executionStatePath,
+    `${JSON.stringify(
+      buildBlueprintExecutionStateArtifact({
+        plan: bundle.blueprint,
+        executionPlan,
+        runId: bundle.execution.run_id,
+        at: bundle.execution.run_id,
+      }),
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+  await writeFile(
+    bundle.execution.artifact_paths.context_manifest_path,
+    `${JSON.stringify(bundle.blueprint.contextManifest, null, 2)}\n`,
+    "utf8",
+  );
 }
 
 async function writeRunnerRefusalArtifacts(opts: {
@@ -273,44 +357,6 @@ export function assertRunnerTaskExecutable(bundle: RunnerContextBundle): void {
   });
 }
 
-export function renderTaskRunnerBootstrap(
-  bundle: RunnerContextBundle,
-  invocation?: RunnerInvocation,
-): string {
-  const targetLabel =
-    bundle.target.kind === "task"
-      ? `task ${bundle.target.task_id}`
-      : `recipe scenario ${bundle.target.recipe_id}:${bundle.target.scenario_id}`;
-  return [
-    "# agentplane runner bootstrap",
-    "",
-    "This invocation is already inside an approved runner execution.",
-    "- Do not run repository startup commands such as `agentplane config show`, `agentplane quickstart`, `agentplane task list`, `git status`, or `git rev-parse` unless the bundle explicitly requires them as task work.",
-    "- Do not create, approve, start, verify, finish, block, or rerun tasks unless the bundle explicitly requires task metadata edits.",
-    "- Do not recursively invoke runner entrypoints such as `agentplane task run` or `agentplane recipes scenario execute` from inside this run.",
-    "- Open bundle.json immediately, execute the requested work directly, and stop when the requested outcome is satisfied.",
-    "",
-    `- target: ${targetLabel}`,
-    `- adapter: ${bundle.execution.adapter_id}`,
-    `- mode: ${bundle.execution.mode}`,
-    `- run_id: ${bundle.execution.run_id}`,
-    `- bundle_path: ${bundle.execution.artifact_paths.bundle_path}`,
-    `- result_path: ${bundle.execution.artifact_paths.result_path}`,
-    `- bootstrap_path: ${bundle.execution.artifact_paths.bootstrap_path}`,
-    "",
-    "Use bundle.json as the complete runner input. Do not reconstruct prompts from CLI argv.",
-    "Execute-mode runs must write a valid JSON result manifest to result_path before exiting.",
-    "Minimal manifest example:",
-    '{"schema_version":1,"status":"success","summary":"Completed.","capabilities_used":["runner.exec"]}',
-    "",
-    "Prepared invocation:",
-    "",
-    invocation
-      ? `- argv: ${invocation.argv.join(" ")}`
-      : "- argv: <not prepared; preflight refused>",
-  ].join("\n");
-}
-
 export async function prepareTaskRunnerExecution(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -353,9 +399,10 @@ export async function prepareTaskRunnerExecution(opts: {
     harness: executionContext.harness,
     execution_profile: executionProfile,
   });
-  const blueprint = resolveRunnerBlueprintPlan({
+  const blueprint = await resolveRunnerBlueprintPlan({
     taskEnvelope,
     config: executionContext.config,
+    projectRoot: executionContext.repo.git_root,
     recipe: opts.recipe,
     basePrompts: base_prompts,
   });
@@ -418,6 +465,7 @@ export async function prepareTaskRunnerExecution(opts: {
     capabilities: bundle.execution.adapter_capabilities,
     requested: bundle.execution.policy_decision.requested,
   });
+  assertRunnerBlueprintPolicyModuleBudget(bundle);
   assertRunnerTaskExecutable(bundle);
   await writeTaskBlueprintSnapshot(bundle);
   try {
