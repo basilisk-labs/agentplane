@@ -25,12 +25,18 @@ Implement CLI/backend safeguards for bidirectional cloud pull: normalize service
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-06T09:22:21.754Z
+- Updated: 2026-05-06T09:30:50.735Z
 - Branch: task/202605060921-2MK9RC/cloud-bidirectional-pull
-- Head: db2c0d431747
+- Head: c32c34453c28
 
 ```text
-No changes detected.
+ docs/developer/cloud-backend-integration-plan.mdx  |  30 ++-
+ docs/user/backends/cloud.mdx                       |  25 +-
+ docs/user/tasks-and-backends.mdx                   |   6 +
+ .../src/backends/task-backend.cloud.test.ts        | 290 ++++++++++++++++++++-
+ .../src/backends/task-backend/cloud-backend.ts     | 215 +++++++++++++--
+ .../src/cli/run-cli.core.backend-sync.test.ts      |  57 ++++
+ 6 files changed, 594 insertions(+), 29 deletions(-)
 ```
 
 </details>

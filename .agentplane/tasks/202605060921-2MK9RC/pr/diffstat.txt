@@ -1,0 +1,7 @@
+ docs/developer/cloud-backend-integration-plan.mdx  |  30 ++-
+ docs/user/backends/cloud.mdx                       |  25 +-
+ docs/user/tasks-and-backends.mdx                   |   6 +
+ .../src/backends/task-backend.cloud.test.ts        | 290 ++++++++++++++++++++-
+ .../src/backends/task-backend/cloud-backend.ts     | 215 +++++++++++++--
+ .../src/cli/run-cli.core.backend-sync.test.ts      |  57 ++++
+ 6 files changed, 594 insertions(+), 29 deletions(-)
