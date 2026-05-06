@@ -1,10 +1,11 @@
 ---
 id: "202605061515-2W42MM"
 title: "Expose blueprint discoverability in CLI"
-status: "DOING"
+result_summary: "Merged via PR #978."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-06T15:25:29.806Z"
   updated_by: "CODER"
   note: "Verified: blueprint examples command, quickstart hint, CLI docs generation, targeted tests, typecheck, doctor, routing, release gate, and diff check passed."
-commit: null
+commit:
+  hash: "a0dc137b68ba35ae98648dbf4d9395ef8e8361e5"
+  message: "Merge pull request #978 from basilisk-labs/task/202605061515-2W42MM/blueprint-discoverability"
 comments:
   -
     author: "CODER"
     body: "Start: Implement blueprint discoverability surfaces, docs examples, and prerelease release-version validation in the approved batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #978 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: blueprint examples command, quickstart hint, CLI docs generation, targeted tests, typecheck, doctor, routing, release gate, and diff check passed."
+  -
+    type: "status"
+    at: "2026-05-06T15:32:26.785Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #978 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-06T15:25:29.828Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T15:32:26.792Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make blueprint commands easier to find from quickstart, task surfaces, and examples without changing blueprint execution semantics."
 sections:
   Summary: |-
