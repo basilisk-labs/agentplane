@@ -57,8 +57,11 @@ const HELP_GROUP_ORDER = new Map<string, number>([
 ]);
 
 function compareHelpGroups(a: string, b: string): number {
-  const rank = (value: string) => HELP_GROUP_ORDER.get(value) ?? 500;
-  return rank(a) - rank(b) || a.localeCompare(b);
+  return helpGroupRank(a) - helpGroupRank(b) || a.localeCompare(b);
+}
+
+function helpGroupRank(value: string): number {
+  return HELP_GROUP_ORDER.get(value) ?? 500;
 }
 
 function renderArgUsage(arg: ArgSpec): string {

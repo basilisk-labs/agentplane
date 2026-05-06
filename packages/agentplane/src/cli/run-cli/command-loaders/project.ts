@@ -25,6 +25,8 @@ export const loadBlueprintSpec = (deps: RunDeps) =>
   );
 export const loadBlueprintListSpec = () =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintList);
+export const loadBlueprintExamplesSpec = () =>
+  import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintExamples);
 export const loadBlueprintExplainSpec = (deps: RunDeps) =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) =>
     m.makeRunBlueprintExplainHandler(deps.getCtx),

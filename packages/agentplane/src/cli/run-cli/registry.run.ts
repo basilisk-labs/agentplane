@@ -12,7 +12,7 @@ export function buildRegistry(opts: {
 }): CommandRegistry {
   const registry = new CommandRegistry();
   const getHelpJsonForDocs = () =>
-    makeHelpJsonFromSpecs([helpSpec, ...COMMANDS.map(makeHelpSpecForEntry)]);
+    makeHelpJsonFromSpecs([helpSpec, ...COMMANDS.map((entry) => makeHelpSpecForEntry(entry))]);
   const deps: RunDeps = {
     getCtx: opts.getCtx,
     getResolvedProject: opts.getResolvedProject,

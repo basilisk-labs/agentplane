@@ -25,8 +25,11 @@ const DOCS_GROUP_ORDER = new Map<string, number>([
 ]);
 
 function compareDocsGroups(a: string, b: string): number {
-  const rank = (value: string) => DOCS_GROUP_ORDER.get(value) ?? 500;
-  return rank(a) - rank(b) || a.localeCompare(b);
+  return docsGroupRank(a) - docsGroupRank(b) || a.localeCompare(b);
+}
+
+function docsGroupRank(value: string): number {
+  return DOCS_GROUP_ORDER.get(value) ?? 500;
 }
 
 function escCode(text: string): string {

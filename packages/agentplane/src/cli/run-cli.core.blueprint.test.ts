@@ -20,6 +20,20 @@ async function mkProject(): Promise<string> {
 }
 
 describe("runCli blueprint commands", () => {
+  it("blueprint examples shows practical route inspection commands", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["blueprint", "examples"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Blueprint route inspection examples");
+      expect(io.stdout).toContain("analysis.light");
+      expect(io.stdout).toContain("code.branch_pr");
+      expect(io.stdout).toContain("agentplane blueprint explain --kind analysis --mutation none");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("blueprint validate accepts a project-local blueprint JSON file", async () => {
     const root = await mkTempDir();
     const blueprintPath = path.join(root, "analysis.custom.json");

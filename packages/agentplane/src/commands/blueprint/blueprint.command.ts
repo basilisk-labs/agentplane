@@ -31,6 +31,7 @@ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend
 
 export {
   blueprintDriftSpec,
+  blueprintExamplesSpec,
   blueprintExplainSpec,
   blueprintListSpec,
   blueprintReportSpec,
@@ -41,6 +42,7 @@ export {
 } from "./blueprint.specs.js";
 import type {
   BlueprintDriftParsed,
+  BlueprintExamplesParsed,
   BlueprintExplainParsed,
   BlueprintListParsed,
   BlueprintReportParsed,
@@ -106,6 +108,71 @@ function validationErrorFromProjectFile(
     context: { path: filePath },
   });
 }
+
+const BLUEPRINT_ROUTE_EXAMPLES = [
+  {
+    id: "analysis.readonly",
+    title: "Read-only analysis",
+    command: "agentplane blueprint explain --kind analysis --mutation none",
+    expected: "analysis.light",
+    note: "No CI, PR, worktree, or merge gates.",
+  },
+  {
+    id: "content.readonly",
+    title: "Content generation",
+    command: "agentplane blueprint explain --kind content --mutation none",
+    expected: "content.light",
+    note: "Evidence and final output, not code lifecycle.",
+  },
+  {
+    id: "docs.change",
+    title: "Documentation change",
+    command: "agentplane blueprint explain --kind docs --mutation docs",
+    expected: "docs.change",
+    note: "Docs verification without code checks by default.",
+  },
+  {
+    id: "code.branch_pr",
+    title: "Code change in branch_pr",
+    command: "agentplane blueprint explain --kind code --mutation code --workflow-mode branch_pr",
+    expected: "code.branch_pr",
+    note: "Task branch, local checks, PR artifact, integration gate.",
+  },
+  {
+    id: "release.strict",
+    title: "Release or publish",
+    command:
+      "agentplane blueprint explain --kind release --mutation release --risk external_publish",
+    expected: "release.strict",
+    note: "Version, manifest, parity, and publish safety gates.",
+  },
+  {
+    id: "existing.task",
+    title: "Existing task",
+    command: "agentplane blueprint explain <task-id>",
+    expected: "task-specific route",
+    note: "Uses task fields, tags, workflow mode, mutation scope, and risk hints.",
+  },
+] as const;
+
+export const runBlueprintExamples: CommandHandler<BlueprintExamplesParsed> = (_ctx, p) => {
+  if (p.json) {
+    process.stdout.write(`${JSON.stringify({ examples: BLUEPRINT_ROUTE_EXAMPLES }, null, 2)}\n`);
+    return Promise.resolve(0);
+  }
+  process.stdout.write("Blueprint route inspection examples\n");
+  for (const example of BLUEPRINT_ROUTE_EXAMPLES) {
+    process.stdout.write(`\n- ${example.title}\n`);
+    process.stdout.write(`  command: ${example.command}\n`);
+    process.stdout.write(`  expected: ${example.expected}\n`);
+    process.stdout.write(`  note: ${example.note}\n`);
+  }
+  process.stdout.write("\nNext commands:\n");
+  process.stdout.write("- agentplane blueprint list\n");
+  process.stdout.write("- agentplane blueprint report\n");
+  process.stdout.write("- agentplane help blueprint explain --compact\n");
+  return Promise.resolve(0);
+};
 
 export const runBlueprintList: CommandHandler<BlueprintListParsed> = async (ctx, p) => {
   const registry = createBlueprintRegistry();

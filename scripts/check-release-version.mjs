@@ -37,11 +37,13 @@ const main = defineCheck({
     const { tagArg } = options;
     const tag = resolveTag(tagArg);
     if (!tag) {
-      throw new Error("Missing release tag. Provide --tag vX.Y.Z or run under tag ref.");
+      throw new Error(
+        "Missing release tag. Provide --tag vX.Y.Z[-prerelease][+build] or run under tag ref.",
+      );
     }
-    const match = tag.match(/^v(\d+\.\d+\.\d+)(?:-.+)?$/);
+    const match = tag.match(/^v(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?)$/);
     if (!match) {
-      throw new Error(`Tag ${tag} does not match vX.Y.Z format.`);
+      throw new Error(`Tag ${tag} does not match vX.Y.Z[-prerelease][+build] format.`);
     }
     const version = match[1];
     return assertReleaseParity(process.cwd(), { requiredVersion: version });
