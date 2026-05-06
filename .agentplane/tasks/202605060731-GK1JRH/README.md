@@ -1,10 +1,11 @@
 ---
 id: "202605060731-GK1JRH"
 title: "Document local blueprint authoring"
-status: "DOING"
+result_summary: "Blueprint authoring docs and generated CLI reference describe local scaffold and validation flow."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-06T07:46:58.471Z"
   updated_by: "CODER"
   note: "Verified: blueprint authoring documentation and generated CLI reference were updated; docs freshness and ci:local:fast passed."
-commit: null
+commit:
+  hash: "70ac693ef82c44c51d5dff652e16dfda60411b70"
+  message: "Merge pull request #958 from basilisk-labs/task/202605060730-B55DQR/local-blueprint-authoring"
 comments:
   -
     author: "CODER"
     body: "Start: batch execution in B55DQR worktree; document safe local blueprint authoring."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #958 passed required remote checks, review threads were resolved, and hosted merge landed on origin/main."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: blueprint authoring documentation and generated CLI reference were updated; docs freshness and ci:local:fast passed."
+  -
+    type: "status"
+    at: "2026-05-06T08:15:51.208Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #958 passed required remote checks, review threads were resolved, and hosted merge landed on origin/main."
 doc_version: 3
-doc_updated_at: "2026-05-06T07:46:58.476Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T08:15:51.209Z"
+doc_updated_by: "INTEGRATOR"
 description: "Document safe project-local blueprint authoring, scaffold, validate, registry listing, and current non-execution limits for v0.5."
 sections:
   Summary: |-
