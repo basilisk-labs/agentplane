@@ -1,10 +1,11 @@
 ---
 id: "202605060826-0GB6WB"
 title: "Resolve trusted project-local blueprints explicitly"
-status: "DOING"
+result_summary: "Trusted project-local blueprint resolver selection merged via PR #963."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-06T08:36:07.004Z"
   updated_by: "CODER"
   note: "Resolver now includes only explicitly trusted project-local blueprints and rejects untrusted ids."
-commit: null
+commit:
+  hash: "dbfb872a8a2cf8ecae6099b3ddae4e0bc54dff8a"
+  message: "Merge pull request #963 from basilisk-labs/task/202605060826-FZ9FV6/trusted-local-blueprints"
 comments:
   -
     author: "CODER"
     body: "Start: implement explicit trusted project-local blueprint resolver selection after the config gate."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: trusted project-local resolver selection merged through PR #963 with green hosted checks."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Resolver now includes only explicitly trusted project-local blueprints and rejects untrusted ids."
+  -
+    type: "status"
+    at: "2026-05-06T08:55:41.381Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: trusted project-local resolver selection merged through PR #963 with green hosted checks."
 doc_version: 3
-doc_updated_at: "2026-05-06T08:36:07.009Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T08:55:41.381Z"
+doc_updated_by: "INTEGRATOR"
 description: "Allow resolver/explain to use project-local blueprints only when trusted config enables them and the task explicitly requests a compatible id."
 sections:
   Summary: |-
