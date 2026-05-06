@@ -144,6 +144,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task hosted-close-pr](#task-hosted-close-pr)
   - [task lint](#task-lint)
   - [task obsidian](#task-obsidian)
+  - [task obsidian clean](#task-obsidian-clean)
   - [task plan reject](#task-plan-reject)
   - [task reclaim](#task-reclaim)
   - [task resume-context](#task-resume-context)
@@ -3621,6 +3622,26 @@ agentplane task obsidian
 ```
 
 - Write .agentplane/index.md, .agentplane/tasks.md, and grouped navigation files.
+
+### task obsidian clean
+
+Remove generated Obsidian task navigation files under .agentplane.
+
+Deletes only AgentPlane-generated Obsidian projection files and directories while preserving canonical task READMEs and non-generated Markdown files.
+
+Usage:
+
+```text
+agentplane task obsidian clean
+```
+
+Examples:
+
+```sh
+agentplane task obsidian clean
+```
+
+- Remove .agentplane/index.md, .agentplane/tasks.md, and generated grouped navigation files.
 
 ### task plan reject
 

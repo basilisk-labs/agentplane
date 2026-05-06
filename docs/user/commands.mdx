@@ -164,6 +164,7 @@ Generate an optional integration snapshot:
 ```bash
 agentplane task export
 agentplane task obsidian
+agentplane task obsidian clean
 agentplane task lint
 ```
 
@@ -180,6 +181,8 @@ source of truth.
 
 Open `.agentplane/` as an Obsidian vault to browse task IDs, statuses, owners, tags, and dependency
 links while keeping `.agentplane/tasks/<task-id>/README.md` as the canonical task record.
+`agentplane task obsidian clean` removes only the generated Obsidian projection files; it does not
+delete canonical task READMEs or non-generated Markdown files.
 
 ## Agent Change Record
 
