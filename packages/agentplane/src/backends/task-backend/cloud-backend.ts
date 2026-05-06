@@ -1,5 +1,6 @@
 import path from "node:path";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 
 import { loadDotEnv } from "../../shared/env.js";
 import {
@@ -46,6 +47,9 @@ type CloudSyncStateSnapshot = {
   safeCommand: string | null;
   unavailable: boolean;
 };
+
+const CLOUD_PUSH_DIRECT_BODY_LIMIT_BYTES = 750_000;
+const CLOUD_PUSH_BATCH_TASK_BYTES = 600_000;
 
 export class CloudBackend implements TaskBackend {
   id = "cloud";
@@ -224,18 +228,20 @@ export class CloudBackend implements TaskBackend {
         "E_BACKEND",
       );
     }
-    const response = await this.request<CloudSyncResponse>(
-      `/v1/projects/${encodeURIComponent(this.projectId)}/sync/${action}`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          provider: this.provider,
-          direction: opts.direction,
-          conflict: opts.conflict,
-          tasks: opts.direction === "push" ? localTasks : undefined,
-        }),
-      },
-    );
+    const response =
+      opts.direction === "push"
+        ? await this.requestCloudPush(localTasks, opts)
+        : await this.request<CloudSyncResponse>(
+            `/v1/projects/${encodeURIComponent(this.projectId)}/sync/${action}`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                provider: this.provider,
+                direction: opts.direction,
+                conflict: opts.conflict,
+              }),
+            },
+          );
     const data = isRecord(response.data) ? response.data : {};
     const pull = normalizeCloudPullResponse(response, data);
     if (opts.direction === "pull") {
@@ -315,6 +321,70 @@ export class CloudBackend implements TaskBackend {
         "agentplane backend sync cloud --direction pull --conflict=diff",
       unavailable: false,
     };
+  }
+
+  private async requestCloudPush(
+    localTasks: TaskData[],
+    opts: {
+      conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
+      quiet: boolean;
+    },
+  ): Promise<CloudSyncResponse> {
+    const directBody = JSON.stringify({
+      provider: this.provider,
+      direction: "push",
+      conflict: opts.conflict,
+      tasks: localTasks,
+    });
+    if (Buffer.byteLength(directBody, "utf8") <= CLOUD_PUSH_DIRECT_BODY_LIMIT_BYTES) {
+      return await this.request<CloudSyncResponse>(
+        `/v1/projects/${encodeURIComponent(this.projectId)}/sync/push`,
+        { method: "POST", body: directBody },
+      );
+    }
+
+    const chunks = splitTasksByPayloadBytes(localTasks, CLOUD_PUSH_BATCH_TASK_BYTES);
+    const batchId = `batch_${Date.now()}_${randomUUID()}`;
+    let lastResponse: CloudSyncResponse | null = null;
+    for (const [index, tasks] of chunks.entries()) {
+      lastResponse = await this.request<CloudSyncResponse>(
+        `/v1/projects/${encodeURIComponent(this.projectId)}/sync/push-batch`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            provider: this.provider,
+            direction: "push",
+            conflict: opts.conflict,
+            batch: {
+              id: batchId,
+              total_batches: chunks.length,
+              total_tasks: localTasks.length,
+              chunk_index: index,
+              finalize: index === chunks.length - 1,
+            },
+            tasks,
+          }),
+        },
+      );
+      if (!opts.quiet) {
+        process.stderr.write(
+          `cloud push uploaded batch ${index + 1}/${chunks.length} tasks=${tasks.length}\n`,
+        );
+      }
+      if (index === chunks.length - 1 && !cloudPushBatchFinalized(lastResponse)) {
+        throw new BackendError(
+          [
+            "Cloud backend batch push did not finalize.",
+            "Why: the service did not confirm that every expected chunk was received before replacing the projection.",
+            "Fix: retry the cloud push; chunks are idempotent for one batch id during the run.",
+            "Safe command: agentplane backend sync cloud --direction push --yes",
+            "Stop condition: stop if the service repeatedly reports an incomplete batch after all chunks are uploaded.",
+          ].join("\n"),
+          "E_BACKEND",
+        );
+      }
+    }
+    return lastResponse ?? { data: { last_checked_at: new Date().toISOString() } };
   }
 
   async inspectConfiguration(): Promise<TaskBackendInspectionResult> {
@@ -468,6 +538,12 @@ function readSafeCommand(response: CloudSyncResponse, data: Record<string, unkno
   return command ?? "agentplane backend inspect cloud --yes";
 }
 
+function cloudPushBatchFinalized(response: CloudSyncResponse): boolean {
+  const data = isRecord(response.data) ? response.data : {};
+  const batch = isRecord(data.batch) ? data.batch : null;
+  return batch?.finalized === true;
+}
+
 function readString(input: unknown, key: string): string | null {
   if (!isRecord(input)) return null;
   const value = input[key];
@@ -534,6 +610,39 @@ function normalizePositiveInteger(input: unknown): number | null {
   if (typeof input !== "number" || !Number.isFinite(input)) return null;
   const value = Math.trunc(input);
   return value > 0 ? value : null;
+}
+
+function splitTasksByPayloadBytes(tasks: TaskData[], maxBytes: number): TaskData[][] {
+  const chunks: TaskData[][] = [];
+  let current: TaskData[] = [];
+  let currentBytes = 2;
+  for (const task of tasks) {
+    const taskBytes = Buffer.byteLength(JSON.stringify(task), "utf8");
+    if (taskBytes > maxBytes) {
+      throw new BackendError(
+        [
+          "Cloud backend cannot batch a single oversized task projection.",
+          `Why: task ${task.id} is larger than the per-batch payload budget.`,
+          "Fix: reduce large task README metadata or raise the service request-body limit before syncing.",
+          "Safe command: agentplane task show <task-id>",
+          "Stop condition: stop if the task contains secrets or large embedded artifacts.",
+        ].join("\n"),
+        "E_BACKEND",
+      );
+    }
+    const separatorBytes = current.length === 0 ? 0 : 1;
+    if (current.length > 0 && currentBytes + separatorBytes + taskBytes > maxBytes) {
+      chunks.push(current);
+      current = [];
+      currentBytes = 2;
+    }
+    current.push(task);
+    currentBytes += separatorBytes + taskBytes;
+  }
+  if (current.length > 0 || tasks.length === 0) {
+    chunks.push(current);
+  }
+  return chunks;
 }
 
 function isStale(lastCheckedAt: string | null, staleAfterSeconds: number | null): boolean {

@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 1,
+  "artifactKind": "agentplane.blueprint.resolved_snapshot",
+  "resolverInput": {
+    "taskId": "202605061738-DRD78G",
+    "title": "Add batched cloud push client",
+    "description": "Update the public cloud task backend to upload oversized push projections through the cloud service batch endpoint while keeping small pushes on the existing direct endpoint.",
+    "tags": [
+      "backend",
+      "cloud",
+      "sync"
+    ],
+    "owner": "CODER",
+    "taskKind": "code",
+    "workflowMode": "branch_pr",
+    "mutation": "code",
+    "mutationScope": "code",
+    "touchedPaths": [],
+    "recipeHints": [],
+    "riskFlags": [
+      "external_system"
+    ]
+  },
+  "selectedBlueprint": {
+    "id": "ops.approval",
+    "version": 1,
+    "title": "Approval-gated operations",
+    "taskKinds": [
+      "ops"
+    ],
+    "workflowModes": []
+  },
+  "plan": {
+    "schemaVersion": 1,
+    "blueprintId": "ops.approval",
+    "blueprintVersion": 1,
+    "title": "Approval-gated operations",
+    "taskId": "202605061738-DRD78G",
+    "workflowMode": "branch_pr",
+    "taskIntent": {
+      "taskKind": "code",
+      "mutationScope": "code",
+      "riskFlags": [
+        "external_system"
+      ]
+    },
+    "whySelected": [
+      "risk flags require ops.approval: external_system",
+      "task intent kind: code",
+      "workflow mode: branch_pr",
+      "task intent mutation scope: code"
+    ],
+    "states": [
+      {
+        "id": "intake",
+        "kind": "intake",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": []
+      },
+      {
+        "id": "scope",
+        "kind": "scope",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "assumptions",
+          "rollback"
+        ]
+      },
+      {
+        "id": "approval_gate",
+        "kind": "approval_gate",
+        "mode": "approval",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "approval"
+        ]
+      },
+      {
+        "id": "context_resolve",
+        "kind": "context_resolve",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [
+          ".agentplane/policy/security.must.md",
+          ".agentplane/policy/dod.core.md"
+        ],
+        "evidenceKinds": [
+          "context_manifest"
+        ]
+      },
+      {
+        "id": "work_unit",
+        "kind": "work_unit",
+        "mode": "agentic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "artifact",
+          "rollback"
+        ]
+      },
+      {
+        "id": "deterministic_check",
+        "kind": "deterministic_check",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result"
+        ]
+      },
+      {
+        "id": "artifact_write",
+        "kind": "artifact_write",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "artifact"
+        ]
+      },
+      {
+        "id": "verify_record",
+        "kind": "verify_record",
+        "mode": "record",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result"
+        ]
+      },
+      {
+        "id": "finish",
+        "kind": "finish",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "final_output"
+        ]
+      }
+    ],
+    "requiredEvidence": [
+      {
+        "id": "ops.approval",
+        "kind": "approval",
+        "producedBy": "approval_gate",
+        "required": true,
+        "description": "Operational approval."
+      },
+      {
+        "id": "ops.rollback",
+        "kind": "rollback",
+        "producedBy": "scope",
+        "required": true,
+        "description": "Rollback or recovery path."
+      },
+      {
+        "id": "ops.action",
+        "kind": "artifact",
+        "producedBy": "work_unit",
+        "required": true,
+        "description": "Action log or operational artifact."
+      },
+      {
+        "id": "ops.check",
+        "kind": "check_result",
+        "producedBy": "deterministic_check",
+        "required": true,
+        "description": "Post-action check."
+      }
+    ],
+    "policyModules": [
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/security.must.md"
+    ],
+    "allowedCommands": [
+      "agentplane task verify-show <task-id>",
+      "agentplane verify <task-id> --ok|--rework",
+      "approved operational command"
+    ],
+    "contextBudget": {
+      "maxPolicyModules": 2,
+      "maxPromptBlocks": 12,
+      "rationale": "Ops work needs security and rollback context before any external action."
+    },
+    "contextManifest": [],
+    "acceptedRecipeExtensions": [],
+    "rejectedRecipeExtensions": [],
+    "stopReasons": []
+  },
+  "nodes": [
+    {
+      "id": "intake",
+      "kind": "intake",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": []
+    },
+    {
+      "id": "scope",
+      "kind": "scope",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "assumptions",
+        "rollback"
+      ]
+    },
+    {
+      "id": "approval_gate",
+      "kind": "approval_gate",
+      "mode": "approval",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "approval"
+      ]
+    },
+    {
+      "id": "context_resolve",
+      "kind": "context_resolve",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [
+        ".agentplane/policy/security.must.md",
+        ".agentplane/policy/dod.core.md"
+      ],
+      "evidenceKinds": [
+        "context_manifest"
+      ]
+    },
+    {
+      "id": "work_unit",
+      "kind": "work_unit",
+      "mode": "agentic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "artifact",
+        "rollback"
+      ]
+    },
+    {
+      "id": "deterministic_check",
+      "kind": "deterministic_check",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result"
+      ]
+    },
+    {
+      "id": "artifact_write",
+      "kind": "artifact_write",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "artifact"
+      ]
+    },
+    {
+      "id": "verify_record",
+      "kind": "verify_record",
+      "mode": "record",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result"
+      ]
+    },
+    {
+      "id": "finish",
+      "kind": "finish",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "final_output"
+      ]
+    }
+  ],
+  "requiredEvidence": [
+    {
+      "id": "ops.approval",
+      "kind": "approval",
+      "producedBy": "approval_gate",
+      "required": true,
+      "description": "Operational approval."
+    },
+    {
+      "id": "ops.rollback",
+      "kind": "rollback",
+      "producedBy": "scope",
+      "required": true,
+      "description": "Rollback or recovery path."
+    },
+    {
+      "id": "ops.action",
+      "kind": "artifact",
+      "producedBy": "work_unit",
+      "required": true,
+      "description": "Action log or operational artifact."
+    },
+    {
+      "id": "ops.check",
+      "kind": "check_result",
+      "producedBy": "deterministic_check",
+      "required": true,
+      "description": "Post-action check."
+    }
+  ],
+  "policyModules": [
+    ".agentplane/policy/dod.core.md",
+    ".agentplane/policy/security.must.md"
+  ],
+  "allowedCommands": [
+    "agentplane task verify-show <task-id>",
+    "agentplane verify <task-id> --ok|--rework",
+    "approved operational command"
+  ],
+  "contextBudget": {
+    "maxPolicyModules": 2,
+    "maxPromptBlocks": 12,
+    "rationale": "Ops work needs security and rollback context before any external action."
+  },
+  "contextManifest": [],
+  "acceptedRecipeExtensions": [],
+  "rejectedRecipeExtensions": [],
+  "stopReasons": [],
+  "selectionReasons": [
+    "risk flags require ops.approval: external_system",
+    "task intent kind: code",
+    "workflow mode: branch_pr",
+    "task intent mutation scope: code"
+  ],
+  "digest": {
+    "algorithm": "sha256",
+    "value": "b7e62420914853e6b96fb71d4cbaa06080e64e88a941386db5489fcd70febd73"
+  }
+}

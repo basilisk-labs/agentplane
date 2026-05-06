@@ -114,6 +114,13 @@ Push local dirty task state to the cloud service:
 agentplane backend sync cloud --direction push --yes
 ```
 
+For large task archives, the CLI automatically uploads the push projection in
+byte-limited batches. The cloud service stages those chunks and only replaces
+the canonical projection after the final batch is received, then enqueues one
+publish job for connected views. This keeps `backend sync cloud --direction
+push --yes` as the user-facing command while avoiding oversized HTTP request
+bodies.
+
 Operational rule:
 
 - use `pull` before local task mutations when the projection is stale;
