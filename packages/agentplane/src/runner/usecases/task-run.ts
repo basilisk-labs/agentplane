@@ -128,6 +128,45 @@ function assertRunnerPolicyCompatibility(bundle: RunnerContextBundle): void {
   }
 }
 
+function isBlueprintPolicyModuleEntry(entry: {
+  kind: string;
+  source?: string;
+  id: string;
+}): boolean {
+  const source = entry.source ?? entry.id;
+  return entry.kind === "policy_module" && source.startsWith(".agentplane/policy/");
+}
+
+export function assertRunnerBlueprintPolicyModuleBudget(bundle: RunnerContextBundle): void {
+  const blueprint = bundle.blueprint;
+  if (!blueprint) return;
+  const maxPolicyModules = blueprint.contextBudget.maxPolicyModules;
+  const policyModules = blueprint.policyModules.filter((item) => item.trim().length > 0);
+  const policyManifestEntries = blueprint.contextManifest.filter((entry) =>
+    isBlueprintPolicyModuleEntry(entry),
+  );
+  const actualCount = Math.max(policyModules.length, policyManifestEntries.length);
+  if (actualCount <= maxPolicyModules) return;
+  throw new CliError({
+    exitCode: 2,
+    code: "E_VALIDATION",
+    message: [
+      "Runner blueprint policy module budget exceeded.",
+      `blueprint=${blueprint.blueprintId}`,
+      `policy_modules=${policyModules.length}`,
+      `context_manifest_policy_modules=${policyManifestEntries.length}`,
+      `max_policy_modules=${maxPolicyModules}`,
+      "Fix: remove unrelated policy modules from the runner context or select a blueprint with a larger explicit budget.",
+    ].join("\n"),
+    context: {
+      blueprint_id: blueprint.blueprintId,
+      policy_modules: policyModules.length,
+      context_manifest_policy_modules: policyManifestEntries.length,
+      max_policy_modules: maxPolicyModules,
+    },
+  });
+}
+
 function recipeManifestFromContext(recipe: RunnerRecipeContext | undefined): RecipeManifest | null {
   if (!recipe?.manifest || typeof recipe.manifest !== "object") return null;
   return recipe.manifest as RecipeManifest;
@@ -418,6 +457,7 @@ export async function prepareTaskRunnerExecution(opts: {
     capabilities: bundle.execution.adapter_capabilities,
     requested: bundle.execution.policy_decision.requested,
   });
+  assertRunnerBlueprintPolicyModuleBudget(bundle);
   assertRunnerTaskExecutable(bundle);
   await writeTaskBlueprintSnapshot(bundle);
   try {
