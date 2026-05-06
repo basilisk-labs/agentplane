@@ -3,6 +3,7 @@ import { CliError } from "../../shared/errors.js";
 import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../incidents/shared.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
+import { assertBlueprintEvidenceBeforeFinish } from "./finish-blueprint-evidence.js";
 import {
   createTaskCloseCommit,
   existingCommitInfo,
@@ -32,6 +33,7 @@ export async function executeFinishPlan(opts: {
   await appendStructuredFindingIfNeeded({ ctx, options, plan });
 
   const loadedState = await loadFinishTasks({ ctx, options, plan });
+  await assertBlueprintEvidenceBeforeFinish({ ctx, loadedTasks: loadedState.loadedTasks });
   await collectIncidentsForLoadedTasks({
     ctx,
     taskIds: options.taskIds,

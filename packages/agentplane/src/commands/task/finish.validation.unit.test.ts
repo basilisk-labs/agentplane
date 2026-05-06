@@ -24,6 +24,7 @@ const mocks = vi.hoisted(() => ({
   gitCurrentBranch: vi.fn(),
   generateAcr: vi.fn(),
   writeAcrFile: vi.fn(),
+  checkTaskBlueprintSnapshotDrift: vi.fn(),
 }));
 
 vi.mock("../guard/impl/comment-commit.js", () => ({
@@ -47,6 +48,9 @@ vi.mock("../shared/git-ops.js", () => ({
 vi.mock("../acr/acr.command.js", () => ({
   generateAcr: mocks.generateAcr,
   writeAcrFile: mocks.writeAcrFile,
+}));
+vi.mock("../blueprint/snapshot-artifact.js", () => ({
+  checkTaskBlueprintSnapshotDrift: mocks.checkTaskBlueprintSnapshotDrift,
 }));
 vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
@@ -113,6 +117,8 @@ function mkTask(overrides: Partial<TaskData>): TaskData {
       "Low",
       "",
       "## Verification",
+      "BlueprintSnapshotRef:",
+      "- state: current",
       "",
       "## Rollback Plan",
       "Revert commit",
@@ -223,6 +229,7 @@ describe("task finish validation", () => {
     mocks.gitCurrentBranch.mockReset();
     mocks.generateAcr.mockReset();
     mocks.writeAcrFile.mockReset();
+    mocks.checkTaskBlueprintSnapshotDrift.mockReset();
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
     mocks.readCommitInfo.mockResolvedValue({ hash: "hc", message: "mc" });
@@ -242,6 +249,14 @@ describe("task finish validation", () => {
       record: { record_type: "agent_change_record" },
     });
     mocks.writeAcrFile.mockResolvedValue();
+    mocks.checkTaskBlueprintSnapshotDrift.mockResolvedValue({
+      path: "/repo/.agentplane/tasks/T-1/blueprint/resolved-snapshot.json",
+      state: "current",
+      previous: { digest: "d1", blueprintId: "code.branch_pr", route: [], errors: [] },
+      current: { digest: "d1", blueprintId: "code.branch_pr", route: [] },
+      routeChanged: false,
+      safeCommand: "agentplane blueprint snapshot T-1",
+    });
     mocks.commitFromComment.mockResolvedValue({
       hash: "new-hash",
       message: "✅ T-1 task: verified",
@@ -509,6 +524,106 @@ describe("task finish validation", () => {
       ctx,
       command: "finish",
     });
+  });
+
+  it("rejects finish when blueprint snapshot evidence is stale", async () => {
+    const ctx = mkCtx();
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        id: "T-1",
+        tags: ["code"],
+        commit: { hash: "impl-hash", message: "feat: implement T-1" },
+      }),
+    );
+    mocks.checkTaskBlueprintSnapshotDrift.mockResolvedValue({
+      path: "/repo/.agentplane/tasks/T-1/blueprint/resolved-snapshot.json",
+      state: "stale",
+      previous: { digest: "old", blueprintId: "code.branch_pr", route: [], errors: [] },
+      current: { digest: "new", blueprintId: "code.branch_pr", route: [] },
+      routeChanged: false,
+      safeCommand: "agentplane blueprint snapshot T-1",
+    });
+
+    const { cmdFinish } = await import("./finish-command.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: this is long enough",
+        result: "done",
+        breaking: false,
+        force: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        closeCommit: true,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
+    expect(mocks.cmdCommit).not.toHaveBeenCalled();
+  });
+
+  it("rejects finish when verification did not record a blueprint snapshot ref", async () => {
+    const ctx = mkCtx();
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        id: "T-1",
+        tags: ["code"],
+        doc: [
+          "## Summary",
+          "Task summary",
+          "",
+          "## Scope",
+          "In-scope files",
+          "",
+          "## Plan",
+          "1. Implement",
+          "",
+          "## Verification",
+          "Verified without a snapshot reference.",
+          "",
+          "## Rollback Plan",
+          "Revert commit",
+        ].join("\n"),
+        commit: { hash: "impl-hash", message: "feat: implement T-1" },
+      }),
+    );
+
+    const { cmdFinish } = await import("./finish-command.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: this is long enough",
+        result: "done",
+        breaking: false,
+        force: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        closeCommit: true,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
+    expect(mocks.cmdCommit).not.toHaveBeenCalled();
   });
 
   it("auto-runs deterministic close commit by default in direct mode with local backend", async () => {
