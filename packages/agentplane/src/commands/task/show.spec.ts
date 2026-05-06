@@ -5,7 +5,7 @@ export type TaskShowParsed = { taskId: string };
 export const taskShowSpec: CommandSpec<TaskShowParsed> = {
   id: ["task", "show"],
   group: "Task",
-  summary: "Print task metadata as JSON (frontmatter shape).",
+  summary: "Print task metadata and resolved blueprint route as JSON.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   examples: [{ cmd: "agentplane task show 202602030608-F1Q8AB", why: "Show task metadata." }],
   parse: (raw) => ({ taskId: String(raw.args["task-id"]) }),
