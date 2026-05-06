@@ -335,4 +335,55 @@ describe("runCli blueprint commands", () => {
       io.restore();
     }
   });
+
+  it("blueprint snapshot refreshes a task-local resolved snapshot artifact", async () => {
+    const root = await mkProject();
+    let taskId = "";
+    const createIo = captureStdIO();
+    try {
+      const createCode = await runCli([
+        "--root",
+        root,
+        "task",
+        "new",
+        "--title",
+        "Implement route",
+        "--description",
+        "Write code",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+      ]);
+      expect(createCode).toBe(0);
+      taskId = createIo.stdout.trim();
+    } finally {
+      createIo.restore();
+    }
+
+    const refreshIo = captureStdIO();
+    try {
+      const code = await runCli(["--root", root, "blueprint", "snapshot", taskId, "--json"]);
+      expect(code).toBe(0);
+      const output = JSON.parse(refreshIo.stdout) as {
+        old_digest: string | null;
+        new_digest: string;
+        changed: boolean;
+        route_changed: boolean | null;
+        path: string;
+      };
+      expect(output.old_digest).toBeNull();
+      expect(output.new_digest).toMatch(/^[a-f0-9]{64}$/);
+      expect(output.changed).toBe(true);
+      expect(output.route_changed).toBeNull();
+      const snapshot = JSON.parse(await readFile(output.path, "utf8")) as {
+        selectedBlueprint?: { id?: string };
+      };
+      expect(snapshot.selectedBlueprint?.id).toBe("code.direct");
+    } finally {
+      refreshIo.restore();
+    }
+  });
 });

@@ -34,6 +34,7 @@ import { usageError } from "../../cli/spec/errors.js";
 import { ValidationError } from "../../shared/errors.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 
+import { refreshTaskBlueprintResolvedSnapshot } from "./snapshot-artifact.js";
 import { blueprintResolveInputFromTask, workflowModeFromConfig } from "./task-input.js";
 
 export type BlueprintListParsed = {
@@ -66,6 +67,11 @@ export type BlueprintScaffoldParsed = {
   from?: BlueprintId;
   out?: string;
   force: boolean;
+  json: boolean;
+};
+
+export type BlueprintSnapshotParsed = {
+  taskId: string;
   json: boolean;
 };
 
@@ -290,6 +296,28 @@ export const blueprintScaffoldSpec: CommandSpec<BlueprintScaffoldParsed> = {
   }),
 };
 
+export const blueprintSnapshotSpec: CommandSpec<BlueprintSnapshotParsed> = {
+  id: ["blueprint", "snapshot"],
+  group: "Blueprints",
+  summary: "Refresh the resolved blueprint snapshot artifact for a task.",
+  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
+  examples: [
+    {
+      cmd: "agentplane blueprint snapshot 202605060915-3NBTGG",
+      why: "Refresh the task-local resolved blueprint snapshot artifact.",
+    },
+    {
+      cmd: "agentplane blueprint snapshot 202605060915-3NBTGG --json",
+      why: "Emit old/new digest details as JSON.",
+    },
+  ],
+  parse: (raw) => ({
+    taskId: String(raw.args["task-id"]),
+    json: raw.opts.json === true,
+  }),
+};
+
 async function runBlueprintRoot(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
   throwGroupCommandUsage({
     spec: blueprintSpec,
@@ -423,6 +451,41 @@ export function makeRunBlueprintExplainHandler(getCtx: (cmd: string) => Promise<
       return 0;
     }
     process.stdout.write(formatBlueprintExplain(output));
+    return 0;
+  };
+}
+
+export function makeRunBlueprintSnapshotHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+  return async (_ctx: CommandCtx, p: BlueprintSnapshotParsed): Promise<number> => {
+    const commandCtx = await getCtx("blueprint snapshot");
+    const task = await loadTaskFromContext({ ctx: commandCtx, taskId: p.taskId });
+    const result = await refreshTaskBlueprintResolvedSnapshot({ ctx: commandCtx, task });
+    const output = {
+      task_id: p.taskId,
+      path: result.path,
+      old_digest: result.previous.digest,
+      new_digest: result.next.digest,
+      changed: result.changed,
+      route_changed: result.routeChanged,
+      old_blueprint_id: result.previous.blueprintId,
+      new_blueprint_id: result.next.blueprintId,
+      previous_valid: result.previous.valid,
+      previous_exists: result.previous.exists,
+    };
+    if (p.json) {
+      process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
+      return 0;
+    }
+    process.stdout.write(`blueprint_snapshot: ${output.path}\n`);
+    process.stdout.write(`old_digest: ${output.old_digest ?? "none"}\n`);
+    process.stdout.write(`new_digest: ${output.new_digest}\n`);
+    process.stdout.write(`changed: ${output.changed ? "yes" : "no"}\n`);
+    process.stdout.write(
+      `route_changed: ${
+        output.route_changed === null ? "unknown" : output.route_changed ? "yes" : "no"
+      }\n`,
+    );
+    process.stdout.write(`blueprint: ${output.new_blueprint_id}\n`);
     return 0;
   };
 }
