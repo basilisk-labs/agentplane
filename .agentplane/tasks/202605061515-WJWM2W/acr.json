@@ -1,0 +1,216 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605061515-WJWM2W",
+  "created_at": "2026-05-06T15:37:55.322Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "a0dc137b68ba35ae98648dbf4d9395ef8e8361e5",
+    "work_ref": "main",
+    "work_commit": "a0dc137b68ba35ae98648dbf4d9395ef8e8361e5"
+  },
+  "task": {
+    "task_id": "202605061515-WJWM2W",
+    "title": "Allow prerelease release-version checks",
+    "intent": "Make release-version validation handle prerelease tags such as v0.5.0-rc.1 consistently with release parity checks.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605061515-WJWM2W/README.md",
+      "sha256": "sha256:b89de04f5841780ce3030c29c5c7e21a3d2c6ed573b887727115871402589157"
+    },
+    "approved_at": "2026-05-06T15:16:49.790Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Allowed prerelease release-version checks.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605061515-WJWM2W_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-06T15:16:49.790Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605061515-WJWM2W/README.md",
+      "sha256": "sha256:b89de04f5841780ce3030c29c5c7e21a3d2c6ed573b887727115871402589157"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605061515-WJWM2W/README.md",
+      "sha256": "sha256:b89de04f5841780ce3030c29c5c7e21a3d2c6ed573b887727115871402589157"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605061515-WJWM2W/README.md",
+      "sha256": "sha256:b89de04f5841780ce3030c29c5c7e21a3d2c6ed573b887727115871402589157"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605061515-WJWM2W/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:c6dc70edbe4740c06de207de0b7deab458a27a7a9ea11a5a3817dc98f9235101"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit a0dc137b68ba35ae98648dbf4d9395ef8e8361e5 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:301818296399f0dc60a2f8decf8387994357f21575fd31e617f933860a037b22",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "release.strict",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "release.approval",
+          "kind": "approval",
+          "produced_by": "approval_gate",
+          "required": true
+        },
+        {
+          "id": "release.plan",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "release.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "release.publish",
+          "kind": "external_link",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        },
+        {
+          "id": "release.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605061515-WJWM2W/blueprint/resolved-snapshot.json",
+        "digest": "64f1f44bfdc2b38eaa117c3b8e466c4cf953caa5c485486dbeec247a961d36bb",
+        "current_digest": "64f1f44bfdc2b38eaa117c3b8e466c4cf953caa5c485486dbeec247a961d36bb",
+        "route_changed": false,
+        "artifact_sha256": "sha256:c6dc70edbe4740c06de207de0b7deab458a27a7a9ea11a5a3817dc98f9235101",
+        "safe_command": "agentplane blueprint snapshot 202605061515-WJWM2W"
+      }
+    }
+  }
+}

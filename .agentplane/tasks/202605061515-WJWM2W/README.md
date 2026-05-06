@@ -1,10 +1,11 @@
 ---
 id: "202605061515-WJWM2W"
 title: "Allow prerelease release-version checks"
-status: "DOING"
+result_summary: "Allowed prerelease release-version checks."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-06T15:25:51.716Z"
   updated_by: "CODER"
   note: "Verified: release-version script preserves prerelease tag suffixes; prerelease unit test and v0.5.0-rc.1 script check pass."
-commit: null
+commit:
+  hash: "a0dc137b68ba35ae98648dbf4d9395ef8e8361e5"
+  message: "Merge pull request #978 from basilisk-labs/task/202605061515-2W42MM/blueprint-discoverability"
 comments:
   -
     author: "CODER"
     body: "Start: Fix prerelease release-version validation for rc tags as part of the blueprint discoverability batch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #978 merged prerelease release-version validation; targeted tests and v0.5.0-rc.1 check passed before merge."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: release-version script preserves prerelease tag suffixes; prerelease unit test and v0.5.0-rc.1 script check pass."
+  -
+    type: "status"
+    at: "2026-05-06T15:36:05.452Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #978 merged prerelease release-version validation; targeted tests and v0.5.0-rc.1 check passed before merge."
 doc_version: 3
-doc_updated_at: "2026-05-06T15:25:51.731Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T15:36:05.453Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make release-version validation handle prerelease tags such as v0.5.0-rc.1 consistently with release parity checks."
 sections:
   Summary: |-
