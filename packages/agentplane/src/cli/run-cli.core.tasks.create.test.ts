@@ -249,7 +249,9 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
       expect(io.stderr).toContain(
         "route: intake -> scope -> context_resolve -> work_unit -> artifact_write -> verify_record -> finish",
       );
-      expect(io.stderr).toContain("selection_reasons: explicit blueprint requested: analysis.light");
+      expect(io.stderr).toContain(
+        "selection_reasons: explicit blueprint requested: analysis.light",
+      );
       expect(io.stderr).toContain("required_evidence: analysis.sources");
       expect(io.stderr).toContain(`explain_command: agentplane blueprint explain ${taskId}`);
       expect(io.stderr).toContain(`snapshot_command: agentplane blueprint snapshot ${taskId}`);
