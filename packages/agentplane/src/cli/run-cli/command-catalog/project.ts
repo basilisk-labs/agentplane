@@ -10,6 +10,7 @@ import {
 import {
   blueprintExplainSpec,
   blueprintListSpec,
+  blueprintScaffoldSpec,
   blueprintSpec,
   blueprintValidateSpec,
 } from "../../../commands/blueprint/blueprint.command.js";
@@ -105,6 +106,7 @@ import {
   loadBlueprintListSpec,
   loadBlueprintExplainSpec,
   loadBlueprintValidateSpec,
+  loadBlueprintScaffoldSpec,
 } from "../command-loaders/project.js";
 
 export const PROJECT_COMMANDS = [
@@ -117,6 +119,7 @@ export const PROJECT_COMMANDS = [
   declareCommand(blueprintSpec, { load: loadBlueprintSpec, needs: "none" }),
   declareCommand(blueprintListSpec, { load: loadBlueprintListSpec, needs: "none" }),
   declareCommand(blueprintExplainSpec, { load: loadBlueprintExplainSpec }),
+  declareCommand(blueprintScaffoldSpec, { load: loadBlueprintScaffoldSpec, needs: "none" }),
   declareCommand(blueprintValidateSpec, { load: loadBlueprintValidateSpec, needs: "none" }),
   declareCommand(workStartSpec, { load: loadWorkStartSpec }),
   fromCommandsRecipesRecipesCommand(recipesSpec, "runRecipes", { needs: "none" }),

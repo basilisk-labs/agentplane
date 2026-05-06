@@ -6,6 +6,7 @@ import { warnMessage, successMessage } from "../cli/output.js";
 import type { DoctorParsed } from "./doctor.spec.js";
 import { loadCommandContext } from "./shared/task-backend.js";
 import { checkDoneTaskCommitInvariants } from "./doctor/archive.js";
+import { checkProjectBlueprints } from "./doctor/blueprints.js";
 import {
   checkBranchPrBatchIncludedTaskDrift,
   checkBranchPrDoneTaskOpenPrDrift,
@@ -49,6 +50,8 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
     );
     reportProgress("checking runtime source");
     checks.push(...checkRuntimeSourceFacts(ctx.cwd, loadedConfig.config));
+    reportProgress("checking project-local blueprints");
+    checks.push(...(await checkProjectBlueprints(repoRoot)));
     reportProgress("checking prompt graph");
     checks.push(...(await checkPromptGraphFacts(resolved)));
     reportProgress(

@@ -5,6 +5,14 @@ export {
   listBlueprints,
   requireBlueprint,
 } from "./registry.js";
+export {
+  PROJECT_BLUEPRINTS_DIR,
+  parseProjectBlueprintJson,
+  projectBlueprintsDirectory,
+  scaffoldProjectBlueprint,
+  validateProjectBlueprintDirectory,
+  validateProjectBlueprintFile,
+} from "./project-local.js";
 export { explainResolvedBlueprint, formatBlueprintExplain } from "./explain.js";
 export { blueprintPlanEvidence, blueprintPlanState, buildBlueprintPlanArtifact } from "./plan.js";
 export {
@@ -57,3 +65,10 @@ export type {
   TaskKind,
   WorkflowMode,
 } from "./model.js";
+export type {
+  ProjectBlueprintDirectoryResult,
+  ProjectBlueprintFileResult,
+  ProjectBlueprintProblem,
+  ProjectBlueprintProblemCode,
+  ScaffoldProjectBlueprintOptions,
+} from "./project-local.js";

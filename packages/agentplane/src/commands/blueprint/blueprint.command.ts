@@ -1,11 +1,17 @@
-import { readFile } from "node:fs/promises";
+import path from "node:path";
+
+import { resolveProject } from "@agentplaneorg/core/project";
 
 import {
   createBlueprintRegistry,
   explainResolvedBlueprint,
   formatBlueprintExplain,
   listBlueprints,
+  projectBlueprintsDirectory,
   resolveBlueprint,
+  scaffoldProjectBlueprint,
+  validateProjectBlueprintDirectory,
+  validateProjectBlueprintFile,
   validateBlueprint,
   type Blueprint,
   type BlueprintId,
@@ -30,6 +36,7 @@ import { blueprintResolveInputFromTask, workflowModeFromConfig } from "./task-in
 
 export type BlueprintListParsed = {
   json: boolean;
+  project: boolean;
 };
 
 export type BlueprintExplainParsed = {
@@ -46,7 +53,16 @@ export type BlueprintExplainParsed = {
 };
 
 export type BlueprintValidateParsed = {
-  path: string;
+  path?: string;
+  project: boolean;
+  json: boolean;
+};
+
+export type BlueprintScaffoldParsed = {
+  id: BlueprintId;
+  from?: BlueprintId;
+  out?: string;
+  force: boolean;
   json: boolean;
 };
 
@@ -61,10 +77,14 @@ export const blueprintSpec: CommandSpec<GroupCommandParsed> = {
   group: "Blueprints",
   summary: "List and explain blueprint routing without executing a task.",
   description:
-    "This is a command group. Use `agentplane blueprint list` or `agentplane blueprint explain ...`.",
+    "This is a command group. Use `agentplane blueprint list`, `agentplane blueprint explain ...`, `agentplane blueprint scaffold ...`, or `agentplane blueprint validate ...`.",
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [
     { cmd: "agentplane blueprint list", why: "Show built-in blueprint routes." },
+    {
+      cmd: "agentplane blueprint scaffold analysis.custom",
+      why: "Create a project-local blueprint scaffold.",
+    },
     {
       cmd: "agentplane blueprint explain 202605051957-5WRJZK",
       why: "Explain the resolved route for a task.",
@@ -76,10 +96,24 @@ export const blueprintSpec: CommandSpec<GroupCommandParsed> = {
 export const blueprintListSpec: CommandSpec<BlueprintListParsed> = {
   id: ["blueprint", "list"],
   group: "Blueprints",
-  summary: "List built-in blueprint routes.",
-  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
-  examples: [{ cmd: "agentplane blueprint list --json", why: "Emit machine-readable routes." }],
-  parse: (raw) => ({ json: raw.opts.json === true }),
+  summary: "List built-in and optional project-local blueprint routes.",
+  options: [
+    {
+      kind: "boolean",
+      name: "project",
+      default: false,
+      description: "Include validated project-local blueprints from .agentplane/blueprints.",
+    },
+    { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
+  ],
+  examples: [
+    { cmd: "agentplane blueprint list --json", why: "Emit machine-readable built-in routes." },
+    {
+      cmd: "agentplane blueprint list --project",
+      why: "Include project-local blueprint definitions.",
+    },
+  ],
+  parse: (raw) => ({ json: raw.opts.json === true, project: raw.opts.project === true }),
 };
 
 export const blueprintExplainSpec: CommandSpec<BlueprintExplainParsed> = {
@@ -165,17 +199,80 @@ export const blueprintExplainSpec: CommandSpec<BlueprintExplainParsed> = {
 export const blueprintValidateSpec: CommandSpec<BlueprintValidateParsed> = {
   id: ["blueprint", "validate"],
   group: "Blueprints",
-  summary: "Validate a project-local blueprint JSON file without registering or executing it.",
-  args: [{ name: "path", required: true, valueHint: "<path>" }],
-  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
+  summary: "Validate project-local blueprint JSON without registering or executing it.",
+  args: [{ name: "path", required: false, valueHint: "<path>" }],
+  options: [
+    {
+      kind: "boolean",
+      name: "project",
+      default: false,
+      description:
+        "Validate all JSON blueprints in .agentplane/blueprints or the supplied directory.",
+    },
+    { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
+  ],
   examples: [
     {
       cmd: "agentplane blueprint validate .agentplane/blueprints/analysis.json",
       why: "Validate a local blueprint definition.",
     },
+    {
+      cmd: "agentplane blueprint validate --project",
+      why: "Validate the project-local blueprint registry directory.",
+    },
+  ],
+  validateRaw: (raw) => {
+    if (!raw.args.path && raw.opts.project !== true) {
+      throw usageError({
+        spec: blueprintValidateSpec,
+        command: "blueprint validate",
+        message: "Provide a blueprint file path, or use --project.",
+      });
+    }
+  },
+  parse: (raw) => ({
+    path: typeof raw.args.path === "string" ? raw.args.path : undefined,
+    project: raw.opts.project === true,
+    json: raw.opts.json === true,
+  }),
+};
+
+export const blueprintScaffoldSpec: CommandSpec<BlueprintScaffoldParsed> = {
+  id: ["blueprint", "scaffold"],
+  group: "Blueprints",
+  summary: "Create a project-local blueprint JSON scaffold without enabling it.",
+  args: [{ name: "id", required: true, valueHint: "<blueprint-id>" }],
+  options: [
+    {
+      kind: "string",
+      name: "from",
+      valueHint: "<builtin-blueprint-id>",
+      description: "Built-in blueprint to clone as a starting point.",
+    },
+    {
+      kind: "string",
+      name: "out",
+      valueHint: "<path>",
+      description: "Output path; defaults to .agentplane/blueprints/<id>.json.",
+    },
+    { kind: "boolean", name: "force", default: false, description: "Overwrite an existing file." },
+    { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
+  ],
+  examples: [
+    {
+      cmd: "agentplane blueprint scaffold analysis.custom",
+      why: "Create .agentplane/blueprints/analysis.custom.json from analysis.light.",
+    },
+    {
+      cmd: "agentplane blueprint scaffold code.custom --from code.branch_pr",
+      why: "Start from an existing code workflow route.",
+    },
   ],
   parse: (raw) => ({
-    path: String(raw.args.path),
+    id: String(raw.args.id) as BlueprintId,
+    from: typeof raw.opts.from === "string" ? (raw.opts.from as BlueprintId) : undefined,
+    out: typeof raw.opts.out === "string" ? raw.opts.out : undefined,
+    force: raw.opts.force === true,
     json: raw.opts.json === true,
   }),
 };
@@ -203,73 +300,61 @@ function syntheticInput(ctx: CommandContext, p: BlueprintExplainParsed): Bluepri
   };
 }
 
-function requireObject(value: unknown, path: string): asserts value is Record<string, unknown> {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    throw new ValidationError({
-      message: `Blueprint file ${JSON.stringify(path)} must contain one JSON object.`,
-      context: { path },
-    });
-  }
-}
-
-function requireArrayField(value: Record<string, unknown>, field: string, path: string): void {
-  if (!Array.isArray(value[field])) {
-    throw new ValidationError({
-      message: `Blueprint file ${JSON.stringify(path)} is missing array field ${JSON.stringify(field)}.`,
-      context: { path, field },
-    });
-  }
-}
-
-function parseBlueprintJson(raw: string, path: string): Blueprint {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch (err) {
-    throw new ValidationError({
-      message: `Blueprint file ${JSON.stringify(path)} is not valid JSON: ${
-        err instanceof Error ? err.message : String(err)
-      }`,
-      context: { path },
-    });
-  }
-  requireObject(parsed, path);
-  for (const field of [
-    "taskKinds",
-    "allowedCommands",
-    "policyModules",
-    "nodes",
-    "edges",
-    "requiredEvidence",
-    "stopRules",
-  ]) {
-    requireArrayField(parsed, field, path);
-  }
-  return parsed as Blueprint;
-}
-
 export function makeRunBlueprintHandler(_getCtx: (cmd: string) => Promise<CommandContext>) {
   return runBlueprintRoot;
 }
 
-export const runBlueprintList: CommandHandler<BlueprintListParsed> = (_ctx, p) => {
-  const registry = createBlueprintRegistry();
-  const routes = listBlueprints(registry).map((blueprint) => ({
+function blueprintRoute(blueprint: Blueprint, source: "builtin" | "project", filePath?: string) {
+  return {
     id: blueprint.id,
     version: blueprint.version,
     title: blueprint.title,
+    source,
+    ...(filePath ? { path: filePath } : {}),
     task_kinds: blueprint.taskKinds,
     workflow_modes: blueprint.workflowModes ?? ["direct", "branch_pr"],
     route: blueprint.nodes.map((node) => node.kind),
-  }));
+  };
+}
+
+function validationErrorFromProjectFile(
+  filePath: string,
+  errors: readonly { code: string; message: string }[],
+) {
+  return new ValidationError({
+    message: `Project blueprint ${JSON.stringify(filePath)} is invalid:\n${errors
+      .map((error) => `- ${error.code}: ${error.message}`)
+      .join("\n")}`,
+    context: { path: filePath },
+  });
+}
+
+export const runBlueprintList: CommandHandler<BlueprintListParsed> = async (ctx, p) => {
+  const registry = createBlueprintRegistry();
+  const routes = listBlueprints(registry).map((blueprint) => blueprintRoute(blueprint, "builtin"));
+  if (p.project) {
+    const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
+    const local = await validateProjectBlueprintDirectory(
+      projectBlueprintsDirectory(resolved.gitRoot),
+    );
+    const invalid = local.files.find((file) => !file.ok);
+    if (invalid) throw validationErrorFromProjectFile(invalid.path, invalid.errors);
+    routes.push(
+      ...local.files.flatMap((file) =>
+        file.blueprint ? [blueprintRoute(file.blueprint, "project", file.path)] : [],
+      ),
+    );
+  }
   if (p.json) {
     process.stdout.write(`${JSON.stringify({ blueprints: routes }, null, 2)}\n`);
-    return Promise.resolve(0);
+    return 0;
   }
   for (const route of routes) {
-    process.stdout.write(`${route.id}@${route.version} ${route.route.join(" -> ")}\n`);
+    process.stdout.write(
+      `${route.source} ${route.id}@${route.version} ${route.route.join(" -> ")}\n`,
+    );
   }
-  return Promise.resolve(0);
+  return 0;
 };
 
 export function makeRunBlueprintExplainHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
@@ -299,8 +384,50 @@ export function makeRunBlueprintExplainHandler(getCtx: (cmd: string) => Promise<
   };
 }
 
-export const runBlueprintValidate: CommandHandler<BlueprintValidateParsed> = async (_ctx, p) => {
-  const blueprint = parseBlueprintJson(await readFile(p.path, "utf8"), p.path);
+export const runBlueprintValidate: CommandHandler<BlueprintValidateParsed> = async (ctx, p) => {
+  if (p.project) {
+    const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
+    const directory = p.path
+      ? path.resolve(resolved.gitRoot, p.path)
+      : projectBlueprintsDirectory(resolved.gitRoot);
+    const result = await validateProjectBlueprintDirectory(directory);
+    const output = {
+      ok: result.ok,
+      directory: result.directory,
+      blueprints: result.files.map((file) => ({
+        ok: file.ok,
+        path: file.path,
+        blueprint_id: file.blueprintId ?? null,
+        errors: file.errors,
+      })),
+      errors: result.errors,
+    };
+    if (p.json) {
+      process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
+    } else if (result.ok) {
+      process.stdout.write(
+        `project blueprints valid: ${result.files.length} file${result.files.length === 1 ? "" : "s"}\n`,
+      );
+    } else {
+      for (const file of result.files) {
+        for (const error of file.errors) {
+          process.stderr.write(`${file.path}: ${error.code}: ${error.message}\n`);
+        }
+      }
+    }
+    return result.ok ? 0 : 3;
+  }
+
+  if (!p.path) {
+    throw new ValidationError({
+      message: "Blueprint validate requires a file path unless --project is set.",
+    });
+  }
+  const file = await validateProjectBlueprintFile(p.path);
+  if (!file.blueprint) {
+    throw validationErrorFromProjectFile(file.path, file.errors);
+  }
+  const blueprint = file.blueprint;
   const result = validateBlueprint(blueprint);
   const output = {
     ok: result.ok,
@@ -318,4 +445,32 @@ export const runBlueprintValidate: CommandHandler<BlueprintValidateParsed> = asy
     }
   }
   return result.ok ? 0 : 3;
+};
+
+export const runBlueprintScaffold: CommandHandler<BlueprintScaffoldParsed> = async (ctx, p) => {
+  const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
+  const result = await scaffoldProjectBlueprint({
+    projectRoot: resolved.gitRoot,
+    id: p.id,
+    from: p.from,
+    out: p.out,
+    force: p.force,
+  });
+  const output = {
+    path: result.path,
+    blueprint_id: result.blueprint.id,
+    from: p.from ?? "analysis.light",
+    validation: result.validation,
+  };
+  if (p.json) {
+    process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
+    return result.validation.ok ? 0 : 3;
+  }
+  process.stdout.write(`blueprint scaffolded: ${result.path}\n`);
+  if (!result.validation.ok) {
+    for (const error of result.validation.errors) {
+      process.stderr.write(`${error.code}: ${error.message}\n`);
+    }
+  }
+  return result.validation.ok ? 0 : 3;
 };
