@@ -191,7 +191,7 @@ function enforceTaskBoundOutgoingCommits(range) {
   const failures = [];
   for (const commit of commits) {
     const files = readCommitFiles(commit);
-    const mutating = files.filter(isMutatingPath);
+    const mutating = files.filter((filePath) => isMutatingPath(filePath));
     if (mutating.length === 0) continue;
 
     const body = readCommitBody(commit);
