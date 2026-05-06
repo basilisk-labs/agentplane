@@ -45,12 +45,16 @@ Define the persisted task-local resolved blueprint snapshot schema for v0.5, inc
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-06T09:20:45.367Z
+- Updated: 2026-05-06T09:25:27.077Z
 - Branch: task/202605060915-YN0VAQ/blueprint-lifecycle
-- Head: b749384f69f4
+- Head: 38314f0bb8a7
 
 ```text
-No changes detected.
+ packages/agentplane/src/blueprints/index.ts        |  13 +
+ packages/agentplane/src/blueprints/model.ts        |  70 +++++
+ .../agentplane/src/blueprints/snapshot.test.ts     | 137 ++++++++++
+ packages/agentplane/src/blueprints/snapshot.ts     | 296 +++++++++++++++++++++
+ 4 files changed, 516 insertions(+)
 ```
 
 </details>
