@@ -13,6 +13,10 @@ import {
   queryTaskProjection,
   type TaskListFilters,
 } from "./shared.js";
+import {
+  formatTaskBlueprintListExtra,
+  resolveTaskBlueprintLifecycleSummary,
+} from "./blueprint-summary.js";
 
 export async function cmdTaskListWithFilters(opts: {
   ctx?: CommandContext;
@@ -28,7 +32,14 @@ export async function cmdTaskListWithFilters(opts: {
     handleTaskListWarnings({ backend: ctx.taskBackend, strictRead: opts.filters.strictRead });
     const { depState, items } = queryTaskProjection({ tasks, filters: opts.filters });
     for (const task of items) {
-      process.stdout.write(`${formatTaskLine(task, depState.get(task.id))}\n`);
+      const blueprint = await resolveTaskBlueprintLifecycleSummary({
+        task,
+        config: ctx.config,
+        projectRoot: ctx.resolvedProject.gitRoot,
+      });
+      process.stdout.write(
+        `${formatTaskLine(task, depState.get(task.id), [formatTaskBlueprintListExtra(blueprint)])}\n`,
+      );
     }
     if (!opts.filters.quiet) {
       const counts: Record<string, number> = {};

@@ -66,6 +66,32 @@ agentplane blueprint report
 agentplane blueprint validate --project
 ```
 
+## Task Lifecycle Visibility
+
+Blueprint selection is also visible on task lifecycle surfaces. Agents should use these commands in
+the normal task flow before falling back to standalone blueprint diagnostics.
+
+```bash
+agentplane task show <task-id>
+agentplane task list
+agentplane task verify-show <task-id>
+```
+
+Behavior:
+
+- `task show` includes a `blueprint` object with the resolved `blueprint_id`, route, selection
+  reasons, required evidence, stop reasons, and safe follow-up commands.
+- `task list` prints a compact `blueprint=<id>` field per row so route class is visible while
+  scanning active work.
+- `task verify-show` remains the verifier-facing acceptance surface: it prints `## Verify Steps`,
+  resolved blueprint expected evidence, and snapshot drift state.
+- If route resolution fails, lifecycle surfaces keep the task readable and expose
+  `blueprint=unresolved` or a task-local `blueprint.error` instead of hiding the task.
+
+The lifecycle view is intentionally compact. Use `agentplane blueprint explain <task-id>` when the
+operator needs full selection reasons, policy modules, context budget, allowed commands, and recipe
+extension decisions.
+
 ## Design Premises
 
 Blueprints are useful only if they preserve the difference between task classes.

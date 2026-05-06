@@ -163,7 +163,11 @@ function formatDepsSummary(dep: DependencyState | undefined): string | null {
   return `deps=${parts.join(",")}`;
 }
 
-export function formatTaskLine(task: TaskSummary, depState?: DependencyState): string {
+export function formatTaskLine(
+  task: TaskSummary,
+  depState?: DependencyState,
+  extraFields: readonly string[] = [],
+): string {
   const status = normalizeTaskStatus(task.status);
   const extras: string[] = [];
   if (task.owner?.trim()) extras.push(`owner=${task.owner.trim()}`);
@@ -176,6 +180,7 @@ export function formatTaskLine(task: TaskSummary, depState?: DependencyState): s
   if (tags.length > 0) extras.push(`tags=${tags.join(",")}`);
   const verify = dedupeStrings(toStringArray(task.verify));
   if (verify.length > 0) extras.push(`verify=${verify.length}`);
+  extras.push(...extraFields.filter((field) => field.trim().length > 0));
   const suffix = extras.length > 0 ? ` (${extras.join(", ")})` : "";
   return `${task.id} [${status}] ${task.title?.trim() || "(untitled task)"}${suffix}`;
 }

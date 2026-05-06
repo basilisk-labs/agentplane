@@ -919,6 +919,9 @@ describe(
         expect(io2.stdout).toContain('"origin"');
         expect(io2.stdout).toContain('"system": "manual"');
         expect(io2.stdout).toContain('"status": "TODO"');
+        expect(io2.stdout).toContain('"blueprint"');
+        expect(io2.stdout).toContain('"blueprint_id": "analysis.light"');
+        expect(io2.stdout).toContain('"route"');
       } finally {
         io2.restore();
       }
@@ -1015,8 +1018,8 @@ describe(
         ]);
         expect(code).toBe(0);
         expect(io.stdout).toBe(
-          `${firstTaskId} [TODO] Alpha ready (owner=CODER, prio=med, deps=none, tags=docs)\n` +
-            `${secondTaskId} [TODO] Beta blocked (owner=CODER, prio=med, deps=wait:${firstTaskId}, tags=docs)\n`,
+          `${firstTaskId} [TODO] Alpha ready (owner=CODER, prio=med, deps=none, tags=docs, blueprint=docs.change)\n` +
+            `${secondTaskId} [TODO] Beta blocked (owner=CODER, prio=med, deps=wait:${firstTaskId}, tags=docs, blueprint=docs.change)\n`,
         );
         expect(io.stderr).toBe("");
       } finally {
