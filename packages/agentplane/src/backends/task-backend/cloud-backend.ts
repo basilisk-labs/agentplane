@@ -11,6 +11,7 @@ import {
   type TaskWriteOptions,
 } from "./shared.js";
 import type { LocalBackend } from "./local-backend.js";
+import { buildCloudPullPlan, emitCloudPullDiffSummary, readOpenConflicts } from "./cloud-pull.js";
 
 export type CloudBackendSettings = {
   endpoint?: string;
@@ -31,9 +32,20 @@ type CloudSyncResponse = {
   no_changes?: unknown;
 };
 
-type FetchLike = typeof fetch;
+type CloudSyncStateResponse = {
+  data?: unknown;
+  conflicts?: unknown;
+  openConflicts?: unknown;
+  open_conflicts?: unknown;
+  safe_command?: unknown;
+};
 
-const CLOUD_OPERATIONAL_FIELDS = ["title", "status", "priority", "owner", "tags"] as const;
+type FetchLike = typeof fetch;
+type CloudSyncStateSnapshot = {
+  conflicts: unknown[];
+  safeCommand: string | null;
+  unavailable: boolean;
+};
 
 export class CloudBackend implements TaskBackend {
   id = "cloud";
@@ -193,6 +205,25 @@ export class CloudBackend implements TaskBackend {
     this.assertConfigured();
     const localTasks = await this.cache.listTasks();
     const action = opts.direction === "pull" ? "pull" : "push";
+    const state =
+      opts.direction === "pull"
+        ? await this.requestCloudSyncState(this.projectId)
+        : { conflicts: [], safeCommand: null, unavailable: false };
+    if (state.unavailable && !opts.quiet) {
+      process.stderr.write(
+        "Warning: cloud sync-state preflight is unavailable; continuing with pull endpoint conflict data.\n",
+      );
+    }
+    if (opts.direction === "pull" && state.conflicts.length > 0 && opts.conflict === "fail") {
+      throw new BackendError(
+        cloudConflictMessage({
+          conflicts: state.conflicts,
+          safeCommand:
+            state.safeCommand ?? "agentplane backend sync cloud --direction pull --conflict=diff",
+        }),
+        "E_BACKEND",
+      );
+    }
     const response = await this.request<CloudSyncResponse>(
       `/v1/projects/${encodeURIComponent(this.projectId)}/sync/${action}`,
       {
@@ -208,10 +239,13 @@ export class CloudBackend implements TaskBackend {
     const data = isRecord(response.data) ? response.data : {};
     const pull = normalizeCloudPullResponse(response, data);
     if (opts.direction === "pull") {
-      const conflicts = readOpenConflicts(pull.conflicts);
+      const conflicts = [...state.conflicts, ...readOpenConflicts(pull.conflicts)];
       if (conflicts.length > 0 && opts.conflict === "fail") {
         throw new BackendError(
-          cloudConflictMessage({ conflicts, safeCommand: readSafeCommand(response, data) }),
+          cloudConflictMessage({
+            conflicts,
+            safeCommand: state.safeCommand ?? readSafeCommand(response, data),
+          }),
           "E_BACKEND",
         );
       }
@@ -227,16 +261,60 @@ export class CloudBackend implements TaskBackend {
           "E_BACKEND",
         );
       }
-      if (opts.conflict !== "diff" && pull.tasks) {
-        const changed = mergeCloudPullTasks(localTasks, pull.tasks);
-        if (changed.length > 0) {
-          await this.cache.writeTasks(changed);
-        }
+      const plan = pull.tasks ? buildCloudPullPlan(localTasks, pull.tasks) : null;
+      if (opts.conflict === "diff") {
+        emitCloudPullDiffSummary({
+          plan,
+          conflicts,
+          quiet: opts.quiet,
+        });
+        const hasPendingProjectionChanges = conflicts.length > 0 || (plan?.changed.length ?? 0) > 0;
+        if (hasPendingProjectionChanges) return;
+      } else if (plan && plan.changed.length > 0) {
+        await this.cache.writeTasks(plan.changed);
       }
     }
     await this.writeState({
       last_checked_at: pull.lastCheckedAt ?? new Date().toISOString(),
     });
+  }
+
+  private async requestCloudSyncState(projectId: string): Promise<CloudSyncStateSnapshot> {
+    const headers = this.cloudHeaders();
+    let res: Response;
+    try {
+      res = await this.fetchImpl(
+        `${this.endpoint}/v1/projects/${encodeURIComponent(projectId)}/sync/state`,
+        {
+          method: "GET",
+          headers,
+        },
+      );
+    } catch {
+      return { conflicts: [], safeCommand: null, unavailable: true };
+    }
+    if (!res.ok) {
+      if (isOptionalSyncStateFailure(res.status)) {
+        return { conflicts: [], safeCommand: null, unavailable: true };
+      }
+      throw new BackendError(await cloudHttpErrorMessage(res), "E_BACKEND");
+    }
+    const response = (await res.json()) as CloudSyncStateResponse;
+    const data = isRecord(response.data) ? response.data : {};
+    return {
+      conflicts: readOpenConflicts(
+        response.openConflicts ??
+          response.open_conflicts ??
+          response.conflicts ??
+          data.openConflicts ??
+          data.open_conflicts ??
+          data.conflicts,
+      ),
+      safeCommand:
+        readSafeCommand(response, data) ??
+        "agentplane backend sync cloud --direction pull --conflict=diff",
+      unavailable: false,
+    };
   }
 
   async inspectConfiguration(): Promise<TaskBackendInspectionResult> {
@@ -264,10 +342,7 @@ export class CloudBackend implements TaskBackend {
   }
 
   private async request<T>(pathname: string, init: RequestInit): Promise<T> {
-    const headers = new Headers({
-      "content-type": "application/json",
-      authorization: `Bearer ${this.token}`,
-    });
+    const headers = this.cloudHeaders();
     for (const [key, value] of new Headers(init.headers)) {
       headers.set(key, value);
     }
@@ -280,6 +355,13 @@ export class CloudBackend implements TaskBackend {
       throw new BackendError(await cloudHttpErrorMessage(res), "E_BACKEND");
     }
     return (await res.json()) as T;
+  }
+
+  private cloudHeaders(): Headers {
+    return new Headers({
+      "content-type": "application/json",
+      authorization: `Bearer ${this.token}`,
+    });
   }
 
   private async assertProjectionFreshForLocalMutation(): Promise<void> {
@@ -381,56 +463,6 @@ function normalizeCloudPullResponse(
   };
 }
 
-function mergeCloudPullTasks(localTasks: TaskData[], remoteTasks: unknown[]): TaskData[] {
-  const currentById = new Map(localTasks.map((task) => [task.id, task]));
-  const changed: TaskData[] = [];
-  for (const remote of remoteTasks) {
-    if (!isRecord(remote) || typeof remote.id !== "string") continue;
-    const current = currentById.get(remote.id);
-    if (!current) continue;
-    const next = mergeCloudOperationalFields(current, remote);
-    if (stableJson(current) !== stableJson(next)) changed.push(next);
-  }
-  return changed;
-}
-
-function mergeCloudOperationalFields(current: TaskData, remote: Record<string, unknown>): TaskData {
-  let next = current;
-  for (const field of CLOUD_OPERATIONAL_FIELDS) {
-    if (!(field in remote)) continue;
-    const value = normalizeCloudOperationalField(field, remote[field]);
-    if (value === undefined) continue;
-    next = { ...next, [field]: value };
-  }
-  return next;
-}
-
-function normalizeCloudOperationalField(
-  field: (typeof CLOUD_OPERATIONAL_FIELDS)[number],
-  value: unknown,
-): TaskData[typeof field] | undefined {
-  if (field === "priority") {
-    if (typeof value === "string" || typeof value === "number") return value;
-    return undefined;
-  }
-  if (field === "tags") {
-    return Array.isArray(value) && value.every((tag) => typeof tag === "string")
-      ? value
-      : undefined;
-  }
-  return typeof value === "string" ? value : undefined;
-}
-
-function readOpenConflicts(input: unknown): unknown[] {
-  if (!Array.isArray(input)) return [];
-  return input.filter((conflict) => {
-    if (!isRecord(conflict)) return true;
-    const state = typeof conflict.state === "string" ? conflict.state : null;
-    const status = typeof conflict.status === "string" ? conflict.status : null;
-    return !["resolved", "closed"].includes(String(state ?? status ?? "open"));
-  });
-}
-
 function readSafeCommand(response: CloudSyncResponse, data: Record<string, unknown>): string {
   const command = readString(response, "safe_command") ?? readString(data, "safe_command");
   return command ?? "agentplane backend inspect cloud --yes";
@@ -440,6 +472,10 @@ function readString(input: unknown, key: string): string | null {
   if (!isRecord(input)) return null;
   const value = input[key];
   return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function isOptionalSyncStateFailure(status: number): boolean {
+  return [404, 405, 501, 502, 503, 504].includes(status);
 }
 
 function cloudConflictMessage(opts: { conflicts: unknown[]; safeCommand: string }): string {
@@ -492,20 +528,6 @@ function normalizeServiceRemediation(input: Record<string, unknown>): {
   const whenToStop = readString(source, "when_to_stop") ?? readString(source, "stop_condition");
   if (!code || !why || !fix || !safeCommand || !whenToStop) return null;
   return { code, why, fix, safeCommand, whenToStop };
-}
-
-function stableJson(input: unknown): string {
-  return JSON.stringify(sortJson(input));
-}
-
-function sortJson(input: unknown): unknown {
-  if (Array.isArray(input)) return input.map((item) => sortJson(item));
-  if (!isRecord(input)) return input;
-  return Object.fromEntries(
-    Object.entries(input)
-      .toSorted(([left], [right]) => left.localeCompare(right))
-      .map(([key, value]) => [key, sortJson(value)]),
-  );
 }
 
 function normalizePositiveInteger(input: unknown): number | null {

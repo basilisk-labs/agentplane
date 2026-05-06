@@ -136,8 +136,10 @@ Access levels:
 Conflict modes for pull:
 
 - `--conflict=fail` stops before writing projection changes when the service reports open
-  conflicts.
-- `--conflict=diff` is read-only and does not write remote changes into the local projection.
+  conflicts through either `sync/state` or the pull response.
+- `--conflict=diff` is read-only. It prints a summary of known local tasks that would change,
+  remote-only tasks that were ignored, and open conflicts; it does not write remote changes into the
+  local projection or mark a changed projection as fresh.
 - `--conflict=prefer-remote` applies only service-approved operational fields.
 
 Remote-only items are ignored until a local task creation policy is explicitly configured.
@@ -161,9 +163,10 @@ Expected output should include:
 - projection freshness;
 - local state path.
 
-The current cloud backend records `last_checked_at` after successful sync. If that timestamp is older
-than `stale_after_seconds`, `backend inspect cloud --yes` marks the projection stale. Task commands
-still read the local projection; sync remains explicit.
+The current cloud backend records `last_checked_at` in the ignored local backend state file after
+successful sync. If that timestamp is older than `stale_after_seconds`,
+`backend inspect cloud --yes` marks the projection stale. Task commands still read the local
+projection; sync remains explicit.
 
 ## Connected views
 
