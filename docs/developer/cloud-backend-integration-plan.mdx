@@ -84,14 +84,15 @@ Verification:
 - mocked HTTP tests;
 - error-code mapping tests.
 
-Status: partially implemented. The current API surface posts to
+Status: implemented for the public CLI contract. The current API surface posts to
 `/v1/projects/{project_id}/sync/{pull|push}` with `provider`, `direction`, `conflict`, and local
-tasks for push sync.
+tasks for push sync. Pull also reads `/v1/projects/{project_id}/sync/state` so open service
+conflicts can stop `--conflict=fail` before projection writes.
 
-Bidirectional pull support expects the public CLI to accept both `response.tasks` and
-`response.data.tasks`, preserve `last_checked_at` from either envelope level, and surface service
-remediation fields (`why`, `fix`, `safe_command`, `when_to_stop`) when a service-side direction or
-conflict policy rejects the request.
+Bidirectional pull support accepts both `response.tasks` and `response.data.tasks`, preserves
+`last_checked_at` from either envelope level, and surfaces service remediation fields (`why`, `fix`,
+`safe_command`, `when_to_stop`) when a service-side direction or conflict policy rejects the
+request.
 
 ### C004: Add backend connect command
 
@@ -149,9 +150,10 @@ Verification:
 - backend sync CLI tests;
 - backend inspect CLI tests.
 
-Status: partially implemented. `backend sync cloud` uses the backend sync port; `backend inspect
-cloud --yes` shows connection and freshness metadata. Conflict count is a follow-up service/API
-field.
+Status: implemented for the current cloud service contract. `backend sync cloud` uses the backend
+sync port; `backend inspect cloud --yes` shows connection and freshness metadata. Pull checks
+service conflict state, blocks `--conflict=fail` when conflicts are open, and keeps
+`--conflict=diff` read-only with a local summary instead of applying projection writes.
 
 For bidirectional projects, pull applies only service-approved operational fields to already known
 local task IDs. Full task documents returned by the service are treated as projection sources for
