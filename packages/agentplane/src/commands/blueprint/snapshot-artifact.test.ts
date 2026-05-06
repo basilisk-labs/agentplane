@@ -6,6 +6,7 @@ import { makeTaskCommandContext, makeTaskFixture } from "@agentplane/testkit/tas
 import { describe, expect, it } from "vitest";
 
 import {
+  checkTaskBlueprintSnapshotDrift,
   refreshTaskBlueprintResolvedSnapshot,
   taskBlueprintSnapshotPath,
   writeTaskBlueprintResolvedSnapshot,
@@ -75,5 +76,41 @@ describe("blueprint snapshot artifacts", () => {
     expect(second.previous.digest).toBe(second.next.digest);
     expect(second.changed).toBe(false);
     expect(second.routeChanged).toBe(false);
+  });
+
+  it("detects missing, current, and stale snapshot states without rewriting", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "agentplane-blueprint-drift-"));
+    const ctx = makeTaskCommandContext({
+      resolvedProject: {
+        gitRoot: root,
+        agentplaneDir: path.join(root, ".agentplane"),
+      } as ReturnType<typeof makeTaskCommandContext>["resolvedProject"],
+      configureConfig: (config) => {
+        config.workflow_mode = "branch_pr";
+      },
+    });
+    const task = makeTaskFixture({
+      id: "202605060915-RQFY8Y",
+      title: "Detect blueprint snapshot drift",
+      tags: ["blueprints", "code", "doctor"],
+      task_kind: "code",
+      mutation_scope: "code",
+    });
+
+    const missing = await checkTaskBlueprintSnapshotDrift({ ctx, task });
+    expect(missing.state).toBe("missing");
+    expect(missing.safeCommand).toBe(`agentplane blueprint snapshot ${task.id}`);
+
+    await writeTaskBlueprintResolvedSnapshot({ ctx, task });
+    const current = await checkTaskBlueprintSnapshotDrift({ ctx, task });
+    expect(current.state).toBe("current");
+    expect(current.routeChanged).toBe(false);
+
+    const stale = await checkTaskBlueprintSnapshotDrift({
+      ctx,
+      task: { ...task, mutation_scope: "none", task_kind: "analysis", tags: ["analysis"] },
+    });
+    expect(stale.state).toBe("stale");
+    expect(stale.routeChanged).toBe(true);
   });
 });

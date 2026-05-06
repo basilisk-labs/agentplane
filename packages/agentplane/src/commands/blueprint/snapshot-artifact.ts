@@ -144,3 +144,85 @@ export async function refreshTaskBlueprintResolvedSnapshot(opts: {
     snapshot: written.snapshot,
   };
 }
+
+export async function checkTaskBlueprintSnapshotDrift(opts: {
+  ctx: CommandContext;
+  task: TaskData;
+}): Promise<{
+  path: string;
+  state: "current" | "missing" | "invalid" | "stale";
+  previous: {
+    digest: string | null;
+    blueprintId: string | null;
+    route: readonly string[];
+    errors: readonly string[];
+  };
+  current: {
+    digest: string;
+    blueprintId: string;
+    route: readonly string[];
+  };
+  routeChanged: boolean | null;
+  safeCommand: string;
+}> {
+  const previous = await readTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, taskId: opts.task.id });
+  const current = await buildTaskBlueprintResolvedSnapshot(opts);
+  const previousRoute = previous.snapshot ? routeKinds(previous.snapshot) : [];
+  const currentRoute = routeKinds(current);
+  const safeCommand = `agentplane blueprint snapshot ${opts.task.id}`;
+
+  if (!previous.validation) {
+    return {
+      path: previous.path,
+      state: "missing",
+      previous: { digest: null, blueprintId: null, route: [], errors: [] },
+      current: {
+        digest: current.digest.value,
+        blueprintId: current.selectedBlueprint.id,
+        route: currentRoute,
+      },
+      routeChanged: null,
+      safeCommand,
+    };
+  }
+
+  if (!previous.validation.ok || !previous.snapshot) {
+    return {
+      path: previous.path,
+      state: "invalid",
+      previous: {
+        digest: null,
+        blueprintId: null,
+        route: [],
+        errors: previous.validation.errors.map((error) => error.code),
+      },
+      current: {
+        digest: current.digest.value,
+        blueprintId: current.selectedBlueprint.id,
+        route: currentRoute,
+      },
+      routeChanged: null,
+      safeCommand,
+    };
+  }
+
+  const routeChanged = previousRoute.join("\0") !== currentRoute.join("\0");
+  const stale = previous.snapshot.digest.value !== current.digest.value;
+  return {
+    path: previous.path,
+    state: stale ? "stale" : "current",
+    previous: {
+      digest: previous.snapshot.digest.value,
+      blueprintId: previous.snapshot.selectedBlueprint.id,
+      route: previousRoute,
+      errors: [],
+    },
+    current: {
+      digest: current.digest.value,
+      blueprintId: current.selectedBlueprint.id,
+      route: currentRoute,
+    },
+    routeChanged,
+    safeCommand,
+  };
+}

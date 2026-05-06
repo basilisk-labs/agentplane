@@ -386,4 +386,61 @@ describe("runCli blueprint commands", () => {
       refreshIo.restore();
     }
   });
+
+  it("blueprint drift detects missing and current snapshots", async () => {
+    const root = await mkProject();
+    let taskId = "";
+    const createIo = captureStdIO();
+    try {
+      const createCode = await runCli([
+        "--root",
+        root,
+        "task",
+        "new",
+        "--title",
+        "Analyze route",
+        "--description",
+        "Read-only analysis",
+        "--priority",
+        "med",
+        "--owner",
+        "ANALYST",
+        "--tag",
+        "analysis",
+      ]);
+      expect(createCode).toBe(0);
+      taskId = createIo.stdout.trim();
+    } finally {
+      createIo.restore();
+    }
+
+    const missingIo = captureStdIO();
+    try {
+      const missingCode = await runCli(["--root", root, "blueprint", "drift", taskId, "--json"]);
+      expect(missingCode).toBe(2);
+      const missing = JSON.parse(missingIo.stdout) as { state?: string; safe_command?: string };
+      expect(missing.state).toBe("missing");
+      expect(missing.safe_command).toBe(`agentplane blueprint snapshot ${taskId}`);
+    } finally {
+      missingIo.restore();
+    }
+
+    const refreshIo = captureStdIO();
+    try {
+      expect(await runCli(["--root", root, "blueprint", "snapshot", taskId, "--json"])).toBe(0);
+    } finally {
+      refreshIo.restore();
+    }
+
+    const currentIo = captureStdIO();
+    try {
+      const currentCode = await runCli(["--root", root, "blueprint", "drift", taskId, "--json"]);
+      expect(currentCode).toBe(0);
+      const current = JSON.parse(currentIo.stdout) as { state?: string; route_changed?: boolean };
+      expect(current.state).toBe("current");
+      expect(current.route_changed).toBe(false);
+    } finally {
+      currentIo.restore();
+    }
+  });
 });

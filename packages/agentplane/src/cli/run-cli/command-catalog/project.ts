@@ -8,6 +8,7 @@ import {
   acrValidateSpec,
 } from "../../../commands/acr/acr.command.js";
 import {
+  blueprintDriftSpec,
   blueprintExplainSpec,
   blueprintListSpec,
   blueprintSnapshotSpec,
@@ -105,6 +106,7 @@ import {
   loadAcrExplainSpec,
   loadBlueprintSpec,
   loadBlueprintListSpec,
+  loadBlueprintDriftSpec,
   loadBlueprintExplainSpec,
   loadBlueprintSnapshotSpec,
   loadBlueprintValidateSpec,
@@ -122,6 +124,7 @@ export const PROJECT_COMMANDS = [
   declareCommand(blueprintListSpec, { load: loadBlueprintListSpec, needs: "none" }),
   declareCommand(blueprintExplainSpec, { load: loadBlueprintExplainSpec }),
   declareCommand(blueprintSnapshotSpec, { load: loadBlueprintSnapshotSpec }),
+  declareCommand(blueprintDriftSpec, { load: loadBlueprintDriftSpec }),
   declareCommand(blueprintScaffoldSpec, { load: loadBlueprintScaffoldSpec, needs: "none" }),
   declareCommand(blueprintValidateSpec, { load: loadBlueprintValidateSpec, needs: "none" }),
   declareCommand(workStartSpec, { load: loadWorkStartSpec }),

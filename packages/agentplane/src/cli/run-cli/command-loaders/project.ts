@@ -33,6 +33,10 @@ export const loadBlueprintSnapshotSpec = (deps: RunDeps) =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) =>
     m.makeRunBlueprintSnapshotHandler(deps.getCtx),
   );
+export const loadBlueprintDriftSpec = (deps: RunDeps) =>
+  import("../../../commands/blueprint/blueprint.command.js").then((m) =>
+    m.makeRunBlueprintDriftHandler(deps.getCtx),
+  );
 export const loadBlueprintValidateSpec = () =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintValidate);
 export const loadBlueprintScaffoldSpec = () =>

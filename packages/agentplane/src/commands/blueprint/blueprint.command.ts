@@ -34,7 +34,10 @@ import { usageError } from "../../cli/spec/errors.js";
 import { ValidationError } from "../../shared/errors.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 
-import { refreshTaskBlueprintResolvedSnapshot } from "./snapshot-artifact.js";
+import {
+  checkTaskBlueprintSnapshotDrift,
+  refreshTaskBlueprintResolvedSnapshot,
+} from "./snapshot-artifact.js";
 import { blueprintResolveInputFromTask, workflowModeFromConfig } from "./task-input.js";
 
 export type BlueprintListParsed = {
@@ -71,6 +74,11 @@ export type BlueprintScaffoldParsed = {
 };
 
 export type BlueprintSnapshotParsed = {
+  taskId: string;
+  json: boolean;
+};
+
+export type BlueprintDriftParsed = {
   taskId: string;
   json: boolean;
 };
@@ -318,6 +326,24 @@ export const blueprintSnapshotSpec: CommandSpec<BlueprintSnapshotParsed> = {
   }),
 };
 
+export const blueprintDriftSpec: CommandSpec<BlueprintDriftParsed> = {
+  id: ["blueprint", "drift"],
+  group: "Blueprints",
+  summary: "Check whether a task resolved blueprint snapshot is current.",
+  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
+  examples: [
+    {
+      cmd: "agentplane blueprint drift 202605060915-3NBTGG",
+      why: "Check a task-local resolved snapshot before runner materialization.",
+    },
+  ],
+  parse: (raw) => ({
+    taskId: String(raw.args["task-id"]),
+    json: raw.opts.json === true,
+  }),
+};
+
 async function runBlueprintRoot(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
   throwGroupCommandUsage({
     spec: blueprintSpec,
@@ -487,6 +513,41 @@ export function makeRunBlueprintSnapshotHandler(getCtx: (cmd: string) => Promise
     );
     process.stdout.write(`blueprint: ${output.new_blueprint_id}\n`);
     return 0;
+  };
+}
+
+export function makeRunBlueprintDriftHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+  return async (_ctx: CommandCtx, p: BlueprintDriftParsed): Promise<number> => {
+    const commandCtx = await getCtx("blueprint drift");
+    const task = await loadTaskFromContext({ ctx: commandCtx, taskId: p.taskId });
+    const result = await checkTaskBlueprintSnapshotDrift({ ctx: commandCtx, task });
+    const output = {
+      task_id: p.taskId,
+      path: result.path,
+      state: result.state,
+      old_digest: result.previous.digest,
+      new_digest: result.current.digest,
+      route_changed: result.routeChanged,
+      old_blueprint_id: result.previous.blueprintId,
+      new_blueprint_id: result.current.blueprintId,
+      errors: result.previous.errors,
+      safe_command: result.safeCommand,
+    };
+    if (p.json) {
+      process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
+      return result.state === "current" ? 0 : 2;
+    }
+    process.stdout.write(`blueprint_snapshot: ${output.path}\n`);
+    process.stdout.write(`state: ${output.state}\n`);
+    process.stdout.write(`old_digest: ${output.old_digest ?? "none"}\n`);
+    process.stdout.write(`new_digest: ${output.new_digest}\n`);
+    process.stdout.write(
+      `route_changed: ${
+        output.route_changed === null ? "unknown" : output.route_changed ? "yes" : "no"
+      }\n`,
+    );
+    process.stdout.write(`safe_command: ${output.safe_command}\n`);
+    return result.state === "current" ? 0 : 2;
   };
 }
 
