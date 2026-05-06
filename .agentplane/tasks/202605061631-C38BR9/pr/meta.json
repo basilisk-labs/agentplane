@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-06T17:02:50Z",
   "base": "main",
   "branch": "task/202605061631-C38BR9/incident-registry-cleanup",
   "created_at": "2026-05-06T16:32:44.802Z",
-  "head_sha": "46bbde9323af71d4e72498fff7e8d9cf2914da3d",
+  "head_sha": "46e0f731940d2e25158f258a21dc00c81580e19f",
   "last_verified_at": "2026-05-06T16:59:22.789Z",
   "last_verified_sha": "d58dd947d591c91cc848e1921dc351969d7af623",
+  "merge_commit": "610b6c15047d0d1fae2a26d24c3ca607d6457526",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-06T17:02:50Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605061631-C38BR9",
-  "updated_at": "2026-05-06T17:00:33.282Z",
+  "updated_at": "2026-05-06T17:02:50Z",
   "verify": {
     "status": "pass"
   }
