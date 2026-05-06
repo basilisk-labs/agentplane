@@ -75,3 +75,31 @@ export function formatTaskBlueprintListExtra(summary: TaskBlueprintLifecycleSumm
   if (summary.blueprint_id) return `blueprint=${summary.blueprint_id}`;
   return "blueprint=unresolved";
 }
+
+function joinOrNone(values: string[] | undefined, separator: string): string {
+  return values && values.length > 0 ? values.join(separator) : "none";
+}
+
+export function formatTaskBlueprintCreationPreview(
+  summary: TaskBlueprintLifecycleSummary,
+): string {
+  const lines = summary.error
+    ? ["Blueprint route preview:", "blueprint_id: unresolved", `error: ${summary.error}`]
+    : [
+        "Blueprint route preview:",
+        `blueprint_id: ${summary.blueprint_id ?? "unresolved"}`,
+        ...(summary.blueprint_version === undefined
+          ? []
+          : [`blueprint_version: ${summary.blueprint_version}`]),
+        ...(summary.workflow_mode ? [`workflow_mode: ${summary.workflow_mode}`] : []),
+        `route: ${joinOrNone(summary.route, " -> ")}`,
+        `selection_reasons: ${joinOrNone(summary.selection_reasons, "; ")}`,
+        `required_evidence: ${joinOrNone(summary.required_evidence, ", ")}`,
+        `stop_reasons: ${joinOrNone(summary.stop_reasons, ", ")}`,
+      ];
+  return `${[
+    ...lines,
+    `explain_command: ${summary.explain_command}`,
+    `snapshot_command: ${summary.snapshot_command}`,
+  ].join("\n")}\n`;
+}

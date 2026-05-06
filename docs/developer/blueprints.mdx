@@ -665,8 +665,32 @@ agentplane task new \
   --task-kind analysis \
   --mutation-scope none \
   --risk network \
-  --blueprint-request analysis.light
+  --blueprint-request analysis.light \
+  --show-blueprint
 ```
+
+`task new` keeps stdout stable: it prints only the generated task id. `--show-blueprint` writes the
+route preview to stderr so scripts can keep capturing stdout as the id while humans and agents see
+the selected route immediately.
+
+Example preview:
+
+```text
+Blueprint route preview:
+blueprint_id: analysis.light
+blueprint_version: 1
+workflow_mode: branch_pr
+route: intake -> scope -> context_resolve -> work_unit -> artifact_write -> verify_record -> finish
+selection_reasons: explicit blueprint requested: analysis.light; task intent kind: analysis; workflow mode: branch_pr; task intent mutation scope: none
+required_evidence: analysis.sources, analysis.assumptions, analysis.weak_links, analysis.final
+stop_reasons: none
+explain_command: agentplane blueprint explain <task-id>
+snapshot_command: agentplane blueprint snapshot <task-id>
+```
+
+Use the preview when creating tasks from weak natural-language intent, recipe templates, or
+agent-generated task graphs. It is a creation-time check, not a stored override; the resolver still
+uses the task fields and project config as the source of truth.
 
 Resolver precedence:
 

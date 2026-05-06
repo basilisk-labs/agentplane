@@ -212,6 +212,52 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     expect(task.frontmatter.blueprint_request).toBe("analysis.light");
   });
 
+  it("task new can preview the resolved blueprint route without changing stdout", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Market analysis route preview",
+        "--description",
+        "Analyze market context without repository mutation",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "analysis",
+        "--task-kind",
+        "analysis",
+        "--mutation-scope",
+        "none",
+        "--blueprint-request",
+        "analysis.light",
+        "--show-blueprint",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = io.stdout.trim();
+      expect(taskId).toMatch(/^\d{12}-[A-Z0-9]{6}$/);
+      expect(io.stdout).toBe(`${taskId}\n`);
+      expect(io.stderr).toContain("Blueprint route preview:");
+      expect(io.stderr).toContain("blueprint_id: analysis.light");
+      expect(io.stderr).toContain(
+        "route: intake -> scope -> context_resolve -> work_unit -> artifact_write -> verify_record -> finish",
+      );
+      expect(io.stderr).toContain("selection_reasons: explicit blueprint requested: analysis.light");
+      expect(io.stderr).toContain("required_evidence: analysis.sources");
+      expect(io.stderr).toContain(`explain_command: agentplane blueprint explain ${taskId}`);
+      expect(io.stderr).toContain(`snapshot_command: agentplane blueprint snapshot ${taskId}`);
+    } finally {
+      io.restore();
+    }
+  });
+
   it("task new rejects highly similar open task titles unless --allow-duplicate is passed", async () => {
     const root = await mkGitRepoRoot();
     const firstIo = captureStdIO();

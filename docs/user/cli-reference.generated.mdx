@@ -564,12 +564,14 @@ Options:
 - `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|release.strict|ops.approval)
 - `--depends-on <task-id>`: Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
 - `--verify <command>`: Repeatable. Verification commands/checks to run for this task. (repeatable)
+- `--show-blueprint`: Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
 - `--allow-duplicate`: Allow creating a task even when an open task with a highly similar title already exists. (default=false)
 
 Notes:
 
 - Task creation defaults to doc_version=3 and seeds the README v3 section contract automatically.
 - For verify-required primary tags, this command seeds a default ## Verify Steps acceptance contract in README.
+- \`--show-blueprint\` writes route preview details to stderr; stdout remains only the generated task id.
 
 Examples:
 
@@ -578,6 +580,12 @@ agentplane task new --title "Refactor CLI" --description "Improve CLI output" --
 ```
 
 - Create a new task with one tag.
+
+```sh
+agentplane task new --title "Market analysis note" --description "Analyze market context" --owner ANALYST --tag analysis --task-kind analysis --mutation-scope none --show-blueprint
+```
+
+- Create a task and preview the resolved route without changing the task-id stdout contract.
 
 ### task next
 
