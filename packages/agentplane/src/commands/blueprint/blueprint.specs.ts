@@ -32,6 +32,10 @@ export type BlueprintReportParsed = {
   json: boolean;
 };
 
+export type BlueprintExamplesParsed = {
+  json: boolean;
+};
+
 export type BlueprintScaffoldParsed = {
   id: BlueprintId;
   from?: BlueprintId;
@@ -61,9 +65,10 @@ export const blueprintSpec: CommandSpec<GroupCommandParsed> = {
   group: "Blueprints",
   summary: "List and explain blueprint routing without executing a task.",
   description:
-    "This is a command group. Use `agentplane blueprint list`, `agentplane blueprint explain ...`, `agentplane blueprint scaffold ...`, or `agentplane blueprint validate ...`.",
+    "This is a command group. Use `agentplane blueprint examples`, `agentplane blueprint list`, `agentplane blueprint explain ...`, `agentplane blueprint scaffold ...`, or `agentplane blueprint validate ...`.",
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [
+    { cmd: "agentplane blueprint examples", why: "Show practical route inspection commands." },
     { cmd: "agentplane blueprint list", why: "Show built-in blueprint routes." },
     {
       cmd: "agentplane blueprint scaffold analysis.custom",
@@ -240,6 +245,24 @@ export const blueprintReportSpec: CommandSpec<BlueprintReportParsed> = {
     {
       cmd: "agentplane blueprint report --json",
       why: "Inspect project-local blueprint trust compatibility before runner materialization.",
+    },
+  ],
+  parse: (raw) => ({ json: raw.opts.json === true }),
+};
+
+export const blueprintExamplesSpec: CommandSpec<BlueprintExamplesParsed> = {
+  id: ["blueprint", "examples"],
+  group: "Blueprints",
+  summary: "Show practical blueprint route inspection examples.",
+  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
+  examples: [
+    {
+      cmd: "agentplane blueprint examples",
+      why: "Inspect which route different task classes resolve to.",
+    },
+    {
+      cmd: "agentplane blueprint examples --json",
+      why: "Emit route examples for agents or documentation tooling.",
     },
   ],
   parse: (raw) => ({ json: raw.opts.json === true }),
