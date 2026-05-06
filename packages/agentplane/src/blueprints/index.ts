@@ -8,6 +8,7 @@ export {
 export {
   PROJECT_BLUEPRINTS_DIR,
   PROJECT_BLUEPRINTS_CONFIG_NAME,
+  buildProjectBlueprintCompatibilityReport,
   createTrustedProjectBlueprintRegistry,
   loadProjectBlueprintTrustConfig,
   loadTrustedProjectBlueprintRegistry,
@@ -110,6 +111,7 @@ export type {
 export type {
   ProjectBlueprintDirectoryResult,
   ProjectBlueprintFileResult,
+  ProjectBlueprintCompatibilityReport,
   ProjectBlueprintProblem,
   ProjectBlueprintProblemCode,
   ProjectBlueprintTrustConfig,

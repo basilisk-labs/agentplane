@@ -68,6 +68,27 @@ export type TrustedProjectBlueprintRegistryResult = {
   errors: ProjectBlueprintProblem[];
 };
 
+export type ProjectBlueprintCompatibilityReport = {
+  schemaVersion: 1;
+  compatible: boolean;
+  directory: string;
+  trustConfig: {
+    path: string;
+    exists: boolean;
+    ok: boolean;
+    config: ProjectBlueprintTrustConfig;
+  };
+  blueprints: {
+    path: string;
+    ok: boolean;
+    blueprintId?: string;
+    trusted: boolean;
+    errors: ProjectBlueprintProblem[];
+  }[];
+  trustedBlueprintIds: readonly BlueprintId[];
+  errors: ProjectBlueprintProblem[];
+};
+
 export type ScaffoldProjectBlueprintOptions = {
   projectRoot: string;
   id: BlueprintId;
@@ -447,6 +468,33 @@ export async function createTrustedProjectBlueprintRegistry(
       ...trusted.trustedBlueprints,
     ]),
     projectBlueprintIds: trusted.trustedBlueprints.map((blueprint) => blueprint.id),
+  };
+}
+
+export async function buildProjectBlueprintCompatibilityReport(
+  projectRoot: string,
+): Promise<ProjectBlueprintCompatibilityReport> {
+  const trusted = await loadTrustedProjectBlueprintRegistry(projectRoot);
+  const trustedIds = new Set(trusted.trustedBlueprints.map((blueprint) => blueprint.id));
+  return {
+    schemaVersion: 1,
+    compatible: trusted.ok,
+    directory: trusted.directory,
+    trustConfig: {
+      path: trusted.trustConfig.path,
+      exists: trusted.trustConfig.exists,
+      ok: trusted.trustConfig.ok,
+      config: trusted.trustConfig.config,
+    },
+    blueprints: trusted.files.map((file) => ({
+      path: file.path,
+      ok: file.ok,
+      ...(file.blueprintId ? { blueprintId: file.blueprintId } : {}),
+      trusted: file.blueprintId ? trustedIds.has(file.blueprintId) : false,
+      errors: file.errors,
+    })),
+    trustedBlueprintIds: trusted.trustedBlueprints.map((blueprint) => blueprint.id),
+    errors: trusted.errors,
   };
 }
 
