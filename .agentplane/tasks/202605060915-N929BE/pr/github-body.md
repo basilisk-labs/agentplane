@@ -22,13 +22,14 @@ Extend task verify-show so it combines README Verify Steps with resolved bluepri
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-06T09:38:46.996Z
+- Updated: 2026-05-06T09:40:26.331Z
 - Branch: task/202605060915-N929BE/blueprint-evidence
-- Head: f09d02c241be
+- Head: e7213dda10b2
 
 ```text
  .agentplane/tasks/202605060915-0EDRBK/README.md    | 154 +++++++
  .agentplane/tasks/202605060915-3NBTGG/README.md    |  97 ++++
+ .../blueprint/resolved-snapshot.json               | 499 +++++++++++++++++++++
  .../blueprint/resolved-snapshot.json               | 499 +++++++++++++++++++++
  .agentplane/tasks/202605060915-RQFY8Y/README.md    |  98 ++++
  .../blueprint/resolved-snapshot.json               | 499 +++++++++++++++++++++
@@ -45,6 +46,7 @@ Extend task verify-show so it combines README Verify Steps with resolved bluepri
  .../agentplane/src/blueprints/snapshot.test.ts     | 137 ++++++
  packages/agentplane/src/blueprints/snapshot.ts     | 296 ++++++++++++
  .../src/cli/run-cli.core.blueprint.test.ts         | 108 +++++
+ .../cli/run-cli.core.tasks.query-listing.test.ts   |   7 +
  .../src/cli/run-cli/command-catalog/project.ts     |   6 +
  .../src/cli/run-cli/command-loaders/project.ts     |   8 +
  .../src/commands/blueprint/blueprint.command.ts    | 124 +++++
@@ -52,7 +54,8 @@ Extend task verify-show so it combines README Verify Steps with resolved bluepri
  .../src/commands/blueprint/snapshot-artifact.ts    | 228 ++++++++++
  packages/agentplane/src/commands/task/start.ts     |   6 +
  .../src/commands/task/start.unit.test.ts           |  23 +
- 25 files changed, 2754 insertions(+)
+ .../src/commands/task/verify-show.command.ts       |  16 +
+ 28 files changed, 3276 insertions(+)
 ```
 
 </details>
