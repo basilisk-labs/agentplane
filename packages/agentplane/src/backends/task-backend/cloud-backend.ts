@@ -41,6 +41,11 @@ type CloudSyncStateResponse = {
 };
 
 type FetchLike = typeof fetch;
+type CloudSyncStateSnapshot = {
+  conflicts: unknown[];
+  safeCommand: string | null;
+  unavailable: boolean;
+};
 
 export class CloudBackend implements TaskBackend {
   id = "cloud";
@@ -203,7 +208,12 @@ export class CloudBackend implements TaskBackend {
     const state =
       opts.direction === "pull"
         ? await this.requestCloudSyncState(this.projectId)
-        : { conflicts: [], safeCommand: null };
+        : { conflicts: [], safeCommand: null, unavailable: false };
+    if (state.unavailable && !opts.quiet) {
+      process.stderr.write(
+        "Warning: cloud sync-state preflight is unavailable; continuing with pull endpoint conflict data.\n",
+      );
+    }
     if (opts.direction === "pull" && state.conflicts.length > 0 && opts.conflict === "fail") {
       throw new BackendError(
         cloudConflictMessage({
@@ -269,16 +279,27 @@ export class CloudBackend implements TaskBackend {
     });
   }
 
-  private async requestCloudSyncState(projectId: string): Promise<{
-    conflicts: unknown[];
-    safeCommand: string | null;
-  }> {
-    const response = await this.request<CloudSyncStateResponse>(
-      `/v1/projects/${encodeURIComponent(projectId)}/sync/state`,
-      {
-        method: "GET",
-      },
-    );
+  private async requestCloudSyncState(projectId: string): Promise<CloudSyncStateSnapshot> {
+    const headers = this.cloudHeaders();
+    let res: Response;
+    try {
+      res = await this.fetchImpl(
+        `${this.endpoint}/v1/projects/${encodeURIComponent(projectId)}/sync/state`,
+        {
+          method: "GET",
+          headers,
+        },
+      );
+    } catch {
+      return { conflicts: [], safeCommand: null, unavailable: true };
+    }
+    if (!res.ok) {
+      if (isOptionalSyncStateFailure(res.status)) {
+        return { conflicts: [], safeCommand: null, unavailable: true };
+      }
+      throw new BackendError(await cloudHttpErrorMessage(res), "E_BACKEND");
+    }
+    const response = (await res.json()) as CloudSyncStateResponse;
     const data = isRecord(response.data) ? response.data : {};
     return {
       conflicts: readOpenConflicts(
@@ -292,6 +313,7 @@ export class CloudBackend implements TaskBackend {
       safeCommand:
         readSafeCommand(response, data) ??
         "agentplane backend sync cloud --direction pull --conflict=diff",
+      unavailable: false,
     };
   }
 
@@ -320,10 +342,7 @@ export class CloudBackend implements TaskBackend {
   }
 
   private async request<T>(pathname: string, init: RequestInit): Promise<T> {
-    const headers = new Headers({
-      "content-type": "application/json",
-      authorization: `Bearer ${this.token}`,
-    });
+    const headers = this.cloudHeaders();
     for (const [key, value] of new Headers(init.headers)) {
       headers.set(key, value);
     }
@@ -336,6 +355,13 @@ export class CloudBackend implements TaskBackend {
       throw new BackendError(await cloudHttpErrorMessage(res), "E_BACKEND");
     }
     return (await res.json()) as T;
+  }
+
+  private cloudHeaders(): Headers {
+    return new Headers({
+      "content-type": "application/json",
+      authorization: `Bearer ${this.token}`,
+    });
   }
 
   private async assertProjectionFreshForLocalMutation(): Promise<void> {
@@ -446,6 +472,10 @@ function readString(input: unknown, key: string): string | null {
   if (!isRecord(input)) return null;
   const value = input[key];
   return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function isOptionalSyncStateFailure(status: number): boolean {
+  return [404, 405, 501, 502, 503, 504].includes(status);
 }
 
 function cloudConflictMessage(opts: { conflicts: unknown[]; safeCommand: string }): string {
