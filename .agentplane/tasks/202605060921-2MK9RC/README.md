@@ -1,10 +1,11 @@
 ---
 id: "202605060921-2MK9RC"
 title: "Implement cloud bidirectional pull safeguards"
-status: "DOING"
+result_summary: "Merged cloud bidirectional pull safeguards into main; incident registry check found no promotable incidents and policy mirrors are synchronized."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +30,16 @@ verification:
   updated_at: "2026-05-06T09:33:32.013Z"
   updated_by: "CODER"
   note: "Verified: hosted required checks passed for PR #970 after local verification. Remote check summary: Release-ready manifest, test-windows, recovery-validate, test, docs, Socket checks, and changes all succeeded."
-commit: null
+commit:
+  hash: "19e0a6af216b24b3a225dbab35a2ba3db2212ca7"
+  message: "🔀 2MK9RC integrate: Implement cloud bidirectional pull safeguards"
 comments:
   -
     author: "CODER"
     body: "Start: implement approved cloud bidirectional pull safeguards in the isolated task worktree, covering response parsing, safe projection apply, conflict UX, stale mutation guard, focused tests, and docs updates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #970 was merged into main via merge commit 19e0a6af2 after local verification, hosted checks, incident check, and agents template parity check."
 events:
   -
     type: "status"
@@ -54,9 +60,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: hosted required checks passed for PR #970 after local verification. Remote check summary: Release-ready manifest, test-windows, recovery-validate, test, docs, Socket checks, and changes all succeeded."
+  -
+    type: "status"
+    at: "2026-05-06T09:53:49.879Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #970 was merged into main via merge commit 19e0a6af2 after local verification, hosted checks, incident check, and agents template parity check."
 doc_version: 3
-doc_updated_at: "2026-05-06T09:33:32.019Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T09:53:49.880Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement CLI/backend safeguards for bidirectional cloud pull: normalize service pull responses, safely apply service-approved operational fields to known local tasks, surface conflict/remediation details, block stale cloud projection before local task mutations, and update user/developer docs."
 sections:
   Summary: |-
