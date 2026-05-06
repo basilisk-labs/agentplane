@@ -24,12 +24,15 @@ Created: 2026-05-06T16:36:20.900Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-06T16:36:20.900Z
+- Updated: 2026-05-06T16:40:51.908Z
 - Branch: task/202605061635-VWSY04/format-blueprint-preview
-- Head: abb467e93938
+- Head: 0d81e3e6df47
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 502 +++++++++++++++++++++
+ .../src/cli/run-cli.core.tasks.create.test.ts      |   4 +-
+ .../src/commands/task/blueprint-summary.ts         |   4 +-
+ 3 files changed, 506 insertions(+), 4 deletions(-)
 ```
 
 </details>
