@@ -1,5 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
+import { mkdtemp } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+
 import { runCli } from "./run-cli.js";
 import { captureStdIO, silenceStdIO } from "@agentplane/testkit";
 import { COMMANDS } from "./run-cli/command-catalog.js";
@@ -124,11 +128,39 @@ describe("cli help contract", () => {
   it("help --json covers the canonical command catalog id set", async () => {
     const io = captureStdIO();
     try {
-      const code = await runCli(["help", "--json"]);
+      const code = await runCli(["help", "--json", "--all"]);
       expect(code).toBe(0);
       const list = JSON.parse(io.stdout) as HelpJson[];
       const ids = [...new Set(list.map((spec) => keyId(spec.id)))].toSorted();
       expect(ids).toEqual(expectedHelpIdsSorted());
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("normal project help hides framework-maintainer commands by default", async () => {
+    const outsideRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-help-outside-"));
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["--root", outsideRoot, "help"]);
+      expect(code).toBe(0);
+      expect(io.stdout).not.toContain("release  Prepare a release");
+      expect(io.stdout).not.toContain("Framework Dev:");
+      expect(io.stdout).toContain("task  Task lifecycle and task-store commands.");
+      expect(io.stdout).toContain("work start  Prepare the workspace for a task");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("framework checkout help exposes framework-dev commands in a dedicated group", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["help"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Framework Dev:");
+      expect(io.stdout).toContain("release  Prepare a release");
+      expect(io.stdout).toContain("docs cli  Generate an MDX CLI reference");
     } finally {
       io.restore();
     }

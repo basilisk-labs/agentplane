@@ -10,8 +10,25 @@ agentplane --help
 agentplane help task
 agentplane help task plan
 agentplane help task doc set --compact
+agentplane help --all
 agentplane --version
 ```
+
+`agentplane --help` and `agentplane help` show the normal installed-project surface by default.
+The first screen is intentionally biased toward commands an agent needs for project work: startup,
+task lifecycle, branch/PR workflow, backend sync, recipes, diagnostics, and setup.
+
+Advanced recovery and maintenance commands stay available through direct help or the full registry:
+
+```bash
+agentplane help task reclaim
+agentplane help --all
+```
+
+Inside the Agent Plane framework checkout, help automatically switches to the framework-dev surface
+and adds a dedicated `Framework Dev` group. Framework-maintainer commands such as `release`,
+`workflow build`, `docs cli`, and bundled Codex plugin installation are not shown in the normal
+installed-project help surface.
 
 ## Quickstart
 

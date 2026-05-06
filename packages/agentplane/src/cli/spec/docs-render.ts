@@ -1,5 +1,37 @@
 import type { HelpJson } from "./help-render.js";
 
+const DOCS_GROUP_ORDER = new Map<string, number>([
+  ["Core", 10],
+  ["Task", 20],
+  ["Lifecycle", 30],
+  ["Work", 40],
+  ["PR", 50],
+  ["Branch", 60],
+  ["Backend", 70],
+  ["Config", 80],
+  ["Setup", 90],
+  ["Quality", 100],
+  ["Diagnostics", 110],
+  ["Recipes", 120],
+  ["Blueprints", 130],
+  ["ACR", 140],
+  ["Guard", 150],
+  ["Hooks", 160],
+  ["Policy", 170],
+  ["IDE", 180],
+  ["Advanced", 800],
+  ["Framework Dev", 900],
+  ["Maintenance", 950],
+]);
+
+function compareDocsGroups(a: string, b: string): number {
+  return docsGroupRank(a) - docsGroupRank(b) || a.localeCompare(b);
+}
+
+function docsGroupRank(value: string): number {
+  return DOCS_GROUP_ORDER.get(value) ?? 500;
+}
+
 function escCode(text: string): string {
   return text.replaceAll("`", "\\`");
 }
@@ -53,7 +85,7 @@ export function renderCliDocsMdx(specs: readonly HelpJson[]): string {
     byGroup.set(g, [...(byGroup.get(g) ?? []), s]);
   }
 
-  const groups = [...byGroup.keys()].toSorted((a, b) => a.localeCompare(b));
+  const groups = [...byGroup.keys()].toSorted(compareDocsGroups);
   const groupEntries = groups.map((g) => ({
     group: g,
     specs: (byGroup.get(g) ?? []).toSorted((a, b) => a.id.join(" ").localeCompare(b.id.join(" "))),

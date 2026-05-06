@@ -161,7 +161,11 @@ export const PROJECT_COMMANDS = [
   declareCommand(backendSyncSpec, { load: loadBackendSyncSpec }),
   declareCommand(backendInspectSpec, { load: loadBackendInspectSpec }),
   declareCommand(backendConnectSpec, { load: loadBackendConnectSpec }),
-  declareCommand(backendMigrateCanonicalStateSpec, { load: loadBackendMigrateCanonicalStateSpec }),
+  declareCommand(backendMigrateCanonicalStateSpec, {
+    load: loadBackendMigrateCanonicalStateSpec,
+    surface: "internal",
+    helpGroup: "Maintenance",
+  }),
   declareCommand(syncSpec, { load: loadSyncSpec }),
   declareCommand(prSpec, { load: loadPrSpec, needs: "none" }),
   declareCommand(prOpenSpec, { load: loadPrOpenSpec }),

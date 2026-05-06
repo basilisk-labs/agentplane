@@ -18,6 +18,7 @@ export const COMMANDS = [
 ] as const satisfies readonly CommandEntry[];
 
 export type CatalogMatch = { entry: (typeof COMMANDS)[number]; consumed: number };
+export type HelpSurfaceMode = "user" | "framework" | "all";
 
 function buildCatalogGraph(entries: readonly CommandEntry[]): CommandGraph<CommandEntry> {
   const graph = new CommandGraph<CommandEntry>((entry) => entry.spec.id);
@@ -54,4 +55,20 @@ export function getCommandInvocation(id: CommandId): string {
     throw new Error(`Unknown command id: ${id.join(" ")}`);
   }
   return entry.invocation ?? `agentplane ${entry.spec.id.join(" ")}`;
+}
+
+export function isCommandVisibleInHelp(entry: CommandEntry, mode: HelpSurfaceMode): boolean {
+  if (mode === "all") return true;
+  if (entry.surface === "advanced" || entry.surface === "internal") return false;
+  if (mode === "framework") return entry.surface === "user" || entry.surface === "framework";
+  return entry.surface === "user";
+}
+
+export function makeHelpSpecForEntry(entry: CommandEntry): CommandEntry["spec"] {
+  if (!entry.helpGroup) return entry.spec;
+  return { ...entry.spec, group: entry.helpGroup };
+}
+
+export function getHelpCommandEntries(mode: HelpSurfaceMode): readonly CommandEntry[] {
+  return COMMANDS.filter((entry) => isCommandVisibleInHelp(entry, mode));
 }

@@ -50,7 +50,12 @@ export const LIFECYCLE_COMMANDS = [
     invocation: requireCanonicalCommandInvocation(["finish"]),
   }),
   declareCommand(readySpec, { load: loadReadySpec }),
-  declareCommand(docsCliSpec, { load: loadDocsCliSpec, needs: "none" }),
+  declareCommand(docsCliSpec, {
+    load: loadDocsCliSpec,
+    needs: "none",
+    surface: "framework",
+    helpGroup: "Framework Dev",
+  }),
   fromCommandsHooksHooksCommand(hooksSpec, "runHooks", { needs: "none" }),
   fromCommandsHooksInstallCommand(hooksInstallSpec, "runHooksInstall", {}),
   fromHooksUninstallSpec(hooksUninstallSpec, "runHooksUninstall"),

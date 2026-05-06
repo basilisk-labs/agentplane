@@ -4,6 +4,7 @@ import {
   findCommandEntry,
   getDirectChildCommandEntries,
   getDirectChildCommandNames,
+  getHelpCommandEntries,
   matchCommandCatalog,
 } from "./command-catalog.js";
 
@@ -66,5 +67,27 @@ describe("command catalog graph", () => {
       loadedConfig: false,
       taskContext: false,
     });
+  });
+
+  it("keeps framework and internal commands out of normal help without removing dispatch", () => {
+    expect(findCommandEntry(["release"])?.surface).toBe("framework");
+    expect(findCommandEntry(["release", "apply"])?.surface).toBe("framework");
+    expect(findCommandEntry(["task", "normalize"])?.surface).toBe("internal");
+
+    const normalHelpIds = getHelpCommandEntries("user").map((entry) => entry.spec.id.join(" "));
+    expect(normalHelpIds).not.toContain("release");
+    expect(normalHelpIds).not.toContain("task normalize");
+    expect(normalHelpIds).toContain("task");
+    expect(normalHelpIds).toContain("work start");
+
+    const frameworkHelpIds = getHelpCommandEntries("framework").map((entry) =>
+      entry.spec.id.join(" "),
+    );
+    expect(frameworkHelpIds).toContain("release");
+    expect(frameworkHelpIds).not.toContain("task normalize");
+
+    const allHelpIds = getHelpCommandEntries("all").map((entry) => entry.spec.id.join(" "));
+    expect(allHelpIds).toContain("release");
+    expect(allHelpIds).toContain("task normalize");
   });
 });

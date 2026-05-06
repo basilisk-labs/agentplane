@@ -14,10 +14,11 @@ export type HelpParsed = {
   cmd: string[];
   compact: boolean;
   json: boolean;
+  all: boolean;
 };
 
 export type HelpRegistryView = {
-  list(): readonly { spec: CommandSpec }[];
+  list(opts?: { all?: boolean }): readonly { spec: CommandSpec }[];
   match(tokens: readonly string[]): { spec: CommandSpec; consumed: number } | null;
 };
 
@@ -31,6 +32,11 @@ export const helpSpec: CommandSpec<HelpParsed> = {
   options: [
     { kind: "boolean", name: "compact", description: "Compact help (usage + options)." },
     { kind: "boolean", name: "json", description: "Emit JSON help (success output)." },
+    {
+      kind: "boolean",
+      name: "all",
+      description: "Include framework-dev and internal maintenance commands in registry output.",
+    },
   ],
   examples: [
     { cmd: "agentplane help", why: "List commands available in the CLI command catalog." },
@@ -43,13 +49,14 @@ export const helpSpec: CommandSpec<HelpParsed> = {
       cmd: Array.isArray(cmd) ? cmd.map(String) : [String(cmd)],
       compact: raw.opts.compact === true,
       json: raw.opts.json === true,
+      all: raw.opts.all === true,
     };
   },
 };
 
 export function makeHelpHandler(registry: HelpRegistryView): CommandHandler<HelpParsed> {
   return (_ctx, p) => {
-    const specs = registry.list().map((e) => e.spec);
+    const specs = registry.list({ all: p.all }).map((e) => e.spec);
 
     if (p.cmd.length === 0) {
       if (p.json) {

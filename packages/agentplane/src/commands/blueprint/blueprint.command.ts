@@ -155,10 +155,10 @@ const BLUEPRINT_ROUTE_EXAMPLES = [
   },
 ] as const;
 
-export const runBlueprintExamples: CommandHandler<BlueprintExamplesParsed> = async (_ctx, p) => {
+export const runBlueprintExamples: CommandHandler<BlueprintExamplesParsed> = (_ctx, p) => {
   if (p.json) {
     process.stdout.write(`${JSON.stringify({ examples: BLUEPRINT_ROUTE_EXAMPLES }, null, 2)}\n`);
-    return 0;
+    return Promise.resolve(0);
   }
   process.stdout.write("Blueprint route inspection examples\n");
   for (const example of BLUEPRINT_ROUTE_EXAMPLES) {
@@ -171,7 +171,7 @@ export const runBlueprintExamples: CommandHandler<BlueprintExamplesParsed> = asy
   process.stdout.write("- agentplane blueprint list\n");
   process.stdout.write("- agentplane blueprint report\n");
   process.stdout.write("- agentplane help blueprint explain --compact\n");
-  return 0;
+  return Promise.resolve(0);
 };
 
 export const runBlueprintList: CommandHandler<BlueprintListParsed> = async (ctx, p) => {

@@ -32,6 +32,38 @@ export type HelpJson = {
   notes: string[];
 };
 
+const HELP_GROUP_ORDER = new Map<string, number>([
+  ["Core", 10],
+  ["Task", 20],
+  ["Lifecycle", 30],
+  ["Work", 40],
+  ["PR", 50],
+  ["Branch", 60],
+  ["Backend", 70],
+  ["Config", 80],
+  ["Setup", 90],
+  ["Quality", 100],
+  ["Diagnostics", 110],
+  ["Recipes", 120],
+  ["Blueprints", 130],
+  ["ACR", 140],
+  ["Guard", 150],
+  ["Hooks", 160],
+  ["Policy", 170],
+  ["IDE", 180],
+  ["Advanced", 800],
+  ["Framework Dev", 900],
+  ["Maintenance", 950],
+]);
+
+function compareHelpGroups(a: string, b: string): number {
+  return helpGroupRank(a) - helpGroupRank(b) || a.localeCompare(b);
+}
+
+function helpGroupRank(value: string): number {
+  return HELP_GROUP_ORDER.get(value) ?? 500;
+}
+
 function renderArgUsage(arg: ArgSpec): string {
   const hint = arg.valueHint ?? `<${arg.name}>`;
   const base = arg.variadic ? `${hint} ...` : hint;
@@ -215,7 +247,7 @@ export function renderRegistryHelpText(specs: readonly CommandSpec<unknown>[]): 
     byGroup.set(s.group, arr);
   }
 
-  const groups = [...byGroup.keys()].toSorted((a, b) => a.localeCompare(b));
+  const groups = [...byGroup.keys()].toSorted(compareHelpGroups);
   const lines: string[] = [
     "Usage:",
     "  agentplane help [<cmd...>] [--compact] [--json]",
