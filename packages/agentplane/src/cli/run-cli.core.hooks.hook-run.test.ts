@@ -320,6 +320,79 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     }
   });
 
+  it("hooks run commit-msg blocks mutating staged paths with a non-task subject", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "export const value = 1;\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    await writeFile(messagePath, "✨ code: connect managed API\n", "utf8");
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Mutating staged paths require an active AgentPlane task");
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
+    }
+  });
+
+  it("hooks run commit-msg binds mutating staged paths from a valid task suffix", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202601010101-ABCDEF";
+    await mkdir(path.join(root, ".agentplane", "tasks", taskId), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      [
+        "---",
+        `id: "${taskId}"`,
+        'title: "Code task"',
+        'status: "DOING"',
+        'priority: "med"',
+        'owner: "CODER"',
+        "depends_on: []",
+        'tags: ["code"]',
+        'task_kind: "code"',
+        'mutation_scope: "code"',
+        "verify: []",
+        "comments: []",
+        "doc_version: 3",
+        'doc_updated_at: "2026-01-01T00:00:00.000Z"',
+        'doc_updated_by: "CODER"',
+        'description: "Code task."',
+        "---",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "export const value = 1;\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", ".agentplane/tasks", "src/app.ts"], { cwd: root });
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    await writeFile(messagePath, "✨ ABCDEF code: connect managed API\n", "utf8");
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
+    }
+  });
+
   it("hooks run pre-commit succeeds when nothing is staged", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -439,6 +512,116 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
       "This indicates repository config pollution, not a release payload failure.",
     );
     expect(String(failure?.stdout ?? "")).not.toContain("== Format (check) ==");
+  });
+
+  it("pre-push hook blocks outgoing mutating commits without task binding", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    await writeDefaultConfig(root);
+    await writeFile(
+      path.join(root, "package.json"),
+      JSON.stringify(
+        {
+          name: "hook-test",
+          private: true,
+          scripts: {
+            "format:check": 'node -e "process.exit(0)"',
+            "ci:local:fast": 'node -e "process.exit(0)"',
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await commitAll(root, "chore: base");
+    const baseSha = execFileSync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      encoding: "utf8",
+    }).trim();
+
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "export const value = 1;\n", "utf8");
+    await commitAll(root, "✨ code: connect managed API");
+    const headSha = execFileSync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      encoding: "utf8",
+    }).trim();
+
+    let failure: (Error & { stderr?: string | Buffer; stdout?: string | Buffer }) | null = null;
+    try {
+      execFileSync("node", [PRE_PUSH_HOOK_SCRIPT], {
+        cwd: root,
+        stdio: "pipe",
+        input: `refs/heads/main ${headSha} refs/heads/main ${baseSha}\n`,
+      });
+    } catch (error) {
+      failure = error as Error & { stderr?: string | Buffer; stdout?: string | Buffer };
+    }
+
+    expect(failure).not.toBeNull();
+    expect(String(failure?.stderr ?? "")).toContain(
+      "pre-push blocked: mutating commits require a valid task id",
+    );
+    expect(String(failure?.stderr ?? "")).toContain("src/app.ts");
+  });
+
+  it("pre-push hook accepts emergency hotfix commits with backfill evidence", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    await writeDefaultConfig(root);
+    await writeFile(
+      path.join(root, "package.json"),
+      JSON.stringify(
+        {
+          name: "hook-test",
+          private: true,
+          scripts: {
+            "format:check": 'node -e "process.exit(0)"',
+            "ci:local:fast": 'node -e "process.exit(0)"',
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await commitAll(root, "chore: base");
+    const baseSha = execFileSync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      encoding: "utf8",
+    }).trim();
+
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "export const value = 1;\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
+    await execFileAsync(
+      "git",
+      [
+        "commit",
+        "-m",
+        [
+          "🚑 hotfix: restore managed API",
+          "",
+          "Emergency-Hotfix: true",
+          "Backfill-Task: 202601010101-ABCDEF",
+          "Backfill-Evidence: incident ticket and rollback note recorded",
+        ].join("\n"),
+      ],
+      { cwd: root },
+    );
+    const headSha = execFileSync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      encoding: "utf8",
+    }).trim();
+
+    const result = execFileSync("node", [PRE_PUSH_HOOK_SCRIPT], {
+      cwd: root,
+      encoding: "utf8",
+      input: `refs/heads/main ${headSha} refs/heads/main ${baseSha}\n`,
+    });
+    expect(result).toContain("Running pre-push checks in standard mode.");
   });
 
   it("hooks run post-merge prunes merged local task worktrees on the base branch", async () => {

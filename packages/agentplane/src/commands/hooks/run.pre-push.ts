@@ -172,6 +172,116 @@ function failIfPollutedReleaseGitConfig(gitRoot: string): void {
   ]);
 }
 
+const TASK_ID_RE = /\b\d{12}-[A-Z0-9]{6}\b/;
+const TASK_SUBJECT_RE = /^\S+\s+([A-Z0-9]{6})\s+[a-z][a-z0-9_-]*(?:\/[a-z0-9_-]+)*:\s+.+$/;
+const DOC_FILE_RE = /(^|\/)(README|CHANGELOG|CONTRIBUTING|LICENSE)(\.[^/]*)?$/i;
+const DOC_EXT_RE = /\.(md|mdx|txt|adoc|rst)$/i;
+
+function gitPathIsUnder(filePath: string, prefix: string): boolean {
+  return filePath === prefix || filePath.startsWith(`${prefix}/`);
+}
+
+function isDocsOnlyPath(filePath: string): boolean {
+  return (
+    DOC_FILE_RE.test(filePath) ||
+    DOC_EXT_RE.test(filePath) ||
+    gitPathIsUnder(filePath, "docs") ||
+    gitPathIsUnder(filePath, "website/docs")
+  );
+}
+
+function isTaskArtifactPath(filePath: string): boolean {
+  return filePath === ".agentplane/tasks.json" || gitPathIsUnder(filePath, ".agentplane/tasks");
+}
+
+function isMutatingPath(filePath: string): boolean {
+  return !isTaskArtifactPath(filePath) && !isDocsOnlyPath(filePath);
+}
+
+function taskIdFromSubject(gitRoot: string, subject: string): string {
+  const full = TASK_ID_RE.exec(subject)?.[0] ?? "";
+  if (full) return full;
+  const suffix = TASK_SUBJECT_RE.exec(subject)?.[1] ?? "";
+  if (!suffix) return "";
+  try {
+    const taskRoot = path.join(gitRoot, ".agentplane", "tasks");
+    const matches = fs
+      .readdirSync(taskRoot, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .filter((name) => name.toLowerCase().endsWith(`-${suffix.toLowerCase()}`));
+    return matches.length === 1 ? (matches[0] ?? "") : "";
+  } catch {
+    return "";
+  }
+}
+
+function hasEmergencyBackfillEvidence(body: string): boolean {
+  if (!/^Emergency-Hotfix:\s*true\s*$/im.test(body)) return false;
+  if (!/^Backfill-Task:\s*\d{12}-[A-Z0-9]{6}\s*$/im.test(body)) return false;
+  const evidence = /^Backfill-Evidence:\s*(.+)$/im.exec(body)?.[1]?.trim() ?? "";
+  return evidence.length >= 12;
+}
+
+function readCommitList(gitRoot: string, range: { from: string; to: string } | null): string[] {
+  if (!range) return [];
+  return readGitText(gitRoot, ["log", "--format=%H", `${range.from}..${range.to}`])
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function readCommitFiles(gitRoot: string, commit: string): string[] {
+  return readGitText(gitRoot, ["diff-tree", "--no-commit-id", "--name-only", "-r", commit])
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function readCommitBody(gitRoot: string, commit: string): string {
+  return readGitText(gitRoot, ["show", "--format=%B", "--no-patch", commit]);
+}
+
+function enforceTaskBoundOutgoingCommits(
+  gitRoot: string,
+  range: { from: string; to: string } | null,
+): void {
+  const failures: string[] = [];
+  for (const commit of readCommitList(gitRoot, range)) {
+    const mutating = readCommitFiles(gitRoot, commit).filter((filePath) =>
+      isMutatingPath(filePath),
+    );
+    if (mutating.length === 0) continue;
+
+    const body = readCommitBody(gitRoot, commit);
+    const subject =
+      body
+        .split("\n")
+        .find((line) => line.trim())
+        ?.trim() ?? "";
+    if (taskIdFromSubject(gitRoot, subject)) continue;
+    if (hasEmergencyBackfillEvidence(body)) continue;
+
+    failures.push(
+      [
+        `${commit.slice(0, 12)} ${subject || "(empty subject)"}`,
+        `  mutating_paths=${mutating.slice(0, 6).join(", ")}${mutating.length > 6 ? ", ..." : ""}`,
+      ].join("\n"),
+    );
+  }
+  if (failures.length === 0) return;
+  fail(
+    "pre-push blocked: mutating commits require a valid task id or emergency backfill evidence.",
+    [
+      ...failures,
+      "Fix:",
+      "  1) Reword the commit subject to include a valid task suffix/id from .agentplane/tasks.",
+      "  2) Or commit from task/<task-id>/<slug> / AGENTPLANE_TASK_ID through AgentPlane.",
+      "  3) For emergency hotfixes, add trailers: Emergency-Hotfix: true, Backfill-Task: <task-id>, Backfill-Evidence: <evidence>.",
+    ],
+  );
+}
+
 function gitRefExists(gitRoot: string, ref: string): boolean {
   return readGitText(gitRoot, ["rev-parse", "--verify", "--quiet", ref]).length > 0;
 }
@@ -266,12 +376,11 @@ function runInternalPrePushHook(gitRoot: string, stdin: string): number {
     if (isReleasePush) failIfPollutedReleaseGitConfig(gitRoot);
     const ciScript = envFull ? "ci:local:full" : "ci:local:fast";
     const scripts = readPackageScripts(gitRoot);
-    const changedFiles = readChangedFilesForRange(
-      gitRoot,
-      selectBranchDiffRange(updates, {
-        newBranchFallbackRef: resolveDefaultBaseRef(gitRoot),
-      }),
-    );
+    const diffRange = selectBranchDiffRange(updates, {
+      newBranchFallbackRef: resolveDefaultBaseRef(gitRoot),
+    });
+    const changedFiles = readChangedFilesForRange(gitRoot, diffRange);
+    enforceTaskBoundOutgoingCommits(gitRoot, diffRange);
     const ciEnv =
       changedFiles.length > 0
         ? { ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") }

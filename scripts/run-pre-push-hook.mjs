@@ -61,6 +61,17 @@ function read(command, args) {
   return execFileSync(command, args, { encoding: "utf8" });
 }
 
+function readQuiet(command, args) {
+  try {
+    return execFileSync(command, args, {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+  } catch {
+    return "";
+  }
+}
+
 function trackedChangesShort() {
   return String(read("git", ["status", "--short", "--untracked-files=no"])).trim();
 }
@@ -103,6 +114,115 @@ function failIfPollutedReleaseGitConfig() {
   ]);
 }
 
+const TASK_ID_RE = /\b\d{12}-[A-Z0-9]{6}\b/;
+const TASK_SUBJECT_RE = /^\S+\s+([A-Z0-9]{6})\s+[a-z][a-z0-9_-]*(?:\/[a-z0-9_-]+)*:\s+.+$/;
+const DOC_FILE_RE = /(^|\/)(README|CHANGELOG|CONTRIBUTING|LICENSE)(\.[^/]*)?$/i;
+const DOC_EXT_RE = /\.(md|mdx|txt|adoc|rst)$/i;
+
+function isUnder(filePath, prefix) {
+  return filePath === prefix || filePath.startsWith(`${prefix}/`);
+}
+
+function isDocsOnlyPath(filePath) {
+  return (
+    DOC_FILE_RE.test(filePath) ||
+    DOC_EXT_RE.test(filePath) ||
+    isUnder(filePath, "docs") ||
+    isUnder(filePath, "website/docs")
+  );
+}
+
+function isTaskArtifactPath(filePath) {
+  return filePath === ".agentplane/tasks.json" || isUnder(filePath, ".agentplane/tasks");
+}
+
+function isMutatingPath(filePath) {
+  return !isTaskArtifactPath(filePath) && !isDocsOnlyPath(filePath);
+}
+
+function taskIdFromSubject(subject) {
+  const full = TASK_ID_RE.exec(subject)?.[0] ?? "";
+  if (full) return full;
+  const suffix = TASK_SUBJECT_RE.exec(subject)?.[1] ?? "";
+  if (!suffix) return "";
+  const found = readQuiet("find", [
+    ".agentplane/tasks",
+    "-maxdepth",
+    "1",
+    "-type",
+    "d",
+    "-name",
+    `*-${suffix}`,
+  ])
+    .split("\n")
+    .map((line) => line.trim().split("/").at(-1) ?? "")
+    .filter(Boolean);
+  return found.length === 1 ? found[0] : "";
+}
+
+function hasEmergencyBackfillEvidence(body) {
+  if (!/^Emergency-Hotfix:\s*true\s*$/im.test(body)) return false;
+  if (!/^Backfill-Task:\s*\d{12}-[A-Z0-9]{6}\s*$/im.test(body)) return false;
+  const evidence = /^Backfill-Evidence:\s*(.+)$/im.exec(body)?.[1]?.trim() ?? "";
+  return evidence.length >= 12;
+}
+
+function readCommitList(range) {
+  if (!range) return [];
+  return readQuiet("git", ["log", "--format=%H", `${range.from}..${range.to}`])
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function readCommitFiles(commit) {
+  return readQuiet("git", ["diff-tree", "--no-commit-id", "--name-only", "-r", commit])
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function readCommitBody(commit) {
+  return readQuiet("git", ["show", "--format=%B", "--no-patch", commit]);
+}
+
+function enforceTaskBoundOutgoingCommits(range) {
+  const commits = readCommitList(range);
+  const failures = [];
+  for (const commit of commits) {
+    const files = readCommitFiles(commit);
+    const mutating = files.filter(isMutatingPath);
+    if (mutating.length === 0) continue;
+
+    const body = readCommitBody(commit);
+    const subject =
+      body
+        .split("\n")
+        .find((line) => line.trim())
+        ?.trim() ?? "";
+    if (taskIdFromSubject(subject)) continue;
+    if (hasEmergencyBackfillEvidence(body)) continue;
+
+    failures.push(
+      [
+        `${commit.slice(0, 12)} ${subject || "(empty subject)"}`,
+        `  mutating_paths=${mutating.slice(0, 6).join(", ")}${mutating.length > 6 ? ", ..." : ""}`,
+      ].join("\n"),
+    );
+  }
+  if (failures.length === 0) return;
+  fail(
+    "pre-push blocked: mutating commits require a valid task id or emergency backfill evidence.",
+    [
+      ...failures,
+      "Fix:",
+      "  1) Reword the commit subject to include a valid task suffix/id from .agentplane/tasks.",
+      "  2) Or commit from task/<task-id>/<slug> / AGENTPLANE_TASK_ID through AgentPlane.",
+      "  3) For emergency hotfixes, add trailers: Emergency-Hotfix: true, Backfill-Task: <task-id>, Backfill-Evidence: <evidence>.",
+    ],
+  );
+}
+
 function main() {
   const stdin = readFileSync(0, "utf8");
   const updates = parsePrePushStdin(stdin);
@@ -129,6 +249,10 @@ function main() {
       newBranchFallbackRef: resolveDefaultBaseRef(),
     }),
   );
+  const diffRange = selectBranchDiffRange(updates, {
+    newBranchFallbackRef: resolveDefaultBaseRef(),
+  });
+  enforceTaskBoundOutgoingCommits(diffRange);
   const ciEnv =
     changedFiles.length > 0
       ? { ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") }

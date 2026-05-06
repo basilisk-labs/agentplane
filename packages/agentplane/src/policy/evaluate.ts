@@ -5,6 +5,7 @@ import { branchPrBaseRule } from "./rules/branch-pr-base.js";
 import { cleanTreeRule } from "./rules/clean-tree.js";
 import { commitSubjectRule } from "./rules/commit-subject.js";
 import { protectedPathsRule } from "./rules/protected-paths.js";
+import { stagedMutationRequiresTaskRule } from "./rules/task-bound-mutation.js";
 
 export function evaluatePolicy(ctx: PolicyContext): PolicyResult {
   const taskId = (ctx.taskId ?? "").trim();
@@ -14,10 +15,14 @@ export function evaluatePolicy(ctx: PolicyContext): PolicyResult {
 
   switch (ctx.action) {
     case "hook_commit_msg": {
-      return commitSubjectRule(ctx);
+      return mergeResults(commitSubjectRule(ctx), stagedMutationRequiresTaskRule(ctx));
     }
     case "hook_pre_commit": {
-      return mergeResults(protectedPathsRule(ctx), branchPrBaseRule(ctx));
+      return mergeResults(
+        protectedPathsRule(ctx),
+        branchPrBaseRule(ctx),
+        stagedMutationRequiresTaskRule(ctx),
+      );
     }
     case "guard_commit":
     case "commit": {

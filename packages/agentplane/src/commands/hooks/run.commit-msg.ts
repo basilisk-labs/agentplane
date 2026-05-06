@@ -2,16 +2,20 @@ import { resolveProject } from "@agentplaneorg/core/project";
 import { parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import type { CommitTaskIntent } from "@agentplaneorg/core/commit";
+import { parseTaskSubjectTemplate, type CommitTaskIntent } from "@agentplaneorg/core/commit";
 
 import { loadConfig } from "@agentplaneorg/core/config";
+import {
+  GitContext,
+  parseTaskIdFromBranch,
+  parseTaskIdFromCloseBranch,
+} from "@agentplaneorg/core/git";
 
 import { evaluatePolicy } from "../../policy/evaluate.js";
 import { CliError } from "../../shared/errors.js";
 import { throwIfPolicyDenied } from "../shared/policy-deny.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
 import { assertDcoSignoff } from "../guard/impl/dco.js";
-import { parseTaskIdFromBranch, parseTaskIdFromCloseBranch } from "@agentplaneorg/core/git";
 import type { HooksRunOptions } from "./run.js";
 
 async function inferTaskIdFromBranchContext(opts: {
@@ -23,6 +27,28 @@ async function inferTaskIdFromBranchContext(opts: {
     return (
       parseTaskIdFromBranch(opts.taskPrefix, branch) ?? parseTaskIdFromCloseBranch(branch) ?? ""
     );
+  } catch {
+    return "";
+  }
+}
+
+async function inferTaskIdFromSubjectSuffix(opts: {
+  gitRoot: string;
+  workflowDir: string;
+  subject: string;
+}): Promise<string> {
+  const suffix = parseTaskSubjectTemplate(opts.subject)?.suffix?.trim() ?? "";
+  if (!suffix) return "";
+  try {
+    const { readdir } = await import("node:fs/promises");
+    const entries = await readdir(path.join(opts.gitRoot, opts.workflowDir), {
+      withFileTypes: true,
+    });
+    const matches = entries
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .filter((name) => name.toLowerCase().endsWith(`-${suffix.toLowerCase()}`));
+    return matches.length === 1 ? (matches[0] ?? "") : "";
   } catch {
     return "";
   }
@@ -102,6 +128,11 @@ export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
     (await inferTaskIdFromBranchContext({
       gitRoot: resolved.gitRoot,
       taskPrefix: loaded.config.branch.task_prefix,
+    })) ||
+    (await inferTaskIdFromSubjectSuffix({
+      gitRoot: resolved.gitRoot,
+      workflowDir: loaded.config.paths.workflow_dir,
+      subject,
     }));
   const statusTo = (process.env.AGENTPLANE_STATUS_TO ?? "").trim().toUpperCase();
   const taskIntent = taskId
@@ -128,7 +159,7 @@ export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
     action: "hook_commit_msg",
     config: loaded.config,
     taskId,
-    git: { stagedPaths: [] },
+    git: { stagedPaths: await new GitContext({ gitRoot: resolved.gitRoot }).statusStagedPaths() },
     commit: { subject, taskIntent },
   });
   throwIfPolicyDenied(res);
