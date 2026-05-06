@@ -22,12 +22,20 @@ Implement the remaining public AgentPlane cloud backend gaps from the cloud serv
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-06T10:22:21.425Z
+- Updated: 2026-05-06T10:44:25.604Z
 - Branch: task/202605061021-E9TY7J/cloud-backend-e2e
-- Head: 64d2f5129167
+- Head: 6663a4e759c6
 
 ```text
-No changes detected.
+ .agentplane/WORKFLOW.md                            |   2 +-
+ .agentplane/backends/cloud/backend.json            |  11 ++
+ .gitignore                                         |   1 +
+ docs/developer/cloud-backend-integration-plan.mdx  |  20 +--
+ docs/user/backends/cloud.mdx                       |  13 +-
+ .../src/backends/task-backend.cloud.test.ts        | 122 +++++++++++++++++-
+ .../src/backends/task-backend/cloud-backend.ts     | 138 ++++++++++-----------
+ .../src/backends/task-backend/cloud-pull.ts        | 123 ++++++++++++++++++
+ 8 files changed, 341 insertions(+), 89 deletions(-)
 ```
 
 </details>
