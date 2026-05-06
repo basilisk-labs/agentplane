@@ -218,6 +218,7 @@ export function renderQuickstart(): string {
     "## Go deeper",
     "",
     `- \`${COMMAND_SNIPPETS.core.role}\` to activate ORCHESTRATOR for planning and the task owner role before owner-scoped execution.`,
+    "- `agentplane blueprint examples` to inspect how analysis, content, docs, code, and release tasks resolve to different routes.",
     "- `agentplane help <command>` for flags, examples, and exceptional/manual flows.",
     "- Keep installed runtime guidance self-contained; do not depend on repo-only docs files.",
     "- If you need the docs site, treat it as a public reference surface rather than a required local file.",

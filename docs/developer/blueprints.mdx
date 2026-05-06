@@ -29,6 +29,43 @@ A blueprint is not:
 The purpose is to let AgentPlane select a task-specific route. Analysis, content, documentation,
 code, release, and operational tasks should not inherit the same code-oriented PR flow.
 
+## CLI Route Inspection
+
+Blueprints are visible before execution. Use the CLI to inspect route selection, compare task
+classes, and confirm that a read-only task is not being pushed through a code PR route.
+
+```bash
+agentplane blueprint examples
+```
+
+Common route probes:
+
+```bash
+agentplane blueprint explain --kind analysis --mutation none
+agentplane blueprint explain --kind content --mutation none
+agentplane blueprint explain --kind docs --mutation docs
+agentplane blueprint explain --kind code --mutation code --workflow-mode branch_pr
+agentplane blueprint explain --kind release --mutation release --risk external_publish
+agentplane blueprint explain <task-id>
+```
+
+Expected shape:
+
+- `analysis.light`: lightweight analysis route with evidence and final output, no CI or PR gates.
+- `content.light`: content-generation route with output/evidence emphasis, no code lifecycle.
+- `docs.change`: documentation mutation route with docs checks.
+- `code.branch_pr`: code mutation route in `branch_pr`, including local checks and PR/integration
+  gates.
+- `release.strict`: release/publish route with version, parity, manifest, and publish safety gates.
+
+For project-local blueprints, inspect trust and compatibility before runner materialization:
+
+```bash
+agentplane blueprint list --project --trusted
+agentplane blueprint report
+agentplane blueprint validate --project
+```
+
 ## Design Premises
 
 Blueprints are useful only if they preserve the difference between task classes.

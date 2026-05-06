@@ -21,6 +21,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 - Blueprints
   - [blueprint](#blueprint)
   - [blueprint drift](#blueprint-drift)
+  - [blueprint examples](#blueprint-examples)
   - [blueprint explain](#blueprint-explain)
   - [blueprint list](#blueprint-list)
   - [blueprint report](#blueprint-report)
@@ -500,7 +501,7 @@ agentplane sync redmine --direction push --yes
 
 List and explain blueprint routing without executing a task.
 
-This is a command group. Use \`agentplane blueprint list\`, \`agentplane blueprint explain ...\`, \`agentplane blueprint scaffold ...\`, or \`agentplane blueprint validate ...\`.
+This is a command group. Use \`agentplane blueprint examples\`, \`agentplane blueprint list\`, \`agentplane blueprint explain ...\`, \`agentplane blueprint scaffold ...\`, or \`agentplane blueprint validate ...\`.
 
 Usage:
 
@@ -509,6 +510,12 @@ agentplane blueprint [<cmd> ...]
 ```
 
 Examples:
+
+```sh
+agentplane blueprint examples
+```
+
+- Show practical route inspection commands.
 
 ```sh
 agentplane blueprint list
@@ -549,6 +556,34 @@ agentplane blueprint drift 202605060915-3NBTGG
 ```
 
 - Check a task-local resolved snapshot before runner materialization.
+
+### blueprint examples
+
+Show practical blueprint route inspection examples.
+
+Usage:
+
+```text
+agentplane blueprint examples [options]
+```
+
+Options:
+
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane blueprint examples
+```
+
+- Inspect which route different task classes resolve to.
+
+```sh
+agentplane blueprint examples --json
+```
+
+- Emit route examples for agents or documentation tooling.
 
 ### blueprint explain
 

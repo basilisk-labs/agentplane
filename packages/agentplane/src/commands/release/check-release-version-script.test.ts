@@ -19,6 +19,21 @@ describe("check-release-version script", () => {
     ).resolves.toBeDefined();
   });
 
+  it("passes when prerelease tag and package versions are aligned", async () => {
+    const root = await initReleaseWorkspace({
+      prefix: "agentplane-release-check-",
+      coreVersion: "1.2.3-rc.1",
+      cliVersion: "1.2.3-rc.1",
+      recipesVersion: "1.2.3-rc.1",
+      dependencyVersion: "1.2.3-rc.1",
+      recipesDependencyVersion: "1.2.3-rc.1",
+    });
+
+    await expect(
+      execFileAsync("node", [SCRIPT_PATH, "--tag", "v1.2.3-rc.1"], { cwd: root }),
+    ).resolves.toBeDefined();
+  });
+
   it("fails when agentplane depends on a different core version", async () => {
     const root = await initReleaseWorkspace({
       prefix: "agentplane-release-check-",
