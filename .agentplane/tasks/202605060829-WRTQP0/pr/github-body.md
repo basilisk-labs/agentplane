@@ -25,9 +25,9 @@ Harden commit hooks so mutating changes require an active task or valid task id,
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-06T08:56:48.010Z
+- Updated: 2026-05-06T08:59:01.664Z
 - Branch: task/202605060829-WRTQP0/task-bound-hooks
-- Head: a85f0f043964
+- Head: 7c5707a5d7c6
 
 ```text
  .../src/cli/run-cli.core.hooks.hook-run.test.ts    | 145 ++++++-------
