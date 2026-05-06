@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605060731-GK1JRH",
+  "created_at": "2026-05-06T08:15:51.294Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "70ac693ef82c44c51d5dff652e16dfda60411b70",
+    "work_ref": "main",
+    "work_commit": "70ac693ef82c44c51d5dff652e16dfda60411b70"
+  },
+  "task": {
+    "task_id": "202605060731-GK1JRH",
+    "title": "Document local blueprint authoring",
+    "intent": "Document safe project-local blueprint authoring, scaffold, validate, registry listing, and current non-execution limits for v0.5.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605060731-GK1JRH/README.md",
+      "sha256": "sha256:7a567362213c25f122acd186ae62c32117a91d99801735dfeed8e65329f2209d"
+    },
+    "approved_at": "2026-05-06T07:31:25.499Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Blueprint authoring docs and generated CLI reference describe local scaffold and validation flow.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605060731-GK1JRH_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-06T07:31:25.499Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605060731-GK1JRH/README.md",
+      "sha256": "sha256:7a567362213c25f122acd186ae62c32117a91d99801735dfeed8e65329f2209d"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605060731-GK1JRH/README.md",
+      "sha256": "sha256:7a567362213c25f122acd186ae62c32117a91d99801735dfeed8e65329f2209d"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605060731-GK1JRH/README.md",
+      "sha256": "sha256:7a567362213c25f122acd186ae62c32117a91d99801735dfeed8e65329f2209d"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 70ac693ef82c44c51d5dff652e16dfda60411b70 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:cb287be62de2b3c86f9899761a99896f2655d2861313b4c61c78b941a5638d8a",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
