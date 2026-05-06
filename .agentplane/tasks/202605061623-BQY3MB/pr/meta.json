@@ -3,12 +3,12 @@
   "branch": "task/202605061623-BQY3MB/obsidian-clean",
   "created_at": "2026-05-06T16:24:09.558Z",
   "head_sha": "d48d13c59f467a02c5ba3bf428d24c8baebb2047",
-  "last_verified_at": null,
-  "last_verified_sha": null,
+  "last_verified_at": "2026-05-06T16:31:42.776Z",
+  "last_verified_sha": "d48d13c59f467a02c5ba3bf428d24c8baebb2047",
   "schema_version": 1,
   "task_id": "202605061623-BQY3MB",
   "updated_at": "2026-05-06T16:29:07.444Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

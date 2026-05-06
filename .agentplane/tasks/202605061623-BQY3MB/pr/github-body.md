@@ -15,8 +15,8 @@ Add a CLI command that removes only the generated Obsidian task navigation proje
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Command: bun test packages/agentplane/src/commands/task/obsidian.unit.test.ts. Result: pass. Evidence: 6 pass, 0 fail. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Command: bun run docs:cli:check. Result: pass. Evidence: CLI reference up to date. Command: bunx prettier --check touched files. Result: pass. Evidence: all matched files use Prettier style. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Command: node packages/agentplane/bin/agentplane.js doctor. Result: pass. Evidence: doctor OK. Hosted: PR #989 required checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
