@@ -282,7 +282,7 @@ function rejectedRecipeExtension(opts: {
   };
 }
 
-function resolveRecipeExtensions(opts: {
+export function validateRecipeHintsForBlueprint(opts: {
   blueprint: Blueprint;
   recipeHints: readonly RecipeHint[];
 }): {
@@ -367,7 +367,7 @@ export function resolveBlueprint(opts: {
   if (opts.projectBlueprintIds?.includes(blueprint.id)) {
     reasons.push(`trusted project-local blueprint selected: ${blueprint.id}`);
   }
-  const { acceptedRecipeExtensions, rejectedRecipeExtensions } = resolveRecipeExtensions({
+  const { acceptedRecipeExtensions, rejectedRecipeExtensions } = validateRecipeHintsForBlueprint({
     blueprint,
     recipeHints: opts.input.recipeHints ?? [],
   });

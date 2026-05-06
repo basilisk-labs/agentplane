@@ -7,6 +7,17 @@ import type {
 } from "./model.js";
 import { blueprintPlanEvidence, buildBlueprintPlanArtifact } from "./plan.js";
 
+function recipeContributionId(item: {
+  recipeId: string;
+  recipeVersion?: string;
+  extensionId?: string;
+}): string {
+  return [
+    item.recipeVersion ? `${item.recipeId}@${item.recipeVersion}` : item.recipeId,
+    item.extensionId ?? "extension",
+  ].join("/");
+}
+
 function explainNode(node: ResolvedBlueprint["activeNodes"][number]): BlueprintExplainNode {
   return {
     id: node.id,
@@ -60,7 +71,15 @@ export function formatBlueprintExplain(output: BlueprintExplainOutput): string {
     `context_manifest: ${output.plan.contextManifest.length}`,
     `required_evidence: ${output.requiredEvidence.map((item) => item.kind).join(", ")}`,
     `accepted_recipe_extensions: ${output.acceptedRecipeExtensions.length}`,
+    ...output.acceptedRecipeExtensions.map(
+      (item) =>
+        `accepted_recipe_extension: ${recipeContributionId(item)} kind=${item.kind} node=${item.nodeKind} reason=${item.reason}`,
+    ),
     `rejected_recipe_extensions: ${output.rejectedRecipeExtensions.length}`,
+    ...output.rejectedRecipeExtensions.map(
+      (item) =>
+        `rejected_recipe_extension: ${recipeContributionId(item)} kind=${item.kind} node=${item.nodeKind ?? "none"} reason=${item.reason}`,
+    ),
     `stop_reasons: ${output.stopReasons.map((reason) => reason.id).join(", ") || "none"}`,
   ];
   return `${lines.join("\n")}\n`;

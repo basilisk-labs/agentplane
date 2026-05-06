@@ -6,6 +6,7 @@ import {
 } from "../../blueprints/index.js";
 import { backendNotSupportedMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import { blueprintResolveInputFromTask } from "../blueprint/task-input.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 
@@ -86,6 +87,21 @@ export function makeRunTaskVerifyShowHandler(getCtx: (cmd: string) => Promise<Co
     const resolved = resolveBlueprint({ input });
     const output = explainResolvedBlueprint({ resolved, workflowMode: input.workflowMode });
     process.stdout.write(`\nBlueprint expected evidence\n${formatBlueprintExplain(output)}`);
+    const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: commandCtx, task });
+    process.stdout.write("Blueprint snapshot evidence\n");
+    process.stdout.write(`snapshot_state: ${snapshot.state}\n`);
+    process.stdout.write(`snapshot_path: ${snapshot.path}\n`);
+    process.stdout.write(`snapshot_digest: ${snapshot.previous.digest ?? "none"}\n`);
+    process.stdout.write(`snapshot_current_digest: ${snapshot.current.digest}\n`);
+    process.stdout.write(
+      `snapshot_route_changed: ${
+        snapshot.routeChanged === null ? "unknown" : snapshot.routeChanged ? "yes" : "no"
+      }\n`,
+    );
+    process.stdout.write(
+      `snapshot_required_evidence: ${output.requiredEvidence.map((item) => item.id).join(", ") || "none"}\n`,
+    );
+    process.stdout.write(`snapshot_safe_command: ${snapshot.safeCommand}\n`);
     return exitCode;
   };
 }

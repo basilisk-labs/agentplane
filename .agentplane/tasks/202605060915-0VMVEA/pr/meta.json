@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605060915-0VMVEA/blueprint-execution",
+  "created_at": "2026-05-06T10:21:30.589Z",
+  "head_sha": "c8204419abc877b0d72546489bc3249c4ab48863",
+  "last_verified_at": "2026-05-06T10:23:08.744Z",
+  "last_verified_sha": "c8204419abc877b0d72546489bc3249c4ab48863",
+  "merge_commit": "c8204419abc877b0d72546489bc3249c4ab48863",
+  "merged_at": "2026-05-06T12:21:33.421Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605060915-0VMVEA",
+  "updated_at": "2026-05-06T12:21:33.421Z",
+  "verify": {
+    "status": "pass"
+  }
+}

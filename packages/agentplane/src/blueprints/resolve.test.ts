@@ -4,7 +4,11 @@ import { explainResolvedBlueprint, formatBlueprintExplain } from "./explain.js";
 import type { BlueprintResolveInput } from "./model.js";
 import { recipeBlueprintExtensionsToHints } from "./recipe-hints.js";
 import { createBlueprintRegistry, requireBlueprint } from "./registry.js";
-import { inferBlueprintTaskKind, resolveBlueprint } from "./resolve.js";
+import {
+  inferBlueprintTaskKind,
+  resolveBlueprint,
+  validateRecipeHintsForBlueprint,
+} from "./resolve.js";
 
 function resolve(input: Partial<BlueprintResolveInput>) {
   return resolveBlueprint({
@@ -23,6 +27,84 @@ describe("resolveBlueprint", () => {
     expect(resolved.blueprint.id).toBe("analysis.light");
     expect(resolved.selectionReasons).toContain("task kind resolved to analysis");
     expect(resolved.activeNodes.map((node) => node.kind)).not.toContain("pr_artifact");
+  });
+
+  it("validates recipe hints against the selected blueprint extension points", () => {
+    const result = validateRecipeHintsForBlueprint({
+      blueprint: requireBlueprint("analysis.light"),
+      recipeHints: [
+        {
+          schemaVersion: 2,
+          source: "recipe_blueprint_extension",
+          recipeId: "research",
+          extensionId: "research.context",
+          kind: "context_hint",
+          summary: "Research context",
+          value: { docs: ["research.md"] },
+        },
+        {
+          schemaVersion: 2,
+          source: "recipe_blueprint_extension",
+          recipeId: "research",
+          extensionId: "research.check",
+          kind: "check_suggestion",
+          summary: "Run check",
+          targetNodeKind: "approval_gate",
+          value: { command: "bun test" },
+        },
+      ],
+    });
+
+    expect(result.acceptedRecipeExtensions).toHaveLength(1);
+    expect(result.acceptedRecipeExtensions[0]).toMatchObject({
+      recipeId: "research",
+      extensionId: "research.context",
+      nodeKind: "context_resolve",
+      kind: "context_hint",
+    });
+    expect(result.rejectedRecipeExtensions).toHaveLength(1);
+    expect(result.rejectedRecipeExtensions[0]?.reason).toContain("not active");
+  });
+
+  it("formats accepted and rejected recipe contributions with reasons", () => {
+    const formatted = formatBlueprintExplain(
+      explainResolvedBlueprint({
+        resolved: resolve({
+          title: "Analyze sources",
+          mutation: "none",
+          recipeHints: [
+            {
+              schemaVersion: 2,
+              source: "recipe_blueprint_extension",
+              recipeId: "research",
+              recipeVersion: "1.0.0",
+              extensionId: "research.context",
+              kind: "context_hint",
+              summary: "Research context",
+              value: { docs: ["research.md"] },
+            },
+            {
+              schemaVersion: 2,
+              source: "recipe_blueprint_extension",
+              recipeId: "research",
+              recipeVersion: "1.0.0",
+              extensionId: "research.check",
+              kind: "check_suggestion",
+              summary: "Run check",
+              targetNodeKind: "approval_gate",
+              value: { command: "bun test" },
+            },
+          ],
+        }),
+      }),
+    );
+
+    expect(formatted).toContain(
+      "accepted_recipe_extension: research@1.0.0/research.context kind=context_hint node=context_resolve",
+    );
+    expect(formatted).toContain(
+      "rejected_recipe_extension: research@1.0.0/research.check kind=check_suggestion node=approval_gate",
+    );
   });
 
   it("resolves content-only work to content.light", () => {

@@ -6,9 +6,9 @@ description: "Typed execution-route contracts for task-specific AgentPlane harne
 Blueprints are AgentPlane's typed route contracts for task-specific harness behavior.
 
 v0.5 rc1 ships the model, built-in registry, validation, resolver, explain output, recipe hint
-bridge, task verification visibility, ACR summary extension, and explicit opt-in selection for
-trusted project-local blueprints. It does not ship blueprint node execution or a runner workflow
-engine.
+bridge, task verification visibility, ACR summary extension, runner bundle artifacts, deterministic
+execution plan/state artifacts, project-local trust gates, CLI compatibility reporting, doctor
+integration, and release-gate checks. It does not execute blueprint nodes as a workflow engine.
 
 ## Definition
 
@@ -107,29 +107,34 @@ blueprints/
   builtins.ts
   registry.ts
   project-local.ts
+  execution.ts
   validate.ts
   resolve.ts
   explain.ts
   recipe-hints.ts
+  snapshot.ts
   index.ts
   *.test.ts
 ```
 
 Initial responsibilities:
 
-| File               | Responsibility                                                                  |
-| ------------------ | ------------------------------------------------------------------------------- |
-| `model.ts`         | Pure types, string unions, and small helper predicates                          |
-| `builtins.ts`      | Built-in blueprint definitions and node catalog                                 |
-| `registry.ts`      | Registry lookup, duplicate detection, and built-in export                       |
-| `project-local.ts` | Safe JSON parsing, scaffold writing, project-local validation, and trust config |
-| `validate.ts`      | Structural validation and invariant checks                                      |
-| `resolve.ts`       | Select a blueprint from task metadata, workflow mode, mutation, risk, recipes   |
-| `explain.ts`       | Convert resolved blueprint data into stable human-readable explanation objects  |
-| `recipe-hints.ts`  | Convert normalized recipe blueprint extensions into resolver hints              |
-| `index.ts`         | Public internal exports for CLI and verification integrations                   |
+| File               | Responsibility                                                                 |
+| ------------------ | ------------------------------------------------------------------------------ |
+| `model.ts`         | Pure types, string unions, and small helper predicates                         |
+| `builtins.ts`      | Built-in blueprint definitions and node catalog                                |
+| `registry.ts`      | Registry lookup, duplicate detection, and built-in export                      |
+| `project-local.ts` | Safe JSON parsing, scaffold writing, compatibility reporting, and trust config |
+| `execution.ts`     | Data-only node execution contracts, deterministic plan/state, replay checks    |
+| `validate.ts`      | Structural validation and invariant checks                                     |
+| `resolve.ts`       | Select a blueprint from task metadata, workflow mode, mutation, risk, recipes  |
+| `explain.ts`       | Convert resolved blueprint data into stable human-readable explanation objects |
+| `recipe-hints.ts`  | Convert normalized recipe blueprint extensions into resolver hints             |
+| `snapshot.ts`      | Task-local resolved snapshot artifacts, digesting, and drift checks            |
+| `index.ts`         | Public internal exports for CLI and verification integrations                  |
 
-Do not place route logic inside command handlers. Commands should call the resolver and formatter.
+Do not place route logic inside command handlers. Commands should call the resolver, formatter,
+project-local trust loader, and runner artifact builders.
 
 ## Core Model
 
@@ -336,6 +341,62 @@ export type StopReason = {
 
 The resolver may return stop reasons. A stopped resolution is still useful because it explains why a
 runner must ask for approval, narrow scope, or choose a different route.
+
+## v0.5 Integration Contract
+
+v0.5 treats a resolved blueprint as an executable contract boundary, not as prose. The contract is
+still data-only: AgentPlane materializes plans and evidence surfaces, but it does not yet run
+blueprint nodes as a workflow engine.
+
+Required surfaces:
+
+| Surface           | Contract                                                                                |
+| ----------------- | --------------------------------------------------------------------------------------- |
+| Task start        | Writes `.agentplane/tasks/<task-id>/blueprint/resolved-snapshot.json`                   |
+| Snapshot refresh  | `agentplane blueprint snapshot <task-id> [--json]` rewrites the resolved snapshot       |
+| Snapshot drift    | `agentplane blueprint drift <task-id> [--json]` compares stored and current resolution  |
+| Runner bundle     | Includes `bundle.blueprint`, context budget, stop rules, recipe contribution decisions  |
+| Runner artifacts  | Writes `blueprint-plan.json`, `blueprint-execution-plan.json`, and context manifest     |
+| Execution state   | Writes `blueprint-execution-state.json` with node statuses and replayable history       |
+| Verify evidence   | Records `BlueprintSnapshotRef` and shows blueprint state in verification views          |
+| Finish gate       | Requires current blueprint evidence when a blueprint snapshot exists for the task       |
+| ACR               | Projects snapshot metadata under `extensions["agentplane.blueprint"]`                   |
+| CLI report        | `agentplane blueprint report [--json]` shows project-local trust compatibility          |
+| Doctor            | Reports project-local blueprint compatibility and trust/file warnings                   |
+| Runner trust gate | Fails closed before runner materialization if project-local trust registry is invalid   |
+| Release gate      | Must run blueprint CLI, doctor, runner artifact, and project-local compatibility checks |
+
+Runner artifacts are task-run artifacts, not task lifecycle state. They live under:
+
+```text
+.agentplane/tasks/<task-id>/runs/<run-id>/
+  bundle.json
+  blueprint-plan.json
+  blueprint-execution-plan.json
+  blueprint-execution-state.json
+  context-manifest.json
+```
+
+The execution plan is deterministic for a prepared run. It contains ordered node contracts,
+dependencies, allowed commands, policy modules, expected evidence, accepted recipe extensions, and
+stop reasons. The execution state starts with the first node `ready`, later nodes `pending`, and a
+`planned` history event. Replay/resume checks compare plan/state identity, node coverage, history,
+dependencies, and the next resumable `ready` node.
+
+Project-local blueprints are never trusted by directory presence alone. The trust file is:
+
+```json
+{
+  "schema_version": 1,
+  "trust_model": "explicit_allowlist",
+  "enabled": true,
+  "allowed_ids": ["analysis.local"],
+  "selection": "explicit_only"
+}
+```
+
+Legacy configs without `schema_version` and `trust_model` still load as schema version 1 with
+`explicit_allowlist`, but new docs and scaffolds should use the explicit fields.
 
 ## Node Catalog
 
