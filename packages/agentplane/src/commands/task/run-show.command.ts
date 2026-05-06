@@ -170,6 +170,10 @@ export const runTaskRunShow: CommandHandler<TaskRunShowParsed> = async (
           inspection.bundle.blueprint?.requiredEvidence.map((item) => item.id) ?? [],
         ),
       },
+      {
+        label: "stop_rules",
+        value: JSON.stringify(inspection.bundle.blueprint?.stopReasons ?? []),
+      },
     );
     if (inspection.state.result?.summary) {
       entries.push({ label: "summary", value: inspection.state.result.summary });

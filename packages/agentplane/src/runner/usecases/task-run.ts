@@ -320,6 +320,7 @@ export function renderTaskRunnerBootstrap(
     bundle.target.kind === "task"
       ? `task ${bundle.target.task_id}`
       : `recipe scenario ${bundle.target.recipe_id}:${bundle.target.scenario_id}`;
+  const stopRules = bundle.blueprint?.stopReasons ?? [];
   return [
     "# agentplane runner bootstrap",
     "",
@@ -338,6 +339,13 @@ export function renderTaskRunnerBootstrap(
     `- bootstrap_path: ${bundle.execution.artifact_paths.bootstrap_path}`,
     "",
     "Use bundle.json as the complete runner input. Do not reconstruct prompts from CLI argv.",
+    ...(stopRules.length > 0
+      ? [
+          "",
+          "Blueprint stop rules:",
+          ...stopRules.map((rule) => `- ${rule.severity}: ${rule.reason} (${rule.id})`),
+        ]
+      : []),
     "Execute-mode runs must write a valid JSON result manifest to result_path before exiting.",
     "Minimal manifest example:",
     '{"schema_version":1,"status":"success","summary":"Completed.","capabilities_used":["runner.exec"]}',

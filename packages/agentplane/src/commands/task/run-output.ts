@@ -81,6 +81,7 @@ export function renderTaskRunDryRunOutput(opts: {
     `evidence_checklist: ${JSON.stringify(
       opts.prepared.bundle.blueprint?.requiredEvidence.map((item) => item.id) ?? [],
     )}`,
+    `stop_rules: ${JSON.stringify(opts.prepared.bundle.blueprint?.stopReasons ?? [])}`,
     `argv: ${opts.prepared.invocation.argv.join(" ")}`,
   ];
   return { stdout: linesToOutput(stdout), stderr: "" };
