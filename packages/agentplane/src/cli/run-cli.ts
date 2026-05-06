@@ -12,11 +12,18 @@ import { parseCommandArgv } from "./spec/parse.js";
 import { helpSpec, makeHelpHandler } from "./spec/help.js";
 import { usageError } from "./spec/errors.js";
 import { suggestOne } from "./spec/suggest.js";
-import { COMMANDS, matchCommandCatalog } from "./run-cli/command-catalog.js";
+import { findFrameworkCheckout } from "../../bin/runtime-context.js";
+import {
+  COMMANDS,
+  getHelpCommandEntries,
+  makeHelpSpecForEntry,
+  matchCommandCatalog,
+  type HelpSurfaceMode,
+} from "./run-cli/command-catalog.js";
 import { parseGlobalArgs, resolveOutputMode, runWithOutputMode } from "./run-cli/globals.js";
 import { maybeWarnOnUpdate } from "./run-cli/update-warning.js";
 import { resolveAgentModeArgv } from "./run-cli/agent-mode.js";
-const HELP_TAIL_OPTIONS = new Set(["--compact", "--json"]);
+const HELP_TAIL_OPTIONS = new Set(["--compact", "--json", "--all"]);
 
 type CliResolvedProject = Awaited<ReturnType<typeof resolveProject>>;
 
@@ -60,6 +67,10 @@ export async function runCli(argv: string[]): Promise<number> {
     const outputMode = resolveOutputMode(globals.outputMode);
     jsonErrors = globals.jsonErrors || outputMode === "json";
     const cwd = process.cwd();
+    const helpCwd = globals.root ?? cwd;
+    const defaultHelpSurface: HelpSurfaceMode = findFrameworkCheckout(helpCwd)
+      ? "framework"
+      : "user";
     let matched: ReturnType<typeof matchCommandCatalog> | null = null;
     let maybeResolvedProjectPromise: Promise<CliResolvedProject | null> | null = null;
     const getMaybeResolvedProject = async (): Promise<CliResolvedProject | null> => {
@@ -81,18 +92,23 @@ export async function runCli(argv: string[]): Promise<number> {
       });
     }
 
-    const helpRegistryEntries = [
+    const makeHelpRegistryEntries = (mode: HelpSurfaceMode) => [
       { spec: helpSpec },
-      ...COMMANDS.map((entry) => ({ spec: entry.spec })),
+      ...getHelpCommandEntries(mode).map((entry) => ({ spec: makeHelpSpecForEntry(entry) })),
+    ];
+    const allHelpRegistryEntries = [
+      { spec: helpSpec },
+      ...COMMANDS.map((entry) => ({ spec: makeHelpSpecForEntry(entry) })),
     ];
     const helpRegistry = {
-      list: () => helpRegistryEntries,
+      list: (opts?: { all?: boolean }) =>
+        opts?.all ? allHelpRegistryEntries : makeHelpRegistryEntries(defaultHelpSurface),
       match: (tokens: readonly string[]) => {
         if (tokens[0] === "help") {
           return { spec: helpSpec, consumed: 1 };
         }
         const match = matchCommandCatalog(tokens);
-        return match ? { spec: match.entry.spec, consumed: match.consumed } : null;
+        return match ? { spec: makeHelpSpecForEntry(match.entry), consumed: match.consumed } : null;
       },
     };
     const runHelp = makeHelpHandler(helpRegistry);

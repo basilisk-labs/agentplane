@@ -106,11 +106,29 @@ import {
 
 export const TASK_COMMANDS = [
   fromCommandsTaskTaskCommand(taskSpec, "runTask", { needs: "none" }),
-  fromCommandsTaskHandoffCommand(taskHandoffSpec, "runTaskHandoff", { needs: "none" }),
-  fromCommandsTaskHandoffRecordCommand(taskHandoffRecordSpec, "runTaskHandoffRecord", {}),
-  fromTaskHandoffShowSpec(taskHandoffShowSpec, "runTaskHandoffShow"),
-  declareCommand(taskHostedCloseSpec, { load: loadTaskHostedCloseSpec }),
-  declareCommand(taskHostedClosePrSpec, { load: loadTaskHostedClosePrSpec }),
+  fromCommandsTaskHandoffCommand(taskHandoffSpec, "runTaskHandoff", {
+    needs: "none",
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  fromCommandsTaskHandoffRecordCommand(taskHandoffRecordSpec, "runTaskHandoffRecord", {
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  fromTaskHandoffShowSpec(taskHandoffShowSpec, "runTaskHandoffShow", {
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareCommand(taskHostedCloseSpec, {
+    load: loadTaskHostedCloseSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareCommand(taskHostedClosePrSpec, {
+    load: loadTaskHostedClosePrSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
   declareCommand(taskListSpec, {
     load: loadTaskListSpec,
     invocation: requireCanonicalCommandInvocation(["task", "list"]),
@@ -122,40 +140,114 @@ export const TASK_COMMANDS = [
     invocation: requireCanonicalCommandInvocation(["task", "show"]),
   }),
   fromCommandsTaskRunShowCommand(taskRunShowSpec, "runTaskRunShow", {}),
-  fromTaskRunTraceSpec(taskRunTraceSpec, "runTaskRunTrace"),
+  fromTaskRunTraceSpec(taskRunTraceSpec, "runTaskRunTrace", {
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
   fromCommandsTaskRunTailCommand(taskRunTailSpec, "runTaskRunTail", {}),
   fromTaskRunSpec(taskRunSpec, "runTaskRun"),
-  fromCommandsTaskRunCancelCommand(taskRunCancelSpec, "runTaskRunCancel", {}),
-  fromTaskRunResumeSpec(taskRunResumeSpec, "runTaskRunResume"),
-  fromCommandsTaskRunRetryCommand(taskRunRetrySpec, "runTaskRunRetry", {}),
+  fromCommandsTaskRunCancelCommand(taskRunCancelSpec, "runTaskRunCancel", {
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  fromTaskRunResumeSpec(taskRunResumeSpec, "runTaskRunResume", {
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  fromCommandsTaskRunRetryCommand(taskRunRetrySpec, "runTaskRunRetry", {
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
   declareCommand(taskNewSpec, {
     load: loadTaskNewSpec,
     invocation: requireCanonicalCommandInvocation(["task", "new"]),
   }),
-  declareCommand(taskDeriveSpec, { load: loadTaskDeriveSpec }),
-  declareCommand(taskCloseDuplicateSpec, { load: loadTaskCloseDuplicateSpec }),
+  declareCommand(taskDeriveSpec, {
+    load: loadTaskDeriveSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareCommand(taskCloseDuplicateSpec, {
+    load: loadTaskCloseDuplicateSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
   declareCommand(taskStartReadySpec, {
     load: loadTaskStartReadySpec,
     invocation: requireCanonicalCommandInvocation(["task", "start-ready"]),
   }),
-  declareCommand(taskCloseNoopSpec, { load: loadTaskCloseNoopSpec }),
-  declareCommand(taskAddSpec, { load: loadTaskAddSpec }),
-  declareCommand(taskUpdateSpec, { load: loadTaskUpdateSpec }),
+  declareCommand(taskCloseNoopSpec, {
+    load: loadTaskCloseNoopSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareCommand(taskAddSpec, {
+    load: loadTaskAddSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareCommand(taskUpdateSpec, {
+    load: loadTaskUpdateSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
   declareCommand(taskCommentSpec, { load: loadTaskCommentSpec }),
-  declareCommand(taskSetStatusSpec, { load: loadTaskSetStatusSpec }),
-  fromCommandsTaskFindingsCommand(taskFindingsSpec, "runTaskFindings", { needs: "none" }),
-  declareCommand(taskFindingsAddSpec, { load: loadTaskFindingsAddSpec }),
+  declareCommand(taskSetStatusSpec, {
+    load: loadTaskSetStatusSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  fromCommandsTaskFindingsCommand(taskFindingsSpec, "runTaskFindings", {
+    needs: "none",
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareCommand(taskFindingsAddSpec, {
+    load: loadTaskFindingsAddSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
   fromCommandsTaskDocCommand(taskDocSpec, "runTaskDoc", { needs: "none" }),
   declareCommand(taskDocShowSpec, { load: loadTaskDocShowSpec }),
   declareCommand(taskDocSetSpec, { load: loadTaskDocSetSpec }),
-  declareCommand(taskScrubSpec, { load: loadTaskScrubSpec }),
-  declareCommand(taskScaffoldSpec, { load: loadTaskScaffoldSpec }),
-  declareCommand(taskNormalizeSpec, { load: loadTaskNormalizeSpec }),
-  declareCommand(taskExportSpec, { load: loadTaskExportSpec }),
-  declareCommand(taskObsidianSpec, { load: loadTaskObsidianSpec }),
-  fromCommandsTaskLintCommand(taskLintSpec, "runTaskLint", {}),
-  declareCommand(taskMigrateSpec, { load: loadTaskMigrateSpec }),
-  fromCommandsTaskMigrateDocCommand(taskMigrateDocSpec, "runTaskMigrateDoc", {}),
+  declareCommand(taskScrubSpec, {
+    load: loadTaskScrubSpec,
+    surface: "internal",
+    helpGroup: "Maintenance",
+  }),
+  declareCommand(taskScaffoldSpec, {
+    load: loadTaskScaffoldSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareCommand(taskNormalizeSpec, {
+    load: loadTaskNormalizeSpec,
+    surface: "internal",
+    helpGroup: "Maintenance",
+  }),
+  declareCommand(taskExportSpec, {
+    load: loadTaskExportSpec,
+    surface: "internal",
+    helpGroup: "Maintenance",
+  }),
+  declareCommand(taskObsidianSpec, {
+    load: loadTaskObsidianSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  fromCommandsTaskLintCommand(taskLintSpec, "runTaskLint", {
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  declareCommand(taskMigrateSpec, {
+    load: loadTaskMigrateSpec,
+    surface: "internal",
+    helpGroup: "Maintenance",
+  }),
+  fromCommandsTaskMigrateDocCommand(taskMigrateDocSpec, "runTaskMigrateDoc", {
+    surface: "internal",
+    helpGroup: "Maintenance",
+  }),
   fromTaskPlanSpec(taskPlanSpec, "runTaskPlan", { needs: "none" }),
   declareCommand(taskPlanSetSpec, {
     load: loadTaskPlanSetSpec,
@@ -165,7 +257,11 @@ export const TASK_COMMANDS = [
     load: loadTaskPlanApproveSpec,
     invocation: requireCanonicalCommandInvocation(["task", "plan", "approve"]),
   }),
-  declareCommand(taskPlanRejectSpec, { load: loadTaskPlanRejectSpec }),
+  declareCommand(taskPlanRejectSpec, {
+    load: loadTaskPlanRejectSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
   fromCommandsTaskVerifyCommand(taskVerifySpec, "runTaskVerify", { needs: "none" }),
   declareCommand(taskVerifyOkSpec, { load: loadTaskVerifyOkSpec }),
   declareCommand(taskVerifyReworkSpec, { load: loadTaskVerifyReworkSpec }),
@@ -173,7 +269,17 @@ export const TASK_COMMANDS = [
     load: loadTaskVerifyShowSpec,
     invocation: requireCanonicalCommandInvocation(["task", "verify-show"]),
   }),
-  declareCommand(taskRebuildIndexSpec, { load: loadTaskRebuildIndexSpec }),
-  fromCommandsTaskResumeContextCommand(taskResumeContextSpec, "runTaskResumeContext", {}),
-  fromTaskReclaimSpec(taskReclaimSpec, "runTaskReclaim"),
+  declareCommand(taskRebuildIndexSpec, {
+    load: loadTaskRebuildIndexSpec,
+    surface: "internal",
+    helpGroup: "Maintenance",
+  }),
+  fromCommandsTaskResumeContextCommand(taskResumeContextSpec, "runTaskResumeContext", {
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
+  fromTaskReclaimSpec(taskReclaimSpec, "runTaskReclaim", {
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
 ] as const satisfies readonly CommandEntry[];

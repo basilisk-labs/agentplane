@@ -19,17 +19,22 @@ export type DispatchNeeds = {
 };
 
 export type CommandNeeds = "none" | "project" | "project+config" | "project+config+task";
+export type CommandSurface = "user" | "advanced" | "framework" | "internal";
 
 export type CommandEntry = {
   spec: CommandSpec<unknown>;
   load: (deps: RunDeps) => Promise<CommandHandler<unknown>>;
   needs: CommandNeeds;
   dispatch: DispatchNeeds;
+  surface: CommandSurface;
+  helpGroup?: string;
   invocation?: string;
 };
 
 export type CommandMeta = {
   needs?: CommandNeeds;
+  surface?: CommandSurface;
+  helpGroup?: string;
   invocation?: string;
 };
 
@@ -76,6 +81,8 @@ export function declareCommand<TParsed>(
     load: (deps) => loadDeclaredCommand(declaration, deps) as Promise<CommandHandler<unknown>>,
     needs,
     dispatch: normalizeDispatchNeeds(needs),
+    surface: declaration.surface ?? "user",
+    helpGroup: declaration.helpGroup,
     invocation: declaration.invocation,
   };
 }

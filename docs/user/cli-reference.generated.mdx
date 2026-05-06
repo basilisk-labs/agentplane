@@ -4,29 +4,51 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 
 ## Index
 
-- ACR
-  - [acr](#acr)
-  - [acr check](#acr-check)
-  - [acr explain](#acr-explain)
-  - [acr generate](#acr-generate)
-  - [acr schema](#acr-schema)
-  - [acr validate](#acr-validate)
-- Backend
-  - [backend](#backend)
-  - [backend connect](#backend-connect)
-  - [backend inspect](#backend-inspect)
-  - [backend migrate-canonical-state](#backend-migrate-canonical-state)
-  - [backend sync](#backend-sync)
-  - [sync](#sync)
-- Blueprints
-  - [blueprint](#blueprint)
-  - [blueprint drift](#blueprint-drift)
-  - [blueprint explain](#blueprint-explain)
-  - [blueprint list](#blueprint-list)
-  - [blueprint report](#blueprint-report)
-  - [blueprint scaffold](#blueprint-scaffold)
-  - [blueprint snapshot](#blueprint-snapshot)
-  - [blueprint validate](#blueprint-validate)
+- Core
+  - [agents](#agents)
+  - [help](#help)
+  - [preflight](#preflight)
+  - [quickstart](#quickstart)
+  - [role](#role)
+- Task
+  - [ready](#ready)
+  - [task](#task)
+  - [task comment](#task-comment)
+  - [task doc](#task-doc)
+  - [task doc set](#task-doc-set)
+  - [task doc show](#task-doc-show)
+  - [task list](#task-list)
+  - [task new](#task-new)
+  - [task next](#task-next)
+  - [task plan](#task-plan)
+  - [task plan approve](#task-plan-approve)
+  - [task plan set](#task-plan-set)
+  - [task run](#task-run)
+  - [task run show](#task-run-show)
+  - [task run tail](#task-run-tail)
+  - [task search](#task-search)
+  - [task show](#task-show)
+  - [task start-ready](#task-start-ready)
+  - [task verify](#task-verify)
+  - [task verify ok](#task-verify-ok)
+  - [task verify rework](#task-verify-rework)
+  - [task verify-show](#task-verify-show)
+- Lifecycle
+  - [block](#block)
+  - [finish](#finish)
+  - [start](#start)
+  - [verify](#verify)
+- Work
+  - [work start](#work-start)
+- PR
+  - [integrate](#integrate)
+  - [pr](#pr)
+  - [pr check](#pr-check)
+  - [pr close](#pr-close)
+  - [pr close-superseded](#pr-close-superseded)
+  - [pr note](#pr-note)
+  - [pr open](#pr-open)
+  - [pr update](#pr-update)
 - Branch
   - [branch base](#branch-base)
   - [branch base clear](#branch-base-clear)
@@ -37,60 +59,26 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [branch status](#branch-status)
   - [cleanup](#cleanup)
   - [cleanup merged](#cleanup-merged)
-- Codex
-  - [codex](#codex)
-  - [codex plugin](#codex-plugin)
-  - [codex plugin install](#codex-plugin-install)
+- Backend
+  - [backend](#backend)
+  - [backend connect](#backend-connect)
+  - [backend inspect](#backend-inspect)
+  - [backend sync](#backend-sync)
+  - [sync](#sync)
 - Config
   - [config set](#config-set)
   - [config show](#config-show)
   - [mode get](#mode-get)
   - [mode set](#mode-set)
   - [profile set](#profile-set)
-- Core
-  - [agents](#agents)
-  - [help](#help)
-  - [preflight](#preflight)
-  - [quickstart](#quickstart)
-  - [role](#role)
+- Setup
+  - [init](#init)
+  - [upgrade](#upgrade)
+- Quality
+  - [doctor](#doctor)
 - Diagnostics
   - [runtime](#runtime)
   - [runtime explain](#runtime-explain)
-- Docs
-  - [docs cli](#docs-cli)
-- Guard
-  - [commit](#commit)
-  - [guard](#guard)
-  - [guard clean](#guard-clean)
-  - [guard commit](#guard-commit)
-  - [guard suggest-allow](#guard-suggest-allow)
-- Hooks
-  - [hooks](#hooks)
-  - [hooks install](#hooks-install)
-  - [hooks run](#hooks-run)
-  - [hooks uninstall](#hooks-uninstall)
-- IDE
-  - [ide sync](#ide-sync)
-- Lifecycle
-  - [block](#block)
-  - [finish](#finish)
-  - [start](#start)
-  - [verify](#verify)
-- Policy
-  - [incidents](#incidents)
-  - [incidents advise](#incidents-advise)
-  - [incidents collect](#incidents-collect)
-- PR
-  - [integrate](#integrate)
-  - [pr](#pr)
-  - [pr check](#pr-check)
-  - [pr close](#pr-close)
-  - [pr close-superseded](#pr-close-superseded)
-  - [pr note](#pr-note)
-  - [pr open](#pr-open)
-  - [pr update](#pr-update)
-- Quality
-  - [doctor](#doctor)
 - Recipes
   - [recipes](#recipes)
   - [recipes active](#recipes-active)
@@ -108,26 +96,44 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [recipes list-remote](#recipes-list-remote)
   - [recipes remove](#recipes-remove)
   - [recipes update](#recipes-update)
-- Release
-  - [release](#release)
-  - [release apply](#release-apply)
-  - [release candidate](#release-candidate)
-  - [release plan](#release-plan)
-- Setup
-  - [init](#init)
-  - [upgrade](#upgrade)
-- Task
-  - [ready](#ready)
-  - [task](#task)
+- Blueprints
+  - [blueprint](#blueprint)
+  - [blueprint drift](#blueprint-drift)
+  - [blueprint explain](#blueprint-explain)
+  - [blueprint list](#blueprint-list)
+  - [blueprint report](#blueprint-report)
+  - [blueprint scaffold](#blueprint-scaffold)
+  - [blueprint snapshot](#blueprint-snapshot)
+  - [blueprint validate](#blueprint-validate)
+- ACR
+  - [acr](#acr)
+  - [acr check](#acr-check)
+  - [acr explain](#acr-explain)
+  - [acr generate](#acr-generate)
+  - [acr schema](#acr-schema)
+  - [acr validate](#acr-validate)
+- Guard
+  - [commit](#commit)
+  - [guard](#guard)
+  - [guard clean](#guard-clean)
+  - [guard commit](#guard-commit)
+  - [guard suggest-allow](#guard-suggest-allow)
+- Hooks
+  - [hooks](#hooks)
+  - [hooks install](#hooks-install)
+  - [hooks run](#hooks-run)
+  - [hooks uninstall](#hooks-uninstall)
+- Policy
+  - [incidents](#incidents)
+  - [incidents advise](#incidents-advise)
+  - [incidents collect](#incidents-collect)
+- IDE
+  - [ide sync](#ide-sync)
+- Advanced
   - [task add](#task-add)
   - [task close-duplicate](#task-close-duplicate)
   - [task close-noop](#task-close-noop)
-  - [task comment](#task-comment)
   - [task derive](#task-derive)
-  - [task doc](#task-doc)
-  - [task doc set](#task-doc-set)
-  - [task doc show](#task-doc-show)
-  - [task export](#task-export)
   - [task findings](#task-findings)
   - [task findings add](#task-findings-add)
   - [task handoff](#task-handoff)
@@ -136,595 +142,1309 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task hosted-close](#task-hosted-close)
   - [task hosted-close-pr](#task-hosted-close-pr)
   - [task lint](#task-lint)
-  - [task list](#task-list)
-  - [task migrate](#task-migrate)
-  - [task migrate-doc](#task-migrate-doc)
-  - [task new](#task-new)
-  - [task next](#task-next)
-  - [task normalize](#task-normalize)
   - [task obsidian](#task-obsidian)
-  - [task plan](#task-plan)
-  - [task plan approve](#task-plan-approve)
   - [task plan reject](#task-plan-reject)
-  - [task plan set](#task-plan-set)
-  - [task rebuild-index](#task-rebuild-index)
   - [task reclaim](#task-reclaim)
   - [task resume-context](#task-resume-context)
-  - [task run](#task-run)
   - [task run cancel](#task-run-cancel)
   - [task run resume](#task-run-resume)
   - [task run retry](#task-run-retry)
-  - [task run show](#task-run-show)
-  - [task run tail](#task-run-tail)
   - [task run trace](#task-run-trace)
   - [task scaffold](#task-scaffold)
-  - [task scrub](#task-scrub)
-  - [task search](#task-search)
   - [task set-status](#task-set-status)
-  - [task show](#task-show)
-  - [task start-ready](#task-start-ready)
   - [task update](#task-update)
-  - [task verify](#task-verify)
-  - [task verify ok](#task-verify-ok)
-  - [task verify rework](#task-verify-rework)
-  - [task verify-show](#task-verify-show)
-- Work
-  - [work start](#work-start)
-- Workflow
+- Framework Dev
+  - [codex](#codex)
+  - [codex plugin](#codex-plugin)
+  - [codex plugin install](#codex-plugin-install)
+  - [docs cli](#docs-cli)
+  - [release](#release)
+  - [release apply](#release-apply)
+  - [release candidate](#release-candidate)
+  - [release plan](#release-plan)
   - [workflow](#workflow)
   - [workflow build](#workflow-build)
   - [workflow debug](#workflow-debug)
   - [workflow land](#workflow-land)
   - [workflow restore](#workflow-restore)
   - [workflow sync](#workflow-sync)
+- Maintenance
+  - [backend migrate-canonical-state](#backend-migrate-canonical-state)
+  - [task export](#task-export)
+  - [task migrate](#task-migrate)
+  - [task migrate-doc](#task-migrate-doc)
+  - [task normalize](#task-normalize)
+  - [task rebuild-index](#task-rebuild-index)
+  - [task scrub](#task-scrub)
 
-## ACR
+## Core
 
-### acr
+### agents
 
-Generate, validate, check, explain, and print Agent Change Record artifacts.
-
-This is a command group. Use a subcommand such as \`agentplane acr generate ...\`, \`agentplane acr validate ...\`, or \`agentplane acr schema\`.
+List agent definitions under .agentplane/agents.
 
 Usage:
 
 ```text
-agentplane acr [<cmd> ...]
+agentplane agents
 ```
 
 Examples:
 
 ```sh
-agentplane acr generate 202605031625-886KZ6 --work-commit HEAD --write
+agentplane agents
 ```
 
-- Generate a task-local ACR.
+- Print available agent ids and roles.
 
-### acr check
+### help
 
-Run the ACR merge-gate check for CI and branch review.
+Show help for a command.
+
+Renders spec-derived help for migrated commands. Use --compact for minimal output and --json for machine-readable help.
 
 Usage:
 
 ```text
-agentplane acr check <task-id> [options]
+agentplane help [<cmd> ...] [options]
 ```
 
 Options:
 
-- `--mode <ci>`: Check mode. (choices=ci, default=ci)
-- `--require-plan-approved`: Require approved plan. (default=true)
-- `--require-verification`: Require passed verification. (default=true)
-- `--require-policy-pass`: Reject failed policy decisions. (default=true)
-- `--allow-waived-verification`: Allow waived verification with approval. (default=false)
-- `--allow-manual-override`: Allow policy manual_override with approval. (default=false)
-- `--json`: Emit machine-readable result. (default=false)
+- `--compact`: Compact help (usage + options).
+- `--json`: Emit JSON help (success output).
+- `--all`: Include framework-dev and internal maintenance commands in registry output.
 
 Examples:
 
 ```sh
-agentplane acr check 202605031625-886KZ6 --mode ci
+agentplane help
 ```
 
-- Run merge gate.
+- List commands available in the CLI command catalog.
 
-### acr explain
+```sh
+agentplane help task new --compact
+```
 
-Explain an ACR for human review.
+- Show compact help for a command.
+
+```sh
+agentplane help task new --json
+```
+
+- Show JSON help for a command.
+
+### preflight
+
+Run aggregated preflight checks and print a deterministic readiness report.
 
 Usage:
 
 ```text
-agentplane acr explain <task-id-or-path> [options]
+agentplane preflight [options]
 ```
 
 Options:
 
-- `--json`: Emit machine-readable summary. (default=false)
+- `--mode <quick|full>`: Preflight depth. quick skips backend task-list probe; full includes backend readiness. (choices=quick|full, default=quick)
+- `--full`: Shortcut for --mode full. (default=false)
+- `--json`: Emit machine-readable JSON report. (default=false)
 
 Examples:
 
 ```sh
-agentplane acr explain 202605031625-886KZ6
+agentplane preflight --json
 ```
 
-- Summarize ACR readiness.
+- Produce one-shot agent-readable preflight.
 
-### acr generate
+```sh
+agentplane preflight --json --mode full
+```
 
-Generate an Agent Change Record from task, Git, policy, and verification state.
+- Run full preflight including backend task-list probe.
+
+### quickstart
+
+Print the canonical agent bootstrap path and startup guidance.
 
 Usage:
 
 ```text
-agentplane acr generate <task-id> [options]
+agentplane quickstart [options]
 ```
 
 Options:
 
-- `--work-commit <rev>`: Implementation revision.
-- `--base-commit <rev>`: Base revision override.
-- `--agent <id>`: AgentPlane role or agent id.
-- `--agent-name <name>`: Human-readable agent name.
-- `--model-provider <provider>`: Model provider. (choices=anthropic|openai|cursor|aider|unknown|custom)
-- `--model-name <name>`: Model name.
-- `--out <path>`: Write ACR to custom path.
-- `--write`: Write task-local ACR. (default=false)
-- `--stdout`: Print ACR JSON to stdout. (default=false)
-- `--refresh`: Overwrite existing ACR. (default=false)
-- `--json`: Emit machine-readable result. (default=false)
+- `--json`: Emit compact machine-readable output for agent runtimes. (default=false)
 
 Examples:
 
 ```sh
-agentplane acr generate 202605031625-886KZ6 --work-commit HEAD --write
+agentplane quickstart
 ```
 
-- Write \`.agentplane/tasks/&lt;task-id&gt;/acr.json\`.
+- Show quickstart.
 
-### acr schema
+### role
 
-Print or write the ACR v0.1 JSON Schema.
+Show role-specific workflow guidance.
 
 Usage:
 
 ```text
-agentplane acr schema [options]
+agentplane role <role> [options]
 ```
 
 Options:
 
-- `--version <version>`: ACR schema version. (choices=0.1, default=0.1)
-- `--out <path>`: Write schema to a file instead of stdout.
+- `--json`: Emit compact machine-readable role payload. (default=false)
 
 Examples:
 
 ```sh
-agentplane acr schema --version 0.1
+agentplane role ORCHESTRATOR
 ```
 
-- Print the bundled schema.
+- Show ORCHESTRATOR guide.
 
-```sh
-agentplane acr schema --version 0.1 --out schemas/acr-v0.1.schema.json
-```
+## Task
 
-- Write the bundled schema to a custom path.
+### ready
 
-### acr validate
-
-Validate an ACR file by schema, local, or CI invariants.
+Report dependency readiness details for a task.
 
 Usage:
 
 ```text
-agentplane acr validate <task-id-or-path> [options]
+agentplane ready <task-id>
+```
+
+Examples:
+
+```sh
+agentplane ready 202602030608-F1Q8AB
+```
+
+- Print readiness details.
+
+### task
+
+Task lifecycle and task-store commands.
+
+Usage:
+
+```text
+agentplane task <subcommand> [args] [options]
+```
+
+Notes:
+
+- Direct task route: task new -&gt; task plan set -&gt; task plan approve -&gt; task start-ready -&gt; task verify-show -&gt; verify -&gt; finish.
+- Use \`agentplane help task plan\`, \`agentplane help task doc\`, and \`agentplane help task verify\` to inspect task sub-areas.
+- Verification recording and closure stay top-level lifecycle commands: \`agentplane verify ...\` and \`agentplane finish ...\`.
+
+Examples:
+
+```sh
+agentplane task new --title "..." --description "..." --owner CODER --tag code
+```
+
+- Create a task.
+
+```sh
+agentplane task plan set <task-id> --text "..." --updated-by ORCHESTRATOR
+```
+
+- Write the execution plan.
+
+```sh
+agentplane task start-ready <task-id> --author CODER --body "Start: ..."
+```
+
+- Start the task after approval.
+
+```sh
+agentplane task verify-show <task-id>
+```
+
+- Show Verify Steps before running checks.
+
+```sh
+agentplane task run <task-id>
+```
+
+- Run an existing task through the shared runner flow.
+
+```sh
+agentplane task handoff record <task-id> --from CODER --reason "Paused for handoff"
+```
+
+- Persist a first-class handoff snapshot.
+
+```sh
+agentplane task hosted-close --event-json "$GITHUB_EVENT_PATH"
+```
+
+- Apply deterministic task closure from a merged hosted PR event on an automation branch.
+
+```sh
+agentplane task hosted-close-pr 202604091218-JREJ4K
+```
+
+- Open the hosted closure PR after a manual handoff comment leaves only the remote task-close branch.
+
+```sh
+agentplane task resume-context <task-id>
+```
+
+- Inspect deterministic recovery context before resuming or retrying a run.
+
+### task comment
+
+Append a comment to a task.
+
+Usage:
+
+```text
+agentplane task comment <task-id> --author <id> [options]
 ```
 
 Options:
 
-- `--mode <schema|local|ci>`: Validation mode. (choices=schema|local|ci, default=local)
-- `--strict`: Treat warnings as failures. (default=false)
-- `--json`: Emit machine-readable result. (default=false)
+- `--author <id>`: Comment author id (e.g. CODER). (required)
+- `--body <text>`: Comment body text. Use --body-file for Markdown or shell-sensitive text.
+- `--body-file <path>`: Read the comment body from a file path (mutually exclusive with --body).
 
 Examples:
 
 ```sh
-agentplane acr validate 202605031625-886KZ6 --mode local
+agentplane task comment 202602030608-F1Q8AB --author CODER --body "Investigated root cause."
 ```
 
-- Validate task ACR.
+- Add a comment and bump doc metadata.
 
-## Backend
+### task doc
 
-### backend
-
-Backend-related operations.
-
-This is a command group. Use a subcommand such as \`agentplane backend sync ...\`, \`agentplane backend inspect ...\`, \`agentplane backend connect ...\`, or \`agentplane backend migrate-canonical-state ...\`.
+Task doc commands (show/set).
 
 Usage:
 
 ```text
-agentplane backend [<cmd> ...]
+agentplane task doc show <task-id> [--section <name>] [--quiet]
+agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>) [--updated-by <id>]
+agentplane task doc set <task-id> --full-doc (--text <text> | --file <path>) [--updated-by <id>]
 ```
 
-Examples:
+### task doc set
 
-```sh
-agentplane backend sync local --direction pull
-```
-
-- Sync the backend.
-
-### backend connect
-
-Configure a cloud backend connection.
+Update a task README section.
 
 Usage:
 
 ```text
-agentplane backend connect <id> [options]
+agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>) [--updated-by <id>]
+agentplane task doc set <task-id> --full-doc (--text <text> | --file <path>) [--updated-by <id>]
 ```
 
 Options:
 
-- `--endpoint <url>`: Cloud sync service endpoint.
-- `--project-id <id>`: Cloud sync service project identifier.
-- `--provider <name>`: Optional remote projection provider selected in the cloud service.
-- `--token <token>`: Cloud CLI token. Stored only in ignored project .env, not backend JSON.
-- `--yes`: Reserved for future browser flow approval. (default=false)
+- `--section <name>`: Target section heading (must be one of config.tasks.doc.sections). Required unless --full-doc is set.
+- `--full-doc`: Treat the provided text/file as the full task README payload. (default=false)
+- `--text <text>`: Section content (mutually exclusive with --file). Literal escaped newlines (\n) are normalized for inline text.
+- `--file <path>`: Read section content from a file (mutually exclusive with --text).
+- `--updated-by <id>`: Optional. Override doc_updated_by metadata (must be non-empty).
+
+Examples:
+
+```sh
+agentplane task doc set 202602030608-F1Q8AB --section Summary --text "New summary."
+```
+
+- Update one section using inline text.
+
+```sh
+agentplane task doc set 202602030608-F1Q8AB --section Plan --file ./plan.md
+```
+
+- Update one section using a file.
+
+```sh
+agentplane task doc set 202602030608-F1Q8AB --full-doc --file ./task-readme.md
+```
+
+- Replace the full task README payload explicitly.
+
+### task doc show
+
+Print task README content (entire doc or one section).
+
+Usage:
+
+```text
+agentplane task doc show <task-id> [options]
+```
+
+Options:
+
+- `--section <name>`: Optional. Print a single section.
+- `--quiet`: Suppress informational output when doc/section content is missing. (default=false)
+
+Examples:
+
+```sh
+agentplane task doc show 202602030608-F1Q8AB
+```
+
+- Print the full doc.
+
+```sh
+agentplane task doc show 202602030608-F1Q8AB --section Summary
+```
+
+- Print a single section.
+
+### task list
+
+List tasks (optionally filtered by status/owner/tag).
+
+Usage:
+
+```text
+agentplane task list [options]
+```
+
+Options:
+
+- `--status <status>`: Repeatable. Filter by status. (repeatable)
+- `--owner <owner>`: Repeatable. Filter by owner id. (repeatable)
+- `--tag <tag>`: Repeatable. Filter by tag. (repeatable)
+- `--strict-read`: Fail if task scan skips malformed/unreadable task files. (default=false)
+- `--limit <n>`: Max rows to print.
+- `--quiet`: Suppress summary output. (default=false)
+
+Examples:
+
+```sh
+agentplane task list
+```
+
+- List all tasks.
+
+```sh
+agentplane task list --status TODO --owner CODER
+```
+
+- List filtered tasks.
+
+### task new
+
+Create a new task (prints the generated task id).
+
+Creates a TODO task with doc_version=3, seeds the README v3 section layout, and writes it via the configured task backend.
+
+Usage:
+
+```text
+agentplane task new --title <text> --description <text> --owner <id> [options]
+```
+
+Options:
+
+- `--title <text>`: Task title. (required)
+- `--description <text>`: Task description. (required)
+- `--owner <id>`: Owner id (e.g. CODER). (required)
+- `--priority <low|normal|med|high>`: Task priority (default: med). (choices=low|normal|med|high, default=med)
+- `--tag <tag>`: Repeatable. Adds a tag (must provide at least one). (repeatable)
+- `--task-kind <analysis|content|docs|code|release|ops>`: Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops)
+- `--mutation-scope <none|docs|code|release|ops|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|unknown)
+- `--risk <risk>`: Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
+- `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|release.strict|ops.approval)
+- `--depends-on <task-id>`: Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
+- `--verify <command>`: Repeatable. Verification commands/checks to run for this task. (repeatable)
+- `--allow-duplicate`: Allow creating a task even when an open task with a highly similar title already exists. (default=false)
+
+Notes:
+
+- Task creation defaults to doc_version=3 and seeds the README v3 section contract automatically.
+- For verify-required primary tags, this command seeds a default ## Verify Steps acceptance contract in README.
+
+Examples:
+
+```sh
+agentplane task new --title "Refactor CLI" --description "Improve CLI output" --owner CODER --tag cli
+```
+
+- Create a new task with one tag.
+
+### task next
+
+List ready tasks (default status=TODO) with optional filters.
+
+Usage:
+
+```text
+agentplane task next [options]
+```
+
+Options:
+
+- `--status <status>`: Repeatable. Filter by status (default: TODO). (repeatable)
+- `--owner <owner>`: Repeatable. Filter by owner id. (repeatable)
+- `--tag <tag>`: Repeatable. Filter by tag. (repeatable)
+- `--strict-read`: Fail if task scan skips malformed/unreadable task files. (default=false)
+- `--limit <n>`: Max rows to print.
+- `--quiet`: Suppress summary output. (default=false)
+
+Examples:
+
+```sh
+agentplane task next
+```
+
+- List ready TODO tasks.
+
+```sh
+agentplane task next --limit 3
+```
+
+- Limit output.
+
+### task plan
+
+Task plan commands (set/approve/reject).
+
+Usage:
+
+```text
+agentplane task plan <set|approve|reject> [args] [options]
+```
+
+Examples:
+
+```sh
+agentplane task plan set <task-id> --text "..." --updated-by ORCHESTRATOR
+```
+
+- Write or replace the task plan.
+
+```sh
+agentplane task plan approve <task-id> --by ORCHESTRATOR
+```
+
+- Approve the current task plan.
+
+```sh
+agentplane task plan reject <task-id> --by ORCHESTRATOR --note "..."
+```
+
+- Reject the current task plan with a note.
+
+### task plan approve
+
+Approve the current task plan (enforces Verify Steps gating when configured).
+
+Usage:
+
+```text
+agentplane task plan approve <task-id> --by <id> [options]
+```
+
+Options:
+
+- `--by <id>`: Approver id. (required)
+- `--note <text>`: Optional note (stored in plan_approval.note).
+
+Examples:
+
+```sh
+agentplane task plan approve 202602030608-F1Q8AB --by USER --note "OK"
+```
+
+- Approve a plan with a note.
+
+### task plan set
+
+Set a task plan (writes the Plan section and resets plan approval to pending).
+
+Usage:
+
+```text
+agentplane task plan set <task-id> [options]
+```
+
+Options:
+
+- `--text <text>`: Plan text to write into the task README Plan section. Literal escaped newlines (\n) are normalized for inline text.
+- `--file <path>`: Read plan text from a file path (relative to cwd).
+- `--updated-by <id>`: Optional. Sets doc_updated_by when writing the plan.
+
+Examples:
+
+```sh
+agentplane task plan set 202602030608-F1Q8AB --text "1) Do X\n2) Verify Y" --updated-by ORCHESTRATOR
+```
+
+- Write plan from text and set doc_updated_by.
+
+```sh
+agentplane task plan set 202602030608-F1Q8AB --file plan.md
+```
+
+- Write plan from a file.
+
+### task run
+
+Prepare or run a task through the shared runner contract.
+
+Materializes runner bundle artifacts for a task and can execute the configured runner adapter against that prepared bundle.
+
+Usage:
+
+```text
+agentplane task run <task-id> [options]
+```
+
+Options:
+
+- `--dry-run`: Prepare runner artifacts and print invocation metadata without executing a runner. (default=false)
+
+Examples:
+
+```sh
+agentplane task run 202602030608-F1Q8AB --dry-run
+```
+
+- Materialize bundle/run artifacts and inspect the prepared runner invocation.
+
+```sh
+agentplane task run 202602030608-F1Q8AB
+```
+
+- Prepare bundle artifacts and execute the configured runner adapter for the task.
+
+### task run show
+
+Inspect persisted runner state and result artifacts for an existing run.
+
+Loads an existing runner run from its artifacts and prints a structured summary of run-state, result metadata, and event counters. When run-id is omitted, the latest run for the task is selected.
+
+Usage:
+
+```text
+agentplane task run show <task-id> [[run-id]] [options]
+```
+
+Options:
+
+- `--json`: Emit machine-readable runner inspection JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane task run show 202602030608-F1Q8AB
+```
+
+- Inspect the latest persisted runner run for a task.
+
+```sh
+agentplane task run show 202602030608-F1Q8AB run_20260323_abc123
+```
+
+- Inspect a specific run by run id.
+
+```sh
+agentplane task run show 202602030608-F1Q8AB --json
+```
+
+- Inspect the latest run in machine-readable JSON form.
+
+### task run tail
+
+Print the last N lines from the raw agent trace artifact for an existing runner run.
+
+Reads agent-trace.jsonl for an existing runner run and prints the last N lines. When run-id is omitted, the latest run for the task is selected.
+
+Usage:
+
+```text
+agentplane task run tail <task-id> [[run-id]] [options]
+```
+
+Options:
+
+- `--lines <n>`: Optional. Number of trace lines to print from the end (default: 40).
+
+Examples:
+
+```sh
+agentplane task run tail 202602030608-F1Q8AB
+```
+
+- Print the last 40 trace lines for the latest task run.
+
+```sh
+agentplane task run tail 202602030608-F1Q8AB run_20260323_abc123 --lines 10
+```
+
+- Print the last 10 trace lines for a specific run.
+
+### task search
+
+Search tasks by text or regex with optional filters.
+
+Usage:
+
+```text
+agentplane task search <query> [options]
+```
+
+Options:
+
+- `--regex`: Treat query as a regex. (default=false)
+- `--status <status>`: Repeatable. Filter by status. (repeatable)
+- `--owner <owner>`: Repeatable. Filter by owner id. (repeatable)
+- `--tag <tag>`: Repeatable. Filter by tag. (repeatable)
+- `--strict-read`: Fail if task scan skips malformed/unreadable task files. (default=false)
+- `--limit <n>`: Max rows to print.
+
+Examples:
+
+```sh
+agentplane task search cli
+```
+
+- Search tasks by substring.
+
+```sh
+agentplane task search 'CLI.*' --regex
+```
+
+- Search tasks by regex.
+
+### task show
+
+Print task metadata as JSON (frontmatter shape).
+
+Usage:
+
+```text
+agentplane task show <task-id>
+```
+
+Examples:
+
+```sh
+agentplane task show 202602030608-F1Q8AB
+```
+
+- Show task metadata.
+
+### task start-ready
+
+Run readiness checks and start a task in one deterministic command.
+
+Usage:
+
+```text
+agentplane task start-ready <task-id> --author <id> [options]
+```
+
+Options:
+
+- `--author <id>`: Comment author id (e.g. CODER). (required)
+- `--body <text>`: Structured Start comment body. Use --body-file for Markdown or shell-sensitive text.
+- `--body-file <path>`: Read the Start comment body from a file path (mutually exclusive with --body).
+- `--force`: Override readiness and transition checks. (default=false)
+- `--yes`: Auto-approve force-action checks when required. (default=false)
+- `--quiet`: Suppress output. (default=false)
+
+Examples:
+
+```sh
+agentplane task start-ready 202602030608-F1Q8AB --author CODER --body "Start: implement parser hardening"
+```
+
+- Check readiness and transition to DOING without command chaining.
+
+### task verify
+
+Record verification results (ok/rework).
+
+Usage:
+
+```text
+agentplane task verify ok <task-id> --by <id> --note <text> [--details <text> | --file <path>] [--quiet]
+agentplane task verify rework <task-id> --by <id> --note <text> [--details <text> | --file <path>] [--quiet]
+```
+
+### task verify ok
+
+Record verification as OK (updates Verification section and verification frontmatter).
+
+Usage:
+
+```text
+agentplane task verify ok <task-id> --by <id> [options]
+```
+
+Options:
+
+- `--by <id>`: Verifier id. (required)
+- `--note <text>`: Short verification note.
+- `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
+- `--details <text>`: Optional details text (mutually exclusive with --file).
+- `--file <path>`: Optional details file path (mutually exclusive with --details).
+- `--quiet`: Suppress normal output (still prints errors). (default=false)
+- `--collect-incidents`: After recording verification, collect promotable findings into incidents.md immediately. (default=false)
+- `--observation <text>`: Structured finding observation to append with the verification.
+- `--impact <text>`: Structured finding impact to append with the verification.
+- `--resolution <text>`: Structured finding resolution to append with the verification.
+- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
+- `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
+- `--incident-scope <text>`: Optional incident scope for the appended finding.
+- `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
+- `--incident-match <term>`: Repeatable incident match term for the appended finding. (repeatable)
+- `--incident-advice <text>`: Optional operator advice for the appended finding.
+- `--incident-rule <text>`: Optional incident rule for the appended finding.
+
+Examples:
+
+```sh
+agentplane task verify ok 202602030608-F1Q8AB --by REVIEWER --note "Looks good"
+```
+
+- Record an OK verification.
+
+### task verify rework
+
+Record verification as needs rework (resets commit, sets status to DOING, updates Verification).
+
+Usage:
+
+```text
+agentplane task verify rework <task-id> --by <id> [options]
+```
+
+Options:
+
+- `--by <id>`: Verifier id. (required)
+- `--note <text>`: Short verification note.
+- `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
+- `--details <text>`: Optional details text (mutually exclusive with --file).
+- `--file <path>`: Optional details file path (mutually exclusive with --details).
+- `--quiet`: Suppress normal output (still prints errors). (default=false)
+- `--collect-incidents`: After recording verification, collect promotable findings into incidents.md immediately. (default=false)
+- `--observation <text>`: Structured finding observation to append with the verification.
+- `--impact <text>`: Structured finding impact to append with the verification.
+- `--resolution <text>`: Structured finding resolution to append with the verification.
+- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
+- `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
+- `--incident-scope <text>`: Optional incident scope for the appended finding.
+- `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
+- `--incident-match <term>`: Repeatable incident match term for the appended finding. (repeatable)
+- `--incident-advice <text>`: Optional operator advice for the appended finding.
+- `--incident-rule <text>`: Optional incident rule for the appended finding.
+
+Examples:
+
+```sh
+agentplane task verify rework 202602030608-F1Q8AB --by REVIEWER --note "Needs changes"
+```
+
+- Record a needs-rework verification.
+
+### task verify-show
+
+Print the task Verify Steps acceptance contract (alias for task doc show --section "Verify Steps").
+
+Usage:
+
+```text
+agentplane task verify-show <task-id> [options]
+```
+
+Options:
+
+- `--quiet`: Suppress errors when the section is missing. (default=false)
+
+Notes:
+
+- \`## Verify Steps\` is the ex-ante acceptance contract for the verifier.
+- Verification results are recorded later in \`## Verification\` via \`agentplane verify ...\`.
+
+Examples:
+
+```sh
+agentplane task verify-show 202602030608-F1Q8AB
+```
+
+- Print Verify Steps.
+
+```sh
+agentplane task verify-show 202602030608-F1Q8AB --quiet
+```
+
+- Print Verify Steps without erroring when missing.
+
+## Lifecycle
+
+### block
+
+Transition a task to BLOCKED and record a structured Blocked comment.
+
+Usage:
+
+```text
+agentplane block <task-id> --author <id> [options]
+```
+
+Options:
+
+- `--author <id>`: Comment author id (e.g. CODER). (required)
+- `--body <text>`: Structured comment body (must match the configured Blocked: prefix). Use --body-file for Markdown or shell-sensitive text.
+- `--body-file <path>`: Read the structured comment body from a file path (mutually exclusive with --body).
+- `--commit-from-comment`: Create a status commit using the comment body. (default=false)
+- `--commit-emoji <emoji>`: Override the status commit emoji (used with --commit-from-comment).
+- `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected. (repeatable)
+- `--commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --commit-allow prefixes. (default=false, deprecated=disabled)
+- `--commit-require-clean`: Require a clean working tree for the status commit (used with --commit-from-comment). (default=false)
+- `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment). (default=false)
+- `--force`: Override status transition restrictions. (default=false)
+- `--yes`: Auto-approve force-action approval checks when required. (default=false)
+- `--quiet`: Suppress output. (default=false)
+
+Examples:
+
+```sh
+agentplane block 202602030608-F1Q8AB --author CODER --body "Blocked: waiting for review"
+```
+
+- Block work on a task.
+
+```sh
+agentplane block 202602030608-F1Q8AB --author CODER --body "Blocked: waiting for review" --commit-from-comment --commit-allow packages/agentplane/src
+```
+
+- Block work and create a status commit from the comment.
+
+### finish
+
+Mark task(s) as DONE and record a structured Verified comment.
+
+Usage:
+
+```text
+agentplane finish <task-id> ... --author <id> [options]
+```
+
+Options:
+
+- `--author <id>`: Comment author id (e.g. INTEGRATOR). (required)
+- `--body <text>`: Structured comment body (must match the configured Verified: prefix). Use --body-file for Markdown or shell-sensitive text.
+- `--body-file <path>`: Read the structured comment body from a file path (mutually exclusive with --body).
+- `--result <one-line>`: One-line result summary stored in task metadata (required for non-spike tasks when finishing a single task). Use --result-file for shell-sensitive text.
+- `--result-file <path>`: Read the result summary from a file path (mutually exclusive with --result).
+- `--risk <low|med|high>`: Optional. Risk level stored in task metadata. (choices=low|med|high)
+- `--breaking`: Optional. Mark the change as breaking in task metadata. (default=false)
+- `--commit <hash>`: Commit hash to record on the task (optional).
+- `--force`: Force finish despite gates. (default=false)
+- `--yes`: Auto-approve force-action approval checks when required. (default=false)
+- `--commit-from-comment`: Create a commit using the comment body (requires exactly one task id). (default=false)
+- `--commit-emoji <emoji>`: Override the commit emoji (used with --commit-from-comment).
+- `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected. (repeatable)
+- `--commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --commit-allow prefixes. (default=false, deprecated=disabled)
+- `--commit-require-clean`: Require a clean working tree for the commit (used with --commit-from-comment). (default=false)
+- `--status-commit`: Create a separate status commit (requires exactly one task id). (default=false)
+- `--status-commit-emoji <emoji>`: Override the status commit emoji (used with --status-commit).
+- `--status-commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --status-commit). Use minimal prefixes; '.' is rejected. (repeatable)
+- `--status-commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --status-commit-allow prefixes. (default=false, deprecated=disabled)
+- `--status-commit-require-clean`: Require a clean working tree for the status commit (used with --status-commit). (default=false)
+- `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment or --status-commit). (default=false)
+- `--close-commit`: After finishing, run a deterministic close commit for the task README (single-task only). (default=false)
+- `--no-close-commit`: Disable the default deterministic close commit in direct mode (single-task only). (default=false)
+- `--no-write-acr`: Disable automatic ACR refresh for this finish call when acr.write_on_finish is enabled. (default=false)
+- `--close-unstage-others`: With --close-commit: unstage any currently staged paths before staging the task README. (default=false)
+- `--base <branch>`: Optional explicit base branch override for branch_pr finish validation and close-commit reconciliation.
+- `--observation <text>`: Structured finding observation to append with the verification.
+- `--impact <text>`: Structured finding impact to append with the verification.
+- `--resolution <text>`: Structured finding resolution to append with the verification.
+- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
+- `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
+- `--incident-scope <text>`: Optional incident scope for the appended finding.
+- `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
+- `--incident-match <term>`: Repeatable incident match term for the appended finding. (repeatable)
+- `--incident-advice <text>`: Optional operator advice for the appended finding.
+- `--incident-rule <text>`: Optional incident rule for the appended finding.
+- `--quiet`: Suppress output. (default=false)
+
+Examples:
+
+```sh
+agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: all checks passed" --commit abcdef123456
+```
+
+- Finish a task and record commit metadata.
+
+```sh
+agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: all checks passed" --commit-from-comment --commit-allow packages/agentplane/src
+```
+
+- Finish and create a commit from the comment (single-task only).
+
+```sh
+agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: all checks passed" --commit abcdef123456 --observation "Recurring manual recovery remained easy to miss." --impact "incidents.md stayed stale until a second command." --resolution "Capture the closeout finding during finish itself."
+```
+
+- Finish a task while appending a structured finding that can promote into incidents.md.
+
+### start
+
+Transition a task to DOING and record a structured Start comment.
+
+Usage:
+
+```text
+agentplane start <task-id> --author <id> [options]
+```
+
+Options:
+
+- `--author <id>`: Comment author id (e.g. CODER). (required)
+- `--body <text>`: Structured comment body (must match the configured Start: prefix). Use --body-file for Markdown or shell-sensitive text.
+- `--body-file <path>`: Read the structured comment body from a file path (mutually exclusive with --body).
+- `--commit-from-comment`: Create a status commit using the comment body. (default=false)
+- `--commit-emoji <emoji>`: Override the status commit emoji (used with --commit-from-comment).
+- `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected. (repeatable)
+- `--commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --commit-allow prefixes. (default=false, deprecated=disabled)
+- `--commit-require-clean`: Require a clean working tree for the status commit (used with --commit-from-comment). (default=false)
+- `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment). (default=false)
+- `--force`: Override readiness checks and status transition restrictions. (default=false)
+- `--yes`: Auto-approve force-action approval checks when required. (default=false)
+- `--quiet`: Suppress output. (default=false)
+
+Examples:
+
+```sh
+agentplane start 202602030608-F1Q8AB --author CODER --body-file ./start-note.txt
+```
+
+- Start work on a task.
+
+```sh
+agentplane start 202602030608-F1Q8AB --author CODER --body "Start: implement spec-driven CLI" --commit-from-comment --commit-allow packages/agentplane/src
+```
+
+- Start work and create a status commit from the comment.
+
+### verify
+
+Record a verification outcome for a task; incident candidates stay task-local unless collected explicitly.
+
+Usage:
+
+```text
+agentplane verify <task-id> --by <id> [options]
+```
+
+Options:
+
+- `--ok`: Record an OK verification outcome. (default=false)
+- `--rework`: Record a needs-rework verification outcome. (default=false)
+- `--by <id>`: Verifier id (e.g. REVIEWER). (required)
+- `--note <text>`: Short note describing the verification outcome.
+- `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
+- `--details <text>`: Optional free-form details (mutually exclusive with --file).
+- `--file <path>`: Read details from a file path (mutually exclusive with --details).
+- `--collect-incidents`: After recording verification, collect promotable findings into incidents.md immediately. (default=false)
+- `--quiet`: Suppress output. (default=false)
+- `--observation <text>`: Structured finding observation to append with the verification.
+- `--impact <text>`: Structured finding impact to append with the verification.
+- `--resolution <text>`: Structured finding resolution to append with the verification.
+- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
+- `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
+- `--incident-scope <text>`: Optional incident scope for the appended finding.
+- `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
+- `--incident-match <term>`: Repeatable incident match term for the appended finding. (repeatable)
+- `--incident-advice <text>`: Optional operator advice for the appended finding.
+- `--incident-rule <text>`: Optional incident rule for the appended finding.
+
+Examples:
+
+```sh
+agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --quiet
+```
+
+- Record an OK verification outcome.
+
+```sh
+agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note-file ./verify-note.txt
+```
+
+- Record an OK verification outcome using a file-backed note.
+
+```sh
+agentplane verify 202602030608-F1Q8AB --rework --by REVIEWER --note "Needs changes" --details "Missing tests"
+```
+
+- Record a needs-rework outcome with details.
+
+```sh
+agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --observation "Repeated recovery was manual." --impact "Operators needed a second command." --resolution "Append structured findings during verify."
+```
+
+- Record verification and append a promotable structured finding in one command.
+
+```sh
+agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --collect-incidents
+```
+
+- Record verification and collect promotable findings into incidents.md immediately.
+
+## Work
+
+### work start
+
+Prepare the workspace for a task (direct: single-stream on current branch; branch_pr: task branch/worktree).
+
+Usage:
+
+```text
+agentplane work start <task-id> --agent <ID> --slug <slug> [options]
+```
+
+Options:
+
+- `--agent <ID>`: Agent id (uppercase letters, numbers, underscore). (required, format=A–Z, 0–9, underscore)
+- `--slug <slug>`: Branch slug (lowercase kebab-case). (required, format=lowercase kebab-case)
+- `--worktree`: Use git worktree for the task branch. Required when workflow_mode=branch_pr. (default=false)
+
+Notes:
+
+- When workflow_mode=direct, agentplane does not create task branches; it records a single active task for the workspace.
+- When workflow_mode=branch_pr, --worktree is required and the command must be run on the base branch.
+- After branch_pr work starts, run owner-scoped task commands from the created worktree so task README/PR artifacts stay attached to one checkout.
+
+Examples:
+
+```sh
+agentplane work start 202602030608-F1Q8AB --agent CODER --slug cli
+```
+
+- Start work (direct mode records the active task; branch_pr uses a dedicated task branch/worktree).
+
+## PR
+
+### integrate
+
+Integrate a task branch into the base branch (branch_pr workflow).
+
+Usage:
+
+```text
+agentplane integrate <task-id> [options]
+```
+
+Options:
+
+- `--branch <name>`: Branch name override.
+- `--base <name>`: Base branch override.
+- `--merge-strategy <squash|merge|rebase>`: Merge strategy (default: merge, preserving branch commits; use squash to compact history). (choices=squash|merge|rebase, default=merge)
+- `--run-verify`: Run verify commands. (default=false)
+- `--dry-run`: Do not modify git state. (default=false)
 - `--quiet`: Reduce output noise. (default=false)
 
 Examples:
 
 ```sh
-agentplane backend connect cloud --endpoint https://sync.agentplane.cloud --project-id proj_123 --token apc_...
+agentplane integrate 202602030608-F1Q8AB --run-verify
 ```
 
-- Attach this repository to a cloud sync project and keep the token in ignored .env.
+- Integrate with verify.
 
-### backend inspect
+### pr
 
-Inspect visible backend readiness facts without mutating remote state.
+Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).
 
 Usage:
 
 ```text
-agentplane backend inspect <id> [options]
+agentplane pr <open|update|check|note|close|close-superseded> <task-id|pr-number> [options]
+```
+
+Examples:
+
+```sh
+agentplane pr open 202602030608-F1Q8AB --author CODER
+```
+
+- Create PR artifacts.
+
+```sh
+agentplane pr update 202602030608-F1Q8AB
+```
+
+- Refresh review.md plus github-title/body projections.
+
+```sh
+agentplane pr check 202602030608-F1Q8AB
+```
+
+- Validate PR artifacts.
+
+```sh
+agentplane pr note 202602030608-F1Q8AB --author REVIEWER --body "Looks good"
+```
+
+- Append a handoff note.
+
+```sh
+agentplane pr close 123 --comment "Superseded by #456" --delete-remote-branch
+```
+
+- Close a stale GitHub PR through REST and optionally delete its remote head branch.
+
+```sh
+agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch
+```
+
+- Close a superseded task PR from task artifacts after protected-main closure.
+
+### pr check
+
+Check that PR artifacts are present and valid.
+
+Usage:
+
+```text
+agentplane pr check <task-id>
+```
+
+Examples:
+
+```sh
+agentplane pr check 202602030608-F1Q8AB
+```
+
+- Check artifacts.
+
+### pr close
+
+Close a GitHub PR through REST with optional remote head-branch deletion.
+
+Usage:
+
+```text
+agentplane pr close <pr-number> [options]
 ```
 
 Options:
 
-- `--yes`: Auto-approve network access. (default=false)
-- `--quiet`: Reduce output noise. (default=false)
+- `--repo <owner/name>`: Optional. GitHub owner/repo override (defaults to origin remote).
+- `--comment <text>`: Optional. Add a close comment before closing the PR.
+- `--delete-remote-branch`: Delete the remote head branch after a successful close when it belongs to the target repo. (default=false)
 
 Examples:
 
 ```sh
-agentplane backend inspect redmine --yes
+agentplane pr close 123 --comment "Superseded by #456" --delete-remote-branch
 ```
 
-- Inspect visible Redmine custom fields and canonical_state readiness without remote writes.
+- Close a stale PR and remove its remote head branch when it belongs to the same repo.
 
-### backend migrate-canonical-state
+### pr close-superseded
 
-Backfill canonical_state for issues in the configured backend.
+Close a superseded task PR using task artifacts.
 
 Usage:
 
 ```text
-agentplane backend migrate-canonical-state <id> [options]
+agentplane pr close-superseded <task-id> [options]
 ```
 
 Options:
 
-- `--yes`: Auto-approve network access. (default=false)
-- `--quiet`: Reduce output noise. (default=false)
+- `--delete-remote-branch`: Delete the remote head branch after a successful close when it belongs to the task repo. (default=false)
 
 Examples:
 
 ```sh
-agentplane backend migrate-canonical-state redmine --yes
+agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch
 ```
 
-- Backfill structured canonical_state into legacy Redmine issues.
+- Repair a stale task PR after the task has already been merged to main.
 
-### backend sync
+### pr note
 
-Sync the configured backend (push or pull).
+Append a handoff note into PR review.md.
 
 Usage:
 
 ```text
-agentplane backend sync <id> [options]
+agentplane pr note <task-id> --author <id> [options]
 ```
 
 Options:
 
-- `--direction <push|pull>`: Sync direction (default: push). (choices=push|pull, default=push)
-- `--conflict <diff|prefer-local|prefer-remote|fail>`: Conflict handling policy (default: diff). (choices=diff|prefer-local|prefer-remote|fail, default=diff)
-- `--yes`: Auto-approve network access. (default=false)
-- `--quiet`: Reduce output noise. (default=false)
+- `--author <id>`: Author id (e.g. REVIEWER). (required)
+- `--body <text>`: Note body text. Use --body-file for Markdown or shell-sensitive text.
+- `--body-file <path>`: Read the note body from a file path (mutually exclusive with --body).
 
 Examples:
 
 ```sh
-agentplane backend sync local --direction pull
+agentplane pr note 202602030608-F1Q8AB --author REVIEWER --body "LGTM"
 ```
 
-- Pull from backend.
+- Add note.
 
-```sh
-agentplane backend sync redmine --direction push --yes
-```
+### pr open
 
-- Push to a networked backend with explicit approval.
-
-### sync
-
-Sync the configured backend (alias).
-
-Alias for backend sync using the configured backend id. Optionally pass an explicit backend id.
+Create PR artifacts for a task and, unless --sync-only is set, publish/link the remote GitHub PR.
 
 Usage:
 
 ```text
-agentplane sync [<id>] [options]
+agentplane pr open <task-id> --author <id> [options]
 ```
 
 Options:
 
-- `--direction <push|pull>`: Sync direction (default: push). (choices=push|pull, default=push)
-- `--conflict <diff|prefer-local|prefer-remote|fail>`: Conflict handling policy (default: diff). (choices=diff|prefer-local|prefer-remote|fail, default=diff)
-- `--yes`: Auto-approve network access. (default=false)
-- `--quiet`: Reduce output noise. (default=false)
+- `--author <id>`: Author id (e.g. CODER). (required)
+- `--branch <name>`: Branch name (default: current branch).
+- `--include-task <task-id>`: Repeatable. Record an additional related task id on this primary PR. (repeatable)
+- `--sync-only`: Only write local PR artifacts; do not create a remote GitHub PR. (default=false)
 
 Examples:
 
 ```sh
-agentplane sync --direction pull
+agentplane pr open 202602030608-F1Q8AB --author CODER
 ```
 
-- Pull from backend (configured backend id).
+- Sync local artifacts, publish the task branch to origin if needed, and create/link the GitHub PR.
 
-```sh
-agentplane sync redmine --direction push --yes
-```
+### pr update
 
-- Push to redmine backend.
-
-## Blueprints
-
-### blueprint
-
-List and explain blueprint routing without executing a task.
-
-This is a command group. Use \`agentplane blueprint list\`, \`agentplane blueprint explain ...\`, \`agentplane blueprint scaffold ...\`, or \`agentplane blueprint validate ...\`.
+Update PR artifacts (review packet, diffstat, and GitHub projections).
 
 Usage:
 
 ```text
-agentplane blueprint [<cmd> ...]
-```
-
-Examples:
-
-```sh
-agentplane blueprint list
-```
-
-- Show built-in blueprint routes.
-
-```sh
-agentplane blueprint scaffold analysis.custom
-```
-
-- Create a project-local blueprint scaffold.
-
-```sh
-agentplane blueprint explain 202605051957-5WRJZK
-```
-
-- Explain the resolved route for a task.
-
-### blueprint drift
-
-Check whether a task resolved blueprint snapshot is current.
-
-Usage:
-
-```text
-agentplane blueprint drift <task-id> [options]
+agentplane pr update <task-id> [options]
 ```
 
 Options:
 
-- `--json`: Emit JSON. (default=false)
+- `--include-task <task-id>`: Repeatable. Record an additional related task id on this primary PR. (repeatable)
 
 Examples:
 
 ```sh
-agentplane blueprint drift 202605060915-3NBTGG
+agentplane pr update 202602030608-F1Q8AB
 ```
 
-- Check a task-local resolved snapshot before runner materialization.
-
-### blueprint explain
-
-Explain blueprint route selection for a task or synthetic input.
-
-Usage:
-
-```text
-agentplane blueprint explain [<task-id>] [options]
-```
-
-Options:
-
-- `--kind <analysis|content|docs|code|release|ops>`: Synthetic task kind hint.
-- `--mutation <none|docs|code|release|ops|unknown>`: Synthetic mutation scope. (choices=none|docs|code|release|ops|unknown, default=unknown)
-- `--workflow-mode <direct|branch_pr>`: Workflow mode override. (choices=direct|branch_pr)
-- `--tag <tag>`: Synthetic tag.
-- `--title <text>`: Synthetic title.
-- `--description <text>`: Synthetic description.
-- `--risk <risk>`: Risk flag; repeatable.
-- `--blueprint <id>`: Explicit blueprint request.
-- `--json`: Emit JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane blueprint explain 202605051957-5WRJZK
-```
-
-- Resolve a task.
-
-```sh
-agentplane blueprint explain --kind analysis --mutation none
-```
-
-- Resolve a synthetic analysis route.
-
-### blueprint list
-
-List built-in and optional project-local blueprint routes.
-
-Usage:
-
-```text
-agentplane blueprint list [options]
-```
-
-Options:
-
-- `--project`: Include validated project-local blueprints from .agentplane/blueprints. (default=false)
-- `--trusted`: Show trust status from .agentplane/blueprints/config.json. (default=false)
-- `--json`: Emit JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane blueprint list --json
-```
-
-- Emit machine-readable built-in routes.
-
-```sh
-agentplane blueprint list --project
-```
-
-- Include project-local blueprint definitions.
-
-### blueprint report
-
-Report project-local blueprint trust compatibility.
-
-Usage:
-
-```text
-agentplane blueprint report [options]
-```
-
-Options:
-
-- `--json`: Emit JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane blueprint report --json
-```
-
-- Inspect project-local blueprint trust compatibility before runner materialization.
-
-### blueprint scaffold
-
-Create a project-local blueprint JSON scaffold without enabling it.
-
-Usage:
-
-```text
-agentplane blueprint scaffold <blueprint-id> [options]
-```
-
-Options:
-
-- `--from <builtin-blueprint-id>`: Built-in blueprint to clone as a starting point.
-- `--out <path>`: Output path; defaults to .agentplane/blueprints/&lt;id&gt;.json.
-- `--force`: Overwrite an existing file. (default=false)
-- `--json`: Emit JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane blueprint scaffold analysis.custom
-```
-
-- Create .agentplane/blueprints/analysis.custom.json from analysis.light.
-
-```sh
-agentplane blueprint scaffold code.custom --from code.branch_pr
-```
-
-- Start from an existing code workflow route.
-
-### blueprint snapshot
-
-Refresh the resolved blueprint snapshot artifact for a task.
-
-Usage:
-
-```text
-agentplane blueprint snapshot <task-id> [options]
-```
-
-Options:
-
-- `--json`: Emit JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane blueprint snapshot 202605060915-3NBTGG
-```
-
-- Refresh the task-local resolved blueprint snapshot artifact.
-
-```sh
-agentplane blueprint snapshot 202605060915-3NBTGG --json
-```
-
-- Emit old/new digest details as JSON.
-
-### blueprint validate
-
-Validate project-local blueprint JSON without registering or executing it.
-
-Usage:
-
-```text
-agentplane blueprint validate [<path>] [options]
-```
-
-Options:
-
-- `--project`: Validate all JSON blueprints in .agentplane/blueprints or the supplied directory. (default=false)
-- `--json`: Emit JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane blueprint validate .agentplane/blueprints/analysis.json
-```
-
-- Validate a local blueprint definition.
-
-```sh
-agentplane blueprint validate --project
-```
-
-- Validate the project-local blueprint registry directory.
+- Update artifacts.
 
 ## Branch
 
@@ -952,61 +1672,141 @@ agentplane cleanup merged --fetch
 
 - Refresh origin before evaluating cleanup candidates.
 
-## Codex
+## Backend
 
-### codex
+### backend
 
-Codex integration commands.
+Backend-related operations.
 
-Usage:
-
-```text
-agentplane codex <subcommand> [options]
-```
-
-### codex plugin
-
-Install and inspect bundled Codex plugin integrations.
+This is a command group. Use a subcommand such as \`agentplane backend sync ...\`, \`agentplane backend inspect ...\`, \`agentplane backend connect ...\`, or \`agentplane backend migrate-canonical-state ...\`.
 
 Usage:
 
 ```text
-agentplane codex plugin <subcommand> [options]
+agentplane backend [<cmd> ...]
 ```
-
-### codex plugin install
-
-Install the bundled AgentPlane plugin into a local Codex marketplace.
-
-Usage:
-
-```text
-agentplane codex plugin install [options]
-```
-
-Options:
-
-- `--scope <user|repo>`: Install to the user home marketplace or the current repository marketplace. (choices=user|repo, default=user)
-
-Notes:
-
-- User scope writes \`~/plugins/agentplane\` plus \`~/.agents/plugins/marketplace.json\` by default.
-- Repo scope writes \`&lt;repo&gt;/plugins/agentplane\` plus \`&lt;repo&gt;/.agents/plugins/marketplace.json\`.
-- OpenAI's public self-serve Plugin Directory is not available yet; local marketplaces are the supported route today.
 
 Examples:
 
 ```sh
-agentplane codex plugin install
+agentplane backend sync local --direction pull
 ```
 
-- Install AgentPlane into the user-local Codex marketplace under ~/.agents/plugins.
+- Sync the backend.
+
+### backend connect
+
+Configure a cloud backend connection.
+
+Usage:
+
+```text
+agentplane backend connect <id> [options]
+```
+
+Options:
+
+- `--endpoint <url>`: Cloud sync service endpoint.
+- `--project-id <id>`: Cloud sync service project identifier.
+- `--provider <name>`: Optional remote projection provider selected in the cloud service.
+- `--token <token>`: Cloud CLI token. Stored only in ignored project .env, not backend JSON.
+- `--yes`: Reserved for future browser flow approval. (default=false)
+- `--quiet`: Reduce output noise. (default=false)
+
+Examples:
 
 ```sh
-agentplane codex plugin install --scope repo
+agentplane backend connect cloud --endpoint https://sync.agentplane.cloud --project-id proj_123 --token apc_...
 ```
 
-- Install AgentPlane into the current repository marketplace for local testing.
+- Attach this repository to a cloud sync project and keep the token in ignored .env.
+
+### backend inspect
+
+Inspect visible backend readiness facts without mutating remote state.
+
+Usage:
+
+```text
+agentplane backend inspect <id> [options]
+```
+
+Options:
+
+- `--yes`: Auto-approve network access. (default=false)
+- `--quiet`: Reduce output noise. (default=false)
+
+Examples:
+
+```sh
+agentplane backend inspect redmine --yes
+```
+
+- Inspect visible Redmine custom fields and canonical_state readiness without remote writes.
+
+### backend sync
+
+Sync the configured backend (push or pull).
+
+Usage:
+
+```text
+agentplane backend sync <id> [options]
+```
+
+Options:
+
+- `--direction <push|pull>`: Sync direction (default: push). (choices=push|pull, default=push)
+- `--conflict <diff|prefer-local|prefer-remote|fail>`: Conflict handling policy (default: diff). (choices=diff|prefer-local|prefer-remote|fail, default=diff)
+- `--yes`: Auto-approve network access. (default=false)
+- `--quiet`: Reduce output noise. (default=false)
+
+Examples:
+
+```sh
+agentplane backend sync local --direction pull
+```
+
+- Pull from backend.
+
+```sh
+agentplane backend sync redmine --direction push --yes
+```
+
+- Push to a networked backend with explicit approval.
+
+### sync
+
+Sync the configured backend (alias).
+
+Alias for backend sync using the configured backend id. Optionally pass an explicit backend id.
+
+Usage:
+
+```text
+agentplane sync [<id>] [options]
+```
+
+Options:
+
+- `--direction <push|pull>`: Sync direction (default: push). (choices=push|pull, default=push)
+- `--conflict <diff|prefer-local|prefer-remote|fail>`: Conflict handling policy (default: diff). (choices=diff|prefer-local|prefer-remote|fail, default=diff)
+- `--yes`: Auto-approve network access. (default=false)
+- `--quiet`: Reduce output noise. (default=false)
+
+Examples:
+
+```sh
+agentplane sync --direction pull
+```
+
+- Pull from backend (configured backend id).
+
+```sh
+agentplane sync redmine --direction push --yes
+```
+
+- Push to redmine backend.
 
 ## Config
 
@@ -1118,971 +1918,144 @@ agentplane profile set full-harness
 
 - Apply strict defaults.
 
-## Core
+## Setup
 
-### agents
+### init
 
-List agent definitions under .agentplane/agents.
+Initialize agentplane project files under .agentplane/.
 
-Usage:
-
-```text
-agentplane agents
-```
-
-Examples:
-
-```sh
-agentplane agents
-```
-
-- Print available agent ids and roles.
-
-### help
-
-Show help for a command.
-
-Renders spec-derived help for migrated commands. Use --compact for minimal output and --json for machine-readable help.
+Creates .agentplane/ config, backend stubs, and agent templates in the target directory. If the target directory is not a git repository, it initializes one and (by default) writes an initial install commit. Use --gitignore-agents to keep agent templates local (gitignored) and skip the install commit. In interactive mode it prompts for missing inputs; use --yes for non-interactive mode.
 
 Usage:
 
 ```text
-agentplane help [<cmd> ...] [options]
+agentplane init [options]
 ```
 
 Options:
 
-- `--compact`: Compact help (usage + options).
-- `--json`: Emit JSON help (success output).
+- `--setup-profile <light|normal|full-harness>`: Setup profile preset. Preferred values: light, normal, full-harness. (choices=light|normal|full-harness|developer|vibecoder|manager|enterprise)
+- `--policy-gateway <codex|claude>`: Policy gateway file to install (codex -&gt; AGENTS.md, claude -&gt; CLAUDE.md). (choices=codex|claude)
+- `--ide <codex|cursor|windsurf>`: IDE rules integration target (default: codex). (choices=codex|cursor|windsurf)
+- `--workflow <direct|branch_pr>`: Workflow mode (default: direct). (choices=direct|branch_pr)
+- `--direct-close-dirty-policy <allow-other-task-readmes|strict>`: Direct-mode close behavior when tracked dirt exists outside the active task: allow only other active task READMEs, or block on any unrelated tracked change. (choices=allow-other-task-readmes|strict)
+- `--backend <local|redmine|cloud>`: Task backend (default: local). (choices=local|redmine|cloud)
+- `--hooks <true|false>`: Install managed git hooks (default by setup profile: light=false, normal/full-harness=true).
+- `--require-plan-approval <true|false>`: Require explicit plan approval before starting work.
+- `--require-network-approval <true|false>`: Require explicit approval before any network operation.
+- `--require-verify-approval <true|false>`: Require explicit approval before recording verification.
+- `--execution-profile <conservative|balanced|aggressive>`: Execution profile preset controlling autonomy, reasoning, and tool budgets. (choices=conservative|balanced|aggressive)
+- `--strict-unsafe-confirm <true|false>`: Require strict explicit confirmations for additional unsafe actions.
+- `--recipes <none|id1,id2,...>`: Optional cached recipes to vendor during init (comma-separated), or 'none'.
+- `--force`: Overwrite init conflicts by deleting existing paths. (default=false)
+- `--backup`: Backup init conflicts before overwriting. (default=false)
+- `--yes`: Non-interactive mode (do not prompt; use defaults for missing flags). (default=false)
+- `--gitignore-agents`: Add gateway/agent files (AGENTS.md or CLAUDE.md and .agentplane/agents/) to .gitignore and skip the initial install commit. (default=false)
 
 Examples:
 
 ```sh
-agentplane help
+agentplane init
 ```
 
-- List commands available in the CLI command catalog.
+- Interactive setup (prompts for missing values).
 
 ```sh
-agentplane help task new --compact
+agentplane init --setup-profile light --yes
 ```
 
-- Show compact help for a command.
+- Non-interactive setup with flexible defaults.
 
 ```sh
-agentplane help task new --json
+agentplane init --workflow direct --direct-close-dirty-policy allow-other-task-readmes --backend local --hooks true --require-network-approval true --yes
 ```
 
-- Show JSON help for a command.
+- Non-interactive setup with the tolerant direct close policy plus an explicit network-approval override.
 
-### preflight
+```sh
+agentplane init --workflow direct --direct-close-dirty-policy strict --yes
+```
 
-Run aggregated preflight checks and print a deterministic readiness report.
+- Initialize direct mode with strict close-tail blocking on any unrelated tracked dirt.
+
+```sh
+agentplane init --force --yes
+```
+
+- Re-initialize, overwriting conflicts (non-interactive).
+
+```sh
+agentplane init --yes --gitignore-agents
+```
+
+- Initialize without committing and keep agent prompts/templates local (gitignored).
+
+### upgrade
+
+Upgrade the local agentplane framework bundle in the repo.
+
+Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade applies the bundled managed files from the locally installed agentplane package assets (no network) and creates a dedicated upgrade commit. Use --dry-run to preview changes without writing files, or --agent to generate a review plan instead of applying. Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.
 
 Usage:
 
 ```text
-agentplane preflight [options]
+agentplane upgrade [options]
 ```
 
 Options:
 
-- `--mode <quick|full>`: Preflight depth. quick skips backend task-list probe; full includes backend readiness. (choices=quick|full, default=quick)
-- `--full`: Shortcut for --mode full. (default=false)
-- `--json`: Emit machine-readable JSON report. (default=false)
+- `--agent`: Generate an agent-assisted upgrade plan instead of applying managed files. (default=false)
+- `--auto`: Apply the upgrade automatically (same behavior as the default mode; useful for explicit scripts). (default=false)
+- `--remote`: Fetch the framework bundle from GitHub releases (requires network approvals). (default=false)
+- `--allow-tarball`: Allow falling back to a GitHub repo tarball when release assets are missing (no checksum verification). (default=false)
+- `--tag <tag>`: GitHub release tag (defaults to latest).
+- `--source <repo-url>`: Override GitHub repo source URL (defaults to config.framework.source).
+- `--bundle <path|url>`: Use a local path or URL for the upgrade bundle archive.
+- `--checksum <path|url>`: Use a local path or URL for the bundle checksum file (required with --bundle).
+- `--asset <name>`: Override the GitHub release asset name for the bundle.
+- `--checksum-asset <name>`: Override the GitHub release asset name for the checksum file.
+- `--dry-run`: Report changes without modifying files. (default=false)
+- `--migrate-task-docs`: After applying the framework upgrade, migrate legacy task README docs in the same run. (default=false)
+- `--no-backup`: Disable backups (default is to create backups). (default=false)
+- `--yes`: Auto-approve network access prompts (subject to config approvals). (default=false)
 
 Examples:
 
 ```sh
-agentplane preflight --json
+agentplane upgrade
 ```
 
-- Produce one-shot agent-readable preflight.
-
-```sh
-agentplane preflight --json --mode full
-```
-
-- Run full preflight including backend task-list probe.
-
-### quickstart
-
-Print the canonical agent bootstrap path and startup guidance.
-
-Usage:
-
-```text
-agentplane quickstart [options]
-```
-
-Options:
-
-- `--json`: Emit compact machine-readable output for agent runtimes. (default=false)
-
-Examples:
+- Apply managed files from the installed CLI assets and create an upgrade commit.
 
 ```sh
-agentplane quickstart
+agentplane upgrade --dry-run
 ```
 
-- Show quickstart.
-
-### role
-
-Show role-specific workflow guidance.
-
-Usage:
-
-```text
-agentplane role <role> [options]
-```
-
-Options:
-
-- `--json`: Emit compact machine-readable role payload. (default=false)
-
-Examples:
+- Preview managed-file changes without modifying the repo.
 
 ```sh
-agentplane role ORCHESTRATOR
+agentplane upgrade --agent
 ```
 
-- Show ORCHESTRATOR guide.
-
-## Diagnostics
-
-### runtime
-
-Inspect which agentplane runtime/binary/package sources are active.
-
-Usage:
-
-```text
-agentplane runtime <explain> [options]
-```
-
-Examples:
+- Generate an agent-assisted upgrade plan instead of applying files.
 
 ```sh
-agentplane runtime explain
+agentplane upgrade --remote --tag v0.1.9 --dry-run
 ```
 
-- Show active runtime details.
-
-### runtime explain
-
-Explain the active binary, runtime mode, and resolved package roots.
-
-Usage:
-
-```text
-agentplane runtime explain [options]
-```
-
-Options:
-
-- `--json`: Emit machine-readable runtime details. (default=false)
-
-Examples:
+- Preview changes for a specific GitHub release tag (no writes).
 
 ```sh
-agentplane runtime explain
+agentplane upgrade --bundle ./agentplane-upgrade.tar.gz --checksum ./agentplane-upgrade.tar.gz.sha256
 ```
 
-- Show the active runtime as readable text.
-
-```sh
-agentplane runtime explain --json
-```
-
-- Show runtime details for scripts and diagnostics tooling.
-
-## Docs
-
-### docs cli
-
-Generate an MDX CLI reference from the current command spec catalog.
-
-Usage:
-
-```text
-agentplane docs cli --out <path>
-```
-
-Options:
-
-- `--out <path>`: Output path. If relative, it is resolved against the current working directory. (required)
-
-Examples:
+- Upgrade from local bundle files (no network).
 
 ```sh
-agentplane docs cli --out docs/user/cli-reference.generated.mdx
+agentplane upgrade --yes --migrate-task-docs
 ```
 
-- Generate docs.
-
-## Guard
-
-### commit
-
-Create a git commit after validating policy and allowlist; if the index is empty, stage matching allowlist paths first.
-
-Usage:
-
-```text
-agentplane commit <task-id> [options]
-```
-
-Options:
-
-- `-m, --message <message>`: Commit subject (must follow policy). Required unless --close is used.
-- `--close`: Generate a deterministic close commit message from task snapshot + verification + recorded implementation commit; stages only the task README. (default=false)
-- `--unstage-others`: With --close: unstage any currently staged paths before staging the task README. (default=false)
-- `--check-only`: With --close: run preflight checks and print the planned close commit subject without creating a commit. (default=false)
-- `--allow <path-prefix>`: Repeatable. Allowed path prefix (git-path). Use minimal prefixes; repo-wide '.' is rejected (tip: \`agentplane guard suggest-allow --format args\`). (repeatable)
-- `--auto-allow`: Deprecated. Disabled for safety; pass explicit --allow prefixes. (default=false, deprecated=disabled)
-- `--allow-tasks`: Allow the optional tasks export snapshot plus artifacts under the active task subtree; standalone path scope. (default=false)
-- `--allow-base`: Allow base branch edits; branch override only, not a path allowlist. (default=false)
-- `--allow-policy`: Allow policy edits (e.g. AGENTS.md); standalone path scope. (default=false)
-- `--allow-config`: Allow config edits; standalone path scope. (default=false)
-- `--allow-hooks`: Allow hooks edits; standalone path scope. (default=false)
-- `--allow-ci`: Allow CI workflow edits; standalone path scope. (default=false)
-- `--require-clean`: Fail if tracked files have unstaged changes (untracked is ignored). (default=false)
-- `--quiet`: Reduce output noise. (default=false)
-
-Notes:
-
-- Repository-managed task commits use the canonical subject format \`&lt;emoji&gt; &lt;suffix&gt; &lt;scope&gt;: &lt;summary&gt;\`; non-task commits use \`&lt;emoji&gt; &lt;scope&gt;: &lt;summary&gt;\`.
-- Repository-managed commit paths resolve author/committer identity from global git \`user.name\` and \`user.email\` before falling back to ambient git env.
-- When \`commit.dco.enabled=true\`, repository-managed commits append the configured \`Signed-off-by\` trailer and \`commit-msg\` rejects manual commits without any valid \`Signed-off-by\` trailer.
-- Protected path-scoped overrides can stand alone without a duplicate explicit prefix: \`--allow-tasks\`, \`--allow-policy\`, \`--allow-config\`, \`--allow-hooks\`, and \`--allow-ci\` each admit their own path family.
-- Top-level \`agentplane commit\` can auto-stage those protected path scopes when the git index starts empty.
-- \`--allow-base\` is different: it only overrides base-branch protection and never selects file paths by itself.
-
-Examples:
-
-```sh
-agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --allow packages/agentplane
-```
-
-- Create a commit after validating allowlist and subject policy.
-
-```sh
-agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: update publish workflow" --allow-ci
-```
-
-- Commit CI-only changes without a redundant explicit workflow path prefix.
-
-```sh
-agentplane commit 202602030608-F1Q8AB --close
-```
-
-- Create a close commit for the task README using a deterministic message builder.
-
-### guard
-
-Guard commands (commit checks, git hygiene, and allowlist helpers).
-
-Usage:
-
-```text
-agentplane guard <command> [args] [options]
-```
-
-### guard clean
-
-Ensure the git index has no staged files.
-
-Usage:
-
-```text
-agentplane guard clean [options]
-```
-
-Options:
-
-- `--quiet`: Reduce output noise. (default=false)
-
-Examples:
-
-```sh
-agentplane guard clean
-```
-
-- Fail if staged files exist.
-
-### guard commit
-
-Validate commit policy and allowlist for staged changes (no commit is created).
-
-Usage:
-
-```text
-agentplane guard commit <task-id> --message <message> [options]
-```
-
-Options:
-
-- `-m, --message <message>`: Commit subject (must follow policy). (required)
-- `--allow <path-prefix>`: Repeatable. Allowed path prefix (git-path). Use minimal prefixes; repo-wide '.' is rejected (tip: \`agentplane guard suggest-allow --format args\`). (repeatable)
-- `--auto-allow`: Deprecated. Disabled for safety; pass explicit --allow prefixes. (default=false, deprecated=disabled)
-- `--allow-tasks`: Allow the optional tasks export snapshot plus artifacts under the active task subtree; standalone path scope. (default=false)
-- `--allow-base`: Allow base branch edits; branch override only, not a path allowlist. (default=false)
-- `--allow-policy`: Allow policy edits (e.g. AGENTS.md); standalone path scope. (default=false)
-- `--allow-config`: Allow config edits; standalone path scope. (default=false)
-- `--allow-hooks`: Allow hooks edits; standalone path scope. (default=false)
-- `--allow-ci`: Allow CI workflow edits; standalone path scope. (default=false)
-- `--require-clean`: Fail if tracked files have unstaged changes (untracked is ignored). (default=false)
-- `--quiet`: Reduce output noise. (default=false)
-
-Notes:
-
-- Protected path-scoped overrides can stand alone without a duplicate explicit prefix: \`--allow-tasks\`, \`--allow-policy\`, \`--allow-config\`, \`--allow-hooks\`, and \`--allow-ci\` each admit their own path family.
-- \`agentplane guard commit\` remains staged-only: it validates the current index and never auto-stages files for you.
-- \`--allow-base\` is different: it only overrides base-branch protection and never selects file paths by itself.
-
-Examples:
-
-```sh
-agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --allow packages/agentplane
-```
-
-- Validate staged changes are covered by allowlist and policy.
-
-```sh
-agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: update publish workflow" --allow-ci
-```
-
-- Validate already staged CI-only changes without a redundant explicit workflow path prefix.
-
-### guard suggest-allow
-
-Suggest minimal --allow prefixes based on staged files.
-
-Usage:
-
-```text
-agentplane guard suggest-allow [options]
-```
-
-Options:
-
-- `--format <lines|args>`: Output format (default: lines). (choices=lines|args, default=lines)
-
-Examples:
-
-```sh
-agentplane guard suggest-allow
-```
-
-- Print prefixes, one per line.
-
-```sh
-agentplane guard suggest-allow --format args
-```
-
-- Print as --allow ... args.
-
-## Hooks
-
-### hooks
-
-Manage and run git hooks installed by agentplane.
-
-Usage:
-
-```text
-agentplane hooks <command> [args] [options]
-```
-
-### hooks install
-
-Install managed git hooks and the agentplane shim.
-
-Usage:
-
-```text
-agentplane hooks install [options]
-```
-
-Options:
-
-- `--quiet`: Reduce output noise. (default=false)
-
-Examples:
-
-```sh
-agentplane hooks install
-```
-
-- Install hooks into .git/hooks/.
-
-### hooks run
-
-Run a managed hook (use \`--\` to pass through additional arguments).
-
-Usage:
-
-```text
-agentplane hooks run <hook> [<args...> ...]
-```
-
-Examples:
-
-```sh
-agentplane hooks run pre-commit
-```
-
-- Run the pre-commit checks.
-
-```sh
-agentplane hooks run commit-msg -- .git/COMMIT_EDITMSG
-```
-
-- Run commit-msg with a message file argument.
-
-### hooks uninstall
-
-Uninstall managed git hooks installed by agentplane.
-
-Usage:
-
-```text
-agentplane hooks uninstall [options]
-```
-
-Options:
-
-- `--quiet`: Reduce output noise. (default=false)
-
-Examples:
-
-```sh
-agentplane hooks uninstall
-```
-
-- Remove agentplane hooks from .git/hooks/.
-
-## IDE
-
-### ide sync
-
-Generate IDE entrypoints from policy gateway file (AGENTS.md or CLAUDE.md).
-
-Usage:
-
-```text
-agentplane ide sync [options]
-```
-
-Options:
-
-- `--ide <cursor|windsurf>`: Only generate rules for a single IDE (default: both). (choices=cursor|windsurf)
-
-Examples:
-
-```sh
-agentplane ide sync
-```
-
-- Generate Cursor + Windsurf rules.
-
-```sh
-agentplane ide sync --ide cursor
-```
-
-- Generate Cursor rules only.
-
-## Lifecycle
-
-### block
-
-Transition a task to BLOCKED and record a structured Blocked comment.
-
-Usage:
-
-```text
-agentplane block <task-id> --author <id> [options]
-```
-
-Options:
-
-- `--author <id>`: Comment author id (e.g. CODER). (required)
-- `--body <text>`: Structured comment body (must match the configured Blocked: prefix). Use --body-file for Markdown or shell-sensitive text.
-- `--body-file <path>`: Read the structured comment body from a file path (mutually exclusive with --body).
-- `--commit-from-comment`: Create a status commit using the comment body. (default=false)
-- `--commit-emoji <emoji>`: Override the status commit emoji (used with --commit-from-comment).
-- `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected. (repeatable)
-- `--commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --commit-allow prefixes. (default=false, deprecated=disabled)
-- `--commit-require-clean`: Require a clean working tree for the status commit (used with --commit-from-comment). (default=false)
-- `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment). (default=false)
-- `--force`: Override status transition restrictions. (default=false)
-- `--yes`: Auto-approve force-action approval checks when required. (default=false)
-- `--quiet`: Suppress output. (default=false)
-
-Examples:
-
-```sh
-agentplane block 202602030608-F1Q8AB --author CODER --body "Blocked: waiting for review"
-```
-
-- Block work on a task.
-
-```sh
-agentplane block 202602030608-F1Q8AB --author CODER --body "Blocked: waiting for review" --commit-from-comment --commit-allow packages/agentplane/src
-```
-
-- Block work and create a status commit from the comment.
-
-### finish
-
-Mark task(s) as DONE and record a structured Verified comment.
-
-Usage:
-
-```text
-agentplane finish <task-id> ... --author <id> [options]
-```
-
-Options:
-
-- `--author <id>`: Comment author id (e.g. INTEGRATOR). (required)
-- `--body <text>`: Structured comment body (must match the configured Verified: prefix). Use --body-file for Markdown or shell-sensitive text.
-- `--body-file <path>`: Read the structured comment body from a file path (mutually exclusive with --body).
-- `--result <one-line>`: One-line result summary stored in task metadata (required for non-spike tasks when finishing a single task). Use --result-file for shell-sensitive text.
-- `--result-file <path>`: Read the result summary from a file path (mutually exclusive with --result).
-- `--risk <low|med|high>`: Optional. Risk level stored in task metadata. (choices=low|med|high)
-- `--breaking`: Optional. Mark the change as breaking in task metadata. (default=false)
-- `--commit <hash>`: Commit hash to record on the task (optional).
-- `--force`: Force finish despite gates. (default=false)
-- `--yes`: Auto-approve force-action approval checks when required. (default=false)
-- `--commit-from-comment`: Create a commit using the comment body (requires exactly one task id). (default=false)
-- `--commit-emoji <emoji>`: Override the commit emoji (used with --commit-from-comment).
-- `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected. (repeatable)
-- `--commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --commit-allow prefixes. (default=false, deprecated=disabled)
-- `--commit-require-clean`: Require a clean working tree for the commit (used with --commit-from-comment). (default=false)
-- `--status-commit`: Create a separate status commit (requires exactly one task id). (default=false)
-- `--status-commit-emoji <emoji>`: Override the status commit emoji (used with --status-commit).
-- `--status-commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --status-commit). Use minimal prefixes; '.' is rejected. (repeatable)
-- `--status-commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --status-commit-allow prefixes. (default=false, deprecated=disabled)
-- `--status-commit-require-clean`: Require a clean working tree for the status commit (used with --status-commit). (default=false)
-- `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment or --status-commit). (default=false)
-- `--close-commit`: After finishing, run a deterministic close commit for the task README (single-task only). (default=false)
-- `--no-close-commit`: Disable the default deterministic close commit in direct mode (single-task only). (default=false)
-- `--no-write-acr`: Disable automatic ACR refresh for this finish call when acr.write_on_finish is enabled. (default=false)
-- `--close-unstage-others`: With --close-commit: unstage any currently staged paths before staging the task README. (default=false)
-- `--base <branch>`: Optional explicit base branch override for branch_pr finish validation and close-commit reconciliation.
-- `--observation <text>`: Structured finding observation to append with the verification.
-- `--impact <text>`: Structured finding impact to append with the verification.
-- `--resolution <text>`: Structured finding resolution to append with the verification.
-- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
-- `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
-- `--incident-scope <text>`: Optional incident scope for the appended finding.
-- `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
-- `--incident-match <term>`: Repeatable incident match term for the appended finding. (repeatable)
-- `--incident-advice <text>`: Optional operator advice for the appended finding.
-- `--incident-rule <text>`: Optional incident rule for the appended finding.
-- `--quiet`: Suppress output. (default=false)
-
-Examples:
-
-```sh
-agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: all checks passed" --commit abcdef123456
-```
-
-- Finish a task and record commit metadata.
-
-```sh
-agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: all checks passed" --commit-from-comment --commit-allow packages/agentplane/src
-```
-
-- Finish and create a commit from the comment (single-task only).
-
-```sh
-agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: all checks passed" --commit abcdef123456 --observation "Recurring manual recovery remained easy to miss." --impact "incidents.md stayed stale until a second command." --resolution "Capture the closeout finding during finish itself."
-```
-
-- Finish a task while appending a structured finding that can promote into incidents.md.
-
-### start
-
-Transition a task to DOING and record a structured Start comment.
-
-Usage:
-
-```text
-agentplane start <task-id> --author <id> [options]
-```
-
-Options:
-
-- `--author <id>`: Comment author id (e.g. CODER). (required)
-- `--body <text>`: Structured comment body (must match the configured Start: prefix). Use --body-file for Markdown or shell-sensitive text.
-- `--body-file <path>`: Read the structured comment body from a file path (mutually exclusive with --body).
-- `--commit-from-comment`: Create a status commit using the comment body. (default=false)
-- `--commit-emoji <emoji>`: Override the status commit emoji (used with --commit-from-comment).
-- `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected. (repeatable)
-- `--commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --commit-allow prefixes. (default=false, deprecated=disabled)
-- `--commit-require-clean`: Require a clean working tree for the status commit (used with --commit-from-comment). (default=false)
-- `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment). (default=false)
-- `--force`: Override readiness checks and status transition restrictions. (default=false)
-- `--yes`: Auto-approve force-action approval checks when required. (default=false)
-- `--quiet`: Suppress output. (default=false)
-
-Examples:
-
-```sh
-agentplane start 202602030608-F1Q8AB --author CODER --body-file ./start-note.txt
-```
-
-- Start work on a task.
-
-```sh
-agentplane start 202602030608-F1Q8AB --author CODER --body "Start: implement spec-driven CLI" --commit-from-comment --commit-allow packages/agentplane/src
-```
-
-- Start work and create a status commit from the comment.
-
-### verify
-
-Record a verification outcome for a task; incident candidates stay task-local unless collected explicitly.
-
-Usage:
-
-```text
-agentplane verify <task-id> --by <id> [options]
-```
-
-Options:
-
-- `--ok`: Record an OK verification outcome. (default=false)
-- `--rework`: Record a needs-rework verification outcome. (default=false)
-- `--by <id>`: Verifier id (e.g. REVIEWER). (required)
-- `--note <text>`: Short note describing the verification outcome.
-- `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
-- `--details <text>`: Optional free-form details (mutually exclusive with --file).
-- `--file <path>`: Read details from a file path (mutually exclusive with --details).
-- `--collect-incidents`: After recording verification, collect promotable findings into incidents.md immediately. (default=false)
-- `--quiet`: Suppress output. (default=false)
-- `--observation <text>`: Structured finding observation to append with the verification.
-- `--impact <text>`: Structured finding impact to append with the verification.
-- `--resolution <text>`: Structured finding resolution to append with the verification.
-- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
-- `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
-- `--incident-scope <text>`: Optional incident scope for the appended finding.
-- `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
-- `--incident-match <term>`: Repeatable incident match term for the appended finding. (repeatable)
-- `--incident-advice <text>`: Optional operator advice for the appended finding.
-- `--incident-rule <text>`: Optional incident rule for the appended finding.
-
-Examples:
-
-```sh
-agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --quiet
-```
-
-- Record an OK verification outcome.
-
-```sh
-agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note-file ./verify-note.txt
-```
-
-- Record an OK verification outcome using a file-backed note.
-
-```sh
-agentplane verify 202602030608-F1Q8AB --rework --by REVIEWER --note "Needs changes" --details "Missing tests"
-```
-
-- Record a needs-rework outcome with details.
-
-```sh
-agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --observation "Repeated recovery was manual." --impact "Operators needed a second command." --resolution "Append structured findings during verify."
-```
-
-- Record verification and append a promotable structured finding in one command.
-
-```sh
-agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --collect-incidents
-```
-
-- Record verification and collect promotable findings into incidents.md immediately.
-
-## Policy
-
-### incidents
-
-Promote external incident advice and resolve incident hints for analogous tasks.
-
-Usage:
-
-```text
-agentplane incidents <collect|advise> [args] [options]
-```
-
-Notes:
-
-- Use \`incidents collect\` to promote resolved reusable external findings into \`.agentplane/policy/incidents.md\`.
-- Use \`incidents advise\` to query registry advice by task id or lightweight scope/tags.
-
-### incidents advise
-
-Resolve relevant incident advice for a task or an ad hoc scope/tag query.
-
-Usage:
-
-```text
-agentplane incidents advise [<task-id>] [options]
-```
-
-Options:
-
-- `--scope <text>`: Ad hoc scope text when querying without a task id.
-- `--title <text>`: Optional title text for ad hoc advice lookup.
-- `--description <text>`: Optional description text for ad hoc advice lookup.
-- `--tag <tag>`: Matching tag for ad hoc advice lookup; repeat as needed. (repeatable)
-- `--limit <n>`: Maximum number of advice entries to show. (default=5)
-- `--json`: Emit machine-readable advice matches. (default=false)
-
-### incidents collect
-
-Promote reusable resolved external findings from a task into the incident registry.
-
-Usage:
-
-```text
-agentplane incidents collect <task-id> [options]
-```
-
-Options:
-
-- `--check`: Validate incident promotion inputs without writing \`.agentplane/policy/incidents.md\`. (default=false)
-- `--json`: Emit machine-readable collection details. (default=false)
-
-Examples:
-
-```sh
-agentplane incidents collect 202604031416-HEJWTM
-```
-
-- Promote resolved external incident advice from task Findings into the shared registry.
-
-```sh
-agentplane incidents collect 202604031416-HEJWTM --check --json
-```
-
-- Validate that reusable resolved external findings are complete before finish.
-
-## PR
-
-### integrate
-
-Integrate a task branch into the base branch (branch_pr workflow).
-
-Usage:
-
-```text
-agentplane integrate <task-id> [options]
-```
-
-Options:
-
-- `--branch <name>`: Branch name override.
-- `--base <name>`: Base branch override.
-- `--merge-strategy <squash|merge|rebase>`: Merge strategy (default: merge, preserving branch commits; use squash to compact history). (choices=squash|merge|rebase, default=merge)
-- `--run-verify`: Run verify commands. (default=false)
-- `--dry-run`: Do not modify git state. (default=false)
-- `--quiet`: Reduce output noise. (default=false)
-
-Examples:
-
-```sh
-agentplane integrate 202602030608-F1Q8AB --run-verify
-```
-
-- Integrate with verify.
-
-### pr
-
-Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).
-
-Usage:
-
-```text
-agentplane pr <open|update|check|note|close|close-superseded> <task-id|pr-number> [options]
-```
-
-Examples:
-
-```sh
-agentplane pr open 202602030608-F1Q8AB --author CODER
-```
-
-- Create PR artifacts.
-
-```sh
-agentplane pr update 202602030608-F1Q8AB
-```
-
-- Refresh review.md plus github-title/body projections.
-
-```sh
-agentplane pr check 202602030608-F1Q8AB
-```
-
-- Validate PR artifacts.
-
-```sh
-agentplane pr note 202602030608-F1Q8AB --author REVIEWER --body "Looks good"
-```
-
-- Append a handoff note.
-
-```sh
-agentplane pr close 123 --comment "Superseded by #456" --delete-remote-branch
-```
-
-- Close a stale GitHub PR through REST and optionally delete its remote head branch.
-
-```sh
-agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch
-```
-
-- Close a superseded task PR from task artifacts after protected-main closure.
-
-### pr check
-
-Check that PR artifacts are present and valid.
-
-Usage:
-
-```text
-agentplane pr check <task-id>
-```
-
-Examples:
-
-```sh
-agentplane pr check 202602030608-F1Q8AB
-```
-
-- Check artifacts.
-
-### pr close
-
-Close a GitHub PR through REST with optional remote head-branch deletion.
-
-Usage:
-
-```text
-agentplane pr close <pr-number> [options]
-```
-
-Options:
-
-- `--repo <owner/name>`: Optional. GitHub owner/repo override (defaults to origin remote).
-- `--comment <text>`: Optional. Add a close comment before closing the PR.
-- `--delete-remote-branch`: Delete the remote head branch after a successful close when it belongs to the target repo. (default=false)
-
-Examples:
-
-```sh
-agentplane pr close 123 --comment "Superseded by #456" --delete-remote-branch
-```
-
-- Close a stale PR and remove its remote head branch when it belongs to the same repo.
-
-### pr close-superseded
-
-Close a superseded task PR using task artifacts.
-
-Usage:
-
-```text
-agentplane pr close-superseded <task-id> [options]
-```
-
-Options:
-
-- `--delete-remote-branch`: Delete the remote head branch after a successful close when it belongs to the task repo. (default=false)
-
-Examples:
-
-```sh
-agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch
-```
-
-- Repair a stale task PR after the task has already been merged to main.
-
-### pr note
-
-Append a handoff note into PR review.md.
-
-Usage:
-
-```text
-agentplane pr note <task-id> --author <id> [options]
-```
-
-Options:
-
-- `--author <id>`: Author id (e.g. REVIEWER). (required)
-- `--body <text>`: Note body text. Use --body-file for Markdown or shell-sensitive text.
-- `--body-file <path>`: Read the note body from a file path (mutually exclusive with --body).
-
-Examples:
-
-```sh
-agentplane pr note 202602030608-F1Q8AB --author REVIEWER --body "LGTM"
-```
-
-- Add note.
-
-### pr open
-
-Create PR artifacts for a task and, unless --sync-only is set, publish/link the remote GitHub PR.
-
-Usage:
-
-```text
-agentplane pr open <task-id> --author <id> [options]
-```
-
-Options:
-
-- `--author <id>`: Author id (e.g. CODER). (required)
-- `--branch <name>`: Branch name (default: current branch).
-- `--include-task <task-id>`: Repeatable. Record an additional related task id on this primary PR. (repeatable)
-- `--sync-only`: Only write local PR artifacts; do not create a remote GitHub PR. (default=false)
-
-Examples:
-
-```sh
-agentplane pr open 202602030608-F1Q8AB --author CODER
-```
-
-- Sync local artifacts, publish the task branch to origin if needed, and create/link the GitHub PR.
-
-### pr update
-
-Update PR artifacts (review packet, diffstat, and GitHub projections).
-
-Usage:
-
-```text
-agentplane pr update <task-id> [options]
-```
-
-Options:
-
-- `--include-task <task-id>`: Repeatable. Record an additional related task id on this primary PR. (repeatable)
-
-Examples:
-
-```sh
-agentplane pr update 202602030608-F1Q8AB
-```
-
-- Update artifacts.
+- Apply the framework upgrade and migrate legacy task README docs in one operator run.
 
 ## Quality
 
@@ -2134,6 +2107,54 @@ agentplane doctor --fix
 ```
 
 - Apply safe-only fixes (idempotent).
+
+## Diagnostics
+
+### runtime
+
+Inspect which agentplane runtime/binary/package sources are active.
+
+Usage:
+
+```text
+agentplane runtime <explain> [options]
+```
+
+Examples:
+
+```sh
+agentplane runtime explain
+```
+
+- Show active runtime details.
+
+### runtime explain
+
+Explain the active binary, runtime mode, and resolved package roots.
+
+Usage:
+
+```text
+agentplane runtime explain [options]
+```
+
+Options:
+
+- `--json`: Emit machine-readable runtime details. (default=false)
+
+Examples:
+
+```sh
+agentplane runtime explain
+```
+
+- Show the active runtime as readable text.
+
+```sh
+agentplane runtime explain --json
+```
+
+- Show runtime details for scripts and diagnostics tooling.
 
 ## Recipes
 
@@ -2516,360 +2537,733 @@ agentplane recipes update tdd --force
 
 - Overwrite local vendored edits with the cached source.
 
-## Release
+## Blueprints
 
-### release
+### blueprint
 
-Prepare a release (agent-assisted notes + version bump workflow).
+List and explain blueprint routing without executing a task.
+
+This is a command group. Use \`agentplane blueprint list\`, \`agentplane blueprint explain ...\`, \`agentplane blueprint scaffold ...\`, or \`agentplane blueprint validate ...\`.
 
 Usage:
 
 ```text
-agentplane release <command> [args] [options]
+agentplane blueprint [<cmd> ...]
 ```
 
-### release apply
+Examples:
 
-Apply a prepared direct-mode release: bump versions, validate notes, commit, and tag.
+```sh
+agentplane blueprint list
+```
 
-Applies a release plan generated by \`agentplane release plan\` on the direct release route. This command does not author release notes; it expects a DOCS agent to have written docs/releases/vX.Y.Z.md. In branch_pr repositories, use \`agentplane release candidate\` on a dedicated non-base branch instead.
+- Show built-in blueprint routes.
+
+```sh
+agentplane blueprint scaffold analysis.custom
+```
+
+- Create a project-local blueprint scaffold.
+
+```sh
+agentplane blueprint explain 202605051957-5WRJZK
+```
+
+- Explain the resolved route for a task.
+
+### blueprint drift
+
+Check whether a task resolved blueprint snapshot is current.
 
 Usage:
 
 ```text
-agentplane release apply [options]
+agentplane blueprint drift <task-id> [options]
 ```
 
 Options:
 
-- `--plan <path>`: Path to a release plan directory (defaults to the latest under .agentplane/.release/plan/).
-- `--push`: Optional direct-push mode: push the release commit and tag immediately (requires --yes). This is for the direct release route only. (default=false)
-- `--remote <name>`: Git remote to push to (default: origin).
-- `--yes`: Approve minor/major bumps and allow pushing. Patch bumps can be applied without this flag. (default=false)
+- `--json`: Emit JSON. (default=false)
 
 Examples:
 
 ```sh
-agentplane release apply
+agentplane blueprint drift 202605060915-3NBTGG
 ```
 
-- Apply the latest release plan locally (expects docs/releases/vX.Y.Z.md to exist).
+- Check a task-local resolved snapshot before runner materialization.
 
-```sh
-agentplane release apply --plan .agentplane/.release/plan/<runId>
-```
+### blueprint explain
 
-- Apply a specific release plan directory.
-
-```sh
-agentplane release apply --push --yes
-```
-
-- Apply and push the release commit+tag to the remote.
-
-### release candidate
-
-Prepare a branch_pr release candidate: bump versions, validate notes, commit, and optionally push the candidate branch.
-
-Prepares a release candidate from a generated release plan on a dedicated non-base branch in branch_pr mode. This command creates the candidate commit but intentionally does not create or push the release tag; final publication remains gated on merge to the protected base branch and explicit Publish to npm workflow dispatch with the release commit sha.
+Explain blueprint route selection for a task or synthetic input.
 
 Usage:
 
 ```text
-agentplane release candidate [options]
+agentplane blueprint explain [<task-id>] [options]
 ```
 
 Options:
 
-- `--plan <path>`: Path to a release plan directory (defaults to the latest under .agentplane/.release/plan/).
-- `--push`: Optional candidate-push mode: push only the release candidate branch for hosted review and merge (requires --yes). The release tag is not created or pushed here. (default=false)
-- `--remote <name>`: Git remote to push to (default: origin).
-- `--yes`: Approve minor/major bumps and allow pushing. Patch bumps can be applied without this flag. (default=false)
+- `--kind <analysis|content|docs|code|release|ops>`: Synthetic task kind hint.
+- `--mutation <none|docs|code|release|ops|unknown>`: Synthetic mutation scope. (choices=none|docs|code|release|ops|unknown, default=unknown)
+- `--workflow-mode <direct|branch_pr>`: Workflow mode override. (choices=direct|branch_pr)
+- `--tag <tag>`: Synthetic tag.
+- `--title <text>`: Synthetic title.
+- `--description <text>`: Synthetic description.
+- `--risk <risk>`: Risk flag; repeatable.
+- `--blueprint <id>`: Explicit blueprint request.
+- `--json`: Emit JSON. (default=false)
 
 Examples:
 
 ```sh
-agentplane release candidate
+agentplane blueprint explain 202605051957-5WRJZK
 ```
 
-- Prepare the latest release plan on the current branch_pr candidate branch.
+- Resolve a task.
 
 ```sh
-agentplane release candidate --plan .agentplane/.release/plan/<runId>
+agentplane blueprint explain --kind analysis --mutation none
 ```
 
-- Prepare a specific release plan on the current candidate branch.
+- Resolve a synthetic analysis route.
 
-```sh
-agentplane release candidate --push --yes
-```
+### blueprint list
 
-- Prepare and push only the release candidate branch for hosted review and merge.
-
-### release plan
-
-Generate an agent-assisted release plan (changes list + next patch version).
-
-Generates a structured changes list since the last semver tag and writes a plan directory under .agentplane/.release/. This plan is intended for a DOCS agent to author release notes. By default, only patch bumps are allowed without explicit approval.
+List built-in and optional project-local blueprint routes.
 
 Usage:
 
 ```text
-agentplane release plan [options]
+agentplane blueprint list [options]
 ```
 
 Options:
 
-- `--patch`: Bump patch version (default). (default=false)
-- `--minor`: Bump minor version (requires --yes). (default=false)
-- `--major`: Bump major version (requires --yes). (default=false)
-- `--since <tag>`: Override the starting tag/ref (defaults to the latest vX.Y.Z tag).
-- `--yes`: Approve minor/major version bumps (required for --minor/--major). (default=false)
+- `--project`: Include validated project-local blueprints from .agentplane/blueprints. (default=false)
+- `--trusted`: Show trust status from .agentplane/blueprints/config.json. (default=false)
+- `--json`: Emit JSON. (default=false)
 
 Examples:
 
 ```sh
-agentplane release plan
+agentplane blueprint list --json
 ```
 
-- Generate a plan for the next patch release and hand it to a DOCS agent to write release notes.
+- Emit machine-readable built-in routes.
 
 ```sh
-agentplane release plan --minor --yes
+agentplane blueprint list --project
 ```
 
-- Generate a plan for the next minor release (explicit approval required).
+- Include project-local blueprint definitions.
 
-## Setup
+### blueprint report
 
-### init
-
-Initialize agentplane project files under .agentplane/.
-
-Creates .agentplane/ config, backend stubs, and agent templates in the target directory. If the target directory is not a git repository, it initializes one and (by default) writes an initial install commit. Use --gitignore-agents to keep agent templates local (gitignored) and skip the install commit. In interactive mode it prompts for missing inputs; use --yes for non-interactive mode.
+Report project-local blueprint trust compatibility.
 
 Usage:
 
 ```text
-agentplane init [options]
+agentplane blueprint report [options]
 ```
 
 Options:
 
-- `--setup-profile <light|normal|full-harness>`: Setup profile preset. Preferred values: light, normal, full-harness. (choices=light|normal|full-harness|developer|vibecoder|manager|enterprise)
-- `--policy-gateway <codex|claude>`: Policy gateway file to install (codex -&gt; AGENTS.md, claude -&gt; CLAUDE.md). (choices=codex|claude)
-- `--ide <codex|cursor|windsurf>`: IDE rules integration target (default: codex). (choices=codex|cursor|windsurf)
-- `--workflow <direct|branch_pr>`: Workflow mode (default: direct). (choices=direct|branch_pr)
-- `--direct-close-dirty-policy <allow-other-task-readmes|strict>`: Direct-mode close behavior when tracked dirt exists outside the active task: allow only other active task READMEs, or block on any unrelated tracked change. (choices=allow-other-task-readmes|strict)
-- `--backend <local|redmine|cloud>`: Task backend (default: local). (choices=local|redmine|cloud)
-- `--hooks <true|false>`: Install managed git hooks (default by setup profile: light=false, normal/full-harness=true).
-- `--require-plan-approval <true|false>`: Require explicit plan approval before starting work.
-- `--require-network-approval <true|false>`: Require explicit approval before any network operation.
-- `--require-verify-approval <true|false>`: Require explicit approval before recording verification.
-- `--execution-profile <conservative|balanced|aggressive>`: Execution profile preset controlling autonomy, reasoning, and tool budgets. (choices=conservative|balanced|aggressive)
-- `--strict-unsafe-confirm <true|false>`: Require strict explicit confirmations for additional unsafe actions.
-- `--recipes <none|id1,id2,...>`: Optional cached recipes to vendor during init (comma-separated), or 'none'.
-- `--force`: Overwrite init conflicts by deleting existing paths. (default=false)
-- `--backup`: Backup init conflicts before overwriting. (default=false)
-- `--yes`: Non-interactive mode (do not prompt; use defaults for missing flags). (default=false)
-- `--gitignore-agents`: Add gateway/agent files (AGENTS.md or CLAUDE.md and .agentplane/agents/) to .gitignore and skip the initial install commit. (default=false)
+- `--json`: Emit JSON. (default=false)
 
 Examples:
 
 ```sh
-agentplane init
+agentplane blueprint report --json
 ```
 
-- Interactive setup (prompts for missing values).
+- Inspect project-local blueprint trust compatibility before runner materialization.
 
-```sh
-agentplane init --setup-profile light --yes
-```
+### blueprint scaffold
 
-- Non-interactive setup with flexible defaults.
-
-```sh
-agentplane init --workflow direct --direct-close-dirty-policy allow-other-task-readmes --backend local --hooks true --require-network-approval true --yes
-```
-
-- Non-interactive setup with the tolerant direct close policy plus an explicit network-approval override.
-
-```sh
-agentplane init --workflow direct --direct-close-dirty-policy strict --yes
-```
-
-- Initialize direct mode with strict close-tail blocking on any unrelated tracked dirt.
-
-```sh
-agentplane init --force --yes
-```
-
-- Re-initialize, overwriting conflicts (non-interactive).
-
-```sh
-agentplane init --yes --gitignore-agents
-```
-
-- Initialize without committing and keep agent prompts/templates local (gitignored).
-
-### upgrade
-
-Upgrade the local agentplane framework bundle in the repo.
-
-Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade applies the bundled managed files from the locally installed agentplane package assets (no network) and creates a dedicated upgrade commit. Use --dry-run to preview changes without writing files, or --agent to generate a review plan instead of applying. Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.
+Create a project-local blueprint JSON scaffold without enabling it.
 
 Usage:
 
 ```text
-agentplane upgrade [options]
+agentplane blueprint scaffold <blueprint-id> [options]
 ```
 
 Options:
 
-- `--agent`: Generate an agent-assisted upgrade plan instead of applying managed files. (default=false)
-- `--auto`: Apply the upgrade automatically (same behavior as the default mode; useful for explicit scripts). (default=false)
-- `--remote`: Fetch the framework bundle from GitHub releases (requires network approvals). (default=false)
-- `--allow-tarball`: Allow falling back to a GitHub repo tarball when release assets are missing (no checksum verification). (default=false)
-- `--tag <tag>`: GitHub release tag (defaults to latest).
-- `--source <repo-url>`: Override GitHub repo source URL (defaults to config.framework.source).
-- `--bundle <path|url>`: Use a local path or URL for the upgrade bundle archive.
-- `--checksum <path|url>`: Use a local path or URL for the bundle checksum file (required with --bundle).
-- `--asset <name>`: Override the GitHub release asset name for the bundle.
-- `--checksum-asset <name>`: Override the GitHub release asset name for the checksum file.
-- `--dry-run`: Report changes without modifying files. (default=false)
-- `--migrate-task-docs`: After applying the framework upgrade, migrate legacy task README docs in the same run. (default=false)
-- `--no-backup`: Disable backups (default is to create backups). (default=false)
-- `--yes`: Auto-approve network access prompts (subject to config approvals). (default=false)
+- `--from <builtin-blueprint-id>`: Built-in blueprint to clone as a starting point.
+- `--out <path>`: Output path; defaults to .agentplane/blueprints/&lt;id&gt;.json.
+- `--force`: Overwrite an existing file. (default=false)
+- `--json`: Emit JSON. (default=false)
 
 Examples:
 
 ```sh
-agentplane upgrade
+agentplane blueprint scaffold analysis.custom
 ```
 
-- Apply managed files from the installed CLI assets and create an upgrade commit.
+- Create .agentplane/blueprints/analysis.custom.json from analysis.light.
 
 ```sh
-agentplane upgrade --dry-run
+agentplane blueprint scaffold code.custom --from code.branch_pr
 ```
 
-- Preview managed-file changes without modifying the repo.
+- Start from an existing code workflow route.
 
-```sh
-agentplane upgrade --agent
-```
+### blueprint snapshot
 
-- Generate an agent-assisted upgrade plan instead of applying files.
-
-```sh
-agentplane upgrade --remote --tag v0.1.9 --dry-run
-```
-
-- Preview changes for a specific GitHub release tag (no writes).
-
-```sh
-agentplane upgrade --bundle ./agentplane-upgrade.tar.gz --checksum ./agentplane-upgrade.tar.gz.sha256
-```
-
-- Upgrade from local bundle files (no network).
-
-```sh
-agentplane upgrade --yes --migrate-task-docs
-```
-
-- Apply the framework upgrade and migrate legacy task README docs in one operator run.
-
-## Task
-
-### ready
-
-Report dependency readiness details for a task.
+Refresh the resolved blueprint snapshot artifact for a task.
 
 Usage:
 
 ```text
-agentplane ready <task-id>
+agentplane blueprint snapshot <task-id> [options]
+```
+
+Options:
+
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane blueprint snapshot 202605060915-3NBTGG
+```
+
+- Refresh the task-local resolved blueprint snapshot artifact.
+
+```sh
+agentplane blueprint snapshot 202605060915-3NBTGG --json
+```
+
+- Emit old/new digest details as JSON.
+
+### blueprint validate
+
+Validate project-local blueprint JSON without registering or executing it.
+
+Usage:
+
+```text
+agentplane blueprint validate [<path>] [options]
+```
+
+Options:
+
+- `--project`: Validate all JSON blueprints in .agentplane/blueprints or the supplied directory. (default=false)
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane blueprint validate .agentplane/blueprints/analysis.json
+```
+
+- Validate a local blueprint definition.
+
+```sh
+agentplane blueprint validate --project
+```
+
+- Validate the project-local blueprint registry directory.
+
+## ACR
+
+### acr
+
+Generate, validate, check, explain, and print Agent Change Record artifacts.
+
+This is a command group. Use a subcommand such as \`agentplane acr generate ...\`, \`agentplane acr validate ...\`, or \`agentplane acr schema\`.
+
+Usage:
+
+```text
+agentplane acr [<cmd> ...]
 ```
 
 Examples:
 
 ```sh
-agentplane ready 202602030608-F1Q8AB
+agentplane acr generate 202605031625-886KZ6 --work-commit HEAD --write
 ```
 
-- Print readiness details.
+- Generate a task-local ACR.
 
-### task
+### acr check
 
-Task lifecycle and task-store commands.
+Run the ACR merge-gate check for CI and branch review.
 
 Usage:
 
 ```text
-agentplane task <subcommand> [args] [options]
+agentplane acr check <task-id> [options]
+```
+
+Options:
+
+- `--mode <ci>`: Check mode. (choices=ci, default=ci)
+- `--require-plan-approved`: Require approved plan. (default=true)
+- `--require-verification`: Require passed verification. (default=true)
+- `--require-policy-pass`: Reject failed policy decisions. (default=true)
+- `--allow-waived-verification`: Allow waived verification with approval. (default=false)
+- `--allow-manual-override`: Allow policy manual_override with approval. (default=false)
+- `--json`: Emit machine-readable result. (default=false)
+
+Examples:
+
+```sh
+agentplane acr check 202605031625-886KZ6 --mode ci
+```
+
+- Run merge gate.
+
+### acr explain
+
+Explain an ACR for human review.
+
+Usage:
+
+```text
+agentplane acr explain <task-id-or-path> [options]
+```
+
+Options:
+
+- `--json`: Emit machine-readable summary. (default=false)
+
+Examples:
+
+```sh
+agentplane acr explain 202605031625-886KZ6
+```
+
+- Summarize ACR readiness.
+
+### acr generate
+
+Generate an Agent Change Record from task, Git, policy, and verification state.
+
+Usage:
+
+```text
+agentplane acr generate <task-id> [options]
+```
+
+Options:
+
+- `--work-commit <rev>`: Implementation revision.
+- `--base-commit <rev>`: Base revision override.
+- `--agent <id>`: AgentPlane role or agent id.
+- `--agent-name <name>`: Human-readable agent name.
+- `--model-provider <provider>`: Model provider. (choices=anthropic|openai|cursor|aider|unknown|custom)
+- `--model-name <name>`: Model name.
+- `--out <path>`: Write ACR to custom path.
+- `--write`: Write task-local ACR. (default=false)
+- `--stdout`: Print ACR JSON to stdout. (default=false)
+- `--refresh`: Overwrite existing ACR. (default=false)
+- `--json`: Emit machine-readable result. (default=false)
+
+Examples:
+
+```sh
+agentplane acr generate 202605031625-886KZ6 --work-commit HEAD --write
+```
+
+- Write \`.agentplane/tasks/&lt;task-id&gt;/acr.json\`.
+
+### acr schema
+
+Print or write the ACR v0.1 JSON Schema.
+
+Usage:
+
+```text
+agentplane acr schema [options]
+```
+
+Options:
+
+- `--version <version>`: ACR schema version. (choices=0.1, default=0.1)
+- `--out <path>`: Write schema to a file instead of stdout.
+
+Examples:
+
+```sh
+agentplane acr schema --version 0.1
+```
+
+- Print the bundled schema.
+
+```sh
+agentplane acr schema --version 0.1 --out schemas/acr-v0.1.schema.json
+```
+
+- Write the bundled schema to a custom path.
+
+### acr validate
+
+Validate an ACR file by schema, local, or CI invariants.
+
+Usage:
+
+```text
+agentplane acr validate <task-id-or-path> [options]
+```
+
+Options:
+
+- `--mode <schema|local|ci>`: Validation mode. (choices=schema|local|ci, default=local)
+- `--strict`: Treat warnings as failures. (default=false)
+- `--json`: Emit machine-readable result. (default=false)
+
+Examples:
+
+```sh
+agentplane acr validate 202605031625-886KZ6 --mode local
+```
+
+- Validate task ACR.
+
+## Guard
+
+### commit
+
+Create a git commit after validating policy and allowlist; if the index is empty, stage matching allowlist paths first.
+
+Usage:
+
+```text
+agentplane commit <task-id> [options]
+```
+
+Options:
+
+- `-m, --message <message>`: Commit subject (must follow policy). Required unless --close is used.
+- `--close`: Generate a deterministic close commit message from task snapshot + verification + recorded implementation commit; stages only the task README. (default=false)
+- `--unstage-others`: With --close: unstage any currently staged paths before staging the task README. (default=false)
+- `--check-only`: With --close: run preflight checks and print the planned close commit subject without creating a commit. (default=false)
+- `--allow <path-prefix>`: Repeatable. Allowed path prefix (git-path). Use minimal prefixes; repo-wide '.' is rejected (tip: \`agentplane guard suggest-allow --format args\`). (repeatable)
+- `--auto-allow`: Deprecated. Disabled for safety; pass explicit --allow prefixes. (default=false, deprecated=disabled)
+- `--allow-tasks`: Allow the optional tasks export snapshot plus artifacts under the active task subtree; standalone path scope. (default=false)
+- `--allow-base`: Allow base branch edits; branch override only, not a path allowlist. (default=false)
+- `--allow-policy`: Allow policy edits (e.g. AGENTS.md); standalone path scope. (default=false)
+- `--allow-config`: Allow config edits; standalone path scope. (default=false)
+- `--allow-hooks`: Allow hooks edits; standalone path scope. (default=false)
+- `--allow-ci`: Allow CI workflow edits; standalone path scope. (default=false)
+- `--require-clean`: Fail if tracked files have unstaged changes (untracked is ignored). (default=false)
+- `--quiet`: Reduce output noise. (default=false)
+
+Notes:
+
+- Repository-managed task commits use the canonical subject format \`&lt;emoji&gt; &lt;suffix&gt; &lt;scope&gt;: &lt;summary&gt;\`; non-task commits use \`&lt;emoji&gt; &lt;scope&gt;: &lt;summary&gt;\`.
+- Repository-managed commit paths resolve author/committer identity from global git \`user.name\` and \`user.email\` before falling back to ambient git env.
+- When \`commit.dco.enabled=true\`, repository-managed commits append the configured \`Signed-off-by\` trailer and \`commit-msg\` rejects manual commits without any valid \`Signed-off-by\` trailer.
+- Protected path-scoped overrides can stand alone without a duplicate explicit prefix: \`--allow-tasks\`, \`--allow-policy\`, \`--allow-config\`, \`--allow-hooks\`, and \`--allow-ci\` each admit their own path family.
+- Top-level \`agentplane commit\` can auto-stage those protected path scopes when the git index starts empty.
+- \`--allow-base\` is different: it only overrides base-branch protection and never selects file paths by itself.
+
+Examples:
+
+```sh
+agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --allow packages/agentplane
+```
+
+- Create a commit after validating allowlist and subject policy.
+
+```sh
+agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: update publish workflow" --allow-ci
+```
+
+- Commit CI-only changes without a redundant explicit workflow path prefix.
+
+```sh
+agentplane commit 202602030608-F1Q8AB --close
+```
+
+- Create a close commit for the task README using a deterministic message builder.
+
+### guard
+
+Guard commands (commit checks, git hygiene, and allowlist helpers).
+
+Usage:
+
+```text
+agentplane guard <command> [args] [options]
+```
+
+### guard clean
+
+Ensure the git index has no staged files.
+
+Usage:
+
+```text
+agentplane guard clean [options]
+```
+
+Options:
+
+- `--quiet`: Reduce output noise. (default=false)
+
+Examples:
+
+```sh
+agentplane guard clean
+```
+
+- Fail if staged files exist.
+
+### guard commit
+
+Validate commit policy and allowlist for staged changes (no commit is created).
+
+Usage:
+
+```text
+agentplane guard commit <task-id> --message <message> [options]
+```
+
+Options:
+
+- `-m, --message <message>`: Commit subject (must follow policy). (required)
+- `--allow <path-prefix>`: Repeatable. Allowed path prefix (git-path). Use minimal prefixes; repo-wide '.' is rejected (tip: \`agentplane guard suggest-allow --format args\`). (repeatable)
+- `--auto-allow`: Deprecated. Disabled for safety; pass explicit --allow prefixes. (default=false, deprecated=disabled)
+- `--allow-tasks`: Allow the optional tasks export snapshot plus artifacts under the active task subtree; standalone path scope. (default=false)
+- `--allow-base`: Allow base branch edits; branch override only, not a path allowlist. (default=false)
+- `--allow-policy`: Allow policy edits (e.g. AGENTS.md); standalone path scope. (default=false)
+- `--allow-config`: Allow config edits; standalone path scope. (default=false)
+- `--allow-hooks`: Allow hooks edits; standalone path scope. (default=false)
+- `--allow-ci`: Allow CI workflow edits; standalone path scope. (default=false)
+- `--require-clean`: Fail if tracked files have unstaged changes (untracked is ignored). (default=false)
+- `--quiet`: Reduce output noise. (default=false)
+
+Notes:
+
+- Protected path-scoped overrides can stand alone without a duplicate explicit prefix: \`--allow-tasks\`, \`--allow-policy\`, \`--allow-config\`, \`--allow-hooks\`, and \`--allow-ci\` each admit their own path family.
+- \`agentplane guard commit\` remains staged-only: it validates the current index and never auto-stages files for you.
+- \`--allow-base\` is different: it only overrides base-branch protection and never selects file paths by itself.
+
+Examples:
+
+```sh
+agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --allow packages/agentplane
+```
+
+- Validate staged changes are covered by allowlist and policy.
+
+```sh
+agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: update publish workflow" --allow-ci
+```
+
+- Validate already staged CI-only changes without a redundant explicit workflow path prefix.
+
+### guard suggest-allow
+
+Suggest minimal --allow prefixes based on staged files.
+
+Usage:
+
+```text
+agentplane guard suggest-allow [options]
+```
+
+Options:
+
+- `--format <lines|args>`: Output format (default: lines). (choices=lines|args, default=lines)
+
+Examples:
+
+```sh
+agentplane guard suggest-allow
+```
+
+- Print prefixes, one per line.
+
+```sh
+agentplane guard suggest-allow --format args
+```
+
+- Print as --allow ... args.
+
+## Hooks
+
+### hooks
+
+Manage and run git hooks installed by agentplane.
+
+Usage:
+
+```text
+agentplane hooks <command> [args] [options]
+```
+
+### hooks install
+
+Install managed git hooks and the agentplane shim.
+
+Usage:
+
+```text
+agentplane hooks install [options]
+```
+
+Options:
+
+- `--quiet`: Reduce output noise. (default=false)
+
+Examples:
+
+```sh
+agentplane hooks install
+```
+
+- Install hooks into .git/hooks/.
+
+### hooks run
+
+Run a managed hook (use \`--\` to pass through additional arguments).
+
+Usage:
+
+```text
+agentplane hooks run <hook> [<args...> ...]
+```
+
+Examples:
+
+```sh
+agentplane hooks run pre-commit
+```
+
+- Run the pre-commit checks.
+
+```sh
+agentplane hooks run commit-msg -- .git/COMMIT_EDITMSG
+```
+
+- Run commit-msg with a message file argument.
+
+### hooks uninstall
+
+Uninstall managed git hooks installed by agentplane.
+
+Usage:
+
+```text
+agentplane hooks uninstall [options]
+```
+
+Options:
+
+- `--quiet`: Reduce output noise. (default=false)
+
+Examples:
+
+```sh
+agentplane hooks uninstall
+```
+
+- Remove agentplane hooks from .git/hooks/.
+
+## Policy
+
+### incidents
+
+Promote external incident advice and resolve incident hints for analogous tasks.
+
+Usage:
+
+```text
+agentplane incidents <collect|advise> [args] [options]
 ```
 
 Notes:
 
-- Direct task route: task new -&gt; task plan set -&gt; task plan approve -&gt; task start-ready -&gt; task verify-show -&gt; verify -&gt; finish.
-- Use \`agentplane help task plan\`, \`agentplane help task doc\`, and \`agentplane help task verify\` to inspect task sub-areas.
-- Verification recording and closure stay top-level lifecycle commands: \`agentplane verify ...\` and \`agentplane finish ...\`.
+- Use \`incidents collect\` to promote resolved reusable external findings into \`.agentplane/policy/incidents.md\`.
+- Use \`incidents advise\` to query registry advice by task id or lightweight scope/tags.
+
+### incidents advise
+
+Resolve relevant incident advice for a task or an ad hoc scope/tag query.
+
+Usage:
+
+```text
+agentplane incidents advise [<task-id>] [options]
+```
+
+Options:
+
+- `--scope <text>`: Ad hoc scope text when querying without a task id.
+- `--title <text>`: Optional title text for ad hoc advice lookup.
+- `--description <text>`: Optional description text for ad hoc advice lookup.
+- `--tag <tag>`: Matching tag for ad hoc advice lookup; repeat as needed. (repeatable)
+- `--limit <n>`: Maximum number of advice entries to show. (default=5)
+- `--json`: Emit machine-readable advice matches. (default=false)
+
+### incidents collect
+
+Promote reusable resolved external findings from a task into the incident registry.
+
+Usage:
+
+```text
+agentplane incidents collect <task-id> [options]
+```
+
+Options:
+
+- `--check`: Validate incident promotion inputs without writing \`.agentplane/policy/incidents.md\`. (default=false)
+- `--json`: Emit machine-readable collection details. (default=false)
 
 Examples:
 
 ```sh
-agentplane task new --title "..." --description "..." --owner CODER --tag code
+agentplane incidents collect 202604031416-HEJWTM
 ```
 
-- Create a task.
+- Promote resolved external incident advice from task Findings into the shared registry.
 
 ```sh
-agentplane task plan set <task-id> --text "..." --updated-by ORCHESTRATOR
+agentplane incidents collect 202604031416-HEJWTM --check --json
 ```
 
-- Write the execution plan.
+- Validate that reusable resolved external findings are complete before finish.
+
+## IDE
+
+### ide sync
+
+Generate IDE entrypoints from policy gateway file (AGENTS.md or CLAUDE.md).
+
+Usage:
+
+```text
+agentplane ide sync [options]
+```
+
+Options:
+
+- `--ide <cursor|windsurf>`: Only generate rules for a single IDE (default: both). (choices=cursor|windsurf)
+
+Examples:
 
 ```sh
-agentplane task start-ready <task-id> --author CODER --body "Start: ..."
+agentplane ide sync
 ```
 
-- Start the task after approval.
+- Generate Cursor + Windsurf rules.
 
 ```sh
-agentplane task verify-show <task-id>
+agentplane ide sync --ide cursor
 ```
 
-- Show Verify Steps before running checks.
+- Generate Cursor rules only.
 
-```sh
-agentplane task run <task-id>
-```
-
-- Run an existing task through the shared runner flow.
-
-```sh
-agentplane task handoff record <task-id> --from CODER --reason "Paused for handoff"
-```
-
-- Persist a first-class handoff snapshot.
-
-```sh
-agentplane task hosted-close --event-json "$GITHUB_EVENT_PATH"
-```
-
-- Apply deterministic task closure from a merged hosted PR event on an automation branch.
-
-```sh
-agentplane task hosted-close-pr 202604091218-JREJ4K
-```
-
-- Open the hosted closure PR after a manual handoff comment leaves only the remote task-close branch.
-
-```sh
-agentplane task resume-context <task-id>
-```
-
-- Inspect deterministic recovery context before resuming or retrying a run.
+## Advanced
 
 ### task add
 
@@ -2961,30 +3355,6 @@ agentplane task close-noop 202602030608-F1Q8AB --author ORCHESTRATOR --note "Dup
 
 - Close bookkeeping-only tasks without manual verify+finish choreography.
 
-### task comment
-
-Append a comment to a task.
-
-Usage:
-
-```text
-agentplane task comment <task-id> --author <id> [options]
-```
-
-Options:
-
-- `--author <id>`: Comment author id (e.g. CODER). (required)
-- `--body <text>`: Comment body text. Use --body-file for Markdown or shell-sensitive text.
-- `--body-file <path>`: Read the comment body from a file path (mutually exclusive with --body).
-
-Examples:
-
-```sh
-agentplane task comment 202602030608-F1Q8AB --author CODER --body "Investigated root cause."
-```
-
-- Add a comment and bump doc metadata.
-
 ### task derive
 
 Derive an implementation task from a spike task (adds depends_on on the spike).
@@ -3016,104 +3386,6 @@ agentplane task derive 202602070101-ABCD --title "Implement X" --description "Do
 ```
 
 - Create an implementation task derived from a spike with seeded verify steps.
-
-### task doc
-
-Task doc commands (show/set).
-
-Usage:
-
-```text
-agentplane task doc show <task-id> [--section <name>] [--quiet]
-agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>) [--updated-by <id>]
-agentplane task doc set <task-id> --full-doc (--text <text> | --file <path>) [--updated-by <id>]
-```
-
-### task doc set
-
-Update a task README section.
-
-Usage:
-
-```text
-agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>) [--updated-by <id>]
-agentplane task doc set <task-id> --full-doc (--text <text> | --file <path>) [--updated-by <id>]
-```
-
-Options:
-
-- `--section <name>`: Target section heading (must be one of config.tasks.doc.sections). Required unless --full-doc is set.
-- `--full-doc`: Treat the provided text/file as the full task README payload. (default=false)
-- `--text <text>`: Section content (mutually exclusive with --file). Literal escaped newlines (\n) are normalized for inline text.
-- `--file <path>`: Read section content from a file (mutually exclusive with --text).
-- `--updated-by <id>`: Optional. Override doc_updated_by metadata (must be non-empty).
-
-Examples:
-
-```sh
-agentplane task doc set 202602030608-F1Q8AB --section Summary --text "New summary."
-```
-
-- Update one section using inline text.
-
-```sh
-agentplane task doc set 202602030608-F1Q8AB --section Plan --file ./plan.md
-```
-
-- Update one section using a file.
-
-```sh
-agentplane task doc set 202602030608-F1Q8AB --full-doc --file ./task-readme.md
-```
-
-- Replace the full task README payload explicitly.
-
-### task doc show
-
-Print task README content (entire doc or one section).
-
-Usage:
-
-```text
-agentplane task doc show <task-id> [options]
-```
-
-Options:
-
-- `--section <name>`: Optional. Print a single section.
-- `--quiet`: Suppress informational output when doc/section content is missing. (default=false)
-
-Examples:
-
-```sh
-agentplane task doc show 202602030608-F1Q8AB
-```
-
-- Print the full doc.
-
-```sh
-agentplane task doc show 202602030608-F1Q8AB --section Summary
-```
-
-- Print a single section.
-
-### task export
-
-Generate an optional tasks export snapshot at the configured path.
-
-Usage:
-
-```text
-agentplane task export
-```
-
-Examples:
-
-```sh
-agentplane task export
-```
-
-- Write the optional tasks export JSON and print the path.
 
 ### task findings
 
@@ -3283,228 +3555,6 @@ agentplane task lint
 
 - Validate the tasks export file.
 
-### task list
-
-List tasks (optionally filtered by status/owner/tag).
-
-Usage:
-
-```text
-agentplane task list [options]
-```
-
-Options:
-
-- `--status <status>`: Repeatable. Filter by status. (repeatable)
-- `--owner <owner>`: Repeatable. Filter by owner id. (repeatable)
-- `--tag <tag>`: Repeatable. Filter by tag. (repeatable)
-- `--strict-read`: Fail if task scan skips malformed/unreadable task files. (default=false)
-- `--limit <n>`: Max rows to print.
-- `--quiet`: Suppress summary output. (default=false)
-
-Examples:
-
-```sh
-agentplane task list
-```
-
-- List all tasks.
-
-```sh
-agentplane task list --status TODO --owner CODER
-```
-
-- List filtered tasks.
-
-### task migrate
-
-Import tasks from an exported JSON file into the configured backend.
-
-Usage:
-
-```text
-agentplane task migrate [options]
-```
-
-Options:
-
-- `--source <path>`: Path to a tasks export JSON file (defaults to config.paths.tasks_path).
-- `--quiet`: Suppress normal output (still prints errors). (default=false)
-- `--force`: Accepted for parity; currently has no additional checks in the node CLI. (default=false)
-- `--yes`: Auto-approve force-action approval checks when required. (default=false)
-
-Examples:
-
-```sh
-agentplane task migrate
-```
-
-- Import from the default export path.
-
-```sh
-agentplane task migrate --source tasks-export.json
-```
-
-- Import from a custom file.
-
-### task migrate-doc
-
-Migrate legacy task README docs to the current README v3 template/metadata format.
-
-Usage:
-
-```text
-agentplane task migrate-doc [<task-id> ...] [options]
-```
-
-Options:
-
-- `--all`: Migrate all task READMEs. (default=false)
-- `--quiet`: Suppress normal output (still prints errors). (default=false)
-
-Notes:
-
-- Use this after framework upgrade when doctor reports active legacy README v2 tasks or an active v2/v3 mixed state.
-- This command upgrades task-local docs; it does not replace framework-managed files such as AGENTS.md or .agentplane/policy/\*\*.
-
-Examples:
-
-```sh
-agentplane task migrate-doc --all
-```
-
-- Migrate all task READMEs.
-
-```sh
-agentplane task migrate-doc 202602030608-F1Q8AB 202602030609-ABCDEF
-```
-
-- Migrate specific task READMEs.
-
-### task new
-
-Create a new task (prints the generated task id).
-
-Creates a TODO task with doc_version=3, seeds the README v3 section layout, and writes it via the configured task backend.
-
-Usage:
-
-```text
-agentplane task new --title <text> --description <text> --owner <id> [options]
-```
-
-Options:
-
-- `--title <text>`: Task title. (required)
-- `--description <text>`: Task description. (required)
-- `--owner <id>`: Owner id (e.g. CODER). (required)
-- `--priority <low|normal|med|high>`: Task priority (default: med). (choices=low|normal|med|high, default=med)
-- `--tag <tag>`: Repeatable. Adds a tag (must provide at least one). (repeatable)
-- `--task-kind <analysis|content|docs|code|release|ops>`: Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops)
-- `--mutation-scope <none|docs|code|release|ops|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|unknown)
-- `--risk <risk>`: Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
-- `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|release.strict|ops.approval)
-- `--depends-on <task-id>`: Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
-- `--verify <command>`: Repeatable. Verification commands/checks to run for this task. (repeatable)
-- `--allow-duplicate`: Allow creating a task even when an open task with a highly similar title already exists. (default=false)
-
-Notes:
-
-- Task creation defaults to doc_version=3 and seeds the README v3 section contract automatically.
-- For verify-required primary tags, this command seeds a default ## Verify Steps acceptance contract in README.
-
-Examples:
-
-```sh
-agentplane task new --title "Refactor CLI" --description "Improve CLI output" --owner CODER --tag cli
-```
-
-- Create a new task with one tag.
-
-### task next
-
-List ready tasks (default status=TODO) with optional filters.
-
-Usage:
-
-```text
-agentplane task next [options]
-```
-
-Options:
-
-- `--status <status>`: Repeatable. Filter by status (default: TODO). (repeatable)
-- `--owner <owner>`: Repeatable. Filter by owner id. (repeatable)
-- `--tag <tag>`: Repeatable. Filter by tag. (repeatable)
-- `--strict-read`: Fail if task scan skips malformed/unreadable task files. (default=false)
-- `--limit <n>`: Max rows to print.
-- `--quiet`: Suppress summary output. (default=false)
-
-Examples:
-
-```sh
-agentplane task next
-```
-
-- List ready TODO tasks.
-
-```sh
-agentplane task next --limit 3
-```
-
-- Limit output.
-
-### task normalize
-
-Normalize tasks in the configured backend (stable ordering and formatting).
-
-Usage:
-
-```text
-agentplane task normalize [options]
-```
-
-Options:
-
-- `--quiet`: Suppress normal output (still prints errors). (default=false)
-- `--force`: Accepted for parity; currently has no additional checks in the node CLI. (default=false)
-- `--yes`: Auto-approve force-action approval checks when required. (default=false)
-- `--sync-hosted-merges`: Query GitHub for merged hosted PRs referenced by local PR artifacts and reconcile stale branch_pr task state before normalization. (default=false)
-- `--sync-branch-pr-state`: Reconcile stale local branch_pr task state when verified task commits already landed on the base branch. (default=false)
-- `--task-id <task-id>`: Repeatable. Limit reconcile modes to explicit task ids instead of scanning every task. (repeatable)
-
-Examples:
-
-```sh
-agentplane task normalize
-```
-
-- Normalize tasks and print a short summary.
-
-```sh
-agentplane task normalize --quiet
-```
-
-- Normalize tasks without printing output.
-
-```sh
-agentplane task normalize --sync-hosted-merges
-```
-
-- Reconcile stale branch_pr task state from hosted PR merges, then normalize the local projection.
-
-```sh
-agentplane task normalize --sync-branch-pr-state
-```
-
-- Reconcile locally shipped branch_pr task state when task commits already reached the base branch.
-
-```sh
-agentplane task normalize --sync-hosted-merges --task-id 202604071853-XGX2YJ
-```
-
-- Reconcile only known stale tasks instead of scanning unrelated historical PR metadata.
-
 ### task obsidian
 
 Generate Obsidian-friendly Markdown task navigation under .agentplane.
@@ -3529,59 +3579,6 @@ agentplane task obsidian
 
 - Write .agentplane/index.md, .agentplane/tasks.md, and grouped navigation files.
 
-### task plan
-
-Task plan commands (set/approve/reject).
-
-Usage:
-
-```text
-agentplane task plan <set|approve|reject> [args] [options]
-```
-
-Examples:
-
-```sh
-agentplane task plan set <task-id> --text "..." --updated-by ORCHESTRATOR
-```
-
-- Write or replace the task plan.
-
-```sh
-agentplane task plan approve <task-id> --by ORCHESTRATOR
-```
-
-- Approve the current task plan.
-
-```sh
-agentplane task plan reject <task-id> --by ORCHESTRATOR --note "..."
-```
-
-- Reject the current task plan with a note.
-
-### task plan approve
-
-Approve the current task plan (enforces Verify Steps gating when configured).
-
-Usage:
-
-```text
-agentplane task plan approve <task-id> --by <id> [options]
-```
-
-Options:
-
-- `--by <id>`: Approver id. (required)
-- `--note <text>`: Optional note (stored in plan_approval.note).
-
-Examples:
-
-```sh
-agentplane task plan approve 202602030608-F1Q8AB --by USER --note "OK"
-```
-
-- Approve a plan with a note.
-
 ### task plan reject
 
 Reject the current task plan (requires a note).
@@ -3604,54 +3601,6 @@ agentplane task plan reject 202602030608-F1Q8AB --by USER --note "Need clarifica
 ```
 
 - Reject a plan with a note.
-
-### task plan set
-
-Set a task plan (writes the Plan section and resets plan approval to pending).
-
-Usage:
-
-```text
-agentplane task plan set <task-id> [options]
-```
-
-Options:
-
-- `--text <text>`: Plan text to write into the task README Plan section. Literal escaped newlines (\n) are normalized for inline text.
-- `--file <path>`: Read plan text from a file path (relative to cwd).
-- `--updated-by <id>`: Optional. Sets doc_updated_by when writing the plan.
-
-Examples:
-
-```sh
-agentplane task plan set 202602030608-F1Q8AB --text "1) Do X\n2) Verify Y" --updated-by ORCHESTRATOR
-```
-
-- Write plan from text and set doc_updated_by.
-
-```sh
-agentplane task plan set 202602030608-F1Q8AB --file plan.md
-```
-
-- Write plan from a file.
-
-### task rebuild-index
-
-Rebuild the task index cache for the configured backend (best-effort).
-
-Usage:
-
-```text
-agentplane task rebuild-index
-```
-
-Examples:
-
-```sh
-agentplane task rebuild-index
-```
-
-- Rebuild tasks index cache.
 
 ### task reclaim
 
@@ -3683,36 +3632,6 @@ agentplane task resume-context <task-id> [[run-id]] [options]
 Options:
 
 - `--json`: Emit machine-readable resume context JSON. (default=false)
-
-### task run
-
-Prepare or run a task through the shared runner contract.
-
-Materializes runner bundle artifacts for a task and can execute the configured runner adapter against that prepared bundle.
-
-Usage:
-
-```text
-agentplane task run <task-id> [options]
-```
-
-Options:
-
-- `--dry-run`: Prepare runner artifacts and print invocation metadata without executing a runner. (default=false)
-
-Examples:
-
-```sh
-agentplane task run 202602030608-F1Q8AB --dry-run
-```
-
-- Materialize bundle/run artifacts and inspect the prepared runner invocation.
-
-```sh
-agentplane task run 202602030608-F1Q8AB
-```
-
-- Prepare bundle artifacts and execute the configured runner adapter for the task.
 
 ### task run cancel
 
@@ -3774,72 +3693,6 @@ agentplane task run retry 202602030608-F1Q8AB run_20260323_abc123
 
 - Create a new run from a failed/cancelled run snapshot and execute it.
 
-### task run show
-
-Inspect persisted runner state and result artifacts for an existing run.
-
-Loads an existing runner run from its artifacts and prints a structured summary of run-state, result metadata, and event counters. When run-id is omitted, the latest run for the task is selected.
-
-Usage:
-
-```text
-agentplane task run show <task-id> [[run-id]] [options]
-```
-
-Options:
-
-- `--json`: Emit machine-readable runner inspection JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane task run show 202602030608-F1Q8AB
-```
-
-- Inspect the latest persisted runner run for a task.
-
-```sh
-agentplane task run show 202602030608-F1Q8AB run_20260323_abc123
-```
-
-- Inspect a specific run by run id.
-
-```sh
-agentplane task run show 202602030608-F1Q8AB --json
-```
-
-- Inspect the latest run in machine-readable JSON form.
-
-### task run tail
-
-Print the last N lines from the raw agent trace artifact for an existing runner run.
-
-Reads agent-trace.jsonl for an existing runner run and prints the last N lines. When run-id is omitted, the latest run for the task is selected.
-
-Usage:
-
-```text
-agentplane task run tail <task-id> [[run-id]] [options]
-```
-
-Options:
-
-- `--lines <n>`: Optional. Number of trace lines to print from the end (default: 40).
-
-Examples:
-
-```sh
-agentplane task run tail 202602030608-F1Q8AB
-```
-
-- Print the last 40 trace lines for the latest task run.
-
-```sh
-agentplane task run tail 202602030608-F1Q8AB run_20260323_abc123 --lines 10
-```
-
-- Print the last 10 trace lines for a specific run.
-
 ### task run trace
 
 Print the raw agent trace artifact for an existing runner run.
@@ -3898,64 +3751,6 @@ agentplane task scaffold 202602030608-F1Q8AB --overwrite --title "My task" --for
 
 - Overwrite README.md and allow missing task (uses --title).
 
-### task scrub
-
-Replace a string across all tasks (frontmatter + docs).
-
-Usage:
-
-```text
-agentplane task scrub --find <text> --replace <text> [options]
-```
-
-Options:
-
-- `--find <text>`: The string to search for. (required)
-- `--replace <text>`: The replacement string. (required)
-- `--dry-run`: Print affected task ids without writing changes. (default=false)
-- `--quiet`: Suppress normal output (still prints errors). (default=false)
-
-Examples:
-
-```sh
-agentplane task scrub --find "old-owner" --replace "new-owner" --dry-run
-```
-
-- Preview which tasks would change.
-
-### task search
-
-Search tasks by text or regex with optional filters.
-
-Usage:
-
-```text
-agentplane task search <query> [options]
-```
-
-Options:
-
-- `--regex`: Treat query as a regex. (default=false)
-- `--status <status>`: Repeatable. Filter by status. (repeatable)
-- `--owner <owner>`: Repeatable. Filter by owner id. (repeatable)
-- `--tag <tag>`: Repeatable. Filter by tag. (repeatable)
-- `--strict-read`: Fail if task scan skips malformed/unreadable task files. (default=false)
-- `--limit <n>`: Max rows to print.
-
-Examples:
-
-```sh
-agentplane task search cli
-```
-
-- Search tasks by substring.
-
-```sh
-agentplane task search 'CLI.*' --regex
-```
-
-- Search tasks by regex.
-
 ### task set-status
 
 Change a task status (optionally committing from the comment body).
@@ -4003,51 +3798,6 @@ agentplane task set-status 202602030608-F1Q8AB DOING --commit-from-comment --aut
 
 - Create a commit from the comment body (subject to policy and allowlist).
 
-### task show
-
-Print task metadata as JSON (frontmatter shape).
-
-Usage:
-
-```text
-agentplane task show <task-id>
-```
-
-Examples:
-
-```sh
-agentplane task show 202602030608-F1Q8AB
-```
-
-- Show task metadata.
-
-### task start-ready
-
-Run readiness checks and start a task in one deterministic command.
-
-Usage:
-
-```text
-agentplane task start-ready <task-id> --author <id> [options]
-```
-
-Options:
-
-- `--author <id>`: Comment author id (e.g. CODER). (required)
-- `--body <text>`: Structured Start comment body. Use --body-file for Markdown or shell-sensitive text.
-- `--body-file <path>`: Read the Start comment body from a file path (mutually exclusive with --body).
-- `--force`: Override readiness and transition checks. (default=false)
-- `--yes`: Auto-approve force-action checks when required. (default=false)
-- `--quiet`: Suppress output. (default=false)
-
-Examples:
-
-```sh
-agentplane task start-ready 202602030608-F1Q8AB --author CODER --body "Start: implement parser hardening"
-```
-
-- Check readiness and transition to DOING without command chaining.
-
 ### task update
 
 Update an existing task.
@@ -4092,159 +3842,205 @@ agentplane task update 202602030608-F1Q8AB --replace-depends-on --depends-on 202
 
 - Replace dependencies.
 
-### task verify
+## Framework Dev
 
-Record verification results (ok/rework).
+### codex
+
+Codex integration commands.
 
 Usage:
 
 ```text
-agentplane task verify ok <task-id> --by <id> --note <text> [--details <text> | --file <path>] [--quiet]
-agentplane task verify rework <task-id> --by <id> --note <text> [--details <text> | --file <path>] [--quiet]
+agentplane codex <subcommand> [options]
 ```
 
-### task verify ok
+### codex plugin
 
-Record verification as OK (updates Verification section and verification frontmatter).
+Install and inspect bundled Codex plugin integrations.
 
 Usage:
 
 ```text
-agentplane task verify ok <task-id> --by <id> [options]
+agentplane codex plugin <subcommand> [options]
+```
+
+### codex plugin install
+
+Install the bundled AgentPlane plugin into a local Codex marketplace.
+
+Usage:
+
+```text
+agentplane codex plugin install [options]
 ```
 
 Options:
 
-- `--by <id>`: Verifier id. (required)
-- `--note <text>`: Short verification note.
-- `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
-- `--details <text>`: Optional details text (mutually exclusive with --file).
-- `--file <path>`: Optional details file path (mutually exclusive with --details).
-- `--quiet`: Suppress normal output (still prints errors). (default=false)
-- `--collect-incidents`: After recording verification, collect promotable findings into incidents.md immediately. (default=false)
-- `--observation <text>`: Structured finding observation to append with the verification.
-- `--impact <text>`: Structured finding impact to append with the verification.
-- `--resolution <text>`: Structured finding resolution to append with the verification.
-- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
-- `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
-- `--incident-scope <text>`: Optional incident scope for the appended finding.
-- `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
-- `--incident-match <term>`: Repeatable incident match term for the appended finding. (repeatable)
-- `--incident-advice <text>`: Optional operator advice for the appended finding.
-- `--incident-rule <text>`: Optional incident rule for the appended finding.
-
-Examples:
-
-```sh
-agentplane task verify ok 202602030608-F1Q8AB --by REVIEWER --note "Looks good"
-```
-
-- Record an OK verification.
-
-### task verify rework
-
-Record verification as needs rework (resets commit, sets status to DOING, updates Verification).
-
-Usage:
-
-```text
-agentplane task verify rework <task-id> --by <id> [options]
-```
-
-Options:
-
-- `--by <id>`: Verifier id. (required)
-- `--note <text>`: Short verification note.
-- `--note-file <path>`: Read the verification note from a file path (mutually exclusive with --note).
-- `--details <text>`: Optional details text (mutually exclusive with --file).
-- `--file <path>`: Optional details file path (mutually exclusive with --details).
-- `--quiet`: Suppress normal output (still prints errors). (default=false)
-- `--collect-incidents`: After recording verification, collect promotable findings into incidents.md immediately. (default=false)
-- `--observation <text>`: Structured finding observation to append with the verification.
-- `--impact <text>`: Structured finding impact to append with the verification.
-- `--resolution <text>`: Structured finding resolution to append with the verification.
-- `--local-only`: Keep the finding task-local; omit incident-candidate promotion. (default=false)
-- `--repo-fixable`: Mark the structured finding as repo-fixable so incidents collect can promote it. (default=false)
-- `--incident-scope <text>`: Optional incident scope for the appended finding.
-- `--incident-tag <tag>`: Repeatable incident tag for the appended finding. (repeatable)
-- `--incident-match <term>`: Repeatable incident match term for the appended finding. (repeatable)
-- `--incident-advice <text>`: Optional operator advice for the appended finding.
-- `--incident-rule <text>`: Optional incident rule for the appended finding.
-
-Examples:
-
-```sh
-agentplane task verify rework 202602030608-F1Q8AB --by REVIEWER --note "Needs changes"
-```
-
-- Record a needs-rework verification.
-
-### task verify-show
-
-Print the task Verify Steps acceptance contract (alias for task doc show --section "Verify Steps").
-
-Usage:
-
-```text
-agentplane task verify-show <task-id> [options]
-```
-
-Options:
-
-- `--quiet`: Suppress errors when the section is missing. (default=false)
+- `--scope <user|repo>`: Install to the user home marketplace or the current repository marketplace. (choices=user|repo, default=user)
 
 Notes:
 
-- \`## Verify Steps\` is the ex-ante acceptance contract for the verifier.
-- Verification results are recorded later in \`## Verification\` via \`agentplane verify ...\`.
+- User scope writes \`~/plugins/agentplane\` plus \`~/.agents/plugins/marketplace.json\` by default.
+- Repo scope writes \`&lt;repo&gt;/plugins/agentplane\` plus \`&lt;repo&gt;/.agents/plugins/marketplace.json\`.
+- OpenAI's public self-serve Plugin Directory is not available yet; local marketplaces are the supported route today.
 
 Examples:
 
 ```sh
-agentplane task verify-show 202602030608-F1Q8AB
+agentplane codex plugin install
 ```
 
-- Print Verify Steps.
+- Install AgentPlane into the user-local Codex marketplace under ~/.agents/plugins.
 
 ```sh
-agentplane task verify-show 202602030608-F1Q8AB --quiet
+agentplane codex plugin install --scope repo
 ```
 
-- Print Verify Steps without erroring when missing.
+- Install AgentPlane into the current repository marketplace for local testing.
 
-## Work
+### docs cli
 
-### work start
-
-Prepare the workspace for a task (direct: single-stream on current branch; branch_pr: task branch/worktree).
+Generate an MDX CLI reference from the current command spec catalog.
 
 Usage:
 
 ```text
-agentplane work start <task-id> --agent <ID> --slug <slug> [options]
+agentplane docs cli --out <path>
 ```
 
 Options:
 
-- `--agent <ID>`: Agent id (uppercase letters, numbers, underscore). (required, format=A–Z, 0–9, underscore)
-- `--slug <slug>`: Branch slug (lowercase kebab-case). (required, format=lowercase kebab-case)
-- `--worktree`: Use git worktree for the task branch. Required when workflow_mode=branch_pr. (default=false)
-
-Notes:
-
-- When workflow_mode=direct, agentplane does not create task branches; it records a single active task for the workspace.
-- When workflow_mode=branch_pr, --worktree is required and the command must be run on the base branch.
-- After branch_pr work starts, run owner-scoped task commands from the created worktree so task README/PR artifacts stay attached to one checkout.
+- `--out <path>`: Output path. If relative, it is resolved against the current working directory. (required)
 
 Examples:
 
 ```sh
-agentplane work start 202602030608-F1Q8AB --agent CODER --slug cli
+agentplane docs cli --out docs/user/cli-reference.generated.mdx
 ```
 
-- Start work (direct mode records the active task; branch_pr uses a dedicated task branch/worktree).
+- Generate docs.
 
-## Workflow
+### release
+
+Prepare a release (agent-assisted notes + version bump workflow).
+
+Usage:
+
+```text
+agentplane release <command> [args] [options]
+```
+
+### release apply
+
+Apply a prepared direct-mode release: bump versions, validate notes, commit, and tag.
+
+Applies a release plan generated by \`agentplane release plan\` on the direct release route. This command does not author release notes; it expects a DOCS agent to have written docs/releases/vX.Y.Z.md. In branch_pr repositories, use \`agentplane release candidate\` on a dedicated non-base branch instead.
+
+Usage:
+
+```text
+agentplane release apply [options]
+```
+
+Options:
+
+- `--plan <path>`: Path to a release plan directory (defaults to the latest under .agentplane/.release/plan/).
+- `--push`: Optional direct-push mode: push the release commit and tag immediately (requires --yes). This is for the direct release route only. (default=false)
+- `--remote <name>`: Git remote to push to (default: origin).
+- `--yes`: Approve minor/major bumps and allow pushing. Patch bumps can be applied without this flag. (default=false)
+
+Examples:
+
+```sh
+agentplane release apply
+```
+
+- Apply the latest release plan locally (expects docs/releases/vX.Y.Z.md to exist).
+
+```sh
+agentplane release apply --plan .agentplane/.release/plan/<runId>
+```
+
+- Apply a specific release plan directory.
+
+```sh
+agentplane release apply --push --yes
+```
+
+- Apply and push the release commit+tag to the remote.
+
+### release candidate
+
+Prepare a branch_pr release candidate: bump versions, validate notes, commit, and optionally push the candidate branch.
+
+Prepares a release candidate from a generated release plan on a dedicated non-base branch in branch_pr mode. This command creates the candidate commit but intentionally does not create or push the release tag; final publication remains gated on merge to the protected base branch and explicit Publish to npm workflow dispatch with the release commit sha.
+
+Usage:
+
+```text
+agentplane release candidate [options]
+```
+
+Options:
+
+- `--plan <path>`: Path to a release plan directory (defaults to the latest under .agentplane/.release/plan/).
+- `--push`: Optional candidate-push mode: push only the release candidate branch for hosted review and merge (requires --yes). The release tag is not created or pushed here. (default=false)
+- `--remote <name>`: Git remote to push to (default: origin).
+- `--yes`: Approve minor/major bumps and allow pushing. Patch bumps can be applied without this flag. (default=false)
+
+Examples:
+
+```sh
+agentplane release candidate
+```
+
+- Prepare the latest release plan on the current branch_pr candidate branch.
+
+```sh
+agentplane release candidate --plan .agentplane/.release/plan/<runId>
+```
+
+- Prepare a specific release plan on the current candidate branch.
+
+```sh
+agentplane release candidate --push --yes
+```
+
+- Prepare and push only the release candidate branch for hosted review and merge.
+
+### release plan
+
+Generate an agent-assisted release plan (changes list + next patch version).
+
+Generates a structured changes list since the last semver tag and writes a plan directory under .agentplane/.release/. This plan is intended for a DOCS agent to author release notes. By default, only patch bumps are allowed without explicit approval.
+
+Usage:
+
+```text
+agentplane release plan [options]
+```
+
+Options:
+
+- `--patch`: Bump patch version (default). (default=false)
+- `--minor`: Bump minor version (requires --yes). (default=false)
+- `--major`: Bump major version (requires --yes). (default=false)
+- `--since <tag>`: Override the starting tag/ref (defaults to the latest vX.Y.Z tag).
+- `--yes`: Approve minor/major version bumps (required for --minor/--major). (default=false)
+
+Examples:
+
+```sh
+agentplane release plan
+```
+
+- Generate a plan for the next patch release and hand it to a DOCS agent to write release notes.
+
+```sh
+agentplane release plan --minor --yes
+```
+
+- Generate a plan for the next minor release (explicit approval required).
 
 ### workflow
 
@@ -4356,3 +4152,205 @@ agentplane workflow sync
 ```
 
 - Collect sync-state evidence.
+
+## Maintenance
+
+### backend migrate-canonical-state
+
+Backfill canonical_state for issues in the configured backend.
+
+Usage:
+
+```text
+agentplane backend migrate-canonical-state <id> [options]
+```
+
+Options:
+
+- `--yes`: Auto-approve network access. (default=false)
+- `--quiet`: Reduce output noise. (default=false)
+
+Examples:
+
+```sh
+agentplane backend migrate-canonical-state redmine --yes
+```
+
+- Backfill structured canonical_state into legacy Redmine issues.
+
+### task export
+
+Generate an optional tasks export snapshot at the configured path.
+
+Usage:
+
+```text
+agentplane task export
+```
+
+Examples:
+
+```sh
+agentplane task export
+```
+
+- Write the optional tasks export JSON and print the path.
+
+### task migrate
+
+Import tasks from an exported JSON file into the configured backend.
+
+Usage:
+
+```text
+agentplane task migrate [options]
+```
+
+Options:
+
+- `--source <path>`: Path to a tasks export JSON file (defaults to config.paths.tasks_path).
+- `--quiet`: Suppress normal output (still prints errors). (default=false)
+- `--force`: Accepted for parity; currently has no additional checks in the node CLI. (default=false)
+- `--yes`: Auto-approve force-action approval checks when required. (default=false)
+
+Examples:
+
+```sh
+agentplane task migrate
+```
+
+- Import from the default export path.
+
+```sh
+agentplane task migrate --source tasks-export.json
+```
+
+- Import from a custom file.
+
+### task migrate-doc
+
+Migrate legacy task README docs to the current README v3 template/metadata format.
+
+Usage:
+
+```text
+agentplane task migrate-doc [<task-id> ...] [options]
+```
+
+Options:
+
+- `--all`: Migrate all task READMEs. (default=false)
+- `--quiet`: Suppress normal output (still prints errors). (default=false)
+
+Notes:
+
+- Use this after framework upgrade when doctor reports active legacy README v2 tasks or an active v2/v3 mixed state.
+- This command upgrades task-local docs; it does not replace framework-managed files such as AGENTS.md or .agentplane/policy/\*\*.
+
+Examples:
+
+```sh
+agentplane task migrate-doc --all
+```
+
+- Migrate all task READMEs.
+
+```sh
+agentplane task migrate-doc 202602030608-F1Q8AB 202602030609-ABCDEF
+```
+
+- Migrate specific task READMEs.
+
+### task normalize
+
+Normalize tasks in the configured backend (stable ordering and formatting).
+
+Usage:
+
+```text
+agentplane task normalize [options]
+```
+
+Options:
+
+- `--quiet`: Suppress normal output (still prints errors). (default=false)
+- `--force`: Accepted for parity; currently has no additional checks in the node CLI. (default=false)
+- `--yes`: Auto-approve force-action approval checks when required. (default=false)
+- `--sync-hosted-merges`: Query GitHub for merged hosted PRs referenced by local PR artifacts and reconcile stale branch_pr task state before normalization. (default=false)
+- `--sync-branch-pr-state`: Reconcile stale local branch_pr task state when verified task commits already landed on the base branch. (default=false)
+- `--task-id <task-id>`: Repeatable. Limit reconcile modes to explicit task ids instead of scanning every task. (repeatable)
+
+Examples:
+
+```sh
+agentplane task normalize
+```
+
+- Normalize tasks and print a short summary.
+
+```sh
+agentplane task normalize --quiet
+```
+
+- Normalize tasks without printing output.
+
+```sh
+agentplane task normalize --sync-hosted-merges
+```
+
+- Reconcile stale branch_pr task state from hosted PR merges, then normalize the local projection.
+
+```sh
+agentplane task normalize --sync-branch-pr-state
+```
+
+- Reconcile locally shipped branch_pr task state when task commits already reached the base branch.
+
+```sh
+agentplane task normalize --sync-hosted-merges --task-id 202604071853-XGX2YJ
+```
+
+- Reconcile only known stale tasks instead of scanning unrelated historical PR metadata.
+
+### task rebuild-index
+
+Rebuild the task index cache for the configured backend (best-effort).
+
+Usage:
+
+```text
+agentplane task rebuild-index
+```
+
+Examples:
+
+```sh
+agentplane task rebuild-index
+```
+
+- Rebuild tasks index cache.
+
+### task scrub
+
+Replace a string across all tasks (frontmatter + docs).
+
+Usage:
+
+```text
+agentplane task scrub --find <text> --replace <text> [options]
+```
+
+Options:
+
+- `--find <text>`: The string to search for. (required)
+- `--replace <text>`: The replacement string. (required)
+- `--dry-run`: Print affected task ids without writing changes. (default=false)
+- `--quiet`: Suppress normal output (still prints errors). (default=false)
+
+Examples:
+
+```sh
+agentplane task scrub --find "old-owner" --replace "new-owner" --dry-run
+```
+
+- Preview which tasks would change.
