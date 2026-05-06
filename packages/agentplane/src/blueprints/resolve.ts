@@ -360,9 +360,13 @@ function resolveRecipeExtensions(opts: {
 export function resolveBlueprint(opts: {
   input: BlueprintResolveInput;
   registry?: BlueprintRegistry;
+  projectBlueprintIds?: readonly BlueprintId[];
 }): ResolvedBlueprint {
   const registry = opts.registry ?? createBlueprintRegistry();
   const { blueprint, reasons, stopReasons } = selectBlueprint({ input: opts.input, registry });
+  if (opts.projectBlueprintIds?.includes(blueprint.id)) {
+    reasons.push(`trusted project-local blueprint selected: ${blueprint.id}`);
+  }
   const { acceptedRecipeExtensions, rejectedRecipeExtensions } = resolveRecipeExtensions({
     blueprint,
     recipeHints: opts.input.recipeHints ?? [],

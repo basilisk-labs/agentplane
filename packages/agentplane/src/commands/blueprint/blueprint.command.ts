@@ -4,8 +4,10 @@ import { resolveProject } from "@agentplaneorg/core/project";
 
 import {
   createBlueprintRegistry,
+  createTrustedProjectBlueprintRegistry,
   explainResolvedBlueprint,
   formatBlueprintExplain,
+  loadTrustedProjectBlueprintRegistry,
   listBlueprints,
   projectBlueprintsDirectory,
   resolveBlueprint,
@@ -37,6 +39,7 @@ import { blueprintResolveInputFromTask, workflowModeFromConfig } from "./task-in
 export type BlueprintListParsed = {
   json: boolean;
   project: boolean;
+  trusted: boolean;
 };
 
 export type BlueprintExplainParsed = {
@@ -104,6 +107,12 @@ export const blueprintListSpec: CommandSpec<BlueprintListParsed> = {
       default: false,
       description: "Include validated project-local blueprints from .agentplane/blueprints.",
     },
+    {
+      kind: "boolean",
+      name: "trusted",
+      default: false,
+      description: "Show trust status from .agentplane/blueprints/config.json.",
+    },
     { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
   ],
   examples: [
@@ -113,7 +122,11 @@ export const blueprintListSpec: CommandSpec<BlueprintListParsed> = {
       why: "Include project-local blueprint definitions.",
     },
   ],
-  parse: (raw) => ({ json: raw.opts.json === true, project: raw.opts.project === true }),
+  parse: (raw) => ({
+    json: raw.opts.json === true,
+    project: raw.opts.project === true,
+    trusted: raw.opts.trusted === true,
+  }),
 };
 
 export const blueprintExplainSpec: CommandSpec<BlueprintExplainParsed> = {
@@ -332,11 +345,26 @@ function validationErrorFromProjectFile(
 export const runBlueprintList: CommandHandler<BlueprintListParsed> = async (ctx, p) => {
   const registry = createBlueprintRegistry();
   const routes = listBlueprints(registry).map((blueprint) => blueprintRoute(blueprint, "builtin"));
-  if (p.project) {
+  let trustedIds = new Set<string>();
+  let trustConfig: unknown = null;
+  if (p.project || p.trusted) {
     const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
-    const local = await validateProjectBlueprintDirectory(
-      projectBlueprintsDirectory(resolved.gitRoot),
-    );
+    const trusted = await loadTrustedProjectBlueprintRegistry(resolved.gitRoot);
+    if (p.trusted && !trusted.ok) {
+      throw new ValidationError({
+        message: `Invalid project-local blueprint trust registry:\n${trusted.errors
+          .map((error) => `- ${error.code}: ${error.message}`)
+          .join("\n")}`,
+      });
+    }
+    trustedIds = new Set(trusted.trustedBlueprints.map((blueprint) => blueprint.id));
+    trustConfig = {
+      enabled: trusted.trustConfig.config.enabled,
+      exists: trusted.trustConfig.exists,
+      allowed_ids: trusted.trustConfig.config.allowedIds,
+      selection: trusted.trustConfig.config.selection,
+    };
+    const local = trusted;
     const invalid = local.files.find((file) => !file.ok);
     if (invalid) throw validationErrorFromProjectFile(invalid.path, invalid.errors);
     routes.push(
@@ -345,13 +373,21 @@ export const runBlueprintList: CommandHandler<BlueprintListParsed> = async (ctx,
       ),
     );
   }
+  const outputRoutes = routes.map((route) => ({
+    ...route,
+    ...(p.trusted && route.source === "project" ? { trusted: trustedIds.has(route.id) } : {}),
+  }));
   if (p.json) {
-    process.stdout.write(`${JSON.stringify({ blueprints: routes }, null, 2)}\n`);
+    process.stdout.write(
+      `${JSON.stringify({ blueprints: outputRoutes, ...(p.trusted ? { trust: trustConfig } : {}) }, null, 2)}\n`,
+    );
     return 0;
   }
-  for (const route of routes) {
+  for (const route of outputRoutes) {
+    const trustLabel =
+      p.trusted && route.source === "project" ? ` trusted=${route.trusted ? "yes" : "no"}` : "";
     process.stdout.write(
-      `${route.source} ${route.id}@${route.version} ${route.route.join(" -> ")}\n`,
+      `${route.source}${trustLabel} ${route.id}@${route.version} ${route.route.join(" -> ")}\n`,
     );
   }
   return 0;
@@ -369,7 +405,14 @@ export function makeRunBlueprintExplainHandler(getCtx: (cmd: string) => Promise<
           riskFlags: p.riskFlags,
         })
       : syntheticInput(commandCtx, p);
-    const resolved = resolveBlueprint({ input });
+    const projectRegistry = await createTrustedProjectBlueprintRegistry(
+      commandCtx.resolvedProject.gitRoot,
+    );
+    const resolved = resolveBlueprint({
+      input,
+      registry: projectRegistry.registry,
+      projectBlueprintIds: projectRegistry.projectBlueprintIds,
+    });
     const output = explainResolvedBlueprint({
       resolved,
       input,
@@ -391,8 +434,13 @@ export const runBlueprintValidate: CommandHandler<BlueprintValidateParsed> = asy
       ? path.resolve(resolved.gitRoot, p.path)
       : projectBlueprintsDirectory(resolved.gitRoot);
     const result = await validateProjectBlueprintDirectory(directory);
+    const trusted =
+      !p.path ||
+      path.resolve(resolved.gitRoot, p.path) === projectBlueprintsDirectory(resolved.gitRoot)
+        ? await loadTrustedProjectBlueprintRegistry(resolved.gitRoot)
+        : null;
     const output = {
-      ok: result.ok,
+      ok: result.ok && (trusted ? trusted.ok : true),
       directory: result.directory,
       blueprints: result.files.map((file) => ({
         ok: file.ok,
@@ -400,11 +448,20 @@ export const runBlueprintValidate: CommandHandler<BlueprintValidateParsed> = asy
         blueprint_id: file.blueprintId ?? null,
         errors: file.errors,
       })),
-      errors: result.errors,
+      trust: trusted
+        ? {
+            enabled: trusted.trustConfig.config.enabled,
+            exists: trusted.trustConfig.exists,
+            allowed_ids: trusted.trustConfig.config.allowedIds,
+            trusted_blueprint_ids: trusted.trustedBlueprints.map((blueprint) => blueprint.id),
+            errors: trusted.errors,
+          }
+        : null,
+      errors: [...result.errors, ...(trusted ? trusted.errors : [])],
     };
     if (p.json) {
       process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
-    } else if (result.ok) {
+    } else if (output.ok) {
       process.stdout.write(
         `project blueprints valid: ${result.files.length} file${result.files.length === 1 ? "" : "s"}\n`,
       );
@@ -414,8 +471,11 @@ export const runBlueprintValidate: CommandHandler<BlueprintValidateParsed> = asy
           process.stderr.write(`${file.path}: ${error.code}: ${error.message}\n`);
         }
       }
+      for (const error of trusted?.errors ?? []) {
+        process.stderr.write(`trust: ${error.code}: ${error.message}\n`);
+      }
     }
-    return result.ok ? 0 : 3;
+    return output.ok ? 0 : 3;
   }
 
   if (!p.path) {

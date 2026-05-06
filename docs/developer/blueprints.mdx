@@ -6,8 +6,9 @@ description: "Typed execution-route contracts for task-specific AgentPlane harne
 Blueprints are AgentPlane's typed route contracts for task-specific harness behavior.
 
 v0.5 rc1 ships the model, built-in registry, validation, resolver, explain output, recipe hint
-bridge, task verification visibility, and ACR summary extension. It does not ship blueprint node
-execution or a runner workflow engine.
+bridge, task verification visibility, ACR summary extension, and explicit opt-in selection for
+trusted project-local blueprints. It does not ship blueprint node execution or a runner workflow
+engine.
 
 ## Definition
 
@@ -116,17 +117,17 @@ blueprints/
 
 Initial responsibilities:
 
-| File               | Responsibility                                                                 |
-| ------------------ | ------------------------------------------------------------------------------ |
-| `model.ts`         | Pure types, string unions, and small helper predicates                         |
-| `builtins.ts`      | Built-in blueprint definitions and node catalog                                |
-| `registry.ts`      | Registry lookup, duplicate detection, and built-in export                      |
-| `project-local.ts` | Safe JSON parsing, scaffold writing, and project-local blueprint validation    |
-| `validate.ts`      | Structural validation and invariant checks                                     |
-| `resolve.ts`       | Select a blueprint from task metadata, workflow mode, mutation, risk, recipes  |
-| `explain.ts`       | Convert resolved blueprint data into stable human-readable explanation objects |
-| `recipe-hints.ts`  | Convert normalized recipe blueprint extensions into resolver hints             |
-| `index.ts`         | Public internal exports for CLI and verification integrations                  |
+| File               | Responsibility                                                                  |
+| ------------------ | ------------------------------------------------------------------------------- |
+| `model.ts`         | Pure types, string unions, and small helper predicates                          |
+| `builtins.ts`      | Built-in blueprint definitions and node catalog                                 |
+| `registry.ts`      | Registry lookup, duplicate detection, and built-in export                       |
+| `project-local.ts` | Safe JSON parsing, scaffold writing, project-local validation, and trust config |
+| `validate.ts`      | Structural validation and invariant checks                                      |
+| `resolve.ts`       | Select a blueprint from task metadata, workflow mode, mutation, risk, recipes   |
+| `explain.ts`       | Convert resolved blueprint data into stable human-readable explanation objects  |
+| `recipe-hints.ts`  | Convert normalized recipe blueprint extensions into resolver hints              |
+| `index.ts`         | Public internal exports for CLI and verification integrations                   |
 
 Do not place route logic inside command handlers. Commands should call the resolver and formatter.
 
@@ -745,6 +746,7 @@ CLI shape:
 ```text
 agentplane blueprint list
 agentplane blueprint list --project
+agentplane blueprint list --trusted
 agentplane blueprint explain <task-id>
 agentplane blueprint explain --kind analysis --mutation none
 agentplane blueprint explain <task-id> --json
@@ -793,12 +795,14 @@ Not required:
 
 ## Project-Local Authoring
 
-Project-local blueprints live under `.agentplane/blueprints/*.json`.
+Project-local blueprints live under `.agentplane/blueprints/*.json`. The optional trust config lives
+at `.agentplane/blueprints/config.json` and is not treated as a blueprint definition.
 
 This is an authoring and validation surface, not automatic execution. A local blueprint can be
-scaffolded, listed, and validated, but the resolver does not select it by default and the runner does
-not execute custom node graphs yet. That boundary is intentional: custom lifecycle topology must be
-visible and valid before it can become an execution route.
+scaffolded, listed, validated, and explicitly trusted. The resolver still does not select local
+blueprints by default, and the runner does not execute custom node graphs yet. That boundary is
+intentional: custom lifecycle topology must be visible, valid, and deliberately allowed before it can
+become an execution route.
 
 Safe authoring loop:
 
@@ -807,8 +811,46 @@ agentplane blueprint scaffold analysis.custom
 agentplane blueprint validate .agentplane/blueprints/analysis.custom.json
 agentplane blueprint validate --project
 agentplane blueprint list --project
+agentplane blueprint list --trusted
 agentplane doctor
 ```
+
+Trusted selection is an explicit repository opt-in:
+
+```json
+{
+  "enabled": true,
+  "allowed_ids": ["analysis.custom"],
+  "selection": "explicit_only"
+}
+```
+
+Trust semantics:
+
+1. `enabled: false` or a missing config means local blueprints remain authoring-only.
+2. `allowed_ids` is an allowlist. Only ids listed there can be added to the resolver registry.
+3. `selection` is currently only `explicit_only`; there is no automatic project-local route
+   selection.
+4. Built-in ids cannot be shadowed by project-local blueprints.
+5. Unknown, duplicate, or invalid allowlist entries block trusted selection and surface through
+   `blueprint validate --project`, `blueprint list --trusted`, and `doctor`.
+6. Trust does not bypass compatibility checks. Explicit blueprint requests and recipe
+   `preferred_blueprint` hints are still validated against task kind, workflow mode, mutation scope,
+   and risk rules.
+
+Selection examples:
+
+```bash
+agentplane blueprint explain --kind analysis --mutation none --blueprint analysis.custom
+agentplane blueprint explain <task-id> --blueprint analysis.custom
+```
+
+Recipe interaction:
+
+- A recipe may request a trusted local blueprint through `preferred_blueprint`.
+- The resolver accepts that preference only when the local id is trusted and compatible.
+- A trusted local blueprint still cannot make a content or analysis task inherit PR, CI, merge, or
+  publish nodes unless the task metadata and workflow mode make that route valid.
 
 Command semantics:
 
@@ -818,8 +860,9 @@ Command semantics:
 | `blueprint scaffold <id> --from code.branch_pr` | Starts from a specific built-in route                                  |
 | `blueprint scaffold <id> --out <path>`          | Writes to a custom path, restricted to the current project             |
 | `blueprint validate <path>`                     | Validates one JSON blueprint file                                      |
-| `blueprint validate --project`                  | Validates every `.json` file under `.agentplane/blueprints`            |
+| `blueprint validate --project`                  | Validates local blueprint files and the optional trust config          |
 | `blueprint list --project`                      | Lists built-ins plus valid local definitions                           |
+| `blueprint list --trusted`                      | Lists built-ins plus local definitions allowed by trust config         |
 | `doctor`                                        | Reports invalid local blueprints as warnings                           |
 
 Authoring constraints:
@@ -831,6 +874,8 @@ Authoring constraints:
 4. Validate the full project registry before relying on a custom route in docs or experiments.
 5. Treat custom blueprints as contracts for future execution, not as permission to bypass policy
    modules, approvals, or workflow mode constraints.
+6. Add a local id to `allowed_ids` only after validating its route, evidence, stop rules, and recipe
+   extension points.
 
 ## ACR Relationship
 
