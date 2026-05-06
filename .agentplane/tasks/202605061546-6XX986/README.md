@@ -1,10 +1,11 @@
 ---
 id: "202605061546-6XX986"
 title: "Document blueprint lifecycle visibility"
-status: "DOING"
+result_summary: "Documented blueprint lifecycle visibility."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-06T15:55:21.062Z"
   updated_by: "DOCS"
   note: "Verified: developer docs and generated CLI reference describe blueprint lifecycle visibility and match actual command output."
-commit: null
+commit:
+  hash: "75ccb30824fb162d724b0fdc9d1a290c93293a2a"
+  message: "Merge pull request #983 from basilisk-labs/task/202605061546-9JE6YN/blueprint-task-lifecycle"
 comments:
   -
     author: "DOCS"
     body: "Start: Document the shipped blueprint lifecycle visibility behavior in the shared batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #983 merged lifecycle visibility docs to GitHub main; generated CLI reference and developer docs match shipped command output."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified: developer docs and generated CLI reference describe blueprint lifecycle visibility and match actual command output."
+  -
+    type: "status"
+    at: "2026-05-06T16:03:44.849Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #983 merged lifecycle visibility docs to GitHub main; generated CLI reference and developer docs match shipped command output."
 doc_version: 3
-doc_updated_at: "2026-05-06T15:55:21.087Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-06T16:03:44.850Z"
+doc_updated_by: "INTEGRATOR"
 description: "Document how task lifecycle commands expose resolved blueprints and how users should inspect route selection during planning and verification."
 sections:
   Summary: |-

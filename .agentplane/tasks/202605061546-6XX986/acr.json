@@ -1,0 +1,203 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605061546-6XX986",
+  "created_at": "2026-05-06T16:03:45.900Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "75ccb30824fb162d724b0fdc9d1a290c93293a2a",
+    "work_ref": "main",
+    "work_commit": "75ccb30824fb162d724b0fdc9d1a290c93293a2a"
+  },
+  "task": {
+    "task_id": "202605061546-6XX986",
+    "title": "Document blueprint lifecycle visibility",
+    "intent": "Document how task lifecycle commands expose resolved blueprints and how users should inspect route selection during planning and verification.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605061546-6XX986/README.md",
+      "sha256": "sha256:e9562ca9c86add5729f5dec0d5cb6adfcbdebd70de6efca11de50cc5a8c548b8"
+    },
+    "approved_at": "2026-05-06T15:47:28.180Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Documented blueprint lifecycle visibility.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605061546-6XX986_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-06T15:47:28.180Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605061546-6XX986/README.md",
+      "sha256": "sha256:e9562ca9c86add5729f5dec0d5cb6adfcbdebd70de6efca11de50cc5a8c548b8"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605061546-6XX986/README.md",
+      "sha256": "sha256:e9562ca9c86add5729f5dec0d5cb6adfcbdebd70de6efca11de50cc5a8c548b8"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605061546-6XX986/README.md",
+      "sha256": "sha256:e9562ca9c86add5729f5dec0d5cb6adfcbdebd70de6efca11de50cc5a8c548b8"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605061546-6XX986/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:ba31512138e30cacce22580195df43721d1624b48fe4143857ff4a702836f93b"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 75ccb30824fb162d724b0fdc9d1a290c93293a2a if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:756af2248f5645cd98f3cec0c276a50ef14907b8f7b9d27d68fb5552a561546b",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "docs.change",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "docs.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "docs.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "docs.artifact",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605061546-6XX986/blueprint/resolved-snapshot.json",
+        "digest": "9379e2ad309069e8b160ae73907020087a0ea06d12d465375d00e22732f1b1c0",
+        "current_digest": "9379e2ad309069e8b160ae73907020087a0ea06d12d465375d00e22732f1b1c0",
+        "route_changed": false,
+        "artifact_sha256": "sha256:ba31512138e30cacce22580195df43721d1624b48fe4143857ff4a702836f93b",
+        "safe_command": "agentplane blueprint snapshot 202605061546-6XX986"
+      }
+    }
+  }
+}
