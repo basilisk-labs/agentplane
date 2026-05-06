@@ -75,7 +75,7 @@ export async function readTaskBlueprintResolvedSnapshot(opts: {
   validation: BlueprintSnapshotValidationResult | null;
 }> {
   const artifactPath = taskBlueprintSnapshotPath(opts);
-  let raw: string;
+  let raw: unknown;
   try {
     raw = await readFile(artifactPath, "utf8");
   } catch (err) {
@@ -85,7 +85,40 @@ export async function readTaskBlueprintResolvedSnapshot(opts: {
     throw err;
   }
 
-  const parsed: unknown = JSON.parse(raw);
+  if (typeof raw !== "string") {
+    return {
+      path: artifactPath,
+      snapshot: null,
+      validation: {
+        ok: false,
+        errors: [
+          {
+            code: "snapshot_invalid_object",
+            message: "Blueprint resolved snapshot file did not contain text.",
+          },
+        ],
+      },
+    };
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (err) {
+    return {
+      path: artifactPath,
+      snapshot: null,
+      validation: {
+        ok: false,
+        errors: [
+          {
+            code: "snapshot_invalid_object",
+            message: err instanceof Error ? err.message : "Blueprint snapshot JSON is invalid.",
+          },
+        ],
+      },
+    };
+  }
   const validation = validateBlueprintResolvedSnapshot(parsed);
   return {
     path: artifactPath,
