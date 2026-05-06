@@ -24,8 +24,8 @@ Harden commit hooks so mutating changes require an active task or valid task id,
 
 ### Current Status
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/policy/evaluate.test.ts packages/core/src/commit/commit-policy.test.ts; Result: pass; Evidence: 5 files passed, 75 tests passed. Command: bun run typecheck; Result: pass; Evidence: tsc -b completed successfully. Command: bunx eslint on touched TS files; Result: pass; Evidence: no lint output after fixes. Command: bunx prettier --check touched hook files; Result: pass; Evidence: all matched files use Prettier style. Command: git diff --check; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: bun run framework:dev:bootstrap; Result: pass; Evidence: repo-local runtime built and verified. Command: node packages/agentplane/bin/agentplane.js doctor; Result: pass with one unrelated branch_pr normalization warning for WCPBCX.
 
 ## Risks
 
