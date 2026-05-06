@@ -1,10 +1,11 @@
 ---
 id: "202605061738-DRD78G"
 title: "Add batched cloud push client"
-status: "DOING"
+result_summary: "Merged via PR #999."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +30,16 @@ verification:
   updated_at: "2026-05-06T17:39:23.250Z"
   updated_by: "CODER"
   note: "Batched cloud push client implemented and focused checks passed."
-commit: null
+commit:
+  hash: "e9be116c2405607884797efcdb27b077da8d6b76"
+  message: "Merge pull request #999 from basilisk-labs/task/202605061738-DRD78G/batched-cloud-push"
 comments:
   -
     author: "CODER"
     body: "Start: implement batched cloud push client in the dedicated branch_pr worktree after service endpoint publication."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #999 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Batched cloud push client implemented and focused checks passed."
+  -
+    type: "status"
+    at: "2026-05-06T17:43:11.906Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #999 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-06T17:39:23.256Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T17:43:11.911Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the public cloud task backend to upload oversized push projections through the cloud service batch endpoint while keeping small pushes on the existing direct endpoint."
 sections:
   Summary: |-
