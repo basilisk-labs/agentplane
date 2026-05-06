@@ -116,6 +116,10 @@ export const runTaskRunShow: CommandHandler<TaskRunShowParsed> = async (
         value: inspection.bundle.execution.artifact_paths.blueprint_execution_plan_path,
       },
       {
+        label: "blueprint_execution_state",
+        value: inspection.bundle.execution.artifact_paths.blueprint_execution_state_path,
+      },
+      {
         label: "context_manifest_path",
         value: inspection.bundle.execution.artifact_paths.context_manifest_path,
       },

@@ -11,6 +11,7 @@ import {
 } from "./artifacts.js";
 import {
   RUNNER_BLUEPRINT_EXECUTION_PLAN_FILENAME,
+  RUNNER_BLUEPRINT_EXECUTION_STATE_FILENAME,
   RUNNER_BLUEPRINT_PLAN_FILENAME,
   RUNNER_CONTEXT_MANIFEST_FILENAME,
   resolveTaskRunnerPaths,
@@ -132,6 +133,10 @@ export class RunnerRunRepository {
       blueprint_execution_plan_path: path.join(
         invocation.run_dir,
         RUNNER_BLUEPRINT_EXECUTION_PLAN_FILENAME,
+      ),
+      blueprint_execution_state_path: path.join(
+        invocation.run_dir,
+        RUNNER_BLUEPRINT_EXECUTION_STATE_FILENAME,
       ),
       context_manifest_path: path.join(invocation.run_dir, RUNNER_CONTEXT_MANIFEST_FILENAME),
       bootstrap_path: invocation.bootstrap_path ?? "",

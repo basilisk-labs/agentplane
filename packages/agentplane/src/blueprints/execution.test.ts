@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { buildBlueprintExecutionPlanArtifact } from "./execution.js";
+import {
+  buildBlueprintExecutionPlanArtifact,
+  buildBlueprintExecutionStateArtifact,
+} from "./execution.js";
 import type { BlueprintPlanArtifact } from "./model.js";
 
 function plan(): BlueprintPlanArtifact {
@@ -58,8 +61,9 @@ function plan(): BlueprintPlanArtifact {
 
 describe("blueprint execution contract", () => {
   it("builds deterministic node execution contracts from a resolved plan", () => {
+    const blueprintPlan = plan();
     const artifact = buildBlueprintExecutionPlanArtifact({
-      plan: plan(),
+      plan: blueprintPlan,
       runId: "run-1",
       generatedAt: "2026-05-06T10:00:00.000Z",
     });
@@ -92,6 +96,27 @@ describe("blueprint execution contract", () => {
         }),
       ],
       stopReasons: [{ id: "scope_drift", severity: "stop", reason: "Scope changed." }],
+    });
+    expect(
+      buildBlueprintExecutionStateArtifact({
+        plan: blueprintPlan,
+        executionPlan: artifact,
+        runId: "run-1",
+        at: "2026-05-06T10:00:00.000Z",
+      }),
+    ).toMatchObject({
+      artifactKind: "agentplane.blueprint.execution_state",
+      blueprintId: "analysis.light",
+      nodes: [
+        { nodeId: "intake", status: "ready", evidenceRefs: [] },
+        { nodeId: "work_unit", status: "pending", evidenceRefs: [] },
+      ],
+      history: [
+        {
+          type: "planned",
+          message: "Blueprint execution state initialized from deterministic plan.",
+        },
+      ],
     });
   });
 });

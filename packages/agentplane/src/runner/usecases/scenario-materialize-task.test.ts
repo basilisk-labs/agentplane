@@ -239,5 +239,22 @@ describe("materializeRecipeScenarioTask", () => {
     });
     expect(executionPlan.steps?.[0]).toMatchObject({ nodeId: "intake", dependsOn: [] });
     expect(executionPlan.nodeContracts?.length).toBe(executionPlan.steps?.length);
+    const executionState = JSON.parse(
+      await readFile(
+        prepared.bundle.execution.artifact_paths.blueprint_execution_state_path,
+        "utf8",
+      ),
+    ) as {
+      artifactKind?: string;
+      blueprintId?: string;
+      history?: { type: string }[];
+      nodes?: { nodeId: string; status: string }[];
+    };
+    expect(executionState).toMatchObject({
+      artifactKind: "agentplane.blueprint.execution_state",
+      blueprintId: "analysis.light",
+      history: [{ type: "planned" }],
+    });
+    expect(executionState.nodes?.[0]).toMatchObject({ nodeId: "intake", status: "ready" });
   });
 });

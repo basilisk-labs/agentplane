@@ -2,6 +2,7 @@ import type {
   AcceptedRecipeExtension,
   BlueprintExecutionPlanArtifact,
   BlueprintExecutionPlanStep,
+  BlueprintExecutionStateArtifact,
   BlueprintNodeExecutionContract,
   BlueprintPlanArtifact,
   StopReason,
@@ -79,5 +80,39 @@ export function buildBlueprintExecutionPlanArtifact(opts: {
         stopReasons: opts.plan.stopReasons,
       }),
     ),
+  };
+}
+
+export function buildBlueprintExecutionStateArtifact(opts: {
+  plan: BlueprintPlanArtifact;
+  executionPlan: BlueprintExecutionPlanArtifact;
+  runId?: string;
+  at: string;
+}): BlueprintExecutionStateArtifact {
+  return {
+    schemaVersion: 1,
+    artifactKind: "agentplane.blueprint.execution_state",
+    blueprintId: opts.plan.blueprintId,
+    blueprintVersion: opts.plan.blueprintVersion,
+    ...(opts.plan.taskId ? { taskId: opts.plan.taskId } : {}),
+    ...(opts.runId ? { runId: opts.runId } : {}),
+    nodes: opts.executionPlan.steps.map((step, index) => ({
+      nodeId: step.nodeId,
+      status: index === 0 ? "ready" : "pending",
+      evidenceRefs: [],
+      updatedAt: opts.at,
+      message:
+        index === 0
+          ? "Node is ready because all dependencies are satisfied."
+          : "Node is pending until dependencies complete.",
+    })),
+    history: [
+      {
+        schemaVersion: 1,
+        at: opts.at,
+        type: "planned",
+        message: "Blueprint execution state initialized from deterministic plan.",
+      },
+    ],
   };
 }

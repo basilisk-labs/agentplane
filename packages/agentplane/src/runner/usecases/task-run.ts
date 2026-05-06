@@ -11,6 +11,7 @@ import { CliError } from "../../shared/errors.js";
 import {
   buildBlueprintPlanArtifact,
   buildBlueprintExecutionPlanArtifact,
+  buildBlueprintExecutionStateArtifact,
   type BlueprintContextManifestEntry,
   inferBlueprintTaskKind,
   recipeBlueprintExtensionsToHints,
@@ -249,15 +250,23 @@ async function writeTaskBlueprintSnapshot(bundle: RunnerContextBundle): Promise<
   if (bundle.target.kind !== "task" || !bundle.blueprint) return;
   const snapshotPath = bundle.execution.artifact_paths.blueprint_plan_path;
   const executionPlanPath = bundle.execution.artifact_paths.blueprint_execution_plan_path;
+  const executionStatePath = bundle.execution.artifact_paths.blueprint_execution_state_path;
   await mkdir(path.dirname(snapshotPath), { recursive: true });
+  const executionPlan = buildBlueprintExecutionPlanArtifact({
+    plan: bundle.blueprint,
+    runId: bundle.execution.run_id,
+    generatedAt: bundle.execution.run_id,
+  });
   await writeFile(snapshotPath, `${JSON.stringify(bundle.blueprint, null, 2)}\n`, "utf8");
+  await writeFile(executionPlanPath, `${JSON.stringify(executionPlan, null, 2)}\n`, "utf8");
   await writeFile(
-    executionPlanPath,
+    executionStatePath,
     `${JSON.stringify(
-      buildBlueprintExecutionPlanArtifact({
+      buildBlueprintExecutionStateArtifact({
         plan: bundle.blueprint,
+        executionPlan,
         runId: bundle.execution.run_id,
-        generatedAt: bundle.execution.run_id,
+        at: bundle.execution.run_id,
       }),
       null,
       2,
