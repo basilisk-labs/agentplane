@@ -387,6 +387,63 @@ describe("runCli", () => {
     }
   });
 
+  it("backend sync surfaces backend remediation details", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const sync = vi
+      .fn()
+      .mockImplementation(() =>
+        Promise.reject(
+          new taskBackend.BackendError(
+            [
+              "Cloud backend request failed: HTTP 409",
+              "Code: cloud_direction_not_supported",
+              "Why: publish_only projects cannot pull remote edits",
+              "Fix: switch the project to bidirectional access",
+              "Safe command: agentplane backend inspect cloud --yes",
+              "Stop condition: stop until the service project access level changes",
+            ].join("\n"),
+            "E_BACKEND",
+          ),
+        ),
+      );
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: stubTaskBackend({ id: "cloud", sync }),
+      backendId: "cloud",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "cloud", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "backend",
+        "sync",
+        "cloud",
+        "--direction",
+        "pull",
+        "--conflict",
+        "fail",
+        "--yes",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(6);
+      expect(io.stderr).toContain("cloud_direction_not_supported");
+      expect(io.stderr).toContain("Why: publish_only projects cannot pull remote edits");
+      expect(io.stderr).toContain("Safe command: agentplane backend inspect cloud --yes");
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
   it("backend sync requires --yes in non-tty mode when require_network=true and backend is non-local", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

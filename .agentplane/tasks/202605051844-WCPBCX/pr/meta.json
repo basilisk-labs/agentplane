@@ -5,9 +5,12 @@
   "head_sha": "21af248fa0ab257a052c2cd464bce24de511c9c6",
   "last_verified_at": "2026-05-05T18:48:21.185Z",
   "last_verified_sha": "8dd6eaa8801f8670457397cf047fc7a1b9f298af",
+  "merge_commit": "a69eec4890e805252f62b865bd468e1887718e17",
+  "merged_at": "2026-05-06T09:55:44.822Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605051844-WCPBCX",
-  "updated_at": "2026-05-05T18:49:02.590Z",
+  "updated_at": "2026-05-06T09:55:44.822Z",
   "verify": {
     "status": "pass"
   }

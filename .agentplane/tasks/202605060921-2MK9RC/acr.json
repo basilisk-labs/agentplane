@@ -1,0 +1,178 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605060921-2MK9RC",
+  "created_at": "2026-05-06T09:53:49.937Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "19e0a6af216b24b3a225dbab35a2ba3db2212ca7",
+    "work_ref": "main",
+    "work_commit": "19e0a6af216b24b3a225dbab35a2ba3db2212ca7"
+  },
+  "task": {
+    "task_id": "202605060921-2MK9RC",
+    "title": "Implement cloud bidirectional pull safeguards",
+    "intent": "Implement CLI/backend safeguards for bidirectional cloud pull: normalize service pull responses, safely apply service-approved operational fields to known local tasks, surface conflict/remediation details, block stale cloud projection before local task mutations, and update user/developer docs.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605060921-2MK9RC/README.md",
+      "sha256": "sha256:accd4a218252b48ecc7ca6b9ea3832ac52f9e678e65100d93ab7075c1a330b32"
+    },
+    "approved_at": "2026-05-06T09:21:24.066Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged cloud bidirectional pull safeguards into main; incident registry check found no promotable incidents and policy mirrors are synchronized.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "other",
+        "command": "agentplane doctor",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-2",
+        "type": "typecheck",
+        "command": "bun run typecheck",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-3",
+        "type": "test",
+        "command": "bun test packages/agentplane/src/backends/task-backend.cloud.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-4",
+        "type": "other",
+        "command": "git diff --check",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-5",
+        "type": "other",
+        "command": "node .agentplane/policy/check-routing.mjs",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605060921-2MK9RC_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-06T09:21:24.066Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605060921-2MK9RC/README.md",
+      "sha256": "sha256:accd4a218252b48ecc7ca6b9ea3832ac52f9e678e65100d93ab7075c1a330b32"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605060921-2MK9RC/README.md",
+      "sha256": "sha256:accd4a218252b48ecc7ca6b9ea3832ac52f9e678e65100d93ab7075c1a330b32"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605060921-2MK9RC/README.md",
+      "sha256": "sha256:accd4a218252b48ecc7ca6b9ea3832ac52f9e678e65100d93ab7075c1a330b32"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 19e0a6af216b24b3a225dbab35a2ba3db2212ca7 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:9c5a9a1a92275f75d4d1766c49e1ff32a98f88f6c4c201ee372fee34850d4ff9",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}
