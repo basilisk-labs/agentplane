@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   RUNNER_BOOTSTRAP_FILENAME,
+  RUNNER_BLUEPRINT_EXECUTION_PLAN_FILENAME,
   RUNNER_BLUEPRINT_PLAN_FILENAME,
   RUNNER_BUNDLE_FILENAME,
   RUNNER_CONTEXT_MANIFEST_FILENAME,
@@ -29,6 +30,9 @@ describe("resolveTaskRunnerPaths", () => {
     );
     expect(paths.bundle_path).toBe(`${paths.run_dir}/${RUNNER_BUNDLE_FILENAME}`);
     expect(paths.blueprint_plan_path).toBe(`${paths.run_dir}/${RUNNER_BLUEPRINT_PLAN_FILENAME}`);
+    expect(paths.blueprint_execution_plan_path).toBe(
+      `${paths.run_dir}/${RUNNER_BLUEPRINT_EXECUTION_PLAN_FILENAME}`,
+    );
     expect(paths.context_manifest_path).toBe(
       `${paths.run_dir}/${RUNNER_CONTEXT_MANIFEST_FILENAME}`,
     );

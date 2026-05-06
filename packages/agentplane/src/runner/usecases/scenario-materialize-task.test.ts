@@ -220,5 +220,24 @@ describe("materializeRecipeScenarioTask", () => {
           "Recipe preferred blueprint code.branch_pr did not match the resolved safe route analysis.light.",
       }),
     ]);
+    const executionPlan = JSON.parse(
+      await readFile(
+        prepared.bundle.execution.artifact_paths.blueprint_execution_plan_path,
+        "utf8",
+      ),
+    ) as {
+      artifactKind?: string;
+      blueprintId?: string;
+      runId?: string;
+      steps?: { nodeId: string; dependsOn: string[] }[];
+      nodeContracts?: unknown[];
+    };
+    expect(executionPlan).toMatchObject({
+      artifactKind: "agentplane.blueprint.execution_plan",
+      blueprintId: "analysis.light",
+      runId: "runner-blueprint-fixture",
+    });
+    expect(executionPlan.steps?.[0]).toMatchObject({ nodeId: "intake", dependsOn: [] });
+    expect(executionPlan.nodeContracts?.length).toBe(executionPlan.steps?.length);
   });
 });

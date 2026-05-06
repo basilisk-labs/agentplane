@@ -4,6 +4,7 @@ import type { RunnerArtifactPaths } from "./types.js";
 
 export const RUNNER_BUNDLE_FILENAME = "bundle.json";
 export const RUNNER_BLUEPRINT_PLAN_FILENAME = "blueprint-plan.json";
+export const RUNNER_BLUEPRINT_EXECUTION_PLAN_FILENAME = "blueprint-execution-plan.json";
 export const RUNNER_CONTEXT_MANIFEST_FILENAME = "context-manifest.json";
 export const RUNNER_BOOTSTRAP_FILENAME = "bootstrap.md";
 export const RUNNER_STATE_FILENAME = "run-state.json";
@@ -36,6 +37,7 @@ export function resolveTaskRunnerPaths(opts: {
     run_dir,
     bundle_path: path.join(run_dir, RUNNER_BUNDLE_FILENAME),
     blueprint_plan_path: path.join(run_dir, RUNNER_BLUEPRINT_PLAN_FILENAME),
+    blueprint_execution_plan_path: path.join(run_dir, RUNNER_BLUEPRINT_EXECUTION_PLAN_FILENAME),
     context_manifest_path: path.join(run_dir, RUNNER_CONTEXT_MANIFEST_FILENAME),
     bootstrap_path: path.join(run_dir, RUNNER_BOOTSTRAP_FILENAME),
     state_path: path.join(run_dir, RUNNER_STATE_FILENAME),

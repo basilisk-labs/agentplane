@@ -10,6 +10,7 @@ import { blueprintResolveInputFromTask } from "../../commands/blueprint/task-inp
 import { CliError } from "../../shared/errors.js";
 import {
   buildBlueprintPlanArtifact,
+  buildBlueprintExecutionPlanArtifact,
   type BlueprintContextManifestEntry,
   inferBlueprintTaskKind,
   recipeBlueprintExtensionsToHints,
@@ -247,8 +248,22 @@ function buildRunnerBlueprintContextManifest(opts: {
 async function writeTaskBlueprintSnapshot(bundle: RunnerContextBundle): Promise<void> {
   if (bundle.target.kind !== "task" || !bundle.blueprint) return;
   const snapshotPath = bundle.execution.artifact_paths.blueprint_plan_path;
+  const executionPlanPath = bundle.execution.artifact_paths.blueprint_execution_plan_path;
   await mkdir(path.dirname(snapshotPath), { recursive: true });
   await writeFile(snapshotPath, `${JSON.stringify(bundle.blueprint, null, 2)}\n`, "utf8");
+  await writeFile(
+    executionPlanPath,
+    `${JSON.stringify(
+      buildBlueprintExecutionPlanArtifact({
+        plan: bundle.blueprint,
+        runId: bundle.execution.run_id,
+        generatedAt: bundle.execution.run_id,
+      }),
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
   await writeFile(
     bundle.execution.artifact_paths.context_manifest_path,
     `${JSON.stringify(bundle.blueprint.contextManifest, null, 2)}\n`,

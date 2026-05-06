@@ -52,6 +52,7 @@ export function renderTaskRunDryRunOutput(opts: {
     `run_id: ${opts.prepared.invocation.run_id}`,
     `bundle: ${opts.prepared.bundle.execution.artifact_paths.bundle_path}`,
     `blueprint_plan: ${opts.prepared.bundle.execution.artifact_paths.blueprint_plan_path}`,
+    `blueprint_execution_plan: ${opts.prepared.bundle.execution.artifact_paths.blueprint_execution_plan_path}`,
     `context_manifest_path: ${opts.prepared.bundle.execution.artifact_paths.context_manifest_path}`,
     `result: ${opts.prepared.bundle.execution.artifact_paths.result_path}`,
     `bootstrap: ${opts.prepared.bundle.execution.artifact_paths.bootstrap_path}`,
