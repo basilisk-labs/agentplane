@@ -1,10 +1,11 @@
 ---
 id: "202605061515-EPEVHQ"
 title: "Document blueprint task selection examples"
-status: "DOING"
+result_summary: "Documented blueprint route inspection examples."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-06T15:25:42.779Z"
   updated_by: "DOCS"
   note: "Verified: developer blueprint documentation now includes CLI route inspection examples and generated CLI reference is fresh."
-commit: null
+commit:
+  hash: "a0dc137b68ba35ae98648dbf4d9395ef8e8361e5"
+  message: "Merge pull request #978 from basilisk-labs/task/202605061515-2W42MM/blueprint-discoverability"
 comments:
   -
     author: "DOCS"
     body: "Start: Document blueprint selection and inspection examples inside the approved blueprint discoverability batch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #978 merged documentation updates to GitHub main; docs examples and generated CLI reference were verified before merge."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified: developer blueprint documentation now includes CLI route inspection examples and generated CLI reference is fresh."
+  -
+    type: "status"
+    at: "2026-05-06T15:36:05.463Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #978 merged documentation updates to GitHub main; docs examples and generated CLI reference were verified before merge."
 doc_version: 3
-doc_updated_at: "2026-05-06T15:25:42.797Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-06T15:36:05.463Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add practical documentation that shows how tasks choose blueprints and how users can inspect route selection."
 sections:
   Summary: |-
