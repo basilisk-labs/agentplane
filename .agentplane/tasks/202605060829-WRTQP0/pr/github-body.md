@@ -25,20 +25,21 @@ Harden commit hooks so mutating changes require an active task or valid task id,
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-06T08:52:47.960Z
+- Updated: 2026-05-06T08:56:48.010Z
 - Branch: task/202605060829-WRTQP0/task-bound-hooks
-- Head: f6c27040fc3a
+- Head: a85f0f043964
 
 ```text
- .../src/cli/run-cli.core.hooks.hook-run.test.ts    | 247 +++++++++++++++++++++
+ .../src/cli/run-cli.core.hooks.hook-run.test.ts    | 145 ++++++-------
  .../src/cli/run-cli.core.hooks.pre-commit.test.ts  |  76 ++++++-
- .../src/commands/hooks/run.commit-msg.ts           |  37 ++-
- .../src/commands/hooks/run.pre-commit.ts           |  83 ++++++-
- .../agentplane/src/commands/hooks/run.pre-push.ts  | 121 +++++++++-
+ ...un-cli.core.hooks.pre-push-task-binding.test.ts | 229 +++++++++++++++++++++
+ .../src/commands/hooks/run.commit-msg.ts           |  37 +++-
+ .../src/commands/hooks/run.pre-commit.ts           |  83 +++++++-
+ .../agentplane/src/commands/hooks/run.pre-push.ts  | 121 ++++++++++-
  packages/agentplane/src/policy/evaluate.ts         |   9 +-
- .../src/policy/rules/task-bound-mutation.ts        |  96 ++++++++
+ .../src/policy/rules/task-bound-mutation.ts        |  96 +++++++++
  scripts/run-pre-push-hook.mjs                      | 124 +++++++++++
- 8 files changed, 777 insertions(+), 16 deletions(-)
+ 9 files changed, 832 insertions(+), 88 deletions(-)
 ```
 
 </details>
