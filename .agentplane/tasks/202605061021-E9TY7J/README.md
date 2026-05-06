@@ -20,9 +20,9 @@ plan_approval:
   note: "Approved from user request: implement the remaining cloud backend E2E integration work and commit in agentplane."
 verification:
   state: "ok"
-  updated_at: "2026-05-06T10:33:17.757Z"
+  updated_at: "2026-05-06T10:34:52.536Z"
   updated_by: "REVIEWER"
-  note: "Verified cloud sync-state preflight, read-only pull diff behavior, repo cloud config, ignored cloud state, and live sync.agentplane.cloud inspect/pull smoke. Focused cloud backend tests, backend-sync CLI tests, typecheck, build, doctor, and policy routing passed. backend-critical remains blocked by pre-existing run-cli.core.tasks.create README v3 expectation failures unrelated to this change."
+  note: "Verified cloud sync-state preflight including numeric open conflict counts, read-only pull diff behavior, repo cloud config, ignored cloud state, and live sync.agentplane.cloud inspect/pull smoke. Focused cloud backend tests, backend-sync CLI tests, typecheck, build, doctor, and policy routing passed. backend-critical remains blocked by pre-existing run-cli.core.tasks.create README v3 expectation failures unrelated to this change."
 commit: null
 comments:
   -
@@ -42,8 +42,14 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Verified cloud sync-state preflight, read-only pull diff behavior, repo cloud config, ignored cloud state, and live sync.agentplane.cloud inspect/pull smoke. Focused cloud backend tests, backend-sync CLI tests, typecheck, build, doctor, and policy routing passed. backend-critical remains blocked by pre-existing run-cli.core.tasks.create README v3 expectation failures unrelated to this change."
+  -
+    type: "verify"
+    at: "2026-05-06T10:34:52.536Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Verified cloud sync-state preflight including numeric open conflict counts, read-only pull diff behavior, repo cloud config, ignored cloud state, and live sync.agentplane.cloud inspect/pull smoke. Focused cloud backend tests, backend-sync CLI tests, typecheck, build, doctor, and policy routing passed. backend-critical remains blocked by pre-existing run-cli.core.tasks.create README v3 expectation failures unrelated to this change."
 doc_version: 3
-doc_updated_at: "2026-05-06T10:33:17.763Z"
+doc_updated_at: "2026-05-06T10:34:52.542Z"
 doc_updated_by: "CODER"
 description: "Implement the remaining public AgentPlane cloud backend gaps from the cloud service handoff: refresh the repository cloud connection, add sync-state preflight for conflicts, improve read-only diff output, update docs, and verify end-to-end against sync.agentplane.cloud."
 sections:
@@ -75,6 +81,14 @@ sections:
     Note: Verified cloud sync-state preflight, read-only pull diff behavior, repo cloud config, ignored cloud state, and live sync.agentplane.cloud inspect/pull smoke. Focused cloud backend tests, backend-sync CLI tests, typecheck, build, doctor, and policy routing passed. backend-critical remains blocked by pre-existing run-cli.core.tasks.create README v3 expectation failures unrelated to this change.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T10:22:21.377Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    ### 2026-05-06T10:34:52.536Z — VERIFY — ok
+    
+    By: REVIEWER
+    
+    Note: Verified cloud sync-state preflight including numeric open conflict counts, read-only pull diff behavior, repo cloud config, ignored cloud state, and live sync.agentplane.cloud inspect/pull smoke. Focused cloud backend tests, backend-sync CLI tests, typecheck, build, doctor, and policy routing passed. backend-critical remains blocked by pre-existing run-cli.core.tasks.create README v3 expectation failures unrelated to this change.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T10:33:17.763Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-

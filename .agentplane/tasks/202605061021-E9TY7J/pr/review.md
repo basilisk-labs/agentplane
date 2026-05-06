@@ -13,7 +13,7 @@ Created: 2026-05-06T10:22:21.425Z
 ## Verification
 
 - State: ok
-- Note: Verified cloud sync-state preflight, read-only pull diff behavior, repo cloud config, ignored cloud state, and live sync.agentplane.cloud inspect/pull smoke. Focused cloud backend tests, backend-sync CLI tests, typecheck, build, doctor, and policy routing passed. backend-critical remains blocked by pre-existing run-cli.core.tasks.create README v3 expectation failures unrelated to this change.
+- Note: Verified cloud sync-state preflight including numeric open conflict counts, read-only pull diff behavior, repo cloud config, ignored cloud state, and live sync.agentplane.cloud inspect/pull smoke. Focused cloud backend tests, backend-sync CLI tests, typecheck, build, doctor, and policy routing passed. backend-critical remains blocked by pre-existing run-cli.core.tasks.create README v3 expectation failures unrelated to this change.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
