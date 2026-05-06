@@ -24,7 +24,11 @@ export {
   recipeBlueprintExtensionToHint,
   recipeBlueprintExtensionsToHints,
 } from "./recipe-hints.js";
-export { inferBlueprintTaskKind, resolveBlueprint } from "./resolve.js";
+export {
+  inferBlueprintTaskKind,
+  resolveBlueprint,
+  validateRecipeHintsForBlueprint,
+} from "./resolve.js";
 export {
   blueprintSnapshotDigest,
   blueprintSnapshotPayloadForDigest,
