@@ -24,6 +24,8 @@ export {
   blueprintNodeExecutionContract,
   buildBlueprintExecutionPlanArtifact,
   buildBlueprintExecutionStateArtifact,
+  checkBlueprintExecutionReplay,
+  checkBlueprintExecutionResume,
 } from "./execution.js";
 export { blueprintPlanEvidence, blueprintPlanState, buildBlueprintPlanArtifact } from "./plan.js";
 export {
@@ -58,6 +60,9 @@ export type {
   BlueprintExplainNode,
   BlueprintExplainOutput,
   BlueprintExecutionEventType,
+  BlueprintExecutionCheckProblem,
+  BlueprintExecutionCheckProblemCode,
+  BlueprintExecutionCheckResult,
   BlueprintExecutionEvidenceRef,
   BlueprintExecutionNodeStatus,
   BlueprintExecutionPlanArtifact,

@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   buildBlueprintExecutionPlanArtifact,
   buildBlueprintExecutionStateArtifact,
+  checkBlueprintExecutionReplay,
+  checkBlueprintExecutionResume,
 } from "./execution.js";
 import type { BlueprintPlanArtifact } from "./model.js";
 
@@ -117,6 +119,67 @@ describe("blueprint execution contract", () => {
           message: "Blueprint execution state initialized from deterministic plan.",
         },
       ],
+    });
+  });
+
+  it("checks replay consistency and derives the next resumable node", () => {
+    const blueprintPlan = plan();
+    const executionPlan = buildBlueprintExecutionPlanArtifact({
+      plan: blueprintPlan,
+      runId: "run-1",
+      generatedAt: "2026-05-06T10:00:00.000Z",
+    });
+    const executionState = buildBlueprintExecutionStateArtifact({
+      plan: blueprintPlan,
+      executionPlan,
+      runId: "run-1",
+      at: "2026-05-06T10:00:00.000Z",
+    });
+
+    expect(checkBlueprintExecutionReplay({ executionPlan, executionState })).toEqual({
+      ok: true,
+      problems: [],
+    });
+    expect(checkBlueprintExecutionResume({ executionPlan, executionState })).toEqual({
+      ok: true,
+      problems: [],
+      nextNodeId: "intake",
+    });
+    expect(
+      checkBlueprintExecutionResume({
+        executionPlan,
+        executionState: {
+          ...executionState,
+          nodes: [
+            { ...executionState.nodes[0], status: "succeeded" },
+            { ...executionState.nodes[1], status: "ready" },
+          ],
+        },
+      }),
+    ).toEqual({ ok: true, problems: [], nextNodeId: "work_unit" });
+  });
+
+  it("rejects replay drift before deriving a resume point", () => {
+    const blueprintPlan = plan();
+    const executionPlan = buildBlueprintExecutionPlanArtifact({
+      plan: blueprintPlan,
+      runId: "run-1",
+      generatedAt: "2026-05-06T10:00:00.000Z",
+    });
+    const executionState = buildBlueprintExecutionStateArtifact({
+      plan: blueprintPlan,
+      executionPlan,
+      runId: "other-run",
+      at: "2026-05-06T10:00:00.000Z",
+    });
+
+    expect(checkBlueprintExecutionReplay({ executionPlan, executionState })).toMatchObject({
+      ok: false,
+      problems: [{ code: "execution_run_mismatch", path: "runId" }],
+    });
+    expect(checkBlueprintExecutionResume({ executionPlan, executionState })).toMatchObject({
+      ok: false,
+      problems: [{ code: "execution_run_mismatch", path: "runId" }],
     });
   });
 });

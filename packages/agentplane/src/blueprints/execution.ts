@@ -1,5 +1,7 @@
 import type {
   AcceptedRecipeExtension,
+  BlueprintExecutionCheckProblem,
+  BlueprintExecutionCheckResult,
   BlueprintExecutionPlanArtifact,
   BlueprintExecutionPlanStep,
   BlueprintExecutionStateArtifact,
@@ -32,6 +34,134 @@ export function blueprintExecutionPlanStep(
     policyModules: [...state.policyModules],
     expectedEvidence: [...state.evidenceKinds],
   };
+}
+
+function checkProblem(
+  code: BlueprintExecutionCheckProblem["code"],
+  message: string,
+  path?: string,
+): BlueprintExecutionCheckProblem {
+  return path ? { code, message, path } : { code, message };
+}
+
+const COMPLETE_STATUSES = new Set(["succeeded", "skipped"]);
+
+function completedDependencies(
+  step: BlueprintExecutionPlanStep,
+  stateByNodeId: ReadonlyMap<string, BlueprintExecutionStateArtifact["nodes"][number]>,
+): boolean {
+  return step.dependsOn.every((nodeId) => {
+    const dependency = stateByNodeId.get(nodeId);
+    return dependency ? COMPLETE_STATUSES.has(dependency.status) : false;
+  });
+}
+
+export function checkBlueprintExecutionReplay(opts: {
+  executionPlan: BlueprintExecutionPlanArtifact;
+  executionState: BlueprintExecutionStateArtifact;
+}): BlueprintExecutionCheckResult {
+  const problems: BlueprintExecutionCheckProblem[] = [];
+  if (opts.executionPlan.blueprintId !== opts.executionState.blueprintId) {
+    problems.push(
+      checkProblem(
+        "execution_blueprint_mismatch",
+        "Execution state blueprint does not match the execution plan.",
+        "blueprintId",
+      ),
+    );
+  }
+  if (opts.executionPlan.blueprintVersion !== opts.executionState.blueprintVersion) {
+    problems.push(
+      checkProblem(
+        "execution_version_mismatch",
+        "Execution state blueprint version does not match the execution plan.",
+        "blueprintVersion",
+      ),
+    );
+  }
+  if ((opts.executionPlan.runId ?? "") !== (opts.executionState.runId ?? "")) {
+    problems.push(
+      checkProblem(
+        "execution_run_mismatch",
+        "Execution state run id does not match the execution plan.",
+        "runId",
+      ),
+    );
+  }
+  if (opts.executionState.history.length === 0) {
+    problems.push(
+      checkProblem("execution_missing_history", "Execution state has no replayable history."),
+    );
+  }
+
+  const expectedNodeIds = new Set(opts.executionPlan.steps.map((step) => step.nodeId));
+  const seenNodeIds = new Set<string>();
+  for (const [index, node] of opts.executionState.nodes.entries()) {
+    if (!expectedNodeIds.has(node.nodeId)) {
+      problems.push(
+        checkProblem(
+          "execution_unknown_node_state",
+          `Execution state references unknown blueprint node ${JSON.stringify(node.nodeId)}.`,
+          `nodes[${index}].nodeId`,
+        ),
+      );
+    }
+    if (seenNodeIds.has(node.nodeId)) {
+      problems.push(
+        checkProblem(
+          "execution_duplicate_node_state",
+          `Execution state contains duplicate node ${JSON.stringify(node.nodeId)}.`,
+          `nodes[${index}].nodeId`,
+        ),
+      );
+    }
+    seenNodeIds.add(node.nodeId);
+  }
+  for (const [index, step] of opts.executionPlan.steps.entries()) {
+    if (!seenNodeIds.has(step.nodeId)) {
+      problems.push(
+        checkProblem(
+          "execution_missing_node_state",
+          `Execution state is missing blueprint node ${JSON.stringify(step.nodeId)}.`,
+          `steps[${index}].nodeId`,
+        ),
+      );
+    }
+  }
+
+  return { ok: problems.length === 0, problems };
+}
+
+export function checkBlueprintExecutionResume(opts: {
+  executionPlan: BlueprintExecutionPlanArtifact;
+  executionState: BlueprintExecutionStateArtifact;
+}): BlueprintExecutionCheckResult {
+  const replay = checkBlueprintExecutionReplay(opts);
+  const problems = [...replay.problems];
+  if (problems.length > 0) return { ok: false, problems };
+
+  const stateByNodeId = new Map(opts.executionState.nodes.map((node) => [node.nodeId, node]));
+  for (const [index, step] of opts.executionPlan.steps.entries()) {
+    const nodeState = stateByNodeId.get(step.nodeId);
+    if (!nodeState) continue;
+    if (nodeState.status === "ready" && completedDependencies(step, stateByNodeId)) {
+      return { ok: true, problems: [], nextNodeId: step.nodeId };
+    }
+    if (nodeState.status === "ready") {
+      problems.push(
+        checkProblem(
+          "execution_dependency_not_complete",
+          `Ready node ${JSON.stringify(step.nodeId)} has incomplete dependencies.`,
+          `steps[${index}].dependsOn`,
+        ),
+      );
+    }
+  }
+
+  problems.push(
+    checkProblem("execution_no_resumable_node", "Execution state has no resumable ready node."),
+  );
+  return { ok: false, problems };
 }
 
 export function blueprintNodeExecutionContract(opts: {

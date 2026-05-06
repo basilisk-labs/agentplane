@@ -402,6 +402,29 @@ export type BlueprintExecutionStateArtifact = {
   history: readonly BlueprintExecutionStateEvent[];
 };
 
+export type BlueprintExecutionCheckProblemCode =
+  | "execution_blueprint_mismatch"
+  | "execution_version_mismatch"
+  | "execution_run_mismatch"
+  | "execution_missing_history"
+  | "execution_missing_node_state"
+  | "execution_unknown_node_state"
+  | "execution_duplicate_node_state"
+  | "execution_dependency_not_complete"
+  | "execution_no_resumable_node";
+
+export type BlueprintExecutionCheckProblem = {
+  code: BlueprintExecutionCheckProblemCode;
+  message: string;
+  path?: string;
+};
+
+export type BlueprintExecutionCheckResult = {
+  ok: boolean;
+  problems: readonly BlueprintExecutionCheckProblem[];
+  nextNodeId?: string;
+};
+
 export type BlueprintSnapshotDigest = {
   algorithm: "sha256";
   value: string;
