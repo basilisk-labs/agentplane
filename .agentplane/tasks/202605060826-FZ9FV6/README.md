@@ -1,10 +1,11 @@
 ---
 id: "202605060826-FZ9FV6"
 title: "Add trusted project-local blueprint config"
-status: "DOING"
+result_summary: "Merged via PR #963."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-06T08:36:05.812Z"
   updated_by: "CODER"
   note: "Trusted project-local blueprint config implemented and validated."
-commit: null
+commit:
+  hash: "dbfb872a8a2cf8ecae6099b3ddae4e0bc54dff8a"
+  message: "Merge pull request #963 from basilisk-labs/task/202605060826-FZ9FV6/trusted-local-blueprints"
 comments:
   -
     author: "CODER"
     body: "Start: implement trusted project-local blueprint config in the shared batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #963 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Trusted project-local blueprint config implemented and validated."
+  -
+    type: "status"
+    at: "2026-05-06T08:51:26.699Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #963 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-06T08:36:05.816Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T08:51:26.706Z"
+doc_updated_by: "INTEGRATOR"
 description: "Define and validate an opt-in .agentplane/blueprints/config.json trust gate for project-local blueprint selection."
 sections:
   Summary: |-
