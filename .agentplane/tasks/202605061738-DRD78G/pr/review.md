@@ -24,12 +24,16 @@ Created: 2026-05-06T17:38:55.473Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-06T17:38:55.473Z
+- Updated: 2026-05-06T17:39:35.482Z
 - Branch: task/202605061738-DRD78G/batched-cloud-push
-- Head: e0dfae52e936
+- Head: 98e017eeecda
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 386 +++++++++++++++++++++
+ docs/user/backends/cloud.mdx                       |   7 +
+ .../src/backends/task-backend.cloud.test.ts        |  71 ++++
+ .../src/backends/task-backend/cloud-backend.ts     | 133 ++++++-
+ 4 files changed, 585 insertions(+), 12 deletions(-)
 ```
 
 </details>
