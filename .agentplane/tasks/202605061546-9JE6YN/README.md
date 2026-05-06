@@ -1,10 +1,11 @@
 ---
 id: "202605061546-9JE6YN"
 title: "Expose blueprint route in task lifecycle surfaces"
-status: "DOING"
+result_summary: "Merged via PR #983."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-06T15:55:19.567Z"
   updated_by: "CODER"
   note: "Verified: task show/list/verify-show expose resolved blueprint route; focused lifecycle and blueprint tests, typecheck, docs:cli:check, routing, doctor, and diff check passed."
-commit: null
+commit:
+  hash: "75ccb30824fb162d724b0fdc9d1a290c93293a2a"
+  message: "Merge pull request #983 from basilisk-labs/task/202605061546-9JE6YN/blueprint-task-lifecycle"
 comments:
   -
     author: "CODER"
     body: "Start: Implement blueprint route visibility on task lifecycle read surfaces in the approved primary worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #983 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: task show/list/verify-show expose resolved blueprint route; focused lifecycle and blueprint tests, typecheck, docs:cli:check, routing, doctor, and diff check passed."
+  -
+    type: "status"
+    at: "2026-05-06T16:01:13.336Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #983 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-06T15:55:19.652Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T16:01:13.343Z"
+doc_updated_by: "INTEGRATOR"
 description: "Show resolved blueprint route on task show, task list, and task verify-show so agents can see the selected route without running separate blueprint diagnostics."
 sections:
   Summary: |-
