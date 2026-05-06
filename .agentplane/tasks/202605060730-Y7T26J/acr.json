@@ -1,0 +1,149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605060730-Y7T26J",
+  "created_at": "2026-05-06T08:15:44.109Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "70ac693ef82c44c51d5dff652e16dfda60411b70",
+    "work_ref": "main",
+    "work_commit": "70ac693ef82c44c51d5dff652e16dfda60411b70"
+  },
+  "task": {
+    "task_id": "202605060730-Y7T26J",
+    "title": "Load project-local blueprint registry safely",
+    "intent": "Add a validate-only project-local blueprint registry loader for .agentplane/blueprints/*.json and expose list/validate-all surfaces without automatic resolver selection.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605060730-Y7T26J/README.md",
+      "sha256": "sha256:0303d72ad30e68bc9fa949d5513a23b03d7b35efc298a96ff288a115322c0b1c"
+    },
+    "approved_at": "2026-05-06T07:31:24.921Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Project-local blueprint registry listing validates local JSON before exposure.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605060730-Y7T26J_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-06T07:31:24.921Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605060730-Y7T26J/README.md",
+      "sha256": "sha256:0303d72ad30e68bc9fa949d5513a23b03d7b35efc298a96ff288a115322c0b1c"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605060730-Y7T26J/README.md",
+      "sha256": "sha256:0303d72ad30e68bc9fa949d5513a23b03d7b35efc298a96ff288a115322c0b1c"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605060730-Y7T26J/README.md",
+      "sha256": "sha256:0303d72ad30e68bc9fa949d5513a23b03d7b35efc298a96ff288a115322c0b1c"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 70ac693ef82c44c51d5dff652e16dfda60411b70 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:89476df4d8d5c37bca53a7d22ba37eff7fdb8608c891023cb3cf337ce608cebb",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  }
+}

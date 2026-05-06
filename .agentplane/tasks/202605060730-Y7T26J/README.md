@@ -1,10 +1,11 @@
 ---
 id: "202605060730-Y7T26J"
 title: "Load project-local blueprint registry safely"
-status: "DOING"
+result_summary: "Project-local blueprint registry listing validates local JSON before exposure."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-06T07:46:55.599Z"
   updated_by: "CODER"
   note: "Verified: project-local registry listing validates JSON definitions before listing; focused tests and ci:local:fast passed."
-commit: null
+commit:
+  hash: "70ac693ef82c44c51d5dff652e16dfda60411b70"
+  message: "Merge pull request #958 from basilisk-labs/task/202605060730-B55DQR/local-blueprint-authoring"
 comments:
   -
     author: "CODER"
     body: "Start: batch execution in B55DQR worktree; add safe local blueprint registry loading."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #958 passed required remote checks, review threads were resolved, and hosted merge landed on origin/main."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: project-local registry listing validates JSON definitions before listing; focused tests and ci:local:fast passed."
+  -
+    type: "status"
+    at: "2026-05-06T08:15:44.019Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #958 passed required remote checks, review threads were resolved, and hosted merge landed on origin/main."
 doc_version: 3
-doc_updated_at: "2026-05-06T07:46:55.605Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T08:15:44.020Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a validate-only project-local blueprint registry loader for .agentplane/blueprints/*.json and expose list/validate-all surfaces without automatic resolver selection."
 sections:
   Summary: |-
