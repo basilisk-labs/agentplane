@@ -4,7 +4,7 @@ title: "Enforce task-bound mutating commits"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-06T08:56:59.458Z"
+  updated_at: "2026-05-06T09:10:04.034Z"
   updated_by: "CODER"
-  note: "Review follow-up final checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts passed with 3 files and 38 tests. bun run hotspots:check passed after moving new pre-push binding tests out of the oversized hook-run file. Prior focused 77-test hook/policy suite and typecheck passed before the split; behavior unchanged except test placement."
+  note: "Implemented task-bound mutation gates for pre-commit, commit-msg, and pre-push. Verification passed: focused vitest suite (release-smoke, pre-push task binding, pre-commit, runtime shim, policy evaluate, commit-policy), bun run typecheck, targeted eslint, bun run format:check, bun run hotspots:check, git diff --check, node .agentplane/policy/check-routing.mjs, and bun run framework:dev:bootstrap. Release-smoke failure was stale runtime before bootstrap; it passed after rebuilding."
 commit: null
 comments:
   -
@@ -54,8 +54,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Review follow-up final checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts passed with 3 files and 38 tests. bun run hotspots:check passed after moving new pre-push binding tests out of the oversized hook-run file. Prior focused 77-test hook/policy suite and typecheck passed before the split; behavior unchanged except test placement."
+  -
+    type: "verify"
+    at: "2026-05-06T09:10:04.034Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented task-bound mutation gates for pre-commit, commit-msg, and pre-push. Verification passed: focused vitest suite (release-smoke, pre-push task binding, pre-commit, runtime shim, policy evaluate, commit-policy), bun run typecheck, targeted eslint, bun run format:check, bun run hotspots:check, git diff --check, node .agentplane/policy/check-routing.mjs, and bun run framework:dev:bootstrap. Release-smoke failure was stale runtime before bootstrap; it passed after rebuilding."
 doc_version: 3
-doc_updated_at: "2026-05-06T08:56:59.463Z"
+doc_updated_at: "2026-05-06T09:10:04.039Z"
 doc_updated_by: "CODER"
 description: "Harden commit hooks so mutating changes require an active task or valid task id, docs-only changes align with docs/content tasks, and emergency hotfixes require backfill evidence."
 sections:
@@ -97,11 +103,24 @@ sections:
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T08:52:57.626Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
+    ### 2026-05-06T09:10:04.034Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Implemented task-bound mutation gates for pre-commit, commit-msg, and pre-push. Verification passed: focused vitest suite (release-smoke, pre-push task binding, pre-commit, runtime shim, policy evaluate, commit-policy), bun run typecheck, targeted eslint, bun run format:check, bun run hotspots:check, git diff --check, node .agentplane/policy/check-routing.mjs, and bun run framework:dev:bootstrap. Release-smoke failure was stale runtime before bootstrap; it passed after rebuilding.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T08:56:59.463Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Direct mutating commits without active task/task id are now blocked locally; outgoing mutating commits are audited in pre-push; docs-only changes remain eligible for docs/content tasks; emergency commits require explicit Backfill-Task and Backfill-Evidence trailers.
+      Impact: Commit gate now enforces task traceability across normal local commits and push attempts, including the GitHub-created direct-commit gap that local pre-commit alone cannot cover.
+      Resolution: Managed upgrade commits use AGENTPLANE_ALLOW_UPGRADE during local commit and still require upgrade evidence in pre-push.
+      Promotion: incident-candidate
+      Fixability: external
 id_source: "generated"
 ---
 ## Summary
@@ -152,6 +171,14 @@ Note: Review follow-up final checks: bunx vitest run packages/agentplane/src/cli
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T08:52:57.626Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
+### 2026-05-06T09:10:04.034Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented task-bound mutation gates for pre-commit, commit-msg, and pre-push. Verification passed: focused vitest suite (release-smoke, pre-push task binding, pre-commit, runtime shim, policy evaluate, commit-policy), bun run typecheck, targeted eslint, bun run format:check, bun run hotspots:check, git diff --check, node .agentplane/policy/check-routing.mjs, and bun run framework:dev:bootstrap. Release-smoke failure was stale runtime before bootstrap; it passed after rebuilding.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T08:56:59.463Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -160,3 +187,9 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-06T08:52:57.626Z, excerpt_
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Direct mutating commits without active task/task id are now blocked locally; outgoing mutating commits are audited in pre-push; docs-only changes remain eligible for docs/content tasks; emergency commits require explicit Backfill-Task and Backfill-Evidence trailers.
+  Impact: Commit gate now enforces task traceability across normal local commits and push attempts, including the GitHub-created direct-commit gap that local pre-commit alone cannot cover.
+  Resolution: Managed upgrade commits use AGENTPLANE_ALLOW_UPGRADE during local commit and still require upgrade evidence in pre-push.
+  Promotion: incident-candidate
+  Fixability: external
