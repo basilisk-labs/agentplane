@@ -109,6 +109,13 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     },
     {
       kind: "boolean",
+      name: "show-blueprint",
+      default: false,
+      description:
+        "Print a resolved blueprint route preview to stderr after creation without changing stdout.",
+    },
+    {
+      kind: "boolean",
       name: "allow-duplicate",
       default: false,
       description:
@@ -120,10 +127,15 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
       cmd: 'agentplane task new --title "Refactor CLI" --description "Improve CLI output" --owner CODER --tag cli',
       why: "Create a new task with one tag.",
     },
+    {
+      cmd: 'agentplane task new --title "Market analysis note" --description "Analyze market context" --owner ANALYST --tag analysis --task-kind analysis --mutation-scope none --show-blueprint',
+      why: "Create a task and preview the resolved route without changing the task-id stdout contract.",
+    },
   ],
   notes: [
     "Task creation defaults to doc_version=3 and seeds the README v3 section contract automatically.",
     "For verify-required primary tags, this command seeds a default ## Verify Steps acceptance contract in README.",
+    "`--show-blueprint` writes route preview details to stderr; stdout remains only the generated task id.",
   ],
   parse: (raw) => ({
     title: raw.opts.title as string,
@@ -137,6 +149,7 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     blueprintRequest: raw.opts["blueprint-request"] as TaskNewParsed["blueprintRequest"],
     dependsOn: (raw.opts["depends-on"] ?? []) as string[],
     verify: (raw.opts.verify ?? []) as string[],
+    showBlueprint: raw.opts["show-blueprint"] === true,
     allowDuplicate: raw.opts["allow-duplicate"] === true,
   }),
 };

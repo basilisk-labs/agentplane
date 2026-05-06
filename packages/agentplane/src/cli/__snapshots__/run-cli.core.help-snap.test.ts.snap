@@ -320,3 +320,26 @@ exports[`runCli help snapshots (cli2) > help work start --json snapshot 1`] = `
   ],
 }
 `;
+
+exports[`runCli help snapshots (cli2) help task new --compact snapshot 1`] = `
+"task new - Create a new task (prints the generated task id).
+
+Usage:
+  agentplane task new --title <text> --description <text> --owner <id> [options]
+
+Options:
+  --title <text>  Task title. (required)
+  --description <text>  Task description. (required)
+  --owner <id>  Owner id (e.g. CODER). (required)
+  --priority <low|normal|med|high>  Task priority (default: med). (choices=low|normal|med|high, default=med)
+  --tag <tag>  Repeatable. Adds a tag (must provide at least one). (repeatable, min=1)
+  --task-kind <analysis|content|docs|code|release|ops>  Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops)
+  --mutation-scope <none|docs|code|release|ops|unknown>  Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|unknown)
+  --risk <risk>  Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
+  --blueprint-request <id>  Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|release.strict|ops.approval)
+  --depends-on <task-id>  Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
+  --verify <command>  Repeatable. Verification commands/checks to run for this task. (repeatable)
+  --show-blueprint  Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
+  --allow-duplicate  Allow creating a task even when an open task with a highly similar title already exists. (default=false)
+"
+`;

@@ -1,0 +1,11 @@
+ .../blueprint/resolved-snapshot.json               | 498 +++++++++++++++++++++
+ .agentplane/tasks/202605061609-PD9A1Y/README.md    |  90 ++++
+ .../blueprint/resolved-snapshot.json               | 342 ++++++++++++++
+ docs/developer/blueprints.mdx                      |  26 +-
+ docs/user/cli-reference.generated.mdx              |   8 +
+ .../run-cli.core.help-snap.test.ts.snap            |  23 +
+ .../src/cli/run-cli.core.tasks.create.test.ts      |  46 ++
+ .../src/commands/task/blueprint-summary.ts         |  28 ++
+ packages/agentplane/src/commands/task/new.spec.ts  |  13 +
+ packages/agentplane/src/commands/task/new.ts       |  13 +
+ 10 files changed, 1086 insertions(+), 1 deletion(-)

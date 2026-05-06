@@ -24,6 +24,10 @@ import {
   defaultTaskDocV3,
   TASK_DOC_VERSION_V3,
 } from "./doc-template.js";
+import {
+  formatTaskBlueprintCreationPreview,
+  resolveTaskBlueprintLifecycleSummary,
+} from "./blueprint-summary.js";
 
 export type TaskNewParsed = {
   title: string;
@@ -37,6 +41,7 @@ export type TaskNewParsed = {
   blueprintRequest?: TaskData["blueprint_request"];
   dependsOn: string[];
   verify: string[];
+  showBlueprint: boolean;
   allowDuplicate: boolean;
 };
 
@@ -381,6 +386,14 @@ export async function runTaskNewParsed(opts: {
 
     await ctx.taskBackend.writeTask(task);
     process.stdout.write(`${taskId}\n`);
+    if (p.showBlueprint) {
+      const summary = await resolveTaskBlueprintLifecycleSummary({
+        task,
+        config: ctx.config,
+        projectRoot: ctx.resolvedProject.gitRoot,
+      });
+      process.stderr.write(formatTaskBlueprintCreationPreview(summary));
+    }
     return 0;
   } catch (err) {
     throw mapBackendError(err, { command: "task new", root: opts.rootOverride ?? null });
