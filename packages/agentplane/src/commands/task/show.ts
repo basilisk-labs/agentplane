@@ -17,6 +17,8 @@ import {
   type CommandContext,
 } from "../shared/task-backend.js";
 
+import { resolveTaskBlueprintLifecycleSummary } from "./blueprint-summary.js";
+
 async function detectLocalTaskMetadataErrors(
   ctx: CommandContext,
   taskId: string,
@@ -66,7 +68,12 @@ export async function cmdTaskShow(opts: {
         });
       }
     }
-    process.stdout.write(`${JSON.stringify(frontmatter, null, 2)}\n`);
+    const blueprint = await resolveTaskBlueprintLifecycleSummary({
+      task,
+      config: ctx.config,
+      projectRoot: ctx.resolvedProject.gitRoot,
+    });
+    process.stdout.write(`${JSON.stringify({ ...frontmatter, blueprint }, null, 2)}\n`);
     return 0;
   } catch (err) {
     if (!(err instanceof CliError) && ctx) {
