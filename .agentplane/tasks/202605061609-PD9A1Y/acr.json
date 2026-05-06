@@ -1,0 +1,203 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605061609-PD9A1Y",
+  "created_at": "2026-05-06T16:29:22.343Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "339bbacf062a38026e90b4778dffb4b8074dd58f",
+    "work_ref": "main",
+    "work_commit": "339bbacf062a38026e90b4778dffb4b8074dd58f"
+  },
+  "task": {
+    "task_id": "202605061609-PD9A1Y",
+    "title": "Document blueprint creation hints",
+    "intent": "Document task-kind, mutation-scope, risk, blueprint-request, and task new route preview usage for blueprint-aware task creation.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605061609-PD9A1Y/README.md",
+      "sha256": "sha256:161ca7ebfc7d52a25fbcf6637eac2fbf9d41cbb377759936fb60c9a63c079f37"
+    },
+    "approved_at": "2026-05-06T16:10:06.893Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Documented task new blueprint creation hints and --show-blueprint preview.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605061609-PD9A1Y_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-06T16:10:06.893Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605061609-PD9A1Y/README.md",
+      "sha256": "sha256:161ca7ebfc7d52a25fbcf6637eac2fbf9d41cbb377759936fb60c9a63c079f37"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605061609-PD9A1Y/README.md",
+      "sha256": "sha256:161ca7ebfc7d52a25fbcf6637eac2fbf9d41cbb377759936fb60c9a63c079f37"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605061609-PD9A1Y/README.md",
+      "sha256": "sha256:161ca7ebfc7d52a25fbcf6637eac2fbf9d41cbb377759936fb60c9a63c079f37"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605061609-PD9A1Y/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:63acb8ac2e73c53eb7ba652b7bcfc2a7a889873c32aaab70c3b2243b9e43559a"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 339bbacf062a38026e90b4778dffb4b8074dd58f if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:456d79ec82083d85c37aff354b9422f47a014701b0f10e7a6c04689ce0c6a1d9",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "docs.change",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "docs.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "docs.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "docs.artifact",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605061609-PD9A1Y/blueprint/resolved-snapshot.json",
+        "digest": "5589ce371b9eabde15012ad19c313128d6cc736f345ff36655f737a216e2b716",
+        "current_digest": "5589ce371b9eabde15012ad19c313128d6cc736f345ff36655f737a216e2b716",
+        "route_changed": false,
+        "artifact_sha256": "sha256:63acb8ac2e73c53eb7ba652b7bcfc2a7a889873c32aaab70c3b2243b9e43559a",
+        "safe_command": "agentplane blueprint snapshot 202605061609-PD9A1Y"
+      }
+    }
+  }
+}

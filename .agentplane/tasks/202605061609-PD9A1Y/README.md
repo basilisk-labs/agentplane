@@ -1,10 +1,11 @@
 ---
 id: "202605061609-PD9A1Y"
 title: "Document blueprint creation hints"
-status: "DOING"
+result_summary: "Documented task new blueprint creation hints and --show-blueprint preview."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-06T16:22:54.736Z"
   updated_by: "DOCS"
   note: "Documentation updated for blueprint-aware task creation hints and --show-blueprint stderr route preview."
-commit: null
+commit:
+  hash: "339bbacf062a38026e90b4778dffb4b8074dd58f"
+  message: "Merge pull request #987 from basilisk-labs/task/202605061609-P86BJS/blueprint-task-new-preview"
 comments:
   -
     author: "DOCS"
     body: "Start: Document blueprint-aware task creation hints and the new task creation route preview flag."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Documentation landed with PR #987 at 339bbacf062a38026e90b4778dffb4b8074dd58f and generated CLI reference stayed fresh."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Documentation updated for blueprint-aware task creation hints and --show-blueprint stderr route preview."
+  -
+    type: "status"
+    at: "2026-05-06T16:29:20.597Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Documentation landed with PR #987 at 339bbacf062a38026e90b4778dffb4b8074dd58f and generated CLI reference stayed fresh."
 doc_version: 3
-doc_updated_at: "2026-05-06T16:22:54.746Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-06T16:29:20.599Z"
+doc_updated_by: "INTEGRATOR"
 description: "Document task-kind, mutation-scope, risk, blueprint-request, and task new route preview usage for blueprint-aware task creation."
 sections:
   Summary: |-

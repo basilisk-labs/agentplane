@@ -1,10 +1,11 @@
 ---
 id: "202605061609-P86BJS"
 title: "Preview blueprint route during task creation"
-status: "DOING"
+result_summary: "Merged PR #987 with task new --show-blueprint route preview."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-06T16:22:45.921Z"
   updated_by: "CODER"
   note: "Preview flag verified: task new keeps stdout as the generated id and emits resolved blueprint route details to stderr when --show-blueprint is passed."
-commit: null
+commit:
+  hash: "339bbacf062a38026e90b4778dffb4b8074dd58f"
+  message: "Merge pull request #987 from basilisk-labs/task/202605061609-P86BJS/blueprint-task-new-preview"
 comments:
   -
     author: "CODER"
     body: "Start: Implement opt-in blueprint route preview for task creation without changing default stdout id output."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #987 merged into main at 339bbacf062a38026e90b4778dffb4b8074dd58f after required hosted checks passed."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Preview flag verified: task new keeps stdout as the generated id and emits resolved blueprint route details to stderr when --show-blueprint is passed."
+  -
+    type: "status"
+    at: "2026-05-06T16:28:59.776Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #987 merged into main at 339bbacf062a38026e90b4778dffb4b8074dd58f after required hosted checks passed."
 doc_version: 3
-doc_updated_at: "2026-05-06T16:22:45.935Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T16:28:59.777Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add an opt-in task new flag that prints the resolved blueprint route after task creation without changing the default stdout task-id contract."
 sections:
   Summary: |-
