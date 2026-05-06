@@ -1,0 +1,219 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605061623-BQY3MB",
+  "created_at": "2026-05-06T16:39:46.697Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "67e4a86b40dc5f875374a574b2248efc60810a8a",
+    "work_ref": "main",
+    "work_commit": "67e4a86b40dc5f875374a574b2248efc60810a8a"
+  },
+  "task": {
+    "task_id": "202605061623-BQY3MB",
+    "title": "Add Obsidian projection cleanup command",
+    "intent": "Add a CLI command that removes only the generated Obsidian task navigation projection files while preserving canonical task READMEs and non-generated user files.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605061623-BQY3MB/README.md",
+      "sha256": "sha256:a5c9176ad6fa9f69707dd7ca0ddf116c66de4327c7726c53e179bb003d0a7dd6"
+    },
+    "approved_at": "2026-05-06T16:23:56.835Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #989.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605061623-BQY3MB_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-06T16:23:56.835Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605061623-BQY3MB/README.md",
+      "sha256": "sha256:a5c9176ad6fa9f69707dd7ca0ddf116c66de4327c7726c53e179bb003d0a7dd6"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605061623-BQY3MB/README.md",
+      "sha256": "sha256:a5c9176ad6fa9f69707dd7ca0ddf116c66de4327c7726c53e179bb003d0a7dd6"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605061623-BQY3MB/README.md",
+      "sha256": "sha256:a5c9176ad6fa9f69707dd7ca0ddf116c66de4327c7726c53e179bb003d0a7dd6"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605061623-BQY3MB/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:9f79a125d3a1fec3a7c761cd7f365613b787ad81fafa4c207e5af1bec2508bdd"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 67e4a86b40dc5f875374a574b2248efc60810a8a if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:ca72bcfb07b7057a7cac10959c13d91dd77d168e4b520a6b25898884ad2b4473",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605061623-BQY3MB/blueprint/resolved-snapshot.json",
+        "digest": "c103e24b015b76cfc30baca45ca9673f4236aa84e29233aa0bd7283c5a3af962",
+        "current_digest": "c103e24b015b76cfc30baca45ca9673f4236aa84e29233aa0bd7283c5a3af962",
+        "route_changed": false,
+        "artifact_sha256": "sha256:9f79a125d3a1fec3a7c761cd7f365613b787ad81fafa4c207e5af1bec2508bdd",
+        "safe_command": "agentplane blueprint snapshot 202605061623-BQY3MB"
+      }
+    }
+  }
+}

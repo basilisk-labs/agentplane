@@ -1,10 +1,11 @@
 ---
 id: "202605061623-BQY3MB"
 title: "Add Obsidian projection cleanup command"
-status: "DOING"
+result_summary: "Merged via PR #989."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-06T16:31:42.776Z"
   updated_by: "CODER"
   note: "Command: bun test packages/agentplane/src/commands/task/obsidian.unit.test.ts. Result: pass. Evidence: 6 pass, 0 fail. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Command: bun run docs:cli:check. Result: pass. Evidence: CLI reference up to date. Command: bunx prettier --check touched files. Result: pass. Evidence: all matched files use Prettier style. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Command: node packages/agentplane/bin/agentplane.js doctor. Result: pass. Evidence: doctor OK. Hosted: PR #989 required checks passed."
-commit: null
+commit:
+  hash: "67e4a86b40dc5f875374a574b2248efc60810a8a"
+  message: "Merge pull request #989 from basilisk-labs/task/202605061623-BQY3MB/obsidian-clean"
 comments:
   -
     author: "CODER"
     body: "Start: implementing a marker-aware Obsidian projection cleanup command with focused tests and docs updates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #989 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/commands/task/obsidian.unit.test.ts. Result: pass. Evidence: 6 pass, 0 fail. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Command: bun run docs:cli:check. Result: pass. Evidence: CLI reference up to date. Command: bunx prettier --check touched files. Result: pass. Evidence: all matched files use Prettier style. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Command: node packages/agentplane/bin/agentplane.js doctor. Result: pass. Evidence: doctor OK. Hosted: PR #989 required checks passed."
+  -
+    type: "status"
+    at: "2026-05-06T16:39:46.642Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #989 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-06T16:31:42.811Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-06T16:39:46.650Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a CLI command that removes only the generated Obsidian task navigation projection files while preserving canonical task READMEs and non-generated user files."
 sections:
   Summary: |-
