@@ -350,7 +350,7 @@ export const runBlueprintList: CommandHandler<BlueprintListParsed> = async (ctx,
   if (p.project || p.trusted) {
     const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
     const trusted = await loadTrustedProjectBlueprintRegistry(resolved.gitRoot);
-    if (p.trusted && !trusted.ok) {
+    if (!trusted.ok) {
       throw new ValidationError({
         message: `Invalid project-local blueprint trust registry:\n${trusted.errors
           .map((error) => `- ${error.code}: ${error.message}`)

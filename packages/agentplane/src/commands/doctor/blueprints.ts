@@ -2,7 +2,6 @@ import { loadTrustedProjectBlueprintRegistry } from "../../blueprints/index.js";
 
 export async function checkProjectBlueprints(repoRoot: string): Promise<string[]> {
   const result = await loadTrustedProjectBlueprintRegistry(repoRoot);
-  if (result.files.length === 0) return [];
   return [
     ...result.files.flatMap((file) =>
       file.errors.map(

@@ -90,11 +90,6 @@ function defaultTrustConfig(): ProjectBlueprintTrustConfig {
   };
 }
 
-function stringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
-}
-
 function parseTrustConfigJson(raw: string, filePath: string): ProjectBlueprintTrustConfigResult {
   let parsed: unknown;
   try {
@@ -136,11 +131,25 @@ function parseTrustConfigJson(raw: string, filePath: string): ProjectBlueprintTr
   if ("enabled" in parsed && typeof parsed.enabled !== "boolean") {
     errors.push(problem("invalid_trust_config", "Blueprint trust config enabled must be boolean."));
   }
-  const allowedIds = stringArray(parsed.allowed_ids);
+  const allowedIds: string[] = [];
   if ("allowed_ids" in parsed && !Array.isArray(parsed.allowed_ids)) {
     errors.push(
       problem("invalid_trust_config", "Blueprint trust config allowed_ids must be an array."),
     );
+  }
+  if (Array.isArray(parsed.allowed_ids)) {
+    for (const [index, item] of parsed.allowed_ids.entries()) {
+      if (typeof item !== "string" || item.trim().length === 0) {
+        errors.push(
+          problem(
+            "invalid_trust_config",
+            `Blueprint trust config allowed_ids[${index}] must be a non-empty string.`,
+          ),
+        );
+        continue;
+      }
+      allowedIds.push(item.trim());
+    }
   }
   const selection = parsed.selection === undefined ? "explicit_only" : parsed.selection;
   if (selection !== "explicit_only") {
