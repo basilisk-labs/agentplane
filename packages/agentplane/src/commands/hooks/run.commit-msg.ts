@@ -67,6 +67,10 @@ function stringValue<T extends string>(value: unknown, allowed: Set<string>): T 
   return typeof value === "string" && allowed.has(value) ? (value as T) : undefined;
 }
 
+function envFlag(name: string): boolean {
+  return (process.env[name] ?? "").trim() === "1";
+}
+
 async function readTaskIntent(opts: {
   gitRoot: string;
   workflowDir: string;
@@ -161,6 +165,7 @@ export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
     taskId,
     git: { stagedPaths: await new GitContext({ gitRoot: resolved.gitRoot }).statusStagedPaths() },
     commit: { subject, taskIntent },
+    allow: { allowUpgrade: envFlag("AGENTPLANE_ALLOW_UPGRADE") },
   });
   throwIfPolicyDenied(res);
   try {

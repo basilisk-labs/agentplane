@@ -223,6 +223,15 @@ function hasEmergencyBackfillEvidence(body: string): boolean {
   return evidence.length >= 12;
 }
 
+function hasManagedUpgradeEvidence(body: string): boolean {
+  const subject =
+    body
+      .split("\n")
+      .find((line) => line.trim())
+      ?.trim() ?? "";
+  return /^⬆️\s+upgrade:\s+/u.test(subject) && /^Upgrade-Version:\s*\S+\s*$/im.test(body);
+}
+
 function readCommitList(gitRoot: string, range: { from: string; to: string } | null): string[] {
   if (!range) return [];
   return readGitText(gitRoot, ["log", "--format=%H", `${range.from}..${range.to}`])
@@ -260,6 +269,7 @@ function enforceTaskBoundOutgoingCommits(
         .find((line) => line.trim())
         ?.trim() ?? "";
     if (taskIdFromSubject(gitRoot, subject)) continue;
+    if (hasManagedUpgradeEvidence(body)) continue;
     if (hasEmergencyBackfillEvidence(body)) continue;
 
     failures.push(

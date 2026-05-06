@@ -122,6 +122,7 @@ export async function runPreCommitHook(opts: HooksRunOptions): Promise<number> {
       allowConfig: envFlag("AGENTPLANE_ALLOW_CONFIG"),
       allowHooks: envFlag("AGENTPLANE_ALLOW_HOOKS"),
       allowCI: envFlag("AGENTPLANE_ALLOW_CI"),
+      allowUpgrade: envFlag("AGENTPLANE_ALLOW_UPGRADE"),
     },
   });
   throwIfPolicyDenied(res);

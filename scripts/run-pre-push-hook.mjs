@@ -167,6 +167,15 @@ function hasEmergencyBackfillEvidence(body) {
   return evidence.length >= 12;
 }
 
+function hasManagedUpgradeEvidence(body) {
+  const subject =
+    body
+      .split("\n")
+      .find((line) => line.trim())
+      ?.trim() ?? "";
+  return /^⬆️\s+upgrade:\s+/u.test(subject) && /^Upgrade-Version:\s*\S+\s*$/im.test(body);
+}
+
 function readCommitList(range) {
   if (!range) return [];
   return readQuiet("git", ["log", "--format=%H", `${range.from}..${range.to}`])
@@ -201,6 +210,7 @@ function enforceTaskBoundOutgoingCommits(range) {
         .find((line) => line.trim())
         ?.trim() ?? "";
     if (taskIdFromSubject(subject)) continue;
+    if (hasManagedUpgradeEvidence(body)) continue;
     if (hasEmergencyBackfillEvidence(body)) continue;
 
     failures.push(

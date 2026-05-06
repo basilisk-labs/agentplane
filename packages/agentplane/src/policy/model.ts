@@ -45,6 +45,7 @@ export type PolicyContext = {
     allowConfig?: boolean;
     allowHooks?: boolean;
     allowCI?: boolean;
+    allowUpgrade?: boolean;
   };
 
   requireClean?: boolean;

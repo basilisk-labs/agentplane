@@ -46,6 +46,7 @@ function isNonMutatingIntent(intent?: CommitTaskIntent): boolean {
 export function stagedMutationRequiresTaskRule(ctx: PolicyContext): PolicyResult {
   const staged = ctx.git.stagedPaths ?? [];
   if (staged.length === 0) return okResult();
+  if (ctx.allow?.allowUpgrade === true) return okResult();
 
   const scoped = staged.filter((filePath) => !isTaskArtifactPath(ctx, filePath));
   if (scoped.length === 0) return okResult();
