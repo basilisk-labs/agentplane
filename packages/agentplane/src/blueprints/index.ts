@@ -19,6 +19,11 @@ export {
   validateProjectBlueprintFile,
 } from "./project-local.js";
 export { explainResolvedBlueprint, formatBlueprintExplain } from "./explain.js";
+export {
+  blueprintExecutionPlanStep,
+  blueprintNodeExecutionContract,
+  buildBlueprintExecutionPlanArtifact,
+} from "./execution.js";
 export { blueprintPlanEvidence, blueprintPlanState, buildBlueprintPlanArtifact } from "./plan.js";
 export {
   recipeBlueprintExtensionToHint,
@@ -51,7 +56,16 @@ export type {
   BlueprintExplainEvidence,
   BlueprintExplainNode,
   BlueprintExplainOutput,
+  BlueprintExecutionEventType,
+  BlueprintExecutionEvidenceRef,
+  BlueprintExecutionNodeStatus,
+  BlueprintExecutionPlanArtifact,
+  BlueprintExecutionPlanStep,
+  BlueprintExecutionStateArtifact,
+  BlueprintExecutionStateEvent,
+  BlueprintExecutionStateNode,
   BlueprintId,
+  BlueprintNodeExecutionContract,
   BlueprintPlanArtifact,
   BlueprintPlanState,
   BlueprintPlanValidationProblem,
