@@ -210,6 +210,11 @@ async function writeTaskBlueprintSnapshot(bundle: RunnerContextBundle): Promise<
   const snapshotPath = bundle.execution.artifact_paths.blueprint_plan_path;
   await mkdir(path.dirname(snapshotPath), { recursive: true });
   await writeFile(snapshotPath, `${JSON.stringify(bundle.blueprint, null, 2)}\n`, "utf8");
+  await writeFile(
+    bundle.execution.artifact_paths.context_manifest_path,
+    `${JSON.stringify(bundle.blueprint.contextManifest, null, 2)}\n`,
+    "utf8",
+  );
 }
 
 async function writeRunnerRefusalArtifacts(opts: {

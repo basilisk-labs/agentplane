@@ -78,6 +78,7 @@ export type RunnerArtifactPaths = {
   run_dir: string;
   bundle_path: string;
   blueprint_plan_path: string;
+  context_manifest_path: string;
   bootstrap_path: string;
   state_path: string;
   events_path: string;

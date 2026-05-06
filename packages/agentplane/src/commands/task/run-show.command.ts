@@ -107,6 +107,14 @@ export const runTaskRunShow: CommandHandler<TaskRunShowParsed> = async (
       { label: "created_at", value: inspection.state.created_at },
       { label: "updated_at", value: inspection.state.updated_at },
       { label: "bundle", value: inspection.paths.bundle_path },
+      {
+        label: "blueprint_plan",
+        value: inspection.bundle.execution.artifact_paths.blueprint_plan_path,
+      },
+      {
+        label: "context_manifest_path",
+        value: inspection.bundle.execution.artifact_paths.context_manifest_path,
+      },
       { label: "result", value: inspection.paths.result_path },
       { label: "state", value: inspection.paths.state_path },
       { label: "events", value: inspection.paths.events_path },

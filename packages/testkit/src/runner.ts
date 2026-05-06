@@ -76,6 +76,7 @@ export function makeRunnerContextBundle(
       run_dir: runDir,
       bundle_path: path.join(runDir, "bundle.json"),
       blueprint_plan_path: path.join(runDir, "blueprint-plan.json"),
+      context_manifest_path: path.join(runDir, "context-manifest.json"),
       bootstrap_path: path.join(runDir, "bootstrap.md"),
       state_path: path.join(runDir, "run-state.json"),
       events_path: path.join(runDir, "events.jsonl"),

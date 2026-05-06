@@ -9,7 +9,11 @@ import {
   writePreparedRunnerArtifacts,
   writeRunnerRunState,
 } from "./artifacts.js";
-import { RUNNER_BLUEPRINT_PLAN_FILENAME, resolveTaskRunnerPaths } from "./task-run-paths.js";
+import {
+  RUNNER_BLUEPRINT_PLAN_FILENAME,
+  RUNNER_CONTEXT_MANIFEST_FILENAME,
+  resolveTaskRunnerPaths,
+} from "./task-run-paths.js";
 import { readTraceArtifactText } from "./trace-artifacts.js";
 import type {
   RunnerArtifactPaths,
@@ -124,6 +128,7 @@ export class RunnerRunRepository {
       run_dir: invocation.run_dir,
       bundle_path: invocation.bundle_path,
       blueprint_plan_path: path.join(invocation.run_dir, RUNNER_BLUEPRINT_PLAN_FILENAME),
+      context_manifest_path: path.join(invocation.run_dir, RUNNER_CONTEXT_MANIFEST_FILENAME),
       bootstrap_path: invocation.bootstrap_path ?? "",
       state_path: invocation.state_path,
       events_path: invocation.events_path,

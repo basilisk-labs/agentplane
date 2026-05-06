@@ -4,6 +4,7 @@ import {
   RUNNER_BOOTSTRAP_FILENAME,
   RUNNER_BLUEPRINT_PLAN_FILENAME,
   RUNNER_BUNDLE_FILENAME,
+  RUNNER_CONTEXT_MANIFEST_FILENAME,
   RUNNER_EVENTS_FILENAME,
   RUNNER_RESULT_FILENAME,
   RUNNER_STATE_FILENAME,
@@ -28,6 +29,9 @@ describe("resolveTaskRunnerPaths", () => {
     );
     expect(paths.bundle_path).toBe(`${paths.run_dir}/${RUNNER_BUNDLE_FILENAME}`);
     expect(paths.blueprint_plan_path).toBe(`${paths.run_dir}/${RUNNER_BLUEPRINT_PLAN_FILENAME}`);
+    expect(paths.context_manifest_path).toBe(
+      `${paths.run_dir}/${RUNNER_CONTEXT_MANIFEST_FILENAME}`,
+    );
     expect(paths.bootstrap_path).toBe(`${paths.run_dir}/${RUNNER_BOOTSTRAP_FILENAME}`);
     expect(paths.state_path).toBe(`${paths.run_dir}/${RUNNER_STATE_FILENAME}`);
     expect(paths.events_path).toBe(`${paths.run_dir}/${RUNNER_EVENTS_FILENAME}`);
