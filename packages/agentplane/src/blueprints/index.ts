@@ -7,7 +7,12 @@ export {
 } from "./registry.js";
 export {
   PROJECT_BLUEPRINTS_DIR,
+  PROJECT_BLUEPRINTS_CONFIG_NAME,
+  createTrustedProjectBlueprintRegistry,
+  loadProjectBlueprintTrustConfig,
+  loadTrustedProjectBlueprintRegistry,
   parseProjectBlueprintJson,
+  projectBlueprintsConfigPath,
   projectBlueprintsDirectory,
   scaffoldProjectBlueprint,
   validateProjectBlueprintDirectory,
@@ -70,5 +75,8 @@ export type {
   ProjectBlueprintFileResult,
   ProjectBlueprintProblem,
   ProjectBlueprintProblemCode,
+  ProjectBlueprintTrustConfig,
+  ProjectBlueprintTrustConfigResult,
   ScaffoldProjectBlueprintOptions,
+  TrustedProjectBlueprintRegistryResult,
 } from "./project-local.js";

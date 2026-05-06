@@ -185,4 +185,154 @@ describe("runCli blueprint commands", () => {
       io.restore();
     }
   });
+
+  it("blueprint explain resolves an explicitly trusted project-local blueprint", async () => {
+    const root = await mkProject();
+    const blueprintPath = path.join(root, ".agentplane", "blueprints", "analysis.custom.json");
+    await mkdir(path.dirname(blueprintPath), { recursive: true });
+    await writeFile(
+      blueprintPath,
+      `${JSON.stringify(
+        {
+          ...structuredClone(requireBlueprint("analysis.light")),
+          id: "analysis.custom",
+          title: "Custom analysis",
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, ".agentplane", "blueprints", "config.json"),
+      '{\n  "enabled": true,\n  "allowed_ids": ["analysis.custom"],\n  "selection": "explicit_only"\n}\n',
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "--root",
+        root,
+        "blueprint",
+        "explain",
+        "--kind",
+        "analysis",
+        "--mutation",
+        "none",
+        "--blueprint",
+        "analysis.custom",
+        "--json",
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        blueprintId: string;
+        selectionReasons: string[];
+      };
+      expect(payload.blueprintId).toBe("analysis.custom");
+      expect(payload.selectionReasons).toContain(
+        "trusted project-local blueprint selected: analysis.custom",
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("blueprint explain rejects project-local blueprints without trust config opt-in", async () => {
+    const root = await mkProject();
+    const blueprintPath = path.join(root, ".agentplane", "blueprints", "analysis.custom.json");
+    await mkdir(path.dirname(blueprintPath), { recursive: true });
+    await writeFile(
+      blueprintPath,
+      `${JSON.stringify(
+        {
+          ...structuredClone(requireBlueprint("analysis.light")),
+          id: "analysis.custom",
+          title: "Custom analysis",
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "--root",
+        root,
+        "blueprint",
+        "explain",
+        "--kind",
+        "analysis",
+        "--mutation",
+        "none",
+        "--blueprint",
+        "analysis.custom",
+      ]);
+      expect(code).not.toBe(0);
+      expect(io.stderr).toContain("Unknown blueprint in registry: analysis.custom");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("blueprint validate --project reports invalid trust config entries", async () => {
+    const root = await mkProject();
+    await mkdir(path.join(root, ".agentplane", "blueprints"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "blueprints", "config.json"),
+      '{\n  "enabled": true,\n  "allowed_ids": ["analysis.missing"],\n  "selection": "explicit_only"\n}\n',
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["--root", root, "blueprint", "validate", "--project"]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("allows unknown project-local blueprint id");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("blueprint validate --project rejects non-string trust allowlist entries", async () => {
+    const root = await mkProject();
+    await mkdir(path.join(root, ".agentplane", "blueprints"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "blueprints", "config.json"),
+      '{\n  "enabled": true,\n  "allowed_ids": ["analysis.custom", 7, ""],\n  "selection": "explicit_only"\n}\n',
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["--root", root, "blueprint", "validate", "--project"]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("allowed_ids[1] must be a non-empty string");
+      expect(io.stderr).toContain("allowed_ids[2] must be a non-empty string");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("blueprint list --project rejects local blueprints that shadow built-ins", async () => {
+    const root = await mkProject();
+    const blueprintPath = path.join(root, ".agentplane", "blueprints", "analysis.light.json");
+    await mkdir(path.dirname(blueprintPath), { recursive: true });
+    await writeFile(
+      blueprintPath,
+      `${JSON.stringify(requireBlueprint("analysis.light"), null, 2)}\n`,
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["--root", root, "blueprint", "list", "--project"]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("must not shadow a built-in blueprint id");
+    } finally {
+      io.restore();
+    }
+  });
 });

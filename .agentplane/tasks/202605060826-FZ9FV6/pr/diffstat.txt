@@ -1,0 +1,13 @@
+ .agentplane/tasks/202605060826-0GB6WB/README.md    |  78 +++++++
+ .agentplane/tasks/202605060826-97XHD3/README.md    |  78 +++++++
+ .agentplane/tasks/202605060826-VY5AKF/README.md    |  77 +++++++
+ docs/developer/blueprints.mdx                      |  81 +++++--
+ docs/user/cli-reference.generated.mdx              |   1 +
+ packages/agentplane/src/blueprints/index.ts        |   8 +
+ .../agentplane/src/blueprints/project-local.ts     | 237 ++++++++++++++++++++-
+ packages/agentplane/src/blueprints/resolve.ts      |   4 +
+ .../src/cli/run-cli.core.blueprint.test.ts         | 150 +++++++++++++
+ .../src/commands/blueprint/blueprint.command.ts    |  86 ++++++--
+ .../agentplane/src/commands/doctor.fast.test.ts    |  23 ++
+ .../agentplane/src/commands/doctor/blueprints.ts   |  26 ++-
+ 12 files changed, 806 insertions(+), 43 deletions(-)

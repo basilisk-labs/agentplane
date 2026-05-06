@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605060826-FZ9FV6/trusted-local-blueprints",
+  "created_at": "2026-05-06T08:37:30.269Z",
+  "head_sha": "c2e2e3325b691b6beb1ca20a3be6385dda44325c",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605060826-FZ9FV6",
+  "updated_at": "2026-05-06T08:45:45.560Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

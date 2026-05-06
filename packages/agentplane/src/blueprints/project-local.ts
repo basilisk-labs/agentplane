@@ -1,21 +1,25 @@
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { requireBlueprint } from "./registry.js";
+import { createBlueprintRegistry, getBlueprint, requireBlueprint } from "./registry.js";
 import { validateBlueprint } from "./validate.js";
 import type {
   Blueprint,
   BlueprintId,
+  BlueprintRegistry,
   BlueprintValidationProblem,
   BlueprintValidationResult,
 } from "./model.js";
 
 export const PROJECT_BLUEPRINTS_DIR = ".agentplane/blueprints";
+export const PROJECT_BLUEPRINTS_CONFIG_NAME = "config.json";
 
 export type ProjectBlueprintProblemCode =
   | BlueprintValidationProblem["code"]
+  | "builtin_shadow"
   | "invalid_json"
   | "invalid_shape"
+  | "invalid_trust_config"
   | "missing_blueprint_directory";
 
 export type ProjectBlueprintProblem = {
@@ -39,6 +43,29 @@ export type ProjectBlueprintDirectoryResult = {
   errors: ProjectBlueprintProblem[];
 };
 
+export type ProjectBlueprintTrustConfig = {
+  enabled: boolean;
+  allowedIds: readonly BlueprintId[];
+  selection: "explicit_only";
+};
+
+export type ProjectBlueprintTrustConfigResult = {
+  ok: boolean;
+  path: string;
+  exists: boolean;
+  config: ProjectBlueprintTrustConfig;
+  errors: ProjectBlueprintProblem[];
+};
+
+export type TrustedProjectBlueprintRegistryResult = {
+  ok: boolean;
+  directory: string;
+  trustConfig: ProjectBlueprintTrustConfigResult;
+  files: ProjectBlueprintFileResult[];
+  trustedBlueprints: Blueprint[];
+  errors: ProjectBlueprintProblem[];
+};
+
 export type ScaffoldProjectBlueprintOptions = {
   projectRoot: string;
   id: BlueprintId;
@@ -53,6 +80,95 @@ function problem(
   path?: string,
 ): ProjectBlueprintProblem {
   return { code, message, ...(path ? { path } : {}) };
+}
+
+function defaultTrustConfig(): ProjectBlueprintTrustConfig {
+  return {
+    enabled: false,
+    allowedIds: [],
+    selection: "explicit_only",
+  };
+}
+
+function parseTrustConfigJson(raw: string, filePath: string): ProjectBlueprintTrustConfigResult {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (err) {
+    return {
+      ok: false,
+      path: filePath,
+      exists: true,
+      config: defaultTrustConfig(),
+      errors: [
+        problem(
+          "invalid_json",
+          `Blueprint trust config ${JSON.stringify(filePath)} is not valid JSON: ${
+            err instanceof Error ? err.message : String(err)
+          }`,
+        ),
+      ],
+    };
+  }
+
+  if (!requireObjectResult(parsed)) {
+    return {
+      ok: false,
+      path: filePath,
+      exists: true,
+      config: defaultTrustConfig(),
+      errors: [
+        problem(
+          "invalid_trust_config",
+          `Blueprint trust config ${JSON.stringify(filePath)} must contain one JSON object.`,
+        ),
+      ],
+    };
+  }
+
+  const errors: ProjectBlueprintProblem[] = [];
+  const enabled = parsed.enabled === true;
+  if ("enabled" in parsed && typeof parsed.enabled !== "boolean") {
+    errors.push(problem("invalid_trust_config", "Blueprint trust config enabled must be boolean."));
+  }
+  const allowedIds: string[] = [];
+  if ("allowed_ids" in parsed && !Array.isArray(parsed.allowed_ids)) {
+    errors.push(
+      problem("invalid_trust_config", "Blueprint trust config allowed_ids must be an array."),
+    );
+  }
+  if (Array.isArray(parsed.allowed_ids)) {
+    for (const [index, item] of parsed.allowed_ids.entries()) {
+      if (typeof item !== "string" || item.trim().length === 0) {
+        errors.push(
+          problem(
+            "invalid_trust_config",
+            `Blueprint trust config allowed_ids[${index}] must be a non-empty string.`,
+          ),
+        );
+        continue;
+      }
+      allowedIds.push(item.trim());
+    }
+  }
+  const selection = parsed.selection === undefined ? "explicit_only" : parsed.selection;
+  if (selection !== "explicit_only") {
+    errors.push(
+      problem("invalid_trust_config", "Blueprint trust config selection must be explicit_only."),
+    );
+  }
+
+  return {
+    ok: errors.length === 0,
+    path: filePath,
+    exists: true,
+    config: {
+      enabled,
+      allowedIds: allowedIds.map((id) => id.trim() as BlueprintId),
+      selection: "explicit_only",
+    },
+    errors,
+  };
 }
 
 function requireObjectResult(value: unknown): value is Record<string, unknown> {
@@ -170,6 +286,7 @@ async function listJsonFiles(directory: string): Promise<string[]> {
     const entries = await readdir(directory, { withFileTypes: true });
     return entries
       .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
+      .filter((entry) => entry.name !== PROJECT_BLUEPRINTS_CONFIG_NAME)
       .map((entry) => path.join(directory, entry.name))
       .toSorted();
   } catch (err) {
@@ -191,6 +308,124 @@ export async function validateProjectBlueprintDirectory(
     directory,
     files,
     errors,
+  };
+}
+
+export function projectBlueprintsConfigPath(projectRoot: string): string {
+  return path.join(projectBlueprintsDirectory(projectRoot), PROJECT_BLUEPRINTS_CONFIG_NAME);
+}
+
+export async function loadProjectBlueprintTrustConfig(
+  projectRoot: string,
+): Promise<ProjectBlueprintTrustConfigResult> {
+  const configPath = projectBlueprintsConfigPath(projectRoot);
+  try {
+    return parseTrustConfigJson(await readFile(configPath, "utf8"), configPath);
+  } catch (err) {
+    if (err instanceof Error && "code" in err && err.code === "ENOENT") {
+      return {
+        ok: true,
+        path: configPath,
+        exists: false,
+        config: defaultTrustConfig(),
+        errors: [],
+      };
+    }
+    throw err;
+  }
+}
+
+function duplicateIds(ids: readonly BlueprintId[]): BlueprintId[] {
+  const seen = new Set<string>();
+  const duplicates = new Set<BlueprintId>();
+  for (const id of ids) {
+    if (seen.has(id)) duplicates.add(id);
+    seen.add(id);
+  }
+  return [...duplicates].toSorted((a, b) => a.localeCompare(b));
+}
+
+export async function loadTrustedProjectBlueprintRegistry(
+  projectRoot: string,
+): Promise<TrustedProjectBlueprintRegistryResult> {
+  const directory = projectBlueprintsDirectory(projectRoot);
+  const [trustConfig, directoryResult] = await Promise.all([
+    loadProjectBlueprintTrustConfig(projectRoot),
+    validateProjectBlueprintDirectory(directory),
+  ]);
+  const errors: ProjectBlueprintProblem[] = [...trustConfig.errors, ...directoryResult.errors];
+  const byId = new Map<string, Blueprint>();
+
+  for (const file of directoryResult.files) {
+    if (!file.blueprint) continue;
+    if (getBlueprint(file.blueprint.id, createBlueprintRegistry())) {
+      errors.push(
+        problem(
+          "builtin_shadow",
+          `Project blueprint ${file.blueprint.id} must not shadow a built-in blueprint id.`,
+          file.path,
+        ),
+      );
+      continue;
+    }
+    byId.set(file.blueprint.id, file.blueprint);
+  }
+
+  for (const duplicate of duplicateIds(trustConfig.config.allowedIds)) {
+    errors.push(
+      problem(
+        "invalid_trust_config",
+        `Blueprint trust config allowed_ids contains duplicate id: ${duplicate}`,
+        trustConfig.path,
+      ),
+    );
+  }
+
+  const trustedBlueprints: Blueprint[] = [];
+  if (trustConfig.config.enabled && trustConfig.ok) {
+    for (const id of trustConfig.config.allowedIds) {
+      const blueprint = byId.get(id);
+      if (!blueprint) {
+        errors.push(
+          problem(
+            "invalid_trust_config",
+            `Blueprint trust config allows unknown project-local blueprint id: ${id}`,
+            trustConfig.path,
+          ),
+        );
+        continue;
+      }
+      trustedBlueprints.push(blueprint);
+    }
+  }
+
+  return {
+    ok: errors.length === 0,
+    directory,
+    trustConfig,
+    files: directoryResult.files,
+    trustedBlueprints,
+    errors,
+  };
+}
+
+export async function createTrustedProjectBlueprintRegistry(
+  projectRoot: string,
+): Promise<{ registry: BlueprintRegistry; projectBlueprintIds: BlueprintId[] }> {
+  const trusted = await loadTrustedProjectBlueprintRegistry(projectRoot);
+  if (!trusted.ok) {
+    throw new Error(
+      `Invalid project-local blueprint trust registry:\n${trusted.errors
+        .map((error) => `- ${error.code}: ${error.message}`)
+        .join("\n")}`,
+    );
+  }
+  return {
+    registry: createBlueprintRegistry([
+      ...createBlueprintRegistry().blueprints,
+      ...trusted.trustedBlueprints,
+    ]),
+    projectBlueprintIds: trusted.trustedBlueprints.map((blueprint) => blueprint.id),
   };
 }
 
