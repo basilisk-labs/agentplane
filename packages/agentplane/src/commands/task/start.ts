@@ -6,6 +6,7 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
+import { writeTaskBlueprintResolvedSnapshot } from "../blueprint/snapshot-artifact.js";
 
 import {
   applyTaskStatusTransitionCommand,
@@ -128,6 +129,11 @@ export async function cmdStart(opts: {
           },
         };
       },
+    });
+
+    await writeTaskBlueprintResolvedSnapshot({
+      ctx,
+      task: transition.execution.nextTask,
     });
 
     let commitInfo: { hash: string; message: string } | null = null;
