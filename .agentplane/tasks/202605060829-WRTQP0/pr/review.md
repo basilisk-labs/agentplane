@@ -45,12 +45,20 @@ Harden commit hooks so mutating changes require an active task or valid task id,
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-06T08:29:58.763Z
+- Updated: 2026-05-06T08:38:02.531Z
 - Branch: task/202605060829-WRTQP0/task-bound-hooks
-- Head: 1f67e09e9b57
+- Head: 8ac27c7315c9
 
 ```text
-No changes detected.
+ .../src/cli/run-cli.core.hooks.hook-run.test.ts    | 183 +++++++++++++++++++++
+ .../src/cli/run-cli.core.hooks.pre-commit.test.ts  |  47 ++++++
+ .../src/commands/hooks/run.commit-msg.ts           |  37 ++++-
+ .../src/commands/hooks/run.pre-commit.ts           |  75 ++++++++-
+ .../agentplane/src/commands/hooks/run.pre-push.ts  | 121 +++++++++++++-
+ packages/agentplane/src/policy/evaluate.ts         |   9 +-
+ .../src/policy/rules/task-bound-mutation.ts        |  96 +++++++++++
+ scripts/run-pre-push-hook.mjs                      | 124 ++++++++++++++
+ 8 files changed, 677 insertions(+), 15 deletions(-)
 ```
 
 </details>
