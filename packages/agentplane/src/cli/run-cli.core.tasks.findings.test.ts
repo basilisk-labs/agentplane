@@ -17,7 +17,7 @@ import {
 installRunCliIntegrationHarness();
 
 describe("runCli task findings", () => {
-  it("task findings add appends a promotable external Findings block by default", async () => {
+  it("task findings add appends a task-local Findings block by default", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     const config = defaultConfig();
@@ -73,9 +73,8 @@ describe("runCli task findings", () => {
       expect(io.stdout).toContain(path.join(root, ".agentplane", "tasks", taskId, "README.md"));
       expect(io.stderr).toContain("task findings add outcome=entry-appended section=Findings");
       expect(io.stderr).toContain(
-        `incident candidate recorded for ${taskId}; incidents.md updates later during finish, \`verify --collect-incidents\`, or`,
+        `task-local finding recorded for ${taskId}; incidents.md unchanged in the current checkout`,
       );
-      expect(io.stderr).toContain("task-local in the current checkout until promotion");
     } finally {
       io.restore();
     }
@@ -90,15 +89,15 @@ describe("runCli task findings", () => {
     expect(readme).toContain(
       "  Resolution: Use the new append command instead of editing the whole README.",
     );
-    expect(readme).toContain("  Promotion: incident-candidate");
-    expect(readme).toContain("  Fixability: external");
+    expect(readme).not.toContain("  Promotion: incident-candidate");
+    expect(readme).not.toContain("  Fixability: external");
     expect(readme).toContain('doc_updated_by: "CODER"');
     expect(parseTaskReadme(readme).frontmatter.sections.Findings).toContain(
       "- Observation: GitHub transport retries were manual.",
     );
   });
 
-  it("task findings add writes promotable metadata without requiring hidden flags", async () => {
+  it("task findings add writes promotable metadata with explicit promotion flags", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     const config = defaultConfig();
@@ -152,6 +151,8 @@ describe("runCli task findings", () => {
           "Task cleanup required repeated operator retries.",
           "--resolution",
           "Switch close flows to REST-backed helpers.",
+          "--promote",
+          "--external",
           "--incident-scope",
           "GitHub PR cleanup",
           "--incident-tag",

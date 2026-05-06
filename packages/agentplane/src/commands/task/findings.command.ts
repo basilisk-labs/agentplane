@@ -8,10 +8,9 @@ export type TaskFindingsParsed = {
 export const taskFindingsSpec: CommandSpec<TaskFindingsParsed> = {
   id: ["task", "findings"],
   group: "Task",
-  summary:
-    "Structured Findings/Notes commands (incident promotion is default unless --local-only).",
+  summary: "Structured Findings/Notes commands; incident promotion is explicit opt-in.",
   synopsis: [
-    "agentplane task findings add <task-id> --observation <text> --impact <text> --resolution <text> [--local-only] [--incident-scope <text>] [--incident-tag <tag>] [--incident-match <term>] [--incident-advice <text>] [--incident-rule <text>] [--updated-by <id>]",
+    "agentplane task findings add <task-id> --observation <text> --impact <text> --resolution <text> [--promote] [--external|--repo-fixable] [--incident-scope <text>] [--incident-tag <tag>] [--incident-match <term>] [--incident-advice <text>] [--incident-rule <text>] [--updated-by <id>]",
   ],
   args: [{ name: "subcommand", required: false, valueHint: "<add>" }],
   parse: (raw) => ({

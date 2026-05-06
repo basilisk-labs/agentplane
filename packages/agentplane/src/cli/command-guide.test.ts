@@ -95,7 +95,9 @@ describe("command-guide", () => {
     expect(text).toContain("Use `agentplane role ORCHESTRATOR` during planning");
     expect(text).toContain("agentplane incidents advise <task-id>");
     expect(text).toContain("agentplane incidents collect <task-id> --check");
-    expect(text).toContain("promotion is the default unless you pass `--local-only`");
+    expect(text).toContain(
+      "add `--promote --external` or `--repo-fixable` only for real reusable incidents",
+    );
     expect(text).toContain("Plain prose in `Findings` stays task-local");
     expect(text).toContain("configured CI/provider gate");
     expect(text).toContain("workflow:wait-remote-checks");
@@ -104,9 +106,10 @@ describe("command-guide", () => {
     );
   });
 
-  it("updates the planner role guidance to the promotion-by-default findings flow", () => {
+  it("updates the planner role guidance to the explicit findings promotion flow", () => {
     const text = renderRoleTyped("planner");
-    expect(text).toContain("promotion is the default unless `--local-only` is set");
-    expect(text).not.toContain("[--promote] [--external]");
+    expect(text).toContain(
+      "add `--promote --external` or `--repo-fixable` only for real reusable incidents",
+    );
   });
 });

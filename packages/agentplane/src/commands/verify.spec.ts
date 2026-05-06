@@ -99,7 +99,7 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
     },
     {
       cmd: 'agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --observation "Repeated recovery was manual." --impact "Operators needed a second command." --resolution "Append structured findings during verify."',
-      why: "Record verification and append a promotable structured finding in one command.",
+      why: "Record verification and append a task-local structured finding.",
     },
     {
       cmd: 'agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --collect-incidents',

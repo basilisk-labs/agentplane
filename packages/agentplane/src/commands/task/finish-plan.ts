@@ -176,6 +176,8 @@ function resolveFinishFinding(options: FinishOptions): FinishStructuredFinding |
     observation: options.observation,
     impact: options.impact,
     resolution: options.resolution,
+    promote: options.promote === true,
+    external: options.external === true,
     localOnly: options.localOnly === true,
     repoFixable: options.repoFixable === true,
     incidentScope: options.incidentScope,
