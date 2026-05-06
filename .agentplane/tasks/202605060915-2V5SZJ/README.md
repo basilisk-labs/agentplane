@@ -1,7 +1,8 @@
 ---
 id: "202605060915-2V5SZJ"
 title: "Add blueprint integration CLI surfaces"
-status: "DOING"
+result_summary: "Shipped on main and reconciled from local branch_pr state."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 5
@@ -26,7 +27,9 @@ verification:
   updated_at: "2026-05-06T10:41:28.507Z"
   updated_by: "ENGINEER"
   note: "Blueprint report CLI surface is implemented with JSON compatibility output and focused CLI coverage."
-commit: null
+commit:
+  hash: "5046712cd477f7f2a090b6e3dda1ef819c8824ce"
+  message: "Shipped on main before canonical task closure"
 comments:
   -
     author: "ENGINEER"
@@ -45,8 +48,15 @@ events:
     author: "ENGINEER"
     state: "ok"
     note: "Blueprint report CLI surface is implemented with JSON compatibility output and focused CLI coverage."
+  -
+    type: "status"
+    at: "2026-05-06T12:21:33.425Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Local branch_pr reconciliation detected task commit 5046712cd477 on base main; canonical task state normalized after shipment."
 doc_version: 3
-doc_updated_at: "2026-05-06T10:41:28.512Z"
+doc_updated_at: "2026-05-06T12:21:33.503Z"
 doc_updated_by: "ENGINEER"
 description: "Add v0.5 CLI surfaces for blueprint snapshot show/refresh/dry-run/drift reporting while preserving lightweight explain behavior for analysis and content tasks."
 sections:

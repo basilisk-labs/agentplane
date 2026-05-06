@@ -1,7 +1,8 @@
 ---
 id: "202605060915-N929BE"
 title: "Merge blueprint evidence into verify-show"
-status: "DOING"
+result_summary: "Shipped on main and reconciled from local branch_pr state."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 5
@@ -25,7 +26,9 @@ verification:
   updated_at: "2026-05-06T09:40:10.541Z"
   updated_by: "CODER"
   note: "Merged persisted blueprint snapshot evidence into verify-show. Verification passed: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts; bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/blueprint/snapshot-artifact.test.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/blueprints/snapshot.test.ts; bun run typecheck; prettier/eslint on touched files; git diff --check; bun run framework:dev:bootstrap; node packages/agentplane/bin/agentplane.js task verify-show 202605060915-N929BE."
-commit: null
+commit:
+  hash: "e7213dda10b2ef460f5a69064281afc82e2abeae"
+  message: "Shipped on main before canonical task closure"
 comments:
   -
     author: "CODER"
@@ -44,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Merged persisted blueprint snapshot evidence into verify-show. Verification passed: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts; bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/blueprint/snapshot-artifact.test.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/blueprints/snapshot.test.ts; bun run typecheck; prettier/eslint on touched files; git diff --check; bun run framework:dev:bootstrap; node packages/agentplane/bin/agentplane.js task verify-show 202605060915-N929BE."
+  -
+    type: "status"
+    at: "2026-05-06T12:21:33.425Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Local branch_pr reconciliation detected task commit e7213dda10b2 on base main; canonical task state normalized after shipment."
 doc_version: 3
-doc_updated_at: "2026-05-06T09:40:10.546Z"
+doc_updated_at: "2026-05-06T12:21:33.504Z"
 doc_updated_by: "CODER"
 description: "Extend task verify-show so it combines README Verify Steps with resolved blueprint required evidence while keeping non-code routes lightweight."
 sections:

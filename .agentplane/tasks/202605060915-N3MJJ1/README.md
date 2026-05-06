@@ -1,7 +1,8 @@
 ---
 id: "202605060915-N3MJJ1"
 title: "Embed resolved blueprint plan in runner bundle"
-status: "DOING"
+result_summary: "Shipped on main and reconciled from local branch_pr state."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 5
@@ -25,7 +26,9 @@ verification:
   updated_at: "2026-05-06T10:04:05.272Z"
   updated_by: "CODER"
   note: "Verified: runner bundle now exposes a named blueprint plan artifact path and writes the embedded blueprint plan there during prepare."
-commit: null
+commit:
+  hash: "3fab8a1567fdc36a5b5f5f76c81573e5e0739e53"
+  message: "Shipped on main before canonical task closure"
 comments:
   -
     author: "CODER"
@@ -44,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: runner bundle now exposes a named blueprint plan artifact path and writes the embedded blueprint plan there during prepare."
+  -
+    type: "status"
+    at: "2026-05-06T12:21:33.425Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Local branch_pr reconciliation detected task commit 3fab8a1567fd on base main; canonical task state normalized after shipment."
 doc_version: 3
-doc_updated_at: "2026-05-06T10:04:05.281Z"
+doc_updated_at: "2026-05-06T12:21:33.505Z"
 doc_updated_by: "CODER"
 description: "Embed the resolved blueprint snapshot into runner bundle output as a compact execution contract for agents and external runners."
 sections:
