@@ -25,7 +25,7 @@ Harden commit hooks so mutating changes require an active task or valid task id,
 ### Current Status
 
 - State: ok
-- Note: Review follow-up checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts packages/agentplane/src/policy/evaluate.test.ts packages/core/src/commit/commit-policy.test.ts passed with 5 files and 77 tests. bun run typecheck passed. Prettier check on touched hook files passed. ESLint on touched hook files passed. git diff --check passed. Review fixes cover detached HEAD with AGENTPLANE_TASK_ID and merge commits in pre-push mutation audits.
+- Note: Review follow-up final checks: bunx vitest run packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts passed with 3 files and 38 tests. bun run hotspots:check passed after moving new pre-push binding tests out of the oversized hook-run file. Prior focused 77-test hook/policy suite and typecheck passed before the split; behavior unchanged except test placement.
 
 ## Risks
 
