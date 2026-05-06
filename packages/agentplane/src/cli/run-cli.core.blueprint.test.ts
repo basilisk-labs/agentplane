@@ -80,6 +80,40 @@ describe("runCli blueprint commands", () => {
     }
   });
 
+  it("blueprint validate reports malformed blueprint objects without crashing", async () => {
+    const root = await mkTempDir();
+    const blueprintPath = path.join(root, "malformed.json");
+    await writeFile(
+      blueprintPath,
+      JSON.stringify(
+        {
+          id: "analysis.malformed",
+          title: "Malformed",
+          description: "Missing context budget",
+          taskKinds: ["analysis"],
+          allowedCommands: [],
+          policyModules: [],
+          nodes: [],
+          edges: [],
+          requiredEvidence: [],
+          stopRules: [],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["blueprint", "validate", blueprintPath]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("invalid_shape");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("blueprint scaffold creates a project-local blueprint file", async () => {
     const root = await mkProject();
     const io = captureStdIO();
@@ -90,6 +124,26 @@ describe("runCli blueprint commands", () => {
       const blueprint = JSON.parse(await readFile(blueprintPath, "utf8")) as { id?: string };
       expect(blueprint.id).toBe("analysis.custom");
       expect(io.stdout).toContain("blueprint scaffolded:");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("blueprint scaffold rejects output paths outside the project", async () => {
+    const root = await mkProject();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "--root",
+        root,
+        "blueprint",
+        "scaffold",
+        "analysis.custom",
+        "--out",
+        "../outside.json",
+      ]);
+      expect(code).not.toBe(0);
+      expect(io.stderr).toContain("output must stay inside the project");
     } finally {
       io.restore();
     }

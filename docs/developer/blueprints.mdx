@@ -816,6 +816,7 @@ Command semantics:
 | ----------------------------------------------- | ---------------------------------------------------------------------- |
 | `blueprint scaffold <id>`                       | Clones a built-in route, defaults to `analysis.light`, and writes JSON |
 | `blueprint scaffold <id> --from code.branch_pr` | Starts from a specific built-in route                                  |
+| `blueprint scaffold <id> --out <path>`          | Writes to a custom path, restricted to the current project             |
 | `blueprint validate <path>`                     | Validates one JSON blueprint file                                      |
 | `blueprint validate --project`                  | Validates every `.json` file under `.agentplane/blueprints`            |
 | `blueprint list --project`                      | Lists built-ins plus valid local definitions                           |

@@ -132,7 +132,24 @@ export function parseProjectBlueprintJson(
   }
 
   const blueprint = parsed as Blueprint;
-  const validation = validateBlueprint(blueprint);
+  let validation: BlueprintValidationResult;
+  try {
+    validation = validateBlueprint(blueprint);
+  } catch (err) {
+    return {
+      ok: false,
+      path: filePath,
+      blueprintId: typeof parsed.id === "string" ? parsed.id : undefined,
+      errors: [
+        problem(
+          "invalid_shape",
+          `Blueprint file ${JSON.stringify(filePath)} has an invalid blueprint shape: ${
+            err instanceof Error ? err.message : String(err)
+          }`,
+        ),
+      ],
+    };
+  }
   return {
     ok: validation.ok,
     path: filePath,
@@ -190,8 +207,14 @@ function filenameForBlueprintId(id: string): string {
 }
 
 function scaffoldPath(opts: ScaffoldProjectBlueprintOptions): string {
-  if (opts.out) return path.resolve(opts.projectRoot, opts.out);
-  return path.join(projectBlueprintsDirectory(opts.projectRoot), filenameForBlueprintId(opts.id));
+  const outPath = opts.out
+    ? path.resolve(opts.projectRoot, opts.out)
+    : path.join(projectBlueprintsDirectory(opts.projectRoot), filenameForBlueprintId(opts.id));
+  const relative = path.relative(opts.projectRoot, outPath);
+  if (relative.startsWith("..") || path.isAbsolute(relative)) {
+    throw new Error(`Blueprint scaffold output must stay inside the project: ${opts.out}`);
+  }
+  return outPath;
 }
 
 export async function scaffoldProjectBlueprint(
