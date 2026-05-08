@@ -73,8 +73,8 @@ mirror the cached-install shape of recipes while staying a separate subsystem.
 
 Separation:
 
-- A blueprint is a route contract that can be validated, installed into `.agentplane/blueprints/`,
-  and explicitly trusted.
+- A blueprint is a route contract that can be validated, installed into the project's blueprint
+  store, and explicitly trusted.
 - A blueprint pack is only a grouping descriptor for multiple catalog blueprint ids.
 - A recipe is still the extension layer for domain guidance, prompt modules, scenarios, templates,
   and runtime assets.
@@ -92,12 +92,11 @@ agentplane blueprints install <pack-id> --kind pack --activate
 Cache and project boundaries:
 
 - The refreshed catalog index is stored under `~/.agentplane/blueprints/`.
-- Installing vendors blueprint definitions into the current project's `.agentplane/blueprints/`.
+- Installing vendors blueprint definitions into the current project's blueprint store.
 - Installing does not imply activation.
-- Activation writes `.agentplane/blueprints/config.json` using the existing
-  `explicit_allowlist` trust model.
-- Local catalog packages may be copied into `.agentplane/blueprint-catalog/` as provenance; remote
-  sources install the validated definition file.
+- Activation writes the blueprint trust config using the existing `explicit_allowlist` trust model.
+- Local catalog packages may be copied into the project-local blueprint catalog provenance directory;
+  remote sources install the validated definition file.
 
 Init integration:
 
@@ -985,8 +984,9 @@ Not required:
 
 ## Project-Local Authoring
 
-Project-local blueprints live under `.agentplane/blueprints/*.json`. The optional trust config is a
-`config.json` file in that directory and is not treated as a blueprint definition.
+Project-local blueprints live as JSON definition files in the project's blueprint store. The
+optional trust config is a `config.json` file in that directory and is not treated as a blueprint
+definition.
 
 This is an authoring and validation surface, not automatic execution. A local blueprint can be
 scaffolded, listed, validated, and explicitly trusted. The resolver still does not select local
@@ -998,7 +998,7 @@ Safe authoring loop:
 
 ```bash
 agentplane blueprint scaffold analysis.custom
-agentplane blueprint validate .agentplane/blueprints/analysis.custom.json
+agentplane blueprint validate .agentplane/blueprints/<id>.json
 agentplane blueprint validate --project
 agentplane blueprint list --project
 agentplane blueprint list --trusted

@@ -75,8 +75,6 @@ const projectLocalPrefixes = [
   ".agentplane/.release/",
   ".agentplane/.upgrade/",
   ".agentplane/backends/",
-  ".agentplane/blueprint-catalog/",
-  ".agentplane/blueprints/",
   ".agentplane/cache/",
   ".agentplane/generated/",
   ".agentplane/handoff/",
