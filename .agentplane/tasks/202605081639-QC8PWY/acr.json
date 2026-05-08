@@ -1,0 +1,241 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605081639-QC8PWY",
+  "created_at": "2026-05-08T18:18:41.650Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "e34e06fcde96ca3d57a80de0e9ba4b485a62ceb0",
+    "work_ref": "main",
+    "work_commit": "e34e06fcde96ca3d57a80de0e9ba4b485a62ceb0"
+  },
+  "task": {
+    "task_id": "202605081639-QC8PWY",
+    "title": "Add specialized built-in blueprint definitions",
+    "intent": "Add built-in blueprint definitions for performance.benchmark, quality.regression, and runner.execution with required evidence and stop rules.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605081639-QC8PWY/README.md",
+      "sha256": "sha256:2e0a746602b658e5dad08395836746472cb6b08721908ba70110c0faa345cd00"
+    },
+    "approved_at": "2026-05-08T16:41:01.435Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "warning",
+        "reason": "Verification is not ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3480.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "not_run",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "test",
+        "command": "bun test packages/agentplane/src/blueprints",
+        "status": "unknown"
+      },
+      {
+        "check_id": "verify-2",
+        "type": "other",
+        "command": "node .agentplane/policy/check-routing.mjs",
+        "status": "unknown"
+      },
+      {
+        "check_id": "verify-3",
+        "type": "other",
+        "command": "node packages/agentplane/bin/agentplane.js doctor",
+        "status": "unknown"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605081639-QC8PWY_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-08T16:41:01.435Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605081639-QC8PWY/README.md",
+      "sha256": "sha256:2e0a746602b658e5dad08395836746472cb6b08721908ba70110c0faa345cd00"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605081639-QC8PWY/README.md",
+      "sha256": "sha256:2e0a746602b658e5dad08395836746472cb6b08721908ba70110c0faa345cd00"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Verification is not recorded as ok.",
+      "Verification log evidence is missing."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit e34e06fcde96ca3d57a80de0e9ba4b485a62ceb0 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:53a5dd73dc8782b380975116176437b3660350cf8c1f78d1495847cd19187ad6",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "runner.execution",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "runner.bundle",
+          "kind": "artifact",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "runner.invocation",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "runner.result_manifest",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "runner.trace",
+          "kind": "artifact",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "runner.execution_state",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "runner.replay_or_resume",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "runner.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "stale",
+        "path": ".agentplane/tasks/202605081639-QC8PWY/blueprint/resolved-snapshot.json",
+        "digest": "6a74cc0df15c800c003d62f3809919ea6d69051513220058042bb229b84a4dae",
+        "current_digest": "43f03e8bc97629ef062b87318a501a6d9af5adfc896f9646b5bfc61204c9a64e",
+        "route_changed": false,
+        "artifact_sha256": null,
+        "safe_command": "agentplane blueprint snapshot 202605081639-QC8PWY"
+      }
+    }
+  }
+}

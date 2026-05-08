@@ -1,7 +1,8 @@
 ---
 id: "202605081639-QC8PWY"
 title: "Add specialized built-in blueprint definitions"
-status: "DOING"
+result_summary: "Merged via PR #3480."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -30,11 +31,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "e34e06fcde96ca3d57a80de0e9ba4b485a62ceb0"
+  message: "Merge pull request #3480 from basilisk-labs/task/202605081639-QC8PWY/specialized-blueprints"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing the batch in one primary branch_pr worktree because built-in definitions, resolver selection, CLI intake, tests, and docs share the same blueprint contract surface."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3480 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implementing the batch in one primary branch_pr worktree because built-in definitions, resolver selection, CLI intake, tests, and docs share the same blueprint contract surface."
+  -
+    type: "status"
+    at: "2026-05-08T18:18:41.599Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3480 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-08T16:41:50.055Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-08T18:18:41.606Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add built-in blueprint definitions for performance.benchmark, quality.regression, and runner.execution with required evidence and stop rules."
 sections:
   Summary: |-
