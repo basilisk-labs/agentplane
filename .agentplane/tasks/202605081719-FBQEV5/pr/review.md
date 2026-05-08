@@ -2,6 +2,14 @@
 
 Created: 2026-05-08T17:23:48.984Z
 
+## Batch Tasks
+
+- Primary: `202605081719-FBQEV5`
+- Closure policy: `all_or_fail`
+- Included: `202605081720-03TR4S`
+- Included: `202605081720-DTKG82`
+- Included: `202605081720-JF941V`
+
 ## Task
 
 - Task: `202605081719-FBQEV5`
@@ -24,17 +32,17 @@ Created: 2026-05-08T17:23:48.984Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-08T19:10:53.043Z
+- Updated: 2026-05-08T19:27:33.980Z
 - Branch: task/202605081719-FBQEV5/blueprint-catalog-install
-- Head: d2c56282cdd5
+- Head: 2fe6aa07839f
 
 ```text
  .../blueprint/resolved-snapshot.json               | 502 +++++++++++++++++++++
- .agentplane/tasks/202605081720-03TR4S/README.md    |  92 ++++
+ .agentplane/tasks/202605081720-03TR4S/README.md    | 116 +++++
  .../blueprint/resolved-snapshot.json               | 347 ++++++++++++++
- .agentplane/tasks/202605081720-DTKG82/README.md    |  93 ++++
+ .agentplane/tasks/202605081720-DTKG82/README.md    | 117 +++++
  .../blueprint/resolved-snapshot.json               | 502 +++++++++++++++++++++
- .agentplane/tasks/202605081720-JF941V/README.md    |  93 ++++
+ .agentplane/tasks/202605081720-JF941V/README.md    | 117 +++++
  .../blueprint/resolved-snapshot.json               | 502 +++++++++++++++++++++
  docs/developer/blueprints.mdx                      |  48 +-
  docs/reference/generated-reference.mdx             |  14 +-
@@ -60,7 +68,7 @@ Created: 2026-05-08T17:23:48.984Z
  .../src/commands/blueprints/blueprints.command.ts  | 286 ++++++++++++
  .../agentplane/src/commands/blueprints/catalog.ts  | 415 +++++++++++++++++
  website/static/llms-full.txt                       |  97 +++-
- 31 files changed, 3700 insertions(+), 13 deletions(-)
+ 31 files changed, 3772 insertions(+), 13 deletions(-)
 ```
 
 </details>

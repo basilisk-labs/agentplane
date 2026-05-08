@@ -1,9 +1,9 @@
  .../blueprint/resolved-snapshot.json               | 502 +++++++++++++++++++++
- .agentplane/tasks/202605081720-03TR4S/README.md    |  92 ++++
+ .agentplane/tasks/202605081720-03TR4S/README.md    | 116 +++++
  .../blueprint/resolved-snapshot.json               | 347 ++++++++++++++
- .agentplane/tasks/202605081720-DTKG82/README.md    |  93 ++++
+ .agentplane/tasks/202605081720-DTKG82/README.md    | 117 +++++
  .../blueprint/resolved-snapshot.json               | 502 +++++++++++++++++++++
- .agentplane/tasks/202605081720-JF941V/README.md    |  93 ++++
+ .agentplane/tasks/202605081720-JF941V/README.md    | 117 +++++
  .../blueprint/resolved-snapshot.json               | 502 +++++++++++++++++++++
  docs/developer/blueprints.mdx                      |  48 +-
  docs/reference/generated-reference.mdx             |  14 +-
@@ -29,4 +29,4 @@
  .../src/commands/blueprints/blueprints.command.ts  | 286 ++++++++++++
  .../agentplane/src/commands/blueprints/catalog.ts  | 415 +++++++++++++++++
  website/static/llms-full.txt                       |  97 +++-
- 31 files changed, 3700 insertions(+), 13 deletions(-)
+ 31 files changed, 3772 insertions(+), 13 deletions(-)
