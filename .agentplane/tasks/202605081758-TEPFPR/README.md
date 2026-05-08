@@ -1,7 +1,8 @@
 ---
 id: "202605081758-TEPFPR"
 title: "Reposition public copy around Git-native AI evidence"
-status: "DOING"
+result_summary: "Merged via PR #3485."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 revision: 1
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-08T18:34:27.528Z"
   updated_by: "DOCS"
   note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK; Scope: policy routing after docs/site copy changes; Links: .agentplane/policy/*.md. Command: ap doctor; Result: pass; Evidence: doctor OK with zero errors and zero warnings; Scope: task worktree runtime and branch_pr drift. Command: bun run docs:ia:check; Result: pass; Evidence: docs IA, sidebar coverage, and current path references are aligned; Scope: docs/index.mdx and website/sidebars.ts. Command: bun run docs:site:typecheck; Result: pass; Evidence: website TypeScript check exited 0; Scope: Docusaurus config and homepage TSX. Command: bun run docs:site:build; Result: pass; Evidence: static files generated successfully; only existing dependency warning from vscode-languageserver-types; Scope: docs site routes, anchors, and content. Command: bun run docs:site:check:design; Result: pass; Evidence: DESIGN.md compliance check passed; Scope: public website content. Command: git diff --check; Result: pass; Evidence: no whitespace errors; Scope: all changed files."
-commit: null
+commit:
+  hash: "72d898395a4e341468d614663defc3c4a12b727b"
+  message: "Merge pull request #3485 from basilisk-labs/task/202605081758-TEPFPR/git-native-evidence-copy"
 comments:
   -
     author: "DOCS"
     body: "Start: update the public README, website, and docs copy in the task worktree to reposition AgentPlane as Git-native infrastructure for traceable AI work while preserving current shipped CLI and ACR behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3485 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK; Scope: policy routing after docs/site copy changes; Links: .agentplane/policy/*.md. Command: ap doctor; Result: pass; Evidence: doctor OK with zero errors and zero warnings; Scope: task worktree runtime and branch_pr drift. Command: bun run docs:ia:check; Result: pass; Evidence: docs IA, sidebar coverage, and current path references are aligned; Scope: docs/index.mdx and website/sidebars.ts. Command: bun run docs:site:typecheck; Result: pass; Evidence: website TypeScript check exited 0; Scope: Docusaurus config and homepage TSX. Command: bun run docs:site:build; Result: pass; Evidence: static files generated successfully; only existing dependency warning from vscode-languageserver-types; Scope: docs site routes, anchors, and content. Command: bun run docs:site:check:design; Result: pass; Evidence: DESIGN.md compliance check passed; Scope: public website content. Command: git diff --check; Result: pass; Evidence: no whitespace errors; Scope: all changed files."
+  -
+    type: "status"
+    at: "2026-05-08T18:40:12.788Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3485 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-08T18:34:27.561Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-08T18:40:12.797Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update AgentPlane public README, website, and docs copy from audit-layer CLI framing toward Git-native infrastructure for traceable AI work, with ACR as the main evidence artifact."
 sections:
   Summary: |-

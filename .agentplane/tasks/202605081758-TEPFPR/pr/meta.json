@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-08T18:39:24Z",
   "base": "main",
   "branch": "task/202605081758-TEPFPR/git-native-evidence-copy",
   "created_at": "2026-05-08T18:03:56.435Z",
-  "head_sha": "b2206a9ca8b1b80c6ef0fcb20956fd822ebed3df",
+  "head_sha": "56ea3007713a5e5bd0b644faeb658da89229448b",
   "last_verified_at": "2026-05-08T18:34:27.528Z",
   "last_verified_sha": "97448aafec239d34240999d90f008b83c69d462a",
+  "merge_commit": "72d898395a4e341468d614663defc3c4a12b727b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-08T18:39:24Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605081758-TEPFPR",
-  "updated_at": "2026-05-08T18:36:03.784Z",
+  "updated_at": "2026-05-08T18:39:24Z",
   "verify": {
     "status": "pass"
   }
