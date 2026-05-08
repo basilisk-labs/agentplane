@@ -1,0 +1,10 @@
+ docs/developer/blueprints.mdx                      |  46 +++++
+ packages/agentplane/src/blueprints/builtins.ts     | 187 +++++++++++++++++++++
+ packages/agentplane/src/blueprints/model.ts        |   3 +
+ packages/agentplane/src/blueprints/resolve.test.ts |  71 ++++++++
+ packages/agentplane/src/blueprints/resolve.ts      |  68 +++++++-
+ .../agentplane/src/blueprints/validate.test.ts     |   5 +-
+ .../src/commands/blueprint/task-input.test.ts      |  45 +++++
+ .../src/commands/blueprint/task-input.ts           |   3 +
+ packages/agentplane/src/commands/task/new.ts       |   3 +
+ 9 files changed, 429 insertions(+), 2 deletions(-)
