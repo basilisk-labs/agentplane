@@ -1,7 +1,8 @@
 ---
 id: "202605081651-Y9DYVQ"
 title: "Add semantic clone detection to refactor analysis"
-status: "DOING"
+result_summary: "Merged via PR #3481."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -29,11 +30,16 @@ verification:
   updated_at: "2026-05-08T17:55:42.637Z"
   updated_by: "CODER"
   note: "Implemented semantic clone detection with jscpd report/check/baseline workflows. Verification passed: clone:check, docs:scripts:check, knip:check, hotspots:check, typecheck, lint:core, targeted task-doc/cold-path/release publish tests. Full test:fast was attempted repeatedly but local full-suite runs timed out in heavy release asset suites; targeted release publish test passed and earlier standalone run passed before later machine-load timeouts."
-commit: null
+commit:
+  hash: "61f4c54ccfe5d1accb633e3171b6948b22eaf1c2"
+  message: "🚧 Y9DYVQ task: Add semantic clone detection to refactor analysis [202605081651-Y9DYVQ]"
 comments:
   -
     author: "CODER"
     body: "Start: Implement semantic clone detection tooling in a dedicated branch_pr worktree, preserving existing checks while adding report and baseline-aware check workflows."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3481 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,14 +54,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented semantic clone detection with jscpd report/check/baseline workflows. Verification passed: clone:check, docs:scripts:check, knip:check, hotspots:check, typecheck, lint:core, targeted task-doc/cold-path/release publish tests. Full test:fast was attempted repeatedly but local full-suite runs timed out in heavy release asset suites; targeted release publish test passed and earlier standalone run passed before later machine-load timeouts."
+  -
+    type: "status"
+    at: "2026-05-08T18:03:47.608Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3481 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-08T17:55:42.676Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-08T18:03:47.613Z"
+doc_updated_by: "INTEGRATOR"
 description: "Evaluate and wire a semantic clone detector such as jscpd or an equivalent AST/token-based tool into the analysis workflow so future refactor reviews identify structural duplication beyond line counts and simple duplicate scans."
 sections:
   Summary: |-
     Add semantic clone detection to refactor analysis
-
+    
     Evaluate and wire a semantic clone detector such as jscpd or an equivalent AST/token-based tool into the analysis workflow so future refactor reviews identify structural duplication beyond line counts and simple duplicate scans.
   Scope: |-
     - In scope: Evaluate and wire a semantic clone detector such as jscpd or an equivalent AST/token-based tool into the analysis workflow so future refactor reviews identify structural duplication beyond line counts and simple duplicate scans.
@@ -75,15 +88,15 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-08T17:55:42.637Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Implemented semantic clone detection with jscpd report/check/baseline workflows. Verification passed: clone:check, docs:scripts:check, knip:check, hotspots:check, typecheck, lint:core, targeted task-doc/cold-path/release publish tests. Full test:fast was attempted repeatedly but local full-suite runs timed out in heavy release asset suites; targeted release publish test passed and earlier standalone run passed before later machine-load timeouts.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-08T17:00:39.159Z, excerpt_hash=sha256:4d9de362e5abcb7db2f2e85a4a8709cf2d2c11f7143dadb249de319bc90a14ab
-
+    
     Details:
-
+    
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605081651-Y9DYVQ-semantic-clone-detection/.agentplane/tasks/202605081651-Y9DYVQ/blueprint/resolved-snapshot.json
@@ -91,7 +104,7 @@ sections:
     - current_digest: a05e4f283c36c84796f818b5dfbb45635555d4e5cc912bfb9d985bafdbcf09ef
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605081651-Y9DYVQ
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
