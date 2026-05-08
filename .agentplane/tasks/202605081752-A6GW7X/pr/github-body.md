@@ -22,9 +22,9 @@ Add a serialized integration queue for branch_pr so multiple agents can finish P
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-08T18:27:14.919Z
+- Updated: 2026-05-08T19:16:28.718Z
 - Branch: task/202605081752-A6GW7X/integration-queue
-- Head: 818bae616eac
+- Head: 7eaa984e07c7
 
 ```text
  .agentplane/policy/workflow.branch_pr.md           |  10 +-
@@ -33,10 +33,10 @@ Add a serialized integration queue for branch_pr so multiple agents can finish P
  .../src/cli/run-cli/command-catalog/project.ts     |  20 +
  .../src/cli/run-cli/command-loaders/project.ts     |  24 +
  .../src/commands/integrate-queue.command.ts        | 262 +++++++++++
- .../src/commands/integrate-queue.spec.ts           | 166 +++++++
- .../src/commands/pr/integrate/queue-state.test.ts  | 101 +++++
- .../src/commands/pr/integrate/queue-state.ts       | 208 +++++++++
- 9 files changed, 1292 insertions(+), 6 deletions(-)
+ .../src/commands/integrate-queue.spec.ts           | 178 ++++++++
+ .../src/commands/pr/integrate/queue-state.test.ts  | 156 +++++++
+ .../src/commands/pr/integrate/queue-state.ts       | 213 +++++++++
+ 9 files changed, 1364 insertions(+), 6 deletions(-)
 ```
 
 </details>
