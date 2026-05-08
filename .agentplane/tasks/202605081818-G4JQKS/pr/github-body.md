@@ -22,12 +22,14 @@ Document how to use clone report/check/baseline commands during refactoring and 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-08T18:22:16.774Z
+- Updated: 2026-05-08T18:26:36.677Z
 - Branch: task/202605081818-G4JQKS/clone-refactor-docs
-- Head: 864710e8958d
+- Head: dd75f838a3b8
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 343 +++++++++++++++++++++
+ docs/developer/testing-and-quality.mdx             |  37 +++
+ 2 files changed, 380 insertions(+)
 ```
 
 </details>
