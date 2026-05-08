@@ -24,9 +24,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-08T18:36:56.008Z"
+  updated_at: "2026-05-08T19:19:33.259Z"
   updated_by: "CODER"
-  note: "Verified external blueprint and pack installation: focused cli-core blueprint tests cover catalog refresh, individual install without activation, pack install with activation, and full-harness init pack install; typecheck passed."
+  note: "External blueprint and pack install implementation verified through CLI tests, smoke install, and PR #3487 remote checks at 5d090f5d2."
 commit: null
 comments:
   -
@@ -46,8 +46,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified external blueprint and pack installation: focused cli-core blueprint tests cover catalog refresh, individual install without activation, pack install with activation, and full-harness init pack install; typecheck passed."
+  -
+    type: "verify"
+    at: "2026-05-08T19:19:33.259Z"
+    author: "CODER"
+    state: "ok"
+    note: "External blueprint and pack install implementation verified through CLI tests, smoke install, and PR #3487 remote checks at 5d090f5d2."
 doc_version: 3
-doc_updated_at: "2026-05-08T18:36:56.044Z"
+doc_updated_at: "2026-05-08T19:19:33.290Z"
 doc_updated_by: "CODER"
 description: "Add CLI install flow for cached or indexed blueprint catalog entries: install individual blueprints, expand packs into blueprint installs, vendor project-local route files, and write explicit allowlist trust config only after preview/confirmation."
 sections:
@@ -73,6 +79,24 @@ sections:
     Note: Verified external blueprint and pack installation: focused cli-core blueprint tests cover catalog refresh, individual install without activation, pack install with activation, and full-harness init pack install; typecheck passed.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-08T18:36:02.889Z, excerpt_hash=sha256:3c5b5f27ba15cf25cde85da38586fcdd19ba8b5a5f4b0534302fb0cd9b09ef5f
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605081719-FBQEV5-blueprint-catalog-install/.agentplane/tasks/202605081720-DTKG82/blueprint/resolved-snapshot.json
+    - old_digest: d601ef319d3680875ee04110ed13e193e7227c51b4984bb5111b06ad212776de
+    - current_digest: d601ef319d3680875ee04110ed13e193e7227c51b4984bb5111b06ad212776de
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605081720-DTKG82
+    
+    ### 2026-05-08T19:19:33.259Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: External blueprint and pack install implementation verified through CLI tests, smoke install, and PR #3487 remote checks at 5d090f5d2.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-08T18:36:56.044Z, excerpt_hash=sha256:3c5b5f27ba15cf25cde85da38586fcdd19ba8b5a5f4b0534302fb0cd9b09ef5f
     
     Details:
     
