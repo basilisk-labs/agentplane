@@ -1,10 +1,11 @@
 ---
 id: "202605071500-S2TV0X"
 title: "Retry cloud push batch chunks"
-status: "DOING"
+result_summary: "Merged via PR #1379."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +30,16 @@ verification:
   updated_at: "2026-05-08T02:52:55.743Z"
   updated_by: "CODER"
   note: "Cloud batch chunk retry implemented and checks passed."
-commit: null
+commit:
+  hash: "55d1ee3fb149f4ca666bc38feacc8bdad63da201"
+  message: "Merge pull request #1379 from basilisk-labs/task/202605071500-S2TV0X/retry-cloud-batch"
 comments:
   -
     author: "CODER"
     body: "Start: add per-chunk retry for cloud batch push after live sync hit transient fetch failures."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #1379 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Cloud batch chunk retry implemented and checks passed."
+  -
+    type: "status"
+    at: "2026-05-08T02:56:12.400Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #1379 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-08T02:52:55.759Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-08T02:56:12.408Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make cloud push batch uploads resilient to transient fetch failures by retrying individual chunk requests before aborting the full sync."
 sections:
   Summary: |-
