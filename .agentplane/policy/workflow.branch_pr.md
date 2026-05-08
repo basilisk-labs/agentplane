@@ -15,9 +15,10 @@ Use this module when `workflow_mode=branch_pr`.
 4. Keep single-writer discipline per task worktree.
 5. Publish/update PR artifacts from the task worktree.
 6. Verify on the task branch.
-7. CHECKPOINT B: integrate on base branch by INTEGRATOR.
-8. CHECKPOINT C: finish task(s) on base with verification evidence.
-9. Remove merged task branches/worktrees once the hosted-close/finish route has landed.
+7. Queue verified task branches for serialized integration when more than one agent is ready to merge.
+8. CHECKPOINT B: integrate on base branch by INTEGRATOR.
+9. CHECKPOINT C: finish task(s) on base with verification evidence.
+10. Remove merged task branches/worktrees once the hosted-close/finish route has landed.
 
 ## Related task batch worktrees
 
@@ -46,6 +47,8 @@ agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
 agentplane pr update <task-id>
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
+agentplane integrate queue enqueue <task-id> --branch task/<task-id>/<slug>
+agentplane integrate queue run-next --run-verify
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 ```
@@ -63,6 +66,7 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
   listed, verified independently, and merged through the primary task PR.
 - `pr open` without `--sync-only` SHOULD complete in one pass: sync local artifacts, auto-publish the task branch to `origin` when it has no upstream yet, then create/link the remote GitHub PR.
 - `integrate` defaults to the `merge` strategy so task branch commits stay in base history. Use `--merge-strategy squash` only when intentionally compacting branch history.
+- When several task PRs are ready together, use the integration queue so only one branch owns the merge lane; stale branch heads move to rework instead of blocking later queued work.
 - `task start-ready` MAY surface targeted incident advice for analogous scope/tags; follow it before widening scope.
 - Keep structured resolved external findings in the task README; mark reusable ones with `Fixability: external` (or `IncidentExternal: true`) and let base-branch `finish` or `agentplane incidents collect <task-id>` promote them into `.agentplane/policy/incidents.md`, using optional `Incident*` fields only when the inferred scope/advice needs refinement. Plain `Findings` text remains task-local and does not update the shared incident registry.
 - MUST stop and request re-approval on material drift.
