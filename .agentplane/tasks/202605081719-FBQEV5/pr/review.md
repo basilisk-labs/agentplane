@@ -24,9 +24,9 @@ Created: 2026-05-08T17:23:48.984Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-08T19:27:33.980Z
+- Updated: 2026-05-08T19:45:05.292Z
 - Branch: task/202605081719-FBQEV5/blueprint-catalog-install
-- Head: 2fe6aa07839f
+- Head: 5b70d95f5e6a
 
 ```text
  .../blueprint/resolved-snapshot.json               | 502 +++++++++++++++++++++
@@ -40,7 +40,7 @@ Created: 2026-05-08T17:23:48.984Z
  docs/reference/generated-reference.mdx             |  14 +-
  docs/user/cli-reference.generated.mdx              |  89 ++++
  docs/user/commands.mdx                             |  31 ++
- .../src/cli/run-cli.core.blueprint.test.ts         | 252 +++++++++++
+ .../src/cli/run-cli.core.blueprint.test.ts         | 345 ++++++++++++++
  .../src/cli/run-cli/command-catalog/project.ts     |  21 +
  .../src/cli/run-cli/command-loaders/project.ts     |   4 +
  .../src/cli/run-cli/commands/init/answers.ts       |  13 +
@@ -58,9 +58,9 @@ Created: 2026-05-08T17:23:48.984Z
  .../src/cli/run-cli/commands/init/steps/index.ts   |   1 +
  .../commands/init/steps/prompt-steps.test.ts       |  37 +-
  .../src/commands/blueprints/blueprints.command.ts  | 286 ++++++++++++
- .../agentplane/src/commands/blueprints/catalog.ts  | 415 +++++++++++++++++
+ .../agentplane/src/commands/blueprints/catalog.ts  | 435 ++++++++++++++++++
  website/static/llms-full.txt                       |  97 +++-
- 31 files changed, 3772 insertions(+), 13 deletions(-)
+ 31 files changed, 3885 insertions(+), 13 deletions(-)
 ```
 
 </details>
