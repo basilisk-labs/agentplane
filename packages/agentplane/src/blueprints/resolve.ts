@@ -33,6 +33,26 @@ const RISK_ROUTE: Partial<Record<RiskFlag, BlueprintId>> = {
   security: "ops.approval",
 };
 
+const RUNNER_DOMAIN_TAGS = ["runner", "execution", "replay", "resume", "adapter"] as const;
+const PERFORMANCE_DOMAIN_TAGS = [
+  "performance",
+  "benchmark",
+  "benchmarks",
+  "perf",
+  "speed",
+  "latency",
+] as const;
+const QUALITY_DOMAIN_TAGS = [
+  "ci",
+  "coverage",
+  "knip",
+  "lint",
+  "flaky",
+  "regression",
+  "testing",
+  "tests",
+] as const;
+
 function normalizeTags(tags: readonly string[]): Set<string> {
   return new Set(tags.map((tag) => tag.trim().toLowerCase()).filter(Boolean));
 }
@@ -105,6 +125,48 @@ function preferredBlueprintId(input: BlueprintResolveInput): BlueprintId | undef
   return undefined;
 }
 
+function textSignal(input: BlueprintResolveInput): string {
+  return `${input.title ?? ""} ${input.description ?? ""}`.toLowerCase();
+}
+
+function selectSpecializedCodeBlueprintId(opts: {
+  input: BlueprintResolveInput;
+  taskKind: TaskKind;
+}): { id: BlueprintId; reason: string } | undefined {
+  if (opts.taskKind !== "code") return undefined;
+  if (opts.input.workflowMode === "direct") return undefined;
+
+  const tags = normalizeTags(opts.input.tags);
+  const text = textSignal(opts.input);
+  if (
+    includesAny(tags, RUNNER_DOMAIN_TAGS) ||
+    /\brunner\b|\breplay\b|\bresume\b|\binvocation\b|\bresult manifest\b/.test(text)
+  ) {
+    return { id: "runner.execution", reason: "specialized code domain resolved to runner.execution" };
+  }
+  if (
+    includesAny(tags, PERFORMANCE_DOMAIN_TAGS) ||
+    /\bbenchmark\b|\bperformance\b|\bfaster\b|\bslower\b|\blatency\b|\bthroughput\b/.test(text)
+  ) {
+    return {
+      id: "performance.benchmark",
+      reason: "specialized code domain resolved to performance.benchmark",
+    };
+  }
+  if (
+    includesAny(tags, QUALITY_DOMAIN_TAGS) ||
+    /\bfix ci\b|\bfailing check\b|\bfailing test\b|\bflaky\b|\bregression\b|\bcoverage\b|\bknip\b|\blint\b/.test(
+      text,
+    )
+  ) {
+    return {
+      id: "quality.regression",
+      reason: "specialized code domain resolved to quality.regression",
+    };
+  }
+  return undefined;
+}
+
 function explicitCompatibilityStop(opts: {
   blueprint: Blueprint;
   input: BlueprintResolveInput;
@@ -167,7 +229,9 @@ function selectBlueprint(opts: { input: BlueprintResolveInput; registry: Bluepri
   const riskFlags = input.riskFlags ?? [];
   const riskBlueprintId = selectRiskBlueprintId(riskFlags);
   const taskKind = inferTaskKind(input);
-  const inferredBlueprintId = riskBlueprintId ?? blueprintForTaskKind(taskKind, input.workflowMode);
+  const specializedCodeBlueprint = selectSpecializedCodeBlueprintId({ input, taskKind });
+  const inferredBlueprintId =
+    riskBlueprintId ?? specializedCodeBlueprint?.id ?? blueprintForTaskKind(taskKind, input.workflowMode);
   const requestedBlueprintId = input.explicitBlueprintId ?? input.blueprintRequest;
   const preferredId =
     riskBlueprintId || requestedBlueprintId ? undefined : preferredBlueprintId(input);
@@ -195,6 +259,8 @@ function selectBlueprint(opts: { input: BlueprintResolveInput; registry: Bluepri
     stopReasons.push(...explicitCompatibilityStop({ blueprint, input }));
   } else if (riskBlueprintId) {
     reasons.push(`risk flags require ${riskBlueprintId}: ${riskFlags.join(", ")}`);
+  } else if (specializedCodeBlueprint && selectedId === specializedCodeBlueprint.id) {
+    reasons.push(specializedCodeBlueprint.reason);
   } else if (preferredId && selectedId === preferredId) {
     reasons.push(`recipe preferred compatible blueprint: ${preferredId}`);
   } else if (preferredId && !preferredBlueprint) {

@@ -56,6 +56,14 @@ Expected shape:
 - `docs.change`: documentation mutation route with docs checks.
 - `code.branch_pr`: code mutation route in `branch_pr`, including local checks and PR/integration
   gates.
+- `performance.benchmark`: branch PR code route for benchmark work that must record baseline,
+  method, run count, threshold, comparison, and a verdict such as faster, slower, unchanged, or
+  noisy.
+- `quality.regression`: branch PR code route for tests, CI, coverage, lint, knip, or flaky-check
+  work that must preserve the original failure, reproduction, focused check, affected gate, and
+  flake classification.
+- `runner.execution`: branch PR code route for runner subsystem work that must preserve bundle,
+  invocation, result manifest, trace, execution state, and replay or resume evidence.
 - `release.strict`: release/publish route with version, parity, manifest, and publish safety gates.
 
 For project-local blueprints, inspect trust and compatibility before runner materialization:
@@ -125,6 +133,41 @@ In the v0 node catalog, `evidence -> final` is the human shorthand for
 `artifact_write -> verify_record -> finish`.
 
 No CI, PR, worktree, hosted checks, or merge gates appear unless the task meaning requires them.
+
+## Specialized Code Routes
+
+The built-in catalog is a route ontology, not a domain catalog. Most code work still resolves to
+`code.branch_pr` in `branch_pr` repositories. Specialized code routes exist only where the generic
+route hides materially different evidence.
+
+Selection precedence:
+
+1. Explicit `blueprint_request` wins, with compatibility stop reasons if it conflicts with task
+   kind or workflow mode.
+2. High-risk flags such as `publish`, `credentials`, `security`, or `external_system` route to
+   stricter release or ops blueprints.
+3. Compatible recipe `preferred_blueprint` hints can select a route.
+4. Structured code-domain signals select specialized built-ins.
+5. The resolver falls back to `taskKind -> workflowMode`, for example `code.branch_pr`.
+
+Primary tags stay lifecycle-level. A task should still use one primary tag such as `code`, `docs`,
+or `ops`; domain-specific signals belong in structured fields or secondary tags:
+
+```bash
+agentplane task new \
+  --title "Add doctor performance benchmark" \
+  --description "Measure doctor before and after cache changes." \
+  --owner CODER \
+  --tag code \
+  --tag performance \
+  --task-kind code \
+  --mutation-scope code \
+  --blueprint-request performance.benchmark
+```
+
+Secondary tags can help the resolver when structured fields are absent, but they are not the source
+of truth. This keeps the one-primary-tag rule useful for lifecycle gates while still letting
+benchmark, regression, and runner tasks carry stronger evidence contracts.
 
 ## Methodology References
 
@@ -210,6 +253,9 @@ export type BlueprintId =
   | "docs.change"
   | "code.direct"
   | "code.branch_pr"
+  | "performance.benchmark"
+  | "quality.regression"
+  | "runner.execution"
   | "release.strict"
   | "ops.approval";
 
