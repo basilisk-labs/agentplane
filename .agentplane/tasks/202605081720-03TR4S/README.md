@@ -1,7 +1,8 @@
 ---
 id: "202605081720-03TR4S"
 title: "Blueprint catalog docs and release checks"
-status: "DOING"
+result_summary: "Blueprint catalog docs and release checks merged via PR #3487."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 revision: 1
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-05-08T19:19:59.710Z"
   updated_by: "DOCS"
   note: "Blueprint catalog docs, CLI reference, generated website docs, docs IA, docs site typecheck/build, and PR #3487 remote docs check passed at 5d090f5d2."
-commit: null
+commit:
+  hash: "36a8a0b1b08f04107153a3a6f98801b6a3ef73d4"
+  message: "🧩 FBQEV5 integrate: Blueprint catalog install"
 comments:
   -
     author: "DOCS"
     body: "Start: Completing blueprint catalog documentation and release-check coverage after catalog install and init selection behavior landed."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3487 merged into main; remote checks passed; related blueprint catalog scope is integrated."
 events:
   -
     type: "status"
@@ -52,9 +58,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Blueprint catalog docs, CLI reference, generated website docs, docs IA, docs site typecheck/build, and PR #3487 remote docs check passed at 5d090f5d2."
+  -
+    type: "status"
+    at: "2026-05-08T20:07:21.528Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3487 merged into main; remote checks passed; related blueprint catalog scope is integrated."
 doc_version: 3
-doc_updated_at: "2026-05-08T19:19:59.735Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-08T20:07:21.533Z"
+doc_updated_by: "INTEGRATOR"
 description: "Document external blueprint catalog behavior, command usage, trust boundaries, pack semantics, and add focused regression coverage/docs freshness checks for the new CLI surfaces."
 sections:
   Summary: |-
