@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-08T19:19:47Z",
   "base": "main",
   "branch": "task/202605081752-A6GW7X/integration-queue",
   "created_at": "2026-05-08T18:16:17.726Z",
-  "head_sha": "7eaa984e07c76a6a446f0b3c5791d8471a1af336",
+  "head_sha": "f68c93f807163d3b4d040ae23702f6a06ea41e4f",
   "last_verified_at": "2026-05-08T19:16:07.443Z",
   "last_verified_sha": "818bae616eac31b8cc7a031ebfa2c3fe065bd3e1",
+  "merge_commit": "f566a01b2e15fa37f149337281e44330e4560698",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-08T19:19:47Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605081752-A6GW7X",
-  "updated_at": "2026-05-08T19:16:28.718Z",
+  "updated_at": "2026-05-08T19:19:47Z",
   "verify": {
     "status": "pass"
   }

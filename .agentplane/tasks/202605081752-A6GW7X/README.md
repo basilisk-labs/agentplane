@@ -1,7 +1,8 @@
 ---
 id: "202605081752-A6GW7X"
 title: "Add branch PR integration queue"
-status: "DOING"
+result_summary: "Merged via PR #3483."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-08T19:16:07.443Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/queue-state.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts; Result: pass; Evidence: 2 files, 11 tests passed after addressing PR review comments. Command: bun run --filter=agentplane typecheck; Result: pass. Command: bun run --filter=agentplane build; Result: pass."
-commit: null
+commit:
+  hash: "f566a01b2e15fa37f149337281e44330e4560698"
+  message: "🧩 A6GW7X integrate: Add branch PR integration queue"
 comments:
   -
     author: "CODER"
     body: "Start: implement a serialized branch_pr integration queue in the dedicated task worktree, preserving existing protected-base handoff behavior and adding targeted queue verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3483 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -53,9 +59,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/queue-state.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts; Result: pass; Evidence: 2 files, 11 tests passed after addressing PR review comments. Command: bun run --filter=agentplane typecheck; Result: pass. Command: bun run --filter=agentplane build; Result: pass."
+  -
+    type: "status"
+    at: "2026-05-08T19:20:24.391Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3483 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-08T19:16:07.473Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-08T19:20:24.399Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a serialized integration queue for branch_pr so multiple agents can finish PR work concurrently while only one verified task branch enters the main merge lane at a time."
 sections:
   Summary: |-
