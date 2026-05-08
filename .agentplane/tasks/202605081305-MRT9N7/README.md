@@ -1,7 +1,8 @@
 ---
 id: "202605081305-MRT9N7"
 title: "Fix cloud push freshness timestamp semantics"
-status: "DOING"
+result_summary: "Merged via PR #3474."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-05-08T13:44:33.135Z"
   updated_by: "CODER"
   note: "Verified: cloud push freshness now preserves prior state when push response omits last_checked_at. Commands: bun x vitest run packages/agentplane/src/backends/task-backend.cloud.test.ts (17 passed); bun run --filter=agentplane build; bun run release:check; bun run lint:core; bun run hotspots:check; ap doctor; node .agentplane/policy/check-routing.mjs; git diff --check."
-commit: null
+commit:
+  hash: "18db33bad10ef698225c13f681ccac7d276aae96"
+  message: "Merge pull request #3474 from basilisk-labs/task/202605081305-MRT9N7/release-cleanup"
 comments:
   -
     author: "CODER"
     body: "Start: implement cloud push freshness semantics and coordinate the approved release-cleanup batch tasks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3474 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: cloud push freshness now preserves prior state when push response omits last_checked_at. Commands: bun x vitest run packages/agentplane/src/backends/task-backend.cloud.test.ts (17 passed); bun run --filter=agentplane build; bun run release:check; bun run lint:core; bun run hotspots:check; ap doctor; node .agentplane/policy/check-routing.mjs; git diff --check."
+  -
+    type: "status"
+    at: "2026-05-08T13:50:08.614Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3474 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-08T13:44:33.140Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-08T13:50:08.621Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update cloud backend push sync so local freshness state changes only when the cloud service explicitly returns last_checked_at, avoiding a false-fresh state after push responses without server freshness evidence."
 sections:
   Summary: |-

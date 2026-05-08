@@ -1,0 +1,219 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605081305-MRT9N7",
+  "created_at": "2026-05-08T13:50:08.660Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "18db33bad10ef698225c13f681ccac7d276aae96",
+    "work_ref": "main",
+    "work_commit": "18db33bad10ef698225c13f681ccac7d276aae96"
+  },
+  "task": {
+    "task_id": "202605081305-MRT9N7",
+    "title": "Fix cloud push freshness timestamp semantics",
+    "intent": "Update cloud backend push sync so local freshness state changes only when the cloud service explicitly returns last_checked_at, avoiding a false-fresh state after push responses without server freshness evidence.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605081305-MRT9N7/README.md",
+      "sha256": "sha256:a43ca2b90c4edf350f86d87f922a3a90a151f5ba18bc9d8b554413d537eed4a0"
+    },
+    "approved_at": "2026-05-08T13:07:00.563Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3474.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605081305-MRT9N7_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-08T13:07:00.563Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605081305-MRT9N7/README.md",
+      "sha256": "sha256:a43ca2b90c4edf350f86d87f922a3a90a151f5ba18bc9d8b554413d537eed4a0"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605081305-MRT9N7/README.md",
+      "sha256": "sha256:a43ca2b90c4edf350f86d87f922a3a90a151f5ba18bc9d8b554413d537eed4a0"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605081305-MRT9N7/README.md",
+      "sha256": "sha256:a43ca2b90c4edf350f86d87f922a3a90a151f5ba18bc9d8b554413d537eed4a0"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605081305-MRT9N7/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:cdb0e460d59a4c508c99bd233daf4025bc15a8b5bb284888cfb5495e9cfcda24"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 18db33bad10ef698225c13f681ccac7d276aae96 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:a487a434a37b03703f8df56e8fae08012d9f9651f679c0e4b4ebcee51a3b4964",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605081305-MRT9N7/blueprint/resolved-snapshot.json",
+        "digest": "67692a92b75ae7bd82b7fb382430df912f28de7c0a775fb8e8becb772a4d539f",
+        "current_digest": "67692a92b75ae7bd82b7fb382430df912f28de7c0a775fb8e8becb772a4d539f",
+        "route_changed": false,
+        "artifact_sha256": "sha256:cdb0e460d59a4c508c99bd233daf4025bc15a8b5bb284888cfb5495e9cfcda24",
+        "safe_command": "agentplane blueprint snapshot 202605081305-MRT9N7"
+      }
+    }
+  }
+}
