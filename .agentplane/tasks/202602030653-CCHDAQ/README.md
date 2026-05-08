@@ -6,7 +6,7 @@ priority: "med"
 owner: "CODER"
 depends_on: []
 tags:
-  - "cli,ux"
+  - "cli/ux"
 verify: []
 plan_approval:
   state: "pending"
