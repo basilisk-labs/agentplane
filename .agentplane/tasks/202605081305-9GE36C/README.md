@@ -1,7 +1,8 @@
 ---
 id: "202605081305-9GE36C"
 title: "Deduplicate cloud backend helper utilities"
-status: "DOING"
+result_summary: "Merged via PR #3474."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-08T13:44:48.806Z"
   updated_by: "CODER"
   note: "Verified: cloud-backend-utils no longer exports local generic isRecord, firstNonEmpty, or sleep helpers; cloud backend now uses shared guard/string/concurrency helpers. Commands: bun x vitest run packages/agentplane/src/backends/task-backend.cloud.test.ts (17 passed); bun x eslint touched cloud files; bun run lint:core; bun run release:check; bun run hotspots:check."
-commit: null
+commit:
+  hash: "18db33bad10ef698225c13f681ccac7d276aae96"
+  message: "Merge pull request #3474 from basilisk-labs/task/202605081305-MRT9N7/release-cleanup"
 comments:
   -
     author: "CODER"
     body: "Start: deduplicate generic cloud backend helper utilities within the approved release-cleanup batch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3474 merged to main and hosted checks passed; cloud helper dedup is covered by lint and cloud backend tests."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: cloud-backend-utils no longer exports local generic isRecord, firstNonEmpty, or sleep helpers; cloud backend now uses shared guard/string/concurrency helpers. Commands: bun x vitest run packages/agentplane/src/backends/task-backend.cloud.test.ts (17 passed); bun x eslint touched cloud files; bun run lint:core; bun run release:check; bun run hotspots:check."
+  -
+    type: "status"
+    at: "2026-05-08T13:55:28.872Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3474 merged to main and hosted checks passed; cloud helper dedup is covered by lint and cloud backend tests."
 doc_version: 3
-doc_updated_at: "2026-05-08T13:44:48.811Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-08T13:55:28.876Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace cloud-backend-utils local generic helpers with existing shared guard/string/concurrency helpers so the new cloud helper module only contains cloud-specific behavior."
 sections:
   Summary: |-
