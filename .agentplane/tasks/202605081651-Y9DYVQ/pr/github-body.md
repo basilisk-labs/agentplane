@@ -22,12 +22,21 @@ Evaluate and wire a semantic clone detector such as jscpd or an equivalent AST/t
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-08T17:00:39.256Z
+- Updated: 2026-05-08T17:59:13.469Z
 - Branch: task/202605081651-Y9DYVQ/semantic-clone-detection
-- Head: 97448aafec23
+- Head: cf6066170e74
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 504 ++++++++++++++
+ bun.lock                                           | 129 +++-
+ package.json                                       |   4 +
+ .../src/cli/measure-cli-cold-path-script.test.ts   |   2 +-
+ .../agentplane/src/commands/task/shared/docs.ts    |   9 +-
+ scripts/README.md                                  |  10 +-
+ scripts/baselines/clone-baseline.json              | 743 +++++++++++++++++++++
+ scripts/check-clone-baseline.mjs                   | 309 +++++++++
+ scripts/generate-scripts-readme.mjs                |   7 +-
+ 9 files changed, 1698 insertions(+), 19 deletions(-)
 ```
 
 </details>
