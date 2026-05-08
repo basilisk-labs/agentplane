@@ -111,6 +111,46 @@ describe("CloudBackend", () => {
     expect(stateText).toContain("2026-05-06T00:00:00.000Z");
   });
 
+  it("push sync preserves previous freshness when response omits last check time", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    await cache.writeTask({
+      id: "202605051806-C1D2",
+      title: "Cloud task",
+      description: "Sync this task",
+      status: "TODO",
+      priority: "med",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["cloud"],
+      verify: [],
+    });
+    const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
+    await mkdir(stateDir, { recursive: true });
+    await writeFile(
+      path.join(stateDir, "state.json"),
+      `${JSON.stringify({ last_checked_at: "2026-05-05T00:00:00.000Z" }, null, 2)}\n`,
+      "utf8",
+    );
+    const fetchImpl = vi.fn<typeof fetch>(() =>
+      Promise.resolve(Response.json({ data: { no_projection_changes: true } })),
+    );
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example/",
+        token: "token",
+        project_id: "project-1",
+        provider: "github-projects",
+      },
+      { root: tempDir, cache, fetchImpl },
+    );
+
+    await backend.sync({ direction: "push", conflict: "diff", quiet: true, confirm: true });
+
+    const stateText = await readFile(path.join(stateDir, "state.json"), "utf8");
+    expect(stateText).toContain("2026-05-05T00:00:00.000Z");
+    expect(stateText).not.toContain("2026-05-06T00:00:00.000Z");
+  });
+
   it("push sync uploads oversized projections in finalized batches", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
     const largeText = "x".repeat(400_000);
