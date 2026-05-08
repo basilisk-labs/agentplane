@@ -50,6 +50,7 @@ type CloudSyncStateSnapshot = {
 
 const CLOUD_PUSH_DIRECT_BODY_LIMIT_BYTES = 750_000;
 const CLOUD_PUSH_BATCH_TASK_BYTES = 600_000;
+const CLOUD_PUSH_BATCH_RETRY_DELAYS_MS = [0, 1_500, 3_000] as const;
 
 export class CloudBackend implements TaskBackend {
   id = "cloud";
@@ -347,25 +348,15 @@ export class CloudBackend implements TaskBackend {
     const batchId = `batch_${Date.now()}_${randomUUID()}`;
     let lastResponse: CloudSyncResponse | null = null;
     for (const [index, tasks] of chunks.entries()) {
-      lastResponse = await this.request<CloudSyncResponse>(
-        `/v1/projects/${encodeURIComponent(this.projectId)}/sync/push-batch`,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            provider: this.provider,
-            direction: "push",
-            conflict: opts.conflict,
-            batch: {
-              id: batchId,
-              total_batches: chunks.length,
-              total_tasks: localTasks.length,
-              chunk_index: index,
-              finalize: index === chunks.length - 1,
-            },
-            tasks,
-          }),
-        },
-      );
+      lastResponse = await this.requestCloudPushBatchChunk({
+        batchId,
+        chunkIndex: index,
+        totalChunks: chunks.length,
+        totalTasks: localTasks.length,
+        tasks,
+        conflict: opts.conflict,
+        quiet: opts.quiet,
+      });
       if (!opts.quiet) {
         process.stderr.write(
           `cloud push uploaded batch ${index + 1}/${chunks.length} tasks=${tasks.length}\n`,
@@ -385,6 +376,49 @@ export class CloudBackend implements TaskBackend {
       }
     }
     return lastResponse ?? { data: { last_checked_at: new Date().toISOString() } };
+  }
+
+  private async requestCloudPushBatchChunk(opts: {
+    batchId: string;
+    chunkIndex: number;
+    totalChunks: number;
+    totalTasks: number;
+    tasks: TaskData[];
+    conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
+    quiet: boolean;
+  }): Promise<CloudSyncResponse> {
+    const body = JSON.stringify({
+      provider: this.provider,
+      direction: "push",
+      conflict: opts.conflict,
+      batch: {
+        id: opts.batchId,
+        total_batches: opts.totalChunks,
+        total_tasks: opts.totalTasks,
+        chunk_index: opts.chunkIndex,
+        finalize: opts.chunkIndex === opts.totalChunks - 1,
+      },
+      tasks: opts.tasks,
+    });
+    for (let attempt = 0; ; attempt += 1) {
+      try {
+        return await this.request<CloudSyncResponse>(
+          `/v1/projects/${encodeURIComponent(this.projectId)}/sync/push-batch`,
+          { method: "POST", body },
+        );
+      } catch (error) {
+        if (error instanceof BackendError || attempt >= CLOUD_PUSH_BATCH_RETRY_DELAYS_MS.length) {
+          throw error;
+        }
+        const delayMs = CLOUD_PUSH_BATCH_RETRY_DELAYS_MS[attempt] ?? 0;
+        if (!opts.quiet) {
+          process.stderr.write(
+            `cloud push retrying batch ${opts.chunkIndex + 1}/${opts.totalChunks} after network error attempt=${attempt + 1}\n`,
+          );
+        }
+        await sleep(delayMs);
+      }
+    }
   }
 
   async inspectConfiguration(): Promise<TaskBackendInspectionResult> {
@@ -610,6 +644,10 @@ function normalizePositiveInteger(input: unknown): number | null {
   if (typeof input !== "number" || !Number.isFinite(input)) return null;
   const value = Math.trunc(input);
   return value > 0 ? value : null;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function splitTasksByPayloadBytes(tasks: TaskData[], maxBytes: number): TaskData[][] {
