@@ -1,0 +1,10 @@
+ .agentplane/policy/workflow.branch_pr.md           |  10 +-
+ .../blueprint/resolved-snapshot.json               | 497 +++++++++++++++++++++
+ .../agentplane/assets/policy/workflow.branch_pr.md |  10 +-
+ .../src/cli/run-cli/command-catalog/project.ts     |  20 +
+ .../src/cli/run-cli/command-loaders/project.ts     |  24 +
+ .../src/commands/integrate-queue.command.ts        | 262 +++++++++++
+ .../src/commands/integrate-queue.spec.ts           | 178 ++++++++
+ .../src/commands/pr/integrate/queue-state.test.ts  | 156 +++++++
+ .../src/commands/pr/integrate/queue-state.ts       | 213 +++++++++
+ 9 files changed, 1364 insertions(+), 6 deletions(-)

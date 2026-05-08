@@ -37,6 +37,14 @@ import { branchStatusSpec } from "../../../commands/branch/status.command.js";
 import { workStartSpec } from "../../../commands/branch/work-start.command.js";
 import { integrateSpec } from "../../../commands/integrate.spec.js";
 import {
+  integrateQueueClaimSpec,
+  integrateQueueEnqueueSpec,
+  integrateQueueListSpec,
+  integrateQueueReleaseSpec,
+  integrateQueueRunNextSpec,
+  integrateQueueSpec,
+} from "../../../commands/integrate-queue.spec.js";
+import {
   prCheckSpec,
   prCloseSpec,
   prCloseSupersededSpec,
@@ -100,6 +108,12 @@ import {
   loadPrCloseSupersededSpec,
   loadPrNoteSpec,
   loadIntegrateSpec,
+  loadIntegrateQueueSpec,
+  loadIntegrateQueueEnqueueSpec,
+  loadIntegrateQueueListSpec,
+  loadIntegrateQueueClaimSpec,
+  loadIntegrateQueueReleaseSpec,
+  loadIntegrateQueueRunNextSpec,
   loadAcrSpec,
   loadAcrSchemaSpec,
   loadAcrGenerateSpec,
@@ -175,4 +189,10 @@ export const PROJECT_COMMANDS = [
   declareCommand(prCloseSupersededSpec, { load: loadPrCloseSupersededSpec }),
   declareCommand(prNoteSpec, { load: loadPrNoteSpec }),
   declareCommand(integrateSpec, { load: loadIntegrateSpec }),
+  declareCommand(integrateQueueSpec, { load: loadIntegrateQueueSpec, needs: "none" }),
+  declareCommand(integrateQueueEnqueueSpec, { load: loadIntegrateQueueEnqueueSpec }),
+  declareCommand(integrateQueueListSpec, { load: loadIntegrateQueueListSpec }),
+  declareCommand(integrateQueueClaimSpec, { load: loadIntegrateQueueClaimSpec }),
+  declareCommand(integrateQueueReleaseSpec, { load: loadIntegrateQueueReleaseSpec }),
+  declareCommand(integrateQueueRunNextSpec, { load: loadIntegrateQueueRunNextSpec }),
 ] as const satisfies readonly CommandEntry[];

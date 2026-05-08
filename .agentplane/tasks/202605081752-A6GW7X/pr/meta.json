@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605081752-A6GW7X/integration-queue",
+  "created_at": "2026-05-08T18:16:17.726Z",
+  "head_sha": "7eaa984e07c76a6a446f0b3c5791d8471a1af336",
+  "last_verified_at": "2026-05-08T19:16:07.443Z",
+  "last_verified_sha": "818bae616eac31b8cc7a031ebfa2c3fe065bd3e1",
+  "schema_version": 1,
+  "task_id": "202605081752-A6GW7X",
+  "updated_at": "2026-05-08T19:16:28.718Z",
+  "verify": {
+    "status": "pass"
+  }
+}

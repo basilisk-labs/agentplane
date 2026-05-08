@@ -156,3 +156,27 @@ export const loadIntegrateSpec = (deps: RunDeps) =>
   import("../../../commands/integrate.command.js").then((m) =>
     m.makeRunIntegrateHandler(deps.getCtx),
   );
+export const loadIntegrateQueueSpec = (deps: RunDeps) =>
+  import("../../../commands/integrate-queue.command.js").then((m) =>
+    m.makeRunIntegrateQueueHandler(deps.getCtx),
+  );
+export const loadIntegrateQueueEnqueueSpec = (deps: RunDeps) =>
+  import("../../../commands/integrate-queue.command.js").then((m) =>
+    m.makeRunIntegrateQueueEnqueueHandler(deps.getCtx),
+  );
+export const loadIntegrateQueueListSpec = (deps: RunDeps) =>
+  import("../../../commands/integrate-queue.command.js").then((m) =>
+    m.makeRunIntegrateQueueListHandler(deps.getCtx),
+  );
+export const loadIntegrateQueueClaimSpec = (deps: RunDeps) =>
+  import("../../../commands/integrate-queue.command.js").then((m) =>
+    m.makeRunIntegrateQueueClaimHandler(deps.getCtx),
+  );
+export const loadIntegrateQueueReleaseSpec = (deps: RunDeps) =>
+  import("../../../commands/integrate-queue.command.js").then((m) =>
+    m.makeRunIntegrateQueueReleaseHandler(deps.getCtx),
+  );
+export const loadIntegrateQueueRunNextSpec = (deps: RunDeps) =>
+  import("../../../commands/integrate-queue.command.js").then((m) =>
+    m.makeRunIntegrateQueueRunNextHandler(deps.getCtx),
+  );
