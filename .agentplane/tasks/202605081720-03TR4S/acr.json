@@ -1,0 +1,214 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605081720-03TR4S",
+  "created_at": "2026-05-08T20:01:23.587Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "36a8a0b1b08f04107153a3a6f98801b6a3ef73d4",
+    "work_ref": "main",
+    "work_commit": "36a8a0b1b08f04107153a3a6f98801b6a3ef73d4"
+  },
+  "task": {
+    "task_id": "202605081720-03TR4S",
+    "title": "Blueprint catalog docs and release checks",
+    "intent": "Document external blueprint catalog behavior, command usage, trust boundaries, pack semantics, and add focused regression coverage/docs freshness checks for the new CLI surfaces.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605081720-03TR4S/README.md",
+      "sha256": "sha256:59ebeb8b7b70af5837793b6093e2b9058dcc569ff3dcffdef5253ae8e5f7342e"
+    },
+    "approved_at": "2026-05-08T17:21:18.612Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Document external blueprint catalog behavior, command usage, trust boundaries, pack semantics, and add focused regression coverage/docs freshness checks for the new CLI surfaces.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "other",
+        "command": "bun run docs:cli:check",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-2",
+        "type": "other",
+        "command": "node .agentplane/policy/check-routing.mjs",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605081720-03TR4S_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-08T17:21:18.612Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605081720-03TR4S/README.md",
+      "sha256": "sha256:59ebeb8b7b70af5837793b6093e2b9058dcc569ff3dcffdef5253ae8e5f7342e"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605081720-03TR4S/README.md",
+      "sha256": "sha256:59ebeb8b7b70af5837793b6093e2b9058dcc569ff3dcffdef5253ae8e5f7342e"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605081720-03TR4S/README.md",
+      "sha256": "sha256:59ebeb8b7b70af5837793b6093e2b9058dcc569ff3dcffdef5253ae8e5f7342e"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605081720-03TR4S/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:1ab3b841d52dbad3129cfaec5c8ee8c429bbd7fbd483d2a10ac1dfeca28499de"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 36a8a0b1b08f04107153a3a6f98801b6a3ef73d4 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:f96f82667b868927cd80d438bae2ca3e8e549a0ed06f098a84dd3c4e8764e3a4",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "docs.change",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "docs.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "docs.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "docs.artifact",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605081720-03TR4S/blueprint/resolved-snapshot.json",
+        "digest": "82ca70a31e13a37952dcbf5da30eb019c6aafc238a1041cac685bab34dc9ea0b",
+        "current_digest": "82ca70a31e13a37952dcbf5da30eb019c6aafc238a1041cac685bab34dc9ea0b",
+        "route_changed": false,
+        "artifact_sha256": "sha256:1ab3b841d52dbad3129cfaec5c8ee8c429bbd7fbd483d2a10ac1dfeca28499de",
+        "safe_command": "agentplane blueprint snapshot 202605081720-03TR4S"
+      }
+    }
+  }
+}
