@@ -191,6 +191,43 @@ Current enforced baseline:
 The baseline has no unresolved imports and no unused dependencies; those categories should stay
 empty.
 
+To inspect structural duplication before or after refactoring:
+
+```bash
+bun run clone:report
+bun run clone:check
+```
+
+`clone:report` runs `jscpd` over runtime package sources and repository scripts, excluding tests,
+snapshots, generated files, build output, dependency folders, and baseline artifacts. Treat the
+reported clone clusters as refactor candidates, not automatic refactor instructions. Fix a cluster
+when the duplicated blocks share the same responsibility and are likely to drift together; leave it
+alone when the similarity is only syntactic or a shared abstraction would hide different domain
+rules.
+
+`clone:check` compares the current report with `scripts/baselines/clone-baseline.json` and fails
+when guarded clone counts, duplicated lines, or duplicated tokens increase. During a refactor, use
+this sequence:
+
+```bash
+bun run clone:report
+# refactor one or two confirmed clone clusters
+bun run clone:check
+bun run typecheck
+bun run test:fast
+```
+
+When a reviewed refactor intentionally reduces clone debt, refresh the baseline in the same change:
+
+```bash
+bun run clone:baseline:update
+```
+
+Record the before/after clone metrics in the PR or task verification note, for example
+`clones 88 -> 82, duplicatedLines 1581 -> 1430`. Do not update the baseline merely to accept a
+regression; in that case either reduce the new duplication or document why the new duplicate shape
+is intentional.
+
 To enforce production logging hygiene:
 
 ```bash
