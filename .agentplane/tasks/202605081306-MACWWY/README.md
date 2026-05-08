@@ -1,7 +1,8 @@
 ---
 id: "202605081306-MACWWY"
 title: "Ignore bin declaration files in knip baseline"
-status: "DOING"
+result_summary: "Merged via PR #3474."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-08T13:45:01.562Z"
   updated_by: "CODER"
   note: "Verified: knip ignores package bin declaration files and baseline was refreshed for reviewed current unused-code debt after removing stale declaration-file false positives. Commands: bun run knip:check -- --update-baseline; bun run knip:check (OK, total=572); bun run lint:core; bun run release:check; ap doctor."
-commit: null
+commit:
+  hash: "18db33bad10ef698225c13f681ccac7d276aae96"
+  message: "Merge pull request #3474 from basilisk-labs/task/202605081305-MRT9N7/release-cleanup"
 comments:
   -
     author: "CODER"
     body: "Start: remove knip false-positive bin declaration files from the release-cleanup baseline."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3474 merged to main and hosted checks passed; knip baseline now reflects reviewed current debt and ignores bin declaration false positives."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: knip ignores package bin declaration files and baseline was refreshed for reviewed current unused-code debt after removing stale declaration-file false positives. Commands: bun run knip:check -- --update-baseline; bun run knip:check (OK, total=572); bun run lint:core; bun run release:check; ap doctor."
+  -
+    type: "status"
+    at: "2026-05-08T14:02:49.889Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3474 merged to main and hosted checks passed; knip baseline now reflects reviewed current debt and ignores bin declaration false positives."
 doc_version: 3
-doc_updated_at: "2026-05-08T13:45:01.568Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-08T14:02:49.892Z"
+doc_updated_by: "INTEGRATOR"
 description: "Teach knip baseline handling to ignore package bin declaration files that are required as sibling TypeScript declarations for JavaScript bin imports, then refresh the baseline."
 sections:
   Summary: |-
