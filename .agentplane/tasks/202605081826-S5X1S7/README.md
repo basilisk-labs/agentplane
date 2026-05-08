@@ -1,7 +1,8 @@
 ---
 id: "202605081826-S5X1S7"
 title: "Stabilize CLI cold-start pre-push benchmark"
-status: "DOING"
+result_summary: "Merged via PR #3492."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -24,11 +25,16 @@ verification:
   updated_at: "2026-05-08T18:49:59.809Z"
   updated_by: "CODER"
   note: "Implemented bounded pre-push cold-start smoke gate. Evidence: focused Vitest suite passed for benchmark scripts, schema acceptance, and task backend; bench:cli:cold:check passed with fixture local-basic, runs=1, warmups=0, attempts=1, timeout=10000ms, smoke thresholds quickstart=5000 task_list=10000 task_search=6000 task_next=3000 preflight_quick=6000; schemas:check and docs:scripts:check passed; @agentplaneorg/core and agentplane typecheck passed; policy routing and doctor passed after rebase."
-commit: null
+commit:
+  hash: "fa6074a382a31588fbecdd3c2f45a68285d567fc"
+  message: "Merge pull request #3492 from basilisk-labs/task/202605081826-S5X1S7/cold-benchmark-stability"
 comments:
   -
     author: "CODER"
     body: "Start: stabilizing CLI cold-start benchmark so pre-push cannot hang on mutable task/cloud state, while preserving strict regression evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3492 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented bounded pre-push cold-start smoke gate. Evidence: focused Vitest suite passed for benchmark scripts, schema acceptance, and task backend; bench:cli:cold:check passed with fixture local-basic, runs=1, warmups=0, attempts=1, timeout=10000ms, smoke thresholds quickstart=5000 task_list=10000 task_search=6000 task_next=3000 preflight_quick=6000; schemas:check and docs:scripts:check passed; @agentplaneorg/core and agentplane typecheck passed; policy routing and doctor passed after rebase."
+  -
+    type: "status"
+    at: "2026-05-08T20:11:45.561Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3492 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-08T18:49:59.935Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-08T20:11:45.568Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make the CLI cold-start pre-push benchmark deterministic by isolating it from mutable repo/cloud backend state, adding bounded per-command execution, and preserving diagnostics for real performance regressions. Also synchronize the remaining core blueprint_request schemas so specialized blueprint ids can be stored safely."
 sections:
   Summary: |-
