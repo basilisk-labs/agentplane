@@ -22,9 +22,9 @@ Add AgentPlane core contracts and local cache primitives for external blueprint 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-08T18:53:00.294Z
+- Updated: 2026-05-08T19:10:53.043Z
 - Branch: task/202605081719-FBQEV5/blueprint-catalog-install
-- Head: d9e58c2dd503
+- Head: d2c56282cdd5
 
 ```text
  .../blueprint/resolved-snapshot.json               | 502 +++++++++++++++++++++
@@ -34,7 +34,7 @@ Add AgentPlane core contracts and local cache primitives for external blueprint 
  .../blueprint/resolved-snapshot.json               | 502 +++++++++++++++++++++
  .agentplane/tasks/202605081720-JF941V/README.md    |  93 ++++
  .../blueprint/resolved-snapshot.json               | 502 +++++++++++++++++++++
- docs/developer/blueprints.mdx                      |  42 ++
+ docs/developer/blueprints.mdx                      |  48 +-
  docs/reference/generated-reference.mdx             |  14 +-
  docs/user/cli-reference.generated.mdx              |  89 ++++
  docs/user/commands.mdx                             |  31 ++
@@ -57,9 +57,8 @@ Add AgentPlane core contracts and local cache primitives for external blueprint 
  .../commands/init/steps/prompt-steps.test.ts       |  37 +-
  .../src/commands/blueprints/blueprints.command.ts  | 286 ++++++++++++
  .../agentplane/src/commands/blueprints/catalog.ts  | 415 +++++++++++++++++
- scripts/check-docs-ia.mjs                          |   2 +
  website/static/llms-full.txt                       |  97 +++-
- 32 files changed, 3699 insertions(+), 10 deletions(-)
+ 31 files changed, 3700 insertions(+), 13 deletions(-)
 ```
 
 </details>
