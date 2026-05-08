@@ -1,5 +1,9 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
-import { normalizeDocSectionName } from "@agentplaneorg/core/tasks";
+import {
+  normalizeDocSectionName,
+  normalizeTaskDocVersion,
+  type TaskDocVersion,
+} from "@agentplaneorg/core/tasks";
 
 import { CliError } from "../../../shared/errors.js";
 import { dedupeStrings } from "../../../shared/strings.js";
@@ -13,7 +17,6 @@ export const VERIFY_STEPS_PLACEHOLDER =
   "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->";
 export const VERIFICATION_RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
 export const VERIFICATION_RESULTS_END = "<!-- END VERIFICATION RESULTS -->";
-export type TaskDocVersion = 2 | 3;
 const VERIFY_STEPS_TEMPLATE_LINE_RE = /^\d+\.\s*<[^>\n]+>\.\s*Expected:\s*<[^>\n]+>\.?$/m;
 
 export function decodeEscapedTaskTextNewlines(text: string): string {
@@ -68,12 +71,7 @@ export function assertVerifyStepsFilled(opts: {
   });
 }
 
-export function normalizeTaskDocVersion(
-  value: unknown,
-  fallback: TaskDocVersion = 3,
-): TaskDocVersion {
-  return value === 3 ? 3 : value === 2 ? 2 : fallback;
-}
+export { normalizeTaskDocVersion, type TaskDocVersion };
 
 export function normalizeVerificationSectionLayout(
   sectionText: string | null,

@@ -5,8 +5,8 @@ import {
   type CompiledRecipeAssetRegistry,
   type CompiledOverlayBundle,
   validateCompiledOverlayBundle,
-  validateCompiledRecipeAssetRegistry,
 } from "@agentplaneorg/recipes";
+import * as recipes from "@agentplaneorg/recipes";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 
@@ -137,7 +137,7 @@ export async function readProjectRecipeAssetRegistry(project: {
   agentplaneDir: string;
 }): Promise<CompiledRecipeAssetRegistry | null> {
   try {
-    return validateCompiledRecipeAssetRegistry(
+    return recipes.validateCompiledRecipeAssetRegistry(
       JSON.parse(await readFile(resolveProjectRecipeAssetsPath(project), "utf8")) as unknown,
     );
   } catch (err) {

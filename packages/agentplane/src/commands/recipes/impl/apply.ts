@@ -2,11 +2,11 @@ import { cp, mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/pro
 import path from "node:path";
 
 import {
-  normalizeAgentId,
   readScenarioDefinition,
   type RecipeConflictMode,
   type RecipeManifest,
 } from "@agentplaneorg/recipes";
+import * as recipes from "@agentplaneorg/recipes";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { fileExists, getPathKind } from "../../../cli/fs-utils.js";
@@ -130,7 +130,7 @@ export async function applyRecipeAgents(opts: {
     if (!rawId.trim() || !rawFile.trim()) {
       throw new Error("manifest.agents entries must include id and file");
     }
-    const agentId = normalizeAgentId(rawId);
+    const agentId = recipes.normalizeAgentId(rawId);
     const sourcePath = path.join(opts.recipeDir, rawFile);
     if (!(await fileExists(sourcePath))) {
       throw new Error(missingFileMessage("recipe agent file", rawFile));

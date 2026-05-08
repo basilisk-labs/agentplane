@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605081617-D5TQ88/v05-release-cleanup",
+  "created_at": "2026-05-08T16:19:20.558Z",
+  "head_sha": "552d344f8737f9d42ff501b8d5e0fcd2cb29041a",
+  "last_verified_at": "2026-05-08T16:26:40.171Z",
+  "last_verified_sha": "999ef2076454219cf3221e38a3ab5ad27b74f2da",
+  "schema_version": 1,
+  "task_id": "202605081617-D5TQ88",
+  "updated_at": "2026-05-08T16:28:26.940Z",
+  "verify": {
+    "status": "pass"
+  }
+}

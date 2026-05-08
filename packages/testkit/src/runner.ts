@@ -1,10 +1,10 @@
 import path from "node:path";
 
-import type { RunnerContextBundle } from "../../agentplane/src/runner/types.js";
 import {
   RUNNER_API_VERSION,
   RUNNER_BUNDLE_SCHEMA_VERSION,
-} from "../../agentplane/src/runner/types.js";
+  type RunnerContextBundle,
+} from "./agentplane-internal.js";
 import { writeExecutableFile } from "./fixtures.js";
 
 type MakeRunnerContextBundleOptions = {
