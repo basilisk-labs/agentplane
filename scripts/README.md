@@ -4,7 +4,7 @@
 
 Source of truth: `package.json` `scripts` field.
 
-Grouping policy: `ci`, `release`, `docs`, `test`, `coverage`, `arch`, `bench`, `misc`.
+Grouping policy: `ci`, `release`, `docs`, `test`, `coverage`, `arch`, `bench`, `clone`, `misc`.
 
 ## CI
 
@@ -116,6 +116,14 @@ Grouping policy: `ci`, `release`, `docs`, `test`, `coverage`, `arch`, `bench`, `
 | `bench:cli:time`       | `node scripts/measure-cli-walltime.mjs`                                 | Run bench workflow: cli time.       |
 | `bench:cli:time:check` | `node scripts/check-cli-walltime-baseline.mjs --warmups 1 --attempts 3` | Run bench workflow: cli time check. |
 | `bench:cli:time:diff`  | `node scripts/compare-cli-walltime.mjs`                                 | Run bench workflow: cli time diff.  |
+
+## Clone Detection
+
+| Script                  | Command                                                   | Purpose                              |
+| ----------------------- | --------------------------------------------------------- | ------------------------------------ |
+| `clone:baseline:update` | `node scripts/check-clone-baseline.mjs --update-baseline` | Run clone workflow: baseline update. |
+| `clone:check`           | `node scripts/check-clone-baseline.mjs`                   | Run clone workflow: check.           |
+| `clone:report`          | `node scripts/check-clone-baseline.mjs --report`          | Run clone workflow: report.          |
 
 ## Misc
 

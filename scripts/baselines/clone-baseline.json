@@ -1,0 +1,743 @@
+{
+  "schema_version": 1,
+  "generated_by": "check-clone-baseline.mjs",
+  "tool": "jscpd",
+  "config": {
+    "paths": [
+      "packages/agentplane/src",
+      "packages/core/src",
+      "packages/recipes/src",
+      "packages/testkit/src",
+      "scripts"
+    ],
+    "pattern": "**/*.{ts,tsx,js,mjs}",
+    "ignores": [
+      "**/*.test.ts",
+      "**/*.test.tsx",
+      "**/*.spec.ts",
+      "**/*.spec.tsx",
+      "**/__snapshots__/**",
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/*.generated.ts",
+      "scripts/baselines/**"
+    ],
+    "min_lines": 8,
+    "min_tokens": 80,
+    "mode": "mild",
+    "formats": ["typescript", "javascript"],
+    "compare_contract": "current metrics must not exceed baseline clones, duplicatedLines, or duplicatedTokens"
+  },
+  "metrics": {
+    "sources": 843,
+    "lines": 109972,
+    "tokens": 1053751,
+    "clones": 88,
+    "duplicatedLines": 1581,
+    "duplicatedTokens": 16784,
+    "percentage": 1.44,
+    "percentageTokens": 1.59
+  },
+  "top_duplicates": [
+    {
+      "lines": 62,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/cli-benchmark-runner.mjs",
+        "start": 94,
+        "end": 155
+      },
+      "secondFile": {
+        "path": "scripts/measure-cli-walltime.mjs",
+        "start": 107,
+        "end": 168
+      }
+    },
+    {
+      "lines": 45,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/render-homebrew-formula.mjs",
+        "start": 21,
+        "end": 65
+      },
+      "secondFile": {
+        "path": "scripts/render-setup-agentplane-action.mjs",
+        "start": 21,
+        "end": 65
+      }
+    },
+    {
+      "lines": 45,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/render-scoop-manifest.mjs",
+        "start": 21,
+        "end": 65
+      },
+      "secondFile": {
+        "path": "scripts/render-setup-agentplane-action.mjs",
+        "start": 21,
+        "end": 65
+      }
+    },
+    {
+      "lines": 42,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/hooks/run.commit-msg.ts",
+        "start": 71,
+        "end": 112
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/hooks/run.pre-commit.ts",
+        "start": 20,
+        "end": 61
+      }
+    },
+    {
+      "lines": 37,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/core/src/tasks/task-doc.ts",
+        "start": 252,
+        "end": 288
+      },
+      "secondFile": {
+        "path": "packages/core/src/tasks/task-doc.ts",
+        "start": 99,
+        "end": 135
+      }
+    },
+    {
+      "lines": 37,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/check-cli-cold-baseline.mjs",
+        "start": 60,
+        "end": 96
+      },
+      "secondFile": {
+        "path": "scripts/check-cli-walltime-baseline.mjs",
+        "start": 74,
+        "end": 111
+      }
+    },
+    {
+      "lines": 35,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/backends/task-backend/shared/normalize.ts",
+        "start": 168,
+        "end": 202
+      },
+      "secondFile": {
+        "path": "packages/core/src/tasks/tasks-export.ts",
+        "start": 123,
+        "end": 157
+      }
+    },
+    {
+      "lines": 32,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/cli-benchmark-runner.mjs",
+        "start": 224,
+        "end": 255
+      },
+      "secondFile": {
+        "path": "scripts/measure-cli-walltime.mjs",
+        "start": 218,
+        "end": 249
+      }
+    },
+    {
+      "lines": 29,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/task/block.ts",
+        "start": 19,
+        "end": 47
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/task/start.ts",
+        "start": 65,
+        "end": 93
+      }
+    },
+    {
+      "lines": 26,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/task/verify-ok.command.ts",
+        "start": 48,
+        "end": 73
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/task/verify-rework.command.ts",
+        "start": 49,
+        "end": 74
+      }
+    },
+    {
+      "lines": 26,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/cli-benchmark-runner.mjs",
+        "start": 193,
+        "end": 218
+      },
+      "secondFile": {
+        "path": "scripts/measure-cli-walltime.mjs",
+        "start": 190,
+        "end": 207
+      }
+    },
+    {
+      "lines": 25,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/cli/spec/docs-render.ts",
+        "start": 3,
+        "end": 27
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/cli/spec/help-render.ts",
+        "start": 35,
+        "end": 59
+      }
+    },
+    {
+      "lines": 25,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/check-cli-cold-baseline.mjs",
+        "start": 134,
+        "end": 158
+      },
+      "secondFile": {
+        "path": "scripts/check-cli-walltime-baseline.mjs",
+        "start": 158,
+        "end": 183
+      }
+    },
+    {
+      "lines": 24,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/sync.command.ts",
+        "start": 19,
+        "end": 42
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/backend/sync.command.ts",
+        "start": 36,
+        "end": 58
+      }
+    },
+    {
+      "lines": 24,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/task/new.ts",
+        "start": 46,
+        "end": 69
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/backends/task-backend/shared/record.ts",
+        "start": 21,
+        "end": 44
+      }
+    },
+    {
+      "lines": 24,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/task/verify-record.ts",
+        "start": 112,
+        "end": 135
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/task/verify-record.ts",
+        "start": 60,
+        "end": 83
+      }
+    },
+    {
+      "lines": 24,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/task/verify-record.ts",
+        "start": 84,
+        "end": 107
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/task/verify-record.ts",
+        "start": 33,
+        "end": 56
+      }
+    },
+    {
+      "lines": 24,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/check-cli-cold-baseline.mjs",
+        "start": 97,
+        "end": 120
+      },
+      "secondFile": {
+        "path": "scripts/check-cli-walltime-baseline.mjs",
+        "start": 112,
+        "end": 135
+      }
+    },
+    {
+      "lines": 24,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/run-significant-coverage-suite.mjs",
+        "start": 5,
+        "end": 28
+      },
+      "secondFile": {
+        "path": "scripts/run-workflow-coverage-suite.mjs",
+        "start": 5,
+        "end": 28
+      }
+    },
+    {
+      "lines": 23,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/blueprint/task-input.ts",
+        "start": 15,
+        "end": 37
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/backends/task-backend/shared/record.ts",
+        "start": 21,
+        "end": 44
+      }
+    },
+    {
+      "lines": 23,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/compare-cli-perf.mjs",
+        "start": 148,
+        "end": 170
+      },
+      "secondFile": {
+        "path": "scripts/compare-cli-walltime.mjs",
+        "start": 165,
+        "end": 187
+      }
+    },
+    {
+      "lines": 22,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/branch/work-start.direct.ts",
+        "start": 19,
+        "end": 40
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/task/shared/direct-work-lock.ts",
+        "start": 13,
+        "end": 34
+      }
+    },
+    {
+      "lines": 22,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/task/verify-record.ts",
+        "start": 135,
+        "end": 156
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/task/verify-record.ts",
+        "start": 33,
+        "end": 54
+      }
+    },
+    {
+      "lines": 22,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/runner/context/base-prompt-sources.ts",
+        "start": 219,
+        "end": 240
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/runtime/prompt-modules/registry.ts",
+        "start": 362,
+        "end": 383
+      }
+    },
+    {
+      "lines": 22,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/cli-benchmark-runner.mjs",
+        "start": 290,
+        "end": 311
+      },
+      "secondFile": {
+        "path": "scripts/measure-cli-walltime.mjs",
+        "start": 252,
+        "end": 272
+      }
+    },
+    {
+      "lines": 22,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/cli-benchmark-runner.mjs",
+        "start": 57,
+        "end": 78
+      },
+      "secondFile": {
+        "path": "scripts/measure-cli-walltime.mjs",
+        "start": 71,
+        "end": 92
+      }
+    },
+    {
+      "lines": 21,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/recipes/impl/commands/detach.ts",
+        "start": 2,
+        "end": 22
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/recipes/impl/commands/update.ts",
+        "start": 2,
+        "end": 22
+      }
+    },
+    {
+      "lines": 21,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/check-cli-cold-baseline.mjs",
+        "start": 13,
+        "end": 33
+      },
+      "secondFile": {
+        "path": "scripts/check-cli-walltime-baseline.mjs",
+        "start": 18,
+        "end": 38
+      }
+    },
+    {
+      "lines": 21,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/cli-benchmark-runner.mjs",
+        "start": 341,
+        "end": 361
+      },
+      "secondFile": {
+        "path": "scripts/measure-cli-walltime.mjs",
+        "start": 302,
+        "end": 322
+      }
+    },
+    {
+      "lines": 21,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/compare-cli-perf.mjs",
+        "start": 200,
+        "end": 220
+      },
+      "secondFile": {
+        "path": "scripts/compare-cli-walltime.mjs",
+        "start": 218,
+        "end": 238
+      }
+    },
+    {
+      "lines": 20,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/run-runner-codex-smoke.mjs",
+        "start": 549,
+        "end": 568
+      },
+      "secondFile": {
+        "path": "scripts/run-runner-codex-smoke.mjs",
+        "start": 497,
+        "end": 516
+      }
+    },
+    {
+      "lines": 19,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/backends/task-backend/shared/normalize.ts",
+        "start": 102,
+        "end": 120
+      },
+      "secondFile": {
+        "path": "packages/core/src/tasks/tasks-export.ts",
+        "start": 57,
+        "end": 75
+      }
+    },
+    {
+      "lines": 19,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/block.run.ts",
+        "start": 17,
+        "end": 35
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/start.run.ts",
+        "start": 17,
+        "end": 35
+      }
+    },
+    {
+      "lines": 19,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/task/plan.ts",
+        "start": 232,
+        "end": 250
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/task/plan.ts",
+        "start": 159,
+        "end": 177
+      }
+    },
+    {
+      "lines": 19,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/check-oversized-test-baseline.mjs",
+        "start": 266,
+        "end": 284
+      },
+      "secondFile": {
+        "path": "scripts/hotspot-report.mjs",
+        "start": 490,
+        "end": 508
+      }
+    },
+    {
+      "lines": 18,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/backends/task-backend/redmine/state.ts",
+        "start": 28,
+        "end": 45
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/backends/task-backend/shared/record.ts",
+        "start": 42,
+        "end": 59
+      }
+    },
+    {
+      "lines": 18,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/backends/task-backend/shared/normalize.ts",
+        "start": 132,
+        "end": 149
+      },
+      "secondFile": {
+        "path": "packages/core/src/tasks/tasks-export.ts",
+        "start": 87,
+        "end": 104
+      }
+    },
+    {
+      "lines": 18,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/recipes/impl/commands/explain.ts",
+        "start": 59,
+        "end": 76
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/recipes/impl/commands/info.ts",
+        "start": 33,
+        "end": 49
+      }
+    },
+    {
+      "lines": 18,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/check-cli-cold-baseline.mjs",
+        "start": 43,
+        "end": 60
+      },
+      "secondFile": {
+        "path": "scripts/check-cli-walltime-baseline.mjs",
+        "start": 49,
+        "end": 68
+      }
+    },
+    {
+      "lines": 18,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/render-ghcr-image-metadata.mjs",
+        "start": 41,
+        "end": 58
+      },
+      "secondFile": {
+        "path": "scripts/render-setup-agentplane-action.mjs",
+        "start": 35,
+        "end": 52
+      }
+    },
+    {
+      "lines": 17,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/release/apply.preflight.git.ts",
+        "start": 18,
+        "end": 34
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/upgrade/apply.ts",
+        "start": 33,
+        "end": 48
+      }
+    },
+    {
+      "lines": 17,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/task/run-show.command.ts",
+        "start": 55,
+        "end": 71
+      },
+      "secondFile": {
+        "path": "packages/testkit/src/cli-core-tasks-query.expected-run.ts",
+        "start": 81,
+        "end": 97
+      }
+    },
+    {
+      "lines": 17,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/testkit/src/release.ts",
+        "start": 163,
+        "end": 179
+      },
+      "secondFile": {
+        "path": "packages/testkit/src/release.ts",
+        "start": 100,
+        "end": 116
+      }
+    },
+    {
+      "lines": 17,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/cli-benchmark-runner.mjs",
+        "start": 410,
+        "end": 426
+      },
+      "secondFile": {
+        "path": "scripts/measure-cli-walltime.mjs",
+        "start": 371,
+        "end": 387
+      }
+    },
+    {
+      "lines": 17,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/smoke-bun-compiled-cli.mjs",
+        "start": 89,
+        "end": 105
+      },
+      "secondFile": {
+        "path": "scripts/smoke-standalone-cli-artifact.mjs",
+        "start": 71,
+        "end": 87
+      }
+    },
+    {
+      "lines": 16,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/pr/internal/sync-open-step.ts",
+        "start": 171,
+        "end": 186
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/pr/internal/sync-update-step.ts",
+        "start": 88,
+        "end": 104
+      }
+    },
+    {
+      "lines": 16,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/task/hosted-close-recovery.ts",
+        "start": 11,
+        "end": 26
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/guard/impl/close-message.ts",
+        "start": 17,
+        "end": 32
+      }
+    },
+    {
+      "lines": 16,
+      "tokens": 0,
+      "firstFile": {
+        "path": "scripts/cli-benchmark-runner.mjs",
+        "start": 78,
+        "end": 93
+      },
+      "secondFile": {
+        "path": "scripts/measure-cli-walltime.mjs",
+        "start": 92,
+        "end": 107
+      }
+    },
+    {
+      "lines": 15,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/task/block.ts",
+        "start": 51,
+        "end": 65
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/task/start.ts",
+        "start": 97,
+        "end": 111
+      }
+    },
+    {
+      "lines": 15,
+      "tokens": 0,
+      "firstFile": {
+        "path": "packages/agentplane/src/commands/task/scaffold.ts",
+        "start": 28,
+        "end": 42
+      },
+      "secondFile": {
+        "path": "packages/agentplane/src/commands/task/start.ts",
+        "start": 78,
+        "end": 93
+      }
+    }
+  ]
+}

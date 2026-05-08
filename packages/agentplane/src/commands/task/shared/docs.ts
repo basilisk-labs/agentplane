@@ -1,9 +1,5 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
-import {
-  normalizeDocSectionName,
-  normalizeTaskDocVersion,
-  type TaskDocVersion,
-} from "@agentplaneorg/core/tasks";
+import { normalizeDocSectionName, type TaskDocVersion } from "@agentplaneorg/core/tasks";
 
 import { CliError } from "../../../shared/errors.js";
 import { dedupeStrings } from "../../../shared/strings.js";
@@ -71,7 +67,8 @@ export function assertVerifyStepsFilled(opts: {
   });
 }
 
-export { normalizeTaskDocVersion, type TaskDocVersion };
+export { normalizeTaskDocVersion } from "@agentplaneorg/core/tasks";
+export type { TaskDocVersion } from "@agentplaneorg/core/tasks";
 
 export function normalizeVerificationSectionLayout(
   sectionText: string | null,
