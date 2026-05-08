@@ -6,6 +6,7 @@
  .agentplane/tasks/202605081720-JF941V/README.md    |  93 ++++
  .../blueprint/resolved-snapshot.json               | 502 +++++++++++++++++++++
  docs/developer/blueprints.mdx                      |  42 ++
+ docs/reference/generated-reference.mdx             |  14 +-
  docs/user/cli-reference.generated.mdx              |  89 ++++
  docs/user/commands.mdx                             |  31 ++
  .../src/cli/run-cli.core.blueprint.test.ts         | 252 +++++++++++
@@ -27,4 +28,6 @@
  .../commands/init/steps/prompt-steps.test.ts       |  37 +-
  .../src/commands/blueprints/blueprints.command.ts  | 286 ++++++++++++
  .../agentplane/src/commands/blueprints/catalog.ts  | 415 +++++++++++++++++
- 29 files changed, 3595 insertions(+), 1 deletion(-)
+ scripts/check-docs-ia.mjs                          |   2 +
+ website/static/llms-full.txt                       |  97 +++-
+ 32 files changed, 3699 insertions(+), 10 deletions(-)
