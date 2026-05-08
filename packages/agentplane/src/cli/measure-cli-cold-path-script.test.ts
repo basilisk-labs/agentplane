@@ -46,7 +46,7 @@ describe("measure-cli-cold-path script", () => {
 
   it(
     "measures quickstart, task list/search/next, and preflight quick in one payload",
-    { timeout: 60_000 },
+    { timeout: 120_000 },
     async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);

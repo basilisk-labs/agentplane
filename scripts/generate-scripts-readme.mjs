@@ -48,6 +48,11 @@ const GROUPS = [
     match: (name) => name.startsWith("bench:"),
   },
   {
+    key: "clone",
+    title: "Clone Detection",
+    match: (name) => name.startsWith("clone:"),
+  },
+  {
     key: "misc",
     title: "Misc",
     match: () => true,
@@ -99,7 +104,7 @@ function buildReadme(entries) {
     "",
     "Source of truth: `package.json` `scripts` field.",
     "",
-    "Grouping policy: `ci`, `release`, `docs`, `test`, `coverage`, `arch`, `bench`, `misc`.",
+    "Grouping policy: `ci`, `release`, `docs`, `test`, `coverage`, `arch`, `bench`, `clone`, `misc`.",
     "",
   ];
 
