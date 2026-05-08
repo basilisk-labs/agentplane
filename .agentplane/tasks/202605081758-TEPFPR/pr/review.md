@@ -24,12 +24,39 @@ Created: 2026-05-08T18:03:56.435Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-08T18:03:56.435Z
+- Updated: 2026-05-08T18:36:03.784Z
 - Branch: task/202605081758-TEPFPR/git-native-evidence-copy
-- Head: 97448aafec23
+- Head: b2206a9ca8b1
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 341 +++++++++++++++++++++
+ README.md                                          |  76 +++--
+ docs/assets/header.png                             | Bin 84547 -> 98735 bytes
+ docs/assets/header.svg                             |  16 +-
+ docs/compare.mdx                                   |  67 +++-
+ docs/index.mdx                                     | 275 ++++++++++-------
+ docs/launch/checklist.md                           |   2 +-
+ docs/launch/hn.md                                  |   6 +-
+ docs/launch/reddit.md                              |  10 +-
+ docs/launch/twitter.md                             |   8 +-
+ docs/listing.md                                    |  44 ++-
+ docs/manifesto.mdx                                 |  76 ++++-
+ docs/showcase.mdx                                  |  56 +++-
+ docs/user/agent-change-record.mdx                  |  54 +++-
+ docs/user/overview.mdx                             |  74 +++--
+ docs/user/setup.mdx                                | 340 +++++---------------
+ docs/user/website-ia.mdx                           |  60 +++-
+ docs/workflow-guides/claude-code.mdx               |  36 ++-
+ docs/workflow-guides/codex.mdx                     |  29 +-
+ docs/workflow-guides/github-actions.mdx            |  28 ++
+ packages/agentplane/README.md                      |  32 +-
+ website/docusaurus.config.ts                       |  89 +++++-
+ website/sidebars.ts                                |  44 ++-
+ website/src/data/homepage-content.ts               | 133 ++++----
+ website/src/pages/index.tsx                        |  35 ++-
+ .../social/docs/workflow-guides/claude-code.png    | Bin 53889 -> 56535 bytes
+ .../img/social/docs/workflow-guides/codex.png      | Bin 50140 -> 53854 bytes
+ 27 files changed, 1336 insertions(+), 595 deletions(-)
 ```
 
 </details>
