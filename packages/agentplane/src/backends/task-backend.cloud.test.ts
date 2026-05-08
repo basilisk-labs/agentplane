@@ -6,6 +6,22 @@ import { captureStdIO, mkTempDir, silenceStdIO } from "@agentplane/testkit";
 
 import { CloudBackend, LocalBackend, type TaskData } from "./task-backend.js";
 
+function parseRequestBody<T>(body: unknown): T {
+  if (typeof body !== "string") {
+    throw new TypeError("Expected string request body");
+  }
+  return JSON.parse(body) as T;
+}
+
+function requestUrl(url: unknown): string {
+  if (typeof url === "string") return url;
+  if (url instanceof URL) return url.href;
+  if (url && typeof url === "object" && "url" in url && typeof url.url === "string") {
+    return url.url;
+  }
+  throw new TypeError("Expected request URL");
+}
+
 describe("CloudBackend", () => {
   let tempDir = "";
   let restoreStdIO: (() => void) | null = null;
@@ -112,9 +128,9 @@ describe("CloudBackend", () => {
       });
     }
     const fetchImpl = vi.fn<typeof fetch>((_url, init) => {
-      const body = JSON.parse(String(init?.body ?? "{}")) as {
+      const body = parseRequestBody<{
         batch?: { finalize?: boolean };
-      };
+      }>(init?.body);
       return Promise.resolve(
         Response.json({
           data: {
@@ -138,15 +154,15 @@ describe("CloudBackend", () => {
     await backend.sync({ direction: "push", conflict: "diff", quiet: true, confirm: true });
 
     const calls = fetchImpl.mock.calls.map(([url, init]) => ({
-      url: String(url),
-      body: JSON.parse(String(init?.body ?? "{}")) as {
+      url: requestUrl(url),
+      body: parseRequestBody<{
         batch?: {
           total_batches: number;
           chunk_index: number;
           finalize: boolean;
         };
         tasks?: unknown[];
-      },
+      }>(init?.body),
     }));
     expect(calls.map((call) => call.url)).toEqual([
       "https://cloud.example/v1/projects/project-1/sync/push-batch",
@@ -183,9 +199,9 @@ describe("CloudBackend", () => {
       });
     }
     const fetchImpl = vi.fn<typeof fetch>((_url, init) => {
-      const body = JSON.parse(String(init?.body ?? "{}")) as {
+      const body = parseRequestBody<{
         batch?: { chunk_index?: number; finalize?: boolean };
-      };
+      }>(init?.body);
       if (body.batch?.chunk_index === 1 && fetchImpl.mock.calls.length === 2) {
         return Promise.reject(new TypeError("fetch failed"));
       }
@@ -212,9 +228,9 @@ describe("CloudBackend", () => {
     await backend.sync({ direction: "push", conflict: "diff", quiet: true, confirm: true });
 
     const calls = fetchImpl.mock.calls.map(([_url, init]) => {
-      const body = JSON.parse(String(init?.body ?? "{}")) as {
+      const body = parseRequestBody<{
         batch?: { chunk_index?: number; finalize?: boolean };
-      };
+      }>(init?.body);
       return body.batch;
     });
     expect(calls).toEqual([

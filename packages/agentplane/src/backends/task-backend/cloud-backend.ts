@@ -13,6 +13,24 @@ import {
 } from "./shared.js";
 import type { LocalBackend } from "./local-backend.js";
 import { buildCloudPullPlan, emitCloudPullDiffSummary, readOpenConflicts } from "./cloud-pull.js";
+import {
+  CLOUD_PUSH_BATCH_RETRY_DELAYS_MS,
+  CLOUD_PUSH_BATCH_TASK_BYTES,
+  CLOUD_PUSH_DIRECT_BODY_LIMIT_BYTES,
+  cloudConflictMessage,
+  cloudHttpErrorMessage,
+  cloudPushBatchFinalized,
+  firstNonEmpty,
+  isOptionalSyncStateFailure,
+  isRecord,
+  isStale,
+  normalizeCloudPullResponse,
+  normalizePositiveInteger,
+  readSafeCommand,
+  sleep,
+  splitTasksByPayloadBytes,
+  type CloudSyncResponse,
+} from "./cloud-backend-utils.js";
 
 export type CloudBackendSettings = {
   endpoint?: string;
@@ -22,15 +40,6 @@ export type CloudBackendSettings = {
   cache_dir?: string;
   stale_after_seconds?: number;
   state_path?: string;
-};
-
-type CloudSyncResponse = {
-  data?: unknown;
-  tasks?: unknown;
-  last_checked_at?: unknown;
-  conflicts?: unknown;
-  no_projection_changes?: unknown;
-  no_changes?: unknown;
 };
 
 type CloudSyncStateResponse = {
@@ -47,10 +56,6 @@ type CloudSyncStateSnapshot = {
   safeCommand: string | null;
   unavailable: boolean;
 };
-
-const CLOUD_PUSH_DIRECT_BODY_LIMIT_BYTES = 750_000;
-const CLOUD_PUSH_BATCH_TASK_BYTES = 600_000;
-const CLOUD_PUSH_BATCH_RETRY_DELAYS_MS = [0, 1_500, 3_000] as const;
 
 export class CloudBackend implements TaskBackend {
   id = "cloud";
@@ -522,170 +527,4 @@ export class CloudBackend implements TaskBackend {
     await mkdir(path.dirname(this.statePath), { recursive: true });
     await writeFile(this.statePath, `${JSON.stringify(state, null, 2)}\n`, "utf8");
   }
-}
-
-function firstNonEmpty(...values: unknown[]): string {
-  for (const value of values) {
-    if (typeof value !== "string") continue;
-    const trimmed = value.trim();
-    if (trimmed) return trimmed;
-  }
-  return "";
-}
-
-function isRecord(input: unknown): input is Record<string, unknown> {
-  return Boolean(input && typeof input === "object" && !Array.isArray(input));
-}
-
-function normalizeCloudPullResponse(
-  response: CloudSyncResponse,
-  data: Record<string, unknown>,
-): {
-  tasks: unknown[] | null;
-  conflicts: unknown;
-  lastCheckedAt: string | null;
-  noProjectionChanges: boolean;
-} {
-  return {
-    tasks: Array.isArray(response.tasks)
-      ? response.tasks
-      : Array.isArray(data.tasks)
-        ? data.tasks
-        : null,
-    conflicts: response.conflicts ?? data.conflicts,
-    lastCheckedAt:
-      typeof response.last_checked_at === "string"
-        ? response.last_checked_at
-        : typeof data.last_checked_at === "string"
-          ? data.last_checked_at
-          : null,
-    noProjectionChanges:
-      response.no_projection_changes === true ||
-      response.no_changes === true ||
-      data.no_projection_changes === true ||
-      data.no_changes === true,
-  };
-}
-
-function readSafeCommand(response: CloudSyncResponse, data: Record<string, unknown>): string {
-  const command = readString(response, "safe_command") ?? readString(data, "safe_command");
-  return command ?? "agentplane backend inspect cloud --yes";
-}
-
-function cloudPushBatchFinalized(response: CloudSyncResponse): boolean {
-  const data = isRecord(response.data) ? response.data : {};
-  const batch = isRecord(data.batch) ? data.batch : null;
-  return batch?.finalized === true;
-}
-
-function readString(input: unknown, key: string): string | null {
-  if (!isRecord(input)) return null;
-  const value = input[key];
-  return typeof value === "string" && value.trim() ? value.trim() : null;
-}
-
-function isOptionalSyncStateFailure(status: number): boolean {
-  return [404, 405, 501, 502, 503, 504].includes(status);
-}
-
-function cloudConflictMessage(opts: { conflicts: unknown[]; safeCommand: string }): string {
-  return [
-    "Cloud backend pull reported open conflicts.",
-    "Why: the service detected changes on both sides and refused to choose a winner.",
-    "Fix: resolve conflicts in the cloud service or rerun with --conflict=diff to inspect without writing.",
-    `Safe command: ${opts.safeCommand}`,
-    "Stop condition: stop if the conflict list includes fields outside title/status/priority/owner/tags.",
-    `conflicts=${opts.conflicts.length}`,
-  ].join("\n");
-}
-
-async function cloudHttpErrorMessage(res: Response): Promise<string> {
-  const payload = await readJsonResponse(res);
-  const remediation = isRecord(payload) ? normalizeServiceRemediation(payload) : null;
-  if (remediation) {
-    return [
-      `Cloud backend request failed: HTTP ${res.status}`,
-      `Code: ${remediation.code}`,
-      `Why: ${remediation.why}`,
-      `Fix: ${remediation.fix}`,
-      `Safe command: ${remediation.safeCommand}`,
-      `Stop condition: ${remediation.whenToStop}`,
-    ].join("\n");
-  }
-  return `Cloud backend request failed: HTTP ${res.status}`;
-}
-
-async function readJsonResponse(res: Response): Promise<unknown> {
-  try {
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
-
-function normalizeServiceRemediation(input: Record<string, unknown>): {
-  code: string;
-  why: string;
-  fix: string;
-  safeCommand: string;
-  whenToStop: string;
-} | null {
-  const source = isRecord(input.error) ? input.error : input;
-  const code = readString(source, "code") ?? readString(source, "reason_code");
-  const why = readString(source, "why");
-  const fix = readString(source, "fix");
-  const safeCommand = readString(source, "safe_command");
-  const whenToStop = readString(source, "when_to_stop") ?? readString(source, "stop_condition");
-  if (!code || !why || !fix || !safeCommand || !whenToStop) return null;
-  return { code, why, fix, safeCommand, whenToStop };
-}
-
-function normalizePositiveInteger(input: unknown): number | null {
-  if (typeof input !== "number" || !Number.isFinite(input)) return null;
-  const value = Math.trunc(input);
-  return value > 0 ? value : null;
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function splitTasksByPayloadBytes(tasks: TaskData[], maxBytes: number): TaskData[][] {
-  const chunks: TaskData[][] = [];
-  let current: TaskData[] = [];
-  let currentBytes = 2;
-  for (const task of tasks) {
-    const taskBytes = Buffer.byteLength(JSON.stringify(task), "utf8");
-    if (taskBytes > maxBytes) {
-      throw new BackendError(
-        [
-          "Cloud backend cannot batch a single oversized task projection.",
-          `Why: task ${task.id} is larger than the per-batch payload budget.`,
-          "Fix: reduce large task README metadata or raise the service request-body limit before syncing.",
-          "Safe command: agentplane task show <task-id>",
-          "Stop condition: stop if the task contains secrets or large embedded artifacts.",
-        ].join("\n"),
-        "E_BACKEND",
-      );
-    }
-    const separatorBytes = current.length === 0 ? 0 : 1;
-    if (current.length > 0 && currentBytes + separatorBytes + taskBytes > maxBytes) {
-      chunks.push(current);
-      current = [];
-      currentBytes = 2;
-    }
-    current.push(task);
-    currentBytes += separatorBytes + taskBytes;
-  }
-  if (current.length > 0 || tasks.length === 0) {
-    chunks.push(current);
-  }
-  return chunks;
-}
-
-function isStale(lastCheckedAt: string | null, staleAfterSeconds: number | null): boolean {
-  if (!lastCheckedAt || !staleAfterSeconds) return false;
-  const checkedAt = Date.parse(lastCheckedAt);
-  if (!Number.isFinite(checkedAt)) return true;
-  return Date.now() - checkedAt > staleAfterSeconds * 1000;
 }
