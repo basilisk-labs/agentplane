@@ -24,9 +24,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-08T18:37:11.744Z"
+  updated_at: "2026-05-08T19:19:43.726Z"
   updated_by: "CODER"
-  note: "Verified advanced init blueprint selection: --blueprints accepts cached blueprint/pack refs, full-harness prompt step lists cached entries, init installs and activates selected pack contents, focused init prompt/apply tests and cli-core blueprint init test passed."
+  note: "Full-harness init blueprint selection verified through init step tests, smoke init with pack:enterprise-baseline, and PR #3487 remote checks at 5d090f5d2."
 commit: null
 comments:
   -
@@ -46,8 +46,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified advanced init blueprint selection: --blueprints accepts cached blueprint/pack refs, full-harness prompt step lists cached entries, init installs and activates selected pack contents, focused init prompt/apply tests and cli-core blueprint init test passed."
+  -
+    type: "verify"
+    at: "2026-05-08T19:19:43.726Z"
+    author: "CODER"
+    state: "ok"
+    note: "Full-harness init blueprint selection verified through init step tests, smoke init with pack:enterprise-baseline, and PR #3487 remote checks at 5d090f5d2."
 doc_version: 3
-doc_updated_at: "2026-05-08T18:37:11.766Z"
+doc_updated_at: "2026-05-08T19:19:43.750Z"
 doc_updated_by: "CODER"
 description: "Extend full-harness/advanced init to list cached blueprint catalog entries, let users select individual blueprints and packs, preview pack expansion, and vendor selected blueprints during initialization."
 sections:
@@ -73,6 +79,24 @@ sections:
     Note: Verified advanced init blueprint selection: --blueprints accepts cached blueprint/pack refs, full-harness prompt step lists cached entries, init installs and activates selected pack contents, focused init prompt/apply tests and cli-core blueprint init test passed.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-08T18:37:05.310Z, excerpt_hash=sha256:bba20a0ec249444aaa143e1e826ef21bdc98fa33ee6f8d31a44a656d651cb4c9
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605081719-FBQEV5-blueprint-catalog-install/.agentplane/tasks/202605081720-JF941V/blueprint/resolved-snapshot.json
+    - old_digest: 002ae52cdc0860278630e59c1077c8c27ecc4cba65eb65e94519d2640aa84a7b
+    - current_digest: 002ae52cdc0860278630e59c1077c8c27ecc4cba65eb65e94519d2640aa84a7b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605081720-JF941V
+    
+    ### 2026-05-08T19:19:43.726Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Full-harness init blueprint selection verified through init step tests, smoke init with pack:enterprise-baseline, and PR #3487 remote checks at 5d090f5d2.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-08T18:37:11.766Z, excerpt_hash=sha256:bba20a0ec249444aaa143e1e826ef21bdc98fa33ee6f8d31a44a656d651cb4c9
     
     Details:
     
