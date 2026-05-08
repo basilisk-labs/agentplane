@@ -166,6 +166,64 @@ describe("CloudBackend", () => {
     expect(calls[1]?.body.tasks).toHaveLength(1);
   });
 
+  it("retries transient network failures for oversized push batches", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    const largeText = "x".repeat(400_000);
+    for (const suffix of ["C1D2", "C1D3"]) {
+      await cache.writeTask({
+        id: `202605051806-${suffix}`,
+        title: `Cloud task ${suffix}`,
+        description: largeText,
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["cloud"],
+        verify: [],
+      });
+    }
+    const fetchImpl = vi.fn<typeof fetch>((_url, init) => {
+      const body = JSON.parse(String(init?.body ?? "{}")) as {
+        batch?: { chunk_index?: number; finalize?: boolean };
+      };
+      if (body.batch?.chunk_index === 1 && fetchImpl.mock.calls.length === 2) {
+        return Promise.reject(new TypeError("fetch failed"));
+      }
+      return Promise.resolve(
+        Response.json({
+          data: {
+            last_checked_at: "2026-05-06T00:00:00.000Z",
+            batch: { finalized: body.batch?.finalize === true },
+            no_projection_changes: body.batch?.finalize !== true,
+          },
+        }),
+      );
+    });
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example/",
+        token: "token",
+        project_id: "project-1",
+        provider: "github-projects",
+      },
+      { root: tempDir, cache, fetchImpl },
+    );
+
+    await backend.sync({ direction: "push", conflict: "diff", quiet: true, confirm: true });
+
+    const calls = fetchImpl.mock.calls.map(([_url, init]) => {
+      const body = JSON.parse(String(init?.body ?? "{}")) as {
+        batch?: { chunk_index?: number; finalize?: boolean };
+      };
+      return body.batch;
+    });
+    expect(calls).toEqual([
+      expect.objectContaining({ chunk_index: 0, finalize: false }),
+      expect.objectContaining({ chunk_index: 1, finalize: true }),
+      expect.objectContaining({ chunk_index: 1, finalize: true }),
+    ]);
+  });
+
   it("pull sync does not rewrite identical local projection tasks", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
     const task: TaskData = {
