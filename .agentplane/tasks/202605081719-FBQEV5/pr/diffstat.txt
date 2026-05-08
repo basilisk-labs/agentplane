@@ -1,0 +1,10 @@
+ .agentplane/tasks/202605081720-03TR4S/README.md    |  58 +++
+ .agentplane/tasks/202605081720-DTKG82/README.md    |  59 +++
+ .agentplane/tasks/202605081720-JF941V/README.md    |  59 +++
+ docs/user/cli-reference.generated.mdx              |  88 +++++
+ .../src/cli/run-cli.core.blueprint.test.ts         | 195 ++++++++++
+ .../src/cli/run-cli/command-catalog/project.ts     |  21 ++
+ .../src/cli/run-cli/command-loaders/project.ts     |   4 +
+ .../src/commands/blueprints/blueprints.command.ts  | 286 ++++++++++++++
+ .../agentplane/src/commands/blueprints/catalog.ts  | 415 +++++++++++++++++++++
+ 9 files changed, 1185 insertions(+)
