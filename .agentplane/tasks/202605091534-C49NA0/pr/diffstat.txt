@@ -1,0 +1,4 @@
+ docs/developer/testing-and-quality.mdx             |  8 +++++---
+ .../commands/release/release-ci-contract.test.ts   | 15 ++++++++++++---
+ scripts/reinstall-global-agentplane.sh             | 22 +++++++++++++---------
+ 3 files changed, 30 insertions(+), 15 deletions(-)

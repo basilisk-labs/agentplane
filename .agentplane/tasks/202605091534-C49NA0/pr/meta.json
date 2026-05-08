@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605091534-C49NA0/runtime-reinstall-helper",
+  "created_at": "2026-05-09T15:35:55.544Z",
+  "head_sha": "769dd0802d2dab6cb947774939d9dfcd8ff91ba6",
+  "last_verified_at": "2026-05-09T15:35:55.417Z",
+  "last_verified_sha": "769dd0802d2dab6cb947774939d9dfcd8ff91ba6",
+  "schema_version": 1,
+  "task_id": "202605091534-C49NA0",
+  "updated_at": "2026-05-09T15:35:55.544Z",
+  "verify": {
+    "status": "pass"
+  }
+}
