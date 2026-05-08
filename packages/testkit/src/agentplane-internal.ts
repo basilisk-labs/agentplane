@@ -10,6 +10,7 @@ export {
   loadCommandContext,
   loadTaskFromContext,
 } from "../../agentplane/src/commands/shared/task-backend.js";
+export type { CommandContext } from "../../agentplane/src/commands/shared/task-backend.js";
 export {
   evolveRunnerRunState,
   writeRunnerRunState,
@@ -19,8 +20,13 @@ export {
   formatRunnerPolicyFieldSummaryLines,
 } from "../../agentplane/src/runner/policy-display.js";
 export type {
+  RunnerContextBundle,
   RunnerAdapterCapabilities,
   RunnerPolicyDecision,
+} from "../../agentplane/src/runner/types.js";
+export {
+  RUNNER_API_VERSION,
+  RUNNER_BUNDLE_SCHEMA_VERSION,
 } from "../../agentplane/src/runner/types.js";
 export { prepareTaskRunnerExecution } from "../../agentplane/src/runner/usecases/task-run.js";
 export * as processSupervision from "../../agentplane/src/runner/process-supervision/signals.js";

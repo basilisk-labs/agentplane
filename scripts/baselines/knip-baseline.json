@@ -1171,16 +1171,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/commands/recipes/impl/constants.ts",
-      "exports": [
-        {
-          "name": "RECIPE_RUNS_DIR_NAME",
-          "line": 14,
-          "col": 3
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/commands/recipes/impl/overlay-project.ts",
       "exports": [
         {
@@ -3791,10 +3781,10 @@
   ],
   "counts": {
     "files": 1,
-    "exports": 206,
+    "exports": 205,
     "types": 365,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 572
+    "total": 571
   }
 }

@@ -1,6 +1,6 @@
 import { expect } from "vitest";
 
-import { runCli } from "../../../agentplane/src/cli/run-cli.js";
+import { runCli } from "../agentplane-internal.js";
 
 const originalStdoutWrite = process.stdout.write.bind(process.stdout);
 const originalStderrWrite = process.stderr.write.bind(process.stderr);
