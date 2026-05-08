@@ -1,0 +1,4 @@
+ .../blueprint/resolved-snapshot.json               | 386 +++++++++++++++++++++
+ .../src/backends/task-backend.cloud.test.ts        |  58 ++++
+ .../src/backends/task-backend/cloud-backend.ts     |  76 +++-
+ 3 files changed, 501 insertions(+), 19 deletions(-)

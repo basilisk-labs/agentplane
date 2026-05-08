@@ -24,12 +24,15 @@ Created: 2026-05-08T01:09:01.503Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-08T01:09:01.503Z
+- Updated: 2026-05-08T02:53:00.152Z
 - Branch: task/202605071500-S2TV0X/retry-cloud-batch
-- Head: 21e47860641a
+- Head: 61377a2f510b
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 386 +++++++++++++++++++++
+ .../src/backends/task-backend.cloud.test.ts        |  58 ++++
+ .../src/backends/task-backend/cloud-backend.ts     |  76 +++-
+ 3 files changed, 501 insertions(+), 19 deletions(-)
 ```
 
 </details>
