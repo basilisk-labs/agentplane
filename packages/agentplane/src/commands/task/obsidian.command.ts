@@ -60,10 +60,12 @@ export function makeRunTaskObsidianHandler(getCtx: (cmd: string) => Promise<Comm
 }
 
 export function makeRunTaskObsidianCleanHandler() {
-  return async (ctx: CommandCtx): Promise<number> => {
-    return await cmdTaskObsidianClean({
-      cwd: ctx.cwd,
-      rootOverride: ctx.rootOverride,
-    });
-  };
+  return runTaskObsidianCleanHandler;
+}
+
+async function runTaskObsidianCleanHandler(ctx: CommandCtx): Promise<number> {
+  return await cmdTaskObsidianClean({
+    cwd: ctx.cwd,
+    rootOverride: ctx.rootOverride,
+  });
 }
