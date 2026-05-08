@@ -24,16 +24,21 @@ Created: 2026-05-08T17:23:48.984Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-08T18:26:46.541Z
+- Updated: 2026-05-08T18:38:55.853Z
 - Branch: task/202605081719-FBQEV5/blueprint-catalog-install
-- Head: 305eba838683
+- Head: a00f2184663d
 
 ```text
  .../blueprint/resolved-snapshot.json               | 502 +++++++++++++++++++++
- .agentplane/tasks/202605081720-03TR4S/README.md    |  58 +++
- .agentplane/tasks/202605081720-DTKG82/README.md    |  59 +++
- .agentplane/tasks/202605081720-JF941V/README.md    |  59 +++
+ .agentplane/tasks/202605081720-03TR4S/README.md    |  92 ++++
+ .../blueprint/resolved-snapshot.json               | 347 ++++++++++++++
+ .agentplane/tasks/202605081720-DTKG82/README.md    |  93 ++++
+ .../blueprint/resolved-snapshot.json               | 502 +++++++++++++++++++++
+ .agentplane/tasks/202605081720-JF941V/README.md    |  93 ++++
+ .../blueprint/resolved-snapshot.json               | 502 +++++++++++++++++++++
+ docs/developer/blueprints.mdx                      |  42 ++
  docs/user/cli-reference.generated.mdx              |  89 ++++
+ docs/user/commands.mdx                             |  31 ++
  .../src/cli/run-cli.core.blueprint.test.ts         | 252 +++++++++++
  .../src/cli/run-cli/command-catalog/project.ts     |  21 +
  .../src/cli/run-cli/command-loaders/project.ts     |   4 +
@@ -53,7 +58,7 @@ Created: 2026-05-08T17:23:48.984Z
  .../commands/init/steps/prompt-steps.test.ts       |  37 +-
  .../src/commands/blueprints/blueprints.command.ts  | 286 ++++++++++++
  .../agentplane/src/commands/blueprints/catalog.ts  | 415 +++++++++++++++++
- 24 files changed, 2069 insertions(+), 1 deletion(-)
+ 29 files changed, 3595 insertions(+), 1 deletion(-)
 ```
 
 </details>
