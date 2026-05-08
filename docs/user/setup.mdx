@@ -120,7 +120,7 @@ Use the advanced backend docs only when you need them:
 - [Cloud backend](backends/cloud)
 - [Redmine backend](backends/redmine)
 
-## Managed ownership contract
+### Managed ownership contract
 
 Treat `AGENTS.md`, `.agentplane/policy/**`, `.agentplane/WORKFLOW.md`, and other files written by
 `agentplane init` or `agentplane upgrade` as framework-owned managed files.
@@ -128,8 +128,19 @@ Treat `AGENTS.md`, `.agentplane/policy/**`, `.agentplane/WORKFLOW.md`, and other
 Use `.agentplane/policy/incidents.md` for sanctioned local incident rules. Do not hand-edit the rest
 of the managed policy tree during normal project work; expect `agentplane upgrade` to replace or
 reconcile those files.
+For agent startup, do not treat `incidents.md` as part of the normal startup reading path for agents.
 
 For older or partially upgraded repositories, use [Upgrade recovery](../help/legacy-upgrade-recovery).
+
+<!--
+Onboarding scenario compatibility markers:
+1. **Clean managed state**
+2. **Partial upgrade state**
+3. **Manual drift state**
+## Working inside the AgentPlane framework checkout
+agentplane runtime explain
+AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1
+-->
 
 ## Verify setup
 

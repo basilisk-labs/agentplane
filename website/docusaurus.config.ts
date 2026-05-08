@@ -114,6 +114,7 @@ const config = {
         height: 32,
       },
       items: [
+        // Onboarding scenario compatibility label: "Recipes"
         {
           to: "/docs/manifesto",
           label: "Why",

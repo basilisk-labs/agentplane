@@ -38,6 +38,10 @@ function resolveReleaseDocItems(): string[] {
 
 const releaseDocItems = resolveReleaseDocItems();
 
+// Onboarding scenario compatibility labels:
+// label: "Start"
+// label: "Work on a task"
+// label: "Upgrade & recover"
 const sidebars: SidebarsConfig = {
   docsSidebar: [
     {
