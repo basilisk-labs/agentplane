@@ -1,0 +1,203 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605081818-G4JQKS",
+  "created_at": "2026-05-08T18:45:00.395Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "d8cc20750dfce0023b9e474b8c7064e487af5813",
+    "work_ref": "main",
+    "work_commit": "d8cc20750dfce0023b9e474b8c7064e487af5813"
+  },
+  "task": {
+    "task_id": "202605081818-G4JQKS",
+    "title": "Document semantic clone refactor workflow",
+    "intent": "Document how to use clone report/check/baseline commands during refactoring and record a trial run.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605081818-G4JQKS/README.md",
+      "sha256": "sha256:17316c8a73b073cdb0bf00f0c7d13713e63303b3a05a0cb164baabfbbf53885e"
+    },
+    "approved_at": "2026-05-08T18:18:27.954Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3488.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605081818-G4JQKS_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-08T18:18:27.954Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605081818-G4JQKS/README.md",
+      "sha256": "sha256:17316c8a73b073cdb0bf00f0c7d13713e63303b3a05a0cb164baabfbbf53885e"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605081818-G4JQKS/README.md",
+      "sha256": "sha256:17316c8a73b073cdb0bf00f0c7d13713e63303b3a05a0cb164baabfbbf53885e"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605081818-G4JQKS/README.md",
+      "sha256": "sha256:17316c8a73b073cdb0bf00f0c7d13713e63303b3a05a0cb164baabfbbf53885e"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605081818-G4JQKS/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:6cfcd5679208c5ed8bba2fc8e4956fdfb069ac4ceb62cac8a5fc13e4536c0629"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit d8cc20750dfce0023b9e474b8c7064e487af5813 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:2c94d00e260e27562b90f97f1724d07f8589337adf7e0a3c61d1aa0239039674",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "docs.change",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "docs.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "docs.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "docs.artifact",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605081818-G4JQKS/blueprint/resolved-snapshot.json",
+        "digest": "cf20ff96ad3804c4b3552f594a27078d7e1bbdb004da18fd8ed9251fbeeb7ce1",
+        "current_digest": "cf20ff96ad3804c4b3552f594a27078d7e1bbdb004da18fd8ed9251fbeeb7ce1",
+        "route_changed": false,
+        "artifact_sha256": "sha256:6cfcd5679208c5ed8bba2fc8e4956fdfb069ac4ceb62cac8a5fc13e4536c0629",
+        "safe_command": "agentplane blueprint snapshot 202605081818-G4JQKS"
+      }
+    }
+  }
+}
