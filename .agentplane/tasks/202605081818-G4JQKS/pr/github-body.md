@@ -16,7 +16,7 @@ Document how to use clone report/check/baseline commands during refactoring and 
 ## Verification
 
 - State: ok
-- Note: Documented semantic clone report/check/baseline usage in developer quality docs. Trial run passed: clone:report reported sources=843, clones=88, duplicatedLines=1581, duplicatedTokens=16784, percentage=1.44; clone:check passed against the baseline. docs:scripts:check, policy routing, and doctor also passed.
+- Note: Updated after rebasing onto current origin/main. Docs guidance is unchanged and scoped. Trial clone report now shows sources=843, clones=88, duplicatedLines=1587, duplicatedTokens=16808, percentage=1.44. clone:check intentionally fails on current main because duplicatedLines and duplicatedTokens exceed the older baseline by 6 lines and 24 tokens; this documents fresh clone drift rather than a docs regression. docs:scripts:check, policy routing, and doctor passed.
 - Canonical workflow state lives in the task README.
 
 <details>
