@@ -1,7 +1,8 @@
 ---
 id: "202605081818-G4JQKS"
 title: "Document semantic clone refactor workflow"
-status: "DOING"
+result_summary: "Merged via PR #3488."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-08T18:40:52.159Z"
   updated_by: "DOCS"
   note: "Updated after rebasing onto current origin/main. Docs guidance is unchanged and scoped. Trial clone report now shows sources=843, clones=88, duplicatedLines=1587, duplicatedTokens=16808, percentage=1.44. clone:check intentionally fails on current main because duplicatedLines and duplicatedTokens exceed the older baseline by 6 lines and 24 tokens; this documents fresh clone drift rather than a docs regression. docs:scripts:check, policy routing, and doctor passed."
-commit: null
+commit:
+  hash: "d8cc20750dfce0023b9e474b8c7064e487af5813"
+  message: "🚧 G4JQKS task: Document semantic clone refactor workflow [202605081818-G4JQKS]"
 comments:
   -
     author: "DOCS"
     body: "Start: Document the semantic clone workflow in developer quality docs, run clone report/check as a trial, and keep the branch scoped to docs plus task artifacts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3488 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,14 +54,21 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Updated after rebasing onto current origin/main. Docs guidance is unchanged and scoped. Trial clone report now shows sources=843, clones=88, duplicatedLines=1587, duplicatedTokens=16808, percentage=1.44. clone:check intentionally fails on current main because duplicatedLines and duplicatedTokens exceed the older baseline by 6 lines and 24 tokens; this documents fresh clone drift rather than a docs regression. docs:scripts:check, policy routing, and doctor passed."
+  -
+    type: "status"
+    at: "2026-05-08T18:45:00.351Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3488 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-08T18:40:52.186Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-08T18:45:00.359Z"
+doc_updated_by: "INTEGRATOR"
 description: "Document how to use clone report/check/baseline commands during refactoring and record a trial run."
 sections:
   Summary: |-
     Document semantic clone refactor workflow
-
+    
     Document how to use clone report/check/baseline commands during refactoring and record a trial run.
   Scope: |-
     - In scope: Document how to use clone report/check/baseline commands during refactoring and record a trial run.
@@ -72,15 +85,15 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-08T18:25:24.242Z — VERIFY — ok
-
+    
     By: DOCS
-
+    
     Note: Documented semantic clone report/check/baseline usage in developer quality docs. Trial run passed: clone:report reported sources=843, clones=88, duplicatedLines=1581, duplicatedTokens=16784, percentage=1.44; clone:check passed against the baseline. docs:scripts:check, policy routing, and doctor also passed.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-08T18:22:15.310Z, excerpt_hash=sha256:cf519b38ad14ecbe73755a8f7027817fa729ef5554bfc1d480377049d571b988
-
+    
     Details:
-
+    
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605081818-G4JQKS-clone-refactor-docs/.agentplane/tasks/202605081818-G4JQKS/blueprint/resolved-snapshot.json
@@ -88,17 +101,17 @@ sections:
     - current_digest: cf20ff96ad3804c4b3552f594a27078d7e1bbdb004da18fd8ed9251fbeeb7ce1
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605081818-G4JQKS
-
+    
     ### 2026-05-08T18:40:52.159Z — VERIFY — ok
-
+    
     By: DOCS
-
+    
     Note: Updated after rebasing onto current origin/main. Docs guidance is unchanged and scoped. Trial clone report now shows sources=843, clones=88, duplicatedLines=1587, duplicatedTokens=16808, percentage=1.44. clone:check intentionally fails on current main because duplicatedLines and duplicatedTokens exceed the older baseline by 6 lines and 24 tokens; this documents fresh clone drift rather than a docs regression. docs:scripts:check, policy routing, and doctor passed.
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-08T18:25:24.297Z, excerpt_hash=sha256:cf519b38ad14ecbe73755a8f7027817fa729ef5554bfc1d480377049d571b988
-
+    
     Details:
-
+    
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605081818-G4JQKS-clone-refactor-docs/.agentplane/tasks/202605081818-G4JQKS/blueprint/resolved-snapshot.json
@@ -106,7 +119,7 @@ sections:
     - current_digest: cf20ff96ad3804c4b3552f594a27078d7e1bbdb004da18fd8ed9251fbeeb7ce1
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605081818-G4JQKS
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
