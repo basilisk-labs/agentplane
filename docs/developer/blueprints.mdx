@@ -66,6 +66,48 @@ agentplane blueprint report
 agentplane blueprint validate --project
 ```
 
+## External Catalogs and Packs
+
+External blueprint catalogs are an install source for project-local blueprints. They intentionally
+mirror the cached-install shape of recipes while staying a separate subsystem.
+
+Separation:
+
+- A blueprint is a route contract that can be validated, installed into `.agentplane/blueprints/`,
+  and explicitly trusted.
+- A blueprint pack is only a grouping descriptor for multiple catalog blueprint ids.
+- A recipe is still the extension layer for domain guidance, prompt modules, scenarios, templates,
+  and runtime assets.
+
+Catalog flow:
+
+```bash
+agentplane blueprints catalog refresh --index <path-or-url>
+agentplane blueprints catalog list
+agentplane blueprints catalog info <id>
+agentplane blueprints install <id>
+agentplane blueprints install <pack-id> --kind pack --activate
+```
+
+Cache and project boundaries:
+
+- The refreshed catalog index is stored under `~/.agentplane/blueprints/`.
+- Installing vendors blueprint definitions into the current project's `.agentplane/blueprints/`.
+- Installing does not imply activation.
+- Activation writes `.agentplane/blueprints/config.json` using the existing
+  `explicit_allowlist` trust model.
+- Local catalog packages may be copied into `.agentplane/blueprint-catalog/` as provenance; remote
+  sources install the validated definition file.
+
+Init integration:
+
+```bash
+agentplane init --setup-profile full-harness --blueprints pack:enterprise-baseline --yes
+```
+
+Full-harness init may install cached catalog blueprints or packs. Basic/default init keeps using the
+built-in registry and does not prompt for external blueprint installs.
+
 ## Task Lifecycle Visibility
 
 Blueprint selection is also visible on task lifecycle surfaces. Agents should use these commands in
