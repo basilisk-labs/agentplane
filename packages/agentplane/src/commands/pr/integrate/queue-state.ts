@@ -141,6 +141,11 @@ export function claimNextQueuedEntry(
 ): { state: IntegrationQueueState; entry: IntegrationQueueEntry | null } {
   const clock = opts.clock ?? { now: () => new Date() };
   const current = expireClaimedEntries(state, clock);
+  const activeLane = current.entries.find(
+    (entry) => entry.status === "claimed" || entry.status === "handoff",
+  );
+  if (activeLane) return { state: current, entry: null };
+
   const queued = current.entries
     .filter((entry) => entry.status === "queued")
     .toSorted((left, right) => {

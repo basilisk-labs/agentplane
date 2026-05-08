@@ -4,6 +4,18 @@ import type { CommandSpec } from "../cli/spec/spec.js";
 
 export type IntegrateQueueGroupParsed = GroupCommandParsed;
 
+function parseOptionalPositiveInteger(raw: unknown): number | null {
+  if (typeof raw !== "string" || !raw.trim()) return null;
+  const value = Number.parseInt(raw.trim(), 10);
+  return Number.isSafeInteger(value) && value > 0 && String(value) === raw.trim() ? value : null;
+}
+
+function validateOptionalPositiveInteger(raw: unknown, spec: CommandSpec<unknown>, flag: string) {
+  if (raw === undefined) return;
+  if (parseOptionalPositiveInteger(raw) !== null) return;
+  throw usageError({ spec, message: `Invalid value for --${flag}: expected integer >= 1.` });
+}
+
 export const integrateQueueSpec: CommandSpec<IntegrateQueueGroupParsed> = {
   id: ["integrate", "queue"],
   group: "PR",
@@ -97,12 +109,12 @@ export const integrateQueueClaimSpec: CommandSpec<IntegrateQueueClaimParsed> = {
   ],
   parse: (raw) => ({
     worker: typeof raw.opts.worker === "string" ? raw.opts.worker : null,
-    leaseMs:
-      typeof raw.opts["lease-ms"] === "string" && raw.opts["lease-ms"].trim()
-        ? Number.parseInt(raw.opts["lease-ms"], 10)
-        : null,
+    leaseMs: parseOptionalPositiveInteger(raw.opts["lease-ms"]),
     json: raw.opts.json === true,
   }),
+  validateRaw: (raw) => {
+    validateOptionalPositiveInteger(raw.opts["lease-ms"], integrateQueueClaimSpec, "lease-ms");
+  },
 };
 
 export type IntegrateQueueReleaseParsed = {
@@ -155,12 +167,12 @@ export const integrateQueueRunNextSpec: CommandSpec<IntegrateQueueRunNextParsed>
   ],
   parse: (raw) => ({
     worker: typeof raw.opts.worker === "string" ? raw.opts.worker : null,
-    leaseMs:
-      typeof raw.opts["lease-ms"] === "string" && raw.opts["lease-ms"].trim()
-        ? Number.parseInt(raw.opts["lease-ms"], 10)
-        : null,
+    leaseMs: parseOptionalPositiveInteger(raw.opts["lease-ms"]),
     runVerify: raw.opts["run-verify"] === true,
     dryRun: raw.opts["dry-run"] === true,
     quiet: raw.opts.quiet === true,
   }),
+  validateRaw: (raw) => {
+    validateOptionalPositiveInteger(raw.opts["lease-ms"], integrateQueueRunNextSpec, "lease-ms");
+  },
 };

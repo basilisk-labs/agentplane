@@ -13,7 +13,7 @@ Created: 2026-05-08T18:16:17.726Z
 ## Verification
 
 - State: ok
-- Note: Command: bun run workflow:wait-remote-checks -- 3483 --repo basilisk-labs/agentplane; Result: pass; Evidence: required checks passed for PR #3483 after Core CI, Docs CI, Socket, release-ready, test, test-windows, and recovery-validate reported success.
+- Note: Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/queue-state.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts; Result: pass; Evidence: 2 files, 11 tests passed after addressing PR review comments. Command: bun run --filter=agentplane typecheck; Result: pass. Command: bun run --filter=agentplane build; Result: pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

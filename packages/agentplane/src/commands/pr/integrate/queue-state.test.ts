@@ -57,6 +57,61 @@ describe("integration queue state", () => {
     expect(expired.entries[0]?.reason).toBe("lease expired");
   });
 
+  it("does not claim another entry while the merge lane is occupied", () => {
+    const state = upsertQueuedEntry(
+      upsertQueuedEntry(emptyIntegrationQueue(), enqueue("T-1"), clock("2026-01-01T00:00:00Z")),
+      enqueue("T-2"),
+      clock("2026-01-01T00:00:01Z"),
+    );
+    const firstClaim = claimNextQueuedEntry(state, {
+      worker: "integrator",
+      clock: clock("2026-01-01T00:00:02Z"),
+    });
+
+    const secondClaim = claimNextQueuedEntry(firstClaim.state, {
+      worker: "other-integrator",
+      clock: clock("2026-01-01T00:00:03Z"),
+    });
+
+    expect(secondClaim.entry).toBeNull();
+    expect(secondClaim.state.entries.filter((entry) => entry.status === "claimed")).toHaveLength(1);
+    expect(secondClaim.state.entries.find((entry) => entry.task_id === "T-2")?.status).toBe(
+      "queued",
+    );
+  });
+
+  it("does not claim another entry while a protected-base handoff is unresolved", () => {
+    const state = upsertQueuedEntry(
+      upsertQueuedEntry(emptyIntegrationQueue(), enqueue("T-1"), clock("2026-01-01T00:00:00Z")),
+      enqueue("T-2"),
+      clock("2026-01-01T00:00:01Z"),
+    );
+    const claimed = claimNextQueuedEntry(state, {
+      worker: "integrator",
+      clock: clock("2026-01-01T00:00:02Z"),
+    }).state;
+    const handoff = markQueueEntry(
+      claimed,
+      "T-1",
+      "handoff",
+      "protected base handoff recorded",
+      clock("2026-01-01T00:00:03Z"),
+    );
+
+    const secondClaim = claimNextQueuedEntry(handoff, {
+      worker: "other-integrator",
+      clock: clock("2026-01-01T00:00:04Z"),
+    });
+
+    expect(secondClaim.entry).toBeNull();
+    expect(secondClaim.state.entries.find((entry) => entry.task_id === "T-1")?.status).toBe(
+      "handoff",
+    );
+    expect(secondClaim.state.entries.find((entry) => entry.task_id === "T-2")?.status).toBe(
+      "queued",
+    );
+  });
+
   it("keeps handoff entries out of automatic lease expiry", () => {
     const claimed = claimNextQueuedEntry(
       upsertQueuedEntry(emptyIntegrationQueue(), enqueue("T-1"), clock("2026-01-01T00:00:00Z")),
