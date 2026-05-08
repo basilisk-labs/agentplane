@@ -8,7 +8,7 @@
 - [ ] `docs/launch/hn.md` is ready.
 - [ ] `docs/launch/twitter.md` is ready.
 - [ ] `docs/launch/reddit.md` is ready.
-- [ ] README header uses the current tagline: "The audit layer for coding agents."
+- [ ] README header uses the current tagline: "Git-native infrastructure for traceable AI work."
 - [ ] `website/static/img/og-image.png`, `twitter-card.png`, and `hn-card.png` are distinct.
 - [ ] `docs/assets/agentplane-demo.gif` exists.
 - [ ] `docs/assets/agentplane-demo.tape` exists.

@@ -1,63 +1,71 @@
 ---
 title: "Overview"
-description: "Learn what AgentPlane is, what it is not, and how it makes coding-agent work auditable inside Git."
+description: "Learn how AgentPlane makes AI-agent work traceable inside Git."
 ---
 
 ## What AgentPlane is
 
-AgentPlane is a local CLI for agent-driven development inside a Git repository.
+AgentPlane is Git-native infrastructure for traceable AI work.
 
-It makes Claude Code, Codex, Cursor, Aider, and similar coding-agent work auditable by recording the
-workflow around the code:
+It wraps coding-agent changes in repository-owned evidence: task intent, approved plan,
+verification results, finish state, Git metadata, and Agent Change Record.
+
+Use your existing agent to edit code. Use AgentPlane to make the work reviewable after the chat
+window, terminal session, or IDE context is gone.
 
 ```text
 task -> plan -> approve -> implement -> verify -> finish
 ```
 
-AgentPlane runs locally. It does not add a hosted runtime between your repository and your agent.
+## What AgentPlane does not do
 
-## What it gives you
-
-- A repo policy gateway: `AGENTS.md` or `CLAUDE.md`.
-- A repo-local workspace: `.agentplane/`.
-- Task records with ownership, plan, status, and dependencies.
-- Explicit verification state.
-- Finish records tied to Git revisions.
-- Workflow modes for fast local loops and stricter branch/PR handoff.
-- [Agent Change Record](agent-change-record) evidence manifests for portable review and optional CI
-  validation of agent-authored changes.
-
-## What it does not do
-
-- It is not an agent.
-- It is not a hosted agent platform.
-- It is not a prompt framework.
+- It does not generate code for you.
+- It does not choose a model.
 - It does not replace Git.
-- It does not replace your editor or terminal.
-- It does not replace Claude Code, Codex, Cursor, Aider, or other coding agents.
+- It does not replace CI.
+- It does not replace pull request review.
+- It does not require a hosted dashboard.
 
-## How the pieces fit
+## What AgentPlane gives you
 
-1. `agentplane init` creates the policy gateway and `.agentplane/` workspace.
-2. A task records what the agent is supposed to solve.
-3. A plan records the intended approach before implementation.
-4. Verification records what was checked.
-5. Finish records why the work is considered closed.
-6. Agent Change Record packages task evidence into a portable, hash-checked manifest that can be
-   generated, validated, explained, and refreshed automatically on finish.
+- Repo-local task records.
+- Policy gateway through `AGENTS.md` or `CLAUDE.md`.
+- Explicit task lifecycle.
+- Verification evidence.
+- ACR generation and validation.
+- `direct` and `branch_pr` workflows.
+
+## First artifact before first abstraction
+
+The fastest way to understand AgentPlane is to create a harmless task and inspect the files it
+writes:
+
+```bash
+npm i -g agentplane
+agentplane init
+agentplane quickstart
+```
+
+The visible payoff is a repo-owned task trail:
+
+```text
+.agentplane/tasks/<task-id>/README.md
+.agentplane/tasks/<task-id>/acr.json
+```
 
 ## Source of truth model
 
 - Workflow policy: `AGENTS.md` or `CLAUDE.md`.
 - Repo workflow/configuration: `.agentplane/WORKFLOW.md`.
 - Task state: `.agentplane/tasks/`.
+- ACR evidence projection: `.agentplane/tasks/<task-id>/acr.json`.
 - Command behavior: installed `agentplane` CLI.
 - Git history: commits, branches, and review workflow.
 
 ## Next steps
 
 1. Install and initialize from [Setup](setup).
-2. Learn the [Workflow](workflow).
-3. Pick a [Workflow guide](../workflow-guides) for your coding agent or review setup.
-4. Install a [Recipe](../recipes) only when you need an AgentPlane extension package.
-5. Use [Commands](commands) for exact flags.
+2. Read [Agent Change Record](agent-change-record).
+3. Pick a [workflow guide](../workflow-guides) for your coding agent or review setup.
+4. Learn the [Workflow](workflow).
+5. Install a [Recipe](../recipes) only when you need an extension package.

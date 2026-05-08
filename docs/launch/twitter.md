@@ -2,9 +2,9 @@
 
 ## Post 1
 
-AgentPlane is an open-source audit layer for coding agents.
+AgentPlane is Git-native infrastructure for traceable AI work.
 
-It turns an agent change into repo-visible evidence:
+It turns an AI-agent change into repo-visible evidence:
 
 - task intent
 - approved plan
@@ -25,7 +25,7 @@ AgentPlane generates ACRs for coding-agent work:
 
 ```bash
 agentplane acr generate <task-id> --work-commit HEAD --write
-agentplane acr validate .agentplane/tasks/<task-id>/acr.json
+agentplane acr validate <task-id> --mode local
 ```
 
 Docs: https://agentplane.org/docs/user/agent-change-record
@@ -58,5 +58,5 @@ AgentPlane makes those answers durable.
 AgentPlane: ACRs for coding agents. Repo-visible task intent, approved plan, verification evidence,
 and finish state. https://github.com/basilisk-labs/agentplane
 
-AgentPlane is the audit layer around coding agents: task -> plan -> verify -> finish -> acr.
+AgentPlane: Git-native evidence for AI work. task -> plan -> verify -> finish -> ACR.
 https://github.com/basilisk-labs/agentplane

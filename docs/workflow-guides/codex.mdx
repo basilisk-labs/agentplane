@@ -1,10 +1,18 @@
 ---
-title: "AgentPlane + Codex"
-description: "Use Codex-style CLI work inside a repo-local AgentPlane task lifecycle."
+title: "Use AgentPlane with Codex"
+description: "Use Codex-style terminal work inside a repo-local AgentPlane evidence lifecycle."
 ---
 
 Use this when a Codex-style coding agent works from your terminal and you need the result to be
 auditable through Git-visible artifacts.
+
+This guide works for any terminal-based coding agent. Codex is the common example; the evidence
+model is provider-neutral.
+
+## What this guide gives you
+
+A terminal workflow where the agent edits files and AgentPlane records the task evidence around the
+work.
 
 ## When to use
 
@@ -39,6 +47,23 @@ agentplane finish <task-id> --author CODER --body "Verified: focused parser veri
 - approved plan and start comment
 - verification evidence
 - finish metadata linked to the Git revision
+- `.agentplane/tasks/<task-id>/acr.json`
+
+## Reviewer checklist
+
+Before merging, verify:
+
+- The task exists under `.agentplane/tasks/<task-id>/`.
+- The plan was approved or explicitly waived.
+- Verification evidence exists.
+- `agentplane acr check <task-id> --mode ci` passes where CI gating is required.
+- The finish record links to the work commit.
+
+## Common mistakes
+
+- Treating terminal scrollback as durable evidence.
+- Running checks but not recording them with `agentplane verify`.
+- Using a Codex-specific assumption when a provider-neutral task record would be enough.
 
 ## Limitations
 

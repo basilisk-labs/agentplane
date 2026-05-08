@@ -1,18 +1,19 @@
 <p align="center">
-  <img src="docs/assets/header.png" alt="AgentPlane - the audit layer for coding agents" width="720"/>
+  <img src="docs/assets/header.png" alt="AgentPlane - Git-native infrastructure for traceable AI work" width="720"/>
 </p>
 
 # AgentPlane
 
-**The open-source audit layer for coding agents.**
+**Git-native infrastructure for traceable AI work.**
 
-AgentPlane turns Claude Code, Codex, Cursor, Aider, and similar coding-agent work into reviewable,
-reversible Git artifacts. It records what the agent was asked to do, what plan was accepted, what
-was verified, and how the work closed.
+AgentPlane turns Claude Code, Codex, Cursor, Aider, and other coding-agent changes into reviewable
+Git evidence: task intent, approved plan, verification, finish state, and Agent Change Record.
 
 ```text
 task -> plan -> approve -> implement -> verify -> finish
 ```
+
+Not another agent. Not a hosted dashboard. The review trail for AI work, inside Git.
 
 No hosted runtime. No telemetry. No vendor lock-in. Everything stays in your repository.
 
@@ -39,41 +40,39 @@ Requirements: Node.js 20+, Git, and a local terminal.
 
 ![AgentPlane CLI demo](docs/assets/agentplane-demo.gif)
 
-## The problem
+## Why
 
-You let a coding agent run. It edits dozens of files. The final diff is real, but the surrounding
-evidence is scattered across chat history, terminal scrollback, and memory. Reviewers can see what
-changed, but not the task, plan, approval, verification, and closure chain that made the change
-safe to merge.
+A pull request shows what changed. It does not reliably show what the agent was asked to do, which
+plan constrained the change, which checks ran, or why the work is safe to merge.
 
-Hosted dashboards solve that by moving workflow state out of your repo. AgentPlane keeps the
-evidence in Git.
+AgentPlane records that missing evidence before it disappears into chat history, terminal
+scrollback, or IDE state.
 
 ## What AgentPlane writes
 
 `agentplane init` adds a local workflow surface:
 
 ```text
-AGENTS.md or CLAUDE.md   Repository policy gateway
-.agentplane/            Repo-local workflow workspace
-.agentplane/WORKFLOW.md Current workflow/config contract
-.agentplane/tasks/      Per-task records, PR artifacts, and evidence
+AGENTS.md                         Repository policy gateway
+.agentplane/WORKFLOW.md           Workflow contract
+.agentplane/tasks/<task-id>/       Task state and evidence
+.agentplane/tasks/<task-id>/acr.json
+                                  Agent Change Record
 ```
 
-A reviewer can reconstruct the work from repo-visible artifacts: task intent, accepted plan,
-verification result, finish note, and linked commit.
+Reviewers do not need to trust an agent transcript. They can inspect files, commits, checks,
+hashes, and the ACR.
 
-## What is an ACR?
+## Agent Change Record
 
-Every AgentPlane task can produce an **Agent Change Record (ACR)**: a deterministic,
-machine-readable JSON document that summarizes the task's intent, accepted plan, verification
-result, and closure commit. ACRs are validated against `@agentplane/spec` so they remain reviewable
-by humans and parseable by tooling.
+ACR is a commit-safe JSON record for AI-authored work. It captures task intent, approved plan, Git
+commits, policy decisions, verification evidence, and merge readiness.
 
 ```bash
 agentplane acr generate <task-id> --work-commit HEAD --write
-agentplane acr validate .agentplane/tasks/<task-id>/acr.json
-agentplane acr check <task-id> --require-plan-approved --require-verification
+agentplane acr validate <task-id> --mode local
+agentplane acr check <task-id> --mode ci
+agentplane acr explain <task-id>
 ```
 
 Schema: [`schemas/acr-v0.1.schema.json`](schemas/acr-v0.1.schema.json).
@@ -105,6 +104,15 @@ agentplane finish <task-id> --author <agent-id> --result "Parser rejects empty l
 Agent IDs are configurable profiles. See
 [Agents](docs/user/agents.mdx).
 
+## AgentPlane is not
+
+- Not another coding agent.
+- Not a prompt framework.
+- Not a hosted dashboard.
+- Not a replacement for Git, CI, or PR review.
+
+It is the evidence layer around the tools you already use.
+
 ## Why AgentPlane
 
 | Without AgentPlane       | With AgentPlane                       |
@@ -131,9 +139,9 @@ See the full comparison page in [docs/compare.mdx](docs/compare.mdx).
 
 ## Recipes
 
-Recipes are signed, versioned behavior modules for AgentPlane. They can add agent profiles, prompt
-modules, skills, scenario assets, and expected project artifacts without turning your workflow into
-an opaque hosted service.
+Recipes are optional signed behavior modules. Start with the task -> plan -> verify -> ACR flow
+first; add recipes only when you need reusable agent profiles, prompt modules, skills, scenario
+assets, or repository mapping.
 
 ```bash
 agentplane recipes list-remote
@@ -142,14 +150,12 @@ agentplane recipes install code-map --refresh --yes
 
 The current catalog starts with [Code Map](docs/recipes/code-map.mdx).
 
-## Workflow modes
-
 ## Who uses it
 
-- Solo developers who want a future-self version of the agent's work to stay reviewable.
-- Maintainers accepting agent-generated PRs.
-- Teams enforcing AGENTS.md policy and DCO sign-off across human and agent commits.
-- Platform, DevProd, and security orgs building internal AGENTS.md standards.
+- Solo developers who want future-you to know why an agent changed 19 files.
+- OSS maintainers who require agent-generated PRs to include task intent, plan, checks, and ACR.
+- Engineering teams that make agent work follow a shared lifecycle before review.
+- Platform and security teams that need local, inspectable, policy-aware, CI-gateable AI work.
 
 DCO sign-off and multi-author commits are first-class. AgentPlane-managed commits preserve DCO
 identity fallbacks so agent and human co-authoring stays compliant.
@@ -157,6 +163,8 @@ identity fallbacks so agent and human co-authoring stays compliant.
 Using AgentPlane in a real repo? Tell us in
 [Discussions](https://github.com/basilisk-labs/agentplane/discussions). We will add your story to
 [docs/showcase](docs/showcase.mdx).
+
+## Workflow modes
 
 ### `direct`
 

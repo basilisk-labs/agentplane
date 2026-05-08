@@ -2,7 +2,7 @@
 
 ## Title
 
-Launch HN: AgentPlane - audit records for coding agents
+Launch HN: AgentPlane - Git-native evidence for AI-agent work
 
 ## URL
 
@@ -10,7 +10,7 @@ https://github.com/basilisk-labs/agentplane
 
 ## Primary Comment
 
-AgentPlane is an open-source audit layer for coding agents. It records the task, approved plan,
+AgentPlane is Git-native infrastructure for traceable AI work. It records the task, approved plan,
 verification evidence, finish state, and an Agent Change Record (ACR) in the Git repository where
 the change happens.
 
@@ -18,7 +18,7 @@ The problem we are trying to make concrete: a coding agent can edit dozens of fi
 reviewer sees anything durable. Chat history is not a review artifact, and a diff alone does not
 explain intent, approval, or verification.
 
-The current release focuses on ACRs:
+The current public surface focuses on ACRs:
 
 - `agentplane acr generate` writes a portable JSON record for a task.
 - `agentplane acr validate` checks the record against the schema.

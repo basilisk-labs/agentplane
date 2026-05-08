@@ -5,10 +5,11 @@ description: "ACR v0.1 as a repo-local evidence contract for agent-authored soft
 
 ## Status
 
-Agent Change Record, abbreviated ACR, is the AgentPlane evidence format for task-local,
-machine-readable change records. The AgentPlane lifecycle already records task, plan, approval,
-verification, finish, policy, and Git state. ACR v0.1 turns that lifecycle into one portable,
-machine-readable record.
+Agent Change Record, abbreviated ACR, is a reviewable evidence file for AI-authored work.
+
+A pull request shows the diff. An Agent Change Record shows the execution evidence around the diff:
+task intent, approved plan, agent/toolchain identity, Git commits, policy decisions, verification
+results, and merge readiness.
 
 The vendor-neutral standard lives in the Basilisk Labs `agent-change-record` repository. AgentPlane
 is one producer and validator for that standard, not the canonical store for the standard itself.
@@ -35,6 +36,45 @@ The default AgentPlane path is:
 
 The path is task-local because ACR is per-task evidence. Export paths may exist for integrations,
 but the task-local record is the default producer location.
+
+## 60-second version
+
+```bash
+agentplane acr generate <task-id> --work-commit HEAD --write
+agentplane acr explain <task-id>
+agentplane acr check <task-id> --mode ci
+```
+
+Humans read `acr explain`. CI reads `acr check`. External tools read `acr.json`.
+
+Simplified excerpt:
+
+```json
+{
+  "record_type": "agent_change_record",
+  "task": {
+    "title": "Fix parser edge case",
+    "intent": "Reject empty labels"
+  },
+  "plan": {
+    "status": "approved"
+  },
+  "repository": {
+    "base_commit": "abc123",
+    "work_commit": "def456"
+  },
+  "verification": {
+    "status": "passed",
+    "checks": ["npm test -- parser"]
+  },
+  "result": {
+    "merge_ready": true
+  }
+}
+```
+
+The real schema has more required fields. Use `agentplane acr schema --version 0.1` for the full
+contract.
 
 ## Source-of-truth model
 
@@ -198,7 +238,11 @@ This keeps ACR useful as a merge gate rather than only as a retrospective report
 
 ## Privacy baseline
 
-ACR must be safe to commit to Git.
+ACR is commit-safe by default.
+
+It records evidence pointers, artifact hashes, command names, tool versions, policy decisions, and
+verification status. It does not need raw prompts, private transcripts, credentials, or full
+terminal logs.
 
 Forbidden by default:
 

@@ -1,133 +1,172 @@
 ---
 title: "AgentPlane Documentation"
-description: "User and developer documentation for AgentPlane CLI workflows, governance, and release operations."
+description: "Docs for AgentPlane, the Git-native evidence layer for traceable AI work."
 ---
 
-This documentation follows an agent-first structure:
+# AgentPlane documentation
 
-- `Start`
-- `Work on a task`
-- `Workflow guides`
-- `Recipes`
-- `Agent Change Record`
-- `Upgrade & recover`
-- `Reference & integrations`
-- `Developer Guide`
+AgentPlane turns AI-agent changes into reviewable Git evidence: task, plan, verification, Agent
+Change Record, and closure.
 
-## Quick Start
+## What are you trying to do?
+
+### I want to try AgentPlane locally
+
+[Run the 90-second quickstart](user/setup).
+
+### I use Claude Code, Codex, Cursor, or Aider
+
+[Pick a workflow guide](workflow-guides).
+
+### I review agent-generated PRs
+
+[Add task evidence and ACR validation](user/agent-change-record).
+
+### I need to understand the evidence format
+
+[Read Agent Change Record](user/agent-change-record).
+
+### I am operating AgentPlane in a team repo
+
+[Use branch_pr and CI gates](workflow-guides/branch-pr).
+
+### I am upgrading an existing workspace
+
+[Read upgrade and recovery](help/legacy-upgrade-recovery).
+
+## Reading order
 
 1. [Overview](user/overview)
-2. [Why AgentPlane exists](manifesto)
-3. [How AgentPlane compares](compare)
-4. [Prerequisites](user/prerequisites)
-5. [Setup](user/setup)
-6. [Agent bootstrap](user/agent-bootstrap.generated)
-7. [Workflow guides](workflow-guides)
-8. [Recipes](recipes)
-9. [Workflow](user/workflow)
+2. [Setup](user/setup)
+3. [Agent Change Record](user/agent-change-record)
+4. [Why AgentPlane exists](manifesto)
+5. [How AgentPlane compares](compare)
+6. [Workflow guides](workflow-guides)
+7. [CLI reference](user/cli-reference.generated)
 
-## Main Sections
+## Main sections
 
-### Start
+- Start here: overview, setup, first task, ACR, glossary.
+- Concepts: Git-native evidence, task lifecycle, source-of-truth model, privacy, workflow modes.
+- Workflows: solo local work, branch_pr, agent PRs, GitHub Actions, maintainer review.
+- Use with agents: Claude Code, Codex, Cursor, Aider, and generic terminal agents.
+- ACR: overview, record shape, generate/validate/explain, CI gate, schema.
+- Recipes: optional signed behavior modules.
+- Operations: upgrade, recovery, doctor, troubleshooting, backends.
+- Reference: CLI, configuration, task README contract, backend model, hooks, policy.
+- Developer: architecture, CLI contract, contributing, release process.
 
-1. [Overview](user/overview)
-2. [Why AgentPlane exists](manifesto)
-3. [How AgentPlane compares](compare)
-4. [Prerequisites](user/prerequisites)
-5. [Setup](user/setup)
-6. [Agent bootstrap](user/agent-bootstrap.generated)
+## Complete docs index
 
-### Work on a task
+### Start here
 
-1. [Workflow](user/workflow)
-2. [Task lifecycle](user/task-lifecycle)
-3. [Commands](user/commands)
-4. [Agents](user/agents)
-5. [Branching and PR artifacts](user/branching-and-pr-artifacts)
+- [Overview](user/overview)
+- [Setup](user/setup)
+- [Agent Change Record](user/agent-change-record)
+- [Glossary](help/glossary)
+- [Why AgentPlane exists](manifesto)
+- [How AgentPlane compares](compare)
+- [Prerequisites](user/prerequisites)
+- [Agent bootstrap](user/agent-bootstrap.generated)
 
-### Workflow guides
+### Concepts
 
-1. [Workflow guides overview](workflow-guides)
-2. [AgentPlane + Claude Code](workflow-guides/claude-code)
-3. [AgentPlane + Codex](workflow-guides/codex)
-4. [AgentPlane + Cursor](workflow-guides/cursor)
-5. [AgentPlane + Aider](workflow-guides/aider)
-6. [AgentPlane + GitHub Actions](workflow-guides/github-actions)
-7. [AgentPlane + branch_pr workflow](workflow-guides/branch-pr)
+- [Workflow](user/workflow)
+- [Task lifecycle](user/task-lifecycle)
+- [Commands](user/commands)
+- [Branching and PR artifacts](user/branching-and-pr-artifacts)
+- [Tasks and backends](user/tasks-and-backends)
+- [Configuration](user/configuration)
 
-### Recipes
+### Workflows
 
-1. [Recipes overview](recipes)
-2. [Code Map recipe](recipes/code-map)
+- [Workflow guides overview](workflow-guides)
+- [Claude Code](workflow-guides/claude-code)
+- [Codex](workflow-guides/codex)
+- [Cursor](workflow-guides/cursor)
+- [Aider](workflow-guides/aider)
+- [GitHub Actions](workflow-guides/github-actions)
+- [branch_pr workflow](workflow-guides/branch-pr)
+
+### Use with agents
+
+- [Agents](user/agents)
+- [Claude Code](workflow-guides/claude-code)
+- [Codex](workflow-guides/codex)
+- [Cursor](workflow-guides/cursor)
+- [Aider](workflow-guides/aider)
 
 ### Agent Change Record
 
-1. [Agent Change Record](user/agent-change-record)
-2. [ACR implementation plan](developer/agent-change-record-implementation)
+- [ACR overview](user/agent-change-record)
+- [ACR implementation plan](developer/agent-change-record-implementation)
 
-### Upgrade & recover
+### Recipes
 
-1. [Breaking changes](user/breaking-changes)
-2. [Workflow migration](user/workflow-migration)
-3. [Upgrade recovery](help/legacy-upgrade-recovery)
-4. [Troubleshooting by symptom](help/troubleshooting-by-symptom)
-5. [Troubleshooting](help/troubleshooting)
+- [Recipes overview](recipes)
+- [Code Map recipe](recipes/code-map)
 
-### Reference & integrations
+### Operations
 
-1. [Tasks and backends](user/tasks-and-backends)
-2. [Backends deep dive](user/backends)
-3. [Local backend](user/backends/local)
-4. [Cloud backend](user/backends/cloud)
-5. [Redmine backend](user/backends/redmine)
-6. [Redmine guide](user/redmine)
-7. [Configuration](user/configuration)
-8. [Agent discovery](user/agent-discovery)
-9. [Indexing and webmaster operations](user/indexing-and-webmaster-operations)
-10. [Website IA](user/website-ia)
-11. [Listing submission profile](listing)
-12. [CLI reference (generated)](user/cli-reference.generated)
-13. [Generated reference](reference/generated-reference)
+- [Breaking changes](user/breaking-changes)
+- [Workflow migration](user/workflow-migration)
+- [Upgrade recovery](help/legacy-upgrade-recovery)
+- [Troubleshooting by symptom](help/troubleshooting-by-symptom)
+- [Troubleshooting](help/troubleshooting)
 
-## Developer Guide
+### Reference
 
-1. [Design principles](developer/design-principles)
-2. [Architecture](developer/architecture)
-3. [Project layout](developer/project-layout)
-4. [Module topology](developer/module-topology)
-5. [Documentation information architecture](developer/documentation-information-architecture)
-6. [CLI contract](developer/cli-contract)
-7. [CLI help JSON contract](developer/cli-help-json)
-8. [Workflow contract](developer/workflow-contract)
-9. [Workflow harness test matrix](developer/workflow-harness-test-matrix)
-10. [Harness engineering](developer/harness-engineering)
-11. [Blueprints](developer/blueprints)
-12. [Cloud backend integration plan](developer/cloud-backend-integration-plan)
-13. [Evaluation and recursive improvement](developer/evaluation-and-recursive-improvement)
-14. [Close taxonomy](developer/close-taxonomy)
-15. [Incident archive](developer/incident-archive)
-16. [Modular prompt assembly](developer/modular-prompt-assembly)
-17. [Schema validation strategy](developer/schema-validation-strategy)
-18. [TypeScript ESM imports](developer/typescript-esm-imports)
-19. [Recipes specification](developer/recipes-spec)
-20. [Recipes: how it works](developer/recipes-how-it-works)
-21. [Recipes development](developer/recipes-development)
-22. [Recipes safety](developer/recipes-safety)
-23. [Testing and quality](developer/testing-and-quality)
-24. [Code quality](developer/code-quality)
-25. [Performance baselines](developer/performance-baselines)
-26. [Release and publishing](developer/release-and-publishing)
-27. [Contributing](developer/contributing)
+- [Backends](user/backends)
+- [Local backend](user/backends/local)
+- [Cloud backend](user/backends/cloud)
+- [Redmine backend](user/backends/redmine)
+- [Redmine guide](user/redmine)
+- [Agent discovery](user/agent-discovery)
+- [Indexing and webmaster operations](user/indexing-and-webmaster-operations)
+- [Website IA](user/website-ia)
+- [Listing submission profile](listing)
+- [CLI reference](user/cli-reference.generated)
+- [Generated reference](reference/generated-reference)
 
-## Release Notes
+### Community
 
-- Use the sidebar `Release Notes` section.
-- Notes are ordered by version descending (latest first).
+- [Showcase](showcase)
 
-## Help
+### Developer
 
-1. [Upgrade recovery](help/legacy-upgrade-recovery)
-2. [Troubleshooting by symptom](help/troubleshooting-by-symptom)
-3. [Troubleshooting](help/troubleshooting)
-4. [Broken workflow runbook](help/broken-workflow-runbook)
-5. [Glossary](help/glossary)
+- [Design principles](developer/design-principles)
+- [Architecture](developer/architecture)
+- [Project layout](developer/project-layout)
+- [Module topology](developer/module-topology)
+- [Documentation information architecture](developer/documentation-information-architecture)
+- [CLI contract](developer/cli-contract)
+- [CLI help JSON contract](developer/cli-help-json)
+- [Workflow contract](developer/workflow-contract)
+- [Workflow harness test matrix](developer/workflow-harness-test-matrix)
+- [Harness engineering](developer/harness-engineering)
+- [Blueprints](developer/blueprints)
+- [Cloud backend integration plan](developer/cloud-backend-integration-plan)
+- [Evaluation and recursive improvement](developer/evaluation-and-recursive-improvement)
+- [Close taxonomy](developer/close-taxonomy)
+- [Incident archive](developer/incident-archive)
+- [Modular prompt assembly](developer/modular-prompt-assembly)
+- [Schema validation strategy](developer/schema-validation-strategy)
+- [TypeScript ESM imports](developer/typescript-esm-imports)
+- [Recipes specification](developer/recipes-spec)
+- [Recipes: how it works](developer/recipes-how-it-works)
+- [Recipes development](developer/recipes-development)
+- [Recipes safety](developer/recipes-safety)
+- [Testing and quality](developer/testing-and-quality)
+- [Code quality](developer/code-quality)
+- [Performance baselines](developer/performance-baselines)
+- [Release and publishing](developer/release-and-publishing)
+- [Contributing](developer/contributing)
+
+### Release notes
+
+- [Latest release notes](releases)
+
+### Help
+
+- [Broken workflow runbook](help/broken-workflow-runbook)
+- [Glossary](help/glossary)

@@ -1,10 +1,58 @@
 ---
 title: "Showcase"
-description: "Marketing and community showcase source moved to the AgentPlane marketing repository."
+description: "Public examples of AgentPlane evidence trails and AI PR policies."
 ---
 
-The canonical showcase source now lives in the AgentPlane marketing repository:
+# Showcase
 
-- [docs/community/showcase.mdx](https://github.com/basilisk-labs/agentplane-marketing/blob/main/docs/community/showcase.mdx)
+AgentPlane grows best through visible evidence, not hidden telemetry.
 
-Keep this page as a public docs route so existing links to `/docs/showcase` continue to resolve.
+This page is for teams, maintainers, and public repositories that use AgentPlane to make AI work
+reviewable in Git.
+
+## Submit an example
+
+Open a GitHub Discussion with:
+
+- Repository or project link.
+- Agent used: Claude Code, Codex, Cursor, Aider, or another tool.
+- Workflow mode: `direct` or `branch_pr`.
+- Evidence required before merge.
+- Example task README, ACR, or PR link if public.
+
+## Example formats
+
+### First ACR
+
+Share a task that produced:
+
+```text
+.agentplane/tasks/<task-id>/README.md
+.agentplane/tasks/<task-id>/acr.json
+```
+
+### Agent PR policy
+
+Share a contributor policy that requires agent-authored PRs to include:
+
+- task intent
+- approved or waived plan
+- verification evidence
+- valid ACR
+- finish record linked to the work commit
+
+### Workflow guide
+
+Share the exact flow your repo uses with a coding agent:
+
+- Claude Code
+- Codex
+- Cursor
+- Aider
+- GitHub Actions
+- branch_pr
+
+## Trust boundary
+
+Do not submit secrets, private transcripts, raw prompts, credentials, or full terminal logs.
+Commit-safe evidence is enough.

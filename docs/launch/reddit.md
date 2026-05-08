@@ -10,13 +10,13 @@
 
 ## Title Options
 
-- AgentPlane: open-source audit records for coding-agent changes
-- I built a Git-visible audit layer for Claude Code, Codex, Cursor, and Aider workflows
+- AgentPlane: Git-native evidence records for AI-agent changes
+- I built a Git-visible evidence layer for Claude Code, Codex, Cursor, and Aider workflows
 - Agent Change Records for coding agents: task, plan, verification, finish, in Git
 
 ## Post Body
 
-AgentPlane is an open-source audit layer for coding agents.
+AgentPlane is Git-native infrastructure for traceable AI work.
 
 It does not try to be another agent or IDE. It records the workflow around agent-written changes:
 
@@ -34,8 +34,8 @@ The current release adds the public ACR surface:
 
 ```bash
 agentplane acr generate <task-id> --work-commit HEAD --write
-agentplane acr validate .agentplane/tasks/<task-id>/acr.json
-agentplane acr check <task-id> --require-plan-approved --require-verification
+agentplane acr validate <task-id> --mode local
+agentplane acr check <task-id> --mode ci
 ```
 
 Short demo GIF:
