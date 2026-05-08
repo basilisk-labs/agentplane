@@ -1,7 +1,8 @@
 ---
 id: "202605081720-JF941V"
 title: "Advanced init blueprint selection"
-status: "DOING"
+result_summary: "Full-harness init blueprint selection merged via PR #3487."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -27,11 +28,16 @@ verification:
   updated_at: "2026-05-08T19:19:43.726Z"
   updated_by: "CODER"
   note: "Full-harness init blueprint selection verified through init step tests, smoke init with pack:enterprise-baseline, and PR #3487 remote checks at 5d090f5d2."
-commit: null
+commit:
+  hash: "36a8a0b1b08f04107153a3a6f98801b6a3ef73d4"
+  message: "🧩 FBQEV5 integrate: Blueprint catalog install"
 comments:
   -
     author: "CODER"
     body: "Start: Completing advanced init blueprint selection for cached catalog entries and packs after the install flow was implemented in this branch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3487 merged into main; remote checks passed; related blueprint catalog scope is integrated."
 events:
   -
     type: "status"
@@ -52,9 +58,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Full-harness init blueprint selection verified through init step tests, smoke init with pack:enterprise-baseline, and PR #3487 remote checks at 5d090f5d2."
+  -
+    type: "status"
+    at: "2026-05-08T20:07:07.788Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3487 merged into main; remote checks passed; related blueprint catalog scope is integrated."
 doc_version: 3
-doc_updated_at: "2026-05-08T19:19:43.750Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-08T20:07:07.796Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend full-harness/advanced init to list cached blueprint catalog entries, let users select individual blueprints and packs, preview pack expansion, and vendor selected blueprints during initialization."
 sections:
   Summary: |-
