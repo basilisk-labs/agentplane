@@ -19,6 +19,87 @@ async function mkProject(): Promise<string> {
   return root;
 }
 
+async function mkBlueprintCatalogFixture(): Promise<{ root: string; indexPath: string }> {
+  const root = await mkTempDir();
+  const blueprint = {
+    ...structuredClone(requireBlueprint("analysis.light")),
+    id: "analysis.external",
+    title: "External analysis",
+  };
+  await mkdir(path.join(root, "catalog"), { recursive: true });
+  await mkdir(path.join(root, "blueprints", "external-analysis", "blueprints"), {
+    recursive: true,
+  });
+  await mkdir(path.join(root, "packs", "baseline"), { recursive: true });
+  await writeFile(
+    path.join(root, "catalog", "index.json"),
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        catalog_id: "test-blueprints",
+        name: "Test Blueprints",
+        blueprints: [
+          {
+            id: "external-analysis",
+            path: "blueprints/external-analysis/blueprint.json",
+          },
+        ],
+        packs: [{ id: "baseline", path: "packs/baseline/pack.json" }],
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+  await writeFile(
+    path.join(root, "blueprints", "external-analysis", "blueprint.json"),
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        id: "external-analysis",
+        version: "0.1.0",
+        name: "External Analysis",
+        summary: "External analysis route.",
+        definition: {
+          id: "analysis.external",
+          path: "blueprints/analysis.external.json",
+        },
+        activation: {
+          recommended_allowed_ids: ["analysis.external"],
+        },
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+  await writeFile(
+    path.join(root, "blueprints", "external-analysis", "blueprints", "analysis.external.json"),
+    `${JSON.stringify(blueprint, null, 2)}\n`,
+    "utf8",
+  );
+  await writeFile(
+    path.join(root, "packs", "baseline", "pack.json"),
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        id: "baseline",
+        version: "0.1.0",
+        name: "Baseline",
+        summary: "Baseline blueprint pack.",
+        blueprints: [{ id: "external-analysis", required: true }],
+        activation: {
+          recommended_allowed_ids: ["analysis.external"],
+        },
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+  return { root, indexPath: path.join(root, "catalog", "index.json") };
+}
+
 describe("runCli blueprint commands", () => {
   it("blueprint examples shows practical route inspection commands", async () => {
     const io = captureStdIO();
@@ -197,6 +278,120 @@ describe("runCli blueprint commands", () => {
       );
     } finally {
       io.restore();
+    }
+  });
+
+  it("blueprints catalog refresh caches a local external catalog", async () => {
+    const home = await mkTempDir();
+    const originalHome = process.env.AGENTPLANE_HOME;
+    process.env.AGENTPLANE_HOME = home;
+    const fixture = await mkBlueprintCatalogFixture();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "blueprints",
+        "catalog",
+        "refresh",
+        "--index",
+        fixture.indexPath,
+        "--json",
+      ]);
+      expect(code).toBe(0);
+      expect(JSON.parse(io.stdout)).toMatchObject({
+        catalog_id: "test-blueprints",
+        blueprints: 1,
+        packs: 1,
+        source: fixture.indexPath,
+      });
+    } finally {
+      io.restore();
+      if (originalHome === undefined) delete process.env.AGENTPLANE_HOME;
+      else process.env.AGENTPLANE_HOME = originalHome;
+    }
+  });
+
+  it("blueprints install writes an external blueprint without activating it by default", async () => {
+    const home = await mkTempDir();
+    const originalHome = process.env.AGENTPLANE_HOME;
+    process.env.AGENTPLANE_HOME = home;
+    const fixture = await mkBlueprintCatalogFixture();
+    const root = await mkProject();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "--root",
+        root,
+        "blueprints",
+        "install",
+        "external-analysis",
+        "--index",
+        fixture.indexPath,
+        "--json",
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        activated: boolean;
+        installed: { blueprintId: string; projectPath: string }[];
+        allowed_ids: string[];
+      };
+      expect(payload.activated).toBe(false);
+      expect(payload.allowed_ids).toEqual([]);
+      expect(payload.installed).toEqual([
+        expect.objectContaining({
+          blueprintId: "analysis.external",
+          projectPath: ".agentplane/blueprints/analysis.external.json",
+        }),
+      ]);
+      const installed = JSON.parse(
+        await readFile(
+          path.join(root, ".agentplane", "blueprints", "analysis.external.json"),
+          "utf8",
+        ),
+      ) as { id?: string };
+      expect(installed.id).toBe("analysis.external");
+    } finally {
+      io.restore();
+      if (originalHome === undefined) delete process.env.AGENTPLANE_HOME;
+      else process.env.AGENTPLANE_HOME = originalHome;
+    }
+  });
+
+  it("blueprints install can activate every blueprint in a pack", async () => {
+    const home = await mkTempDir();
+    const originalHome = process.env.AGENTPLANE_HOME;
+    process.env.AGENTPLANE_HOME = home;
+    const fixture = await mkBlueprintCatalogFixture();
+    const root = await mkProject();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "--root",
+        root,
+        "blueprints",
+        "install",
+        "baseline",
+        "--kind",
+        "pack",
+        "--index",
+        fixture.indexPath,
+        "--activate",
+        "--json",
+      ]);
+      expect(code).toBe(0);
+      expect(JSON.parse(io.stdout)).toMatchObject({
+        target: "baseline",
+        kind: "pack",
+        activated: true,
+        allowed_ids: ["analysis.external"],
+      });
+      const trustConfig = JSON.parse(
+        await readFile(path.join(root, ".agentplane", "blueprints", "config.json"), "utf8"),
+      ) as { allowed_ids?: string[] };
+      expect(trustConfig.allowed_ids).toEqual(["analysis.external"]);
+    } finally {
+      io.restore();
+      if (originalHome === undefined) delete process.env.AGENTPLANE_HOME;
+      else process.env.AGENTPLANE_HOME = originalHome;
     }
   });
 
