@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-08T18:16:17.598Z"
+  updated_at: "2026-05-08T18:21:32.639Z"
   updated_by: "CODER"
-  note: "Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/queue-state.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts; Result: pass; Evidence: 3 files, 16 tests passed. Command: bun run --filter=agentplane typecheck; Result: pass. Command: bun run --filter=agentplane build; Result: pass. Command: ap integrate queue list; Result: pass, queue command dispatch works. Command: node .agentplane/policy/check-routing.mjs and ap doctor; Result: pass."
+  note: "Command: bun run workflow:wait-remote-checks -- 3483 --repo basilisk-labs/agentplane; Result: pass; Evidence: required checks passed for PR #3483 after Core CI, Docs CI, Socket, release-ready, test, test-windows, and recovery-validate reported success."
 commit: null
 comments:
   -
@@ -41,8 +41,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/queue-state.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts; Result: pass; Evidence: 3 files, 16 tests passed. Command: bun run --filter=agentplane typecheck; Result: pass. Command: bun run --filter=agentplane build; Result: pass. Command: ap integrate queue list; Result: pass, queue command dispatch works. Command: node .agentplane/policy/check-routing.mjs and ap doctor; Result: pass."
+  -
+    type: "verify"
+    at: "2026-05-08T18:21:32.639Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run workflow:wait-remote-checks -- 3483 --repo basilisk-labs/agentplane; Result: pass; Evidence: required checks passed for PR #3483 after Core CI, Docs CI, Socket, release-ready, test, test-windows, and recovery-validate reported success."
 doc_version: 3
-doc_updated_at: "2026-05-08T18:16:17.620Z"
+doc_updated_at: "2026-05-08T18:21:32.763Z"
 doc_updated_by: "CODER"
 description: "Add a serialized integration queue for branch_pr so multiple agents can finish PR work concurrently while only one verified task branch enters the main merge lane at a time."
 sections:
@@ -67,6 +73,24 @@ sections:
     Note: Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/queue-state.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts; Result: pass; Evidence: 3 files, 16 tests passed. Command: bun run --filter=agentplane typecheck; Result: pass. Command: bun run --filter=agentplane build; Result: pass. Command: ap integrate queue list; Result: pass, queue command dispatch works. Command: node .agentplane/policy/check-routing.mjs and ap doctor; Result: pass.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-08T17:58:39.377Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605081752-A6GW7X-integration-queue/.agentplane/tasks/202605081752-A6GW7X/blueprint/resolved-snapshot.json
+    - old_digest: 920866503f3eaa1fa05da2dfbda9605dda351f1028e35b4a557aedf46d5935dc
+    - current_digest: 920866503f3eaa1fa05da2dfbda9605dda351f1028e35b4a557aedf46d5935dc
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605081752-A6GW7X
+    
+    ### 2026-05-08T18:21:32.639Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run workflow:wait-remote-checks -- 3483 --repo basilisk-labs/agentplane; Result: pass; Evidence: required checks passed for PR #3483 after Core CI, Docs CI, Socket, release-ready, test, test-windows, and recovery-validate reported success.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-08T18:16:17.620Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     Details:
     

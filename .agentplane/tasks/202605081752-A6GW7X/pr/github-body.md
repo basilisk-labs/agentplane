@@ -16,7 +16,7 @@ Add a serialized integration queue for branch_pr so multiple agents can finish P
 ## Verification
 
 - State: ok
-- Note: Command: bunx vitest run packages/agentplane/src/commands/pr/integrate/queue-state.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli/command-catalog.test.ts; Result: pass; Evidence: 3 files, 16 tests passed. Command: bun run --filter=agentplane typecheck; Result: pass. Command: bun run --filter=agentplane build; Result: pass. Command: ap integrate queue list; Result: pass, queue command dispatch works. Command: node .agentplane/policy/check-routing.mjs and ap doctor; Result: pass.
+- Note: Command: bun run workflow:wait-remote-checks -- 3483 --repo basilisk-labs/agentplane; Result: pass; Evidence: required checks passed for PR #3483 after Core CI, Docs CI, Socket, release-ready, test, test-windows, and recovery-validate reported success.
 - Canonical workflow state lives in the task README.
 
 <details>
