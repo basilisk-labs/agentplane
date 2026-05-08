@@ -188,12 +188,40 @@ agentplane init \
   --yes
 ```
 
+Backend choice:
+
+- `local` stores tasks in the repository and is the default setup.
+- `cloud` connects the repository to a cloud sync service while ordinary task reads continue to use
+  a local projection.
+- Direct backend integrations such as `redmine` are available when a project needs that specific
+  backend.
+
 You can switch profile later without re-running init:
 
 ```bash
 agentplane profile set light
 agentplane profile set normal
 agentplane profile set full-harness
+```
+
+## Cloud backend connect flow
+
+When `--backend cloud` is selected, init creates cloud backend config with non-secret connection
+settings. Run the connect command next:
+
+```bash
+agentplane backend connect cloud \
+  --endpoint https://sync.agentplane.cloud \
+  --project-id <project_id> \
+  --token <token>
+```
+
+The browser connect flow returns the `project_id` and CLI token. The CLI stores the token only in the
+ignored project `.env`, while backend JSON keeps non-secret metadata. After connect, refresh the
+local projection:
+
+```bash
+agentplane backend sync cloud --direction pull
 ```
 
 ## Redmine env files on init
@@ -844,8 +872,25 @@ agentplane --help
 agentplane help task
 agentplane help task plan
 agentplane help task doc set --compact
+agentplane help --all
 agentplane --version
 ```
+
+`agentplane --help` and `agentplane help` show the normal installed-project surface by default.
+The first screen is intentionally biased toward commands an agent needs for project work: startup,
+task lifecycle, branch/PR workflow, backend sync, recipes, diagnostics, and setup.
+
+Advanced recovery and maintenance commands stay available through direct help or the full registry:
+
+```bash
+agentplane help task reclaim
+agentplane help --all
+```
+
+Inside the Agent Plane framework checkout, help automatically switches to the framework-dev surface
+and adds a dedicated `Framework Dev` group. Framework-maintainer commands such as `release`,
+`workflow build`, `docs cli`, and bundled Codex plugin installation are not shown in the normal
+installed-project help surface.
 
 ## Quickstart
 
@@ -980,11 +1025,26 @@ Generate an optional integration snapshot:
 
 ```bash
 agentplane task export
+agentplane task obsidian
+agentplane task obsidian clean
 agentplane task lint
 ```
 
 The exported snapshot is derived from the current backend projection. It is not the canonical
 source of truth.
+
+`agentplane task obsidian` writes a Markdown navigation projection under `.agentplane/`:
+
+- `.agentplane/index.md`
+- `.agentplane/tasks.md`
+- `.agentplane/by-status/*.md`
+- `.agentplane/by-tag/*.md`
+- `.agentplane/by-owner/*.md`
+
+Open `.agentplane/` as an Obsidian vault to browse task IDs, statuses, owners, tags, and dependency
+links while keeping `.agentplane/tasks/<task-id>/README.md` as the canonical task record.
+`agentplane task obsidian clean` removes only the generated Obsidian projection files; it does not
+delete canonical task READMEs or non-generated Markdown files.
 
 ## Agent Change Record
 
@@ -1007,16 +1067,18 @@ shape; `acr check --mode ci` enforces merge-ready semantics. See
 
 ## Backend sync (remote backends)
 
-For remote backends (for example Redmine), use explicit sync:
+For remote backends, use explicit sync:
 
 ```bash
+agentplane backend sync cloud --direction pull
+agentplane backend sync cloud --direction push --yes
 agentplane sync redmine
 agentplane backend sync redmine --direction pull
 agentplane backend sync redmine --direction push --yes
 ```
 
 `sync` and `backend sync` default to `--direction push`; prefer explicit `--direction pull` when
-refreshing the local projection from Redmine.
+refreshing the local projection from a remote source.
 
 Ordinary task reads (`task list`, `task show`, `doctor`) use the current projection by default and
 do not implicitly refresh from the network.
@@ -1147,6 +1209,37 @@ introduced.
 
 Recipe `run_profile` no longer supports `requires_human_approval` in the main repo runtime. The
 current runner accepts only fields it can explain honestly in `task run show`.
+
+## Blueprint catalogs
+
+```bash
+agentplane blueprints catalog refresh --index <path-or-url>
+agentplane blueprints catalog list
+agentplane blueprints catalog info <id>
+agentplane blueprints install <id>
+agentplane blueprints install pack:<id> --kind pack --activate
+```
+
+Blueprint catalogs are optional extension catalogs for route blueprints. They are separate from
+recipes: recipes add domain guidance and prompt/runtime assets; blueprints add task-route
+definitions that can become project-local trusted routes.
+
+`blueprints catalog refresh` caches an external catalog index under `~/.agentplane/blueprints`.
+`blueprints install` vendors selected blueprint definitions into `.agentplane/blueprints/`.
+Installing a blueprint does not activate it unless `--activate` is passed. Activation updates
+`.agentplane/blueprints/config.json` with an explicit allowlist.
+
+Blueprint packs are lightweight catalog entries that expand to multiple blueprint installs. A pack
+does not own extra runtime behavior by itself; it only groups blueprint ids that should be installed
+together.
+
+During advanced/full-harness init, cached catalog entries can be installed in one step:
+
+```bash
+agentplane init --setup-profile full-harness --blueprints pack:enterprise-baseline --yes
+```
+
+Use `blueprint:<id>` or `pack:<id>` when a catalog contains overlapping ids.
 
 ## CLI reference (generated)
 
