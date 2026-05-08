@@ -2,14 +2,6 @@ Task: `202605081719-FBQEV5`
 Title: Blueprint catalog contracts and cache
 Canonical task record: `.agentplane/tasks/202605081719-FBQEV5/README.md`
 
-## Batch Tasks
-
-- Primary: `202605081719-FBQEV5`
-- Closure policy: `all_or_fail`
-- Included: `202605081720-03TR4S`
-- Included: `202605081720-DTKG82`
-- Included: `202605081720-JF941V`
-
 ## Summary
 
 Blueprint catalog contracts and cache

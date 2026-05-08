@@ -2,14 +2,6 @@
 
 Created: 2026-05-08T17:23:48.984Z
 
-## Batch Tasks
-
-- Primary: `202605081719-FBQEV5`
-- Closure policy: `all_or_fail`
-- Included: `202605081720-03TR4S`
-- Included: `202605081720-DTKG82`
-- Included: `202605081720-JF941V`
-
 ## Task
 
 - Task: `202605081719-FBQEV5`
