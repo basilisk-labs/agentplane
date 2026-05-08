@@ -1,7 +1,7 @@
 ---
 id: "202605081720-DTKG82"
 title: "Install external blueprints and packs"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -27,11 +27,16 @@ verification:
   updated_at: "2026-05-08T19:19:33.259Z"
   updated_by: "CODER"
   note: "External blueprint and pack install implementation verified through CLI tests, smoke install, and PR #3487 remote checks at 5d090f5d2."
-commit: null
+commit:
+  hash: "36a8a0b1b08f04107153a3a6f98801b6a3ef73d4"
+  message: "🧩 FBQEV5 integrate: Blueprint catalog install"
 comments:
   -
     author: "CODER"
     body: "Start: Completing the already implemented external blueprint install and pack expansion scope after the primary catalog primitives landed in this branch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3487 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -52,9 +57,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "External blueprint and pack install implementation verified through CLI tests, smoke install, and PR #3487 remote checks at 5d090f5d2."
+  -
+    type: "status"
+    at: "2026-05-08T20:01:23.488Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3487 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-08T19:19:33.290Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-08T20:01:23.491Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add CLI install flow for cached or indexed blueprint catalog entries: install individual blueprints, expand packs into blueprint installs, vendor project-local route files, and write explicit allowlist trust config only after preview/confirmation."
 sections:
   Summary: |-

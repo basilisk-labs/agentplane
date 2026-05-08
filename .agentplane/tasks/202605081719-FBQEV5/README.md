@@ -1,7 +1,8 @@
 ---
 id: "202605081719-FBQEV5"
 title: "Blueprint catalog contracts and cache"
-status: "DOING"
+result_summary: "Merged via PR #3487."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -26,11 +27,16 @@ verification:
   updated_at: "2026-05-08T19:45:16.910Z"
   updated_by: "CODER"
   note: "Verified: fixed Codex Review P1 path traversal findings by rejecting unsafe catalog manifest ids and blueprint definition ids before filesystem writes/deletes; focused blueprint CLI tests and agentplane typecheck passed."
-commit: null
+commit:
+  hash: "36a8a0b1b08f04107153a3a6f98801b6a3ef73d4"
+  message: "🧩 FBQEV5 integrate: Blueprint catalog install"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing the primary batch worktree for blueprint catalog contracts/cache plus dependent install and init selection tasks, keeping scope to blueprint catalog files and tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3487 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -75,9 +81,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: fixed Codex Review P1 path traversal findings by rejecting unsafe catalog manifest ids and blueprint definition ids before filesystem writes/deletes; focused blueprint CLI tests and agentplane typecheck passed."
+  -
+    type: "status"
+    at: "2026-05-08T20:01:23.467Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3487 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-08T19:45:16.922Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-08T20:01:23.475Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add AgentPlane core contracts and local cache primitives for external blueprint catalog indexes, individual catalog blueprints, and blueprint packs without activating project routes."
 sections:
   Summary: |-
