@@ -22,9 +22,9 @@ Document how to use clone report/check/baseline commands during refactoring and 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-08T18:26:36.677Z
+- Updated: 2026-05-08T18:42:07.955Z
 - Branch: task/202605081818-G4JQKS/clone-refactor-docs
-- Head: dd75f838a3b8
+- Head: d5d7d10ed0ce
 
 ```text
  .../blueprint/resolved-snapshot.json               | 343 +++++++++++++++++++++
