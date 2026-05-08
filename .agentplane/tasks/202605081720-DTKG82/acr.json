@@ -1,0 +1,1149 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605081720-DTKG82",
+  "created_at": "2026-05-08T20:06:53.763Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "97448aafec239d34240999d90f008b83c69d462a",
+    "work_ref": "task-close/202605081719-FBQEV5/36a8a0b1b08f",
+    "work_commit": "36a8a0b1b08f04107153a3a6f98801b6a3ef73d4"
+  },
+  "task": {
+    "task_id": "202605081720-DTKG82",
+    "title": "Install external blueprints and packs",
+    "intent": "Add CLI install flow for cached or indexed blueprint catalog entries: install individual blueprints, expand packs into blueprint installs, vendor project-local route files, and write explicit allowlist trust config only after preview/confirmation.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605081720-DTKG82/README.md",
+      "sha256": "sha256:54badb00ce079c875c1912ea13bd35f09b4379df2375bc7596beb49674c0f664"
+    },
+    "approved_at": "2026-05-08T17:21:08.122Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "External blueprint and pack install merged via PR #3487.",
+    "diff_stats": {
+      "files_changed": 130,
+      "insertions": 12441,
+      "deletions": 635
+    },
+    "files": [
+      {
+        "path": ".agentplane/policy/workflow.branch_pr.md",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081639-QC8PWY/README.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081639-QC8PWY/acr.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081639-QC8PWY/blueprint/resolved-snapshot.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081639-QC8PWY/pr/diffstat.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081639-QC8PWY/pr/github-body.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081639-QC8PWY/pr/github-title.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081639-QC8PWY/pr/meta.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081639-QC8PWY/pr/review.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081651-Y9DYVQ/README.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081651-Y9DYVQ/acr.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081651-Y9DYVQ/blueprint/resolved-snapshot.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081651-Y9DYVQ/pr/diffstat.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081651-Y9DYVQ/pr/github-body.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081651-Y9DYVQ/pr/github-title.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081651-Y9DYVQ/pr/meta.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081651-Y9DYVQ/pr/review.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081719-FBQEV5/README.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081719-FBQEV5/blueprint/resolved-snapshot.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081719-FBQEV5/pr/diffstat.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081719-FBQEV5/pr/github-body.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081719-FBQEV5/pr/github-title.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081719-FBQEV5/pr/meta.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081719-FBQEV5/pr/review.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081720-03TR4S/README.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081720-03TR4S/blueprint/resolved-snapshot.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081720-DTKG82/README.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081720-DTKG82/blueprint/resolved-snapshot.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081720-JF941V/README.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081720-JF941V/blueprint/resolved-snapshot.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081752-A6GW7X/README.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081752-A6GW7X/acr.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081752-A6GW7X/blueprint/resolved-snapshot.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081752-A6GW7X/pr/diffstat.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081752-A6GW7X/pr/github-body.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081752-A6GW7X/pr/github-title.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081752-A6GW7X/pr/meta.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081752-A6GW7X/pr/review.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081758-TEPFPR/README.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081758-TEPFPR/acr.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081758-TEPFPR/blueprint/resolved-snapshot.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081758-TEPFPR/pr/diffstat.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081758-TEPFPR/pr/github-body.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081758-TEPFPR/pr/github-title.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081758-TEPFPR/pr/meta.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081758-TEPFPR/pr/review.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081818-G4JQKS/README.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081818-G4JQKS/acr.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081818-G4JQKS/blueprint/resolved-snapshot.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081818-G4JQKS/pr/diffstat.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081818-G4JQKS/pr/github-body.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081818-G4JQKS/pr/github-title.txt",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081818-G4JQKS/pr/meta.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605081818-G4JQKS/pr/review.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "README.md",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "bun.lock",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "docs/assets/header.png",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/assets/header.svg",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/compare.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/developer/blueprints.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/developer/testing-and-quality.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs",
+          "tests"
+        ]
+      },
+      {
+        "path": "docs/index.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/launch/checklist.md",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/launch/hn.md",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/launch/reddit.md",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/launch/twitter.md",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/listing.md",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/manifesto.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/reference/generated-reference.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/showcase.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/user/agent-change-record.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/user/cli-reference.generated.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/user/commands.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/user/overview.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/user/setup.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/user/website-ia.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/workflow-guides/claude-code.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/workflow-guides/codex.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "docs/workflow-guides/github-actions.mdx",
+        "status": "modified",
+        "risk_categories": [
+          "docs"
+        ]
+      },
+      {
+        "path": "package.json",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/README.md",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/assets/policy/workflow.branch_pr.md",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/backends/task-backend.test.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tests"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/backends/task-backend/shared/record.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/backends/task-backend/shared/types.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/blueprints/builtins.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/blueprints/model.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/blueprints/resolve.test.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tests"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/blueprints/resolve.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/blueprints/validate.test.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tests"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tests"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli.core.blueprint.test.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tests"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/command-catalog/project.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/command-loaders/project.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/commands/init/answers.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/commands/init/blueprints.ts",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/commands/init/execution.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/commands/init/model.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/commands/init/orchestrate.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/commands/init/parsers.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/commands/init/presets.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/commands/init/spec.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tests"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/commands/init/steps/apply.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/commands/init/steps/blueprint-selection.ts",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/commands/init/steps/contracts.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/commands/init/steps/index.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tests"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/blueprint/task-input.test.ts",
+        "status": "added",
+        "risk_categories": [
+          "tests",
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/blueprint/task-input.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/blueprints/blueprints.command.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/blueprints/catalog.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/integrate-queue.command.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/integrate-queue.spec.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/pr/integrate/queue-state.test.ts",
+        "status": "added",
+        "risk_categories": [
+          "tests",
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/pr/integrate/queue-state.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/new.spec.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/new.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/shared/docs.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "scripts/README.md",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "scripts/baselines/clone-baseline.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "scripts/check-clone-baseline.mjs",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "scripts/generate-scripts-readme.mjs",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "website/docusaurus.config.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "website/sidebars.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "website/src/data/homepage-content.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "website/src/pages/index.tsx",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "website/static/img/social/docs/workflow-guides/claude-code.png",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "website/static/img/social/docs/workflow-guides/codex.png",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "website/static/llms-full.txt",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      }
+    ],
+    "risk": {
+      "level": "medium",
+      "categories": [
+        "tooling",
+        "docs",
+        "tests",
+        "cli"
+      ],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "typecheck",
+        "command": "bun run typecheck",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-2",
+        "type": "test",
+        "command": "bun test packages/agentplane/src/commands/blueprints*.test.ts packages/agentplane/src/cli/run-cli.core.blueprint*.test.ts",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605081720-DTKG82_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-08T17:21:08.122Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605081720-DTKG82/README.md",
+      "sha256": "sha256:54badb00ce079c875c1912ea13bd35f09b4379df2375bc7596beb49674c0f664"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605081720-DTKG82/README.md",
+      "sha256": "sha256:54badb00ce079c875c1912ea13bd35f09b4379df2375bc7596beb49674c0f664"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605081720-DTKG82/README.md",
+      "sha256": "sha256:54badb00ce079c875c1912ea13bd35f09b4379df2375bc7596beb49674c0f664"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605081720-DTKG82/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:f18e013785e01963786c2fc1495d7a28b6995eb418d5a9b6fa6f7b2f8f65cbed"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 36a8a0b1b08f04107153a3a6f98801b6a3ef73d4 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:f57653db1159612af968ba30a146c8c5447d04982f4f4bf3956bc2b639c664a3",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605081720-DTKG82/blueprint/resolved-snapshot.json",
+        "digest": "d601ef319d3680875ee04110ed13e193e7227c51b4984bb5111b06ad212776de",
+        "current_digest": "d601ef319d3680875ee04110ed13e193e7227c51b4984bb5111b06ad212776de",
+        "route_changed": false,
+        "artifact_sha256": "sha256:f18e013785e01963786c2fc1495d7a28b6995eb418d5a9b6fa6f7b2f8f65cbed",
+        "safe_command": "agentplane blueprint snapshot 202605081720-DTKG82"
+      }
+    }
+  }
+}
