@@ -23,9 +23,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-08T18:13:35.111Z"
+  updated_at: "2026-05-08T18:26:15.545Z"
   updated_by: "CODER"
-  note: "Implemented external blueprint catalog refresh/list/info/install commands, pack expansion, explicit activation allowlist updates, focused CLI tests, generated CLI reference, and verified with typecheck, cli-core blueprint tests, real agentplane-blueprints smoke installs, docs:cli:check, hotspot check, policy routing, and doctor."
+  note: "Extended implementation to init: explicit --blueprints selection installs cached blueprint catalog entries and packs during full-harness/non-interactive init, activates installed blueprint ids, updates preview/progress/docs, and verifies with focused init prompt/apply tests, cli-core blueprint init test, typecheck, build, docs:cli:check, real init smoke, hotspot check, routing check, and doctor."
 commit: null
 comments:
   -
@@ -45,8 +45,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented external blueprint catalog refresh/list/info/install commands, pack expansion, explicit activation allowlist updates, focused CLI tests, generated CLI reference, and verified with typecheck, cli-core blueprint tests, real agentplane-blueprints smoke installs, docs:cli:check, hotspot check, policy routing, and doctor."
+  -
+    type: "verify"
+    at: "2026-05-08T18:26:15.545Z"
+    author: "CODER"
+    state: "ok"
+    note: "Extended implementation to init: explicit --blueprints selection installs cached blueprint catalog entries and packs during full-harness/non-interactive init, activates installed blueprint ids, updates preview/progress/docs, and verifies with focused init prompt/apply tests, cli-core blueprint init test, typecheck, build, docs:cli:check, real init smoke, hotspot check, routing check, and doctor."
 doc_version: 3
-doc_updated_at: "2026-05-08T18:13:35.199Z"
+doc_updated_at: "2026-05-08T18:26:15.576Z"
 doc_updated_by: "CODER"
 description: "Add AgentPlane core contracts and local cache primitives for external blueprint catalog indexes, individual catalog blueprints, and blueprint packs without activating project routes."
 sections:
@@ -72,6 +78,24 @@ sections:
     Note: Implemented external blueprint catalog refresh/list/info/install commands, pack expansion, explicit activation allowlist updates, focused CLI tests, generated CLI reference, and verified with typecheck, cli-core blueprint tests, real agentplane-blueprints smoke installs, docs:cli:check, hotspot check, policy routing, and doctor.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-08T17:23:48.858Z, excerpt_hash=sha256:71d0006a25ab23eef06cc33fe015d13a945280c60148b352ec6ff4f5132de3aa
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605081719-FBQEV5-blueprint-catalog-install/.agentplane/tasks/202605081719-FBQEV5/blueprint/resolved-snapshot.json
+    - old_digest: 0f9058138717dfad670c6e386b82650b06d8c332588c8acbe820fad2f2b82936
+    - current_digest: 0f9058138717dfad670c6e386b82650b06d8c332588c8acbe820fad2f2b82936
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605081719-FBQEV5
+    
+    ### 2026-05-08T18:26:15.545Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Extended implementation to init: explicit --blueprints selection installs cached blueprint catalog entries and packs during full-harness/non-interactive init, activates installed blueprint ids, updates preview/progress/docs, and verifies with focused init prompt/apply tests, cli-core blueprint init test, typecheck, build, docs:cli:check, real init smoke, hotspot check, routing check, and doctor.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-08T18:13:35.199Z, excerpt_hash=sha256:71d0006a25ab23eef06cc33fe015d13a945280c60148b352ec6ff4f5132de3aa
     
     Details:
     
