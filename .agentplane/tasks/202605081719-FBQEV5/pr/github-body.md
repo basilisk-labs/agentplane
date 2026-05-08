@@ -16,7 +16,7 @@ Add AgentPlane core contracts and local cache primitives for external blueprint 
 ## Verification
 
 - State: ok
-- Note: Verified current PR head after publishing and documentation/task-artifact refresh commits: branch contains catalog commands, install/pack activation, full-harness init selection, documentation, generated CLI reference, and all focused checks previously passed on this head lineage.
+- Note: Remote PR checks passed for #3487 at 5d090f5d2 after docs IA alignment; local pre-push docs-only gates passed.
 - Canonical workflow state lives in the task README.
 
 <details>
