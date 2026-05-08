@@ -23,6 +23,7 @@ export type InitFlags = {
   executionProfile?: ExecutionProfile;
   strictUnsafeConfirm?: boolean;
   recipes?: string[];
+  blueprints?: string[];
   force?: boolean;
   backup?: boolean;
   yes: boolean;
@@ -43,4 +44,5 @@ export type InitDefaults = {
   requireVerifyApproval: boolean;
   executionProfile: ExecutionProfile;
   strictUnsafeConfirm: boolean;
+  blueprints: string[];
 };

@@ -395,6 +395,63 @@ describe("runCli blueprint commands", () => {
     }
   });
 
+  it("init can install and activate cached blueprint packs explicitly", async () => {
+    const home = await mkTempDir();
+    const originalHome = process.env.AGENTPLANE_HOME;
+    process.env.AGENTPLANE_HOME = home;
+    const fixture = await mkBlueprintCatalogFixture();
+    const root = await mkTempDir();
+    try {
+      const refreshIo = captureStdIO();
+      try {
+        const refreshCode = await runCli([
+          "blueprints",
+          "catalog",
+          "refresh",
+          "--index",
+          fixture.indexPath,
+          "--json",
+        ]);
+        expect(refreshCode).toBe(0);
+      } finally {
+        refreshIo.restore();
+      }
+
+      const initIo = captureStdIO();
+      try {
+        const initCode = await runCli([
+          "init",
+          "--yes",
+          "--setup-profile",
+          "full-harness",
+          "--blueprints",
+          "pack:baseline",
+          "--gitignore-agents",
+          "--root",
+          root,
+        ]);
+        expect(initCode).toBe(0);
+      } finally {
+        initIo.restore();
+      }
+
+      const installed = JSON.parse(
+        await readFile(
+          path.join(root, ".agentplane", "blueprints", "analysis.external.json"),
+          "utf8",
+        ),
+      ) as { id?: string };
+      expect(installed.id).toBe("analysis.external");
+      const trustConfig = JSON.parse(
+        await readFile(path.join(root, ".agentplane", "blueprints", "config.json"), "utf8"),
+      ) as { allowed_ids?: string[] };
+      expect(trustConfig.allowed_ids).toEqual(["analysis.external"]);
+    } finally {
+      if (originalHome === undefined) delete process.env.AGENTPLANE_HOME;
+      else process.env.AGENTPLANE_HOME = originalHome;
+    }
+  });
+
   it("blueprint report emits project-local compatibility status", async () => {
     const root = await mkProject();
     const blueprintPath = path.join(root, ".agentplane", "blueprints", "analysis.custom.json");

@@ -12,6 +12,7 @@ import type { InitParsed } from "./model.js";
 import { InitAborted, loadInitClackPrompts, shouldUseInitClackPrompts } from "./prompts.js";
 import type { InitClackPrompts } from "./prompts.js";
 import { validateCachedRecipesSelection } from "./recipes.js";
+import { validateCachedBlueprintSelection } from "./blueprints.js";
 import {
   applyInitPlan,
   collectInitAndHookConflicts,
@@ -69,6 +70,7 @@ export async function cmdInit(opts: {
       ? await promptInteractiveAnswers({ flags: opts.flags, clack })
       : buildNonInteractiveAnswers(opts.flags);
     await validateCachedRecipesSelection(answers.recipes);
+    await validateCachedBlueprintSelection(answers.blueprints);
     const paths = await resolveInitPaths({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,

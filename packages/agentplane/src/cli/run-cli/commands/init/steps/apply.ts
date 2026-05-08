@@ -20,6 +20,7 @@ type InitApplyPlan = {
   hooks?: InitApplyStepWriter;
   ideSync: InitApplyStepWriter;
   recipes: InitApplyStepWriter;
+  blueprints: InitApplyStepWriter;
   installCommit?: InitApplyInstallCommitWriter;
 };
 
@@ -123,6 +124,15 @@ export async function applyInitWithProgress(opts: {
     run: async () => asInstallPaths(await opts.plan.recipes()),
   });
   installPaths.push(...recipePaths);
+
+  const blueprintPaths = await withStep({
+    clack: opts.clack,
+    start: "Installing blueprints",
+    success: "Installed blueprints",
+    failure: "Failed to install blueprints",
+    run: async () => asInstallPaths(await opts.plan.blueprints()),
+  });
+  installPaths.push(...blueprintPaths);
 
   if (opts.includeInstallCommit && opts.plan.installCommit) {
     await withStep({

@@ -1971,6 +1971,7 @@ Options:
 - `--execution-profile <conservative|balanced|aggressive>`: Execution profile preset controlling autonomy, reasoning, and tool budgets. (choices=conservative|balanced|aggressive)
 - `--strict-unsafe-confirm <true|false>`: Require strict explicit confirmations for additional unsafe actions.
 - `--recipes <none|id1,id2,...>`: Optional cached recipes to vendor during init (comma-separated), or 'none'.
+- `--blueprints <none|id1,pack:id2,...>`: Optional cached blueprint catalog entries to install and activate during init (comma-separated), or 'none'. Prefix with blueprint: or pack: to disambiguate.
 - `--force`: Overwrite init conflicts by deleting existing paths. (default=false)
 - `--backup`: Backup init conflicts before overwriting. (default=false)
 - `--yes`: Non-interactive mode (do not prompt; use defaults for missing flags). (default=false)
