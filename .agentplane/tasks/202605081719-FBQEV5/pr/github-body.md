@@ -2,14 +2,6 @@ Task: `202605081719-FBQEV5`
 Title: Blueprint catalog contracts and cache
 Canonical task record: `.agentplane/tasks/202605081719-FBQEV5/README.md`
 
-## Batch Tasks
-
-- Primary: `202605081719-FBQEV5`
-- Closure policy: `all_or_fail`
-- Included: `202605081720-03TR4S`
-- Included: `202605081720-DTKG82`
-- Included: `202605081720-JF941V`
-
 ## Summary
 
 Blueprint catalog contracts and cache
@@ -24,7 +16,7 @@ Add AgentPlane core contracts and local cache primitives for external blueprint 
 ## Verification
 
 - State: ok
-- Note: Remote PR checks passed for #3487 at 5d090f5d2 after docs IA alignment; local pre-push docs-only gates passed.
+- Note: Verified: final PR artifact head refresh after related task evidence commits; remote checks passed on PR #3487.
 - Canonical workflow state lives in the task README.
 
 <details>

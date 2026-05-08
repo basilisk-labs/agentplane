@@ -23,9 +23,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-08T19:19:20.944Z"
+  updated_at: "2026-05-08T19:28:12.236Z"
   updated_by: "CODER"
-  note: "Remote PR checks passed for #3487 at 5d090f5d2 after docs IA alignment; local pre-push docs-only gates passed."
+  note: "Verified: final PR artifact head refresh after related task evidence commits; remote checks passed on PR #3487."
 commit: null
 comments:
   -
@@ -63,8 +63,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Remote PR checks passed for #3487 at 5d090f5d2 after docs IA alignment; local pre-push docs-only gates passed."
+  -
+    type: "verify"
+    at: "2026-05-08T19:28:12.236Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: final PR artifact head refresh after related task evidence commits; remote checks passed on PR #3487."
 doc_version: 3
-doc_updated_at: "2026-05-08T19:19:20.975Z"
+doc_updated_at: "2026-05-08T19:28:12.261Z"
 doc_updated_by: "CODER"
 description: "Add AgentPlane core contracts and local cache primitives for external blueprint catalog indexes, individual catalog blueprints, and blueprint packs without activating project routes."
 sections:
@@ -144,6 +150,24 @@ sections:
     Note: Remote PR checks passed for #3487 at 5d090f5d2 after docs IA alignment; local pre-push docs-only gates passed.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-08T18:41:27.954Z, excerpt_hash=sha256:71d0006a25ab23eef06cc33fe015d13a945280c60148b352ec6ff4f5132de3aa
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605081719-FBQEV5-blueprint-catalog-install/.agentplane/tasks/202605081719-FBQEV5/blueprint/resolved-snapshot.json
+    - old_digest: 0f9058138717dfad670c6e386b82650b06d8c332588c8acbe820fad2f2b82936
+    - current_digest: 0f9058138717dfad670c6e386b82650b06d8c332588c8acbe820fad2f2b82936
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605081719-FBQEV5
+    
+    ### 2026-05-08T19:28:12.236Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: final PR artifact head refresh after related task evidence commits; remote checks passed on PR #3487.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-08T19:19:20.975Z, excerpt_hash=sha256:71d0006a25ab23eef06cc33fe015d13a945280c60148b352ec6ff4f5132de3aa
     
     Details:
     

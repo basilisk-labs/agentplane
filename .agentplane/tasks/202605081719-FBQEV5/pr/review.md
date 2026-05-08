@@ -2,14 +2,6 @@
 
 Created: 2026-05-08T17:23:48.984Z
 
-## Batch Tasks
-
-- Primary: `202605081719-FBQEV5`
-- Closure policy: `all_or_fail`
-- Included: `202605081720-03TR4S`
-- Included: `202605081720-DTKG82`
-- Included: `202605081720-JF941V`
-
 ## Task
 
 - Task: `202605081719-FBQEV5`
@@ -21,7 +13,7 @@ Created: 2026-05-08T17:23:48.984Z
 ## Verification
 
 - State: ok
-- Note: Remote PR checks passed for #3487 at 5d090f5d2 after docs IA alignment; local pre-push docs-only gates passed.
+- Note: Verified: final PR artifact head refresh after related task evidence commits; remote checks passed on PR #3487.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
