@@ -24,9 +24,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-08T18:37:49.936Z"
+  updated_at: "2026-05-08T19:19:59.710Z"
   updated_by: "DOCS"
-  note: "Verified docs and release checks: docs/user/commands.mdx and docs/developer/blueprints.mdx document external catalog behavior, trust boundaries, pack semantics, and full-harness init; docs:cli:check, policy routing, and doctor passed."
+  note: "Blueprint catalog docs, CLI reference, generated website docs, docs IA, docs site typecheck/build, and PR #3487 remote docs check passed at 5d090f5d2."
 commit: null
 comments:
   -
@@ -46,8 +46,14 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified docs and release checks: docs/user/commands.mdx and docs/developer/blueprints.mdx document external catalog behavior, trust boundaries, pack semantics, and full-harness init; docs:cli:check, policy routing, and doctor passed."
+  -
+    type: "verify"
+    at: "2026-05-08T19:19:59.710Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Blueprint catalog docs, CLI reference, generated website docs, docs IA, docs site typecheck/build, and PR #3487 remote docs check passed at 5d090f5d2."
 doc_version: 3
-doc_updated_at: "2026-05-08T18:37:49.960Z"
+doc_updated_at: "2026-05-08T19:19:59.735Z"
 doc_updated_by: "DOCS"
 description: "Document external blueprint catalog behavior, command usage, trust boundaries, pack semantics, and add focused regression coverage/docs freshness checks for the new CLI surfaces."
 sections:
@@ -72,6 +78,24 @@ sections:
     Note: Verified docs and release checks: docs/user/commands.mdx and docs/developer/blueprints.mdx document external catalog behavior, trust boundaries, pack semantics, and full-harness init; docs:cli:check, policy routing, and doctor passed.
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-08T18:37:40.607Z, excerpt_hash=sha256:c4b995dabc5113ebe37798ee93a3256e30fbe42ff0b276fe8fc5deb5f21e56a6
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605081719-FBQEV5-blueprint-catalog-install/.agentplane/tasks/202605081720-03TR4S/blueprint/resolved-snapshot.json
+    - old_digest: 82ca70a31e13a37952dcbf5da30eb019c6aafc238a1041cac685bab34dc9ea0b
+    - current_digest: 82ca70a31e13a37952dcbf5da30eb019c6aafc238a1041cac685bab34dc9ea0b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605081720-03TR4S
+    
+    ### 2026-05-08T19:19:59.710Z — VERIFY — ok
+    
+    By: DOCS
+    
+    Note: Blueprint catalog docs, CLI reference, generated website docs, docs IA, docs site typecheck/build, and PR #3487 remote docs check passed at 5d090f5d2.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-08T18:37:49.960Z, excerpt_hash=sha256:c4b995dabc5113ebe37798ee93a3256e30fbe42ff0b276fe8fc5deb5f21e56a6
     
     Details:
     
