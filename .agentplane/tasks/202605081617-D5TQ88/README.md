@@ -1,7 +1,8 @@
 ---
 id: "202605081617-D5TQ88"
 title: "Clean up v0.5 release code debt"
-status: "DOING"
+result_summary: "Merged via PR #3478."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-05-08T16:26:40.171Z"
   updated_by: "CODER"
   note: "Implemented scoped v0.5 cleanup: recipe build warning removed, task-doc version normalization consolidated through core, testkit internal imports routed through the testkit internal facade, and knip baseline reduced by one stale export. Checks passed: agentplane build, focused recipe/task/testkit tests, release:parity, diff --check, knip:check, hotspots:check, test:fast, release:check."
-commit: null
+commit:
+  hash: "a87241805d6d15b906dbbc03dc228dbd5bacd98f"
+  message: "Merge pull request #3478 from basilisk-labs/task/202605081617-D5TQ88/v05-release-cleanup"
 comments:
   -
     author: "CODER"
     body: "Start: Implement scoped v0.5 release cleanup in the dedicated branch_pr worktree, preserving runtime behavior while removing the build warning and consolidating duplicated helper surfaces."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3478 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented scoped v0.5 cleanup: recipe build warning removed, task-doc version normalization consolidated through core, testkit internal imports routed through the testkit internal facade, and knip baseline reduced by one stale export. Checks passed: agentplane build, focused recipe/task/testkit tests, release:parity, diff --check, knip:check, hotspots:check, test:fast, release:check."
+  -
+    type: "status"
+    at: "2026-05-08T16:33:40.424Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3478 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-08T16:26:40.177Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-08T16:33:40.431Z"
+doc_updated_by: "INTEGRATOR"
 description: "Address release-readiness cleanup found in main: unused bundle import warning, duplicated task document helpers, and testkit internal surface coupling without changing runtime behavior."
 sections:
   Summary: |-

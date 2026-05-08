@@ -1,0 +1,216 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605081617-D5TQ88",
+  "created_at": "2026-05-08T16:33:40.480Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "a87241805d6d15b906dbbc03dc228dbd5bacd98f",
+    "work_ref": "main",
+    "work_commit": "a87241805d6d15b906dbbc03dc228dbd5bacd98f"
+  },
+  "task": {
+    "task_id": "202605081617-D5TQ88",
+    "title": "Clean up v0.5 release code debt",
+    "intent": "Address release-readiness cleanup found in main: unused bundle import warning, duplicated task document helpers, and testkit internal surface coupling without changing runtime behavior.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605081617-D5TQ88/README.md",
+      "sha256": "sha256:831d71fdb5356fcbc6965fc1c77e9fae66d863051dd0d2b2a4a424f8c2d68520"
+    },
+    "approved_at": "2026-05-08T16:17:59.908Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3478.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605081617-D5TQ88_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-08T16:17:59.908Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605081617-D5TQ88/README.md",
+      "sha256": "sha256:831d71fdb5356fcbc6965fc1c77e9fae66d863051dd0d2b2a4a424f8c2d68520"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605081617-D5TQ88/README.md",
+      "sha256": "sha256:831d71fdb5356fcbc6965fc1c77e9fae66d863051dd0d2b2a4a424f8c2d68520"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605081617-D5TQ88/README.md",
+      "sha256": "sha256:831d71fdb5356fcbc6965fc1c77e9fae66d863051dd0d2b2a4a424f8c2d68520"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605081617-D5TQ88/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:40c16525d3ce57322507d4bc8d3588c9b0d7cbd9a5771145c947240ca92ed64a"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit a87241805d6d15b906dbbc03dc228dbd5bacd98f if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:b7a5885c7f25be99c87b38e28f039d2499541ef749f093b8da7d9ac918ea20fa",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "release.strict",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "release.approval",
+          "kind": "approval",
+          "produced_by": "approval_gate",
+          "required": true
+        },
+        {
+          "id": "release.plan",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "release.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "release.publish",
+          "kind": "external_link",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        },
+        {
+          "id": "release.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605081617-D5TQ88/blueprint/resolved-snapshot.json",
+        "digest": "bb5b7f1dc26c1fa2adeb68fe15aeef0489245ae6d18f1ae0af2fc0fc81e4dd43",
+        "current_digest": "bb5b7f1dc26c1fa2adeb68fe15aeef0489245ae6d18f1ae0af2fc0fc81e4dd43",
+        "route_changed": false,
+        "artifact_sha256": "sha256:40c16525d3ce57322507d4bc8d3588c9b0d7cbd9a5771145c947240ca92ed64a",
+        "safe_command": "agentplane blueprint snapshot 202605081617-D5TQ88"
+      }
+    }
+  }
+}
