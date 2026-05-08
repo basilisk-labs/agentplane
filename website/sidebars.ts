@@ -42,30 +42,33 @@ const sidebars: SidebarsConfig = {
   docsSidebar: [
     {
       type: "category",
-      label: "Start",
+      label: "Start here",
       items: [
         "user/overview",
+        "user/setup",
+        "user/agent-change-record",
+        "help/glossary",
         "manifesto",
         "compare",
         "user/prerequisites",
-        "user/setup",
         "user/agent-bootstrap.generated",
       ],
     },
     {
       type: "category",
-      label: "Work on a task",
+      label: "Concepts",
       items: [
         "user/workflow",
         "user/task-lifecycle",
         "user/commands",
-        "user/agents",
         "user/branching-and-pr-artifacts",
+        "user/tasks-and-backends",
+        "user/configuration",
       ],
     },
     {
       type: "category",
-      label: "Workflow guides",
+      label: "Workflows",
       items: [
         "workflow-guides/index",
         "workflow-guides/claude-code",
@@ -78,8 +81,14 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Recipes",
-      items: ["recipes/index", "recipes/code-map"],
+      label: "Use with agents",
+      items: [
+        "user/agents",
+        "workflow-guides/claude-code",
+        "workflow-guides/codex",
+        "workflow-guides/cursor",
+        "workflow-guides/aider",
+      ],
     },
     {
       type: "category",
@@ -88,7 +97,12 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Upgrade & recover",
+      label: "Recipes",
+      items: ["recipes/index", "recipes/code-map"],
+    },
+    {
+      type: "category",
+      label: "Operations",
       items: [
         "user/breaking-changes",
         "user/workflow-migration",
@@ -99,15 +113,13 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Reference & integrations",
+      label: "Reference",
       items: [
-        "user/tasks-and-backends",
         "user/backends",
         "user/backends/local",
         "user/backends/cloud",
         "user/backends/redmine",
         "user/redmine",
-        "user/configuration",
         "user/agent-discovery",
         "user/indexing-and-webmaster-operations",
         "user/website-ia",
@@ -157,7 +169,15 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Release notes",
-      items: ["releases/index", ...releaseDocItems],
+      items: [
+        "releases/index",
+        {
+          type: "category",
+          label: "Archive",
+          collapsed: true,
+          items: releaseDocItems,
+        },
+      ],
     },
     {
       type: "category",

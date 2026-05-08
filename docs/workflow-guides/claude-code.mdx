@@ -1,10 +1,15 @@
 ---
-title: "AgentPlane + Claude Code"
-description: "Use Claude Code for edits while AgentPlane records task state, approval, verification, and finish inside Git."
+title: "Use AgentPlane with Claude Code"
+description: "Use Claude Code for edits while AgentPlane records task intent, approved plan, verification, finish state, and ACR inside Git."
 ---
 
-Use this when Claude Code is changing files in a local repository and you want the work to remain
-reviewable after the chat is gone.
+Claude Code can edit your repository. AgentPlane makes those edits reviewable after the chat is
+gone by recording task intent, approved plan, verification, finish state, and ACR inside Git.
+
+## What this guide gives you
+
+A local flow for Claude Code work that leaves durable repository evidence instead of relying on
+chat history.
 
 ## When to use
 
@@ -42,8 +47,31 @@ agentplane finish <task-id> --author CODER --body "Verified: approved checks pas
 - Git diff from Claude Code edits
 - verification entry with the checks you ran
 - finish record tied to the final commit
+- `.agentplane/tasks/<task-id>/acr.json`
+
+## Reviewer checklist
+
+Before merging, verify:
+
+- The task exists under `.agentplane/tasks/<task-id>/`.
+- The plan was approved or explicitly waived.
+- Verification evidence exists.
+- `acr.json` validates.
+- The finish record links to the work commit.
+
+## Common mistakes
+
+- Starting Claude Code before creating the task boundary.
+- Letting the session drift outside the approved plan.
+- Treating a passing diff as enough without verification evidence.
+- Forgetting to generate or refresh ACR before review.
 
 ## Limitations
 
 AgentPlane does not drive Claude Code or inspect Claude's private chat context. It records the
 repository workflow around the code changes.
+
+## Next
+
+Add [ACR validation](../user/agent-change-record) or use [GitHub Actions](github-actions) as a CI
+gate.

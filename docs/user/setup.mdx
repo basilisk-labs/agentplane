@@ -1,11 +1,15 @@
 ---
 title: "Setup"
-description: "Install the CLI, initialize a project, and run AgentPlane locally for development."
+description: "Install AgentPlane, initialize a repository, and create the first repo-local evidence trail."
 ---
 
-## Install CLI
+## Install AgentPlane
 
-The shortest path is:
+Requirements:
+
+- Node.js 20+
+- Git
+- Local terminal
 
 ```bash
 npm i -g agentplane
@@ -13,82 +17,86 @@ agentplane init
 agentplane quickstart
 ```
 
-Requirements:
-
-- Node.js 20+
-- Git repository
-- Local terminal
-
-You can also inspect the CLI without a global install:
+Prefer no global install:
 
 ```bash
-npx agentplane --help
+npx agentplane init
+npx agentplane quickstart
 ```
 
-Alternative global install:
-
-```bash
-npm i -g agentplane
-# or
-bun add -g agentplane
-agentplane --help
-```
-
-If the shell says `agentplane` is not recognized (common on fresh Windows setup), use:
-
-```bash
-npx agentplane --help
-```
-
-Quick checks on Windows:
-
-```powershell
-where agentplane
-npm config get prefix
-```
-
-If `where agentplane` returns nothing, reopen the terminal after global install or use `npx agentplane ...`.
+On fresh Windows shells, use `npx agentplane ...` if `agentplane` is not yet on `PATH`, then reopen
+the terminal after global install.
 
 ## Initialize repository
 
-Run from repository root:
+Run from the repository root:
 
 ```bash
 agentplane init
 ```
 
-`init` creates:
+`init` creates the local evidence surface:
 
-- `AGENTS.md` in repo root.
-- `.agentplane/WORKFLOW.md` (validated workflow/config contract).
-- `.agentplane/agents/*`.
-- `.agentplane/backends/<selected-backend>/backend.json`.
-- `.agentplane/tasks/` workspace directories.
-- `.agentplane/workflows/last-known-good.md` (rollback snapshot).
+- `AGENTS.md` or `CLAUDE.md` as the repository policy gateway.
+- `.agentplane/WORKFLOW.md` as the workflow/config contract.
+- `.agentplane/tasks/` for task records, verification evidence, PR artifacts, and ACR.
 
-If `.git` does not exist in that folder, `init` creates a new git repository there.
+If `.git` does not exist in that folder, `init` creates a new Git repository there.
 
-## Interactive choices in init
+## Create your first task
 
-`agentplane init` now starts with a setup profile:
+Use a harmless task first. The goal is to see the artifact shape before giving an agent broad edit
+scope.
 
-- `Light`: compact flow, minimum enforcement, maximum flexibility.
-- `Normal` (default): balanced approvals and checks for most teams.
-- `Full Harness`: strict guardrails and full questionnaire.
+```bash
+agentplane task new \
+  --title "Demo: make AI work traceable" \
+  --description "Create a harmless task and inspect the evidence artifacts." \
+  --priority med \
+  --owner CODER \
+  --tag docs
 
-Hooks default by profile:
+agentplane task plan set <task-id> \
+  --text "Inspect the generated task record and ACR path." \
+  --updated-by CODER
 
-- `Light`: hooks disabled by default.
-- `Normal`: hooks enabled by default.
-- `Full Harness`: hooks enabled by default.
+agentplane task plan approve <task-id> --by ORCHESTRATOR
+agentplane task start-ready <task-id> \
+  --author CODER \
+  --body "Start: inspect repo-local artifacts before broad agent edits."
+agentplane task verify-show <task-id>
+agentplane verify <task-id> --ok --by CODER --note "Inspected task evidence."
+agentplane finish <task-id> \
+  --author CODER \
+  --body "Verified: evidence exists and the local traceability path is visible." \
+  --result "First traceable task complete" \
+  --commit HEAD
+agentplane acr explain <task-id>
+```
 
-You can override the default explicitly with `--hooks true|false`.
+Expected files:
 
-Use `--setup-profile full-harness` to force the full questionnaire.
+```text
+.agentplane/tasks/<task-id>/README.md
+.agentplane/tasks/<task-id>/acr.json
+```
 
-In the interactive happy-path, `plan` and `verify` approvals now follow the selected setup profile instead of being asked as separate questions. Keep using `--require-plan-approval` and `--require-verify-approval` only when you want to override the profile defaults explicitly.
+## Setup profiles
 
-Non-interactive setup is available through flags:
+Choose profiles after you understand the first artifact:
+
+- `Light`: solo experiments with minimal enforcement.
+- `Normal`: default team-safe workflow.
+- Team Strict: stricter approvals, hooks, and CI-oriented guardrails. In the current CLI this
+  profile is selected with `full-harness`.
+
+```bash
+agentplane profile set light
+agentplane profile set normal
+agentplane profile set full-harness
+```
+
+Non-interactive setup:
 
 ```bash
 agentplane init \
@@ -102,232 +110,46 @@ agentplane init \
   --yes
 ```
 
-Backend choice:
+## Backends and advanced setup
 
-- `local` stores tasks in the repository and is the default setup.
-- `cloud` connects the repository to a cloud sync service while ordinary task reads continue to use
-  a local projection.
-- Direct backend integrations such as `redmine` are available when a project needs that specific
-  backend.
+Start with the local backend. It stores task evidence in the repository and is the default path.
 
-You can switch profile later without re-running init:
+Use the advanced backend docs only when you need them:
 
-```bash
-agentplane profile set light
-agentplane profile set normal
-agentplane profile set full-harness
-```
+- [Backends overview](backends)
+- [Cloud backend](backends/cloud)
+- [Redmine backend](backends/redmine)
 
-## Cloud backend connect flow
+## Managed ownership contract
 
-When `--backend cloud` is selected, init creates cloud backend config with non-secret connection
-settings. Run the connect command next:
+Treat `AGENTS.md`, `.agentplane/policy/**`, `.agentplane/WORKFLOW.md`, and other files written by
+`agentplane init` or `agentplane upgrade` as framework-owned managed files.
 
-```bash
-agentplane backend connect cloud \
-  --endpoint https://sync.agentplane.cloud \
-  --project-id <project_id> \
-  --token <token>
-```
+Use `.agentplane/policy/incidents.md` for sanctioned local incident rules. Do not hand-edit the rest
+of the managed policy tree during normal project work; expect `agentplane upgrade` to replace or
+reconcile those files.
 
-The browser connect flow returns the `project_id` and CLI token. The CLI stores the token only in the
-ignored project `.env`, while backend JSON keeps non-secret metadata. After connect, refresh the
-local projection:
+For older or partially upgraded repositories, use [Upgrade recovery](../help/legacy-upgrade-recovery).
 
-```bash
-agentplane backend sync cloud --direction pull
-```
-
-## Redmine env files on init
-
-If `--backend redmine` is selected, `init` writes a template to `.env.example` and creates `.env` when missing.
-
-Credentials are read from env at runtime; secrets are not stored in backend JSON.
-
-## Keep agent files out of git (optional)
-
-```bash
-agentplane init --gitignore-agents
-```
-
-This appends ignores for `AGENTS.md` and `.agentplane/agents/` and skips the init commit.
-
-## Upgrade a workspace
-
-```bash
-agentplane upgrade
-```
-
-Default mode applies the managed framework files from the installed CLI bundle and creates a dedicated upgrade commit.
-
-### Managed ownership contract
-
-Treat these files as framework-owned:
-
-- `AGENTS.md`
-- `.agentplane/policy/**`
-- other managed framework files written by `agentplane init` and `agentplane upgrade`
-
-Treat this file as the sanctioned local override area:
-
-- `.agentplane/policy/incidents.md`
-
-Operational rule:
-
-- record situational directives in `incidents.md`;
-- do not treat `incidents.md` as part of the normal startup reading path for agents; consult it only during recovery, incident handling, or direct work on that file;
-- do not hand-edit the rest of the managed policy tree in normal project work;
-- expect `agentplane upgrade` to replace or reconcile framework-owned files on apply.
-
-### Upgrade state model
-
-Think about upgrade in three states:
-
-1. **Clean managed state**
-   `AGENTS.md`, `.agentplane/policy/**`, `.agentplane/WORKFLOW.md`, `.agentplane/workflows/last-known-good.md`, and other managed/runtime framework files match the installed CLI bundle.
-   Normal path:
-
-   ```bash
-   agentplane upgrade
-   ```
-
-2. **Partial upgrade state**
-   The gateway or part of the managed tree changed, but not all managed files were updated.
-   Typical recovery:
-
-   ```bash
-   agentplane doctor
-   agentplane upgrade --yes
-   ```
-
-3. **Manual drift state**
-   Managed files were edited by hand, or the workspace was updated with an older CLI than expected.
-   Recovery starts with diagnostics and may require reinstalling/updating the CLI first:
-
-   ```bash
-   agentplane doctor
-   agentplane upgrade --remote --yes
-   ```
-
-- managed files are replace-first on apply, except `.agentplane/policy/incidents.md`, which is append-only when local content already exists;
-- upgrade also restores required workflow runtime artifacts for the current contract, even when those files were missing from an older initialized repository;
-- upgrade prints the bundle source, resolved version label, and selected mode before doing any work.
-
-Non-default modes:
-
-```bash
-agentplane upgrade --dry-run
-agentplane upgrade --agent
-```
-
-`--dry-run` is the preview path.
-
-If an older project ends up with a new gateway but missing policy modules after upgrade, use the
-[Upgrade recovery](../help/legacy-upgrade-recovery) runbook.
-
-If `agentplane doctor` reports that active tasks still use legacy README v2 docs or that the
-workspace is in an active v2/v3 mixed state after an upgrade, normalize task docs before
-continuing active work:
-
-```bash
-agentplane task migrate-doc --all
-agentplane doctor
-```
-
-Use this after the managed framework files are already up to date. `agentplane upgrade` updates the
-framework-owned files; `task migrate-doc --all` updates task-local README docs to the README v3
-contract.
-
-## Preflight modes
-
-Quick preflight is now the default and is optimized for fast readiness checks:
-
-```bash
-agentplane preflight
-agentplane preflight --json
-```
-
-For full backend/task-list probing, use full mode:
-
-```bash
-agentplane preflight --mode full
-# or
-agentplane preflight --full
-```
-
-## Verify setup quickly
+## Verify setup
 
 ```bash
 agentplane config show
 agentplane quickstart
 agentplane task list
-agentplane workflow build --validate --dry-run
 agentplane doctor
 ```
 
-Then use `agentplane role <ROLE>` for role-specific guidance. If you are browsing the docs site,
-[Agent bootstrap](agent-bootstrap.generated) is the expanded reference page for the same startup
-model; installed repositories should not depend on that file existing locally.
+Then use `agentplane role <ROLE>` for role-specific guidance.
 
-## Working inside the AgentPlane framework checkout
+## Optional recipes
 
-If you run `agentplane` from `PATH` inside this framework repository, the global wrapper now
-detects the checkout and delegates automatically to the repo-local binary from this checkout.
-
-The repo-local binary still checks whether `dist/` matches the current source tree.
-
-- To inspect which runtime is currently active, run:
-
-```bash
-agentplane runtime explain
-```
-
-It prints the active binary path, runtime mode, and the resolved `agentplane` /
-`@agentplaneorg/core` package roots.
-
-- Inside the framework checkout, a stale build is a hard stop. Rebuild first:
-
-```bash
-bun run --filter=@agentplaneorg/core build
-bun run --filter=agentplane build
-bun run --filter=@agentplane/testkit build
-```
-
-- If you intentionally want to keep using the global installed CLI inside the framework checkout,
-  set:
-
-```bash
-AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1
-```
-
-- Outside the framework checkout, the linked global binary continues to use its own installed
-  package and does not hand off.
-
-The gateway preflight commands are still the correct commands. Inside the framework repository
-they now resolve to the repo-local binary automatically and therefore assume a fresh local build.
-
-## Core workflow operations
-
-```bash
-agentplane workflow debug
-agentplane workflow sync
-agentplane workflow land
-```
-
-Each command writes evidence to `.agentplane/workflows/evidence/`.
-
-## Install optional recipes (extensions)
+Recipes are extensions, not the first step. Add them after the task -> plan -> verify -> ACR flow is
+clear.
 
 ```bash
 agentplane recipes list-remote --refresh --yes
 agentplane recipes install code-map --refresh --yes
-agentplane recipes add code-map
-agentplane recipes active
-agentplane recipes explain code-map
 ```
 
-`recipes install` fills the global cache. `recipes add` vendors the selected package into the current
-repository, after which runtime reads only `.agentplane/recipes/` from the project.
-
-Recipe packages may still carry scenario assets for recipe-owned automation, but they are no longer
-part of the public CLI surface.
+Start with [Code Map](../recipes/code-map) when you need lightweight repository mapping.

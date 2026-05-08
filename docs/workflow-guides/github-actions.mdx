@@ -6,6 +6,9 @@ description: "Use GitHub Actions as the hosted check surface while AgentPlane ke
 Use this when repository checks run in GitHub Actions and agent-generated work should not merge until
 task state and CI evidence are both legible.
 
+AgentPlane does not replace GitHub branch protection. It gives branch protection a repo-local
+evidence artifact to check.
+
 ## When to use
 
 - Your repository already uses GitHub Actions for required checks.
@@ -37,6 +40,31 @@ agentplane verify <task-id> --ok --by CODER --note "Local checks passed and host
 ```
 
 Integrate only after the required hosted checks are green.
+
+## ACR gate example
+
+Use a concrete task id when the PR is task-bound:
+
+```yaml
+name: AgentPlane ACR
+
+on:
+  pull_request:
+
+jobs:
+  acr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm i -g agentplane
+      - run: agentplane acr check <task-id> --mode ci
+```
+
+For reusable team workflows, wrap the task id discovery in your repository's PR convention or a
+future first-class AgentPlane action.
 
 ## Expected repo artifacts
 

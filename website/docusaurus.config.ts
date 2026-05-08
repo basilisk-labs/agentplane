@@ -6,7 +6,7 @@ const gaMeasurementId = process.env.GA_MEASUREMENT_ID ?? "G-L8T8ZZ8RSG";
 
 const config = {
   title: "AgentPlane",
-  tagline: "The audit layer for coding agents.",
+  tagline: "Git-native infrastructure for traceable AI work.",
   titleDelimiter: "·",
   favicon: "img/favicon.ico",
   future: {
@@ -71,7 +71,7 @@ const config = {
       {
         name: "keywords",
         content:
-          "claude code workflow, codex workflow, cursor agent, aider, ai coding agent guardrails, agent audit log, AGENTS.md, reviewable agent work",
+          "agent change record, ai pull request review, claude code workflow, codex workflow, cursor agent, aider, ai coding agent guardrails, git-native ai work, AGENTS.md, reviewable agent work",
       },
       {
         name: "robots",
@@ -79,18 +79,24 @@ const config = {
       },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "AgentPlane" },
-      { property: "og:title", content: "AgentPlane: the audit layer for coding agents" },
+      {
+        property: "og:title",
+        content: "AgentPlane.org - Git-native infrastructure for traceable AI work",
+      },
       {
         property: "og:description",
         content:
-          "Open-source CLI that turns Claude Code, Codex, Cursor, and Aider into reviewable, reversible work inside Git repositories.",
+          "AgentPlane records AI-agent work as reviewable Git evidence: task intent, approved plan, verification, Agent Change Record, and closure metadata.",
       },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "AgentPlane: the audit layer for coding agents" },
+      {
+        name: "twitter:title",
+        content: "AgentPlane.org - Git-native infrastructure for traceable AI work",
+      },
       {
         name: "twitter:description",
         content:
-          "Open-source CLI that records task, plan, verification, and closure evidence for coding-agent work.",
+          "Local-first CLI for task, plan, verification, Agent Change Record, and closure evidence in Git.",
       },
       { name: "twitter:site", content: "@agentplaneorg" },
     ],
@@ -115,6 +121,18 @@ const config = {
           activeBaseRegex: "^/docs/manifesto",
         },
         {
+          to: "/docs/user/agent-change-record",
+          label: "ACR",
+          position: "right",
+          activeBaseRegex: "^/docs/user/agent-change-record",
+        },
+        {
+          to: "/docs/workflow-guides",
+          label: "Workflows",
+          position: "right",
+          activeBaseRegex: "^/docs/workflow-guides",
+        },
+        {
           to: "/docs/user/overview",
           label: "Docs",
           position: "right",
@@ -125,12 +143,6 @@ const config = {
           label: "Compare",
           position: "right",
           activeBaseRegex: "^/docs/compare",
-        },
-        {
-          to: "/docs/recipes",
-          label: "Recipes",
-          position: "right",
-          activeBaseRegex: "^/docs/recipes",
         },
         {
           href: "https://github.com/basilisk-labs/agentplane",
@@ -155,11 +167,48 @@ const config = {
       style: "light",
       links: [
         {
+          title: "Product",
+          items: [
+            {
+              label: "Why",
+              to: "/docs/manifesto",
+            },
+            {
+              label: "Agent Change Record",
+              to: "/docs/user/agent-change-record",
+            },
+            {
+              label: "Workflows",
+              to: "/docs/workflow-guides",
+            },
+            {
+              label: "Compare",
+              to: "/docs/compare",
+            },
+          ],
+        },
+        {
           title: "Docs",
           items: [
             {
-              label: "Tutorial",
-              to: "/docs",
+              label: "Quickstart",
+              to: "/docs/user/setup",
+            },
+            {
+              label: "Claude Code",
+              to: "/docs/workflow-guides/claude-code",
+            },
+            {
+              label: "Codex",
+              to: "/docs/workflow-guides/codex",
+            },
+            {
+              label: "GitHub Actions",
+              to: "/docs/workflow-guides/github-actions",
+            },
+            {
+              label: "CLI Reference",
+              to: "/docs/user/cli-reference.generated",
             },
           ],
         },
@@ -167,7 +216,7 @@ const config = {
           title: "Project",
           items: [
             {
-              label: "Repository",
+              label: "GitHub",
               href: "https://github.com/basilisk-labs/agentplane",
             },
             {
@@ -181,11 +230,19 @@ const config = {
           ],
         },
         {
-          title: "More",
+          title: "Community",
           items: [
             {
               label: "Contributing",
               href: "https://github.com/basilisk-labs/agentplane/blob/main/CONTRIBUTING.md",
+            },
+            {
+              label: "Discussions",
+              href: "https://github.com/basilisk-labs/agentplane/discussions",
+            },
+            {
+              label: "Showcase",
+              to: "/docs/showcase",
             },
           ],
         },

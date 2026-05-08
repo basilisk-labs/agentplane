@@ -1,10 +1,62 @@
 ---
 title: "Website information architecture"
-description: "Marketing website IA source moved to the AgentPlane marketing repository."
+description: "Public website structure for AgentPlane's Git-native evidence positioning."
 ---
 
-The canonical website information architecture now lives in the AgentPlane marketing repository:
+# Website information architecture
 
-- [docs/website/website-ia.mdx](https://github.com/basilisk-labs/agentplane-marketing/blob/main/docs/website/website-ia.mdx)
+The public site should make AgentPlane legible before it explains internal mechanics.
 
-Keep this page as a public docs route so existing links to `/docs/user/website-ia` continue to resolve.
+## Positioning stack
+
+- Tagline: Git-native infrastructure for traceable AI work.
+- One-liner: AgentPlane turns AI-agent changes into reviewable Git evidence: task, plan,
+  verification, ACR, and closure.
+- Category: repo-local evidence layer for AI-authored software changes.
+- Wedge: every serious agent change should leave an Agent Change Record.
+- Promise: use any coding agent; keep the evidence in Git.
+- Trust: no hosted runtime, no telemetry, no vendor lock-in.
+
+## Top-level navigation
+
+- Home
+- Why
+- ACR
+- Workflows
+- Docs
+- Compare
+- GitHub
+
+Recipes stay below the core flow until the extension catalog is large enough to justify top-level
+navigation.
+
+## Homepage order
+
+1. Hero
+2. Trust bar
+3. Problem: the diff is not the whole story
+4. What AgentPlane writes
+5. Agent Change Record
+6. How it works
+7. Use with your agent
+8. Use cases
+9. Compare
+10. Quickstart
+11. Docs paths
+12. Footer
+
+## Docs order
+
+1. Start here
+2. Concepts
+3. Workflows
+4. Use with agents
+5. Agent Change Record
+6. Recipes
+7. Operations
+8. Reference
+9. Developer
+10. Release notes
+
+The first-time path should show the first artifact before advanced abstractions: `acr.json`, then
+task lifecycle, workflow modes, recipes, backends, and framework internals.

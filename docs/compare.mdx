@@ -1,10 +1,69 @@
 ---
 title: "How AgentPlane compares"
-description: "Marketing and positioning source moved to the AgentPlane marketing repository."
+description: "AgentPlane compared with coding agents, AGENTS.md, Git-only workflows, CI, and hosted dashboards."
 ---
 
-The canonical comparison page now lives in the AgentPlane marketing repository:
+# AgentPlane is not another coding agent
 
-- [docs/positioning/compare.mdx](https://github.com/basilisk-labs/agentplane-marketing/blob/main/docs/positioning/compare.mdx)
+Claude Code, Codex, Cursor, Aider, and similar tools generate or edit code. AgentPlane records the
+evidence that makes their work reviewable: task scope, approved plan, role ownership, verification,
+branch handoff, closure, and Agent Change Record.
 
-Keep this page as a public docs route so existing links to `/docs/compare` continue to resolve.
+## Comparison matrix
+
+| Surface                              | Best at                            | Missing by itself              | AgentPlane adds                    |
+| ------------------------------------ | ---------------------------------- | ------------------------------ | ---------------------------------- |
+| Claude Code / Codex / Cursor / Aider | Generating and editing code        | Durable task evidence          | Lifecycle records and ACR          |
+| `AGENTS.md` / `CLAUDE.md`            | Instructions and policy            | State, approvals, verification | Commands, gates, artifacts         |
+| Git                                  | Diffs and history                  | Intent, plan, verification     | Evidence around the diff           |
+| CI                                   | Automated checks                   | Task context and closure state | Verification evidence and ACR gate |
+| Hosted agent dashboards              | Central status or remote execution | Repo-local source of truth     | Durable Git-owned evidence         |
+
+## Coding agents
+
+Coding agents are responsible for changing files. AgentPlane is responsible for making that work
+traceable after the session is gone.
+
+Use AgentPlane when you need a reviewer to answer:
+
+- What was the task?
+- Which plan constrained the work?
+- What evidence proves verification happened?
+- Which commit represents the work?
+- Is the ACR merge-ready?
+
+## `AGENTS.md` and `CLAUDE.md`
+
+Instruction files describe policy. They do not record whether a specific agent task followed that
+policy.
+
+AgentPlane keeps the policy gateway, then adds task state, plan approval, verification, finish
+metadata, PR artifacts, and ACR.
+
+## Git-only workflows
+
+Git remains the source of truth for content and history. AgentPlane does not replace it.
+
+The gap is that a commit hash does not describe the agent's task, plan, verification, or policy
+decisions. AgentPlane stores those records beside the commit so review and revert have enough
+context.
+
+## CI
+
+CI proves that configured checks ran. It usually does not know why the agent changed the files or
+which task evidence belongs to the pull request.
+
+AgentPlane can record verification as task evidence and use `agentplane acr check <task-id> --mode
+ci` as an ACR readiness gate.
+
+## Hosted agent platforms
+
+Hosted runtimes and dashboards are useful when you need remote execution, central queues, or sandbox
+management.
+
+AgentPlane.org is not a hosted agent runtime or sandbox API. It is a local-first Git evidence layer
+for AI work in repositories.
+
+## Summary
+
+Use any coding agent. Keep the evidence in Git.

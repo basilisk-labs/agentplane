@@ -1,10 +1,78 @@
 ---
 title: "Why AgentPlane exists"
-description: "Marketing and positioning source moved to the AgentPlane marketing repository."
+description: "Why AI work needs a Git-native evidence layer inside the repository."
 ---
 
-The canonical manifesto now lives in the AgentPlane marketing repository:
+# Why AI work needs a Git-native evidence layer
 
-- [docs/positioning/manifesto.mdx](https://github.com/basilisk-labs/agentplane-marketing/blob/main/docs/positioning/manifesto.mdx)
+Coding agents made software changes cheaper. They did not make those changes accountable.
 
-Keep this page as a public docs route so existing links to `/docs/manifesto` continue to resolve.
+A generated diff is not enough when the work spans prompts, retries, tools, branches, checks,
+approvals, and handoffs. AgentPlane exists to preserve the operational evidence around AI-authored
+changes inside the repository where review already happens.
+
+## 1. The failure mode
+
+AI agents can now edit real repositories, not just draft snippets. They update code, docs, tests,
+release paths, and configuration. That creates a new review problem: the repository shows the final
+diff, but the reasoning trail often remains in a chat transcript, terminal scrollback, or IDE state.
+
+The weak link is not only "can the agent write code?" It is "can the team reconstruct, verify, and
+govern what happened?"
+
+## 2. Why Git alone is not enough
+
+Git is the right durable substrate. It stores content, branches, commits, and review history. But a
+commit does not reliably answer:
+
+- What was the agent asked to do?
+- Which plan constrained the change?
+- Which checks actually ran?
+- Which policy decisions or waivers applied?
+- Why is the work safe to merge or revert?
+
+AgentPlane keeps Git as the source of truth and adds the missing evidence beside the diff.
+
+## 3. Why chat transcripts are not enough
+
+Chat transcripts are useful context, but they are poor review artifacts. They are long, mutable,
+private, tool-specific, and often unavailable to the next reviewer. They can include sensitive
+material that should not be committed.
+
+AgentPlane records commit-safe summaries, task state, verification evidence, and hashes instead of
+requiring reviewers to trust raw agent conversations.
+
+## 4. Why hosted dashboards are not the default answer
+
+Hosted dashboards can be useful for remote execution and central status. They are not the default
+answer when the durable record must stay with the code.
+
+AgentPlane is local-first: no hosted runtime, no telemetry, no vendor lock-in. The repository owns
+the workflow artifacts.
+
+## 5. Why ACR exists
+
+An Agent Change Record is the evidence file for AI-authored work. It is a commit-safe JSON artifact
+that records task intent, approved plan, agent/toolchain identity, Git commits, policy decisions,
+verification results, and merge readiness.
+
+Humans can read `agentplane acr explain`. CI can run `agentplane acr check`. External tools can read
+`.agentplane/tasks/<task-id>/acr.json`.
+
+## 6. What AgentPlane refuses to do
+
+AgentPlane is not another coding agent. It does not choose a model, generate code for you, replace
+Git, replace CI, or replace pull request review.
+
+It wraps the tools you already use with a repo-local lifecycle:
+
+```text
+task -> plan -> approve -> implement -> verify -> finish
+```
+
+## 7. The operating bet
+
+Every serious agent change should leave an Agent Change Record.
+
+That is the category bet: AI-authored work needs a durable evidence artifact, and the easiest place
+to keep it is the Git repository that already owns review, revert, audit, and merge.

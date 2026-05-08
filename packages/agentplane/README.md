@@ -1,9 +1,12 @@
 # AgentPlane CLI
 
-**The open-source audit layer for coding agents.**
+**Git-native infrastructure for traceable AI work.**
 
-`agentplane` is a local CLI that turns Claude Code, Codex, Cursor, Aider, and similar coding-agent
-work into reviewable, reversible Git artifacts.
+`agentplane` is a local-first CLI that turns Claude Code, Codex, Cursor, Aider, and similar
+coding-agent changes into reviewable Git evidence: task intent, approved plan, verification, finish
+state, and Agent Change Record.
+
+No hosted runtime. No telemetry. No vendor lock-in. Everything stays in your repository.
 
 [![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
 [![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
@@ -70,22 +73,22 @@ agentplane verify <task-id> --ok --by <agent-id> --note "Focused tests passed."
 agentplane finish <task-id> --author <agent-id> --result "Parser rejects empty labels." --commit <git-rev>
 ```
 
-The visible output is the point: a reviewer can inspect task intent, plan, verification, and closure
-from Git-visible files.
+The visible output is the point: a reviewer can inspect task intent, plan, verification, closure,
+and ACR from Git-visible files.
 
 Agent IDs are configurable profiles. See
 [Agents](https://agentplane.org/docs/user/agents).
 
 ## Agent Change Record
 
-Every task can produce an **Agent Change Record (ACR)**, a deterministic JSON evidence projection
-of intent, accepted plan, verification result, policy decisions, and closure commit.
+Every task can produce an **Agent Change Record (ACR)**, a commit-safe JSON evidence projection of
+intent, accepted plan, Git commits, policy decisions, verification result, and merge readiness.
 
 ```bash
 agentplane acr generate <task-id> --work-commit HEAD --write
-agentplane acr validate .agentplane/tasks/<task-id>/acr.json
-agentplane acr check <task-id> --require-plan-approved --require-verification
-agentplane acr --help
+agentplane acr validate <task-id> --mode local
+agentplane acr check <task-id> --mode ci
+agentplane acr explain <task-id>
 ```
 
 Schema: https://agentplane.org/schemas/acr-v0.1.schema.json
@@ -95,6 +98,11 @@ Schema: https://agentplane.org/schemas/acr-v0.1.schema.json
 - `direct` keeps work in the current checkout for fast local loops.
 - `branch_pr` creates per-task branches, worktrees, PR artifacts, and integration handoff.
 
+## Not another agent
+
+AgentPlane does not replace your coding agent, editor, terminal, Git, CI, or PR review. It records
+the evidence around the tools you already use.
+
 ## Compatible with
 
 Claude Code, Codex CLI, Cursor agent, Aider, GitHub Actions agent runners, and MCP-driven
@@ -102,7 +110,9 @@ workflows. AgentPlane does not replace them; it records what they did and whethe
 
 ## Recipes
 
-Recipes are signed, versioned behavior modules for AgentPlane:
+Recipes are optional signed behavior modules. Start with the task -> plan -> verify -> ACR flow
+first; add recipes only when you need reusable profiles, prompt modules, skills, or repository
+mapping:
 
 ```bash
 agentplane recipes list-remote

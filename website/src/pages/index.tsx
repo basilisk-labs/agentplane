@@ -392,8 +392,19 @@ function NextStepCard({
 }
 
 export default function Home(): ReactNode {
-  const { seo, hero, problem, demo, comparison, workflow, artifacts, whyNow, nextSteps, closing } =
-    homepageContent;
+  const {
+    seo,
+    hero,
+    problem,
+    demo,
+    comparison,
+    workflow,
+    artifacts,
+    acr,
+    whyNow,
+    nextSteps,
+    closing,
+  } = homepageContent;
 
   return (
     <Layout title={seo.title} description={seo.description}>
@@ -408,8 +419,8 @@ export default function Home(): ReactNode {
                 <p className={styles.flowLine}>{hero.flow}</p>
                 <ActionsRow
                   actions={[
-                    { label: "View on GitHub", to: githubUrl, variant: "primary" },
-                    { label: "Read the docs", to: docsUrl, variant: "secondary" },
+                    { label: "Generate your first ACR", to: acr.action.to, variant: "primary" },
+                    { label: "View on GitHub", to: githubUrl, variant: "secondary" },
                     { label: installCommand, command: installCommand, variant: "copy" },
                   ]}
                 />
@@ -504,6 +515,22 @@ export default function Home(): ReactNode {
                   Read the docs
                 </Link>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className={`${styles.section} ${styles.shell}`}>
+          <SectionLead label="Agent Change Record" title={acr.title} text={acr.text} />
+          <div className={styles.demoGrid}>
+            <TerminalPreview title={acr.terminal.title} lines={acr.terminal.lines} compact />
+            <div className={styles.demoAside}>
+              <span className={styles.sectionLabel}>Review path</span>
+              <p>
+                Humans read `acr explain`. CI reads `acr check`. External tools read `acr.json`.
+              </p>
+              <Link className={`${styles.action} ${styles.actionPrimary}`} to={acr.action.to}>
+                {acr.action.label}
+              </Link>
             </div>
           </div>
         </section>
