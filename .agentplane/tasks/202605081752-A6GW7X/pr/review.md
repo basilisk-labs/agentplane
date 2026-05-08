@@ -24,20 +24,21 @@ Created: 2026-05-08T18:16:17.726Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-08T18:17:23.165Z
+- Updated: 2026-05-08T18:27:14.919Z
 - Branch: task/202605081752-A6GW7X/integration-queue
-- Head: 64f82e28749f
+- Head: 818bae616eac
 
 ```text
  .agentplane/policy/workflow.branch_pr.md           |  10 +-
  .../blueprint/resolved-snapshot.json               | 497 +++++++++++++++++++++
+ .../agentplane/assets/policy/workflow.branch_pr.md |  10 +-
  .../src/cli/run-cli/command-catalog/project.ts     |  20 +
  .../src/cli/run-cli/command-loaders/project.ts     |  24 +
  .../src/commands/integrate-queue.command.ts        | 262 +++++++++++
  .../src/commands/integrate-queue.spec.ts           | 166 +++++++
  .../src/commands/pr/integrate/queue-state.test.ts  | 101 +++++
  .../src/commands/pr/integrate/queue-state.ts       | 208 +++++++++
- 8 files changed, 1285 insertions(+), 3 deletions(-)
+ 9 files changed, 1292 insertions(+), 6 deletions(-)
 ```
 
 </details>
