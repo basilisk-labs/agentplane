@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-08T20:10:56Z",
   "base": "main",
   "branch": "task/202605081826-S5X1S7/cold-benchmark-stability",
   "created_at": "2026-05-08T18:29:51.044Z",
-  "head_sha": "fe5d78e6d84b2439e2ff484d11d68ce78f9641c1",
+  "head_sha": "4ffb719f97a282c4950a9fcf2f987b1c34c19b0b",
   "last_verified_at": "2026-05-08T18:49:59.809Z",
   "last_verified_sha": "e84c42800fa8765b2e2775d0d8d3853b632e3975",
+  "merge_commit": "fa6074a382a31588fbecdd3c2f45a68285d567fc",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-08T20:10:56Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605081826-S5X1S7",
-  "updated_at": "2026-05-08T20:07:05.548Z",
+  "updated_at": "2026-05-08T20:10:56Z",
   "verify": {
     "status": "pass"
   }
