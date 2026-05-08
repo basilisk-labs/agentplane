@@ -42,6 +42,12 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [work start](#work-start)
 - PR
   - [integrate](#integrate)
+  - [integrate queue](#integrate-queue)
+  - [integrate queue claim](#integrate-queue-claim)
+  - [integrate queue enqueue](#integrate-queue-enqueue)
+  - [integrate queue list](#integrate-queue-list)
+  - [integrate queue release](#integrate-queue-release)
+  - [integrate queue run-next](#integrate-queue-run-next)
   - [pr](#pr)
   - [pr check](#pr-check)
   - [pr close](#pr-close)
@@ -568,7 +574,7 @@ Options:
 - `--task-kind <analysis|content|docs|code|release|ops>`: Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops)
 - `--mutation-scope <none|docs|code|release|ops|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|unknown)
 - `--risk <risk>`: Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
-- `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|release.strict|ops.approval)
+- `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|runner.execution|release.strict|ops.approval)
 - `--depends-on <task-id>`: Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
 - `--verify <command>`: Repeatable. Verification commands/checks to run for this task. (repeatable)
 - `--show-blueprint`: Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
@@ -1286,6 +1292,109 @@ agentplane integrate 202602030608-F1Q8AB --run-verify
 ```
 
 - Integrate with verify.
+
+### integrate queue
+
+Serialize branch_pr integration into one merge lane.
+
+Usage:
+
+```text
+agentplane integrate queue <enqueue|list|claim|release|run-next> [args] [options]
+```
+
+Examples:
+
+```sh
+agentplane integrate queue enqueue 202602030608-F1Q8AB --branch task/202602030608-F1Q8AB/fix
+```
+
+- Add a verified task branch to the integration queue.
+
+```sh
+agentplane integrate queue run-next --run-verify
+```
+
+- Run one queued integration.
+
+### integrate queue claim
+
+Claim the next queued integration candidate without running integrate.
+
+Usage:
+
+```text
+agentplane integrate queue claim [options]
+```
+
+Options:
+
+- `--worker <id>`: Queue worker id.
+- `--lease-ms <ms>`: Lease duration.
+- `--json`: Emit JSON. (default=false)
+
+### integrate queue enqueue
+
+Add or refresh a verified task branch in the integration queue.
+
+Usage:
+
+```text
+agentplane integrate queue enqueue <task-id> [options]
+```
+
+Options:
+
+- `--branch <name>`: Branch name override.
+- `--base <name>`: Base branch override.
+- `--priority <number>`: Higher values are claimed first. (default=0)
+
+### integrate queue list
+
+List branch_pr integration queue entries.
+
+Usage:
+
+```text
+agentplane integrate queue list [options]
+```
+
+Options:
+
+- `--json`: Emit JSON. (default=false)
+
+### integrate queue release
+
+Release or complete a queue entry.
+
+Usage:
+
+```text
+agentplane integrate queue release <task-id> [options]
+```
+
+Options:
+
+- `--status <queued|done|rework>`: Next queue status. (choices=queued|done|rework, default=queued)
+- `--reason <text>`: Release reason.
+
+### integrate queue run-next
+
+Claim and run one queued integration candidate.
+
+Usage:
+
+```text
+agentplane integrate queue run-next [options]
+```
+
+Options:
+
+- `--worker <id>`: Queue worker id.
+- `--lease-ms <ms>`: Lease duration.
+- `--run-verify`: Run verify commands. (default=false)
+- `--dry-run`: Do not modify git state. (default=false)
+- `--quiet`: Reduce output noise. (default=false)
 
 ### pr
 

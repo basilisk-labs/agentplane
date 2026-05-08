@@ -42,7 +42,7 @@ const sidebars: SidebarsConfig = {
   docsSidebar: [
     {
       type: "category",
-      label: "Start here",
+      label: "Start",
       items: [
         "user/overview",
         "user/setup",
@@ -56,7 +56,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Concepts",
+      label: "Work on a task",
       items: [
         "user/workflow",
         "user/task-lifecycle",
@@ -102,7 +102,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Operations",
+      label: "Upgrade & recover",
       items: [
         "user/breaking-changes",
         "user/workflow-migration",

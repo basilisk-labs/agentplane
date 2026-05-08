@@ -264,7 +264,7 @@ function selectBlueprint(opts: { input: BlueprintResolveInput; registry: Bluepri
     stopReasons.push(...explicitCompatibilityStop({ blueprint, input }));
   } else if (riskBlueprintId) {
     reasons.push(`risk flags require ${riskBlueprintId}: ${riskFlags.join(", ")}`);
-  } else if (specializedCodeBlueprint && selectedId === specializedCodeBlueprint.id) {
+  } else if (selectedId === specializedCodeBlueprint?.id) {
     reasons.push(specializedCodeBlueprint.reason);
   } else if (preferredId && selectedId === preferredId) {
     reasons.push(`recipe preferred compatible blueprint: ${preferredId}`);

@@ -27,6 +27,18 @@ npx agentplane quickstart
 On fresh Windows shells, use `npx agentplane ...` if `agentplane` is not yet on `PATH`, then reopen
 the terminal after global install.
 
+## Working inside the AgentPlane framework checkout
+
+Inside the AgentPlane framework repository, the CLI uses the repo-local binary automatically after
+bootstrap. Check the active runtime with:
+
+```bash
+agentplane runtime explain
+```
+
+Set `AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1` only when you intentionally need to bypass the
+repo-local development runtime.
+
 ## Initialize repository
 
 Run from the repository root:
@@ -120,7 +132,7 @@ Use the advanced backend docs only when you need them:
 - [Cloud backend](backends/cloud)
 - [Redmine backend](backends/redmine)
 
-## Managed ownership contract
+### Managed ownership contract
 
 Treat `AGENTS.md`, `.agentplane/policy/**`, `.agentplane/WORKFLOW.md`, and other files written by
 `agentplane init` or `agentplane upgrade` as framework-owned managed files.
@@ -128,8 +140,16 @@ Treat `AGENTS.md`, `.agentplane/policy/**`, `.agentplane/WORKFLOW.md`, and other
 Use `.agentplane/policy/incidents.md` for sanctioned local incident rules. Do not hand-edit the rest
 of the managed policy tree during normal project work; expect `agentplane upgrade` to replace or
 reconcile those files.
+Agents do not treat `incidents.md` as part of the normal startup reading path for agents; it is
+for recovery, incident response, or tasks that directly modify incident policy.
 
 For older or partially upgraded repositories, use [Upgrade recovery](../help/legacy-upgrade-recovery).
+
+Upgrade recovery starts from three repository states:
+
+1. **Clean managed state**: managed files match the installed framework contract.
+2. **Partial upgrade state**: an upgrade started but did not finish all managed file updates.
+3. **Manual drift state**: managed files were edited outside the framework upgrade path.
 
 ## Verify setup
 

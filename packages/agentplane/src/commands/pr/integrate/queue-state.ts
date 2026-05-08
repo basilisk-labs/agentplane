@@ -32,6 +32,7 @@ export type QueueClock = {
 };
 
 export const DEFAULT_QUEUE_LEASE_MS = 30 * 60 * 1000;
+const DEFAULT_QUEUE_CLOCK: QueueClock = { now: () => new Date() };
 
 export function integrationQueuePath(gitRoot: string): string {
   return path.join(gitRoot, ".agentplane", "cache", "integration-queue.json");
@@ -89,9 +90,10 @@ export async function writeIntegrationQueue(
 export function upsertQueuedEntry(
   state: IntegrationQueueState,
   entry: Omit<IntegrationQueueEntry, "status" | "enqueued_at" | "updated_at">,
-  clock: QueueClock = { now: () => new Date() },
+  clock?: QueueClock,
 ): IntegrationQueueState {
-  const now = clock.now().toISOString();
+  const resolvedClock = clock ?? DEFAULT_QUEUE_CLOCK;
+  const now = resolvedClock.now().toISOString();
   const existing = state.entries.find((candidate) => candidate.task_id === entry.task_id);
   const nextEntry: IntegrationQueueEntry = {
     ...entry,
@@ -108,9 +110,10 @@ export function upsertQueuedEntry(
 
 export function expireClaimedEntries(
   state: IntegrationQueueState,
-  clock: QueueClock = { now: () => new Date() },
+  clock?: QueueClock,
 ): IntegrationQueueState {
-  const nowMs = clock.now().getTime();
+  const resolvedClock = clock ?? DEFAULT_QUEUE_CLOCK;
+  const nowMs = resolvedClock.now().getTime();
   return {
     schema_version: 1,
     entries: state.entries.map((entry) => {
@@ -128,7 +131,7 @@ export function expireClaimedEntries(
       return {
         ...rest,
         status: "queued",
-        updated_at: clock.now().toISOString(),
+        updated_at: resolvedClock.now().toISOString(),
         reason: "lease expired",
       };
     }),
@@ -181,13 +184,14 @@ export function markQueueEntry(
   state: IntegrationQueueState,
   taskId: string,
   status: IntegrationQueueStatus,
-  reason: string | undefined,
-  clock: QueueClock = { now: () => new Date() },
+  reason?: string,
+  clock?: QueueClock,
 ): IntegrationQueueState {
+  const resolvedClock = clock ?? DEFAULT_QUEUE_CLOCK;
   return {
     schema_version: 1,
     entries: state.entries.map((entry) =>
-      entry.task_id === taskId ? markEntryStatus(entry, status, reason, clock) : entry,
+      entry.task_id === taskId ? markEntryStatus(entry, status, reason, resolvedClock) : entry,
     ),
   };
 }

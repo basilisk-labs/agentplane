@@ -107,15 +107,15 @@ Grouping policy: `ci`, `release`, `docs`, `test`, `coverage`, `arch`, `bench`, `
 
 ## Bench
 
-| Script                 | Command                                                                 | Purpose                             |
-| ---------------------- | ----------------------------------------------------------------------- | ----------------------------------- |
-| `bench:cli:cold`       | `node scripts/measure-cli-cold-path.mjs`                                | Run bench workflow: cli cold.       |
-| `bench:cli:cold:check` | `node scripts/check-cli-cold-baseline.mjs --warmups 2 --attempts 5`     | Run bench workflow: cli cold check. |
-| `bench:cli:diff`       | `node scripts/compare-cli-perf.mjs`                                     | Run bench workflow: cli diff.       |
-| `bench:cli:perf`       | `node scripts/measure-cli-perf.mjs`                                     | Run bench workflow: cli perf.       |
-| `bench:cli:time`       | `node scripts/measure-cli-walltime.mjs`                                 | Run bench workflow: cli time.       |
-| `bench:cli:time:check` | `node scripts/check-cli-walltime-baseline.mjs --warmups 1 --attempts 3` | Run bench workflow: cli time check. |
-| `bench:cli:time:diff`  | `node scripts/compare-cli-walltime.mjs`                                 | Run bench workflow: cli time diff.  |
+| Script                 | Command                                                                                                                                                                     | Purpose                             |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `bench:cli:cold`       | `node scripts/measure-cli-cold-path.mjs`                                                                                                                                    | Run bench workflow: cli cold.       |
+| `bench:cli:cold:check` | `node scripts/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 1 --fixture local-basic --timeout-ms 10000` | Run bench workflow: cli cold check. |
+| `bench:cli:diff`       | `node scripts/compare-cli-perf.mjs`                                                                                                                                         | Run bench workflow: cli diff.       |
+| `bench:cli:perf`       | `node scripts/measure-cli-perf.mjs`                                                                                                                                         | Run bench workflow: cli perf.       |
+| `bench:cli:time`       | `node scripts/measure-cli-walltime.mjs`                                                                                                                                     | Run bench workflow: cli time.       |
+| `bench:cli:time:check` | `node scripts/check-cli-walltime-baseline.mjs --warmups 1 --attempts 3`                                                                                                     | Run bench workflow: cli time check. |
+| `bench:cli:time:diff`  | `node scripts/compare-cli-walltime.mjs`                                                                                                                                     | Run bench workflow: cli time diff.  |
 
 ## Clone Detection
 

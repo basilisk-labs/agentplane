@@ -131,6 +131,43 @@ describe("check-cli-cold-baseline script", () => {
     expect(result.stderr).toContain("quickstart: median_ms=150 exceeds max_median_ms=100");
   });
 
+  it("fails fast with timeout diagnostics when a measured command timed out", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cold-baseline-"));
+    const baselinePath = await writeJson(root, "baseline.json", {
+      schema_version: 2,
+      mode: "cli_cold_path_v1",
+      metric: "median_ms",
+      commands: [
+        {
+          id: "quickstart",
+          max_median_ms: 100,
+          expected_exit_code: 0,
+        },
+      ],
+    });
+    const measurementPath = await writeJson(root, "measurement.json", {
+      schema_version: 1,
+      mode: "cli_cold_path_v1",
+      commands: [
+        {
+          id: "quickstart",
+          median_ms: 50,
+          avg_ms: 50,
+          p95_ms: 50,
+          exit_code: 124,
+          timed_out: true,
+          timeout_ms: 25,
+        },
+      ],
+    });
+
+    const result = await runScript(["--baseline", baselinePath, "--measurement", measurementPath]);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain("quickstart: timed out after 25ms");
+    expect(result.stderr).toContain("quickstart: exit_code=124, expected=0");
+  });
+
   it("uses median timing instead of average timing so one outlier does not fail the guard", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cold-baseline-"));
     const baselinePath = await writeJson(root, "baseline.json", {

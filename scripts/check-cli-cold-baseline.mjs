@@ -1,7 +1,10 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { defaultConfig, saveConfig } from "../packages/core/dist/config/index.js";
 
 import { defineCheck, parseScriptArgs, runScriptMain } from "./lib/script-runtime.mjs";
 
@@ -30,7 +33,17 @@ function parseNonNegativeInt(raw, flag) {
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
-    valueFlags: ["baseline", "measurement", "root", "cli", "runs", "warmups", "attempts"],
+    valueFlags: [
+      "baseline",
+      "measurement",
+      "root",
+      "cli",
+      "runs",
+      "warmups",
+      "attempts",
+      "timeout-ms",
+      "fixture",
+    ],
   });
   if (positionals.length > 0) {
     throw new Error(`unexpected positional arguments: ${positionals.join(" ")}`);
@@ -44,6 +57,9 @@ function parseArgs(argv) {
     runs: flags.runs === undefined ? 3 : parsePositiveInt(flags.runs, "runs"),
     warmups: flags.warmups === undefined ? 0 : parseNonNegativeInt(flags.warmups, "warmups"),
     attempts: flags.attempts === undefined ? 1 : parsePositiveInt(flags.attempts, "attempts"),
+    timeoutMs:
+      flags["timeout-ms"] === undefined ? 0 : parsePositiveInt(flags["timeout-ms"], "timeout-ms"),
+    fixture: flags.fixture ? String(flags.fixture) : null,
   };
 }
 
@@ -59,6 +75,7 @@ function readJson(filePath, label) {
 function runMeasurement(options) {
   const args = [MEASURE_SCRIPT_PATH, "--root", options.root, "--runs", String(options.runs)];
   if (options.warmups > 0) args.push("--warmups", String(options.warmups));
+  if (options.timeoutMs > 0) args.push("--timeout-ms", String(options.timeoutMs));
   if (options.cliPath) args.push("--cli", options.cliPath);
   try {
     const stdout = execFileSync(process.execPath, args, {
@@ -83,6 +100,45 @@ function runMeasurement(options) {
     }
     throw error;
   }
+}
+
+function defaultCliPath(options) {
+  return options.cliPath ?? path.join(repoRoot, "packages", "agentplane", "bin", "agentplane.js");
+}
+
+async function createLocalBasicFixture(options) {
+  const root = mkdtempSync(path.join(os.tmpdir(), "agentplane-cold-fixture-"));
+  execFileSync("git", ["init"], { cwd: root, stdio: "ignore" });
+  mkdirSync(path.join(root, ".agentplane"), { recursive: true });
+  await saveConfig(path.join(root, ".agentplane"), defaultConfig());
+  execFileSync(
+    process.execPath,
+    [
+      defaultCliPath(options),
+      "task",
+      "new",
+      "--title",
+      "Cold path benchmark task",
+      "--description",
+      "Seed one ready task so task next benchmarks a bounded local path.",
+      "--owner",
+      "CODER",
+      "--tag",
+      "docs",
+      "--root",
+      root,
+    ],
+    {
+      cwd: repoRoot,
+      env: {
+        ...process.env,
+        AGENTPLANE_NO_UPDATE_CHECK: "1",
+      },
+      stdio: "ignore",
+      maxBuffer: 10 * 1024 * 1024,
+    },
+  );
+  return root;
 }
 
 function normalizeCommandList(payload, label) {
@@ -126,6 +182,12 @@ function compareMeasurementToBaseline(measurement, baseline) {
 
     const expectedExit = Number(expected.expected_exit_code ?? 0);
     const actualExit = Number(actual.exit_code);
+    if (actual.timed_out === true) {
+      const timeoutMs = Number(actual.timeout_ms);
+      const timeoutSummary =
+        Number.isFinite(timeoutMs) && timeoutMs > 0 ? ` after ${timeoutMs}ms` : "";
+      failures.push(`${id}: timed out${timeoutSummary}`);
+    }
     if (actualExit !== expectedExit) {
       failures.push(`${id}: exit_code=${actualExit}, expected=${expectedExit}`);
     }
@@ -147,19 +209,40 @@ const main = defineCheck({
     const attempts = options.measurementPath ? 1 : options.attempts;
     let lastFailures = [];
     let lastSummaries = [];
+    let fixtureRoot = null;
 
-    for (let attempt = 1; attempt <= attempts; attempt++) {
-      const measurement = options.measurementPath
-        ? readJson(options.measurementPath, "measurement")
-        : runMeasurement(options);
-      const { failures, summaries } = compareMeasurementToBaseline(measurement, baseline);
-      if (failures.length === 0) {
-        const retrySuffix = attempt > 1 ? ` after retry ${attempt}/${attempts}` : "";
-        stdout.write(`CLI cold-start baseline OK${retrySuffix} (${summaries.join("; ")})\n`);
-        return;
+    if (options.fixture) {
+      if (options.fixture !== "local-basic") {
+        throw new Error(`unsupported --fixture value: ${options.fixture}`);
       }
-      lastFailures = failures;
-      lastSummaries = summaries;
+      if (options.measurementPath) {
+        throw new Error("--fixture cannot be combined with --measurement");
+      }
+      fixtureRoot = await createLocalBasicFixture(options);
+      options.root = fixtureRoot;
+    }
+
+    try {
+      for (let attempt = 1; attempt <= attempts; attempt++) {
+        const measurement = options.measurementPath
+          ? readJson(options.measurementPath, "measurement")
+          : runMeasurement(options);
+        const { failures, summaries } = compareMeasurementToBaseline(measurement, baseline);
+        if (failures.length === 0) {
+          const retrySuffix = attempt > 1 ? ` after retry ${attempt}/${attempts}` : "";
+          const fixtureSuffix = options.fixture ? ` using fixture ${options.fixture}` : "";
+          stdout.write(
+            `CLI cold-start baseline OK${retrySuffix}${fixtureSuffix} (${summaries.join("; ")})\n`,
+          );
+          return;
+        }
+        lastFailures = failures;
+        lastSummaries = summaries;
+      }
+    } finally {
+      if (fixtureRoot) {
+        rmSync(fixtureRoot, { recursive: true, force: true });
+      }
     }
 
     throw new Error(
