@@ -3,38 +3,6 @@
   "generated_by": "check-knip-baseline.mjs",
   "entries": [
     {
-      "file": "packages/agentplane/bin/framework-dev-contract.d.ts",
-      "files": [
-        {
-          "name": "packages/agentplane/bin/framework-dev-contract.d.ts"
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/bin/runtime-context.d.ts",
-      "files": [
-        {
-          "name": "packages/agentplane/bin/runtime-context.d.ts"
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/bin/runtime-watch.d.ts",
-      "files": [
-        {
-          "name": "packages/agentplane/bin/runtime-watch.d.ts"
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/bin/stale-dist-policy.d.ts",
-      "files": [
-        {
-          "name": "packages/agentplane/bin/stale-dist-policy.d.ts"
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/agents/agents-template.ts",
       "types": [
         {
@@ -45,6 +13,16 @@
         {
           "name": "MarkdownPromptTemplate",
           "line": 35,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/backends/task-backend/cloud-pull.ts",
+      "types": [
+        {
+          "name": "CloudPullPlan",
+          "line": 3,
           "col": 13
         }
       ]
@@ -136,12 +114,496 @@
       "types": [
         {
           "name": "TaskIndexFile",
-          "line": 23,
+          "line": 35,
           "col": 13
         },
         {
           "name": "TaskIndexFileV2",
+          "line": 28,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/blueprints/execution.ts",
+      "exports": [
+        {
+          "name": "blueprintExecutionPlanStep",
+          "line": 22,
+          "col": 17
+        },
+        {
+          "name": "blueprintNodeExecutionContract",
+          "line": 167,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/blueprints/index.ts",
+      "exports": [
+        {
+          "name": "blueprintExecutionPlanStep",
+          "line": 24,
+          "col": 3
+        },
+        {
+          "name": "blueprintNodeExecutionContract",
+          "line": 25,
+          "col": 3
+        },
+        {
+          "name": "blueprintPlanEvidence",
+          "line": 31,
+          "col": 10
+        },
+        {
+          "name": "blueprintPlanState",
+          "line": 31,
+          "col": 33
+        },
+        {
+          "name": "blueprintSnapshotDigest",
+          "line": 42,
+          "col": 3
+        },
+        {
+          "name": "blueprintSnapshotPayloadForDigest",
+          "line": 43,
+          "col": 3
+        },
+        {
+          "name": "BUILTIN_BLUEPRINTS",
+          "line": 1,
+          "col": 10
+        },
+        {
+          "name": "checkBlueprintExecutionReplay",
+          "line": 28,
+          "col": 3
+        },
+        {
+          "name": "checkBlueprintExecutionResume",
+          "line": 29,
+          "col": 3
+        },
+        {
+          "name": "getBlueprint",
+          "line": 4,
+          "col": 3
+        },
+        {
+          "name": "loadProjectBlueprintTrustConfig",
+          "line": 13,
+          "col": 3
+        },
+        {
+          "name": "parseProjectBlueprintJson",
+          "line": 15,
+          "col": 3
+        },
+        {
+          "name": "PROJECT_BLUEPRINTS_CONFIG_NAME",
+          "line": 10,
+          "col": 3
+        },
+        {
+          "name": "PROJECT_BLUEPRINTS_DIR",
+          "line": 9,
+          "col": 3
+        },
+        {
+          "name": "projectBlueprintsConfigPath",
+          "line": 16,
+          "col": 3
+        },
+        {
+          "name": "recipeBlueprintExtensionToHint",
+          "line": 33,
+          "col": 3
+        },
+        {
+          "name": "requireBlueprint",
+          "line": 6,
+          "col": 3
+        },
+        {
+          "name": "stableBlueprintSnapshotJson",
+          "line": 45,
+          "col": 3
+        },
+        {
+          "name": "validateBlueprintPlanArtifact",
+          "line": 50,
+          "col": 3
+        },
+        {
+          "name": "validateBlueprintRegistry",
+          "line": 51,
+          "col": 3
+        },
+        {
+          "name": "validateRecipeHintsForBlueprint",
+          "line": 39,
+          "col": 3
+        }
+      ],
+      "types": [
+        {
+          "name": "AcceptedRecipeExtension",
+          "line": 54,
+          "col": 3
+        },
+        {
+          "name": "BlueprintContextBudget",
+          "line": 56,
+          "col": 3
+        },
+        {
+          "name": "BlueprintDefinition",
+          "line": 58,
+          "col": 3
+        },
+        {
+          "name": "BlueprintEdge",
+          "line": 59,
+          "col": 3
+        },
+        {
+          "name": "BlueprintExecutionCheckProblem",
+          "line": 64,
+          "col": 3
+        },
+        {
+          "name": "BlueprintExecutionCheckProblemCode",
+          "line": 65,
+          "col": 3
+        },
+        {
+          "name": "BlueprintExecutionCheckResult",
+          "line": 66,
+          "col": 3
+        },
+        {
+          "name": "BlueprintExecutionEventType",
+          "line": 63,
+          "col": 3
+        },
+        {
+          "name": "BlueprintExecutionEvidenceRef",
+          "line": 67,
+          "col": 3
+        },
+        {
+          "name": "BlueprintExecutionNodeStatus",
+          "line": 68,
+          "col": 3
+        },
+        {
+          "name": "BlueprintExecutionPlanArtifact",
+          "line": 69,
+          "col": 3
+        },
+        {
+          "name": "BlueprintExecutionPlanStep",
+          "line": 70,
+          "col": 3
+        },
+        {
+          "name": "BlueprintExecutionStateArtifact",
+          "line": 71,
+          "col": 3
+        },
+        {
+          "name": "BlueprintExecutionStateEvent",
+          "line": 72,
+          "col": 3
+        },
+        {
+          "name": "BlueprintExecutionStateNode",
+          "line": 73,
+          "col": 3
+        },
+        {
+          "name": "BlueprintExplainEvidence",
+          "line": 60,
+          "col": 3
+        },
+        {
+          "name": "BlueprintExplainNode",
+          "line": 61,
+          "col": 3
+        },
+        {
+          "name": "BlueprintNode",
+          "line": 88,
+          "col": 3
+        },
+        {
+          "name": "BlueprintNodeExecutionContract",
+          "line": 75,
+          "col": 3
+        },
+        {
+          "name": "BlueprintNodeKind",
+          "line": 89,
+          "col": 3
+        },
+        {
+          "name": "BlueprintNodeMode",
+          "line": 90,
+          "col": 3
+        },
+        {
+          "name": "BlueprintPlanState",
+          "line": 77,
+          "col": 3
+        },
+        {
+          "name": "BlueprintPlanValidationProblem",
+          "line": 78,
+          "col": 3
+        },
+        {
+          "name": "BlueprintPlanValidationResult",
+          "line": 79,
+          "col": 3
+        },
+        {
+          "name": "BlueprintRegistry",
+          "line": 92,
+          "col": 3
+        },
+        {
+          "name": "BlueprintSnapshotDigest",
+          "line": 81,
+          "col": 3
+        },
+        {
+          "name": "BlueprintSnapshotResolverInput",
+          "line": 82,
+          "col": 3
+        },
+        {
+          "name": "BlueprintSnapshotSelectedBlueprint",
+          "line": 83,
+          "col": 3
+        },
+        {
+          "name": "BlueprintSnapshotValidationProblem",
+          "line": 84,
+          "col": 3
+        },
+        {
+          "name": "BlueprintState",
+          "line": 86,
+          "col": 3
+        },
+        {
+          "name": "BlueprintTaskIntent",
+          "line": 87,
+          "col": 3
+        },
+        {
+          "name": "BlueprintValidationProblem",
+          "line": 93,
+          "col": 3
+        },
+        {
+          "name": "BlueprintValidationResult",
+          "line": 94,
+          "col": 3
+        },
+        {
+          "name": "EvidenceKind",
+          "line": 95,
+          "col": 3
+        },
+        {
+          "name": "EvidenceRequirement",
+          "line": 96,
+          "col": 3
+        },
+        {
+          "name": "ProjectBlueprintCompatibilityReport",
+          "line": 114,
+          "col": 3
+        },
+        {
+          "name": "ProjectBlueprintDirectoryResult",
+          "line": 112,
+          "col": 3
+        },
+        {
+          "name": "ProjectBlueprintFileResult",
+          "line": 113,
+          "col": 3
+        },
+        {
+          "name": "ProjectBlueprintProblem",
+          "line": 115,
+          "col": 3
+        },
+        {
+          "name": "ProjectBlueprintProblemCode",
+          "line": 116,
+          "col": 3
+        },
+        {
+          "name": "ProjectBlueprintTrustConfig",
+          "line": 117,
+          "col": 3
+        },
+        {
+          "name": "ProjectBlueprintTrustConfigResult",
+          "line": 118,
+          "col": 3
+        },
+        {
+          "name": "RecipeExtensionKind",
+          "line": 98,
+          "col": 3
+        },
+        {
+          "name": "RecipeExtensionPoint",
+          "line": 100,
+          "col": 3
+        },
+        {
+          "name": "RecipeHint",
+          "line": 99,
+          "col": 3
+        },
+        {
+          "name": "RejectedRecipeExtension",
+          "line": 101,
+          "col": 3
+        },
+        {
+          "name": "ResolvedBlueprint",
+          "line": 102,
+          "col": 3
+        },
+        {
+          "name": "ScaffoldProjectBlueprintOptions",
+          "line": 119,
+          "col": 3
+        },
+        {
+          "name": "SkippedNode",
+          "line": 104,
+          "col": 3
+        },
+        {
+          "name": "StopReason",
+          "line": 105,
+          "col": 3
+        },
+        {
+          "name": "StopRule",
+          "line": 106,
+          "col": 3
+        },
+        {
+          "name": "StopRuleSeverity",
+          "line": 107,
+          "col": 3
+        },
+        {
+          "name": "TrustedProjectBlueprintRegistryResult",
+          "line": 120,
+          "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/blueprints/model.ts",
+      "types": [
+        {
+          "name": "BlueprintDefinition",
+          "line": 84,
+          "col": 13
+        },
+        {
+          "name": "BlueprintState",
+          "line": 85,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/blueprints/plan.ts",
+      "exports": [
+        {
+          "name": "blueprintPlanState",
+          "line": 31,
+          "col": 17
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/blueprints/project-local.ts",
+      "exports": [
+        {
+          "name": "parseProjectBlueprintJson",
+          "line": 247,
+          "col": 17
+        },
+        {
+          "name": "PROJECT_BLUEPRINTS_CONFIG_NAME",
+          "line": 15,
+          "col": 14
+        },
+        {
+          "name": "PROJECT_BLUEPRINTS_DIR",
+          "line": 14,
+          "col": 14
+        }
+      ],
+      "types": [
+        {
+          "name": "ProjectBlueprintCompatibilityReport",
+          "line": 71,
+          "col": 13
+        },
+        {
+          "name": "ProjectBlueprintDirectoryResult",
+          "line": 39,
+          "col": 13
+        },
+        {
+          "name": "ProjectBlueprintFileResult",
+          "line": 31,
+          "col": 13
+        },
+        {
+          "name": "ProjectBlueprintProblem",
+          "line": 25,
+          "col": 13
+        },
+        {
+          "name": "ProjectBlueprintProblemCode",
           "line": 17,
+          "col": 13
+        },
+        {
+          "name": "ProjectBlueprintTrustConfig",
+          "line": 46,
+          "col": 13
+        },
+        {
+          "name": "ProjectBlueprintTrustConfigResult",
+          "line": 54,
+          "col": 13
+        },
+        {
+          "name": "ScaffoldProjectBlueprintOptions",
+          "line": 92,
+          "col": 13
+        },
+        {
+          "name": "TrustedProjectBlueprintRegistryResult",
+          "line": 62,
           "col": 13
         }
       ]
@@ -288,7 +750,12 @@
       "exports": [
         {
           "name": "getCommandInvocation",
-          "line": 51,
+          "line": 52,
+          "col": 17
+        },
+        {
+          "name": "isCommandVisibleInHelp",
+          "line": 60,
           "col": 17
         }
       ],
@@ -315,12 +782,12 @@
       "types": [
         {
           "name": "CommandMeta",
-          "line": 31,
+          "line": 34,
           "col": 13
         },
         {
           "name": "CommandModule",
-          "line": 36,
+          "line": 41,
           "col": 13
         }
       ]
@@ -385,7 +852,7 @@
         },
         {
           "name": "HelpRegistryView",
-          "line": 19,
+          "line": 20,
           "col": 13
         }
       ]
@@ -439,6 +906,36 @@
           "name": "UpdateCheckFetchResult",
           "line": 21,
           "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/blueprint/snapshot-artifact.ts",
+      "exports": [
+        {
+          "name": "BLUEPRINT_SNAPSHOT_ARTIFACT_PATH",
+          "line": 19,
+          "col": 14
+        },
+        {
+          "name": "buildTaskBlueprintResolvedSnapshot",
+          "line": 30,
+          "col": 23
+        },
+        {
+          "name": "readTaskBlueprintResolvedSnapshot",
+          "line": 69,
+          "col": 23
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/blueprint/task-input.ts",
+      "exports": [
+        {
+          "name": "inferMutationFromTask",
+          "line": 47,
+          "col": 17
         }
       ]
     },
@@ -589,17 +1086,17 @@
       "exports": [
         {
           "name": "renderPrHandoffNotes",
-          "line": 215,
+          "line": 165,
           "col": 17
         },
         {
           "name": "updateAutoSummaryBlock",
-          "line": 193,
+          "line": 143,
           "col": 17
         },
         {
           "name": "updateHandoffNotesBlock",
-          "line": 224,
+          "line": 174,
           "col": 17
         }
       ]
@@ -1389,6 +1886,16 @@
       ]
     },
     {
+      "file": "packages/agentplane/src/commands/task/blueprint-summary.ts",
+      "types": [
+        {
+          "name": "TaskBlueprintLifecycleSummary",
+          "line": 12,
+          "col": 13
+        }
+      ]
+    },
+    {
       "file": "packages/agentplane/src/commands/task/findings.ts",
       "exports": [
         {
@@ -1420,7 +1927,7 @@
       "exports": [
         {
           "name": "assertTaskCanFinish",
-          "line": 79,
+          "line": 81,
           "col": 17
         }
       ]
@@ -1506,6 +2013,11 @@
           "col": 10
         },
         {
+          "name": "cmdTaskObsidian",
+          "line": 30,
+          "col": 10
+        },
+        {
           "name": "cmdTaskSetStatus",
           "line": 18,
           "col": 10
@@ -1550,6 +2062,26 @@
         {
           "name": "TaskDocMigrationResult",
           "line": 23,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/task/obsidian.ts",
+      "types": [
+        {
+          "name": "ObsidianCleanResult",
+          "line": 22,
+          "col": 13
+        },
+        {
+          "name": "ObsidianProjectionFile",
+          "line": 12,
+          "col": 13
+        },
+        {
+          "name": "ObsidianProjectionResult",
+          "line": 17,
           "col": 13
         }
       ]
@@ -1793,11 +2325,6 @@
     {
       "file": "packages/agentplane/src/commands/upgrade/policy.ts",
       "exports": [
-        {
-          "name": "CONFIG_REL_PATH",
-          "line": 5,
-          "col": 14
-        },
         {
           "name": "INCIDENTS_APPEND_MARKER",
           "line": 4,
@@ -2169,7 +2696,7 @@
       "exports": [
         {
           "name": "parseRunnerEventsText",
-          "line": 28,
+          "line": 34,
           "col": 17
         }
       ]
@@ -3263,11 +3790,11 @@
     }
   ],
   "counts": {
-    "files": 5,
-    "exports": 174,
-    "types": 296,
+    "files": 1,
+    "exports": 206,
+    "types": 365,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 475
+    "total": 572
   }
 }

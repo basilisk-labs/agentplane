@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 
 import { loadDotEnv } from "../../shared/env.js";
+import { isRecord } from "../../shared/guards.js";
 import {
   BackendError,
   type TaskBackend,
@@ -20,17 +21,16 @@ import {
   cloudConflictMessage,
   cloudHttpErrorMessage,
   cloudPushBatchFinalized,
-  firstNonEmpty,
   isOptionalSyncStateFailure,
-  isRecord,
   isStale,
   normalizeCloudPullResponse,
   normalizePositiveInteger,
   readSafeCommand,
-  sleep,
   splitTasksByPayloadBytes,
   type CloudSyncResponse,
 } from "./cloud-backend-utils.js";
+import { sleep } from "./shared/concurrency.js";
+import { firstNonEmptyString } from "./shared/strings.js";
 
 export type CloudBackendSettings = {
   endpoint?: string;
@@ -87,18 +87,22 @@ export class CloudBackend implements TaskBackend {
     settings: CloudBackendSettings,
     opts: { cache: LocalBackend; root: string; fetchImpl?: FetchLike },
   ) {
-    const endpoint = firstNonEmpty(
+    const endpoint = firstNonEmptyString(
       process.env.AGENTPLANE_CLOUD_ENDPOINT,
       settings.endpoint,
     ).replaceAll(/\/+$/gu, "");
     this.endpoint = endpoint;
-    this.token = firstNonEmpty(process.env.AGENTPLANE_CLOUD_TOKEN, settings.token);
-    this.projectId = firstNonEmpty(process.env.AGENTPLANE_CLOUD_PROJECT_ID, settings.project_id);
-    this.provider = firstNonEmpty(process.env.AGENTPLANE_CLOUD_PROVIDER, settings.provider) || null;
+    this.token = firstNonEmptyString(process.env.AGENTPLANE_CLOUD_TOKEN, settings.token);
+    this.projectId = firstNonEmptyString(
+      process.env.AGENTPLANE_CLOUD_PROJECT_ID,
+      settings.project_id,
+    );
+    this.provider =
+      firstNonEmptyString(process.env.AGENTPLANE_CLOUD_PROVIDER, settings.provider) || null;
     this.cache = opts.cache;
     this.statePath = path.resolve(
       opts.root,
-      firstNonEmpty(settings.state_path, ".agentplane/backends/cloud/state.json"),
+      firstNonEmptyString(settings.state_path, ".agentplane/backends/cloud/state.json"),
     );
     this.staleAfterSeconds = normalizePositiveInteger(settings.stale_after_seconds) ?? 300;
     this.fetchImpl = opts.fetchImpl ?? fetch;
@@ -286,6 +290,7 @@ export class CloudBackend implements TaskBackend {
         await this.cache.writeTasks(plan.changed);
       }
     }
+    if (opts.direction === "push" && !pull.lastCheckedAt) return;
     await this.writeState({
       last_checked_at: pull.lastCheckedAt ?? new Date().toISOString(),
     });

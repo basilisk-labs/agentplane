@@ -1,4 +1,5 @@
 import { BackendError, type TaskData } from "./shared.js";
+import { isRecord } from "../../shared/guards.js";
 
 export type CloudSyncResponse = {
   data?: unknown;
@@ -12,19 +13,6 @@ export type CloudSyncResponse = {
 export const CLOUD_PUSH_DIRECT_BODY_LIMIT_BYTES = 750_000;
 export const CLOUD_PUSH_BATCH_TASK_BYTES = 600_000;
 export const CLOUD_PUSH_BATCH_RETRY_DELAYS_MS = [0, 1500, 3000] as const;
-
-export function firstNonEmpty(...values: unknown[]): string {
-  for (const value of values) {
-    if (typeof value !== "string") continue;
-    const trimmed = value.trim();
-    if (trimmed) return trimmed;
-  }
-  return "";
-}
-
-export function isRecord(input: unknown): input is Record<string, unknown> {
-  return Boolean(input && typeof input === "object" && !Array.isArray(input));
-}
 
 export function normalizeCloudPullResponse(
   response: CloudSyncResponse,
@@ -105,10 +93,6 @@ export function normalizePositiveInteger(input: unknown): number | null {
   if (typeof input !== "number" || !Number.isFinite(input)) return null;
   const value = Math.trunc(input);
   return value > 0 ? value : null;
-}
-
-export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export function splitTasksByPayloadBytes(tasks: TaskData[], maxBytes: number): TaskData[][] {
