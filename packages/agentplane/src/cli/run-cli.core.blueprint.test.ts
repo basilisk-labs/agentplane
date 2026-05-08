@@ -356,6 +356,99 @@ describe("runCli blueprint commands", () => {
     }
   });
 
+  it("blueprints install rejects traversal in blueprint definition ids", async () => {
+    const fixture = await mkBlueprintCatalogFixture();
+    const root = await mkProject();
+    await writeFile(
+      path.join(fixture.root, "blueprints", "external-analysis", "blueprint.json"),
+      `${JSON.stringify(
+        {
+          schema_version: 1,
+          id: "external-analysis",
+          version: "0.1.0",
+          name: "External Analysis",
+          summary: "External analysis route.",
+          definition: {
+            id: "../escaped",
+            path: "blueprints/analysis.external.json",
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "--root",
+        root,
+        "blueprints",
+        "install",
+        "external-analysis",
+        "--index",
+        fixture.indexPath,
+      ]);
+      expect(code).not.toBe(0);
+      expect(io.stderr).toContain("definition.id must be a safe path segment");
+      await expect(
+        readFile(path.join(root, ".agentplane", "escaped.json"), "utf8"),
+      ).rejects.toThrow();
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("blueprints install rejects traversal in local catalog manifest ids before provenance copy", async () => {
+    const fixture = await mkBlueprintCatalogFixture();
+    const root = await mkProject();
+    const escapedCatalogDir = path.join(root, ".agentplane", "escaped-catalog");
+    const sentinelPath = path.join(escapedCatalogDir, "sentinel.txt");
+    await mkdir(escapedCatalogDir, { recursive: true });
+    await writeFile(sentinelPath, "keep\n", "utf8");
+    await writeFile(
+      path.join(fixture.root, "blueprints", "external-analysis", "blueprint.json"),
+      `${JSON.stringify(
+        {
+          schema_version: 1,
+          id: "../escaped-catalog",
+          version: "0.1.0",
+          name: "External Analysis",
+          summary: "External analysis route.",
+          definition: {
+            id: "analysis.external",
+            path: "blueprints/analysis.external.json",
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "--root",
+        root,
+        "blueprints",
+        "install",
+        "external-analysis",
+        "--index",
+        fixture.indexPath,
+      ]);
+      expect(code).not.toBe(0);
+      expect(io.stderr).toContain("manifest id must be a safe path segment");
+      await expect(readFile(sentinelPath, "utf8")).resolves.toBe("keep\n");
+      await expect(
+        readFile(path.join(root, ".agentplane", "blueprints", "analysis.external.json"), "utf8"),
+      ).rejects.toThrow();
+    } finally {
+      io.restore();
+    }
+  });
+
   it("blueprints install can activate every blueprint in a pack", async () => {
     const home = await mkTempDir();
     const originalHome = process.env.AGENTPLANE_HOME;

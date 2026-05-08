@@ -170,6 +170,22 @@ function parseCatalogSource(raw: unknown): BlueprintCatalogSource {
   return { schema_version: 1, source: raw.source };
 }
 
+function assertSafeCatalogPathSegment(value: string, label: string): void {
+  if (
+    !value ||
+    value === "." ||
+    value === ".." ||
+    value.includes("..") ||
+    value.includes("/") ||
+    value.includes("\\")
+  ) {
+    throw new ValidationError({
+      message: `${label} must be a safe path segment.`,
+      context: { value },
+    });
+  }
+}
+
 async function loadCachedCatalog(): Promise<{ index: BlueprintCatalogIndex; source: string }> {
   const [indexText, sourceText] = await Promise.all([
     readFile(cachedIndexPath(), "utf8"),
@@ -379,6 +395,10 @@ export async function installBlueprint(opts: {
     catalogSource: opts.catalogSource,
     entry: opts.entry,
   });
+  assertSafeCatalogPathSegment(manifest.definition.id, "Catalog blueprint definition.id");
+  if (!isHttpUrl(manifestSource)) {
+    assertSafeCatalogPathSegment(manifest.id, "Catalog blueprint manifest id");
+  }
   const definitionSource = resolveNearSource(manifestSource, manifest.definition.path);
   const definitionText = await readText(definitionSource);
   const targetDir = path.join(opts.projectRoot, ".agentplane", "blueprints");
