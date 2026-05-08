@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605081826-S5X1S7/cold-benchmark-stability",
+  "created_at": "2026-05-08T18:29:51.044Z",
+  "head_sha": "e84c42800fa8765b2e2775d0d8d3853b632e3975",
+  "last_verified_at": "2026-05-08T18:49:59.809Z",
+  "last_verified_sha": "e84c42800fa8765b2e2775d0d8d3853b632e3975",
+  "schema_version": 1,
+  "task_id": "202605081826-S5X1S7",
+  "updated_at": "2026-05-08T18:50:00.215Z",
+  "verify": {
+    "status": "pass"
+  }
+}

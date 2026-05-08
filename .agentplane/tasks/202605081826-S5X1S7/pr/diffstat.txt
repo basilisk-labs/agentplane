@@ -1,0 +1,20 @@
+ .../blueprint/resolved-snapshot.json               | 538 +++++++++++++++++++++
+ package.json                                       |   2 +-
+ .../src/cli/check-cli-cold-baseline-script.test.ts |  37 ++
+ .../src/cli/measure-cli-cold-path-script.test.ts   |  60 +++
+ .../src/commands/hooks/run.commit-msg.ts           |   3 +
+ .../src/commands/hooks/run.pre-commit.ts           |   3 +
+ .../schemas/task-readme-frontmatter.schema.json    |   3 +
+ packages/core/schemas/tasks-export.schema.json     |   3 +
+ packages/core/src/commit/commit-policy.ts          |   3 +
+ .../core/src/tasks/task-artifact-schema.task.ts    |   3 +
+ .../core/src/tasks/task-artifact-schema.test.ts    |  43 ++
+ .../schemas/task-readme-frontmatter.schema.json    | 177 +++++--
+ packages/spec/schemas/tasks-export.schema.json     | 179 +++++--
+ schemas/task-readme-frontmatter.schema.json        | 177 +++++--
+ schemas/tasks-export.schema.json                   | 179 +++++--
+ scripts/README.md                                  |  18 +-
+ scripts/baselines/cli-cold-path-smoke.json         |  39 ++
+ scripts/check-cli-cold-baseline.mjs                | 109 ++++-
+ scripts/cli-benchmark-runner.mjs                   |  41 +-
+ 19 files changed, 1469 insertions(+), 148 deletions(-)

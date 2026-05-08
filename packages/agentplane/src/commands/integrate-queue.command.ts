@@ -129,7 +129,7 @@ export function makeRunIntegrateQueueListHandler(getCtx: (cmd: string) => Promis
       output.line(emptyStateMessage("integration queue entries"));
       return 0;
     }
-    output.lines(active.map(renderEntry));
+    output.lines(active.map((entry) => renderEntry(entry)));
     return 0;
   };
 }
@@ -143,7 +143,7 @@ export function makeRunIntegrateQueueClaimHandler(
     const queue = await readIntegrationQueue(gitRoot);
     const claimed = claimNextQueuedEntry(queue, {
       worker: p.worker ?? defaultWorker(),
-      leaseMs: p.leaseMs ?? undefined,
+      ...(p.leaseMs === null ? {} : { leaseMs: p.leaseMs }),
     });
     if (!claimed.entry) {
       createCliEmitter().line(emptyStateMessage("queued integration entries"));
@@ -196,7 +196,7 @@ export function makeRunIntegrateQueueRunNextHandler(
     const queue = await readIntegrationQueue(gitRoot);
     const claimed = claimNextQueuedEntry(queue, {
       worker: p.worker ?? defaultWorker(),
-      leaseMs: p.leaseMs ?? undefined,
+      ...(p.leaseMs === null ? {} : { leaseMs: p.leaseMs }),
     });
     if (!claimed.entry) {
       createCliEmitter().line(emptyStateMessage("queued integration entries"));
@@ -230,32 +230,25 @@ export function makeRunIntegrateQueueRunNextHandler(
       const nextQueue = await readIntegrationQueue(gitRoot);
       await writeIntegrationQueue(
         gitRoot,
-        markQueueEntry(nextQueue, claimed.entry.task_id, p.dryRun ? "queued" : "done", undefined),
+        markQueueEntry(nextQueue, claimed.entry.task_id, p.dryRun ? "queued" : "done"),
       );
       return result;
     } catch (err) {
       const nextQueue = await readIntegrationQueue(gitRoot);
-      if (err instanceof CliError && err.code === "E_HANDOFF") {
-        await writeIntegrationQueue(
-          gitRoot,
-          markQueueEntry(
-            nextQueue,
-            claimed.entry.task_id,
-            "handoff",
-            "protected base handoff recorded; wait for hosted merge/close before releasing lane",
-          ),
-        );
-      } else {
-        await writeIntegrationQueue(
-          gitRoot,
-          markQueueEntry(
-            nextQueue,
-            claimed.entry.task_id,
-            "rework",
-            err instanceof Error ? err.message : String(err),
-          ),
-        );
-      }
+      const handoff = err instanceof CliError && err.code === "E_HANDOFF";
+      await writeIntegrationQueue(
+        gitRoot,
+        markQueueEntry(
+          nextQueue,
+          claimed.entry.task_id,
+          handoff ? "handoff" : "rework",
+          handoff
+            ? "protected base handoff recorded; wait for hosted merge/close before releasing lane"
+            : err instanceof Error
+              ? err.message
+              : String(err),
+        ),
+      );
       throw err;
     }
   };

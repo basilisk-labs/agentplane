@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -30,6 +31,23 @@ async function runScript(args: string[]) {
       stderr: typeof execError.stderr === "string" ? execError.stderr : String(error),
     };
   }
+}
+
+async function writeSlowCli(root: string, delayMs: number): Promise<string> {
+  const cliDir = path.join(root, "stub", "bin");
+  const cliPath = path.join(cliDir, "agentplane.js");
+  await mkdir(cliDir, { recursive: true });
+  await writeFile(
+    cliPath,
+    [
+      `const startedAt = Date.now();`,
+      `while (Date.now() - startedAt < ${delayMs}) {}`,
+      String.raw`process.stdout.write("slow\n");`,
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  return cliPath;
 }
 
 describe("measure-cli-cold-path script", () => {
@@ -147,4 +165,46 @@ describe("measure-cli-cold-path script", () => {
       }
     },
   );
+
+  it("marks commands as timed out instead of hanging indefinitely", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const cliPath = await writeSlowCli(root, 250);
+
+    const result = await runScript([
+      "--root",
+      root,
+      "--cli",
+      cliPath,
+      "--command-id",
+      "quickstart",
+      "--runs",
+      "1",
+      "--warmups",
+      "0",
+      "--timeout-ms",
+      "25",
+    ]);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toBe("");
+    const payload = JSON.parse(result.stdout) as {
+      timeout_ms?: number;
+      commands?: {
+        id?: string;
+        exit_code?: number;
+        timed_out?: boolean;
+        timeout_ms?: number;
+        failed?: boolean;
+      }[];
+    };
+    expect(payload.timeout_ms).toBe(25);
+    expect(payload.commands?.[0]).toMatchObject({
+      id: "quickstart",
+      exit_code: 124,
+      timed_out: true,
+      timeout_ms: 25,
+      failed: true,
+    });
+  });
 });

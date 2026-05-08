@@ -82,6 +82,7 @@ export function parseSuiteArgs(argv) {
   let cliPath = DEFAULT_CLI_PATH;
   let runs = 3;
   let warmups = 0;
+  let timeoutMs = Number.parseInt(process.env.AGENTPLANE_CLI_BENCH_TIMEOUT_MS ?? "0", 10) || 0;
   let commandId = null;
   let help = false;
 
@@ -138,6 +139,13 @@ export function parseSuiteArgs(argv) {
         i += 1;
         break;
       }
+      case "--timeout-ms": {
+        const next = argv[i + 1];
+        if (!next) throw new Error("Missing value after --timeout-ms");
+        timeoutMs = parsePositiveInt(next, "--timeout-ms");
+        i += 1;
+        break;
+      }
       case "--command-id": {
         const next = argv[i + 1];
         if (!next) throw new Error("Missing value after --command-id");
@@ -158,6 +166,7 @@ export function parseSuiteArgs(argv) {
     cliPath,
     runs,
     warmups,
+    timeoutMs,
     commandId,
     help,
   };
@@ -224,8 +233,9 @@ function formatSuiteCommands(suite) {
   }));
 }
 
-async function runCommand(cliPath, argv) {
+async function runCommandWithOptions(cliPath, argv, options) {
   const startedAt = performance.now();
+  const timeoutMs = Math.max(0, Math.floor(Number(options.timeoutMs ?? 0)));
   try {
     const result = await execFileAsync(process.execPath, [cliPath, ...argv], {
       cwd: cliRepoRootFromPath(cliPath),
@@ -234,28 +244,32 @@ async function runCommand(cliPath, argv) {
         AGENTPLANE_NO_UPDATE_CHECK: "1",
       },
       maxBuffer: MAX_BUFFER_BYTES,
+      ...(timeoutMs > 0 ? { timeout: timeoutMs } : {}),
     });
     return {
       exitCode: 0,
       stdout: String(result.stdout ?? ""),
       stderr: String(result.stderr ?? ""),
       durationMs: roundMs(performance.now() - startedAt),
+      timedOut: false,
     };
   } catch (error) {
     const execError = error;
+    const timedOut = timeoutMs > 0 && execError?.killed === true;
     return {
-      exitCode: Number.isInteger(execError?.code) ? execError.code : 1,
+      exitCode: timedOut ? 124 : Number.isInteger(execError?.code) ? execError.code : 1,
       stdout: typeof execError?.stdout === "string" ? execError.stdout : "",
       stderr: typeof execError?.stderr === "string" ? execError.stderr : String(error),
       durationMs: roundMs(performance.now() - startedAt),
+      timedOut,
     };
   }
 }
 
-async function runCommandGroup(cliPath, argv, parallel) {
+async function runCommandGroup(cliPath, argv, parallel, options = {}) {
   const count = Math.max(1, Math.floor(Number(parallel ?? 1)));
   if (count === 1) {
-    const result = await runCommand(cliPath, argv);
+    const result = await runCommandWithOptions(cliPath, argv, options);
     return {
       ...result,
       parallel: 1,
@@ -264,14 +278,16 @@ async function runCommandGroup(cliPath, argv, parallel) {
 
   const startedAt = performance.now();
   const results = await Promise.all(
-    Array.from({ length: count }, async () => await runCommand(cliPath, argv)),
+    Array.from({ length: count }, async () => await runCommandWithOptions(cliPath, argv, options)),
   );
   let stdout = "";
   let stderr = "";
   let exitCode = 0;
+  let timedOut = false;
   for (const result of results) {
     stdout += result.stdout;
     stderr += result.stderr;
+    timedOut = timedOut || result.timedOut === true;
     if (result.exitCode !== 0 && exitCode === 0) {
       exitCode = result.exitCode;
     }
@@ -282,6 +298,7 @@ async function runCommandGroup(cliPath, argv, parallel) {
     stderr,
     durationMs: roundMs(performance.now() - startedAt),
     parallel: count,
+    timedOut,
   };
 }
 
@@ -310,13 +327,15 @@ export async function measureSuite(options) {
     const argv = interpolateArgs(spec.argv, vars);
     const parallel = Math.max(1, Math.floor(Number(spec.parallel ?? 1)));
     for (let i = 0; i < options.warmups; i += 1) {
-      await runCommandGroup(options.cliPath, argv, parallel);
+      await runCommandGroup(options.cliPath, argv, parallel, { timeoutMs: options.timeoutMs });
     }
 
     const durations = [];
     let lastResult = null;
     for (let i = 0; i < options.runs; i += 1) {
-      lastResult = await runCommandGroup(options.cliPath, argv, parallel);
+      lastResult = await runCommandGroup(options.cliPath, argv, parallel, {
+        timeoutMs: options.timeoutMs,
+      });
       durations.push(lastResult.durationMs);
     }
 
@@ -327,9 +346,11 @@ export async function measureSuite(options) {
       parallel,
       runs: options.runs,
       warmups: options.warmups,
+      timeout_ms: Math.max(0, Math.floor(Number(options.timeoutMs ?? 0))),
       durations_ms: durations,
       ...summarizeDurations(durations),
       exit_code: Number.isInteger(lastResult?.exitCode) ? lastResult.exitCode : 1,
+      timed_out: lastResult?.timedOut === true,
       stdout_bytes: Buffer.byteLength(lastResult?.stdout ?? "", "utf8"),
       stderr_bytes: Buffer.byteLength(lastResult?.stderr ?? "", "utf8"),
       stdout_preview: String(lastResult?.stdout ?? "")
@@ -339,7 +360,7 @@ export async function measureSuite(options) {
         .trim()
         .slice(0, 240),
       command_line: `${path.basename(options.cliPath)} ${argv.map((value) => JSON.stringify(value)).join(" ")}`,
-      failed: (lastResult?.exitCode ?? 1) !== 0,
+      failed: lastResult?.timedOut === true || (lastResult?.exitCode ?? 1) !== 0,
     });
   }
 
@@ -353,6 +374,7 @@ export async function measureSuite(options) {
     measured_at: new Date().toISOString(),
     runs: options.runs,
     warmups: options.warmups,
+    timeout_ms: Math.max(0, Math.floor(Number(options.timeoutMs ?? 0))),
     commands,
     failed_count: commands.filter((command) => command.failed).length,
   };
@@ -384,6 +406,7 @@ export function printCliPerfHelpText(options = {}) {
     "  --cli <path>       CLI entrypoint to execute. Defaults to this checkout's agentplane bin.",
     "  --runs <n>         Timed runs per command. Default: 3.",
     "  --warmups <n>      Untimed warmup runs per command. Default: 0.",
+    "  --timeout-ms <n>   Kill an individual command run after n ms. Default: disabled.",
     "  --help             Show this help text.",
     "",
     "Output:",

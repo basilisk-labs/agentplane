@@ -334,6 +334,49 @@ describe("task-artifact-schema", () => {
     ).not.toThrow();
   });
 
+  it("accepts specialized blueprint requests in task artifact schemas", () => {
+    const task = withTaskReadmeFrontmatterDefaults({
+      id: "202603251535-DPZ4NN",
+      title: "Specialized blueprint fixture",
+      status: "TODO",
+      priority: "high",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["code", "performance"],
+      task_kind: "code",
+      mutation_scope: "code",
+      blueprint_request: "performance.benchmark",
+      verify: [],
+      plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+      verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+      comments: [],
+      doc_version: 3,
+      doc_updated_at: "2026-03-25T17:20:00.000Z",
+      doc_updated_by: "CODER",
+      description: "Fixture",
+      id_source: "generated",
+    });
+
+    expect(() => validateTaskReadmeFrontmatter(task)).not.toThrow();
+    expect(() =>
+      validateTasksExportSnapshot({
+        tasks: [
+          {
+            ...task,
+            commit: null,
+            dirty: false,
+          },
+        ],
+        meta: {
+          schema_version: 1,
+          managed_by: "agentplane",
+          checksum_algo: "sha256",
+          checksum: "abc",
+        },
+      }),
+    ).not.toThrow();
+  });
+
   it("normalizes legacy medium priority before README schema validation", () => {
     expect(() =>
       validateTaskReadmeFrontmatter(
