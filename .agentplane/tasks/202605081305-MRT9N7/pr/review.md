@@ -24,12 +24,22 @@ Created: 2026-05-08T13:09:35.782Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-08T13:09:35.782Z
+- Updated: 2026-05-08T13:45:58.452Z
 - Branch: task/202605081305-MRT9N7/release-cleanup
-- Head: 408172ebeae8
+- Head: 0dc0172521f0
 
 ```text
-No changes detected.
+ .agentplane/tasks/202605081305-9GE36C/README.md    |  88 +++
+ .../blueprint/resolved-snapshot.json               | 498 ++++++++++++++++
+ .../blueprint/resolved-snapshot.json               | 499 ++++++++++++++++
+ .agentplane/tasks/202605081306-MACWWY/README.md    |  88 +++
+ .../blueprint/resolved-snapshot.json               | 498 ++++++++++++++++
+ knip.json                                          |   3 +-
+ .../src/backends/task-backend.cloud.test.ts        |  40 ++
+ .../backends/task-backend/cloud-backend-utils.ts   |  18 +-
+ .../src/backends/task-backend/cloud-backend.ts     |  21 +-
+ scripts/baselines/knip-baseline.json               | 629 +++++++++++++++++++--
+ 10 files changed, 2305 insertions(+), 77 deletions(-)
 ```
 
 </details>
