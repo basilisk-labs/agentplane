@@ -2,6 +2,14 @@
 
 Created: 2026-05-08T17:23:48.984Z
 
+## Batch Tasks
+
+- Primary: `202605081719-FBQEV5`
+- Closure policy: `all_or_fail`
+- Included: `202605081720-03TR4S`
+- Included: `202605081720-DTKG82`
+- Included: `202605081720-JF941V`
+
 ## Task
 
 - Task: `202605081719-FBQEV5`
@@ -13,7 +21,7 @@ Created: 2026-05-08T17:23:48.984Z
 ## Verification
 
 - State: ok
-- Note: Extended implementation to init: explicit --blueprints selection installs cached blueprint catalog entries and packs during full-harness/non-interactive init, activates installed blueprint ids, updates preview/progress/docs, and verifies with focused init prompt/apply tests, cli-core blueprint init test, typecheck, build, docs:cli:check, real init smoke, hotspot check, routing check, and doctor.
+- Note: Verified current PR head after publishing and documentation/task-artifact refresh commits: branch contains catalog commands, install/pack activation, full-harness init selection, documentation, generated CLI reference, and all focused checks previously passed on this head lineage.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
