@@ -1,0 +1,221 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605071500-S2TV0X",
+  "created_at": "2026-05-08T02:56:12.454Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "55d1ee3fb149f4ca666bc38feacc8bdad63da201",
+    "work_ref": "main",
+    "work_commit": "55d1ee3fb149f4ca666bc38feacc8bdad63da201"
+  },
+  "task": {
+    "task_id": "202605071500-S2TV0X",
+    "title": "Retry cloud push batch chunks",
+    "intent": "Make cloud push batch uploads resilient to transient fetch failures by retrying individual chunk requests before aborting the full sync.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605071500-S2TV0X/README.md",
+      "sha256": "sha256:67a3a6a7387e7b32ccb207fe4cf0d0cb2b15b642a613ff1f77719445ae0d07bd"
+    },
+    "approved_at": "2026-05-07T15:00:43.794Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "CODER"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #1379.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "build",
+        "command": "bun run --filter=agentplane build",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-2",
+        "type": "test",
+        "command": "bun x vitest run packages/agentplane/src/backends/task-backend.cloud.test.ts",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605071500-S2TV0X_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "CODER"
+      },
+      "approved_at": "2026-05-07T15:00:43.794Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605071500-S2TV0X/README.md",
+      "sha256": "sha256:67a3a6a7387e7b32ccb207fe4cf0d0cb2b15b642a613ff1f77719445ae0d07bd"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605071500-S2TV0X/README.md",
+      "sha256": "sha256:67a3a6a7387e7b32ccb207fe4cf0d0cb2b15b642a613ff1f77719445ae0d07bd"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605071500-S2TV0X/README.md",
+      "sha256": "sha256:67a3a6a7387e7b32ccb207fe4cf0d0cb2b15b642a613ff1f77719445ae0d07bd"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605071500-S2TV0X/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:ae64ba3ded539055d196caed0f9bc4e75f3b80a59396350bc346355b3f4b04e4"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 55d1ee3fb149f4ca666bc38feacc8bdad63da201 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:8eb94c68516d1ea6d5d061f2dc7aa109d4bef9d7d2325b4aca1ae8db54b502e8",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "ops.approval",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "ops.approval",
+          "kind": "approval",
+          "produced_by": "approval_gate",
+          "required": true
+        },
+        {
+          "id": "ops.rollback",
+          "kind": "rollback",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "ops.action",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "ops.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605071500-S2TV0X/blueprint/resolved-snapshot.json",
+        "digest": "97d07289a9fd967452d12b49e4ea75bd41eb96e93a70e6217e24c95c5312684d",
+        "current_digest": "97d07289a9fd967452d12b49e4ea75bd41eb96e93a70e6217e24c95c5312684d",
+        "route_changed": false,
+        "artifact_sha256": "sha256:ae64ba3ded539055d196caed0f9bc4e75f3b80a59396350bc346355b3f4b04e4",
+        "safe_command": "agentplane blueprint snapshot 202605071500-S2TV0X"
+      }
+    }
+  }
+}
