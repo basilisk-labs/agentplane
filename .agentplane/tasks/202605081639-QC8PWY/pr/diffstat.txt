@@ -1,0 +1,11 @@
+ .../blueprint/resolved-snapshot.json               | 505 +++++++++++++++++++++
+ docs/developer/blueprints.mdx                      |  46 ++
+ packages/agentplane/src/blueprints/builtins.ts     | 269 +++++++++++
+ packages/agentplane/src/blueprints/model.ts        |   3 +
+ packages/agentplane/src/blueprints/resolve.test.ts |  71 +++
+ packages/agentplane/src/blueprints/resolve.ts      |  73 ++-
+ .../agentplane/src/blueprints/validate.test.ts     |   5 +-
+ .../src/commands/blueprint/task-input.test.ts      |  45 ++
+ .../src/commands/blueprint/task-input.ts           |   3 +
+ packages/agentplane/src/commands/task/new.ts       |   3 +
+ 10 files changed, 1021 insertions(+), 2 deletions(-)

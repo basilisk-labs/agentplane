@@ -256,6 +256,37 @@ const codeBranchPrNodes = [
   node({ kind: "finish", evidence: ["commit"], protected: true }),
 ] as const;
 
+function extendNodeEvidence(
+  nodes: readonly BlueprintNode[],
+  evidenceByKind: Partial<Record<BlueprintNodeKind, readonly EvidenceKind[]>>,
+): BlueprintNode[] {
+  return nodes.map((item) => {
+    const extra = evidenceByKind[item.kind] ?? [];
+    if (extra.length === 0) return item;
+    return {
+      ...item,
+      evidence: [...new Set([...(item.evidence ?? []), ...extra])],
+    };
+  });
+}
+
+const benchmarkNodes = extendNodeEvidence(codeBranchPrNodes, {
+  work_unit: ["artifact"],
+  verify_record: ["final_output"],
+});
+
+const regressionNodes = extendNodeEvidence(codeBranchPrNodes, {
+  context_resolve: ["artifact"],
+  work_unit: ["check_result"],
+  verify_record: ["weak_links"],
+});
+
+const runnerNodes = extendNodeEvidence(codeBranchPrNodes, {
+  context_resolve: ["artifact"],
+  work_unit: ["artifact"],
+  fast_local_checks: ["artifact"],
+});
+
 const releaseNodes = [
   node({ kind: "intake" }),
   node({ kind: "scope", evidence: ["assumptions"] }),
@@ -425,6 +456,244 @@ export const BUILTIN_BLUEPRINTS = [
       evidence("code_pr.pr", "external_link", "pr_artifact", "Pull request artifact."),
       evidence("code_pr.hosted", "check_result", "hosted_checks", "Hosted check evidence."),
       evidence("code_pr.commit", "commit", "publish_or_integrate", "Integration commit."),
+    ],
+  }),
+  blueprint({
+    id: "performance.benchmark",
+    title: "Performance benchmark",
+    description:
+      "Code mutation that makes or protects performance claims and must prove baseline, method, threshold, and comparison quality.",
+    taskKinds: ["code"],
+    workflowModes: ["branch_pr"],
+    allowedCommands: [
+      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
+      "agentplane task verify-show <task-id>",
+      "benchmark baseline command",
+      "benchmark comparison command",
+      "project focused checks",
+      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
+      "agentplane verify <task-id> --ok|--rework",
+      "agentplane integrate <task-id> --branch <branch> --run-verify",
+    ],
+    policyModules: [
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/dod.code.md",
+      ".agentplane/policy/workflow.branch_pr.md",
+    ],
+    contextBudget: {
+      maxPolicyModules: 4,
+      maxPromptBlocks: 16,
+      rationale:
+        "Benchmark work needs normal branch_pr code policy plus room for baseline and comparison artifacts.",
+    },
+    nodes: benchmarkNodes,
+    requiredEvidence: [
+      evidence("benchmark.baseline", "artifact", "work_unit", "Baseline measurement artifact."),
+      evidence(
+        "benchmark.method",
+        "assumptions",
+        "scope",
+        "Benchmark method, environment, and warm/cold mode.",
+      ),
+      evidence(
+        "benchmark.runs",
+        "check_result",
+        "fast_local_checks",
+        "Run count and raw measurement results.",
+      ),
+      evidence(
+        "benchmark.threshold",
+        "assumptions",
+        "scope",
+        "Accepted threshold or noise tolerance.",
+      ),
+      evidence(
+        "benchmark.comparison",
+        "check_result",
+        "hosted_checks",
+        "Before/after comparison result.",
+      ),
+      evidence(
+        "benchmark.verdict",
+        "final_output",
+        "verify_record",
+        "Faster, slower, unchanged, or noisy verdict.",
+      ),
+      evidence("benchmark.commit", "commit", "publish_or_integrate", "Integration commit."),
+    ],
+    stopRules: [
+      {
+        id: "benchmark_without_baseline",
+        severity: "stop",
+        reason: "Performance claims require a baseline and comparison artifact.",
+      },
+      {
+        id: "benchmark_noisy_without_verdict",
+        severity: "approval_required",
+        reason: "Noisy benchmark results require an explicit verifier verdict before finish.",
+      },
+    ],
+  }),
+  blueprint({
+    id: "quality.regression",
+    title: "Quality regression",
+    description:
+      "Code mutation that fixes, prevents, or classifies failing tests, CI, coverage, lint, knip, or flaky checks.",
+    taskKinds: ["code"],
+    workflowModes: ["branch_pr"],
+    allowedCommands: [
+      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
+      "agentplane task verify-show <task-id>",
+      "failure reproduction command",
+      "focused regression check",
+      "affected matrix or full relevant gate",
+      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
+      "agentplane verify <task-id> --ok|--rework",
+      "agentplane integrate <task-id> --branch <branch> --run-verify",
+    ],
+    policyModules: [
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/dod.code.md",
+      ".agentplane/policy/workflow.branch_pr.md",
+    ],
+    contextBudget: {
+      maxPolicyModules: 4,
+      maxPromptBlocks: 16,
+      rationale:
+        "Regression work needs failure evidence, focused reproduction, and the relevant quality gate.",
+    },
+    nodes: regressionNodes,
+    requiredEvidence: [
+      evidence(
+        "regression.original_failure",
+        "artifact",
+        "context_resolve",
+        "Original failure log or check output.",
+      ),
+      evidence(
+        "regression.reproduction",
+        "check_result",
+        "work_unit",
+        "Local reproduction or explicit non-reproduction result.",
+      ),
+      evidence(
+        "regression.focused_check",
+        "check_result",
+        "fast_local_checks",
+        "Focused regression check.",
+      ),
+      evidence(
+        "regression.matrix_or_scope",
+        "assumptions",
+        "scope",
+        "Affected test/check matrix or bounded scope.",
+      ),
+      evidence(
+        "regression.full_gate",
+        "check_result",
+        "hosted_checks",
+        "Full relevant gate or hosted check evidence.",
+      ),
+      evidence(
+        "regression.flake_classification",
+        "weak_links",
+        "verify_record",
+        "Flake classification or residual risk.",
+      ),
+      evidence("regression.commit", "commit", "publish_or_integrate", "Integration commit."),
+    ],
+    stopRules: [
+      {
+        id: "regression_without_failure",
+        severity: "warn",
+        reason:
+          "Regression work should preserve the original failure or explain why it cannot be reproduced.",
+      },
+      {
+        id: "regression_gate_skipped",
+        severity: "approval_required",
+        reason: "Skipping the relevant quality gate requires explicit recorded approval.",
+      },
+    ],
+  }),
+  blueprint({
+    id: "runner.execution",
+    title: "Runner execution",
+    description:
+      "Code mutation in the runner execution subsystem that must prove bundle, invocation, manifest, trace, and replay/resume behavior.",
+    taskKinds: ["code"],
+    workflowModes: ["branch_pr"],
+    allowedCommands: [
+      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
+      "agentplane task verify-show <task-id>",
+      "runner bundle inspection",
+      "runner execution/replay/resume check",
+      "project focused checks",
+      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
+      "agentplane verify <task-id> --ok|--rework",
+      "agentplane integrate <task-id> --branch <branch> --run-verify",
+    ],
+    policyModules: [
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/dod.code.md",
+      ".agentplane/policy/workflow.branch_pr.md",
+    ],
+    contextBudget: {
+      maxPolicyModules: 4,
+      maxPromptBlocks: 16,
+      rationale:
+        "Runner execution work needs branch_pr policy plus runner bundle and execution-state artifacts.",
+    },
+    nodes: runnerNodes,
+    requiredEvidence: [
+      evidence(
+        "runner.bundle",
+        "artifact",
+        "context_resolve",
+        "Runner context bundle or bundle inspection.",
+      ),
+      evidence(
+        "runner.invocation",
+        "artifact",
+        "work_unit",
+        "Invocation inputs and command or adapter capability.",
+      ),
+      evidence(
+        "runner.result_manifest",
+        "artifact",
+        "work_unit",
+        "Result manifest or manifest validation.",
+      ),
+      evidence("runner.trace", "artifact", "fast_local_checks", "Execution trace or log path."),
+      evidence(
+        "runner.execution_state",
+        "check_result",
+        "fast_local_checks",
+        "Execution state transition evidence.",
+      ),
+      evidence(
+        "runner.replay_or_resume",
+        "check_result",
+        "hosted_checks",
+        "Replay or resume validation.",
+      ),
+      evidence("runner.commit", "commit", "publish_or_integrate", "Integration commit."),
+    ],
+    stopRules: [
+      {
+        id: "runner_without_manifest",
+        severity: "stop",
+        reason:
+          "Runner execution changes require result manifest or equivalent execution artifact evidence.",
+      },
+      {
+        id: "runner_replay_unverified",
+        severity: "approval_required",
+        reason: "Replay or resume behavior must be verified or explicitly waived.",
+      },
     ],
   }),
   blueprint({

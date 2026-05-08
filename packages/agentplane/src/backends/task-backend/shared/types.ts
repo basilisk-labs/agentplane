@@ -54,6 +54,9 @@ export type TaskData = {
     | "docs.change"
     | "code.direct"
     | "code.branch_pr"
+    | "performance.benchmark"
+    | "quality.regression"
+    | "runner.execution"
     | "release.strict"
     | "ops.approval";
   verify: string[];

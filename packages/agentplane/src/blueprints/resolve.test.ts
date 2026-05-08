@@ -160,6 +160,40 @@ describe("resolveBlueprint", () => {
     );
   });
 
+  it("routes benchmark, regression, and runner code domains to specialized branch PR blueprints", () => {
+    expect(
+      resolve({
+        mutation: "code",
+        workflowMode: "branch_pr",
+        tags: ["code", "performance"],
+      }).blueprint.id,
+    ).toBe("performance.benchmark");
+    expect(
+      resolve({
+        mutation: "code",
+        workflowMode: "branch_pr",
+        title: "Fix flaky CI coverage regression",
+      }).blueprint.id,
+    ).toBe("quality.regression");
+    expect(
+      resolve({
+        mutation: "code",
+        workflowMode: "branch_pr",
+        tags: ["code", "runner"],
+      }).blueprint.id,
+    ).toBe("runner.execution");
+  });
+
+  it("keeps direct workflow code tasks on the direct route despite specialized domain hints", () => {
+    expect(
+      resolve({
+        mutation: "code",
+        workflowMode: "direct",
+        tags: ["code", "performance"],
+      }).blueprint.id,
+    ).toBe("code.direct");
+  });
+
   it("routes publish and external system risks to stronger blueprints", () => {
     expect(resolve({ mutation: "code", riskFlags: ["publish"] }).blueprint.id).toBe(
       "release.strict",
@@ -332,6 +366,18 @@ describe("resolveBlueprint", () => {
     expect(resolved.selectionReasons[0]).toContain("risk flags require release.strict");
   });
 
+  it("keeps risk routes stronger than specialized code domain routes", () => {
+    const resolved = resolve({
+      tags: ["code", "performance"],
+      mutation: "code",
+      workflowMode: "branch_pr",
+      riskFlags: ["publish"],
+    });
+
+    expect(resolved.blueprint.id).toBe("release.strict");
+    expect(resolved.selectionReasons[0]).toContain("risk flags require release.strict");
+  });
+
   it("builds executable plan metadata without adding policy to lightweight analysis", () => {
     const resolved = resolve({
       taskId: "202605052204-ANALYS",
@@ -389,6 +435,31 @@ describe("resolveBlueprint", () => {
         .find((state) => state.kind === "context_resolve")
         ?.policyModules.includes(".agentplane/policy/workflow.branch_pr.md"),
     ).toBe(true);
+  });
+
+  it("builds executable plan metadata for specialized benchmark routes", () => {
+    const input: BlueprintResolveInput = {
+      tags: ["code", "benchmark"],
+      taskKind: "code",
+      mutation: "code",
+      mutationScope: "code",
+      workflowMode: "branch_pr",
+    };
+    const output = explainResolvedBlueprint({
+      resolved: resolve(input),
+      input,
+      workflowMode: "branch_pr",
+    });
+
+    expect(output.plan.blueprintId).toBe("performance.benchmark");
+    expect(output.requiredEvidence.map((item) => item.id)).toContain("benchmark.baseline");
+    expect(output.requiredEvidence.map((item) => item.id)).toContain("benchmark.verdict");
+    expect(output.plan.policyModules).toEqual([
+      ".agentplane/policy/dod.code.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/workflow.branch_pr.md",
+    ]);
   });
 
   it("bridges normalized recipe blueprint extensions into resolver hints", () => {

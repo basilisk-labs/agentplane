@@ -43,7 +43,7 @@ function docsPlan() {
 
 describe("blueprint built-ins", () => {
   it("validates every built-in blueprint", () => {
-    expect(BUILTIN_BLUEPRINTS).toHaveLength(7);
+    expect(BUILTIN_BLUEPRINTS).toHaveLength(10);
 
     for (const blueprint of BUILTIN_BLUEPRINTS) {
       expect(validateBlueprint(blueprint), blueprint.id).toEqual({ ok: true, errors: [] });
@@ -60,7 +60,10 @@ describe("blueprint built-ins", () => {
       "content.light",
       "docs.change",
       "ops.approval",
+      "performance.benchmark",
+      "quality.regression",
       "release.strict",
+      "runner.execution",
     ]);
     expect(getBlueprint("analysis.light", registry)?.title).toBe("Lightweight analysis");
     expect(requireBlueprint("code.branch_pr", registry).workflowModes).toEqual(["branch_pr"]);
