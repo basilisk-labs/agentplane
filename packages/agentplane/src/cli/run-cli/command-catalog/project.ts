@@ -19,6 +19,14 @@ import {
   blueprintValidateSpec,
 } from "../../../commands/blueprint/blueprint.command.js";
 import {
+  blueprintsCatalogInfoSpec,
+  blueprintsCatalogListSpec,
+  blueprintsCatalogRefreshSpec,
+  blueprintsCatalogSpec,
+  blueprintsInstallSpec,
+  blueprintsSpec,
+} from "../../../commands/blueprints/blueprints.command.js";
+import {
   backendInspectSpec,
   backendConnectSpec,
   backendMigrateCanonicalStateSpec,
@@ -129,6 +137,7 @@ import {
   loadBlueprintReportSpec,
   loadBlueprintValidateSpec,
   loadBlueprintScaffoldSpec,
+  fromCommandsBlueprintsCommand,
 } from "../command-loaders/project.js";
 
 export const PROJECT_COMMANDS = [
@@ -147,6 +156,18 @@ export const PROJECT_COMMANDS = [
   declareCommand(blueprintReportSpec, { load: loadBlueprintReportSpec, needs: "none" }),
   declareCommand(blueprintScaffoldSpec, { load: loadBlueprintScaffoldSpec, needs: "none" }),
   declareCommand(blueprintValidateSpec, { load: loadBlueprintValidateSpec, needs: "none" }),
+  fromCommandsBlueprintsCommand(blueprintsSpec, "runBlueprints", { needs: "none" }),
+  fromCommandsBlueprintsCommand(blueprintsCatalogSpec, "runBlueprintsCatalog", { needs: "none" }),
+  fromCommandsBlueprintsCommand(blueprintsCatalogRefreshSpec, "runBlueprintsCatalogRefresh", {
+    needs: "none",
+  }),
+  fromCommandsBlueprintsCommand(blueprintsCatalogListSpec, "runBlueprintsCatalogList", {
+    needs: "none",
+  }),
+  fromCommandsBlueprintsCommand(blueprintsCatalogInfoSpec, "runBlueprintsCatalogInfo", {
+    needs: "none",
+  }),
+  fromCommandsBlueprintsCommand(blueprintsInstallSpec, "runBlueprintsInstall", {}),
   declareCommand(workStartSpec, { load: loadWorkStartSpec }),
   fromCommandsRecipesRecipesCommand(recipesSpec, "runRecipes", { needs: "none" }),
   fromCommandsRecipesCacheCommand(recipesCacheSpec, "runRecipesCache", { needs: "none" }),

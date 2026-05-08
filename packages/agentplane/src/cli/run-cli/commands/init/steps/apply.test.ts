@@ -90,6 +90,10 @@ describe("init apply wrapper", () => {
       calls.push("recipes");
       return Promise.resolve();
     });
+    const blueprints = vi.fn(() => {
+      calls.push("blueprints");
+      return Promise.resolve([".agentplane/blueprints/analysis.external.json"]);
+    });
     const installCommit = vi.fn(() => {
       calls.push("commit");
       return Promise.resolve();
@@ -104,6 +108,7 @@ describe("init apply wrapper", () => {
         hooks,
         ideSync,
         recipes,
+        blueprints,
         installCommit,
       },
       includeInstallCommit: true,
@@ -117,6 +122,7 @@ describe("init apply wrapper", () => {
       "hooks",
       "ide",
       "recipes",
+      "blueprints",
       "commit",
     ]);
     expect(result.installPaths).toEqual([
@@ -125,6 +131,7 @@ describe("init apply wrapper", () => {
       ".gitignore",
       ".agentplane/bin/agentplane",
       ".cursor/rules/agentplane.mdc",
+      ".agentplane/blueprints/analysis.external.json",
     ]);
     expect(installCommit).toHaveBeenCalledWith(result.installPaths);
   });
@@ -141,6 +148,7 @@ describe("init apply wrapper", () => {
         gitignore: () => Promise.resolve([".gitignore"]),
         ideSync: () => Promise.resolve([]),
         recipes: () => Promise.resolve(),
+        blueprints: () => Promise.resolve(),
         hooks,
         installCommit,
       },

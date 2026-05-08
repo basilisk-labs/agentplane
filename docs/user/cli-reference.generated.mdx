@@ -106,6 +106,12 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [blueprint scaffold](#blueprint-scaffold)
   - [blueprint snapshot](#blueprint-snapshot)
   - [blueprint validate](#blueprint-validate)
+  - [blueprints](#blueprints)
+  - [blueprints catalog](#blueprints-catalog)
+  - [blueprints catalog info](#blueprints-catalog-info)
+  - [blueprints catalog list](#blueprints-catalog-list)
+  - [blueprints catalog refresh](#blueprints-catalog-refresh)
+  - [blueprints install](#blueprints-install)
 - ACR
   - [acr](#acr)
   - [acr check](#acr-check)
@@ -1965,6 +1971,7 @@ Options:
 - `--execution-profile <conservative|balanced|aggressive>`: Execution profile preset controlling autonomy, reasoning, and tool budgets. (choices=conservative|balanced|aggressive)
 - `--strict-unsafe-confirm <true|false>`: Require strict explicit confirmations for additional unsafe actions.
 - `--recipes <none|id1,id2,...>`: Optional cached recipes to vendor during init (comma-separated), or 'none'.
+- `--blueprints <none|id1,pack:id2,...>`: Optional cached blueprint catalog entries to install and activate during init (comma-separated), or 'none'. Prefix with blueprint: or pack: to disambiguate.
 - `--force`: Overwrite init conflicts by deleting existing paths. (default=false)
 - `--backup`: Backup init conflicts before overwriting. (default=false)
 - `--yes`: Non-interactive mode (do not prompt; use defaults for missing flags). (default=false)
@@ -2820,6 +2827,88 @@ agentplane blueprint validate --project
 ```
 
 - Validate the project-local blueprint registry directory.
+
+### blueprints
+
+Manage external blueprint catalogs and installs.
+
+Usage:
+
+```text
+agentplane blueprints <subcommand> [options]
+```
+
+### blueprints catalog
+
+Manage the cached external blueprint catalog index.
+
+Usage:
+
+```text
+agentplane blueprints catalog [<cmd> ...]
+```
+
+### blueprints catalog info
+
+Show cached external blueprint or pack metadata.
+
+Usage:
+
+```text
+agentplane blueprints catalog info <id> [options]
+```
+
+Options:
+
+- `--kind <blueprint|pack>`: Disambiguate catalog id kind. (choices=blueprint|pack)
+- `--json`: Emit JSON. (default=false)
+
+### blueprints catalog list
+
+List cached external blueprint catalog entries.
+
+Usage:
+
+```text
+agentplane blueprints catalog list [options]
+```
+
+Options:
+
+- `--json`: Emit JSON. (default=false)
+
+### blueprints catalog refresh
+
+Refresh the cached external blueprint catalog index.
+
+Usage:
+
+```text
+agentplane blueprints catalog refresh --index <path|url> [options]
+```
+
+Options:
+
+- `--index <path|url>`: Catalog index path or URL. (required)
+- `--json`: Emit JSON. (default=false)
+
+### blueprints install
+
+Install an external blueprint or blueprint pack into the current project.
+
+Usage:
+
+```text
+agentplane blueprints install <blueprint-or-pack-id> [options]
+```
+
+Options:
+
+- `--kind <blueprint|pack>`: Disambiguate catalog id kind. (choices=blueprint|pack)
+- `--index <path|url>`: Refresh from this catalog index before installing.
+- `--refresh`: Refresh the cached catalog before installing. (default=false)
+- `--activate`: Explicitly add installed route blueprint ids to the project trust allowlist. (default=false)
+- `--json`: Emit JSON. (default=false)
 
 ## ACR
 

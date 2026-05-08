@@ -13,6 +13,7 @@ export const INIT_DEFAULTS: InitDefaults = {
   requireVerifyApproval: true,
   executionProfile: "balanced",
   strictUnsafeConfirm: false,
+  blueprints: [],
 };
 
 export const setupProfilePresets: Record<

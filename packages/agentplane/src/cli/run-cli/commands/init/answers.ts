@@ -5,11 +5,13 @@ import { InitAborted } from "./prompts.js";
 import type { InitClackPrompts } from "./prompts.js";
 import type { InitFlags, InitIde, InitParsed, SetupProfilePreset } from "./model.js";
 import { INIT_DEFAULTS, setupProfilePresets } from "./presets.js";
+import { listCachedBlueprintCatalogItems } from "./blueprints.js";
 import { listCachedRecipes } from "./recipes.js";
 import type { PolicyGatewayFlavor } from "../../../../shared/policy-gateway.js";
 import {
   promptAdvancedSettingsStep,
   promptBackendStep,
+  promptBlueprintSelectionStep,
   promptIdeStep,
   promptPolicyGatewayStep,
   promptRecipeSelectionStep,
@@ -33,6 +35,7 @@ export type InitAnswers = {
   requireVerifyApproval: boolean;
   executionProfile: ExecutionProfile;
   strictUnsafeConfirm: boolean;
+  blueprints: string[];
 };
 
 export function assertConfirmed(clack: InitClackPrompts, value: boolean | symbol): boolean {
@@ -60,6 +63,7 @@ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
     requireVerifyApproval: flags.requireVerifyApproval ?? preset.defaultRequireVerifyApproval,
     executionProfile: flags.executionProfile ?? preset.defaultExecutionProfile,
     strictUnsafeConfirm: flags.strictUnsafeConfirm ?? preset.defaultStrictUnsafeConfirm,
+    blueprints: flags.blueprints ?? INIT_DEFAULTS.blueprints,
   };
 }
 
@@ -99,6 +103,14 @@ export async function promptInteractiveAnswers(opts: {
     setupProfileMode: setup.setupProfileMode,
     cachedRecipes,
   });
+  const cachedBlueprints = await listCachedBlueprintCatalogItems();
+  const blueprintSelection = await promptBlueprintSelectionStep({
+    clack: promptClack,
+    flags: opts.flags,
+    setupProfilePreset: setup.setupProfilePreset,
+    setupProfileMode: setup.setupProfileMode,
+    cachedBlueprints,
+  });
   return {
     setupProfileDescription: selectedPreset.description,
     policyGateway: policy.policyGateway,
@@ -113,5 +125,6 @@ export async function promptInteractiveAnswers(opts: {
     requireVerifyApproval: advanced.requireVerifyApproval,
     executionProfile: advanced.executionProfile,
     strictUnsafeConfirm: advanced.strictUnsafeConfirm,
+    blueprints: blueprintSelection.blueprints,
   };
 }

@@ -348,6 +348,37 @@ introduced.
 Recipe `run_profile` no longer supports `requires_human_approval` in the main repo runtime. The
 current runner accepts only fields it can explain honestly in `task run show`.
 
+## Blueprint catalogs
+
+```bash
+agentplane blueprints catalog refresh --index <path-or-url>
+agentplane blueprints catalog list
+agentplane blueprints catalog info <id>
+agentplane blueprints install <id>
+agentplane blueprints install pack:<id> --kind pack --activate
+```
+
+Blueprint catalogs are optional extension catalogs for route blueprints. They are separate from
+recipes: recipes add domain guidance and prompt/runtime assets; blueprints add task-route
+definitions that can become project-local trusted routes.
+
+`blueprints catalog refresh` caches an external catalog index under `~/.agentplane/blueprints`.
+`blueprints install` vendors selected blueprint definitions into the project-local blueprint store.
+Installing a blueprint does not activate it unless `--activate` is passed. Activation updates the
+project-local blueprint trust config with an explicit allowlist.
+
+Blueprint packs are lightweight catalog entries that expand to multiple blueprint installs. A pack
+does not own extra runtime behavior by itself; it only groups blueprint ids that should be installed
+together.
+
+During advanced/full-harness init, cached catalog entries can be installed in one step:
+
+```bash
+agentplane init --setup-profile full-harness --blueprints pack:enterprise-baseline --yes
+```
+
+Use `blueprint:<id>` or `pack:<id>` when a catalog contains overlapping ids.
+
 ## CLI reference (generated)
 
 For the full, up-to-date command surface derived from the CLI command specs, see:

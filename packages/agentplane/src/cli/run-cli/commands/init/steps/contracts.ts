@@ -62,3 +62,7 @@ export type AdvancedSettingsStepAnswers = {
 export type RecipeSelectionStepAnswers = {
   recipes: string[];
 };
+
+export type BlueprintSelectionStepAnswers = {
+  blueprints: string[];
+};

@@ -93,6 +93,7 @@ export async function maybeConfirmInteractiveApply(opts: {
     { label: "Hooks", value: opts.answers.hooks },
     { label: "IDE", value: opts.answers.ide },
     { label: "Recipes", value: opts.answers.recipes.join(", ") || "none" },
+    { label: "Blueprints", value: opts.answers.blueprints.join(", ") || "none" },
     { label: "Install commit", value: !opts.flags.gitignoreAgents },
   ]);
   const confirmed = assertConfirmed(
@@ -226,6 +227,15 @@ export async function applyInitPlan(opts: {
         return await import("./recipes.js").then((m) =>
           m.maybeAddCachedRecipes({
             recipes: opts.answers.recipes,
+            cwd: opts.cwd,
+            rootOverride: opts.rootOverride,
+          }),
+        );
+      },
+      blueprints: async () => {
+        return await import("./blueprints.js").then((m) =>
+          m.maybeInstallCachedBlueprints({
+            blueprints: opts.answers.blueprints,
             cwd: opts.cwd,
             rootOverride: opts.rootOverride,
           }),

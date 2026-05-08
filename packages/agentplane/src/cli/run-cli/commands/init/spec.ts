@@ -4,6 +4,7 @@ import { usageError } from "../../../spec/errors.js";
 import { cmdInit } from "./orchestrate.js";
 import { normalizeSetupProfile } from "./presets.js";
 import {
+  parseBlueprintsSelectionForInit,
   parseBooleanValueForInit,
   parseDirectCloseDirtyPolicyForInit,
   parseRecipesSelectionForInit,
@@ -116,6 +117,13 @@ export const initSpec: CommandSpec<InitParsed> = {
       description: "Optional cached recipes to vendor during init (comma-separated), or 'none'.",
     },
     {
+      kind: "string",
+      name: "blueprints",
+      valueHint: "<none|id1,pack:id2,...>",
+      description:
+        "Optional cached blueprint catalog entries to install and activate during init (comma-separated), or 'none'. Prefix with blueprint: or pack: to disambiguate.",
+    },
+    {
       kind: "boolean",
       name: "force",
       default: false,
@@ -179,6 +187,7 @@ export const initSpec: CommandSpec<InitParsed> = {
     const requireNetworkRaw = raw.opts["require-network-approval"] as string | undefined;
     const requireVerifyRaw = raw.opts["require-verify-approval"] as string | undefined;
     const recipesRaw = raw.opts.recipes as string | undefined;
+    const blueprintsRaw = raw.opts.blueprints as string | undefined;
 
     return {
       setupProfile: normalizeSetupProfile(raw.opts["setup-profile"] as string | undefined),
@@ -220,6 +229,8 @@ export const initSpec: CommandSpec<InitParsed> = {
               String(raw.opts["strict-unsafe-confirm"]),
             ),
       recipes: recipesRaw === undefined ? undefined : parseRecipesSelectionForInit(recipesRaw),
+      blueprints:
+        blueprintsRaw === undefined ? undefined : parseBlueprintsSelectionForInit(blueprintsRaw),
       force: raw.opts.force === true,
       backup: raw.opts.backup === true,
       yes: raw.opts.yes === true,
