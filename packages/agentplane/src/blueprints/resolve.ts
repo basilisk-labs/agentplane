@@ -142,7 +142,10 @@ function selectSpecializedCodeBlueprintId(opts: {
     includesAny(tags, RUNNER_DOMAIN_TAGS) ||
     /\brunner\b|\breplay\b|\bresume\b|\binvocation\b|\bresult manifest\b/.test(text)
   ) {
-    return { id: "runner.execution", reason: "specialized code domain resolved to runner.execution" };
+    return {
+      id: "runner.execution",
+      reason: "specialized code domain resolved to runner.execution",
+    };
   }
   if (
     includesAny(tags, PERFORMANCE_DOMAIN_TAGS) ||
@@ -231,7 +234,9 @@ function selectBlueprint(opts: { input: BlueprintResolveInput; registry: Bluepri
   const taskKind = inferTaskKind(input);
   const specializedCodeBlueprint = selectSpecializedCodeBlueprintId({ input, taskKind });
   const inferredBlueprintId =
-    riskBlueprintId ?? specializedCodeBlueprint?.id ?? blueprintForTaskKind(taskKind, input.workflowMode);
+    riskBlueprintId ??
+    specializedCodeBlueprint?.id ??
+    blueprintForTaskKind(taskKind, input.workflowMode);
   const requestedBlueprintId = input.explicitBlueprintId ?? input.blueprintRequest;
   const preferredId =
     riskBlueprintId || requestedBlueprintId ? undefined : preferredBlueprintId(input);

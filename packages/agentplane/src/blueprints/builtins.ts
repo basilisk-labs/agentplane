@@ -490,11 +490,36 @@ export const BUILTIN_BLUEPRINTS = [
     nodes: benchmarkNodes,
     requiredEvidence: [
       evidence("benchmark.baseline", "artifact", "work_unit", "Baseline measurement artifact."),
-      evidence("benchmark.method", "assumptions", "scope", "Benchmark method, environment, and warm/cold mode."),
-      evidence("benchmark.runs", "check_result", "fast_local_checks", "Run count and raw measurement results."),
-      evidence("benchmark.threshold", "assumptions", "scope", "Accepted threshold or noise tolerance."),
-      evidence("benchmark.comparison", "check_result", "hosted_checks", "Before/after comparison result."),
-      evidence("benchmark.verdict", "final_output", "verify_record", "Faster, slower, unchanged, or noisy verdict."),
+      evidence(
+        "benchmark.method",
+        "assumptions",
+        "scope",
+        "Benchmark method, environment, and warm/cold mode.",
+      ),
+      evidence(
+        "benchmark.runs",
+        "check_result",
+        "fast_local_checks",
+        "Run count and raw measurement results.",
+      ),
+      evidence(
+        "benchmark.threshold",
+        "assumptions",
+        "scope",
+        "Accepted threshold or noise tolerance.",
+      ),
+      evidence(
+        "benchmark.comparison",
+        "check_result",
+        "hosted_checks",
+        "Before/after comparison result.",
+      ),
+      evidence(
+        "benchmark.verdict",
+        "final_output",
+        "verify_record",
+        "Faster, slower, unchanged, or noisy verdict.",
+      ),
       evidence("benchmark.commit", "commit", "publish_or_integrate", "Integration commit."),
     ],
     stopRules: [
@@ -541,19 +566,50 @@ export const BUILTIN_BLUEPRINTS = [
     },
     nodes: regressionNodes,
     requiredEvidence: [
-      evidence("regression.original_failure", "artifact", "context_resolve", "Original failure log or check output."),
-      evidence("regression.reproduction", "check_result", "work_unit", "Local reproduction or explicit non-reproduction result."),
-      evidence("regression.focused_check", "check_result", "fast_local_checks", "Focused regression check."),
-      evidence("regression.matrix_or_scope", "assumptions", "scope", "Affected test/check matrix or bounded scope."),
-      evidence("regression.full_gate", "check_result", "hosted_checks", "Full relevant gate or hosted check evidence."),
-      evidence("regression.flake_classification", "weak_links", "verify_record", "Flake classification or residual risk."),
+      evidence(
+        "regression.original_failure",
+        "artifact",
+        "context_resolve",
+        "Original failure log or check output.",
+      ),
+      evidence(
+        "regression.reproduction",
+        "check_result",
+        "work_unit",
+        "Local reproduction or explicit non-reproduction result.",
+      ),
+      evidence(
+        "regression.focused_check",
+        "check_result",
+        "fast_local_checks",
+        "Focused regression check.",
+      ),
+      evidence(
+        "regression.matrix_or_scope",
+        "assumptions",
+        "scope",
+        "Affected test/check matrix or bounded scope.",
+      ),
+      evidence(
+        "regression.full_gate",
+        "check_result",
+        "hosted_checks",
+        "Full relevant gate or hosted check evidence.",
+      ),
+      evidence(
+        "regression.flake_classification",
+        "weak_links",
+        "verify_record",
+        "Flake classification or residual risk.",
+      ),
       evidence("regression.commit", "commit", "publish_or_integrate", "Integration commit."),
     ],
     stopRules: [
       {
         id: "regression_without_failure",
         severity: "warn",
-        reason: "Regression work should preserve the original failure or explain why it cannot be reproduced.",
+        reason:
+          "Regression work should preserve the original failure or explain why it cannot be reproduced.",
       },
       {
         id: "regression_gate_skipped",
@@ -593,19 +649,45 @@ export const BUILTIN_BLUEPRINTS = [
     },
     nodes: runnerNodes,
     requiredEvidence: [
-      evidence("runner.bundle", "artifact", "context_resolve", "Runner context bundle or bundle inspection."),
-      evidence("runner.invocation", "artifact", "work_unit", "Invocation inputs and command or adapter capability."),
-      evidence("runner.result_manifest", "artifact", "work_unit", "Result manifest or manifest validation."),
+      evidence(
+        "runner.bundle",
+        "artifact",
+        "context_resolve",
+        "Runner context bundle or bundle inspection.",
+      ),
+      evidence(
+        "runner.invocation",
+        "artifact",
+        "work_unit",
+        "Invocation inputs and command or adapter capability.",
+      ),
+      evidence(
+        "runner.result_manifest",
+        "artifact",
+        "work_unit",
+        "Result manifest or manifest validation.",
+      ),
       evidence("runner.trace", "artifact", "fast_local_checks", "Execution trace or log path."),
-      evidence("runner.execution_state", "check_result", "fast_local_checks", "Execution state transition evidence."),
-      evidence("runner.replay_or_resume", "check_result", "hosted_checks", "Replay or resume validation."),
+      evidence(
+        "runner.execution_state",
+        "check_result",
+        "fast_local_checks",
+        "Execution state transition evidence.",
+      ),
+      evidence(
+        "runner.replay_or_resume",
+        "check_result",
+        "hosted_checks",
+        "Replay or resume validation.",
+      ),
       evidence("runner.commit", "commit", "publish_or_integrate", "Integration commit."),
     ],
     stopRules: [
       {
         id: "runner_without_manifest",
         severity: "stop",
-        reason: "Runner execution changes require result manifest or equivalent execution artifact evidence.",
+        reason:
+          "Runner execution changes require result manifest or equivalent execution artifact evidence.",
       },
       {
         id: "runner_replay_unverified",
