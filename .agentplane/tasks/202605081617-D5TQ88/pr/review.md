@@ -24,12 +24,23 @@ Created: 2026-05-08T16:19:20.558Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-08T16:19:20.558Z
+- Updated: 2026-05-08T16:28:26.940Z
 - Branch: task/202605081617-D5TQ88/v05-release-cleanup
-- Head: 999ef2076454
+- Head: 552d344f8737
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 401 +++++++++++++++++++++
+ .../agentplane/src/commands/recipes/impl/apply.ts  |   4 +-
+ .../src/commands/recipes/impl/constants.test.ts    |  55 +++
+ .../src/commands/recipes/impl/constants.ts         |  48 ++-
+ .../src/commands/recipes/impl/overlay-publish.ts   |   4 +-
+ .../agentplane/src/commands/task/shared/docs.ts    |  14 +-
+ packages/testkit/src/agentplane-internal.ts        |   6 +
+ packages/testkit/src/cli-harness/stdio.ts          |   2 +-
+ packages/testkit/src/runner.ts                     |   4 +-
+ packages/testkit/src/task.ts                       |   6 +-
+ scripts/baselines/knip-baseline.json               |  14 +-
+ 11 files changed, 512 insertions(+), 46 deletions(-)
 ```
 
 </details>
