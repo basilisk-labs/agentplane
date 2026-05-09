@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605091754-6BYVEH/transition-comment-flow",
+  "created_at": "2026-05-09T19:00:06.444Z",
+  "head_sha": "8d509525d621ee4ac306fbf71d9040335ada084f",
+  "last_verified_at": "2026-05-09T19:09:01.403Z",
+  "last_verified_sha": "8d509525d621ee4ac306fbf71d9040335ada084f",
+  "schema_version": 1,
+  "task_id": "202605091754-6BYVEH",
+  "updated_at": "2026-05-09T19:00:06.444Z",
+  "verify": {
+    "status": "pass"
+  }
+}
