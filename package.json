@@ -89,7 +89,7 @@
     "schemas:check": "bun scripts/sync-schemas.mjs check",
     "schemas:sync": "bun scripts/sync-schemas.mjs sync",
     "spec:examples:check": "node scripts/check-spec-examples.mjs",
-    "hotspots:check": "node scripts/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 --allow-oversized packages/agentplane/src/runtime/prompt-modules/compiler.ts --allow-oversized packages/agentplane/src/commands/acr/acr.command.ts && node scripts/check-oversized-test-baseline.mjs --threshold-lines 1000",
+    "hotspots:check": "node scripts/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/check-oversized-test-baseline.mjs --threshold-lines 1000",
     "check:types-files": "node scripts/check-types-files.mjs",
     "vitest:projects:check": "node scripts/check-vitest-projects.mjs",
     "coverage:significant": "node scripts/check-significant-coverage.mjs",
