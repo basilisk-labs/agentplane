@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-09T19:21:08Z",
   "base": "main",
   "branch": "task/202605091754-S1KM8E/verify-spec-factory",
   "created_at": "2026-05-09T19:13:38.898Z",
-  "head_sha": "e76ae07f9f10f0c945f7a0f275c94d441fb459b6",
+  "head_sha": "501ab3b2ba84cb4ece74fa99f5b4ae1266661e69",
   "last_verified_at": "2026-05-09T19:18:20.585Z",
   "last_verified_sha": "8d79e1d5dff2b2be62db668008898056d9692efe",
+  "merge_commit": "16aa090ddd379101e7f38745ed30227087b934ca",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-09T19:21:08Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605091754-S1KM8E",
-  "updated_at": "2026-05-09T19:18:57.670Z",
+  "updated_at": "2026-05-09T19:21:08Z",
   "verify": {
     "status": "pass"
   }

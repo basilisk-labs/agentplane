@@ -1,7 +1,8 @@
 ---
 id: "202605091754-S1KM8E"
 title: "Create verify command spec factory"
-status: "DOING"
+result_summary: "Merged via PR #3540."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -30,11 +31,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: created shared verify command spec/handler factory; verify CLI tests passed (2 files, 17 tests), typecheck passed, Prettier passed, clone:report improved metrics to 81 clones / 1335 duplicated lines / 14279 duplicated tokens, and clone:check passed without baseline update."
   attempts: 0
-commit: null
+commit:
+  hash: "16aa090ddd379101e7f38745ed30227087b934ca"
+  message: "Merge pull request #3540 from basilisk-labs/task/202605091754-S1KM8E/verify-spec-factory"
 comments:
   -
     author: "CODER"
     body: "Start: create a shared factory for task verify ok/rework command specs and handlers."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3540 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: created shared verify command spec/handler factory; verify CLI tests passed (2 files, 17 tests), typecheck passed, Prettier passed, clone:report improved metrics to 81 clones / 1335 duplicated lines / 14279 duplicated tokens, and clone:check passed without baseline update."
+  -
+    type: "status"
+    at: "2026-05-09T19:21:55.820Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3540 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T19:18:20.599Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T19:21:55.827Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace the duplicated task verify ok/rework command spec boilerplate with a small factory that keeps verdict-specific summary and runner behavior explicit."
 sections:
   Summary: |-
