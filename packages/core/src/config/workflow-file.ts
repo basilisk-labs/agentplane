@@ -4,6 +4,7 @@ import path from "node:path";
 import YAML from "yaml";
 
 import { atomicWriteFile } from "../fs/atomic-write.js";
+import { isRecord } from "../types/guards.js";
 import type { AgentplaneConfig } from "./validation.js";
 
 export type WorkflowMarkdown = {
@@ -23,10 +24,6 @@ Workflow mode: {{ workflow.mode }}
 ## Fallback
 last_known_good: .agentplane/workflows/last-known-good.md
 `;
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
-}
 
 function cloneRecord(value: unknown): Record<string, unknown> {
   return isRecord(value) ? structuredClone(value) : {};

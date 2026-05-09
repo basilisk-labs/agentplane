@@ -2,6 +2,7 @@ import { z, type ZodIssue } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
 import { formatZodIssues } from "../schemas/zod-error-format.js";
+import { isRecord } from "../types/guards.js";
 
 const nonEmptyString = () => z.string().min(1);
 const nonEmptyStringArray = (defaults?: string[]) =>
@@ -455,10 +456,6 @@ export const AgentplaneConfigSchema = z
   .passthrough();
 
 export type AgentplaneConfig = z.infer<typeof AgentplaneConfigSchema>;
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
-}
 
 export function formatAgentplaneConfigIssues(issues: readonly ZodIssue[]): string {
   return formatZodIssues("config schema validation failed", issues);

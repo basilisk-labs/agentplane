@@ -5,6 +5,7 @@ import path from "node:path";
 import { loadConfig } from "../config/config.js";
 import { atomicWriteFile } from "../fs/atomic-write.js";
 import { resolveProject } from "../project/project-root.js";
+import { isRecord } from "../types/guards.js";
 import { normalizeTaskDocVersion, type TaskDocVersion } from "./task-doc-contract.js";
 import { validateTasksExportSnapshot } from "./task-artifact-schema.js";
 import {
@@ -16,10 +17,6 @@ import {
   type TaskRunnerOutcome,
   type TaskRunnerTarget,
 } from "./task-store.js";
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
-}
 
 function normalizeTaskOrigin(value: unknown): TaskOrigin | undefined {
   if (!isRecord(value)) return undefined;
