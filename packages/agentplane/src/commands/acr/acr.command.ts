@@ -7,8 +7,6 @@ import {
 } from "@agentplaneorg/core/schemas";
 import {
   gitConfigGet,
-  gitDiffNameStatus,
-  gitDiffNumstat,
   gitIsAncestor,
   gitMergeBase,
   gitRevParse,
@@ -25,7 +23,6 @@ import {
   throwGroupCommandUsage,
   type GroupCommandParsed,
 } from "../../cli/group-command.js";
-import { exitCodeForError } from "../../cli/exit-codes.js";
 import { usageError } from "../../cli/spec/errors.js";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
@@ -33,7 +30,9 @@ import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { blueprintResolveInputFromTask } from "../blueprint/task-input.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
-import { withDiagnosticContext } from "../shared/diagnostics.js";
+import { readDiffSummary } from "./diff.js";
+import { acrValidationError } from "./remediation.js";
+import { renderAcrSummary, summarizeAcr } from "./summary.js";
 
 type AcrMode = "schema" | "local" | "ci";
 type AcrCiSemanticOptions = Pick<
@@ -989,60 +988,6 @@ function emitValidationResult(
   process.stdout.write(`✅ ${command} ${path.basename(result.acr_path)}\n`);
 }
 
-function summarizeAcr(record: AgentChangeRecord) {
-  const blueprint = record.extensions?.["agentplane.blueprint"] as
-    | { blueprint_id?: unknown; route?: unknown }
-    | undefined;
-  return {
-    task_id: record.task.task_id,
-    title: record.task.title,
-    agent: `${record.agent.name}${record.agent.model ? ` / ${record.agent.model.provider} / ${record.agent.model.name}` : ""}`,
-    plan: record.plan.status,
-    work_range: `${record.repository.base_commit}..${record.repository.work_commit}`,
-    policy: {
-      pass: record.policy.decisions.filter((item) => item.decision === "pass").length,
-      fail: record.policy.decisions.filter((item) => item.decision === "fail").length,
-      warning: record.policy.decisions.filter((item) => item.decision === "warning").length,
-      manual_override: record.policy.decisions.filter((item) => item.decision === "manual_override")
-        .length,
-    },
-    verification: record.verification.status,
-    merge_ready: record.result.merge_ready,
-    blueprint:
-      typeof blueprint?.blueprint_id === "string"
-        ? {
-            id: blueprint.blueprint_id,
-            route: Array.isArray(blueprint.route)
-              ? blueprint.route.filter((item): item is string => typeof item === "string")
-              : [],
-          }
-        : null,
-    record_digest: record.integrity.record_digest,
-  };
-}
-
-function renderAcrSummary(summary: ReturnType<typeof summarizeAcr>): string {
-  return [
-    "Agent Change Record",
-    `Task: ${summary.task_id}`,
-    `Title: ${summary.title}`,
-    `Agent: ${summary.agent}`,
-    `Plan: ${summary.plan}`,
-    `Work range: ${summary.work_range}`,
-    `Policy: ${summary.policy.pass} pass, ${summary.policy.fail} fail, ${summary.policy.warning} warning, ${summary.policy.manual_override} manual override`,
-    `Verification: ${summary.verification}`,
-    `Merge ready: ${summary.merge_ready ? "yes" : "no"}`,
-    ...(summary.blueprint
-      ? [
-          `Blueprint: ${summary.blueprint.id}`,
-          `Blueprint route: ${summary.blueprint.route.join(" -> ")}`,
-        ]
-      : []),
-    `Digest: ${summary.record_digest}`,
-    "",
-  ].join("\n");
-}
-
 function defaultAcrPath(ctx: CommandContext, taskId: string): string {
   return path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.workflow_dir, taskId, "acr.json");
 }
@@ -1083,54 +1028,6 @@ async function assertGitCommit(gitRoot: string, rev: string): Promise<void> {
   await gitRevParse(gitRoot, ["--verify", `${rev}^{commit}`]).catch(() => {
     throw acrValidationError("ACR_E_GIT_COMMIT_MISSING", `Git commit missing: ${rev}`);
   });
-}
-
-async function readDiffSummary(gitRoot: string, baseCommit: string, workCommit: string) {
-  const [numstat, names] = await Promise.all([
-    gitDiffNumstat(gitRoot, baseCommit, workCommit, { range: "two-dot" }).catch(() => []),
-    gitDiffNameStatus(gitRoot, baseCommit, workCommit, { range: "two-dot" }).catch(() => []),
-  ]);
-  const files = names.map(({ statusCode, path: filePath }) => ({
-    path: filePath,
-    status: mapGitStatus(statusCode),
-    risk_categories: inferRiskCategories(filePath),
-  }));
-  const insertions = numstat.reduce((sum, entry) => sum + entry.insertions, 0);
-  const deletions = numstat.reduce((sum, entry) => sum + entry.deletions, 0);
-  return {
-    diff_stats: {
-      files_changed: files.length,
-      insertions,
-      deletions,
-    },
-    files,
-  };
-}
-
-function mapGitStatus(status: string): AgentChangeRecord["changes"]["files"][number]["status"] {
-  const code = status[0];
-  if (code === "A") return "added";
-  if (code === "M") return "modified";
-  if (code === "D") return "deleted";
-  if (code === "R") return "renamed";
-  if (code === "C") return "copied";
-  if (code === "T") return "type_changed";
-  return "unknown";
-}
-
-function inferRiskCategories(
-  filePath: string,
-): NonNullable<AgentChangeRecord["changes"]["files"][number]["risk_categories"]> {
-  const categories = new Set<
-    NonNullable<AgentChangeRecord["changes"]["files"][number]["risk_categories"]>[number]
-  >();
-  if (filePath.includes("schema")) categories.add("schema");
-  if (filePath.startsWith("docs/")) categories.add("docs");
-  if (filePath.includes("/test") || filePath.endsWith(".test.ts")) categories.add("tests");
-  if (filePath.startsWith(".github/")) categories.add("ci");
-  if (filePath.startsWith("packages/agentplane/src/commands/")) categories.add("cli");
-  if (categories.size === 0) categories.add("tooling");
-  return [...categories];
 }
 
 function inferCheckType(
@@ -1190,88 +1087,4 @@ function assertEvidence(
   if (!record.evidence.some((evidence) => evidence.type === type)) {
     throw acrValidationError(code, `Missing evidence: ${type}.`);
   }
-}
-
-function acrValidationError(code: string, message: string): CliError {
-  return new CliError({
-    exitCode: exitCodeForError("E_VALIDATION"),
-    code: "E_VALIDATION",
-    message: `${code}: ${message}`,
-    context: withDiagnosticContext(
-      { reason_code: code },
-      {
-        state: "ACR validation failed.",
-        likelyCause: message,
-        hint: "ACR is a derived evidence record; regenerate it from task, policy, verification, and Git state instead of hand-editing it.",
-        nextAction: {
-          command: "agentplane acr explain <task-id>",
-          reason: "inspect the current ACR readiness summary before retrying the gate",
-          reasonCode: code,
-        },
-        remediation: acrRemediationForCode(code, message),
-      },
-    ),
-  });
-}
-
-function acrRemediationForCode(
-  code: string,
-  message: string,
-): NonNullable<Parameters<typeof withDiagnosticContext>[1]["remediation"]> {
-  if (code.includes("PLAN")) {
-    return {
-      code,
-      why: "The ACR cannot prove that the implementation followed an approved plan.",
-      fix: "Approve the task plan through AgentPlane, then regenerate or refresh the task-local ACR.",
-      safeCommand: "agentplane task plan approve <task-id> --by ORCHESTRATOR",
-      stopCondition:
-        "Stop if the plan is missing, stale, or no longer matches the implementation scope.",
-    };
-  }
-  if (code.includes("VERIFICATION")) {
-    return {
-      code,
-      why: "The ACR cannot prove that required checks ran and passed.",
-      fix: "Run the task Verify Steps, record verification through AgentPlane, then regenerate the ACR.",
-      safeCommand: "agentplane task verify-show <task-id>",
-      stopCondition:
-        "Stop if a required check must be skipped without explicit approval and recorded risk.",
-    };
-  }
-  if (code.includes("EVIDENCE") || code.includes("DIGEST")) {
-    return {
-      code,
-      why: "The ACR evidence does not match the current repository artifact state.",
-      fix: "Regenerate the ACR from current task evidence and verify the digest again.",
-      safeCommand: "agentplane acr generate <task-id> --work-commit HEAD --write --refresh",
-      stopCondition:
-        "Stop if the evidence mismatch points to uncommitted or unintended task artifact changes.",
-    };
-  }
-  if (code.includes("GIT")) {
-    return {
-      code,
-      why: "The ACR Git range cannot be validated locally.",
-      fix: "Confirm the base and work commits exist and that work_commit descends from base_commit.",
-      safeCommand: "git merge-base --is-ancestor <base_commit> <work_commit>",
-      stopCondition:
-        "Stop if the recorded commits are from another branch, checkout, or repository.",
-    };
-  }
-  if (code.includes("POLICY")) {
-    return {
-      code,
-      why: "The ACR records a policy decision that is not merge-ready.",
-      fix: "Resolve the failed policy decision or record an approved policy override when allowed.",
-      safeCommand: "agentplane acr explain <task-id>",
-      stopCondition: "Stop if resolving the policy failure requires changing repository policy.",
-    };
-  }
-  return {
-    code,
-    why: message,
-    fix: "Inspect the ACR target, regenerate it from canonical task evidence, and rerun validation.",
-    safeCommand: "agentplane acr validate <task-id> --mode local",
-    stopCondition: "Stop if the target ACR was hand-edited or cannot be traced to a task README.",
-  };
 }
