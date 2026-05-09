@@ -1,7 +1,8 @@
 ---
 id: "202605091753-A9YYYQ"
 title: "Deduplicate hook task intent context"
-status: "TODO"
+result_summary: "Merged via PR #3530."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -30,8 +31,13 @@ verification:
   updated_by: "CODER"
   note: "Verified: extracted shared hook task context helper; focused hook tests passed (2 files, 33 tests), typecheck passed, Prettier passed, clone:report improved metrics to 84 clones / 1420 duplicated lines / 15111 duplicated tokens, and clone:check passed without baseline update."
   attempts: 0
-commit: null
-comments: []
+commit:
+  hash: "1067a720ba81e4a3701883ac972259b3b8e5e9e7"
+  message: "Merge pull request #3530 from basilisk-labs/task/202605091753-A9YYYQ/hook-context"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3530 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "verify"
@@ -39,9 +45,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: extracted shared hook task context helper; focused hook tests passed (2 files, 33 tests), typecheck passed, Prettier passed, clone:report improved metrics to 84 clones / 1420 duplicated lines / 15111 duplicated tokens, and clone:check passed without baseline update."
+  -
+    type: "status"
+    at: "2026-05-09T18:40:32.416Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: PR #3530 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T18:37:16.089Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T18:40:32.424Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extract common hook helpers for task intent loading, enum parsing, environment flags, and branch task-id inference from pre-commit and commit-msg hooks."
 sections:
   Summary: |-
