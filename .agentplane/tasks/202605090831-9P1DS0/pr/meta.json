@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-09T08:40:13Z",
   "base": "main",
   "branch": "task/202605090831-9P1DS0/cloud-node-address-selection",
   "created_at": "2026-05-09T08:33:06.157Z",
-  "head_sha": "0ea79236d7c1f4612d7a7e53bbd12f7f168f424e",
+  "head_sha": "811337741bdfb0c5ac350f77e5f9577fe743d5d7",
   "last_verified_at": "2026-05-09T08:36:00.932Z",
   "last_verified_sha": "1178f3e0b7b2b4e369f2ad66c5b21ed98cb1f1fb",
+  "merge_commit": "93831ff83a572f71b0f390b542c9dddd5bd39da6",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-09T08:40:13Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605090831-9P1DS0",
-  "updated_at": "2026-05-09T08:36:51.448Z",
+  "updated_at": "2026-05-09T08:40:13Z",
   "verify": {
     "status": "pass"
   }
