@@ -2,6 +2,14 @@
 
 Created: 2026-05-09T15:51:06.784Z
 
+## Batch Tasks
+
+- Primary: `202605091549-JAE983`
+- Closure policy: `all_or_fail`
+- Included: `202605091549-65ANX7`
+- Included: `202605091549-8Z3MZ5`
+- Included: `202605091549-TAQM7T`
+
 ## Task
 
 - Task: `202605091549-JAE983`
@@ -32,6 +40,7 @@ Created: 2026-05-09T15:51:06.784Z
  .agentplane/tasks/202605091549-65ANX7/README.md    | 128 ++++++
  .../blueprint/resolved-snapshot.json               | 427 ++++++++++++++++++
  .agentplane/tasks/202605091549-8Z3MZ5/README.md    |  99 ++++
+ .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
  .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
  .agentplane/tasks/202605091549-TAQM7T/README.md    |  99 ++++
  .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
@@ -64,7 +73,7 @@ Created: 2026-05-09T15:51:06.784Z
  packages/spec/schemas/tasks-export.schema.json     |   1 +
  schemas/task-readme-frontmatter.schema.json        |   1 +
  schemas/tasks-export.schema.json                   |   1 +
- 35 files changed, 2128 insertions(+), 6 deletions(-)
+ 36 files changed, 2624 insertions(+), 6 deletions(-)
 ```
 
 </details>

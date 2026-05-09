@@ -2,6 +2,7 @@
  .../blueprint/resolved-snapshot.json               | 427 ++++++++++++++++++
  .agentplane/tasks/202605091549-8Z3MZ5/README.md    |  99 ++++
  .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
+ .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
  .agentplane/tasks/202605091549-TAQM7T/README.md    |  99 ++++
  .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
  docs/developer/blueprints.mdx                      |   4 +
@@ -33,4 +34,4 @@
  packages/spec/schemas/tasks-export.schema.json     |   1 +
  schemas/task-readme-frontmatter.schema.json        |   1 +
  schemas/tasks-export.schema.json                   |   1 +
- 35 files changed, 2128 insertions(+), 6 deletions(-)
+ 36 files changed, 2624 insertions(+), 6 deletions(-)
