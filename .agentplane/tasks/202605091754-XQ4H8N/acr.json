@@ -1,0 +1,248 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605091754-XQ4H8N",
+  "created_at": "2026-05-09T19:31:02.571Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "15443cdfbd69c897b925b5363edbb0fc777f444c",
+    "work_ref": "main",
+    "work_commit": "15443cdfbd69c897b925b5363edbb0fc777f444c"
+  },
+  "task": {
+    "task_id": "202605091754-XQ4H8N",
+    "title": "Clean unused exported API surface",
+    "intent": "Resolve the current knip baseline failures by removing accidental exports or adding real consumers for the reported unused constants/types, then update baseline only if reviewed debt remains intentional.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605091754-XQ4H8N/README.md",
+      "sha256": "sha256:7b3d52376b09d84b99db98486d9865f42dc0b73dbf486e466ea0a06e96daae1b"
+    },
+    "approved_at": "2026-05-09T17:55:14.754Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3543.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "other",
+        "command": "bun run clone:check",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-2",
+        "type": "other",
+        "command": "bun run knip:check",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-3",
+        "type": "typecheck",
+        "command": "bun run typecheck",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605091754-XQ4H8N_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-09T17:55:14.754Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605091754-XQ4H8N/README.md",
+      "sha256": "sha256:7b3d52376b09d84b99db98486d9865f42dc0b73dbf486e466ea0a06e96daae1b"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605091754-XQ4H8N/README.md",
+      "sha256": "sha256:7b3d52376b09d84b99db98486d9865f42dc0b73dbf486e466ea0a06e96daae1b"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605091754-XQ4H8N/README.md",
+      "sha256": "sha256:7b3d52376b09d84b99db98486d9865f42dc0b73dbf486e466ea0a06e96daae1b"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605091754-XQ4H8N/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:f0de7624b18172c20f5d844d4cacd1c90c59efc5a9cfc9a9c5d204b0f0affb80"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 15443cdfbd69c897b925b5363edbb0fc777f444c if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:fbea2c32cf28028f20608c417d90bc69597fdabf85faa43ec57883f2b5f2bed4",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "quality.regression",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "regression.original_failure",
+          "kind": "artifact",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "regression.reproduction",
+          "kind": "check_result",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "regression.focused_check",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "regression.matrix_or_scope",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "regression.full_gate",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "regression.flake_classification",
+          "kind": "weak_links",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "regression.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605091754-XQ4H8N/blueprint/resolved-snapshot.json",
+        "digest": "a5163b22d5c798c1daff247846bdfd5ef453a0dc26272a1223f0bfae9d11e04a",
+        "current_digest": "a5163b22d5c798c1daff247846bdfd5ef453a0dc26272a1223f0bfae9d11e04a",
+        "route_changed": false,
+        "artifact_sha256": "sha256:f0de7624b18172c20f5d844d4cacd1c90c59efc5a9cfc9a9c5d204b0f0affb80",
+        "safe_command": "agentplane blueprint snapshot 202605091754-XQ4H8N"
+      }
+    }
+  }
+}
