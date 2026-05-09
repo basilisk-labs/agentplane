@@ -22,12 +22,17 @@ Add a shared async JSON file reader for agentplane CLI code and replace the dupl
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-09T14:43:59.251Z
+- Updated: 2026-05-09T14:56:13.910Z
 - Branch: task/202605091443-B5JJYR/async-json-reader
-- Head: db4396d080d8
+- Head: ca94aa77d8f3
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
+ packages/agentplane/src/backends/task-index.ts     |  18 +-
+ .../src/commands/release/apply.preflight.plan.ts   |   5 +-
+ packages/agentplane/src/shared/json-io.test.ts     |  37 ++
+ packages/agentplane/src/shared/json-io.ts          |  17 +
+ 5 files changed, 553 insertions(+), 20 deletions(-)
 ```
 
 </details>
