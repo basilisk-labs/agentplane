@@ -1,7 +1,8 @@
 ---
 id: "202605091355-S6ZHV4"
 title: "Deduplicate core type guards"
-status: "DOING"
+result_summary: "Merged via PR #3505."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-09T14:00:17.297Z"
   updated_by: "CODER"
   note: "Core guard deduplication verified."
-commit: null
+commit:
+  hash: "62abd19e7f91f4842589472e9ac7417de871eb3d"
+  message: "Merge pull request #3505 from basilisk-labs/task/202605091355-S6ZHV4/core-guards"
 comments:
   -
     author: "CODER"
     body: "Start: Deduplicate internal core type guards with a narrow helper and preserve existing config/task parsing behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3505 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Core guard deduplication verified."
+  -
+    type: "status"
+    at: "2026-05-09T14:03:43.862Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3505 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T14:00:17.310Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T14:03:43.868Z"
+doc_updated_by: "INTEGRATOR"
 description: "Create one internal core type guard helper and replace duplicated isRecord/isStringArray implementations inside packages/core without changing public package exports."
 sections:
   Summary: |-
