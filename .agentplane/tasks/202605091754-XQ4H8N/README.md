@@ -1,7 +1,8 @@
 ---
 id: "202605091754-XQ4H8N"
 title: "Clean unused exported API surface"
-status: "DOING"
+result_summary: "Merged via PR #3543."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -30,11 +31,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: removed/narrowed unused exported API surface and stale knip baseline entry; knip:check passed, typecheck passed, Prettier passed, knip baseline helper test passed (1 file, 2 tests), and clone:check passed without baseline update."
   attempts: 0
-commit: null
+commit:
+  hash: "15443cdfbd69c897b925b5363edbb0fc777f444c"
+  message: "Merge pull request #3543 from basilisk-labs/task/202605091754-XQ4H8N/knip-unused-surface"
 comments:
   -
     author: "CODER"
     body: "Start: remove or narrow unused exported API surface reported by knip without changing runtime behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3543 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: removed/narrowed unused exported API surface and stale knip baseline entry; knip:check passed, typecheck passed, Prettier passed, knip baseline helper test passed (1 file, 2 tests), and clone:check passed without baseline update."
+  -
+    type: "status"
+    at: "2026-05-09T19:31:02.521Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3543 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T19:27:56.755Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T19:31:02.529Z"
+doc_updated_by: "INTEGRATOR"
 description: "Resolve the current knip baseline failures by removing accidental exports or adding real consumers for the reported unused constants/types, then update baseline only if reviewed debt remains intentional."
 sections:
   Summary: |-
