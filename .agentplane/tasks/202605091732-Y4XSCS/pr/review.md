@@ -24,12 +24,14 @@ Created: 2026-05-09T17:33:06.845Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-09T17:33:06.845Z
+- Updated: 2026-05-09T17:41:08.860Z
 - Branch: task/202605091732-Y4XSCS/oversized-test-baseline
-- Head: 6fd758efb507
+- Head: da87bd2f021a
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
+ scripts/oversized-test-baseline.json               |   4 +-
+ 2 files changed, 498 insertions(+), 2 deletions(-)
 ```
 
 </details>
