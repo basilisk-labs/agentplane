@@ -128,9 +128,13 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     expect(readme).toContain("description: |-");
     expect(readme).toContain("  Line one");
     expect(readme).toContain("  Line two");
-    expect(readme).toContain("Line one\n\nLine two");
     expect(readme).not.toContain(String.raw`literal \n sequences`);
-    expect(readme).toContain("- In scope: Line one Line two.");
+    expect(readme).not.toMatch(/\n## Summary\n/);
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId: id });
+    expect(task.frontmatter.description).toBe("Line one\n\nLine two");
+    expect(task.frontmatter.sections?.Summary).toContain("Line one\n\nLine two");
+    expect(task.frontmatter.sections?.Scope).toContain("- In scope: Line one Line two.");
   });
 
   it("task new supports depends-on and verify flags", async () => {
@@ -458,14 +462,17 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
 
     const readmePath = path.join(root, ".agentplane", "tasks", id, "README.md");
     const readme = await readFile(readmePath, "utf8");
-    expect(readme).toContain("## Verify Steps");
-    expect(readme).toContain("Run `bun run test:fast`.");
-    expect(readme).toContain("Expected: it succeeds and confirms the requested outcome");
-    expect(readme).toContain("## Findings");
+    expect(readme).toContain("sections:");
+    expect(readme).not.toMatch(/\n## Verify Steps\n/);
+    expect(readme).not.toMatch(/\n## Findings\n/);
     expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
 
     const task = await readTask({ cwd: root, rootOverride: root, taskId: id });
     expect(task.frontmatter.sections?.["Verify Steps"]).toContain("Run `bun run test:fast`.");
+    expect(task.frontmatter.sections?.["Verify Steps"]).toContain(
+      "Expected: it succeeds and confirms the requested outcome",
+    );
+    expect(task.frontmatter.sections?.Findings).toBe("");
     expect(task.frontmatter.sections?.Summary).toContain("Code task");
   });
 
@@ -499,10 +506,17 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
 
     const readmePath = path.join(root, ".agentplane", "tasks", id, "README.md");
     const readme = await readFile(readmePath, "utf8");
-    expect(readme).toContain("## Verify Steps");
-    expect(readme).toContain("Review the changed artifact or behavior for the `code` task.");
-    expect(readme).toContain("Run the most relevant validation step for the `code` task.");
+    expect(readme).toContain("sections:");
+    expect(readme).not.toMatch(/\n## Verify Steps\n/);
     expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId: id });
+    expect(task.frontmatter.sections?.["Verify Steps"]).toContain(
+      "Review the changed artifact or behavior for the `code` task.",
+    );
+    expect(task.frontmatter.sections?.["Verify Steps"]).toContain(
+      "Run the most relevant validation step for the `code` task.",
+    );
   });
 
   it("task new seeds concrete Verify Steps even for non-verify-required tags", async () => {
@@ -535,10 +549,17 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
 
     const readmePath = path.join(root, ".agentplane", "tasks", id, "README.md");
     const readme = await readFile(readmePath, "utf8");
-    expect(readme).toContain("## Verify Steps");
-    expect(readme).toContain('Review the requested outcome for "Workflow task".');
-    expect(readme).toContain("Run the most relevant validation step for this task.");
+    expect(readme).toContain("sections:");
+    expect(readme).not.toMatch(/\n## Verify Steps\n/);
     expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId: id });
+    expect(task.frontmatter.sections?.["Verify Steps"]).toContain(
+      'Review the requested outcome for "Workflow task".',
+    );
+    expect(task.frontmatter.sections?.["Verify Steps"]).toContain(
+      "Run the most relevant validation step for this task.",
+    );
   });
 
   it("task add creates tasks with explicit ids", async () => {

@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-09T12:29:50.051Z"
+  updated_at: "2026-05-09T12:41:04.173Z"
   updated_by: "CODER"
-  note: "Cloud pull fetch timeout fix verified after hotspot-safe test split."
+  note: "Cloud pull timeout fix reverified with targeted backend route, canonical test fix, and live cloud pull before publish."
 commit: null
 comments:
   -
@@ -47,8 +47,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Cloud pull fetch timeout fix verified after hotspot-safe test split."
+  -
+    type: "verify"
+    at: "2026-05-09T12:41:04.173Z"
+    author: "CODER"
+    state: "ok"
+    note: "Cloud pull timeout fix reverified with targeted backend route, canonical test fix, and live cloud pull before publish."
 doc_version: 3
-doc_updated_at: "2026-05-09T12:29:50.061Z"
+doc_updated_at: "2026-05-09T12:41:04.195Z"
 doc_updated_by: "CODER"
 description: "Normalize Node address-selection attempt timeout for cloud fetch so backend sync pull can refresh large cloud projections instead of failing with UND_ERR_CONNECT_TIMEOUT."
 sections:
@@ -96,6 +102,31 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-09T12:26:38.545Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605091226-1DH19J/blueprint/resolved-snapshot.json
+    - old_digest: b66b9eb8b8de1712464aaa28bafd9de0f4a1e7e1f3ff6ad737b29b426d975cf4
+    - current_digest: b66b9eb8b8de1712464aaa28bafd9de0f4a1e7e1f3ff6ad737b29b426d975cf4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605091226-1DH19J
+    
+    ### 2026-05-09T12:41:04.173Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Cloud pull timeout fix reverified with targeted backend route, canonical test fix, and live cloud pull before publish.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-09T12:29:50.061Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    Command: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts packages/agentplane/src/backends/task-backend/cloud-backend-utils.test.ts. Result: pass. Evidence: 25 tests passed. Scope: cloud backend timeout/freshness coverage.
+    Command: bunx vitest run targeted backend/task CLI suite. Result: pass. Evidence: 19 files, 186 tests passed. Scope: pre-push backend route.
+    Command: bun run hotspots:check. Result: pass. Evidence: threshold check passed; oversized test baseline OK. Scope: hotspot budgets.
+    Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: TypeScript project references.
+    Command: bun run lint:core. Result: pass. Evidence: eslint exited 0. Scope: core lint surface.
+    Command: bun run framework:dev:bootstrap && ap backend sync cloud --direction pull --conflict=diff --yes. Result: pass. Evidence: cloud pull diff changed=0 ignored_remote_only=0 conflicts=0. Scope: repo-local CLI build and live cloud pull.
     
     BlueprintSnapshotRef:
     - state: current
