@@ -4,6 +4,7 @@ import path from "node:path";
 import type { AgentplaneConfig } from "../config/config.js";
 import { loadConfig } from "../config/config.js";
 import { resolveProject } from "../project/project-root.js";
+import { isNonEmptyStringArray, isRecord } from "../types/guards.js";
 import { listTasksExportSnapshotSchemaErrors } from "./task-artifact-schema.js";
 import { isIsoUtcTimestamp } from "./task-doc-contract.js";
 import {
@@ -16,14 +17,6 @@ import { isTaskStatus, TASK_STATUS_LABEL } from "./task-status.js";
 export type TasksLintResult = {
   errors: string[];
 };
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
-}
-
-function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every((v) => typeof v === "string" && v.trim().length > 0);
-}
 
 function isCommentsArray(value: unknown): value is { author: string; body: string }[] {
   return (
@@ -151,8 +144,8 @@ export function lintTasksSnapshot(
     }
     if (typeof t.owner !== "string" || t.owner.trim().length === 0)
       errors.push(`${id}: owner must be non-empty`);
-    if (!isStringArray(t.depends_on)) errors.push(`${id}: depends_on must be a string[]`);
-    if (!isStringArray(t.tags)) errors.push(`${id}: tags must be a string[]`);
+    if (!isNonEmptyStringArray(t.depends_on)) errors.push(`${id}: depends_on must be a string[]`);
+    if (!isNonEmptyStringArray(t.tags)) errors.push(`${id}: tags must be a string[]`);
     if (
       !Array.isArray(t.verify) ||
       t.verify.some((v) => typeof v !== "string" || v.trim().length === 0)

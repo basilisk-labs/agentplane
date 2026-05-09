@@ -2,6 +2,7 @@ import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 
 import { formatZodIssues } from "../schemas/zod-error-format.js";
+export { isRecord } from "../types/guards.js";
 
 export type JsonSchemaDocument = Record<string, unknown>;
 
@@ -38,10 +39,6 @@ export function buildJsonSchemaDocument(
     ...(meta.description ? { description: meta.description } : {}),
     ...rest,
   };
-}
-
-export function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
 export function formatSchemaErrors(label: string, issues: z.ZodIssue[] | undefined): string {

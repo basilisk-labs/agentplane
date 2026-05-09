@@ -1,10 +1,7 @@
 import { parse as parseYaml } from "yaml";
+import { isRecord, isStringArray } from "../types/guards.js";
 import { getTaskDocContract, TASK_DOC_SECTION_ORDER } from "./task-doc-contract.js";
 import { parseDocSections, renderTaskDocFromSections } from "./task-doc.js";
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
-}
 
 function normalizeCanonicalSections(
   value: unknown,
@@ -147,10 +144,6 @@ function renderMapLines(
     lines.push(...renderValueLines(k, v, indent));
   }
   return lines;
-}
-
-function isStringArray(value: unknown[]): value is string[] {
-  return value.every((v) => typeof v === "string");
 }
 
 function renderValueLines(key: string, value: unknown, indent: string): string[] {

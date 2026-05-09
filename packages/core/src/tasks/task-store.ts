@@ -4,6 +4,7 @@ import path from "node:path";
 import { loadConfig } from "../config/config.js";
 import { atomicWriteFile } from "../fs/atomic-write.js";
 import { resolveProject } from "../project/project-root.js";
+import { isRecord } from "../types/guards.js";
 import {
   validateTaskReadmeFrontmatter,
   withTaskReadmeFrontmatterDefaults,
@@ -150,10 +151,6 @@ export type TaskRecord = {
 
 function nowIso(): string {
   return new Date().toISOString();
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
 async function fileExists(filePath: string): Promise<boolean> {
