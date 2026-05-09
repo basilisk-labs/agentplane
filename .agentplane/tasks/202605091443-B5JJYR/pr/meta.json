@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-09T14:58:17Z",
   "base": "main",
   "branch": "task/202605091443-B5JJYR/async-json-reader",
   "created_at": "2026-05-09T14:43:59.251Z",
-  "head_sha": "ca94aa77d8f3166f725f20940c9f0d41685e4e5b",
+  "head_sha": "559db43df9a61f66373e7d281770f57b341b13f3",
   "last_verified_at": "2026-05-09T14:55:49.335Z",
   "last_verified_sha": "db4396d080d871eb39c1871ebeff9bcb9aae8079",
+  "merge_commit": "b4ad4c142af133ece3064a3c967bed95c934f572",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-09T14:58:17Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605091443-B5JJYR",
-  "updated_at": "2026-05-09T14:56:13.910Z",
+  "updated_at": "2026-05-09T14:58:17Z",
   "verify": {
     "status": "pass"
   }
