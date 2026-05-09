@@ -1,0 +1,505 @@
+{
+  "schemaVersion": 1,
+  "artifactKind": "agentplane.blueprint.resolved_snapshot",
+  "resolverInput": {
+    "taskId": "202605091754-6BYVEH",
+    "title": "Consolidate task transition comment commit flow",
+    "description": "Factor the repeated start/block transition path for structured comments, transition command execution, optional comment commit, and success output while preserving command-specific guards.",
+    "tags": [
+      "code",
+      "refactor",
+      "tasks"
+    ],
+    "owner": "CODER",
+    "taskKind": "code",
+    "workflowMode": "branch_pr",
+    "mutation": "code",
+    "mutationScope": "code",
+    "touchedPaths": [],
+    "recipeHints": [],
+    "riskFlags": [],
+    "blueprintRequest": "code.branch_pr"
+  },
+  "selectedBlueprint": {
+    "id": "code.branch_pr",
+    "version": 1,
+    "title": "Branch PR code change",
+    "taskKinds": [
+      "code"
+    ],
+    "workflowModes": [
+      "branch_pr"
+    ]
+  },
+  "plan": {
+    "schemaVersion": 1,
+    "blueprintId": "code.branch_pr",
+    "blueprintVersion": 1,
+    "title": "Branch PR code change",
+    "taskId": "202605091754-6BYVEH",
+    "workflowMode": "branch_pr",
+    "taskIntent": {
+      "taskKind": "code",
+      "mutationScope": "code",
+      "blueprintRequest": "code.branch_pr"
+    },
+    "whySelected": [
+      "explicit blueprint requested: code.branch_pr",
+      "task intent kind: code",
+      "workflow mode: branch_pr",
+      "task intent mutation scope: code"
+    ],
+    "states": [
+      {
+        "id": "intake",
+        "kind": "intake",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": []
+      },
+      {
+        "id": "scope",
+        "kind": "scope",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "assumptions"
+        ]
+      },
+      {
+        "id": "approval_gate",
+        "kind": "approval_gate",
+        "mode": "approval",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "approval"
+        ]
+      },
+      {
+        "id": "context_resolve",
+        "kind": "context_resolve",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [
+          ".agentplane/policy/security.must.md",
+          ".agentplane/policy/dod.core.md",
+          ".agentplane/policy/dod.code.md",
+          ".agentplane/policy/workflow.branch_pr.md"
+        ],
+        "evidenceKinds": [
+          "context_manifest"
+        ]
+      },
+      {
+        "id": "worktree_start",
+        "kind": "worktree_start",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [
+          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
+        ],
+        "policyModules": [],
+        "evidenceKinds": [
+          "changed_paths"
+        ]
+      },
+      {
+        "id": "work_unit",
+        "kind": "work_unit",
+        "mode": "agentic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "changed_paths"
+        ]
+      },
+      {
+        "id": "fast_local_checks",
+        "kind": "fast_local_checks",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [
+          "agentplane task verify-show <task-id>",
+          "project focused checks"
+        ],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result"
+        ]
+      },
+      {
+        "id": "pr_artifact",
+        "kind": "pr_artifact",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [
+          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
+        ],
+        "policyModules": [],
+        "evidenceKinds": [
+          "artifact",
+          "external_link"
+        ]
+      },
+      {
+        "id": "hosted_checks",
+        "kind": "hosted_checks",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result",
+          "external_link"
+        ]
+      },
+      {
+        "id": "publish_or_integrate",
+        "kind": "publish_or_integrate",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [
+          "agentplane integrate <task-id> --branch <branch> --run-verify"
+        ],
+        "policyModules": [],
+        "evidenceKinds": [
+          "commit",
+          "external_link"
+        ]
+      },
+      {
+        "id": "verify_record",
+        "kind": "verify_record",
+        "mode": "record",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result"
+        ]
+      },
+      {
+        "id": "finish",
+        "kind": "finish",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "commit"
+        ]
+      }
+    ],
+    "requiredEvidence": [
+      {
+        "id": "code_pr.paths",
+        "kind": "changed_paths",
+        "producedBy": "work_unit",
+        "required": true,
+        "description": "Changed source paths."
+      },
+      {
+        "id": "code_pr.fast_checks",
+        "kind": "check_result",
+        "producedBy": "fast_local_checks",
+        "required": true,
+        "description": "Fast local checks."
+      },
+      {
+        "id": "code_pr.pr",
+        "kind": "external_link",
+        "producedBy": "pr_artifact",
+        "required": true,
+        "description": "Pull request artifact."
+      },
+      {
+        "id": "code_pr.hosted",
+        "kind": "check_result",
+        "producedBy": "hosted_checks",
+        "required": true,
+        "description": "Hosted check evidence."
+      },
+      {
+        "id": "code_pr.commit",
+        "kind": "commit",
+        "producedBy": "publish_or_integrate",
+        "required": true,
+        "description": "Integration commit."
+      }
+    ],
+    "policyModules": [
+      ".agentplane/policy/dod.code.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/workflow.branch_pr.md"
+    ],
+    "allowedCommands": [
+      "agentplane integrate <task-id> --branch <branch> --run-verify",
+      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
+      "agentplane task verify-show <task-id>",
+      "agentplane verify <task-id> --ok|--rework",
+      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
+      "project focused checks"
+    ],
+    "contextBudget": {
+      "maxPolicyModules": 4,
+      "maxPromptBlocks": 14,
+      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
+    },
+    "contextManifest": [],
+    "acceptedRecipeExtensions": [],
+    "rejectedRecipeExtensions": [],
+    "stopReasons": []
+  },
+  "nodes": [
+    {
+      "id": "intake",
+      "kind": "intake",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": []
+    },
+    {
+      "id": "scope",
+      "kind": "scope",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "assumptions"
+      ]
+    },
+    {
+      "id": "approval_gate",
+      "kind": "approval_gate",
+      "mode": "approval",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "approval"
+      ]
+    },
+    {
+      "id": "context_resolve",
+      "kind": "context_resolve",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [
+        ".agentplane/policy/security.must.md",
+        ".agentplane/policy/dod.core.md",
+        ".agentplane/policy/dod.code.md",
+        ".agentplane/policy/workflow.branch_pr.md"
+      ],
+      "evidenceKinds": [
+        "context_manifest"
+      ]
+    },
+    {
+      "id": "worktree_start",
+      "kind": "worktree_start",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [
+        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
+      ],
+      "policyModules": [],
+      "evidenceKinds": [
+        "changed_paths"
+      ]
+    },
+    {
+      "id": "work_unit",
+      "kind": "work_unit",
+      "mode": "agentic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "changed_paths"
+      ]
+    },
+    {
+      "id": "fast_local_checks",
+      "kind": "fast_local_checks",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [
+        "agentplane task verify-show <task-id>",
+        "project focused checks"
+      ],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result"
+      ]
+    },
+    {
+      "id": "pr_artifact",
+      "kind": "pr_artifact",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [
+        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
+      ],
+      "policyModules": [],
+      "evidenceKinds": [
+        "artifact",
+        "external_link"
+      ]
+    },
+    {
+      "id": "hosted_checks",
+      "kind": "hosted_checks",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result",
+        "external_link"
+      ]
+    },
+    {
+      "id": "publish_or_integrate",
+      "kind": "publish_or_integrate",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [
+        "agentplane integrate <task-id> --branch <branch> --run-verify"
+      ],
+      "policyModules": [],
+      "evidenceKinds": [
+        "commit",
+        "external_link"
+      ]
+    },
+    {
+      "id": "verify_record",
+      "kind": "verify_record",
+      "mode": "record",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result"
+      ]
+    },
+    {
+      "id": "finish",
+      "kind": "finish",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "commit"
+      ]
+    }
+  ],
+  "requiredEvidence": [
+    {
+      "id": "code_pr.paths",
+      "kind": "changed_paths",
+      "producedBy": "work_unit",
+      "required": true,
+      "description": "Changed source paths."
+    },
+    {
+      "id": "code_pr.fast_checks",
+      "kind": "check_result",
+      "producedBy": "fast_local_checks",
+      "required": true,
+      "description": "Fast local checks."
+    },
+    {
+      "id": "code_pr.pr",
+      "kind": "external_link",
+      "producedBy": "pr_artifact",
+      "required": true,
+      "description": "Pull request artifact."
+    },
+    {
+      "id": "code_pr.hosted",
+      "kind": "check_result",
+      "producedBy": "hosted_checks",
+      "required": true,
+      "description": "Hosted check evidence."
+    },
+    {
+      "id": "code_pr.commit",
+      "kind": "commit",
+      "producedBy": "publish_or_integrate",
+      "required": true,
+      "description": "Integration commit."
+    }
+  ],
+  "policyModules": [
+    ".agentplane/policy/dod.code.md",
+    ".agentplane/policy/dod.core.md",
+    ".agentplane/policy/security.must.md",
+    ".agentplane/policy/workflow.branch_pr.md"
+  ],
+  "allowedCommands": [
+    "agentplane integrate <task-id> --branch <branch> --run-verify",
+    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
+    "agentplane task verify-show <task-id>",
+    "agentplane verify <task-id> --ok|--rework",
+    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
+    "project focused checks"
+  ],
+  "contextBudget": {
+    "maxPolicyModules": 4,
+    "maxPromptBlocks": 14,
+    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
+  },
+  "contextManifest": [],
+  "acceptedRecipeExtensions": [],
+  "rejectedRecipeExtensions": [],
+  "stopReasons": [],
+  "selectionReasons": [
+    "explicit blueprint requested: code.branch_pr",
+    "task intent kind: code",
+    "workflow mode: branch_pr",
+    "task intent mutation scope: code"
+  ],
+  "digest": {
+    "algorithm": "sha256",
+    "value": "bb944432425a8a222044a5bc963ffa8feb4fcb1d5613cf822e1469c30629d1d7"
+  }
+}

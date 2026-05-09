@@ -124,6 +124,25 @@ export function prepareTaskTransitionComment(opts: {
   };
 }
 
+export type TaskTransitionCommentCommandOptions = {
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  author: string;
+  body: string;
+  commitFromComment: boolean;
+  commitEmoji?: string;
+  commitAllow: string[];
+  commitAutoAllow: boolean;
+  commitAllowTasks: boolean;
+  commitRequireClean: boolean;
+  confirmStatusCommit: boolean;
+  force: boolean;
+  yes?: boolean;
+  quiet: boolean;
+};
+
 export async function resolveTaskTransitionExecutorAgent(opts: {
   ctx: Pick<CommandContext, "config" | "resolvedProject">;
   taskId: string;
@@ -196,6 +215,50 @@ export async function runTaskTransitionCommentCommit(opts: {
     quiet: opts.quiet,
   });
   return result;
+}
+
+export async function runOptionalTaskTransitionCommentCommit(opts: {
+  enabled: boolean;
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  primaryTag: string;
+  author?: string;
+  statusFrom?: string;
+  statusTo?: string;
+  commentBody: string;
+  formattedComment: string | null;
+  emoji: string;
+  allow: string[];
+  autoAllow: boolean;
+  allowTasks: boolean;
+  requireClean: boolean;
+  quiet: boolean;
+  progressMessage?: string;
+  resolveExecutorAgent?: boolean;
+}): Promise<{ hash: string; message: string; staged: string[] } | null> {
+  if (!opts.enabled) return null;
+  return runTaskTransitionCommentCommit({
+    ctx: opts.ctx,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride,
+    taskId: opts.taskId,
+    primaryTag: opts.primaryTag,
+    author: opts.author,
+    statusFrom: opts.statusFrom,
+    statusTo: opts.statusTo,
+    commentBody: opts.commentBody,
+    formattedComment: opts.formattedComment,
+    emoji: opts.emoji,
+    allow: opts.allow,
+    autoAllow: opts.autoAllow,
+    allowTasks: opts.allowTasks,
+    requireClean: opts.requireClean,
+    quiet: opts.quiet,
+    progressMessage: opts.progressMessage,
+    resolveExecutorAgent: opts.resolveExecutorAgent,
+  });
 }
 
 export async function readHeadCommit(cwd: string): Promise<{ hash: string; message: string }> {

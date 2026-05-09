@@ -20,8 +20,9 @@ import {
   prepareTaskTransitionComment,
   requiresVerifyStepsByPrimary,
   requireStructuredComment,
-  runTaskTransitionCommentCommit,
+  runOptionalTaskTransitionCommentCommit,
   taskObservationSectionName,
+  type TaskTransitionCommentCommandOptions,
   toStringArray,
 } from "./shared.js";
 
@@ -62,24 +63,7 @@ function assertStartDocRequirements(task: TaskData, config: CommandContext["conf
   }
 }
 
-export async function cmdStart(opts: {
-  ctx?: CommandContext;
-  cwd: string;
-  rootOverride?: string;
-  taskId: string;
-  author: string;
-  body: string;
-  commitFromComment: boolean;
-  commitEmoji?: string;
-  commitAllow: string[];
-  commitAutoAllow: boolean;
-  commitAllowTasks: boolean;
-  commitRequireClean: boolean;
-  confirmStatusCommit: boolean;
-  force: boolean;
-  yes?: boolean;
-  quiet: boolean;
-}): Promise<number> {
+export async function cmdStart(opts: TaskTransitionCommentCommandOptions): Promise<number> {
   try {
     const ctx =
       opts.ctx ??
@@ -136,29 +120,27 @@ export async function cmdStart(opts: {
       task: transition.execution.nextTask,
     });
 
-    let commitInfo: { hash: string; message: string } | null = null;
-    if (opts.commitFromComment) {
-      commitInfo = await runTaskTransitionCommentCommit({
-        ctx,
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride,
-        taskId: opts.taskId,
-        primaryTag: transition.primaryTag,
-        author: opts.author,
-        statusFrom: transition.execution.currentStatus,
-        statusTo: "DOING",
-        commentBody: opts.body,
-        formattedComment: preparedComment.formattedComment,
-        emoji: opts.commitEmoji ?? defaultCommitEmojiForStatus("DOING"),
-        allow: opts.commitAllow,
-        autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
-        allowTasks: opts.commitAllowTasks,
-        requireClean: opts.commitRequireClean,
-        quiet: opts.quiet,
-        progressMessage: "task marked DOING; creating commit from start comment",
-        resolveExecutorAgent: true,
-      });
-    }
+    const commitInfo = await runOptionalTaskTransitionCommentCommit({
+      enabled: opts.commitFromComment,
+      ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: opts.taskId,
+      primaryTag: transition.primaryTag,
+      author: opts.author,
+      statusFrom: transition.execution.currentStatus,
+      statusTo: "DOING",
+      commentBody: opts.body,
+      formattedComment: preparedComment.formattedComment,
+      emoji: opts.commitEmoji ?? defaultCommitEmojiForStatus("DOING"),
+      allow: opts.commitAllow,
+      autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
+      allowTasks: opts.commitAllowTasks,
+      requireClean: opts.commitRequireClean,
+      quiet: opts.quiet,
+      progressMessage: "task marked DOING; creating commit from start comment",
+      resolveExecutorAgent: true,
+    });
 
     if (ctx.config.workflow_mode === "branch_pr") {
       await ensurePrArtifactsSynced({
