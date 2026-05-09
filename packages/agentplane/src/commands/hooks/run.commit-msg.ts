@@ -1,58 +1,20 @@
 import { resolveProject } from "@agentplaneorg/core/project";
-import { parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { readFile } from "node:fs/promises";
-import path from "node:path";
-import { parseTaskSubjectTemplate, type CommitTaskIntent } from "@agentplaneorg/core/commit";
 
 import { loadConfig } from "@agentplaneorg/core/config";
-import {
-  GitContext,
-  parseTaskIdFromBranch,
-  parseTaskIdFromCloseBranch,
-} from "@agentplaneorg/core/git";
+import { GitContext } from "@agentplaneorg/core/git";
 
 import { evaluatePolicy } from "../../policy/evaluate.js";
 import { CliError } from "../../shared/errors.js";
 import { throwIfPolicyDenied } from "../shared/policy-deny.js";
-import { gitCurrentBranch } from "../shared/git-ops.js";
 import { assertDcoSignoff } from "../guard/impl/dco.js";
 import type { HooksRunOptions } from "./run.js";
-
-async function inferTaskIdFromBranchContext(opts: {
-  gitRoot: string;
-  taskPrefix: string;
-}): Promise<string> {
-  try {
-    const branch = await gitCurrentBranch(opts.gitRoot);
-    return (
-      parseTaskIdFromBranch(opts.taskPrefix, branch) ?? parseTaskIdFromCloseBranch(branch) ?? ""
-    );
-  } catch {
-    return "";
-  }
-}
-
-async function inferTaskIdFromSubjectSuffix(opts: {
-  gitRoot: string;
-  workflowDir: string;
-  subject: string;
-}): Promise<string> {
-  const suffix = parseTaskSubjectTemplate(opts.subject)?.suffix?.trim() ?? "";
-  if (!suffix) return "";
-  try {
-    const { readdir } = await import("node:fs/promises");
-    const entries = await readdir(path.join(opts.gitRoot, opts.workflowDir), {
-      withFileTypes: true,
-    });
-    const matches = entries
-      .filter((entry) => entry.isDirectory())
-      .map((entry) => entry.name)
-      .filter((name) => name.toLowerCase().endsWith(`-${suffix.toLowerCase()}`));
-    return matches.length === 1 ? (matches[0] ?? "") : "";
-  } catch {
-    return "";
-  }
-}
+import {
+  envFlag,
+  inferTaskIdFromCurrentBranch,
+  inferTaskIdFromSubjectSuffix,
+  readTaskIntent,
+} from "./task-context.js";
 
 function readCommitSubject(message: string): string {
   for (const line of message.split("\n")) {
@@ -61,56 +23,6 @@ function readCommitSubject(message: string): string {
     return trimmed;
   }
   return "";
-}
-
-function stringValue<T extends string>(value: unknown, allowed: Set<string>): T | undefined {
-  return typeof value === "string" && allowed.has(value) ? (value as T) : undefined;
-}
-
-function envFlag(name: string): boolean {
-  return (process.env[name] ?? "").trim() === "1";
-}
-
-async function readTaskIntent(opts: {
-  gitRoot: string;
-  workflowDir: string;
-  taskId: string;
-}): Promise<CommitTaskIntent | undefined> {
-  const taskReadmePath = path.join(opts.gitRoot, opts.workflowDir, opts.taskId, "README.md");
-  let parsed;
-  try {
-    parsed = parseTaskReadme(await readFile(taskReadmePath, "utf8"));
-  } catch {
-    return undefined;
-  }
-  const fm = parsed.frontmatter;
-  const intent: CommitTaskIntent = {
-    taskKind: stringValue(
-      fm.task_kind,
-      new Set(["analysis", "content", "docs", "code", "release", "ops"]),
-    ),
-    mutationScope: stringValue(
-      fm.mutation_scope,
-      new Set(["none", "docs", "code", "release", "ops", "unknown"]),
-    ),
-    blueprintRequest: stringValue(
-      fm.blueprint_request,
-      new Set([
-        "analysis.light",
-        "content.light",
-        "docs.change",
-        "code.direct",
-        "code.branch_pr",
-        "performance.benchmark",
-        "quality.regression",
-        "runner.execution",
-        "post_run.improvement_review",
-        "release.strict",
-        "ops.approval",
-      ]),
-    ),
-  };
-  return intent.taskKind || intent.mutationScope || intent.blueprintRequest ? intent : undefined;
 }
 
 export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
@@ -133,7 +45,7 @@ export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
 
   const taskId =
     (process.env.AGENTPLANE_TASK_ID ?? "").trim() ||
-    (await inferTaskIdFromBranchContext({
+    (await inferTaskIdFromCurrentBranch({
       gitRoot: resolved.gitRoot,
       taskPrefix: loaded.config.branch.task_prefix,
     })) ||
