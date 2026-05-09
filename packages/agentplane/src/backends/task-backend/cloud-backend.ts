@@ -511,11 +511,7 @@ export class CloudBackend implements TaskBackend {
     };
   }
 
-  private async request<T>(
-    pathname: string,
-    init: RequestInit,
-    opts?: { timeoutMs?: number },
-  ): Promise<T> {
+  private async request<T>(pathname: string, init: RequestInit, opts?: { timeoutMs?: number }) {
     const headers = this.cloudHeaders();
     for (const [key, value] of new Headers(init.headers)) {
       headers.set(key, value);

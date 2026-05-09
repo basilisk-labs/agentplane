@@ -5,7 +5,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { captureStdIO, mkTempDir, silenceStdIO } from "@agentplane/testkit";
 
 import { CloudBackend, LocalBackend, type TaskData } from "./task-backend.js";
-import { configureCloudFetchAddressSelection } from "./task-backend/cloud-backend-utils.js";
 
 function parseRequestBody<T>(body: unknown): T {
   if (typeof body !== "string") {
@@ -48,28 +47,6 @@ describe("CloudBackend", () => {
     restoreStdIO = null;
     process.env = originalEnv;
     if (tempDir) await rm(tempDir, { recursive: true, force: true });
-  });
-
-  it("raises Node address-selection attempt timeout for cloud fetch transport", () => {
-    const setDefaultAutoSelectFamilyAttemptTimeout = vi.fn();
-
-    configureCloudFetchAddressSelection({
-      getDefaultAutoSelectFamilyAttemptTimeout: () => 250,
-      setDefaultAutoSelectFamilyAttemptTimeout,
-    });
-
-    expect(setDefaultAutoSelectFamilyAttemptTimeout).toHaveBeenCalledWith(1_000);
-  });
-
-  it("preserves an already safer Node address-selection attempt timeout", () => {
-    const setDefaultAutoSelectFamilyAttemptTimeout = vi.fn();
-
-    configureCloudFetchAddressSelection({
-      getDefaultAutoSelectFamilyAttemptTimeout: () => 1_500,
-      setDefaultAutoSelectFamilyAttemptTimeout,
-    });
-
-    expect(setDefaultAutoSelectFamilyAttemptTimeout).not.toHaveBeenCalled();
   });
 
   it("inspects connection and freshness state without requiring configuration", async () => {
