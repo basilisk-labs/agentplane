@@ -1,0 +1,93 @@
+---
+id: "202605091226-1DH19J"
+title: "Fix cloud pull Node fetch timeout"
+status: "DOING"
+priority: "med"
+owner: "CODER"
+revision: 1
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "backend"
+  - "code"
+verify: []
+plan_approval:
+  state: "approved"
+  updated_at: "2026-05-09T12:26:17.225Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "ok"
+  updated_at: "2026-05-09T12:26:38.539Z"
+  updated_by: "CODER"
+  note: "Cloud pull Node fetch timeout fix verified with focused tests, typecheck, lint, bootstrap, and live pull."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: fix cloud pull Node fetch connect timeout by normalizing address-selection attempt timing and proving live pull refresh."
+events:
+  -
+    type: "status"
+    at: "2026-05-09T12:26:22.164Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: fix cloud pull Node fetch connect timeout by normalizing address-selection attempt timing and proving live pull refresh."
+  -
+    type: "verify"
+    at: "2026-05-09T12:26:38.539Z"
+    author: "CODER"
+    state: "ok"
+    note: "Cloud pull Node fetch timeout fix verified with focused tests, typecheck, lint, bootstrap, and live pull."
+doc_version: 3
+doc_updated_at: "2026-05-09T12:26:38.545Z"
+doc_updated_by: "CODER"
+description: "Normalize Node address-selection attempt timeout for cloud fetch so backend sync pull can refresh large cloud projections instead of failing with UND_ERR_CONNECT_TIMEOUT."
+sections:
+  Summary: |-
+    Fix cloud pull Node fetch timeout
+    
+    Normalize Node address-selection attempt timeout for cloud fetch so backend sync pull can refresh large cloud projections instead of failing with UND_ERR_CONNECT_TIMEOUT.
+  Scope: |-
+    - In scope: Normalize Node address-selection attempt timeout for cloud fetch so backend sync pull can refresh large cloud projections instead of failing with UND_ERR_CONNECT_TIMEOUT.
+    - Out of scope: unrelated refactors not required for "Fix cloud pull Node fetch timeout".
+  Plan: |-
+    1. Normalize Node cloud fetch address-selection attempt timeout to 1000ms so dead first addresses do not exhaust undici's 10s connect path.
+    2. Add focused regression coverage for the Node default 10000ms case while preserving the existing too-low timeout behavior.
+    3. Verify with cloud backend tests, typecheck, lint, framework bootstrap, and live cloud pull.
+  Verify Steps: |-
+    1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+    2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
+    3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-09T12:26:38.539Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Cloud pull Node fetch timeout fix verified with focused tests, typecheck, lint, bootstrap, and live pull.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-09T12:26:22.169Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605091226-1DH19J/blueprint/resolved-snapshot.json
+    - old_digest: b66b9eb8b8de1712464aaa28bafd9de0f4a1e7e1f3ff6ad737b29b426d975cf4
+    - current_digest: b66b9eb8b8de1712464aaa28bafd9de0f4a1e7e1f3ff6ad737b29b426d975cf4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605091226-1DH19J
+    
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: |-
+    - Observation: Command: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts | Result: pass | Evidence: 25 tests passed, including Node default 10000ms timeout normalization regression. Scope: cloud backend sync behavior.\nCommand: bun run typecheck | Result: pass | Evidence: tsc -b completed. Scope: workspace TypeScript contracts.\nCommand: bun run lint:core | Result: pass | Evidence: eslint completed. Scope: repo lint contract.\nCommand: bun run framework:dev:bootstrap && ap backend sync cloud --direction pull --conflict=diff --yes | Result: pass | Evidence: repo-local runtime rebuilt; live pull returned changed=0 ignored_remote_only=0 conflicts=0. Scope: live cloud projection refresh.
+      Impact: Node fetch no longer keeps the unsafe 10000ms address-selection attempt timeout that produced UND_ERR_CONNECT_TIMEOUT against sync.agentplane.cloud.
+      Resolution: Normalize cloud fetch address-selection attempt timeout to 1000ms and cover both too-low and Node-default cases.
+id_source: "generated"
+---
