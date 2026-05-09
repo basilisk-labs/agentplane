@@ -1,0 +1,3 @@
+ .agentplane/backends/cloud/backend.json            |   2 +-
+ .../blueprint/resolved-snapshot.json               | 374 +++++++++++++++++++++
+ 2 files changed, 375 insertions(+), 1 deletion(-)
