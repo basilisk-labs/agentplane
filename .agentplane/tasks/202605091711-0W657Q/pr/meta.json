@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605091711-0W657Q/github-metadata-refresh",
+  "created_at": "2026-05-09T17:15:56.493Z",
+  "head_sha": "69fb7bf28a0caadbf75c655a8c6d1e468719b1b3",
+  "last_verified_at": "2026-05-09T17:16:24.333Z",
+  "last_verified_sha": "69fb7bf28a0caadbf75c655a8c6d1e468719b1b3",
+  "schema_version": 1,
+  "task_id": "202605091711-0W657Q",
+  "updated_at": "2026-05-09T17:15:56.493Z",
+  "verify": {
+    "status": "pass"
+  }
+}
