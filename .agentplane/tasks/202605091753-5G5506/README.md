@@ -1,7 +1,8 @@
 ---
 id: "202605091753-5G5506"
 title: "Deduplicate CLI benchmark script helpers"
-status: "DOING"
+result_summary: "Merged via PR #3528."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -31,11 +32,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: extracted shared benchmark helper module; help paths, walltime smoke, perf smoke, Prettier, typecheck, clone:report, and clone:check passed. Clone metrics improved from 1546 duplicated lines / 16193 tokens after the previous task to 1465 duplicated lines / 15457 tokens, with clone count 88 -> 85."
   attempts: 0
-commit: null
+commit:
+  hash: "171e577bf335bb93a66ccdeb2f2414fde67364fd"
+  message: "Merge pull request #3528 from basilisk-labs/task/202605091753-5G5506/benchmark-helpers"
 comments:
   -
     author: "CODER"
     body: "Start: extracting shared CLI benchmark helper code from benchmark runner scripts while preserving command-specific defaults and validating with clone/type/script checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3528 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: extracted shared benchmark helper module; help paths, walltime smoke, perf smoke, Prettier, typecheck, clone:report, and clone:check passed. Clone metrics improved from 1546 duplicated lines / 16193 tokens after the previous task to 1465 duplicated lines / 15457 tokens, with clone count 88 -> 85."
+  -
+    type: "status"
+    at: "2026-05-09T18:29:54.550Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3528 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T18:28:03.704Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T18:29:54.556Z"
+doc_updated_by: "INTEGRATOR"
 description: "Move shared duration statistics, suite argument parsing, config loading, interpolation, and command formatting from benchmark scripts into a script-local helper module without changing benchmark semantics."
 sections:
   Summary: |-
