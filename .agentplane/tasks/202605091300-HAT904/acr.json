@@ -1,0 +1,219 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605091300-HAT904",
+  "created_at": "2026-05-09T13:22:25.540Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "fbc0ee5ac1b88bad387e24eb1c2ef33663709b89",
+    "work_ref": "main",
+    "work_commit": "fbc0ee5ac1b88bad387e24eb1c2ef33663709b89"
+  },
+  "task": {
+    "task_id": "202605091300-HAT904",
+    "title": "Stabilize standalone asset tests in pre-push",
+    "intent": "Raise standalone release asset test timeouts to match full-fast parallel pre-push load after isolated runs pass but two archive smoke tests hit the current 90s limit.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605091300-HAT904/README.md",
+      "sha256": "sha256:23f4fc183ef2bcbd70162523f73072f0fad388ffaae42369537a4961396c143f"
+    },
+    "approved_at": "2026-05-09T13:00:18.861Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged PR 3499 to main with standalone release asset tests stabilized for full-fast pre-push load.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605091300-HAT904_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-09T13:00:18.861Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605091300-HAT904/README.md",
+      "sha256": "sha256:23f4fc183ef2bcbd70162523f73072f0fad388ffaae42369537a4961396c143f"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605091300-HAT904/README.md",
+      "sha256": "sha256:23f4fc183ef2bcbd70162523f73072f0fad388ffaae42369537a4961396c143f"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605091300-HAT904/README.md",
+      "sha256": "sha256:23f4fc183ef2bcbd70162523f73072f0fad388ffaae42369537a4961396c143f"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605091300-HAT904/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:6699ec4ee0858480b413d52a2fa6f5583191b8300e21abfe610173521a8b8c33"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit fbc0ee5ac1b88bad387e24eb1c2ef33663709b89 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:d6be8a007d605d1d0c60a752373db0a0378d3f3252e7124c2992df95717ea0b1",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605091300-HAT904/blueprint/resolved-snapshot.json",
+        "digest": "307a340979490e59107817ab9c125f81befc6d7a3b2081e3f831e82c4093475d",
+        "current_digest": "307a340979490e59107817ab9c125f81befc6d7a3b2081e3f831e82c4093475d",
+        "route_changed": false,
+        "artifact_sha256": "sha256:6699ec4ee0858480b413d52a2fa6f5583191b8300e21abfe610173521a8b8c33",
+        "safe_command": "agentplane blueprint snapshot 202605091300-HAT904"
+      }
+    }
+  }
+}
