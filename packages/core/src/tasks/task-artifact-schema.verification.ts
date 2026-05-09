@@ -3,7 +3,12 @@ import { z } from "zod";
 import { NULLABLE_ISO_UTC_TIMESTAMP, isRecord } from "./task-artifact-schema.shared.js";
 
 export const PLAN_APPROVAL_STATE_VALUES = ["pending", "approved", "rejected"] as const;
-export const VERIFICATION_STATE_VALUES = ["pending", "ok", "needs_rework"] as const;
+export const VERIFICATION_STATE_VALUES = [
+  "pending",
+  "ok",
+  "needs_rework",
+  "blocked_external",
+] as const;
 
 export const TASK_PLAN_APPROVAL_SCHEMA = z
   .object({
@@ -17,6 +22,7 @@ export const TASK_PLAN_APPROVAL_SCHEMA = z
 export const TASK_VERIFICATION_SCHEMA = z
   .object({
     state: z.enum(VERIFICATION_STATE_VALUES),
+    attempts: z.number().int().min(0),
     updated_at: NULLABLE_ISO_UTC_TIMESTAMP,
     updated_by: z.string().nullable(),
     note: z.string().nullable(),

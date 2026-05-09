@@ -54,10 +54,12 @@ type BuildTaskVerificationTransitionOptions = {
   at: string;
   by: string;
   note: string;
-  state: "ok" | "needs_rework";
+  state: "ok" | "needs_rework" | "blocked_external";
+  attempts: number;
   verificationSection: string;
   nextDoc: string;
   requiredSections: string[];
+  maxReworkAttempts: number;
 };
 
 export type ExecuteTaskVerificationTransitionRequest = {
@@ -69,6 +71,7 @@ export type ExecuteTaskVerificationTransitionRequest = {
   details?: string | null;
   doc: string;
   requiredSections: string[];
+  maxReworkAttempts?: number;
 };
 
 export type TaskVerificationTransitionExecution = TaskTransitionWrite & {
@@ -154,7 +157,8 @@ function appendVerificationEntryBetweenMarkers(
 
 function renderVerificationEntry(opts: {
   at: string;
-  state: "ok" | "needs_rework";
+  state: "ok" | "needs_rework" | "blocked_external";
+  attempts: number;
   by: string;
   note: string;
   details?: string | null;
@@ -166,6 +170,7 @@ function renderVerificationEntry(opts: {
     `By: ${opts.by}`,
     "",
     `Note: ${opts.note}`,
+    `Attempts: ${opts.attempts}`,
   ];
   const verifyStepsRef = (opts.verifyStepsRef ?? "").trim();
   if (verifyStepsRef) {
@@ -284,16 +289,26 @@ export async function executeTaskStatusTransitionRequest(
 export function buildTaskVerificationTransition(
   opts: BuildTaskVerificationTransitionOptions,
 ): TaskTransitionWrite {
-  const currentStatus = normalizeTaskStatus(opts.task.status);
   const verification = {
     state: opts.state,
+    attempts: opts.attempts,
     updated_at: opts.at,
     updated_by: opts.by,
     note: opts.note,
   } as const;
+  const currentStatus = normalizeTaskStatus(opts.task.status);
   const patch: TaskStoreTaskPatch = {
     verification,
-    ...(opts.state === "needs_rework" ? { status: "DOING", commit: null } : {}),
+    ...(opts.state === "needs_rework" || opts.state === "blocked_external"
+      ? {
+          status:
+            opts.state === "blocked_external" ||
+            (opts.maxReworkAttempts > 0 && verification.attempts > opts.maxReworkAttempts)
+              ? "BLOCKED"
+              : "DOING",
+          commit: null,
+        }
+      : {}),
   };
   const verifyEvent = {
     type: "verify" as const,
@@ -329,6 +344,12 @@ export function buildTaskVerificationTransition(
 export function executeTaskVerificationTransitionRequest(
   opts: ExecuteTaskVerificationTransitionRequest,
 ): TaskVerificationTransitionExecution {
+  const maxReworkAttempts =
+    typeof opts.maxReworkAttempts === "number" &&
+    Number.isInteger(opts.maxReworkAttempts) &&
+    opts.maxReworkAttempts > 0
+      ? opts.maxReworkAttempts
+      : 3;
   const baseDoc = ensureDocSections(opts.doc, opts.requiredSections);
   const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
   const verifySteps = extractDocSection(baseDoc, "Verify Steps");
@@ -341,9 +362,19 @@ export function executeTaskVerificationTransitionRequest(
     `doc_updated_at=${String(opts.task.doc_updated_at ?? "missing")}`,
     `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
   ].join(", ");
+  const currentAttempts =
+    typeof opts.task.verification?.attempts === "number" &&
+    Number.isInteger(opts.task.verification.attempts) &&
+    opts.task.verification.attempts >= 0
+      ? opts.task.verification.attempts
+      : 0;
+  const nextAttempts = opts.state === "needs_rework" ? currentAttempts + 1 : 0;
+  const willBlockRework = opts.state === "needs_rework" && nextAttempts > maxReworkAttempts;
+  const nextState = willBlockRework ? "blocked_external" : opts.state;
   const entry = renderVerificationEntry({
     at: opts.at,
-    state: opts.state,
+    state: nextState,
+    attempts: nextAttempts,
     by: opts.by,
     note: opts.note,
     details: opts.details ?? null,
@@ -363,7 +394,9 @@ export function executeTaskVerificationTransitionRequest(
     at: opts.at,
     by: opts.by,
     note: opts.note,
-    state: opts.state,
+    state: nextState,
+    maxReworkAttempts,
+    attempts: nextAttempts,
     verificationSection: nextVerification,
     nextDoc,
     requiredSections: opts.requiredSections,

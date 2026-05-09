@@ -38,7 +38,7 @@ export function defaultPlanApproval(): PlanApproval {
 }
 
 export function defaultVerificationResult(): VerificationResult {
-  return { state: "pending", updated_at: null, updated_by: null, note: null };
+  return { state: "pending", attempts: 0, updated_at: null, updated_by: null, note: null };
 }
 
 export function normalizeTaskOrigin(value: unknown): TaskOrigin | null {
@@ -72,13 +72,28 @@ export function normalizePlanApproval(value: unknown): PlanApproval | null {
 export function normalizeVerificationResult(value: unknown): VerificationResult | null {
   if (!isRecord(value)) return null;
   const state = typeof value.state === "string" ? value.state : "";
-  if (state !== "pending" && state !== "ok" && state !== "needs_rework") return null;
+  if (
+    state !== "pending" &&
+    state !== "ok" &&
+    state !== "needs_rework" &&
+    state !== "blocked_external"
+  )
+    return null;
+  const attempts =
+    value.attempts === undefined
+      ? 0
+      : typeof value.attempts === "number" &&
+          Number.isInteger(value.attempts) &&
+          value.attempts >= 0
+        ? value.attempts
+        : null;
+  if (attempts === null) return null;
   const updatedAt =
     value.updated_at === null || typeof value.updated_at === "string" ? value.updated_at : null;
   const updatedBy =
     value.updated_by === null || typeof value.updated_by === "string" ? value.updated_by : null;
   const note = value.note === null || typeof value.note === "string" ? value.note : null;
-  return { state, updated_at: updatedAt, updated_by: updatedBy, note };
+  return { state, attempts, updated_at: updatedAt, updated_by: updatedBy, note };
 }
 
 function normalizeTaskRunnerTarget(value: unknown): TaskRunnerTarget | null {

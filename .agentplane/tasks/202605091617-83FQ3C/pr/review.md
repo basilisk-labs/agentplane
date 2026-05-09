@@ -1,0 +1,78 @@
+# PR Review
+
+Created: 2026-05-09T16:46:24.544Z
+
+## Batch Tasks
+
+- Primary: `202605091617-83FQ3C`
+- Closure policy: `all_or_fail`
+- Included: `202605091617-362W7W`
+- Included: `202605091617-96XQSV`
+- Included: `202605091617-CBKJSC`
+- Included: `202605091617-MK6T79`
+
+## Task
+
+- Task: `202605091617-83FQ3C`
+- Title: Introduce bounded EVALUATOR rework loop with return-to-previous-agent
+- Status: DOING
+- Branch: `task/202605091617-83FQ3C/bounded-evaluator-loop`
+- Canonical task record: `.agentplane/tasks/202605091617-83FQ3C/README.md`
+
+## Verification
+
+- State: ok
+- Note: Verified bounded evaluator rework loop batch.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-09T16:50:44.513Z
+- Branch: task/202605091617-83FQ3C/bounded-evaluator-loop
+- Head: 04b39e02421c
+
+```text
+ .agentplane/tasks/202605091617-362W7W/README.md    | 131 +++++
+ .../blueprint/resolved-snapshot.json               | 504 +++++++++++++++++++
+ .../blueprint/resolved-snapshot.json               | 498 +++++++++++++++++++
+ .agentplane/tasks/202605091617-96XQSV/README.md    | 131 +++++
+ .../blueprint/resolved-snapshot.json               | 544 +++++++++++++++++++++
+ .agentplane/tasks/202605091617-CBKJSC/README.md    | 131 +++++
+ .../blueprint/resolved-snapshot.json               | 504 +++++++++++++++++++
+ .agentplane/tasks/202605091617-MK6T79/README.md    | 130 +++++
+ .../blueprint/resolved-snapshot.json               | 348 +++++++++++++
+ .../evaluation-and-recursive-improvement.mdx       |  14 +
+ .../src/backends/task-backend/shared/export.ts     |   1 +
+ .../src/backends/task-backend/shared/normalize.ts  |  21 +-
+ .../src/backends/task-backend/shared/types.ts      |   2 +-
+ .../src/commands/task/hosted-close-recovery.ts     |   2 +-
+ .../task/shared/workflow-transition-service.ts     |  45 +-
+ .../src/commands/task/verify-record-execute.ts     |   1 +
+ .../task/workflow-transition-service.unit.test.ts  |  62 +++
+ packages/agentplane/src/workflow-runtime/build.ts  |   1 +
+ packages/core/schemas/config.schema.json           |  15 +
+ .../schemas/task-readme-frontmatter.schema.json    |   8 +-
+ packages/core/schemas/tasks-export.schema.json     |   8 +-
+ packages/core/src/config/schema.impl.ts            |   8 +
+ .../core/src/tasks/task-artifact-schema.task.ts    |  18 +-
+ .../src/tasks/task-artifact-schema.verification.ts |   8 +-
+ packages/core/src/tasks/task-store.ts              |   4 +-
+ packages/core/src/tasks/tasks-export.ts            |  71 ++-
+ packages/spec/examples/config.json                 |   3 +
+ packages/spec/schemas/config.schema.json           |  15 +
+ .../schemas/task-readme-frontmatter.schema.json    |   8 +-
+ packages/spec/schemas/tasks-export.schema.json     |   8 +-
+ schemas/config.schema.json                         |  15 +
+ schemas/task-readme-frontmatter.schema.json        |   8 +-
+ schemas/tasks-export.schema.json                   |   8 +-
+ 33 files changed, 3224 insertions(+), 51 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->

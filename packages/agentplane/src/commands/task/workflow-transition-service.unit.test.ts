@@ -95,6 +95,8 @@ describe("workflow transition service", () => {
       by: "REVIEWER",
       note: "Fix the parser edge case.",
       state: "needs_rework",
+      attempts: 1,
+      maxReworkAttempts: 3,
       verificationSection: [
         "<!-- BEGIN VERIFICATION RESULTS -->",
         "### 2026-03-27T01:10:00.000Z — VERIFY — needs_rework",
@@ -119,6 +121,7 @@ describe("workflow transition service", () => {
     expect(transition.nextTask.commit).toBeNull();
     expect(transition.nextTask.verification).toEqual({
       state: "needs_rework",
+      attempts: 1,
       updated_at: "2026-03-27T01:10:00.000Z",
       updated_by: "REVIEWER",
       note: "Fix the parser edge case.",
@@ -255,5 +258,64 @@ describe("workflow transition service", () => {
       "append-events",
       "touch-doc-meta",
     ]);
+  });
+
+  it("keeps rework DOING through the configured max and blocks when the next attempt exceeds it", () => {
+    const withinLimit = executeTaskVerificationTransitionRequest({
+      task: mkTask({
+        status: "DONE",
+        verification: {
+          state: "needs_rework",
+          attempts: 2,
+          updated_at: "2026-03-27T01:00:00.000Z",
+          updated_by: "REVIEWER",
+          note: "Prior review.",
+        },
+      }),
+      at: "2026-03-27T02:00:00.000Z",
+      by: "REVIEWER",
+      note: "One more rework pass.",
+      state: "needs_rework",
+      doc: mkTask().doc ?? "",
+      requiredSections: ["Summary", "Verify Steps", "Verification"],
+      maxReworkAttempts: 3,
+    });
+
+    expect(withinLimit.nextTask.status).toBe("DOING");
+    expect(withinLimit.nextTask.verification).toMatchObject({
+      state: "needs_rework",
+      attempts: 3,
+    });
+    expect(withinLimit.verificationSection).toContain("VERIFY — needs_rework");
+    expect(withinLimit.verificationSection).toContain("Attempts: 3");
+
+    const exceededLimit = executeTaskVerificationTransitionRequest({
+      task: mkTask({
+        status: "DONE",
+        verification: {
+          state: "needs_rework",
+          attempts: 3,
+          updated_at: "2026-03-27T01:00:00.000Z",
+          updated_by: "REVIEWER",
+          note: "Prior review.",
+        },
+      }),
+      at: "2026-03-27T03:00:00.000Z",
+      by: "REVIEWER",
+      note: "Limit exceeded.",
+      state: "needs_rework",
+      doc: mkTask().doc ?? "",
+      requiredSections: ["Summary", "Verify Steps", "Verification"],
+      maxReworkAttempts: 3,
+    });
+
+    expect(exceededLimit.nextTask.status).toBe("BLOCKED");
+    expect(exceededLimit.nextTask.commit).toBeNull();
+    expect(exceededLimit.nextTask.verification).toMatchObject({
+      state: "blocked_external",
+      attempts: 4,
+    });
+    expect(exceededLimit.verificationSection).toContain("VERIFY — blocked_external");
+    expect(exceededLimit.verificationSection).toContain("Attempts: 4");
   });
 });

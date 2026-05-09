@@ -83,6 +83,7 @@ function taskDataToExport(task: TaskData): TaskData & { dirty: boolean; id_sourc
     },
     verification: task.verification ?? {
       state: "pending",
+      attempts: 0,
       updated_at: null,
       updated_by: null,
       note: null,

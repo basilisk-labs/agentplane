@@ -19,8 +19,8 @@ export {
   TaskRunnerOutcome,
   TaskRunnerOutcomeStatus,
   TaskRunnerTarget,
-  VerificationResult,
   VerificationState,
+  VerificationResult,
 } from "@agentplaneorg/core/tasks";
 
 export type TaskData = {

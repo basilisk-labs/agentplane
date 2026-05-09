@@ -197,7 +197,7 @@ export async function buildHostedTaskFromTrackedPrArtifacts(opts: {
     tags: [],
     verify: [],
     plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
-    verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+    verification: { state: "pending", attempts: 0, updated_at: null, updated_by: null, note: null },
     commit: null,
     doc,
     doc_version: 3,

@@ -119,6 +119,7 @@ async function recordVerificationResult(opts: {
         details: await appendBlueprintSnapshotReference(opts.details, { ctx, task: current }),
         doc,
         requiredSections: config.tasks.doc.required_sections,
+        maxReworkAttempts: config.evaluator?.max_rework_attempts,
       });
       const intents = [...execution.intents];
       if (opts.finding) {

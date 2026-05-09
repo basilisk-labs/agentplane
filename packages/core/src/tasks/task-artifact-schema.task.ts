@@ -6,7 +6,7 @@ import {
   TASK_EVENT_SCHEMA,
   TASK_SECTIONS_SCHEMA,
 } from "./task-artifact-schema.findings.js";
-import { ISO_UTC_TIMESTAMP, NON_EMPTY_STRING } from "./task-artifact-schema.shared.js";
+import { ISO_UTC_TIMESTAMP, NON_EMPTY_STRING, isRecord } from "./task-artifact-schema.shared.js";
 import {
   TASK_PLAN_APPROVAL_SCHEMA,
   TASK_VERIFICATION_SCHEMA,
@@ -233,6 +233,20 @@ function normalizeLegacyTaskPriority(value: unknown): unknown {
 export function withTaskReadmeFrontmatterDefaults(
   value: Record<string, unknown>,
 ): Record<string, unknown> {
+  const verificationSource = isRecord(value.verification) ? value.verification : {};
+  const verification = normalizeApprovalRecord(verificationSource, [
+    "pending",
+    "ok",
+    "needs_rework",
+    "blocked_external",
+  ]);
+  const verificationAttemptsSource = verificationSource.attempts;
+  const verificationAttempts =
+    typeof verificationAttemptsSource === "number" &&
+    Number.isInteger(verificationAttemptsSource) &&
+    verificationAttemptsSource >= 0
+      ? verificationAttemptsSource
+      : 0;
   return {
     ...value,
     priority: normalizeLegacyTaskPriority(value.priority),
@@ -245,6 +259,6 @@ export function withTaskReadmeFrontmatterDefaults(
       "approved",
       "rejected",
     ]),
-    verification: normalizeApprovalRecord(value.verification, ["pending", "ok", "needs_rework"]),
+    verification: { ...verification, attempts: verificationAttempts },
   };
 }

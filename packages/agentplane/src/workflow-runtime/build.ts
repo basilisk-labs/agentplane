@@ -167,6 +167,7 @@ evaluator:
     - human_review
     - infra_failed
     - no_change
+  max_rework_attempts: 3
   required_checks:
     - agentplane doctor
     - node .agentplane/policy/check-routing.mjs

@@ -410,6 +410,14 @@ export const AgentplaneConfigSchema = z
         },
         comments: COMMENT_POLICY_DEFAULTS,
       }),
+    evaluator: z
+      .object({
+        max_rework_attempts: z.number().int().min(1).max(20).default(3),
+      })
+      .passthrough()
+      .default({
+        max_rework_attempts: 3,
+      }),
     commit: z
       .object({
         generic_tokens: nonEmptyStringArray([
