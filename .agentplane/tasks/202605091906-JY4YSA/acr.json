@@ -1,0 +1,219 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605091906-JY4YSA",
+  "created_at": "2026-05-09T19:20:42.582Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "f058872dfa3fb4d34444e16e1a239c2a4c066e3b",
+    "work_ref": "main",
+    "work_commit": "f058872dfa3fb4d34444e16e1a239c2a4c066e3b"
+  },
+  "task": {
+    "task_id": "202605091906-JY4YSA",
+    "title": "Support packaged blueprint catalogs",
+    "intent": "Teach AgentPlane CLI to consume recipes-like blueprint release indexes with versioned package tarballs and checksums while preserving existing source catalog compatibility.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605091906-JY4YSA/README.md",
+      "sha256": "sha256:3f47bf1fb95fc58e0d028b58e13f457bd8e89d45be219861fd5b8a2aeeac274a"
+    },
+    "approved_at": "2026-05-09T19:06:25.601Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3539.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605091906-JY4YSA_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-09T19:06:25.601Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605091906-JY4YSA/README.md",
+      "sha256": "sha256:3f47bf1fb95fc58e0d028b58e13f457bd8e89d45be219861fd5b8a2aeeac274a"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605091906-JY4YSA/README.md",
+      "sha256": "sha256:3f47bf1fb95fc58e0d028b58e13f457bd8e89d45be219861fd5b8a2aeeac274a"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605091906-JY4YSA/README.md",
+      "sha256": "sha256:3f47bf1fb95fc58e0d028b58e13f457bd8e89d45be219861fd5b8a2aeeac274a"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605091906-JY4YSA/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:fe814a19eb8f5482744eaae579b73063dc55cc1d05a1def8aed580efab09eaec"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit f058872dfa3fb4d34444e16e1a239c2a4c066e3b if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:bc5488b9493a4278ae617775fd8925852b44a8f7c14a360bddaff20abb16e0af",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605091906-JY4YSA/blueprint/resolved-snapshot.json",
+        "digest": "39ecd490d3342aec503d5dbb350e30eed2dfa3594cffe2712e1df396361825ed",
+        "current_digest": "39ecd490d3342aec503d5dbb350e30eed2dfa3594cffe2712e1df396361825ed",
+        "route_changed": false,
+        "artifact_sha256": "sha256:fe814a19eb8f5482744eaae579b73063dc55cc1d05a1def8aed580efab09eaec",
+        "safe_command": "agentplane blueprint snapshot 202605091906-JY4YSA"
+      }
+    }
+  }
+}
