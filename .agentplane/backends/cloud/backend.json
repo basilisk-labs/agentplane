@@ -3,7 +3,7 @@
   "version": 1,
   "settings": {
     "endpoint": "https://sync.agentplane.cloud",
-    "project_id": "proj_UlAUF77DQTMga23f",
+    "project_id": "proj_PhwmbZq_UzFgKnXT",
     "provider": "github-projects",
     "cache_dir": ".agentplane/tasks",
     "stale_after_seconds": 900
