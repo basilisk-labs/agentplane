@@ -35,9 +35,10 @@ export type PlanApproval = {
   note: string | null;
 };
 
-export type VerificationState = "pending" | "ok" | "needs_rework";
+export type VerificationState = "pending" | "ok" | "needs_rework" | "blocked_external";
 export type VerificationResult = {
   state: VerificationState;
+  attempts: number;
   updated_at: string | null;
   updated_by: string | null;
   note: string | null;
@@ -226,6 +227,7 @@ export async function createTask(opts: {
     },
     verification: {
       state: "pending",
+      attempts: 0,
       updated_at: null,
       updated_by: null,
       note: null,

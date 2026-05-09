@@ -40,6 +40,20 @@ Internal evals compare a baseline target with a candidate target:
 Natural-language reference behavior is not enough by itself. It should seed scenarios and scoring
 rubrics, but promotion needs executable checks and recorded evidence.
 
+### Bounded rework attempts
+
+Controlled recursion uses `evaluator.max_rework_attempts` (default: `3`).
+
+- `task verify --rework` increments `verification.attempts`.
+- When the next attempt stays within the configured limit, the task returns to `DOING` for the same
+  owner.
+- When the next attempt would exceed the limit, verification records `blocked_external`, the task
+  moves to `BLOCKED`, and AgentPlane stops cycling it back to `DOING` without explicit operator
+  intervention.
+
+`EVALUATOR` must write `--note` and details on every cycle, so hitting the guard leaves an explicit
+trace of why the task was blocked.
+
 ## Planner-runner-evaluator phases
 
 The eval loop depends on three distinct phases:

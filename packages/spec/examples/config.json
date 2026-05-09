@@ -30,6 +30,9 @@
       "expected_version": null
     }
   },
+  "evaluator": {
+    "max_rework_attempts": 3
+  },
   "artifacts_language": "any",
   "tasks": {
     "id_suffix_length_default": 6,

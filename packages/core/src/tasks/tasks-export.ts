@@ -101,6 +101,50 @@ function normalizeRunnerEvidence(value: unknown): TaskRunnerEvidence | undefined
   return Object.keys(evidence).length > 0 ? evidence : undefined;
 }
 
+function normalizeTaskVerification(value: unknown): {
+  state: "pending" | "ok" | "needs_rework" | "blocked_external";
+  attempts: number;
+  updated_at: string | null;
+  updated_by: string | null;
+  note: string | null;
+} {
+  const verification = isRecord(value) ? value : null;
+  if (
+    !verification ||
+    (verification.state !== "pending" &&
+      verification.state !== "ok" &&
+      verification.state !== "needs_rework" &&
+      verification.state !== "blocked_external")
+  ) {
+    return { state: "pending", attempts: 0, updated_at: null, updated_by: null, note: null };
+  }
+
+  const attempts =
+    typeof verification.attempts === "number" &&
+    Number.isInteger(verification.attempts) &&
+    verification.attempts >= 0
+      ? verification.attempts
+      : 0;
+  const updatedAt =
+    typeof verification.updated_at === "string" || verification.updated_at === null
+      ? verification.updated_at
+      : null;
+  const updatedBy =
+    typeof verification.updated_by === "string" || verification.updated_by === null
+      ? verification.updated_by
+      : null;
+  const note =
+    typeof verification.note === "string" || verification.note === null ? verification.note : null;
+
+  return {
+    state: verification.state,
+    attempts,
+    updated_at: updatedAt,
+    updated_by: updatedBy,
+    note,
+  };
+}
+
 function normalizeTaskRunnerHistoryEntry(value: unknown): TaskRunnerHistoryEntry | undefined {
   if (!isRecord(value)) return undefined;
   const runId = typeof value.run_id === "string" ? value.run_id.trim() : "";
@@ -210,7 +254,8 @@ export type TasksExportTask = {
     note: string | null;
   };
   verification: {
-    state: "pending" | "ok" | "needs_rework";
+    state: "pending" | "ok" | "needs_rework" | "blocked_external";
+    attempts: number;
     updated_at: string | null;
     updated_by: string | null;
     note: string | null;
@@ -364,29 +409,7 @@ export async function buildTasksExportSnapshot(opts: {
                   : null,
             }
           : { state: "pending", updated_at: null, updated_by: null, note: null },
-      verification:
-        isRecord(fm.verification) &&
-        (fm.verification.state === "pending" ||
-          fm.verification.state === "ok" ||
-          fm.verification.state === "needs_rework")
-          ? {
-              state: fm.verification.state,
-              updated_at:
-                typeof fm.verification.updated_at === "string" ||
-                fm.verification.updated_at === null
-                  ? fm.verification.updated_at
-                  : null,
-              updated_by:
-                typeof fm.verification.updated_by === "string" ||
-                fm.verification.updated_by === null
-                  ? fm.verification.updated_by
-                  : null,
-              note:
-                typeof fm.verification.note === "string" || fm.verification.note === null
-                  ? fm.verification.note
-                  : null,
-            }
-          : { state: "pending", updated_at: null, updated_by: null, note: null },
+      verification: normalizeTaskVerification(fm.verification),
       runner: normalizeTaskRunnerOutcome(fm.runner),
       depends_on: dependsOn,
       tags,

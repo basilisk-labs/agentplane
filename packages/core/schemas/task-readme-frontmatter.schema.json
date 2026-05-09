@@ -169,7 +169,11 @@
       "properties": {
         "state": {
           "type": "string",
-          "enum": ["pending", "ok", "needs_rework"]
+          "enum": ["pending", "ok", "needs_rework", "blocked_external"]
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 0
         },
         "updated_at": {
           "anyOf": [
@@ -189,7 +193,7 @@
           "type": ["string", "null"]
         }
       },
-      "required": ["state", "updated_at", "updated_by", "note"],
+      "required": ["state", "attempts", "updated_at", "updated_by", "note"],
       "additionalProperties": true
     },
     "runner": {

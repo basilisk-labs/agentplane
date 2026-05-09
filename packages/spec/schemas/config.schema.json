@@ -748,6 +748,21 @@
         }
       }
     },
+    "evaluator": {
+      "type": "object",
+      "properties": {
+        "max_rework_attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20,
+          "default": 3
+        }
+      },
+      "additionalProperties": true,
+      "default": {
+        "max_rework_attempts": 3
+      }
+    },
     "commit": {
       "type": "object",
       "properties": {
