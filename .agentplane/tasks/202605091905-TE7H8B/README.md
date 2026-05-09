@@ -1,7 +1,8 @@
 ---
 id: "202605091905-TE7H8B"
 title: "Improve managed hook readiness diagnostics"
-status: "DOING"
+result_summary: "Merged via PR #3537."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Focused hook readiness implementation verified."
   attempts: 0
-commit: null
+commit:
+  hash: "dd8b92c627b495fe7b31f1cc4f5638207e5e4d44"
+  message: "Merge pull request #3537 from basilisk-labs/task/202605091905-TE7H8B/hook-readiness-repair"
 comments:
   -
     author: "CODER"
     body: "Start: improving managed hook readiness diagnostics and safe doctor repair for AgentPlane-managed hook files."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3537 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused hook readiness implementation verified."
+  -
+    type: "status"
+    at: "2026-05-09T19:16:51.773Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3537 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T19:12:21.411Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T19:16:51.778Z"
+doc_updated_by: "INTEGRATOR"
 description: "Tighten managed hook install/readiness behavior: detect stale managed hook wrappers, make doctor --fix refresh safe managed hook shims/hooks, and clarify pre-push fallback diagnostics without requiring project-local hook scripts."
 sections:
   Summary: |-
