@@ -1,4 +1,5 @@
 import type { PromptModuleMutability, PromptModuleSlot } from "../prompt-modules/model.js";
+import { isRecord } from "../../shared/guards.js";
 import type { PromptFragmentListItem, PromptJsonTextFragment } from "./model.js";
 import {
   generatedPromptFragmentId,
@@ -13,10 +14,6 @@ export type NormalizePromptFragmentListOptions = {
   source_ref?: string;
   default_mutability?: PromptModuleMutability;
 };
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 const LOCAL_PROMPT_FRAGMENT_KEY_RE = /^[a-z][a-z0-9_-]*(?:\.[a-z0-9][a-z0-9_-]*)*$/;
 

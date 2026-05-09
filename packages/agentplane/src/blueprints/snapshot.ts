@@ -11,11 +11,8 @@ import type {
   ResolvedBlueprint,
   WorkflowMode,
 } from "./model.js";
+import { isRecord } from "../shared/guards.js";
 import { buildBlueprintPlanArtifact } from "./plan.js";
-
-function isRecord(input: unknown): input is Record<string, unknown> {
-  return Boolean(input && typeof input === "object" && !Array.isArray(input));
-}
 
 function sortJson(input: unknown): unknown {
   if (Array.isArray(input)) return input.map((item) => sortJson(item));

@@ -2,6 +2,7 @@ import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 
+import { isRecord } from "../shared/guards.js";
 import type {
   RunnerResultEvidence,
   RunnerExecutionMetrics,
@@ -36,10 +37,6 @@ function invalidManifest(resultPath: string, reason: string, rawContent: string)
     reason,
     raw_content: rawContent,
   });
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
 const MACHINE_IDENTIFIER_RE = /^[a-z0-9]+(?:[._:-][a-z0-9]+)*$/;
