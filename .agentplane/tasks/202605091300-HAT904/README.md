@@ -1,7 +1,8 @@
 ---
 id: "202605091300-HAT904"
 title: "Stabilize standalone asset tests in pre-push"
-status: "DOING"
+result_summary: "Merged PR 3499 to main with standalone release asset tests stabilized for full-fast pre-push load."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-09T13:02:49.977Z"
   updated_by: "CODER"
   note: "Standalone release asset test timeouts stabilized without changing coverage."
-commit: null
+commit:
+  hash: "fbc0ee5ac1b88bad387e24eb1c2ef33663709b89"
+  message: "Merge pull request #3499 from basilisk-labs/codex/v05-cloud-pull-fetch-fix"
 comments:
   -
     author: "CODER"
     body: "Start: Stabilize the standalone release asset tests by keeping coverage intact and giving heavy archive checks enough time under full-fast parallel pre-push load."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR 3499 merged to main after standalone asset suite timeout stabilization, full pre-push full-fast, and hosted checks completed successfully."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Standalone release asset test timeouts stabilized without changing coverage."
+  -
+    type: "status"
+    at: "2026-05-09T13:22:23.670Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR 3499 merged to main after standalone asset suite timeout stabilization, full pre-push full-fast, and hosted checks completed successfully."
 doc_version: 3
-doc_updated_at: "2026-05-09T13:02:49.984Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T13:22:23.673Z"
+doc_updated_by: "INTEGRATOR"
 description: "Raise standalone release asset test timeouts to match full-fast parallel pre-push load after isolated runs pass but two archive smoke tests hit the current 90s limit."
 sections:
   Summary: |-
