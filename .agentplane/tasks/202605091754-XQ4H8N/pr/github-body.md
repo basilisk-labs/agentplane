@@ -22,12 +22,21 @@ Resolve the current knip baseline failures by removing accidental exports or add
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-09T19:23:56.949Z
+- Updated: 2026-05-09T19:28:16.233Z
 - Branch: task/202605091754-XQ4H8N/knip-unused-surface
-- Head: 148f626f1314
+- Head: c29b7a386932
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 545 +++++++++++++++++++++
+ .../backends/task-backend/cloud-backend-utils.ts   |   2 +-
+ .../agentplane/src/blueprints/builtin-builder.ts   |   2 +-
+ packages/agentplane/src/commands/acr/validate.ts   |   6 +-
+ .../agentplane/src/commands/blueprints/catalog.ts  |  25 +-
+ .../src/commands/pr/integrate/queue-state.ts       |   6 +-
+ .../src/commands/task/verify-command-shared.ts     |   2 +-
+ packages/agentplane/src/shared/json-io.ts          |   2 +-
+ scripts/baselines/knip-baseline.json               |   5 -
+ 9 files changed, 571 insertions(+), 24 deletions(-)
 ```
 
 </details>
