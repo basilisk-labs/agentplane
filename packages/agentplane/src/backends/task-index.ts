@@ -1,6 +1,6 @@
-import { readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { readJsonFile } from "../shared/json-io.js";
 import { writeJsonStableIfChanged } from "../shared/write-if-changed.js";
 
 import type { TaskData, TaskSummary } from "./task-backend.js";
@@ -101,22 +101,8 @@ function isTaskIndexFileV2(value: unknown): value is TaskIndexFileV2 {
   return true;
 }
 
-async function readJsonFile(p: string): Promise<unknown> {
-  let raw = "";
-  try {
-    raw = await readFile(p, "utf8");
-  } catch {
-    return null;
-  }
-  try {
-    return JSON.parse(raw) as unknown;
-  } catch {
-    return null;
-  }
-}
-
 export async function loadTaskIndex(indexPath: string): Promise<TaskIndexFile | null> {
-  const v2 = await readJsonFile(indexPath);
+  const v2 = await readJsonFile<unknown>(indexPath, { defaultValue: null });
   if (v2 && isTaskIndexFileV2(v2)) return v2;
   return null;
 }

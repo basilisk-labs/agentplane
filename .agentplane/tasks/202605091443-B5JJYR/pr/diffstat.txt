@@ -1,0 +1,6 @@
+ .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
+ packages/agentplane/src/backends/task-index.ts     |  18 +-
+ .../src/commands/release/apply.preflight.plan.ts   |   5 +-
+ packages/agentplane/src/shared/json-io.test.ts     |  37 ++
+ packages/agentplane/src/shared/json-io.ts          |  17 +
+ 5 files changed, 553 insertions(+), 20 deletions(-)
