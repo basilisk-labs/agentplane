@@ -5,6 +5,7 @@ import path from "node:path";
 import { fetchText } from "../../cli/http.js";
 import { validateProjectBlueprintFile } from "../../blueprints/index.js";
 import { CliError, ValidationError } from "../../shared/errors.js";
+import { isRecord } from "../../shared/guards.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 
 export type CatalogKind = "blueprint" | "pack";
@@ -65,10 +66,6 @@ export type InstalledBlueprint = {
   projectPath: string;
   recommendedAllowedIds: string[];
 };
-
-function isRecord(input: unknown): input is Record<string, unknown> {
-  return Boolean(input && typeof input === "object" && !Array.isArray(input));
-}
 
 function agentplaneHome(): string {
   const configuredHome = process.env.AGENTPLANE_HOME?.trim();

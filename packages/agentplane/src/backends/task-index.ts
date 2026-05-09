@@ -1,5 +1,6 @@
 import path from "node:path";
 
+import { isRecord } from "../shared/guards.js";
 import { readJsonFile } from "../shared/json-io.js";
 import { writeJsonStableIfChanged } from "../shared/write-if-changed.js";
 
@@ -44,10 +45,6 @@ export function resolveTaskIndexPath(tasksDir: string): string {
   }
   const cacheDir = path.join(tasksDir, ".cache");
   return path.join(cacheDir, TASK_INDEX_FILENAME);
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
 function isTaskIndexEntry(value: unknown): value is TaskIndexEntry {
