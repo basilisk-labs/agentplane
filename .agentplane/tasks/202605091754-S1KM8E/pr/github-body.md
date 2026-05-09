@@ -22,12 +22,16 @@ Replace the duplicated task verify ok/rework command spec boilerplate with a sma
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-09T19:13:38.898Z
+- Updated: 2026-05-09T19:18:57.670Z
 - Branch: task/202605091754-S1KM8E/verify-spec-factory
-- Head: 8d79e1d5dff2
+- Head: e76ae07f9f10
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 505 +++++++++++++++++++++
+ .../src/commands/task/verify-command-shared.ts     |  95 +++-
+ .../src/commands/task/verify-ok.command.ts         |  74 +--
+ .../src/commands/task/verify-rework.command.ts     |  74 +--
+ 4 files changed, 627 insertions(+), 121 deletions(-)
 ```
 
 </details>
