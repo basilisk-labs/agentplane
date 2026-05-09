@@ -1,7 +1,8 @@
 ---
 id: "202605091514-JP4HTA"
 title: "Harden managed hook fallback policy"
-status: "DOING"
+result_summary: "Merged via PR #3511."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-09T15:17:48.901Z"
   updated_by: "CODER"
   note: "Managed hook fallback hardening verified."
-commit: null
+commit:
+  hash: "0e3eb27dc3b7f244b44585d5121b2366c84771ab"
+  message: "Merge pull request #3511 from basilisk-labs/task/202605091514-JP4HTA/hook-global-fallback"
 comments:
   -
     author: "CODER"
     body: "Start: harden managed hook fallback behavior so global agentplane execution is explicit opt-in."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3511 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Managed hook fallback hardening verified."
+  -
+    type: "status"
+    at: "2026-05-09T15:21:19.419Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3511 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T15:17:48.912Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T15:21:19.426Z"
+doc_updated_by: "INTEGRATOR"
 description: "Require explicit opt-in before managed hook shims fall back to a global agentplane runner, and make installed hook wrappers fail with actionable local-shim recovery guidance when the repository shim is missing."
 sections:
   Summary: |-
