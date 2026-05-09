@@ -1,0 +1,219 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605091443-B5JJYR",
+  "created_at": "2026-05-09T14:59:00.502Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "b4ad4c142af133ece3064a3c967bed95c934f572",
+    "work_ref": "main",
+    "work_commit": "b4ad4c142af133ece3064a3c967bed95c934f572"
+  },
+  "task": {
+    "task_id": "202605091443-B5JJYR",
+    "title": "Deduplicate async JSON file reader",
+    "intent": "Add a shared async JSON file reader for agentplane CLI code and replace the duplicated release preflight and task-index readJsonFile helpers while preserving their different error handling behavior.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605091443-B5JJYR/README.md",
+      "sha256": "sha256:96e15bf0525ad8ee294df704e5b1d5124077afa7fac02707f00e56e184c386f8"
+    },
+    "approved_at": "2026-05-09T14:43:35.950Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3507.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605091443-B5JJYR_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-09T14:43:35.950Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605091443-B5JJYR/README.md",
+      "sha256": "sha256:96e15bf0525ad8ee294df704e5b1d5124077afa7fac02707f00e56e184c386f8"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605091443-B5JJYR/README.md",
+      "sha256": "sha256:96e15bf0525ad8ee294df704e5b1d5124077afa7fac02707f00e56e184c386f8"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605091443-B5JJYR/README.md",
+      "sha256": "sha256:96e15bf0525ad8ee294df704e5b1d5124077afa7fac02707f00e56e184c386f8"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605091443-B5JJYR/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:dfb8e1ab68929f913981dc42454b49ce2628c1c7d0a5fa85bb19ef7e1dddc00f"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit b4ad4c142af133ece3064a3c967bed95c934f572 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:377c3c02aa39e64ac5dd486efde97d0b0845bf1fde109050f99742c58bade1c7",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605091443-B5JJYR/blueprint/resolved-snapshot.json",
+        "digest": "ed85430248dd01928a925708cb33263f8e5dd415d911fcab644bb4703a0f6067",
+        "current_digest": "ed85430248dd01928a925708cb33263f8e5dd415d911fcab644bb4703a0f6067",
+        "route_changed": false,
+        "artifact_sha256": "sha256:dfb8e1ab68929f913981dc42454b49ce2628c1c7d0a5fa85bb19ef7e1dddc00f",
+        "safe_command": "agentplane blueprint snapshot 202605091443-B5JJYR"
+      }
+    }
+  }
+}

@@ -1,7 +1,8 @@
 ---
 id: "202605091443-B5JJYR"
 title: "Deduplicate async JSON file reader"
-status: "DOING"
+result_summary: "Merged via PR #3507."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-09T14:55:49.335Z"
   updated_by: "CODER"
   note: "Async JSON reader deduplication verified."
-commit: null
+commit:
+  hash: "b4ad4c142af133ece3064a3c967bed95c934f572"
+  message: "Merge pull request #3507 from basilisk-labs/task/202605091443-B5JJYR/async-json-reader"
 comments:
   -
     author: "CODER"
     body: "Start: Deduplicate async JSON file reading while preserving strict release errors and tolerant task-index cache reads."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3507 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Async JSON reader deduplication verified."
+  -
+    type: "status"
+    at: "2026-05-09T14:59:00.454Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3507 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T14:55:49.359Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T14:59:00.462Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a shared async JSON file reader for agentplane CLI code and replace the duplicated release preflight and task-index readJsonFile helpers while preserving their different error handling behavior."
 sections:
   Summary: |-
