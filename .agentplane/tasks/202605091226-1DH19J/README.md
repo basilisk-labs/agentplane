@@ -1,7 +1,8 @@
 ---
 id: "202605091226-1DH19J"
 title: "Fix cloud pull Node fetch timeout"
-status: "DOING"
+result_summary: "Merged PR 3499 to main with Node cloud fetch address-selection timeout normalization and verified live cloud pull."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-05-09T12:41:04.173Z"
   updated_by: "CODER"
   note: "Cloud pull timeout fix reverified with targeted backend route, canonical test fix, and live cloud pull before publish."
-commit: null
+commit:
+  hash: "fbc0ee5ac1b88bad387e24eb1c2ef33663709b89"
+  message: "Merge pull request #3499 from basilisk-labs/codex/v05-cloud-pull-fetch-fix"
 comments:
   -
     author: "CODER"
     body: "Start: fix cloud pull Node fetch connect timeout by normalizing address-selection attempt timing and proving live pull refresh."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR 3499 merged to main with cloud fetch timeout fix, focused cloud tests, full local pre-push gate, and hosted checks passing or intentionally skipped by routing."
 events:
   -
     type: "status"
@@ -53,9 +59,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Cloud pull timeout fix reverified with targeted backend route, canonical test fix, and live cloud pull before publish."
+  -
+    type: "status"
+    at: "2026-05-09T13:19:52.350Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR 3499 merged to main with cloud fetch timeout fix, focused cloud tests, full local pre-push gate, and hosted checks passing or intentionally skipped by routing."
 doc_version: 3
-doc_updated_at: "2026-05-09T12:41:04.195Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T13:19:52.355Z"
+doc_updated_by: "INTEGRATOR"
 description: "Normalize Node address-selection attempt timeout for cloud fetch so backend sync pull can refresh large cloud projections instead of failing with UND_ERR_CONNECT_TIMEOUT."
 sections:
   Summary: |-
