@@ -1,7 +1,8 @@
 ---
 id: "202605091754-6BYVEH"
 title: "Consolidate task transition comment commit flow"
-status: "DOING"
+result_summary: "Merged via PR #3535."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -30,11 +31,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: consolidated shared task transition comment command options and optional comment-commit plumbing; lifecycle tests passed (1 file, 12 tests), typecheck passed, Prettier passed, clone:report improved metrics to 82 clones / 1360 duplicated lines / 14489 duplicated tokens, and clone:check passed without baseline update."
   attempts: 0
-commit: null
+commit:
+  hash: "671eab1b9349d99fce5f49e1005ffe1e74f8c2c9"
+  message: "Merge pull request #3535 from basilisk-labs/task/202605091754-6BYVEH/transition-comment-flow"
 comments:
   -
     author: "CODER"
     body: "Start: consolidate duplicated task transition comment commit plumbing in block/start commands."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3535 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: consolidated shared task transition comment command options and optional comment-commit plumbing; lifecycle tests passed (1 file, 12 tests), typecheck passed, Prettier passed, clone:report improved metrics to 82 clones / 1360 duplicated lines / 14489 duplicated tokens, and clone:check passed without baseline update."
+  -
+    type: "status"
+    at: "2026-05-09T19:12:18.505Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3535 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T19:09:01.428Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T19:12:18.510Z"
+doc_updated_by: "INTEGRATOR"
 description: "Factor the repeated start/block transition path for structured comments, transition command execution, optional comment commit, and success output while preserving command-specific guards."
 sections:
   Summary: |-

@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-09T19:11:36Z",
   "base": "main",
   "branch": "task/202605091754-6BYVEH/transition-comment-flow",
   "created_at": "2026-05-09T19:00:06.444Z",
-  "head_sha": "7ff2f8f9011816fa5e4f815a8018408f3714a1b8",
+  "head_sha": "cfb328d5d72b59471506d84f23cbee6781d4b59c",
   "last_verified_at": "2026-05-09T19:09:01.403Z",
   "last_verified_sha": "8d509525d621ee4ac306fbf71d9040335ada084f",
+  "merge_commit": "671eab1b9349d99fce5f49e1005ffe1e74f8c2c9",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-09T19:11:36Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605091754-6BYVEH",
-  "updated_at": "2026-05-09T19:09:25.879Z",
+  "updated_at": "2026-05-09T19:11:36Z",
   "verify": {
     "status": "pass"
   }
