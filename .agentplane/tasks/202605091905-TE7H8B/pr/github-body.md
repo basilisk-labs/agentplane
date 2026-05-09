@@ -22,12 +22,17 @@ Tighten managed hook install/readiness behavior: detect stale managed hook wrapp
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-09T19:07:10.041Z
+- Updated: 2026-05-09T19:13:14.898Z
 - Branch: task/202605091905-TE7H8B/hook-readiness-repair
-- Head: 8d509525d621
+- Head: 00bf0e456038
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
+ .../src/commands/doctor.command.runtime.test.ts    | 101 ++++-
+ packages/agentplane/src/commands/doctor.run.ts     |   4 +-
+ packages/agentplane/src/commands/doctor/fixes.ts   |  59 +++
+ .../src/commands/doctor/hook-readiness.ts          |  53 ++-
+ 5 files changed, 699 insertions(+), 14 deletions(-)
 ```
 
 </details>
