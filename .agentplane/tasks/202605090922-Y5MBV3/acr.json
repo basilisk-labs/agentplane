@@ -1,0 +1,219 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605090922-Y5MBV3",
+  "created_at": "2026-05-09T15:28:11.571Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "cce1235dfbab70d1e5208a794582c42180220146",
+    "work_ref": "main",
+    "work_commit": "cce1235dfbab70d1e5208a794582c42180220146"
+  },
+  "task": {
+    "task_id": "202605090922-Y5MBV3",
+    "title": "Remove compiler hotspot allowlist",
+    "intent": "Remove prompt-modules/compiler.ts from hotspots:check allow-list when the file is below the oversized threshold, leaving hotspot guardrails without runtime allow-list entries.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605090922-Y5MBV3/README.md",
+      "sha256": "sha256:3904bb19544d6d34e737b0b3e6e0025b3b43ebea224f5b27c88728f8f4ef4483"
+    },
+    "approved_at": "2026-05-09T09:22:41.393Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Closed stale lifecycle state after merged implementation commit cce1235df.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605090922-Y5MBV3_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-09T09:22:41.393Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605090922-Y5MBV3/README.md",
+      "sha256": "sha256:3904bb19544d6d34e737b0b3e6e0025b3b43ebea224f5b27c88728f8f4ef4483"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605090922-Y5MBV3/README.md",
+      "sha256": "sha256:3904bb19544d6d34e737b0b3e6e0025b3b43ebea224f5b27c88728f8f4ef4483"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605090922-Y5MBV3/README.md",
+      "sha256": "sha256:3904bb19544d6d34e737b0b3e6e0025b3b43ebea224f5b27c88728f8f4ef4483"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605090922-Y5MBV3/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:d06a6a2f75505d50039f42e0438d276cbe6abdafd7f0d7b161b91b9e65f98a43"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit cce1235dfbab70d1e5208a794582c42180220146 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:0c420ba7b9ecacfb64d5b78395bc0706da131a23412b1999476c4ea8c2b45870",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605090922-Y5MBV3/blueprint/resolved-snapshot.json",
+        "digest": "64f8b2fd54de3a2a02bf6e52c98fe806e5d75a35bc3144235429de950f854bb6",
+        "current_digest": "64f8b2fd54de3a2a02bf6e52c98fe806e5d75a35bc3144235429de950f854bb6",
+        "route_changed": false,
+        "artifact_sha256": "sha256:d06a6a2f75505d50039f42e0438d276cbe6abdafd7f0d7b161b91b9e65f98a43",
+        "safe_command": "agentplane blueprint snapshot 202605090922-Y5MBV3"
+      }
+    }
+  }
+}

@@ -1,7 +1,8 @@
 ---
 id: "202605090913-E0Z7PF"
 title: "Split ACR validation module"
-status: "DOING"
+result_summary: "Closed stale lifecycle state after merged implementation commit 1cacfa9ff."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -18,14 +19,19 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-09T09:16:35.797Z"
+  updated_at: "2026-05-09T15:26:13.456Z"
   updated_by: "CODER"
-  note: "ACR validation split verified with focused tests, typecheck, and hotspot check."
-commit: null
+  note: "ACR validation module split verified on current main."
+commit:
+  hash: "1cacfa9ff5a8b8613bf5d53fd502511aba47e868"
+  message: "🚧 E0Z7PF acr: split validation module"
 comments:
   -
     author: "CODER"
     body: "Start: split ACR validation helpers into a focused module while preserving command behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: ACR validation-module split is present on current main, focused ACR tests, hotspot check, and typecheck evidence are recorded."
 events:
   -
     type: "status"
@@ -40,9 +46,22 @@ events:
     author: "CODER"
     state: "ok"
     note: "ACR validation split verified with focused tests, typecheck, and hotspot check."
+  -
+    type: "verify"
+    at: "2026-05-09T15:26:13.456Z"
+    author: "CODER"
+    state: "ok"
+    note: "ACR validation module split verified on current main."
+  -
+    type: "status"
+    at: "2026-05-09T15:27:49.565Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: ACR validation-module split is present on current main, focused ACR tests, hotspot check, and typecheck evidence are recorded."
 doc_version: 3
-doc_updated_at: "2026-05-09T09:16:35.811Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T15:27:49.569Z"
+doc_updated_by: "INTEGRATOR"
 description: "Move ACR validation target, CI semantics, and validation output helpers into a focused validation module without changing ACR CLI behavior."
 sections:
   Summary: |-
@@ -71,6 +90,28 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-09T09:13:33.296Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605090913-E0Z7PF/blueprint/resolved-snapshot.json
+    - old_digest: c05d4162b249eda54b60dba82af8a8e9e04bc9caa9d2e10599578cdd4e64dadc
+    - current_digest: c05d4162b249eda54b60dba82af8a8e9e04bc9caa9d2e10599578cdd4e64dadc
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605090913-E0Z7PF
+    
+    ### 2026-05-09T15:26:13.456Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: ACR validation module split verified on current main.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-09T09:16:35.811Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    Command: bunx vitest run packages/agentplane/src/commands/acr/acr.command.test.ts --pool=forks --maxWorkers 2 --testTimeout 120000 --hookTimeout 120000 | Result: pass | Evidence: 10 tests passed. Scope: ACR validation and CI semantics.
+    Command: bun run hotspots:check | Result: pass | Evidence: threshold check passed. Scope: runtime hotspot guard.
+    Command: bun run typecheck | Result: pass | Evidence: tsc -b completed. Scope: workspace TypeScript contracts.
     
     BlueprintSnapshotRef:
     - state: current
