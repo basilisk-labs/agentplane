@@ -1,7 +1,7 @@
 ---
 id: "202605091617-CBKJSC"
 title: "Add max_rework_attempts configuration surface"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -27,7 +27,9 @@ verification:
   updated_by: "CODER"
   note: "Verified max_rework_attempts configuration surface."
   attempts: 0
-commit: null
+commit:
+  hash: "5c8b9d2c955132845712a7a6f322abd58e1932e1"
+  message: "Merge pull request #3518 from basilisk-labs/task/202605091617-83FQ3C/bounded-evaluator-loop"
 comments:
   -
     author: "CODER"
@@ -35,6 +37,9 @@ comments:
   -
     author: "CODER"
     body: "Start: implement max_rework_attempts configuration surface inside the parent evaluator-loop batch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3518 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -62,9 +67,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified max_rework_attempts configuration surface."
+  -
+    type: "status"
+    at: "2026-05-09T17:06:20.149Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3518 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T16:46:35.375Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T17:06:20.152Z"
+doc_updated_by: "INTEGRATOR"
 description: "Introduce bounded evaluator loop setting with default, validation, and propagation into verification transitions. Ensure the setting is clearly documented in config surfaces and CLI/runtime contract."
 sections:
   Summary: |-

@@ -1,7 +1,7 @@
 ---
 id: "202605091617-362W7W"
 title: "Bound evaluator rework attempts in transition state machine"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -27,7 +27,9 @@ verification:
   updated_by: "CODER"
   note: "Verified bounded rework transition state machine."
   attempts: 0
-commit: null
+commit:
+  hash: "5c8b9d2c955132845712a7a6f322abd58e1932e1"
+  message: "Merge pull request #3518 from basilisk-labs/task/202605091617-83FQ3C/bounded-evaluator-loop"
 comments:
   -
     author: "CODER"
@@ -35,6 +37,9 @@ comments:
   -
     author: "CODER"
     body: "Start: implement bounded rework transition logic inside the parent evaluator-loop batch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3518 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -62,9 +67,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified bounded rework transition state machine."
+  -
+    type: "status"
+    at: "2026-05-09T17:06:20.138Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3518 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T16:46:30.540Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T17:06:20.142Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update task verification transition logic so each needs_rework increments attempts, return path is preserved, and attempts exceeding max transition to blocked_external with status BLOCKED."
 sections:
   Summary: |-
