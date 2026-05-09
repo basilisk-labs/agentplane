@@ -1,7 +1,7 @@
 ---
 id: "202605091549-TAQM7T"
 title: "Warn on cloud project override and degraded sync state"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -21,11 +21,16 @@ verification:
   updated_at: "2026-05-09T16:17:59.813Z"
   updated_by: "CODER"
   note: "Verified backend inspect and doctor report cloud override/degraded sync diagnostics."
-commit: null
+commit:
+  hash: "905b0067267660acc0cbee12e9aff75902318274"
+  message: "Merge pull request #3516 from basilisk-labs/task/202605091549-JAE983/lifecycle-followups"
 comments:
   -
     author: "CODER"
     body: "Start: implement cloud override and degraded-state diagnostics as part of the lifecycle follow-up batch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3516 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +45,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified backend inspect and doctor report cloud override/degraded sync diagnostics."
+  -
+    type: "status"
+    at: "2026-05-09T16:28:47.003Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3516 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T16:17:59.836Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T16:28:47.005Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add doctor/backend diagnostics that clearly surface AGENTPLANE_CLOUD_PROJECT_ID overriding backend.json and degraded cloud sync state such as rate_limited failed jobs before task lifecycle mutations hit stale projection errors."
 sections:
   Summary: |-
