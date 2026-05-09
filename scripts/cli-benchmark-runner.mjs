@@ -1,9 +1,19 @@
 import { execFile } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { performance } from "node:perf_hooks";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
+
+import {
+  cliRepoRootFromPath,
+  formatSuiteCommands,
+  interpolateArgs,
+  parseSuiteArgs as parseSharedSuiteArgs,
+  readSuiteConfigMap,
+  roundMs,
+  summarizeDurations,
+} from "./lib/cli-benchmark-shared.mjs";
 
 const execFileAsync = promisify(execFile);
 const MAX_BUFFER_BYTES = 10 * 1024 * 1024;
@@ -15,222 +25,14 @@ const DEFAULT_SUITE_CONFIG_PATH = path.join(
 );
 const DEFAULT_CLI_PATH = path.join(REPO_ROOT, "packages", "agentplane", "bin", "agentplane.js");
 
-export function cliRepoRootFromPath(cliPath) {
-  return path.resolve(path.dirname(cliPath), "..", "..", "..");
-}
-
-function roundMs(value) {
-  return Number(value.toFixed(3));
-}
-
-function sortNumeric(values) {
-  return values.toSorted((left, right) => left - right);
-}
-
-function median(values) {
-  const sorted = sortNumeric(values);
-  const mid = Math.floor(sorted.length / 2);
-  if (sorted.length % 2 === 1) {
-    return sorted[mid];
-  }
-  return (sorted[mid - 1] + sorted[mid]) / 2;
-}
-
-function percentile(values, percentileValue) {
-  const sorted = sortNumeric(values);
-  const index = Math.ceil((percentileValue / 100) * sorted.length) - 1;
-  return sorted[Math.min(Math.max(index, 0), sorted.length - 1)];
-}
-
-function summarizeDurations(durations) {
-  let sum = 0;
-  for (const value of durations) {
-    sum += value;
-  }
-  const average = durations.length === 0 ? 0 : sum / durations.length;
-
-  let totalDiff = 0;
-  for (const value of durations) {
-    const diff = value - average;
-    totalDiff += diff * diff;
-  }
-  const variance = durations.length === 0 ? 0 : totalDiff / durations.length;
-
-  return {
-    min_ms: roundMs(Math.min(...durations)),
-    median_ms: roundMs(median(durations)),
-    max_ms: roundMs(Math.max(...durations)),
-    avg_ms: roundMs(average),
-    p95_ms: roundMs(percentile(durations, 95)),
-    p99_ms: roundMs(percentile(durations, 99)),
-    stddev_ms: roundMs(Math.sqrt(variance)),
-  };
-}
-
-function parsePositiveInt(value, flag) {
-  const parsed = Number.parseInt(value, 10);
-  if (!Number.isInteger(parsed) || parsed < 0) {
-    throw new Error(`Invalid value for ${flag}: ${value} (expected integer >= 0)`);
-  }
-  return parsed;
-}
-
 export function parseSuiteArgs(argv) {
-  let suite = null;
-  let suiteConfig = DEFAULT_SUITE_CONFIG_PATH;
-  let root = REPO_ROOT;
-  let cliPath = DEFAULT_CLI_PATH;
-  let runs = 3;
-  let warmups = 0;
-  let timeoutMs = Number.parseInt(process.env.AGENTPLANE_CLI_BENCH_TIMEOUT_MS ?? "0", 10) || 0;
-  let commandId = null;
-  let help = false;
-
-  for (let i = 0; i < argv.length; i += 1) {
-    const arg = argv[i];
-    switch (arg) {
-      case "--help":
-      case "-h": {
-        help = true;
-        break;
-      }
-      case "--suite": {
-        const next = argv[i + 1];
-        if (!next) throw new Error("Missing value after --suite");
-        suite = next;
-        i += 1;
-        break;
-      }
-      case "--suite-config": {
-        const next = argv[i + 1];
-        if (!next) throw new Error("Missing value after --suite-config");
-        suiteConfig = path.resolve(next);
-        i += 1;
-        break;
-      }
-      case "--root": {
-        const next = argv[i + 1];
-        if (!next) throw new Error("Missing value after --root");
-        root = path.resolve(next);
-        i += 1;
-        break;
-      }
-      case "--cli": {
-        const next = argv[i + 1];
-        if (!next) throw new Error("Missing value after --cli");
-        cliPath = path.resolve(next);
-        i += 1;
-        break;
-      }
-      case "--runs": {
-        const next = argv[i + 1];
-        if (!next) throw new Error("Missing value after --runs");
-        runs = parsePositiveInt(next, "--runs");
-        if (runs === 0) {
-          throw new Error("Invalid value for --runs: 0 (expected integer >= 1)");
-        }
-        i += 1;
-        break;
-      }
-      case "--warmups": {
-        const next = argv[i + 1];
-        if (!next) throw new Error("Missing value after --warmups");
-        warmups = parsePositiveInt(next, "--warmups");
-        i += 1;
-        break;
-      }
-      case "--timeout-ms": {
-        const next = argv[i + 1];
-        if (!next) throw new Error("Missing value after --timeout-ms");
-        timeoutMs = parsePositiveInt(next, "--timeout-ms");
-        i += 1;
-        break;
-      }
-      case "--command-id": {
-        const next = argv[i + 1];
-        if (!next) throw new Error("Missing value after --command-id");
-        commandId = next;
-        i += 1;
-        break;
-      }
-      default: {
-        throw new Error(`Unknown argument: ${arg}`);
-      }
-    }
-  }
-
-  return {
-    suite: suite ?? "cli-cold-path",
-    suiteConfig,
-    root,
-    cliPath,
-    runs,
-    warmups,
-    timeoutMs,
-    commandId,
-    help,
-  };
-}
-
-function parseBenchmarkConfig(raw) {
-  if (!raw || raw.schema_version !== 1 || !Array.isArray(raw.suites)) {
-    throw new Error("Invalid suite config payload: expected schema_version=1 and suites");
-  }
-  return raw;
-}
-
-function readSuiteConfig(filePath) {
-  if (!existsSync(filePath)) {
-    throw new Error(`Suite config is missing: ${filePath}`);
-  }
-  const payload = parseBenchmarkConfig(JSON.parse(readFileSync(filePath, "utf8")));
-  const suites = new Map();
-
-  for (const suite of payload.suites ?? []) {
-    if (!suite || typeof suite.id !== "string" || typeof suite.mode !== "string") {
-      throw new Error(`Invalid suite entry in ${filePath}`);
-    }
-    if (!Array.isArray(suite.commands) || suite.commands.length === 0) {
-      throw new Error(`Suite ${suite.id} must contain at least one command`);
-    }
-    suites.set(suite.id, suite);
-  }
-
-  return {
-    suites,
-    defaultSuite: payload.default_suite,
-  };
-}
-
-function interpolateArg(value, vars) {
-  return String(value).replaceAll("{root}", vars.root).replaceAll("{repo_root}", vars.repoRoot);
-}
-
-function interpolateArgs(args, vars) {
-  return args.map((value) => interpolateArg(value, vars));
-}
-
-function formatSuiteCommands(suite) {
-  if (!suite || !Array.isArray(suite.commands)) {
-    return [];
-  }
-  return suite.commands.map((command) => ({
-    id: String(command.id ?? ""),
-    commandLine: `agentplane ${
-      Array.isArray(command.argv)
-        ? command.argv
-            .map((argument) =>
-              typeof argument === "string" &&
-              argument.includes(" ") &&
-              !argument.startsWith('"') &&
-              !argument.endsWith('"')
-                ? `"${argument}"`
-                : String(argument),
-            )
-            .join(" ")
-        : ""
-    }`,
-  }));
+  return parseSharedSuiteArgs(argv, {
+    suite: "cli-cold-path",
+    suiteConfig: DEFAULT_SUITE_CONFIG_PATH,
+    root: REPO_ROOT,
+    cliPath: DEFAULT_CLI_PATH,
+    timeoutEnvVar: "AGENTPLANE_CLI_BENCH_TIMEOUT_MS",
+  });
 }
 
 async function runCommandWithOptions(cliPath, argv, options) {
@@ -303,7 +105,7 @@ async function runCommandGroup(cliPath, argv, parallel, options = {}) {
 }
 
 export async function measureSuite(options) {
-  const raw = readSuiteConfig(options.suiteConfig);
+  const raw = readSuiteConfigMap(options.suiteConfig);
   const selected = raw.suites.get(options.suite) ?? raw.suites.get(raw.defaultSuite);
   if (!selected) {
     throw new Error(`Suite not found: ${options.suite}`);
@@ -421,11 +223,11 @@ export async function runSuiteRunner(
 ) {
   const options = parseSuiteArgs(argv);
   if (options.help) {
-    const suiteConfig = readSuiteConfig(options.suiteConfig);
+    const suiteConfig = readSuiteConfigMap(options.suiteConfig);
     const previewSuite =
       suiteConfig.suites.get(options.suite) ??
       suiteConfig.suites.get(suiteConfig.defaultSuite ?? options.suite);
-    const commandPreview = formatSuiteCommands(previewSuite);
+    const commandPreview = formatSuiteCommands(previewSuite, { commandPrefix: "agentplane" });
     outputStream.write(
       `${printCliPerfHelpText({
         scriptName,
