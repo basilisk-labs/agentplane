@@ -2,6 +2,14 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { RUNTIME_GITIGNORE_LINES } from "../../runtime/shared/runtime-artifacts.js";
+import { cmdHooksInstall, collectHooksInstallConflicts } from "../hooks/install.js";
+import {
+  fileIsManaged,
+  HOOK_MARKER,
+  HOOK_NAMES,
+  resolveGitHooksDir,
+  SHIM_MARKER,
+} from "../hooks/shared.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 
 export async function safeFixGitignore(
@@ -43,4 +51,55 @@ export async function safeFixTaskIndex(
   } catch {
     return { changed: false, note: "Skip: could not rebuild tasks index cache." };
   }
+}
+
+async function pathExists(absPath: string): Promise<boolean> {
+  try {
+    await fs.access(absPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function hasManagedHookSurface(repoRoot: string): Promise<boolean> {
+  const shimPath = path.join(repoRoot, ".agentplane", "bin", "agentplane");
+  if ((await pathExists(shimPath)) && (await fileIsManaged(shimPath, SHIM_MARKER))) return true;
+
+  let hooksDir: string;
+  try {
+    hooksDir = await resolveGitHooksDir(repoRoot);
+  } catch {
+    return false;
+  }
+
+  for (const hook of HOOK_NAMES) {
+    const hookPath = path.join(hooksDir, hook);
+    if ((await pathExists(hookPath)) && (await fileIsManaged(hookPath, HOOK_MARKER))) return true;
+  }
+  return false;
+}
+
+export async function safeFixManagedHooks(
+  repoRoot: string,
+): Promise<{ changed: boolean; note: string }> {
+  if (!(await hasManagedHookSurface(repoRoot))) {
+    return { changed: false, note: "Skip: no AgentPlane-managed hook surface found." };
+  }
+
+  const conflicts = await collectHooksInstallConflicts({
+    gitRoot: repoRoot,
+    agentplaneDir: path.join(repoRoot, ".agentplane"),
+  });
+  if (conflicts.length > 0) {
+    return {
+      changed: false,
+      note: `Skip: custom hook files require manual reconciliation (${conflicts
+        .map((conflict) => path.relative(repoRoot, conflict))
+        .join(", ")}).`,
+    };
+  }
+
+  await cmdHooksInstall({ cwd: repoRoot, rootOverride: repoRoot, quiet: true });
+  return { changed: true, note: "Fixed: refreshed AgentPlane-managed hook files and shim." };
 }

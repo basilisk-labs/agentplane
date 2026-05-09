@@ -1,0 +1,1 @@
+🚧 TE7H8B task: Improve managed hook readiness diagnostics [202605091905-TE7H8B]
