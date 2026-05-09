@@ -24,12 +24,14 @@ Created: 2026-05-09T13:44:08.264Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-09T13:44:08.264Z
+- Updated: 2026-05-09T13:48:52.926Z
 - Branch: task/202605091343-A5CBGS/dedupe-gh-sleep
-- Head: fd8040bef90d
+- Head: 391de7ac8101
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
+ .../agentplane/src/commands/shared/gh-transport.ts |  10 +-
+ 2 files changed, 500 insertions(+), 6 deletions(-)
 ```
 
 </details>
