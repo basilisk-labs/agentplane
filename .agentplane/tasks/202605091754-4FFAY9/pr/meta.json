@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-09T18:55:27Z",
   "base": "main",
   "branch": "task/202605091754-4FFAY9/task-doc-parser",
   "created_at": "2026-05-09T18:46:47.225Z",
-  "head_sha": "90f3f6953a17a8ed538c04d2f92d88a6534e1f20",
+  "head_sha": "be68ccf4f8710e3f052b7e39b9ee7c86932c8620",
   "last_verified_at": "2026-05-09T18:52:34.181Z",
   "last_verified_sha": "f8395196d2a23facd7a802015ad9fb08520f17b2",
+  "merge_commit": "2d36513712e6c82a8d866c90f823540556b1f144",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-09T18:55:27Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605091754-4FFAY9",
-  "updated_at": "2026-05-09T18:53:16.677Z",
+  "updated_at": "2026-05-09T18:55:27Z",
   "verify": {
     "status": "pass"
   }
