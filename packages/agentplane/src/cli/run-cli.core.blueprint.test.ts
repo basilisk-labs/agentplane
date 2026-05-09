@@ -1,11 +1,16 @@
+import { createHash } from "node:crypto";
+import { execFile } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 
 import { requireBlueprint } from "../blueprints/registry.js";
 import { captureStdIO, mkTempDir } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
+
+const execFileAsync = promisify(execFile);
 
 async function mkProject(): Promise<string> {
   const root = await mkTempDir();
@@ -98,6 +103,67 @@ async function mkBlueprintCatalogFixture(): Promise<{ root: string; indexPath: s
     "utf8",
   );
   return { root, indexPath: path.join(root, "catalog", "index.json") };
+}
+
+async function mkPackagedBlueprintCatalogFixture(): Promise<{ root: string; indexPath: string }> {
+  const fixture = await mkBlueprintCatalogFixture();
+  const distDir = path.join(fixture.root, "dist");
+  await mkdir(distDir, { recursive: true });
+  const archivePath = path.join(distDir, "external-analysis-0.1.0.tar.gz");
+  await execFileAsync("tar", [
+    "-czf",
+    archivePath,
+    "-C",
+    path.join(fixture.root, "blueprints"),
+    "external-analysis",
+  ]);
+  const sha256 = createHash("sha256").update(await readFile(archivePath)).digest("hex");
+  const releaseIndexPath = path.join(fixture.root, "index.json");
+  await writeFile(
+    releaseIndexPath,
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        catalog_id: "test-blueprints",
+        name: "Test Blueprints",
+        blueprints: [
+          {
+            id: "external-analysis",
+            name: "External Analysis",
+            summary: "External analysis route.",
+            activation: {
+              recommended_allowed_ids: ["analysis.external"],
+            },
+            versions: [
+              {
+                version: "0.1.0",
+                url: archivePath,
+                sha256,
+                min_agentplane_version: "0.5.0-rc.1",
+                tags: ["analysis"],
+              },
+            ],
+          },
+        ],
+        packs: [
+          {
+            id: "baseline",
+            version: "0.1.0",
+            name: "Baseline",
+            summary: "Baseline blueprint pack.",
+            blueprints: [{ id: "external-analysis", required: true }],
+            activation: {
+              recommended_allowed_ids: ["analysis.external"],
+            },
+          },
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+  return { root: fixture.root, indexPath: releaseIndexPath };
 }
 
 describe("runCli blueprint commands", () => {
@@ -349,6 +415,59 @@ describe("runCli blueprint commands", () => {
         ),
       ) as { id?: string };
       expect(installed.id).toBe("analysis.external");
+    } finally {
+      io.restore();
+      if (originalHome === undefined) delete process.env.AGENTPLANE_HOME;
+      else process.env.AGENTPLANE_HOME = originalHome;
+    }
+  });
+
+  it("blueprints install writes a packaged blueprint after checksum verification", async () => {
+    const home = await mkTempDir();
+    const originalHome = process.env.AGENTPLANE_HOME;
+    process.env.AGENTPLANE_HOME = home;
+    const fixture = await mkPackagedBlueprintCatalogFixture();
+    const root = await mkProject();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "--root",
+        root,
+        "blueprints",
+        "install",
+        "external-analysis",
+        "--index",
+        fixture.indexPath,
+        "--activate",
+        "--json",
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        activated: boolean;
+        installed: { blueprintId: string; projectPath: string }[];
+        allowed_ids: string[];
+      };
+      expect(payload.activated).toBe(true);
+      expect(payload.allowed_ids).toEqual(["analysis.external"]);
+      expect(payload.installed).toEqual([
+        expect.objectContaining({
+          blueprintId: "analysis.external",
+          projectPath: ".agentplane/blueprints/analysis.external.json",
+        }),
+      ]);
+      const installed = JSON.parse(
+        await readFile(
+          path.join(root, ".agentplane", "blueprints", "analysis.external.json"),
+          "utf8",
+        ),
+      ) as { id?: string };
+      expect(installed.id).toBe("analysis.external");
+      await expect(
+        readFile(
+          path.join(root, ".agentplane", "blueprint-catalog", "external-analysis", "blueprint.json"),
+          "utf8",
+        ),
+      ).resolves.toContain('"external-analysis"');
     } finally {
       io.restore();
       if (originalHome === undefined) delete process.env.AGENTPLANE_HOME;
