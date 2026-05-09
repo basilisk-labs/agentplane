@@ -221,9 +221,11 @@ export const runBlueprintsCatalogInfo: CommandHandler<BlueprintsCatalogInfoParse
   const catalog = await loadCatalog({ cwd: ctx.cwd });
   const found = findEntry(catalog.index, p.id, p.kind);
   const loaded =
-    found.kind === "blueprint"
+    found.kind === "blueprint" && found.entry.path
       ? await loadBlueprintManifest({ catalogSource: catalog.source, entry: found.entry })
-      : await loadPackManifest({ catalogSource: catalog.source, entry: found.entry });
+      : found.kind === "pack"
+        ? await loadPackManifest({ catalogSource: catalog.source, entry: found.entry })
+        : { manifest: found.entry };
   const output = { kind: found.kind, manifest: loaded.manifest };
   if (p.json) process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
   else

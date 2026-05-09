@@ -1,8 +1,10 @@
-import { mkdir, cp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, cp, mkdtemp, readFile, rm, writeFile, readdir } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-import { fetchText } from "../../cli/http.js";
+import { extractArchive } from "../../cli/archive.js";
+import { sha256File } from "../../cli/checksum.js";
+import { downloadToFile, fetchText } from "../../cli/http.js";
 import { validateProjectBlueprintFile } from "../../blueprints/index.js";
 import { CliError, ValidationError } from "../../shared/errors.js";
 import { isRecord } from "../../shared/guards.js";
@@ -12,7 +14,26 @@ export type CatalogKind = "blueprint" | "pack";
 
 export type CatalogEntry = {
   id: string;
-  path: string;
+  path?: string;
+  name?: string;
+  summary?: string;
+  version?: string;
+  tags?: string[];
+  activation?: {
+    recommended_allowed_ids?: string[];
+  };
+  versions?: {
+    version: string;
+    url: string;
+    sha256: string;
+    min_agentplane_version?: string;
+    tags?: string[];
+  }[];
+  blueprints?: {
+    id: string;
+    version?: string;
+    required?: boolean;
+  }[];
 };
 
 export type BlueprintCatalogIndex = {
@@ -125,11 +146,72 @@ async function readText(source: string): Promise<string> {
 function parseCatalogEntry(raw: unknown, field: string): CatalogEntry {
   if (!isRecord(raw)) throw new ValidationError({ message: `${field} entry must be an object.` });
   const id = typeof raw.id === "string" ? raw.id.trim() : "";
-  const entryPath = typeof raw.path === "string" ? raw.path.trim() : "";
-  if (!id || !entryPath) {
-    throw new ValidationError({ message: `${field} entry must contain id and path.` });
+  const entryPath = typeof raw.path === "string" ? raw.path.trim() : undefined;
+  const versions = Array.isArray(raw.versions)
+    ? raw.versions.map((version) => {
+        if (!isRecord(version)) {
+          throw new ValidationError({ message: `${field} versions entries must be objects.` });
+        }
+        const versionId = typeof version.version === "string" ? version.version.trim() : "";
+        const url = typeof version.url === "string" ? version.url.trim() : "";
+        const sha256 = typeof version.sha256 === "string" ? version.sha256.trim() : "";
+        if (!versionId || !url || !sha256) {
+          throw new ValidationError({
+            message: `${field} versions entries must contain version, url, and sha256.`,
+          });
+        }
+        return {
+          version: versionId,
+          url,
+          sha256,
+          min_agentplane_version:
+            typeof version.min_agentplane_version === "string"
+              ? version.min_agentplane_version
+              : undefined,
+          tags: Array.isArray(version.tags)
+            ? version.tags.filter((tag): tag is string => typeof tag === "string")
+            : undefined,
+        };
+      })
+    : undefined;
+  const blueprints = Array.isArray(raw.blueprints)
+    ? raw.blueprints.map((entry) => {
+        if (!isRecord(entry) || typeof entry.id !== "string" || !entry.id.trim()) {
+          throw new ValidationError({ message: `${field} blueprint entries must contain id.` });
+        }
+        return {
+          id: entry.id.trim(),
+          version: typeof entry.version === "string" ? entry.version.trim() : undefined,
+          required: entry.required === true,
+        };
+      })
+    : undefined;
+  if (!id || (!entryPath && !versions && !blueprints)) {
+    throw new ValidationError({
+      message: `${field} entry must contain id plus path, versions, or blueprints.`,
+    });
   }
-  return { id, path: entryPath };
+  return {
+    id,
+    path: entryPath,
+    name: typeof raw.name === "string" ? raw.name : undefined,
+    summary: typeof raw.summary === "string" ? raw.summary : undefined,
+    version: typeof raw.version === "string" ? raw.version : undefined,
+    tags: Array.isArray(raw.tags)
+      ? raw.tags.filter((tag): tag is string => typeof tag === "string")
+      : undefined,
+    activation: isRecord(raw.activation)
+      ? {
+          recommended_allowed_ids: Array.isArray(raw.activation.recommended_allowed_ids)
+            ? raw.activation.recommended_allowed_ids.filter(
+                (allowedId): allowedId is string => typeof allowedId === "string",
+              )
+            : undefined,
+        }
+      : undefined,
+    versions,
+    blueprints,
+  };
 }
 
 function parseCatalogIndex(raw: unknown): BlueprintCatalogIndex {
@@ -337,10 +419,44 @@ function parsePackManifest(raw: unknown): CatalogPackManifest {
   return pack;
 }
 
+function pickLatestVersion(entry: CatalogEntry): NonNullable<CatalogEntry["versions"]>[number] {
+  const versions = entry.versions ?? [];
+  if (versions.length === 0) {
+    throw new ValidationError({ message: `Blueprint ${entry.id} has no installable versions.` });
+  }
+  return versions.toSorted((a, b) => a.version.localeCompare(b.version, undefined, { numeric: true })).at(-1)!;
+}
+
+async function resolvePackageRoot(extractedDir: string): Promise<string> {
+  const rootManifest = path.join(extractedDir, "blueprint.json");
+  try {
+    await readFile(rootManifest, "utf8");
+    return extractedDir;
+  } catch (err) {
+    const code = (err as { code?: string } | null)?.code;
+    if (code !== "ENOENT") throw err;
+  }
+  const entries = await readdir(extractedDir, { withFileTypes: true });
+  const dirs = entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
+  if (dirs.length !== 1) {
+    throw new ValidationError({
+      message: "Blueprint package archive must contain blueprint.json at root or exactly one root directory.",
+    });
+  }
+  const candidate = path.join(extractedDir, dirs[0]);
+  await readFile(path.join(candidate, "blueprint.json"), "utf8");
+  return candidate;
+}
+
 export async function loadBlueprintManifest(opts: {
   catalogSource: string;
   entry: CatalogEntry;
 }): Promise<{ manifest: CatalogBlueprintManifest; manifestSource: string }> {
+  if (!opts.entry.path) {
+    throw new ValidationError({
+      message: `Blueprint ${opts.entry.id} is packaged; install it to inspect its full manifest.`,
+    });
+  }
   const manifestSource = resolveCatalogEntrySource(opts.catalogSource, opts.entry.path);
   return {
     manifest: parseBlueprintManifest(JSON.parse(await readText(manifestSource)) as unknown),
@@ -352,6 +468,18 @@ export async function loadPackManifest(opts: {
   catalogSource: string;
   entry: CatalogEntry;
 }): Promise<{ manifest: CatalogPackManifest; manifestSource: string }> {
+  if (!opts.entry.path) {
+    const pack = {
+      schema_version: 1,
+      id: opts.entry.id,
+      version: opts.entry.version ?? "0.0.0",
+      name: opts.entry.name ?? opts.entry.id,
+      summary: opts.entry.summary ?? "",
+      blueprints: opts.entry.blueprints ?? [],
+      activation: opts.entry.activation,
+    } satisfies CatalogPackManifest;
+    return { manifest: parsePackManifest(pack), manifestSource: opts.catalogSource };
+  }
   const manifestSource = resolveCatalogEntrySource(opts.catalogSource, opts.entry.path);
   return {
     manifest: parsePackManifest(JSON.parse(await readText(manifestSource)) as unknown),
@@ -390,45 +518,77 @@ export async function installBlueprint(opts: {
   catalogSource: string;
   entry: CatalogEntry;
 }): Promise<InstalledBlueprint> {
-  const { manifest, manifestSource } = await loadBlueprintManifest({
-    catalogSource: opts.catalogSource,
-    entry: opts.entry,
-  });
-  assertSafeCatalogPathSegment(manifest.definition.id, "Catalog blueprint definition.id");
-  if (!isHttpUrl(manifestSource)) {
+  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-blueprint-"));
+  try {
+    let manifestSource = "";
+    let manifest: CatalogBlueprintManifest;
+    if (opts.entry.path) {
+      const loaded = await loadBlueprintManifest({
+        catalogSource: opts.catalogSource,
+        entry: opts.entry,
+      });
+      manifest = loaded.manifest;
+      manifestSource = loaded.manifestSource;
+    } else {
+      const latest = pickLatestVersion(opts.entry);
+      const archiveUrl = isHttpUrl(latest.url)
+        ? latest.url
+        : isHttpUrl(opts.catalogSource)
+          ? new URL(latest.url, opts.catalogSource).toString()
+          : path.resolve(path.dirname(opts.catalogSource), latest.url);
+      const archiveName =
+        path.basename(isHttpUrl(archiveUrl) ? new URL(archiveUrl).pathname : archiveUrl) ||
+        "blueprint.tar.gz";
+      const archivePath = path.join(tempRoot, archiveName);
+      if (isHttpUrl(archiveUrl)) await downloadToFile(archiveUrl, archivePath);
+      else await cp(archiveUrl, archivePath);
+      const actualSha = await sha256File(archivePath);
+      if (actualSha !== latest.sha256) {
+        throw new ValidationError({
+          message: `Blueprint checksum mismatch for ${opts.entry.id}@${latest.version}`,
+        });
+      }
+      await extractArchive({ archivePath, destDir: tempRoot });
+      const packageRoot = await resolvePackageRoot(tempRoot);
+      manifestSource = path.join(packageRoot, "blueprint.json");
+      manifest = parseBlueprintManifest(JSON.parse(await readFile(manifestSource, "utf8")) as unknown);
+    }
+    assertSafeCatalogPathSegment(manifest.definition.id, "Catalog blueprint definition.id");
     assertSafeCatalogPathSegment(manifest.id, "Catalog blueprint manifest id");
+    const definitionSource = resolveNearSource(manifestSource, manifest.definition.path);
+    const definitionText = await readText(definitionSource);
+    const targetDir = path.join(opts.projectRoot, ".agentplane", "blueprints");
+    const targetPath = path.join(targetDir, `${manifest.definition.id}.json`);
+    await mkdir(targetDir, { recursive: true });
+    await writeFile(targetPath, definitionText, "utf8");
+    const validation = await validateProjectBlueprintFile(targetPath);
+    if (!validation.ok) {
+      throw new ValidationError({
+        message: `Installed blueprint definition is invalid: ${validation.errors
+          .map((error) => `${error.code}: ${error.message}`)
+          .join("; ")}`,
+        context: { path: targetPath },
+      });
+    }
+    if (!isHttpUrl(manifestSource)) {
+      const packageRoot = path.dirname(manifestSource);
+      const catalogTarget = path.join(
+        opts.projectRoot,
+        ".agentplane",
+        "blueprint-catalog",
+        manifest.id,
+      );
+      await rm(catalogTarget, { recursive: true, force: true });
+      await mkdir(path.dirname(catalogTarget), { recursive: true });
+      await cp(packageRoot, catalogTarget, { recursive: true });
+    }
+    return {
+      catalogId: manifest.id,
+      blueprintId: manifest.definition.id,
+      projectPath: path.relative(opts.projectRoot, targetPath),
+      recommendedAllowedIds: manifest.activation?.recommended_allowed_ids ?? [manifest.definition.id],
+    };
+  } finally {
+    await rm(tempRoot, { recursive: true, force: true });
   }
-  const definitionSource = resolveNearSource(manifestSource, manifest.definition.path);
-  const definitionText = await readText(definitionSource);
-  const targetDir = path.join(opts.projectRoot, ".agentplane", "blueprints");
-  const targetPath = path.join(targetDir, `${manifest.definition.id}.json`);
-  await mkdir(targetDir, { recursive: true });
-  await writeFile(targetPath, definitionText, "utf8");
-  const validation = await validateProjectBlueprintFile(targetPath);
-  if (!validation.ok) {
-    throw new ValidationError({
-      message: `Installed blueprint definition is invalid: ${validation.errors
-        .map((error) => `${error.code}: ${error.message}`)
-        .join("; ")}`,
-      context: { path: targetPath },
-    });
-  }
-  if (!isHttpUrl(manifestSource)) {
-    const packageRoot = path.dirname(manifestSource);
-    const catalogTarget = path.join(
-      opts.projectRoot,
-      ".agentplane",
-      "blueprint-catalog",
-      manifest.id,
-    );
-    await rm(catalogTarget, { recursive: true, force: true });
-    await mkdir(path.dirname(catalogTarget), { recursive: true });
-    await cp(packageRoot, catalogTarget, { recursive: true });
-  }
-  return {
-    catalogId: manifest.id,
-    blueprintId: manifest.definition.id,
-    projectPath: path.relative(opts.projectRoot, targetPath),
-    recommendedAllowedIds: manifest.activation?.recommended_allowed_ids ?? [manifest.definition.id],
-  };
 }
