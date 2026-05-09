@@ -1,7 +1,8 @@
 ---
 id: "202605091732-XBBTRA"
 title: "Align cloud backend project id and clear recovery stash"
-status: "DOING"
+result_summary: "Merged via PR #3522."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: backend.json project_id now matches effective .env project proj_PhwmbZq_UzFgKnXT; backend pull completed changed=0 conflicts=0; backend inspect shows no project override; doctor OK with only server-side rate_limited cloud sync warning."
   attempts: 0
-commit: null
+commit:
+  hash: "7610f8bf04a700bb009799e409c0ec24b605d5e2"
+  message: "Merge pull request #3522 from basilisk-labs/task/202605091732-XBBTRA/cloud-project-sync"
 comments:
   -
     author: "CODER"
     body: "Start: aligning tracked cloud backend project id with the effective .env project, then verifying cloud pull/inspect/doctor and removing obsolete recovery stash after clean-state confirmation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3522 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: backend.json project_id now matches effective .env project proj_PhwmbZq_UzFgKnXT; backend pull completed changed=0 conflicts=0; backend inspect shows no project override; doctor OK with only server-side rate_limited cloud sync warning."
+  -
+    type: "status"
+    at: "2026-05-09T17:44:24.939Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3522 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T17:39:11.047Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T17:44:24.947Z"
+doc_updated_by: "INTEGRATOR"
 description: "Align tracked cloud backend project id with the effective .env project, run cloud backend pull/inspect/doctor checks, and remove the obsolete recovery stash after confirming no useful changes remain."
 sections:
   Summary: |-
