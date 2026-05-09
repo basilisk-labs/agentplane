@@ -1,7 +1,8 @@
 ---
 id: "202605091711-0W657Q"
 title: "Verify GitHub metadata refresh"
-status: "DOING"
+result_summary: "Merged via PR #3520."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 revision: 1
@@ -22,7 +23,9 @@ verification:
   updated_by: "DOCS"
   note: "Verified GitHub metadata refresh by repository API readback."
   attempts: 0
-commit: null
+commit:
+  hash: "e22630cf0c3eaed218918f7110b026e22ae2a970"
+  message: "Merge pull request #3520 from basilisk-labs/task/202605091711-0W657Q/github-metadata-refresh"
 comments:
   -
     author: "DOCS"
@@ -30,6 +33,9 @@ comments:
   -
     author: "DOCS"
     body: "Start: verify GitHub metadata refresh evidence and close the docs-only task."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3520 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -51,9 +57,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified GitHub metadata refresh by repository API readback."
+  -
+    type: "status"
+    at: "2026-05-09T17:18:53.653Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3520 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T17:16:24.402Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-09T17:18:53.660Z"
+doc_updated_by: "INTEGRATOR"
 description: "Record verification evidence for basilisk-labs repository metadata refresh completed through GitHub API."
 sections:
   Summary: |-
