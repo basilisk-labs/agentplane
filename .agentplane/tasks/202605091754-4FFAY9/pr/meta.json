@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605091754-4FFAY9/task-doc-parser",
+  "created_at": "2026-05-09T18:46:47.225Z",
+  "head_sha": "f8395196d2a23facd7a802015ad9fb08520f17b2",
+  "last_verified_at": "2026-05-09T18:52:34.181Z",
+  "last_verified_sha": "f8395196d2a23facd7a802015ad9fb08520f17b2",
+  "schema_version": 1,
+  "task_id": "202605091754-4FFAY9",
+  "updated_at": "2026-05-09T18:46:47.225Z",
+  "verify": {
+    "status": "pass"
+  }
+}
