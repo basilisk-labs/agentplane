@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-09T17:18:16Z",
   "base": "main",
   "branch": "task/202605091711-0W657Q/github-metadata-refresh",
   "created_at": "2026-05-09T17:15:56.493Z",
-  "head_sha": "69fb7bf28a0caadbf75c655a8c6d1e468719b1b3",
+  "head_sha": "c1539f191c00f5558d70859c88a3d9c2081a5a3b",
   "last_verified_at": "2026-05-09T17:16:24.333Z",
   "last_verified_sha": "69fb7bf28a0caadbf75c655a8c6d1e468719b1b3",
+  "merge_commit": "e22630cf0c3eaed218918f7110b026e22ae2a970",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-09T17:18:16Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605091711-0W657Q",
-  "updated_at": "2026-05-09T17:15:56.493Z",
+  "updated_at": "2026-05-09T17:18:16Z",
   "verify": {
     "status": "pass"
   }
