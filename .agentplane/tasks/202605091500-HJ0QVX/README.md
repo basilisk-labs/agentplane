@@ -1,7 +1,8 @@
 ---
 id: "202605091500-HJ0QVX"
 title: "Deduplicate agentplane utility guards"
-status: "DOING"
+result_summary: "Merged via PR #3509."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-09T15:02:45.991Z"
   updated_by: "CODER"
   note: "Agentplane shared guard batch verified."
-commit: null
+commit:
+  hash: "2419f06b71f91706e74dc3148b8139b2829c2ff8"
+  message: "Merge pull request #3509 from basilisk-labs/task/202605091500-HJ0QVX/agentplane-guards"
 comments:
   -
     author: "CODER"
     body: "Start: Replace a low-risk batch of local agentplane isRecord helpers with the canonical shared guard."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3509 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Agentplane shared guard batch verified."
+  -
+    type: "status"
+    at: "2026-05-09T15:06:00.816Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3509 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T15:02:45.999Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T15:06:00.824Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace a first low-risk batch of local agentplane isRecord helpers with the canonical shared guard without changing behavior."
 sections:
   Summary: |-
