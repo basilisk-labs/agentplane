@@ -17,7 +17,6 @@ import { generateAcr } from "./generate.js";
 import { acrValidationError } from "./remediation.js";
 import { renderAcrSummary, summarizeAcr } from "./summary.js";
 import {
-  defaultAcrPath,
   emitValidationResult,
   readAcrTarget,
   validateAcrTarget,
