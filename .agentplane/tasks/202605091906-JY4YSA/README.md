@@ -1,7 +1,8 @@
 ---
 id: "202605091906-JY4YSA"
 title: "Support packaged blueprint catalogs"
-status: "DOING"
+result_summary: "Merged via PR #3539."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Packaged blueprint catalog support verified."
   attempts: 0
-commit: null
+commit:
+  hash: "f058872dfa3fb4d34444e16e1a239c2a4c066e3b"
+  message: "Merge pull request #3539 from basilisk-labs/task/202605091906-JY4YSA/packaged-blueprint-catalog"
 comments:
   -
     author: "CODER"
     body: "Start: implementing package-style blueprint catalog parsing and install support in the task worktree while preserving existing source catalog behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3539 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Packaged blueprint catalog support verified."
+  -
+    type: "status"
+    at: "2026-05-09T19:20:42.532Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3539 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T19:15:46.696Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T19:20:42.539Z"
+doc_updated_by: "INTEGRATOR"
 description: "Teach AgentPlane CLI to consume recipes-like blueprint release indexes with versioned package tarballs and checksums while preserving existing source catalog compatibility."
 sections:
   Summary: |-
