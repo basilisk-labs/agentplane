@@ -1,0 +1,210 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605091732-XBBTRA",
+  "created_at": "2026-05-09T17:44:24.986Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "7610f8bf04a700bb009799e409c0ec24b605d5e2",
+    "work_ref": "main",
+    "work_commit": "7610f8bf04a700bb009799e409c0ec24b605d5e2"
+  },
+  "task": {
+    "task_id": "202605091732-XBBTRA",
+    "title": "Align cloud backend project id and clear recovery stash",
+    "intent": "Align tracked cloud backend project id with the effective .env project, run cloud backend pull/inspect/doctor checks, and remove the obsolete recovery stash after confirming no useful changes remain.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605091732-XBBTRA/README.md",
+      "sha256": "sha256:1fa7602314f751123f937a87b500aaf97a4f8ce85861aa41add8265bf02907f0"
+    },
+    "approved_at": "2026-05-09T17:33:01.331Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3522.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605091732-XBBTRA_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-09T17:33:01.331Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605091732-XBBTRA/README.md",
+      "sha256": "sha256:1fa7602314f751123f937a87b500aaf97a4f8ce85861aa41add8265bf02907f0"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605091732-XBBTRA/README.md",
+      "sha256": "sha256:1fa7602314f751123f937a87b500aaf97a4f8ce85861aa41add8265bf02907f0"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605091732-XBBTRA/README.md",
+      "sha256": "sha256:1fa7602314f751123f937a87b500aaf97a4f8ce85861aa41add8265bf02907f0"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605091732-XBBTRA/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:877ae070595b9a8a61ebe6dca880e7bcd757b61c6a75954c630d1a98fac9e827"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 7610f8bf04a700bb009799e409c0ec24b605d5e2 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:def808128f9f6d91235d4c385fd2fa123732a10a028eb2aae785274f21588e44",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "ops.approval",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "ops.approval",
+          "kind": "approval",
+          "produced_by": "approval_gate",
+          "required": true
+        },
+        {
+          "id": "ops.rollback",
+          "kind": "rollback",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "ops.action",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "ops.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605091732-XBBTRA/blueprint/resolved-snapshot.json",
+        "digest": "fb1543d6821a4c526633670a8e128c5490bdc6a0dc20392e390a938652bca001",
+        "current_digest": "fb1543d6821a4c526633670a8e128c5490bdc6a0dc20392e390a938652bca001",
+        "route_changed": false,
+        "artifact_sha256": "sha256:877ae070595b9a8a61ebe6dca880e7bcd757b61c6a75954c630d1a98fac9e827",
+        "safe_command": "agentplane blueprint snapshot 202605091732-XBBTRA"
+      }
+    }
+  }
+}
