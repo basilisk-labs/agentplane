@@ -160,14 +160,14 @@ export async function checkManagedHookShimReadiness(repoRoot: string): Promise<s
   }
 
   const hasEnvFallback = shimText.includes("AGENTPLANE_HOOK_RUNNER");
-  const hasNpxFallback = shimText.includes("AGENTPLANE_HOOK_ALLOW_NPX");
-  if (!hasEnvFallback || !hasNpxFallback) {
+  const hasGlobalFallback = shimText.includes("AGENTPLANE_HOOK_ALLOW_GLOBAL");
+  if (!hasEnvFallback || !hasGlobalFallback) {
     findings.push(
       renderDiagnosticFinding({
         severity: "WARN",
         state: "managed AgentPlane hook shim is missing current fallback branches",
         likelyCause:
-          "the repository still has an older managed shim that cannot use env-runner or explicit npx fallback recovery",
+          "the repository still has an older managed shim that cannot use env-runner or explicit global fallback recovery",
         nextAction: {
           command: "agentplane hooks install",
           reason: "rewrite the shim with the current fallback chain",
@@ -175,7 +175,7 @@ export async function checkManagedHookShimReadiness(repoRoot: string): Promise<s
         details: [
           `Shim path: ${shimRelPath}`,
           `AGENTPLANE_HOOK_RUNNER fallback: ${hasEnvFallback ? "present" : "missing"}`,
-          `AGENTPLANE_HOOK_ALLOW_NPX fallback: ${hasNpxFallback ? "present" : "missing"}`,
+          `AGENTPLANE_HOOK_ALLOW_GLOBAL fallback: ${hasGlobalFallback ? "present" : "missing"}`,
         ],
       }),
     );

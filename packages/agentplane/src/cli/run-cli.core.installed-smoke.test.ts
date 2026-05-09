@@ -304,6 +304,6 @@ describe("installed AgentPlane smoke", { timeout: INSTALLED_SMOKE_TIMEOUT_MS }, 
     );
     expect(shim).toContain("agentplane-hook-shim");
     expect(shim).toContain(`INSTALL_BIN='${binPath}'`);
-    expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_NPX");
+    expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_GLOBAL");
   });
 });
