@@ -1,16 +1,19 @@
 {
-  "artifact_state": "remote_failed",
-  "artifact_state_reason": "task branch push failed: remote: error: GH006: Protected branch update failed for refs/heads/main.        \nremote: \nremote: - Changes must be made through a pull request.        \nTo https://github.com/basilisk-labs/agentplane.git\n ! [remote rejected]     HEAD -> main (protected branch hook declined)\nerror: failed to push some refs to 'https://github.com/basilisk-labs/agentplane.git'",
-  "artifact_state_updated_at": "2026-05-09T15:18:26.179Z",
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-09T15:20:40Z",
   "base": "main",
   "branch": "task/202605091514-JP4HTA/hook-global-fallback",
   "created_at": "2026-05-09T15:15:02.457Z",
-  "head_sha": "bd06495dc586cc309224050ecca404d6e3ad4dea",
+  "head_sha": "8eb630cad7a46f2b53e7928006147e60a2cd38e8",
   "last_verified_at": "2026-05-09T15:17:48.901Z",
   "last_verified_sha": "172bcc8169f8f2e9c16510e0666b0a0b1b9afcc7",
+  "merge_commit": "0e3eb27dc3b7f244b44585d5121b2366c84771ab",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-09T15:20:40Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605091514-JP4HTA",
-  "updated_at": "2026-05-09T15:18:20.817Z",
+  "updated_at": "2026-05-09T15:20:40Z",
   "verify": {
     "status": "pass"
   }
