@@ -1,0 +1,219 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605091732-Y4XSCS",
+  "created_at": "2026-05-09T17:43:51.736Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "d61ac3b0f0d71978d104bb5074b568891b3337f1",
+    "work_ref": "main",
+    "work_commit": "d61ac3b0f0d71978d104bb5074b568891b3337f1"
+  },
+  "task": {
+    "task_id": "202605091732-Y4XSCS",
+    "title": "Refresh oversized test baseline",
+    "intent": "Fix hotspots:check drift by reconciling the oversized test baseline with the current merged finish.validation.unit.test.ts size.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605091732-Y4XSCS/README.md",
+      "sha256": "sha256:56dacdea0e976f575c0a8ca41d60978616f4cc4b9b539f1d74a4a2c27fcc40c7"
+    },
+    "approved_at": "2026-05-09T17:32:45.487Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3523.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605091732-Y4XSCS_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-09T17:32:45.487Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605091732-Y4XSCS/README.md",
+      "sha256": "sha256:56dacdea0e976f575c0a8ca41d60978616f4cc4b9b539f1d74a4a2c27fcc40c7"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605091732-Y4XSCS/README.md",
+      "sha256": "sha256:56dacdea0e976f575c0a8ca41d60978616f4cc4b9b539f1d74a4a2c27fcc40c7"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605091732-Y4XSCS/README.md",
+      "sha256": "sha256:56dacdea0e976f575c0a8ca41d60978616f4cc4b9b539f1d74a4a2c27fcc40c7"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605091732-Y4XSCS/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:4d0f0c733b7321a6ad2e587de14a577f8a471f104c1229712e8a8e29aac9439b"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit d61ac3b0f0d71978d104bb5074b568891b3337f1 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:1f5b588a2d16a47edf19b679439927d4f67adc00da5f49a41da7da306d6233a9",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605091732-Y4XSCS/blueprint/resolved-snapshot.json",
+        "digest": "bcb7704676247f8c5c9b9f5459c7985c8b321febd6ae7236428096de92020122",
+        "current_digest": "bcb7704676247f8c5c9b9f5459c7985c8b321febd6ae7236428096de92020122",
+        "route_changed": false,
+        "artifact_sha256": "sha256:4d0f0c733b7321a6ad2e587de14a577f8a471f104c1229712e8a8e29aac9439b",
+        "safe_command": "agentplane blueprint snapshot 202605091732-Y4XSCS"
+      }
+    }
+  }
+}
