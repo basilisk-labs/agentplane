@@ -24,12 +24,17 @@ Created: 2026-05-09T19:00:06.444Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-09T19:00:06.444Z
+- Updated: 2026-05-09T19:09:25.879Z
 - Branch: task/202605091754-6BYVEH/transition-comment-flow
-- Head: 8d509525d621
+- Head: 7ff2f8f90118
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 505 +++++++++++++++++++++
+ packages/agentplane/src/commands/task/block.ts     |  66 +--
+ packages/agentplane/src/commands/task/shared.ts    |   2 +
+ .../src/commands/task/shared/transitions.ts        |  63 +++
+ packages/agentplane/src/commands/task/start.ts     |  66 +--
+ 5 files changed, 618 insertions(+), 84 deletions(-)
 ```
 
 </details>
