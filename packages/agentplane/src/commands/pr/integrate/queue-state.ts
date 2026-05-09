@@ -22,7 +22,7 @@ export type IntegrationQueueEntry = {
   reason?: string;
 };
 
-export type IntegrationQueueState = {
+type IntegrationQueueState = {
   schema_version: 1;
   entries: IntegrationQueueEntry[];
 };
@@ -31,10 +31,10 @@ export type QueueClock = {
   now: () => Date;
 };
 
-export const DEFAULT_QUEUE_LEASE_MS = 30 * 60 * 1000;
+const DEFAULT_QUEUE_LEASE_MS = 30 * 60 * 1000;
 const DEFAULT_QUEUE_CLOCK: QueueClock = { now: () => new Date() };
 
-export function integrationQueuePath(gitRoot: string): string {
+function integrationQueuePath(gitRoot: string): string {
   return path.join(gitRoot, ".agentplane", "cache", "integration-queue.json");
 }
 

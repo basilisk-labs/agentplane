@@ -12,7 +12,7 @@ import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 
 export type CatalogKind = "blueprint" | "pack";
 
-export type CatalogEntry = {
+type CatalogEntry = {
   id: string;
   path?: string;
   name?: string;
@@ -36,7 +36,7 @@ export type CatalogEntry = {
   }[];
 };
 
-export type BlueprintCatalogIndex = {
+type BlueprintCatalogIndex = {
   schema_version: 1;
   catalog_id: string;
   name: string;
@@ -50,7 +50,7 @@ type BlueprintCatalogSource = {
   source: string;
 };
 
-export type CatalogBlueprintManifest = {
+type CatalogBlueprintManifest = {
   schema_version: 1;
   id: string;
   version: string;
@@ -65,7 +65,7 @@ export type CatalogBlueprintManifest = {
   };
 };
 
-export type CatalogPackManifest = {
+type CatalogPackManifest = {
   schema_version: 1;
   id: string;
   version: string;
@@ -81,7 +81,7 @@ export type CatalogPackManifest = {
   };
 };
 
-export type InstalledBlueprint = {
+type InstalledBlueprint = {
   catalogId: string;
   blueprintId: string;
   projectPath: string;
@@ -424,7 +424,9 @@ function pickLatestVersion(entry: CatalogEntry): NonNullable<CatalogEntry["versi
   if (versions.length === 0) {
     throw new ValidationError({ message: `Blueprint ${entry.id} has no installable versions.` });
   }
-  return versions.toSorted((a, b) => a.version.localeCompare(b.version, undefined, { numeric: true })).at(-1)!;
+  return versions
+    .toSorted((a, b) => a.version.localeCompare(b.version, undefined, { numeric: true }))
+    .at(-1)!;
 }
 
 async function resolvePackageRoot(extractedDir: string): Promise<string> {
@@ -440,7 +442,8 @@ async function resolvePackageRoot(extractedDir: string): Promise<string> {
   const dirs = entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
   if (dirs.length !== 1) {
     throw new ValidationError({
-      message: "Blueprint package archive must contain blueprint.json at root or exactly one root directory.",
+      message:
+        "Blueprint package archive must contain blueprint.json at root or exactly one root directory.",
     });
   }
   const candidate = path.join(extractedDir, dirs[0]);
@@ -551,7 +554,9 @@ export async function installBlueprint(opts: {
       await extractArchive({ archivePath, destDir: tempRoot });
       const packageRoot = await resolvePackageRoot(tempRoot);
       manifestSource = path.join(packageRoot, "blueprint.json");
-      manifest = parseBlueprintManifest(JSON.parse(await readFile(manifestSource, "utf8")) as unknown);
+      manifest = parseBlueprintManifest(
+        JSON.parse(await readFile(manifestSource, "utf8")) as unknown,
+      );
     }
     assertSafeCatalogPathSegment(manifest.definition.id, "Catalog blueprint definition.id");
     assertSafeCatalogPathSegment(manifest.id, "Catalog blueprint manifest id");
@@ -586,7 +591,9 @@ export async function installBlueprint(opts: {
       catalogId: manifest.id,
       blueprintId: manifest.definition.id,
       projectPath: path.relative(opts.projectRoot, targetPath),
-      recommendedAllowedIds: manifest.activation?.recommended_allowed_ids ?? [manifest.definition.id],
+      recommendedAllowedIds: manifest.activation?.recommended_allowed_ids ?? [
+        manifest.definition.id,
+      ],
     };
   } finally {
     await rm(tempRoot, { recursive: true, force: true });

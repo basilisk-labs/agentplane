@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-export type ReadJsonFileOptions<T> = {
+type ReadJsonFileOptions<T> = {
   defaultValue?: T;
 };
 
