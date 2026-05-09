@@ -1,7 +1,7 @@
 ---
 id: "202605091617-MK6T79"
 title: "Update evaluator/docs and operational guidance"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 revision: 1
@@ -26,7 +26,9 @@ verification:
   updated_by: "DOCS"
   note: "Verified bounded evaluator documentation."
   attempts: 0
-commit: null
+commit:
+  hash: "5c8b9d2c955132845712a7a6f322abd58e1932e1"
+  message: "Merge pull request #3518 from basilisk-labs/task/202605091617-83FQ3C/bounded-evaluator-loop"
 comments:
   -
     author: "DOCS"
@@ -34,6 +36,9 @@ comments:
   -
     author: "DOCS"
     body: "Start: document bounded evaluator rework behavior inside the parent evaluator-loop batch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3518 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -61,9 +66,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified bounded evaluator documentation."
+  -
+    type: "status"
+    at: "2026-05-09T17:06:20.153Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3518 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T16:46:42.068Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-09T17:06:20.156Z"
+doc_updated_by: "INTEGRATOR"
 description: "Document how EVALUATOR verdicts are applied, rework loop boundaries, max attempts behavior, and when blocked_external is triggered before returning to next agent."
 sections:
   Summary: |-

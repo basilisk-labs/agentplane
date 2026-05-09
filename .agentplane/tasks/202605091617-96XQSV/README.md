@@ -1,7 +1,7 @@
 ---
 id: "202605091617-96XQSV"
 title: "Add bounded evaluator tests and schema fixtures"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "TESTER"
 revision: 1
@@ -27,7 +27,9 @@ verification:
   updated_by: "TESTER"
   note: "Verified bounded evaluator tests and schema fixtures."
   attempts: 0
-commit: null
+commit:
+  hash: "5c8b9d2c955132845712a7a6f322abd58e1932e1"
+  message: "Merge pull request #3518 from basilisk-labs/task/202605091617-83FQ3C/bounded-evaluator-loop"
 comments:
   -
     author: "TESTER"
@@ -35,6 +37,9 @@ comments:
   -
     author: "TESTER"
     body: "Start: add bounded evaluator tests and schema fixtures inside the parent evaluator-loop batch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3518 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -62,9 +67,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified bounded evaluator tests and schema fixtures."
+  -
+    type: "status"
+    at: "2026-05-09T17:06:20.145Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3518 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T16:46:38.850Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-05-09T17:06:20.148Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add/extend tests covering attempts field, max_rework_attempts enforcement, and blocked_external transitions. Ensure verification artifacts include attempts in snapshots and exports."
 sections:
   Summary: |-

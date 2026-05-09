@@ -1,7 +1,8 @@
 ---
 id: "202605091617-83FQ3C"
 title: "Introduce bounded EVALUATOR rework loop with return-to-previous-agent"
-status: "DOING"
+result_summary: "Merged via PR #3518."
+status: "DONE"
 priority: "med"
 owner: "PLANNER"
 revision: 1
@@ -24,7 +25,9 @@ verification:
   updated_by: "CODER"
   note: "Verified bounded evaluator rework loop batch."
   attempts: 0
-commit: null
+commit:
+  hash: "5c8b9d2c955132845712a7a6f322abd58e1932e1"
+  message: "Merge pull request #3518 from basilisk-labs/task/202605091617-83FQ3C/bounded-evaluator-loop"
 comments:
   -
     author: "PLANNER"
@@ -32,6 +35,9 @@ comments:
   -
     author: "PLANNER"
     body: "Start: task approved and worktree created; proceeding with atomic subtask decomposition and implementation handoff through bounded evaluator loop tasks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3518 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -53,9 +59,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified bounded evaluator rework loop batch."
+  -
+    type: "status"
+    at: "2026-05-09T17:06:20.131Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3518 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T16:46:24.421Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-09T17:06:20.135Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add bounded evaluation loop so results are reviewed against task goals, best coding practices, and repository rules; on rework return to previous agent with reason and max-attempts guard in configuration/settings."
 sections:
   Summary: |-

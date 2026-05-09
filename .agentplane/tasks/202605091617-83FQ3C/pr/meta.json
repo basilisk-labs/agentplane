@@ -1,4 +1,6 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-09T17:05:42Z",
   "base": "main",
   "batch": {
     "closure_policy": "all_or_fail",
@@ -13,9 +15,12 @@
   },
   "branch": "task/202605091617-83FQ3C/bounded-evaluator-loop",
   "created_at": "2026-05-09T16:46:24.544Z",
-  "head_sha": "04b39e02421c3c0af67524662e126bed1ab59bab",
+  "head_sha": "82608ff239eca8081fab51f5fc0e86a867e23b13",
   "last_verified_at": "2026-05-09T16:46:24.391Z",
   "last_verified_sha": "7f40f04dd37729afe20addc17b8a75e416bbf565",
+  "merge_commit": "5c8b9d2c955132845712a7a6f322abd58e1932e1",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-09T17:05:42Z",
   "related_task_ids": [
     "202605091617-362W7W",
     "202605091617-96XQSV",
@@ -23,8 +28,9 @@
     "202605091617-MK6T79"
   ],
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605091617-83FQ3C",
-  "updated_at": "2026-05-09T16:50:44.513Z",
+  "updated_at": "2026-05-09T17:05:42Z",
   "verify": {
     "status": "pass"
   }
