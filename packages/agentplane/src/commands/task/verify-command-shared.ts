@@ -132,7 +132,7 @@ export const verifyFindingOptions: readonly OptionSpec[] = [
   },
 ] as const;
 
-export const verifyCommonOptions: readonly OptionSpec[] = [
+const verifyCommonOptions: readonly OptionSpec[] = [
   { kind: "string", name: "by", valueHint: "<id>", required: true, description: "Verifier id." },
   {
     kind: "string",

@@ -12,7 +12,7 @@ import type {
   WorkflowMode,
 } from "./model.js";
 
-export type NodeSpec = {
+type NodeSpec = {
   kind: BlueprintNodeKind;
   mode?: BlueprintNode["mode"];
   evidence?: readonly EvidenceKind[];

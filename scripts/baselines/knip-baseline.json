@@ -1572,11 +1572,6 @@
           "name": "parseVersionPlan",
           "line": 33,
           "col": 17
-        },
-        {
-          "name": "readJsonFile",
-          "line": 18,
-          "col": 23
         }
       ]
     },

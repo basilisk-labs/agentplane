@@ -12,9 +12,9 @@ import type { CommandContext } from "../shared/task-backend.js";
 import { loadTaskFromContext } from "../shared/task-backend.js";
 import { acrValidationError } from "./remediation.js";
 
-export type AcrValidationMode = "schema" | "local" | "ci";
+type AcrValidationMode = "schema" | "local" | "ci";
 
-export type AcrCiSemanticOptions = {
+type AcrCiSemanticOptions = {
   requirePlanApproved: boolean;
   requireVerification: boolean;
   requirePolicyPass: boolean;
@@ -22,7 +22,7 @@ export type AcrCiSemanticOptions = {
   allowManualOverride: boolean;
 };
 
-export type AcrValidationResult = {
+type AcrValidationResult = {
   ok: true;
   task_id: string;
   acr_path: string;
