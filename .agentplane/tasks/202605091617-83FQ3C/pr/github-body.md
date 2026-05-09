@@ -2,6 +2,15 @@ Task: `202605091617-83FQ3C`
 Title: Introduce bounded EVALUATOR rework loop with return-to-previous-agent
 Canonical task record: `.agentplane/tasks/202605091617-83FQ3C/README.md`
 
+## Batch Tasks
+
+- Primary: `202605091617-83FQ3C`
+- Closure policy: `all_or_fail`
+- Included: `202605091617-362W7W`
+- Included: `202605091617-96XQSV`
+- Included: `202605091617-CBKJSC`
+- Included: `202605091617-MK6T79`
+
 ## Summary
 
 Introduce bounded EVALUATOR rework loop with return-to-previous-agent
@@ -29,6 +38,7 @@ Add bounded evaluation loop so results are reviewed against task goals, best cod
 ```text
  .agentplane/tasks/202605091617-362W7W/README.md    | 131 +++++
  .../blueprint/resolved-snapshot.json               | 504 +++++++++++++++++++
+ .../blueprint/resolved-snapshot.json               | 498 +++++++++++++++++++
  .agentplane/tasks/202605091617-96XQSV/README.md    | 131 +++++
  .../blueprint/resolved-snapshot.json               | 544 +++++++++++++++++++++
  .agentplane/tasks/202605091617-CBKJSC/README.md    | 131 +++++
@@ -59,7 +69,7 @@ Add bounded evaluation loop so results are reviewed against task goals, best cod
  schemas/config.schema.json                         |  15 +
  schemas/task-readme-frontmatter.schema.json        |   8 +-
  schemas/tasks-export.schema.json                   |   8 +-
- 32 files changed, 2726 insertions(+), 51 deletions(-)
+ 33 files changed, 3224 insertions(+), 51 deletions(-)
 ```
 
 </details>
