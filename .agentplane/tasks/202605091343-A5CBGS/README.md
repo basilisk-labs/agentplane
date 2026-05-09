@@ -1,7 +1,8 @@
 ---
 id: "202605091343-A5CBGS"
 title: "Deduplicate GitHub transport sleep helper"
-status: "DOING"
+result_summary: "Merged via PR #3503."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-09T13:48:36.189Z"
   updated_by: "CODER"
   note: "Shared sleep helper reuse verified."
-commit: null
+commit:
+  hash: "fbe499664f0bfe84c33eae766e03586f58f221fb"
+  message: "Merge pull request #3503 from basilisk-labs/task/202605091343-A5CBGS/dedupe-gh-sleep"
 comments:
   -
     author: "CODER"
     body: "Start: Deduplicate the GitHub transport sleep helper by importing the existing shared concurrency helper and verifying retry behavior stays unchanged."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3503 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Shared sleep helper reuse verified."
+  -
+    type: "status"
+    at: "2026-05-09T13:52:13.227Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3503 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T13:48:36.199Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T13:52:13.232Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace the local gh-transport sleep helper with the existing shared task-backend concurrency helper to remove one duplicate sleep implementation without changing retry behavior."
 sections:
   Summary: |-
