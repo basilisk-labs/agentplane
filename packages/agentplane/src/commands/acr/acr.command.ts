@@ -16,11 +16,7 @@ import type { CommandContext } from "../shared/task-backend.js";
 import { generateAcr } from "./generate.js";
 import { acrValidationError } from "./remediation.js";
 import { renderAcrSummary, summarizeAcr } from "./summary.js";
-import {
-  emitValidationResult,
-  readAcrTarget,
-  validateAcrTarget,
-} from "./validate.js";
+import { emitValidationResult, readAcrTarget, validateAcrTarget } from "./validate.js";
 
 type AcrMode = "schema" | "local" | "ci";
 
