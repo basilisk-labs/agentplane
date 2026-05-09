@@ -22,12 +22,16 @@ Move shared duration statistics, suite argument parsing, config loading, interpo
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-09T18:22:55.946Z
+- Updated: 2026-05-09T18:28:17.804Z
 - Branch: task/202605091753-5G5506/benchmark-helpers
-- Head: d25d4ae5fb95
+- Head: 621acaa364c2
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 541 +++++++++++++++++++++
+ scripts/cli-benchmark-runner.mjs                   | 240 +--------
+ scripts/lib/cli-benchmark-shared.mjs               | 245 ++++++++++
+ scripts/measure-cli-walltime.mjs                   | 229 +--------
+ 4 files changed, 829 insertions(+), 426 deletions(-)
 ```
 
 </details>
