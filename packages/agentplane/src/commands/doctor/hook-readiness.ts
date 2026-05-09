@@ -40,24 +40,33 @@ function extractInstallBinFromShim(shimText: string): string | null {
 async function resolveManagedHookNames(repoRoot: string): Promise<{
   hooksDir: string | null;
   managedHooks: string[];
+  staleManagedHooks: string[];
   unmanagedHooks: string[];
 }> {
   let hooksDir: string;
   try {
     hooksDir = await resolveGitHooksDir(repoRoot);
   } catch {
-    return { hooksDir: null, managedHooks: [], unmanagedHooks: [] };
+    return { hooksDir: null, managedHooks: [], staleManagedHooks: [], unmanagedHooks: [] };
   }
 
   const managedHooks: string[] = [];
+  const staleManagedHooks: string[] = [];
   const unmanagedHooks: string[] = [];
   for (const hook of HOOK_NAMES) {
     const hookPath = path.join(hooksDir, hook);
     if (!(await pathExists(hookPath))) continue;
-    if (await fileIsManaged(hookPath, HOOK_MARKER)) managedHooks.push(hook);
-    else unmanagedHooks.push(hook);
+    const hookText = await readTextIfExists(hookPath);
+    if (hookText?.includes(HOOK_MARKER) === true) {
+      managedHooks.push(hook);
+      if (hookText.includes("command -v agentplane") || hookText.includes("exec agentplane ")) {
+        staleManagedHooks.push(hook);
+      }
+    } else {
+      unmanagedHooks.push(hook);
+    }
   }
-  return { hooksDir, managedHooks, unmanagedHooks };
+  return { hooksDir, managedHooks, staleManagedHooks, unmanagedHooks };
 }
 
 function renderUnmanagedHooksFinding(unmanagedHooks: string[]): string {
@@ -76,7 +85,8 @@ function renderUnmanagedHooksFinding(unmanagedHooks: string[]): string {
 
 export async function checkManagedHookShimReadiness(repoRoot: string): Promise<string[]> {
   const findings: string[] = [];
-  const { managedHooks, unmanagedHooks } = await resolveManagedHookNames(repoRoot);
+  const { managedHooks, staleManagedHooks, unmanagedHooks } =
+    await resolveManagedHookNames(repoRoot);
   const shimRelPath = ".agentplane/bin/agentplane";
   const shimPath = path.join(repoRoot, shimRelPath);
   const shimText = await readTextIfExists(shimPath);
@@ -181,10 +191,39 @@ export async function checkManagedHookShimReadiness(repoRoot: string): Promise<s
     );
   }
 
+  if (staleManagedHooks.length > 0) {
+    findings.push(
+      renderDiagnosticFinding({
+        severity: "WARN",
+        state: "managed git hook wrappers use a stale direct global fallback",
+        likelyCause:
+          "the hook files were generated before hook execution was forced through the repository-scoped shim",
+        nextAction: {
+          command: "agentplane hooks install",
+          reason: "rewrite managed hook wrappers so fallback policy is centralized in the shim",
+        },
+        details: [`Stale managed hooks: ${staleManagedHooks.join(", ")}`],
+      }),
+    );
+  }
+
   if (managedHooks.includes("pre-push")) {
     const repoPrePushScript = path.join(repoRoot, "scripts", "run-pre-push-hook.mjs");
     const packageJsonText = await readTextIfExists(path.join(repoRoot, "package.json"));
     if (!(await pathExists(repoPrePushScript)) && packageJsonText) {
+      const packageScripts = (() => {
+        try {
+          const parsed = JSON.parse(packageJsonText) as { scripts?: unknown };
+          return parsed.scripts && typeof parsed.scripts === "object"
+            ? Object.keys(parsed.scripts).sort()
+            : [];
+        } catch {
+          return [];
+        }
+      })();
+      const fallbackScriptNames = packageScripts.filter((name) =>
+        ["format:check", "ci:local:fast", "ci:local:full", "test", "build"].includes(name),
+      );
       findings.push(
         renderDiagnosticFinding({
           severity: "INFO",
@@ -199,7 +238,9 @@ export async function checkManagedHookShimReadiness(repoRoot: string): Promise<s
           },
           details: [
             "Missing repository script: scripts/run-pre-push-hook.mjs",
-            "Installed fallback skips package scripts that are not declared by the clean project.",
+            fallbackScriptNames.length > 0
+              ? `Fallback will consider declared scripts: ${fallbackScriptNames.join(", ")}`
+              : "Installed fallback skips package scripts that are not declared by the clean project.",
           ],
         }),
       );

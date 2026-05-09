@@ -1,0 +1,6 @@
+ .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
+ .../src/commands/doctor.command.runtime.test.ts    | 101 ++++-
+ packages/agentplane/src/commands/doctor.run.ts     |   4 +-
+ packages/agentplane/src/commands/doctor/fixes.ts   |  59 +++
+ .../src/commands/doctor/hook-readiness.ts          |  53 ++-
+ 5 files changed, 699 insertions(+), 14 deletions(-)

@@ -250,6 +250,7 @@ async function writeManagedHookSurface(
   root: string,
   opts: {
     hooks?: string[];
+    hookText?: (hook: string) => string;
     packageJson?: string | null;
     runnerExists?: boolean;
     shimText?: string;
@@ -270,12 +271,13 @@ async function writeManagedHookSurface(
     const hookPath = path.join(hooksDir, hook);
     await writeFile(
       hookPath,
-      [
-        "#!/usr/bin/env sh",
-        "# agentplane-hook (do not edit)",
-        'exec "$PWD/.agentplane/bin/agentplane" hooks run "$@"',
-        "",
-      ].join("\n"),
+      opts.hookText?.(hook) ??
+        [
+          "#!/usr/bin/env sh",
+          "# agentplane-hook (do not edit)",
+          'exec "$PWD/.agentplane/bin/agentplane" hooks run "$@"',
+          "",
+        ].join("\n"),
       "utf8",
     );
     await chmod(hookPath, 0o755);
@@ -818,10 +820,46 @@ describe(
       }
     });
 
+    it("warns when managed hook wrappers still use direct global fallback", async () => {
+      const ws = await mkWorkspace();
+      await gitInitWithCommit(ws.root, "feat: initial");
+      await writeManagedHookSurface(ws.root, {
+        hookText: (hook) =>
+          [
+            "#!/usr/bin/env sh",
+            "# agentplane-hook (do not edit)",
+            'SHIM="$PWD/.agentplane/bin/agentplane"',
+            'if [ -x "$SHIM" ]; then',
+            `  exec "$SHIM" hooks run ${hook} "$@"`,
+            "fi",
+            "if command -v agentplane >/dev/null 2>&1; then",
+            `  exec agentplane hooks run ${hook} "$@"`,
+            "fi",
+            "",
+          ].join("\n"),
+      });
+      const stderr = captureStderr();
+      try {
+        const rc = await runDoctor(
+          { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+          { fix: false, dev: false },
+        );
+        expect(rc).toBe(0);
+        const output = stderr.output();
+        expect(output).toContain("managed git hook wrappers use a stale direct global fallback");
+        expect(output).toContain("Stale managed hooks: pre-push");
+      } finally {
+        stderr.restore();
+      }
+    });
+
     it("reports installed clean-project fallback behavior when local pre-push scripts are absent", async () => {
       const ws = await mkWorkspace();
       await gitInitWithCommit(ws.root, "feat: initial");
-      await writeManagedHookSurface(ws.root, { packageJson: '{\n  "scripts": {}\n}\n' });
+      await writeManagedHookSurface(ws.root, {
+        packageJson:
+          '{\n  "scripts": {\n    "format:check": "prettier --check .",\n    "test": "vitest run"\n  }\n}\n',
+      });
       const stderr = captureStderr();
       try {
         const rc = await runDoctor(
@@ -834,9 +872,58 @@ describe(
           "managed pre-push hook will use installed clean-project fallback checks",
         );
         expect(output).toContain("Missing repository script: scripts/run-pre-push-hook.mjs");
+        expect(output).toContain("Fallback will consider declared scripts: format:check, test");
       } finally {
         stderr.restore();
       }
+    });
+
+    it("refreshes existing managed hooks and shim when doctor --fix runs", async () => {
+      const ws = await mkWorkspace();
+      await gitInitWithCommit(ws.root, "feat: initial");
+      await writeManagedHookSurface(ws.root, {
+        hooks: ["pre-commit"],
+        shimText: [
+          "#!/usr/bin/env sh",
+          "# agentplane-hook-shim (do not edit)",
+          'exec agentplane "$@"',
+          "",
+        ].join("\n"),
+        hookText: (hook) =>
+          [
+            "#!/usr/bin/env sh",
+            "# agentplane-hook (do not edit)",
+            'SHIM="$PWD/.agentplane/bin/agentplane"',
+            'if [ -x "$SHIM" ]; then',
+            `  exec "$SHIM" hooks run ${hook} "$@"`,
+            "fi",
+            "if command -v agentplane >/dev/null 2>&1; then",
+            `  exec agentplane hooks run ${hook} "$@"`,
+            "fi",
+            "",
+          ].join("\n"),
+      });
+      const stderr = captureStderr();
+      try {
+        const rc = await runDoctor(
+          { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+          { fix: true, dev: false },
+        );
+        expect(rc).toBe(0);
+        const output = stderr.output();
+        expect(output).not.toContain("managed AgentPlane hook shim uses a stale format");
+        expect(output).not.toContain(
+          "managed git hook wrappers use a stale direct global fallback",
+        );
+      } finally {
+        stderr.restore();
+      }
+
+      const shim = await readFile(path.join(ws.root, ".agentplane", "bin", "agentplane"), "utf8");
+      const hook = await readFile(path.join(ws.root, ".git", "hooks", "pre-commit"), "utf8");
+      expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_GLOBAL");
+      expect(hook).toContain('exec "$SHIM" hooks run pre-commit "$@"');
+      expect(hook).not.toContain("command -v agentplane");
     });
 
     it("reports unmanaged hooks without suggesting silent overwrite", async () => {

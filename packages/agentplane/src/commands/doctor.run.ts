@@ -12,7 +12,7 @@ import {
   checkBranchPrDoneTaskOpenPrDrift,
   checkBranchPrShippedTaskDrift,
 } from "./doctor/branch-pr.js";
-import { safeFixGitignore, safeFixTaskIndex } from "./doctor/fixes.js";
+import { safeFixGitignore, safeFixManagedHooks, safeFixTaskIndex } from "./doctor/fixes.js";
 import { checkLayering } from "./doctor/layering.js";
 import { checkPromptGraphFacts } from "./doctor/prompt-graph.js";
 import { checkRuntimeSourceFacts, findingSeverity } from "./doctor/runtime.js";
@@ -86,6 +86,8 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
     process.stdout.write(`${successMessage("doctor fix", undefined, idx.note)}\n`);
     const workflowFix = await safeFixWorkflow(repoRoot);
     process.stdout.write(`${successMessage("doctor fix", undefined, workflowFix.note)}\n`);
+    const hooksFix = await safeFixManagedHooks(repoRoot);
+    process.stdout.write(`${successMessage("doctor fix", undefined, hooksFix.note)}\n`);
   }
 
   const problems = await runChecks();
