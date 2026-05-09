@@ -22,12 +22,16 @@ Teach AgentPlane CLI to consume recipes-like blueprint release indexes with vers
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-09T19:07:04.570Z
+- Updated: 2026-05-09T19:16:57.571Z
 - Branch: task/202605091906-JY4YSA/packaged-blueprint-catalog
-- Head: 8d509525d621
+- Head: 8575da6dfc4d
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
+ .../src/cli/run-cli.core.blueprint.test.ts         | 119 +++++
+ .../src/commands/blueprints/blueprints.command.ts  |   6 +-
+ .../agentplane/src/commands/blueprints/catalog.ts  | 252 +++++++++--
+ 4 files changed, 825 insertions(+), 48 deletions(-)
 ```
 
 </details>

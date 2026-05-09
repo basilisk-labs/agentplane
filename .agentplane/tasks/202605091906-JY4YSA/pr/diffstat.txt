@@ -1,0 +1,5 @@
+ .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
+ .../src/cli/run-cli.core.blueprint.test.ts         | 119 +++++
+ .../src/commands/blueprints/blueprints.command.ts  |   6 +-
+ .../agentplane/src/commands/blueprints/catalog.ts  | 252 +++++++++--
+ 4 files changed, 825 insertions(+), 48 deletions(-)
