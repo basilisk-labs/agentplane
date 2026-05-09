@@ -71,7 +71,9 @@ function isRecord(input: unknown): input is Record<string, unknown> {
 }
 
 function agentplaneHome(): string {
-  return process.env.AGENTPLANE_HOME?.trim() || path.join(os.homedir(), ".agentplane");
+  const configuredHome = process.env.AGENTPLANE_HOME?.trim();
+  if (configuredHome === "") return path.join(os.homedir(), ".agentplane");
+  return configuredHome ?? path.join(os.homedir(), ".agentplane");
 }
 
 function blueprintsHomeDir(): string {

@@ -185,12 +185,14 @@ export {
   gitBranchExists,
   gitBranchUpstream,
   gitAddPaths,
+  gitConfigGet,
   gitCommit,
   gitCurrentBranch,
   gitEnv,
   gitInitRepo,
   gitIsAncestor,
   gitListBranches,
+  gitMergeBase,
   gitRevParse,
   gitStagedPaths,
   GitContext,
@@ -200,9 +202,14 @@ export {
 export {
   gitAheadBehind,
   gitDiffNames,
+  gitDiffNameStatus,
+  gitDiffNumstat,
   gitDiffStat,
   gitShowFile,
   toGitPath,
+  type GitDiffRange,
+  type GitDiffNameStatusEntry,
+  type GitDiffNumstatEntry,
 } from "./git/git-diff.js";
 
 export {

@@ -5,8 +5,15 @@ import {
   validateAcr,
   type AgentChangeRecord,
 } from "@agentplaneorg/core/schemas";
-import { gitEnv, resolveBaseBranch } from "@agentplaneorg/core/git";
-import { execFileAsync } from "@agentplaneorg/core/process";
+import {
+  gitConfigGet,
+  gitDiffNameStatus,
+  gitDiffNumstat,
+  gitIsAncestor,
+  gitMergeBase,
+  gitRevParse,
+  resolveBaseBranch,
+} from "@agentplaneorg/core/git";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -480,12 +487,8 @@ export async function generateAcr(opts: {
     baseCommit: opts.baseCommit,
     workCommit,
   });
-  const branch = await gitOutput(gitRoot, ["rev-parse", "--abbrev-ref", "HEAD"]).catch(
-    () => "unknown",
-  );
-  const remote = await gitOutput(gitRoot, ["config", "--get", "remote.origin.url"]).catch(
-    () => null,
-  );
+  const branch = await gitRevParse(gitRoot, ["--abbrev-ref", "HEAD"]).catch(() => "unknown");
+  const remote = await gitConfigGet(gitRoot, "remote.origin.url");
   const diff = await readDiffSummary(gitRoot, baseCommit, workCommit);
   const taskHash = await hashFile(taskReadmePath).catch(() => null);
   const planState = task.plan_approval?.state ?? "pending";
@@ -842,7 +845,7 @@ export async function validateAcrTarget(opts: {
     }
     await assertGitCommit(opts.ctx.resolvedProject.gitRoot, resolved.record.repository.base_commit);
     await assertGitCommit(opts.ctx.resolvedProject.gitRoot, resolved.record.repository.work_commit);
-    const ancestor = await isAncestor(
+    const ancestor = await gitIsAncestor(
       opts.ctx.resolvedProject.gitRoot,
       resolved.record.repository.base_commit,
       resolved.record.repository.work_commit,
@@ -1069,64 +1072,31 @@ async function resolveBaseCommit(opts: {
   if (opts.baseCommit)
     return await resolveCommit(opts.ctx.resolvedProject.gitRoot, opts.baseCommit);
   const baseRef = await resolveBaseRef(opts.ctx, opts.cwd, opts.rootOverride);
-  return await gitOutput(opts.ctx.resolvedProject.gitRoot, [
-    "merge-base",
-    opts.workCommit,
-    baseRef,
-  ]);
+  return await gitMergeBase(opts.ctx.resolvedProject.gitRoot, opts.workCommit, baseRef);
 }
 
 async function resolveCommit(gitRoot: string, rev: string): Promise<string> {
-  return await gitOutput(gitRoot, ["rev-parse", rev]);
+  return await gitRevParse(gitRoot, [rev]);
 }
 
 async function assertGitCommit(gitRoot: string, rev: string): Promise<void> {
-  await gitOutput(gitRoot, ["cat-file", "-e", `${rev}^{commit}`]).catch(() => {
+  await gitRevParse(gitRoot, ["--verify", `${rev}^{commit}`]).catch(() => {
     throw acrValidationError("ACR_E_GIT_COMMIT_MISSING", `Git commit missing: ${rev}`);
   });
 }
 
-async function isAncestor(gitRoot: string, base: string, work: string): Promise<boolean> {
-  try {
-    await execFileAsync("git", ["merge-base", "--is-ancestor", base, work], {
-      cwd: gitRoot,
-      env: gitEnv(),
-    });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function gitOutput(gitRoot: string, args: string[]): Promise<string> {
-  const { stdout } = await execFileAsync("git", args, { cwd: gitRoot, env: gitEnv() });
-  return stdout.trim();
-}
-
 async function readDiffSummary(gitRoot: string, baseCommit: string, workCommit: string) {
   const [numstat, names] = await Promise.all([
-    gitOutput(gitRoot, ["diff", "--numstat", `${baseCommit}..${workCommit}`]).catch(() => ""),
-    gitOutput(gitRoot, ["diff", "--name-status", `${baseCommit}..${workCommit}`]).catch(() => ""),
+    gitDiffNumstat(gitRoot, baseCommit, workCommit, { range: "two-dot" }).catch(() => []),
+    gitDiffNameStatus(gitRoot, baseCommit, workCommit, { range: "two-dot" }).catch(() => []),
   ]);
-  let insertions = 0;
-  let deletions = 0;
-  const files = names
-    .split("\n")
-    .filter(Boolean)
-    .map((line) => {
-      const [statusCode = "", ...rest] = line.split("\t");
-      const filePath = rest.at(-1) ?? "unknown";
-      return {
-        path: filePath,
-        status: mapGitStatus(statusCode),
-        risk_categories: inferRiskCategories(filePath),
-      };
-    });
-  for (const line of numstat.split("\n").filter(Boolean)) {
-    const [added, removed] = line.split("\t");
-    insertions += Number.parseInt(added ?? "0", 10) || 0;
-    deletions += Number.parseInt(removed ?? "0", 10) || 0;
-  }
+  const files = names.map(({ statusCode, path: filePath }) => ({
+    path: filePath,
+    status: mapGitStatus(statusCode),
+    risk_categories: inferRiskCategories(filePath),
+  }));
+  const insertions = numstat.reduce((sum, entry) => sum + entry.insertions, 0);
+  const deletions = numstat.reduce((sum, entry) => sum + entry.deletions, 0);
   return {
     diff_stats: {
       files_changed: files.length,

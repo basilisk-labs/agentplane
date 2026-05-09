@@ -240,6 +240,22 @@ export async function cmdBackendInspectParsed(opts: {
       if (result.connection.missing.length > 0) {
         output.line(`missing ${result.connection.missing.join(",")}`);
       }
+      for (const override of result.connection.envOverrides ?? []) {
+        output.warn(
+          `backend config overridden by .env: ${override.key} configured=${override.configured ?? "unset"} effective=${override.effective}`,
+        );
+      }
+      if (result.connection.syncState) {
+        const syncState = result.connection.syncState;
+        output.line(
+          `sync_state unavailable=${syncState.unavailable} degraded=${syncState.degraded ?? "unknown"} reason=${syncState.reason ?? "none"} failed_jobs=${syncState.failedJobs ?? "unknown"} queued_jobs=${syncState.queuedJobs ?? "unknown"} running_jobs=${syncState.runningJobs ?? "unknown"} delayed_jobs=${syncState.delayedJobs ?? "unknown"} pull_cursor=${syncState.pullCursor ?? "unset"} open_conflicts=${syncState.openConflicts}`,
+        );
+        if (syncState.latestJob) {
+          output.line(
+            `sync_state_latest_job id=${syncState.latestJob.id ?? "unknown"} type=${syncState.latestJob.type ?? "unknown"} status=${syncState.latestJob.status ?? "unknown"} error=${JSON.stringify(syncState.latestJob.error ?? "")}`,
+          );
+        }
+      }
     }
     if (result.freshness) {
       output.line(

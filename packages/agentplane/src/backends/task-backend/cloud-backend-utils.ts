@@ -1,4 +1,5 @@
 import { BackendError, type TaskData } from "./shared.js";
+import { isDotEnvLoadedKey } from "../../shared/env.js";
 import { isRecord } from "../../shared/guards.js";
 
 export type CloudSyncResponse = {
@@ -13,6 +14,49 @@ export type CloudSyncResponse = {
 export const CLOUD_PUSH_DIRECT_BODY_LIMIT_BYTES = 750_000;
 export const CLOUD_PUSH_BATCH_TASK_BYTES = 600_000;
 export const CLOUD_PUSH_BATCH_RETRY_DELAYS_MS = [0, 1500, 3000] as const;
+export const CLOUD_REQUEST_TIMEOUT_MS = 30_000;
+export const CLOUD_PULL_REQUEST_TIMEOUT_MS = 120_000;
+export const CLOUD_PUSH_BATCH_REQUEST_TIMEOUT_MS = 60_000;
+const CLOUD_RETRIABLE_HTTP_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
+
+export type CloudSyncStateDiagnostics = {
+  unavailable: boolean;
+  degraded: boolean | null;
+  reason: string | null;
+  failedJobs: number | null;
+  queuedJobs: number | null;
+  runningJobs: number | null;
+  delayedJobs: number | null;
+  pullCursor: string | null;
+  openConflicts: number;
+  latestJob: {
+    id: string | null;
+    type: string | null;
+    status: string | null;
+    error: string | null;
+  } | null;
+};
+
+export type CloudConfigOverride = {
+  key: string;
+  configured: string | null;
+  effective: string;
+};
+
+export class CloudHttpError extends BackendError {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message, "E_BACKEND");
+  }
+}
+
+export class CloudNetworkError extends BackendError {
+  constructor(message: string) {
+    super(message, "E_NETWORK");
+  }
+}
 
 export function normalizeCloudPullResponse(
   response: CloudSyncResponse,
@@ -133,6 +177,149 @@ export function isStale(lastCheckedAt: string | null, staleAfterSeconds: number 
   const checkedAt = Date.parse(lastCheckedAt);
   if (!Number.isFinite(checkedAt)) return true;
   return Date.now() - checkedAt > staleAfterSeconds * 1000;
+}
+
+export function createTimeoutSignal(timeoutMs: number): AbortSignal {
+  if (typeof AbortSignal.timeout === "function") {
+    return AbortSignal.timeout(timeoutMs);
+  }
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  timer.unref?.();
+  return controller.signal;
+}
+
+export function isCloudRetriableError(error: unknown): boolean {
+  if (error instanceof CloudNetworkError) return true;
+  return error instanceof CloudHttpError && CLOUD_RETRIABLE_HTTP_STATUSES.has(error.status);
+}
+
+export async function readCloudJson<T>(res: Response, timeoutMs: number | undefined): Promise<T> {
+  try {
+    return (await res.json()) as T;
+  } catch (error) {
+    throw new CloudNetworkError(cloudNetworkErrorMessage(error, timeoutMs));
+  }
+}
+
+export function cloudNetworkErrorMessage(error: unknown, timeoutMs: number | undefined): string {
+  const timeout =
+    error instanceof DOMException && (error.name === "TimeoutError" || error.name === "AbortError");
+  const reason = timeout
+    ? `the cloud request exceeded ${timeoutMs ?? CLOUD_REQUEST_TIMEOUT_MS}ms`
+    : error instanceof Error && error.message
+      ? error.message
+      : "the network request failed";
+  return [
+    "Cloud backend request failed before a response was received.",
+    `Why: ${reason}.`,
+    "Fix: retry the command after checking network connectivity and cloud service health.",
+    "Safe command: agentplane backend inspect cloud --yes",
+    "Stop condition: stop if the request repeatedly times out or the service cannot be reached.",
+  ].join("\n");
+}
+
+export function unavailableCloudSyncStateDiagnostics(
+  unavailable: boolean,
+): CloudSyncStateDiagnostics {
+  return {
+    unavailable,
+    degraded: null,
+    reason: null,
+    failedJobs: null,
+    queuedJobs: null,
+    runningJobs: null,
+    delayedJobs: null,
+    pullCursor: null,
+    openConflicts: 0,
+    latestJob: null,
+  };
+}
+
+export function readCloudSyncStateDiagnostics(
+  data: Record<string, unknown>,
+  openConflicts: number,
+): CloudSyncStateDiagnostics {
+  const backoff = isRecord(data.backoff) ? data.backoff : {};
+  const jobs = isRecord(data.jobs) ? data.jobs : {};
+  return {
+    unavailable: false,
+    degraded: readBoolean(backoff, "degraded") ?? readBoolean(data, "degraded"),
+    reason: readString(backoff, "reason") ?? readString(data, "reason"),
+    failedJobs:
+      readNumber(backoff, "failed_jobs") ??
+      readNumber(jobs, "failed") ??
+      readNumber(data, "failed_jobs"),
+    queuedJobs: readNumber(jobs, "queued") ?? readNumber(data, "queued_jobs"),
+    runningJobs: readNumber(jobs, "running") ?? readNumber(data, "running_jobs"),
+    delayedJobs: readNumber(jobs, "delayed") ?? readNumber(data, "delayed_jobs"),
+    pullCursor:
+      readString(data, "pull_cursor") ??
+      readString(data, "last_checked_at") ??
+      readString(data, "lastCheckedAt"),
+    openConflicts,
+    latestJob: readLatestCloudSyncJob(data),
+  };
+}
+
+export function cloudConfigOverrides(
+  settings: { endpoint?: string; project_id?: string; provider?: string },
+  effective: Record<string, string>,
+): CloudConfigOverride[] {
+  const configured: Record<string, string | null> = {
+    AGENTPLANE_CLOUD_ENDPOINT: normalizeEndpoint(settings.endpoint),
+    AGENTPLANE_CLOUD_PROJECT_ID: normalizedString(settings.project_id),
+    AGENTPLANE_CLOUD_PROVIDER: normalizedString(settings.provider),
+  };
+  const out: CloudConfigOverride[] = [];
+  for (const [key, value] of Object.entries(effective)) {
+    if (!isDotEnvLoadedKey(key)) continue;
+    const configuredValue = configured[key] ?? null;
+    if (configuredValue === value) continue;
+    out.push({ key, configured: configuredValue, effective: value });
+  }
+  return out;
+}
+
+function readLatestCloudSyncJob(
+  data: Record<string, unknown>,
+): CloudSyncStateDiagnostics["latestJob"] {
+  const candidates = [
+    data.latestJob,
+    data.latest_job,
+    isRecord(data.jobs) ? data.jobs.latest : null,
+    isRecord(data.jobs) ? data.jobs.latest_job : null,
+  ];
+  const job = candidates.find((candidate) => isRecord(candidate));
+  if (!job) return null;
+  return {
+    id: readString(job, "id"),
+    type: readString(job, "type") ?? readString(job, "kind"),
+    status: readString(job, "status") ?? readString(job, "state"),
+    error: readString(job, "error") ?? readString(job, "last_error"),
+  };
+}
+
+function readBoolean(input: unknown, key: string): boolean | null {
+  if (!isRecord(input)) return null;
+  const value = input[key];
+  return typeof value === "boolean" ? value : null;
+}
+
+function readNumber(input: unknown, key: string): number | null {
+  if (!isRecord(input)) return null;
+  const value = input[key];
+  if (typeof value !== "number" || !Number.isFinite(value)) return null;
+  return Math.trunc(value);
+}
+
+function normalizedString(value: unknown): string | null {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function normalizeEndpoint(value: unknown): string | null {
+  const normalized = normalizedString(value);
+  return normalized ? normalized.replaceAll(/\/+$/gu, "") : null;
 }
 
 function readString(input: unknown, key: string): string | null {

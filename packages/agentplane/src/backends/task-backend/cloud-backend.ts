@@ -16,17 +16,31 @@ import type { LocalBackend } from "./local-backend.js";
 import { buildCloudPullPlan, emitCloudPullDiffSummary, readOpenConflicts } from "./cloud-pull.js";
 import {
   CLOUD_PUSH_BATCH_RETRY_DELAYS_MS,
+  CLOUD_PUSH_BATCH_REQUEST_TIMEOUT_MS,
   CLOUD_PUSH_BATCH_TASK_BYTES,
+  CLOUD_PULL_REQUEST_TIMEOUT_MS,
+  CLOUD_REQUEST_TIMEOUT_MS,
   CLOUD_PUSH_DIRECT_BODY_LIMIT_BYTES,
+  CloudHttpError,
+  CloudNetworkError,
+  cloudConfigOverrides,
   cloudConflictMessage,
   cloudHttpErrorMessage,
   cloudPushBatchFinalized,
+  cloudNetworkErrorMessage,
+  createTimeoutSignal,
   isOptionalSyncStateFailure,
+  isCloudRetriableError,
   isStale,
   normalizeCloudPullResponse,
   normalizePositiveInteger,
+  readCloudJson,
+  readCloudSyncStateDiagnostics,
   readSafeCommand,
   splitTasksByPayloadBytes,
+  unavailableCloudSyncStateDiagnostics,
+  type CloudConfigOverride,
+  type CloudSyncStateDiagnostics,
   type CloudSyncResponse,
 } from "./cloud-backend-utils.js";
 import { sleep } from "./shared/concurrency.js";
@@ -55,6 +69,7 @@ type CloudSyncStateSnapshot = {
   conflicts: unknown[];
   safeCommand: string | null;
   unavailable: boolean;
+  diagnostics: CloudSyncStateDiagnostics;
 };
 
 export class CloudBackend implements TaskBackend {
@@ -82,6 +97,7 @@ export class CloudBackend implements TaskBackend {
   statePath: string;
   staleAfterSeconds: number | null;
   private fetchImpl: FetchLike;
+  private readonly configOverrides: CloudConfigOverride[];
 
   constructor(
     settings: CloudBackendSettings,
@@ -99,6 +115,11 @@ export class CloudBackend implements TaskBackend {
     );
     this.provider =
       firstNonEmptyString(process.env.AGENTPLANE_CLOUD_PROVIDER, settings.provider) || null;
+    this.configOverrides = cloudConfigOverrides(settings, {
+      AGENTPLANE_CLOUD_ENDPOINT: this.endpoint,
+      AGENTPLANE_CLOUD_PROJECT_ID: this.projectId,
+      AGENTPLANE_CLOUD_PROVIDER: this.provider ?? "",
+    });
     this.cache = opts.cache;
     this.statePath = path.resolve(
       opts.root,
@@ -222,7 +243,12 @@ export class CloudBackend implements TaskBackend {
     const state =
       opts.direction === "pull"
         ? await this.requestCloudSyncState(this.projectId)
-        : { conflicts: [], safeCommand: null, unavailable: false };
+        : {
+            conflicts: [],
+            safeCommand: null,
+            unavailable: false,
+            diagnostics: unavailableCloudSyncStateDiagnostics(false),
+          };
     if (state.unavailable && !opts.quiet) {
       process.stderr.write(
         "Warning: cloud sync-state preflight is unavailable; continuing with pull endpoint conflict data.\n",
@@ -251,6 +277,7 @@ export class CloudBackend implements TaskBackend {
                 conflict: opts.conflict,
               }),
             },
+            { timeoutMs: CLOUD_PULL_REQUEST_TIMEOUT_MS },
           );
     const data = isRecord(response.data) ? response.data : {};
     const pull = normalizeCloudPullResponse(response, data);
@@ -290,9 +317,15 @@ export class CloudBackend implements TaskBackend {
         await this.cache.writeTasks(plan.changed);
       }
     }
-    if (opts.direction === "push" && !pull.lastCheckedAt) return;
+    if (opts.direction === "pull") {
+      await this.writeState({
+        last_checked_at: pull.lastCheckedAt ?? new Date().toISOString(),
+      });
+      return;
+    }
+    if (!pull.lastCheckedAt) return;
     await this.writeState({
-      last_checked_at: pull.lastCheckedAt ?? new Date().toISOString(),
+      last_checked_at: pull.lastCheckedAt,
     });
   }
 
@@ -305,32 +338,45 @@ export class CloudBackend implements TaskBackend {
         {
           method: "GET",
           headers,
+          signal: createTimeoutSignal(CLOUD_REQUEST_TIMEOUT_MS),
         },
       );
     } catch {
-      return { conflicts: [], safeCommand: null, unavailable: true };
+      return {
+        conflicts: [],
+        safeCommand: null,
+        unavailable: true,
+        diagnostics: unavailableCloudSyncStateDiagnostics(true),
+      };
     }
     if (!res.ok) {
       if (isOptionalSyncStateFailure(res.status)) {
-        return { conflicts: [], safeCommand: null, unavailable: true };
+        return {
+          conflicts: [],
+          safeCommand: null,
+          unavailable: true,
+          diagnostics: unavailableCloudSyncStateDiagnostics(true),
+        };
       }
       throw new BackendError(await cloudHttpErrorMessage(res), "E_BACKEND");
     }
-    const response = (await res.json()) as CloudSyncStateResponse;
+    const response = await readCloudJson<CloudSyncStateResponse>(res, CLOUD_REQUEST_TIMEOUT_MS);
     const data = isRecord(response.data) ? response.data : {};
+    const conflicts = readOpenConflicts(
+      response.openConflicts ??
+        response.open_conflicts ??
+        response.conflicts ??
+        data.openConflicts ??
+        data.open_conflicts ??
+        data.conflicts,
+    );
     return {
-      conflicts: readOpenConflicts(
-        response.openConflicts ??
-          response.open_conflicts ??
-          response.conflicts ??
-          data.openConflicts ??
-          data.open_conflicts ??
-          data.conflicts,
-      ),
+      conflicts,
       safeCommand:
         readSafeCommand(response, data) ??
         "agentplane backend sync cloud --direction pull --conflict=diff",
       unavailable: false,
+      diagnostics: readCloudSyncStateDiagnostics(data, conflicts.length),
     };
   }
 
@@ -351,6 +397,7 @@ export class CloudBackend implements TaskBackend {
       return await this.request<CloudSyncResponse>(
         `/v1/projects/${encodeURIComponent(this.projectId)}/sync/push`,
         { method: "POST", body: directBody },
+        { timeoutMs: CLOUD_REQUEST_TIMEOUT_MS },
       );
     }
 
@@ -415,15 +462,16 @@ export class CloudBackend implements TaskBackend {
         return await this.request<CloudSyncResponse>(
           `/v1/projects/${encodeURIComponent(this.projectId)}/sync/push-batch`,
           { method: "POST", body },
+          { timeoutMs: CLOUD_PUSH_BATCH_REQUEST_TIMEOUT_MS },
         );
       } catch (error) {
-        if (error instanceof BackendError || attempt >= CLOUD_PUSH_BATCH_RETRY_DELAYS_MS.length) {
+        if (!isCloudRetriableError(error) || attempt >= CLOUD_PUSH_BATCH_RETRY_DELAYS_MS.length) {
           throw error;
         }
         const delayMs = CLOUD_PUSH_BATCH_RETRY_DELAYS_MS[attempt] ?? 0;
         if (!opts.quiet) {
           process.stderr.write(
-            `cloud push retrying batch ${opts.chunkIndex + 1}/${opts.totalChunks} after network error attempt=${attempt + 1}\n`,
+            `cloud push retrying batch ${opts.chunkIndex + 1}/${opts.totalChunks} after transient error attempt=${attempt + 1}\n`,
           );
         }
         await sleep(delayMs);
@@ -434,6 +482,10 @@ export class CloudBackend implements TaskBackend {
   async inspectConfiguration(): Promise<TaskBackendInspectionResult> {
     const missing = this.missingConfigKeys();
     const state = await this.readState();
+    const syncState =
+      missing.length === 0
+        ? await this.requestCloudSyncState(this.projectId).catch(() => null)
+        : null;
     return {
       backendId: this.id,
       visibleCustomFields: [],
@@ -445,6 +497,8 @@ export class CloudBackend implements TaskBackend {
         connected: missing.length === 0,
         missing,
         provider: this.provider,
+        envOverrides: this.configOverrides,
+        syncState: syncState?.diagnostics ?? null,
       },
       freshness: {
         lastCheckedAt: state.last_checked_at,
@@ -455,20 +509,30 @@ export class CloudBackend implements TaskBackend {
     };
   }
 
-  private async request<T>(pathname: string, init: RequestInit): Promise<T> {
+  private async request<T>(
+    pathname: string,
+    init: RequestInit,
+    opts?: { timeoutMs?: number },
+  ): Promise<T> {
     const headers = this.cloudHeaders();
     for (const [key, value] of new Headers(init.headers)) {
       headers.set(key, value);
     }
 
-    const res = await this.fetchImpl(`${this.endpoint}${pathname}`, {
-      ...init,
-      headers,
-    });
-    if (!res.ok) {
-      throw new BackendError(await cloudHttpErrorMessage(res), "E_BACKEND");
+    let res: Response;
+    try {
+      res = await this.fetchImpl(`${this.endpoint}${pathname}`, {
+        ...init,
+        headers,
+        signal: init.signal ?? createTimeoutSignal(opts?.timeoutMs ?? CLOUD_REQUEST_TIMEOUT_MS),
+      });
+    } catch (error) {
+      throw new CloudNetworkError(cloudNetworkErrorMessage(error, opts?.timeoutMs));
     }
-    return (await res.json()) as T;
+    if (!res.ok) {
+      throw new CloudHttpError(await cloudHttpErrorMessage(res), res.status);
+    }
+    return await readCloudJson<T>(res, opts?.timeoutMs);
   }
 
   private cloudHeaders(): Headers {

@@ -11,18 +11,31 @@ export {
   gitAddPaths,
   gitBranchExists,
   gitBranchUpstream,
+  gitConfigGet,
   gitCommit,
   gitCurrentBranch,
   gitEnv,
   gitInitRepo,
   gitIsAncestor,
   gitListBranches,
+  gitMergeBase,
   gitRevParse,
   gitStagedPaths,
   resolveInitBaseBranch,
 } from "./git-client.js";
 
-export { gitAheadBehind, gitDiffNames, gitDiffStat, gitShowFile, toGitPath } from "./git-diff.js";
+export {
+  gitAheadBehind,
+  gitDiffNames,
+  gitDiffNameStatus,
+  gitDiffNumstat,
+  gitDiffStat,
+  gitShowFile,
+  toGitPath,
+  type GitDiffRange,
+  type GitDiffNameStatusEntry,
+  type GitDiffNumstatEntry,
+} from "./git-diff.js";
 
 export {
   findWorktreeForBranch,

@@ -82,6 +82,31 @@ export async function gitRevParse(cwd: string, args: string[]): Promise<string> 
   return trimmed;
 }
 
+export async function gitMergeBase(cwd: string, left: string, right: string): Promise<string> {
+  const { stdout } = await execFileAsync("git", ["merge-base", left, right], {
+    cwd,
+    env: gitEnv(),
+  });
+  const trimmed = String(stdout).trim();
+  if (!trimmed) throw new Error("Failed to resolve git merge-base");
+  return trimmed;
+}
+
+export async function gitConfigGet(cwd: string, key: string): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync("git", ["config", "--get", key], {
+      cwd,
+      env: gitEnv(),
+    });
+    const trimmed = String(stdout).trim();
+    return trimmed.length > 0 ? trimmed : null;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1) return null;
+    throw err;
+  }
+}
+
 export async function gitCurrentBranch(cwd: string): Promise<string> {
   try {
     const { stdout } = await execFileAsync("git", ["symbolic-ref", "--short", "HEAD"], {

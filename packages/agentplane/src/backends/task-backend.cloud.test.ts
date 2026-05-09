@@ -22,6 +22,10 @@ function requestUrl(url: unknown): string {
   throw new TypeError("Expected request URL");
 }
 
+function expectAbortSignal(input: unknown): asserts input is AbortSignal {
+  expect(input).toBeInstanceOf(AbortSignal);
+}
+
 describe("CloudBackend", () => {
   let tempDir = "";
   let restoreStdIO: (() => void) | null = null;
@@ -103,6 +107,7 @@ describe("CloudBackend", () => {
     const [url, init] = firstCall;
     expect(url).toBe("https://cloud.example/v1/projects/project-1/sync/push");
     expect(init?.method).toBe("POST");
+    expectAbortSignal(init?.signal);
     expect(init?.body).toContain('"direction":"push"');
     const stateText = await readFile(
       path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"),
@@ -149,6 +154,70 @@ describe("CloudBackend", () => {
     const stateText = await readFile(path.join(stateDir, "state.json"), "utf8");
     expect(stateText).toContain("2026-05-05T00:00:00.000Z");
     expect(stateText).not.toContain("2026-05-06T00:00:00.000Z");
+  });
+
+  it("wraps aborted cloud requests with backend remediation", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    await cache.writeTask({
+      id: "202605051806-C1D2",
+      title: "Cloud task",
+      description: "Sync this task",
+      status: "TODO",
+      priority: "med",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["cloud"],
+      verify: [],
+    });
+    const fetchImpl = vi.fn<typeof fetch>(() =>
+      Promise.reject(new DOMException("The operation was aborted due to timeout", "TimeoutError")),
+    );
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example/",
+        token: "token",
+        project_id: "project-1",
+        provider: "github-projects",
+      },
+      { root: tempDir, cache, fetchImpl },
+    );
+
+    await expect(
+      backend.sync({ direction: "push", conflict: "diff", quiet: true, confirm: true }),
+    ).rejects.toThrow("Safe command: agentplane backend inspect cloud --yes");
+  });
+
+  it("wraps aborted cloud response bodies with backend remediation", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    await cache.writeTask({
+      id: "202605051806-C1D2",
+      title: "Cloud task",
+      description: "Sync this task",
+      status: "TODO",
+      priority: "med",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["cloud"],
+      verify: [],
+    });
+    const response = new Response(null);
+    vi.spyOn(response, "json").mockRejectedValue(
+      new DOMException("The operation was aborted due to timeout", "TimeoutError"),
+    );
+    const fetchImpl = vi.fn<typeof fetch>(() => Promise.resolve(response));
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example/",
+        token: "token",
+        project_id: "project-1",
+        provider: "github-projects",
+      },
+      { root: tempDir, cache, fetchImpl },
+    );
+
+    await expect(
+      backend.sync({ direction: "push", conflict: "diff", quiet: true, confirm: true }),
+    ).rejects.toThrow("Safe command: agentplane backend inspect cloud --yes");
   });
 
   it("push sync uploads oversized projections in finalized batches", async () => {
@@ -244,6 +313,65 @@ describe("CloudBackend", () => {
       }>(init?.body);
       if (body.batch?.chunk_index === 1 && fetchImpl.mock.calls.length === 2) {
         return Promise.reject(new TypeError("fetch failed"));
+      }
+      return Promise.resolve(
+        Response.json({
+          data: {
+            last_checked_at: "2026-05-06T00:00:00.000Z",
+            batch: { finalized: body.batch?.finalize === true },
+            no_projection_changes: body.batch?.finalize !== true,
+          },
+        }),
+      );
+    });
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example/",
+        token: "token",
+        project_id: "project-1",
+        provider: "github-projects",
+      },
+      { root: tempDir, cache, fetchImpl },
+    );
+
+    await backend.sync({ direction: "push", conflict: "diff", quiet: true, confirm: true });
+
+    const calls = fetchImpl.mock.calls.map(([_url, init]) => {
+      const body = parseRequestBody<{
+        batch?: { chunk_index?: number; finalize?: boolean };
+      }>(init?.body);
+      return body.batch;
+    });
+    expect(calls).toEqual([
+      expect.objectContaining({ chunk_index: 0, finalize: false }),
+      expect.objectContaining({ chunk_index: 1, finalize: true }),
+      expect.objectContaining({ chunk_index: 1, finalize: true }),
+    ]);
+  });
+
+  it("retries transient HTTP failures for oversized push batches", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    const largeText = "x".repeat(400_000);
+    for (const suffix of ["C1D2", "C1D3"]) {
+      await cache.writeTask({
+        id: `202605051806-${suffix}`,
+        title: `Cloud task ${suffix}`,
+        description: largeText,
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["cloud"],
+        verify: [],
+      });
+    }
+    const fetchImpl = vi.fn<typeof fetch>((_url, init) => {
+      expectAbortSignal(init?.signal);
+      const body = parseRequestBody<{
+        batch?: { chunk_index?: number; finalize?: boolean };
+      }>(init?.body);
+      if (body.batch?.chunk_index === 1 && fetchImpl.mock.calls.length === 2) {
+        return Promise.resolve(Response.json({ error: "temporary" }, { status: 503 }));
       }
       return Promise.resolve(
         Response.json({
@@ -532,6 +660,91 @@ describe("CloudBackend", () => {
       io.restore();
       restoreStdIO = silenceStdIO();
     }
+  });
+
+  it("preserves the service freshness timestamp after a no-op cloud pull", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    const task: TaskData = {
+      id: "202605051806-C1D2",
+      title: "Local title",
+      description: "Existing task",
+      status: "TODO",
+      priority: "med",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["cloud"],
+      verify: [],
+    };
+    await cache.writeTask(task);
+    const fetchImpl = vi.fn<typeof fetch>((input) => {
+      const url = input instanceof Request ? input.url : input.toString();
+      if (url.endsWith("/sync/state")) {
+        return Promise.resolve(Response.json({ data: { openConflicts: [] } }));
+      }
+      return Promise.resolve(
+        Response.json({
+          data: {
+            tasks: [task],
+            last_checked_at: "2000-01-01T00:00:00.000Z",
+          },
+        }),
+      );
+    });
+    const backend = new CloudBackend(
+      { endpoint: "https://cloud.example", token: "token", project_id: "project-1" },
+      { root: tempDir, cache, fetchImpl },
+    );
+
+    await backend.sync({ direction: "pull", conflict: "diff", quiet: true, confirm: true });
+
+    const stateText = await readFile(
+      path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"),
+      "utf8",
+    );
+    const state = JSON.parse(stateText) as { last_checked_at: string };
+    expect(state.last_checked_at).toBe("2000-01-01T00:00:00.000Z");
+  });
+
+  it("uses a local freshness fallback after a no-op pull only when the service omits a timestamp", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    const task: TaskData = {
+      id: "202605051806-C1D2",
+      title: "Local title",
+      description: "Existing task",
+      status: "TODO",
+      priority: "med",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["cloud"],
+      verify: [],
+    };
+    await cache.writeTask(task);
+    const fetchImpl = vi.fn<typeof fetch>((input) => {
+      const url = input instanceof Request ? input.url : input.toString();
+      if (url.endsWith("/sync/state")) {
+        return Promise.resolve(Response.json({ data: { openConflicts: [] } }));
+      }
+      return Promise.resolve(
+        Response.json({
+          data: {
+            tasks: [task],
+          },
+        }),
+      );
+    });
+    const backend = new CloudBackend(
+      { endpoint: "https://cloud.example", token: "token", project_id: "project-1" },
+      { root: tempDir, cache, fetchImpl },
+    );
+
+    await backend.sync({ direction: "pull", conflict: "diff", quiet: true, confirm: true });
+
+    const stateText = await readFile(
+      path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"),
+      "utf8",
+    );
+    const state = JSON.parse(stateText) as { last_checked_at: string };
+    expect(Number.isFinite(Date.parse(state.last_checked_at))).toBe(true);
   });
 
   it("conflict=fail refuses to write open service conflicts", async () => {
