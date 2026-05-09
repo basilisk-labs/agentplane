@@ -24,12 +24,14 @@ Created: 2026-05-09T18:46:47.225Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-09T18:46:47.225Z
+- Updated: 2026-05-09T18:53:16.677Z
 - Branch: task/202605091754-4FFAY9/task-doc-parser
-- Head: f8395196d2a2
+- Head: 90f3f6953a17
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 505 +++++++++++++++++++++
+ packages/core/src/tasks/task-doc.ts                | 152 +++----
+ 2 files changed, 562 insertions(+), 95 deletions(-)
 ```
 
 </details>
