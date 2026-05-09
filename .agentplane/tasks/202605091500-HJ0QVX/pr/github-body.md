@@ -22,12 +22,18 @@ Replace a first low-risk batch of local agentplane isRecord helpers with the can
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-09T15:00:45.946Z
+- Updated: 2026-05-09T15:03:08.276Z
 - Branch: task/202605091500-HJ0QVX/agentplane-guards
-- Head: 43342f2bec97
+- Head: 554dab2c72bd
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
+ packages/agentplane/src/backends/task-index.ts     |   5 +-
+ packages/agentplane/src/blueprints/snapshot.ts     |   5 +-
+ .../agentplane/src/commands/blueprints/catalog.ts  |   5 +-
+ packages/agentplane/src/runner/result-manifest.ts  |   5 +-
+ .../src/runtime/prompt-fragments/json.ts           |   5 +-
+ 6 files changed, 501 insertions(+), 20 deletions(-)
 ```
 
 </details>
