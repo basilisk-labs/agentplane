@@ -1,7 +1,8 @@
 ---
 id: "202605090921-J01VGF"
 title: "Remove ACR hotspot allowlist"
-status: "DOING"
+result_summary: "Closed stale lifecycle state after merged implementation commit 4e2420cfc."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -18,14 +19,19 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-09T09:21:58.648Z"
+  updated_at: "2026-05-09T15:26:17.388Z"
   updated_by: "CODER"
-  note: "ACR hotspot allow-list removal verified with hotspot, script docs, and type checks."
-commit: null
+  note: "ACR hotspot allowlist removal verified on current main."
+commit:
+  hash: "4e2420cfcebcd1621ace310849bd343c1bc8f15a"
+  message: "🚧 J01VGF hotspots: remove acr allowlist"
 comments:
   -
     author: "CODER"
     body: "Start: remove stale ACR hotspot allow-list entry after the ACR split dropped below the oversized threshold."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: ACR hotspot allowlist removal is present on current main, hotspot check and typecheck evidence are recorded."
 events:
   -
     type: "status"
@@ -40,9 +46,22 @@ events:
     author: "CODER"
     state: "ok"
     note: "ACR hotspot allow-list removal verified with hotspot, script docs, and type checks."
+  -
+    type: "verify"
+    at: "2026-05-09T15:26:17.388Z"
+    author: "CODER"
+    state: "ok"
+    note: "ACR hotspot allowlist removal verified on current main."
+  -
+    type: "status"
+    at: "2026-05-09T15:28:02.509Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: ACR hotspot allowlist removal is present on current main, hotspot check and typecheck evidence are recorded."
 doc_version: 3
-doc_updated_at: "2026-05-09T09:21:58.660Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T15:28:02.513Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove acr.command.ts from hotspots:check allow-list after ACR split brings it below the oversized threshold, and update generated script docs if required."
 sections:
   Summary: |-
@@ -71,6 +90,28 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-09T09:21:21.090Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605090921-J01VGF/blueprint/resolved-snapshot.json
+    - old_digest: 9624a1ed1bd600d360975acc05d1aeb9e6543aa8519402f249532dbb8eb434fb
+    - current_digest: 9624a1ed1bd600d360975acc05d1aeb9e6543aa8519402f249532dbb8eb434fb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605090921-J01VGF
+    
+    ### 2026-05-09T15:26:17.388Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: ACR hotspot allowlist removal verified on current main.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-09T09:21:58.660Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    Command: bun run hotspots:check | Result: pass | Evidence: threshold check passed without ACR allow-list. Scope: hotspot script configuration.
+    Command: jq -r '.scripts["hotspots:check"]' package.json | Result: pass | Evidence: script has no --allow-oversized entry. Scope: package script.
+    Command: bun run typecheck | Result: pass | Evidence: tsc -b completed. Scope: workspace TypeScript contracts.
     
     BlueprintSnapshotRef:
     - state: current

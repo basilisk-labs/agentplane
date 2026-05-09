@@ -1,7 +1,8 @@
 ---
 id: "202605090908-VND44D"
 title: "Split ACR command helper modules"
-status: "DOING"
+result_summary: "Closed stale lifecycle state after merged implementation commit 0e5dae238."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -18,14 +19,19 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-09T09:12:17.192Z"
+  updated_at: "2026-05-09T15:26:11.398Z"
   updated_by: "CODER"
-  note: "ACR helper split verified with focused tests, typecheck, and hotspot check."
-commit: null
+  note: "ACR helper module split verified on current main."
+commit:
+  hash: "0e5dae2387ef30b256dbb7baa72f1245e1c9bb73"
+  message: "🚧 VND44D acr: split helper modules"
 comments:
   -
     author: "CODER"
     body: "Start: split pure ACR helper modules while preserving CLI behavior and release-gate checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: ACR helper-module split is present on current main, focused ACR tests, hotspot check, and typecheck evidence are recorded."
 events:
   -
     type: "status"
@@ -40,9 +46,22 @@ events:
     author: "CODER"
     state: "ok"
     note: "ACR helper split verified with focused tests, typecheck, and hotspot check."
+  -
+    type: "verify"
+    at: "2026-05-09T15:26:11.398Z"
+    author: "CODER"
+    state: "ok"
+    note: "ACR helper module split verified on current main."
+  -
+    type: "status"
+    at: "2026-05-09T15:27:42.371Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: ACR helper-module split is present on current main, focused ACR tests, hotspot check, and typecheck evidence are recorded."
 doc_version: 3
-doc_updated_at: "2026-05-09T09:12:17.206Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T15:27:42.375Z"
+doc_updated_by: "INTEGRATOR"
 description: "Reduce the ACR command hotspot by moving pure diff, summary, and remediation helpers into focused modules without changing CLI behavior."
 sections:
   Summary: |-
@@ -72,6 +91,28 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-09T09:08:45.316Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605090908-VND44D/blueprint/resolved-snapshot.json
+    - old_digest: e66ba9f7a2c9edcc587fd256ce0fbf19cc44c82ea7296a73425ebda8f05f8cb9
+    - current_digest: e66ba9f7a2c9edcc587fd256ce0fbf19cc44c82ea7296a73425ebda8f05f8cb9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605090908-VND44D
+    
+    ### 2026-05-09T15:26:11.398Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: ACR helper module split verified on current main.
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-09T09:12:17.206Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    Command: bunx vitest run packages/agentplane/src/commands/acr/acr.command.test.ts --pool=forks --maxWorkers 2 --testTimeout 120000 --hookTimeout 120000 | Result: pass | Evidence: 10 tests passed. Scope: ACR command behavior.
+    Command: bun run hotspots:check | Result: pass | Evidence: threshold check passed; acr.command.ts is 453 lines. Scope: hotspot regression.
+    Command: bun run typecheck | Result: pass | Evidence: tsc -b completed. Scope: workspace TypeScript contracts.
     
     BlueprintSnapshotRef:
     - state: current
