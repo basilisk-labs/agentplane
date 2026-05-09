@@ -1,7 +1,8 @@
 ---
 id: "202605090831-9P1DS0"
 title: "Fix cloud backend Node address selection"
-status: "DOING"
+result_summary: "Merged via PR #3496."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -25,11 +26,16 @@ verification:
   updated_at: "2026-05-09T08:36:00.932Z"
   updated_by: "CODER"
   note: "Verified: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts passed 24 tests; bun run typecheck passed; bun run --filter=agentplane build passed; git diff --check passed; node .agentplane/policy/check-routing.mjs passed; agentplane doctor OK; live patched CLI without NODE_OPTIONS successfully ran backend inspect cloud --yes and backend sync cloud --direction pull --yes against agentplane-cloud-sync, producing cloud pull diff changed=0 ignored_remote_only=0 conflicts=0."
-commit: null
+commit:
+  hash: "93831ff83a572f71b0f390b542c9dddd5bd39da6"
+  message: "Merge pull request #3496 from basilisk-labs/task/202605090831-9P1DS0/cloud-node-address-selection"
 comments:
   -
     author: "CODER"
     body: "Start: implement the cloud backend transport fix in the dedicated task worktree and verify Node v24 address-selection behavior without requiring NODE_OPTIONS."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3496 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts passed 24 tests; bun run typecheck passed; bun run --filter=agentplane build passed; git diff --check passed; node .agentplane/policy/check-routing.mjs passed; agentplane doctor OK; live patched CLI without NODE_OPTIONS successfully ran backend inspect cloud --yes and backend sync cloud --direction pull --yes against agentplane-cloud-sync, producing cloud pull diff changed=0 ignored_remote_only=0 conflicts=0."
+  -
+    type: "status"
+    at: "2026-05-09T08:40:56.277Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3496 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T08:36:00.942Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T08:40:56.282Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make AgentPlane cloud backend requests resilient to Node v24 network-family autoselection failures when IPv4 is slightly slower than the default 250ms attempt timeout and NAT64 IPv6 is unusable."
 sections:
   Summary: |-

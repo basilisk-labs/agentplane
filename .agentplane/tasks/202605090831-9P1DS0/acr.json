@@ -1,0 +1,237 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605090831-9P1DS0",
+  "created_at": "2026-05-09T08:40:56.321Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "93831ff83a572f71b0f390b542c9dddd5bd39da6",
+    "work_ref": "main",
+    "work_commit": "93831ff83a572f71b0f390b542c9dddd5bd39da6"
+  },
+  "task": {
+    "task_id": "202605090831-9P1DS0",
+    "title": "Fix cloud backend Node address selection",
+    "intent": "Make AgentPlane cloud backend requests resilient to Node v24 network-family autoselection failures when IPv4 is slightly slower than the default 250ms attempt timeout and NAT64 IPv6 is unusable.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605090831-9P1DS0/README.md",
+      "sha256": "sha256:ac78be3d52e37bdde76d57a76af44b1def2815e4b41d96b36b48ad382d6e06a6"
+    },
+    "approved_at": "2026-05-09T08:32:13.272Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3496.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605090831-9P1DS0_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-09T08:32:13.272Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605090831-9P1DS0/README.md",
+      "sha256": "sha256:ac78be3d52e37bdde76d57a76af44b1def2815e4b41d96b36b48ad382d6e06a6"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605090831-9P1DS0/README.md",
+      "sha256": "sha256:ac78be3d52e37bdde76d57a76af44b1def2815e4b41d96b36b48ad382d6e06a6"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605090831-9P1DS0/README.md",
+      "sha256": "sha256:ac78be3d52e37bdde76d57a76af44b1def2815e4b41d96b36b48ad382d6e06a6"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605090831-9P1DS0/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:a5107ac674cf8742b263ed9c080d22b660cd34265e8983d05f53fb5364522371"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 93831ff83a572f71b0f390b542c9dddd5bd39da6 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:3aa558c8a0b19411687e488accb460870251606266fb9339a9fb091325b92bb4",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "performance.benchmark",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "benchmark.baseline",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "benchmark.method",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "benchmark.runs",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "benchmark.threshold",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "benchmark.comparison",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "benchmark.verdict",
+          "kind": "final_output",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "benchmark.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [
+        {
+          "id": "network_risk",
+          "severity": "warn",
+          "reason": "Task declares network risk; preserve explicit evidence for that step."
+        }
+      ],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605090831-9P1DS0/blueprint/resolved-snapshot.json",
+        "digest": "96c6302f381cecd05effa184eeeddb95eb8eaeeb5ced8ab67796d61f75c18e9e",
+        "current_digest": "96c6302f381cecd05effa184eeeddb95eb8eaeeb5ced8ab67796d61f75c18e9e",
+        "route_changed": false,
+        "artifact_sha256": "sha256:a5107ac674cf8742b263ed9c080d22b660cd34265e8983d05f53fb5364522371",
+        "safe_command": "agentplane blueprint snapshot 202605090831-9P1DS0"
+      }
+    }
+  }
+}
