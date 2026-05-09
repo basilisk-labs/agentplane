@@ -58,18 +58,29 @@ describe("CloudBackend", () => {
       setDefaultAutoSelectFamilyAttemptTimeout,
     });
 
-    expect(setDefaultAutoSelectFamilyAttemptTimeout).toHaveBeenCalledWith(1_000);
+    expect(setDefaultAutoSelectFamilyAttemptTimeout).toHaveBeenCalledWith(1000);
   });
 
   it("preserves an already safer Node address-selection attempt timeout", () => {
     const setDefaultAutoSelectFamilyAttemptTimeout = vi.fn();
 
     configureCloudFetchAddressSelection({
-      getDefaultAutoSelectFamilyAttemptTimeout: () => 1_500,
+      getDefaultAutoSelectFamilyAttemptTimeout: () => 1000,
       setDefaultAutoSelectFamilyAttemptTimeout,
     });
 
     expect(setDefaultAutoSelectFamilyAttemptTimeout).not.toHaveBeenCalled();
+  });
+
+  it("lowers the default Node address-selection attempt timeout for cloud fetch transport", () => {
+    const setDefaultAutoSelectFamilyAttemptTimeout = vi.fn();
+
+    configureCloudFetchAddressSelection({
+      getDefaultAutoSelectFamilyAttemptTimeout: () => 10_000,
+      setDefaultAutoSelectFamilyAttemptTimeout,
+    });
+
+    expect(setDefaultAutoSelectFamilyAttemptTimeout).toHaveBeenCalledWith(1000);
   });
 
   it("inspects connection and freshness state without requiring configuration", async () => {
