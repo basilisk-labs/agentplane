@@ -24,12 +24,16 @@ Created: 2026-05-09T08:33:06.157Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-09T08:33:06.157Z
+- Updated: 2026-05-09T08:36:51.448Z
 - Branch: task/202605090831-9P1DS0/cloud-node-address-selection
-- Head: 1178f3e0b7b2
+- Head: 0ea79236d7c1
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 554 +++++++++++++++++++++
+ .../src/backends/task-backend.cloud.test.ts        |  23 +
+ .../backends/task-backend/cloud-backend-utils.ts   |  22 +
+ .../src/backends/task-backend/cloud-backend.ts     |   2 +
+ 4 files changed, 601 insertions(+)
 ```
 
 </details>
