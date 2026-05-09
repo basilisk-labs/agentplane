@@ -1,3 +1,5 @@
+import { sleep } from "../../backends/task-backend/shared/concurrency.js";
+
 export const GH_LOOKUP_MAX_ATTEMPTS = 3;
 export const GH_LOOKUP_BASE_DELAY_MS = 250;
 
@@ -47,11 +49,6 @@ export function isTransientGhTransportError(err: unknown): boolean {
   return GH_TRANSIENT_ERROR_PATTERNS.some((pattern) => pattern.test(text));
 }
 
-async function sleep(ms: number): Promise<void> {
-  if (ms <= 0) return;
-  await new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export async function withGhTransportRetry<T>(
   operation: () => Promise<T>,
   opts: {
@@ -78,7 +75,8 @@ export async function withGhTransportRetry<T>(
         throw error;
       }
       opts.onRetry?.({ attempt, maxAttempts, error, label: opts.label });
-      await sleep(baseDelayMs * attempt);
+      const delayMs = baseDelayMs * attempt;
+      if (delayMs > 0) await sleep(delayMs);
     }
   }
   throw lastError instanceof Error ? lastError : new Error(String(lastError));
