@@ -29,7 +29,8 @@ Created: 2026-05-09T17:15:56.493Z
 - Head: 69fb7bf28a0c
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 341 +++++++++++++++++++++
+ 1 file changed, 341 insertions(+)
 ```
 
 </details>

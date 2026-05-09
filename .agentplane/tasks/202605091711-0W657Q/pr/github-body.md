@@ -27,7 +27,8 @@ Record verification evidence for basilisk-labs repository metadata refresh compl
 - Head: 69fb7bf28a0c
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 341 +++++++++++++++++++++
+ 1 file changed, 341 insertions(+)
 ```
 
 </details>
