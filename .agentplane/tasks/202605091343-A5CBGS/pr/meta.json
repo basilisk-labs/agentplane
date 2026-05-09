@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-09T13:51:32Z",
   "base": "main",
   "branch": "task/202605091343-A5CBGS/dedupe-gh-sleep",
   "created_at": "2026-05-09T13:44:08.264Z",
-  "head_sha": "391de7ac8101fefb7617b78aca0b7a4742a15201",
+  "head_sha": "7e7fa7f8c434dba0be43b5d1dd398a6d47e4eeb4",
   "last_verified_at": "2026-05-09T13:48:36.189Z",
   "last_verified_sha": "fd8040bef90d861e3c4fdf65332d2a0f8e279e3e",
+  "merge_commit": "fbe499664f0bfe84c33eae766e03586f58f221fb",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-09T13:51:32Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605091343-A5CBGS",
-  "updated_at": "2026-05-09T13:48:52.926Z",
+  "updated_at": "2026-05-09T13:51:32Z",
   "verify": {
     "status": "pass"
   }
