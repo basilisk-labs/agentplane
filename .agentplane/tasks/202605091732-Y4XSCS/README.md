@@ -1,7 +1,8 @@
 ---
 id: "202605091732-Y4XSCS"
 title: "Refresh oversized test baseline"
-status: "DOING"
+result_summary: "Merged via PR #3523."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bun run hotspots:check; Result: pass; Evidence: Oversized test baseline OK (10 entries, 11536 total lines). Command: focused finish.validation vitest; Result: pass; Evidence: 22 tests passed. Command: bun run format:check and git diff --check; Result: pass."
   attempts: 0
-commit: null
+commit:
+  hash: "d61ac3b0f0d71978d104bb5074b568891b3337f1"
+  message: "🧪 Y4XSCS test: refresh oversized test baseline"
 comments:
   -
     author: "CODER"
     body: "Start: Reproducing hotspots:check drift in the task worktree, inspecting the oversized test baseline and finish.validation.unit.test.ts growth, then applying the smallest code-scope fix that restores the guard."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3523 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run hotspots:check; Result: pass; Evidence: Oversized test baseline OK (10 entries, 11536 total lines). Command: focused finish.validation vitest; Result: pass; Evidence: 22 tests passed. Command: bun run format:check and git diff --check; Result: pass."
+  -
+    type: "status"
+    at: "2026-05-09T17:43:51.688Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3523 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T17:37:44.729Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T17:43:51.694Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix hotspots:check drift by reconciling the oversized test baseline with the current merged finish.validation.unit.test.ts size."
 sections:
   Summary: |-
