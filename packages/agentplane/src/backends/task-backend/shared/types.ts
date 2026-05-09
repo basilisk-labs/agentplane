@@ -146,6 +146,28 @@ export type TaskBackendInspectionResult = {
     connected: boolean;
     missing: string[];
     provider?: string | null;
+    envOverrides?: {
+      key: string;
+      configured: string | null;
+      effective: string;
+    }[];
+    syncState?: {
+      unavailable: boolean;
+      degraded: boolean | null;
+      reason: string | null;
+      failedJobs: number | null;
+      queuedJobs: number | null;
+      runningJobs: number | null;
+      delayedJobs: number | null;
+      pullCursor: string | null;
+      openConflicts: number;
+      latestJob: {
+        id: string | null;
+        type: string | null;
+        status: string | null;
+        error: string | null;
+      } | null;
+    } | null;
   };
   freshness?: {
     lastCheckedAt: string | null;

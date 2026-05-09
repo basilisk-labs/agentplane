@@ -1,7 +1,7 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   LocalBackend,
@@ -151,6 +151,9 @@ describe("loadTaskBackend", () => {
         id: "cloud",
         settings: {
           cache_dir: "cloud-cache",
+          endpoint: "https://configured.example",
+          project_id: "configured-project",
+          provider: "configured-provider",
           stale_after_seconds: 60,
         },
       }),
@@ -167,6 +170,15 @@ describe("loadTaskBackend", () => {
       "utf8",
     );
 
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      Response.json({
+        data: {
+          backoff: { degraded: true, reason: "failed_jobs", failed_jobs: 2 },
+          jobs: { queued: 0, running: 0, delayed: 0 },
+          pull_cursor: "2026-05-08T18:15:41.504Z",
+        },
+      }),
+    );
     const result = await loadTaskBackend({ cwd: tempDir });
     expect(result.backendId).toBe("cloud");
     expect(result.backend).toBeInstanceOf(CloudBackend);
@@ -179,6 +191,35 @@ describe("loadTaskBackend", () => {
     expect(cloud.projectId).toBe("project-1");
     expect(cloud.provider).toBe("github-projects");
     expect(cloud.cache.root).toBe(path.join(tempDir, "cloud-cache"));
+
+    await expect(cloud.inspectConfiguration()).resolves.toMatchObject({
+      connection: {
+        envOverrides: [
+          {
+            key: "AGENTPLANE_CLOUD_ENDPOINT",
+            configured: "https://configured.example",
+            effective: "https://cloud.example",
+          },
+          {
+            key: "AGENTPLANE_CLOUD_PROJECT_ID",
+            configured: "configured-project",
+            effective: "project-1",
+          },
+          {
+            key: "AGENTPLANE_CLOUD_PROVIDER",
+            configured: "configured-provider",
+            effective: "github-projects",
+          },
+        ],
+        syncState: {
+          degraded: true,
+          reason: "failed_jobs",
+          failedJobs: 2,
+          pullCursor: "2026-05-08T18:15:41.504Z",
+        },
+      },
+    });
+    fetchSpy.mockRestore();
   });
 
   it("parses quoted .env values and resolves backend directories", async () => {

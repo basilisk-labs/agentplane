@@ -66,7 +66,7 @@ function renderCachedBlueprintsHint(items: CachedBlueprintCatalogItem[]): string
   if (items.length === 0) {
     return "Cached blueprint catalog: none. Run `agentplane blueprints catalog refresh --index <path|url>` before selecting blueprints during init.";
   }
-  return `Cached blueprint catalog entries: ${items.map(renderRef).join(", ")}`;
+  return `Cached blueprint catalog entries: ${items.map((item) => renderRef(item)).join(", ")}`;
 }
 
 async function gitStatusPaths(cwd: string): Promise<string[]> {

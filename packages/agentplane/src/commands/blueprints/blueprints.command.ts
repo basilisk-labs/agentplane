@@ -18,7 +18,6 @@ import {
   refreshCatalog,
   writeTrustConfig,
   type CatalogKind,
-  type InstalledBlueprint,
 } from "./catalog.js";
 
 export type BlueprintsCatalogParsed = GroupCommandParsed;
