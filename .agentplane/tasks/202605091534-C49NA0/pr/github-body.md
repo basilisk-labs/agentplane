@@ -22,15 +22,16 @@ Integrate the existing local runtime-install-atomic branch changes into current 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-09T15:35:55.544Z
+- Updated: 2026-05-09T15:36:26.507Z
 - Branch: task/202605091534-C49NA0/runtime-reinstall-helper
-- Head: 769dd0802d2d
+- Head: 24428fa78335
 
 ```text
- docs/developer/testing-and-quality.mdx             |  8 +++++---
- .../commands/release/release-ci-contract.test.ts   | 15 ++++++++++++---
- scripts/reinstall-global-agentplane.sh             | 22 +++++++++++++---------
- 3 files changed, 30 insertions(+), 15 deletions(-)
+ .../blueprint/resolved-snapshot.json               | 536 +++++++++++++++++++++
+ docs/developer/testing-and-quality.mdx             |   8 +-
+ .../commands/release/release-ci-contract.test.ts   |  15 +-
+ scripts/reinstall-global-agentplane.sh             |  22 +-
+ 4 files changed, 566 insertions(+), 15 deletions(-)
 ```
 
 </details>

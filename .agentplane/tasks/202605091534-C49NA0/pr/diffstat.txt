@@ -1,4 +1,5 @@
- docs/developer/testing-and-quality.mdx             |  8 +++++---
- .../commands/release/release-ci-contract.test.ts   | 15 ++++++++++++---
- scripts/reinstall-global-agentplane.sh             | 22 +++++++++++++---------
- 3 files changed, 30 insertions(+), 15 deletions(-)
+ .../blueprint/resolved-snapshot.json               | 536 +++++++++++++++++++++
+ docs/developer/testing-and-quality.mdx             |   8 +-
+ .../commands/release/release-ci-contract.test.ts   |  15 +-
+ scripts/reinstall-global-agentplane.sh             |  22 +-
+ 4 files changed, 566 insertions(+), 15 deletions(-)
