@@ -78,6 +78,8 @@ export async function executeFinishPlan(opts: {
     primaryTag: loadedState.primaryTag,
   });
 
+  await assertCloseCommitCanMutateTaskState({ ctx, options, plan });
+
   await writeFinishedTasks({
     ctx,
     loadedTasks: loadedState.loadedTasks,
@@ -332,6 +334,45 @@ async function resolveTaskCommitInfo(opts: {
   }
 
   return taskCommitInfo;
+}
+
+async function assertCloseCommitCanMutateTaskState(opts: {
+  ctx: CommandContext;
+  options: FinishOptions;
+  plan: FinishExecutionPlan;
+}): Promise<void> {
+  const { ctx, options, plan } = opts;
+  if (!plan.shouldCloseCommit) return;
+  if (ctx.config.workflow_mode !== "branch_pr") return;
+
+  const staged = await ctx.git.statusStagedPaths();
+  if (staged.length > 0 && options.closeUnstageOthers !== true) {
+    throw new CliError({
+      exitCode: 5,
+      code: "E_GIT",
+      message: [
+        "finish --close-commit cannot proceed with a non-empty index.",
+        "Why: close commit creation would fail after the task is marked DONE.",
+        "Fix: clear the index or rerun with --close-unstage-others.",
+        "Safe command: git status --short --untracked-files=no",
+      ].join("\n"),
+    });
+  }
+
+  const unstaged = await ctx.git.statusUnstagedTrackedPaths();
+  if (unstaged.length === 0) return;
+
+  throw new CliError({
+    exitCode: 5,
+    code: "E_GIT",
+    message: [
+      "finish --close-commit requires a clean tracked working tree before mutating task state.",
+      "Why: deterministic branch_pr close commits stage only the finished task artifacts; other tracked changes would make commit creation fail after the task is marked DONE.",
+      `Dirty tracked paths: ${unstaged.slice(0, 12).join(", ")}${unstaged.length > 12 ? ` (+${unstaged.length - 12} more)` : ""}`,
+      "Fix: commit, stash, or move unrelated lifecycle changes into a batch close branch before rerunning finish.",
+      "Safe command: git status --short --untracked-files=no",
+    ].join("\n"),
+  });
 }
 
 async function finalizeCloseTail(opts: {

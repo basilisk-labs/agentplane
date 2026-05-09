@@ -34,6 +34,13 @@ const RISK_ROUTE: Partial<Record<RiskFlag, BlueprintId>> = {
 };
 
 const RUNNER_DOMAIN_TAGS = ["runner", "execution", "replay", "resume", "adapter"] as const;
+const POST_RUN_DOMAIN_TAGS = [
+  "post-run",
+  "post_run",
+  "retrospective",
+  "improvement",
+  "follow-up",
+] as const;
 const PERFORMANCE_DOMAIN_TAGS = [
   "performance",
   "benchmark",
@@ -138,6 +145,17 @@ function selectSpecializedCodeBlueprintId(opts: {
 
   const tags = normalizeTags(opts.input.tags);
   const text = textSignal(opts.input);
+  if (
+    includesAny(tags, POST_RUN_DOMAIN_TAGS) ||
+    /\bpost[-_ ]run\b|\bafter[-_ ]action\b|\bretrospective\b|\bimprovement review\b|\bfollow[-_ ]up tasks\b/.test(
+      text,
+    )
+  ) {
+    return {
+      id: "post_run.improvement_review",
+      reason: "specialized code domain resolved to post_run.improvement_review",
+    };
+  }
   if (
     includesAny(tags, RUNNER_DOMAIN_TAGS) ||
     /\brunner\b|\breplay\b|\bresume\b|\binvocation\b|\bresult manifest\b/.test(text)

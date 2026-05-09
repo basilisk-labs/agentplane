@@ -169,7 +169,12 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
     taskBackend: backend,
     backendId: "mock",
     backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
-    git: new GitContext({ gitRoot: "/repo" }),
+    git: {
+      ...new GitContext({ gitRoot: "/repo" }),
+      statusStagedPaths: vi.fn().mockResolvedValue([]),
+      statusUnstagedTrackedPaths: vi.fn().mockResolvedValue([]),
+      invalidateStatus: vi.fn(),
+    } as unknown as CommandContext["git"],
     memo: {},
     resolved,
     backend,
@@ -524,6 +529,65 @@ describe("task finish validation", () => {
       ctx,
       command: "finish",
     });
+  });
+
+  it("rejects branch_pr close commit before mutating task state when other tracked files are dirty", async () => {
+    const currentTask = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["code"],
+      verification: { state: "ok", updated_at: "2026-02-09T00:00:00.000Z", updated_by: "A" },
+      commit: { hash: "impl-hash", message: "feat: implement T-1" },
+    });
+    const storeMutate = vi.fn((id: string, mutate: (task: TaskData) => TaskStorePatch[]) => {
+      const patches = mutate(currentTask);
+      for (const patch of patches) Object.assign(currentTask, applyStorePatch(currentTask, patch));
+      return { changed: patches.length > 0, task: currentTask };
+    });
+    mocks.getTaskStore.mockReturnValue({
+      mutate: storeMutate,
+    });
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    const ctx = mkCtx({
+      config: {
+        ...mkCtx().config,
+        workflow_mode: "branch_pr",
+      },
+      git: {
+        statusStagedPaths: vi.fn().mockResolvedValue([]),
+        statusUnstagedTrackedPaths: vi.fn().mockResolvedValue([".agentplane/tasks/T-2/README.md"]),
+        invalidateStatus: vi.fn(),
+      } as unknown as CommandContext["git"],
+    });
+
+    const { cmdFinish } = await import("./finish-command.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: this is long enough",
+        result: "done",
+        breaking: false,
+        force: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        closeCommit: true,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_GIT" });
+
+    expect(currentTask.status).toBe("DOING");
+    expect(mocks.cmdCommit).not.toHaveBeenCalled();
   });
 
   it("rejects finish when blueprint snapshot evidence is stale", async () => {

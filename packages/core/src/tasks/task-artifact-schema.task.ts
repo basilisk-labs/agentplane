@@ -36,6 +36,7 @@ const TASK_BLUEPRINT_REQUEST_VALUES = [
   "performance.benchmark",
   "quality.regression",
   "runner.execution",
+  "post_run.improvement_review",
   "release.strict",
   "ops.approval",
 ] as const;

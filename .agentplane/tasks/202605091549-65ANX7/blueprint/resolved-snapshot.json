@@ -1,0 +1,427 @@
+{
+  "schemaVersion": 1,
+  "artifactKind": "agentplane.blueprint.resolved_snapshot",
+  "resolverInput": {
+    "taskId": "202605091549-65ANX7",
+    "title": "Add post-run improvement review blueprint",
+    "description": "Create a blueprint entity for long-running complex tasks: after completion, the agent analyzes work logs for code-fixable process/runtime errors, creates atomic follow-up tasks for those fixes, and asks the user whether to execute them immediately or defer.",
+    "tags": [
+      "code"
+    ],
+    "owner": "CODER",
+    "workflowMode": "branch_pr",
+    "mutation": "code",
+    "touchedPaths": [],
+    "recipeHints": [],
+    "riskFlags": []
+  },
+  "selectedBlueprint": {
+    "id": "post_run.improvement_review",
+    "version": 1,
+    "title": "Post-run improvement review",
+    "taskKinds": [
+      "code",
+      "analysis"
+    ],
+    "workflowModes": [
+      "branch_pr"
+    ]
+  },
+  "plan": {
+    "schemaVersion": 1,
+    "blueprintId": "post_run.improvement_review",
+    "blueprintVersion": 1,
+    "title": "Post-run improvement review",
+    "taskId": "202605091549-65ANX7",
+    "workflowMode": "branch_pr",
+    "taskIntent": {
+      "mutationScope": "code"
+    },
+    "whySelected": [
+      "specialized code domain resolved to post_run.improvement_review",
+      "workflow mode: branch_pr",
+      "mutation scope: code"
+    ],
+    "states": [
+      {
+        "id": "intake",
+        "kind": "intake",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "sources"
+        ]
+      },
+      {
+        "id": "scope",
+        "kind": "scope",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "assumptions"
+        ]
+      },
+      {
+        "id": "context_resolve",
+        "kind": "context_resolve",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "artifact"
+        ]
+      },
+      {
+        "id": "work_unit",
+        "kind": "work_unit",
+        "mode": "agentic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "weak_links"
+        ]
+      },
+      {
+        "id": "artifact_write",
+        "kind": "artifact_write",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "artifact"
+        ]
+      },
+      {
+        "id": "approval_gate",
+        "kind": "approval_gate",
+        "mode": "approval",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "approval"
+        ]
+      },
+      {
+        "id": "verify_record",
+        "kind": "verify_record",
+        "mode": "record",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result"
+        ]
+      },
+      {
+        "id": "handoff",
+        "kind": "handoff",
+        "mode": "record",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "final_output"
+        ]
+      },
+      {
+        "id": "finish",
+        "kind": "finish",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "commit"
+        ]
+      }
+    ],
+    "requiredEvidence": [
+      {
+        "id": "post_run.work_log",
+        "kind": "artifact",
+        "producedBy": "context_resolve",
+        "required": true,
+        "description": "Work log, terminal summary, PR/check history, or task transcript inspected."
+      },
+      {
+        "id": "post_run.fixable_errors",
+        "kind": "weak_links",
+        "producedBy": "work_unit",
+        "required": true,
+        "description": "Concrete errors or workflow failures that are fixable in repository code."
+      },
+      {
+        "id": "post_run.atomic_tasks",
+        "kind": "artifact",
+        "producedBy": "artifact_write",
+        "required": true,
+        "description": "Created atomic AgentPlane tasks for each fixable issue, or explicit no-fixable-issue evidence."
+      },
+      {
+        "id": "post_run.execute_or_defer_decision",
+        "kind": "approval",
+        "producedBy": "approval_gate",
+        "required": true,
+        "description": "User decision to execute the created tasks immediately or defer them."
+      },
+      {
+        "id": "post_run.review_verdict",
+        "kind": "check_result",
+        "producedBy": "verify_record",
+        "required": true,
+        "description": "Verification that the review inspected available logs and gated execution behind the user decision."
+      },
+      {
+        "id": "post_run.handoff",
+        "kind": "final_output",
+        "producedBy": "handoff",
+        "required": true,
+        "description": "Summary of task ids, priorities, dependencies, and recommended next action."
+      },
+      {
+        "id": "post_run.commit",
+        "kind": "commit",
+        "producedBy": "finish",
+        "required": true,
+        "description": "Integrated review or blueprint commit."
+      }
+    ],
+    "policyModules": [
+      ".agentplane/policy/dod.code.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/workflow.branch_pr.md"
+    ],
+    "allowedCommands": [
+      "agentplane finish <task-id> --commit <git-rev>",
+      "agentplane task list --status DOING --status TODO",
+      "agentplane task new --title <title> --description <description> --owner <ROLE> --tag <tag>",
+      "agentplane task plan approve <task-id> --by ORCHESTRATOR",
+      "agentplane task plan set <task-id> --text <plan>",
+      "agentplane verify <task-id> --ok|--rework",
+      "ask user whether to execute created tasks now or defer",
+      "work log or terminal history inspection"
+    ],
+    "contextBudget": {
+      "maxPolicyModules": 4,
+      "maxPromptBlocks": 18,
+      "rationale": "Post-run review needs the normal branch_pr policy plus enough context for logs, observed failures, and follow-up task graph evidence."
+    },
+    "contextManifest": [],
+    "acceptedRecipeExtensions": [],
+    "rejectedRecipeExtensions": [],
+    "stopReasons": []
+  },
+  "nodes": [
+    {
+      "id": "intake",
+      "kind": "intake",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "sources"
+      ]
+    },
+    {
+      "id": "scope",
+      "kind": "scope",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "assumptions"
+      ]
+    },
+    {
+      "id": "context_resolve",
+      "kind": "context_resolve",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "artifact"
+      ]
+    },
+    {
+      "id": "work_unit",
+      "kind": "work_unit",
+      "mode": "agentic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "weak_links"
+      ]
+    },
+    {
+      "id": "artifact_write",
+      "kind": "artifact_write",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "artifact"
+      ]
+    },
+    {
+      "id": "approval_gate",
+      "kind": "approval_gate",
+      "mode": "approval",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "approval"
+      ]
+    },
+    {
+      "id": "verify_record",
+      "kind": "verify_record",
+      "mode": "record",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result"
+      ]
+    },
+    {
+      "id": "handoff",
+      "kind": "handoff",
+      "mode": "record",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "final_output"
+      ]
+    },
+    {
+      "id": "finish",
+      "kind": "finish",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "commit"
+      ]
+    }
+  ],
+  "requiredEvidence": [
+    {
+      "id": "post_run.work_log",
+      "kind": "artifact",
+      "producedBy": "context_resolve",
+      "required": true,
+      "description": "Work log, terminal summary, PR/check history, or task transcript inspected."
+    },
+    {
+      "id": "post_run.fixable_errors",
+      "kind": "weak_links",
+      "producedBy": "work_unit",
+      "required": true,
+      "description": "Concrete errors or workflow failures that are fixable in repository code."
+    },
+    {
+      "id": "post_run.atomic_tasks",
+      "kind": "artifact",
+      "producedBy": "artifact_write",
+      "required": true,
+      "description": "Created atomic AgentPlane tasks for each fixable issue, or explicit no-fixable-issue evidence."
+    },
+    {
+      "id": "post_run.execute_or_defer_decision",
+      "kind": "approval",
+      "producedBy": "approval_gate",
+      "required": true,
+      "description": "User decision to execute the created tasks immediately or defer them."
+    },
+    {
+      "id": "post_run.review_verdict",
+      "kind": "check_result",
+      "producedBy": "verify_record",
+      "required": true,
+      "description": "Verification that the review inspected available logs and gated execution behind the user decision."
+    },
+    {
+      "id": "post_run.handoff",
+      "kind": "final_output",
+      "producedBy": "handoff",
+      "required": true,
+      "description": "Summary of task ids, priorities, dependencies, and recommended next action."
+    },
+    {
+      "id": "post_run.commit",
+      "kind": "commit",
+      "producedBy": "finish",
+      "required": true,
+      "description": "Integrated review or blueprint commit."
+    }
+  ],
+  "policyModules": [
+    ".agentplane/policy/dod.code.md",
+    ".agentplane/policy/dod.core.md",
+    ".agentplane/policy/security.must.md",
+    ".agentplane/policy/workflow.branch_pr.md"
+  ],
+  "allowedCommands": [
+    "agentplane finish <task-id> --commit <git-rev>",
+    "agentplane task list --status DOING --status TODO",
+    "agentplane task new --title <title> --description <description> --owner <ROLE> --tag <tag>",
+    "agentplane task plan approve <task-id> --by ORCHESTRATOR",
+    "agentplane task plan set <task-id> --text <plan>",
+    "agentplane verify <task-id> --ok|--rework",
+    "ask user whether to execute created tasks now or defer",
+    "work log or terminal history inspection"
+  ],
+  "contextBudget": {
+    "maxPolicyModules": 4,
+    "maxPromptBlocks": 18,
+    "rationale": "Post-run review needs the normal branch_pr policy plus enough context for logs, observed failures, and follow-up task graph evidence."
+  },
+  "contextManifest": [],
+  "acceptedRecipeExtensions": [],
+  "rejectedRecipeExtensions": [],
+  "stopReasons": [],
+  "selectionReasons": [
+    "specialized code domain resolved to post_run.improvement_review",
+    "workflow mode: branch_pr",
+    "mutation scope: code"
+  ],
+  "digest": {
+    "algorithm": "sha256",
+    "value": "ef31b7a3a18afff7e399dbc2cd196b43b86cc822757186baf2b84351668b36a1"
+  }
+}

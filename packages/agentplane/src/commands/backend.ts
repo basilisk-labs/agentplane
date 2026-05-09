@@ -244,12 +244,25 @@ export async function cmdBackendInspectParsed(opts: {
         output.warn(
           `backend config overridden by .env: ${override.key} configured=${override.configured ?? "unset"} effective=${override.effective}`,
         );
+        if (override.key === "AGENTPLANE_CLOUD_PROJECT_ID") {
+          output.warn(
+            "cloud project override is active; task projection freshness and conflicts are evaluated against the effective project id, not backend.json",
+          );
+        }
       }
       if (result.connection.syncState) {
         const syncState = result.connection.syncState;
         output.line(
           `sync_state unavailable=${syncState.unavailable} degraded=${syncState.degraded ?? "unknown"} reason=${syncState.reason ?? "none"} failed_jobs=${syncState.failedJobs ?? "unknown"} queued_jobs=${syncState.queuedJobs ?? "unknown"} running_jobs=${syncState.runningJobs ?? "unknown"} delayed_jobs=${syncState.delayedJobs ?? "unknown"} pull_cursor=${syncState.pullCursor ?? "unset"} open_conflicts=${syncState.openConflicts}`,
         );
+        if (syncState.degraded === true) {
+          output.warn(
+            `cloud sync state degraded: reason=${syncState.reason ?? "unknown"} failed_jobs=${syncState.failedJobs ?? "unknown"}; local task mutations may be blocked when projection freshness expires`,
+          );
+          output.line(
+            "safe_command agentplane backend sync cloud --direction pull --conflict=diff",
+          );
+        }
         if (syncState.latestJob) {
           output.line(
             `sync_state_latest_job id=${syncState.latestJob.id ?? "unknown"} type=${syncState.latestJob.type ?? "unknown"} status=${syncState.latestJob.status ?? "unknown"} error=${JSON.stringify(syncState.latestJob.error ?? "")}`,
