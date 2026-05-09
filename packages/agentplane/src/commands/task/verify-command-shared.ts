@@ -1,5 +1,6 @@
 import { usageError } from "../../cli/spec/errors.js";
-import type { CommandSpec, OptionSpec, ParsedRaw } from "../../cli/spec/spec.js";
+import type { CommandCtx, CommandSpec, OptionSpec, ParsedRaw } from "../../cli/spec/spec.js";
+import type { CommandContext } from "../shared/task-backend.js";
 
 export type VerifyCommonParsed = {
   by: string;
@@ -22,6 +23,36 @@ export type VerifyCommonParsed = {
   incidentAdvice?: string;
   incidentRule?: string;
 };
+
+export type TaskVerifyParsed = VerifyCommonParsed & {
+  taskId: string;
+};
+
+type VerifyRecordRunner = (opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  by: string;
+  note: string;
+  noteFile?: string;
+  details?: string;
+  file?: string;
+  collectIncidents: boolean;
+  quiet: boolean;
+  observation?: string;
+  impact?: string;
+  resolution?: string;
+  promote: boolean;
+  external: boolean;
+  localOnly: boolean;
+  repoFixable: boolean;
+  incidentScope?: string;
+  incidentTags: string[];
+  incidentMatch: string[];
+  incidentAdvice?: string;
+  incidentRule?: string;
+}) => Promise<number>;
 
 export const verifyFindingOptions: readonly OptionSpec[] = [
   {
@@ -290,5 +321,67 @@ export function parseVerifyCommonOptions(raw: ParsedRaw): VerifyCommonParsed {
       typeof raw.opts["incident-advice"] === "string" ? raw.opts["incident-advice"] : undefined,
     incidentRule:
       typeof raw.opts["incident-rule"] === "string" ? raw.opts["incident-rule"] : undefined,
+  };
+}
+
+export function createTaskVerifyCommandSpec(opts: {
+  id: ["task", "verify", "ok"] | ["task", "verify", "rework"];
+  summary: string;
+  example: { cmd: string; why: string };
+}): CommandSpec<TaskVerifyParsed> {
+  const spec: CommandSpec<TaskVerifyParsed> = {
+    id: opts.id,
+    group: "Task",
+    summary: opts.summary,
+    args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+    options: verifyCommonOptions,
+    examples: [opts.example],
+    validateRaw: (raw) => {
+      validateVerifyDetailsFileExclusive(raw, spec, {
+        message: "Provide at most one of --details or --file.",
+      });
+      validateVerifyNonEmptyInput(raw, spec, "by");
+      validateVerifyNoteSource(raw, spec);
+      validateVerifyFindingSource(raw, spec);
+    },
+    parse: (raw) => ({
+      taskId: String(raw.args["task-id"]),
+      ...parseVerifyCommonOptions(raw),
+    }),
+  };
+  return spec;
+}
+
+export function makeRunTaskVerifyHandler(opts: {
+  commandName: string;
+  getCtx: (cmd: string) => Promise<CommandContext>;
+  run: VerifyRecordRunner;
+}) {
+  return async (ctx: CommandCtx, p: TaskVerifyParsed): Promise<number> => {
+    return await opts.run({
+      ctx: await opts.getCtx(opts.commandName),
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride,
+      taskId: p.taskId,
+      by: p.by,
+      note: p.note,
+      noteFile: p.noteFile,
+      details: p.details,
+      file: p.file,
+      collectIncidents: p.collectIncidents,
+      quiet: p.quiet,
+      observation: p.observation,
+      impact: p.impact,
+      resolution: p.resolution,
+      promote: p.promote,
+      external: p.external,
+      localOnly: p.localOnly,
+      repoFixable: p.repoFixable,
+      incidentScope: p.incidentScope,
+      incidentTags: p.incidentTags,
+      incidentMatch: p.incidentMatch,
+      incidentAdvice: p.incidentAdvice,
+      incidentRule: p.incidentRule,
+    });
   };
 }

@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605091754-S1KM8E/verify-spec-factory",
+  "created_at": "2026-05-09T19:13:38.898Z",
+  "head_sha": "8d79e1d5dff2b2be62db668008898056d9692efe",
+  "last_verified_at": "2026-05-09T19:18:20.585Z",
+  "last_verified_sha": "8d79e1d5dff2b2be62db668008898056d9692efe",
+  "schema_version": 1,
+  "task_id": "202605091754-S1KM8E",
+  "updated_at": "2026-05-09T19:13:38.898Z",
+  "verify": {
+    "status": "pass"
+  }
+}
