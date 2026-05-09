@@ -1,0 +1,536 @@
+{
+  "schemaVersion": 1,
+  "artifactKind": "agentplane.blueprint.resolved_snapshot",
+  "resolverInput": {
+    "taskId": "202605091534-C49NA0",
+    "title": "Integrate atomic global reinstall helper",
+    "description": "Integrate the existing local runtime-install-atomic branch changes into current main: make scripts/reinstall-global-agentplane.sh use an atomic npm link workflow, update release contract coverage, and align developer docs.",
+    "tags": [
+      "code"
+    ],
+    "owner": "CODER",
+    "workflowMode": "branch_pr",
+    "mutation": "code",
+    "touchedPaths": [],
+    "recipeHints": [],
+    "riskFlags": []
+  },
+  "selectedBlueprint": {
+    "id": "quality.regression",
+    "version": 1,
+    "title": "Quality regression",
+    "taskKinds": [
+      "code"
+    ],
+    "workflowModes": [
+      "branch_pr"
+    ]
+  },
+  "plan": {
+    "schemaVersion": 1,
+    "blueprintId": "quality.regression",
+    "blueprintVersion": 1,
+    "title": "Quality regression",
+    "taskId": "202605091534-C49NA0",
+    "workflowMode": "branch_pr",
+    "taskIntent": {
+      "mutationScope": "code"
+    },
+    "whySelected": [
+      "specialized code domain resolved to quality.regression",
+      "workflow mode: branch_pr",
+      "mutation scope: code"
+    ],
+    "states": [
+      {
+        "id": "intake",
+        "kind": "intake",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": []
+      },
+      {
+        "id": "scope",
+        "kind": "scope",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "assumptions"
+        ]
+      },
+      {
+        "id": "approval_gate",
+        "kind": "approval_gate",
+        "mode": "approval",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "approval"
+        ]
+      },
+      {
+        "id": "context_resolve",
+        "kind": "context_resolve",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [
+          ".agentplane/policy/security.must.md",
+          ".agentplane/policy/dod.core.md",
+          ".agentplane/policy/dod.code.md",
+          ".agentplane/policy/workflow.branch_pr.md"
+        ],
+        "evidenceKinds": [
+          "context_manifest",
+          "artifact"
+        ]
+      },
+      {
+        "id": "worktree_start",
+        "kind": "worktree_start",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [
+          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
+        ],
+        "policyModules": [],
+        "evidenceKinds": [
+          "changed_paths"
+        ]
+      },
+      {
+        "id": "work_unit",
+        "kind": "work_unit",
+        "mode": "agentic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "changed_paths",
+          "check_result"
+        ]
+      },
+      {
+        "id": "fast_local_checks",
+        "kind": "fast_local_checks",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [
+          "agentplane task verify-show <task-id>",
+          "project focused checks"
+        ],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result"
+        ]
+      },
+      {
+        "id": "pr_artifact",
+        "kind": "pr_artifact",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [
+          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
+        ],
+        "policyModules": [],
+        "evidenceKinds": [
+          "artifact",
+          "external_link"
+        ]
+      },
+      {
+        "id": "hosted_checks",
+        "kind": "hosted_checks",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result",
+          "external_link"
+        ]
+      },
+      {
+        "id": "publish_or_integrate",
+        "kind": "publish_or_integrate",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [
+          "agentplane integrate <task-id> --branch <branch> --run-verify"
+        ],
+        "policyModules": [],
+        "evidenceKinds": [
+          "commit",
+          "external_link"
+        ]
+      },
+      {
+        "id": "verify_record",
+        "kind": "verify_record",
+        "mode": "record",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result",
+          "weak_links"
+        ]
+      },
+      {
+        "id": "finish",
+        "kind": "finish",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "commit"
+        ]
+      }
+    ],
+    "requiredEvidence": [
+      {
+        "id": "regression.original_failure",
+        "kind": "artifact",
+        "producedBy": "context_resolve",
+        "required": true,
+        "description": "Original failure log or check output."
+      },
+      {
+        "id": "regression.reproduction",
+        "kind": "check_result",
+        "producedBy": "work_unit",
+        "required": true,
+        "description": "Local reproduction or explicit non-reproduction result."
+      },
+      {
+        "id": "regression.focused_check",
+        "kind": "check_result",
+        "producedBy": "fast_local_checks",
+        "required": true,
+        "description": "Focused regression check."
+      },
+      {
+        "id": "regression.matrix_or_scope",
+        "kind": "assumptions",
+        "producedBy": "scope",
+        "required": true,
+        "description": "Affected test/check matrix or bounded scope."
+      },
+      {
+        "id": "regression.full_gate",
+        "kind": "check_result",
+        "producedBy": "hosted_checks",
+        "required": true,
+        "description": "Full relevant gate or hosted check evidence."
+      },
+      {
+        "id": "regression.flake_classification",
+        "kind": "weak_links",
+        "producedBy": "verify_record",
+        "required": true,
+        "description": "Flake classification or residual risk."
+      },
+      {
+        "id": "regression.commit",
+        "kind": "commit",
+        "producedBy": "publish_or_integrate",
+        "required": true,
+        "description": "Integration commit."
+      }
+    ],
+    "policyModules": [
+      ".agentplane/policy/dod.code.md",
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/security.must.md",
+      ".agentplane/policy/workflow.branch_pr.md"
+    ],
+    "allowedCommands": [
+      "affected matrix or full relevant gate",
+      "agentplane integrate <task-id> --branch <branch> --run-verify",
+      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
+      "agentplane task verify-show <task-id>",
+      "agentplane verify <task-id> --ok|--rework",
+      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
+      "failure reproduction command",
+      "focused regression check",
+      "project focused checks"
+    ],
+    "contextBudget": {
+      "maxPolicyModules": 4,
+      "maxPromptBlocks": 16,
+      "rationale": "Regression work needs failure evidence, focused reproduction, and the relevant quality gate."
+    },
+    "contextManifest": [],
+    "acceptedRecipeExtensions": [],
+    "rejectedRecipeExtensions": [],
+    "stopReasons": []
+  },
+  "nodes": [
+    {
+      "id": "intake",
+      "kind": "intake",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": []
+    },
+    {
+      "id": "scope",
+      "kind": "scope",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "assumptions"
+      ]
+    },
+    {
+      "id": "approval_gate",
+      "kind": "approval_gate",
+      "mode": "approval",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "approval"
+      ]
+    },
+    {
+      "id": "context_resolve",
+      "kind": "context_resolve",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [
+        ".agentplane/policy/security.must.md",
+        ".agentplane/policy/dod.core.md",
+        ".agentplane/policy/dod.code.md",
+        ".agentplane/policy/workflow.branch_pr.md"
+      ],
+      "evidenceKinds": [
+        "context_manifest",
+        "artifact"
+      ]
+    },
+    {
+      "id": "worktree_start",
+      "kind": "worktree_start",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [
+        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
+      ],
+      "policyModules": [],
+      "evidenceKinds": [
+        "changed_paths"
+      ]
+    },
+    {
+      "id": "work_unit",
+      "kind": "work_unit",
+      "mode": "agentic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "changed_paths",
+        "check_result"
+      ]
+    },
+    {
+      "id": "fast_local_checks",
+      "kind": "fast_local_checks",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [
+        "agentplane task verify-show <task-id>",
+        "project focused checks"
+      ],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result"
+      ]
+    },
+    {
+      "id": "pr_artifact",
+      "kind": "pr_artifact",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [
+        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
+      ],
+      "policyModules": [],
+      "evidenceKinds": [
+        "artifact",
+        "external_link"
+      ]
+    },
+    {
+      "id": "hosted_checks",
+      "kind": "hosted_checks",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result",
+        "external_link"
+      ]
+    },
+    {
+      "id": "publish_or_integrate",
+      "kind": "publish_or_integrate",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [
+        "agentplane integrate <task-id> --branch <branch> --run-verify"
+      ],
+      "policyModules": [],
+      "evidenceKinds": [
+        "commit",
+        "external_link"
+      ]
+    },
+    {
+      "id": "verify_record",
+      "kind": "verify_record",
+      "mode": "record",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result",
+        "weak_links"
+      ]
+    },
+    {
+      "id": "finish",
+      "kind": "finish",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "commit"
+      ]
+    }
+  ],
+  "requiredEvidence": [
+    {
+      "id": "regression.original_failure",
+      "kind": "artifact",
+      "producedBy": "context_resolve",
+      "required": true,
+      "description": "Original failure log or check output."
+    },
+    {
+      "id": "regression.reproduction",
+      "kind": "check_result",
+      "producedBy": "work_unit",
+      "required": true,
+      "description": "Local reproduction or explicit non-reproduction result."
+    },
+    {
+      "id": "regression.focused_check",
+      "kind": "check_result",
+      "producedBy": "fast_local_checks",
+      "required": true,
+      "description": "Focused regression check."
+    },
+    {
+      "id": "regression.matrix_or_scope",
+      "kind": "assumptions",
+      "producedBy": "scope",
+      "required": true,
+      "description": "Affected test/check matrix or bounded scope."
+    },
+    {
+      "id": "regression.full_gate",
+      "kind": "check_result",
+      "producedBy": "hosted_checks",
+      "required": true,
+      "description": "Full relevant gate or hosted check evidence."
+    },
+    {
+      "id": "regression.flake_classification",
+      "kind": "weak_links",
+      "producedBy": "verify_record",
+      "required": true,
+      "description": "Flake classification or residual risk."
+    },
+    {
+      "id": "regression.commit",
+      "kind": "commit",
+      "producedBy": "publish_or_integrate",
+      "required": true,
+      "description": "Integration commit."
+    }
+  ],
+  "policyModules": [
+    ".agentplane/policy/dod.code.md",
+    ".agentplane/policy/dod.core.md",
+    ".agentplane/policy/security.must.md",
+    ".agentplane/policy/workflow.branch_pr.md"
+  ],
+  "allowedCommands": [
+    "affected matrix or full relevant gate",
+    "agentplane integrate <task-id> --branch <branch> --run-verify",
+    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
+    "agentplane task verify-show <task-id>",
+    "agentplane verify <task-id> --ok|--rework",
+    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
+    "failure reproduction command",
+    "focused regression check",
+    "project focused checks"
+  ],
+  "contextBudget": {
+    "maxPolicyModules": 4,
+    "maxPromptBlocks": 16,
+    "rationale": "Regression work needs failure evidence, focused reproduction, and the relevant quality gate."
+  },
+  "contextManifest": [],
+  "acceptedRecipeExtensions": [],
+  "rejectedRecipeExtensions": [],
+  "stopReasons": [],
+  "selectionReasons": [
+    "specialized code domain resolved to quality.regression",
+    "workflow mode: branch_pr",
+    "mutation scope: code"
+  ],
+  "digest": {
+    "algorithm": "sha256",
+    "value": "e2aa4530a91440f132fb460b34bbc5f3e8499caf822b86dfbecf0b545bd7052d"
+  }
+}

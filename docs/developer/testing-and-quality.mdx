@@ -75,9 +75,11 @@ developer reinstall helper:
 scripts/reinstall-global-agentplane.sh
 ```
 
-It rebuilds local `@agentplaneorg/core` and `agentplane`, reinstalls both packages globally from
-this checkout, and verifies that the global `agentplane` runtime resolves `@agentplaneorg/core`
-from this checkout instead of a published fallback.
+It rebuilds the local `@agentplaneorg/core` and `agentplane` runtime bundles, links local
+`@agentplaneorg/core` and `agentplane` into the global npm prefix from this checkout, and verifies
+that the global `agentplane` runtime resolves `@agentplaneorg/core` from this checkout instead of a
+published fallback. Use `bun run framework:dev:bootstrap` when you also need the full framework
+development layout and `@agentplane/testkit`.
 
 For a full run (including slower CLI integration tests):
 

@@ -68,14 +68,13 @@ describe("release CI contract", () => {
       releaseCheck.indexOf("bun run --filter=agentplane build"),
     );
 
-    const [coreCi, prepublish, hostedClose, reinstall] = await Promise.all([
+    const [coreCi, prepublish, hostedClose] = await Promise.all([
       readRootText(".github/workflows/ci.yml"),
       readRootText(".github/workflows/prepublish.yml"),
       readRootText(".github/workflows/task-hosted-close.yml"),
-      readRootText("scripts/reinstall-global-agentplane.sh"),
     ]);
 
-    for (const text of [coreCi, prepublish, hostedClose, reinstall]) {
+    for (const text of [coreCi, prepublish, hostedClose]) {
       expect(text).toContain("bun run --filter=@agentplane/testkit build");
       expect(text.indexOf("bun run --filter=agentplane build")).toBeGreaterThan(
         text.indexOf("bun run --filter=@agentplaneorg/core build"),
@@ -84,6 +83,16 @@ describe("release CI contract", () => {
         text.indexOf("bun run --filter=agentplane build"),
       );
     }
+  });
+
+  it("keeps the developer reinstall helper on the minimal runtime build path", async () => {
+    const reinstall = await readRootText("scripts/reinstall-global-agentplane.sh");
+
+    expect(reinstall).toContain("bun run --filter=@agentplaneorg/core build");
+    expect(reinstall).toContain("bun run --filter=agentplane build:bundle");
+    expect(reinstall).toContain("npm link");
+    expect(reinstall).not.toContain("bun run --filter=@agentplane/testkit build");
+    expect(reinstall).not.toContain("npm install -g ./packages");
   });
 
   it("does not expose repo-private test helpers from the published agentplane package", async () => {
