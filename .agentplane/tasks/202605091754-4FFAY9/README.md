@@ -1,7 +1,8 @@
 ---
 id: "202605091754-4FFAY9"
 title: "Extract shared task doc section parser"
-status: "DOING"
+result_summary: "Merged via PR #3533."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -30,11 +31,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: extracted shared task doc section parser; focused core task-doc/readme/store tests passed (4 files, 58 tests), typecheck passed, Prettier passed, clone:report improved metrics to 83 clones / 1384 duplicated lines / 14705 duplicated tokens, and clone:check passed without baseline update."
   attempts: 0
-commit: null
+commit:
+  hash: "2d36513712e6c82a8d866c90f823540556b1f144"
+  message: "Merge pull request #3533 from basilisk-labs/task/202605091754-4FFAY9/task-doc-parser"
 comments:
   -
     author: "CODER"
     body: "Start: extract a shared task doc section parser and reuse it from normalization, ensure-section, and section-map helpers."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3533 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: extracted shared task doc section parser; focused core task-doc/readme/store tests passed (4 files, 58 tests), typecheck passed, Prettier passed, clone:report improved metrics to 83 clones / 1384 duplicated lines / 14705 duplicated tokens, and clone:check passed without baseline update."
+  -
+    type: "status"
+    at: "2026-05-09T18:56:08.830Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3533 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T18:52:34.206Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T18:56:08.838Z"
+doc_updated_by: "INTEGRATOR"
 description: "Unify the duplicated section parsing logic in core task document normalization so normalizeTaskDoc and normalizeDocSections share one parser."
 sections:
   Summary: |-
