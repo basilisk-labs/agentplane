@@ -1,7 +1,8 @@
 ---
 id: "202605091233-GJX6S4"
 title: "Align task new tests with canonical sections"
-status: "DOING"
+result_summary: "Merged PR 3499 to main with task-new regression tests aligned to canonical README sections."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-09T12:40:51.056Z"
   updated_by: "CODER"
   note: "Task new regression tests aligned with canonical README sections and targeted backend route verified."
-commit: null
+commit:
+  hash: "fbc0ee5ac1b88bad387e24eb1c2ef33663709b89"
+  message: "Merge pull request #3499 from basilisk-labs/codex/v05-cloud-pull-fetch-fix"
 comments:
   -
     author: "CODER"
     body: "Start: Update the task new regression assertions to match doc_version=3 canonical sections and unblock the targeted backend pre-push route."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR 3499 merged to main after task-new canonical section assertions passed locally and the full pre-push and hosted checks completed successfully."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Task new regression tests aligned with canonical README sections and targeted backend route verified."
+  -
+    type: "status"
+    at: "2026-05-09T13:21:27.421Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR 3499 merged to main after task-new canonical section assertions passed locally and the full pre-push and hosted checks completed successfully."
 doc_version: 3
-doc_updated_at: "2026-05-09T12:40:51.096Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T13:21:27.424Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update task new regression tests to assert doc_version=3 canonical sections instead of duplicated Markdown body so targeted backend pre-push route reflects the current task README contract."
 sections:
   Summary: |-
