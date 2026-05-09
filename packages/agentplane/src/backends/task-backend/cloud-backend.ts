@@ -28,6 +28,7 @@ import {
   cloudHttpErrorMessage,
   cloudPushBatchFinalized,
   cloudNetworkErrorMessage,
+  configureCloudFetchAddressSelection,
   createTimeoutSignal,
   isOptionalSyncStateFailure,
   isCloudRetriableError,
@@ -126,6 +127,7 @@ export class CloudBackend implements TaskBackend {
       firstNonEmptyString(settings.state_path, ".agentplane/backends/cloud/state.json"),
     );
     this.staleAfterSeconds = normalizePositiveInteger(settings.stale_after_seconds) ?? 300;
+    if (!opts.fetchImpl) configureCloudFetchAddressSelection();
     this.fetchImpl = opts.fetchImpl ?? fetch;
   }
 

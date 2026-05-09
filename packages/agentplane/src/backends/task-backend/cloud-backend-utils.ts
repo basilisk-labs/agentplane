@@ -1,3 +1,5 @@
+import * as net from "node:net";
+
 import { BackendError, type TaskData } from "./shared.js";
 import { isDotEnvLoadedKey } from "../../shared/env.js";
 import { isRecord } from "../../shared/guards.js";
@@ -17,7 +19,13 @@ export const CLOUD_PUSH_BATCH_RETRY_DELAYS_MS = [0, 1500, 3000] as const;
 export const CLOUD_REQUEST_TIMEOUT_MS = 30_000;
 export const CLOUD_PULL_REQUEST_TIMEOUT_MS = 120_000;
 export const CLOUD_PUSH_BATCH_REQUEST_TIMEOUT_MS = 60_000;
+export const CLOUD_NETWORK_FAMILY_ATTEMPT_TIMEOUT_MS = 1_000;
 const CLOUD_RETRIABLE_HTTP_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
+
+type NetworkFamilyAttemptTimeoutApi = {
+  getDefaultAutoSelectFamilyAttemptTimeout?: () => number;
+  setDefaultAutoSelectFamilyAttemptTimeout?: (value: number) => void;
+};
 
 export type CloudSyncStateDiagnostics = {
   unavailable: boolean;
@@ -56,6 +64,20 @@ export class CloudNetworkError extends BackendError {
   constructor(message: string) {
     super(message, "E_NETWORK");
   }
+}
+
+export function configureCloudFetchAddressSelection(
+  api: NetworkFamilyAttemptTimeoutApi = net,
+): void {
+  if (
+    typeof api.getDefaultAutoSelectFamilyAttemptTimeout !== "function" ||
+    typeof api.setDefaultAutoSelectFamilyAttemptTimeout !== "function"
+  ) {
+    return;
+  }
+  const current = api.getDefaultAutoSelectFamilyAttemptTimeout();
+  if (!Number.isFinite(current) || current >= CLOUD_NETWORK_FAMILY_ATTEMPT_TIMEOUT_MS) return;
+  api.setDefaultAutoSelectFamilyAttemptTimeout(CLOUD_NETWORK_FAMILY_ATTEMPT_TIMEOUT_MS);
 }
 
 export function normalizeCloudPullResponse(
