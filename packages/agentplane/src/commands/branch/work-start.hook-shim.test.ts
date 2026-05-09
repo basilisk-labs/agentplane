@@ -30,6 +30,6 @@ describe("worktree hook shim", () => {
     expect(shim).toContain("agentplane-hook-shim");
     expect(shim).toContain(`INSTALL_BIN='${activeBin}'`);
     expect(shim).toContain("AGENTPLANE_HOOK_RUNNER");
-    expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_NPX");
+    expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_GLOBAL");
   });
 });

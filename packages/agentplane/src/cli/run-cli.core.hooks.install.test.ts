@@ -94,7 +94,7 @@ describe("runCli hooks install", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
     expect(shim).toContain("agentplane-hook-shim");
     expect(shim).toContain(`INSTALL_BIN='${activeBin}'`);
     expect(shim).toContain("AGENTPLANE_HOOK_RUNNER");
-    expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_NPX");
+    expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_GLOBAL");
   });
 
   it("hooks install refuses to overwrite unmanaged hook", async () => {

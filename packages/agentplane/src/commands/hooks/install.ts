@@ -30,11 +30,9 @@ function hookScriptText(hook: HookName): string {
     'if [ -x "$SHIM" ]; then',
     '  exec "$SHIM" hooks run ' + hook + ' "$@"',
     "fi",
-    "if ! command -v agentplane >/dev/null 2>&1; then",
-    '  echo "agentplane hooks: runner not found (PATH missing and shim unavailable)." >&2',
-    "  exit 127",
-    "fi",
-    "exec agentplane hooks run " + hook + ' "$@"',
+    'echo "agentplane hooks: local shim not found or not executable: $SHIM" >&2',
+    'echo "Run agentplane hooks install or agentplane init to restore repository-scoped hooks." >&2',
+    "exit 127",
     "",
   ].join("\n");
 }

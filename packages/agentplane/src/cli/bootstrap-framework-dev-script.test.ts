@@ -138,7 +138,7 @@ describe("bootstrap-framework-dev script", () => {
     expect(shim).toContain(
       `INSTALL_BIN='${path.join(repoRoot, "packages", "agentplane", "bin", "agentplane.js")}'`,
     );
-    expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_NPX");
+    expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_GLOBAL");
   });
 
   it("reconciles the managed hook set and adds a missing post-merge hook", async () => {
@@ -311,7 +311,7 @@ describe("bootstrap-framework-dev script", () => {
     expect(shim).toContain(
       `INSTALL_BIN='${path.join(repoRoot, "packages", "agentplane", "bin", "agentplane.js")}'`,
     );
-    expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_NPX");
+    expect(shim).toContain("AGENTPLANE_HOOK_ALLOW_GLOBAL");
   });
 
   it("surfaces a precise error when the recipes gitlink cannot be initialized", async () => {
