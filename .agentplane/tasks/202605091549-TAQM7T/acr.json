@@ -1,0 +1,219 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605091549-TAQM7T",
+  "created_at": "2026-05-09T16:28:47.160Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "905b0067267660acc0cbee12e9aff75902318274",
+    "work_ref": "main",
+    "work_commit": "905b0067267660acc0cbee12e9aff75902318274"
+  },
+  "task": {
+    "task_id": "202605091549-TAQM7T",
+    "title": "Warn on cloud project override and degraded sync state",
+    "intent": "Add doctor/backend diagnostics that clearly surface AGENTPLANE_CLOUD_PROJECT_ID overriding backend.json and degraded cloud sync state such as rate_limited failed jobs before task lifecycle mutations hit stale projection errors.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605091549-TAQM7T/README.md",
+      "sha256": "sha256:077b1a3b80d1eb7994118d5cb61caefb7e24b6bf37ac6bb085cead87b46b47db"
+    },
+    "approved_at": "2026-05-09T15:50:22.337Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Add doctor/backend diagnostics that clearly surface AGENTPLANE_CLOUD_PROJECT_ID overriding backend.json and degraded cloud sync state such as rate_limited failed jobs before task lifecycle mutations hit stale projection errors.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605091549-TAQM7T_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-09T15:50:22.337Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605091549-TAQM7T/README.md",
+      "sha256": "sha256:077b1a3b80d1eb7994118d5cb61caefb7e24b6bf37ac6bb085cead87b46b47db"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605091549-TAQM7T/README.md",
+      "sha256": "sha256:077b1a3b80d1eb7994118d5cb61caefb7e24b6bf37ac6bb085cead87b46b47db"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605091549-TAQM7T/README.md",
+      "sha256": "sha256:077b1a3b80d1eb7994118d5cb61caefb7e24b6bf37ac6bb085cead87b46b47db"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605091549-TAQM7T/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:88bdf028dea7d3f47316217df141e6f4ad6636fc4f7e8274911860bc79f08dbd"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 905b0067267660acc0cbee12e9aff75902318274 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:ecb241e16c53d50187cb45e86dbc050c388033524223f1ee86a125abd0a2aa45",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605091549-TAQM7T/blueprint/resolved-snapshot.json",
+        "digest": "5345d01986c08e14c0259e49ddfe189b74a878b78a389b4e7b77f7c70e17d004",
+        "current_digest": "5345d01986c08e14c0259e49ddfe189b74a878b78a389b4e7b77f7c70e17d004",
+        "route_changed": false,
+        "artifact_sha256": "sha256:88bdf028dea7d3f47316217df141e6f4ad6636fc4f7e8274911860bc79f08dbd",
+        "safe_command": "agentplane blueprint snapshot 202605091549-TAQM7T"
+      }
+    }
+  }
+}

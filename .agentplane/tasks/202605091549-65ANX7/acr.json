@@ -1,0 +1,228 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605091549-65ANX7",
+  "created_at": "2026-05-09T16:28:47.085Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "905b0067267660acc0cbee12e9aff75902318274",
+    "work_ref": "main",
+    "work_commit": "905b0067267660acc0cbee12e9aff75902318274"
+  },
+  "task": {
+    "task_id": "202605091549-65ANX7",
+    "title": "Add post-run improvement review blueprint",
+    "intent": "Create a blueprint entity for long-running complex tasks: after completion, the agent analyzes work logs for code-fixable process/runtime errors, creates atomic follow-up tasks for those fixes, and asks the user whether to execute them immediately or defer.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605091549-65ANX7/README.md",
+      "sha256": "sha256:a03a44327f9a3117a955e048346bbd6b361ebe334c6c2a5e35a56761db4ba8de"
+    },
+    "approved_at": "2026-05-09T15:50:24.343Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Create a blueprint entity for long-running complex tasks: after completion, the agent analyzes work logs for code-fixable process/runtime errors, creates atomic follow-up tasks for those fixes, and asks the user whether to execute them immediately or defer.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605091549-65ANX7_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-09T15:50:24.343Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605091549-65ANX7/README.md",
+      "sha256": "sha256:a03a44327f9a3117a955e048346bbd6b361ebe334c6c2a5e35a56761db4ba8de"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605091549-65ANX7/README.md",
+      "sha256": "sha256:a03a44327f9a3117a955e048346bbd6b361ebe334c6c2a5e35a56761db4ba8de"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605091549-65ANX7/README.md",
+      "sha256": "sha256:a03a44327f9a3117a955e048346bbd6b361ebe334c6c2a5e35a56761db4ba8de"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605091549-65ANX7/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:ec248b95749291161ec8404bcf0263d5d7e2b0ed9aac2768bfdcfc96600f41cc"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 905b0067267660acc0cbee12e9aff75902318274 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:9e7ed829894151d8f3f1318de5248885401252759191859c56a56ed3d1ff7e1f",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "post_run.improvement_review",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "artifact_write",
+        "approval_gate",
+        "verify_record",
+        "handoff",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "post_run.work_log",
+          "kind": "artifact",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "post_run.fixable_errors",
+          "kind": "weak_links",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "post_run.atomic_tasks",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        },
+        {
+          "id": "post_run.execute_or_defer_decision",
+          "kind": "approval",
+          "produced_by": "approval_gate",
+          "required": true
+        },
+        {
+          "id": "post_run.review_verdict",
+          "kind": "check_result",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "post_run.handoff",
+          "kind": "final_output",
+          "produced_by": "handoff",
+          "required": true
+        },
+        {
+          "id": "post_run.commit",
+          "kind": "commit",
+          "produced_by": "finish",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605091549-65ANX7/blueprint/resolved-snapshot.json",
+        "digest": "ef31b7a3a18afff7e399dbc2cd196b43b86cc822757186baf2b84351668b36a1",
+        "current_digest": "ef31b7a3a18afff7e399dbc2cd196b43b86cc822757186baf2b84351668b36a1",
+        "route_changed": false,
+        "artifact_sha256": "sha256:ec248b95749291161ec8404bcf0263d5d7e2b0ed9aac2768bfdcfc96600f41cc",
+        "safe_command": "agentplane blueprint snapshot 202605091549-65ANX7"
+      }
+    }
+  }
+}

@@ -1,4 +1,6 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-09T16:28:08Z",
   "base": "main",
   "batch": {
     "closure_policy": "all_or_fail",
@@ -12,17 +14,21 @@
   },
   "branch": "task/202605091549-JAE983/lifecycle-followups",
   "created_at": "2026-05-09T15:51:06.784Z",
-  "head_sha": "286be3dcebcc6f10f8394d2c42a626c6dc833017",
+  "head_sha": "3a85c44ddcf6d1254998730dccb3dd49f0506538",
   "last_verified_at": "2026-05-09T16:17:43.741Z",
   "last_verified_sha": "7f40f04dd37729afe20addc17b8a75e416bbf565",
+  "merge_commit": "905b0067267660acc0cbee12e9aff75902318274",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-09T16:28:08Z",
   "related_task_ids": [
     "202605091549-65ANX7",
     "202605091549-8Z3MZ5",
     "202605091549-TAQM7T"
   ],
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605091549-JAE983",
-  "updated_at": "2026-05-09T16:22:02.240Z",
+  "updated_at": "2026-05-09T16:28:08Z",
   "verify": {
     "status": "pass"
   }

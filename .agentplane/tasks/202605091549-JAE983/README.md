@@ -1,7 +1,8 @@
 ---
 id: "202605091549-JAE983"
 title: "Make finish close-commit atomic under dirty lifecycle state"
-status: "DOING"
+result_summary: "Merged via PR #3516."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-09T16:17:43.741Z"
   updated_by: "CODER"
   note: "Verified close-commit preflight rejects dirty tracked state before task mutation."
-commit: null
+commit:
+  hash: "905b0067267660acc0cbee12e9aff75902318274"
+  message: "Merge pull request #3516 from basilisk-labs/task/202605091549-JAE983/lifecycle-followups"
 comments:
   -
     author: "CODER"
     body: "Start: implement finish close-commit atomicity as part of the lifecycle follow-up batch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3516 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified close-commit preflight rejects dirty tracked state before task mutation."
+  -
+    type: "status"
+    at: "2026-05-09T16:28:46.983Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3516 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T16:17:43.762Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T16:28:46.989Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix ap finish --close-commit so it does not partially transition a task to DONE before proving the deterministic close commit can be created, and add a safe path for batch lifecycle closures."
 sections:
   Summary: |-

@@ -1,0 +1,219 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605091549-8Z3MZ5",
+  "created_at": "2026-05-09T16:28:47.122Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "905b0067267660acc0cbee12e9aff75902318274",
+    "work_ref": "main",
+    "work_commit": "905b0067267660acc0cbee12e9aff75902318274"
+  },
+  "task": {
+    "task_id": "202605091549-8Z3MZ5",
+    "title": "Sync branch_pr task artifacts into worktrees",
+    "intent": "Fix branch_pr work start/pr open so task README, blueprint snapshot, and PR artifacts are available inside the task worktree, preventing ENOENT when the task was created on the base checkout.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605091549-8Z3MZ5/README.md",
+      "sha256": "sha256:d7efec15b63a5613e520e869617bd4c4ba7a3d58ab6565395df8ae0454d5538f"
+    },
+    "approved_at": "2026-05-09T15:50:20.229Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Fix branch_pr work start/pr open so task README, blueprint snapshot, and PR artifacts are available inside the task worktree, preventing ENOENT when the task was created on the base checkout.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605091549-8Z3MZ5_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-09T15:50:20.229Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605091549-8Z3MZ5/README.md",
+      "sha256": "sha256:d7efec15b63a5613e520e869617bd4c4ba7a3d58ab6565395df8ae0454d5538f"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605091549-8Z3MZ5/README.md",
+      "sha256": "sha256:d7efec15b63a5613e520e869617bd4c4ba7a3d58ab6565395df8ae0454d5538f"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605091549-8Z3MZ5/README.md",
+      "sha256": "sha256:d7efec15b63a5613e520e869617bd4c4ba7a3d58ab6565395df8ae0454d5538f"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605091549-8Z3MZ5/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:6ae8fcfc678cc9231aa67aec2c92ff710a0c0ec7c3e3cdce1cd666b7f5c689c4"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 905b0067267660acc0cbee12e9aff75902318274 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:dca1d3b260bcfd29f991d038f2a06621d306665d432768fc3c54986501c83ada",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605091549-8Z3MZ5/blueprint/resolved-snapshot.json",
+        "digest": "0f56c1282f7cd2f015a8b0072b769e49870dda90ddc3de27104cee464098100d",
+        "current_digest": "0f56c1282f7cd2f015a8b0072b769e49870dda90ddc3de27104cee464098100d",
+        "route_changed": false,
+        "artifact_sha256": "sha256:6ae8fcfc678cc9231aa67aec2c92ff710a0c0ec7c3e3cdce1cd666b7f5c689c4",
+        "safe_command": "agentplane blueprint snapshot 202605091549-8Z3MZ5"
+      }
+    }
+  }
+}

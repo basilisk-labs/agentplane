@@ -1,7 +1,7 @@
 ---
 id: "202605091549-65ANX7"
 title: "Add post-run improvement review blueprint"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -21,11 +21,16 @@ verification:
   updated_at: "2026-05-09T16:18:42.215Z"
   updated_by: "CODER"
   note: "Verified post_run.improvement_review blueprint validates and resolves from post-run/follow-up intent with current blueprint snapshot."
-commit: null
+commit:
+  hash: "905b0067267660acc0cbee12e9aff75902318274"
+  message: "Merge pull request #3516 from basilisk-labs/task/202605091549-JAE983/lifecycle-followups"
 comments:
   -
     author: "CODER"
     body: "Start: implement the post-run improvement review blueprint entity as the final follow-up task."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3516 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -46,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified post_run.improvement_review blueprint validates and resolves from post-run/follow-up intent with current blueprint snapshot."
+  -
+    type: "status"
+    at: "2026-05-09T16:28:46.993Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3516 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T16:18:42.315Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T16:28:46.996Z"
+doc_updated_by: "INTEGRATOR"
 description: "Create a blueprint entity for long-running complex tasks: after completion, the agent analyzes work logs for code-fixable process/runtime errors, creates atomic follow-up tasks for those fixes, and asks the user whether to execute them immediately or defer."
 sections:
   Summary: |-
