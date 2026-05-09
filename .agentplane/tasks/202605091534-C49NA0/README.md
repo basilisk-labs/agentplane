@@ -1,7 +1,8 @@
 ---
 id: "202605091534-C49NA0"
 title: "Integrate atomic global reinstall helper"
-status: "DOING"
+result_summary: "Merged via PR #3514."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-05-09T15:35:55.417Z"
   updated_by: "CODER"
   note: "Runtime reinstall helper integration verified."
-commit: null
+commit:
+  hash: "fcbcf880e88dd07c0f5e0d9e9322db016dd98fbc"
+  message: "Merge pull request #3514 from basilisk-labs/task/202605091534-C49NA0/runtime-reinstall-helper"
 comments:
   -
     author: "CODER"
     body: "Start: integrate the existing runtime reinstall helper branch onto current main with focused release-contract and docs verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3514 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Runtime reinstall helper integration verified."
+  -
+    type: "status"
+    at: "2026-05-09T15:39:19.499Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3514 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T15:35:55.442Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T15:39:19.506Z"
+doc_updated_by: "INTEGRATOR"
 description: "Integrate the existing local runtime-install-atomic branch changes into current main: make scripts/reinstall-global-agentplane.sh use an atomic npm link workflow, update release contract coverage, and align developer docs."
 sections:
   Summary: |-

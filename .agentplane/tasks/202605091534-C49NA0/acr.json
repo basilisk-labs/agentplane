@@ -1,0 +1,231 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605091534-C49NA0",
+  "created_at": "2026-05-09T15:39:19.546Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "fcbcf880e88dd07c0f5e0d9e9322db016dd98fbc",
+    "work_ref": "main",
+    "work_commit": "fcbcf880e88dd07c0f5e0d9e9322db016dd98fbc"
+  },
+  "task": {
+    "task_id": "202605091534-C49NA0",
+    "title": "Integrate atomic global reinstall helper",
+    "intent": "Integrate the existing local runtime-install-atomic branch changes into current main: make scripts/reinstall-global-agentplane.sh use an atomic npm link workflow, update release contract coverage, and align developer docs.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605091534-C49NA0/README.md",
+      "sha256": "sha256:dae6cedd91c42c83ddd0087aacdfbeb6264d1db30c51a0333f1b873c3326a6fb"
+    },
+    "approved_at": "2026-05-09T15:34:20.111Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3514.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605091534-C49NA0_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-09T15:34:20.111Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605091534-C49NA0/README.md",
+      "sha256": "sha256:dae6cedd91c42c83ddd0087aacdfbeb6264d1db30c51a0333f1b873c3326a6fb"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605091534-C49NA0/README.md",
+      "sha256": "sha256:dae6cedd91c42c83ddd0087aacdfbeb6264d1db30c51a0333f1b873c3326a6fb"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605091534-C49NA0/README.md",
+      "sha256": "sha256:dae6cedd91c42c83ddd0087aacdfbeb6264d1db30c51a0333f1b873c3326a6fb"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605091534-C49NA0/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:7a79568c92934003f3da778850337b122d7a4a56787e92a797fe3ec0510fc14a"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit fcbcf880e88dd07c0f5e0d9e9322db016dd98fbc if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:02a9f70a219fe619845d5017466e393ba466ce3365528cbfe985521014ae8141",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "quality.regression",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "regression.original_failure",
+          "kind": "artifact",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "regression.reproduction",
+          "kind": "check_result",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "regression.focused_check",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "regression.matrix_or_scope",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "regression.full_gate",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "regression.flake_classification",
+          "kind": "weak_links",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "regression.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605091534-C49NA0/blueprint/resolved-snapshot.json",
+        "digest": "e2aa4530a91440f132fb460b34bbc5f3e8499caf822b86dfbecf0b545bd7052d",
+        "current_digest": "e2aa4530a91440f132fb460b34bbc5f3e8499caf822b86dfbecf0b545bd7052d",
+        "route_changed": false,
+        "artifact_sha256": "sha256:7a79568c92934003f3da778850337b122d7a4a56787e92a797fe3ec0510fc14a",
+        "safe_command": "agentplane blueprint snapshot 202605091534-C49NA0"
+      }
+    }
+  }
+}
