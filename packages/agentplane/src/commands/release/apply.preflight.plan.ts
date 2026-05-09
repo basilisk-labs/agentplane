@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
+import { readJsonFile } from "../../shared/json-io.js";
 
 import type { PlanChange, ReleaseVersionPlan } from "./apply.types.js";
 
@@ -13,10 +14,6 @@ export async function fileExists(p: string): Promise<boolean> {
   } catch {
     return false;
   }
-}
-
-export async function readJsonFile<T>(p: string): Promise<T> {
-  return JSON.parse(await readFile(p, "utf8")) as T;
 }
 
 function assertNonEmptyString(value: unknown, label: string): string {
