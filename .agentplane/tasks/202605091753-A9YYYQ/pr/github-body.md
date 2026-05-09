@@ -22,12 +22,16 @@ Extract common hook helpers for task intent loading, enum parsing, environment f
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-09T18:37:16.398Z
+- Updated: 2026-05-09T18:37:34.130Z
 - Branch: task/202605091753-A9YYYQ/hook-context
-- Head: 31abc088e938
+- Head: e3b10b70df91
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 505 +++++++++++++++++++++
+ .../src/commands/hooks/run.commit-msg.ts           | 104 +----
+ .../src/commands/hooks/run.pre-commit.ts           |  82 +---
+ .../agentplane/src/commands/hooks/task-context.ts  |  94 ++++
+ 4 files changed, 614 insertions(+), 171 deletions(-)
 ```
 
 </details>
