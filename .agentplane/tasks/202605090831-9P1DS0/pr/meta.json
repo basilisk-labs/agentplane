@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605090831-9P1DS0/cloud-node-address-selection",
+  "created_at": "2026-05-09T08:33:06.157Z",
+  "head_sha": "0ea79236d7c1f4612d7a7e53bbd12f7f168f424e",
+  "last_verified_at": "2026-05-09T08:36:00.932Z",
+  "last_verified_sha": "1178f3e0b7b2b4e369f2ad66c5b21ed98cb1f1fb",
+  "schema_version": 1,
+  "task_id": "202605090831-9P1DS0",
+  "updated_at": "2026-05-09T08:36:51.448Z",
+  "verify": {
+    "status": "pass"
+  }
+}
