@@ -1,0 +1,11 @@
+ .../blueprint/resolved-snapshot.json               | 534 +++++++++++++++++++++
+ .../src/cli/bootstrap-framework-dev-script.test.ts |   4 +-
+ .../src/cli/run-cli.core.hooks.install.test.ts     |   2 +-
+ .../src/cli/run-cli.core.installed-smoke.test.ts   |   2 +-
+ .../commands/branch/work-start.hook-shim.test.ts   |   2 +-
+ .../src/commands/doctor.command.runtime.test.ts    |   8 +-
+ .../src/commands/doctor/hook-readiness.ts          |   8 +-
+ packages/agentplane/src/commands/hooks/install.ts  |   8 +-
+ .../src/commands/shared/hook-shim-template.ts      |  11 +-
+ scripts/bootstrap-framework-dev.mjs                |  19 +-
+ 10 files changed, 567 insertions(+), 31 deletions(-)
