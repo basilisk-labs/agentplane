@@ -1,0 +1,29 @@
+{
+  "base": "main",
+  "batch": {
+    "closure_policy": "all_or_fail",
+    "included_task_ids": [
+      "202605091549-65ANX7",
+      "202605091549-8Z3MZ5",
+      "202605091549-TAQM7T"
+    ],
+    "primary_task_id": "202605091549-JAE983",
+    "schema_version": 1
+  },
+  "branch": "task/202605091549-JAE983/lifecycle-followups",
+  "created_at": "2026-05-09T15:51:06.784Z",
+  "head_sha": "286be3dcebcc6f10f8394d2c42a626c6dc833017",
+  "last_verified_at": "2026-05-09T16:17:43.741Z",
+  "last_verified_sha": "7f40f04dd37729afe20addc17b8a75e416bbf565",
+  "related_task_ids": [
+    "202605091549-65ANX7",
+    "202605091549-8Z3MZ5",
+    "202605091549-TAQM7T"
+  ],
+  "schema_version": 1,
+  "task_id": "202605091549-JAE983",
+  "updated_at": "2026-05-09T16:22:02.240Z",
+  "verify": {
+    "status": "pass"
+  }
+}

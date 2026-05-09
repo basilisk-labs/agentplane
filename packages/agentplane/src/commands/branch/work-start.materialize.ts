@@ -16,7 +16,15 @@ export async function materializeLocalBackendReadmesForWorktree(opts: {
   repoRoot: string;
   worktreePath: string;
   taskId: string;
+  workflowDir?: string;
 }): Promise<void> {
+  await materializeActiveTaskArtifactsForWorktree({
+    repoRoot: opts.repoRoot,
+    worktreePath: opts.worktreePath,
+    workflowDir: opts.workflowDir ?? path.join(".agentplane", "tasks"),
+    taskId: opts.taskId,
+  });
+
   if (!(opts.backend instanceof LocalBackend)) return;
 
   const sourceRoot = path.resolve(opts.backend.root);
@@ -47,6 +55,23 @@ export async function materializeLocalBackendReadmesForWorktree(opts: {
       await rm(sourceTaskRoot, { recursive: true, force: true });
     }
   }
+}
+
+export async function materializeActiveTaskArtifactsForWorktree(opts: {
+  repoRoot: string;
+  worktreePath: string;
+  workflowDir: string;
+  taskId: string;
+}): Promise<boolean> {
+  const sourceTaskRoot = path.resolve(opts.repoRoot, opts.workflowDir, opts.taskId);
+  if (!isPathWithin(opts.repoRoot, sourceTaskRoot)) return false;
+  if (!(await fileExists(path.join(sourceTaskRoot, "README.md")))) return false;
+
+  const relativeTaskRoot = path.relative(opts.repoRoot, sourceTaskRoot);
+  const targetTaskRoot = path.join(opts.worktreePath, relativeTaskRoot);
+  await mkdir(path.dirname(targetTaskRoot), { recursive: true });
+  await cp(sourceTaskRoot, targetTaskRoot, { recursive: true, force: true });
+  return true;
 }
 
 export async function materializeRepoLocalDistForWorktree(opts: {

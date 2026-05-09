@@ -33,6 +33,7 @@ const BLUEPRINT_REQUEST_VALUES = new Set([
   "performance.benchmark",
   "quality.regression",
   "runner.execution",
+  "post_run.improvement_review",
   "release.strict",
   "ops.approval",
 ]);

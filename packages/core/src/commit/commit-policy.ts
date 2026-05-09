@@ -15,6 +15,7 @@ export type CommitTaskIntent = {
     | "performance.benchmark"
     | "quality.regression"
     | "runner.execution"
+    | "post_run.improvement_review"
     | "release.strict"
     | "ops.approval";
 };

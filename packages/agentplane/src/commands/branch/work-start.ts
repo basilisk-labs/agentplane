@@ -188,6 +188,7 @@ export async function cmdWorkStart(opts: {
         repoRoot: resolved.gitRoot,
         worktreePath,
         taskId: opts.taskId,
+        workflowDir: config.paths.workflow_dir,
       });
       await materializeRepoLocalDistForWorktree({
         repoRoot: resolved.gitRoot,

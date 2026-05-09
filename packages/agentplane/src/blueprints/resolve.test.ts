@@ -160,7 +160,14 @@ describe("resolveBlueprint", () => {
     );
   });
 
-  it("routes benchmark, regression, and runner code domains to specialized branch PR blueprints", () => {
+  it("routes benchmark, post-run, regression, and runner code domains to specialized branch PR blueprints", () => {
+    expect(
+      resolve({
+        mutation: "code",
+        workflowMode: "branch_pr",
+        title: "Add post-run improvement review follow-up tasks",
+      }).blueprint.id,
+    ).toBe("post_run.improvement_review");
     expect(
       resolve({
         mutation: "code",

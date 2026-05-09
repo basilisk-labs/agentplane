@@ -60,7 +60,10 @@ async function listMissingManagedPolicyFiles(repoRoot: string): Promise<string[]
   return missing.toSorted();
 }
 
-function checkBackendReadiness(ctx?: CommandContext): string[] {
+async function checkBackendReadiness(ctx?: CommandContext): Promise<string[]> {
+  if (ctx?.backendId === "cloud") {
+    return await checkCloudBackendReadiness(ctx);
+  }
   if (ctx?.backendId !== "redmine") return [];
 
   const { supports_task_revisions, supports_revision_guarded_writes } =
@@ -111,6 +114,61 @@ function checkBackendReadiness(ctx?: CommandContext): string[] {
       ],
     }),
   ];
+}
+
+async function checkCloudBackendReadiness(ctx: CommandContext): Promise<string[]> {
+  if (!ctx.taskBackend.inspectConfiguration) return [];
+
+  let result: Awaited<ReturnType<NonNullable<typeof ctx.taskBackend.inspectConfiguration>>>;
+  try {
+    result = await ctx.taskBackend.inspectConfiguration();
+  } catch {
+    return [];
+  }
+
+  const findings: string[] = [];
+  for (const override of result.connection?.envOverrides ?? []) {
+    if (override.key !== "AGENTPLANE_CLOUD_PROJECT_ID") continue;
+    findings.push(
+      renderDiagnosticFinding({
+        severity: "WARN",
+        state: "cloud backend project id is overridden by local environment",
+        likelyCause:
+          "AGENTPLANE_CLOUD_PROJECT_ID in the environment or .env shadows backend.json, so task projection freshness is checked against the effective project id",
+        nextAction: {
+          command: "agentplane backend inspect cloud --yes",
+          reason: "confirm the configured and effective project ids before mutating task state",
+        },
+        details: [
+          `Configured project: ${override.configured ?? "unset"}`,
+          `Effective project: ${override.effective}`,
+          `Backend config: ${ctx.backendConfigPath}`,
+        ],
+      }),
+    );
+  }
+
+  const syncState = result.connection?.syncState ?? null;
+  if (syncState?.degraded === true) {
+    findings.push(
+      renderDiagnosticFinding({
+        severity: "WARN",
+        state: "cloud backend sync state is degraded",
+        likelyCause:
+          "the cloud service reports degraded sync workers or rate limiting, so local projection freshness can expire and block task lifecycle mutations",
+        nextAction: {
+          command: "agentplane backend sync cloud --direction pull --conflict=diff",
+          reason: "refresh the projection and check for open conflicts before mutating tasks",
+        },
+        details: [
+          `reason=${syncState.reason ?? "unknown"}`,
+          `failed_jobs=${syncState.failedJobs ?? "unknown"}`,
+          `open_conflicts=${syncState.openConflicts}`,
+        ],
+      }),
+    );
+  }
+  return findings;
 }
 
 export async function checkWorkspace(
@@ -169,7 +227,7 @@ export async function checkWorkspace(
     problems.push("No agent profiles found in .agentplane/agents (*.json expected).");
   }
   problems.push(
-    ...checkBackendReadiness(opts?.ctx),
+    ...(await checkBackendReadiness(opts?.ctx)),
     ...(await checkManagedHookShimReadiness(repoRoot)),
     ...(await checkTaskReadmeMigrationState(repoRoot, opts?.ctx)),
     ...(await checkDoneTaskReadmeArchiveDrift(repoRoot, opts?.ctx)),
