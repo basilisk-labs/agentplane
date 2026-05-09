@@ -1,0 +1,10 @@
+ .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
+ packages/core/src/config/schema.impl.ts            |   5 +-
+ packages/core/src/config/workflow-file.ts          |   5 +-
+ .../core/src/tasks/task-artifact-schema.shared.ts  |   5 +-
+ packages/core/src/tasks/task-readme.ts             |   9 +-
+ packages/core/src/tasks/task-store.ts              |   5 +-
+ packages/core/src/tasks/tasks-export.ts            |   5 +-
+ packages/core/src/tasks/tasks-lint.ts              |  13 +-
+ packages/core/src/types/guards.ts                  |  11 +
+ 9 files changed, 516 insertions(+), 38 deletions(-)
