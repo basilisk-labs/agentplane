@@ -22,12 +22,17 @@ Extract the shared built-in blueprint node/builder primitives from builtins.ts a
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-09T17:55:52.997Z
+- Updated: 2026-05-09T18:08:46.143Z
 - Branch: task/202605091753-96X7WA/blueprint-builder
-- Head: e2218d7ad7b1
+- Head: 744f258768b3
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 505 +++++++++++++++++++++
+ .../agentplane/src/blueprints/builtin-builder.ts   | 157 +++++++
+ .../agentplane/src/blueprints/builtin-routes.ts    |  45 ++
+ .../src/blueprints/builtins-specialized.ts         | 204 +--------
+ packages/agentplane/src/blueprints/builtins.ts     | 188 +-------
+ 5 files changed, 713 insertions(+), 386 deletions(-)
 ```
 
 </details>

@@ -1,0 +1,6 @@
+ .../blueprint/resolved-snapshot.json               | 505 +++++++++++++++++++++
+ .../agentplane/src/blueprints/builtin-builder.ts   | 157 +++++++
+ .../agentplane/src/blueprints/builtin-routes.ts    |  45 ++
+ .../src/blueprints/builtins-specialized.ts         | 204 +--------
+ packages/agentplane/src/blueprints/builtins.ts     | 188 +-------
+ 5 files changed, 713 insertions(+), 386 deletions(-)
