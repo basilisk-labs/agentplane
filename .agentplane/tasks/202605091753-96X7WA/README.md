@@ -1,7 +1,8 @@
 ---
 id: "202605091753-96X7WA"
 title: "Deduplicate built-in blueprint builders"
-status: "DOING"
+result_summary: "Merged via PR #3526."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -31,11 +32,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: extracted shared blueprint builder and branch_pr route helpers; focused blueprint tests passed (3 files, 51 tests), typecheck passed, clone:report improved duplicatedLines 1708->1546 and duplicatedTokens 17574->16193, and clone:check passed without baseline update."
   attempts: 0
-commit: null
+commit:
+  hash: "e12e8b4c05d20a0f8feab61a609ace8dd17425c0"
+  message: "Merge pull request #3526 from basilisk-labs/task/202605091753-96X7WA/blueprint-builder"
 comments:
   -
     author: "CODER"
     body: "Start: extracting the shared built-in blueprint builder primitives from duplicated runtime files, preserving current blueprint exports and verifying with focused blueprint tests plus clone/type checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3526 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: extracted shared blueprint builder and branch_pr route helpers; focused blueprint tests passed (3 files, 51 tests), typecheck passed, clone:report improved duplicatedLines 1708->1546 and duplicatedTokens 17574->16193, and clone:check passed without baseline update."
+  -
+    type: "status"
+    at: "2026-05-09T18:12:47.906Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3526 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-09T18:07:21.546Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-09T18:12:47.912Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extract the shared built-in blueprint node/builder primitives from builtins.ts and builtins-specialized.ts so specialized blueprints reuse the canonical builder instead of duplicating the route construction code."
 sections:
   Summary: |-
