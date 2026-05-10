@@ -2,6 +2,12 @@ Task: `202605100836-NKKQEH`
 Title: Pre-v0.5: document Git mutation model
 Canonical task record: `.agentplane/tasks/202605100836-NKKQEH/README.md`
 
+## Batch Tasks
+
+- Primary: `202605100836-NKKQEH`
+- Closure policy: `all_or_fail`
+- Included: `202605100941-061JK3`
+
 ## Summary
 
 Pre-v0.5: document Git mutation model
@@ -22,14 +28,18 @@ Define the internal model for AgentPlane Git mutation kinds: implementation comm
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-10T09:40:07.951Z
+- Updated: 2026-05-10T09:44:32.355Z
 - Branch: task/202605100836-NKKQEH/git-mutation-model
-- Head: ef92f7404f0c
+- Head: 001cf7428095
 
 ```text
- .../blueprint/resolved-snapshot.json               | 350 +++++++++++++++++++++
- docs/internal/git-mutation-model.mdx               | 155 +++++++++
- 2 files changed, 505 insertions(+)
+ .../blueprint/resolved-snapshot.json               | 350 +++++++++++++++
+ .agentplane/tasks/202605100941-061JK3/README.md    |  91 ++++
+ .../blueprint/resolved-snapshot.json               | 496 +++++++++++++++++++++
+ docs/internal/git-mutation-model.mdx               | 155 +++++++
+ .../src/backends/task-backend/cloud-backend.ts     |   8 +-
+ scripts/oversized-test-baseline.json               |   8 +-
+ 6 files changed, 1101 insertions(+), 7 deletions(-)
 ```
 
 </details>
