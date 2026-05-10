@@ -25,7 +25,7 @@ import {
   loadAgentTemplates,
   loadAgentsTemplate,
 } from "../agents/agents-template.js";
-import type * as taskBackend from "../backends/task-backend.js";
+import * as taskBackend from "../backends/task-backend.js";
 import {
   captureStdIO,
   cleanGitEnv,
@@ -94,6 +94,61 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     expect(readme).toContain("## Scope");
     expect(readme).toContain("## Findings");
     expect(readme).not.toContain("## Risks");
+  });
+
+  it("task new runs backend mutation readiness before emitting verify-step warnings", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const assertLocalMutationReady = vi
+      .fn<() => Promise<void>>()
+      .mockRejectedValue(new Error("projection stale"));
+    const listTasks = vi.fn().mockResolvedValue([]);
+    const writeTask = vi.fn().mockResolvedValue(null);
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: stubTaskBackend({
+        id: "cloud",
+        assertLocalMutationReady,
+        listTasks,
+        writeTask,
+        generateTaskId: vi.fn().mockResolvedValue("202605100747-ABC123"),
+      }),
+      backendId: "cloud",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "cloud", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Cloud task",
+        "--description",
+        "Create through cloud backend",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(4);
+      expect(assertLocalMutationReady).toHaveBeenCalledOnce();
+      expect(listTasks).not.toHaveBeenCalled();
+      expect(writeTask).not.toHaveBeenCalled();
+      expect(io.stderr).not.toContain("task requires Verify Steps");
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
   });
 
   it("task new normalizes escaped newlines into readable summary and scope text", async () => {

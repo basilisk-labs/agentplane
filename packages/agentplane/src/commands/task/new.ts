@@ -259,6 +259,7 @@ export async function runTaskNewParsed(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    await ctx.taskBackend.assertLocalMutationReady?.();
     const duplicateTasks = listOpenTaskDuplicates(await ctx.taskBackend.listTasks(), p.title);
     if (duplicateTasks.length > 0 && !p.allowDuplicate) {
       throw new CliError({

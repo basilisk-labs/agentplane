@@ -195,6 +195,7 @@ export type TaskBackendProjectionPort = {
 };
 
 export type TaskBackendMutationPort = {
+  assertLocalMutationReady?(): Promise<void>;
   writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void>;
   writeTasks?(tasks: TaskData[], opts?: TaskWriteOptions): Promise<void>;
   normalizeTasks?(): Promise<{ scanned: number; changed: number }>;
