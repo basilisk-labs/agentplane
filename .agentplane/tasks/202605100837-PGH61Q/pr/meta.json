@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-10T17:14:50Z",
   "base": "main",
-  "branch": "task-202605100837-PGH61Q-hook-capabilities",
+  "branch": "task/202605100837-PGH61Q/hook-capabilities",
   "created_at": "2026-05-10T17:03:20.977Z",
-  "head_sha": "81090060d2129258556d9eadf27837868702cf2e",
+  "head_sha": "ba2391c2fcc9a3235608e83d869c679b6e32a4c3",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "adbcf2a7e81ccb62642e86899fdbfc1758e6929e",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-10T17:14:50Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605100837-PGH61Q",
-  "updated_at": "2026-05-10T17:03:20.977Z",
+  "updated_at": "2026-05-10T17:14:50Z",
   "verify": {
     "status": "skipped"
   }
