@@ -73,6 +73,36 @@ describe("CloudBackend", () => {
     expect(result.freshness?.stale).toBe(false);
   });
 
+  it("rejects local mutations before cache writes when the cloud projection is stale", async () => {
+    const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
+    await mkdir(stateDir, { recursive: true });
+    await writeFile(
+      path.join(stateDir, "state.json"),
+      `${JSON.stringify({ last_checked_at: "2026-05-05T00:00:00.000Z" }, null, 2)}\n`,
+      "utf8",
+    );
+    const fetchImpl = vi.fn<typeof fetch>(() => Promise.resolve(Response.json({})));
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example/",
+        token: "token",
+        project_id: "project-1",
+        provider: "github-projects",
+        stale_after_seconds: 1,
+      },
+      {
+        root: tempDir,
+        cache: new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") }),
+        fetchImpl,
+      },
+    );
+
+    await expect(backend.assertLocalMutationReady()).rejects.toThrow(
+      "Safe command: agentplane backend sync cloud --direction pull",
+    );
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
   it("push sync sends local tasks and records last check time", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
     const task: TaskData = {

@@ -1,0 +1,6 @@
+ .../blueprint/resolved-snapshot.json               | 533 +++++++++++++++++++++
+ .../src/backends/task-backend/cloud-backend.ts     |   4 +
+ .../src/backends/task-backend/shared/types.ts      |   1 +
+ .../src/cli/run-cli.core.tasks.create.test.ts      |  57 ++-
+ packages/agentplane/src/commands/task/new.ts       |   1 +
+ 5 files changed, 595 insertions(+), 1 deletion(-)
