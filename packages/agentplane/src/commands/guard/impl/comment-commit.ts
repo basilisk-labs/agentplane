@@ -119,6 +119,7 @@ export async function commitFromComment(opts: {
     tasksPath: opts.config.paths.tasks_path,
     workflowDir: opts.config.paths.workflow_dir,
     taskId: opts.taskId,
+    mutationKind: "lifecycle_commit",
   });
 
   const message = deriveCommitMessageFromComment({

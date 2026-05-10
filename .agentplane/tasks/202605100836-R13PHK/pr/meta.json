@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605100836-R13PHK/git-mutation-kind",
+  "created_at": "2026-05-10T10:21:30.595Z",
+  "head_sha": "90ff3c323e2987b3a6ad32658d8a8fbd4e024637",
+  "last_verified_at": "2026-05-10T10:26:01.602Z",
+  "last_verified_sha": "90ff3c323e2987b3a6ad32658d8a8fbd4e024637",
+  "schema_version": 1,
+  "task_id": "202605100836-R13PHK",
+  "updated_at": "2026-05-10T10:21:30.595Z",
+  "verify": {
+    "status": "pass"
+  }
+}
