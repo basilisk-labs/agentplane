@@ -323,6 +323,44 @@ describe("task finish validation", () => {
     ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
+  it("rejects branch_pr finish --commit-from-comment before loading or mutating task state", async () => {
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "branch_pr";
+
+    const { cmdFinish } = await import("./finish-command.js");
+    const runFinish = () =>
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: this is long enough",
+        result: "ok",
+        breaking: false,
+        force: false,
+        commitFromComment: true,
+        commitEmoji: "✅",
+        commitAllow: ["packages/agentplane"],
+        commitAutoAllow: false,
+        commitAllowTasks: true,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      });
+    await expect(runFinish()).rejects.toMatchObject({ code: "E_USAGE" });
+    await expect(runFinish()).rejects.toThrow(
+      "finish --commit-from-comment is not supported in branch_pr",
+    );
+
+    expect(mocks.loadTaskFromContext).not.toHaveBeenCalled();
+    expect(mocks.commitFromComment).not.toHaveBeenCalled();
+    expect(mocks.cmdCommit).not.toHaveBeenCalled();
+  });
+
   it("rejects --status-commit without explicit allowlist or auto-allow", async () => {
     const { cmdFinish } = await import("./finish-command.js");
     await expect(

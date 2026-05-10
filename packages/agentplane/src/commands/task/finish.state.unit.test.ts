@@ -456,7 +456,7 @@ describe("task finish state and errors", () => {
     expect(currentTask.status).toBe("DONE");
   });
 
-  it("cmdFinish derives status-commit metadata from the current local task state", async () => {
+  it("rejects branch_pr finish --commit-from-comment before local store task mutation", async () => {
     const staleTask = mkTask({
       id: "T-1",
       status: "TODO",
@@ -486,37 +486,34 @@ describe("task finish state and errors", () => {
     mocks.getTaskStore.mockReturnValue(store);
 
     const { cmdFinish } = await import("./finish-command.js");
-    const rc = await cmdFinish({
-      ctx,
-      cwd: "/repo",
-      taskIds: ["T-1"],
-      author: "A",
-      body: "Verified: this is long enough",
-      result: "ok",
-      breaking: false,
-      force: false,
-      commitFromComment: true,
-      commitEmoji: "✅",
-      commitAllow: ["packages/agentplane"],
-      commitAutoAllow: false,
-      commitAllowTasks: true,
-      commitRequireClean: false,
-      statusCommit: false,
-      statusCommitAllow: [],
-      statusCommitAutoAllow: false,
-      statusCommitRequireClean: false,
-      confirmStatusCommit: false,
-      quiet: true,
-    });
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: this is long enough",
+        result: "ok",
+        breaking: false,
+        force: false,
+        commitFromComment: true,
+        commitEmoji: "✅",
+        commitAllow: ["packages/agentplane"],
+        commitAutoAllow: false,
+        commitAllowTasks: true,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
 
-    expect(rc).toBe(0);
-    expect(mocks.commitFromComment).toHaveBeenCalledTimes(1);
-    expect(mocks.commitFromComment.mock.calls.at(-1)?.[0]).toMatchObject({
-      taskId: "T-1",
-      primaryTag: "code",
-      statusFrom: "DOING",
-      statusTo: "DONE",
-    });
+    expect(store.patch).not.toHaveBeenCalled();
+    expect(currentTask.status).toBe("DOING");
+    expect(mocks.commitFromComment).not.toHaveBeenCalled();
   });
 
   it("propagates E_VALIDATION when require_verify=true and task is not verified", async () => {

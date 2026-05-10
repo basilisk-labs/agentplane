@@ -250,7 +250,7 @@ describe("task finish close-tail", () => {
     mocks.ensureReconciledBeforeMutation.mockResolvedValue();
   });
 
-  it("creates the verification commit before writing DONE metadata and records tracked task docs in a close commit", async () => {
+  it("rejects branch_pr finish --commit-from-comment before DONE metadata and close-tail commits", async () => {
     const writes: string[] = [];
     const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
       writes.push(String(chunk));
@@ -310,69 +310,39 @@ describe("task finish close-tail", () => {
       patch: storePatch,
     });
     const { cmdFinish } = await import("./finish-command.js");
-    const rc = await cmdFinish({
-      ctx,
-      cwd: "/repo",
-      taskIds: ["T-1"],
-      author: "A",
-      body: "Verified: this is long enough",
-      result: "done",
-      risk: "high",
-      breaking: true,
-      force: false,
-      commitFromComment: true,
-      commitEmoji: "✅",
-      commitAllow: ["packages/agentplane"],
-      commitAutoAllow: false,
-      commitAllowTasks: true,
-      commitRequireClean: false,
-      statusCommit: false,
-      statusCommitAllow: [],
-      statusCommitAutoAllow: false,
-      statusCommitRequireClean: false,
-      confirmStatusCommit: false,
-      quiet: false,
-    });
-    expect(rc).toBe(0);
-    expect(storeGet).not.toHaveBeenCalled();
-    expect(storePatch).toHaveBeenCalledTimes(2);
-    expect(currentTask.status).toBe("DONE");
-    expect(currentTask.commit).toEqual({ hash: "new-hash", message: "✅ T-1 task: verified" });
-    expect(currentTask.comments?.at(-1)).toEqual({
-      author: "A",
-      body: "Verified: this is long enough",
-    });
-    expect(currentTask.result_summary).toBe("done");
-    expect(currentTask.risk_level).toBe("high");
-    expect(currentTask.breaking).toBe(true);
-    expect(typeof currentTask.doc_updated_at).toBe("string");
-
-    expect(mocks.commitFromComment).toHaveBeenCalledTimes(1);
-    expect(mocks.cmdCommit).toHaveBeenCalledTimes(1);
-    const call = mocks.commitFromComment.mock.calls[0]?.[0] as { emoji?: string; taskId?: string };
-    expect(call.taskId).toBe("T-1");
-    expect(call.emoji).toBe("✅");
-    expect(mocks.cmdCommit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        taskId: "T-1",
-        close: true,
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: this is long enough",
+        result: "done",
+        risk: "high",
+        breaking: true,
+        force: false,
+        commitFromComment: true,
+        commitEmoji: "✅",
+        commitAllow: ["packages/agentplane"],
+        commitAutoAllow: false,
+        commitAllowTasks: true,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: false,
       }),
-    );
-    expect(writes.join("")).toContain("creating commit from verification comment");
-    expect(writes.join("")).toContain("creating deterministic close commit");
-    expect(writes.join("")).toContain("finished");
-    const traceEvents = traceWrites
-      .join("")
-      .trim()
-      .split("\n")
-      .filter(Boolean)
-      .map((line) => JSON.parse(line) as { component?: string; event?: string });
-    expect(traceEvents).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ component: "task-finish", event: "finish_started" }),
-        expect.objectContaining({ component: "task-finish", event: "finish_completed" }),
-      ]),
-    );
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+
+    expect(storeGet).not.toHaveBeenCalled();
+    expect(storePatch).not.toHaveBeenCalled();
+    expect(currentTask.status).toBe("DOING");
+    expect(mocks.commitFromComment).not.toHaveBeenCalled();
+    expect(mocks.cmdCommit).not.toHaveBeenCalled();
+    expect(writes.join("")).not.toContain("creating commit from verification comment");
+    expect(traceWrites.join("")).toContain('"event":"finish_failed"');
     writeSpy.mockRestore();
     traceSpy.mockRestore();
   });
@@ -659,12 +629,12 @@ describe("task finish close-tail", () => {
       result: "done",
       risk: "high",
       breaking: true,
+      commit: "abc123",
       force: false,
-      commitFromComment: true,
-      commitEmoji: "✅",
-      commitAllow: ["packages/agentplane"],
+      commitFromComment: false,
+      commitAllow: [],
       commitAutoAllow: false,
-      commitAllowTasks: true,
+      commitAllowTasks: false,
       commitRequireClean: false,
       statusCommit: false,
       statusCommitAllow: [],

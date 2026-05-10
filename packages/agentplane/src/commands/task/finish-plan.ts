@@ -34,6 +34,17 @@ export function resolveFinishExecutionPlan(opts: {
         "--commit-from-comment cannot be combined with --status-commit in finish; use one deterministic commit path.",
     });
   }
+  if (ctx.config.workflow_mode === "branch_pr" && options.commitFromComment) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: [
+        "finish --commit-from-comment is not supported in branch_pr.",
+        "Why: finish runs on the base checkout; implementation commits belong to task worktrees.",
+        'Use: agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <hash> --close-commit',
+      ].join("\n"),
+    });
+  }
   if ((options.closeCommit || options.noCloseCommit) && options.taskIds.length !== 1) {
     throw new CliError({
       exitCode: 2,
