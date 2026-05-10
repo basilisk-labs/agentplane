@@ -1,7 +1,8 @@
 ---
 id: "202605100837-X33YYQ"
 title: "Pre-v0.5: guard against AgentPlane-owned writes to .git index.lock"
-status: "DOING"
+result_summary: "Merged via PR #3561."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -29,11 +30,16 @@ verification:
   updated_by: "CODER"
   note: "Added a tracked guard test that scans packages/scripts/.github plus the Git mutation model for index.lock occurrences, allows only documented/read-only/fake-lock regression locations, and rejects write-intent outside the E_GIT_LOCKED fixture. Checks passed: targeted Vitest guard+allow tests, prettier check, direct eslint for new test, policy routing."
   attempts: 0
-commit: null
+commit:
+  hash: "89ed683c95ba8be474467dc489faa2ba6fec220a"
+  message: "Merge pull request #3561 from basilisk-labs/task/202605100837-X33YYQ/index-lock-guard"
 comments:
   -
     author: "CODER"
     body: "Start: audit manual index.lock writes and add a regression guard preventing AgentPlane-owned .git index.lock usage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3561 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added a tracked guard test that scans packages/scripts/.github plus the Git mutation model for index.lock occurrences, allows only documented/read-only/fake-lock regression locations, and rejects write-intent outside the E_GIT_LOCKED fixture. Checks passed: targeted Vitest guard+allow tests, prettier check, direct eslint for new test, policy routing."
+  -
+    type: "status"
+    at: "2026-05-10T15:36:45.187Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3561 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-10T15:27:59.604Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-10T15:36:45.194Z"
+doc_updated_by: "INTEGRATOR"
 description: "Audit code, hooks, wrappers, and generated scripts for manual .git/**/index.lock use. Replace any AgentPlane lock usage with .agentplane/cache/locks and add a guard test forbidding new manual index.lock writes."
 sections:
   Summary: |-
