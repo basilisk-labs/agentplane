@@ -1,0 +1,1 @@
+🚧 PGH61Q task: Pre-v0.5: split hook capabilities and declare write intent [202605100837-PGH61Q]

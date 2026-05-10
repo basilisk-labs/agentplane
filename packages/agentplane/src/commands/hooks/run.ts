@@ -1,5 +1,10 @@
 import { mapBackendError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  hookCapabilityDiagnosticContext,
+  resolveHookCapability,
+  withHookCapabilityEnvironment,
+} from "./capabilities.js";
 import type { HookName } from "./shared.js";
 import { runCommitMsgHook } from "./run.commit-msg.js";
 import { runPostMergeHook } from "./run.post-merge.js";
@@ -31,8 +36,9 @@ async function runHook(opts: HooksRunOptions): Promise<number> {
 }
 
 export async function cmdHooksRun(opts: HooksRunOptions): Promise<number> {
+  const capability = resolveHookCapability(opts.hook);
   try {
-    return await runHook(opts);
+    return await withHookCapabilityEnvironment(capability, () => runHook(opts));
   } catch (err) {
     const status = (err as { status?: unknown } | null)?.status;
     const stdout = (err as { stdout?: unknown } | null)?.stdout;
@@ -42,7 +48,16 @@ export async function cmdHooksRun(opts: HooksRunOptions): Promise<number> {
     if (typeof status === "number" && Number.isInteger(status) && status >= 0) {
       return status;
     }
-    if (err instanceof CliError) throw err;
+    if (err instanceof CliError) {
+      const context = hookCapabilityDiagnosticContext(capability);
+      if (err.context) Object.assign(context, err.context);
+      throw new CliError({
+        exitCode: err.exitCode,
+        code: err.code,
+        message: err.message,
+        context,
+      });
+    }
     throw mapBackendError(err, {
       command: `hooks run ${opts.hook}`,
       root: opts.rootOverride ?? null,
