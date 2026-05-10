@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task-202605100837-PGH61Q-hook-capabilities",
+  "created_at": "2026-05-10T17:03:20.977Z",
+  "head_sha": "81090060d2129258556d9eadf27837868702cf2e",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605100837-PGH61Q",
+  "updated_at": "2026-05-10T17:03:20.977Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

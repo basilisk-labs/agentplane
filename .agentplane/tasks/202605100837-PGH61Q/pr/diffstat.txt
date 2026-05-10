@@ -1,0 +1,4 @@
+ .../src/commands/hooks/capabilities.test.ts        | 48 +++++++++++
+ .../agentplane/src/commands/hooks/capabilities.ts  | 93 ++++++++++++++++++++++
+ packages/agentplane/src/commands/hooks/run.ts      | 19 ++++-
+ 3 files changed, 158 insertions(+), 2 deletions(-)
