@@ -1,7 +1,8 @@
 ---
 id: "202605100836-R13PHK"
 title: "Pre-v0.5: add Git mutation kind diagnostics type"
-status: "DOING"
+result_summary: "Merged via PR #3553."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -29,11 +30,16 @@ verification:
   updated_by: "CODER"
   note: "Verified GitMutationKind diagnostics type and staging metadata path."
   attempts: 0
-commit: null
+commit:
+  hash: "c1b117b24a97464aeca2481ca23cf5f3c70abaa7"
+  message: "Merge pull request #3553 from basilisk-labs/task/202605100836-R13PHK/git-mutation-kind"
 comments:
   -
     author: "CODER"
     body: "Start: add internal GitMutationKind diagnostics vocabulary without behavior changes."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3553 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified GitMutationKind diagnostics type and staging metadata path."
+  -
+    type: "status"
+    at: "2026-05-10T10:46:02.782Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3553 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-10T10:26:01.608Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-10T10:46:02.790Z"
+doc_updated_by: "INTEGRATOR"
 description: "Introduce a GitMutationKind type for implementation_commit, lifecycle_commit, pr_artifact_update, close_tail, integration, and hook_check. Use it initially for diagnostics/logging without behavior changes."
 sections:
   Summary: |-
