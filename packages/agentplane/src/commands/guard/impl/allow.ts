@@ -1,6 +1,10 @@
 import { resolveProject } from "@agentplaneorg/core/project";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
+import {
+  gitMutationDiagnosticContext,
+  type GitMutationKind,
+} from "../../../shared/git-mutation.js";
 import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../../shared/git-path.js";
 import { CliError } from "../../../shared/errors.js";
 import {
@@ -96,6 +100,7 @@ export async function stageAllowlist(opts: {
   allowTaskOnly?: boolean;
   emptyAllowMessage?: string;
   noMatchMessage?: string;
+  mutationKind?: GitMutationKind;
 }): Promise<string[]> {
   const changed = await opts.ctx.git.statusChangedPaths();
   if (changed.length === 0) {
@@ -103,6 +108,13 @@ export async function stageAllowlist(opts: {
       exitCode: 2,
       code: "E_USAGE",
       message: "No changes to stage (working tree clean)",
+      context: gitMutationDiagnosticContext({
+        command: "stage-allowlist",
+        mutationKind: opts.mutationKind,
+        taskId: opts.taskId,
+        allowPrefixes: opts.allow,
+        changedPaths: changed,
+      }),
     });
   }
 
@@ -113,6 +125,13 @@ export async function stageAllowlist(opts: {
       code: "E_USAGE",
       message:
         "Repo-wide allowlist ('.') is not allowed; choose minimal prefixes (tip: `agentplane guard suggest-allow --format args`).",
+      context: gitMutationDiagnosticContext({
+        command: "stage-allowlist",
+        mutationKind: opts.mutationKind,
+        taskId: opts.taskId,
+        allowPrefixes: allow,
+        changedPaths: changed,
+      }),
     });
   }
   const taskAllow = taskArtifactPrefixes({
@@ -139,6 +158,13 @@ export async function stageAllowlist(opts: {
       exitCode: 2,
       code: "E_USAGE",
       message: opts.emptyAllowMessage ?? "Provide at least one allowed prefix",
+      context: gitMutationDiagnosticContext({
+        command: "stage-allowlist",
+        mutationKind: opts.mutationKind,
+        taskId: opts.taskId,
+        allowPrefixes: effectiveAllow,
+        changedPaths: changed,
+      }),
     });
   }
   const denied = opts.allowTasks ? [] : taskAllow;
@@ -157,6 +183,13 @@ export async function stageAllowlist(opts: {
       exitCode: 2,
       code: "E_USAGE",
       message: opts.noMatchMessage ?? "No changes matched allowed prefixes (update --commit-allow)",
+      context: gitMutationDiagnosticContext({
+        command: "stage-allowlist",
+        mutationKind: opts.mutationKind,
+        taskId: opts.taskId,
+        allowPrefixes: effectiveAllow,
+        changedPaths: changed,
+      }),
     });
   }
 

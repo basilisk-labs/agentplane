@@ -85,6 +85,7 @@ export async function commitRefreshedTaskArtifacts(opts: {
       "PR artifact refresh produced no task-local files to stage for the follow-up commit.",
     noMatchMessage:
       "PR artifact refresh produced changes outside the active task artifact scope; inspect the working tree before retrying the commit flow.",
+    mutationKind: "pr_artifact_update",
   });
 
   const message = buildTaskArtifactRefreshCommitSubject({

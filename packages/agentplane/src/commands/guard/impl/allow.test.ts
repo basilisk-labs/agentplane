@@ -277,4 +277,41 @@ describe("guard/impl/allow", () => {
     expect(staged).toEqual([".github/workflows/publish.yml"]);
     expect(ctx.git.stage).toHaveBeenCalledWith([".github/workflows/publish.yml"]);
   });
+
+  it("stageAllowlist includes Git mutation kind metadata in staging diagnostics", async () => {
+    const { stageAllowlist } = await import("./allow.js");
+    const ctx = {
+      git: {
+        statusChangedPaths: vi.fn().mockResolvedValue(["docs/readme.md"]),
+        stage: vi.fn(),
+      },
+    };
+
+    let err: unknown;
+    try {
+      await stageAllowlist({
+        ctx: ctx as never,
+        allow: ["src"],
+        allowTasks: false,
+        tasksPath: ".agentplane/tasks.json",
+        workflowDir: ".agentplane/tasks",
+        taskId: "202601010101-ABCDEF",
+        mutationKind: "lifecycle_commit",
+      });
+    } catch (caught) {
+      err = caught;
+    }
+
+    expect(err).toMatchObject<CliError>({
+      code: "E_USAGE",
+      context: {
+        command: "stage-allowlist",
+        mutation_kind: "lifecycle_commit",
+        task_id: "202601010101-ABCDEF",
+        allow_prefixes: ["src"],
+        changed_paths: ["docs/readme.md"],
+      },
+    });
+    expect(ctx.git.stage).not.toHaveBeenCalled();
+  });
 });

@@ -99,6 +99,7 @@ export async function cmdCommit(opts: {
           "No staged files and no commit allowlist. Pass --allow <path-prefix>, use --allow-tasks for active task artifacts, or stage files manually.",
         noMatchMessage:
           "No changed files matched the commit allowlist (adjust --allow, protected allow flags, or --allow-tasks; otherwise stage files manually).",
+        mutationKind: "implementation_commit",
       });
       if (!opts.quiet) {
         process.stdout.write(
@@ -280,6 +281,7 @@ async function cmdCloseCommit(
         emptyAllowMessage: "No changed task artifacts to stage for the deterministic close commit.",
         noMatchMessage:
           "No changed files matched the active task artifact scope for the deterministic close commit.",
+        mutationKind: "close_tail",
       })
     : stageCloseCommitPaths({
         ctx: opts.ctx,
