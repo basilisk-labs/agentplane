@@ -22,12 +22,13 @@ Before internal git add/write-index operations, detect gitdir/index.lock and emi
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-10T11:31:23.517Z
+- Updated: 2026-05-10T11:42:48.320Z
 - Branch: task/202605100836-76DX16/git-index-lock
-- Head: 028f0f63e816
+- Head: 79277550c2e5
 
 ```text
  .../blueprint/resolved-snapshot.json               | 505 +++++++++++++++++++++
+ packages/agentplane/src/cli/cli-contract.test.ts   |   1 +
  packages/agentplane/src/cli/exit-codes.ts          |   1 +
  .../src/commands/guard/impl/allow.test.ts          |  84 ++++
  .../agentplane/src/commands/guard/impl/allow.ts    |  28 ++
@@ -36,7 +37,7 @@ Before internal git add/write-index operations, detect gitdir/index.lock and emi
  .../src/commands/guard/impl/comment-commit.test.ts |  21 +-
  packages/agentplane/src/shared/errors.ts           |   2 +
  packages/agentplane/src/shared/git-mutation.ts     |  30 ++
- 9 files changed, 682 insertions(+), 1 deletion(-)
+ 10 files changed, 683 insertions(+), 1 deletion(-)
 ```
 
 </details>
