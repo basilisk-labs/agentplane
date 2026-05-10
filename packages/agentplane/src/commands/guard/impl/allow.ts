@@ -1,6 +1,7 @@
 import { resolveProject } from "@agentplaneorg/core/project";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
+import type { ErrorCode } from "../../../shared/errors.js";
 import {
   gitMutationDiagnosticContext,
   resolveGitIndexLockInfo,
@@ -15,6 +16,29 @@ import {
 } from "../../../shared/protected-paths.js";
 import { GitContext } from "@agentplaneorg/core/git";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
+
+const ALLOW_EMPTY_REMEDIATION =
+  "Review changed paths and pass the narrowest --commit-allow prefix, or make a code change before retrying.";
+const ALLOW_NO_MATCH_REMEDIATION =
+  "Run agentplane guard suggest-allow, then retry with a prefix that covers the intended changed paths.";
+const TASK_ARTIFACT_DENIED_REMEDIATION =
+  "Retry with the task-artifact allow flag for the active task, or split unrelated task artifacts into their own lifecycle commit.";
+const GIT_STAGE_REMEDIATION =
+  "Inspect the reported git context, fix the index state or permissions, then retry the same command.";
+
+function classifyGitStageFailure(message: string): ErrorCode {
+  if (/\b(EACCES|EPERM)\b|operation not permitted|permission denied/i.test(message)) {
+    return "E_GIT_PERMISSION";
+  }
+  if (
+    /index\.lock|could not lock|cannot lock|unable to create .*lock|\block\b.*denied|another git process/i.test(
+      message,
+    )
+  ) {
+    return "E_GIT_RACE";
+  }
+  return "E_GIT_STAGE_FAILED";
+}
 
 function normalizeAllowPrefixes(prefixes: string[]): string[] {
   const unique = [
@@ -107,8 +131,8 @@ export async function stageAllowlist(opts: {
   const changed = await opts.ctx.git.statusChangedPaths();
   if (changed.length === 0) {
     throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
+      exitCode: exitCodeForError("E_COMMIT_ALLOW_EMPTY"),
+      code: "E_COMMIT_ALLOW_EMPTY",
       message: "No changes to stage (working tree clean)",
       context: gitMutationDiagnosticContext({
         command: "stage-allowlist",
@@ -116,6 +140,7 @@ export async function stageAllowlist(opts: {
         taskId: opts.taskId,
         allowPrefixes: opts.allow,
         changedPaths: changed,
+        remediation: ALLOW_EMPTY_REMEDIATION,
       }),
     });
   }
@@ -157,8 +182,8 @@ export async function stageAllowlist(opts: {
     (allow.length === 0 && protectedAllow.length === 0 && opts.allowTaskOnly !== true)
   ) {
     throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
+      exitCode: exitCodeForError("E_COMMIT_ALLOW_EMPTY"),
+      code: "E_COMMIT_ALLOW_EMPTY",
       message: opts.emptyAllowMessage ?? "Provide at least one allowed prefix",
       context: gitMutationDiagnosticContext({
         command: "stage-allowlist",
@@ -166,6 +191,7 @@ export async function stageAllowlist(opts: {
         taskId: opts.taskId,
         allowPrefixes: effectiveAllow,
         changedPaths: changed,
+        remediation: ALLOW_EMPTY_REMEDIATION,
       }),
     });
   }
@@ -181,9 +207,16 @@ export async function stageAllowlist(opts: {
 
   const unique = [...new Set(staged)].toSorted((a, b) => a.localeCompare(b));
   if (unique.length === 0) {
+    const deniedTaskArtifacts = changed
+      .filter((filePath) => denied.some((prefix) => gitPathIsUnderPrefix(filePath, prefix)))
+      .toSorted((a, b) => a.localeCompare(b));
+    const code: ErrorCode =
+      deniedTaskArtifacts.length > 0
+        ? "E_COMMIT_ALLOW_TASK_ARTIFACT_DENIED"
+        : "E_COMMIT_ALLOW_NO_MATCH";
     throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
+      exitCode: exitCodeForError(code),
+      code,
       message: opts.noMatchMessage ?? "No changes matched allowed prefixes (update --commit-allow)",
       context: gitMutationDiagnosticContext({
         command: "stage-allowlist",
@@ -191,6 +224,11 @@ export async function stageAllowlist(opts: {
         taskId: opts.taskId,
         allowPrefixes: effectiveAllow,
         changedPaths: changed,
+        ...(deniedTaskArtifacts.length > 0 ? { deniedPaths: deniedTaskArtifacts } : {}),
+        remediation:
+          code === "E_COMMIT_ALLOW_TASK_ARTIFACT_DENIED"
+            ? TASK_ARTIFACT_DENIED_REMEDIATION
+            : ALLOW_NO_MATCH_REMEDIATION,
       }),
     });
   }
@@ -228,21 +266,25 @@ export async function stageAllowlist(opts: {
     await opts.ctx.git.stage(unique);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
+    const code = classifyGitStageFailure(message);
     throw new CliError({
-      exitCode: exitCodeForError("E_GIT"),
-      code: "E_GIT",
+      exitCode: exitCodeForError(code),
+      code,
       message: `Failed to stage allowed paths: ${message}`,
-      context: await resolveGitMutationDiagnosticContext({
-        command: "git add",
-        cwd: opts.ctx.resolvedProject.gitRoot,
-        repoRoot: opts.ctx.resolvedProject.gitRoot,
-        workflowMode: opts.ctx.config.workflow_mode,
-        mutationKind: opts.mutationKind,
-        taskId: opts.taskId,
-        allowPrefixes: effectiveAllow,
-        changedPaths: changed,
-        stagedPaths: unique,
-      }),
+      context: {
+        ...(await resolveGitMutationDiagnosticContext({
+          command: "git add",
+          cwd: opts.ctx.resolvedProject.gitRoot,
+          repoRoot: opts.ctx.resolvedProject.gitRoot,
+          workflowMode: opts.ctx.config.workflow_mode,
+          mutationKind: opts.mutationKind,
+          taskId: opts.taskId,
+          allowPrefixes: effectiveAllow,
+          changedPaths: changed,
+          stagedPaths: unique,
+        })),
+        remediation: GIT_STAGE_REMEDIATION,
+      },
     });
   }
   return unique;

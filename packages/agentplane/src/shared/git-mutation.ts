@@ -26,6 +26,7 @@ export function gitMutationDiagnosticContext(opts: {
   allowPrefixes?: string[];
   changedPaths?: string[];
   stagedPaths?: string[];
+  deniedPaths?: string[];
   indexLockPath?: string;
   indexLockAgeMs?: number;
   remediation?: string;
@@ -42,6 +43,7 @@ export function gitMutationDiagnosticContext(opts: {
     ...(opts.allowPrefixes ? { allow_prefixes: opts.allowPrefixes } : {}),
     ...(opts.changedPaths ? { changed_paths: opts.changedPaths } : {}),
     ...(opts.stagedPaths ? { staged_paths: opts.stagedPaths } : {}),
+    ...(opts.deniedPaths ? { denied_paths: opts.deniedPaths } : {}),
     ...(opts.indexLockPath ? { git_index_lock_path: opts.indexLockPath } : {}),
     ...(opts.indexLockAgeMs === undefined ? {} : { git_index_lock_age_ms: opts.indexLockAgeMs }),
     ...(opts.remediation ? { remediation: opts.remediation } : {}),
