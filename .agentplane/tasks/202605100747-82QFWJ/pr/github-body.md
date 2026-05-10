@@ -22,17 +22,18 @@ Audit the branch_pr task lifecycle, map state transitions, identify redundant/er
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-10T07:59:53.833Z
+- Updated: 2026-05-10T08:01:00.255Z
 - Branch: task/202605100747-82QFWJ/branch-pr-resilience
-- Head: 66190128e3e7
+- Head: b14440e726d2
 
 ```text
  .../blueprint/resolved-snapshot.json               | 533 +++++++++++++++++++++
+ .../src/backends/task-backend.cloud.test.ts        |  30 ++
  .../src/backends/task-backend/cloud-backend.ts     |   4 +
  .../src/backends/task-backend/shared/types.ts      |   1 +
  .../src/cli/run-cli.core.tasks.create.test.ts      |  57 ++-
  packages/agentplane/src/commands/task/new.ts       |   1 +
- 5 files changed, 595 insertions(+), 1 deletion(-)
+ 6 files changed, 625 insertions(+), 1 deletion(-)
 ```
 
 </details>
