@@ -22,6 +22,7 @@ const mocks = vi.hoisted(() => ({
   resolveCanonicalGitIdentity: vi.fn(),
   guardCommitCheck: vi.fn(),
   resolveIgnoredDirectCloseDirtyPaths: vi.fn(),
+  withGitMutationMutex: vi.fn(),
 }));
 
 vi.mock("@agentplaneorg/core/commit", async (importOriginal) => {
@@ -66,6 +67,13 @@ vi.mock("./policy.js", () => ({ guardCommitCheck: mocks.guardCommitCheck }));
 vi.mock("./close-dirt.js", () => ({
   resolveIgnoredDirectCloseDirtyPaths: mocks.resolveIgnoredDirectCloseDirtyPaths,
 }));
+vi.mock("../../../shared/git-mutation.js", async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+  return {
+    ...actual,
+    withGitMutationMutex: mocks.withGitMutationMutex,
+  };
+});
 
 describe("guard command implementations: commit close", () => {
   beforeEach(() => {
@@ -90,6 +98,9 @@ describe("guard command implementations: commit close", () => {
     mocks.gitRevParse.mockResolvedValue(".git");
     mocks.resolveCanonicalGitIdentity.mockResolvedValue(null);
     mocks.resolveIgnoredDirectCloseDirtyPaths.mockResolvedValue([]);
+    mocks.withGitMutationMutex.mockImplementation(
+      async (_opts: unknown, run: (ctx: unknown) => Promise<unknown>) => await run({}),
+    );
   });
 
   it("cmdCommit close path stages absolute README when outside gitRoot", async () => {
