@@ -1,7 +1,8 @@
 ---
 id: "202605100836-76DX16"
 title: "Pre-v0.5: classify Git index lock failures as E_GIT_LOCKED"
-status: "DOING"
+result_summary: "Merged via PR #3557."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -29,11 +30,16 @@ verification:
   updated_by: "CODER"
   note: "Verified E_GIT_LOCKED preflight for gitdir index.lock."
   attempts: 0
-commit: null
+commit:
+  hash: "a10e9e90f5c53cbdd10a783198359a55801bbcee"
+  message: "Merge pull request #3557 from basilisk-labs/task/202605100836-76DX16/git-index-lock"
 comments:
   -
     author: "CODER"
     body: "Start: detect gitdir/index.lock before internal git add operations and report E_GIT_LOCKED."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3557 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified E_GIT_LOCKED preflight for gitdir index.lock."
+  -
+    type: "status"
+    at: "2026-05-10T12:09:56.063Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3557 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-10T11:16:01.738Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-10T12:09:56.069Z"
+doc_updated_by: "INTEGRATOR"
 description: "Before internal git add/write-index operations, detect gitdir/index.lock and emit E_GIT_LOCKED with lock path, age, worktree, and remediation. Do not auto-delete Git index locks."
 sections:
   Summary: |-
