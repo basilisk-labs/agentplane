@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-10T08:39:30Z",
   "base": "main",
   "branch": "task/202605100600-663T4T/v05-readiness",
   "created_at": "2026-05-10T06:18:12.743Z",
-  "head_sha": "38033930a723918281b9c162ef8b5bfa29f0e6ba",
+  "head_sha": "9271b409fc1efa7aa21b5b3b3ef9e8b461baa7bc",
   "last_verified_at": "2026-05-10T07:52:47.828Z",
   "last_verified_sha": "38033930a723918281b9c162ef8b5bfa29f0e6ba",
+  "merge_commit": "2a0053e21125edc99e3862761d9b05d6ac6b4603",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-10T08:39:30Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605100600-663T4T",
-  "updated_at": "2026-05-10T07:52:48.005Z",
+  "updated_at": "2026-05-10T08:39:30Z",
   "verify": {
     "status": "pass"
   }

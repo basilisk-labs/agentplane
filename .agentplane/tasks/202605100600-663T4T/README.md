@@ -1,7 +1,8 @@
 ---
 id: "202605100600-663T4T"
 title: "Audit v0.5 readiness and fix blockers"
-status: "DOING"
+result_summary: "Merged via PR #3545."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -25,11 +26,16 @@ verification:
   updated_by: "CODER"
   note: "Verification attempts schema and close-tail unit blockers fixed. Targeted regression tests, typecheck, lint:core, schemas:check, and format:check pass after pre-push failure."
   attempts: 0
-commit: null
+commit:
+  hash: "2a0053e21125edc99e3862761d9b05d6ac6b4603"
+  message: "Merge pull request #3545 from basilisk-labs/task/202605100600-663T4T/v05-readiness"
 comments:
   -
     author: "CODER"
     body: "Start: auditing v0.5 readiness and fixing blueprint storage so external blueprint packages cache in the user AgentPlane home while project .agentplane/blueprints keeps initialized definitions."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3545 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verification attempts schema and close-tail unit blockers fixed. Targeted regression tests, typecheck, lint:core, schemas:check, and format:check pass after pre-push failure."
+  -
+    type: "status"
+    at: "2026-05-10T08:40:08.147Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3545 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-10T07:52:47.866Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-10T08:40:08.155Z"
+doc_updated_by: "INTEGRATOR"
 description: "Run release-readiness audit for v0.5, verify legacy and new behavior, especially ap init in empty and existing projects plus local/remote recipe and blueprint installation paths; fix blocking code issues found during the audit."
 sections:
   Summary: |-
