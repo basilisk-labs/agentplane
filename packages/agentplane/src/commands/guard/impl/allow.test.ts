@@ -128,8 +128,12 @@ describe("guard/impl/allow", () => {
         taskId: "202601010101-ABCDEF",
       }),
     ).rejects.toMatchObject<CliError>({
-      code: "E_USAGE",
+      code: "E_COMMIT_ALLOW_EMPTY",
       message: "Provide at least one allowed prefix",
+      context: {
+        remediation:
+          "Review changed paths and pass the narrowest --commit-allow prefix, or make a code change before retrying.",
+      },
     });
     await expect(
       stageAllowlist({
@@ -162,8 +166,12 @@ describe("guard/impl/allow", () => {
         taskId: "202601010101-ABCDEF",
       }),
     ).rejects.toMatchObject<CliError>({
-      code: "E_USAGE",
+      code: "E_COMMIT_ALLOW_EMPTY",
       message: "No changes to stage (working tree clean)",
+      context: {
+        remediation:
+          "Review changed paths and pass the narrowest --commit-allow prefix, or make a code change before retrying.",
+      },
     });
 
     const ctxNoMatch = {
@@ -181,7 +189,14 @@ describe("guard/impl/allow", () => {
         workflowDir: ".agentplane/tasks",
         taskId: "202601010101-ABCDEF",
       }),
-    ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
+    ).rejects.toMatchObject<CliError>({
+      code: "E_COMMIT_ALLOW_TASK_ARTIFACT_DENIED",
+      context: {
+        denied_paths: [".agentplane/tasks.json"],
+        remediation:
+          "Retry with the task-artifact allow flag for the active task, or split unrelated task artifacts into their own lifecycle commit.",
+      },
+    });
     await expect(
       stageAllowlist({
         ctx: ctxNoMatch as never,
@@ -341,13 +356,15 @@ describe("guard/impl/allow", () => {
     }
 
     expect(err).toMatchObject<CliError>({
-      code: "E_USAGE",
+      code: "E_COMMIT_ALLOW_NO_MATCH",
       context: {
         command: "stage-allowlist",
         mutation_kind: "lifecycle_commit",
         task_id: "202601010101-ABCDEF",
         allow_prefixes: ["src"],
         changed_paths: ["docs/readme.md"],
+        remediation:
+          "Run agentplane guard suggest-allow, then retry with a prefix that covers the intended changed paths.",
       },
     });
     expect(ctx.git.stage).not.toHaveBeenCalled();
@@ -379,7 +396,7 @@ describe("guard/impl/allow", () => {
         mutationKind: "implementation_commit",
       }),
     ).rejects.toMatchObject<CliError>({
-      code: "E_GIT",
+      code: "E_GIT_RACE",
       message: "Failed to stage allowed paths: index lock denied",
       context: {
         command: "git add",
@@ -393,6 +410,57 @@ describe("guard/impl/allow", () => {
         allow_prefixes: ["src"],
         changed_paths: ["src/app.ts"],
         staged_paths: ["src/app.ts"],
+        remediation:
+          "Inspect the reported git context, fix the index state or permissions, then retry the same command.",
+      },
+    });
+  });
+
+  it("stageAllowlist classifies Git permission and generic stage failures", async () => {
+    const { stageAllowlist } = await import("./allow.js");
+    const baseCtx = {
+      resolvedProject: {
+        gitRoot: "/repo/worktrees/task-worktree",
+      },
+      config: {
+        workflow_mode: "branch_pr",
+      },
+    };
+    const stage = async (message: string): Promise<unknown> => {
+      try {
+        await stageAllowlist({
+          ctx: {
+            ...baseCtx,
+            git: {
+              statusChangedPaths: vi.fn().mockResolvedValue(["src/app.ts"]),
+              stage: vi.fn().mockRejectedValue(new Error(message)),
+            },
+          } as never,
+          allow: ["src"],
+          allowTasks: false,
+          tasksPath: ".agentplane/tasks.json",
+          workflowDir: ".agentplane/tasks",
+          taskId: "202601010101-ABCDEF",
+          mutationKind: "implementation_commit",
+        });
+      } catch (err) {
+        return err;
+      }
+      throw new Error("expected stageAllowlist to reject");
+    };
+
+    await expect(stage("fatal: Operation not permitted")).resolves.toMatchObject<CliError>({
+      code: "E_GIT_PERMISSION",
+      context: {
+        remediation:
+          "Inspect the reported git context, fix the index state or permissions, then retry the same command.",
+      },
+    });
+    await expect(stage("fatal: unknown git add failure")).resolves.toMatchObject<CliError>({
+      code: "E_GIT_STAGE_FAILED",
+      context: {
+        remediation:
+          "Inspect the reported git context, fix the index state or permissions, then retry the same command.",
       },
     });
   });

@@ -15,6 +15,14 @@ function sanitizeGitProcessEnv(env) {
   delete nextEnv.GIT_OBJECT_DIRECTORY;
   delete nextEnv.GIT_ALTERNATE_OBJECT_DIRECTORIES;
   delete nextEnv.GIT_PREFIX;
+  delete nextEnv.AGENTPLANE_TASK_ID;
+  delete nextEnv.AGENTPLANE_ALLOW_BASE;
+  delete nextEnv.AGENTPLANE_ALLOW_TASKS;
+  delete nextEnv.AGENTPLANE_ALLOW_POLICY;
+  delete nextEnv.AGENTPLANE_ALLOW_CONFIG;
+  delete nextEnv.AGENTPLANE_ALLOW_HOOKS;
+  delete nextEnv.AGENTPLANE_ALLOW_CI;
+  delete nextEnv.AGENTPLANE_ALLOW_UPGRADE;
   return nextEnv;
 }
 
