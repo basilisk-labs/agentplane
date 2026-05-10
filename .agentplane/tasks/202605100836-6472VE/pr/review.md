@@ -13,7 +13,7 @@ Created: 2026-05-10T12:29:34.363Z
 ## Verification
 
 - State: ok
-- Note: Verified split error taxonomy for commit allowlist and Git staging failures.
+- Note: Verified split error taxonomy and fixed pre-push CI env pollution: hook/local CI now strips task-scoped AgentPlane env before running project checks while preserving AGENTPLANE_FAST_CHANGED_FILES.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -25,9 +25,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-10T12:27:46.969Z"
+  updated_at: "2026-05-10T14:24:36.560Z"
   updated_by: "CODER"
-  note: "Verified split error taxonomy for commit allowlist and Git staging failures."
+  note: "Verified split error taxonomy and fixed pre-push CI env pollution: hook/local CI now strips task-scoped AgentPlane env before running project checks while preserving AGENTPLANE_FAST_CHANGED_FILES."
   attempts: 0
 commit: null
 comments:
@@ -58,8 +58,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified split error taxonomy for commit allowlist and Git staging failures."
+  -
+    type: "verify"
+    at: "2026-05-10T14:24:36.560Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified split error taxonomy and fixed pre-push CI env pollution: hook/local CI now strips task-scoped AgentPlane env before running project checks while preserving AGENTPLANE_FAST_CHANGED_FILES."
 doc_version: 3
-doc_updated_at: "2026-05-10T12:27:46.996Z"
+doc_updated_at: "2026-05-10T14:24:36.569Z"
 doc_updated_by: "CODER"
 description: "Add distinct errors for empty allow scope, no allow match, task-artifact denial, locked index, permission failure, race, and stage failure; ensure each reports what happened, where, and safe retry/remediation."
 sections:
@@ -85,6 +91,25 @@ sections:
     Attempts: 0
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-10T12:17:56.832Z, excerpt_hash=sha256:61b7e049043a9517a08e1e1a1599046bdb001d847fd77ee9469e28cef4277d56
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605100836-6472VE-error-taxonomy/.agentplane/tasks/202605100836-6472VE/blueprint/resolved-snapshot.json
+    - old_digest: f75dc6dc6c0a502106a7c32c680b74f1d38a5316e2a5e37a6679f4a61883cf84
+    - current_digest: f75dc6dc6c0a502106a7c32c680b74f1d38a5316e2a5e37a6679f4a61883cf84
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605100836-6472VE
+    
+    ### 2026-05-10T14:24:36.560Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified split error taxonomy and fixed pre-push CI env pollution: hook/local CI now strips task-scoped AgentPlane env before running project checks while preserving AGENTPLANE_FAST_CHANGED_FILES.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-10T12:27:46.996Z, excerpt_hash=sha256:61b7e049043a9517a08e1e1a1599046bdb001d847fd77ee9469e28cef4277d56
     
     Details:
     
