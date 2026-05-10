@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-10T16:26:17Z",
   "base": "main",
-  "branch": "task-202605100837-SAJN9F-worktree-mutex",
+  "branch": "task/202605100837-SAJN9F/worktree-mutex",
   "created_at": "2026-05-10T15:51:00.275Z",
-  "head_sha": "98f9550499b7f237a0b2f1ad55aa4171a20c6b65",
+  "head_sha": "c5670a9f3ff0e787603d40e8b10c02dce522e17d",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "307bfcef84387cdbc3a4970637c9bbef54b55568",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-10T16:26:17Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605100837-SAJN9F",
-  "updated_at": "2026-05-10T15:51:00.275Z",
+  "updated_at": "2026-05-10T16:26:17Z",
   "verify": {
     "status": "skipped"
   }
