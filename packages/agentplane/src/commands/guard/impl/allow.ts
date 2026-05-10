@@ -3,6 +3,7 @@ import { resolveProject } from "@agentplaneorg/core/project";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import {
   gitMutationDiagnosticContext,
+  resolveGitMutationDiagnosticContext,
   type GitMutationKind,
 } from "../../../shared/git-mutation.js";
 import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../../shared/git-path.js";
@@ -195,6 +196,26 @@ export async function stageAllowlist(opts: {
 
   // `git add <pathspec>` is not reliable for staging deletes/renames across versions/configs.
   // `-A -- <pathspec...>` makes the allowlist staging semantics deterministic.
-  await opts.ctx.git.stage(unique);
+  try {
+    await opts.ctx.git.stage(unique);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    throw new CliError({
+      exitCode: exitCodeForError("E_GIT"),
+      code: "E_GIT",
+      message: `Failed to stage allowed paths: ${message}`,
+      context: await resolveGitMutationDiagnosticContext({
+        command: "git add",
+        cwd: opts.ctx.resolvedProject.gitRoot,
+        repoRoot: opts.ctx.resolvedProject.gitRoot,
+        workflowMode: opts.ctx.config.workflow_mode,
+        mutationKind: opts.mutationKind,
+        taskId: opts.taskId,
+        allowPrefixes: effectiveAllow,
+        changedPaths: changed,
+        stagedPaths: unique,
+      }),
+    });
+  }
   return unique;
 }

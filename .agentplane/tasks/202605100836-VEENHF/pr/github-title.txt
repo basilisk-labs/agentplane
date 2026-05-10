@@ -1,0 +1,1 @@
+🚧 VEENHF task: Pre-v0.5: add worktree-aware Git context diagnostics [202605100836-VEENHF]
