@@ -1,7 +1,8 @@
 ---
 id: "202605100837-PJZW2E"
 title: "Pre-v0.5: reject finish --commit-from-comment in branch_pr"
-status: "DOING"
+result_summary: "Merged via PR #3570."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -29,11 +30,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: branch_pr finish --commit-from-comment now fails with E_USAGE before task loading/mutation or commit-from-comment staging; direct/status paths remain covered by focused finish suites."
   attempts: 0
-commit: null
+commit:
+  hash: "86ea78661e0fae7e141eb812f8009f06a9eca531"
+  message: "🚧 PJZW2E task: Pre-v0.5: reject finish --commit-from-comment in branch_pr [202605100837-PJZW2E] (#3570)"
 comments:
   -
     author: "CODER"
     body: "Start: reject finish --commit-from-comment in branch_pr before any staging path, preserving direct-mode behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3570 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: branch_pr finish --commit-from-comment now fails with E_USAGE before task loading/mutation or commit-from-comment staging; direct/status paths remain covered by focused finish suites."
+  -
+    type: "status"
+    at: "2026-05-10T17:41:47.803Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3570 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-10T17:31:28.434Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-10T17:41:47.810Z"
+doc_updated_by: "INTEGRATOR"
 description: "After diagnostics/error taxonomy exists, reject finish --commit-from-comment in branch_pr with E_USAGE explaining that finish runs on base while implementation commits belong to task worktrees. Preserve direct mode."
 sections:
   Summary: |-
