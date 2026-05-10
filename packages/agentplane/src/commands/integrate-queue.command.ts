@@ -1,5 +1,6 @@
 import os from "node:os";
 
+import { gitDiffNames } from "@agentplaneorg/core/git";
 import type { CommandCtx, CommandHandler } from "../cli/spec/spec.js";
 import {
   loadDirectSubcommandNames,
@@ -15,6 +16,7 @@ import { prepareIntegrate } from "./pr/integrate/internal/prepare.js";
 import {
   claimNextQueuedEntry,
   markQueueEntry,
+  queueBaseConflictReason,
   readIntegrationQueue,
   upsertQueuedEntry,
   writeIntegrationQueue,
@@ -71,6 +73,36 @@ async function rejectIfQueuedHeadChanged(opts: {
     updated_at: new Date().toISOString(),
     reason: `branch head changed after enqueue: queued=${opts.entry.head_sha} current=${currentHead}`,
   };
+}
+
+async function rejectIfQueuedBaseConflicts(opts: {
+  gitRoot: string;
+  entry: IntegrationQueueEntry;
+}): Promise<IntegrationQueueEntry | null> {
+  const currentBaseSha = await gitRevParse(opts.gitRoot, [opts.entry.base]);
+  const baseChangedPaths =
+    currentBaseSha === opts.entry.base_sha
+      ? []
+      : await gitDiffNames(opts.gitRoot, opts.entry.base_sha, opts.entry.base);
+  const reason = queueBaseConflictReason({
+    entry: opts.entry,
+    currentBaseSha,
+    baseChangedPaths,
+  });
+  if (!reason) return null;
+  return {
+    ...opts.entry,
+    status: "rework",
+    updated_at: new Date().toISOString(),
+    reason,
+  };
+}
+
+async function rejectIfQueuedEntryIsStale(opts: {
+  gitRoot: string;
+  entry: IntegrationQueueEntry;
+}): Promise<IntegrationQueueEntry | null> {
+  return (await rejectIfQueuedHeadChanged(opts)) ?? (await rejectIfQueuedBaseConflicts(opts));
 }
 
 export function makeRunIntegrateQueueHandler(
@@ -150,13 +182,13 @@ export function makeRunIntegrateQueueClaimHandler(
       await writeIntegrationQueue(gitRoot, claimed.state);
       return 0;
     }
-    const stale = await rejectIfQueuedHeadChanged({ gitRoot, entry: claimed.entry });
+    const stale = await rejectIfQueuedEntryIsStale({ gitRoot, entry: claimed.entry });
     if (stale) {
       await writeIntegrationQueue(
         gitRoot,
         markQueueEntry(claimed.state, stale.task_id, "rework", stale.reason),
       );
-      throw new CliError({ code: "E_VALIDATION", message: stale.reason ?? "queued head changed" });
+      throw new CliError({ code: "E_VALIDATION", message: stale.reason ?? "queued entry stale" });
     }
     await writeIntegrationQueue(gitRoot, claimed.state);
     const output = createCliEmitter();
@@ -204,13 +236,13 @@ export function makeRunIntegrateQueueRunNextHandler(
       return 0;
     }
 
-    const stale = await rejectIfQueuedHeadChanged({ gitRoot, entry: claimed.entry });
+    const stale = await rejectIfQueuedEntryIsStale({ gitRoot, entry: claimed.entry });
     if (stale) {
       await writeIntegrationQueue(
         gitRoot,
         markQueueEntry(claimed.state, stale.task_id, "rework", stale.reason),
       );
-      throw new CliError({ code: "E_VALIDATION", message: stale.reason ?? "queued head changed" });
+      throw new CliError({ code: "E_VALIDATION", message: stale.reason ?? "queued entry stale" });
     }
 
     await writeIntegrationQueue(gitRoot, claimed.state);

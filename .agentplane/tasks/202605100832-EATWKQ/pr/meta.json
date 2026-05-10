@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605100832-EATWKQ/umbrella-finalize",
+  "created_at": "2026-05-10T08:32:51.916Z",
+  "head_sha": "5adef3d5faca482d429f94edc83f30db43f07f9a",
+  "last_verified_at": "2026-05-10T08:37:53.475Z",
+  "last_verified_sha": "5adef3d5faca482d429f94edc83f30db43f07f9a",
+  "schema_version": 1,
+  "task_id": "202605100832-EATWKQ",
+  "updated_at": "2026-05-10T08:32:51.916Z",
+  "verify": {
+    "status": "pass"
+  }
+}

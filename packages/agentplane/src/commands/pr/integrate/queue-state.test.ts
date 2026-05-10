@@ -5,6 +5,7 @@ import {
   emptyIntegrationQueue,
   expireClaimedEntries,
   markQueueEntry,
+  queueBaseConflictReason,
   upsertQueuedEntry,
   type QueueClock,
 } from "./queue-state.js";
@@ -152,5 +153,35 @@ describe("integration queue state", () => {
       branch: "task/T-1/work",
       head_sha: "head-T-1",
     });
+  });
+
+  it("detects base movement only when queued paths overlap", () => {
+    const entry = {
+      ...enqueue("T-1"),
+      base_sha: "base-before",
+      changed_paths: ["src/shared.ts", "docs/readme.md"],
+    };
+
+    expect(
+      queueBaseConflictReason({
+        entry,
+        currentBaseSha: "base-after",
+        baseChangedPaths: ["src/shared.ts", "src/other.ts"],
+      }),
+    ).toContain("overlapping paths: src/shared.ts");
+    expect(
+      queueBaseConflictReason({
+        entry,
+        currentBaseSha: "base-after",
+        baseChangedPaths: ["src/other.ts"],
+      }),
+    ).toBeNull();
+    expect(
+      queueBaseConflictReason({
+        entry,
+        currentBaseSha: "base-before",
+        baseChangedPaths: ["src/shared.ts"],
+      }),
+    ).toBeNull();
   });
 });
