@@ -117,7 +117,9 @@ async function mkPackagedBlueprintCatalogFixture(): Promise<{ root: string; inde
     path.join(fixture.root, "blueprints"),
     "external-analysis",
   ]);
-  const sha256 = createHash("sha256").update(await readFile(archivePath)).digest("hex");
+  const sha256 = createHash("sha256")
+    .update(await readFile(archivePath))
+    .digest("hex");
   const releaseIndexPath = path.join(fixture.root, "index.json");
   await writeFile(
     releaseIndexPath,
