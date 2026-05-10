@@ -1,7 +1,8 @@
 ---
 id: "202605100837-SAJN9F"
 title: "Pre-v0.5: introduce worktree-scoped Git mutation mutex"
-status: "DOING"
+result_summary: "Merged via PR #3563."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -29,11 +30,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented a worktree-scoped AgentPlane Git mutation mutex under .agentplane/cache/locks, keyed from git common dir plus resolved gitdir. Stage paths that write the Git index now take the mutex before git add. Checks passed: targeted Vitest git-mutation+allow suites, prettier check, and scoped eslint for changed files."
   attempts: 0
-commit: null
+commit:
+  hash: "307bfcef84387cdbc3a4970637c9bbef54b55568"
+  message: "Merge pull request #3563 from basilisk-labs/task/202605100837-SAJN9F/worktree-mutex"
 comments:
   -
     author: "CODER"
     body: "Start: implement a worktree-scoped Git mutation mutex keyed by repo identity plus gitdir identity, with tests for same-worktree contention and different-worktree independence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3563 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented a worktree-scoped AgentPlane Git mutation mutex under .agentplane/cache/locks, keyed from git common dir plus resolved gitdir. Stage paths that write the Git index now take the mutex before git add. Checks passed: targeted Vitest git-mutation+allow suites, prettier check, and scoped eslint for changed files."
+  -
+    type: "status"
+    at: "2026-05-10T16:26:55.127Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3563 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-10T15:50:36.106Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-10T16:26:55.134Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add an AgentPlane-level mutex for write operations that touch the Git index. Key it by gitdir hash plus repo identity, not branch name, so different worktrees can proceed independently."
 sections:
   Summary: |-
