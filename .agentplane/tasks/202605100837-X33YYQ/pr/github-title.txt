@@ -1,0 +1,1 @@
+🚧 X33YYQ task: Pre-v0.5: guard against AgentPlane-owned writes to .git index.lock [202605100837-X33YYQ]
