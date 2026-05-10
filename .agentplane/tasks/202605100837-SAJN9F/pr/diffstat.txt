@@ -1,0 +1,6 @@
+ .../src/commands/guard/impl/allow.test.ts          |  39 +++---
+ .../agentplane/src/commands/guard/impl/allow.ts    | 118 +++++++++--------
+ .../src/commands/guard/impl/commit-stage.ts        |  27 +++-
+ .../agentplane/src/shared/git-mutation.test.ts     | 144 +++++++++++++++++++++
+ packages/agentplane/src/shared/git-mutation.ts     | 134 ++++++++++++++++++-
+ 5 files changed, 392 insertions(+), 70 deletions(-)

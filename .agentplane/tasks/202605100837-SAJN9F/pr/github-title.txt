@@ -1,0 +1,1 @@
+🚧 SAJN9F task: Pre-v0.5: introduce worktree-scoped Git mutation mutex [202605100837-SAJN9F]
