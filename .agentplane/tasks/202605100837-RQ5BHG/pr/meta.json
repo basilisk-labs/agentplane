@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task-202605100837-RQ5BHG-integration-queue-mutex",
+  "created_at": "2026-05-10T16:45:50.123Z",
+  "head_sha": "7a29b6de0d8d5ca2fc4a56712c110dc23fa8cf7e",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605100837-RQ5BHG",
+  "updated_at": "2026-05-10T16:45:50.123Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
