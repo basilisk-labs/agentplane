@@ -10,6 +10,7 @@ describe("cli contract exit codes", () => {
       E_VALIDATION: ExitCode.Validation,
       E_IO: ExitCode.Io,
       E_GIT: ExitCode.Git,
+      E_GIT_LOCKED: ExitCode.Git,
       E_BACKEND: ExitCode.Backend,
       E_NETWORK: ExitCode.Network,
       E_RUNTIME: ExitCode.Runtime,
