@@ -1,0 +1,208 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605100836-NKKQEH",
+  "created_at": "2026-05-10T09:56:09.679Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "c511ffe2dc08f062745b03ce2fc67514eada9a50",
+    "work_ref": "main",
+    "work_commit": "c511ffe2dc08f062745b03ce2fc67514eada9a50"
+  },
+  "task": {
+    "task_id": "202605100836-NKKQEH",
+    "title": "Pre-v0.5: document Git mutation model",
+    "intent": "Define the internal model for AgentPlane Git mutation kinds: implementation commits, lifecycle/status commits, PR artifact updates, branch_pr close-tail commits, hook-time checks, and integration queue Git operations.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605100836-NKKQEH/README.md",
+      "sha256": "sha256:84be562762c208347b766d4370e821543d85da163392616e9c318056857dd0d5"
+    },
+    "approved_at": "2026-05-10T08:36:46.059Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3551.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "other",
+        "command": "Docs page names every Git mutation kind and its allowed checkout/owner/lock boundary.",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605100836-NKKQEH_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-10T08:36:46.059Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605100836-NKKQEH/README.md",
+      "sha256": "sha256:84be562762c208347b766d4370e821543d85da163392616e9c318056857dd0d5"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605100836-NKKQEH/README.md",
+      "sha256": "sha256:84be562762c208347b766d4370e821543d85da163392616e9c318056857dd0d5"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605100836-NKKQEH/README.md",
+      "sha256": "sha256:84be562762c208347b766d4370e821543d85da163392616e9c318056857dd0d5"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605100836-NKKQEH/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:4dd234ab8669b1cb66e534874283da40f80ad7a186ae96f7e687e9b3569008a6"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit c511ffe2dc08f062745b03ce2fc67514eada9a50 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:4a5bde44cb9b0d388096e662d3ed7d2bf5b494213aa25c1937edec8ed4e69120",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "docs.change",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "docs.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "docs.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "docs.artifact",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605100836-NKKQEH/blueprint/resolved-snapshot.json",
+        "digest": "32c26265f33488fc778fda19aa4b55d1961c3144f346e64e95c7a41066ac1d65",
+        "current_digest": "32c26265f33488fc778fda19aa4b55d1961c3144f346e64e95c7a41066ac1d65",
+        "route_changed": false,
+        "artifact_sha256": "sha256:4dd234ab8669b1cb66e534874283da40f80ad7a186ae96f7e687e9b3569008a6",
+        "safe_command": "agentplane blueprint snapshot 202605100836-NKKQEH"
+      }
+    }
+  }
+}

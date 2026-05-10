@@ -1,7 +1,7 @@
 ---
 id: "202605100941-061JK3"
 title: "Pre-v0.5: keep cloud backend under hotspot threshold"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -22,11 +22,16 @@ verification:
   updated_by: "CODER"
   note: "Reduced cloud-backend.ts from the oversized error path to the enforced 600-line boundary and updated scripts/oversized-test-baseline.json for the existing task-backend.cloud.test.ts oversized warning. Checks passed: bun run hotspots:check; bun run check:types-files -- packages/agentplane/src/backends/task-backend/cloud-backend.ts."
   attempts: 0
-commit: null
+commit:
+  hash: "c511ffe2dc08f062745b03ce2fc67514eada9a50"
+  message: "Merge pull request #3551 from basilisk-labs/task/202605100836-NKKQEH/git-mutation-model"
 comments:
   -
     author: "CODER"
     body: "Start: reduce cloud-backend.ts below the enforced hotspot threshold after pre-push blocked the docs task branch."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3551 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Reduced cloud-backend.ts from the oversized error path to the enforced 600-line boundary and updated scripts/oversized-test-baseline.json for the existing task-backend.cloud.test.ts oversized warning. Checks passed: bun run hotspots:check; bun run check:types-files -- packages/agentplane/src/backends/task-backend/cloud-backend.ts."
+  -
+    type: "status"
+    at: "2026-05-10T09:56:09.647Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3551 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-10T09:43:15.507Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-10T09:56:09.650Z"
+doc_updated_by: "INTEGRATOR"
 description: "Reduce cloud-backend.ts below the enforced hotspot threshold after pre-push detected the file above 600 lines."
 sections:
   Summary: |-
