@@ -1,0 +1,155 @@
+---
+title: "Git Mutation Model"
+description: "Internal model for AgentPlane Git writes, lifecycle writes, worktree isolation, hooks, and integration queues."
+---
+
+## Purpose
+
+AgentPlane has multiple write paths that touch Git state. Treating them as one
+generic "commit" operation hides the checkout, owner, and lock semantics that
+make `branch_pr` reliable.
+
+This document defines the working model for the pre-v0.5 pipeline hardening
+tasks. It describes current behavior first, then the target invariants later
+tasks must enforce.
+
+## Mutation kinds
+
+| Kind                    | Writes Git index/history | Primary location                                       | Owner                       |
+| ----------------------- | ------------------------ | ------------------------------------------------------ | --------------------------- |
+| `implementation_commit` | yes                      | active task checkout; task worktree in `branch_pr`     | task owner                  |
+| `lifecycle_commit`      | yes                      | command checkout that owns the lifecycle transition    | transition author           |
+| `pr_artifact_update`    | maybe                    | task worktree in `branch_pr`                           | task owner                  |
+| `close_tail`            | yes                      | base checkout or generated close branch in `branch_pr` | `INTEGRATOR` / hosted close |
+| `integration`           | yes                      | base checkout or temporary integration worktree        | `INTEGRATOR`                |
+| `hook_check`            | maybe                    | hook invocation checkout                               | hook capability owner       |
+
+These names are not a public API yet. They are the internal diagnostic vocabulary
+for code paths that call `git add`, `git commit`, `git checkout`, `git merge`,
+`git rebase`, `git worktree`, `git push`, or equivalent index/history mutations.
+
+## Current code map
+
+`commitFromComment` is the shared lifecycle-comment commit primitive. The current
+path is:
+
+1. Compute changed paths from `GitContext.statusChangedPaths()`.
+2. Normalize explicit `--commit-allow` prefixes.
+3. Add protected task/artifact prefixes when the command permits them.
+4. Stage matching paths through `GitContext.stage()`, which runs
+   `git add -A -- <paths>`.
+5. Run `guardCommitCheck`.
+6. Create the commit through `GitContext.commit()`, which runs `git commit`.
+
+`finish` has additional responsibilities:
+
+- `finish` in `branch_pr` must run from the base branch. This is enforced before
+  the execution plan is resolved.
+- `finish --commit <hash>` records an existing implementation commit in the task
+  lifecycle. It does not commit implementation scope.
+- `finish --commit-from-comment` can currently call the shared
+  `commitFromComment` path before task metadata is written.
+- `finish --close-commit` can create a deterministic task close commit. In
+  `branch_pr`, this is materialized as a close-tail branch when the task close is
+  not already represented on base.
+
+`work start`, `pr open/update`, `integrate`, `branch cleanup`, `release apply`,
+and upgrade flows are separate Git mutation surfaces. Some write branches,
+worktrees, PR artifacts, tags, merge commits, or release commits without going
+through `commitFromComment`.
+
+## Workflow ownership
+
+`direct` uses one checkout. Implementation commits, lifecycle commits, and close
+commits may all happen in that checkout, subject to the active task and allowlist
+rules.
+
+`branch_pr` separates two checkouts:
+
+- task worktree: owner-scoped implementation, verification, lifecycle progress,
+  and PR artifacts;
+- base checkout: integration, hosted close reconciliation, and final
+  `finish --commit <hash> --close-commit`.
+
+The base checkout is not the implementation writer in `branch_pr`. A
+comment-driven implementation commit during base-side `finish` is therefore the
+wrong ownership boundary even if the allowlist happens to match.
+
+## Locking model
+
+There are two distinct coordination problems:
+
+| Coordination       | Scope                          | Purpose                                            |
+| ------------------ | ------------------------------ | -------------------------------------------------- |
+| worktree Git mutex | one resolved worktree / gitdir | serialize writes to that checkout's index and refs |
+| integration queue  | base branch lane               | serialize merge/integrate operations               |
+
+The worktree mutex must be keyed by worktree identity, not by branch name alone.
+Different task worktrees may write in parallel. One worktree must have only one
+Git writer at a time.
+
+The integration queue must not become a global Git lock. It protects base-branch
+merge order, stale branch handling, and integration evidence. It does not need to
+block unrelated task worktrees.
+
+AgentPlane must not use `.git/**/index.lock` as its own lock file. That file is
+Git-owned. AgentPlane-owned locks belong under `.agentplane/cache/locks/` and
+should include the worktree identity plus operation kind.
+
+## Diagnostic context
+
+Every internal Git write failure should be diagnosable without manual shell
+forensics. Error surfaces should include:
+
+- command and mutation kind;
+- command `cwd`;
+- resolved repo root and `.git` directory;
+- current branch;
+- workflow mode;
+- task id when task-scoped;
+- allow prefixes when allowlist staging is involved;
+- changed and staged paths when available.
+
+`index.lock` must be reported as a Git lock condition, not as an allowlist or
+generic permission problem. The safe recovery message should name the lock path,
+worktree, age when detectable, and the next read-only diagnostic command.
+
+## Hook capability rule
+
+Hooks are allowed to enforce policy. They are not implicitly read-only.
+
+AgentPlane distinguishes three hook modes:
+
+- read-only checks: inspect state and may use read-only Git options;
+- write-capable hooks: declare write intent and take the worktree Git mutex;
+- push-time hooks: must not unexpectedly create lifecycle/status commits.
+
+Hidden Git writes from hooks are unsafe because they bypass the mutation kind,
+worktree context, and recovery diagnostics.
+
+## Branch_pr command matrix
+
+| Command                                  | `direct` | `branch_pr` task worktree   | `branch_pr` base checkout     |
+| ---------------------------------------- | -------- | --------------------------- | ----------------------------- |
+| `task start-ready --commit-from-comment` | allowed  | allowed with explicit scope | not the owner-scoped path     |
+| `verify --commit-from-comment`           | allowed  | allowed with explicit scope | not the owner-scoped path     |
+| `task set-status --commit-from-comment`  | allowed  | allowed with explicit scope | not for implementation scope  |
+| `finish --commit-from-comment`           | allowed  | not the finish location     | should be rejected            |
+| `finish --commit <hash>`                 | allowed  | not the normal close path   | primary branch_pr close input |
+
+The matrix keeps `commitFromComment` available where it represents a local
+lifecycle checkpoint, while preventing base-side `finish` from becoming an
+implicit implementation commit path.
+
+## Blueprint planner implication
+
+Blueprint guidance must consume workflow capabilities instead of hardcoding CLI
+strings. For `branch_pr`, generated guidance should resolve to:
+
+- implementation commit location: task worktree;
+- finish commit source: explicit hash;
+- close tail: required when base task artifacts are not already closed;
+- forbidden path: `finish --commit-from-comment`.
+
+Recipes and blueprints may automate the sequence, but they must not erase the
+checkout boundary between task worktrees and base integration.

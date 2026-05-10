@@ -64,8 +64,6 @@ type CloudSyncStateResponse = {
   open_conflicts?: unknown;
   safe_command?: unknown;
 };
-
-type FetchLike = typeof fetch;
 type CloudSyncStateSnapshot = {
   conflicts: unknown[];
   safeCommand: string | null;
@@ -97,12 +95,12 @@ export class CloudBackend implements TaskBackend {
   cache: LocalBackend;
   statePath: string;
   staleAfterSeconds: number | null;
-  private fetchImpl: FetchLike;
+  private fetchImpl: typeof fetch;
   private readonly configOverrides: CloudConfigOverride[];
 
   constructor(
     settings: CloudBackendSettings,
-    opts: { cache: LocalBackend; root: string; fetchImpl?: FetchLike },
+    opts: { cache: LocalBackend; root: string; fetchImpl?: typeof fetch },
   ) {
     const endpoint = firstNonEmptyString(
       process.env.AGENTPLANE_CLOUD_ENDPOINT,
@@ -135,7 +133,7 @@ export class CloudBackend implements TaskBackend {
     root: string;
     settings: CloudBackendSettings;
     cache: LocalBackend;
-    fetchImpl?: FetchLike;
+    fetchImpl?: typeof fetch;
   }): Promise<CloudBackend> {
     await loadDotEnv(opts.root);
     return new CloudBackend(opts.settings, {
