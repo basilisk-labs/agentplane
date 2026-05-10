@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-10T08:47:11Z",
   "base": "main",
   "branch": "task/202605100832-EATWKQ/umbrella-finalize",
   "created_at": "2026-05-10T08:32:51.916Z",
-  "head_sha": "7e43b58b79563b3593b9ebab90f5eca266920bae",
+  "head_sha": "1ec197c12897e59bba6ff1c1559253d9238affa1",
   "last_verified_at": "2026-05-10T08:37:53.475Z",
   "last_verified_sha": "5adef3d5faca482d429f94edc83f30db43f07f9a",
+  "merge_commit": "90ef0c2efa2c589361487c62a89fa5bc26518e5d",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-10T08:47:11Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605100832-EATWKQ",
-  "updated_at": "2026-05-10T08:38:58.273Z",
+  "updated_at": "2026-05-10T08:47:11Z",
   "verify": {
     "status": "pass"
   }
