@@ -858,6 +858,8 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
         [
           'import { writeFileSync } from "node:fs";',
           'writeFileSync("changed-files.txt", process.env.AGENTPLANE_FAST_CHANGED_FILES ?? "", "utf8");',
+          'writeFileSync("task-env.txt", process.env.AGENTPLANE_TASK_ID ?? "", "utf8");',
+          'writeFileSync("allow-env.txt", process.env.AGENTPLANE_ALLOW_TASKS ?? "", "utf8");',
           "process.exit(0);",
           "",
         ].join("\n"),
@@ -928,12 +930,19 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
 
       execFileSync("node", [PRE_PUSH_HOOK_SCRIPT], {
         cwd: root,
+        env: {
+          ...process.env,
+          AGENTPLANE_TASK_ID: "202605100836-6472VE",
+          AGENTPLANE_ALLOW_TASKS: "1",
+        },
         stdio: "pipe",
         input: `refs/heads/task/202604071841-HWNRXM/pre-push-new-branch-scope ${headSha} refs/heads/task/202604071841-HWNRXM/pre-push-new-branch-scope 0000000000000000000000000000000000000000\n`,
       });
 
       const changedFiles = await readFile(path.join(root, "changed-files.txt"), "utf8");
       expect(changedFiles.trim()).toBe(".agentplane/tasks/202604071841-HWNRXM/README.md");
+      await expect(readFile(path.join(root, "task-env.txt"), "utf8")).resolves.toBe("");
+      await expect(readFile(path.join(root, "allow-env.txt"), "utf8")).resolves.toBe("");
     },
   );
 

@@ -43,11 +43,24 @@ function withPreferredRuntimePath(baseEnv = process.env) {
   };
 }
 
-function run(command, args) {
-  execFileSync(command, args, {
-    stdio: "inherit",
-    env: withPreferredRuntimePath(process.env),
-  });
+function sanitizeCiEnv(env = process.env) {
+  const nextEnv = { ...env };
+  delete nextEnv.GIT_DIR;
+  delete nextEnv.GIT_WORK_TREE;
+  delete nextEnv.GIT_COMMON_DIR;
+  delete nextEnv.GIT_INDEX_FILE;
+  delete nextEnv.GIT_OBJECT_DIRECTORY;
+  delete nextEnv.GIT_ALTERNATE_OBJECT_DIRECTORIES;
+  delete nextEnv.GIT_PREFIX;
+  delete nextEnv.AGENTPLANE_TASK_ID;
+  delete nextEnv.AGENTPLANE_ALLOW_BASE;
+  delete nextEnv.AGENTPLANE_ALLOW_TASKS;
+  delete nextEnv.AGENTPLANE_ALLOW_POLICY;
+  delete nextEnv.AGENTPLANE_ALLOW_CONFIG;
+  delete nextEnv.AGENTPLANE_ALLOW_HOOKS;
+  delete nextEnv.AGENTPLANE_ALLOW_CI;
+  delete nextEnv.AGENTPLANE_ALLOW_UPGRADE;
+  return nextEnv;
 }
 
 function runWithEnv(command, args, env) {
@@ -265,12 +278,12 @@ function main() {
   enforceTaskBoundOutgoingCommits(diffRange);
   const ciEnv =
     changedFiles.length > 0
-      ? { ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") }
-      : process.env;
+      ? sanitizeCiEnv({ ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") })
+      : sanitizeCiEnv(process.env);
 
   process.stdout.write("\n== Format (check) ==\n");
   try {
-    run("bun", ["run", "format:check"]);
+    runWithEnv("bun", ["run", "format:check"], sanitizeCiEnv(process.env));
   } catch {
     failIfTrackedChanges(
       "pre-push blocked: format:check changed tracked files unexpectedly. Revert or commit those changes and push again.",
@@ -297,8 +310,8 @@ function main() {
   }
 
   if (isReleasePush) {
-    run("node", ["scripts/check-release-notes.mjs"]);
-    run("bun", ["run", "release:prepublish"]);
+    runWithEnv("node", ["scripts/check-release-notes.mjs"], sanitizeCiEnv(process.env));
+    runWithEnv("bun", ["run", "release:prepublish"], sanitizeCiEnv(process.env));
   }
 }
 

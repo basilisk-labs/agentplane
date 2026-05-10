@@ -95,6 +95,26 @@ function runHookCommandWithEnv(
   return result.exitCode ?? (result.signal ? 1 : 0);
 }
 
+function sanitizeCiEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  const nextEnv: NodeJS.ProcessEnv = { ...env };
+  delete nextEnv.GIT_DIR;
+  delete nextEnv.GIT_WORK_TREE;
+  delete nextEnv.GIT_COMMON_DIR;
+  delete nextEnv.GIT_INDEX_FILE;
+  delete nextEnv.GIT_OBJECT_DIRECTORY;
+  delete nextEnv.GIT_ALTERNATE_OBJECT_DIRECTORIES;
+  delete nextEnv.GIT_PREFIX;
+  delete nextEnv.AGENTPLANE_TASK_ID;
+  delete nextEnv.AGENTPLANE_ALLOW_BASE;
+  delete nextEnv.AGENTPLANE_ALLOW_TASKS;
+  delete nextEnv.AGENTPLANE_ALLOW_POLICY;
+  delete nextEnv.AGENTPLANE_ALLOW_CONFIG;
+  delete nextEnv.AGENTPLANE_ALLOW_HOOKS;
+  delete nextEnv.AGENTPLANE_ALLOW_CI;
+  delete nextEnv.AGENTPLANE_ALLOW_UPGRADE;
+  return nextEnv;
+}
+
 function readGitText(gitRoot: string, args: readonly string[]): string {
   const result = runProcessSync({
     command: "git",
@@ -393,10 +413,11 @@ function runInternalPrePushHook(gitRoot: string, stdin: string): number {
     enforceTaskBoundOutgoingCommits(gitRoot, diffRange);
     const ciEnv =
       changedFiles.length > 0
-        ? { ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") }
-        : process.env;
+        ? sanitizeCiEnv({ ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") })
+        : sanitizeCiEnv(process.env);
 
     const formatResult = runOptionalProjectScript(gitRoot, scripts, "format:check", {
+      env: sanitizeCiEnv(process.env),
       heading: "\n== Format (check) ==\n",
     });
     if (formatResult.exitCode !== 0) {
@@ -438,7 +459,9 @@ function runInternalPrePushHook(gitRoot: string, stdin: string): number {
           "Skipping release notes check: scripts/check-release-notes.mjs is not defined.\n",
         );
       }
-      return runOptionalProjectScript(gitRoot, scripts, "release:prepublish").exitCode;
+      return runOptionalProjectScript(gitRoot, scripts, "release:prepublish", {
+        env: sanitizeCiEnv(process.env),
+      }).exitCode;
     }
     return 0;
   } catch (error) {
