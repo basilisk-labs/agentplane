@@ -1,7 +1,8 @@
 ---
 id: "202605100747-82QFWJ"
 title: "Optimize branch_pr workflow resilience"
-status: "DOING"
+result_summary: "Merged via PR #3546."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: task-new backend readiness now fails before stale cloud setup emits task-doc warnings or writes task cache; focused tests, formatting, lint, policy routing, and doctor passed."
   attempts: 0
-commit: null
+commit:
+  hash: "1b154de586c9185ba0b6d11e3348d1fe52971ccb"
+  message: "Merge pull request #3546 from basilisk-labs/task/202605100747-82QFWJ/branch-pr-resilience"
 comments:
   -
     author: "CODER"
     body: "Start: audit the branch_pr lifecycle in the current codebase, isolate one narrow resilience improvement, implement it in this task worktree, and verify with focused tests plus policy checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3546 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: task-new backend readiness now fails before stale cloud setup emits task-doc warnings or writes task cache; focused tests, formatting, lint, policy routing, and doctor passed."
+  -
+    type: "status"
+    at: "2026-05-10T08:06:25.050Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3546 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-10T07:58:39.143Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-10T08:06:25.057Z"
+doc_updated_by: "INTEGRATOR"
 description: "Audit the branch_pr task lifecycle, map state transitions, identify redundant/error-prone steps, and implement a narrow refactor that makes the workflow faster, simpler, and more fault-tolerant without weakening verification or traceability."
 sections:
   Summary: |-
