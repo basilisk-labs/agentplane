@@ -24,12 +24,19 @@ Created: 2026-05-10T10:21:30.595Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-10T10:21:30.595Z
+- Updated: 2026-05-10T10:32:39.718Z
 - Branch: task/202605100836-R13PHK/git-mutation-kind
-- Head: 90ff3c323e29
+- Head: 164524bc59f9
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 505 +++++++++++++++++++++
+ .../src/commands/guard/impl/allow.test.ts          |  37 ++
+ .../agentplane/src/commands/guard/impl/allow.ts    |  33 ++
+ .../src/commands/guard/impl/comment-commit.ts      |   1 +
+ .../src/commands/guard/impl/commit-refresh.ts      |   1 +
+ .../agentplane/src/commands/guard/impl/commit.ts   |   2 +
+ packages/agentplane/src/shared/git-mutation.ts     |  28 ++
+ 7 files changed, 607 insertions(+)
 ```
 
 </details>
