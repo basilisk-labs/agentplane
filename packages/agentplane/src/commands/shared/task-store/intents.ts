@@ -236,7 +236,7 @@ export function applyTaskStoreIntentsToTask(
   } = {},
 ): TaskData {
   const normalizedIntents = normalizeTaskStoreIntents(intents);
-  if (normalizedIntents.length === 0) return { ...task };
+  if (normalizedIntents.length === 0) return task;
 
   const current = task;
   const next: TaskData = { ...current };

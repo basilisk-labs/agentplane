@@ -344,6 +344,7 @@ describe("RedmineBackend writes and custom fields", () => {
         },
         verification: {
           state: "pending",
+          attempts: 0,
           updated_at: null,
           updated_by: null,
           note: null,

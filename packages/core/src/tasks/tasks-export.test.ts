@@ -30,7 +30,7 @@ describe("tasks-export", () => {
     const parsed = JSON.parse(raw) as { tasks: TasksExportTask[] };
 
     const checksum = computeTasksChecksum(parsed.tasks);
-    expect(checksum).toBe("a62b5efae4e65f14d3ab17de8af58eeff11943aa0116d6b3260eefe66803fa54");
+    expect(checksum).toBe("69d3598cb3ad99b8b5d1f0f131ba51c796c5f7620e1b484dfb4e1188df24209f");
   });
 
   it("writeTasksExport writes .agentplane/tasks.json with matching checksum", async () => {

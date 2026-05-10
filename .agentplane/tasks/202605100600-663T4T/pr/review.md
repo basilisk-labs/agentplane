@@ -13,7 +13,7 @@ Created: 2026-05-10T06:18:12.743Z
 ## Verification
 
 - State: ok
-- Note: Verified v0.5 readiness fixes: release:check passed; typecheck passed; docs:cli:check and docs:recipes:check passed; doctor and routing policy passed; focused init/blueprint tests passed (64); recipe tests passed (24); task lifecycle test passed (12); release/ACR/blueprint/task-run tests passed (30); packaged CLI smoke passed for empty and existing-code projects with HTTP blueprint catalog refresh, AGENTPLANE_HOME blueprint-catalog cache, project .agentplane/blueprints materialization, and no project .agentplane/blueprint-catalog.
+- Note: Verification attempts schema and close-tail unit blockers fixed. Targeted regression tests, typecheck, lint:core, schemas:check, and format:check pass after pre-push failure.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,22 +24,26 @@ Created: 2026-05-10T06:18:12.743Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-10T07:00:30.325Z
+- Updated: 2026-05-10T07:52:48.005Z
 - Branch: task/202605100600-663T4T/v05-readiness
-- Head: b1a462dfd311
+- Head: 38033930a723
 
 ```text
  .../blueprint/resolved-snapshot.json               | 402 +++++++++++++++++++++
  docs/developer/blueprints.mdx                      |   8 +-
  docs/user/commands.mdx                             |   3 +-
- .../src/cli/run-cli.core.blueprint.test.ts         |  21 +-
- .../src/cli/run-cli.core.init.branch-pr.test.ts    |  47 +--
+ .../src/cli/run-cli.core.blueprint.test.ts         |  25 +-
+ .../src/cli/run-cli.core.init.branch-pr.test.ts    |  52 +--
  .../agentplane/src/cli/run-cli.core.init.test.ts   |   8 +-
- .../run-cli.core.init.validation-conflicts.test.ts |  34 +-
+ .../run-cli.core.init.validation-conflicts.test.ts |  39 +-
  .../src/cli/run-cli/commands/init/execution.ts     |   6 +-
- .../agentplane/src/commands/blueprints/catalog.ts  |  53 ++-
+ .../src/commands/blueprints/catalog-cache.ts       | 100 +++++
+ .../agentplane/src/commands/blueprints/catalog.ts  |  64 +---
+ .../src/commands/doctor/hook-readiness.ts          |  10 +-
  scripts/check-blueprint-release-gate.mjs           |   2 +-
- 10 files changed, 512 insertions(+), 72 deletions(-)
+ scripts/check-docs-ia.mjs                          |   2 +
+ scripts/oversized-test-baseline.json               |   8 +-
+ 14 files changed, 609 insertions(+), 120 deletions(-)
 ```
 
 </details>
