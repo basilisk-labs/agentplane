@@ -173,6 +173,10 @@ export class CloudBackend implements TaskBackend {
     return await this.cache.getTaskDoc(taskId);
   }
 
+  async assertLocalMutationReady(): Promise<void> {
+    await this.assertProjectionFreshForLocalMutation();
+  }
+
   async setTaskDoc(
     taskId: string,
     doc: string,
