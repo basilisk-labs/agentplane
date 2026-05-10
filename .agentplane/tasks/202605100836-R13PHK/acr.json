@@ -1,0 +1,224 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605100836-R13PHK",
+  "created_at": "2026-05-10T10:46:02.829Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "c1b117b24a97464aeca2481ca23cf5f3c70abaa7",
+    "work_ref": "main",
+    "work_commit": "c1b117b24a97464aeca2481ca23cf5f3c70abaa7"
+  },
+  "task": {
+    "task_id": "202605100836-R13PHK",
+    "title": "Pre-v0.5: add Git mutation kind diagnostics type",
+    "intent": "Introduce a GitMutationKind type for implementation_commit, lifecycle_commit, pr_artifact_update, close_tail, integration, and hook_check. Use it initially for diagnostics/logging without behavior changes.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605100836-R13PHK/README.md",
+      "sha256": "sha256:1911cc70ae086a6343e777daa89b98045a1999196717d966b3dcd6f876ff9650"
+    },
+    "approved_at": "2026-05-10T08:36:49.130Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3553.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "other",
+        "command": "Typecheck passes and at least one commit/stage diagnostic path carries mutation kind metadata.",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605100836-R13PHK_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-10T08:36:49.130Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605100836-R13PHK/README.md",
+      "sha256": "sha256:1911cc70ae086a6343e777daa89b98045a1999196717d966b3dcd6f876ff9650"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605100836-R13PHK/README.md",
+      "sha256": "sha256:1911cc70ae086a6343e777daa89b98045a1999196717d966b3dcd6f876ff9650"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605100836-R13PHK/README.md",
+      "sha256": "sha256:1911cc70ae086a6343e777daa89b98045a1999196717d966b3dcd6f876ff9650"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605100836-R13PHK/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:c95b489e68bce34fa5ae3b458812c4dc3a1a6b4cb4c3dbc581793cb891cc7ebc"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit c1b117b24a97464aeca2481ca23cf5f3c70abaa7 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:57fbb8ba689bddf5a8839046a98777f16353d2924989aec3c0b10b3dd306acd2",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605100836-R13PHK/blueprint/resolved-snapshot.json",
+        "digest": "e0df736e70ab54b197b697768ab7a629bdc0c2d668b9ca1c4685a9120df94f54",
+        "current_digest": "e0df736e70ab54b197b697768ab7a629bdc0c2d668b9ca1c4685a9120df94f54",
+        "route_changed": false,
+        "artifact_sha256": "sha256:c95b489e68bce34fa5ae3b458812c4dc3a1a6b4cb4c3dbc581793cb891cc7ebc",
+        "safe_command": "agentplane blueprint snapshot 202605100836-R13PHK"
+      }
+    }
+  }
+}
