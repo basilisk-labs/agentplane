@@ -3,7 +3,6 @@ import path from "node:path";
 
 import { renderDiagnosticFinding } from "../shared/diagnostics.js";
 import {
-  fileIsManaged,
   HOOK_MARKER,
   HOOK_NAMES,
   resolveGitHooksDir,
@@ -215,7 +214,7 @@ export async function checkManagedHookShimReadiness(repoRoot: string): Promise<s
         try {
           const parsed = JSON.parse(packageJsonText) as { scripts?: unknown };
           return parsed.scripts && typeof parsed.scripts === "object"
-            ? Object.keys(parsed.scripts).sort()
+            ? Object.keys(parsed.scripts).toSorted()
             : [];
         } catch {
           return [];

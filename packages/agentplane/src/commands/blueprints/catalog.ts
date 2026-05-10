@@ -513,8 +513,9 @@ export async function installBlueprint(opts: {
         path.basename(isHttpUrl(archiveUrl) ? new URL(archiveUrl).pathname : archiveUrl) ||
         "blueprint.tar.gz";
       const archivePath = path.join(tempRoot, archiveName);
-      if (isHttpUrl(archiveUrl)) await downloadToFile(archiveUrl, archivePath);
-      else await cp(archiveUrl, archivePath);
+      await (isHttpUrl(archiveUrl)
+        ? downloadToFile(archiveUrl, archivePath)
+        : cp(archiveUrl, archivePath));
       const actualSha = await sha256File(archivePath);
       if (actualSha !== latest.sha256) {
         throw new ValidationError({
