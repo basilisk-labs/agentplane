@@ -1,0 +1,3 @@
+ .../blueprint/resolved-snapshot.json               | 350 +++++++++++++++++++++
+ docs/internal/git-mutation-model.mdx               | 155 +++++++++
+ 2 files changed, 505 insertions(+)
