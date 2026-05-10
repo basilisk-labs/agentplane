@@ -24,9 +24,9 @@ Created: 2026-05-10T09:12:08.174Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-10T09:38:38.738Z
+- Updated: 2026-05-10T09:40:07.951Z
 - Branch: task/202605100836-NKKQEH/git-mutation-model
-- Head: c74dae2c8ed4
+- Head: ef92f7404f0c
 
 ```text
  .../blueprint/resolved-snapshot.json               | 350 +++++++++++++++++++++
