@@ -85,6 +85,7 @@ type InstalledBlueprint = {
   catalogId: string;
   blueprintId: string;
   projectPath: string;
+  cachePath: string;
   recommendedAllowedIds: string[];
 };
 
@@ -96,6 +97,10 @@ function agentplaneHome(): string {
 
 function blueprintsHomeDir(): string {
   return path.join(agentplaneHome(), "blueprints");
+}
+
+function blueprintCatalogHomeDir(): string {
+  return path.join(agentplaneHome(), "blueprint-catalog");
 }
 
 export function cachedIndexPath(): string {
@@ -451,6 +456,40 @@ async function resolvePackageRoot(extractedDir: string): Promise<string> {
   return candidate;
 }
 
+async function cacheBlueprintPackage(opts: {
+  manifest: CatalogBlueprintManifest;
+  manifestSource: string;
+  definitionText: string;
+}): Promise<string> {
+  assertSafeCatalogPathSegment(opts.manifest.version, "Catalog blueprint manifest version");
+  const catalogTarget = path.join(
+    blueprintCatalogHomeDir(),
+    opts.manifest.id,
+    opts.manifest.version,
+  );
+  await rm(catalogTarget, { recursive: true, force: true });
+  await mkdir(path.dirname(catalogTarget), { recursive: true });
+
+  if (!isHttpUrl(opts.manifestSource)) {
+    await cp(path.dirname(opts.manifestSource), catalogTarget, { recursive: true });
+    return catalogTarget;
+  }
+
+  await mkdir(catalogTarget, { recursive: true });
+  await writeJsonStableIfChanged(path.join(catalogTarget, "blueprint.json"), opts.manifest);
+  const definitionTarget = path.resolve(catalogTarget, opts.manifest.definition.path);
+  const catalogRoot = `${catalogTarget}${path.sep}`;
+  if (!definitionTarget.startsWith(catalogRoot)) {
+    throw new ValidationError({
+      message: "Catalog blueprint definition.path must stay within the blueprint package.",
+      context: { path: opts.manifest.definition.path },
+    });
+  }
+  await mkdir(path.dirname(definitionTarget), { recursive: true });
+  await writeFile(definitionTarget, opts.definitionText, "utf8");
+  return catalogTarget;
+}
+
 export async function loadBlueprintManifest(opts: {
   catalogSource: string;
   entry: CatalogEntry;
@@ -562,6 +601,7 @@ export async function installBlueprint(opts: {
     assertSafeCatalogPathSegment(manifest.id, "Catalog blueprint manifest id");
     const definitionSource = resolveNearSource(manifestSource, manifest.definition.path);
     const definitionText = await readText(definitionSource);
+    const cachePath = await cacheBlueprintPackage({ manifest, manifestSource, definitionText });
     const targetDir = path.join(opts.projectRoot, ".agentplane", "blueprints");
     const targetPath = path.join(targetDir, `${manifest.definition.id}.json`);
     await mkdir(targetDir, { recursive: true });
@@ -575,22 +615,11 @@ export async function installBlueprint(opts: {
         context: { path: targetPath },
       });
     }
-    if (!isHttpUrl(manifestSource)) {
-      const packageRoot = path.dirname(manifestSource);
-      const catalogTarget = path.join(
-        opts.projectRoot,
-        ".agentplane",
-        "blueprint-catalog",
-        manifest.id,
-      );
-      await rm(catalogTarget, { recursive: true, force: true });
-      await mkdir(path.dirname(catalogTarget), { recursive: true });
-      await cp(packageRoot, catalogTarget, { recursive: true });
-    }
     return {
       catalogId: manifest.id,
       blueprintId: manifest.definition.id,
       projectPath: path.relative(opts.projectRoot, targetPath),
+      cachePath,
       recommendedAllowedIds: manifest.activation?.recommended_allowed_ids ?? [
         manifest.definition.id,
       ],

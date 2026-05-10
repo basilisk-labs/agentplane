@@ -103,11 +103,13 @@ agentplane blueprints install <pack-id> --kind pack --activate
 Cache and project boundaries:
 
 - The refreshed catalog index is stored under `~/.agentplane/blueprints/`.
-- Installing vendors blueprint definitions into the current project's blueprint store.
+- Installing caches blueprint package contents under `~/.agentplane/blueprint-catalog/`.
+- Installing materializes selected blueprint definition files into the current project's
+  `.agentplane/blueprints/` store.
 - Installing does not imply activation.
 - Activation writes the blueprint trust config using the existing `explicit_allowlist` trust model.
-- Local catalog packages may be copied into the project-local blueprint catalog provenance directory;
-  remote sources install the validated definition file.
+- Project `.agentplane/blueprints/` is for initialized/trusted project definitions, not downloaded
+  catalog package provenance.
 
 Init integration:
 
