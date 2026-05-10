@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202605100836-6472VE/error-taxonomy",
+  "created_at": "2026-05-10T12:29:34.363Z",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605100836-6472VE",
+  "updated_at": "2026-05-10T12:29:34.363Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

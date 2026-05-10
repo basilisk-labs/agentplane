@@ -1,0 +1,1 @@
+🚧 6472VE task: Pre-v0.5: split commit allowlist and Git index error taxonomy [202605100836-6472VE]
