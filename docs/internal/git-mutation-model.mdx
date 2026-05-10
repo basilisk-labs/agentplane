@@ -15,14 +15,14 @@ tasks must enforce.
 
 ## Mutation kinds
 
-| Kind | Writes Git index/history | Primary location | Owner |
-| --- | --- | --- | --- |
-| `implementation_commit` | yes | active task checkout; task worktree in `branch_pr` | task owner |
-| `lifecycle_commit` | yes | command checkout that owns the lifecycle transition | transition author |
-| `pr_artifact_update` | maybe | task worktree in `branch_pr` | task owner |
-| `close_tail` | yes | base checkout or generated close branch in `branch_pr` | `INTEGRATOR` / hosted close |
-| `integration` | yes | base checkout or temporary integration worktree | `INTEGRATOR` |
-| `hook_check` | maybe | hook invocation checkout | hook capability owner |
+| Kind                    | Writes Git index/history | Primary location                                       | Owner                       |
+| ----------------------- | ------------------------ | ------------------------------------------------------ | --------------------------- |
+| `implementation_commit` | yes                      | active task checkout; task worktree in `branch_pr`     | task owner                  |
+| `lifecycle_commit`      | yes                      | command checkout that owns the lifecycle transition    | transition author           |
+| `pr_artifact_update`    | maybe                    | task worktree in `branch_pr`                           | task owner                  |
+| `close_tail`            | yes                      | base checkout or generated close branch in `branch_pr` | `INTEGRATOR` / hosted close |
+| `integration`           | yes                      | base checkout or temporary integration worktree        | `INTEGRATOR`                |
+| `hook_check`            | maybe                    | hook invocation checkout                               | hook capability owner       |
 
 These names are not a public API yet. They are the internal diagnostic vocabulary
 for code paths that call `git add`, `git commit`, `git checkout`, `git merge`,
@@ -79,10 +79,10 @@ wrong ownership boundary even if the allowlist happens to match.
 
 There are two distinct coordination problems:
 
-| Coordination | Scope | Purpose |
-| --- | --- | --- |
+| Coordination       | Scope                          | Purpose                                            |
+| ------------------ | ------------------------------ | -------------------------------------------------- |
 | worktree Git mutex | one resolved worktree / gitdir | serialize writes to that checkout's index and refs |
-| integration queue | base branch lane | serialize merge/integrate operations |
+| integration queue  | base branch lane               | serialize merge/integrate operations               |
 
 The worktree mutex must be keyed by worktree identity, not by branch name alone.
 Different task worktrees may write in parallel. One worktree must have only one
@@ -129,13 +129,13 @@ worktree context, and recovery diagnostics.
 
 ## Branch_pr command matrix
 
-| Command | `direct` | `branch_pr` task worktree | `branch_pr` base checkout |
-| --- | --- | --- | --- |
-| `task start-ready --commit-from-comment` | allowed | allowed with explicit scope | not the owner-scoped path |
-| `verify --commit-from-comment` | allowed | allowed with explicit scope | not the owner-scoped path |
-| `task set-status --commit-from-comment` | allowed | allowed with explicit scope | not for implementation scope |
-| `finish --commit-from-comment` | allowed | not the finish location | should be rejected |
-| `finish --commit <hash>` | allowed | not the normal close path | primary branch_pr close input |
+| Command                                  | `direct` | `branch_pr` task worktree   | `branch_pr` base checkout     |
+| ---------------------------------------- | -------- | --------------------------- | ----------------------------- |
+| `task start-ready --commit-from-comment` | allowed  | allowed with explicit scope | not the owner-scoped path     |
+| `verify --commit-from-comment`           | allowed  | allowed with explicit scope | not the owner-scoped path     |
+| `task set-status --commit-from-comment`  | allowed  | allowed with explicit scope | not for implementation scope  |
+| `finish --commit-from-comment`           | allowed  | not the finish location     | should be rejected            |
+| `finish --commit <hash>`                 | allowed  | not the normal close path   | primary branch_pr close input |
 
 The matrix keeps `commitFromComment` available where it represents a local
 lifecycle checkpoint, while preventing base-side `finish` from becoming an
