@@ -1,7 +1,8 @@
 ---
 id: "202605100836-NKKQEH"
 title: "Pre-v0.5: document Git mutation model"
-status: "DOING"
+result_summary: "Merged via PR #3551."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 revision: 1
@@ -28,11 +29,16 @@ verification:
   updated_by: "DOCS"
   note: "Internal design doc added at docs/internal/git-mutation-model.mdx. It names implementation_commit, lifecycle_commit, pr_artifact_update, close_tail, integration, and hook_check, with checkout/owner/lock boundaries and the branch_pr finish matrix. Checks passed: node .agentplane/policy/check-routing.mjs; ap doctor; bun run docs:ia:check; bun run docs:site:typecheck; NO_UPDATE_NOTIFIER=1 bun --cwd website docusaurus build; built page contains Git Mutation Model and mutation-kind table. Build warnings were limited to existing webpack cache/localStorage/vscode-languageserver warnings."
   attempts: 0
-commit: null
+commit:
+  hash: "c511ffe2dc08f062745b03ce2fc67514eada9a50"
+  message: "Merge pull request #3551 from basilisk-labs/task/202605100836-NKKQEH/git-mutation-model"
 comments:
   -
     author: "DOCS"
     body: "Start: document the explicit AgentPlane Git mutation model before pipeline hardening work."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3551 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -53,9 +59,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Internal design doc added at docs/internal/git-mutation-model.mdx. It names implementation_commit, lifecycle_commit, pr_artifact_update, close_tail, integration, and hook_check, with checkout/owner/lock boundaries and the branch_pr finish matrix. Checks passed: node .agentplane/policy/check-routing.mjs; ap doctor; bun run docs:ia:check; bun run docs:site:typecheck; NO_UPDATE_NOTIFIER=1 bun --cwd website docusaurus build; built page contains Git Mutation Model and mutation-kind table. Build warnings were limited to existing webpack cache/localStorage/vscode-languageserver warnings."
+  -
+    type: "status"
+    at: "2026-05-10T09:56:09.635Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3551 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-10T09:37:09.902Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-10T09:56:09.641Z"
+doc_updated_by: "INTEGRATOR"
 description: "Define the internal model for AgentPlane Git mutation kinds: implementation commits, lifecycle/status commits, PR artifact updates, branch_pr close-tail commits, hook-time checks, and integration queue Git operations."
 sections:
   Summary: |-
