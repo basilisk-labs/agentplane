@@ -2,12 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { renderDiagnosticFinding } from "../shared/diagnostics.js";
-import {
-  HOOK_MARKER,
-  HOOK_NAMES,
-  resolveGitHooksDir,
-  SHIM_MARKER,
-} from "../hooks/shared.js";
+import { HOOK_MARKER, HOOK_NAMES, resolveGitHooksDir, SHIM_MARKER } from "../hooks/shared.js";
 
 async function pathExists(absPath: string): Promise<boolean> {
   try {
