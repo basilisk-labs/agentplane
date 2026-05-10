@@ -11,6 +11,8 @@ const mocks = vi.hoisted(() => ({
   ensureReconciledBeforeMutation: vi.fn(),
   execFileAsync: vi.fn(),
   gitEnv: vi.fn(),
+  gitCurrentBranch: vi.fn(),
+  gitRevParse: vi.fn(),
   refreshBranchPrArtifactsAfterTaskCommit: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext: vi.fn(),
@@ -44,7 +46,9 @@ vi.mock("@agentplaneorg/core/git", async (importOriginal) => {
   const actual = await importOriginal<Record<string, unknown>>();
   return {
     ...actual,
+    gitCurrentBranch: mocks.gitCurrentBranch,
     gitEnv: mocks.gitEnv,
+    gitRevParse: mocks.gitRevParse,
   };
 });
 vi.mock("../../shared/post-commit-pr-artifacts.js", () => ({
@@ -81,7 +85,9 @@ describe("guard command implementations: commit non-close", () => {
     );
     mocks.ensureReconciledBeforeMutation.mockResolvedValue();
     mocks.execFileAsync.mockResolvedValue({ stdout: "", stderr: "" });
+    mocks.gitCurrentBranch.mockResolvedValue("task/test");
     mocks.gitEnv.mockReturnValue({});
+    mocks.gitRevParse.mockResolvedValue(".git");
     mocks.resolveCanonicalGitIdentity.mockResolvedValue(null);
     mocks.resolveIgnoredDirectCloseDirtyPaths.mockResolvedValue([]);
   });

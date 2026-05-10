@@ -3,6 +3,7 @@ import { resolveProject } from "@agentplaneorg/core/project";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import {
   gitMutationDiagnosticContext,
+  resolveGitIndexLockInfo,
   resolveGitMutationDiagnosticContext,
   type GitMutationKind,
 } from "../../../shared/git-mutation.js";
@@ -191,6 +192,33 @@ export async function stageAllowlist(opts: {
         allowPrefixes: effectiveAllow,
         changedPaths: changed,
       }),
+    });
+  }
+
+  const lockInfo = await resolveGitIndexLockInfo({ repoRoot: opts.ctx.resolvedProject.gitRoot });
+  if (lockInfo) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_GIT_LOCKED"),
+      code: "E_GIT_LOCKED",
+      message: `Git index is locked; refusing to stage allowed paths: ${lockInfo.lockPath}`,
+      context: await resolveGitMutationDiagnosticContext({
+        command: "git add",
+        cwd: opts.ctx.resolvedProject.gitRoot,
+        repoRoot: opts.ctx.resolvedProject.gitRoot,
+        workflowMode: opts.ctx.config.workflow_mode,
+        mutationKind: opts.mutationKind,
+        taskId: opts.taskId,
+        allowPrefixes: effectiveAllow,
+        changedPaths: changed,
+        stagedPaths: unique,
+      }).then((context) => ({
+        ...context,
+        git_dir: lockInfo.gitDir,
+        git_index_lock_path: lockInfo.lockPath,
+        git_index_lock_age_ms: lockInfo.ageMs,
+        remediation:
+          "Wait for the owning git process to finish, then retry. If no git process owns the lock, inspect the lock path and remove it manually.",
+      })),
     });
   }
 

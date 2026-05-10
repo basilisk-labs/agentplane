@@ -1,3 +1,6 @@
+import { stat } from "node:fs/promises";
+import path from "node:path";
+
 import { gitCurrentBranch, gitRevParse } from "@agentplaneorg/core/git";
 
 export const GIT_MUTATION_KINDS = [
@@ -23,6 +26,9 @@ export function gitMutationDiagnosticContext(opts: {
   allowPrefixes?: string[];
   changedPaths?: string[];
   stagedPaths?: string[];
+  indexLockPath?: string;
+  indexLockAgeMs?: number;
+  remediation?: string;
 }): Record<string, unknown> {
   return {
     command: opts.command,
@@ -36,6 +42,9 @@ export function gitMutationDiagnosticContext(opts: {
     ...(opts.allowPrefixes ? { allow_prefixes: opts.allowPrefixes } : {}),
     ...(opts.changedPaths ? { changed_paths: opts.changedPaths } : {}),
     ...(opts.stagedPaths ? { staged_paths: opts.stagedPaths } : {}),
+    ...(opts.indexLockPath ? { git_index_lock_path: opts.indexLockPath } : {}),
+    ...(opts.indexLockAgeMs === undefined ? {} : { git_index_lock_age_ms: opts.indexLockAgeMs }),
+    ...(opts.remediation ? { remediation: opts.remediation } : {}),
   };
 }
 
@@ -64,4 +73,25 @@ export async function resolveGitMutationDiagnosticContext(opts: {
     gitDir,
     branch,
   });
+}
+
+export async function resolveGitIndexLockInfo(opts: {
+  repoRoot: string;
+}): Promise<{ gitDir: string; lockPath: string; ageMs: number } | null> {
+  const rawGitDir = await gitRevParse(opts.repoRoot, ["--git-dir"]);
+  const gitDir = path.isAbsolute(rawGitDir) ? rawGitDir : path.resolve(opts.repoRoot, rawGitDir);
+  const lockPath = path.join(gitDir, "index.lock");
+
+  try {
+    const info = await stat(lockPath);
+    return {
+      gitDir,
+      lockPath,
+      ageMs: Math.max(0, Date.now() - info.mtimeMs),
+    };
+  } catch (err) {
+    const code = (err as { code?: unknown } | null)?.code;
+    if (code === "ENOENT") return null;
+    throw err;
+  }
 }

@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { defaultConfig, type AgentplaneConfig } from "@agentplaneorg/core/config";
 
@@ -6,6 +6,20 @@ import type { CliError } from "../../../shared/errors.js";
 import { captureStdIO } from "@agentplane/testkit";
 import type { CommandContext } from "../../shared/task-backend.js";
 import { commitFromComment } from "./comment-commit.js";
+
+const gitMocks = vi.hoisted(() => ({
+  gitCurrentBranch: vi.fn(),
+  gitRevParse: vi.fn(),
+}));
+
+vi.mock("@agentplaneorg/core/git", async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+  return {
+    ...actual,
+    gitCurrentBranch: gitMocks.gitCurrentBranch,
+    gitRevParse: gitMocks.gitRevParse,
+  };
+});
 
 type FakeGit = {
   statusChangedPaths: ReturnType<typeof vi.fn<() => Promise<string[]>>>;
@@ -48,6 +62,11 @@ function makeGit(): FakeGit {
 }
 
 describe("commitFromComment", () => {
+  beforeEach(() => {
+    gitMocks.gitCurrentBranch.mockResolvedValue("task/test");
+    gitMocks.gitRevParse.mockResolvedValue(".git");
+  });
+
   it("fails when allowlist is empty and auto-allow is disabled", async () => {
     const git = makeGit();
     const ctx = makeCtx(git);

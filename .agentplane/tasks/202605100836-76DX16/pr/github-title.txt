@@ -1,0 +1,1 @@
+🚧 76DX16 task: Pre-v0.5: classify Git index lock failures as E_GIT_LOCKED [202605100836-76DX16]
