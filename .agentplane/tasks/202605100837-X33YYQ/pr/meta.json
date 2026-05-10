@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task-202605100837-X33YYQ-index-lock-guard",
+  "created_at": "2026-05-10T15:28:03.684Z",
+  "head_sha": "3a8da0b38b80dc30721d9ba94a4eb3168636e80c",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605100837-X33YYQ",
+  "updated_at": "2026-05-10T15:28:20.922Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

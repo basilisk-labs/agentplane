@@ -1,0 +1,2 @@
+ .../src/shared/git-index-lock-guard.test.ts        | 86 ++++++++++++++++++++++
+ 1 file changed, 86 insertions(+)
