@@ -1,7 +1,8 @@
 ---
 id: "202605100837-RQ5BHG"
 title: "Pre-v0.5: separate integration queue from worktree mutex"
-status: "DOING"
+result_summary: "Merged via PR #3566."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -29,11 +30,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented a dedicated integration queue mutex under .agentplane/cache/locks/integration-queue.lock and wrapped enqueue/claim/release/run-next queue mutations with it. The queue lane serializes integration state changes, while per-worktree Git mutation mutexes remain independent. Checks passed: queue-state/queue-mutex Vitest 9 tests, scoped ESLint, Prettier, and agentplane package build."
   attempts: 0
-commit: null
+commit:
+  hash: "bacde00be1ae2cda967204dc9d54d8c31e503cd1"
+  message: "Merge pull request #3566 from basilisk-labs/task/202605100837-RQ5BHG/integration-queue-mutex"
 comments:
   -
     author: "CODER"
     body: "Start: separate base integration queue coordination from per-worktree Git mutation mutex semantics and add regression evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3566 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented a dedicated integration queue mutex under .agentplane/cache/locks/integration-queue.lock and wrapped enqueue/claim/release/run-next queue mutations with it. The queue lane serializes integration state changes, while per-worktree Git mutation mutexes remain independent. Checks passed: queue-state/queue-mutex Vitest 9 tests, scoped ESLint, Prettier, and agentplane package build."
+  -
+    type: "status"
+    at: "2026-05-10T16:58:08.406Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3566 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-10T16:45:11.448Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-10T16:58:08.412Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make the model and code paths distinguish base-branch integration queue from per-worktree Git write mutex. Do not serialize independent task worktrees globally."
 sections:
   Summary: |-
