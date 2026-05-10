@@ -1,7 +1,8 @@
 ---
 id: "202605100836-6472VE"
 title: "Pre-v0.5: split commit allowlist and Git index error taxonomy"
-status: "DOING"
+result_summary: "Merged via PR #3559."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -29,7 +30,9 @@ verification:
   updated_by: "CODER"
   note: "Verified split error taxonomy and fixed pre-push CI env pollution: hook/local CI now strips task-scoped AgentPlane env before running project checks while preserving AGENTPLANE_FAST_CHANGED_FILES."
   attempts: 0
-commit: null
+commit:
+  hash: "25f017e6d88bf2d6d75528ce182a550a894ec1cf"
+  message: "Merge pull request #3559 from basilisk-labs/task/202605100836-6472VE/error-taxonomy"
 comments:
   -
     author: "CODER"
@@ -37,6 +40,9 @@ comments:
   -
     author: "CODER"
     body: "Start: split commit allowlist and Git index error taxonomy into distinct CLI error codes and diagnostics."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3559 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -64,9 +70,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified split error taxonomy and fixed pre-push CI env pollution: hook/local CI now strips task-scoped AgentPlane env before running project checks while preserving AGENTPLANE_FAST_CHANGED_FILES."
+  -
+    type: "status"
+    at: "2026-05-10T14:38:41.543Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3559 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-10T14:24:36.569Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-10T14:38:41.550Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add distinct errors for empty allow scope, no allow match, task-artifact denial, locked index, permission failure, race, and stage failure; ensure each reports what happened, where, and safe retry/remediation."
 sections:
   Summary: |-
