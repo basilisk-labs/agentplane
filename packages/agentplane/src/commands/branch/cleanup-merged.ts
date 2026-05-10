@@ -162,6 +162,7 @@ export async function cmdCleanupMerged(opts: {
   yes: boolean;
   archive: boolean;
   deleteRemoteBranches: boolean;
+  finalize?: boolean;
   fetch: boolean;
   quiet: boolean;
   skipUnsafeWorktrees?: boolean;
@@ -216,6 +217,13 @@ export async function cmdCleanupMerged(opts: {
         exitCode: 5,
         code: "E_GIT",
         message: `cleanup merged must run on base branch ${baseBranch} (current: ${currentBranch})`,
+      });
+    }
+
+    if (opts.finalize) {
+      await execFileAsync("git", ["pull", "--ff-only", "origin", baseBranch], {
+        cwd: resolved.gitRoot,
+        env: gitEnv(),
       });
     }
 

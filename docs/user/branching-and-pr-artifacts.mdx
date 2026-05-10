@@ -28,6 +28,20 @@ Configured in `.agentplane/WORKFLOW.md`.
 - Branch naming: `task/<task-id>/<slug>` by default (config: `branch.task_prefix`).
 - Worktrees live under `.agentplane/worktrees/` by default (config: `paths.worktrees_dir`).
 
+## Umbrella and Batch Tasks
+
+Use one branch/worktree per independent task by default. If several tasks are tightly coupled
+parts of one delivery theme, create one primary task as the umbrella implementation branch and
+link the dependent tasks into that PR with `agentplane pr open|update --include-task <task-id>`.
+
+The primary task owns the branch, worktree, PR artifacts, merge, and cleanup. Included tasks keep
+their own plan, start, verification, and finish evidence, but they do not need separate branches
+unless they can be reviewed, merged, or reverted independently.
+
+Keep implementation out of `main` until the umbrella PR is integrated. The top-level task may be
+created from the base branch, but all code/docs changes for the batch still happen inside the
+primary task worktree.
+
 ## PR Artifacts
 
 - Location: `.agentplane/tasks/<task-id>/pr/`.
@@ -89,6 +103,7 @@ bun run workflow:wait-remote-checks
 agentplane pr check <task-id>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "<one line>" --commit <git-rev> --close-commit
+agentplane cleanup merged --finalize
 ```
 
 Underlying hosted-check command:

@@ -196,6 +196,25 @@ export function markQueueEntry(
   };
 }
 
+export function queueBaseConflictReason(opts: {
+  entry: IntegrationQueueEntry;
+  currentBaseSha: string;
+  baseChangedPaths: string[];
+}): string | null {
+  if (opts.currentBaseSha === opts.entry.base_sha) return null;
+
+  const queuedPaths = new Set(opts.entry.changed_paths);
+  const overlappingPaths = opts.baseChangedPaths
+    .filter((changedPath) => queuedPaths.has(changedPath))
+    .toSorted();
+  if (overlappingPaths.length === 0) return null;
+
+  return [
+    `base branch advanced after enqueue: queued=${opts.entry.base_sha} current=${opts.currentBaseSha}`,
+    `overlapping paths: ${overlappingPaths.join(", ")}`,
+  ].join("; ");
+}
+
 function markEntryStatus(
   entry: IntegrationQueueEntry,
   status: IntegrationQueueStatus,

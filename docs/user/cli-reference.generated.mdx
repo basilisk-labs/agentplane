@@ -1777,6 +1777,7 @@ Options:
 - `--archive`: Archive PR artifacts before deletion. (default=false)
 - `--delete-remote-branches`: Also delete matching remote task branches on origin. (default=false)
 - `--fetch`: Fetch and prune origin before candidate resolution. (default=false)
+- `--finalize`: Fetch, fast-forward the base branch, then delete merged local and remote task branches/worktrees. (default=false)
 - `--quiet`: Reduce output noise. (default=false)
 
 Examples:
@@ -1804,6 +1805,12 @@ agentplane cleanup merged --fetch
 ```
 
 - Refresh origin before evaluating cleanup candidates.
+
+```sh
+agentplane cleanup merged --finalize
+```
+
+- One-command post-merge base refresh and local/remote cleanup.
 
 ## Backend
 

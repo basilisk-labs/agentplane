@@ -245,7 +245,7 @@ describe("runCli", () => {
     }
   }, 60_000);
 
-  it("cleanup merged accepts --base, --archive, --fetch, and --delete-remote-branches", async () => {
+  it("cleanup merged accepts --base, --archive, --fetch, --finalize, and --delete-remote-branches", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
     const config = defaultConfig();
@@ -279,6 +279,7 @@ describe("runCli", () => {
         "--archive",
         "--delete-remote-branches",
         "--fetch",
+        "--finalize",
         "--quiet",
         "--root",
         root,
