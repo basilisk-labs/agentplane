@@ -2,6 +2,9 @@
  packages/agentplane/src/cli/exit-codes.ts          |   1 +
  .../src/commands/guard/impl/allow.test.ts          |  84 ++++
  .../agentplane/src/commands/guard/impl/allow.ts    |  28 ++
+ .../guard/impl/commands.commit-close.unit.test.ts  |   6 +
+ .../impl/commands.commit-non-close.unit.test.ts    |   6 +
+ .../src/commands/guard/impl/comment-commit.test.ts |  21 +-
  packages/agentplane/src/shared/errors.ts           |   2 +
  packages/agentplane/src/shared/git-mutation.ts     |  30 ++
- 6 files changed, 650 insertions(+)
+ 9 files changed, 682 insertions(+), 1 deletion(-)
