@@ -1,11 +1,17 @@
+import { mkdtemp, readdir, rm, stat } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
+import type { CliError } from "../../../shared/errors.js";
 import {
   claimNextQueuedEntry,
   emptyIntegrationQueue,
   expireClaimedEntries,
   markQueueEntry,
   queueBaseConflictReason,
+  withIntegrationQueueMutex,
   upsertQueuedEntry,
   type QueueClock,
 } from "./queue-state.js";
@@ -26,6 +32,25 @@ function enqueue(taskId: string, priority = 0) {
     pr_url: null,
     priority,
   };
+}
+
+async function makeRoot(name: string): Promise<string> {
+  return mkdtemp(path.join(tmpdir(), `agentplane-${name}-`));
+}
+
+async function waitForQueueLock(root: string): Promise<string> {
+  const locksDir = path.join(root, ".agentplane", "cache", "locks");
+  for (let attempt = 0; attempt < 50; attempt++) {
+    try {
+      const entries = await readdir(locksDir);
+      const lock = entries.find((entry) => entry === "integration-queue.lock");
+      if (lock) return path.join(locksDir, lock);
+    } catch {
+      // keep polling until the holder creates the lock directory
+    }
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+  throw new Error("Timed out waiting for integration queue mutex");
 }
 
 describe("integration queue state", () => {
@@ -183,5 +208,36 @@ describe("integration queue state", () => {
         baseChangedPaths: ["src/shared.ts"],
       }),
     ).toBeNull();
+  });
+
+  it("serializes integration queue writers with a queue-owned mutex", async () => {
+    const root = await makeRoot("integration-queue");
+    try {
+      let release!: () => void;
+      const holder = withIntegrationQueueMutex(root, async () => {
+        await new Promise<void>((resolve) => {
+          release = resolve;
+        });
+      });
+
+      const lockPath = await waitForQueueLock(root);
+      await expect(
+        withIntegrationQueueMutex(root, () => Promise.resolve(null)),
+      ).rejects.toMatchObject<CliError>({
+        code: "E_GIT_RACE",
+        context: {
+          mutation_kind: "integration",
+          integration_queue_lock_path: lockPath,
+          remediation:
+            "Wait for the active integration queue operation to finish, then retry. Worktree Git mutation mutexes remain independent.",
+        },
+      });
+
+      release();
+      await holder;
+      await expect(stat(lockPath)).rejects.toMatchObject({ code: "ENOENT" });
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   });
 });

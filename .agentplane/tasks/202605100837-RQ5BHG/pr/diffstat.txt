@@ -1,0 +1,5 @@
+ .../src/commands/integrate-queue.command.ts        | 171 ++++++++++++---------
+ .../src/commands/pr/integrate/queue-mutex.test.ts  | 101 ++++++++++++
+ .../src/commands/pr/integrate/queue-state.test.ts  |  56 +++++++
+ .../src/commands/pr/integrate/queue-state.ts       |  90 ++++++++++-
+ 4 files changed, 344 insertions(+), 74 deletions(-)

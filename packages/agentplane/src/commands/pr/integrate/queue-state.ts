@@ -1,5 +1,9 @@
 import path from "node:path";
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { hostname } from "node:os";
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+
+import { CliError } from "../../../shared/errors.js";
+import { gitMutationDiagnosticContext } from "../../../shared/git-mutation.js";
 
 export type IntegrationQueueStatus = "queued" | "claimed" | "handoff" | "done" | "rework";
 
@@ -27,6 +31,13 @@ type IntegrationQueueState = {
   entries: IntegrationQueueEntry[];
 };
 
+export type IntegrationQueueMutexContext = {
+  gitRoot: string;
+  locksDir: string;
+  lockPath: string;
+  queuePath: string;
+};
+
 export type QueueClock = {
   now: () => Date;
 };
@@ -36,6 +47,16 @@ const DEFAULT_QUEUE_CLOCK: QueueClock = { now: () => new Date() };
 
 function integrationQueuePath(gitRoot: string): string {
   return path.join(gitRoot, ".agentplane", "cache", "integration-queue.json");
+}
+
+export function resolveIntegrationQueueMutexContext(gitRoot: string): IntegrationQueueMutexContext {
+  const locksDir = path.join(gitRoot, ".agentplane", "cache", "locks");
+  return {
+    gitRoot,
+    locksDir,
+    lockPath: path.join(locksDir, "integration-queue.lock"),
+    queuePath: integrationQueuePath(gitRoot),
+  };
 }
 
 export function emptyIntegrationQueue(): IntegrationQueueState {
@@ -85,6 +106,73 @@ export async function writeIntegrationQueue(
   const tmpPath = `${queuePath}.${process.pid}.tmp`;
   await writeFile(tmpPath, `${JSON.stringify(state, null, 2)}\n`, "utf8");
   await rename(tmpPath, queuePath);
+}
+
+async function readQueueMutexOwner(lockPath: string): Promise<unknown> {
+  try {
+    return JSON.parse(await readFile(path.join(lockPath, "owner.json"), "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+export async function withIntegrationQueueMutex<T>(
+  gitRoot: string,
+  run: (ctx: IntegrationQueueMutexContext) => Promise<T>,
+): Promise<T> {
+  const mutex = resolveIntegrationQueueMutexContext(gitRoot);
+  await mkdir(mutex.locksDir, { recursive: true });
+
+  try {
+    await mkdir(mutex.lockPath);
+  } catch (err) {
+    const code = (err as { code?: unknown } | null)?.code;
+    if (code !== "EEXIST") throw err;
+    const owner = await readQueueMutexOwner(mutex.lockPath);
+    throw new CliError({
+      code: "E_GIT_RACE",
+      message: `Integration queue mutex is already held: ${mutex.lockPath}`,
+      context: {
+        ...gitMutationDiagnosticContext({
+          command: "agentplane integration queue mutex",
+          cwd: gitRoot,
+          repoRoot: gitRoot,
+          workflowMode: "branch_pr",
+          mutationKind: "integration",
+          remediation:
+            "Wait for the active integration queue operation to finish, then retry. Worktree Git mutation mutexes remain independent.",
+        }),
+        integration_queue_path: mutex.queuePath,
+        integration_queue_lock_path: mutex.lockPath,
+        integration_queue_lock_owner: owner,
+      },
+    });
+  }
+
+  await writeFile(
+    path.join(mutex.lockPath, "owner.json"),
+    JSON.stringify(
+      {
+        pid: process.pid,
+        host: hostname(),
+        acquired_at: new Date().toISOString(),
+        git_root: mutex.gitRoot,
+        queue_path: mutex.queuePath,
+        operation: "integration-queue",
+        workflow_mode: "branch_pr",
+        mutation_kind: "integration",
+      },
+      null,
+      2,
+    ) + "\n",
+    "utf8",
+  );
+
+  try {
+    return await run(mutex);
+  } finally {
+    await rm(mutex.lockPath, { recursive: true, force: true });
+  }
 }
 
 export function upsertQueuedEntry(

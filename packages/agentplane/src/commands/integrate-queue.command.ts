@@ -19,6 +19,7 @@ import {
   queueBaseConflictReason,
   readIntegrationQueue,
   upsertQueuedEntry,
+  withIntegrationQueueMutex,
   writeIntegrationQueue,
   type IntegrationQueueEntry,
 } from "./pr/integrate/queue-state.js";
@@ -126,22 +127,27 @@ export function makeRunIntegrateQueueEnqueueHandler(
       runVerify: false,
     });
     const baseSha = await gitRevParse(prepared.resolved.gitRoot, [prepared.base]);
-    const queue = await readIntegrationQueue(prepared.resolved.gitRoot);
-    await writeIntegrationQueue(
-      prepared.resolved.gitRoot,
-      upsertQueuedEntry(queue, {
-        task_id: prepared.task.id,
-        branch: prepared.branch,
-        base: prepared.base,
-        head_sha: prepared.branchHeadSha,
-        base_sha: baseSha,
-        changed_paths: prepared.changedPaths,
-        pr_number:
-          typeof prepared.metaSource.pr_number === "number" ? prepared.metaSource.pr_number : null,
-        pr_url: typeof prepared.metaSource.pr_url === "string" ? prepared.metaSource.pr_url : null,
-        priority: p.priority,
-      }),
-    );
+    await withIntegrationQueueMutex(prepared.resolved.gitRoot, async () => {
+      const queue = await readIntegrationQueue(prepared.resolved.gitRoot);
+      await writeIntegrationQueue(
+        prepared.resolved.gitRoot,
+        upsertQueuedEntry(queue, {
+          task_id: prepared.task.id,
+          branch: prepared.branch,
+          base: prepared.base,
+          head_sha: prepared.branchHeadSha,
+          base_sha: baseSha,
+          changed_paths: prepared.changedPaths,
+          pr_number:
+            typeof prepared.metaSource.pr_number === "number"
+              ? prepared.metaSource.pr_number
+              : null,
+          pr_url:
+            typeof prepared.metaSource.pr_url === "string" ? prepared.metaSource.pr_url : null,
+          priority: p.priority,
+        }),
+      );
+    });
     createCliEmitter().success("queued integration", prepared.task.id, `branch=${prepared.branch}`);
     return 0;
   };
@@ -172,25 +178,31 @@ export function makeRunIntegrateQueueClaimHandler(
   return async (_ctx: CommandCtx, p: IntegrateQueueClaimParsed): Promise<number> => {
     const commandCtx = await getCtx("integrate queue claim");
     const gitRoot = commandCtx.resolvedProject.gitRoot;
-    const queue = await readIntegrationQueue(gitRoot);
-    const claimed = claimNextQueuedEntry(queue, {
-      worker: p.worker ?? defaultWorker(),
-      ...(p.leaseMs === null ? {} : { leaseMs: p.leaseMs }),
+    const claimed = await withIntegrationQueueMutex(gitRoot, async () => {
+      const queue = await readIntegrationQueue(gitRoot);
+      const next = claimNextQueuedEntry(queue, {
+        worker: p.worker ?? defaultWorker(),
+        ...(p.leaseMs === null ? {} : { leaseMs: p.leaseMs }),
+      });
+      if (!next.entry) {
+        await writeIntegrationQueue(gitRoot, next.state);
+        return next;
+      }
+      const stale = await rejectIfQueuedEntryIsStale({ gitRoot, entry: next.entry });
+      if (stale) {
+        await writeIntegrationQueue(
+          gitRoot,
+          markQueueEntry(next.state, stale.task_id, "rework", stale.reason),
+        );
+        throw new CliError({ code: "E_VALIDATION", message: stale.reason ?? "queued entry stale" });
+      }
+      await writeIntegrationQueue(gitRoot, next.state);
+      return next;
     });
     if (!claimed.entry) {
       createCliEmitter().line(emptyStateMessage("queued integration entries"));
-      await writeIntegrationQueue(gitRoot, claimed.state);
       return 0;
     }
-    const stale = await rejectIfQueuedEntryIsStale({ gitRoot, entry: claimed.entry });
-    if (stale) {
-      await writeIntegrationQueue(
-        gitRoot,
-        markQueueEntry(claimed.state, stale.task_id, "rework", stale.reason),
-      );
-      throw new CliError({ code: "E_VALIDATION", message: stale.reason ?? "queued entry stale" });
-    }
-    await writeIntegrationQueue(gitRoot, claimed.state);
     const output = createCliEmitter();
     if (p.json) output.json(claimed.entry);
     else
@@ -209,11 +221,13 @@ export function makeRunIntegrateQueueReleaseHandler(
   return async (_ctx: CommandCtx, p: IntegrateQueueReleaseParsed): Promise<number> => {
     const commandCtx = await getCtx("integrate queue release");
     const gitRoot = commandCtx.resolvedProject.gitRoot;
-    const queue = await readIntegrationQueue(gitRoot);
-    await writeIntegrationQueue(
-      gitRoot,
-      markQueueEntry(queue, p.taskId, p.status, p.reason ?? undefined),
-    );
+    await withIntegrationQueueMutex(gitRoot, async () => {
+      const queue = await readIntegrationQueue(gitRoot);
+      await writeIntegrationQueue(
+        gitRoot,
+        markQueueEntry(queue, p.taskId, p.status, p.reason ?? undefined),
+      );
+    });
     createCliEmitter().success("queue entry", p.taskId, `status=${p.status}`);
     return 0;
   };
@@ -225,62 +239,73 @@ export function makeRunIntegrateQueueRunNextHandler(
   return async (ctx: CommandCtx, p: IntegrateQueueRunNextParsed): Promise<number> => {
     const commandCtx = await getCtx("integrate queue run-next");
     const gitRoot = commandCtx.resolvedProject.gitRoot;
-    const queue = await readIntegrationQueue(gitRoot);
-    const claimed = claimNextQueuedEntry(queue, {
-      worker: p.worker ?? defaultWorker(),
-      ...(p.leaseMs === null ? {} : { leaseMs: p.leaseMs }),
+    const claimed = await withIntegrationQueueMutex(gitRoot, async () => {
+      const queue = await readIntegrationQueue(gitRoot);
+      const next = claimNextQueuedEntry(queue, {
+        worker: p.worker ?? defaultWorker(),
+        ...(p.leaseMs === null ? {} : { leaseMs: p.leaseMs }),
+      });
+      if (!next.entry) {
+        await writeIntegrationQueue(gitRoot, next.state);
+        return next;
+      }
+
+      const stale = await rejectIfQueuedEntryIsStale({ gitRoot, entry: next.entry });
+      if (stale) {
+        await writeIntegrationQueue(
+          gitRoot,
+          markQueueEntry(next.state, stale.task_id, "rework", stale.reason),
+        );
+        throw new CliError({ code: "E_VALIDATION", message: stale.reason ?? "queued entry stale" });
+      }
+
+      await writeIntegrationQueue(gitRoot, next.state);
+      return next;
     });
     if (!claimed.entry) {
       createCliEmitter().line(emptyStateMessage("queued integration entries"));
-      await writeIntegrationQueue(gitRoot, claimed.state);
       return 0;
     }
-
-    const stale = await rejectIfQueuedEntryIsStale({ gitRoot, entry: claimed.entry });
-    if (stale) {
-      await writeIntegrationQueue(
-        gitRoot,
-        markQueueEntry(claimed.state, stale.task_id, "rework", stale.reason),
-      );
-      throw new CliError({ code: "E_VALIDATION", message: stale.reason ?? "queued entry stale" });
-    }
-
-    await writeIntegrationQueue(gitRoot, claimed.state);
+    const claimedEntry = claimed.entry;
     try {
       const result = await cmdIntegrate({
         ctx: commandCtx,
         cwd: ctx.cwd,
         rootOverride: ctx.rootOverride,
-        taskId: claimed.entry.task_id,
-        branch: claimed.entry.branch,
-        base: claimed.entry.base,
+        taskId: claimedEntry.task_id,
+        branch: claimedEntry.branch,
+        base: claimedEntry.base,
         mergeStrategy: "merge",
         runVerify: p.runVerify,
         dryRun: p.dryRun,
         quiet: p.quiet,
       });
-      const nextQueue = await readIntegrationQueue(gitRoot);
-      await writeIntegrationQueue(
-        gitRoot,
-        markQueueEntry(nextQueue, claimed.entry.task_id, p.dryRun ? "queued" : "done"),
-      );
+      await withIntegrationQueueMutex(gitRoot, async () => {
+        const nextQueue = await readIntegrationQueue(gitRoot);
+        await writeIntegrationQueue(
+          gitRoot,
+          markQueueEntry(nextQueue, claimedEntry.task_id, p.dryRun ? "queued" : "done"),
+        );
+      });
       return result;
     } catch (err) {
-      const nextQueue = await readIntegrationQueue(gitRoot);
       const handoff = err instanceof CliError && err.code === "E_HANDOFF";
-      await writeIntegrationQueue(
-        gitRoot,
-        markQueueEntry(
-          nextQueue,
-          claimed.entry.task_id,
-          handoff ? "handoff" : "rework",
-          handoff
-            ? "protected base handoff recorded; wait for hosted merge/close before releasing lane"
-            : err instanceof Error
-              ? err.message
-              : String(err),
-        ),
-      );
+      await withIntegrationQueueMutex(gitRoot, async () => {
+        const nextQueue = await readIntegrationQueue(gitRoot);
+        await writeIntegrationQueue(
+          gitRoot,
+          markQueueEntry(
+            nextQueue,
+            claimedEntry.task_id,
+            handoff ? "handoff" : "rework",
+            handoff
+              ? "protected base handoff recorded; wait for hosted merge/close before releasing lane"
+              : err instanceof Error
+                ? err.message
+                : String(err),
+          ),
+        );
+      });
       throw err;
     }
   };
