@@ -1,0 +1,224 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605100837-X33YYQ",
+  "created_at": "2026-05-10T15:36:45.240Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "89ed683c95ba8be474467dc489faa2ba6fec220a",
+    "work_ref": "main",
+    "work_commit": "89ed683c95ba8be474467dc489faa2ba6fec220a"
+  },
+  "task": {
+    "task_id": "202605100837-X33YYQ",
+    "title": "Pre-v0.5: guard against AgentPlane-owned writes to .git index.lock",
+    "intent": "Audit code, hooks, wrappers, and generated scripts for manual .git/**/index.lock use. Replace any AgentPlane lock usage with .agentplane/cache/locks and add a guard test forbidding new manual index.lock writes.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605100837-X33YYQ/README.md",
+      "sha256": "sha256:75e5ed98414c034c21a7fe958c6d0a4835c29f2d991c8d88d7d08e44b9543239"
+    },
+    "approved_at": "2026-05-10T08:37:00.809Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3561.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "test",
+        "command": "Search/test proves no AgentPlane code creates .git/**/index.lock as an application lock.",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605100837-X33YYQ_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-10T08:37:00.809Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605100837-X33YYQ/README.md",
+      "sha256": "sha256:75e5ed98414c034c21a7fe958c6d0a4835c29f2d991c8d88d7d08e44b9543239"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605100837-X33YYQ/README.md",
+      "sha256": "sha256:75e5ed98414c034c21a7fe958c6d0a4835c29f2d991c8d88d7d08e44b9543239"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605100837-X33YYQ/README.md",
+      "sha256": "sha256:75e5ed98414c034c21a7fe958c6d0a4835c29f2d991c8d88d7d08e44b9543239"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605100837-X33YYQ/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:01549776bc865e1684d144d3b3d80ec111457b62d8b404b526e88986cbf685fd"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 89ed683c95ba8be474467dc489faa2ba6fec220a if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:41077dbf573c7ba700aada6e158efae615cd7dd4cb62d75fd4e5de9d9fca22eb",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605100837-X33YYQ/blueprint/resolved-snapshot.json",
+        "digest": "606dc6e599edfa5fafde057a1c4c2f52e3056a32a44d1da815296b6c3d4ce72b",
+        "current_digest": "606dc6e599edfa5fafde057a1c4c2f52e3056a32a44d1da815296b6c3d4ce72b",
+        "route_changed": false,
+        "artifact_sha256": "sha256:01549776bc865e1684d144d3b3d80ec111457b62d8b404b526e88986cbf685fd",
+        "safe_command": "agentplane blueprint snapshot 202605100837-X33YYQ"
+      }
+    }
+  }
+}
