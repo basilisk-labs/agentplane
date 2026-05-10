@@ -1,7 +1,8 @@
 ---
 id: "202605100832-EATWKQ"
 title: "Consolidate branch_pr umbrella and finalize flow"
-status: "DOING"
+result_summary: "Merged via PR #3548."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented branch_pr umbrella-task guidance, cleanup merged --finalize, and integration queue base-overlap stale detection. Checks passed: targeted vitest 26/26, prettier check, eslint changed TS files, docs:cli:check, policy routing, ap doctor."
   attempts: 0
-commit: null
+commit:
+  hash: "90ef0c2efa2c589361487c62a89fa5bc26518e5d"
+  message: "Merge pull request #3548 from basilisk-labs/task/202605100832-EATWKQ/umbrella-finalize"
 comments:
   -
     author: "CODER"
     body: "Start: consolidate branch_pr umbrella-task guidance, post-merge finalize behavior, and integration queue conflict prevention in the dedicated task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3548 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented branch_pr umbrella-task guidance, cleanup merged --finalize, and integration queue base-overlap stale detection. Checks passed: targeted vitest 26/26, prettier check, eslint changed TS files, docs:cli:check, policy routing, ap doctor."
+  -
+    type: "status"
+    at: "2026-05-10T08:47:49.645Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3548 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-10T08:37:53.480Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-10T08:47:49.652Z"
+doc_updated_by: "INTEGRATOR"
 description: "Clarify and harden branch_pr umbrella-task batching, cleanup/finalize behavior after hosted merges, and integration queue conflict prevention without weakening verification or task traceability."
 sections:
   Summary: |-
