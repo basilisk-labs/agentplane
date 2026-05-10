@@ -1,0 +1,15 @@
+ .../blueprint/resolved-snapshot.json               | 402 +++++++++++++++++++++
+ docs/developer/blueprints.mdx                      |   8 +-
+ docs/user/commands.mdx                             |   3 +-
+ .../src/cli/run-cli.core.blueprint.test.ts         |  25 +-
+ .../src/cli/run-cli.core.init.branch-pr.test.ts    |  52 +--
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |   8 +-
+ .../run-cli.core.init.validation-conflicts.test.ts |  39 +-
+ .../src/cli/run-cli/commands/init/execution.ts     |   6 +-
+ .../src/commands/blueprints/catalog-cache.ts       | 100 +++++
+ .../agentplane/src/commands/blueprints/catalog.ts  |  64 +---
+ .../src/commands/doctor/hook-readiness.ts          |  10 +-
+ scripts/check-blueprint-release-gate.mjs           |   2 +-
+ scripts/check-docs-ia.mjs                          |   2 +
+ scripts/oversized-test-baseline.json               |   8 +-
+ 14 files changed, 609 insertions(+), 120 deletions(-)

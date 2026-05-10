@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605100600-663T4T/v05-readiness",
+  "created_at": "2026-05-10T06:18:12.743Z",
+  "head_sha": "38033930a723918281b9c162ef8b5bfa29f0e6ba",
+  "last_verified_at": "2026-05-10T07:52:47.828Z",
+  "last_verified_sha": "38033930a723918281b9c162ef8b5bfa29f0e6ba",
+  "schema_version": 1,
+  "task_id": "202605100600-663T4T",
+  "updated_at": "2026-05-10T07:52:48.005Z",
+  "verify": {
+    "status": "pass"
+  }
+}

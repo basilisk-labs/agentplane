@@ -48,7 +48,7 @@ requireText(
   "packages/agentplane/src/commands/task/verify-record-execute.ts",
   "BlueprintSnapshotRef",
 );
-requireText("packages/agentplane/src/commands/acr/acr.command.ts", "agentplane.blueprint");
+requireText("packages/agentplane/src/commands/acr/generate.ts", "agentplane.blueprint");
 requireText("docs/developer/blueprints.mdx", "v0.5 Integration Contract");
 
 process.stdout.write("blueprint release gate OK\n");

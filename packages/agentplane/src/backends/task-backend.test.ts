@@ -238,6 +238,7 @@ describe("task-backend helpers", () => {
     });
     expect(task.verification).toEqual({
       state: "pending",
+      attempts: 0,
       updated_at: null,
       updated_by: null,
       note: null,

@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { GitContext } from "@agentplaneorg/core/git";
+import type { GitContext } from "@agentplaneorg/core/git";
 import type { TaskStorePatch } from "../shared/task-store.js";
 
 const mocks = vi.hoisted(() => ({
@@ -161,7 +161,13 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
     taskBackend: backend,
     backendId: "mock",
     backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
-    git: new GitContext({ gitRoot: "/repo" }),
+    git: {
+      statusStagedPaths: vi.fn().mockResolvedValue([]),
+      statusUnstagedTrackedPaths: vi.fn().mockResolvedValue([]),
+      commit: vi.fn().mockResolvedValue(void 0),
+      invalidateStatus: vi.fn(),
+      headCommit: vi.fn().mockResolvedValue("base-head-sha"),
+    } as unknown as GitContext,
     memo: {},
     resolved,
     backend,

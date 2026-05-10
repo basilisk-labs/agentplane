@@ -15,7 +15,12 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
-import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
+import {
+  defaultConfig,
+  extractTaskSuffix,
+  loadConfig,
+  type ResolvedProject,
+} from "./core-imports.js";
 import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
@@ -83,14 +88,7 @@ describe("runCli", () => {
       io.restore();
     }
 
-    const config = JSON.parse(
-      await readFile(path.join(root, ".agentplane", "config.json"), "utf8"),
-    ) as {
-      workflow_mode: string;
-      agents: {
-        approvals: { require_network: boolean; require_plan: boolean; require_verify: boolean };
-      };
-    };
+    const { config } = await loadConfig(path.join(root, ".agentplane"));
     expect(config.workflow_mode).toBe("direct");
     expect(config.agents.approvals.require_network).toBe(false);
     expect(config.agents.approvals.require_plan).toBe(false);
@@ -109,14 +107,7 @@ describe("runCli", () => {
       io.restore();
     }
 
-    const config = JSON.parse(
-      await readFile(path.join(root, ".agentplane", "config.json"), "utf8"),
-    ) as {
-      agents: {
-        approvals: { require_network: boolean; require_plan: boolean; require_verify: boolean };
-      };
-      execution: { profile: string; unsafe_actions_requiring_explicit_user_ok: string[] };
-    };
+    const { config } = await loadConfig(path.join(root, ".agentplane"));
     expect(config.agents.approvals.require_network).toBe(true);
     expect(config.agents.approvals.require_plan).toBe(true);
     expect(config.agents.approvals.require_verify).toBe(true);
@@ -160,7 +151,7 @@ describe("runCli", () => {
       const code = await runCli(["init", "--yes"]);
       expect(code).toBe(0);
       expect(await pathExists(path.join(child, ".git"))).toBe(true);
-      expect(await pathExists(path.join(child, ".agentplane", "config.json"))).toBe(true);
+      expect(await pathExists(path.join(child, ".agentplane", "WORKFLOW.md"))).toBe(true);
       expect(io.stderr).not.toContain("Init conflicts detected");
     } finally {
       io.restore();
@@ -245,7 +236,7 @@ describe("runCli", () => {
       expect(code).toBe(4);
       const error = normalizeSlashes(io.stderr);
       expect(error).toContain("Init conflicts detected");
-      expect(error).toContain(".agentplane/config.json");
+      expect(error).toContain(".agentplane/WORKFLOW.md");
     } finally {
       io.restore();
     }
@@ -392,8 +383,9 @@ describe("runCli", () => {
       io.restore();
     }
 
-    const configText = await readFile(configPath, "utf8");
-    expect(configText).toContain('"workflow_mode": "direct"');
+    const { config } = await loadConfig(agentplaneDir);
+    expect(config.workflow_mode).toBe("direct");
+    await expect(readFile(configPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
   });
 
   it("init --backup preserves conflicting files with timestamped backups", async () => {
@@ -420,7 +412,8 @@ describe("runCli", () => {
     const backendEntries = await readdir(path.join(agentplaneDir, "backends", "local"));
     expect(backendEntries.some((entry) => entry.startsWith("backend.json.bak-"))).toBe(true);
 
-    const configText = await readFile(configPath, "utf8");
-    expect(configText).toContain('"workflow_mode": "direct"');
+    const { config } = await loadConfig(agentplaneDir);
+    expect(config.workflow_mode).toBe("direct");
+    await expect(readFile(configPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
   });
 });

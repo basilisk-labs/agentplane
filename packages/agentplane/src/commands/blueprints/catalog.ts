@@ -1,4 +1,4 @@
-import { mkdir, cp, mkdtemp, readFile, rm, writeFile, readdir } from "node:fs/promises";
+import { mkdir, cp, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -9,10 +9,11 @@ import { validateProjectBlueprintFile } from "../../blueprints/index.js";
 import { CliError, ValidationError } from "../../shared/errors.js";
 import { isRecord } from "../../shared/guards.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
+import { cacheBlueprintPackage, pickLatestVersion, resolvePackageRoot } from "./catalog-cache.js";
 
 export type CatalogKind = "blueprint" | "pack";
 
-type CatalogEntry = {
+export type CatalogEntry = {
   id: string;
   path?: string;
   name?: string;
@@ -50,7 +51,7 @@ type BlueprintCatalogSource = {
   source: string;
 };
 
-type CatalogBlueprintManifest = {
+export type CatalogBlueprintManifest = {
   schema_version: 1;
   id: string;
   version: string;
@@ -85,6 +86,7 @@ type InstalledBlueprint = {
   catalogId: string;
   blueprintId: string;
   projectPath: string;
+  cachePath: string;
   recommendedAllowedIds: string[];
 };
 
@@ -419,38 +421,6 @@ function parsePackManifest(raw: unknown): CatalogPackManifest {
   return pack;
 }
 
-function pickLatestVersion(entry: CatalogEntry): NonNullable<CatalogEntry["versions"]>[number] {
-  const versions = entry.versions ?? [];
-  if (versions.length === 0) {
-    throw new ValidationError({ message: `Blueprint ${entry.id} has no installable versions.` });
-  }
-  return versions
-    .toSorted((a, b) => a.version.localeCompare(b.version, undefined, { numeric: true }))
-    .at(-1)!;
-}
-
-async function resolvePackageRoot(extractedDir: string): Promise<string> {
-  const rootManifest = path.join(extractedDir, "blueprint.json");
-  try {
-    await readFile(rootManifest, "utf8");
-    return extractedDir;
-  } catch (err) {
-    const code = (err as { code?: string } | null)?.code;
-    if (code !== "ENOENT") throw err;
-  }
-  const entries = await readdir(extractedDir, { withFileTypes: true });
-  const dirs = entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
-  if (dirs.length !== 1) {
-    throw new ValidationError({
-      message:
-        "Blueprint package archive must contain blueprint.json at root or exactly one root directory.",
-    });
-  }
-  const candidate = path.join(extractedDir, dirs[0]);
-  await readFile(path.join(candidate, "blueprint.json"), "utf8");
-  return candidate;
-}
-
 export async function loadBlueprintManifest(opts: {
   catalogSource: string;
   entry: CatalogEntry;
@@ -543,8 +513,9 @@ export async function installBlueprint(opts: {
         path.basename(isHttpUrl(archiveUrl) ? new URL(archiveUrl).pathname : archiveUrl) ||
         "blueprint.tar.gz";
       const archivePath = path.join(tempRoot, archiveName);
-      if (isHttpUrl(archiveUrl)) await downloadToFile(archiveUrl, archivePath);
-      else await cp(archiveUrl, archivePath);
+      await (isHttpUrl(archiveUrl)
+        ? downloadToFile(archiveUrl, archivePath)
+        : cp(archiveUrl, archivePath));
       const actualSha = await sha256File(archivePath);
       if (actualSha !== latest.sha256) {
         throw new ValidationError({
@@ -562,6 +533,12 @@ export async function installBlueprint(opts: {
     assertSafeCatalogPathSegment(manifest.id, "Catalog blueprint manifest id");
     const definitionSource = resolveNearSource(manifestSource, manifest.definition.path);
     const definitionText = await readText(definitionSource);
+    const cachePath = await cacheBlueprintPackage({
+      agentplaneHome: agentplaneHome(),
+      manifest,
+      manifestSource,
+      definitionText,
+    });
     const targetDir = path.join(opts.projectRoot, ".agentplane", "blueprints");
     const targetPath = path.join(targetDir, `${manifest.definition.id}.json`);
     await mkdir(targetDir, { recursive: true });
@@ -575,22 +552,11 @@ export async function installBlueprint(opts: {
         context: { path: targetPath },
       });
     }
-    if (!isHttpUrl(manifestSource)) {
-      const packageRoot = path.dirname(manifestSource);
-      const catalogTarget = path.join(
-        opts.projectRoot,
-        ".agentplane",
-        "blueprint-catalog",
-        manifest.id,
-      );
-      await rm(catalogTarget, { recursive: true, force: true });
-      await mkdir(path.dirname(catalogTarget), { recursive: true });
-      await cp(packageRoot, catalogTarget, { recursive: true });
-    }
     return {
       catalogId: manifest.id,
       blueprintId: manifest.definition.id,
       projectPath: path.relative(opts.projectRoot, targetPath),
+      cachePath,
       recommendedAllowedIds: manifest.activation?.recommended_allowed_ids ?? [
         manifest.definition.id,
       ],

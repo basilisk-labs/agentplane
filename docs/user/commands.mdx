@@ -363,7 +363,8 @@ recipes: recipes add domain guidance and prompt/runtime assets; blueprints add t
 definitions that can become project-local trusted routes.
 
 `blueprints catalog refresh` caches an external catalog index under `~/.agentplane/blueprints`.
-`blueprints install` vendors selected blueprint definitions into the project-local blueprint store.
+`blueprints install` caches blueprint package contents under `~/.agentplane/blueprint-catalog` and
+materializes the selected definition files into the project-local `.agentplane/blueprints` store.
 Installing a blueprint does not activate it unless `--activate` is passed. Activation updates the
 project-local blueprint trust config with an explicit allowlist.
 

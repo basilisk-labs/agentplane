@@ -117,7 +117,9 @@ async function mkPackagedBlueprintCatalogFixture(): Promise<{ root: string; inde
     path.join(fixture.root, "blueprints"),
     "external-analysis",
   ]);
-  const sha256 = createHash("sha256").update(await readFile(archivePath)).digest("hex");
+  const sha256 = createHash("sha256")
+    .update(await readFile(archivePath))
+    .digest("hex");
   const releaseIndexPath = path.join(fixture.root, "index.json");
   await writeFile(
     releaseIndexPath,
@@ -397,7 +399,7 @@ describe("runCli blueprint commands", () => {
       expect(code).toBe(0);
       const payload = JSON.parse(io.stdout) as {
         activated: boolean;
-        installed: { blueprintId: string; projectPath: string }[];
+        installed: { blueprintId: string; projectPath: string; cachePath: string }[];
         allowed_ids: string[];
       };
       expect(payload.activated).toBe(false);
@@ -406,6 +408,7 @@ describe("runCli blueprint commands", () => {
         expect.objectContaining({
           blueprintId: "analysis.external",
           projectPath: ".agentplane/blueprints/analysis.external.json",
+          cachePath: path.join(home, "blueprint-catalog", "external-analysis", "0.1.0"),
         }),
       ]);
       const installed = JSON.parse(
@@ -444,7 +447,7 @@ describe("runCli blueprint commands", () => {
       expect(code).toBe(0);
       const payload = JSON.parse(io.stdout) as {
         activated: boolean;
-        installed: { blueprintId: string; projectPath: string }[];
+        installed: { blueprintId: string; projectPath: string; cachePath: string }[];
         allowed_ids: string[];
       };
       expect(payload.activated).toBe(true);
@@ -453,6 +456,7 @@ describe("runCli blueprint commands", () => {
         expect.objectContaining({
           blueprintId: "analysis.external",
           projectPath: ".agentplane/blueprints/analysis.external.json",
+          cachePath: path.join(home, "blueprint-catalog", "external-analysis", "0.1.0"),
         }),
       ]);
       const installed = JSON.parse(
@@ -464,10 +468,13 @@ describe("runCli blueprint commands", () => {
       expect(installed.id).toBe("analysis.external");
       await expect(
         readFile(
-          path.join(root, ".agentplane", "blueprint-catalog", "external-analysis", "blueprint.json"),
+          path.join(home, "blueprint-catalog", "external-analysis", "0.1.0", "blueprint.json"),
           "utf8",
         ),
       ).resolves.toContain('"external-analysis"');
+      await expect(
+        readFile(path.join(root, ".agentplane", "blueprint-catalog", "external-analysis"), "utf8"),
+      ).rejects.toThrow();
     } finally {
       io.restore();
       if (originalHome === undefined) delete process.env.AGENTPLANE_HOME;
@@ -476,6 +483,9 @@ describe("runCli blueprint commands", () => {
   });
 
   it("blueprints install rejects traversal in blueprint definition ids", async () => {
+    const home = await mkTempDir();
+    const originalHome = process.env.AGENTPLANE_HOME;
+    process.env.AGENTPLANE_HOME = home;
     const fixture = await mkBlueprintCatalogFixture();
     const root = await mkProject();
     await writeFile(
@@ -516,10 +526,15 @@ describe("runCli blueprint commands", () => {
       ).rejects.toThrow();
     } finally {
       io.restore();
+      if (originalHome === undefined) delete process.env.AGENTPLANE_HOME;
+      else process.env.AGENTPLANE_HOME = originalHome;
     }
   });
 
   it("blueprints install rejects traversal in local catalog manifest ids before provenance copy", async () => {
+    const home = await mkTempDir();
+    const originalHome = process.env.AGENTPLANE_HOME;
+    process.env.AGENTPLANE_HOME = home;
     const fixture = await mkBlueprintCatalogFixture();
     const root = await mkProject();
     const escapedCatalogDir = path.join(root, ".agentplane", "escaped-catalog");
@@ -565,6 +580,8 @@ describe("runCli blueprint commands", () => {
       ).rejects.toThrow();
     } finally {
       io.restore();
+      if (originalHome === undefined) delete process.env.AGENTPLANE_HOME;
+      else process.env.AGENTPLANE_HOME = originalHome;
     }
   });
 

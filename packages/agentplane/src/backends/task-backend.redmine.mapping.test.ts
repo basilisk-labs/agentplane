@@ -192,6 +192,7 @@ describe("RedmineBackend mapping and projection", () => {
     });
     expect(taskAfterPull?.verification).toEqual({
       state: "ok",
+      attempts: 0,
       updated_at: "2026-03-14T00:05:00Z",
       updated_by: "CODER",
       note: "verified",

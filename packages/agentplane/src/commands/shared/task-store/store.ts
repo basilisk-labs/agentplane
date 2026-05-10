@@ -126,6 +126,9 @@ export class TaskStore implements TaskStoreContract {
       }
 
       try {
+        if (next === entry.task) {
+          return { changed: false, task: entry.task };
+        }
         return await this.writeNextTask(taskId, entry, next);
       } catch (err) {
         if (attempt === 0 && isConcurrentReadmeChangeError(err)) {

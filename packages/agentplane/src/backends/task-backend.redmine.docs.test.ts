@@ -180,6 +180,7 @@ describe("RedmineBackend canonical docs and migration", () => {
             },
             verification: {
               state: "ok",
+              attempts: 0,
               updated_at: "2026-03-14T00:05:00Z",
               updated_by: "CODER",
               note: "verified",
@@ -232,6 +233,7 @@ describe("RedmineBackend canonical docs and migration", () => {
             },
             verification: {
               state: "ok",
+              attempts: 0,
               updated_at: "2026-03-14T00:05:00Z",
               updated_by: "CODER",
               note: "verified",
@@ -264,6 +266,7 @@ describe("RedmineBackend canonical docs and migration", () => {
     });
     expect(cached?.verification).toEqual({
       state: "ok",
+      attempts: 0,
       updated_at: "2026-03-14T00:05:00Z",
       updated_by: "CODER",
       note: "verified",

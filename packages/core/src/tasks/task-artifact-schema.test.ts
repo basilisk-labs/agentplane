@@ -321,7 +321,7 @@ describe("task-artifact-schema", () => {
         tags: ["code"],
         verify: [],
         plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
-        verification: { state: "ok", updated_at: null, updated_by: null, note: null },
+        verification: { state: "ok", attempts: 0, updated_at: null, updated_by: null, note: null },
         comments: [],
         events: [],
         doc_version: 3,
