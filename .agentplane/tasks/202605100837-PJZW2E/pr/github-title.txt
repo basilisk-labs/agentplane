@@ -1,0 +1,1 @@
+🚧 PJZW2E task: Pre-v0.5: reject finish --commit-from-comment in branch_pr [202605100837-PJZW2E]
