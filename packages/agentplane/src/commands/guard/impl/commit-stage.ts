@@ -1,4 +1,5 @@
 import { protectedPathKindForFile } from "../../../shared/protected-paths.js";
+import { withGitMutationMutex } from "../../../shared/git-mutation.js";
 import { isTaskLocalAdvancePath } from "../../shared/task-local-freshness.js";
 import { type CommandContext } from "../../shared/task-backend.js";
 
@@ -43,7 +44,18 @@ export async function stageActiveTaskArtifactsFromAllowTasks(opts: {
     .filter((relPath) => !staged.has(relPath))
     .toSorted((a, b) => a.localeCompare(b));
   if (unique.length === 0) return [];
-  await opts.ctx.git.stage(unique);
+  await withGitMutationMutex(
+    {
+      repoRoot: opts.ctx.resolvedProject.gitRoot,
+      operation: "git-add",
+      workflowMode: opts.ctx.config.workflow_mode,
+      mutationKind: "lifecycle_commit",
+      taskId: opts.taskId,
+    },
+    async () => {
+      await opts.ctx.git.stage(unique);
+    },
+  );
   return unique;
 }
 
@@ -69,5 +81,16 @@ export async function stageCloseCommitPaths(opts: {
       }
     }
   }
-  await opts.ctx.git.stage([...stagePaths].toSorted((a, b) => a.localeCompare(b)));
+  await withGitMutationMutex(
+    {
+      repoRoot: opts.ctx.resolvedProject.gitRoot,
+      operation: "git-add",
+      workflowMode: opts.ctx.config.workflow_mode,
+      mutationKind: "close_tail",
+      taskId: opts.taskId,
+    },
+    async () => {
+      await opts.ctx.git.stage([...stagePaths].toSorted((a, b) => a.localeCompare(b)));
+    },
+  );
 }
