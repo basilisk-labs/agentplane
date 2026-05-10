@@ -1,10 +1,12 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { CliError } from "../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({
   resolveProject: vi.fn(),
   statusChangedPaths: vi.fn(),
+  gitRevParse: vi.fn(),
+  gitCurrentBranch: vi.fn(),
   loadCommandContext: vi.fn(),
 }));
 
@@ -12,6 +14,8 @@ vi.mock("@agentplaneorg/core/project", () => ({
   resolveProject: mocks.resolveProject,
 }));
 vi.mock("@agentplaneorg/core/git", () => ({
+  gitCurrentBranch: mocks.gitCurrentBranch,
+  gitRevParse: mocks.gitRevParse,
   GitContext: class {
     constructor(opts: { gitRoot: string }) {
       void opts.gitRoot;
@@ -24,6 +28,12 @@ vi.mock("../../shared/task-backend.js", () => ({
 }));
 
 describe("guard/impl/allow", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.gitRevParse.mockResolvedValue("/repo/.git/worktrees/task-worktree");
+    mocks.gitCurrentBranch.mockResolvedValue("task/202601010101-ABCDEF/example");
+  });
+
   it("suggestAllowPrefixes returns sorted unique prefixes", async () => {
     const { suggestAllowPrefixes } = await import("./allow.js");
     const out = suggestAllowPrefixes([
@@ -313,5 +323,49 @@ describe("guard/impl/allow", () => {
       },
     });
     expect(ctx.git.stage).not.toHaveBeenCalled();
+  });
+
+  it("stageAllowlist includes worktree git context when staging fails", async () => {
+    const { stageAllowlist } = await import("./allow.js");
+    const ctx = {
+      resolvedProject: {
+        gitRoot: "/repo/worktrees/task-worktree",
+      },
+      config: {
+        workflow_mode: "branch_pr",
+      },
+      git: {
+        statusChangedPaths: vi.fn().mockResolvedValue(["src/app.ts"]),
+        stage: vi.fn().mockRejectedValue(new Error("index lock denied")),
+      },
+    };
+
+    await expect(
+      stageAllowlist({
+        ctx: ctx as never,
+        allow: ["src"],
+        allowTasks: false,
+        tasksPath: ".agentplane/tasks.json",
+        workflowDir: ".agentplane/tasks",
+        taskId: "202601010101-ABCDEF",
+        mutationKind: "implementation_commit",
+      }),
+    ).rejects.toMatchObject<CliError>({
+      code: "E_GIT",
+      message: "Failed to stage allowed paths: index lock denied",
+      context: {
+        command: "git add",
+        cwd: "/repo/worktrees/task-worktree",
+        git_repo_root: "/repo/worktrees/task-worktree",
+        git_dir: "/repo/.git/worktrees/task-worktree",
+        git_branch: "task/202601010101-ABCDEF/example",
+        workflow_mode: "branch_pr",
+        mutation_kind: "implementation_commit",
+        task_id: "202601010101-ABCDEF",
+        allow_prefixes: ["src"],
+        changed_paths: ["src/app.ts"],
+        staged_paths: ["src/app.ts"],
+      },
+    });
   });
 });
