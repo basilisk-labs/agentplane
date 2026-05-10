@@ -1,3 +1,7 @@
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { CliError } from "../../../shared/errors.js";
@@ -190,6 +194,12 @@ describe("guard/impl/allow", () => {
     ).rejects.toThrow("No changes matched allowed prefixes");
 
     const ctxOk = {
+      resolvedProject: {
+        gitRoot: "/repo/worktrees/task-worktree",
+      },
+      config: {
+        workflow_mode: "branch_pr",
+      },
       git: {
         statusChangedPaths: vi.fn().mockResolvedValue(["src/a.ts", "src/b.ts", "docs/readme.md"]),
         stage: vi.fn().mockResolvedValue(),
@@ -210,6 +220,12 @@ describe("guard/impl/allow", () => {
   it("stageAllowlist auto-admits only the active task artifact prefixes when allowTasks=true", async () => {
     const { stageAllowlist } = await import("./allow.js");
     const ctx = {
+      resolvedProject: {
+        gitRoot: "/repo/worktrees/task-worktree",
+      },
+      config: {
+        workflow_mode: "branch_pr",
+      },
       git: {
         statusChangedPaths: vi
           .fn()
@@ -241,6 +257,12 @@ describe("guard/impl/allow", () => {
   it("stageAllowlist can admit task-only changes when allowTaskOnly=true", async () => {
     const { stageAllowlist } = await import("./allow.js");
     const ctx = {
+      resolvedProject: {
+        gitRoot: "/repo/worktrees/task-worktree",
+      },
+      config: {
+        workflow_mode: "branch_pr",
+      },
       git: {
         statusChangedPaths: vi
           .fn()
@@ -266,6 +288,12 @@ describe("guard/impl/allow", () => {
   it("stageAllowlist can admit CI-only changes when allowCI=true", async () => {
     const { stageAllowlist } = await import("./allow.js");
     const ctx = {
+      resolvedProject: {
+        gitRoot: "/repo/worktrees/task-worktree",
+      },
+      config: {
+        workflow_mode: "branch_pr",
+      },
       git: {
         statusChangedPaths: vi
           .fn()
@@ -367,5 +395,61 @@ describe("guard/impl/allow", () => {
         staged_paths: ["src/app.ts"],
       },
     });
+  });
+
+  it("stageAllowlist reports E_GIT_LOCKED before git add when index.lock exists", async () => {
+    const { stageAllowlist } = await import("./allow.js");
+    const gitDir = await mkdtemp(path.join(tmpdir(), "agentplane-gitdir-"));
+    await writeFile(path.join(gitDir, "index.lock"), "");
+    mocks.gitRevParse.mockResolvedValue(gitDir);
+    const ctx = {
+      resolvedProject: {
+        gitRoot: "/repo/worktrees/task-worktree",
+      },
+      config: {
+        workflow_mode: "branch_pr",
+      },
+      git: {
+        statusChangedPaths: vi.fn().mockResolvedValue(["src/app.ts"]),
+        stage: vi.fn(),
+      },
+    };
+
+    try {
+      await expect(
+        stageAllowlist({
+          ctx: ctx as never,
+          allow: ["src"],
+          allowTasks: false,
+          tasksPath: ".agentplane/tasks.json",
+          workflowDir: ".agentplane/tasks",
+          taskId: "202601010101-ABCDEF",
+          mutationKind: "implementation_commit",
+        }),
+      ).rejects.toMatchObject<CliError>({
+        code: "E_GIT_LOCKED",
+        message: `Git index is locked; refusing to stage allowed paths: ${path.join(
+          gitDir,
+          "index.lock",
+        )}`,
+        context: {
+          command: "git add",
+          cwd: "/repo/worktrees/task-worktree",
+          git_repo_root: "/repo/worktrees/task-worktree",
+          git_dir: gitDir,
+          git_branch: "task/202601010101-ABCDEF/example",
+          workflow_mode: "branch_pr",
+          mutation_kind: "implementation_commit",
+          task_id: "202601010101-ABCDEF",
+          allow_prefixes: ["src"],
+          changed_paths: ["src/app.ts"],
+          staged_paths: ["src/app.ts"],
+          git_index_lock_path: path.join(gitDir, "index.lock"),
+        },
+      });
+      expect(ctx.git.stage).not.toHaveBeenCalled();
+    } finally {
+      await rm(gitDir, { recursive: true, force: true });
+    }
   });
 });

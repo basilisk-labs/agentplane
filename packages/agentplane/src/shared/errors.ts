@@ -17,6 +17,7 @@ export type ErrorCode =
   | "E_VALIDATION"
   | "E_IO"
   | "E_GIT"
+  | "E_GIT_LOCKED"
   | "E_HANDOFF"
   | "E_BACKEND"
   | "E_NETWORK"
@@ -29,6 +30,7 @@ export const DEFAULT_ERROR_EXIT_CODES: Readonly<Record<ErrorCode, number>> = {
   E_VALIDATION: 3,
   E_IO: 4,
   E_GIT: 5,
+  E_GIT_LOCKED: 5,
   E_BACKEND: 6,
   E_NETWORK: 7,
   E_RUNTIME: 8,
