@@ -22,12 +22,23 @@ Add distinct errors for empty allow scope, no allow match, task-artifact denial,
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-10T12:29:34.363Z
-- Branch: task/202605100836-6472VE/error-taxonomy
-- Head: No commits yet
+- Updated: 2026-05-10T14:30:34.268Z
+- Branch: task-202605100836-6472VE-error-taxonomy
+- Head: bd12216cf9e1
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 505 +++++++++++++++++++++
+ packages/agentplane/src/cli/cli-contract.test.ts   |   6 +
+ packages/agentplane/src/cli/exit-codes.ts          |   6 +
+ .../src/cli/run-cli.core.hooks.hook-run.test.ts    |   9 +
+ .../src/commands/guard/impl/allow.test.ts          |  78 +++-
+ .../agentplane/src/commands/guard/impl/allow.ts    |  80 +++-
+ .../agentplane/src/commands/hooks/run.pre-push.ts  |  29 +-
+ packages/agentplane/src/shared/errors.ts           |  12 +
+ packages/agentplane/src/shared/git-mutation.ts     |   2 +
+ scripts/run-local-ci.mjs                           |   8 +
+ scripts/run-pre-push-hook.mjs                      |  33 +-
+ 11 files changed, 731 insertions(+), 37 deletions(-)
 ```
 
 </details>

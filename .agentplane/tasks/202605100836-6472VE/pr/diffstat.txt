@@ -1,0 +1,12 @@
+ .../blueprint/resolved-snapshot.json               | 505 +++++++++++++++++++++
+ packages/agentplane/src/cli/cli-contract.test.ts   |   6 +
+ packages/agentplane/src/cli/exit-codes.ts          |   6 +
+ .../src/cli/run-cli.core.hooks.hook-run.test.ts    |   9 +
+ .../src/commands/guard/impl/allow.test.ts          |  78 +++-
+ .../agentplane/src/commands/guard/impl/allow.ts    |  80 +++-
+ .../agentplane/src/commands/hooks/run.pre-push.ts  |  29 +-
+ packages/agentplane/src/shared/errors.ts           |  12 +
+ packages/agentplane/src/shared/git-mutation.ts     |   2 +
+ scripts/run-local-ci.mjs                           |   8 +
+ scripts/run-pre-push-hook.mjs                      |  33 +-
+ 11 files changed, 731 insertions(+), 37 deletions(-)

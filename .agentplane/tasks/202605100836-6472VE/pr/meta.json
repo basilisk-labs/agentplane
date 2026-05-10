@@ -1,12 +1,13 @@
 {
   "base": "main",
-  "branch": "task/202605100836-6472VE/error-taxonomy",
+  "branch": "task-202605100836-6472VE-error-taxonomy",
   "created_at": "2026-05-10T12:29:34.363Z",
+  "head_sha": "bd12216cf9e1d8a428e72fdac05d20dc8763fe7b",
   "last_verified_at": "2026-05-10T14:24:36.560Z",
   "last_verified_sha": null,
   "schema_version": 1,
   "task_id": "202605100836-6472VE",
-  "updated_at": "2026-05-10T12:29:34.363Z",
+  "updated_at": "2026-05-10T14:30:34.268Z",
   "verify": {
     "status": "pass"
   }
