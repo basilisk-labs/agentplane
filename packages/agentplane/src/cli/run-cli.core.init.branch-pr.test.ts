@@ -15,7 +15,7 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
-import { defaultConfig, extractTaskSuffix, type ResolvedProject } from "./core-imports.js";
+import { defaultConfig, extractTaskSuffix, loadConfig, type ResolvedProject } from "./core-imports.js";
 import { readTask, renderTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { runCli } from "./run-cli.js";
@@ -82,8 +82,8 @@ describe("runCli", () => {
       process.env.GIT_COMMITTER_EMAIL = originalEnv.GIT_COMMITTER_EMAIL;
     }
 
-    const configPath = path.join(root, ".agentplane", "config.json");
-    await readFile(configPath, "utf8");
+    const loaded = await loadConfig(path.join(root, ".agentplane"));
+    expect(loaded.config.workflow_mode).toBe("branch_pr");
 
     const execFileAsync = promisify(execFile);
     const { stdout: baseBranch } = await execFileAsync(
@@ -165,8 +165,8 @@ describe("runCli", () => {
       io.restore();
     }
 
-    const configPath = path.join(root, ".agentplane", "config.json");
-    await readFile(configPath, "utf8");
+    const loaded = await loadConfig(path.join(root, ".agentplane"));
+    expect(loaded.config.workflow_mode).toBe("branch_pr");
 
     const execFileAsync = promisify(execFile);
     const { stdout: baseBranch } = await execFileAsync(
@@ -189,8 +189,8 @@ describe("runCli", () => {
       io.restore();
     }
 
-    const configPath = path.join(root, ".agentplane", "config.json");
-    await readFile(configPath, "utf8");
+    const loaded = await loadConfig(path.join(root, ".agentplane"));
+    expect(loaded.config.workflow_mode).toBe("direct");
 
     const execFileAsync = promisify(execFile);
     const { stdout: baseBranch } = await execFileAsync(
@@ -221,7 +221,7 @@ describe("runCli", () => {
     const agentsText = await readFile(agentsPath, "utf8");
     expect(agentsText).toBe(expectedAgents);
     expect(agentsText).toContain(
-      "The guarded route is determined by `workflow_mode` in `.agentplane/config.json`;",
+      "The guarded route is determined by `workflow.mode` in `.agentplane/WORKFLOW.md`;",
     );
     expect(agentsText).not.toContain("In this repository, `workflow_mode=branch_pr`");
 
@@ -371,19 +371,20 @@ describe("runCli", () => {
       io.restore();
     }
 
-    const configPath = path.join(root, ".agentplane", "config.json");
-    const configText = await readFile(configPath, "utf8");
-    expect(configText).toContain('"workflow_mode": "branch_pr"');
-    expect(configText).toContain('"status_commit_policy": "confirm"');
-    expect(configText).toContain('"commit_automation": "finish_only"');
-    expect(configText).toContain('"finish_auto_status_commit": false');
-    expect(configText).toContain('"direct_dirty_policy": "allow_other_task_readmes"');
-    expect(configText).toContain('"require_plan": true');
-    expect(configText).toContain('"require_network": false');
-    expect(configText).toContain('"require_verify": true');
-    expect(configText).toContain('"profile": "conservative"');
-    expect(configText).toContain('"reasoning_effort": "high"');
-    expect(configText).toContain('"Network actions when approvals are disabled."');
+    const { config } = await loadConfig(path.join(root, ".agentplane"));
+    expect(config.workflow_mode).toBe("branch_pr");
+    expect(config.status_commit_policy).toBe("confirm");
+    expect(config.commit_automation).toBe("finish_only");
+    expect(config.finish_auto_status_commit).toBe(false);
+    expect(config.close_commit.direct_dirty_policy).toBe("allow_other_task_readmes");
+    expect(config.agents.approvals.require_plan).toBe(true);
+    expect(config.agents.approvals.require_network).toBe(false);
+    expect(config.agents.approvals.require_verify).toBe(true);
+    expect(config.execution.profile).toBe("conservative");
+    expect(config.execution.reasoning_effort).toBe("high");
+    expect(config.execution.unsafe_actions_requiring_explicit_user_ok).toContain(
+      "Network actions when approvals are disabled.",
+    );
 
     const cursorPath = path.join(root, ".cursor", "rules", "agentplane.mdc");
     const windsurfPath = path.join(root, ".windsurf", "rules", "agentplane.md");
@@ -438,7 +439,7 @@ describe("runCli", () => {
       io.restore();
     }
 
-    const configText = await readFile(path.join(root, ".agentplane", "config.json"), "utf8");
-    expect(configText).toContain('"direct_dirty_policy": "strict"');
+    const { config } = await loadConfig(path.join(root, ".agentplane"));
+    expect(config.close_commit.direct_dirty_policy).toBe("strict");
   });
 });

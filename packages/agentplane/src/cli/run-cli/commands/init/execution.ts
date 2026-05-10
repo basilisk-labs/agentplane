@@ -25,6 +25,7 @@ export type ResolvedInitPaths = {
   gitRoot: string;
   agentplaneDir: string;
   workflowPath: string;
+  legacyConfigPath: string;
   backendPath: string;
 };
 
@@ -44,6 +45,7 @@ export async function resolveInitPaths(opts: {
   });
   const agentplaneDir = path.join(gitRoot, ".agentplane");
   const workflowPath = path.join(agentplaneDir, "WORKFLOW.md");
+  const legacyConfigPath = path.join(agentplaneDir, "config.json");
   const localBackendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
   const redmineBackendPath = path.join(agentplaneDir, "backends", "redmine", "backend.json");
   const cloudBackendPath = path.join(agentplaneDir, "backends", "cloud", "backend.json");
@@ -53,7 +55,7 @@ export async function resolveInitPaths(opts: {
       : opts.backend === "cloud"
         ? cloudBackendPath
         : localBackendPath;
-  return { gitRoot, gitRootExisted, agentplaneDir, workflowPath, backendPath };
+  return { gitRoot, gitRootExisted, agentplaneDir, workflowPath, legacyConfigPath, backendPath };
 }
 
 export async function collectInitAndHookConflicts(opts: {
@@ -68,7 +70,7 @@ export async function collectInitAndHookConflicts(opts: {
     path.join(opts.paths.agentplaneDir, "backends"),
     path.join(opts.paths.agentplaneDir, "backends", opts.answers.backend),
   ];
-  const initFiles = [opts.paths.workflowPath, opts.paths.backendPath];
+  const initFiles = [opts.paths.workflowPath, opts.paths.legacyConfigPath, opts.paths.backendPath];
   const initConflicts = await collectInitConflicts({ initDirs, initFiles });
   const hookConflicts = opts.answers.hooks
     ? await collectHooksInstallConflicts({

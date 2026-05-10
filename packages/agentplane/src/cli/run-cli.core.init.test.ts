@@ -88,7 +88,7 @@ describe("runCli", () => {
 
     const workflowPath = path.join(root, ".agentplane", "WORKFLOW.md");
     const text = await readFile(workflowPath, "utf8");
-    expect(text).toContain('mode: "branch_pr"');
+    expect(text).toContain("mode: branch_pr");
 
     const io2 = captureStdIO();
     try {
@@ -119,9 +119,9 @@ describe("runCli", () => {
       path.join(root, ".agentplane", "workflows", "last-known-good.md"),
       "utf8",
     );
-    expect(workflowText).toContain('mode: "branch_pr"');
-    expect(workflowText).toContain("Workflow mode: branch_pr");
-    expect(lastKnownGoodText).toContain('mode: "branch_pr"');
+    expect(workflowText).toContain("mode: branch_pr");
+    expect(workflowText).toContain("Workflow mode: {{ workflow.mode }}");
+    expect(lastKnownGoodText).toContain("mode: branch_pr");
   });
 
   it("mode set rejects invalid values", async () => {
