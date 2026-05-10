@@ -2,7 +2,7 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { CliError } from "../../../shared/errors.js";
 
@@ -13,6 +13,9 @@ const mocks = vi.hoisted(() => ({
   gitCurrentBranch: vi.fn(),
   loadCommandContext: vi.fn(),
 }));
+
+let repoRoot: string;
+let defaultGitDir: string;
 
 vi.mock("@agentplaneorg/core/project", () => ({
   resolveProject: mocks.resolveProject,
@@ -32,10 +35,16 @@ vi.mock("../../shared/task-backend.js", () => ({
 }));
 
 describe("guard/impl/allow", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
-    mocks.gitRevParse.mockResolvedValue("/repo/.git/worktrees/task-worktree");
+    repoRoot = await mkdtemp(path.join(tmpdir(), "agentplane-repo-"));
+    defaultGitDir = path.join(repoRoot, ".git", "worktrees", "task-worktree");
+    mocks.gitRevParse.mockResolvedValue(defaultGitDir);
     mocks.gitCurrentBranch.mockResolvedValue("task/202601010101-ABCDEF/example");
+  });
+
+  afterEach(async () => {
+    await rm(repoRoot, { recursive: true, force: true });
   });
 
   it("suggestAllowPrefixes returns sorted unique prefixes", async () => {
@@ -210,7 +219,7 @@ describe("guard/impl/allow", () => {
 
     const ctxOk = {
       resolvedProject: {
-        gitRoot: "/repo/worktrees/task-worktree",
+        gitRoot: repoRoot,
       },
       config: {
         workflow_mode: "branch_pr",
@@ -236,7 +245,7 @@ describe("guard/impl/allow", () => {
     const { stageAllowlist } = await import("./allow.js");
     const ctx = {
       resolvedProject: {
-        gitRoot: "/repo/worktrees/task-worktree",
+        gitRoot: repoRoot,
       },
       config: {
         workflow_mode: "branch_pr",
@@ -273,7 +282,7 @@ describe("guard/impl/allow", () => {
     const { stageAllowlist } = await import("./allow.js");
     const ctx = {
       resolvedProject: {
-        gitRoot: "/repo/worktrees/task-worktree",
+        gitRoot: repoRoot,
       },
       config: {
         workflow_mode: "branch_pr",
@@ -304,7 +313,7 @@ describe("guard/impl/allow", () => {
     const { stageAllowlist } = await import("./allow.js");
     const ctx = {
       resolvedProject: {
-        gitRoot: "/repo/worktrees/task-worktree",
+        gitRoot: repoRoot,
       },
       config: {
         workflow_mode: "branch_pr",
@@ -374,7 +383,7 @@ describe("guard/impl/allow", () => {
     const { stageAllowlist } = await import("./allow.js");
     const ctx = {
       resolvedProject: {
-        gitRoot: "/repo/worktrees/task-worktree",
+        gitRoot: repoRoot,
       },
       config: {
         workflow_mode: "branch_pr",
@@ -400,9 +409,9 @@ describe("guard/impl/allow", () => {
       message: "Failed to stage allowed paths: index lock denied",
       context: {
         command: "git add",
-        cwd: "/repo/worktrees/task-worktree",
-        git_repo_root: "/repo/worktrees/task-worktree",
-        git_dir: "/repo/.git/worktrees/task-worktree",
+        cwd: repoRoot,
+        git_repo_root: repoRoot,
+        git_dir: defaultGitDir,
         git_branch: "task/202601010101-ABCDEF/example",
         workflow_mode: "branch_pr",
         mutation_kind: "implementation_commit",
@@ -420,7 +429,7 @@ describe("guard/impl/allow", () => {
     const { stageAllowlist } = await import("./allow.js");
     const baseCtx = {
       resolvedProject: {
-        gitRoot: "/repo/worktrees/task-worktree",
+        gitRoot: repoRoot,
       },
       config: {
         workflow_mode: "branch_pr",
@@ -472,7 +481,7 @@ describe("guard/impl/allow", () => {
     mocks.gitRevParse.mockResolvedValue(gitDir);
     const ctx = {
       resolvedProject: {
-        gitRoot: "/repo/worktrees/task-worktree",
+        gitRoot: repoRoot,
       },
       config: {
         workflow_mode: "branch_pr",
@@ -502,8 +511,8 @@ describe("guard/impl/allow", () => {
         )}`,
         context: {
           command: "git add",
-          cwd: "/repo/worktrees/task-worktree",
-          git_repo_root: "/repo/worktrees/task-worktree",
+          cwd: repoRoot,
+          git_repo_root: repoRoot,
           git_dir: gitDir,
           git_branch: "task/202601010101-ABCDEF/example",
           workflow_mode: "branch_pr",

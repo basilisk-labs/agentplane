@@ -7,6 +7,7 @@ import {
   resolveGitIndexLockInfo,
   resolveGitMutationDiagnosticContext,
   type GitMutationKind,
+  withGitMutationMutex,
 } from "../../../shared/git-mutation.js";
 import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../../shared/git-path.js";
 import { CliError } from "../../../shared/errors.js";
@@ -233,59 +234,72 @@ export async function stageAllowlist(opts: {
     });
   }
 
-  const lockInfo = await resolveGitIndexLockInfo({ repoRoot: opts.ctx.resolvedProject.gitRoot });
-  if (lockInfo) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_GIT_LOCKED"),
-      code: "E_GIT_LOCKED",
-      message: `Git index is locked; refusing to stage allowed paths: ${lockInfo.lockPath}`,
-      context: await resolveGitMutationDiagnosticContext({
-        command: "git add",
-        cwd: opts.ctx.resolvedProject.gitRoot,
+  await withGitMutationMutex(
+    {
+      repoRoot: opts.ctx.resolvedProject.gitRoot,
+      operation: "git-add",
+      workflowMode: opts.ctx.config.workflow_mode,
+      mutationKind: opts.mutationKind,
+      taskId: opts.taskId,
+    },
+    async () => {
+      const lockInfo = await resolveGitIndexLockInfo({
         repoRoot: opts.ctx.resolvedProject.gitRoot,
-        workflowMode: opts.ctx.config.workflow_mode,
-        mutationKind: opts.mutationKind,
-        taskId: opts.taskId,
-        allowPrefixes: effectiveAllow,
-        changedPaths: changed,
-        stagedPaths: unique,
-      }).then((context) => ({
-        ...context,
-        git_dir: lockInfo.gitDir,
-        git_index_lock_path: lockInfo.lockPath,
-        git_index_lock_age_ms: lockInfo.ageMs,
-        remediation:
-          "Wait for the owning git process to finish, then retry. If no git process owns the lock, inspect the lock path and remove it manually.",
-      })),
-    });
-  }
+      });
+      if (lockInfo) {
+        throw new CliError({
+          exitCode: exitCodeForError("E_GIT_LOCKED"),
+          code: "E_GIT_LOCKED",
+          message: `Git index is locked; refusing to stage allowed paths: ${lockInfo.lockPath}`,
+          context: await resolveGitMutationDiagnosticContext({
+            command: "git add",
+            cwd: opts.ctx.resolvedProject.gitRoot,
+            repoRoot: opts.ctx.resolvedProject.gitRoot,
+            workflowMode: opts.ctx.config.workflow_mode,
+            mutationKind: opts.mutationKind,
+            taskId: opts.taskId,
+            allowPrefixes: effectiveAllow,
+            changedPaths: changed,
+            stagedPaths: unique,
+          }).then((context) => ({
+            ...context,
+            git_dir: lockInfo.gitDir,
+            git_index_lock_path: lockInfo.lockPath,
+            git_index_lock_age_ms: lockInfo.ageMs,
+            remediation:
+              "Wait for the owning git process to finish, then retry. If no git process owns the lock, inspect the lock path and remove it manually.",
+          })),
+        });
+      }
 
-  // `git add <pathspec>` is not reliable for staging deletes/renames across versions/configs.
-  // `-A -- <pathspec...>` makes the allowlist staging semantics deterministic.
-  try {
-    await opts.ctx.git.stage(unique);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    const code = classifyGitStageFailure(message);
-    throw new CliError({
-      exitCode: exitCodeForError(code),
-      code,
-      message: `Failed to stage allowed paths: ${message}`,
-      context: {
-        ...(await resolveGitMutationDiagnosticContext({
-          command: "git add",
-          cwd: opts.ctx.resolvedProject.gitRoot,
-          repoRoot: opts.ctx.resolvedProject.gitRoot,
-          workflowMode: opts.ctx.config.workflow_mode,
-          mutationKind: opts.mutationKind,
-          taskId: opts.taskId,
-          allowPrefixes: effectiveAllow,
-          changedPaths: changed,
-          stagedPaths: unique,
-        })),
-        remediation: GIT_STAGE_REMEDIATION,
-      },
-    });
-  }
+      // `git add <pathspec>` is not reliable for staging deletes/renames across versions/configs.
+      // `-A -- <pathspec...>` makes the allowlist staging semantics deterministic.
+      try {
+        await opts.ctx.git.stage(unique);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        const code = classifyGitStageFailure(message);
+        throw new CliError({
+          exitCode: exitCodeForError(code),
+          code,
+          message: `Failed to stage allowed paths: ${message}`,
+          context: {
+            ...(await resolveGitMutationDiagnosticContext({
+              command: "git add",
+              cwd: opts.ctx.resolvedProject.gitRoot,
+              repoRoot: opts.ctx.resolvedProject.gitRoot,
+              workflowMode: opts.ctx.config.workflow_mode,
+              mutationKind: opts.mutationKind,
+              taskId: opts.taskId,
+              allowPrefixes: effectiveAllow,
+              changedPaths: changed,
+              stagedPaths: unique,
+            })),
+            remediation: GIT_STAGE_REMEDIATION,
+          },
+        });
+      }
+    },
+  );
   return unique;
 }
