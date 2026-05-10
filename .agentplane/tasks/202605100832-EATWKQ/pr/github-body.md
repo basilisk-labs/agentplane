@@ -22,12 +22,21 @@ Clarify and harden branch_pr umbrella-task batching, cleanup/finalize behavior a
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-10T08:32:51.916Z
+- Updated: 2026-05-10T08:38:58.273Z
 - Branch: task/202605100832-EATWKQ/umbrella-finalize
-- Head: 5adef3d5faca
+- Head: 7e43b58b7956
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 497 +++++++++++++++++++++
+ docs/user/branching-and-pr-artifacts.mdx           |  15 +
+ docs/user/cli-reference.generated.mdx              |   7 +
+ .../run-cli.core.pr-flow.cleanup-merged.test.ts    |   3 +-
+ .../src/commands/branch/cleanup-merged.ts          |   8 +
+ .../src/commands/cleanup/merged.command.ts         |  20 +-
+ .../src/commands/integrate-queue.command.ts        |  40 +-
+ .../src/commands/pr/integrate/queue-state.test.ts  |  31 ++
+ .../src/commands/pr/integrate/queue-state.ts       |  19 +
+ 9 files changed, 632 insertions(+), 8 deletions(-)
 ```
 
 </details>
