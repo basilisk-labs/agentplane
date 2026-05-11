@@ -1,7 +1,8 @@
 ---
 id: "202605100837-A8PGWA"
 title: "Pre-v0.5: feed workflow Git capabilities into blueprint planner"
-status: "DOING"
+result_summary: "Merged via PR #3577."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -29,11 +30,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/blueprints/resolve.test.ts packages/agentplane/src/blueprints/snapshot.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts --reporter dot; Result: pass, 3 files / 46 tests. Command: bunx eslint touched blueprint/task preview files; Result: pass. Command: bunx prettier --check touched files; Result: pass. Command: bun run --filter=agentplane build; Result: pass. Command: bun run hotspots:check; Result: pass, oversized baseline OK. Command: ap blueprint snapshot 202605100837-A8PGWA && ap task verify-show 202605100837-A8PGWA; Result: pass, workflow_git capabilities visible and snapshot current."
   attempts: 0
-commit: null
+commit:
+  hash: "5fd069f1146ac0e9e8d1d61c5efe640fb3add524"
+  message: "Merge pull request #3577 from basilisk-labs/task/202605100837-A8PGWA/blueprint-git-capabilities"
 comments:
   -
     author: "CODER"
     body: "Start: feed workflow Git capabilities into blueprint planner and route snapshots so branch_pr guidance avoids finish --commit-from-comment and direct mode retains its lifecycle commit behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3577 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/blueprints/resolve.test.ts packages/agentplane/src/blueprints/snapshot.test.ts packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts --reporter dot; Result: pass, 3 files / 46 tests. Command: bunx eslint touched blueprint/task preview files; Result: pass. Command: bunx prettier --check touched files; Result: pass. Command: bun run --filter=agentplane build; Result: pass. Command: bun run hotspots:check; Result: pass, oversized baseline OK. Command: ap blueprint snapshot 202605100837-A8PGWA && ap task verify-show 202605100837-A8PGWA; Result: pass, workflow_git capabilities visible and snapshot current."
+  -
+    type: "status"
+    at: "2026-05-11T07:56:07.704Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3577 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-11T07:31:27.179Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-11T07:56:07.711Z"
+doc_updated_by: "INTEGRATOR"
 description: "Expose workflow capabilities to blueprint planning: workflowMode, implementationCommitLocation, finishCommitSource, closeTailRequired, and related branch_pr constraints."
 sections:
   Summary: |-
