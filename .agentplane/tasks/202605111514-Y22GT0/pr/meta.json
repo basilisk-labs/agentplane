@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-11T15:18:08Z",
   "base": "main",
   "branch": "task/202605111514-Y22GT0/fix-git-lock-guard-allowlist",
   "created_at": "2026-05-11T15:15:04.614Z",
-  "head_sha": "fa8fb94b01ad36be1f4a425bcfb45cd7187b2a6d",
+  "head_sha": "6e58c2d25b692aaef647fa5a838392dbcf971c64",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "3a765d4aafe4339eae00eccdf8f9ba6729f44298",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-11T15:18:08Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605111514-Y22GT0",
-  "updated_at": "2026-05-11T15:15:26.009Z",
+  "updated_at": "2026-05-11T15:18:08Z",
   "verify": {
     "status": "skipped"
   }

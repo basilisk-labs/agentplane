@@ -1,7 +1,8 @@
 ---
 id: "202605111514-Y22GT0"
 title: "Fix git lock guard allowlist drift"
-status: "DOING"
+result_summary: "Merged via PR #3582."
+status: "DONE"
 priority: "med"
 owner: "INTEGRATOR"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "3a765d4aafe4339eae00eccdf8f9ba6729f44298"
+  message: "Merge pull request #3582 from basilisk-labs/task/202605111514-Y22GT0/fix-git-lock-guard-allowlist"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: Reconcile git-index-lock allowlist drift for doctor-git-locks files after merge and run targeted verification before branch_pr handoff."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3582 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -36,8 +42,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Reconcile git-index-lock allowlist drift for doctor-git-locks files after merge and run targeted verification before branch_pr handoff."
+  -
+    type: "status"
+    at: "2026-05-11T15:18:56.630Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3582 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-11T15:15:04.391Z"
+doc_updated_at: "2026-05-11T15:18:56.637Z"
 doc_updated_by: "INTEGRATOR"
 description: "Reconcile allowlist in git-index-lock-guard for new doctor-git-locks files"
 sections:
