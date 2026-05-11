@@ -26,7 +26,7 @@ commit: null
 comments:
   -
     author: "CODER"
-    body: "Start: Исправление contract drift для task doc/derive перед финальной валидацией v0.5."
+    body: "Start: Fix task doc contract drift for task doc/derive before final v0.5 validation."
 events:
   -
     type: "status"
@@ -34,7 +34,7 @@ events:
     author: "CODER"
     from: "TODO"
     to: "DOING"
-    note: "Start: Исправление contract drift для task doc/derive перед финальной валидацией v0.5."
+    note: "Start: Fix task doc contract drift for task doc/derive before final v0.5 validation."
   -
     type: "verify"
     at: "2026-05-11T16:14:55.191Z"
