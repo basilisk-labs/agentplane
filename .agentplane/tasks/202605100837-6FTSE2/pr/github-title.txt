@@ -1,0 +1,1 @@
+🚧 6FTSE2 task: Pre-v0.5: enforce lifecycle commit-from-comment command matrix [202605100837-6FTSE2]
