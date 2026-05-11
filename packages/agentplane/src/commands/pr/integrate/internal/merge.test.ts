@@ -1,3 +1,6 @@
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { CliError } from "../../../../shared/errors.js";
@@ -14,6 +17,8 @@ vi.mock("@agentplaneorg/core/process", () => ({
 }));
 vi.mock("@agentplaneorg/core/git", () => ({
   gitEnv: () => ({}),
+  gitRevParse: (cwd: string, args: string[]) =>
+    args.includes("--git-common-dir") || args.includes("--git-dir") ? ".git" : `${cwd}/.git`,
 }));
 vi.mock("../../../shared/git-ops.js", () => ({
   gitRevParse: mocks.gitRevParse,
@@ -24,6 +29,15 @@ vi.mock("@agentplaneorg/core/commit", () => ({
 }));
 
 describe("pr/integrate/internal/merge", () => {
+  const withTempGitRoot = async <T>(run: (gitRoot: string) => Promise<T>): Promise<T> => {
+    const gitRoot = await mkdtemp(path.join(tmpdir(), "agentplane-merge-test-"));
+    try {
+      return await run(gitRoot);
+    } finally {
+      await rm(gitRoot, { recursive: true, force: true }).catch(() => null);
+    }
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -39,8 +53,9 @@ describe("pr/integrate/internal/merge", () => {
     mocks.extractTaskSuffix.mockReturnValue("ABC123");
     mocks.gitRevParse.mockResolvedValue("deadbeefcafebabe");
 
-    const hash = await runSquashMerge({
-      gitRoot: "/repo",
+    const hash = await withTempGitRoot((gitRoot) =>
+      runSquashMerge({
+      gitRoot,
       base: "main",
       branch: "task/T-1",
       headBeforeMerge: "before",
@@ -50,13 +65,14 @@ describe("pr/integrate/internal/merge", () => {
       workflowDir: ".agentplane/tasks",
       changedPaths: [],
       genericTokens: ["wip"],
-    });
+      }),
+    );
     expect(hash).toBe("deadbeefcafebabe");
     const commitCall = mocks.execFileAsync.mock.calls.at(-1);
     expect(commitCall?.[0]).toBe("git");
     expect(commitCall?.[1]).toEqual(["commit", "-m", "🧩 ABC123 integrate: Improve PR UX"]);
     expect(commitCall?.[2]).toMatchObject({
-      cwd: "/repo",
+      cwd: expect.stringMatching(/agentplane-merge-test-/),
       env: {
         AGENTPLANE_TASK_ID: "202602111653-X32XPT",
         AGENTPLANE_ALLOW_BASE: "1",
@@ -84,8 +100,9 @@ describe("pr/integrate/internal/merge", () => {
     mocks.extractTaskSuffix.mockReturnValue("X32XPT");
     mocks.gitRevParse.mockResolvedValue("deadbeefcafebabe");
 
-    const hash = await runSquashMerge({
-      gitRoot: "/repo",
+    const hash = await withTempGitRoot((gitRoot) =>
+      runSquashMerge({
+      gitRoot,
       base: "main",
       branch: "task/T-1",
       headBeforeMerge: "before",
@@ -95,13 +112,14 @@ describe("pr/integrate/internal/merge", () => {
       workflowDir: ".agentplane/tasks",
       changedPaths: [],
       genericTokens: ["wip"],
-    });
+      }),
+    );
     expect(hash).toBe("deadbeefcafebabe");
     const commitCall = mocks.execFileAsync.mock.calls.at(-1);
     expect(commitCall?.[0]).toBe("git");
     expect(commitCall?.[1]).toEqual(["commit", "-m", "🧩 X32XPT integrate: Improve PR UX"]);
     expect(commitCall?.[2]).toMatchObject({
-      cwd: "/repo",
+      cwd: expect.stringMatching(/agentplane-merge-test-/),
       env: {
         AGENTPLANE_TASK_ID: "202602111653-X32XPT",
         AGENTPLANE_ALLOW_BASE: "1",
@@ -119,25 +137,27 @@ describe("pr/integrate/internal/merge", () => {
       .mockResolvedValueOnce({ stdout: "  \n" }) // diff --cached empty
       .mockResolvedValueOnce({}); // reset --hard
 
-    await expect(
-      runSquashMerge({
-        gitRoot: "/repo",
-        base: "main",
-        branch: "task/T-2",
-        headBeforeMerge: "before",
-        taskId: "202602111653-X32XPT",
-        taskTitle: "Improve PR UX",
-        taskTags: ["workflow", "cli"],
-        workflowDir: ".agentplane/tasks",
-        changedPaths: [],
-        genericTokens: ["wip"],
-      }),
-    ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
-    expect(mocks.execFileAsync).toHaveBeenCalledWith(
-      "git",
-      ["reset", "--hard", "before"],
-      expect.objectContaining({ cwd: "/repo" }),
-    );
+    await withTempGitRoot(async (gitRoot) => {
+      await expect(
+        runSquashMerge({
+          gitRoot,
+          base: "main",
+          branch: "task/T-2",
+          headBeforeMerge: "before",
+          taskId: "202602111653-X32XPT",
+          taskTitle: "Improve PR UX",
+          taskTags: ["workflow", "cli"],
+          workflowDir: ".agentplane/tasks",
+          changedPaths: [],
+          genericTokens: ["wip"],
+        }),
+      ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
+      expect(mocks.execFileAsync).toHaveBeenCalledWith(
+        "git",
+        ["reset", "--hard", "before"],
+        expect.objectContaining({ cwd: gitRoot }),
+      );
+    });
   });
 
   it("runMergeCommit aborts merge and raises E_GIT on failure", async () => {
@@ -145,22 +165,24 @@ describe("pr/integrate/internal/merge", () => {
     mocks.extractTaskSuffix.mockReturnValue("ABC123");
     mocks.execFileAsync.mockRejectedValueOnce(new Error("merge failed")).mockResolvedValueOnce({});
 
-    await expect(
-      runMergeCommit({
-        gitRoot: "/repo",
-        branch: "task/T-3",
-        taskId: "202602111653-X32XPT",
-        taskTitle: "Improve PR UX",
-        taskTags: ["workflow", "cli"],
-        workflowDir: ".agentplane/tasks",
-        changedPaths: [],
-      }),
-    ).rejects.toMatchObject<CliError>({ code: "E_GIT" });
-    expect(mocks.execFileAsync).toHaveBeenCalledWith(
-      "git",
-      ["merge", "--abort"],
-      expect.objectContaining({ cwd: "/repo" }),
-    );
+    await withTempGitRoot(async (gitRoot) => {
+      await expect(
+        runMergeCommit({
+          gitRoot,
+          branch: "task/T-3",
+          taskId: "202602111653-X32XPT",
+          taskTitle: "Improve PR UX",
+          taskTags: ["workflow", "cli"],
+          workflowDir: ".agentplane/tasks",
+          changedPaths: [],
+        }),
+      ).rejects.toMatchObject<CliError>({ code: "E_GIT" });
+      expect(mocks.execFileAsync).toHaveBeenCalledWith(
+        "git",
+        ["merge", "--abort"],
+        expect.objectContaining({ cwd: gitRoot }),
+      );
+    });
   });
 
   it("runMergeCommit allows tracked task state updates on the base commit path", async () => {
@@ -169,15 +191,17 @@ describe("pr/integrate/internal/merge", () => {
     mocks.execFileAsync.mockResolvedValueOnce({}).mockResolvedValueOnce({});
     mocks.gitRevParse.mockResolvedValue("deadbeefcafebabe");
 
-    const hash = await runMergeCommit({
-      gitRoot: "/repo",
+    const hash = await withTempGitRoot((gitRoot) =>
+      runMergeCommit({
+      gitRoot,
       branch: "task/T-3",
       taskId: "202602111653-X32XPT",
       taskTitle: "Improve PR UX",
       taskTags: ["workflow", "cli"],
       workflowDir: ".agentplane/tasks",
       changedPaths: [],
-    });
+      }),
+    );
 
     expect(hash).toBe("deadbeefcafebabe");
     const mergeCall = mocks.execFileAsync.mock.calls[0];
@@ -191,7 +215,7 @@ describe("pr/integrate/internal/merge", () => {
       "🔀 ABC123 integrate: Improve PR UX",
     ]);
     expect(mergeCall?.[2]).toMatchObject({
-      cwd: "/repo",
+      cwd: expect.stringMatching(/agentplane-merge-test-/),
       env: {
         AGENTPLANE_TASK_ID: "202602111653-X32XPT",
         AGENTPLANE_ALLOW_BASE: "1",

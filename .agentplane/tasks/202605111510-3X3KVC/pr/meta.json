@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605111510-3X3KVC/fix-git-locks-v2",
+  "created_at": "2026-05-11T15:10:35.637Z",
+  "head_sha": "df6e4e8fdab2b62b428652251f9fba98f9cef579",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605111510-3X3KVC",
+  "updated_at": "2026-05-11T15:10:35.637Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

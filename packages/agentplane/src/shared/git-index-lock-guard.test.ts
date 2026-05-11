@@ -19,6 +19,14 @@ const allowedIndexLockFiles = new Map<string, string>([
     "creates a fake Git index lock to verify E_GIT_LOCKED",
   ],
   [
+    "packages/agentplane/src/commands/guard/impl/commit.ts",
+    "checks for pre-commit git index lock state before commit",
+  ],
+  [
+    "packages/agentplane/src/commands/pr/integrate/internal/merge.ts",
+    "checks for pre-integration git index lock state",
+  ],
+  [
     "packages/agentplane/src/shared/git-index-lock-guard.test.ts",
     "enforces the Git index lock ownership guard",
   ],

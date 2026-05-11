@@ -28,19 +28,19 @@ describe("hook capabilities", () => {
     }
   });
 
-  it("declares write-capable hooks as outside-Git-index hook checks", () => {
+  it("declares write-capable hooks as requiring worktree mutex", () => {
     const capability = resolveHookCapability("post-merge");
 
     expect(capability).toMatchObject({
       mode: "write_capable",
-      gitIndexWriteIntent: "forbidden",
+      gitIndexWriteIntent: "worktree_mutex_required",
       mutationKind: "hook_check",
       lockContext: "outside_git_index",
     });
     expect(hookCapabilityDiagnosticContext(capability)).toMatchObject({
       hook: "post-merge",
       hook_capability_mode: "write_capable",
-      hook_git_index_write_intent: "forbidden",
+      hook_git_index_write_intent: "worktree_mutex_required",
       mutation_kind: "hook_check",
       hook_lock_context: "outside_git_index",
     });

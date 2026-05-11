@@ -147,7 +147,11 @@ function commitFailureDiagnostic(
   };
 }
 
-export function asCommitFailure(err: unknown, phase: CommitFailurePhase): CliError | null {
+export function asCommitFailure(
+  err: unknown,
+  phase: CommitFailurePhase,
+  context?: Record<string, unknown>,
+): CliError | null {
   if (!(err instanceof Error)) return null;
   const e = err as ExecFileLikeError;
   const shortMessage = typeof e.shortMessage === "string" ? e.shortMessage : "";
@@ -177,6 +181,9 @@ export function asCommitFailure(err: unknown, phase: CommitFailurePhase): CliErr
     exitCode: 5,
     code: "E_GIT",
     message: lines.join("\n"),
-    context: withDiagnosticContext({ command: "commit" }, commitFailureDiagnostic(phase, output)),
+    context: {
+      ...(context ? context : {}),
+      ...withDiagnosticContext({ command: "commit" }, commitFailureDiagnostic(phase, output)),
+    },
   });
 }

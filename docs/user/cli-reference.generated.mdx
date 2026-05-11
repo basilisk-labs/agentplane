@@ -82,6 +82,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [upgrade](#upgrade)
 - Quality
   - [doctor](#doctor)
+  - [doctor git-locks](#doctor-git-locks)
 - Diagnostics
   - [runtime](#runtime)
   - [runtime explain](#runtime-explain)
@@ -2248,6 +2249,34 @@ agentplane doctor --fix
 ```
 
 - Apply safe-only fixes (idempotent).
+
+### doctor git-locks
+
+Check Git index lock state for this repository and suggest cleanup.
+
+Usage:
+
+```text
+agentplane doctor git-locks [options]
+```
+
+Options:
+
+- `--fix`: Remove stale index.lock when safe. (default=false)
+
+Examples:
+
+```sh
+agentplane doctor git-locks
+```
+
+- Inspect current git index lock status.
+
+```sh
+agentplane doctor git-locks --fix
+```
+
+- Remove stale git index.lock after inspection.
 
 ## Diagnostics
 
