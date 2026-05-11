@@ -292,6 +292,20 @@ describe("wait-remote-pr-checks script", () => {
     expect(callLogText).not.toContain(`["pr","view","--pr"`);
   });
 
+  it("rejects unknown dashed options before contacting GitHub", async () => {
+    const root = await makeTempRoot();
+
+    const result = await runScript(["--mystery"], {
+      env: {
+        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+      },
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain("Unknown option: --mystery");
+    expect(result.stderr).not.toContain("required checks passed");
+  });
+
   it(
     "waits for multiple PRs in input order and caches shared protection lookups",
     { timeout: 120_000 },
