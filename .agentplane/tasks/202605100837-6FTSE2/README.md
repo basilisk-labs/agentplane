@@ -1,7 +1,8 @@
 ---
 id: "202605100837-6FTSE2"
 title: "Pre-v0.5: enforce lifecycle commit-from-comment command matrix"
-status: "DOING"
+result_summary: "Merged via PR #3573."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -29,11 +30,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: lifecycle commit-from-comment matrix is enforced by a shared guard; start-ready/set-status are allowed in direct and branch_pr task worktrees but rejected on branch_pr base, finish is rejected in branch_pr, and verify has no commit-from-comment option."
   attempts: 0
-commit: null
+commit:
+  hash: "330a7d12b4dc076dc3f8674ab3984123b6b4ee37"
+  message: "🚧 6FTSE2 task: Pre-v0.5: enforce lifecycle commit-from-comment command matrix [202605100837-6FTSE2] (#3573)"
 comments:
   -
     author: "CODER"
     body: "Start: enforce lifecycle commit-from-comment command matrix across direct and branch_pr locations."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3573 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: lifecycle commit-from-comment matrix is enforced by a shared guard; start-ready/set-status are allowed in direct and branch_pr task worktrees but rejected on branch_pr base, finish is rejected in branch_pr, and verify has no commit-from-comment option."
+  -
+    type: "status"
+    at: "2026-05-11T06:59:35.496Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3573 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-11T06:24:37.784Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-11T06:59:35.503Z"
+doc_updated_by: "INTEGRATOR"
 description: "Define and enforce the command/mode matrix for start-ready, verify, set-status, and finish commit-from-comment behavior across direct, branch_pr task worktree, and branch_pr base checkout."
 sections:
   Summary: |-
