@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-11T07:23:30Z",
   "base": "main",
-  "branch": "task-202605110703-3V6FMM-acr-checkout-collision",
+  "branch": "task/202605110703-3V6FMM/acr-checkout-collision",
   "created_at": "2026-05-11T07:12:54.165Z",
-  "head_sha": "8573b3209341da36792fc87f3054f64de6342ee5",
+  "head_sha": "fbd2810bcd921eddb23c65e3d6f72e25cdb73c70",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "38baaeffc4facc1431b4c5329927badb8025621c",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-11T07:23:30Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605110703-3V6FMM",
-  "updated_at": "2026-05-11T07:12:54.165Z",
+  "updated_at": "2026-05-11T07:23:30Z",
   "verify": {
     "status": "skipped"
   }

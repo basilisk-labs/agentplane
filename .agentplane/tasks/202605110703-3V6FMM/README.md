@@ -1,7 +1,8 @@
 ---
 id: "202605110703-3V6FMM"
 title: "Fix ACR projection checkout collision"
-status: "DOING"
+result_summary: "Merged via PR #3575."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts --reporter dot; Result: pass, 2 files / 33 tests. Command: bunx eslint touched finish files; Result: pass. Command: bunx prettier --check touched finish files; Result: pass. Command: bun run --filter=agentplane build; Result: pass. Command: bun run hotspots:check; Result: pass, oversized baseline OK."
   attempts: 0
-commit: null
+commit:
+  hash: "38baaeffc4facc1431b4c5329927badb8025621c"
+  message: "🚧 3V6FMM task: Fix ACR projection checkout collision [202605110703-3V6FMM]"
 comments:
   -
     author: "CODER"
     body: "Start: tracing branch_pr finish and hosted close ACR refresh so local base checkout no longer creates untracked acr.json files that block fast-forward pulls."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3575 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts --reporter dot; Result: pass, 2 files / 33 tests. Command: bunx eslint touched finish files; Result: pass. Command: bunx prettier --check touched finish files; Result: pass. Command: bun run --filter=agentplane build; Result: pass. Command: bun run hotspots:check; Result: pass, oversized baseline OK."
+  -
+    type: "status"
+    at: "2026-05-11T07:24:08.869Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3575 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-11T07:12:07.847Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-11T07:24:08.876Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent automatic ACR refresh during branch_pr finish/hosted-close from leaving local untracked acr.json files that later block fast-forward pulls after hosted close commits track the same path."
 sections:
   Summary: |-
