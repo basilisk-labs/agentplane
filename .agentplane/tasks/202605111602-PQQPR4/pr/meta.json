@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605111602-PQQPR4/doc-canonical-v05",
+  "created_at": "2026-05-11T16:20:20.586Z",
+  "head_sha": "f50915589d1e10ac60120679c6063caf873cc639",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605111602-PQQPR4",
+  "updated_at": "2026-05-11T16:20:20.586Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
