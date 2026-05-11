@@ -30,6 +30,14 @@ const allowedIndexLockFiles = new Map<string, string>([
     "packages/agentplane/src/shared/git-index-lock-guard.test.ts",
     "enforces the Git index lock ownership guard",
   ],
+  [
+    "packages/agentplane/src/commands/doctor-git-locks.run.ts",
+    "adds the new doctor command to inspect/remove stale index locks",
+  ],
+  [
+    "packages/agentplane/src/commands/doctor-git-locks.spec.ts",
+    "adds CLI coverage for the doctor git-locks command",
+  ],
   ["packages/agentplane/src/shared/git-mutation.ts", "reads Git index lock state for diagnostics"],
 ]);
 
