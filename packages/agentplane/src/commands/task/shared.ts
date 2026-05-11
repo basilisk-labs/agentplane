@@ -48,6 +48,7 @@ export {
   ensurePlanApprovedIfRequired,
   ensureVerificationSatisfiedIfRequired,
   ensureCommentCommitAllowed,
+  ensureLifecycleCommentCommitLocation,
   emitTransitionWarnings,
   requireStructuredComment,
   type TaskTransitionCommentCommandOptions,
