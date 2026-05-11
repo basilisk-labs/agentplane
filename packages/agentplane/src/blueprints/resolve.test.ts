@@ -437,11 +437,47 @@ describe("resolveBlueprint", () => {
     expect(output.plan.allowedCommands).toContain(
       "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
     );
+    expect(output.plan.workflowGitCapabilities).toEqual({
+      workflowMode: "branch_pr",
+      implementationCommitLocation: "task_worktree",
+      finishCommitSource: "explicit_hash",
+      closeTailRequired: true,
+      lifecycleCommentCommitLocation: "task_worktree",
+      finishCommitFromComment: false,
+    });
+    expect(formatBlueprintExplain(output)).toContain(
+      "workflow_git: implementation_commit_location=task_worktree finish_commit_source=explicit_hash close_tail_required=yes lifecycle_comment_commit_location=task_worktree finish_commit_from_comment=no",
+    );
     expect(
       output.plan.states
         .find((state) => state.kind === "context_resolve")
         ?.policyModules.includes(".agentplane/policy/workflow.branch_pr.md"),
     ).toBe(true);
+  });
+
+  it("builds direct workflow Git capabilities without branch_pr close-tail semantics", () => {
+    const input: BlueprintResolveInput = {
+      tags: ["code"],
+      taskKind: "code",
+      mutation: "code",
+      mutationScope: "code",
+      workflowMode: "direct",
+    };
+    const output = explainResolvedBlueprint({
+      resolved: resolve(input),
+      input,
+      workflowMode: "direct",
+    });
+
+    expect(output.plan.blueprintId).toBe("code.direct");
+    expect(output.plan.workflowGitCapabilities).toEqual({
+      workflowMode: "direct",
+      implementationCommitLocation: "current_checkout",
+      finishCommitSource: "explicit_hash_or_comment_commit",
+      closeTailRequired: false,
+      lifecycleCommentCommitLocation: "current_checkout",
+      finishCommitFromComment: true,
+    });
   });
 
   it("builds executable plan metadata for specialized benchmark routes", () => {

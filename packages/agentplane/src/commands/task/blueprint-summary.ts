@@ -13,6 +13,7 @@ export type TaskBlueprintLifecycleSummary = {
   blueprint_id?: string;
   blueprint_version?: string | number;
   workflow_mode?: string;
+  workflow_git?: string;
   route?: string[];
   selection_reasons?: string[];
   required_evidence?: string[];
@@ -30,6 +31,16 @@ function lifecycleSummaryFromExplain(
     blueprint_id: output.blueprintId,
     blueprint_version: output.blueprintVersion,
     ...(output.workflowMode ? { workflow_mode: output.workflowMode } : {}),
+    ...(output.workflowGitCapabilities
+      ? {
+          workflow_git: [
+            `implementation_commit_location=${output.workflowGitCapabilities.implementationCommitLocation}`,
+            `finish_commit_source=${output.workflowGitCapabilities.finishCommitSource}`,
+            `close_tail_required=${output.workflowGitCapabilities.closeTailRequired ? "yes" : "no"}`,
+            `finish_commit_from_comment=${output.workflowGitCapabilities.finishCommitFromComment ? "yes" : "no"}`,
+          ].join(" "),
+        }
+      : {}),
     route: output.route.map((node) => node.kind),
     selection_reasons: [...output.selectionReasons],
     required_evidence: output.requiredEvidence.map((item) => item.id),
@@ -90,6 +101,7 @@ export function formatTaskBlueprintCreationPreview(summary: TaskBlueprintLifecyc
           ? []
           : [`blueprint_version: ${summary.blueprint_version}`]),
         ...(summary.workflow_mode ? [`workflow_mode: ${summary.workflow_mode}`] : []),
+        ...(summary.workflow_git ? [`workflow_git: ${summary.workflow_git}`] : []),
         `route: ${joinOrNone(summary.route, " -> ")}`,
         `selection_reasons: ${joinOrNone(summary.selection_reasons, "; ")}`,
         `required_evidence: ${joinOrNone(summary.required_evidence, ", ")}`,
