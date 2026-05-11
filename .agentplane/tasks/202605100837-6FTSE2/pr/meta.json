@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-11T06:58:51Z",
   "base": "main",
-  "branch": "task-202605100837-6FTSE2-lifecycle-commit-matrix",
+  "branch": "task/202605100837-6FTSE2/lifecycle-commit-matrix",
   "created_at": "2026-05-11T06:48:39.662Z",
-  "head_sha": "5b4c8defed124e056cad7ea513dedeea6109bf76",
+  "head_sha": "5430fa6a5ba1cbe189cfcaec6aea95f12b1ca808",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "330a7d12b4dc076dc3f8674ab3984123b6b4ee37",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-11T06:58:51Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605100837-6FTSE2",
-  "updated_at": "2026-05-11T06:48:39.662Z",
+  "updated_at": "2026-05-11T06:58:51Z",
   "verify": {
     "status": "skipped"
   }
