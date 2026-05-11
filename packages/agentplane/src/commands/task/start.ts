@@ -12,6 +12,7 @@ import {
   applyTaskStatusTransitionCommand,
   assertVerifyStepsFilled,
   ensurePlanApprovedIfRequired,
+  ensureLifecycleCommentCommitLocation,
   extractTaskObservationSection,
   defaultCommitEmojiForStatus,
   extractDocSection,
@@ -80,6 +81,14 @@ export async function cmdStart(opts: TaskTransitionCommentCommandOptions): Promi
 
     const { prefix, min_chars: minChars } = ctx.config.tasks.comments.start;
     requireStructuredComment(opts.body, prefix, minChars);
+    await ensureLifecycleCommentCommitLocation({
+      enabled: opts.commitFromComment,
+      ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      command: "task start-ready",
+      taskId: opts.taskId,
+    });
     const preparedComment = prepareTaskTransitionComment({
       body: opts.body,
       enabled: opts.commitFromComment,

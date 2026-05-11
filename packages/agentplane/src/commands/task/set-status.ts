@@ -12,6 +12,7 @@ import {
 import {
   applyTaskStatusTransitionCommand,
   defaultCommitEmojiForStatus,
+  ensureLifecycleCommentCommitLocation,
   normalizeTaskStatus,
   nowIso,
   prepareTaskTransitionComment,
@@ -69,6 +70,14 @@ export async function cmdTaskSetStatus(opts: {
       });
     }
     const resolved = ctx.resolvedProject;
+    await ensureLifecycleCommentCommitLocation({
+      enabled: opts.commitFromComment,
+      ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      command: "task set-status",
+      taskId: opts.taskId,
+    });
 
     const preparedComment =
       opts.author && opts.body

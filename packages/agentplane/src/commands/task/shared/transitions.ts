@@ -1,4 +1,5 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+import { resolveBaseBranch } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
@@ -9,6 +10,7 @@ import { CliError } from "../../../shared/errors.js";
 import { parseGitLogHashSubject } from "./git-log.js";
 import type { TaskData } from "../../../backends/task-backend.js";
 import { commitFromComment } from "../../guard/impl/comment-commit.js";
+import { gitCurrentBranch } from "../../shared/git-ops.js";
 import { refreshBranchPrArtifactsAfterTaskCommit } from "../../shared/post-commit-pr-artifacts.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 import { requiresVerificationByPrimary, toStringArray } from "./tags.js";
@@ -70,6 +72,59 @@ export function ensureCommentCommitAllowed(opts: {
   if (warning) {
     process.stderr.write(`${warnMessage(warning)}\n`);
   }
+}
+
+export async function ensureLifecycleCommentCommitLocation(opts: {
+  enabled: boolean;
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  command: "task start-ready" | "task set-status" | "finish";
+  taskId: string;
+}): Promise<void> {
+  if (!opts.enabled) return;
+  if (opts.ctx.config.workflow_mode === "direct") return;
+
+  if (opts.command === "finish") {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: [
+        "finish --commit-from-comment is not supported in branch_pr.",
+        "Why: finish runs on the base checkout; implementation commits belong to task worktrees.",
+        'Use: agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <hash> --close-commit',
+      ].join("\n"),
+    });
+  }
+
+  const baseBranch = await resolveBaseBranch({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+    cliBaseOpt: null,
+    mode: opts.ctx.config.workflow_mode,
+  });
+  if (!baseBranch) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message:
+        `${opts.command} --commit-from-comment requires a resolved branch_pr base branch; ` +
+        "run `agentplane branch base set <branch>` first.",
+    });
+  }
+
+  const currentBranch = await gitCurrentBranch(opts.ctx.resolvedProject.gitRoot);
+  if (currentBranch !== baseBranch) return;
+
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message: [
+      `${opts.command} --commit-from-comment is not supported on the branch_pr base checkout.`,
+      "Why: lifecycle comment commits for task execution belong to the task worktree.",
+      `Use: agentplane work start ${opts.taskId} --agent <ROLE> --slug <slug> --worktree, then rerun from the task worktree.`,
+    ].join("\n"),
+  });
 }
 
 export function emitTransitionWarnings(warnings: readonly string[], quiet: boolean): void {
