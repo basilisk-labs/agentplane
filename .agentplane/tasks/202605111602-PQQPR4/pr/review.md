@@ -13,7 +13,7 @@ Created: 2026-05-11T16:20:20.586Z
 ## Verification
 
 - State: ok
-- Note: Run focused task-doc tests; canonical rendering drift fixed and no-change outcomes now stable.
+- Note: Run task doc targeted regression and verify PR artifacts are complete and language-clean.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

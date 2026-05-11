@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-11T16:16:31.735Z"
+  updated_at: "2026-05-11T16:20:48.696Z"
   updated_by: "CODER"
-  note: "Run focused task-doc tests; canonical rendering drift fixed and no-change outcomes now stable."
+  note: "Run task doc targeted regression and verify PR artifacts are complete and language-clean."
   attempts: 0
 commit: null
 comments:
@@ -53,8 +53,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Run focused task-doc tests; canonical rendering drift fixed and no-change outcomes now stable."
+  -
+    type: "verify"
+    at: "2026-05-11T16:20:48.696Z"
+    author: "CODER"
+    state: "ok"
+    note: "Run task doc targeted regression and verify PR artifacts are complete and language-clean."
 doc_version: 3
-doc_updated_at: "2026-05-11T16:16:31.756Z"
+doc_updated_at: "2026-05-11T16:20:48.772Z"
 doc_updated_by: "CODER"
 description: "Normalize task doc set/read/scaffold behavior after canonical section migration so README output is stable and explicit."
 sections:
@@ -129,6 +135,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605111602-PQQPR4
     
+    ### 2026-05-11T16:20:48.696Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Run task doc targeted regression and verify PR artifacts are complete and language-clean.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-11T16:16:31.756Z, excerpt_hash=sha256:087f6151ade07896ba7220417cc66a31638ffe1ad1e60098aee3b59c313ca080
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605111602-PQQPR4-doc-canonical-v05/.agentplane/tasks/202605111602-PQQPR4/blueprint/resolved-snapshot.json
+    - old_digest: 9ae9919175be59b227df1c84f88db66e1f644ac2014ef8cb4308240bb9052703
+    - current_digest: 65619a297dabfc66def0bd92434a621b164afb7684e90fc84b7715c993c67462
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605111602-PQQPR4
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -151,16 +176,16 @@ id_source: "generated"
 
 Fix task doc canonical rendering drift for v0.5
 
-Нормализовать поведение task doc set/read/scaffold derive после перехода на canonical sections: восстановить ожидаемое состояние README output там, где контракт требует явных markdown секций.
+Normalize task doc set/read/scaffold behavior after canonical sections migration so README output is stable and explicit.
 
 ## Scope
 
-- In scope: Нормализовать поведение task doc set/read/scaffold derive после перехода на canonical sections: восстановить ожидаемое состояние README output там, где контракт требует явных markdown секций.
+- In scope: Normalize task doc set/read/scaffold behavior after canonical sections migration and keep explicit sections stable.
 - Out of scope: unrelated refactors not required for "Fix task doc canonical rendering drift for v0.5".
 
 ## Plan
 
-Задать единый контракт: task doc read/set должны возвращать стабильный markdown с явными секциями Summary/Scope/Verify Steps после canonical-рендера.
+Align task doc read/set to return stable canonical markdown with Summary/Scope/Verify Steps sections after canonical rendering.
 
 ## Verify Steps
 
@@ -228,6 +253,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605111602-PQQPR4
 
+### 2026-05-11T16:20:48.696Z — VERIFY — ok
+
+By: CODER
+
+Note: Run task doc targeted regression and verify PR artifacts are complete and language-clean.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-11T16:16:31.756Z, excerpt_hash=sha256:087f6151ade07896ba7220417cc66a31638ffe1ad1e60098aee3b59c313ca080
+
+Details:
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605111602-PQQPR4-doc-canonical-v05/.agentplane/tasks/202605111602-PQQPR4/blueprint/resolved-snapshot.json
+- old_digest: 9ae9919175be59b227df1c84f88db66e1f644ac2014ef8cb4308240bb9052703
+- current_digest: 65619a297dabfc66def0bd92434a621b164afb7684e90fc84b7715c993c67462
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605111602-PQQPR4
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -237,14 +281,14 @@ BlueprintSnapshotRef:
 
 ## Findings
 
-- Observation: Regression in task doc drift was reproducible during run
-  Impact: Release 0.5 readiness for task doc contract
-  Resolution: Adjusted section comparison + canonical section extraction + no-op intent checks
+- Observation: Regression in task doc drift was reproducible during the original run.
+  Impact: Release 0.5 readiness for task doc contract.
+  Resolution: Adjusted section comparison, canonical section extraction, and no-op intent checks.
+
+- Observation: No regressions found in doc set path after fixes.
+  Impact: v0.5 task doc CLI contract.
+  Resolution: Updated task doc section extraction and diff semantics.
 
 - Observation: No regressions found in doc set path.
-  Impact: v0.5 task doc CLI contract
-  Resolution: Updated task doc section extraction and diff semantics
-
-- Observation: No regressions found in doc set path.
-  Impact: v0.5 task doc CLI contract
-  Resolution: Updated doc section extraction and diff semantics
+  Impact: v0.5 task doc CLI contract.
+  Resolution: Revalidated rendering and no-change behavior.

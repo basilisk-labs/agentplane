@@ -378,18 +378,26 @@ function renderContextualBody(frontmatter: Record<string, unknown>, body: string
   if (!canonicalSections) return body;
 
   const normalizedBody = normalizeMarkdownBody(body);
-  if (!normalizedBody) return "";
-
   const renderedCanonicalBody = normalizeMarkdownBody(
     renderTaskDocFromSections(
       mergeCanonicalSectionsWithBody(canonicalSections, body, frontmatter.doc_version),
     ),
   );
-  if (normalizedBody === renderedCanonicalBody) return "";
+  if (!normalizedBody) return renderedCanonicalBody;
 
   if (containsCanonicalTaskDocHeading(body, frontmatter.doc_version)) {
-    return renderContextSections(body, frontmatter.doc_version);
+    const parsed = parseDocSections(body);
+    const canonicalTitles = canonicalTaskDocSectionTitles(frontmatter.doc_version);
+    const hasNonCanonicalSection = parsed.order.some((key) => {
+      const section = parsed.sections.get(key);
+      return section ? !isCanonicalTaskDocSection(section.title, canonicalTitles) : false;
+    });
+    if (!hasNonCanonicalSection) return renderedCanonicalBody;
+    const extra = renderContextSections(body, frontmatter.doc_version);
+    return extra ? `${renderedCanonicalBody}\n\n${extra}` : renderedCanonicalBody;
   }
+
+  if (normalizedBody === renderedCanonicalBody) return renderedCanonicalBody;
   return body;
 }
 

@@ -126,7 +126,7 @@ export class TaskStore implements TaskStoreContract {
       }
 
       try {
-        if (next === entry.task) {
+        if (next === entry.task || JSON.stringify(next) === JSON.stringify(entry.task)) {
           return { changed: false, task: entry.task };
         }
         return await this.writeNextTask(taskId, entry, next);

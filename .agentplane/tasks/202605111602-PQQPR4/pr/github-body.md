@@ -16,7 +16,7 @@ Normalize task doc set/read/scaffold behavior after canonical sections migration
 ## Verification
 
 - State: ok
-- Note: Run focused task-doc tests; canonical rendering drift fixed and no-change outcomes now stable.
+- Note: Run task doc targeted regression and verify PR artifacts are complete and language-clean.
 - Canonical workflow state lives in the task README.
 
 <details>
