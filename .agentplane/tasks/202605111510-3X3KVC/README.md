@@ -1,7 +1,8 @@
 ---
 id: "202605111510-3X3KVC"
 title: "Fix git lock diagnostics and merge tests"
-status: "TODO"
+result_summary: "Merged via PR #3580."
+status: "DONE"
 priority: "med"
 owner: "INTEGRATOR"
 revision: 1
@@ -24,11 +25,23 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
-comments: []
-events: []
+commit:
+  hash: "b7a439910b5c0cc87c638e48e8e5eab18513017c"
+  message: "Merge pull request #3580 from basilisk-labs/task/202605111510-3X3KVC/fix-git-locks-v2"
+comments:
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3580 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
+events:
+  -
+    type: "status"
+    at: "2026-05-11T15:13:52.341Z"
+    author: "INTEGRATOR"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: PR #3580 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-11T15:10:11.962Z"
+doc_updated_at: "2026-05-11T15:13:52.347Z"
 doc_updated_by: "INTEGRATOR"
 description: "Resolve git lock diagnostics and merge integration regressions for v0.5 branch_pr flow"
 sections:

@@ -1,0 +1,222 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605111510-3X3KVC",
+  "created_at": "2026-05-11T15:13:52.386Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "b7a439910b5c0cc87c638e48e8e5eab18513017c",
+    "work_ref": "main",
+    "work_commit": "b7a439910b5c0cc87c638e48e8e5eab18513017c"
+  },
+  "task": {
+    "task_id": "202605111510-3X3KVC",
+    "title": "Fix git lock diagnostics and merge tests",
+    "intent": "Resolve git lock diagnostics and merge integration regressions for v0.5 branch_pr flow",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605111510-3X3KVC/README.md",
+      "sha256": "sha256:d2c4e440fa45e7b770c652ce98089942b6e8b67367b3c93087fdc12bd94e1e10"
+    },
+    "approved_at": "2026-05-11T15:10:11.957Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "warning",
+        "reason": "Verification is not ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3580.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "not_run",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605111510-3X3KVC_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-11T15:10:11.957Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605111510-3X3KVC/README.md",
+      "sha256": "sha256:d2c4e440fa45e7b770c652ce98089942b6e8b67367b3c93087fdc12bd94e1e10"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605111510-3X3KVC/README.md",
+      "sha256": "sha256:d2c4e440fa45e7b770c652ce98089942b6e8b67367b3c93087fdc12bd94e1e10"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Verification is not recorded as ok.",
+      "Verification log evidence is missing."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit b7a439910b5c0cc87c638e48e8e5eab18513017c if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:7cc4921deeb6a04ca6043220de394177bf4fce8019619e4188f81ebcdb70aa63",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "quality.regression",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "regression.original_failure",
+          "kind": "artifact",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "regression.reproduction",
+          "kind": "check_result",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "regression.focused_check",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "regression.matrix_or_scope",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "regression.full_gate",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "regression.flake_classification",
+          "kind": "weak_links",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "regression.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "missing",
+        "path": ".agentplane/tasks/202605111510-3X3KVC/blueprint/resolved-snapshot.json",
+        "digest": null,
+        "current_digest": "72e449925fe7e5988a13ba54647e56c9926cc9556b80146d90e2a023c2ef8e82",
+        "route_changed": null,
+        "artifact_sha256": null,
+        "safe_command": "agentplane blueprint snapshot 202605111510-3X3KVC"
+      }
+    }
+  }
+}
