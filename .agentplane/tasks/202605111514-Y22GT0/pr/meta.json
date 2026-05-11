@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605111514-Y22GT0/fix-git-lock-guard-allowlist",
+  "created_at": "2026-05-11T15:15:04.614Z",
+  "head_sha": "b7a439910b5c0cc87c638e48e8e5eab18513017c",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605111514-Y22GT0",
+  "updated_at": "2026-05-11T15:15:04.614Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
