@@ -22,6 +22,7 @@ const mocks = vi.hoisted(() => ({
   execFileAsync: vi.fn(),
   gitBranchExists: vi.fn(),
   gitCurrentBranch: vi.fn(),
+  tryLookupExistingGithubPrByBranch: vi.fn(),
   generateAcr: vi.fn(),
   writeAcrFile: vi.fn(),
   checkTaskBlueprintSnapshotDrift: vi.fn(),
@@ -44,6 +45,9 @@ vi.mock("../shared/task-backend.js", () => ({
 vi.mock("../shared/git-ops.js", () => ({
   gitBranchExists: mocks.gitBranchExists,
   gitCurrentBranch: mocks.gitCurrentBranch,
+}));
+vi.mock("../pr/internal/sync-github.js", () => ({
+  tryLookupExistingGithubPrByBranch: mocks.tryLookupExistingGithubPrByBranch,
 }));
 vi.mock("../acr/acr.command.js", () => ({
   generateAcr: mocks.generateAcr,
@@ -232,6 +236,7 @@ describe("task finish validation", () => {
     mocks.execFileAsync.mockReset();
     mocks.gitBranchExists.mockReset();
     mocks.gitCurrentBranch.mockReset();
+    mocks.tryLookupExistingGithubPrByBranch.mockReset();
     mocks.generateAcr.mockReset();
     mocks.writeAcrFile.mockReset();
     mocks.checkTaskBlueprintSnapshotDrift.mockReset();
@@ -249,6 +254,7 @@ describe("task finish validation", () => {
     });
     mocks.gitBranchExists.mockResolvedValue(false);
     mocks.gitCurrentBranch.mockResolvedValue("main");
+    mocks.tryLookupExistingGithubPrByBranch.mockResolvedValue(null);
     mocks.generateAcr.mockResolvedValue({
       acrPath: "/repo/.agentplane/tasks/T-1/acr.json",
       record: { record_type: "agent_change_record" },
@@ -872,37 +878,31 @@ describe("task finish validation", () => {
     );
   });
 
-  it("skips branch_pr close-tail materialization when a close commit already exists on base", async () => {
+  it("skips branch_pr task artifact writes when hosted close is already recorded on origin main", async () => {
     const ctx = mkCtx();
     ctx.config.workflow_mode = "branch_pr";
-    const task = mkTask({
-      id: "T-1",
-      tags: ["meta"],
-      commit: { hash: "impl-hash", message: "feat: implement T-1" },
-    });
+    ctx.config.acr.enabled = true;
+    ctx.config.acr.write_on_finish = true;
     const store = {
-      get: vi.fn().mockResolvedValue(task),
-      patch: vi
+      get: vi
         .fn()
-        .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
-            applyStorePatch(task, await builder(task));
-            return { changed: true, task };
-          },
+        .mockResolvedValue(
+          mkTask({ id: "T-1", commit: { hash: "impl-hash", message: "feat: implement T-1" } }),
         ),
+      patch: vi.fn().mockResolvedValue({ changed: true, task: mkTask({ id: "T-1" }) }),
     };
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
     mocks.execFileAsync.mockImplementation((...args: unknown[]) => {
       const [, gitArgs] = args as [string, string[]];
-      if (Array.isArray(gitArgs) && gitArgs[0] === "log") {
-        return Promise.resolve({
-          stdout: "✅ T-1 close: done (T-1)\nseed\n",
-          stderr: "",
-        });
-      }
       if (Array.isArray(gitArgs) && gitArgs[0] === "rev-parse" && gitArgs[1] === "HEAD") {
         return Promise.resolve({ stdout: "base-head-sha\n", stderr: "" });
+      }
+      if (Array.isArray(gitArgs) && gitArgs[0] === "log" && gitArgs[1] === "origin/main") {
+        return Promise.resolve({
+          stdout: "✅ T-1 close: Merged via PR #123. (T-1) [code]\n",
+          stderr: "",
+        });
       }
       return Promise.resolve({ stdout: "", stderr: "" });
     });
@@ -930,11 +930,9 @@ describe("task finish validation", () => {
       quiet: true,
     });
 
-    expect(mocks.execFileAsync).not.toHaveBeenCalledWith(
-      "git",
-      ["checkout", "-b", "task-close/T-1/base-head-sh"],
-      expect.any(Object),
-    );
+    expect(store.patch).not.toHaveBeenCalled();
+    expect(mocks.generateAcr).not.toHaveBeenCalled();
+    expect(mocks.writeAcrFile).not.toHaveBeenCalled();
     expect(mocks.cmdCommit).not.toHaveBeenCalledWith(
       expect.objectContaining({
         taskId: "T-1",

@@ -13,7 +13,11 @@ import {
   type ResolvedCommitInfo,
   writeFinishedTasks,
 } from "./finish-shared.js";
-import { clearDirectWorkLockIfMatches, materializeBranchPrCloseTail } from "./finish-close.js";
+import {
+  clearDirectWorkLockIfMatches,
+  materializeBranchPrCloseTail,
+  resolveBranchPrCloseTailState,
+} from "./finish-close.js";
 import { appendFinishStructuredFinding } from "./finish-findings.js";
 import {
   defaultCommitEmojiForStatus,
@@ -30,6 +34,10 @@ export async function executeFinishPlan(opts: {
   plan: FinishExecutionPlan;
 }): Promise<number> {
   const { ctx, options, plan } = opts;
+  if (await shouldSkipAlreadyHandledBranchPrCloseTail({ ctx, options, plan })) {
+    return 0;
+  }
+
   await appendStructuredFindingIfNeeded({ ctx, options, plan });
 
   const loadedState = await loadFinishTasks({ ctx, options, plan });
@@ -150,6 +158,28 @@ export async function executeFinishPlan(opts: {
   }
 
   return 0;
+}
+
+async function shouldSkipAlreadyHandledBranchPrCloseTail(opts: {
+  ctx: CommandContext;
+  options: FinishOptions;
+  plan: FinishExecutionPlan;
+}): Promise<boolean> {
+  if (opts.ctx.config.workflow_mode !== "branch_pr") return false;
+  if (!opts.plan.shouldCloseCommit || !opts.plan.primaryTaskId) return false;
+
+  const closeTailState = await resolveBranchPrCloseTailState({
+    ctx: opts.ctx,
+    taskId: opts.plan.primaryTaskId,
+  });
+  if (!closeTailState.alreadyHandled) return false;
+
+  if (!opts.options.quiet) {
+    process.stdout.write(
+      "branch_pr close tail already exists on base or hosted close; skipping local task artifact writes.\n",
+    );
+  }
+  return true;
 }
 
 async function appendStructuredFindingIfNeeded(opts: {

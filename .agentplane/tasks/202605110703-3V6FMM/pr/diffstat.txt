@@ -1,0 +1,5 @@
+ .../blueprint/resolved-snapshot.json               | 498 +++++++++++++++++++++
+ .../agentplane/src/commands/task/finish-close.ts   |  38 +-
+ .../agentplane/src/commands/task/finish-execute.ts |  32 +-
+ .../commands/task/finish.validation.unit.test.ts   |  44 +-
+ 4 files changed, 578 insertions(+), 34 deletions(-)

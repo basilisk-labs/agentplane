@@ -122,16 +122,14 @@ async function closeTailAlreadyHandledRemotely(opts: {
   return observedClosePr?.status === "OPEN" || observedClosePr?.status === "MERGED";
 }
 
-export async function materializeBranchPrCloseTail(opts: {
+export async function resolveBranchPrCloseTailState(opts: {
   ctx: CommandContext;
-  cwd: string;
-  rootOverride?: string;
   taskId: string;
-  baseBranchOverride?: string;
-  quiet: boolean;
-  closeUnstageOthers?: boolean;
-  allowPolicy?: boolean;
-}): Promise<string | null> {
+}): Promise<{
+  baseBranch: string;
+  closeBranch: string | null;
+  alreadyHandled: boolean;
+}> {
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const baseBranch = await gitCurrentBranch(gitRoot);
   const alreadyClosedOnBase = await taskCloseAlreadyRecordedOnBase({
@@ -141,7 +139,7 @@ export async function materializeBranchPrCloseTail(opts: {
     baseBranch,
   });
   if (alreadyClosedOnBase) {
-    return null;
+    return { baseBranch, closeBranch: null, alreadyHandled: true };
   }
 
   const headCommitHash = await readHeadCommitHash(gitRoot);
@@ -155,10 +153,30 @@ export async function materializeBranchPrCloseTail(opts: {
     baseBranch,
     closeBranch,
   });
-  if (alreadyHandledRemotely) {
+  return { baseBranch, closeBranch, alreadyHandled: alreadyHandledRemotely };
+}
+
+export async function materializeBranchPrCloseTail(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  baseBranchOverride?: string;
+  quiet: boolean;
+  closeUnstageOthers?: boolean;
+  allowPolicy?: boolean;
+}): Promise<string | null> {
+  const gitRoot = opts.ctx.resolvedProject.gitRoot;
+  const closeTailState = await resolveBranchPrCloseTailState({
+    ctx: opts.ctx,
+    taskId: opts.taskId,
+  });
+  if (closeTailState.alreadyHandled || !closeTailState.closeBranch) {
     return null;
   }
 
+  const baseBranch = closeTailState.baseBranch;
+  const closeBranch = closeTailState.closeBranch;
   const branchExists = await gitBranchExists(gitRoot, closeBranch);
 
   await execFileAsync(
