@@ -1,7 +1,8 @@
 ---
 id: "202605111602-PQQPR4"
 title: "Fix task doc canonical rendering drift for v0.5"
-status: "DOING"
+result_summary: "Merged via PR #3584."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Run task doc targeted regression and verify PR artifacts are complete and language-clean."
   attempts: 0
-commit: null
+commit:
+  hash: "d7d10f1d96b19a13f317ac3a642d360ba3467833"
+  message: "Merge pull request #3584 from basilisk-labs/task/202605111602-PQQPR4/doc-canonical-v05"
 comments:
   -
     author: "CODER"
     body: "Start: Fix task doc contract drift for task doc/derive before final v0.5 validation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3584 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -59,9 +65,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Run task doc targeted regression and verify PR artifacts are complete and language-clean."
+  -
+    type: "status"
+    at: "2026-05-11T16:28:35.662Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3584 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-11T16:20:48.772Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-11T16:28:35.662Z"
+doc_updated_by: "INTEGRATOR"
 description: "Normalize task doc set/read/scaffold behavior after canonical section migration so README output is stable and explicit."
 sections:
   Summary: |-
