@@ -24,12 +24,13 @@ Created: 2026-05-11T15:15:04.614Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-11T15:15:04.614Z
+- Updated: 2026-05-11T15:15:26.009Z
 - Branch: task/202605111514-Y22GT0/fix-git-lock-guard-allowlist
-- Head: b7a439910b5c
+- Head: fa8fb94b01ad
 
 ```text
-No changes detected.
+ packages/agentplane/src/shared/git-index-lock-guard.test.ts | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 ```
 
 </details>
