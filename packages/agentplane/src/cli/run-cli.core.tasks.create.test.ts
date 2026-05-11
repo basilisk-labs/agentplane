@@ -306,6 +306,9 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
       expect(io.stderr).toContain("Blueprint route preview:");
       expect(io.stderr).toContain("blueprint_id: analysis.light");
       expect(io.stderr).toContain(
+        "workflow_git: implementation_commit_location=current_checkout finish_commit_source=explicit_hash_or_comment_commit close_tail_required=no finish_commit_from_comment=yes",
+      );
+      expect(io.stderr).toContain(
         "route: intake -> scope -> context_resolve -> work_unit -> artifact_write -> verify_record -> finish",
       );
       expect(io.stderr).toContain(

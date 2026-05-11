@@ -6,6 +6,7 @@ import type {
   BlueprintResolveInput,
   BlueprintTaskIntent,
   ResolvedBlueprint,
+  WorkflowGitCapabilities,
   WorkflowMode,
 } from "./model.js";
 import { validateBlueprintPlanArtifact } from "./validate.js";
@@ -26,6 +27,32 @@ function taskIntentFromInput(input?: BlueprintResolveInput): BlueprintTaskIntent
       ? { blueprintRequest: input.blueprintRequest ?? input.explicitBlueprintId }
       : {}),
   };
+}
+
+export function workflowGitCapabilitiesForMode(
+  workflowMode: WorkflowMode | undefined,
+): WorkflowGitCapabilities | undefined {
+  if (workflowMode === "branch_pr") {
+    return {
+      workflowMode,
+      implementationCommitLocation: "task_worktree",
+      finishCommitSource: "explicit_hash",
+      closeTailRequired: true,
+      lifecycleCommentCommitLocation: "task_worktree",
+      finishCommitFromComment: false,
+    };
+  }
+  if (workflowMode === "direct") {
+    return {
+      workflowMode,
+      implementationCommitLocation: "current_checkout",
+      finishCommitSource: "explicit_hash_or_comment_commit",
+      closeTailRequired: false,
+      lifecycleCommentCommitLocation: "current_checkout",
+      finishCommitFromComment: true,
+    };
+  }
+  return undefined;
 }
 
 export function blueprintPlanState(
@@ -63,15 +90,16 @@ export function buildBlueprintPlanArtifact(opts: {
 }): BlueprintPlanArtifact {
   const statePolicyModules = opts.resolved.activeNodes.flatMap((node) => node.policyModules ?? []);
   const stateCommands = opts.resolved.activeNodes.flatMap((node) => node.allowedCommands ?? []);
+  const workflowMode = opts.workflowMode ?? opts.input?.workflowMode;
+  const workflowGitCapabilities = workflowGitCapabilitiesForMode(workflowMode);
   const plan: BlueprintPlanArtifact = {
     schemaVersion: 1,
     blueprintId: opts.resolved.blueprint.id,
     blueprintVersion: opts.resolved.blueprint.version,
     title: opts.resolved.blueprint.title,
     ...(opts.input?.taskId ? { taskId: opts.input.taskId } : {}),
-    ...((opts.workflowMode ?? opts.input?.workflowMode)
-      ? { workflowMode: opts.workflowMode ?? opts.input?.workflowMode }
-      : {}),
+    ...(workflowMode ? { workflowMode } : {}),
+    ...(workflowGitCapabilities ? { workflowGitCapabilities } : {}),
     taskIntent: taskIntentFromInput(opts.input),
     whySelected: [...opts.resolved.selectionReasons],
     states: opts.resolved.activeNodes.map((node) => blueprintPlanState(node)),

@@ -59,6 +59,17 @@ describe("blueprint resolved snapshots", () => {
       }),
     );
     expect(snapshot.selectedBlueprint.id).toBe("code.branch_pr");
+    expect(snapshot.resolverInput.workflowGitCapabilities).toEqual({
+      workflowMode: "branch_pr",
+      implementationCommitLocation: "task_worktree",
+      finishCommitSource: "explicit_hash",
+      closeTailRequired: true,
+      lifecycleCommentCommitLocation: "task_worktree",
+      finishCommitFromComment: false,
+    });
+    expect(snapshot.plan.workflowGitCapabilities).toEqual(
+      snapshot.resolverInput.workflowGitCapabilities,
+    );
     expect(snapshot.nodes.map((node) => node.kind)).toContain("fast_local_checks");
     expect(snapshot.requiredEvidence.map((item) => item.id)).toContain("code_pr.commit");
     expect(snapshot.policyModules).toContain(".agentplane/policy/workflow.branch_pr.md");

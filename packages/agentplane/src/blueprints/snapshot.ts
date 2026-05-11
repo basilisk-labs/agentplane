@@ -12,7 +12,7 @@ import type {
   WorkflowMode,
 } from "./model.js";
 import { isRecord } from "../shared/guards.js";
-import { buildBlueprintPlanArtifact } from "./plan.js";
+import { buildBlueprintPlanArtifact, workflowGitCapabilitiesForMode } from "./plan.js";
 
 function sortJson(input: unknown): unknown {
   if (Array.isArray(input)) return input.map((item) => sortJson(item));
@@ -36,6 +36,7 @@ export function blueprintSnapshotDigest(input: unknown): BlueprintSnapshotDigest
 }
 
 function normalizedResolverInput(input: BlueprintResolveInput): BlueprintSnapshotResolverInput {
+  const workflowGitCapabilities = workflowGitCapabilitiesForMode(input.workflowMode);
   return {
     ...(input.taskId ? { taskId: input.taskId } : {}),
     ...(input.title ? { title: input.title } : {}),
@@ -44,6 +45,7 @@ function normalizedResolverInput(input: BlueprintResolveInput): BlueprintSnapsho
     ...(input.owner ? { owner: input.owner } : {}),
     ...(input.taskKind ? { taskKind: input.taskKind } : {}),
     ...(input.workflowMode ? { workflowMode: input.workflowMode } : {}),
+    ...(workflowGitCapabilities ? { workflowGitCapabilities } : {}),
     mutation: input.mutation,
     ...(input.mutationScope ? { mutationScope: input.mutationScope } : {}),
     touchedPaths: [...(input.touchedPaths ?? [])],

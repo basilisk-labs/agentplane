@@ -5,7 +5,11 @@ import type {
   ResolvedBlueprint,
   WorkflowMode,
 } from "./model.js";
-import { blueprintPlanEvidence, buildBlueprintPlanArtifact } from "./plan.js";
+import {
+  blueprintPlanEvidence,
+  buildBlueprintPlanArtifact,
+  workflowGitCapabilitiesForMode,
+} from "./plan.js";
 
 function recipeContributionId(item: {
   recipeId: string;
@@ -36,11 +40,14 @@ export function explainResolvedBlueprint(opts: {
   workflowMode?: WorkflowMode;
 }): BlueprintExplainOutput {
   const plan = buildBlueprintPlanArtifact(opts);
+  const workflowMode = opts.workflowMode ?? opts.input?.workflowMode;
+  const workflowGitCapabilities = workflowGitCapabilitiesForMode(workflowMode);
   return {
     blueprintId: opts.resolved.blueprint.id,
     blueprintVersion: opts.resolved.blueprint.version,
     title: opts.resolved.blueprint.title,
-    ...(opts.workflowMode ? { workflowMode: opts.workflowMode } : {}),
+    ...(workflowMode ? { workflowMode } : {}),
+    ...(workflowGitCapabilities ? { workflowGitCapabilities } : {}),
     route: opts.resolved.activeNodes.map((node) => explainNode(node)),
     skippedNodes: [...opts.resolved.skippedNodes],
     requiredEvidence: opts.resolved.requiredEvidence.map((evidence) =>
@@ -59,6 +66,11 @@ export function formatBlueprintExplain(output: BlueprintExplainOutput): string {
     `blueprint_id: ${output.blueprintId}`,
     `blueprint_version: ${output.blueprintVersion}`,
     ...(output.workflowMode ? [`workflow_mode: ${output.workflowMode}`] : []),
+    ...(output.workflowGitCapabilities
+      ? [
+          `workflow_git: implementation_commit_location=${output.workflowGitCapabilities.implementationCommitLocation} finish_commit_source=${output.workflowGitCapabilities.finishCommitSource} close_tail_required=${output.workflowGitCapabilities.closeTailRequired ? "yes" : "no"} lifecycle_comment_commit_location=${output.workflowGitCapabilities.lifecycleCommentCommitLocation} finish_commit_from_comment=${output.workflowGitCapabilities.finishCommitFromComment ? "yes" : "no"}`,
+        ]
+      : []),
     `route: ${output.route.map((node) => node.kind).join(" -> ")}`,
     `selection_reasons: ${output.selectionReasons.join("; ") || "none"}`,
     `policy_modules: ${output.plan.policyModules.join(", ") || "none"}`,

@@ -17,6 +17,15 @@ export type TaskKind = "analysis" | "content" | "docs" | "code" | "release" | "o
 
 export type WorkflowMode = "direct" | "branch_pr";
 
+export type WorkflowGitCapabilities = {
+  workflowMode: WorkflowMode;
+  implementationCommitLocation: "current_checkout" | "task_worktree";
+  finishCommitSource: "explicit_hash_or_comment_commit" | "explicit_hash";
+  closeTailRequired: boolean;
+  lifecycleCommentCommitLocation: "current_checkout" | "task_worktree";
+  finishCommitFromComment: boolean;
+};
+
 export type BlueprintNodeKind =
   | "intake"
   | "scope"
@@ -298,6 +307,7 @@ export type BlueprintPlanArtifact = {
   title: string;
   taskId?: string;
   workflowMode?: WorkflowMode;
+  workflowGitCapabilities?: WorkflowGitCapabilities;
   taskIntent: BlueprintTaskIntent;
   whySelected: readonly string[];
   states: readonly BlueprintPlanState[];
@@ -442,6 +452,7 @@ export type BlueprintSnapshotResolverInput = {
   owner?: string;
   taskKind?: TaskKind;
   workflowMode?: WorkflowMode;
+  workflowGitCapabilities?: WorkflowGitCapabilities;
   mutation: MutationKind;
   mutationScope?: MutationKind;
   touchedPaths: readonly string[];
@@ -522,6 +533,7 @@ export type BlueprintExplainOutput = {
   blueprintVersion: 1;
   title: string;
   workflowMode?: WorkflowMode;
+  workflowGitCapabilities?: WorkflowGitCapabilities;
   route: readonly BlueprintExplainNode[];
   skippedNodes: readonly SkippedNode[];
   requiredEvidence: readonly BlueprintExplainEvidence[];
