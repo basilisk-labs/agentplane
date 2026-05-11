@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-11T15:13:01Z",
   "base": "main",
   "branch": "task/202605111510-3X3KVC/fix-git-locks-v2",
   "created_at": "2026-05-11T15:10:35.637Z",
-  "head_sha": "df6e4e8fdab2b62b428652251f9fba98f9cef579",
+  "head_sha": "2196d3d91fa1adeaf6e89676105fdea503b6d669",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "b7a439910b5c0cc87c638e48e8e5eab18513017c",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-11T15:13:01Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605111510-3X3KVC",
-  "updated_at": "2026-05-11T15:10:35.637Z",
+  "updated_at": "2026-05-11T15:13:01Z",
   "verify": {
     "status": "skipped"
   }
