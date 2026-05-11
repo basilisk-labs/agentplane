@@ -1,0 +1,19 @@
+ docs/user/cli-reference.generated.mdx              |  29 +++
+ docs/user/task-lifecycle.mdx                       |  13 +-
+ docs/workflow-guides/branch-pr.mdx                 |  14 +-
+ .../src/cli/run-cli/command-catalog/core.ts        |   5 +
+ .../src/cli/run-cli/command-loaders/core.ts        |   3 +
+ .../src/commands/doctor-git-locks.run.ts           |  45 +++++
+ .../src/commands/doctor-git-locks.spec.ts          |  17 ++
+ .../impl/commands.commit-non-close.unit.test.ts    |  19 +-
+ .../src/commands/guard/impl/comment-commit.ts      | 111 ++++++++++-
+ .../src/commands/guard/impl/commit-diagnostics.ts  |  11 +-
+ .../agentplane/src/commands/guard/impl/commit.ts   | 220 ++++++++++++++++++++-
+ .../src/commands/hooks/capabilities.test.ts        |   6 +-
+ .../agentplane/src/commands/hooks/capabilities.ts  |   2 +-
+ packages/agentplane/src/commands/hooks/run.ts      |  23 ++-
+ .../commands/pr/integrate/internal/merge.test.ts   | 118 ++++++-----
+ .../src/commands/pr/integrate/internal/merge.ts    | 215 +++++++++++++++++---
+ .../src/shared/git-index-lock-guard.test.ts        |   8 +
+ packages/agentplane/src/shared/git-mutation.ts     |  30 ++-
+ 18 files changed, 768 insertions(+), 121 deletions(-)
