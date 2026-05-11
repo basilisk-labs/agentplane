@@ -66,12 +66,20 @@ export async function resolveGitMutationDiagnosticContext(opts: {
   stagedPaths?: string[];
 }): Promise<Record<string, unknown>> {
   const [gitDir, branch] = await Promise.all([
-    gitRevParse(opts.repoRoot, ["--git-dir"]).catch((err: unknown) =>
-      err instanceof Error ? `unresolved:${err.message}` : "unresolved",
-    ),
-    gitCurrentBranch(opts.repoRoot).catch((err: unknown) =>
-      err instanceof Error ? `unresolved:${err.message}` : "unresolved",
-    ),
+    (async () => {
+      try {
+        return await gitRevParse(opts.repoRoot, ["--git-dir"]);
+      } catch (err: unknown) {
+        return err instanceof Error ? `unresolved:${err.message}` : "unresolved";
+      }
+    })(),
+    (async () => {
+      try {
+        return await gitCurrentBranch(opts.repoRoot);
+      } catch (err: unknown) {
+        return err instanceof Error ? `unresolved:${err.message}` : "unresolved";
+      }
+    })(),
   ]);
 
   return gitMutationDiagnosticContext({
@@ -126,9 +134,12 @@ export async function resolveGitMutationMutexContext(opts: {
   operation: string;
 }): Promise<GitMutationMutexContext> {
   const rawGitDir = await gitRevParse(opts.repoRoot, ["--git-dir"]);
-  const rawCommonDir = await gitRevParse(opts.repoRoot, ["--git-common-dir"]).catch(
-    () => rawGitDir,
-  );
+  let rawCommonDir: string;
+  try {
+    rawCommonDir = await gitRevParse(opts.repoRoot, ["--git-common-dir"]);
+  } catch {
+    rawCommonDir = rawGitDir;
+  }
   const gitDir = resolveGitPath(opts.repoRoot, rawGitDir);
   const gitCommonDir = resolveGitPath(opts.repoRoot, rawCommonDir);
   const operation = sanitizeLockOperation(opts.operation);
@@ -208,6 +219,7 @@ export async function withGitMutationMutex<T>(
         pid: process.pid,
         host: hostname(),
         acquired_at: new Date().toISOString(),
+        uid: typeof process.getuid === "function" ? process.getuid() : null,
         repo_root: mutex.repoRoot,
         git_dir: mutex.gitDir,
         git_common_dir: mutex.gitCommonDir,

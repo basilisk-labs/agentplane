@@ -28,6 +28,9 @@ export const fromCommandsIncidentsIncidentsCommand = commandModule(
 );
 export const fromCommandsCoreRole = commandModule(() => import("../commands/core/role.js"));
 export const fromCommandsDoctorRun = commandModule(() => import("../../../commands/doctor.run.js"));
+export const fromCommandsDoctorGitLocksCommand = commandModule(
+  () => import("../../../commands/doctor-git-locks.run.js"),
+);
 export const fromCommandsWorkflowCommand = commandModule(
   () => import("../../../commands/workflow.command.js"),
 );

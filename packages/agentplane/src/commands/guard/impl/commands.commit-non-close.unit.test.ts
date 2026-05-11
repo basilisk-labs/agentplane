@@ -467,16 +467,19 @@ describe("guard command implementations: commit non-close", () => {
     });
   });
 
-  it("cmdCommit maps unknown errors via mapCoreError when not git-commit shaped", async () => {
+  it("cmdCommit maps unknown git-commit failures to git-commit diagnostics", async () => {
     const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
-    const mapped = new CliError({
-      exitCode: exitCodeForError("E_IO"),
-      code: "E_IO",
-      message: "mapped",
-    });
-    mocks.mapCoreError.mockReturnValue(mapped);
+    const errorMatcher = {
+      exitCode: exitCodeForError("E_GIT"),
+      code: "E_GIT",
+      message: "git commit failed: boom",
+      context: expect.objectContaining({
+        diagnostic_state: "git commit failed",
+        diagnostic_likely_cause: expect.stringContaining("The commit pre-conditions"),
+      }),
+    };
     ctx.git.commit.mockRejectedValue(new Error("boom"));
     await expect(
       cmdCommit({
@@ -496,7 +499,7 @@ describe("guard command implementations: commit non-close", () => {
         requireClean: false,
         quiet: true,
       }),
-    ).rejects.toBe(mapped);
+    ).rejects.toMatchObject(errorMatcher);
   });
 
   it("cmdCommit preserves salient linter failure lines in git-commit-shaped errors", async () => {

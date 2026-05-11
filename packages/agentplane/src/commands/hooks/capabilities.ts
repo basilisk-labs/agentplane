@@ -38,7 +38,7 @@ const HOOK_CAPABILITIES: Readonly<Record<HookName, HookCapability>> = {
   "post-merge": {
     hook: "post-merge",
     mode: "write_capable",
-    gitIndexWriteIntent: "forbidden",
+    gitIndexWriteIntent: "worktree_mutex_required",
     mutationKind: "hook_check",
     lockContext: "outside_git_index",
   },

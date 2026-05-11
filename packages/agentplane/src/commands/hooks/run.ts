@@ -1,5 +1,6 @@
 import { mapBackendError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";
+import { withGitMutationMutex } from "../../shared/git-mutation.js";
 import {
   hookCapabilityDiagnosticContext,
   resolveHookCapability,
@@ -35,10 +36,30 @@ async function runHook(opts: HooksRunOptions): Promise<number> {
   }
 }
 
+async function runHookWithGitMutationMutex(
+  capability: ReturnType<typeof resolveHookCapability>,
+  opts: HooksRunOptions,
+): Promise<number> {
+  if (capability.gitIndexWriteIntent !== "worktree_mutex_required") {
+    return withHookCapabilityEnvironment(capability, () => runHook(opts));
+  }
+
+  return withGitMutationMutex(
+    {
+      repoRoot: opts.rootOverride ?? opts.cwd,
+      operation: `git-hook-${opts.hook}`,
+      mutationKind: capability.mutationKind,
+      workflowMode: process.env.AGENTPLANE_WORKFLOW_MODE,
+      taskId: (process.env.AGENTPLANE_TASK_ID ?? "").trim() || undefined,
+    },
+    () => withHookCapabilityEnvironment(capability, () => runHook(opts)),
+  );
+}
+
 export async function cmdHooksRun(opts: HooksRunOptions): Promise<number> {
   const capability = resolveHookCapability(opts.hook);
   try {
-    return await withHookCapabilityEnvironment(capability, () => runHook(opts));
+    return await runHookWithGitMutationMutex(capability, opts);
   } catch (err) {
     const status = (err as { status?: unknown } | null)?.status;
     const stdout = (err as { stdout?: unknown } | null)?.stdout;
