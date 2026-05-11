@@ -3,9 +3,11 @@ import path from "node:path";
 import {
   normalizeDocSectionName,
   normalizeTaskDoc,
+  parseTaskReadme,
   parseDocSections,
   renderTaskDocFromSections,
   setMarkdownSection,
+  taskReadmeDocBody,
   taskDocToSectionMap,
   ensureDocSections,
 } from "@agentplaneorg/core/tasks";
@@ -34,6 +36,32 @@ function extractSectionTextForPatch(doc: string, section: string): string | null
   const { sections } = parseDocSections(doc);
   const entry = sections.get(normalizeDocSectionName(section));
   return entry ? entry.lines.join("\n").trimEnd() : null;
+}
+
+function extractSectionTextFromSectionsMap(
+  sections: Record<string, unknown>,
+  section: string,
+): string | null {
+  const target = normalizeDocSectionName(section);
+  for (const [title, text] of Object.entries(sections)) {
+    if (normalizeDocSectionName(title) !== target) continue;
+    if (typeof text === "string") return text.trimEnd();
+  }
+  return null;
+}
+
+function extractSectionTextFromTaskReadme(
+  readme: string,
+  section: string,
+): string | null {
+  try {
+    const parsed = parseTaskReadme(readme);
+    const rawSections = parsed.frontmatter.sections;
+    if (!rawSections || typeof rawSections !== "object" || Array.isArray(rawSections)) return null;
+    return extractSectionTextFromSectionsMap(rawSections as Record<string, unknown>, section);
+  } catch {
+    return null;
+  }
 }
 
 function buildUpdatedTaskDoc(opts: {
@@ -168,11 +196,11 @@ export async function cmdTaskDocSet(opts: {
       : headingKeys.size > 0 && (headingKeys.size > 1 || !headingKeys.has(targetKey))
         ? "full-doc"
         : "section";
-    const sectionOrder =
-      requestMode === "full-doc"
-        ? [...config.tasks.doc.required_sections]
-        : resolveWritableDocSections({
-            allowedSections: allowed,
+      const sectionOrder =
+        requestMode === "full-doc"
+          ? [...config.tasks.doc.required_sections]
+          : resolveWritableDocSections({
+              allowedSections: allowed,
             requiredSections: config.tasks.doc.required_sections,
             targetSection: opts.section ?? "",
           });
@@ -185,8 +213,20 @@ export async function cmdTaskDocSet(opts: {
           typeof current.doc === "string"
             ? current.doc
             : ((await backend.getTaskDoc!(opts.taskId)) ?? "");
+        const currentDocText =
+          (() => {
+            try {
+              const parsed = parseTaskReadme(currentDocRaw);
+              return taskReadmeDocBody(
+                parsed.frontmatter as Record<string, unknown>,
+                parsed.body,
+              );
+            } catch {
+              return currentDocRaw;
+            }
+          })();
         const nextDoc = buildUpdatedTaskDoc({
-          baseDocRaw: currentDocRaw,
+          baseDocRaw: requestMode === "full-doc" ? currentDocRaw : currentDocText,
           section: opts.section,
           text,
           requestMode,
@@ -194,7 +234,19 @@ export async function cmdTaskDocSet(opts: {
           headingKeys,
           targetKey,
         });
-        const docChanged = normalizeTaskDoc(currentDocRaw) !== normalizeTaskDoc(nextDoc);
+        const docSource = requestMode === "full-doc" ? currentDocRaw : currentDocText;
+        const currentSectionText =
+          requestMode === "full-doc"
+            ? null
+            : extractSectionTextForPatch(docSource, opts.section ?? "") ??
+              extractSectionTextFromTaskReadme(currentDocRaw, opts.section ?? "");
+        const nextSectionText = requestMode === "full-doc"
+          ? undefined
+          : extractSectionTextForPatch(nextDoc, opts.section ?? "");
+        const docChanged =
+          requestMode === "full-doc"
+            ? normalizeTaskDoc(docSource) !== normalizeTaskDoc(nextDoc)
+            : normalizeTaskDoc(currentSectionText ?? "") !== normalizeTaskDoc(nextSectionText ?? "");
         const shouldWrite = docChanged || updatedBy !== undefined;
         if (!shouldWrite) return null;
         if (!docChanged) {
@@ -216,10 +268,9 @@ export async function cmdTaskDocSet(opts: {
             },
           };
         }
-        const expectedCurrentSectionText = extractSectionTextForPatch(
-          currentDocRaw,
-          opts.section ?? "",
-        );
+        const expectedCurrentSectionText =
+          extractSectionTextForPatch(currentDocText, opts.section ?? "") ??
+          extractSectionTextFromTaskReadme(currentDocRaw, opts.section ?? "");
         return {
           intents: [
             setTaskSectionIntent({

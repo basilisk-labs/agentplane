@@ -1,0 +1,5 @@
+ .../src/cli/run-cli.core.tasks.doc-write.test.ts   |  2 +-
+ .../src/commands/shared/task-store/store.ts        |  2 +-
+ packages/agentplane/src/commands/task/doc.ts       | 73 ++++++++++++++++++----
+ packages/core/src/tasks/task-readme.ts             | 16 +++--
+ 4 files changed, 76 insertions(+), 17 deletions(-)

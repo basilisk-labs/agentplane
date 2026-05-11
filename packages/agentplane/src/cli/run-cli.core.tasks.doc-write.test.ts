@@ -592,7 +592,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(ioSeed.stderr).toContain("task doc set outcome=section-updated section=Summary");
+      expect(ioSeed.stderr).toContain("task doc set outcome=no-change section=Summary");
     } finally {
       ioSeed.restore();
     }
