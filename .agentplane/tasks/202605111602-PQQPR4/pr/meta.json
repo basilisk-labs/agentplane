@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-11T16:27:46Z",
   "base": "main",
   "branch": "task/202605111602-PQQPR4/doc-canonical-v05",
   "created_at": "2026-05-11T16:20:20.586Z",
-  "head_sha": "69c567d83f20ba35af0f486744c30e2408ae4e58",
+  "head_sha": "d250ff3dcba817bb2b82b335255b5fcba2d3e67c",
   "last_verified_at": "2026-05-11T16:20:48.696Z",
   "last_verified_sha": "f50915589d1e10ac60120679c6063caf873cc639",
+  "merge_commit": "d7d10f1d96b19a13f317ac3a642d360ba3467833",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-11T16:27:46Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605111602-PQQPR4",
-  "updated_at": "2026-05-11T16:24:37.925Z",
+  "updated_at": "2026-05-11T16:27:46Z",
   "verify": {
     "status": "pass"
   }
