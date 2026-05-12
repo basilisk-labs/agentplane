@@ -1,0 +1,366 @@
+{
+  "schemaVersion": 1,
+  "artifactKind": "agentplane.blueprint.resolved_snapshot",
+  "resolverInput": {
+    "taskId": "202605100837-B14YQC",
+    "title": "Pre-v0.5: update branch_pr docs and quickstart happy path",
+    "description": "Document the canonical branch_pr flow: base plan/approve; task worktree start-ready, implement, verify, commit, PR open/update; base integrate/merge; finish with explicit hash and close commit; cleanup worktree/branch.",
+    "tags": [
+      "docs",
+      "release",
+      "workflow"
+    ],
+    "owner": "DOCS",
+    "taskKind": "docs",
+    "workflowMode": "branch_pr",
+    "workflowGitCapabilities": {
+      "workflowMode": "branch_pr",
+      "implementationCommitLocation": "task_worktree",
+      "finishCommitSource": "explicit_hash",
+      "closeTailRequired": true,
+      "lifecycleCommentCommitLocation": "task_worktree",
+      "finishCommitFromComment": false
+    },
+    "mutation": "docs",
+    "mutationScope": "docs",
+    "touchedPaths": [],
+    "recipeHints": [],
+    "riskFlags": [],
+    "blueprintRequest": "docs.change"
+  },
+  "selectedBlueprint": {
+    "id": "docs.change",
+    "version": 1,
+    "title": "Documentation change",
+    "taskKinds": [
+      "docs"
+    ],
+    "workflowModes": [
+      "direct",
+      "branch_pr"
+    ]
+  },
+  "plan": {
+    "schemaVersion": 1,
+    "blueprintId": "docs.change",
+    "blueprintVersion": 1,
+    "title": "Documentation change",
+    "taskId": "202605100837-B14YQC",
+    "workflowMode": "branch_pr",
+    "workflowGitCapabilities": {
+      "workflowMode": "branch_pr",
+      "implementationCommitLocation": "task_worktree",
+      "finishCommitSource": "explicit_hash",
+      "closeTailRequired": true,
+      "lifecycleCommentCommitLocation": "task_worktree",
+      "finishCommitFromComment": false
+    },
+    "taskIntent": {
+      "taskKind": "docs",
+      "mutationScope": "docs",
+      "blueprintRequest": "docs.change"
+    },
+    "whySelected": [
+      "explicit blueprint requested: docs.change",
+      "task intent kind: docs",
+      "workflow mode: branch_pr",
+      "task intent mutation scope: docs"
+    ],
+    "states": [
+      {
+        "id": "intake",
+        "kind": "intake",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": []
+      },
+      {
+        "id": "scope",
+        "kind": "scope",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "assumptions"
+        ]
+      },
+      {
+        "id": "context_resolve",
+        "kind": "context_resolve",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [
+          ".agentplane/policy/security.must.md",
+          ".agentplane/policy/dod.core.md",
+          ".agentplane/policy/dod.docs.md"
+        ],
+        "evidenceKinds": [
+          "context_manifest"
+        ]
+      },
+      {
+        "id": "work_unit",
+        "kind": "work_unit",
+        "mode": "agentic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "changed_paths",
+          "artifact"
+        ]
+      },
+      {
+        "id": "deterministic_check",
+        "kind": "deterministic_check",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result"
+        ]
+      },
+      {
+        "id": "artifact_write",
+        "kind": "artifact_write",
+        "mode": "deterministic",
+        "required": true,
+        "protected": false,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "artifact"
+        ]
+      },
+      {
+        "id": "verify_record",
+        "kind": "verify_record",
+        "mode": "record",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result"
+        ]
+      },
+      {
+        "id": "finish",
+        "kind": "finish",
+        "mode": "deterministic",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "commit"
+        ]
+      }
+    ],
+    "requiredEvidence": [
+      {
+        "id": "docs.paths",
+        "kind": "changed_paths",
+        "producedBy": "work_unit",
+        "required": true,
+        "description": "Changed documentation paths."
+      },
+      {
+        "id": "docs.check",
+        "kind": "check_result",
+        "producedBy": "deterministic_check",
+        "required": true,
+        "description": "Documentation checks."
+      },
+      {
+        "id": "docs.artifact",
+        "kind": "artifact",
+        "producedBy": "artifact_write",
+        "required": true,
+        "description": "Updated documentation artifact."
+      }
+    ],
+    "policyModules": [
+      ".agentplane/policy/dod.core.md",
+      ".agentplane/policy/dod.docs.md",
+      ".agentplane/policy/security.must.md"
+    ],
+    "allowedCommands": [
+      "agentplane task verify-show <task-id>",
+      "agentplane verify <task-id> --ok|--rework",
+      "documentation checks"
+    ],
+    "contextBudget": {
+      "maxPolicyModules": 3,
+      "maxPromptBlocks": 10,
+      "rationale": "Documentation changes need docs DoD and minimal workflow/security policy."
+    },
+    "contextManifest": [],
+    "acceptedRecipeExtensions": [],
+    "rejectedRecipeExtensions": [],
+    "stopReasons": []
+  },
+  "nodes": [
+    {
+      "id": "intake",
+      "kind": "intake",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": []
+    },
+    {
+      "id": "scope",
+      "kind": "scope",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "assumptions"
+      ]
+    },
+    {
+      "id": "context_resolve",
+      "kind": "context_resolve",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [
+        ".agentplane/policy/security.must.md",
+        ".agentplane/policy/dod.core.md",
+        ".agentplane/policy/dod.docs.md"
+      ],
+      "evidenceKinds": [
+        "context_manifest"
+      ]
+    },
+    {
+      "id": "work_unit",
+      "kind": "work_unit",
+      "mode": "agentic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "changed_paths",
+        "artifact"
+      ]
+    },
+    {
+      "id": "deterministic_check",
+      "kind": "deterministic_check",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result"
+      ]
+    },
+    {
+      "id": "artifact_write",
+      "kind": "artifact_write",
+      "mode": "deterministic",
+      "required": true,
+      "protected": false,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "artifact"
+      ]
+    },
+    {
+      "id": "verify_record",
+      "kind": "verify_record",
+      "mode": "record",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result"
+      ]
+    },
+    {
+      "id": "finish",
+      "kind": "finish",
+      "mode": "deterministic",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "commit"
+      ]
+    }
+  ],
+  "requiredEvidence": [
+    {
+      "id": "docs.paths",
+      "kind": "changed_paths",
+      "producedBy": "work_unit",
+      "required": true,
+      "description": "Changed documentation paths."
+    },
+    {
+      "id": "docs.check",
+      "kind": "check_result",
+      "producedBy": "deterministic_check",
+      "required": true,
+      "description": "Documentation checks."
+    },
+    {
+      "id": "docs.artifact",
+      "kind": "artifact",
+      "producedBy": "artifact_write",
+      "required": true,
+      "description": "Updated documentation artifact."
+    }
+  ],
+  "policyModules": [
+    ".agentplane/policy/dod.core.md",
+    ".agentplane/policy/dod.docs.md",
+    ".agentplane/policy/security.must.md"
+  ],
+  "allowedCommands": [
+    "agentplane task verify-show <task-id>",
+    "agentplane verify <task-id> --ok|--rework",
+    "documentation checks"
+  ],
+  "contextBudget": {
+    "maxPolicyModules": 3,
+    "maxPromptBlocks": 10,
+    "rationale": "Documentation changes need docs DoD and minimal workflow/security policy."
+  },
+  "contextManifest": [],
+  "acceptedRecipeExtensions": [],
+  "rejectedRecipeExtensions": [],
+  "stopReasons": [],
+  "selectionReasons": [
+    "explicit blueprint requested: docs.change",
+    "task intent kind: docs",
+    "workflow mode: branch_pr",
+    "task intent mutation scope: docs"
+  ],
+  "digest": {
+    "algorithm": "sha256",
+    "value": "6620ed394016ca4653e2b0aa3916bbd29738e9f333cfba09295a0482118af231"
+  }
+}
