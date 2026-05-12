@@ -1,7 +1,8 @@
 ---
 id: "202605120952-D2F8VR"
 title: "Block ambiguous nested init roots"
-status: "DOING"
+result_summary: "Implemented safe parent Git ambiguity detection in InitPlan instead of a hard nested-root refusal; hard blocking was not retained because it regressed existing critical scope-leak and symlink init contracts."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts; bun run typecheck; node .agentplane/policy/check-routing.mjs; ap doctor. Result: pass. Evidence: regression 'init refuses ambiguous nested non-interactive roots without explicit --root' passed and asserted no .git/.agentplane writes; typecheck/routing/doctor OK. Scope: parent Git detection and non-interactive nested init guard."
   attempts: 0
-commit: null
+commit:
+  hash: "98af6d66b04ec0a238de0c847178091782fe5e0b"
+  message: "🚧 K5R0SG task: Restore scoped init behavior with parent git detection [202605121018-K5R0SG] (#3598)"
 comments:
   -
     author: "CODER"
     body: "Start: implementing parent Git ambiguity detection inside the approved JT6FWR batch worktree, with no-write regression coverage for nested non-interactive init."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3596 added parentGitRoot detection to init planning, and PR #3598 removed the rejected hard blocker after critical scoped-init tests exposed the contract conflict. Final behavior reports parent Git context without writing nested state in dry-run and preserves child/symlink init behavior."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts; bun run typecheck; node .agentplane/policy/check-routing.mjs; ap doctor. Result: pass. Evidence: regression 'init refuses ambiguous nested non-interactive roots without explicit --root' passed and asserted no .git/.agentplane writes; typecheck/routing/doctor OK. Scope: parent Git detection and non-interactive nested init guard."
+  -
+    type: "status"
+    at: "2026-05-12T10:31:38.996Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3596 added parentGitRoot detection to init planning, and PR #3598 removed the rejected hard blocker after critical scoped-init tests exposed the contract conflict. Final behavior reports parent Git context without writing nested state in dry-run and preserves child/symlink init behavior."
 doc_version: 3
-doc_updated_at: "2026-05-12T10:02:56.619Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-12T10:31:38.996Z"
+doc_updated_by: "INTEGRATOR"
 description: "Detect parent Git repositories before init writes and fail non-interactive init without an explicit root to avoid accidental nested repositories."
 sections:
   Summary: |-

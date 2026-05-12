@@ -1,0 +1,219 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605120952-D2F8VR",
+  "created_at": "2026-05-12T10:31:39.304Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "98af6d66b04ec0a238de0c847178091782fe5e0b",
+    "work_ref": "main",
+    "work_commit": "98af6d66b04ec0a238de0c847178091782fe5e0b"
+  },
+  "task": {
+    "task_id": "202605120952-D2F8VR",
+    "title": "Block ambiguous nested init roots",
+    "intent": "Detect parent Git repositories before init writes and fail non-interactive init without an explicit root to avoid accidental nested repositories.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605120952-D2F8VR/README.md",
+      "sha256": "sha256:f83bc7563df4b44766648126215a8a9bc002d6bba29d771eea4ca69b6120f55e"
+    },
+    "approved_at": "2026-05-12T09:52:23.674Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Implemented safe parent Git ambiguity detection in InitPlan instead of a hard nested-root refusal; hard blocking was not retained because it regressed existing critical scope-leak and symlink init contracts.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605120952-D2F8VR_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-12T09:52:23.674Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605120952-D2F8VR/README.md",
+      "sha256": "sha256:f83bc7563df4b44766648126215a8a9bc002d6bba29d771eea4ca69b6120f55e"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605120952-D2F8VR/README.md",
+      "sha256": "sha256:f83bc7563df4b44766648126215a8a9bc002d6bba29d771eea4ca69b6120f55e"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605120952-D2F8VR/README.md",
+      "sha256": "sha256:f83bc7563df4b44766648126215a8a9bc002d6bba29d771eea4ca69b6120f55e"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605120952-D2F8VR/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:4821b9188eb850ffcd4f244810b514d6d7eeb40a2865ebea0e0e1ea347d3c746"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 98af6d66b04ec0a238de0c847178091782fe5e0b if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:d27b5f8cc775f362651a143f7787d2bb7458f4a8b7ce49d967929471e0b4ec51",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605120952-D2F8VR/blueprint/resolved-snapshot.json",
+        "digest": "d005506d7dde5366cef55c2aa25cd0b09fd2e8b39090bacf565fa46597965ce7",
+        "current_digest": "d005506d7dde5366cef55c2aa25cd0b09fd2e8b39090bacf565fa46597965ce7",
+        "route_changed": false,
+        "artifact_sha256": "sha256:4821b9188eb850ffcd4f244810b514d6d7eeb40a2865ebea0e0e1ea347d3c746",
+        "safe_command": "agentplane blueprint snapshot 202605120952-D2F8VR"
+      }
+    }
+  }
+}
