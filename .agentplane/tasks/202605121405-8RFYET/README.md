@@ -18,11 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "ok"
+  updated_at: "2026-05-12T19:15:30.904Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.5.0."
 commit:
   hash: "bd549657036654e610293702b9bc9c7279eec57c"
   message: "🚧 8RFYET task: Release AgentPlane v0.5 [202605121405-8RFYET] (#3602)"
@@ -49,8 +48,8 @@ events:
     to: "DONE"
     note: "Verified: PR #3602 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-12T17:02:11.869Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-05-12T19:15:30.904Z"
+doc_updated_by: "DEUS"
 description: "Prepare and publish v0.5 release with full verification evidence and roadmap/notes"
 sections:
   Summary: |-
@@ -67,6 +66,19 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    - State: ok
+    - Note: Hosted publish confirmed for v0.5.0.
+    - Details:
+      - release_sha: bd549657036654e610293702b9bc9c7279eec57c
+      - version: 0.5.0
+      - tag: v0.5.0
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.5.0
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/25756420487
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -98,6 +110,19 @@ Prepare and publish final v0.5 release from current rc.1 state: bump package ver
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+- State: ok
+- Note: Hosted publish confirmed for v0.5.0.
+- Details:
+  - release_sha: bd549657036654e610293702b9bc9c7279eec57c
+  - version: 0.5.0
+  - tag: v0.5.0
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.5.0
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/25756420487
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
