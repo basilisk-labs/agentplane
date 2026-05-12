@@ -1,6 +1,6 @@
 {
   "name": "agentplane",
-  "version": "0.4.4",
+  "version": "0.5.0",
   "description": "Open-source audit-layer CLI for coding-agent task, policy, verification, and branch workflows.",
   "keywords": [
     "agentplane",
@@ -69,8 +69,8 @@
     "prepublishOnly": "node ../../scripts/enforce-github-publish.mjs && npm run prepack"
   },
   "dependencies": {
-    "@agentplaneorg/core": "0.4.4",
-    "@agentplaneorg/recipes": "0.4.4",
+    "@agentplaneorg/core": "0.5.0",
+    "@agentplaneorg/recipes": "0.5.0",
     "@clack/prompts": "^1.2.0",
     "yauzl": "^2.10.0",
     "zod": "^3",
