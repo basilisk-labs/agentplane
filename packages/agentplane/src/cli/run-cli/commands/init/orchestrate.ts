@@ -103,15 +103,6 @@ export async function cmdInit(opts: {
       rootOverride: opts.rootOverride,
       backend: answers.backend,
     });
-    if (!interactive && !opts.rootOverride && !paths.gitRootExisted && paths.parentGitRoot) {
-      throw usageError({
-        spec: opts.spec,
-        command: "init",
-        message:
-          `Refusing to initialize nested git repository at ${paths.gitRoot}; parent repository detected at ${paths.parentGitRoot}. ` +
-          "Pass --root to select the intended repository root or run from the target root.",
-      });
-    }
     const initBaseBranchSelection = await resolveInitBaseBranchForInit({
       gitRoot: paths.gitRoot,
       baseBranchFallback: "main",

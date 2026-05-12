@@ -711,7 +711,7 @@ describe("runCli", () => {
     expect(await pathExists(path.join(root, ".agentplane"))).toBe(false);
   });
 
-  it("init refuses ambiguous nested non-interactive roots without explicit --root", async () => {
+  it("init dry-run reports parent git context without writing nested state", async () => {
     const parent = await mkGitRepoRoot();
     const nested = path.join(parent, "packages", "api");
     await mkdir(nested, { recursive: true });
@@ -719,10 +719,12 @@ describe("runCli", () => {
     process.chdir(nested);
     const io = captureStdIO();
     try {
-      const code = await runCli(["init", "--yes"]);
-      expect(code).toBe(2);
-      expect(io.stderr).toContain("Refusing to initialize nested git repository");
-      expect(io.stderr).toContain("Pass --root");
+      const code = await runCli(["init", "--dry-run", "--yes", "--output", "json"]);
+      expect(code).toBe(0);
+      const envelope = JSON.parse(io.stdout) as {
+        data?: { context?: { parentGitRoot?: string | null } };
+      };
+      expect(envelope.data?.context?.parentGitRoot).toBe(await realpath(parent));
     } finally {
       io.restore();
       process.chdir(originalCwd);

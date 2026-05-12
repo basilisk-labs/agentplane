@@ -1,0 +1,1 @@
+🚧 K5R0SG task: Restore scoped init behavior with parent git detection [202605121018-K5R0SG]

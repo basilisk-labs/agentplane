@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605121018-K5R0SG/restore-init-scope",
+  "created_at": "2026-05-12T10:19:18.201Z",
+  "head_sha": "52c041350896b62bb2c57429513235d5181104c0",
+  "last_verified_at": "2026-05-12T10:25:14.012Z",
+  "last_verified_sha": "52c041350896b62bb2c57429513235d5181104c0",
+  "schema_version": 1,
+  "task_id": "202605121018-K5R0SG",
+  "updated_at": "2026-05-12T10:19:18.201Z",
+  "verify": {
+    "status": "pass"
+  }
+}
