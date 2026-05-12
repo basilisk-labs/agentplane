@@ -1,0 +1,208 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605100837-B14YQC",
+  "created_at": "2026-05-12T09:21:26.072Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "4ae23320a628e2e308973e0844b987b8c8a6adef",
+    "work_ref": "main",
+    "work_commit": "4ae23320a628e2e308973e0844b987b8c8a6adef"
+  },
+  "task": {
+    "task_id": "202605100837-B14YQC",
+    "title": "Pre-v0.5: update branch_pr docs and quickstart happy path",
+    "intent": "Document the canonical branch_pr flow: base plan/approve; task worktree start-ready, implement, verify, commit, PR open/update; base integrate/merge; finish with explicit hash and close commit; cleanup worktree/branch.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605100837-B14YQC/README.md",
+      "sha256": "sha256:b4574cb8796ad745ebfa1767c3dc09c03a0cbd0981b6487a2d0be710e35f0b98"
+    },
+    "approved_at": "2026-05-10T08:37:15.865Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "branch_pr docs and installed guidance clarify implementation commits versus lifecycle/status checkpoints",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "other",
+        "command": "Docs and quickstart no longer imply lifecycle/status commits are implementation commits.",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605100837-B14YQC_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-10T08:37:15.865Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605100837-B14YQC/README.md",
+      "sha256": "sha256:b4574cb8796ad745ebfa1767c3dc09c03a0cbd0981b6487a2d0be710e35f0b98"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605100837-B14YQC/README.md",
+      "sha256": "sha256:b4574cb8796ad745ebfa1767c3dc09c03a0cbd0981b6487a2d0be710e35f0b98"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605100837-B14YQC/README.md",
+      "sha256": "sha256:b4574cb8796ad745ebfa1767c3dc09c03a0cbd0981b6487a2d0be710e35f0b98"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605100837-B14YQC/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:e74f56d2799ae4370e5f03931457e1374a0210fcd045b88df558b5a4847d07c3"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 4ae23320a628e2e308973e0844b987b8c8a6adef if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:a53d26031b271e678787c902262deff88bb6e79ae659e68895e83cd3243f6831",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "docs.change",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "docs.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "docs.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "docs.artifact",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605100837-B14YQC/blueprint/resolved-snapshot.json",
+        "digest": "6620ed394016ca4653e2b0aa3916bbd29738e9f333cfba09295a0482118af231",
+        "current_digest": "6620ed394016ca4653e2b0aa3916bbd29738e9f333cfba09295a0482118af231",
+        "route_changed": false,
+        "artifact_sha256": "sha256:e74f56d2799ae4370e5f03931457e1374a0210fcd045b88df558b5a4847d07c3",
+        "safe_command": "agentplane blueprint snapshot 202605100837-B14YQC"
+      }
+    }
+  }
+}

@@ -1,7 +1,8 @@
 ---
 id: "202605100837-B14YQC"
 title: "Pre-v0.5: update branch_pr docs and quickstart happy path"
-status: "DOING"
+result_summary: "branch_pr docs and installed guidance clarify implementation commits versus lifecycle/status checkpoints"
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 revision: 1
@@ -29,11 +30,16 @@ verification:
   updated_by: "DOCS"
   note: "Verified after rebasing branch_pr docs clarification onto current main."
   attempts: 0
-commit: null
+commit:
+  hash: "4ae23320a628e2e308973e0844b987b8c8a6adef"
+  message: "Merge pull request #3591 from basilisk-labs/task-202605100837-B14YQC-branch-pr-docs-happy-path"
 comments:
   -
     author: "DOCS"
     body: "Start: updating branch_pr docs and quickstart to show implementation commits in task worktrees, explicit finish hashes on base, and lifecycle/status commits as separate from implementation commits."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3591 merged branch_pr docs and installed quickstart guidance after checks and empty review threads."
 events:
   -
     type: "status"
@@ -54,9 +60,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified after rebasing branch_pr docs clarification onto current main."
+  -
+    type: "status"
+    at: "2026-05-12T09:21:26.004Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3591 merged branch_pr docs and installed quickstart guidance after checks and empty review threads."
 doc_version: 3
-doc_updated_at: "2026-05-12T09:15:46.543Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-12T09:21:26.004Z"
+doc_updated_by: "INTEGRATOR"
 description: "Document the canonical branch_pr flow: base plan/approve; task worktree start-ready, implement, verify, commit, PR open/update; base integrate/merge; finish with explicit hash and close commit; cleanup worktree/branch."
 sections:
   Summary: |-
