@@ -1,0 +1,5 @@
+ .github/workflows/publish.yml                      | 25 +++++++++++++++++++++-
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |  6 ++++--
+ .../release/publish-workflow-contract.test.ts      |  5 +++--
+ packages/spec/examples/acr.json                    |  4 ++--
+ 4 files changed, 33 insertions(+), 7 deletions(-)
