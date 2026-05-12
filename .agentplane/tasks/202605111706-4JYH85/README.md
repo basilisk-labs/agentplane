@@ -1,7 +1,8 @@
 ---
 id: "202605111706-4JYH85"
 title: "Align task README lifecycle fixtures with sectionized format"
-status: "DOING"
+result_summary: "Sectionized README lifecycle fixtures aligned for v0.5."
+status: "DONE"
 priority: "med"
 owner: "INTEGRATOR"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "INTEGRATOR"
   note: "Command: release-smoke, task creation, lifecycle finish/close validation, and full cli-core. Result: pass. Evidence: release-smoke passed 3 tests; focused lifecycle/task suites passed; full cli-core passed 83 files and 675 tests. Scope: sectionized task README lifecycle fixtures and output text drift."
   attempts: 0
-commit: null
+commit:
+  hash: "624c1f5ea051ada4e7377a374dd8ac2b77479f71"
+  message: "🔀 XQM14A integrate: Stabilize v0.5 CLI readiness"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: aligning task README lifecycle fixtures with sectionized doc_version 3 rendering and release-smoke evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: sectionized task README lifecycle fixtures passed release-smoke, task creation, and full cli-core checks."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "Command: release-smoke, task creation, lifecycle finish/close validation, and full cli-core. Result: pass. Evidence: release-smoke passed 3 tests; focused lifecycle/task suites passed; full cli-core passed 83 files and 675 tests. Scope: sectionized task README lifecycle fixtures and output text drift."
+  -
+    type: "status"
+    at: "2026-05-12T06:22:11.121Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: sectionized task README lifecycle fixtures passed release-smoke, task creation, and full cli-core checks."
 doc_version: 3
-doc_updated_at: "2026-05-12T06:18:29.176Z"
+doc_updated_at: "2026-05-12T06:22:11.121Z"
 doc_updated_by: "INTEGRATOR"
 description: "Align task lifecycle tests and fixtures for finish, close-commit, and release-smoke with the sectionized README format."
 sections:
