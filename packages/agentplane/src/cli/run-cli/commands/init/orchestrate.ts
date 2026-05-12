@@ -98,7 +98,7 @@ export async function cmdInit(opts: {
       rootOverride: opts.rootOverride,
       backend: answers.backend,
     });
-    const initBaseBranch = await resolveInitBaseBranchForInit({
+    const initBaseBranchSelection = await resolveInitBaseBranchForInit({
       gitRoot: paths.gitRoot,
       baseBranchFallback: "main",
       isInteractive: interactive,
@@ -136,7 +136,7 @@ export async function cmdInit(opts: {
       clack,
       answers,
       paths,
-      initBaseBranch,
+      initBaseBranchSelection,
       conflictMode,
       conflicts,
       ensureGitRoot,
