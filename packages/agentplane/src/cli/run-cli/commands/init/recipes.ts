@@ -14,7 +14,7 @@ type CachedRecipeInfo = {
   version: string;
 };
 
-export async function listCachedRecipes(): Promise<CachedRecipeInfo[]> {
+export async function listCachedRecipes(_opts?: { cwd?: string }): Promise<CachedRecipeInfo[]> {
   const cached = await readAndMigrateInstalledRecipesFile(resolveInstalledRecipesPath(), {
     dropInvalidEntries: true,
   });
@@ -46,9 +46,12 @@ async function gitStatusPaths(cwd: string): Promise<string[]> {
     .filter(Boolean);
 }
 
-export async function validateCachedRecipesSelection(recipes: string[]): Promise<void> {
+export async function validateCachedRecipesSelection(
+  recipes: string[],
+  opts?: { cwd?: string },
+): Promise<void> {
   if (recipes.length === 0) return;
-  const cached = await listCachedRecipes();
+  const cached = await listCachedRecipes(opts);
   const available = new Set(cached.map((entry) => entry.id));
   const missing = recipes.filter((recipe) => !available.has(recipe));
   if (missing.length === 0) return;

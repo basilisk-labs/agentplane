@@ -2075,6 +2075,10 @@ agentplane init [options]
 
 Options:
 
+- `--init-mode <quick|guided|advanced|ci>`: User-facing init route. TTY defaults to guided; --yes defaults to ci for automation. (choices=quick|guided|advanced|ci)
+- `--quick`: Alias for --init-mode quick. (default=false)
+- `--advanced`: Alias for --init-mode advanced. (default=false)
+- `--tool <codex|claude|cursor|windsurf|multiple|manual>`: AI surface that should read project instructions. Granular --policy-gateway/--ide flags override this mapping. (choices=codex|claude|cursor|windsurf|multiple|manual)
 - `--setup-profile <light|normal|full-harness>`: Setup profile preset. Preferred values: light, normal, full-harness. (choices=light|normal|full-harness|developer|vibecoder|manager|enterprise)
 - `--policy-gateway <codex|claude>`: Policy gateway file to install (codex -&gt; AGENTS.md, claude -&gt; CLAUDE.md). (choices=codex|claude)
 - `--ide <codex|cursor|windsurf>`: IDE rules integration target (default: codex). (choices=codex|cursor|windsurf)
@@ -2140,6 +2144,12 @@ agentplane init --dry-run --yes --output json
 ```
 
 - Print a machine-readable init plan without writing files.
+
+```sh
+agentplane init --quick --tool cursor
+```
+
+- Use the quick first-run route and install AGENTS.md plus Cursor rules.
 
 ### upgrade
 

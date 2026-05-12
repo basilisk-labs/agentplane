@@ -22,10 +22,13 @@ import { ensureInitCloudEnvTemplate, ensureInitRedmineEnvTemplate } from "./writ
 import { ensureInitGitignore } from "./write-gitignore.js";
 import { ensureInitWorkflow } from "./write-workflow.js";
 import { assertConfirmed } from "./answers.js";
+import { setupProfileToUserFacingProfile } from "./modes.js";
+import { detectParentGitRoot } from "./git.js";
 
 export type ResolvedInitPaths = {
   gitRoot: string;
   gitRootExisted: boolean;
+  parentGitRoot: string | null;
   agentplaneDir: string;
   workflowPath: string;
   legacyConfigPath: string;
@@ -40,6 +43,7 @@ export async function resolveInitPaths(opts: {
   const initRoot = path.resolve(opts.rootOverride ?? opts.cwd);
   const gitRoot = initRoot;
   const gitRootExisted = (await getPathKind(path.join(gitRoot, ".git"))) === "dir";
+  const parentGitRoot = gitRootExisted ? null : await detectParentGitRoot(gitRoot);
   const agentplaneDir = path.join(gitRoot, ".agentplane");
   const workflowPath = path.join(agentplaneDir, "WORKFLOW.md");
   const legacyConfigPath = path.join(agentplaneDir, "config.json");
@@ -52,7 +56,15 @@ export async function resolveInitPaths(opts: {
       : opts.backend === "cloud"
         ? cloudBackendPath
         : localBackendPath;
-  return { gitRoot, gitRootExisted, agentplaneDir, workflowPath, legacyConfigPath, backendPath };
+  return {
+    gitRoot,
+    gitRootExisted,
+    parentGitRoot,
+    agentplaneDir,
+    workflowPath,
+    legacyConfigPath,
+    backendPath,
+  };
 }
 
 export async function collectInitAndHookConflicts(opts: {
@@ -193,6 +205,7 @@ export function buildInitPlan(opts: {
   conflictMode: { backup: boolean; force: boolean };
   outputMode: "text" | "json";
   includeInstallCommit: boolean;
+  initMode: InitPlan["mode"];
 }): InitPlan {
   const hasConflictStrategy = opts.conflictMode.backup || opts.conflictMode.force;
   const conflictEffects: InitEffect[] = hasConflictStrategy
@@ -224,7 +237,9 @@ export function buildInitPlan(opts: {
     schemaVersion: "init-plan/v1",
     agentplaneVersion: getVersion(),
     root: opts.paths.gitRoot,
-    profile: opts.answers.setupProfile,
+    mode: opts.initMode,
+    profile: setupProfileToUserFacingProfile(opts.answers.setupProfile),
+    internalSetupProfile: opts.answers.setupProfile,
     answers: {
       policyGateway: opts.answers.policyGateway,
       ide: opts.answers.ide,
@@ -241,6 +256,7 @@ export function buildInitPlan(opts: {
     },
     context: {
       gitRootExisted: opts.paths.gitRootExisted,
+      parentGitRoot: opts.paths.parentGitRoot,
       outputMode: opts.outputMode,
     },
     effects,

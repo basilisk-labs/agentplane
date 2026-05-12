@@ -2,6 +2,21 @@ import path from "node:path";
 
 import { gitInitRepo } from "../../../../commands/workflow.js";
 import { getPathKind } from "../../../fs-utils.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv } from "@agentplaneorg/core/git";
+
+export async function detectParentGitRoot(initRoot: string): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync("git", ["rev-parse", "--show-toplevel"], {
+      cwd: initRoot,
+      env: gitEnv(),
+    });
+    const discovered = path.resolve(stdout.trim());
+    return discovered === path.resolve(initRoot) ? null : discovered;
+  } catch {
+    return null;
+  }
+}
 
 export async function ensureGitRoot(opts: {
   initRoot: string;

@@ -41,9 +41,11 @@ function parseBlueprintRef(value: string): BlueprintRef {
   return { id: trimmed };
 }
 
-export async function listCachedBlueprintCatalogItems(): Promise<CachedBlueprintCatalogItem[]> {
+export async function listCachedBlueprintCatalogItems(opts?: {
+  cwd?: string;
+}): Promise<CachedBlueprintCatalogItem[]> {
   try {
-    const catalog = await loadCatalog({ cwd: process.cwd() });
+    const catalog = await loadCatalog({ cwd: opts?.cwd ?? process.cwd() });
     return [
       ...catalog.index.blueprints.map((entry) => ({
         id: entry.id,
@@ -81,9 +83,12 @@ async function gitStatusPaths(cwd: string): Promise<string[]> {
     .filter(Boolean);
 }
 
-export async function validateCachedBlueprintSelection(selection: string[]): Promise<void> {
+export async function validateCachedBlueprintSelection(
+  selection: string[],
+  opts?: { cwd?: string },
+): Promise<void> {
   if (selection.length === 0) return;
-  const catalog = await loadCatalog({ cwd: process.cwd() });
+  const catalog = await loadCatalog({ cwd: opts?.cwd ?? process.cwd() });
   const cached = [
     ...catalog.index.blueprints.map((entry) => ({
       id: entry.id,
@@ -120,7 +125,7 @@ export async function maybeInstallCachedBlueprints(opts: {
     rootOverride: opts.rootOverride ?? null,
   });
   const before = new Set(await gitStatusPaths(project.gitRoot));
-  const catalog = await loadCatalog({ cwd: opts.cwd });
+  const catalog = await loadCatalog({ cwd: opts.rootOverride ?? opts.cwd });
   const allowedIds: string[] = [];
 
   for (const value of opts.blueprints) {
