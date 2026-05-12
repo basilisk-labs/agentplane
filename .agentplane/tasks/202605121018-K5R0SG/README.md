@@ -1,7 +1,8 @@
 ---
 id: "202605121018-K5R0SG"
 title: "Restore scoped init behavior with parent git detection"
-status: "DOING"
+result_summary: "Merged via PR #3598."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "IMPLEMENTER"
   note: "Verified scoped init behavior after removing the hard nested-root blocker: init dry-run reports parentGitRoot without writing nested state, and critical scope-leak/symlink tests pass."
   attempts: 0
-commit: null
+commit:
+  hash: "98af6d66b04ec0a238de0c847178091782fe5e0b"
+  message: "🚧 K5R0SG task: Restore scoped init behavior with parent git detection [202605121018-K5R0SG] (#3598)"
 comments:
   -
     author: "CODER"
     body: "Start: restoring the existing scoped init critical contract while preserving parent Git detection in dry-run planning evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3598 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "IMPLEMENTER"
     state: "ok"
     note: "Verified scoped init behavior after removing the hard nested-root blocker: init dry-run reports parentGitRoot without writing nested state, and critical scope-leak/symlink tests pass."
+  -
+    type: "status"
+    at: "2026-05-12T10:28:58.957Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3598 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-12T10:25:14.019Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-12T10:28:58.957Z"
+doc_updated_by: "INTEGRATOR"
 description: "Keep parent Git detection visible in init planning without blocking the existing contract that init --yes in a child directory initializes that child as the target repository."
 sections:
   Summary: |-

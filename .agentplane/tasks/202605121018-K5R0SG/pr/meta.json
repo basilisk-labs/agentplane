@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-12T10:28:16Z",
   "base": "main",
   "branch": "task/202605121018-K5R0SG/restore-init-scope",
   "created_at": "2026-05-12T10:19:18.201Z",
-  "head_sha": "a0c2e3284602ddb70ad589eeb3657b17301f2ffe",
+  "head_sha": "daae82a27688c55743aa268ff5c04a1c3f9ec074",
   "last_verified_at": "2026-05-12T10:25:14.012Z",
   "last_verified_sha": "52c041350896b62bb2c57429513235d5181104c0",
+  "merge_commit": "98af6d66b04ec0a238de0c847178091782fe5e0b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-12T10:28:16Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605121018-K5R0SG",
-  "updated_at": "2026-05-12T10:25:40.560Z",
+  "updated_at": "2026-05-12T10:28:16Z",
   "verify": {
     "status": "pass"
   }
