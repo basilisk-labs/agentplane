@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605121405-8RFYET/release-v0-5",
+  "created_at": "2026-05-12T17:00:51.236Z",
+  "head_sha": "f22d0a35f2d6fa39b3cf0ddc356383c5f4a6f29e",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605121405-8RFYET",
+  "updated_at": "2026-05-12T17:00:51.236Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

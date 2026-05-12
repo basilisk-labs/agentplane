@@ -9,6 +9,7 @@ import {
   runRuntimeExplain,
   renderRuntimeExplainText,
 } from "./runtime.command.js";
+import { compareVersions } from "../runtime/shared/version-compare.js";
 
 const envSnapshot = { ...process.env };
 const workspaceRoot = process.cwd();
@@ -98,7 +99,14 @@ describe("runtime.command", () => {
         "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1",
       );
       expect(payload.repoCliExpectation.expectedVersion).toBe(repoExpectedCliVersion);
-      expect(payload.repoCliExpectation.state).toBe("satisfied");
+      const relation = compareVersions(agentplaneVersion, repoExpectedCliVersion);
+      if (relation === 0) {
+        expect(payload.repoCliExpectation.state).toBe("satisfied");
+      } else if (relation < 0) {
+        expect(payload.repoCliExpectation.state).toBe("older_than_expected");
+      } else {
+        expect(payload.repoCliExpectation.state).toBe("satisfied");
+      }
       expect(payload.promptGraph.artifactState).toBe("not_configured");
       expect(payload.promptGraph.activeRecipeIds).toEqual([]);
       expect(io.stdout).toBe(`${JSON.stringify(payload, null, 2)}\n`);

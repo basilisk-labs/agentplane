@@ -107,19 +107,19 @@
       "exports": [
         {
           "name": "TASK_INDEX_SCHEMA_VERSION",
-          "line": 8,
+          "line": 9,
           "col": 14
         }
       ],
       "types": [
         {
           "name": "TaskIndexFile",
-          "line": 35,
+          "line": 36,
           "col": 13
         },
         {
           "name": "TaskIndexFileV2",
-          "line": 28,
+          "line": 29,
           "col": 13
         }
       ]
@@ -521,12 +521,12 @@
       "types": [
         {
           "name": "BlueprintDefinition",
-          "line": 84,
+          "line": 97,
           "col": 13
         },
         {
           "name": "BlueprintState",
-          "line": 85,
+          "line": 98,
           "col": 13
         }
       ]
@@ -536,7 +536,7 @@
       "exports": [
         {
           "name": "blueprintPlanState",
-          "line": 31,
+          "line": 58,
           "col": 17
         }
       ]
@@ -807,7 +807,7 @@
       "types": [
         {
           "name": "ResolvedInitPaths",
-          "line": 24,
+          "line": 28,
           "col": 13
         }
       ]
@@ -894,7 +894,7 @@
       "types": [
         {
           "name": "UsageErrorFactory",
-          "line": 96,
+          "line": 97,
           "col": 13
         }
       ]
@@ -934,7 +934,7 @@
       "exports": [
         {
           "name": "inferMutationFromTask",
-          "line": 47,
+          "line": 51,
           "col": 17
         }
       ]
@@ -1038,6 +1038,48 @@
           "name": "gitStatusChangedPaths",
           "line": 3,
           "col": 26
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/hooks/capabilities.ts",
+      "types": [
+        {
+          "name": "HookCapability",
+          "line": 8,
+          "col": 13
+        },
+        {
+          "name": "HookCapabilityMode",
+          "line": 4,
+          "col": 13
+        },
+        {
+          "name": "HookGitIndexWriteIntent",
+          "line": 5,
+          "col": 13
+        },
+        {
+          "name": "HookLockContext",
+          "line": 6,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/pr/integrate/queue-state.ts",
+      "exports": [
+        {
+          "name": "resolveIntegrationQueueMutexContext",
+          "line": 52,
+          "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "IntegrationQueueMutexContext",
+          "line": 34,
+          "col": 13
         }
       ]
     },
@@ -1565,12 +1607,12 @@
       "exports": [
         {
           "name": "findLatestPlanDir",
-          "line": 58,
+          "line": 55,
           "col": 23
         },
         {
           "name": "parseVersionPlan",
-          "line": 33,
+          "line": 30,
           "col": 17
         }
       ]
@@ -2096,12 +2138,12 @@
       "exports": [
         {
           "name": "buildTaskStatusTransition",
-          "line": 62,
+          "line": 65,
           "col": 3
         },
         {
           "name": "buildTaskVerificationTransition",
-          "line": 64,
+          "line": 67,
           "col": 3
         },
         {
@@ -2111,7 +2153,7 @@
         },
         {
           "name": "emitTransitionWarnings",
-          "line": 51,
+          "line": 52,
           "col": 3
         },
         {
@@ -2121,12 +2163,12 @@
         },
         {
           "name": "readDeferredTaskTransitionWarnings",
-          "line": 66,
+          "line": 69,
           "col": 3
         },
         {
           "name": "readHeadCommit",
-          "line": 57,
+          "line": 60,
           "col": 3
         },
         {
@@ -2141,7 +2183,7 @@
         },
         {
           "name": "resolveTaskTransitionExecutorAgent",
-          "line": 54,
+          "line": 56,
           "col": 3
         },
         {
@@ -2163,12 +2205,12 @@
         },
         {
           "name": "ExecuteTaskStatusTransitionRequest",
-          "line": 70,
+          "line": 73,
           "col": 8
         },
         {
           "name": "ExecuteTaskVerificationTransitionRequest",
-          "line": 72,
+          "line": 75,
           "col": 8
         },
         {
@@ -2178,22 +2220,22 @@
         },
         {
           "name": "QueryTaskProjectionResult",
-          "line": 81,
+          "line": 84,
           "col": 8
         },
         {
           "name": "TaskStatusTransitionCommentCommitPolicy",
-          "line": 69,
+          "line": 72,
           "col": 8
         },
         {
           "name": "TaskStatusTransitionDependencyPolicy",
-          "line": 68,
+          "line": 71,
           "col": 8
         },
         {
           "name": "TaskStatusTransitionExecution",
-          "line": 71,
+          "line": 74,
           "col": 8
         },
         {
@@ -2203,12 +2245,12 @@
         },
         {
           "name": "TaskTransitionWrite",
-          "line": 67,
+          "line": 70,
           "col": 8
         },
         {
           "name": "TaskVerificationTransitionExecution",
-          "line": 73,
+          "line": 76,
           "col": 8
         }
       ]
@@ -2267,17 +2309,17 @@
       "exports": [
         {
           "name": "ensureCommentCommitAllowed",
-          "line": 60,
+          "line": 62,
           "col": 17
         },
         {
           "name": "readHeadCommit",
-          "line": 201,
+          "line": 319,
           "col": 23
         },
         {
           "name": "resolveTaskTransitionExecutorAgent",
-          "line": 127,
+          "line": 201,
           "col": 23
         }
       ]
@@ -2287,12 +2329,12 @@
       "types": [
         {
           "name": "ExecuteTaskVerificationTransitionRequest",
-          "line": 63,
+          "line": 65,
           "col": 13
         },
         {
           "name": "TaskVerificationTransitionExecution",
-          "line": 74,
+          "line": 77,
           "col": 13
         }
       ]
@@ -2666,12 +2708,12 @@
       "exports": [
         {
           "name": "RUNNER_RESULT_MANIFEST_SCHEMA_VERSION",
-          "line": 15,
+          "line": 16,
           "col": 14
         },
         {
           "name": "sourceRunnerResultManifestPath",
-          "line": 289,
+          "line": 286,
           "col": 17
         }
       ]
@@ -3029,7 +3071,7 @@
       "types": [
         {
           "name": "NormalizePromptFragmentListOptions",
-          "line": 10,
+          "line": 11,
           "col": 13
         }
       ]
@@ -3545,14 +3587,24 @@
       "exports": [
         {
           "name": "HandoffError",
-          "line": 100,
+          "line": 114,
           "col": 14
         }
       ],
       "types": [
         {
           "name": "JsonErrorGuidance",
-          "line": 130,
+          "line": 144,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/shared/git-mutation.ts",
+      "types": [
+        {
+          "name": "GitMutationMutexContext",
+          "line": 113,
           "col": 13
         }
       ]
@@ -3689,24 +3741,24 @@
       "exports": [
         {
           "name": "configRawToWorkflowFrontMatter",
-          "line": 110,
+          "line": 107,
           "col": 17
         },
         {
           "name": "readWorkflowMarkdown",
-          "line": 47,
+          "line": 44,
           "col": 23
         },
         {
           "name": "workflowFrontMatterToConfigRaw",
-          "line": 60,
+          "line": 57,
           "col": 17
         }
       ],
       "types": [
         {
           "name": "WorkflowMarkdown",
-          "line": 9,
+          "line": 10,
           "col": 13
         }
       ]
@@ -3716,14 +3768,14 @@
       "exports": [
         {
           "name": "formatSchemaErrors",
-          "line": 47,
+          "line": 44,
           "col": 17
         }
       ],
       "types": [
         {
           "name": "JsonSchemaDocument",
-          "line": 6,
+          "line": 7,
           "col": 13
         }
       ]
@@ -3777,9 +3829,9 @@
   "counts": {
     "files": 1,
     "exports": 205,
-    "types": 365,
+    "types": 371,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 571
+    "total": 577
   }
 }

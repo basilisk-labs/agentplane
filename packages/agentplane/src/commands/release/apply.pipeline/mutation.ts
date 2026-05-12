@@ -1,9 +1,11 @@
 import path from "node:path";
 
 import { extractTaskSuffix } from "@agentplaneorg/core/commit";
+import { loadConfig } from "@agentplaneorg/core/config";
 
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv, GitContext, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
+import { appendDcoSignoff } from "../../guard/impl/dco.js";
 import {
   cleanHookEnv,
   maybePersistExpectedCliVersion,
@@ -104,7 +106,9 @@ export async function applyReleaseMutation(opts: {
   const subject = taskId
     ? `✨ ${extractTaskSuffix(taskId)} release: publish ${opts.nextTag}`
     : `✨ release: publish ${opts.nextTag}`;
-  await opts.git.commit({ message: subject, env: cleanHookEnv() });
+  const loaded = await loadConfig(opts.agentplaneDir);
+  const body = appendDcoSignoff({ config: loaded.config, body: undefined });
+  await opts.git.commit({ message: subject, body, env: cleanHookEnv() });
   const { stdout: headHash } = await execFileAsync("git", ["rev-parse", "HEAD"], {
     cwd: opts.gitRoot,
     env: gitEnv(),
