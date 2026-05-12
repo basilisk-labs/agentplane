@@ -1,7 +1,8 @@
 ---
 id: "202605120709-JXWHD3"
 title: "Implement RFQ init P0 planning boundary"
-status: "DOING"
+result_summary: "Merged via PR #3587."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts; Result: pass; Evidence: 21 tests passed. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts packages/agentplane/src/cli/run-cli/commands/init/ui.test.ts packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/conflict-resolver.test.ts; Result: pass; Evidence: 25 tests passed. Command: exact-file eslint, bun run format:check, bun run typecheck, bun run docs:cli:check, node .agentplane/policy/check-routing.mjs, ap doctor; Result: pass; Evidence: lint clean, Prettier clean, tsc -b OK, CLI reference up to date, policy routing OK, doctor OK."
   attempts: 0
-commit: null
+commit:
+  hash: "e84d0a7fb2c5072b633e08bd4d689d3d316f2f11"
+  message: "🧩 JXWHD3 task: Implement RFQ init P0 planning boundary"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing the approved P0 init RFQ slice in the dedicated branch_pr worktree, limited to planning/apply safety, dry-run behavior, base-branch interactivity, docs, and focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3587 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts; Result: pass; Evidence: 21 tests passed. Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts packages/agentplane/src/cli/run-cli/commands/init/ui.test.ts packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/conflict-resolver.test.ts; Result: pass; Evidence: 25 tests passed. Command: exact-file eslint, bun run format:check, bun run typecheck, bun run docs:cli:check, node .agentplane/policy/check-routing.mjs, ap doctor; Result: pass; Evidence: lint clean, Prettier clean, tsc -b OK, CLI reference up to date, policy routing OK, doctor OK."
+  -
+    type: "status"
+    at: "2026-05-12T08:28:18.689Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3587 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-12T08:23:52.939Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-12T08:28:18.689Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement the P0 AgentPlane init RFQ slice: pure planning before apply, dry-run plan output, delayed git/conflict side effects, base-branch interactive fix, docs, and tests."
 sections:
   Summary: |-
