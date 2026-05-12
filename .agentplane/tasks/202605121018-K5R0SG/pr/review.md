@@ -24,12 +24,15 @@ Created: 2026-05-12T10:19:18.201Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-12T10:19:18.201Z
+- Updated: 2026-05-12T10:25:40.560Z
 - Branch: task/202605121018-K5R0SG/restore-init-scope
-- Head: 52c041350896
+- Head: a0c2e3284602
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 512 +++++++++++++++++++++
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |  12 +-
+ .../src/cli/run-cli/commands/init/orchestrate.ts   |   9 -
+ 3 files changed, 519 insertions(+), 14 deletions(-)
 ```
 
 </details>
