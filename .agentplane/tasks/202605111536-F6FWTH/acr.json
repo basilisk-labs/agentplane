@@ -1,0 +1,231 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605111536-F6FWTH",
+  "created_at": "2026-05-12T09:44:22.397Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "8fe62d47afeecea373405fa91477677f846c19ce",
+    "work_ref": "main",
+    "work_commit": "8fe62d47afeecea373405fa91477677f846c19ce"
+  },
+  "task": {
+    "task_id": "202605111536-F6FWTH",
+    "title": "Harden wait-remote-pr-checks argument parsing",
+    "intent": "Unknown --* option should fail fast with explicit error and no GitHub calls; add regression test and keep parse behavior stable.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605111536-F6FWTH/README.md",
+      "sha256": "sha256:71120cd2b6597f25d87d24c4fd79191fbbfb4580509b067f49fc6fe8a8c817a8"
+    },
+    "approved_at": "2026-05-11T15:36:49.565Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3594.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605111536-F6FWTH_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-11T15:36:49.565Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605111536-F6FWTH/README.md",
+      "sha256": "sha256:71120cd2b6597f25d87d24c4fd79191fbbfb4580509b067f49fc6fe8a8c817a8"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605111536-F6FWTH/README.md",
+      "sha256": "sha256:71120cd2b6597f25d87d24c4fd79191fbbfb4580509b067f49fc6fe8a8c817a8"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605111536-F6FWTH/README.md",
+      "sha256": "sha256:71120cd2b6597f25d87d24c4fd79191fbbfb4580509b067f49fc6fe8a8c817a8"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605111536-F6FWTH/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:309bccf835d94ac1bb06db3a4c7689d6e2f2eeb54fe802479f0e250abaa915e9"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 8fe62d47afeecea373405fa91477677f846c19ce if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:9ee889d6691b75851ba9056c5e07086243a3daf686ff7f0602ce746db6d8095a",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "quality.regression",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "regression.original_failure",
+          "kind": "artifact",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "regression.reproduction",
+          "kind": "check_result",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "regression.focused_check",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "regression.matrix_or_scope",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "regression.full_gate",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "regression.flake_classification",
+          "kind": "weak_links",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "regression.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605111536-F6FWTH/blueprint/resolved-snapshot.json",
+        "digest": "eaefbf69d06b32fc0f70f948502112ce5a45976f3142719f1e6a3e9b20f45a9e",
+        "current_digest": "eaefbf69d06b32fc0f70f948502112ce5a45976f3142719f1e6a3e9b20f45a9e",
+        "route_changed": false,
+        "artifact_sha256": "sha256:309bccf835d94ac1bb06db3a4c7689d6e2f2eeb54fe802479f0e250abaa915e9",
+        "safe_command": "agentplane blueprint snapshot 202605111536-F6FWTH"
+      }
+    }
+  }
+}
