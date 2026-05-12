@@ -1,7 +1,8 @@
 ---
 id: "202605120909-JVPX7D"
 title: "Align installed branch_pr quickstart guidance"
-status: "DOING"
+result_summary: "installed quickstart and role guidance separate implementation commits from lifecycle/status checkpoints"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified installed quickstart and role guidance changes for branch_pr implementation commit wording."
   attempts: 0
-commit: null
+commit:
+  hash: "4ae23320a628e2e308973e0844b987b8c8a6adef"
+  message: "Merge pull request #3591 from basilisk-labs/task-202605100837-B14YQC-branch-pr-docs-happy-path"
 comments:
   -
     author: "CODER"
     body: "Start: align installed branch_pr quickstart and role guidance in the existing B14YQC batch branch, keeping source/help changes under a code task."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3591 merged installed branch_pr quickstart guidance with checks green and no review comments."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified installed quickstart and role guidance changes for branch_pr implementation commit wording."
+  -
+    type: "status"
+    at: "2026-05-12T09:21:42.931Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3591 merged installed branch_pr quickstart guidance with checks green and no review comments."
 doc_version: 3
-doc_updated_at: "2026-05-12T09:15:48.845Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-12T09:21:42.931Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update installed quickstart and role guidance so branch_pr clearly separates task-worktree implementation commits from lifecycle/status checkpoints and finish uses an explicit task-branch commit hash."
 sections:
   Summary: |-
