@@ -1,7 +1,8 @@
 ---
 id: "202605111602-30JHZH"
 title: "Stabilize readiness command exit semantics"
-status: "DOING"
+result_summary: "Readiness command exit semantics stabilized for v0.5."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts, plus full cli-core. Result: pass. Evidence: readiness focused file passed 11 tests; full cli-core passed 83 files and 675 tests. Scope: readiness command exit semantics and branch_pr CLI regressions."
   attempts: 0
-commit: null
+commit:
+  hash: "624c1f5ea051ada4e7377a374dd8ac2b77479f71"
+  message: "🔀 XQM14A integrate: Stabilize v0.5 CLI readiness"
 comments:
   -
     author: "CODER"
     body: "Start: stabilizing readiness command exit semantics with branch-meta and full cli-core regression coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: readiness exit semantics passed focused branch-meta readiness checks and the full cli-core suite."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts, plus full cli-core. Result: pass. Evidence: readiness focused file passed 11 tests; full cli-core passed 83 files and 675 tests. Scope: readiness command exit semantics and branch_pr CLI regressions."
+  -
+    type: "status"
+    at: "2026-05-12T06:21:07.183Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: readiness exit semantics passed focused branch-meta readiness checks and the full cli-core suite."
 doc_version: 3
-doc_updated_at: "2026-05-12T06:18:06.075Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-12T06:21:07.183Z"
+doc_updated_by: "INTEGRATOR"
 description: "Stabilize task readiness exit semantics and diagnostics without hidden dependencies on temporary artifacts."
 sections:
   Summary: |-
