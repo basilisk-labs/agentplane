@@ -10,6 +10,7 @@ import { getPathKind } from "../../../fs-utils.js";
 import { InitAborted, type InitClackPrompts } from "./prompts.js";
 import type { InitEffect, InitFlags, InitParsed, InitPlan } from "./model.js";
 import type { InitAnswers } from "./answers.js";
+import { applyInitBaseBranchSelection, type InitBaseBranchSelection } from "./base-branch.js";
 import { collectInitConflicts, handleInitConflicts } from "./conflicts.js";
 import { maybeSyncIde } from "./ide-sync.js";
 import { promptConflictResolverStep, applyInitWithProgress } from "./steps/index.js";
@@ -314,7 +315,7 @@ export async function applyInitPlan(opts: {
   clack: InitClackPrompts | null;
   answers: InitAnswers;
   paths: ResolvedInitPaths;
-  initBaseBranch: string;
+  initBaseBranchSelection: InitBaseBranchSelection;
   conflictMode: { backup: boolean; force: boolean };
   conflicts: string[];
   ensureGitRoot: (opts: {
@@ -327,6 +328,10 @@ export async function applyInitPlan(opts: {
     baseBranchFallback: "main",
   });
   const paths = { ...opts.paths, gitRoot: ensured.gitRoot, gitRootExisted: ensured.gitRootExisted };
+  await applyInitBaseBranchSelection({
+    gitRoot: paths.gitRoot,
+    selection: opts.initBaseBranchSelection,
+  });
   await handleInitConflicts({
     gitRoot: paths.gitRoot,
     conflicts: opts.conflicts,
@@ -360,7 +365,7 @@ export async function applyInitPlan(opts: {
           await setPinnedBaseBranch({
             cwd: paths.gitRoot,
             rootOverride: paths.gitRoot,
-            value: opts.initBaseBranch,
+            value: opts.initBaseBranchSelection.baseBranch,
           });
         }
       },
@@ -442,7 +447,7 @@ export async function applyInitPlan(opts: {
       installCommit: async (installPaths) => {
         await ensureInitCommit({
           gitRoot: paths.gitRoot,
-          baseBranch: opts.initBaseBranch,
+          baseBranch: opts.initBaseBranchSelection.baseBranch,
           installPaths: [...installPaths],
           version: getVersion(),
           skipHooks: true,
