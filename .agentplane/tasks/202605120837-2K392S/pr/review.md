@@ -12,8 +12,8 @@ Created: 2026-05-12T08:38:31.207Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified init base-branch creation is deferred until confirmed apply.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

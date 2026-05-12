@@ -15,8 +15,8 @@ Fix init so interactive base-branch creation is planned before confirmation and 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified init base-branch creation is deferred until confirmed apply.
 - Canonical workflow state lives in the task README.
 
 <details>
