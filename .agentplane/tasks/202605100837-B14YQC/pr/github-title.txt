@@ -1,1 +1,1 @@
-🚧 B14YQC task: Pre-v0.5: update branch_pr docs and quickstart happy path [202605100837-B14YQC]
+✅ B14YQC task: Pre-v0.5: update branch_pr docs and quickstart happy path [202605100837-B14YQC]
