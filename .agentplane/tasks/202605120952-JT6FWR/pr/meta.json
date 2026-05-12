@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-12T10:05:36Z",
   "base": "main",
   "branch": "task/202605120952-JT6FWR/init-rfq-controls",
   "created_at": "2026-05-12T09:52:47.377Z",
-  "head_sha": "eaf139fac6fcb1f1098e6b02b2f3da859d0f215a",
+  "head_sha": "61c0b766de2c26c420c1176cfdaa79e0895ef574",
   "last_verified_at": "2026-05-12T10:02:54.382Z",
   "last_verified_sha": "b52b4f106e97a425dc16c05652697c3f2b93ed1d",
+  "merge_commit": "06d67d932eec362dfe3081742e4f633061bfca95",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-12T10:05:36Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605120952-JT6FWR",
-  "updated_at": "2026-05-12T10:03:15.025Z",
+  "updated_at": "2026-05-12T10:05:36Z",
   "verify": {
     "status": "pass"
   }

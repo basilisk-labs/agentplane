@@ -1,7 +1,8 @@
 ---
 id: "202605120952-JT6FWR"
 title: "Implement init mode and tool RFQ controls"
-status: "DOING"
+result_summary: "Merged via PR #3596."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts; bunx eslint packages/agentplane/src/cli/run-cli/commands/init packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts; bunx prettier --check packages/agentplane/src/cli/run-cli/commands/init packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts docs/user/cli-reference.generated.mdx; bun run docs:cli:check; bun run typecheck; node .agentplane/policy/check-routing.mjs; ap doctor. Result: pass. Evidence: init tests 32 passed; CLI reference fresh; typecheck/routing/doctor OK. Scope: --init-mode/--quick/--advanced, --tool mapping, InitPlan mode/profile fields, generated CLI docs."
   attempts: 0
-commit: null
+commit:
+  hash: "06d67d932eec362dfe3081742e4f633061bfca95"
+  message: "🚧 JT6FWR task: Implement init mode and tool RFQ controls [202605120952-JT6FWR] (#3596)"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the RFQ init mode/tool controls as the primary batch worktree owner, including plan schema compatibility and focused init tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3596 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts; bunx eslint packages/agentplane/src/cli/run-cli/commands/init packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts; bunx prettier --check packages/agentplane/src/cli/run-cli/commands/init packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts docs/user/cli-reference.generated.mdx; bun run docs:cli:check; bun run typecheck; node .agentplane/policy/check-routing.mjs; ap doctor. Result: pass. Evidence: init tests 32 passed; CLI reference fresh; typecheck/routing/doctor OK. Scope: --init-mode/--quick/--advanced, --tool mapping, InitPlan mode/profile fields, generated CLI docs."
+  -
+    type: "status"
+    at: "2026-05-12T10:06:22.141Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3596 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-12T10:02:54.388Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-12T10:06:22.141Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add user-facing init mode/tool flags and expose mode/profile in the init plan while preserving legacy init flags."
 sections:
   Summary: |-
