@@ -1,7 +1,8 @@
 ---
 id: "202605111603-269GK3"
 title: "Audit recipes and blueprints CLI coverage and outputs"
-status: "DOING"
+result_summary: "Recipes and blueprints CLI coverage audited for v0.5."
+status: "DONE"
 priority: "med"
 owner: "TESTER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "TESTER"
   note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-recipes and cli-core blueprint/help/docs-cli focused tests. Result: pass. Evidence: cli-recipes passed 3 files and 31 tests; blueprint/help/docs-cli passed 3 files and 38 tests. Scope: recipes and blueprints CLI coverage and output contracts."
   attempts: 0
-commit: null
+commit:
+  hash: "624c1f5ea051ada4e7377a374dd8ac2b77479f71"
+  message: "🔀 XQM14A integrate: Stabilize v0.5 CLI readiness"
 comments:
   -
     author: "TESTER"
     body: "Start: auditing recipes and blueprint CLI coverage with dedicated recipe and blueprint command test evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: recipes and blueprints CLI coverage passed cli-recipes, blueprint, help, and docs-cli checks."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-recipes and cli-core blueprint/help/docs-cli focused tests. Result: pass. Evidence: cli-recipes passed 3 files and 31 tests; blueprint/help/docs-cli passed 3 files and 38 tests. Scope: recipes and blueprints CLI coverage and output contracts."
+  -
+    type: "status"
+    at: "2026-05-12T06:21:22.889Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: recipes and blueprints CLI coverage passed cli-recipes, blueprint, help, and docs-cli checks."
 doc_version: 3
-doc_updated_at: "2026-05-12T06:18:07.261Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-05-12T06:21:22.889Z"
+doc_updated_by: "INTEGRATOR"
 description: "Audit and lock CLI coverage for recipes and blueprints commands: list, scaffold, explain, install, and related invariants before v0.5."
 sections:
   Summary: |-
