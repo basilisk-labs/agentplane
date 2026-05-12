@@ -1,0 +1,17 @@
+ .agentplane/tasks/202605120952-D2F8VR/README.md    |  95 ++++
+ .../blueprint/resolved-snapshot.json               | 512 +++++++++++++++++++++
+ .../blueprint/resolved-snapshot.json               | 512 +++++++++++++++++++++
+ .agentplane/tasks/202605120952-MG1QB4/README.md    |  95 ++++
+ .../blueprint/resolved-snapshot.json               | 512 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |  10 +
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |  58 +++
+ .../src/cli/run-cli/commands/init/answers.ts       |  27 +-
+ .../src/cli/run-cli/commands/init/blueprints.ts    |  15 +-
+ .../src/cli/run-cli/commands/init/execution.ts     |  20 +-
+ .../src/cli/run-cli/commands/init/git.ts           |  15 +
+ .../src/cli/run-cli/commands/init/model.ts         |  12 +-
+ .../src/cli/run-cli/commands/init/modes.ts         |  48 ++
+ .../src/cli/run-cli/commands/init/orchestrate.ts   |  23 +-
+ .../src/cli/run-cli/commands/init/recipes.ts       |   9 +-
+ .../src/cli/run-cli/commands/init/spec.ts          |  50 ++
+ 16 files changed, 1992 insertions(+), 21 deletions(-)
