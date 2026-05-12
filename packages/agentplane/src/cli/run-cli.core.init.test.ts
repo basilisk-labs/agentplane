@@ -619,7 +619,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--dry-run", "--yes", "--backup", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("backup_path .agentplane/config.json");
+      expect(normalizeSlashes(io.stdout)).toContain("backup_path .agentplane/config.json");
     } finally {
       io.restore();
     }
@@ -642,7 +642,9 @@ describe("runCli", () => {
       const envelope = JSON.parse(io.stdout) as {
         data?: { conflicts?: string[]; warnings?: string[]; effects?: { kind: string }[] };
       };
-      expect(envelope.data?.conflicts).toContain(".agentplane/config.json");
+      expect(
+        (envelope.data?.conflicts ?? []).map((conflict) => normalizeSlashes(conflict)),
+      ).toContain(".agentplane/config.json");
       expect(envelope.data?.warnings).toContain(
         "Conflicts require --backup or --force before apply.",
       );
