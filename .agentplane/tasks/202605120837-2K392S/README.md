@@ -1,7 +1,8 @@
 ---
 id: "202605120837-2K392S"
 title: "Defer init base branch creation until apply"
-status: "DOING"
+result_summary: "Merged via PR #3589."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Verified init base-branch creation is deferred until confirmed apply."
   attempts: 0
-commit: null
+commit:
+  hash: "ddee464b25a054baf55fa1a1908a05fcc48017d1"
+  message: "Merge pull request #3589 from basilisk-labs/task/202605120837-2K392S/defer-init-base-branch-apply"
 comments:
   -
     author: "CODER"
     body: "Start: Fix init so interactive base-branch creation is deferred until confirmed apply, with regression coverage for cancel-before-apply behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3589 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified init base-branch creation is deferred until confirmed apply."
+  -
+    type: "status"
+    at: "2026-05-12T08:55:01.543Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3589 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-12T08:50:07.146Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-12T08:55:01.543Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix init so interactive base-branch creation is planned before confirmation and only performs git mutations during apply."
 sections:
   Summary: |-
