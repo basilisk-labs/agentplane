@@ -1,21 +1,32 @@
+Task: `202605121704-F6295Q`
+Title: Add blog post: Why Blueprints matter
+Canonical task record: `.agentplane/tasks/202605121704-F6295Q/README.md`
+
 ## Summary
 
-Add a new blog post in the AgentPlane website blog explaining what Blueprints are and why they are required for stable repository-native agent workflows.
+Add a docs blog post in Russian explaining what Blueprints are and why they matter for stable releases.
 
-## Why this matters
+## Scope
 
-Blueprints define repeatable scenario-level behavior for agents and tasks. The post helps align teams on the purpose of Blueprints and where they reduce operational risk.
+- In scope: Add a docs blog post about Blueprints and their role in release reliability.
+- Out of scope: unrelated refactors and framework changes.
 
-## What changed
+## Verification
 
-- Added a Russian-language blog post at `website/blog/2026-05-12-why-blueprints-matter.mdx`.
-- The post explains:
-  - practical meaning of Blueprints in AgentPlane,
-  - why they are required beyond simple instructions,
-  - and how they improve release and workflow reliability.
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
 
-## Validation
+<details>
+<summary>Raw evidence</summary>
 
-- Release task `202605121405-8RFYET` completed and published as version `0.5.0`.
-- Main branch received the release merge from PR #3602 with hosted close.
-- This blog post is only docs-site content and does not affect runtime behavior.
+- Updated: 2026-05-12T17:08:40.073Z
+- Branch: task/202605121704-F6295Q/blueprints-why-you-need
+- Head: b870f0efdd5f
+
+```text
+ website/blog/2026-05-12-why-blueprints-matter.mdx | 80 +++++++++++++++++++++++
+ 1 file changed, 80 insertions(+)
+```
+
+</details>

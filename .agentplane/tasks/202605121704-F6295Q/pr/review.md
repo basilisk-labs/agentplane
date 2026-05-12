@@ -24,13 +24,13 @@ Created: 2026-05-12T17:05:31.877Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-12T17:05:31.877Z
+- Updated: 2026-05-12T17:08:40.073Z
 - Branch: task/202605121704-F6295Q/blueprints-why-you-need
-- Head: f4b8dd6262d6
+- Head: b870f0efdd5f
 
 ```text
- website/blog/2026-05-12-why-blueprints-matter.mdx | 78 +++++++++++++++++++++++
- 1 file changed, 78 insertions(+)
+ website/blog/2026-05-12-why-blueprints-matter.mdx | 80 +++++++++++++++++++++++
+ 1 file changed, 80 insertions(+)
 ```
 
 </details>
