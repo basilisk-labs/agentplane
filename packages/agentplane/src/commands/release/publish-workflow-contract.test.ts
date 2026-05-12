@@ -164,11 +164,12 @@ describe("publish workflow contract", () => {
     }
   });
 
-  it("checks out recursive submodules before validating the exact-ref publish payload", async () => {
+  it("checks out base revision and initializes required submodules for publish", async () => {
     const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
 
     expect(workflow).toContain("fetch-depth: 0");
-    expect(workflow).toContain("submodules: recursive");
+    expect(workflow).toContain("submodules: false");
+    expect(workflow).toContain("Initialize required publish-relevant submodules");
     expect(workflow).toContain("NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || '' }}");
     expect(workflow).toContain("NPM_TOKEN: ${{ secrets.NPM_TOKEN || '' }}");
     expect(workflow).toContain("packages: write");
