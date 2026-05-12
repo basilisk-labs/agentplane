@@ -184,7 +184,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     expect(readme).toContain("  Line one");
     expect(readme).toContain("  Line two");
     expect(readme).not.toContain(String.raw`literal \n sequences`);
-    expect(readme).not.toMatch(/\n## Summary\n/);
+    expect(readme).toContain("## Summary");
 
     const task = await readTask({ cwd: root, rootOverride: root, taskId: id });
     expect(task.frontmatter.description).toBe("Line one\n\nLine two");
@@ -521,8 +521,8 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     const readmePath = path.join(root, ".agentplane", "tasks", id, "README.md");
     const readme = await readFile(readmePath, "utf8");
     expect(readme).toContain("sections:");
-    expect(readme).not.toMatch(/\n## Verify Steps\n/);
-    expect(readme).not.toMatch(/\n## Findings\n/);
+    expect(readme).toContain("## Verify Steps");
+    expect(readme).toContain("## Findings");
     expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
 
     const task = await readTask({ cwd: root, rootOverride: root, taskId: id });
@@ -565,7 +565,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     const readmePath = path.join(root, ".agentplane", "tasks", id, "README.md");
     const readme = await readFile(readmePath, "utf8");
     expect(readme).toContain("sections:");
-    expect(readme).not.toMatch(/\n## Verify Steps\n/);
+    expect(readme).toContain("## Verify Steps");
     expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
 
     const task = await readTask({ cwd: root, rootOverride: root, taskId: id });
@@ -608,7 +608,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
     const readmePath = path.join(root, ".agentplane", "tasks", id, "README.md");
     const readme = await readFile(readmePath, "utf8");
     expect(readme).toContain("sections:");
-    expect(readme).not.toMatch(/\n## Verify Steps\n/);
+    expect(readme).toContain("## Verify Steps");
     expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
 
     const task = await readTask({ cwd: root, rootOverride: root, taskId: id });

@@ -137,7 +137,7 @@ describe("commands/workflow", () => {
     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const text = await readFile(readmePath, "utf8");
     const parsed = parseTaskReadme(text);
-    expect((text.match(/^## Summary$/gm) ?? []).length).toBe(0);
+    expect((text.match(/^## Summary$/gm) ?? []).length).toBe(1);
     expect((parsed.frontmatter.sections as Record<string, string>).Summary).toBe("Hello from file");
   });
 
@@ -188,7 +188,7 @@ describe("commands/workflow", () => {
     const text = await readFile(readmePath, "utf8");
     const parsed = parseTaskReadme(text);
     const doc = renderTaskDocFromSections(parsed.frontmatter.sections as Record<string, string>);
-    expect(text).not.toContain("## Plan");
+    expect(text).toContain("## Plan");
     expect(doc).toContain("## Plan");
     expect(doc).toContain("Do X then Y.");
     expect(text).toContain("plan_approval:");

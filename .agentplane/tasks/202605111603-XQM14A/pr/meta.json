@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605111603-XQM14A/v05-cli-readiness",
+  "created_at": "2026-05-12T06:18:48.492Z",
+  "head_sha": "f5d1ea8a6a300dc1c8dd139af31cccf8a585e13c",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605111603-XQM14A",
+  "updated_at": "2026-05-12T06:18:48.492Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

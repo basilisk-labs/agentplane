@@ -239,10 +239,29 @@ describe("runCli task run custom adapter outcomes", { timeout: TASKS_QUERY_CLI_T
         verification_candidates: ["inspect reports/custom.txt", "inspect logs/custom.log"],
       });
       expect(await pathExists(sourceResultPath)).toBe(true);
-      expect(await readFile(sourceResultPath, "utf8")).toContain("Привет из custom manifest");
-      expect(await readFile(sourceResultPath, "utf8")).toContain("русский finding");
-      expect(await readFile(sourceResultPath, "utf8")).toContain("русский hint");
-      expect(await readFile(sourceResultPath, "utf8")).toContain('"files_changed_count":2');
+      const sourceResultRaw = await readFile(sourceResultPath, "utf8");
+      const sourceResult = JSON.parse(sourceResultRaw) as {
+        summary?: string;
+        findings?: unknown;
+        verification_hints?: unknown;
+        evidence?: {
+          files_changed_count?: number;
+        };
+      };
+      expect(sourceResult.summary).toBe("Привет из custom manifest");
+      const hasCyrillicFinding =
+        typeof sourceResult.findings === "string"
+          ? sourceResult.findings.includes("русский finding")
+          : Array.isArray(sourceResult.findings) &&
+            sourceResult.findings.includes("русский finding");
+      const hasCyrillicHint =
+        typeof sourceResult.verification_hints === "string"
+          ? sourceResult.verification_hints.includes("русский hint")
+          : Array.isArray(sourceResult.verification_hints) &&
+            sourceResult.verification_hints.includes("русский hint");
+      expect(hasCyrillicFinding).toBe(true);
+      expect(hasCyrillicHint).toBe(true);
+      expect(sourceResult.evidence?.files_changed_count).toBe(2);
 
       const task = await readTask({ cwd: root, rootOverride: root, taskId });
       expect(task.frontmatter.runner).toMatchObject({

@@ -63,9 +63,9 @@ Keep scope.
     expect(migrated).toContain("Verify Steps:");
     expect(migrated).toContain("Verification:");
     expect(migrated).toContain("Findings:");
-    expect(migrated).not.toContain("## Plan");
-    expect(migrated).not.toContain("## Verify Steps");
-    expect(migrated).not.toContain("## Verification");
+    expect(migrated).toContain("## Plan");
+    expect(migrated).toContain("## Verify Steps");
+    expect(migrated).toContain("## Verification");
     expect(migrated).not.toContain("## Notes");
     expect(migrated).not.toContain("### Plan");
     expect(migrated).not.toContain("### Results");
@@ -315,7 +315,7 @@ Legacy verification notes.
     expect(migrated).toContain("Verification: |-");
     expect(migrated).toContain("Legacy verification notes.");
     expect(migrated).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
-    expect(migrated).not.toContain("## Verification");
+    expect(migrated).toContain("## Verification");
     expect(migrated).not.toContain("### Plan");
     expect(migrated).not.toContain("### Results");
   });
@@ -379,8 +379,8 @@ Stale rendered scope.
     expect(migrated).toContain("revision: 1");
     expect(migrated).toContain('Summary: "Canonical summary."');
     expect(migrated).toContain('Findings: "Canonical finding."');
-    expect(migrated).not.toContain("## Summary");
-    expect(migrated).not.toContain("## Findings");
+    expect(migrated).toContain("## Summary");
+    expect(migrated).toContain("## Findings");
     expect(migrated).not.toContain("Stale rendered summary.");
     expect(migrated).not.toContain("Stale rendered scope.");
   });

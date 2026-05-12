@@ -27,7 +27,9 @@ const noopPromise = (): Promise<void> => Promise.resolve();
 const GIT_INTEGRATE_LOCK_REMEDIATION =
   "Wait for the active AgentPlane write operation in this worktree, then retry integration.";
 
-function classifyGitMutationFailure(message: string): "E_GIT_LOCKED" | "E_GIT_PERMISSION" | "E_GIT_RACE" | "E_GIT" {
+function classifyGitMutationFailure(
+  message: string,
+): "E_GIT_LOCKED" | "E_GIT_PERMISSION" | "E_GIT_RACE" | "E_GIT" {
   if (message.includes("index.lock") || /could not lock|unable to create .*lock/.test(message)) {
     return "E_GIT_LOCKED";
   }
@@ -100,17 +102,17 @@ async function runWithIntegrationMutation<T>(opts: {
           message: `${opts.command} failed: ${message}`,
           context: withDiagnosticContext(
             {
-                ...(await resolveGitMutationDiagnosticContext({
-                  command: opts.command,
-                  cwd: opts.repoRoot,
-                  repoRoot: opts.repoRoot,
-                  workflowMode: opts.workflowMode,
-                  mutationKind: "integration" as GitMutationKind,
-                  taskId: opts.taskId,
-                  changedPaths: opts.changedPaths,
-                  stagedPaths: [],
-                })),
-                remediation,
+              ...(await resolveGitMutationDiagnosticContext({
+                command: opts.command,
+                cwd: opts.repoRoot,
+                repoRoot: opts.repoRoot,
+                workflowMode: opts.workflowMode,
+                mutationKind: "integration" as GitMutationKind,
+                taskId: opts.taskId,
+                changedPaths: opts.changedPaths,
+                stagedPaths: [],
+              })),
+              remediation,
             },
             {
               state: `${opts.command} failed during integration mutation`,
@@ -461,7 +463,10 @@ export async function runRebaseFastForward(opts: {
       taskId: opts.taskId,
       changedPaths: opts.changedPaths,
       run: async () => {
-        await execFileAsync("git", ["rebase", opts.base], { cwd: opts.worktreePath, env: gitEnv() });
+        await execFileAsync("git", ["rebase", opts.base], {
+          cwd: opts.worktreePath,
+          env: gitEnv(),
+        });
       },
     });
   } catch (err) {

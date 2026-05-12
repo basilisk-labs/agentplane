@@ -86,6 +86,20 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
+
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--ok",
+      "--by",
+      "TESTER",
+      "--note",
+      "Ok to finish after current snapshot",
+      "--quiet",
+      "--root",
+      root,
+    ]);
 
     const io = captureStdIO();
     try {
@@ -160,6 +174,7 @@ describe("runCli", () => {
         ioNew.restore();
       }
 
+      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
       await runCliSilent([
         "verify",
         taskId,
@@ -264,6 +279,19 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
+      await runCliSilent([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "TESTER",
+        "--note",
+        "Ok to finish via commit-from-comment path.",
+        "--quiet",
+        "--root",
+        root,
+      ]);
 
       await writeFile(path.join(root, "file.txt"), "seed\nchanged\n", "utf8");
 
@@ -360,6 +388,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
       const hookPath = path.join(root, ".git", "hooks", "pre-commit");
       const preCommit = ["#!/bin/sh", 'echo "HOOK_CLOSE_COMMIT_BLOCKED" 1>&2', "exit 1", ""].join(

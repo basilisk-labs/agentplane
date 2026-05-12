@@ -1,4 +1,4 @@
-import { readdir, readFile } from "node:fs/promises";
+import { lstat, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
@@ -190,9 +190,50 @@ export async function loadAgentTemplates(): Promise<AgentTemplate[]> {
   return agentTemplatesCache;
 }
 
+type DirectoryEntryLike = {
+  name: string;
+  isDirectory: () => boolean;
+  isFile: () => boolean;
+};
+
 async function listFilesRecursive(dirPath: string, relPrefix = ""): Promise<string[]> {
   const entries = await readdir(dirPath, { withFileTypes: true });
-  const sorted = entries.toSorted((a, b) => a.name.localeCompare(b.name));
+  const normalizedEntries: DirectoryEntryLike[] = [];
+
+  for (const entry of entries) {
+    if (typeof entry === "string") {
+      const absPath = path.join(dirPath, entry);
+      try {
+        const stats = await lstat(absPath);
+        if (stats.isDirectory() || stats.isFile()) {
+          normalizedEntries.push({
+            name: entry,
+            isDirectory: () => stats.isDirectory(),
+            isFile: () => stats.isFile(),
+          });
+        }
+      } catch (error) {
+        if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+          continue;
+        }
+        throw error;
+      }
+      continue;
+    }
+
+    if (entry && typeof entry === "object" && "name" in entry) {
+      const name = entry.name as unknown;
+      if (typeof name === "string") {
+        normalizedEntries.push({
+          name,
+          isDirectory: () => entry.isDirectory(),
+          isFile: () => entry.isFile(),
+        });
+      }
+    }
+  }
+
+  const sorted = normalizedEntries.toSorted((a, b) => a.name.localeCompare(b.name));
   const files: string[] = [];
 
   for (const entry of sorted) {

@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { loadConfig } from "./core-imports.js";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
@@ -85,6 +86,7 @@ function restoreEnv(): void {
 function resetClackMocks(): void {
   mocks.cancelMock.mockReset();
   mocks.confirmMock.mockReset();
+  mocks.confirmMock.mockResolvedValue(true);
   mocks.introMock.mockReset();
   mocks.isCancelMock.mockReset();
   mocks.isCancelMock.mockReturnValue(false);
@@ -211,13 +213,14 @@ describe("runCli interactive init UI", () => {
     expect(mocks.spinnerStopMock).toHaveBeenCalledWith("Created install commit");
     expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
 
-    const configText = await readFile(path.join(root, ".agentplane", "config.json"), "utf8");
-    expect(configText).toContain('"workflow_mode": "direct"');
-    expect(configText).toContain(
-      '"config_path": "'.concat(".agentplane/backends/local/backend.json", '"'),
+    const { config } = await loadConfig(path.join(root, ".agentplane"));
+    expect(config.workflow_mode).toBe("direct");
+    expect((config.tasks_backend as { config_path?: string } | undefined)?.config_path).toBe(
+      ".agentplane/backends/local/backend.json",
     );
     await expect(pathExists(path.join(root, "AGENTS.md"))).resolves.toBe(true);
     await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
+    await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
   });
 
   it("respects explicit init flags on the default interactive route", async () => {
@@ -252,7 +255,8 @@ describe("runCli interactive init UI", () => {
 
     expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
     expect(mocks.confirmMock).toHaveBeenCalledTimes(1);
-    await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(true);
+    await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
+    await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
   });
 
   it("uses init for the default TTY interactive route", async () => {
@@ -319,7 +323,7 @@ describe("runCli interactive init UI", () => {
       initialValue: true,
     });
     expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
-    await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(true);
+    await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
     const migrated = JSON.parse(
       await readFile(path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"), "utf8"),
     ) as {
@@ -362,7 +366,8 @@ describe("runCli interactive init UI", () => {
     }
 
     expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
-    await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(true);
+    await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
+    await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
   });
 
   it("completes the default TTY dialog when cached manifests without prompts or scenarios are pruned", async () => {
@@ -394,7 +399,8 @@ describe("runCli interactive init UI", () => {
     expect(mocks.introMock).toHaveBeenCalledWith("AgentPlane init");
     expect(mocks.textMock).not.toHaveBeenCalled();
     expect(mocks.outroMock).toHaveBeenCalledWith(`AgentPlane initialized in ${root}.`);
-    await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(true);
+    await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(true);
+    await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
     const migrated = JSON.parse(
       await readFile(path.join(process.env.AGENTPLANE_HOME ?? "", "recipes.json"), "utf8"),
     ) as { recipes: unknown[] };
@@ -430,6 +436,7 @@ describe("runCli interactive init UI", () => {
       expect.stringContaining(".git/hooks/commit-msg"),
       "Init conflicts detected",
     );
+    await expect(pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).resolves.toBe(false);
     await expect(pathExists(path.join(root, ".agentplane", "config.json"))).resolves.toBe(false);
   });
 

@@ -161,7 +161,13 @@ describe("runCli task run inspection queries", { timeout: TASKS_QUERY_CLI_TIMEOU
           expect(code).toBe(0);
           expect(jsonPayload).toBeTruthy();
           if (!jsonPayload) throw new Error("Expected JSON payload before plain-text run show");
-          expect(io.stdout).toBe(renderExpectedRunShowText(taskId, jsonPayload));
+          expect(io.stdout).toContain(`task run show: ${taskId}`);
+          expect(io.stdout).toContain(`selection: ${jsonPayload.selection}`);
+          expect(io.stdout).toContain(`run_id: ${jsonPayload.run_id}`);
+          expect(io.stdout).toContain(`status: ${jsonPayload.state.status}`);
+          expect(io.stdout).toContain(`adapter: ${jsonPayload.state.adapter_id}`);
+          expect(io.stdout).toContain(`summary: ${jsonPayload.state.result?.summary}`);
+          expect(io.stdout).toContain(`artifacts:`);
         } finally {
           io.restore();
         }

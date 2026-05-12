@@ -1,0 +1,208 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605111602-1QZ9XE",
+  "created_at": "2026-05-12T06:20:47.756Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "624c1f5ea051ada4e7377a374dd8ac2b77479f71",
+    "work_ref": "main",
+    "work_commit": "624c1f5ea051ada4e7377a374dd8ac2b77479f71"
+  },
+  "task": {
+    "task_id": "202605111602-1QZ9XE",
+    "title": "Resolve v0.5 CLI upgrade test timeouts and artifact paths",
+    "intent": "Reduce v0.5 upgrade regressions and restore stable dry-run, restore, and artifact-path behavior before release.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605111602-1QZ9XE/README.md",
+      "sha256": "sha256:f8cd26f2156a78d2b1d88ddb05c50ddac0d3eddf50762eb1bd8d7866e4243b5e"
+    },
+    "approved_at": "2026-05-12T06:11:53.775Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Upgrade and artifact-path regressions resolved for v0.5 readiness.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605111602-1QZ9XE_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-12T06:11:53.775Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605111602-1QZ9XE/README.md",
+      "sha256": "sha256:f8cd26f2156a78d2b1d88ddb05c50ddac0d3eddf50762eb1bd8d7866e4243b5e"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605111602-1QZ9XE/README.md",
+      "sha256": "sha256:f8cd26f2156a78d2b1d88ddb05c50ddac0d3eddf50762eb1bd8d7866e4243b5e"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605111602-1QZ9XE/README.md",
+      "sha256": "sha256:f8cd26f2156a78d2b1d88ddb05c50ddac0d3eddf50762eb1bd8d7866e4243b5e"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605111602-1QZ9XE/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:e1bdae22b7d214189429826cd5ec914dbfdb8cdc05cdb29470d9ea0e1e0e04ee"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 624c1f5ea051ada4e7377a374dd8ac2b77479f71 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:d9f336e93729e3eea73c7f04486452dcbc5fd9b0396fb4a83bf901e50692b5a4",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "analysis.light",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "analysis.sources",
+          "kind": "sources",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "analysis.assumptions",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "analysis.weak_links",
+          "kind": "weak_links",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "analysis.final",
+          "kind": "final_output",
+          "produced_by": "work_unit",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605111602-1QZ9XE/blueprint/resolved-snapshot.json",
+        "digest": "b5d2b442fe23268c9e559e7fc6b7931ac073442e07c4729d111b3b77b258d120",
+        "current_digest": "b5d2b442fe23268c9e559e7fc6b7931ac073442e07c4729d111b3b77b258d120",
+        "route_changed": false,
+        "artifact_sha256": "sha256:e1bdae22b7d214189429826cd5ec914dbfdb8cdc05cdb29470d9ea0e1e0e04ee",
+        "safe_command": "agentplane blueprint snapshot 202605111602-1QZ9XE"
+      }
+    }
+  }
+}

@@ -87,6 +87,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
       const hookPath = path.join(root, ".git", "hooks", "pre-commit");
       const preCommit = [
@@ -182,6 +183,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
       const io = captureStdIO();
       try {
@@ -300,6 +302,7 @@ describe("runCli", () => {
             root,
           ]);
           expect(code).toBe(0);
+          await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
         } finally {
           io.restore();
         }
@@ -419,6 +422,7 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await runCliSilent(["blueprint", "snapshot", taskA, "--root", root]);
     await runCliSilent([
       "verify",
       taskB,
@@ -431,6 +435,7 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await runCliSilent(["blueprint", "snapshot", taskB, "--root", root]);
 
     await writeFile(path.join(root, "finish.txt"), "done\n", "utf8");
     await execFileAsync("git", ["add", "."], { cwd: root });

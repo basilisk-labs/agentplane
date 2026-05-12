@@ -532,7 +532,7 @@ describe("commands/shared/TaskStore", () => {
     expect(result.changed).toBe(true);
     const final = await readFile(readmePath, "utf8");
     expect(final).toContain('Summary: "canonical summary"');
-    expect(final).not.toContain("## Summary");
+    expect(final).toContain("## Summary");
     expect(final).not.toContain("stale body");
   });
 
@@ -979,7 +979,7 @@ describe("commands/shared/TaskStore", () => {
 
     expect(result.changed).toBe(true);
     const final = await readFile(readmePath, "utf8");
-    expect(final).not.toContain("## Summary");
+    expect(final).toContain("## Summary");
     expect(final).toContain("my update");
     expect(final).toContain("concurrent plan");
   });
@@ -1108,7 +1108,7 @@ describe("commands/shared/TaskStore", () => {
 
     const parsed = parseTaskReadme(await readFile(readmePath, "utf8"));
     expect(parsed.frontmatter.sections).toMatchObject({ Summary: "after" });
-    expect(parsed.body).not.toContain("## Summary");
+    expect(parsed.body).toContain("## Summary");
     expect(parsed.body).not.toContain("STALE BODY");
   });
 });

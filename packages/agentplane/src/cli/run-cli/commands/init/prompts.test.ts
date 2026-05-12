@@ -7,7 +7,7 @@ import {
   shouldUseInitClackPrompts,
 } from "./prompts.js";
 
-const mocks = vi.hoisted(() => {
+const mocks = (() => {
   const cancelSymbol = Symbol("cancel");
   return {
     cancelSymbol,
@@ -15,7 +15,7 @@ const mocks = vi.hoisted(() => {
     isCancelMock: vi.fn((value: unknown) => value === cancelSymbol),
     selectMock: vi.fn(),
   };
-});
+})();
 
 vi.mock("@clack/prompts", () => ({
   cancel: mocks.cancelMock,

@@ -1,0 +1,208 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605111603-XQM14A",
+  "created_at": "2026-05-12T06:21:37.555Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "624c1f5ea051ada4e7377a374dd8ac2b77479f71",
+    "work_ref": "main",
+    "work_commit": "624c1f5ea051ada4e7377a374dd8ac2b77479f71"
+  },
+  "task": {
+    "task_id": "202605111603-XQM14A",
+    "title": "Fix branch_pr lifecycle and integrate regressions",
+    "intent": "Stabilize branch_pr integrate, PR-flow, finish, timeout, merge-branch, and close-commit behavior before release.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605111603-XQM14A/README.md",
+      "sha256": "sha256:0b407c99285d16797e18351b9f08367d9a5dcd708640ab95a1b0468bdf319312"
+    },
+    "approved_at": "2026-05-12T06:12:16.025Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "branch_pr lifecycle and integrate regressions stabilized for v0.5.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605111603-XQM14A_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-12T06:12:16.025Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605111603-XQM14A/README.md",
+      "sha256": "sha256:0b407c99285d16797e18351b9f08367d9a5dcd708640ab95a1b0468bdf319312"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605111603-XQM14A/README.md",
+      "sha256": "sha256:0b407c99285d16797e18351b9f08367d9a5dcd708640ab95a1b0468bdf319312"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605111603-XQM14A/README.md",
+      "sha256": "sha256:0b407c99285d16797e18351b9f08367d9a5dcd708640ab95a1b0468bdf319312"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605111603-XQM14A/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:28678b603e37ba85e899f20bbce38ae5fdea94ebb43b7fcdabd8522414818687"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 624c1f5ea051ada4e7377a374dd8ac2b77479f71 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:12b3dbee61263d8c6b8542c7b329198d454c0b25fa4fe252f98c9f3923de794e",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "analysis.light",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "analysis.sources",
+          "kind": "sources",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "analysis.assumptions",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "analysis.weak_links",
+          "kind": "weak_links",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "analysis.final",
+          "kind": "final_output",
+          "produced_by": "work_unit",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605111603-XQM14A/blueprint/resolved-snapshot.json",
+        "digest": "31e33eb5031c4c90021a18f4e0abbf3259a89218caf7b401819185951611ff72",
+        "current_digest": "31e33eb5031c4c90021a18f4e0abbf3259a89218caf7b401819185951611ff72",
+        "route_changed": false,
+        "artifact_sha256": "sha256:28678b603e37ba85e899f20bbce38ae5fdea94ebb43b7fcdabd8522414818687",
+        "safe_command": "agentplane blueprint snapshot 202605111603-XQM14A"
+      }
+    }
+  }
+}
