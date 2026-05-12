@@ -1,7 +1,8 @@
 ---
 id: "202605120952-MG1QB4"
 title: "Resolve init cached catalogs from target root"
-status: "DOING"
+result_summary: "Resolved init recipe/blueprint catalog lookup through the target root path and verified in the RFQ init test slice before merge."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts; bunx eslint packages/agentplane/src/cli/run-cli/commands/init; bun run typecheck. Result: pass. Evidence: init tests 32 passed; eslint/typecheck OK. Scope: init recipe/blueprint listing and validation now receive target root, and blueprint install loads catalog from rootOverride when provided."
   attempts: 0
-commit: null
+commit:
+  hash: "06d67d932eec362dfe3081742e4f633061bfca95"
+  message: "🚧 JT6FWR task: Implement init mode and tool RFQ controls [202605120952-JT6FWR] (#3596)"
 comments:
   -
     author: "CODER"
     body: "Start: implementing target-root-aware cached recipe and blueprint lookup inside the approved JT6FWR batch worktree, with focused init coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3596 merged target-root-aware init cached catalog lookup. Blueprint catalog listing/validation now accepts the init target cwd and cached install uses rootOverride when present."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts; bunx eslint packages/agentplane/src/cli/run-cli/commands/init; bun run typecheck. Result: pass. Evidence: init tests 32 passed; eslint/typecheck OK. Scope: init recipe/blueprint listing and validation now receive target root, and blueprint install loads catalog from rootOverride when provided."
+  -
+    type: "status"
+    at: "2026-05-12T10:32:10.192Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3596 merged target-root-aware init cached catalog lookup. Blueprint catalog listing/validation now accepts the init target cwd and cached install uses rootOverride when present."
 doc_version: 3
-doc_updated_at: "2026-05-12T10:02:57.871Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-12T10:32:10.192Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make init recipes and blueprints discovery/validation use the selected target root instead of process.cwd()."
 sections:
   Summary: |-
