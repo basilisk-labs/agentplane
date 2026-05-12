@@ -1,7 +1,8 @@
 ---
 id: "202605111706-Q5JJMW"
 title: "Backfill blueprint evidence preconditions in finish lifecycle CLI tests"
-status: "DOING"
+result_summary: "Blueprint evidence preconditions backfilled in finish lifecycle tests."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Command: branch_pr finish/close-commit/finish-validation focused tests and full cli-core. Result: pass. Evidence: focused branch_pr lifecycle set passed 9 files and 89 tests; full cli-core passed 83 files and 675 tests. Scope: blueprint snapshot preconditions in finish lifecycle tests."
   attempts: 0
-commit: null
+commit:
+  hash: "624c1f5ea051ada4e7377a374dd8ac2b77479f71"
+  message: "🔀 XQM14A integrate: Stabilize v0.5 CLI readiness"
 comments:
   -
     author: "CODER"
     body: "Start: backfilling blueprint evidence preconditions for finish lifecycle tests and branch_pr close flows."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: blueprint evidence preconditions passed branch_pr finish, close-commit, validation, and full cli-core checks."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: branch_pr finish/close-commit/finish-validation focused tests and full cli-core. Result: pass. Evidence: focused branch_pr lifecycle set passed 9 files and 89 tests; full cli-core passed 83 files and 675 tests. Scope: blueprint snapshot preconditions in finish lifecycle tests."
+  -
+    type: "status"
+    at: "2026-05-12T06:22:27.056Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: blueprint evidence preconditions passed branch_pr finish, close-commit, validation, and full cli-core checks."
 doc_version: 3
-doc_updated_at: "2026-05-12T06:18:30.336Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-12T06:22:27.056Z"
+doc_updated_by: "INTEGRATOR"
 description: "Backfill blueprint snapshot and verification preconditions in finish, close-commit, and branch_pr lifecycle CLI tests."
 sections:
   Summary: |-
