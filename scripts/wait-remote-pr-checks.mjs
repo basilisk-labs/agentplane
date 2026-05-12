@@ -95,6 +95,9 @@ function parseArgs(argv) {
     if (IGNORED_LEGACY_FLAGS.has(arg)) {
       continue;
     }
+    if (arg.startsWith("--")) {
+      throw new Error(`Unknown option: ${arg}`);
+    }
     options.targetArgs.push(arg);
   }
 
