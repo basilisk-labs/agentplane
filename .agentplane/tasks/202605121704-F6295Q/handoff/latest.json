@@ -1,0 +1,33 @@
+{
+  "base_branch": "main",
+  "branch": "task/202605121704-F6295Q/blueprints-why-you-need",
+  "created_at": "2026-05-12T17:11:12.053Z",
+  "evidence_paths": [
+    ".agentplane/tasks/202605121704-F6295Q/README.md",
+    ".agentplane/tasks/202605121704-F6295Q/pr/meta.json"
+  ],
+  "from_role": "INTEGRATOR",
+  "head_sha": "14fbed5b55a47c30b9d2e3df4e277dd0643cdc1a",
+  "next_actions": [
+    "agentplane task handoff show 202605121704-F6295Q",
+    "Merge the GitHub PR for branch task/202605121704-F6295Q/blueprints-why-you-need on GitHub",
+    "Wait for Task Hosted Close to finish",
+    "git pull --ff-only"
+  ],
+  "note": "Merge the GitHub PR for branch task/202605121704-F6295Q/blueprints-why-you-need on GitHub. After GitHub merge, wait for Task Hosted Close, then pull main.",
+  "pr_branch": "task/202605121704-F6295Q/blueprints-why-you-need",
+  "reason": "Protected base main requires GitHub pull-request merges.",
+  "route": {
+    "base_pull_command": "git pull --ff-only",
+    "finalize_via": "github_pr_merge_then_hosted_close",
+    "handoff_show_command": "agentplane task handoff show 202605121704-F6295Q",
+    "kind": "protected_base_integrate",
+    "local_mutation": "not_performed",
+    "pr_number": null,
+    "status": "awaiting_github_merge"
+  },
+  "schema_version": 1,
+  "task_id": "202605121704-F6295Q",
+  "to_role": null,
+  "workspace_root": "/Users/densmirnov/Github/agentplane"
+}

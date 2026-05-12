@@ -1,0 +1,194 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605121704-F6295Q",
+  "created_at": "2026-05-12T17:11:26.379Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "8a18306c48cc164dafcb26ca2adb2e0b5b122bbe",
+    "work_ref": "main",
+    "work_commit": "8a18306c48cc164dafcb26ca2adb2e0b5b122bbe"
+  },
+  "task": {
+    "task_id": "202605121704-F6295Q",
+    "title": "Add blog post: Why Blueprints matter",
+    "intent": "Пост для блога о назначении blueprints, почему они нужны и как помогают в релизах",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605121704-F6295Q/README.md",
+      "sha256": "sha256:142189bd34aef0005dbbdb96b1932f668ccf2040c91d17143f3145e8369a40af"
+    },
+    "approved_at": "2026-05-12T17:04:59.822Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "warning",
+        "reason": "Verification is not ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Task completed: added required blog post and merged via GitHub PR #3604.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "not_run",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605121704-F6295Q_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-12T17:04:59.822Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605121704-F6295Q/README.md",
+      "sha256": "sha256:142189bd34aef0005dbbdb96b1932f668ccf2040c91d17143f3145e8369a40af"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605121704-F6295Q/README.md",
+      "sha256": "sha256:142189bd34aef0005dbbdb96b1932f668ccf2040c91d17143f3145e8369a40af"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Verification is not recorded as ok.",
+      "Verification log evidence is missing."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 8a18306c48cc164dafcb26ca2adb2e0b5b122bbe if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:99b86c69970b9f770a76d3738f7593a20486507303fa7d4e9f4cfb704dcf2fab",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "docs.change",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "docs.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "docs.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "docs.artifact",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "missing",
+        "path": ".agentplane/tasks/202605121704-F6295Q/blueprint/resolved-snapshot.json",
+        "digest": null,
+        "current_digest": "73b986fa5b21a109b2468b612535fcfa1842e5c62287b8211c975415c4131a1c",
+        "route_changed": null,
+        "artifact_sha256": null,
+        "safe_command": "agentplane blueprint snapshot 202605121704-F6295Q"
+      }
+    }
+  }
+}

@@ -6,7 +6,7 @@ Created: 2026-05-12T17:05:31.877Z
 
 - Task: `202605121704-F6295Q`
 - Title: Add blog post: Why Blueprints matter
-- Status: DOING
+- Status: DONE
 - Branch: `task/202605121704-F6295Q/blueprints-why-you-need`
 - Canonical task record: `.agentplane/tasks/202605121704-F6295Q/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-05-12T17:05:31.877Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-12T17:08:40.073Z
+- Updated: 2026-05-12T17:11:29.962Z
 - Branch: task/202605121704-F6295Q/blueprints-why-you-need
 - Head: b870f0efdd5f
 

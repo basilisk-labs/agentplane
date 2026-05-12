@@ -20,7 +20,7 @@ Add a docs blog post in Russian explaining what Blueprints are and why they matt
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-12T17:08:40.073Z
+- Updated: 2026-05-12T17:11:29.962Z
 - Branch: task/202605121704-F6295Q/blueprints-why-you-need
 - Head: b870f0efdd5f
 
