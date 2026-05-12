@@ -6,7 +6,7 @@ Created: 2026-05-12T06:18:48.492Z
 
 - Task: `202605111603-XQM14A`
 - Title: Fix branch_pr lifecycle and integrate regressions
-- Status: DOING
+- Status: DONE
 - Branch: `task/202605111603-XQM14A/v05-cli-readiness`
 - Canonical task record: `.agentplane/tasks/202605111603-XQM14A/README.md`
 
@@ -29,20 +29,7 @@ Created: 2026-05-12T06:18:48.492Z
 - Head: f5d1ea8a6a30
 
 ```text
- .agentplane/tasks/202605111602-1QZ9XE/README.md    |  16 +-
- .../blueprint/resolved-snapshot.json               |   4 +-
- .agentplane/tasks/202605111602-30JHZH/README.md    |  16 +-
- .../blueprint/resolved-snapshot.json               |   4 +-
- .agentplane/tasks/202605111603-269GK3/README.md    |  16 +-
- .../blueprint/resolved-snapshot.json               |   4 +-
- .../blueprint/resolved-snapshot.json               | 322 +++++++++++++++++++++
- .agentplane/tasks/202605111706-3K495Y/README.md    |  16 +-
- .../blueprint/resolved-snapshot.json               |   4 +-
- .agentplane/tasks/202605111706-4JYH85/README.md    |  16 +-
- .../blueprint/resolved-snapshot.json               |   4 +-
- .agentplane/tasks/202605111706-Q5JJMW/README.md    |  16 +-
- .../blueprint/resolved-snapshot.json               |   4 +-
- 13 files changed, 382 insertions(+), 60 deletions(-)
+No changes detected.
 ```
 
 </details>

@@ -27,20 +27,7 @@ Stabilize branch_pr integrate, PR-flow, finish, timeout, merge-branch, and close
 - Head: f5d1ea8a6a30
 
 ```text
- .agentplane/tasks/202605111602-1QZ9XE/README.md    |  16 +-
- .../blueprint/resolved-snapshot.json               |   4 +-
- .agentplane/tasks/202605111602-30JHZH/README.md    |  16 +-
- .../blueprint/resolved-snapshot.json               |   4 +-
- .agentplane/tasks/202605111603-269GK3/README.md    |  16 +-
- .../blueprint/resolved-snapshot.json               |   4 +-
- .../blueprint/resolved-snapshot.json               | 322 +++++++++++++++++++++
- .agentplane/tasks/202605111706-3K495Y/README.md    |  16 +-
- .../blueprint/resolved-snapshot.json               |   4 +-
- .agentplane/tasks/202605111706-4JYH85/README.md    |  16 +-
- .../blueprint/resolved-snapshot.json               |   4 +-
- .agentplane/tasks/202605111706-Q5JJMW/README.md    |  16 +-
- .../blueprint/resolved-snapshot.json               |   4 +-
- 13 files changed, 382 insertions(+), 60 deletions(-)
+No changes detected.
 ```
 
 </details>

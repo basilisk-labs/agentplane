@@ -1,7 +1,8 @@
 ---
 id: "202605111603-XQM14A"
 title: "Fix branch_pr lifecycle and integrate regressions"
-status: "DOING"
+result_summary: "branch_pr lifecycle and integrate regressions stabilized for v0.5."
+status: "DONE"
 priority: "med"
 owner: "INTEGRATOR"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "INTEGRATOR"
   note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core. Result: pass. Evidence: full cli-core passed 83 files and 675 tests, including branch_pr lifecycle, integrate, PR artifacts, hosted-close, and finish-close-commit suites. Scope: branch_pr lifecycle and integrate regressions."
   attempts: 0
-commit: null
+commit:
+  hash: "624c1f5ea051ada4e7377a374dd8ac2b77479f71"
+  message: "🔀 XQM14A integrate: Stabilize v0.5 CLI readiness"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: stabilizing branch_pr lifecycle and integrate regressions with focused and full cli-core evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: branch_pr lifecycle and integrate regressions passed focused lifecycle checks and the full cli-core suite."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core. Result: pass. Evidence: full cli-core passed 83 files and 675 tests, including branch_pr lifecycle, integrate, PR artifacts, hosted-close, and finish-close-commit suites. Scope: branch_pr lifecycle and integrate regressions."
+  -
+    type: "status"
+    at: "2026-05-12T06:21:37.444Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: branch_pr lifecycle and integrate regressions passed focused lifecycle checks and the full cli-core suite."
 doc_version: 3
-doc_updated_at: "2026-05-12T06:18:17.066Z"
+doc_updated_at: "2026-05-12T06:21:37.444Z"
 doc_updated_by: "INTEGRATOR"
 description: "Stabilize branch_pr integrate, PR-flow, finish, timeout, merge-branch, and close-commit behavior before release."
 sections:
