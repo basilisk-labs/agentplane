@@ -175,7 +175,7 @@ describe("commands/workflow", () => {
     const readme = await readFile(readmePath, "utf8");
     const parsed = parseTaskReadme(readme);
     const doc = renderTaskDocFromSections(parsed.frontmatter.sections as Record<string, string>);
-    expect(readme).not.toContain("## Verify Steps");
+    expect(readme).toContain("## Verify Steps");
     expect(doc).toContain("## Verify Steps");
     expect(readme).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
   });

@@ -47,8 +47,8 @@ describe("task-store", () => {
     expect(readme).toContain("doc_version: 3");
     expect(readme).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
     expect(readme).toContain("<!-- END VERIFICATION RESULTS -->");
-    expect(readme).not.toContain("## Findings");
-    expect(readme).not.toContain("## Verification");
+    expect(readme).toContain("## Findings");
+    expect(readme).toContain("## Verification");
     expect(readme).not.toContain("### Plan");
     expect(readme).not.toContain("### Results");
 
@@ -227,7 +227,7 @@ describe("task-store", () => {
 
       const readme = await readFile(after.readmePath, "utf8");
       expect(readme).toContain("Hello");
-      expect(readme).not.toContain("## Summary");
+      expect(readme).toContain("## Summary");
       expect(after.body).toContain("## Summary");
       expect(after.body).toContain("Hello");
     } finally {
@@ -282,8 +282,8 @@ describe("task-store", () => {
     const updated = await readFile(readmePath, "utf8");
     expect(updated).toContain('Summary: "Canonical summary"');
     expect(updated).toContain('Findings: "Canonical finding"');
-    expect(updated).not.toContain("## Summary");
-    expect(updated).not.toContain("## Findings");
+    expect(updated).toContain("## Summary");
+    expect(updated).toContain("## Findings");
     expect(updated).not.toContain("stale body");
 
     const loaded = await readTask({ cwd: root, rootOverride: root, taskId });
@@ -359,8 +359,8 @@ describe("task-store", () => {
     });
 
     const updated = await readFile(created.readmePath, "utf8");
-    expect((updated.match(/^## Summary$/gm) ?? []).length).toBe(0);
-    expect((updated.match(/^## Scope$/gm) ?? []).length).toBe(0);
+    expect((updated.match(/^## Summary$/gm) ?? []).length).toBe(1);
+    expect((updated.match(/^## Scope$/gm) ?? []).length).toBe(1);
     expect(updated).toContain("Updated summary");
 
     const loaded = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
@@ -398,8 +398,8 @@ describe("task-store", () => {
 
     const updated = await readFile(created.readmePath, "utf8");
     expect(updated).not.toContain("## Summary## Summary");
-    expect((updated.match(/^## Summary$/gm) ?? []).length).toBe(0);
-    expect((updated.match(/^## Scope$/gm) ?? []).length).toBe(0);
+    expect((updated.match(/^## Summary$/gm) ?? []).length).toBe(1);
+    expect((updated.match(/^## Scope$/gm) ?? []).length).toBe(1);
     expect(updated).toContain("Updated summary");
 
     const loaded = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
@@ -467,7 +467,7 @@ describe("task-store", () => {
     });
 
     const readme = await readFile(created.readmePath, "utf8");
-    expect(readme).not.toContain("## Findings");
+    expect(readme).toContain("## Findings");
     expect(readme).toContain("More details");
 
     await expect(

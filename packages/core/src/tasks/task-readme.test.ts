@@ -265,8 +265,8 @@ Hello world.
 
     expect(rendered).toContain("sections:");
     expect(rendered).toContain('Summary: "Canonical summary"');
-    expect(rendered).not.toContain("## Summary");
-    expect(rendered).not.toContain("## Findings");
+    expect(rendered).toContain("## Summary");
+    expect(rendered).toContain("## Findings");
   });
 
   it("drops stale rendered task-doc body when canonical sections exist", () => {
@@ -297,7 +297,7 @@ Hello world.
     );
 
     expect(rendered).toContain('Summary: "Canonical summary"');
-    expect(rendered).not.toContain("## Summary");
+    expect(rendered).toContain("## Summary");
     expect(rendered).not.toContain("stale body");
   });
 
@@ -425,9 +425,9 @@ Hello world.
     expect(rendered).toContain("Introductory prose");
     expect(rendered).toContain("## References");
     expect(rendered).toContain("Trailing prose.");
-    expect(rendered).not.toContain("## Summary");
+    expect(rendered).toContain("## Summary");
     expect(rendered).not.toContain("stale summary");
-    expect(rendered).not.toContain("## Verification");
+    expect(rendered).toContain("## Verification");
     expect(rendered).not.toContain("stale verification");
   });
 
