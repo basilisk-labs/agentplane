@@ -22,15 +22,15 @@ Add user-facing init mode/tool flags and expose mode/profile in the init plan wh
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-12T10:02:54.412Z
+- Updated: 2026-05-12T10:03:15.025Z
 - Branch: task/202605120952-JT6FWR/init-rfq-controls
-- Head: b52b4f106e97
+- Head: eaf139fac6fc
 
 ```text
- .agentplane/tasks/202605120952-D2F8VR/README.md    |  95 ++++
+ .agentplane/tasks/202605120952-D2F8VR/README.md    | 139 ++++++
  .../blueprint/resolved-snapshot.json               | 512 +++++++++++++++++++++
  .../blueprint/resolved-snapshot.json               | 512 +++++++++++++++++++++
- .agentplane/tasks/202605120952-MG1QB4/README.md    |  95 ++++
+ .agentplane/tasks/202605120952-MG1QB4/README.md    | 139 ++++++
  .../blueprint/resolved-snapshot.json               | 512 +++++++++++++++++++++
  docs/user/cli-reference.generated.mdx              |  10 +
  .../agentplane/src/cli/run-cli.core.init.test.ts   |  58 +++
@@ -43,7 +43,7 @@ Add user-facing init mode/tool flags and expose mode/profile in the init plan wh
  .../src/cli/run-cli/commands/init/orchestrate.ts   |  23 +-
  .../src/cli/run-cli/commands/init/recipes.ts       |   9 +-
  .../src/cli/run-cli/commands/init/spec.ts          |  50 ++
- 16 files changed, 1992 insertions(+), 21 deletions(-)
+ 16 files changed, 2080 insertions(+), 21 deletions(-)
 ```
 
 </details>
