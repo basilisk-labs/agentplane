@@ -19,8 +19,9 @@ Configured in `.agentplane/WORKFLOW.md`.
 - Task branches and worktrees are required.
 - `agentplane work start` must run on base branch and must include `--worktree`.
 - `agentplane work start` now fails fast when the pinned base branch is behind its upstream tracking ref; refresh the base branch first instead of opening a hosted PR from stale history.
-- Canonical task writes happen only on base branch.
-- INTEGRATOR performs verify, merge, and finish.
+- Implementation commits happen in the task worktree.
+- Lifecycle/status commits are task-state checkpoints and are not the implementation commit recorded at finish.
+- INTEGRATOR performs merge/integration and finish from the base checkout after the task branch is verified.
 - Local `agentplane pr ...` commands manage tracked PR artifacts only. They do not open or merge a hosted GitHub PR.
 
 ## Task Branches and Worktrees
@@ -94,17 +95,30 @@ See [`cli-contract`](../developer/cli-contract) for the authoritative command su
 Typical branch_pr flow:
 
 ```bash
+agentplane task plan approve <task-id> --by ORCHESTRATOR
 agentplane work start <task-id> --agent CODER --slug <slug> --worktree
+cd .agentplane/worktrees/<task-id>-<slug>
+agentplane task start-ready <task-id> --author CODER --body "Start: ..."
+# edit files
+git add <changed-files>
+git commit -m "Implement <task>"
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
 git push -u origin task/<task-id>/<slug>
 gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
 bun run workflow:wait-remote-checks
+agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
+cd <base-checkout>
 agentplane pr check <task-id>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "<one line>" --commit <git-rev> --close-commit
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "<one line>" --commit <implementation-git-rev> --close-commit
 agentplane cleanup merged --finalize
 ```
+
+`finish --commit-from-comment` is intentionally not part of `branch_pr`. Finish runs on the base
+checkout, so it records the explicit implementation commit hash that already exists on the task
+branch. Use comment-driven status commits only where the specific lifecycle command supports them
+from the task worktree.
 
 Underlying hosted-check command:
 

@@ -19,10 +19,10 @@ This repository is configured for `branch_pr`, so the normal guarded route is:
 1. Run preflight.
 2. Create the task, set the plan, and approve it.
 3. Start a dedicated branch/worktree with `agentplane work start ... --worktree`.
-4. Implement changes on the task branch and keep local PR artifacts current.
+4. Implement changes on the task branch, create the implementation commit there, and keep local PR artifacts current.
 5. Push the task branch, open a hosted PR, and wait for required remote checks.
 6. Record verification on the task branch, then integrate on the base branch only after remote green.
-7. Finish on the base branch after integration.
+7. Finish on the base branch after integration with `--commit <implementation-git-rev> --close-commit`.
 
 For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
 
@@ -32,18 +32,28 @@ agentplane quickstart
 agentplane task list
 git status --short --untracked-files=no
 agentplane work start <task-id> --agent CODER --slug <slug> --worktree
+cd .agentplane/worktrees/<task-id>-<slug>
+agentplane task start-ready <task-id> --author CODER --body "Start: ..."
+# edit files
+git add <changed-files>
+git commit -m "Implement <task>"
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
 git push -u origin task/<task-id>/<slug>
 gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
 bun run workflow:wait-remote-checks
+agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
+cd <base-checkout>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <git-rev> --close-commit
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <implementation-git-rev> --close-commit
 ```
 
 `direct` remains supported, but in this repository it is an explicit alternative rather than the default guarded path.
 `agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass
 `--merge-strategy squash` only when compacting history is intentional.
+Lifecycle/status commits are task-state checkpoints. They are not implementation commits, and
+`finish --commit-from-comment` is unsupported in `branch_pr` because finish runs on the base
+checkout.
 
 ## Default direct path
 
@@ -109,10 +119,11 @@ agentplane workflow restore
 - One task per branch/worktree.
 - PR artifacts live under `.agentplane/tasks/<task-id>/pr/`.
 - `agentplane work start ... --worktree` is required.
+- Implementation commits are created in the task worktree.
 - Local integration runs through `agentplane integrate`.
 - Good for teams, stricter review, and integration boundaries.
 - Hosted PR creation and remote required checks run through `gh`.
-- When remote checks are required, `agentplane integrate` and `finish` happen only after `bun run workflow:wait-remote-checks` returns green.
+- When remote checks are required, `agentplane integrate` and `finish --commit <implementation-git-rev> --close-commit` happen on the base checkout only after `bun run workflow:wait-remote-checks` returns green.
 
 ## Status transitions
 

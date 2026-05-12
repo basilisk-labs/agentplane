@@ -29,7 +29,9 @@ In the task worktree:
 
 ```bash
 agentplane task start-ready <task-id> --author CODER --body "Start: branch_pr CLI help copy update with focused verification."
-# implement + commit implementation changes
+# edit files
+git add <changed-files>
+git commit -m "Update CLI help copy"
 agentplane task verify-show <task-id>
 agentplane pr open <task-id> --branch task/<task-id>/cli-help-copy --author CODER
 agentplane pr update <task-id>
@@ -41,11 +43,13 @@ Back on base checkout:
 ```bash
 agentplane integrate <task-id> --branch task/<task-id>/cli-help-copy --run-verify
 # optionally run remote-gate if repository policy requires it
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: branch integrated after review and verification." --result "CLI help copy updated" --commit <git-rev> --close-commit
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: branch integrated after review and verification." --result "CLI help copy updated" --commit <implementation-git-rev> --close-commit
 agentplane work end <task-id>
 ```
 
-Lifecycle/status checkpoint commits (`start-ready`/`verify`/`set-status` with `--commit-from-comment`) are not implementation commits; they record lifecycle state in task artifacts and should not be used as the base-side `finish` mutation.
+The `--commit` value is the already-created implementation commit from the task branch. Do not use
+`finish --commit-from-comment` in `branch_pr`: finish runs from the base checkout, while
+implementation commits belong to the task worktree.
 
 ## Expected repo artifacts
 
@@ -54,6 +58,9 @@ Lifecycle/status checkpoint commits (`start-ready`/`verify`/`set-status` with `-
 - task README verification evidence
 - base-branch finish record after integration
 - worktree branch cleanup via `agentplane work end <task-id>`
+
+Lifecycle/status commits, when a command supports them, are task-state checkpoints. They are not a
+substitute for the implementation commit that `finish --commit <git-rev>` records after integration.
 
 ## Limitations
 
