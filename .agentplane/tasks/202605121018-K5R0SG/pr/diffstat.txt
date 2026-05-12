@@ -1,0 +1,4 @@
+ .../blueprint/resolved-snapshot.json               | 512 +++++++++++++++++++++
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |  12 +-
+ .../src/cli/run-cli/commands/init/orchestrate.ts   |   9 -
+ 3 files changed, 519 insertions(+), 14 deletions(-)
