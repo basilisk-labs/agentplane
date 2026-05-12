@@ -1,7 +1,8 @@
 ---
 id: "202605111602-1QZ9XE"
 title: "Resolve v0.5 CLI upgrade test timeouts and artifact paths"
-status: "DOING"
+result_summary: "Upgrade and artifact-path regressions resolved for v0.5 readiness."
+status: "DONE"
 priority: "med"
 owner: "UPGRADER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "UPGRADER"
   note: "Command: bun run test:platform-critical. Result: pass. Evidence: 6 files, 72 tests passed including run-cli.core.upgrade.test.ts upgrade dry-run, artifact restore, legacy config removal, and migrate-task-docs paths. Scope: v0.5 upgrade/init artifact paths and timeout-sensitive CLI regressions."
   attempts: 0
-commit: null
+commit:
+  hash: "624c1f5ea051ada4e7377a374dd8ac2b77479f71"
+  message: "🔀 XQM14A integrate: Stabilize v0.5 CLI readiness"
 comments:
   -
     author: "UPGRADER"
     body: "Start: stabilizing v0.5 upgrade and init artifact-path behavior with focused CLI regression evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: v0.5 upgrade artifact paths and timeout-sensitive CLI regressions passed platform-critical and cli-core evidence."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "UPGRADER"
     state: "ok"
     note: "Command: bun run test:platform-critical. Result: pass. Evidence: 6 files, 72 tests passed including run-cli.core.upgrade.test.ts upgrade dry-run, artifact restore, legacy config removal, and migrate-task-docs paths. Scope: v0.5 upgrade/init artifact paths and timeout-sensitive CLI regressions."
+  -
+    type: "status"
+    at: "2026-05-12T06:20:47.652Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: v0.5 upgrade artifact paths and timeout-sensitive CLI regressions passed platform-critical and cli-core evidence."
 doc_version: 3
-doc_updated_at: "2026-05-12T06:17:56.613Z"
-doc_updated_by: "UPGRADER"
+doc_updated_at: "2026-05-12T06:20:47.652Z"
+doc_updated_by: "INTEGRATOR"
 description: "Reduce v0.5 upgrade regressions and restore stable dry-run, restore, and artifact-path behavior before release."
 sections:
   Summary: |-
