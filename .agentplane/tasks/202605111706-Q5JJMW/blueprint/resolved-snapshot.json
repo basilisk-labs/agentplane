@@ -4,7 +4,7 @@
   "resolverInput": {
     "taskId": "202605111706-Q5JJMW",
     "title": "Backfill blueprint evidence preconditions in finish lifecycle CLI tests",
-    "description": "Добавить шаги blueprint snapshot/verify в тестах finish/close-commit/branch_pr, чтобы отражать новый v0.5 guard finish requires current blueprint snapshot evidence.",
+    "description": "Backfill blueprint snapshot and verification preconditions in finish, close-commit, and branch_pr lifecycle CLI tests.",
     "tags": [
       "cli,branch_pr,bug"
     ],
@@ -317,6 +317,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "d15ad67635510deac0e2937b59c55553018256b2dea25d5fae965dc5a4492eda"
+    "value": "7d6eb1107c4a2972a3603689d46918c5e1aea5af835866b67cfa3d983aa3e305"
   }
 }

@@ -4,7 +4,7 @@
   "resolverInput": {
     "taskId": "202605111602-30JHZH",
     "title": "Stabilize readiness command exit semantics",
-    "description": "Разобрать regression в task ready (ожидаемый exit 0) и стабилизировать диагностические выходы ready для v0.5 без скрытых зависимостей от временных артефактов.",
+    "description": "Stabilize task readiness exit semantics and diagnostics without hidden dependencies on temporary artifacts.",
     "tags": [
       "cli,bug,workflow"
     ],
@@ -317,6 +317,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "e1f5703454854dd018c400130123885bdf41b039912a1a37841c5b893a5d41da"
+    "value": "b223f52ce249302d5ddfd0467d29c484bf44f01a6a3eacaf38a9c6632e2bb772"
   }
 }

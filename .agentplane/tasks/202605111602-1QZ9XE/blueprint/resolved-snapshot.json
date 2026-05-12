@@ -4,7 +4,7 @@
   "resolverInput": {
     "taskId": "202605111602-1QZ9XE",
     "title": "Resolve v0.5 CLI upgrade test timeouts and artifact paths",
-    "description": "Сократить регрессии по upgrade и восстановить стабильные пути артефактов для dry-run/restore сценариев в рамках подготовки релиза v0.5.",
+    "description": "Reduce v0.5 upgrade regressions and restore stable dry-run, restore, and artifact-path behavior before release.",
     "tags": [
       "cli,bug,upgrade"
     ],
@@ -317,6 +317,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "cae1b50c5af08c5b997d5f987799d082b7a52e2d524c945265eef38dd4fe13df"
+    "value": "b5d2b442fe23268c9e559e7fc6b7931ac073442e07c4729d111b3b77b258d120"
   }
 }

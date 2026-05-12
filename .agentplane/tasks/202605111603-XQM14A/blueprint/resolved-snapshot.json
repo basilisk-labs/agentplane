@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "artifactKind": "agentplane.blueprint.resolved_snapshot",
   "resolverInput": {
-    "taskId": "202605111706-3K495Y",
-    "title": "Audit recipes/blueprints output contracts after v0.5 changes",
-    "description": "Build an output-contract matrix for recipes and blueprints commands, record gaps, and expand smoke coverage for outputs and errors.",
+    "taskId": "202605111603-XQM14A",
+    "title": "Fix branch_pr lifecycle and integrate regressions",
+    "description": "Stabilize branch_pr integrate, PR-flow, finish, timeout, merge-branch, and close-commit behavior before release.",
     "tags": [
-      "cli,blueprints,recipes,coverage"
+      "cli,bug,branch_pr"
     ],
-    "owner": "TESTER",
+    "owner": "INTEGRATOR",
     "workflowMode": "branch_pr",
     "workflowGitCapabilities": {
       "workflowMode": "branch_pr",
@@ -37,7 +37,7 @@
     "blueprintId": "analysis.light",
     "blueprintVersion": 1,
     "title": "Lightweight analysis",
-    "taskId": "202605111706-3K495Y",
+    "taskId": "202605111603-XQM14A",
     "workflowMode": "branch_pr",
     "workflowGitCapabilities": {
       "workflowMode": "branch_pr",
@@ -317,6 +317,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "6b3be2f84261a49c1967e5ccc4849d439132cba9e3d16b2e667ea10cf07ff8be"
+    "value": "31e33eb5031c4c90021a18f4e0abbf3259a89218caf7b401819185951611ff72"
   }
 }

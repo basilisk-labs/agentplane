@@ -4,7 +4,7 @@
   "resolverInput": {
     "taskId": "202605111706-4JYH85",
     "title": "Align task README lifecycle fixtures with sectionized format",
-    "description": "Обновить тесты и фикстуры task lifecycle (finish, close-commit, release-smoke) под новую секционированную разметку README, убрать ожидание legacy заголовков и проверить выходные тексты.",
+    "description": "Align task lifecycle tests and fixtures for finish, close-commit, and release-smoke with the sectionized README format.",
     "tags": [
       "cli,code,bug"
     ],
@@ -317,6 +317,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "2de12e0f4914a6a797816107781d082b8b4a45fd9889d5a5721f6fc770e0eb76"
+    "value": "ff0db8a536a460087c849b98237c7dec23c7b1c27d8e6215ededf1bb49acb612"
   }
 }

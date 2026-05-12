@@ -42,17 +42,17 @@ events:
     state: "ok"
     note: "Command: release-smoke, task creation, lifecycle finish/close validation, and full cli-core. Result: pass. Evidence: release-smoke passed 3 tests; focused lifecycle/task suites passed; full cli-core passed 83 files and 675 tests. Scope: sectionized task README lifecycle fixtures and output text drift."
 doc_version: 3
-doc_updated_at: "2026-05-12T06:13:27.518Z"
+doc_updated_at: "2026-05-12T06:18:29.176Z"
 doc_updated_by: "INTEGRATOR"
-description: "Обновить тесты и фикстуры task lifecycle (finish, close-commit, release-smoke) под новую секционированную разметку README, убрать ожидание legacy заголовков и проверить выходные тексты."
+description: "Align task lifecycle tests and fixtures for finish, close-commit, and release-smoke with the sectionized README format."
 sections:
   Summary: |-
     Align task README lifecycle fixtures with sectionized format
     
-    Обновить тесты и фикстуры task lifecycle (finish, close-commit, release-smoke) под новую секционированную разметку README, убрать ожидание legacy заголовков и проверить выходные тексты.
+    Align task lifecycle tests and fixtures for finish, close-commit, and release-smoke with the sectionized README format.
   Scope: |-
-    - In scope: Обновить тесты и фикстуры task lifecycle (finish, close-commit, release-smoke) под новую секционированную разметку README, убрать ожидание legacy заголовков и проверить выходные тексты.
-    - Out of scope: unrelated refactors not required for "Align task README lifecycle fixtures with sectionized format".
+    - In scope: finish, close-commit, release-smoke, task lifecycle fixtures, and sectionized README output expectations.
+    - Out of scope: unrelated task model changes.
   Plan: "Batch v0.5 release readiness plan: 1. Align task README lifecycle fixtures with doc_version=3 sectionized rendering. 2. Verify release-smoke, task creation, finish, close-commit, and full cli-core. 3. Record residual fixture drift before finish."
   Verify Steps: |-
     1. Review the requested outcome for "Align task README lifecycle fixtures with sectionized format". Expected: the visible result matches ## Summary and stays inside approved scope.
@@ -90,12 +90,12 @@ id_source: "generated"
 
 Align task README lifecycle fixtures with sectionized format
 
-Обновить тесты и фикстуры task lifecycle (finish, close-commit, release-smoke) под новую секционированную разметку README, убрать ожидание legacy заголовков и проверить выходные тексты.
+Align task lifecycle tests and fixtures for finish, close-commit, and release-smoke with the sectionized README format.
 
 ## Scope
 
-- In scope: Обновить тесты и фикстуры task lifecycle (finish, close-commit, release-smoke) под новую секционированную разметку README, убрать ожидание legacy заголовков и проверить выходные тексты.
-- Out of scope: unrelated refactors not required for "Align task README lifecycle fixtures with sectionized format".
+- In scope: finish, close-commit, release-smoke, task lifecycle fixtures, and sectionized README output expectations.
+- Out of scope: unrelated task model changes.
 
 ## Plan
 

@@ -4,7 +4,7 @@
   "resolverInput": {
     "taskId": "202605111603-269GK3",
     "title": "Audit recipes and blueprints CLI coverage and outputs",
-    "description": "Проверить и закрепить покрытия команд recipes/blueprints: list/scaffold/explain/install и их инварианты до релиза v0.5.",
+    "description": "Audit and lock CLI coverage for recipes and blueprints commands: list, scaffold, explain, install, and related invariants before v0.5.",
     "tags": [
       "cli,blueprints,recipes"
     ],
@@ -317,6 +317,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "df79cda5ec21571eca9cdc294d323b45e4111208719479e1be4e7205c90211cc"
+    "value": "915c74a01136965fcc81804985f6056b2e93d755f0a239e44a49d95f7f70212a"
   }
 }

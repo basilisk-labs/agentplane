@@ -42,17 +42,17 @@ events:
     state: "ok"
     note: "Command: bun run test:platform-critical. Result: pass. Evidence: 6 files, 72 tests passed including run-cli.core.upgrade.test.ts upgrade dry-run, artifact restore, legacy config removal, and migrate-task-docs paths. Scope: v0.5 upgrade/init artifact paths and timeout-sensitive CLI regressions."
 doc_version: 3
-doc_updated_at: "2026-05-12T06:12:53.340Z"
+doc_updated_at: "2026-05-12T06:17:56.613Z"
 doc_updated_by: "UPGRADER"
-description: "Сократить регрессии по upgrade и восстановить стабильные пути артефактов для dry-run/restore сценариев в рамках подготовки релиза v0.5."
+description: "Reduce v0.5 upgrade regressions and restore stable dry-run, restore, and artifact-path behavior before release."
 sections:
   Summary: |-
     Resolve v0.5 CLI upgrade test timeouts and artifact paths
     
-    Сократить регрессии по upgrade и восстановить стабильные пути артефактов для dry-run/restore сценариев в рамках подготовки релиза v0.5.
+    Reduce v0.5 upgrade regressions and restore stable dry-run, restore, and artifact-path behavior before release.
   Scope: |-
-    - In scope: Сократить регрессии по upgrade и восстановить стабильные пути артефактов для dry-run/restore сценариев в рамках подготовки релиза v0.5.
-    - Out of scope: unrelated refactors not required for "Resolve v0.5 CLI upgrade test timeouts and artifact paths".
+    - In scope: upgrade/init artifact-path regressions, dry-run and restore behavior, and timeout-sensitive CLI tests for v0.5.
+    - Out of scope: unrelated release packaging or public API changes.
   Plan: "Batch v0.5 release readiness plan: 1. Stabilize upgrade/init artifact-path regressions and timeout-sensitive tests. 2. Verify with platform-critical and full cli-core coverage. 3. Record residual release blockers explicitly before finish."
   Verify Steps: |-
     1. Review the requested outcome for "Resolve v0.5 CLI upgrade test timeouts and artifact paths". Expected: the visible result matches ## Summary and stays inside approved scope.
@@ -90,12 +90,12 @@ id_source: "generated"
 
 Resolve v0.5 CLI upgrade test timeouts and artifact paths
 
-Сократить регрессии по upgrade и восстановить стабильные пути артефактов для dry-run/restore сценариев в рамках подготовки релиза v0.5.
+Reduce v0.5 upgrade regressions and restore stable dry-run, restore, and artifact-path behavior before release.
 
 ## Scope
 
-- In scope: Сократить регрессии по upgrade и восстановить стабильные пути артефактов для dry-run/restore сценариев в рамках подготовки релиза v0.5.
-- Out of scope: unrelated refactors not required for "Resolve v0.5 CLI upgrade test timeouts and artifact paths".
+- In scope: upgrade/init artifact-path regressions, dry-run and restore behavior, and timeout-sensitive CLI tests for v0.5.
+- Out of scope: unrelated release packaging or public API changes.
 
 ## Plan
 
