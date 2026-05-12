@@ -42,17 +42,17 @@ events:
     state: "ok"
     note: "Command: cli-recipes, cli-core blueprint/help/docs-cli, agents:check, and format:check. Result: pass. Evidence: recipes passed 31 tests; blueprint/help/docs-cli passed 38 tests; agents templates OK; Prettier reported all matched files formatted. Scope: recipes/blueprints output-contract matrix after v0.5 changes."
 doc_version: 3
-doc_updated_at: "2026-05-12T06:13:22.206Z"
+doc_updated_at: "2026-05-12T06:18:18.246Z"
 doc_updated_by: "TESTER"
-description: "Сформировать матрицу контрактов для recipes/blueprints команд (list/explain/install/scaffold/validate), зафиксировать gaps и расширить smoke-покрытие выводов и ошибок."
+description: "Build an output-contract matrix for recipes and blueprints commands, record gaps, and expand smoke coverage for outputs and errors."
 sections:
   Summary: |-
     Audit recipes/blueprints output contracts after v0.5 changes
     
-    Сформировать матрицу контрактов для recipes/blueprints команд (list/explain/install/scaffold/validate), зафиксировать gaps и расширить smoke-покрытие выводов и ошибок.
+    Build an output-contract matrix for recipes and blueprints commands, record gaps, and expand smoke coverage for outputs and errors.
   Scope: |-
-    - In scope: Сформировать матрицу контрактов для recipes/blueprints команд (list/explain/install/scaffold/validate), зафиксировать gaps и расширить smoke-покрытие выводов и ошибок.
-    - Out of scope: unrelated refactors not required for "Audit recipes/blueprints output contracts after v0.5 changes".
+    - In scope: recipes and blueprints list, explain, install, scaffold, validate outputs and error contracts.
+    - Out of scope: unrelated blueprint catalog feature changes.
   Plan: "Batch v0.5 release readiness plan: 1. Build the recipes/blueprints output-contract evidence matrix from CLI tests. 2. Verify list/explain/install/scaffold/validate paths through cli-recipes, blueprint, and help snapshots. 3. Record any uncovered command contracts before finish."
   Verify Steps: |-
     1. Review the requested outcome for "Audit recipes/blueprints output contracts after v0.5 changes". Expected: the visible result matches ## Summary and stays inside approved scope.
@@ -90,12 +90,12 @@ id_source: "generated"
 
 Audit recipes/blueprints output contracts after v0.5 changes
 
-Сформировать матрицу контрактов для recipes/blueprints команд (list/explain/install/scaffold/validate), зафиксировать gaps и расширить smoke-покрытие выводов и ошибок.
+Build an output-contract matrix for recipes and blueprints commands, record gaps, and expand smoke coverage for outputs and errors.
 
 ## Scope
 
-- In scope: Сформировать матрицу контрактов для recipes/blueprints команд (list/explain/install/scaffold/validate), зафиксировать gaps и расширить smoke-покрытие выводов и ошибок.
-- Out of scope: unrelated refactors not required for "Audit recipes/blueprints output contracts after v0.5 changes".
+- In scope: recipes and blueprints list, explain, install, scaffold, validate outputs and error contracts.
+- Out of scope: unrelated blueprint catalog feature changes.
 
 ## Plan
 

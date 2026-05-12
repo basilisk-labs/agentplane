@@ -42,17 +42,17 @@ events:
     state: "ok"
     note: "Command: branch_pr finish/close-commit/finish-validation focused tests and full cli-core. Result: pass. Evidence: focused branch_pr lifecycle set passed 9 files and 89 tests; full cli-core passed 83 files and 675 tests. Scope: blueprint snapshot preconditions in finish lifecycle tests."
 doc_version: 3
-doc_updated_at: "2026-05-12T06:13:32.669Z"
+doc_updated_at: "2026-05-12T06:18:30.336Z"
 doc_updated_by: "CODER"
-description: "Добавить шаги blueprint snapshot/verify в тестах finish/close-commit/branch_pr, чтобы отражать новый v0.5 guard finish requires current blueprint snapshot evidence."
+description: "Backfill blueprint snapshot and verification preconditions in finish, close-commit, and branch_pr lifecycle CLI tests."
 sections:
   Summary: |-
     Backfill blueprint evidence preconditions in finish lifecycle CLI tests
     
-    Добавить шаги blueprint snapshot/verify в тестах finish/close-commit/branch_pr, чтобы отражать новый v0.5 guard finish requires current blueprint snapshot evidence.
+    Backfill blueprint snapshot and verification preconditions in finish, close-commit, and branch_pr lifecycle CLI tests.
   Scope: |-
-    - In scope: Добавить шаги blueprint snapshot/verify в тестах finish/close-commit/branch_pr, чтобы отражать новый v0.5 guard finish requires current blueprint snapshot evidence.
-    - Out of scope: unrelated refactors not required for "Backfill blueprint evidence preconditions in finish lifecycle CLI tests".
+    - In scope: blueprint snapshot and verification preconditions in finish, close-commit, and branch_pr lifecycle tests.
+    - Out of scope: unrelated blueprint resolver behavior.
   Plan: "Batch v0.5 release readiness plan: 1. Backfill blueprint snapshot/verification preconditions in finish lifecycle CLI tests. 2. Verify branch_pr finish/close-commit/validation tests and full cli-core. 3. Record any remaining finish guard gaps before finish."
   Verify Steps: |-
     1. Review the requested outcome for "Backfill blueprint evidence preconditions in finish lifecycle CLI tests". Expected: the visible result matches ## Summary and stays inside approved scope.
@@ -90,12 +90,12 @@ id_source: "generated"
 
 Backfill blueprint evidence preconditions in finish lifecycle CLI tests
 
-Добавить шаги blueprint snapshot/verify в тестах finish/close-commit/branch_pr, чтобы отражать новый v0.5 guard finish requires current blueprint snapshot evidence.
+Backfill blueprint snapshot and verification preconditions in finish, close-commit, and branch_pr lifecycle CLI tests.
 
 ## Scope
 
-- In scope: Добавить шаги blueprint snapshot/verify в тестах finish/close-commit/branch_pr, чтобы отражать новый v0.5 guard finish requires current blueprint snapshot evidence.
-- Out of scope: unrelated refactors not required for "Backfill blueprint evidence preconditions in finish lifecycle CLI tests".
+- In scope: blueprint snapshot and verification preconditions in finish, close-commit, and branch_pr lifecycle tests.
+- Out of scope: unrelated blueprint resolver behavior.
 
 ## Plan
 

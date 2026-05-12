@@ -42,17 +42,17 @@ events:
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-recipes and cli-core blueprint/help/docs-cli focused tests. Result: pass. Evidence: cli-recipes passed 3 files and 31 tests; blueprint/help/docs-cli passed 3 files and 38 tests. Scope: recipes and blueprints CLI coverage and output contracts."
 doc_version: 3
-doc_updated_at: "2026-05-12T06:13:05.571Z"
+doc_updated_at: "2026-05-12T06:18:07.261Z"
 doc_updated_by: "TESTER"
-description: "Проверить и закрепить покрытия команд recipes/blueprints: list/scaffold/explain/install и их инварианты до релиза v0.5."
+description: "Audit and lock CLI coverage for recipes and blueprints commands: list, scaffold, explain, install, and related invariants before v0.5."
 sections:
   Summary: |-
     Audit recipes and blueprints CLI coverage and outputs
     
-    Проверить и закрепить покрытия команд recipes/blueprints: list/scaffold/explain/install и их инварианты до релиза v0.5.
+    Audit and lock CLI coverage for recipes and blueprints commands before v0.5.
   Scope: |-
-    - In scope: Проверить и закрепить покрытия команд recipes/blueprints: list/scaffold/explain/install и их инварианты до релиза v0.5.
-    - Out of scope: unrelated refactors not required for "Audit recipes and blueprints CLI coverage and outputs".
+    - In scope: recipes and blueprints list, scaffold, explain, install, validation, and related CLI invariants.
+    - Out of scope: unrelated catalog feature work.
   Plan: "Batch v0.5 release readiness plan: 1. Audit recipes and blueprint command coverage for list/install/explain/scaffold/validate surfaces. 2. Verify with cli-recipes plus blueprint/help/docs-cli tests. 3. Record coverage gaps explicitly before finish."
   Verify Steps: |-
     1. Review the requested outcome for "Audit recipes and blueprints CLI coverage and outputs". Expected: the visible result matches ## Summary and stays inside approved scope.
@@ -90,12 +90,12 @@ id_source: "generated"
 
 Audit recipes and blueprints CLI coverage and outputs
 
-Проверить и закрепить покрытия команд recipes/blueprints: list/scaffold/explain/install и их инварианты до релиза v0.5.
+Audit and lock CLI coverage for recipes and blueprints commands before v0.5.
 
 ## Scope
 
-- In scope: Проверить и закрепить покрытия команд recipes/blueprints: list/scaffold/explain/install и их инварианты до релиза v0.5.
-- Out of scope: unrelated refactors not required for "Audit recipes and blueprints CLI coverage and outputs".
+- In scope: recipes and blueprints list, scaffold, explain, install, validation, and related CLI invariants.
+- Out of scope: unrelated catalog feature work.
 
 ## Plan
 

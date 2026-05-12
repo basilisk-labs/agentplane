@@ -42,17 +42,17 @@ events:
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts, plus full cli-core. Result: pass. Evidence: readiness focused file passed 11 tests; full cli-core passed 83 files and 675 tests. Scope: readiness command exit semantics and branch_pr CLI regressions."
 doc_version: 3
-doc_updated_at: "2026-05-12T06:13:00.115Z"
+doc_updated_at: "2026-05-12T06:18:06.075Z"
 doc_updated_by: "CODER"
-description: "Разобрать regression в task ready (ожидаемый exit 0) и стабилизировать диагностические выходы ready для v0.5 без скрытых зависимостей от временных артефактов."
+description: "Stabilize task readiness exit semantics and diagnostics without hidden dependencies on temporary artifacts."
 sections:
   Summary: |-
     Stabilize readiness command exit semantics
     
-    Разобрать regression в task ready (ожидаемый exit 0) и стабилизировать диагностические выходы ready для v0.5 без скрытых зависимостей от временных артефактов.
+    Stabilize task readiness exit semantics and diagnostics without hidden dependencies on temporary artifacts.
   Scope: |-
-    - In scope: Разобрать regression в task ready (ожидаемый exit 0) и стабилизировать диагностические выходы ready для v0.5 без скрытых зависимостей от временных артефактов.
-    - Out of scope: unrelated refactors not required for "Stabilize readiness command exit semantics".
+    - In scope: readiness command exit codes, diagnostics, and branch metadata readiness tests for v0.5.
+    - Out of scope: unrelated workflow routing or task backend changes.
   Plan: "Batch v0.5 release readiness plan: 1. Stabilize readiness command exit semantics and diagnostics. 2. Verify readiness behavior through cli-core branch-meta readiness and full cli-core suite. 3. Record remaining exit-code risks before finish."
   Verify Steps: |-
     1. Review the requested outcome for "Stabilize readiness command exit semantics". Expected: the visible result matches ## Summary and stays inside approved scope.
@@ -90,12 +90,12 @@ id_source: "generated"
 
 Stabilize readiness command exit semantics
 
-Разобрать regression в task ready (ожидаемый exit 0) и стабилизировать диагностические выходы ready для v0.5 без скрытых зависимостей от временных артефактов.
+Stabilize task readiness exit semantics and diagnostics without hidden dependencies on temporary artifacts.
 
 ## Scope
 
-- In scope: Разобрать regression в task ready (ожидаемый exit 0) и стабилизировать диагностические выходы ready для v0.5 без скрытых зависимостей от временных артефактов.
-- Out of scope: unrelated refactors not required for "Stabilize readiness command exit semantics".
+- In scope: readiness command exit codes, diagnostics, and branch metadata readiness tests for v0.5.
+- Out of scope: unrelated workflow routing or task backend changes.
 
 ## Plan
 

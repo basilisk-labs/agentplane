@@ -4,7 +4,7 @@
   "resolverInput": {
     "taskId": "202605111706-3K495Y",
     "title": "Audit recipes/blueprints output contracts after v0.5 changes",
-    "description": "Сформировать матрицу контрактов для recipes/blueprints команд (list/explain/install/scaffold/validate), зафиксировать gaps и расширить smoke-покрытие выводов и ошибок.",
+    "description": "Build an output-contract matrix for recipes and blueprints commands, record gaps, and expand smoke coverage for outputs and errors.",
     "tags": [
       "cli,blueprints,recipes,coverage"
     ],
@@ -317,6 +317,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "f82cc0cd07afc8f6ca0e91b4931a3202ce65d56ab8ee677df1258e2a90e68280"
+    "value": "6b3be2f84261a49c1967e5ccc4849d439132cba9e3d16b2e667ea10cf07ff8be"
   }
 }

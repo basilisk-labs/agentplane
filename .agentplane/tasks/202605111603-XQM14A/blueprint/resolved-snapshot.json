@@ -4,7 +4,7 @@
   "resolverInput": {
     "taskId": "202605111603-XQM14A",
     "title": "Fix branch_pr lifecycle and integrate regressions",
-    "description": "Стабилизировать integrate/pr-flow и finish-команды в branch_pr (timeouts, merge-ветки, close-commit), убрать flaky поведение перед релизом.",
+    "description": "Stabilize branch_pr integrate, PR-flow, finish, timeout, merge-branch, and close-commit behavior before release.",
     "tags": [
       "cli,bug,branch_pr"
     ],
@@ -317,6 +317,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "9622fbc77703378c698e2671b7af06ca682bd37fb307f4570973ecf1a00d805e"
+    "value": "31e33eb5031c4c90021a18f4e0abbf3259a89218caf7b401819185951611ff72"
   }
 }

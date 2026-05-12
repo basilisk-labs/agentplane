@@ -42,17 +42,17 @@ events:
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run --project cli-core. Result: pass. Evidence: full cli-core passed 83 files and 675 tests, including branch_pr lifecycle, integrate, PR artifacts, hosted-close, and finish-close-commit suites. Scope: branch_pr lifecycle and integrate regressions."
 doc_version: 3
-doc_updated_at: "2026-05-12T06:13:12.792Z"
+doc_updated_at: "2026-05-12T06:18:17.066Z"
 doc_updated_by: "INTEGRATOR"
-description: "Стабилизировать integrate/pr-flow и finish-команды в branch_pr (timeouts, merge-ветки, close-commit), убрать flaky поведение перед релизом."
+description: "Stabilize branch_pr integrate, PR-flow, finish, timeout, merge-branch, and close-commit behavior before release."
 sections:
   Summary: |-
     Fix branch_pr lifecycle and integrate regressions
     
-    Стабилизировать integrate/pr-flow и finish-команды в branch_pr (timeouts, merge-ветки, close-commit), убрать flaky поведение перед релизом.
+    Stabilize branch_pr integrate, PR-flow, finish, timeout, merge-branch, and close-commit behavior before release.
   Scope: |-
-    - In scope: Стабилизировать integrate/pr-flow и finish-команды в branch_pr (timeouts, merge-ветки, close-commit), убрать flaky поведение перед релизом.
-    - Out of scope: unrelated refactors not required for "Fix branch_pr lifecycle and integrate regressions".
+    - In scope: branch_pr lifecycle, integrate, PR artifacts, finish, timeout, merge branch, and close-commit behavior.
+    - Out of scope: unrelated backend or release publication changes.
   Plan: "Batch v0.5 release readiness plan: 1. Stabilize branch_pr lifecycle, PR artifact, integrate, and finish-close paths. 2. Verify with focused branch_pr lifecycle tests and full cli-core. 3. Keep release blockers explicit before finish."
   Verify Steps: |-
     1. Review the requested outcome for "Fix branch_pr lifecycle and integrate regressions". Expected: the visible result matches ## Summary and stays inside approved scope.
@@ -90,12 +90,12 @@ id_source: "generated"
 
 Fix branch_pr lifecycle and integrate regressions
 
-Стабилизировать integrate/pr-flow и finish-команды в branch_pr (timeouts, merge-ветки, close-commit), убрать flaky поведение перед релизом.
+Stabilize branch_pr integrate, PR-flow, finish, timeout, merge-branch, and close-commit behavior before release.
 
 ## Scope
 
-- In scope: Стабилизировать integrate/pr-flow и finish-команды в branch_pr (timeouts, merge-ветки, close-commit), убрать flaky поведение перед релизом.
-- Out of scope: unrelated refactors not required for "Fix branch_pr lifecycle and integrate regressions".
+- In scope: branch_pr lifecycle, integrate, PR artifacts, finish, timeout, merge branch, and close-commit behavior.
+- Out of scope: unrelated backend or release publication changes.
 
 ## Plan
 
