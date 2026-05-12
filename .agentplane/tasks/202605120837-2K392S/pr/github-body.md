@@ -22,12 +22,17 @@ Fix init so interactive base-branch creation is planned before confirmation and 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-12T08:38:31.207Z
+- Updated: 2026-05-12T08:49:23.593Z
 - Branch: task/202605120837-2K392S/defer-init-base-branch-apply
-- Head: a42e0cd9f2de
+- Head: 27540f93715f
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 512 +++++++++++++++++++++
+ .../src/cli/run-cli.core.init-base-branch.test.ts  |  51 ++
+ .../src/cli/run-cli/commands/init/base-branch.ts   | 102 +++-
+ .../src/cli/run-cli/commands/init/execution.ts     |  11 +-
+ .../src/cli/run-cli/commands/init/orchestrate.ts   |   4 +-
+ 5 files changed, 669 insertions(+), 11 deletions(-)
 ```
 
 </details>
