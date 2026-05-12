@@ -426,7 +426,6 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
       const staleReview = await readFile(path.join(prDir, "review.md"), "utf8");
       const staleGithubTitle = await readFile(path.join(prDir, "github-title.txt"), "utf8");
       const staleGithubBody = await readFile(path.join(prDir, "github-body.md"), "utf8");
-
       await writeFile(path.join(root, "feature.txt"), "feature", "utf8");
       await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "feature"], { cwd: root });
@@ -436,18 +435,14 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
         [`.agentplane/tasks/${taskId}`],
         `${taskId} refresh pr artifacts`,
       );
-
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       await mkdir(prDir, { recursive: true });
       await writeFile(path.join(prDir, "meta.json"), staleMeta, "utf8");
       await writeFile(path.join(prDir, "diffstat.txt"), staleDiffstat, "utf8");
-      if (staleVerifyLog.length > 0) {
-        await writeFile(staleVerifyLogPath, staleVerifyLog, "utf8");
-      }
+      await writeFile(staleVerifyLogPath, staleVerifyLog, "utf8");
       await writeFile(path.join(prDir, "review.md"), staleReview, "utf8");
       await writeFile(path.join(prDir, "github-title.txt"), staleGithubTitle, "utf8");
       await writeFile(path.join(prDir, "github-body.md"), staleGithubBody, "utf8");
-
       const io = captureStdIO();
       try {
         const code = await runCli(["pr", "check", taskId, "--root", root]);
