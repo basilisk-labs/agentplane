@@ -1,16 +1,19 @@
 {
-  "artifact_state": "remote_staged",
-  "artifact_state_reason": "task branch task/202605121704-F6295Q/blueprints-why-you-need is not yet published on origin; push it with `git push -u origin task/202605121704-F6295Q/blueprints-why-you-need` and rerun `agentplane pr open`",
-  "artifact_state_updated_at": "2026-05-12T17:05:33.481Z",
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-12T17:10:58Z",
   "base": "main",
   "branch": "task/202605121704-F6295Q/blueprints-why-you-need",
   "created_at": "2026-05-12T17:05:31.877Z",
-  "head_sha": "b870f0efdd5f5b0a2a37c6246a8b72402fcd98bf",
+  "head_sha": "14fbed5b55a47c30b9d2e3df4e277dd0643cdc1a",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "8a18306c48cc164dafcb26ca2adb2e0b5b122bbe",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-12T17:10:58Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605121704-F6295Q",
-  "updated_at": "2026-05-12T17:08:40.073Z",
+  "updated_at": "2026-05-12T17:10:58Z",
   "verify": {
     "status": "skipped"
   }

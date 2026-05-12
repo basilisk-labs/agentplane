@@ -1,7 +1,8 @@
 ---
 id: "202605121704-F6295Q"
 title: "Add blog post: Why Blueprints matter"
-status: "DOING"
+result_summary: "Merged via PR #3604."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "8a18306c48cc164dafcb26ca2adb2e0b5b122bbe"
+  message: "🚧 F6295Q task: Add blog post: Why Blueprints matter [202605121704-F6295Q] (#3604)"
 comments:
   -
     author: "DOCS"
     body: "Start: пишу блог-пост в репозитории на русском языке, объясняю назначение Blueprints и их роль в стабильности workflow. План: создать файл post в website/blog и зафиксировать доказательства публикации."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3604 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -35,9 +41,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: пишу блог-пост в репозитории на русском языке, объясняю назначение Blueprints и их роль в стабильности workflow. План: создать файл post в website/blog и зафиксировать доказательства публикации."
+  -
+    type: "status"
+    at: "2026-05-12T17:11:47.739Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3604 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-12T17:08:36.921Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-12T17:11:47.739Z"
+doc_updated_by: "INTEGRATOR"
 description: "Пост для блога о назначении blueprints, почему они нужны и как помогают в релизах"
 sections:
   Summary: "Add a docs blog post in Russian explaining what Blueprints are and why they matter for stable releases."
