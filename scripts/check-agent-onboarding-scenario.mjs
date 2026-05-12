@@ -90,8 +90,15 @@ const onboardingScenarios = [
       ["lifecycle", "## branch_pr mode"],
       ["lifecycle", "**Who closes the task:** INTEGRATOR on the base branch after merge."],
       ["branching", "### branch_pr"],
-      ["branching", "Canonical task writes happen only on base branch."],
-      ["branching", "INTEGRATOR performs verify, merge, and finish."],
+      ["branching", "Implementation commits happen in the task worktree."],
+      [
+        "branching",
+        "Lifecycle/status commits are task-state checkpoints and are not the implementation commit recorded at finish.",
+      ],
+      [
+        "branching",
+        "INTEGRATOR performs merge/integration and finish from the base checkout after the task branch is verified.",
+      ],
       ["branching", "agentplane work start <task-id> --agent CODER --slug <slug> --worktree"],
     ],
   },
