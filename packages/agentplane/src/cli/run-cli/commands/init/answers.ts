@@ -22,6 +22,7 @@ import type { InitPromptClack } from "./steps/contracts.js";
 import { introLogo, section } from "./ui.js";
 
 export type InitAnswers = {
+  setupProfile: SetupProfilePreset;
   setupProfileDescription: string;
   policyGateway: PolicyGatewayFlavor;
   ide: InitIde;
@@ -50,6 +51,7 @@ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
   const setupProfilePreset: SetupProfilePreset = flags.setupProfile ?? "normal";
   const preset = setupProfilePresets[setupProfilePreset];
   return {
+    setupProfile: setupProfilePreset,
     setupProfileDescription: preset.description,
     policyGateway: flags.policyGateway ?? INIT_DEFAULTS.policyGateway,
     ide: flags.ide ?? INIT_DEFAULTS.ide,
@@ -112,6 +114,7 @@ export async function promptInteractiveAnswers(opts: {
     cachedBlueprints,
   });
   return {
+    setupProfile: setup.setupProfilePreset,
     setupProfileDescription: selectedPreset.description,
     policyGateway: policy.policyGateway,
     ide: ide.ide,

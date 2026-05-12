@@ -8,6 +8,9 @@ export async function resolveInitBaseBranchForInit(opts: {
   workflow: WorkflowMode;
   gitRootExisted: boolean;
 }): Promise<string> {
+  if (!opts.gitRootExisted) {
+    return opts.baseBranchFallback;
+  }
   let initBaseBranch = await resolveInitBaseBranch(opts.gitRoot, opts.baseBranchFallback);
   if (opts.isInteractive && opts.workflow === "branch_pr" && opts.gitRootExisted) {
     initBaseBranch = await promptInitBaseBranch({

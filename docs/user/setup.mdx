@@ -55,6 +55,17 @@ agentplane init
 
 If `.git` does not exist in that folder, `init` creates a new Git repository there.
 
+To inspect the setup without writes, use dry-run:
+
+```bash
+agentplane init --dry-run --yes
+agentplane init --dry-run --yes --output json
+```
+
+Dry-run builds the same setup plan but does not create `.git`, `.agentplane`, gateway files,
+backups, hooks, or commits. Use it before re-initializing repositories that already contain
+AgentPlane-related files.
+
 ## Create your first task
 
 Use a harmless task first. The goal is to see the artifact shape before giving an agent broad edit

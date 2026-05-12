@@ -6,7 +6,6 @@ import { usageError } from "../../../spec/errors.js";
 import type { CommandSpec } from "../../../spec/spec.js";
 
 import { resolveInitBaseBranchForInit } from "./base-branch.js";
-import { handleInitConflicts } from "./conflicts.js";
 import { ensureGitRoot } from "./git.js";
 import type { InitParsed } from "./model.js";
 import { InitAborted, loadInitClackPrompts, shouldUseInitClackPrompts } from "./prompts.js";
@@ -15,6 +14,7 @@ import { validateCachedRecipesSelection } from "./recipes.js";
 import { validateCachedBlueprintSelection } from "./blueprints.js";
 import {
   applyInitPlan,
+  buildInitPlan,
   collectInitAndHookConflicts,
   maybeConfirmInteractiveApply,
   resolveConflictStrategy,
@@ -24,7 +24,7 @@ import { buildNonInteractiveAnswers, promptInteractiveAnswers } from "./answers.
 import { outroError, outroSuccess } from "./ui.js";
 
 function shouldRunInteractiveInit(flags: InitParsed): boolean {
-  if (flags.yes || process.env.AGENTPLANE_PROMPTS === "plain") return false;
+  if (flags.yes || flags.dryRun || process.env.AGENTPLANE_PROMPTS === "plain") return false;
   return shouldUseInitClackPrompts();
 }
 
@@ -34,6 +34,7 @@ function assertNonInteractiveInitAllowed(opts: {
   interactive: boolean;
 }): void {
   if (opts.interactive || opts.flags.yes || opts.flags.setupProfile) return;
+  if (opts.flags.dryRun) return;
   if (opts.flags.workflow && opts.flags.requireNetworkApproval !== undefined) return;
   throw usageError({
     spec: opts.spec,
@@ -41,6 +42,26 @@ function assertNonInteractiveInitAllowed(opts: {
     message:
       "Non-interactive init requires --yes, --setup-profile, or explicit values for: --workflow, --require-network-approval.",
   });
+}
+
+function renderDryRunPlanText(plan: ReturnType<typeof buildInitPlan>): string {
+  const lines = [
+    "AgentPlane init plan",
+    `Root: ${plan.root}`,
+    `Profile: ${plan.profile}`,
+    `Workflow: ${plan.answers.workflow}`,
+    `Backend: ${plan.answers.backend}`,
+    `Git init: ${String(!plan.context.gitRootExisted)}`,
+    `Conflicts: ${plan.conflicts.length === 0 ? "none" : plan.conflicts.join(", ")}`,
+    "Effects:",
+    ...plan.effects.map((effect) => {
+      const pathSuffix = effect.path ? ` ${effect.path}` : "";
+      return `- ${effect.kind}${pathSuffix}: ${effect.summary}`;
+    }),
+    "Next:",
+    ...plan.nextSteps.map((step, index) => `${index + 1}. ${step}`),
+  ];
+  return `${lines.join("\n")}\n`;
 }
 
 function requireInitClack(
@@ -58,6 +79,7 @@ function requireInitClack(
 export async function cmdInit(opts: {
   cwd: string;
   rootOverride?: string;
+  outputMode?: "text" | "json";
   flags: InitParsed;
   spec: CommandSpec<InitParsed>;
 }): Promise<number> {
@@ -75,12 +97,11 @@ export async function cmdInit(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       backend: answers.backend,
-      ensureGitRoot,
     });
     const initBaseBranch = await resolveInitBaseBranchForInit({
       gitRoot: paths.gitRoot,
       baseBranchFallback: "main",
-      isInteractive: false,
+      isInteractive: interactive,
       workflow: answers.workflow,
       gitRootExisted: paths.gitRootExisted,
     });
@@ -91,13 +112,23 @@ export async function cmdInit(opts: {
       gitRoot: paths.gitRoot,
       conflicts,
     });
-    await handleInitConflicts({
-      gitRoot: paths.gitRoot,
+    const plan = buildInitPlan({
+      paths,
+      answers,
       conflicts,
-      backup: conflictMode.backup,
-      force: conflictMode.force,
+      conflictMode,
+      outputMode: opts.outputMode ?? "text",
+      includeInstallCommit: !opts.flags.gitignoreAgents,
     });
-    await maybeConfirmInteractiveApply({ clack, flags: opts.flags, answers });
+    if (opts.flags.dryRun) {
+      if ((opts.outputMode ?? "text") === "json") {
+        process.stdout.write(`${JSON.stringify(plan, null, 2)}\n`);
+      } else {
+        process.stdout.write(renderDryRunPlanText(plan));
+      }
+      return 0;
+    }
+    await maybeConfirmInteractiveApply({ clack, flags: opts.flags, answers, paths, plan });
     await applyInitPlan({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
@@ -106,6 +137,9 @@ export async function cmdInit(opts: {
       answers,
       paths,
       initBaseBranch,
+      conflictMode,
+      conflicts,
+      ensureGitRoot,
     });
     if (clack) {
       outroSuccess(clack, paths.gitRoot);
