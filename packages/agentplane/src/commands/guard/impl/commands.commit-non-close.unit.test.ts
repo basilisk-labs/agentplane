@@ -471,13 +471,13 @@ describe("guard command implementations: commit non-close", () => {
     const { cmdCommit } = await import("./commit.js");
     const ctx = mkCtx();
     ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
-    const errorMatcher = {
+    const errorMatcher: { code: string; context: unknown; exitCode: number; message: string } = {
       exitCode: exitCodeForError("E_GIT"),
       code: "E_GIT",
       message: "git commit failed: boom",
       context: expect.objectContaining({
         diagnostic_state: "git commit failed",
-        diagnostic_likely_cause: expect.stringContaining("The commit pre-conditions"),
+        diagnostic_likely_cause: expect.stringContaining("The commit pre-conditions") as unknown,
       }),
     };
     ctx.git.commit.mockRejectedValue(new Error("boom"));

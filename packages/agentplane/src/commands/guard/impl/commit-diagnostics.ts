@@ -182,7 +182,7 @@ export function asCommitFailure(
     code: "E_GIT",
     message: lines.join("\n"),
     context: {
-      ...(context ? context : {}),
+      ...context,
       ...withDiagnosticContext({ command: "commit" }, commitFailureDiagnostic(phase, output)),
     },
   });
