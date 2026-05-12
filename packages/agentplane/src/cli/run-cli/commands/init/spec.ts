@@ -143,6 +143,25 @@ export const initSpec: CommandSpec<InitParsed> = {
     },
     {
       kind: "boolean",
+      name: "no-input",
+      default: false,
+      description: "Alias for --yes; run init without prompts using defaults for missing flags.",
+    },
+    {
+      kind: "boolean",
+      name: "non-interactive",
+      default: false,
+      description: "Alias for --yes; run init without prompts using defaults for missing flags.",
+    },
+    {
+      kind: "boolean",
+      name: "dry-run",
+      default: false,
+      description:
+        "Build and print the init plan without writing files, initializing git, or handling conflicts.",
+    },
+    {
+      kind: "boolean",
       name: "gitignore-agents",
       default: false,
       description:
@@ -170,6 +189,10 @@ export const initSpec: CommandSpec<InitParsed> = {
     {
       cmd: "agentplane init --yes --gitignore-agents",
       why: "Initialize without committing and keep agent prompts/templates local (gitignored).",
+    },
+    {
+      cmd: "agentplane init --dry-run --yes --output json",
+      why: "Print a machine-readable init plan without writing files.",
     },
   ],
   validateRaw: (raw) => {
@@ -233,7 +256,11 @@ export const initSpec: CommandSpec<InitParsed> = {
         blueprintsRaw === undefined ? undefined : parseBlueprintsSelectionForInit(blueprintsRaw),
       force: raw.opts.force === true,
       backup: raw.opts.backup === true,
-      yes: raw.opts.yes === true,
+      yes:
+        raw.opts.yes === true ||
+        raw.opts["no-input"] === true ||
+        raw.opts["non-interactive"] === true,
+      dryRun: raw.opts["dry-run"] === true,
       gitignoreAgents: raw.opts["gitignore-agents"] === true,
     };
   },
@@ -249,4 +276,10 @@ export const initSpec: CommandSpec<InitParsed> = {
 };
 
 export const runInit: CommandHandler<InitParsed> = (ctx, flags) =>
-  cmdInit({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, flags, spec: initSpec });
+  cmdInit({
+    cwd: ctx.cwd,
+    rootOverride: ctx.rootOverride,
+    outputMode: ctx.outputMode ?? "text",
+    flags,
+    spec: initSpec,
+  });

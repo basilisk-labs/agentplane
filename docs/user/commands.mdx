@@ -56,6 +56,8 @@ agentplane init
 ```
 
 If the directory is not a git repository, `agentplane init` initializes git in that directory.
+Use `agentplane init --dry-run --yes` to preview the setup plan without creating `.git`,
+`.agentplane`, backups, hooks, or commits. Add `--output json` for a machine-readable plan.
 
 Interactive init now starts with a profile menu:
 
@@ -75,6 +77,7 @@ Non-interactive:
 
 ```bash
 agentplane init --setup-profile normal --workflow direct --backend local --execution-profile balanced --strict-unsafe-confirm true --hooks true --require-network-approval true --yes
+agentplane init --dry-run --yes --output json
 ```
 
 Workflow contract operations:

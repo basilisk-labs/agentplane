@@ -590,4 +590,101 @@ describe("runCli", () => {
     );
     expect(baseBranch.trim()).toBe("main");
   });
+
+  it("init --dry-run --yes is pure for a fresh non-git directory", async () => {
+    const root = await mkTempDir();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--dry-run", "--yes", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("AgentPlane init plan");
+      expect(io.stdout).toContain("Git init: true");
+    } finally {
+      io.restore();
+    }
+
+    expect(await pathExists(path.join(root, ".git"))).toBe(false);
+    expect(await pathExists(path.join(root, ".agentplane"))).toBe(false);
+    expect(await pathExists(path.join(root, "AGENTS.md"))).toBe(false);
+    expect(await pathExists(path.join(root, ".gitignore"))).toBe(false);
+  });
+
+  it("init --dry-run --backup does not create backups before apply", async () => {
+    const root = await mkGitRepoRoot();
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    const configPath = path.join(root, ".agentplane", "config.json");
+    await writeFile(configPath, '{"existing":true}\n', "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--dry-run", "--yes", "--backup", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("backup_path .agentplane/config.json");
+    } finally {
+      io.restore();
+    }
+
+    expect(await readFile(configPath, "utf8")).toBe('{"existing":true}\n');
+    const entries = await readdir(path.join(root, ".agentplane"));
+    expect(entries.some((entry) => entry.includes(".bak"))).toBe(false);
+  });
+
+  it("init --dry-run reports conflicts without requiring a conflict strategy", async () => {
+    const root = await mkGitRepoRoot();
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    const configPath = path.join(root, ".agentplane", "config.json");
+    await writeFile(configPath, '{"existing":true}\n', "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--dry-run", "--yes", "--root", root, "--output", "json"]);
+      expect(code).toBe(0);
+      const envelope = JSON.parse(io.stdout) as {
+        data?: { conflicts?: string[]; warnings?: string[]; effects?: { kind: string }[] };
+      };
+      expect(envelope.data?.conflicts).toContain(".agentplane/config.json");
+      expect(envelope.data?.warnings).toContain(
+        "Conflicts require --backup or --force before apply.",
+      );
+      expect(envelope.data?.effects?.some((effect) => effect.kind === "delete_path")).toBe(false);
+      expect(envelope.data?.effects?.some((effect) => effect.kind === "backup_path")).toBe(false);
+    } finally {
+      io.restore();
+    }
+
+    expect(await readFile(configPath, "utf8")).toBe('{"existing":true}\n');
+  });
+
+  it("init --dry-run --yes --output json emits a stable plan envelope without writes", async () => {
+    const root = await mkTempDir();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--dry-run", "--yes", "--root", root, "--output", "json"]);
+      expect(code).toBe(0);
+      const envelope = JSON.parse(io.stdout) as {
+        data?: { schemaVersion?: string; effects?: { kind: string }[] };
+      };
+      expect(envelope.data?.schemaVersion).toBe("init-plan/v1");
+      expect(envelope.data?.effects?.some((effect) => effect.kind === "git_init")).toBe(true);
+    } finally {
+      io.restore();
+    }
+
+    expect(await pathExists(path.join(root, ".git"))).toBe(false);
+    expect(await pathExists(path.join(root, ".agentplane"))).toBe(false);
+  });
+
+  it("init --no-input is an alias for --yes", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--no-input", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    expect(await pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).toBe(true);
+  });
 });

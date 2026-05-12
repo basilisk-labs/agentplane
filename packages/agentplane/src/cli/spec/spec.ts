@@ -79,6 +79,7 @@ export type CommandSpec<TParsed = unknown> = {
 export type CommandCtx = {
   cwd: string;
   rootOverride?: string;
+  outputMode?: "text" | "json";
 };
 
 export type CommandHandler<TParsed = unknown> = (

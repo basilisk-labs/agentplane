@@ -1,0 +1,14 @@
+ .../blueprint/resolved-snapshot.json               | 512 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   9 +
+ docs/user/commands.mdx                             |   3 +
+ docs/user/setup.mdx                                |  11 +
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |  97 ++++
+ packages/agentplane/src/cli/run-cli.ts             |   3 +-
+ .../src/cli/run-cli/commands/init/answers.ts       |   3 +
+ .../src/cli/run-cli/commands/init/base-branch.ts   |   3 +
+ .../src/cli/run-cli/commands/init/execution.ts     | 282 ++++++++++--
+ .../src/cli/run-cli/commands/init/model.ts         |  53 +++
+ .../src/cli/run-cli/commands/init/orchestrate.ts   |  52 ++-
+ .../src/cli/run-cli/commands/init/spec.ts          |  37 +-
+ packages/agentplane/src/cli/spec/spec.ts           |   1 +
+ 13 files changed, 1011 insertions(+), 55 deletions(-)

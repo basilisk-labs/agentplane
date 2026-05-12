@@ -290,7 +290,8 @@ export async function runCli(argv: string[]): Promise<number> {
       return await runWithOutputMode({
         mode: outputMode,
         command: runtimeEntry.spec.id.join(" "),
-        run: async () => await runtimeEntry.handler({ cwd, rootOverride: globals.root }, parsed),
+        run: async () =>
+          await runtimeEntry.handler({ cwd, rootOverride: globals.root, outputMode }, parsed),
       });
     }
 
