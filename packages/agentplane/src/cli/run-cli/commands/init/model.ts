@@ -6,9 +6,14 @@ import type { PolicyGatewayFlavor } from "../../../../shared/policy-gateway.js";
 export type InitIde = "codex" | "cursor" | "windsurf";
 
 export type SetupProfilePreset = "light" | "normal" | "full-harness";
+export type InitMode = "quick" | "guided" | "advanced" | "ci";
+export type UserFacingProfile = "solo" | "team" | "strict" | "custom";
+export type InitTool = "codex" | "claude" | "cursor" | "windsurf" | "multiple" | "manual";
 export type InitBackend = "local" | "redmine" | "cloud";
 
 export type InitFlags = {
+  initMode?: InitMode;
+  tool?: InitTool;
   setupProfile?: SetupProfilePreset;
   policyGateway?: PolicyGatewayFlavor;
   ide?: InitIde;
@@ -49,7 +54,9 @@ export type InitDefaults = {
 };
 
 export type InitEffectKind =
+  | "create_dir"
   | "write_file"
+  | "update_file"
   | "backup_path"
   | "delete_path"
   | "git_init"
@@ -75,7 +82,9 @@ export type InitPlan = {
   schemaVersion: "init-plan/v1";
   agentplaneVersion: string;
   root: string;
-  profile: SetupProfilePreset;
+  mode: InitMode;
+  profile: UserFacingProfile;
+  internalSetupProfile: SetupProfilePreset;
   answers: {
     policyGateway: PolicyGatewayFlavor;
     ide: InitIde;
@@ -92,6 +101,7 @@ export type InitPlan = {
   };
   context: {
     gitRootExisted: boolean;
+    parentGitRoot: string | null;
     outputMode: "text" | "json";
   };
   effects: InitEffect[];

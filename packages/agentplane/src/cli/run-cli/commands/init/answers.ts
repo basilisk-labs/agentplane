@@ -20,6 +20,11 @@ import {
 } from "./steps/index.js";
 import type { InitPromptClack } from "./steps/contracts.js";
 import { introLogo, section } from "./ui.js";
+import {
+  resolveIdeFromFlags,
+  resolvePolicyGatewayFromFlags,
+  resolveToolDefaults,
+} from "./modes.js";
 
 export type InitAnswers = {
   setupProfile: SetupProfilePreset;
@@ -53,8 +58,8 @@ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
   return {
     setupProfile: setupProfilePreset,
     setupProfileDescription: preset.description,
-    policyGateway: flags.policyGateway ?? INIT_DEFAULTS.policyGateway,
-    ide: flags.ide ?? INIT_DEFAULTS.ide,
+    policyGateway: resolvePolicyGatewayFromFlags(flags, INIT_DEFAULTS.policyGateway),
+    ide: resolveIdeFromFlags(flags, INIT_DEFAULTS.ide),
     workflow: flags.workflow ?? INIT_DEFAULTS.workflow,
     directCloseDirtyPolicy: flags.directCloseDirtyPolicy ?? INIT_DEFAULTS.directCloseDirtyPolicy,
     backend: flags.backend ?? INIT_DEFAULTS.backend,
@@ -72,6 +77,7 @@ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
 export async function promptInteractiveAnswers(opts: {
   flags: InitParsed;
   clack: InitClackPrompts;
+  targetRoot: string;
 }): Promise<InitAnswers> {
   const promptClack = opts.clack as InitPromptClack & Pick<InitClackPrompts, "note">;
   opts.clack.intro("AgentPlane init");
@@ -83,8 +89,17 @@ export async function promptInteractiveAnswers(opts: {
     defaultProfile: "normal",
   });
   const selectedPreset = setupProfilePresets[setup.setupProfilePreset];
-  const policy = await promptPolicyGatewayStep({ clack: promptClack, flags: opts.flags });
-  const ide = await promptIdeStep({ clack: promptClack, flags: opts.flags });
+  const toolDefaults = resolveToolDefaults(opts.flags.tool);
+  const policy = await promptPolicyGatewayStep({
+    clack: promptClack,
+    flags: {
+      policyGateway: opts.flags.policyGateway ?? toolDefaults.policyGateway,
+    },
+  });
+  const ide = await promptIdeStep({
+    clack: promptClack,
+    flags: { ide: opts.flags.ide ?? toolDefaults.ide },
+  });
   const workflow = await promptWorkflowStep({
     clack: promptClack,
     flags: opts.flags,
@@ -97,7 +112,7 @@ export async function promptInteractiveAnswers(opts: {
     setupProfilePreset: setup.setupProfilePreset,
     setupProfileMode: setup.setupProfileMode,
   });
-  const cachedRecipes = await listCachedRecipes();
+  const cachedRecipes = await listCachedRecipes({ cwd: opts.targetRoot });
   const recipeSelection = await promptRecipeSelectionStep({
     clack: promptClack,
     flags: opts.flags,
@@ -105,7 +120,7 @@ export async function promptInteractiveAnswers(opts: {
     setupProfileMode: setup.setupProfileMode,
     cachedRecipes,
   });
-  const cachedBlueprints = await listCachedBlueprintCatalogItems();
+  const cachedBlueprints = await listCachedBlueprintCatalogItems({ cwd: opts.targetRoot });
   const blueprintSelection = await promptBlueprintSelectionStep({
     clack: promptClack,
     flags: opts.flags,

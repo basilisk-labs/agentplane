@@ -674,6 +674,64 @@ describe("runCli", () => {
     expect(await pathExists(path.join(root, ".agentplane"))).toBe(false);
   });
 
+  it("init --quick --tool cursor maps to guided plan fields and Cursor rules", async () => {
+    const root = await mkTempDir();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "init",
+        "--dry-run",
+        "--yes",
+        "--quick",
+        "--tool",
+        "cursor",
+        "--root",
+        root,
+        "--output",
+        "json",
+      ]);
+      expect(code).toBe(0);
+      const envelope = JSON.parse(io.stdout) as {
+        data?: {
+          mode?: string;
+          profile?: string;
+          internalSetupProfile?: string;
+          answers?: { policyGateway?: string; ide?: string };
+        };
+      };
+      expect(envelope.data?.mode).toBe("quick");
+      expect(envelope.data?.profile).toBe("team");
+      expect(envelope.data?.internalSetupProfile).toBe("normal");
+      expect(envelope.data?.answers).toMatchObject({ policyGateway: "codex", ide: "cursor" });
+    } finally {
+      io.restore();
+    }
+
+    expect(await pathExists(path.join(root, ".git"))).toBe(false);
+    expect(await pathExists(path.join(root, ".agentplane"))).toBe(false);
+  });
+
+  it("init refuses ambiguous nested non-interactive roots without explicit --root", async () => {
+    const parent = await mkGitRepoRoot();
+    const nested = path.join(parent, "packages", "api");
+    await mkdir(nested, { recursive: true });
+    const originalCwd = process.cwd();
+    process.chdir(nested);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Refusing to initialize nested git repository");
+      expect(io.stderr).toContain("Pass --root");
+    } finally {
+      io.restore();
+      process.chdir(originalCwd);
+    }
+
+    expect(await pathExists(path.join(nested, ".git"))).toBe(false);
+    expect(await pathExists(path.join(nested, ".agentplane"))).toBe(false);
+  });
+
   it("init --no-input is an alias for --yes", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);

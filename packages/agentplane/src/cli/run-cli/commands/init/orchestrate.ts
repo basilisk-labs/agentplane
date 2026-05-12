@@ -22,6 +22,7 @@ import {
 } from "./execution.js";
 import { buildNonInteractiveAnswers, promptInteractiveAnswers } from "./answers.js";
 import { outroError, outroSuccess } from "./ui.js";
+import { resolveInitMode } from "./modes.js";
 
 function shouldRunInteractiveInit(flags: InitParsed): boolean {
   if (flags.yes || flags.dryRun || process.env.AGENTPLANE_PROMPTS === "plain") return false;
@@ -48,10 +49,12 @@ function renderDryRunPlanText(plan: ReturnType<typeof buildInitPlan>): string {
   const lines = [
     "AgentPlane init plan",
     `Root: ${plan.root}`,
-    `Profile: ${plan.profile}`,
+    `Mode: ${plan.mode}`,
+    `Profile: ${plan.profile} (${plan.internalSetupProfile})`,
     `Workflow: ${plan.answers.workflow}`,
     `Backend: ${plan.answers.backend}`,
     `Git init: ${String(!plan.context.gitRootExisted)}`,
+    `Parent Git: ${plan.context.parentGitRoot ?? "none"}`,
     `Conflicts: ${plan.conflicts.length === 0 ? "none" : plan.conflicts.join(", ")}`,
     "Effects:",
     ...plan.effects.map((effect) => {
@@ -84,20 +87,31 @@ export async function cmdInit(opts: {
   spec: CommandSpec<InitParsed>;
 }): Promise<number> {
   const interactive = shouldRunInteractiveInit(opts.flags);
+  const initMode = resolveInitMode({ flags: opts.flags, interactive });
   assertNonInteractiveInitAllowed({ flags: opts.flags, spec: opts.spec, interactive });
   const clack = interactive ? requireInitClack(await loadInitClackPrompts(), opts.spec) : null;
+  const targetRoot = path.resolve(opts.rootOverride ?? opts.cwd);
 
   try {
     const answers = clack
-      ? await promptInteractiveAnswers({ flags: opts.flags, clack })
+      ? await promptInteractiveAnswers({ flags: opts.flags, clack, targetRoot })
       : buildNonInteractiveAnswers(opts.flags);
-    await validateCachedRecipesSelection(answers.recipes);
-    await validateCachedBlueprintSelection(answers.blueprints);
+    await validateCachedRecipesSelection(answers.recipes, { cwd: targetRoot });
+    await validateCachedBlueprintSelection(answers.blueprints, { cwd: targetRoot });
     const paths = await resolveInitPaths({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       backend: answers.backend,
     });
+    if (!interactive && !opts.rootOverride && !paths.gitRootExisted && paths.parentGitRoot) {
+      throw usageError({
+        spec: opts.spec,
+        command: "init",
+        message:
+          `Refusing to initialize nested git repository at ${paths.gitRoot}; parent repository detected at ${paths.parentGitRoot}. ` +
+          "Pass --root to select the intended repository root or run from the target root.",
+      });
+    }
     const initBaseBranchSelection = await resolveInitBaseBranchForInit({
       gitRoot: paths.gitRoot,
       baseBranchFallback: "main",
@@ -119,6 +133,7 @@ export async function cmdInit(opts: {
       conflictMode,
       outputMode: opts.outputMode ?? "text",
       includeInstallCommit: !opts.flags.gitignoreAgents,
+      initMode,
     });
     if (opts.flags.dryRun) {
       if ((opts.outputMode ?? "text") === "json") {

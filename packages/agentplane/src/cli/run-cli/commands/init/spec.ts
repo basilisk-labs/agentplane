@@ -20,6 +20,36 @@ export const initSpec: CommandSpec<InitParsed> = {
   options: [
     {
       kind: "string",
+      name: "init-mode",
+      valueHint: "<quick|guided|advanced|ci>",
+      choices: ["quick", "guided", "advanced", "ci"],
+      coerce: (raw) => raw.trim().toLowerCase(),
+      description:
+        "User-facing init route. TTY defaults to guided; --yes defaults to ci for automation.",
+    },
+    {
+      kind: "boolean",
+      name: "quick",
+      default: false,
+      description: "Alias for --init-mode quick.",
+    },
+    {
+      kind: "boolean",
+      name: "advanced",
+      default: false,
+      description: "Alias for --init-mode advanced.",
+    },
+    {
+      kind: "string",
+      name: "tool",
+      valueHint: "<codex|claude|cursor|windsurf|multiple|manual>",
+      choices: ["codex", "claude", "cursor", "windsurf", "multiple", "manual"],
+      coerce: (raw) => raw.trim().toLowerCase(),
+      description:
+        "AI surface that should read project instructions. Granular --policy-gateway/--ide flags override this mapping.",
+    },
+    {
+      kind: "string",
       name: "setup-profile",
       valueHint: "<light|normal|full-harness>",
       choices: [
@@ -194,6 +224,10 @@ export const initSpec: CommandSpec<InitParsed> = {
       cmd: "agentplane init --dry-run --yes --output json",
       why: "Print a machine-readable init plan without writing files.",
     },
+    {
+      cmd: "agentplane init --quick --tool cursor",
+      why: "Use the quick first-run route and install AGENTS.md plus Cursor rules.",
+    },
   ],
   validateRaw: (raw) => {
     if (raw.extra.length > 0) {
@@ -212,7 +246,16 @@ export const initSpec: CommandSpec<InitParsed> = {
     const recipesRaw = raw.opts.recipes as string | undefined;
     const blueprintsRaw = raw.opts.blueprints as string | undefined;
 
+    const initModeFlag =
+      raw.opts.quick === true
+        ? "quick"
+        : raw.opts.advanced === true
+          ? "advanced"
+          : (raw.opts["init-mode"] as InitFlags["initMode"]);
+
     return {
+      initMode: initModeFlag,
+      tool: raw.opts.tool as InitFlags["tool"],
       setupProfile: normalizeSetupProfile(raw.opts["setup-profile"] as string | undefined),
       policyGateway: raw.opts["policy-gateway"] as InitFlags["policyGateway"],
       ide: raw.opts.ide as InitFlags["ide"],
@@ -270,6 +313,13 @@ export const initSpec: CommandSpec<InitParsed> = {
         spec: initSpec,
         command: "init",
         message: "Use either --force or --backup (not both).",
+      });
+    }
+    if (p.initMode === "quick" && p.setupProfile === "full-harness") {
+      throw usageError({
+        spec: initSpec,
+        command: "init",
+        message: "--init-mode quick cannot be combined with --setup-profile full-harness.",
       });
     }
   },
