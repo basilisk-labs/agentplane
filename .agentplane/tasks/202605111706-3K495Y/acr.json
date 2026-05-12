@@ -1,0 +1,208 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605111706-3K495Y",
+  "created_at": "2026-05-12T06:21:53.162Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "624c1f5ea051ada4e7377a374dd8ac2b77479f71",
+    "work_ref": "main",
+    "work_commit": "624c1f5ea051ada4e7377a374dd8ac2b77479f71"
+  },
+  "task": {
+    "task_id": "202605111706-3K495Y",
+    "title": "Audit recipes/blueprints output contracts after v0.5 changes",
+    "intent": "Build an output-contract matrix for recipes and blueprints commands, record gaps, and expand smoke coverage for outputs and errors.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605111706-3K495Y/README.md",
+      "sha256": "sha256:ddf2226891c97b3c38f7faff6b9b5ad2874a5edd9578e4ee02c0857d19620bbd"
+    },
+    "approved_at": "2026-05-12T06:12:23.350Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Recipes and blueprints output contracts audited for v0.5.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605111706-3K495Y_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-12T06:12:23.350Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605111706-3K495Y/README.md",
+      "sha256": "sha256:ddf2226891c97b3c38f7faff6b9b5ad2874a5edd9578e4ee02c0857d19620bbd"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605111706-3K495Y/README.md",
+      "sha256": "sha256:ddf2226891c97b3c38f7faff6b9b5ad2874a5edd9578e4ee02c0857d19620bbd"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605111706-3K495Y/README.md",
+      "sha256": "sha256:ddf2226891c97b3c38f7faff6b9b5ad2874a5edd9578e4ee02c0857d19620bbd"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605111706-3K495Y/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:93f7c3c7990d8749e05783bf866b824cc23eb2468c42f7a24980f2e7a83cc54c"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 624c1f5ea051ada4e7377a374dd8ac2b77479f71 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:1135693206767af78b374abaaaf9b436f924db03aa429df499bf318185575cb4",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "analysis.light",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "analysis.sources",
+          "kind": "sources",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "analysis.assumptions",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "analysis.weak_links",
+          "kind": "weak_links",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "analysis.final",
+          "kind": "final_output",
+          "produced_by": "work_unit",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605111706-3K495Y/blueprint/resolved-snapshot.json",
+        "digest": "6b3be2f84261a49c1967e5ccc4849d439132cba9e3d16b2e667ea10cf07ff8be",
+        "current_digest": "6b3be2f84261a49c1967e5ccc4849d439132cba9e3d16b2e667ea10cf07ff8be",
+        "route_changed": false,
+        "artifact_sha256": "sha256:93f7c3c7990d8749e05783bf866b824cc23eb2468c42f7a24980f2e7a83cc54c",
+        "safe_command": "agentplane blueprint snapshot 202605111706-3K495Y"
+      }
+    }
+  }
+}
