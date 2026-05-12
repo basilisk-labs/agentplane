@@ -1,0 +1,204 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605121405-8RFYET",
+  "created_at": "2026-05-12T17:02:11.917Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "bd549657036654e610293702b9bc9c7279eec57c",
+    "work_ref": "main",
+    "work_commit": "bd549657036654e610293702b9bc9c7279eec57c"
+  },
+  "task": {
+    "task_id": "202605121405-8RFYET",
+    "title": "Release AgentPlane v0.5",
+    "intent": "Prepare and publish v0.5 release with full verification evidence and roadmap/notes",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605121405-8RFYET/README.md",
+      "sha256": "sha256:319b09a9f9196f2ed90bff6cc6974ca93f296aa6aa95806ae7f4678fa8a0183a"
+    },
+    "approved_at": "2026-05-12T14:06:07.404Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "warning",
+        "reason": "Verification is not ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3602.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "not_run",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605121405-8RFYET_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-12T14:06:07.404Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605121405-8RFYET/README.md",
+      "sha256": "sha256:319b09a9f9196f2ed90bff6cc6974ca93f296aa6aa95806ae7f4678fa8a0183a"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605121405-8RFYET/README.md",
+      "sha256": "sha256:319b09a9f9196f2ed90bff6cc6974ca93f296aa6aa95806ae7f4678fa8a0183a"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605121405-8RFYET/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:8f875edd2e9f314b2ac2a81c9f608802aea2ebcaf733d2efe95a78dc66b31adb"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Verification is not recorded as ok.",
+      "Verification log evidence is missing."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit bd549657036654e610293702b9bc9c7279eec57c if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:79c6a9f2826beaff857acd2270a42eacb62aee573e4946034afdd4e56b356e84",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "analysis.light",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "analysis.sources",
+          "kind": "sources",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "analysis.assumptions",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "analysis.weak_links",
+          "kind": "weak_links",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "analysis.final",
+          "kind": "final_output",
+          "produced_by": "work_unit",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605121405-8RFYET/blueprint/resolved-snapshot.json",
+        "digest": "fd20e5e2c075e0057378b2c5f4213f32675ec0466ee733e4dae19378bb7a6f92",
+        "current_digest": "fd20e5e2c075e0057378b2c5f4213f32675ec0466ee733e4dae19378bb7a6f92",
+        "route_changed": false,
+        "artifact_sha256": "sha256:8f875edd2e9f314b2ac2a81c9f608802aea2ebcaf733d2efe95a78dc66b31adb",
+        "safe_command": "agentplane blueprint snapshot 202605121405-8RFYET"
+      }
+    }
+  }
+}
