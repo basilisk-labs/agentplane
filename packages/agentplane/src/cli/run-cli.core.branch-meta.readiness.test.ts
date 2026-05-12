@@ -112,6 +112,7 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await runCliSilent(["blueprint", "snapshot", depId, "--root", root]);
     await runCliSilent([
       "finish",
       depId,

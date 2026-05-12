@@ -28,16 +28,28 @@ vi.mock("@agentplaneorg/core/commit", () => ({
   validateCommitSubject: mocks.validateCommitSubject,
 }));
 
-describe("pr/integrate/internal/merge", () => {
-  const withTempGitRoot = async <T>(run: (gitRoot: string) => Promise<T>): Promise<T> => {
-    const gitRoot = await mkdtemp(path.join(tmpdir(), "agentplane-merge-test-"));
-    try {
-      return await run(gitRoot);
-    } finally {
-      await rm(gitRoot, { recursive: true, force: true }).catch(() => null);
-    }
-  };
+async function withTempGitRoot<T>(run: (gitRoot: string) => Promise<T>): Promise<T> {
+  const gitRoot = await mkdtemp(path.join(tmpdir(), "agentplane-merge-test-"));
+  try {
+    return await run(gitRoot);
+  } finally {
+    await rm(gitRoot, { recursive: true, force: true }).catch(() => null);
+  }
+}
 
+function expectGitCommandOptions(value: unknown): void {
+  const options = value as { cwd?: unknown; env?: Record<string, string> };
+  expect(options.cwd).toEqual(expect.stringMatching(/agentplane-merge-test-/));
+  expect(options.env).toMatchObject({
+    AGENTPLANE_TASK_ID: "202602111653-X32XPT",
+    AGENTPLANE_ALLOW_BASE: "1",
+    AGENTPLANE_ALLOW_TASKS: "1",
+    AGENTPLANE_ALLOW_CONFIG: "1",
+    AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
+  });
+}
+
+describe("pr/integrate/internal/merge", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -55,32 +67,23 @@ describe("pr/integrate/internal/merge", () => {
 
     const hash = await withTempGitRoot((gitRoot) =>
       runSquashMerge({
-      gitRoot,
-      base: "main",
-      branch: "task/T-1",
-      headBeforeMerge: "before",
-      taskId: "202602111653-X32XPT",
-      taskTitle: "Improve PR UX",
-      taskTags: ["workflow", "cli"],
-      workflowDir: ".agentplane/tasks",
-      changedPaths: [],
-      genericTokens: ["wip"],
+        gitRoot,
+        base: "main",
+        branch: "task/T-1",
+        headBeforeMerge: "before",
+        taskId: "202602111653-X32XPT",
+        taskTitle: "Improve PR UX",
+        taskTags: ["workflow", "cli"],
+        workflowDir: ".agentplane/tasks",
+        changedPaths: [],
+        genericTokens: ["wip"],
       }),
     );
     expect(hash).toBe("deadbeefcafebabe");
     const commitCall = mocks.execFileAsync.mock.calls.at(-1);
     expect(commitCall?.[0]).toBe("git");
     expect(commitCall?.[1]).toEqual(["commit", "-m", "🧩 ABC123 integrate: Improve PR UX"]);
-    expect(commitCall?.[2]).toMatchObject({
-      cwd: expect.stringMatching(/agentplane-merge-test-/),
-      env: {
-        AGENTPLANE_TASK_ID: "202602111653-X32XPT",
-        AGENTPLANE_ALLOW_BASE: "1",
-        AGENTPLANE_ALLOW_TASKS: "1",
-        AGENTPLANE_ALLOW_CONFIG: "1",
-        AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
-      },
-    });
+    expectGitCommandOptions(commitCall?.[2]);
   });
 
   it("runSquashMerge falls back when the branch tip commit only touches task artifacts", async () => {
@@ -102,32 +105,23 @@ describe("pr/integrate/internal/merge", () => {
 
     const hash = await withTempGitRoot((gitRoot) =>
       runSquashMerge({
-      gitRoot,
-      base: "main",
-      branch: "task/T-1",
-      headBeforeMerge: "before",
-      taskId: "202602111653-X32XPT",
-      taskTitle: "Improve PR UX",
-      taskTags: ["workflow", "cli"],
-      workflowDir: ".agentplane/tasks",
-      changedPaths: [],
-      genericTokens: ["wip"],
+        gitRoot,
+        base: "main",
+        branch: "task/T-1",
+        headBeforeMerge: "before",
+        taskId: "202602111653-X32XPT",
+        taskTitle: "Improve PR UX",
+        taskTags: ["workflow", "cli"],
+        workflowDir: ".agentplane/tasks",
+        changedPaths: [],
+        genericTokens: ["wip"],
       }),
     );
     expect(hash).toBe("deadbeefcafebabe");
     const commitCall = mocks.execFileAsync.mock.calls.at(-1);
     expect(commitCall?.[0]).toBe("git");
     expect(commitCall?.[1]).toEqual(["commit", "-m", "🧩 X32XPT integrate: Improve PR UX"]);
-    expect(commitCall?.[2]).toMatchObject({
-      cwd: expect.stringMatching(/agentplane-merge-test-/),
-      env: {
-        AGENTPLANE_TASK_ID: "202602111653-X32XPT",
-        AGENTPLANE_ALLOW_BASE: "1",
-        AGENTPLANE_ALLOW_TASKS: "1",
-        AGENTPLANE_ALLOW_CONFIG: "1",
-        AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
-      },
-    });
+    expectGitCommandOptions(commitCall?.[2]);
   });
 
   it("runSquashMerge resets and fails when there is nothing staged after squash", async () => {
@@ -193,13 +187,13 @@ describe("pr/integrate/internal/merge", () => {
 
     const hash = await withTempGitRoot((gitRoot) =>
       runMergeCommit({
-      gitRoot,
-      branch: "task/T-3",
-      taskId: "202602111653-X32XPT",
-      taskTitle: "Improve PR UX",
-      taskTags: ["workflow", "cli"],
-      workflowDir: ".agentplane/tasks",
-      changedPaths: [],
+        gitRoot,
+        branch: "task/T-3",
+        taskId: "202602111653-X32XPT",
+        taskTitle: "Improve PR UX",
+        taskTags: ["workflow", "cli"],
+        workflowDir: ".agentplane/tasks",
+        changedPaths: [],
       }),
     );
 
@@ -214,15 +208,6 @@ describe("pr/integrate/internal/merge", () => {
       "-m",
       "🔀 ABC123 integrate: Improve PR UX",
     ]);
-    expect(mergeCall?.[2]).toMatchObject({
-      cwd: expect.stringMatching(/agentplane-merge-test-/),
-      env: {
-        AGENTPLANE_TASK_ID: "202602111653-X32XPT",
-        AGENTPLANE_ALLOW_BASE: "1",
-        AGENTPLANE_ALLOW_TASKS: "1",
-        AGENTPLANE_ALLOW_CONFIG: "1",
-        AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
-      },
-    });
+    expectGitCommandOptions(mergeCall?.[2]);
   });
 });

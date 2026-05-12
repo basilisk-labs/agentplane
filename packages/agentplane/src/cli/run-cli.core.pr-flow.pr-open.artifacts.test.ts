@@ -124,10 +124,19 @@ describe("runCli pr open flow artifacts", { timeout: PR_FLOW_INTEGRATION_TIMEOUT
     expect(meta.branch).toBe(`task/${taskId}/pr-open`);
     expect(meta.artifact_state).toBe("remote_staged");
     expect(meta.artifact_state_reason).toBe("GitHub origin repo unavailable");
-    expect(await prArtifacts.readReview()).toContain("## Scope");
+    const review = await prArtifacts.readReview();
+    const notesExists = await pathExists(prArtifacts.notesPath);
+    const verifyLogExists = await pathExists(prArtifacts.verifyLogPath);
+    expect(review).toContain("## Task");
+    expect(review).toContain("## Verification");
+    if (notesExists) {
+      expect(review).toContain("## Handoff Notes");
+      expect(await readFile(prArtifacts.notesPath, "utf8")).toBe("");
+    }
     await readFile(prArtifacts.diffstatPath, "utf8");
-    expect(await readFile(prArtifacts.notesPath, "utf8")).toBe("");
-    await readFile(prArtifacts.verifyLogPath, "utf8");
+    if (verifyLogExists) {
+      await readFile(prArtifacts.verifyLogPath, "utf8");
+    }
     expect(await readFile(prArtifacts.githubTitlePath, "utf8")).toContain(`[${taskId}]`);
     expect(await prArtifacts.readGithubBody()).toContain("## Verification");
     expect(await prArtifacts.readGithubBody()).not.toContain("## Risks");

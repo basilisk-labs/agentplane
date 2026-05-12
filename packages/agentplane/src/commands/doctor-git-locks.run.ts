@@ -20,7 +20,9 @@ export const runDoctorGitLocks: CommandHandler<DoctorGitLocksParsed> = async (ct
   })) as { lockPath: string; ageMs: number } | null;
 
   if (!lockInfo) {
-    process.stdout.write(`${successMessage("doctor git-locks", undefined, "no index.lock detected")}\n`);
+    process.stdout.write(
+      `${successMessage("doctor git-locks", undefined, "no index.lock detected")}\n`,
+    );
     return 0;
   }
 

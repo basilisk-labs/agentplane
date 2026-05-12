@@ -31,14 +31,9 @@ const mockRenderRole = vi.fn<
 const mockGetRoleSupplementLines = vi.fn<(role: string) => string[] | null>();
 const mockListRoles = vi.fn<() => string[]>();
 
-vi.mock("@agentplaneorg/core/project", async (importOriginal) => {
-  const actualUnknown: unknown = await importOriginal();
-  const actual =
-    actualUnknown && typeof actualUnknown === "object"
-      ? (actualUnknown as Record<string, unknown>)
-      : {};
-  return { ...actual, resolveProject: mockResolveProject };
-});
+vi.mock("@agentplaneorg/core/project", () => ({
+  resolveProject: mockResolveProject,
+}));
 vi.mock("../../fs-utils.js", () => ({ fileExists: mockFileExists }));
 vi.mock("node:fs/promises", () => ({ readdir: mockReaddir, readFile: mockReadFile }));
 vi.mock("../../command-guide.js", () => ({

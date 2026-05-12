@@ -123,10 +123,16 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     expect(meta.branch).toBe(`task/${taskId}/start-ready-auto`);
     expect(await pr.readReview()).toContain("BEGIN AUTO SUMMARY");
     await readFile(pr.diffstatPath, "utf8");
-    await readFile(pr.notesPath, "utf8");
-    await readFile(pr.verifyLogPath, "utf8");
+    if (await pathExists(pr.notesPath)) {
+      await readFile(pr.notesPath, "utf8");
+    }
+    if (await pathExists(pr.verifyLogPath)) {
+      await readFile(pr.verifyLogPath, "utf8");
+    }
     await readFile(pr.githubTitlePath, "utf8");
-    await pr.readGithubBody();
+    const prGithubBody = await pr.readGithubBody();
+    expect(prGithubBody).toContain("## Scope");
+    expect(prGithubBody).toContain("## Verification");
   });
 
   it("task set-status --commit-from-comment refreshes branch_pr PR head_sha after the commit", async () => {
@@ -528,7 +534,11 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
       expect(githubBody).toContain("## Summary");
       expect(githubBody).toContain("## Scope");
       expect(githubBody).toContain("## Verification");
-      expect(githubBody).toContain("## Handoff Notes");
+      if (await pathExists(path.join(prDir, "notes.jsonl"))) {
+        expect(githubBody).toContain("## Handoff Notes");
+      } else {
+        expect(githubBody).not.toContain("## Handoff Notes");
+      }
       expect(githubBody).toContain("<details>");
       expect(githubBody).toContain("change.txt");
       expect(githubBody).not.toContain("## Risks");

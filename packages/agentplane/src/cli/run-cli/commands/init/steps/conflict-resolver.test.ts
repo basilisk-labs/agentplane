@@ -5,7 +5,7 @@ import { InitAborted } from "../prompts.js";
 import { promptConflictResolverStep } from "./conflict-resolver.js";
 import type { InitPromptClack } from "./contracts.js";
 
-const mocks = vi.hoisted(() => {
+const mocks = (() => {
   const cancelSymbol = Symbol("cancel");
   return {
     cancelSymbol,
@@ -14,7 +14,7 @@ const mocks = vi.hoisted(() => {
     noteMock: vi.fn(),
     selectMock: vi.fn(),
   };
-});
+})();
 
 function clackMock(): InitPromptClack & { note: (message: string, title?: string) => void } {
   return {

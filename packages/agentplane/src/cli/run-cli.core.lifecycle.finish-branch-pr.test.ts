@@ -88,6 +88,7 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
     const io = captureStdIO();
     try {
@@ -198,6 +199,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
       const io = captureStdIO();
       try {
@@ -321,6 +323,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
       const io = captureStdIO();
       try {
@@ -412,6 +415,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
 
       const io = captureStdIO();
       try {
@@ -503,6 +507,7 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
+    await runCliSilent(["blueprint", "snapshot", taskId, "--root", root]);
     await execFileAsync("git", ["checkout", "-b", "task/demo-finish-branch"], { cwd: root });
 
     const io = captureStdIO();

@@ -13,7 +13,7 @@ import { promptSetupProfileStep } from "./setup-profile.js";
 import { promptWorkflowStep } from "./workflow.js";
 import type { InitPromptClack } from "./contracts.js";
 
-const mocks = vi.hoisted(() => {
+const mocks = (() => {
   const cancelSymbol = Symbol("cancel");
   return {
     cancelSymbol,
@@ -23,7 +23,7 @@ const mocks = vi.hoisted(() => {
     selectMock: vi.fn(),
     textMock: vi.fn(),
   };
-});
+})();
 
 vi.mock("@clack/prompts", () => ({
   cancel: mocks.cancelMock,

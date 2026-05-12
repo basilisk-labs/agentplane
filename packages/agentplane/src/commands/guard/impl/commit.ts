@@ -157,7 +157,8 @@ async function runCommitWithLock(opts: {
               remediation,
             },
             {
-              state: code === "E_GIT_LOCKED" ? "Git index lock blocked commit" : "git commit failed",
+              state:
+                code === "E_GIT_LOCKED" ? "Git index lock blocked commit" : "git commit failed",
               likelyCause:
                 code === "E_GIT_LOCKED"
                   ? "A git index lock file is present or another process is actively writing git index."

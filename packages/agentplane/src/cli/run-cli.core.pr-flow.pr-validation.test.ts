@@ -419,7 +419,10 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
       const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
       const staleMeta = await readFile(path.join(prDir, "meta.json"), "utf8");
       const staleDiffstat = await readFile(path.join(prDir, "diffstat.txt"), "utf8");
-      const staleVerifyLog = await readFile(path.join(prDir, "verify.log"), "utf8");
+      const staleVerifyLogPath = path.join(prDir, "verify.log");
+      const staleVerifyLog = (await pathExists(staleVerifyLogPath))
+        ? await readFile(staleVerifyLogPath, "utf8")
+        : "";
       const staleReview = await readFile(path.join(prDir, "review.md"), "utf8");
       const staleGithubTitle = await readFile(path.join(prDir, "github-title.txt"), "utf8");
       const staleGithubBody = await readFile(path.join(prDir, "github-body.md"), "utf8");
@@ -438,7 +441,9 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
       await mkdir(prDir, { recursive: true });
       await writeFile(path.join(prDir, "meta.json"), staleMeta, "utf8");
       await writeFile(path.join(prDir, "diffstat.txt"), staleDiffstat, "utf8");
-      await writeFile(path.join(prDir, "verify.log"), staleVerifyLog, "utf8");
+      if (staleVerifyLog.length > 0) {
+        await writeFile(staleVerifyLogPath, staleVerifyLog, "utf8");
+      }
       await writeFile(path.join(prDir, "review.md"), staleReview, "utf8");
       await writeFile(path.join(prDir, "github-title.txt"), staleGithubTitle, "utf8");
       await writeFile(path.join(prDir, "github-body.md"), staleGithubBody, "utf8");

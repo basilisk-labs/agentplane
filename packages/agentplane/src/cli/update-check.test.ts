@@ -68,78 +68,94 @@ describe("update-check TTL", () => {
 
 describe("update-check fetch", () => {
   it("returns ok with version and etag", async () => {
+    const originalFetch = globalThis.fetch;
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
       headers: new Map([["etag", '"abc"']]),
       json: () => Promise.resolve({ version: "1.2.3" }),
     });
-    vi.stubGlobal("fetch", fetchMock);
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
 
-    const result = await fetchLatestNpmVersion({
-      url: "https://registry.npmjs.org/agentplane/latest",
-      timeoutMs: 50,
-      etag: null,
-    });
+    try {
+      const result = await fetchLatestNpmVersion({
+        url: "https://registry.npmjs.org/agentplane/latest",
+        timeoutMs: 50,
+        etag: null,
+      });
 
-    expect(result).toEqual({ status: "ok", latestVersion: "1.2.3", etag: '"abc"' });
-    vi.unstubAllGlobals();
+      expect(result).toEqual({ status: "ok", latestVersion: "1.2.3", etag: '"abc"' });
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 
   it("returns not_modified on 304", async () => {
+    const originalFetch = globalThis.fetch;
     const fetchMock = vi.fn().mockResolvedValue({
       ok: false,
       status: 304,
       headers: new Map(),
       json: () => Promise.resolve({}),
     });
-    vi.stubGlobal("fetch", fetchMock);
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
 
-    const result = await fetchLatestNpmVersion({
-      url: "https://registry.npmjs.org/agentplane/latest",
-      timeoutMs: 50,
-      etag: '"prev"',
-    });
+    try {
+      const result = await fetchLatestNpmVersion({
+        url: "https://registry.npmjs.org/agentplane/latest",
+        timeoutMs: 50,
+        etag: '"prev"',
+      });
 
-    expect(result).toEqual({ status: "not_modified", etag: '"prev"' });
-    vi.unstubAllGlobals();
+      expect(result).toEqual({ status: "not_modified", etag: '"prev"' });
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 
   it("returns error on bad response", async () => {
+    const originalFetch = globalThis.fetch;
     const fetchMock = vi.fn().mockResolvedValue({
       ok: false,
       status: 500,
       headers: new Map(),
       json: () => Promise.resolve({}),
     });
-    vi.stubGlobal("fetch", fetchMock);
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
 
-    const result = await fetchLatestNpmVersion({
-      url: "https://registry.npmjs.org/agentplane/latest",
-      timeoutMs: 50,
-      etag: null,
-    });
+    try {
+      const result = await fetchLatestNpmVersion({
+        url: "https://registry.npmjs.org/agentplane/latest",
+        timeoutMs: 50,
+        etag: null,
+      });
 
-    expect(result).toEqual({ status: "error" });
-    vi.unstubAllGlobals();
+      expect(result).toEqual({ status: "error" });
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 
   it("returns error when version is missing", async () => {
+    const originalFetch = globalThis.fetch;
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
       headers: new Map([["etag", " "]]),
       json: () => Promise.resolve({}),
     });
-    vi.stubGlobal("fetch", fetchMock);
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
 
-    const result = await fetchLatestNpmVersion({
-      url: "https://registry.npmjs.org/agentplane/latest",
-      timeoutMs: 50,
-      etag: null,
-    });
+    try {
+      const result = await fetchLatestNpmVersion({
+        url: "https://registry.npmjs.org/agentplane/latest",
+        timeoutMs: 50,
+        etag: null,
+      });
 
-    expect(result).toEqual({ status: "error" });
-    vi.unstubAllGlobals();
+      expect(result).toEqual({ status: "error" });
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 });

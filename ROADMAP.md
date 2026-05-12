@@ -27,24 +27,24 @@ A user should be able to understand what the agent was asked to do, which plan c
 
 ## Roadmap Horizons
 
-| Horizon | Meaning |
-| --- | --- |
-| **Now** | Foundational capabilities that define the local AgentPlane workflow. |
-| **Next** | Capability layers that make work more reusable, typed, and context-aware. |
+| Horizon   | Meaning                                                                             |
+| --------- | ----------------------------------------------------------------------------------- |
+| **Now**   | Foundational capabilities that define the local AgentPlane workflow.                |
+| **Next**  | Capability layers that make work more reusable, typed, and context-aware.           |
 | **Later** | Higher-autonomy and quality-feedback layers that depend on the earlier foundations. |
 
 ## Roadmap at a Glance
 
-| Epic | Horizon | Theme | User outcome |
-| --- | --- | --- | --- |
-| **0.1 Workflow** | Now | Foundation | baseline task lifecycle |
-| **0.2 Configuration** | Now | Contracts | consistent project setup |
-| **0.3 Tasks** | Now | Control | git-native task governance |
-| **0.4 Recipes** | Next | Extension | reusable workflow kits |
-| **0.5 Blueprints** | Next | Routing | typed execution paths |
-| **0.6 Context** | Next | Memory | local knowledge layer |
-| **0.7 Runner** | Later | Execution | controlled autonomous runs |
-| **0.8 Evaluations** | Later | Improvement | evidence-based quality loops |
+| Epic                  | Horizon | Theme       | User outcome                 |
+| --------------------- | ------- | ----------- | ---------------------------- |
+| **0.1 Workflow**      | Now     | Foundation  | baseline task lifecycle      |
+| **0.2 Configuration** | Now     | Contracts   | consistent project setup     |
+| **0.3 Tasks**         | Now     | Control     | git-native task governance   |
+| **0.4 Recipes**       | Next    | Extension   | reusable workflow kits       |
+| **0.5 Blueprints**    | Next    | Routing     | typed execution paths        |
+| **0.6 Context**       | Next    | Memory      | local knowledge layer        |
+| **0.7 Runner**        | Later   | Execution   | controlled autonomous runs   |
+| **0.8 Evaluations**   | Later   | Improvement | evidence-based quality loops |
 
 ## Epics
 

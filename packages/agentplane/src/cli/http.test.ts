@@ -9,15 +9,17 @@ import { downloadToFile, fetchJson, fetchText } from "./http.js";
 describe("cli/http", () => {
   const fetchMock = vi.fn();
   const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
+  let originalFetch: typeof fetch | undefined;
 
   beforeEach(() => {
     fetchMock.mockReset();
     setTimeoutSpy.mockClear();
-    vi.stubGlobal("fetch", fetchMock as unknown as typeof fetch);
+    originalFetch = globalThis.fetch;
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
   });
 
   afterEach(() => {
-    vi.unstubAllGlobals();
+    globalThis.fetch = originalFetch;
   });
 
   it("fetchJson returns parsed JSON for ok responses", async () => {

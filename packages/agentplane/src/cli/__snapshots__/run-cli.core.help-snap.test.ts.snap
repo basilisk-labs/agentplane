@@ -43,6 +43,12 @@ Commands:
     work start  Prepare the workspace for a task (direct: single-stream on current branch; branch_pr: task branch/worktree).
   PR:
     integrate  Integrate a task branch into the base branch (branch_pr workflow).
+    integrate queue  Serialize branch_pr integration into one merge lane.
+    integrate queue claim  Claim the next queued integration candidate without running integrate.
+    integrate queue enqueue  Add or refresh a verified task branch in the integration queue.
+    integrate queue list  List branch_pr integration queue entries.
+    integrate queue release  Release or complete a queue entry.
+    integrate queue run-next  Claim and run one queued integration candidate.
     pr  Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).
     pr check  Check that PR artifacts are present and valid.
     pr close  Close a GitHub PR through REST with optional remote head-branch deletion.
@@ -77,6 +83,7 @@ Commands:
     upgrade  Upgrade the local agentplane framework bundle in the repo.
   Quality:
     doctor  Check workspace invariants for a normal agentplane installation (with optional dev source checks).
+    doctor git-locks  Check Git index lock state for this repository and suggest cleanup.
   Diagnostics:
     runtime  Inspect which agentplane runtime/binary/package sources are active.
     runtime explain  Explain the active binary, runtime mode, and resolved package roots.
@@ -107,6 +114,12 @@ Commands:
     blueprint scaffold  Create a project-local blueprint JSON scaffold without enabling it.
     blueprint snapshot  Refresh the resolved blueprint snapshot artifact for a task.
     blueprint validate  Validate project-local blueprint JSON without registering or executing it.
+    blueprints  Manage external blueprint catalogs and installs.
+    blueprints catalog  Manage the cached external blueprint catalog index.
+    blueprints catalog info  Show cached external blueprint or pack metadata.
+    blueprints catalog list  List cached external blueprint catalog entries.
+    blueprints catalog refresh  Refresh the cached external blueprint catalog index.
+    blueprints install  Install an external blueprint or blueprint pack into the current project.
   ACR:
     acr  Generate, validate, check, explain, and print Agent Change Record artifacts.
     acr check  Run the ACR merge-gate check for CI and branch review.
@@ -219,7 +232,7 @@ Options:
   --task-kind <analysis|content|docs|code|release|ops>  Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops)
   --mutation-scope <none|docs|code|release|ops|unknown>  Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|unknown)
   --risk <risk>  Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
-  --blueprint-request <id>  Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|release.strict|ops.approval)
+  --blueprint-request <id>  Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|runner.execution|post_run.improvement_review|release.strict|ops.approval)
   --depends-on <task-id>  Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
   --verify <command>  Repeatable. Verification commands/checks to run for this task. (repeatable)
   --show-blueprint  Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
