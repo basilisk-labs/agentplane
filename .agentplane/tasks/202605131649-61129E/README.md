@@ -23,9 +23,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T17:36:44.786Z"
+  updated_at: "2026-05-13T18:30:29.868Z"
   updated_by: "CODER"
-  note: "Re-verified after rebasing onto origin/main: package build, docs generation, docs:cli:check, docs:onboarding:check, docs:ia:check, check-routing, agentplane doctor, docs:site:typecheck, and targeted docs-cli test with extended timeout passed. Public generated reference still excludes group roots and advanced/internal command groups."
+  note: "Re-verified after rebasing onto current origin/main 707ddf167: package build, docs regeneration, docs:cli:check, docs:onboarding:check, docs:ia:check, lint:core, agentplane doctor, and targeted docs-cli test passed. Generated public CLI reference contains real user/action commands only and excludes group roots plus advanced/internal groups."
   attempts: 0
 commit: null
 comments:
@@ -52,8 +52,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Re-verified after rebasing onto origin/main: package build, docs generation, docs:cli:check, docs:onboarding:check, docs:ia:check, check-routing, agentplane doctor, docs:site:typecheck, and targeted docs-cli test with extended timeout passed. Public generated reference still excludes group roots and advanced/internal command groups."
+  -
+    type: "verify"
+    at: "2026-05-13T18:30:29.868Z"
+    author: "CODER"
+    state: "ok"
+    note: "Re-verified after rebasing onto current origin/main 707ddf167: package build, docs regeneration, docs:cli:check, docs:onboarding:check, docs:ia:check, lint:core, agentplane doctor, and targeted docs-cli test passed. Generated public CLI reference contains real user/action commands only and excludes group roots plus advanced/internal groups."
 doc_version: 3
-doc_updated_at: "2026-05-13T17:36:44.923Z"
+doc_updated_at: "2026-05-13T18:30:29.894Z"
 doc_updated_by: "CODER"
 description: "Separate public user command documentation from developer/advanced surfaces, remove stale command examples, and keep generated CLI reference focused on actionable user commands."
 sections:
@@ -117,6 +123,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131649-61129E
     
+    ### 2026-05-13T18:30:29.868Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Re-verified after rebasing onto current origin/main 707ddf167: package build, docs regeneration, docs:cli:check, docs:onboarding:check, docs:ia:check, lint:core, agentplane doctor, and targeted docs-cli test passed. Generated public CLI reference contains real user/action commands only and excludes group roots plus advanced/internal groups.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T17:36:44.923Z, excerpt_hash=sha256:de5e186a3bd82f4d9d74fbbd65009163b725739ee36387bcbf6fc4cd8efec075
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131649-61129E-public-cli-docs-surface/.agentplane/tasks/202605131649-61129E/blueprint/resolved-snapshot.json
+    - old_digest: a8880e511722d361a92cf2f3adf9983b11c9ce9ba6480eb83ac165b8653a305b
+    - current_digest: a048dc32343f5b17a7cd1158432b7c92d4afa817b192d2fd64fa6da95ea21257
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131649-61129E
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -129,6 +154,10 @@ sections:
     - Observation: The first targeted Bun test retry after rebase hit the default 5000ms timeout after 16/17 assertions on a slower run; rerunning the same test with --timeout 15000 passed in 4.886s. Earlier optional docs:site:build still fails in existing Docusaurus SSG for duplicate / route/default-export handling, outside this task scope.
       Impact: Required task verification is green on the rebased branch. Remaining Docusaurus production build issue is unrelated to the CLI docs/user-surface split.
       Resolution: Kept scope to docs surface/generation; did not widen into website SSG repair.
+    
+    - Observation: A full pre-push fast CI run was attempted and passed format, schemas, agent templates, policy routing, release parity, cold-start baseline, build, docs freshness, recipes inventory, scripts README, onboarding, hotspot baseline, vitest routing, lint:core, and most fast tests, but one release-smoke test failed once in the broad suite with exit 5. The same failing test passed when rerun directly. docs:site:build also remains blocked by an existing Docusaurus duplicate / route/default-export SSG issue outside this task.
+      Impact: Task-specific checks and targeted regression checks are green; broad hook has a known unrelated flaky/interference failure, so the branch was pushed with explicit residual risk rather than widening scope.
+      Resolution: Recorded residual verification caveat; kept scope limited to CLI docs generation and public/developer documentation separation.
 id_source: "generated"
 ---
 ## Summary
@@ -200,6 +229,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131649-61129E
 
+### 2026-05-13T18:30:29.868Z — VERIFY — ok
+
+By: CODER
+
+Note: Re-verified after rebasing onto current origin/main 707ddf167: package build, docs regeneration, docs:cli:check, docs:onboarding:check, docs:ia:check, lint:core, agentplane doctor, and targeted docs-cli test passed. Generated public CLI reference contains real user/action commands only and excludes group roots plus advanced/internal groups.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T17:36:44.923Z, excerpt_hash=sha256:de5e186a3bd82f4d9d74fbbd65009163b725739ee36387bcbf6fc4cd8efec075
+
+Details:
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131649-61129E-public-cli-docs-surface/.agentplane/tasks/202605131649-61129E/blueprint/resolved-snapshot.json
+- old_digest: a8880e511722d361a92cf2f3adf9983b11c9ce9ba6480eb83ac165b8653a305b
+- current_digest: a048dc32343f5b17a7cd1158432b7c92d4afa817b192d2fd64fa6da95ea21257
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131649-61129E
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -216,3 +264,7 @@ BlueprintSnapshotRef:
 - Observation: The first targeted Bun test retry after rebase hit the default 5000ms timeout after 16/17 assertions on a slower run; rerunning the same test with --timeout 15000 passed in 4.886s. Earlier optional docs:site:build still fails in existing Docusaurus SSG for duplicate / route/default-export handling, outside this task scope.
   Impact: Required task verification is green on the rebased branch. Remaining Docusaurus production build issue is unrelated to the CLI docs/user-surface split.
   Resolution: Kept scope to docs surface/generation; did not widen into website SSG repair.
+
+- Observation: A full pre-push fast CI run was attempted and passed format, schemas, agent templates, policy routing, release parity, cold-start baseline, build, docs freshness, recipes inventory, scripts README, onboarding, hotspot baseline, vitest routing, lint:core, and most fast tests, but one release-smoke test failed once in the broad suite with exit 5. The same failing test passed when rerun directly. docs:site:build also remains blocked by an existing Docusaurus duplicate / route/default-export SSG issue outside this task.
+  Impact: Task-specific checks and targeted regression checks are green; broad hook has a known unrelated flaky/interference failure, so the branch was pushed with explicit residual risk rather than widening scope.
+  Resolution: Recorded residual verification caveat; kept scope limited to CLI docs generation and public/developer documentation separation.

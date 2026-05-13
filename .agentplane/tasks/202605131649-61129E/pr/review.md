@@ -13,7 +13,7 @@ Created: 2026-05-13T16:51:39.705Z
 ## Verification
 
 - State: ok
-- Note: Re-verified after rebasing onto origin/main: package build, docs generation, docs:cli:check, docs:onboarding:check, docs:ia:check, check-routing, agentplane doctor, docs:site:typecheck, and targeted docs-cli test with extended timeout passed. Public generated reference still excludes group roots and advanced/internal command groups.
+- Note: Re-verified after rebasing onto current origin/main 707ddf167: package build, docs regeneration, docs:cli:check, docs:onboarding:check, docs:ia:check, lint:core, agentplane doctor, and targeted docs-cli test passed. Generated public CLI reference contains real user/action commands only and excludes group roots plus advanced/internal groups.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
