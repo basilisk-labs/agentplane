@@ -24,23 +24,24 @@ Created: 2026-05-13T10:49:55.784Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T11:27:55.592Z
+- Updated: 2026-05-13T12:49:07.349Z
 - Branch: task/202605131049-2NHAWN/context-task-harvest
-- Head: 91ed87d0f8e3
+- Head: e7b2d39b5713
 
 ```text
  .../blueprint/resolved-snapshot.json               | 520 +++++++++++++++++++
  docs/user/cli-reference.generated.mdx              |  52 ++
- docs/user/commands.mdx                             |   9 +-
- docs/user/local-context.mdx                        |  23 +
+ docs/user/commands.mdx                             |  12 +-
+ docs/user/local-context.mdx                        |  28 +
  .../src/cli/run-cli/command-catalog/project.ts     |   4 +
  .../src/commands/context/context.command.ts        |  29 ++
  .../src/commands/context/context.spec.ts           | 125 +++++
  packages/agentplane/src/commands/context/doctor.ts |  32 +-
- .../commands/context/harvest-tasks-artifacts.ts    | 566 +++++++++++++++++++++
- .../src/commands/context/harvest-tasks.test.ts     | 219 ++++++++
- .../src/commands/context/harvest-tasks.ts          |  83 +++
- 11 files changed, 1659 insertions(+), 3 deletions(-)
+ .../commands/context/harvest-tasks-artifacts.ts    | 571 +++++++++++++++++++++
+ .../src/commands/context/harvest-tasks-markers.ts  | 131 +++++
+ .../src/commands/context/harvest-tasks.test.ts     | 301 +++++++++++
+ .../src/commands/context/harvest-tasks.ts          | 112 ++++
+ 12 files changed, 1914 insertions(+), 3 deletions(-)
 ```
 
 </details>
