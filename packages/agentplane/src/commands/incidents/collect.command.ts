@@ -14,7 +14,7 @@ const output = createCliEmitter();
 export const incidentsCollectSpec: CommandSpec<IncidentsCollectParsed> = {
   id: ["incidents", "collect"],
   group: "Policy",
-  summary: "Promote reusable resolved external findings from a task into the incident registry.",
+  summary: "Validate and promote CURATOR-style reusable incident findings into the registry.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     {

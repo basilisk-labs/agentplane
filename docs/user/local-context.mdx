@@ -64,6 +64,8 @@ only preparing the request.
 ```bash
 agentplane context learn tasks --tag release --limit 20 --dry-run
 agentplane context learn tasks --tag branch_pr --batch-size 25
+ap context harvest tasks --tag branch_pr --write-proposals
+ap context harvest tasks --task 202605100837-PJZW2E --write-proposals
 ```
 
 `context learn tasks` turns completed task history into standard `CURATOR` extraction tasks. It
@@ -76,8 +78,10 @@ stages separate:
 
 - source indexing: task README, comments, and commit metadata become raw evidence under
   `context/raw/tasks/**`
-- knowledge extraction: task-backed claims are written as fact rows with `source_refs`,
-  confidence, status, stale markers, and conflict markers
+- raw scaffold extraction: deterministic task-backed claims are written as proposal fact rows with
+  `source_refs`, confidence, status, stale markers, and conflict markers
+- semantic extraction: default non-write harvest runs create `CURATOR` tasks that extract wiki,
+  facts, and graph updates through the normal task lifecycle
 - wiki synthesis: a human-readable proposal is written under `context/wiki/proposals/task-harvest/**`
 - promotion: `--promote` writes a semi-canonical page only when the promotion gate has no blockers
 
@@ -92,7 +96,14 @@ refs. Later broad runs skip tasks whose marker digest still matches the README e
 advanced write modes require an initialized context workspace from `agentplane context init`;
 dry-run mode can be used before initialization.
 
-Task-learning mode marks source tasks with
+Use `learn tasks`, the default advanced non-write mode, or explicit `--create-extraction-tasks` for
+older scripts when completed task history needs agentic semantic extraction rather than deterministic
+one-claim-per-task proposals. Each generated task carries an
+`extensions.agentplane.context` source pack with the selected task README paths, ACR paths, source
+digests, allowed outputs, provenance requirements, and a replaceable prompt module for extracting
+wiki pages, facts, entities, relations, stale markers, and conflict markers. This mode does not write
+`context/raw/tasks/*.json` by itself; the source of semantic truth is the task README and ACR
+evidence named in the generated task. It also marks source tasks with
 `extensions.context_task_extraction` so later broad runs do not create duplicate extraction tasks
 while the README digest is unchanged. Raw-ingestion markers from `--write-proposals` do not count as
 semantic extraction completion.

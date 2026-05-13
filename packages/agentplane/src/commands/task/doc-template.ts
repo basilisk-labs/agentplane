@@ -42,6 +42,8 @@ function buildDefaultPlan(opts: { title: string }): string {
 
 function buildDefaultVerifyStepsTemplate(opts: { title: string }): string {
   return [
+    `PLANNER fallback scaffold for "${opts.title}". Replace with task-specific acceptance checks when PLANNER context is available.`,
+    "",
     `1. Review the requested outcome for "${opts.title}". Expected: the visible result matches ## Summary and stays inside approved scope.`,
     "2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.",
     "3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
@@ -117,6 +119,8 @@ export function buildDefaultVerifyStepsSection(opts: {
 
   if (commandSteps.length === 0) {
     return [
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.",
+      "",
       `1. Review the changed artifact or behavior for the \`${opts.primary}\` task. Expected: the requested outcome is visible and matches the approved scope.`,
       `2. Run the most relevant validation step for the \`${opts.primary}\` task. Expected: it succeeds without unexpected regressions in touched scope.`,
       "3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.",
@@ -124,6 +128,8 @@ export function buildDefaultVerifyStepsSection(opts: {
   }
 
   return [
+    "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.",
+    "",
     ...commandSteps,
     ...genericSteps.map((step, index) => `${commandSteps.length + index + 1}. ${step}`),
   ].join("\n");

@@ -559,23 +559,23 @@ Legacy configs without `schema_version` and `trust_model` still load as schema v
 Blueprint nodes are reusable building blocks. They are not task statuses. A task can remain in
 `DOING` while many blueprint nodes run inside that state.
 
-| Node kind              | Purpose                                                           | Mode          | Evidence                                  |
-| ---------------------- | ----------------------------------------------------------------- | ------------- | ----------------------------------------- |
-| `intake`               | Classify user intent, task kind, owner, risk, and expected output | deterministic | task kind and classification reasons      |
-| `scope`                | Fix boundaries, assumptions, constraints, and stop rules          | deterministic | approved scope and unresolved ambiguity   |
-| `context_resolve`      | Select relevant policy, docs, files, recipes, and tools           | deterministic | context manifest and selection reasons    |
-| `approval_gate`        | Require explicit approval for risky actions                       | approval      | approval source and approved action       |
-| `worktree_start`       | Create branch/worktree when `branch_pr` mutation requires it      | deterministic | branch and worktree path                  |
-| `work_unit`            | Perform the main analysis, writing, coding, or operational work   | agentic       | produced artifact, diff, or answer        |
-| `deterministic_check`  | Run a fixed command or validation step                            | deterministic | command, result, output summary           |
-| `fast_local_checks`    | Run cheap local checks before expensive hosted checks             | deterministic | command bundle and result                 |
-| `artifact_write`       | Write a task artifact, report, PR artifact, or generated output   | deterministic | artifact path and content summary         |
-| `pr_artifact`          | Prepare PR title, body, labels, and review context                | deterministic | PR metadata or draft artifact             |
-| `hosted_checks`        | Observe hosted checks when required                               | deterministic | provider, status, URL                     |
-| `publish_or_integrate` | Push, publish, merge, release, or integrate when required         | deterministic | target, result, external link or commit   |
-| `verify_record`        | Record verification evidence in the task artifact                 | record        | verification state and evidence reference |
-| `handoff`              | Transfer unresolved work to a human or another owner              | record        | reason, next owner, remaining work        |
-| `finish`               | Close the task through the active AgentPlane lifecycle            | deterministic | close result and final task state         |
+| Node kind              | Purpose                                                         | Mode          | Evidence                                  |
+| ---------------------- | --------------------------------------------------------------- | ------------- | ----------------------------------------- |
+| `intake`               | INTAKE proposes task kind, owner, risk, and expected output     | agentic       | task kind and classification reasons      |
+| `scope`                | Fix boundaries, assumptions, constraints, and stop rules        | deterministic | approved scope and unresolved ambiguity   |
+| `context_resolve`      | Select relevant policy, docs, files, recipes, and tools         | deterministic | context manifest and selection reasons    |
+| `approval_gate`        | Require explicit approval for risky actions                     | approval      | approval source and approved action       |
+| `worktree_start`       | Create branch/worktree when `branch_pr` mutation requires it    | deterministic | branch and worktree path                  |
+| `work_unit`            | Perform the main analysis, writing, coding, or operational work | agentic       | produced artifact, diff, or answer        |
+| `deterministic_check`  | Run a fixed command or validation step                          | deterministic | command, result, output summary           |
+| `fast_local_checks`    | Run cheap local checks before expensive hosted checks           | deterministic | command bundle and result                 |
+| `artifact_write`       | Write a task artifact, report, PR artifact, or generated output | deterministic | artifact path and content summary         |
+| `pr_artifact`          | Prepare PR title, body, labels, and review context              | deterministic | PR metadata or draft artifact             |
+| `hosted_checks`        | Observe hosted checks when required                             | deterministic | provider, status, URL                     |
+| `publish_or_integrate` | Push, publish, merge, release, or integrate when required       | deterministic | target, result, external link or commit   |
+| `verify_record`        | Record verification evidence in the task artifact               | record        | verification state and evidence reference |
+| `handoff`              | Transfer unresolved work to a human or another owner            | record        | reason, next owner, remaining work        |
+| `finish`               | Close the task through the active AgentPlane lifecycle          | deterministic | close result and final task state         |
 
 ## Built-in Blueprints v0
 

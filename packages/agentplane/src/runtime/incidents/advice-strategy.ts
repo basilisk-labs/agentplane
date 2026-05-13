@@ -28,6 +28,7 @@ export function resolveIncidentAdviceMatches(opts: {
   registry: IncidentRegistry;
   limit?: number;
 }): IncidentAdviceMatch[] {
+  // Deterministic candidate scaffold: CURATOR owns semantic fit and promotion judgment.
   const limit = Math.max(1, opts.limit ?? 5);
   const tagSet = new Set(opts.query.tags.map((tag) => tag.trim().toLowerCase()).filter(Boolean));
   const haystack = [opts.query.title, opts.query.description, opts.query.scope ?? ""].join(" ");

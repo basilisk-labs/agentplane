@@ -126,9 +126,9 @@ This loop keeps autonomy useful while preserving operator control and repository
 
 ## Upgrade and policy flow
 
-`agentplane upgrade` applies managed framework assets and can emit upgrade review artifacts.
+`agentplane upgrade` applies managed framework assets and can emit plan-only upgrade artifacts.
 
-- In agent mode, run artifacts are created under `.agentplane/.upgrade/agent/<runId>/` only when a plan is needed (changes to add/update).
+- In agent mode, run artifacts are created under `.agentplane/.upgrade/agent/<runId>/` only when a plan-only report is needed (changes to add/update).
 - When there are no managed changes, agent mode exits via fast no-op and does not create per-run artifacts.
 - Auto mode uses replace-first behavior for managed files; `.agentplane/policy/incidents.md` is append-only when local content already exists.
 

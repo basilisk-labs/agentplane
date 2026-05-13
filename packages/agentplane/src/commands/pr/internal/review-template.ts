@@ -10,6 +10,7 @@ const SUMMARY_SECTION = "## Summary";
 const SCOPE_SECTION = "## Scope";
 const VERIFICATION_SECTION = "## Verification";
 const RISKS_SECTION = "## Risks";
+const REVIEWER_SUMMARY_SECTION = "## Reviewer Summary";
 const TASK_SECTION = "## Task";
 const HANDOFF_NOTES_MARKER = "## Handoff Notes";
 const TASK_ID_SUFFIX_PATTERN = /\s*\[[^\]]+\]\s*$/u;
@@ -25,6 +26,27 @@ function normalizeOneLine(value: string, maxChars: number): string {
   const trimmed = value.trim().replaceAll(/\s+/g, " ");
   if (!trimmed) return "";
   return trimmed.length > maxChars ? `${trimmed.slice(0, Math.max(1, maxChars - 3))}...` : trimmed;
+}
+
+function extensionString(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function reviewerSummary(task: TaskData): string {
+  const extensions = task.extensions;
+  if (!extensions || typeof extensions !== "object") return "";
+  const direct = extensionString(extensions.reviewer_summary);
+  if (direct) return direct;
+  const pr = extensions.pr;
+  if (!pr || typeof pr !== "object") return "";
+  return extensionString((pr as Record<string, unknown>).reviewer_summary);
+}
+
+function renderReviewerSummarySection(task: TaskData): string[] {
+  const summary = reviewerSummary(task);
+  if (!summary) return [];
+  const bounded = summary.trim().slice(0, 1200);
+  return [REVIEWER_SUMMARY_SECTION, "", bounded, ""];
 }
 
 function defaultPrTitleEmojiForStatus(status: string): string {
@@ -209,6 +231,7 @@ export function renderPrReviewDocument(opts: {
       branch: opts.branch,
       handoffNotes: opts.handoffNotes ?? [],
     }),
+    ...renderReviewerSummarySection(opts.task),
     AUTO_SUMMARY_START,
     opts.autoSummary,
     AUTO_SUMMARY_END,
@@ -230,6 +253,7 @@ export function renderGithubPrBody(opts: {
     "",
     ...renderRelatedTasks(opts.task.id, opts.relatedTaskIds ?? []),
     ...renderGithubBodySections(opts.task),
+    ...renderReviewerSummarySection(opts.task),
     ...renderGithubHandoffSection(handoffNotes),
     opts.autoSummary,
     "",

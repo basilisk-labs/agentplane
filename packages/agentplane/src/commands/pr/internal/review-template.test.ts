@@ -112,6 +112,32 @@ describe("review-template batch rendering", () => {
     expect(body).toContain("- 2026-01-27T00:00:00Z CODER: Ready for review.");
   });
 
+  it("includes optional bounded reviewer_summary without replacing canonical sections", () => {
+    const task = {
+      ...makeTask(),
+      extensions: {
+        reviewer_summary:
+          "Reviewer observed that the implementation stays inside the approved task scope and verification passed.",
+      },
+    };
+    const review = renderPrReviewDocument({
+      task,
+      createdAt: "2026-01-27T00:00:00Z",
+      branch: "task/202601010101-ABCDE/batch-metadata",
+      autoSummary: "No changes detected.",
+    });
+    const githubBody = renderGithubPrBody({
+      task,
+      autoSummary: "<details><summary>Raw evidence</summary></details>",
+    });
+
+    for (const text of [review, githubBody]) {
+      expect(text).toContain("## Reviewer Summary");
+      expect(text).toContain("implementation stays inside the approved task scope");
+      expect(text).toContain("## Verification");
+    }
+  });
+
   it("renders included task ids as an explicit branch_pr batch", () => {
     const review = renderPrReviewDocument({
       task: makeTask(),
