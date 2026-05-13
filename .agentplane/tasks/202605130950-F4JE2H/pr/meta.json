@@ -3,12 +3,15 @@
   "branch": "task/202605130950-F4JE2H/ci-failure-stability",
   "created_at": "2026-05-13T09:51:03.514Z",
   "head_sha": "7587eeffa3af1fa54a1eff9c57b763e57fcd9fc6",
-  "last_verified_at": null,
-  "last_verified_sha": null,
+  "last_verified_at": "2026-05-13T10:01:36.578Z",
+  "last_verified_sha": "7587eeffa3af1fa54a1eff9c57b763e57fcd9fc6",
+  "pr_number": 3621,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3621",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202605130950-F4JE2H",
-  "updated_at": "2026-05-13T10:00:51.210Z",
+  "updated_at": "2026-05-13T10:01:25.161Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

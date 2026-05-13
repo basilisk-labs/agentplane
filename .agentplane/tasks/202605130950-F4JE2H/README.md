@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-13T10:01:36.578Z"
+  updated_by: "CODER"
+  note: "Verified: CI failure stabilization covers detached GitHub check waiting, sqlite EPIPE handling, and CI gate noise with focused tests, fast suite, critical suite, lint, typecheck, Knip, workflow lint, policy routing, and doctor."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implement the approved CI stability fixes in the dedicated task worktree, keeping changes scoped to wait-remote-pr-checks tests, sqlite child-process error handling, and CI gate labeling/runtime adjustments."
+  -
+    type: "verify"
+    at: "2026-05-13T10:01:36.578Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: CI failure stabilization covers detached GitHub check waiting, sqlite EPIPE handling, and CI gate noise with focused tests, fast suite, critical suite, lint, typecheck, Knip, workflow lint, policy routing, and doctor."
 doc_version: 3
-doc_updated_at: "2026-05-13T09:51:03.474Z"
+doc_updated_at: "2026-05-13T10:01:36.583Z"
 doc_updated_by: "CODER"
 description: "Make recent GitHub Actions failures less likely by hermeticizing wait-remote-pr-checks tests, handling sqlite stdin pipe errors, and reducing CI gate noise without weakening code quality."
 sections:
@@ -56,11 +62,33 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-13T10:01:36.578Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: CI failure stabilization covers detached GitHub check waiting, sqlite EPIPE handling, and CI gate noise with focused tests, fast suite, critical suite, lint, typecheck, Knip, workflow lint, policy routing, and doctor.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T09:51:03.474Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605130950-F4JE2H-ci-failure-stability/.agentplane/tasks/202605130950-F4JE2H/blueprint/resolved-snapshot.json
+    - old_digest: 3875b88ff7f26963a1b83280f84f03107cb642b50a1f3c52cd1229d9f38d67e1
+    - current_digest: 3875b88ff7f26963a1b83280f84f03107cb642b50a1f3c52cd1229d9f38d67e1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605130950-F4JE2H
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Recent GitHub failures were reproduced as three concrete failure classes: detached push checkout without explicit PR target, sqlite3 stdin EPIPE during context projection, and duplicate/noisy Windows formatting gate.
+      Impact: Detached checkout now fails with an explicit action instead of hidden branch inference; sqlite stdin write failures become handled promise rejections; CI keeps formatting coverage on Linux while removing duplicate Windows format noise and making Knip's blocking role explicit.
+      Resolution: Added targeted regression tests, hardened sqlite child-process handling, clarified wait-remote-checks test env, and adjusted workflow checks without removing the primary quality gates.
 id_source: "generated"
 ---
 ## Summary
@@ -87,6 +115,25 @@ Implement CI stability fixes from the GitHub Actions failure analysis: (1) make 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-13T10:01:36.578Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: CI failure stabilization covers detached GitHub check waiting, sqlite EPIPE handling, and CI gate noise with focused tests, fast suite, critical suite, lint, typecheck, Knip, workflow lint, policy routing, and doctor.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T09:51:03.474Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605130950-F4JE2H-ci-failure-stability/.agentplane/tasks/202605130950-F4JE2H/blueprint/resolved-snapshot.json
+- old_digest: 3875b88ff7f26963a1b83280f84f03107cb642b50a1f3c52cd1229d9f38d67e1
+- current_digest: 3875b88ff7f26963a1b83280f84f03107cb642b50a1f3c52cd1229d9f38d67e1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605130950-F4JE2H
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -95,3 +142,7 @@ Implement CI stability fixes from the GitHub Actions failure analysis: (1) make 
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Recent GitHub failures were reproduced as three concrete failure classes: detached push checkout without explicit PR target, sqlite3 stdin EPIPE during context projection, and duplicate/noisy Windows formatting gate.
+  Impact: Detached checkout now fails with an explicit action instead of hidden branch inference; sqlite stdin write failures become handled promise rejections; CI keeps formatting coverage on Linux while removing duplicate Windows format noise and making Knip's blocking role explicit.
+  Resolution: Added targeted regression tests, hardened sqlite child-process handling, clarified wait-remote-checks test env, and adjusted workflow checks without removing the primary quality gates.
