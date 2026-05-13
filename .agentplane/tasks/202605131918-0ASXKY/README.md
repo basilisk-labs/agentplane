@@ -1,10 +1,11 @@
 ---
 id: "202605131918-0ASXKY"
 title: "Harden shared env root worktree detection"
-status: "DOING"
+result_summary: "Merged via PR #3668."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Re-verified after fallback refinement: backend/CLI tests pass, changed-file ESLint passes, routing policy passes, doctor passed earlier after bootstrap."
   attempts: 0
-commit: null
+commit:
+  hash: "67311eb71d7905980127084fd27bceec11f31d96"
+  message: "Fix shared env root detection for separate git dirs"
 comments:
   -
     author: "CODER"
     body: "Start: Address PR #3662 review by making shared .env root detection independent of the repo-local .git/worktrees path layout."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3668 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Re-verified after fallback refinement: backend/CLI tests pass, changed-file ESLint passes, routing policy passes, doctor passed earlier after bootstrap."
+  -
+    type: "status"
+    at: "2026-05-13T20:46:19.408Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3668 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T19:46:09.196Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T20:46:19.414Z"
+doc_updated_by: "INTEGRATOR"
 description: "Address PR #3662 review feedback by resolving the shared .env root without assuming the repo-local .git/worktrees layout, including separate git-dir worktree layouts."
 sections:
   Summary: |-

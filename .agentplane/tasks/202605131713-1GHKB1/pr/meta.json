@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T20:50:49Z",
+  "base": "main",
+  "branch": "task/202605131713-1GHKB1/public-evaluator-catalog",
+  "created_at": "2026-05-13T17:46:20.298Z",
+  "head_sha": "2ee66c09a329a30af01618df85b0788b3da3fe00",
+  "last_verified_at": "2026-05-13T19:36:20.533Z",
+  "last_verified_sha": "ec5b035ca1d13db9dd0d2b7668c2bbca73707bfc",
+  "merge_commit": "4398f9e0e7d3131ea8828c151dab9e6e152d1713",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T20:50:49Z",
+  "pr_number": 3652,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3652",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605131713-1GHKB1",
+  "updated_at": "2026-05-13T20:50:49Z",
+  "verify": {
+    "status": "pass"
+  }
+}

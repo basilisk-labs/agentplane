@@ -375,6 +375,21 @@ introduced.
 Recipe `run_profile` no longer supports `requires_human_approval` in the main repo runtime. The
 current runner accepts only fields it can explain honestly in `task run show`.
 
+## Evaluators
+
+```bash
+agentplane evaluator list
+agentplane evaluator show recovery-context
+```
+
+Evaluators are repository-local prompt modules under `.agentplane/evaluators`. The current public
+surface is catalog inspection: list the available evaluator prompts and print the exact prompt
+module an agent can use for a separate review pass.
+
+`agentplane init` seeds `.agentplane/evaluators/recovery-context.md`, a preview evaluator for
+recovery-context and invariant review. Executing evaluators from the CLI is intentionally deferred
+to the 0.8 evaluation roadmap.
+
 ## Blueprint catalogs
 
 ```bash

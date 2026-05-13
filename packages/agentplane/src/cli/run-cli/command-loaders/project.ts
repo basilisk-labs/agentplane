@@ -46,6 +46,10 @@ export const loadBlueprintValidateSpec = () =>
 export const loadBlueprintScaffoldSpec = () =>
   import("../../../commands/blueprint/blueprint.command.js").then((m) => m.runBlueprintScaffold);
 
+export const fromCommandsEvaluatorCommand = commandModule(
+  () => import("../../../commands/evaluator/evaluator.command.js"),
+);
+
 export const fromCommandsBlueprintsCommand = commandModule(
   () => import("../../../commands/blueprints/blueprints.command.js"),
 );

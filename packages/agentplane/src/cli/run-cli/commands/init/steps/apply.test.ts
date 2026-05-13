@@ -70,6 +70,10 @@ describe("init apply wrapper", () => {
       calls.push("agents");
       return Promise.resolve([".agentplane/agents/CODER.md"]);
     });
+    const evaluators = vi.fn(() => {
+      calls.push("evaluators");
+      return Promise.resolve([".agentplane/evaluators/recovery-context.md"]);
+    });
     const workflow = vi.fn(() => {
       calls.push("workflow");
       return Promise.resolve([".github/workflows/agentplane.yml"]);
@@ -103,6 +107,7 @@ describe("init apply wrapper", () => {
       plan: {
         config,
         agents,
+        evaluators,
         workflow,
         gitignore,
         hooks,
@@ -117,6 +122,7 @@ describe("init apply wrapper", () => {
     expect(calls).toEqual([
       "config",
       "agents",
+      "evaluators",
       "workflow",
       "gitignore",
       "hooks",
@@ -127,6 +133,7 @@ describe("init apply wrapper", () => {
     ]);
     expect(result.installPaths).toEqual([
       ".agentplane/agents/CODER.md",
+      ".agentplane/evaluators/recovery-context.md",
       ".github/workflows/agentplane.yml",
       ".gitignore",
       ".agentplane/bin/agentplane",
@@ -144,6 +151,7 @@ describe("init apply wrapper", () => {
       plan: {
         config: () => Promise.resolve(),
         agents: () => Promise.resolve([]),
+        evaluators: () => Promise.resolve([]),
         workflow: () => Promise.resolve([]),
         gitignore: () => Promise.resolve([".gitignore"]),
         ideSync: () => Promise.resolve([]),

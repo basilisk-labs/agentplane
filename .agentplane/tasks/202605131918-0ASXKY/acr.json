@@ -1,0 +1,205 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605131918-0ASXKY",
+  "created_at": "2026-05-13T20:46:19.458Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "67311eb71d7905980127084fd27bceec11f31d96",
+    "work_ref": "main",
+    "work_commit": "67311eb71d7905980127084fd27bceec11f31d96"
+  },
+  "task": {
+    "task_id": "202605131918-0ASXKY",
+    "title": "Harden shared env root worktree detection",
+    "intent": "Address PR #3662 review feedback by resolving the shared .env root without assuming the repo-local .git/worktrees layout, including separate git-dir worktree layouts.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605131918-0ASXKY/README.md",
+      "sha256": "sha256:157231b8be8fb25995dd7bf7bdec5390b6abfd2f8dcd78bd5e5cffdffaeedfc3"
+    },
+    "approved_at": "2026-05-13T19:19:32.664Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3668.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605131918-0ASXKY_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-13T19:19:32.664Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605131918-0ASXKY/README.md",
+      "sha256": "sha256:157231b8be8fb25995dd7bf7bdec5390b6abfd2f8dcd78bd5e5cffdffaeedfc3"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605131918-0ASXKY/README.md",
+      "sha256": "sha256:157231b8be8fb25995dd7bf7bdec5390b6abfd2f8dcd78bd5e5cffdffaeedfc3"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605131918-0ASXKY/README.md",
+      "sha256": "sha256:157231b8be8fb25995dd7bf7bdec5390b6abfd2f8dcd78bd5e5cffdffaeedfc3"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 67311eb71d7905980127084fd27bceec11f31d96 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:ada600384146fef41d37b11c6b47050884cd7fda64504e78413f05c2dd82fdcf",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "ops.approval",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "ops.approval",
+          "kind": "approval",
+          "produced_by": "approval_gate",
+          "required": true
+        },
+        {
+          "id": "ops.rollback",
+          "kind": "rollback",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "ops.action",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "ops.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "missing",
+        "path": ".agentplane/tasks/202605131918-0ASXKY/blueprint/resolved-snapshot.json",
+        "digest": null,
+        "current_digest": "76d60ef4e010bb3a5c8e9203e1aa3daeafc33fbb3d3a067826808bc10e53a6f1",
+        "route_changed": null,
+        "artifact_sha256": null,
+        "safe_command": "agentplane blueprint snapshot 202605131918-0ASXKY"
+      }
+    }
+  }
+}
