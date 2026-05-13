@@ -1,10 +1,11 @@
 ---
 id: "202605132054-5FV925"
 title: "Improve generated PR body formatting"
-status: "DOING"
+result_summary: "Merged via PR #3683."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented hosted PR body formatter for long verification bullets. Checks passed after final adjustment: bun test packages/agentplane/src/commands/pr/internal/review-template.test.ts; bunx eslint packages/agentplane/src/commands/pr/internal/review-template.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts; bunx prettier --check packages/agentplane/src/commands/pr/internal/review-template.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts; bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs; agentplane doctor."
   attempts: 0
-commit: null
+commit:
+  hash: "1a618ca1dc6fdcd57f97161c06d96aa6278c7f50"
+  message: "Merge pull request #3683 from basilisk-labs/task/202605132054-5FV925/pr-body-format"
 comments:
   -
     author: "CODER"
     body: "Start: Implement generated GitHub PR body formatting guardrails for long verification commands and cover the renderer with focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3683 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented hosted PR body formatter for long verification bullets. Checks passed after final adjustment: bun test packages/agentplane/src/commands/pr/internal/review-template.test.ts; bunx eslint packages/agentplane/src/commands/pr/internal/review-template.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts; bunx prettier --check packages/agentplane/src/commands/pr/internal/review-template.ts packages/agentplane/src/commands/pr/internal/review-template.test.ts; bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs; agentplane doctor."
+  -
+    type: "status"
+    at: "2026-05-13T21:33:41.808Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3683 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T21:05:48.013Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T21:33:41.814Z"
+doc_updated_by: "INTEGRATOR"
 description: "Format generated GitHub PR bodies so long verification commands render as readable fenced bash blocks instead of wide bullet lines."
 sections:
   Summary: |-
