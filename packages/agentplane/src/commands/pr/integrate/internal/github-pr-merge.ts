@@ -22,7 +22,7 @@ type GithubGraphqlResponse<T> = {
   errors?: { message?: string }[];
 };
 
-export type ProtectedBaseGithubMergeResult = {
+type ProtectedBaseGithubMergeResult = {
   status: "merged" | "auto_merge_enabled";
   detail: string;
 };
