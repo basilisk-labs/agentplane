@@ -340,7 +340,7 @@ function buildWikiProposal(evidence: TaskEvidence[], facts: HarvestFact[], repor
 }
 
 function reportSlug(opts: ContextHarvestTasksParsed): string {
-  if (opts.task.length === 1) return `task-${opts.task[0]}`;
+  if (opts.task.length === 1) return `task-${slug(opts.task[0])}`;
   const tagPart = opts.tag.length > 0 ? opts.tag.map((tag) => slug(tag)).join("-") : "all-tags";
   const statusPart = (opts.status.length > 0 ? opts.status : ["DONE"])
     .map((status) => slug(status))

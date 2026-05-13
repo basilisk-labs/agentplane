@@ -268,6 +268,22 @@ describe("context harvest tasks", () => {
     ).rejects.toThrow(/context init/u);
   });
 
+  it("sanitizes explicit task filters before deriving proposal paths", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, []),
+      cwd: root,
+      parsed: parsed({ task: ["foo/../../../../tmp/pwn"], writeProposals: true }),
+    });
+
+    await expect(
+      readFile(path.join(root, "context/wiki/proposals/task-harvest/task-foo-tmp-pwn.md"), "utf8"),
+    ).resolves.toContain("promotion_state: proposal");
+    await expect(readFile(path.join(root, "tmp/pwn.md"))).rejects.toThrow();
+  });
+
   it("treats malformed harvest reports as invalid", async () => {
     const root = await tempRoot();
     await write(
