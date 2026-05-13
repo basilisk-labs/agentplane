@@ -35,7 +35,7 @@ const CORE_STOP_RULES: readonly StopRule[] = [
 ];
 
 const NODE_MODE_BY_KIND = {
-  intake: "deterministic",
+  intake: "agentic",
   scope: "deterministic",
   context_resolve: "deterministic",
   approval_gate: "approval",

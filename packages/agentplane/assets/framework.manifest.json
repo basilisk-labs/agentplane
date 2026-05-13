@@ -16,6 +16,13 @@
       "required": true
     },
     {
+      "path": ".agentplane/agents/CURATOR.json",
+      "source_path": "agents/CURATOR.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
       "path": ".agentplane/agents/DOCS.json",
       "source_path": "agents/DOCS.json",
       "type": "json",
@@ -25,6 +32,20 @@
     {
       "path": ".agentplane/agents/EVALUATOR.json",
       "source_path": "agents/EVALUATOR.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
+      "path": ".agentplane/agents/EXTRACTOR.json",
+      "source_path": "agents/EXTRACTOR.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
+      "path": ".agentplane/agents/INTAKE.json",
+      "source_path": "agents/INTAKE.json",
       "type": "json",
       "merge_strategy": "agent_json_3way",
       "required": true
@@ -60,13 +81,6 @@
     {
       "path": ".agentplane/agents/REVIEWER.json",
       "source_path": "agents/REVIEWER.json",
-      "type": "json",
-      "merge_strategy": "agent_json_3way",
-      "required": true
-    },
-    {
-      "path": ".agentplane/agents/SKILL_EXTRACTOR.json",
-      "source_path": "agents/SKILL_EXTRACTOR.json",
       "type": "json",
       "merge_strategy": "agent_json_3way",
       "required": true
@@ -203,6 +217,12 @@
       "type": "markdown",
       "merge_strategy": "agents_policy_markdown",
       "required": true
+    }
+  ],
+  "removals": [
+    {
+      "path": ".agentplane/agents/SKILL_EXTRACTOR.json",
+      "type": "json"
     }
   ]
 }

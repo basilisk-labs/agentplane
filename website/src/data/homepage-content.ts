@@ -24,9 +24,9 @@ export const homepageContent = {
       "AgentPlane records what an AI agent was asked to do, which plan was approved, what changed, which checks ran, and why the work is safe to merge or revert - all as reviewable artifacts inside your Git repository.",
     flow: "task → plan → approve → implement → verify → finish",
     assurances: [
-      "No hosted runtime",
-      "No telemetry",
-      "No vendor lock-in",
+      "Repo-local evidence",
+      "Git-visible review trail",
+      "Use any coding agent",
       "Your repository stays the source of truth",
     ],
     terminal: {
@@ -177,7 +177,7 @@ export const homepageContent = {
       },
       {
         title: "Comparing alternatives?",
-        text: "See how AgentPlane differs from coding agents, AGENTS.md, Git-only workflows, CI, and hosted dashboards.",
+        text: "See how AgentPlane differs from coding agents, AGENTS.md, Git-only workflows, and CI.",
         action: "Read comparison",
         to: comparisonUrl,
       },

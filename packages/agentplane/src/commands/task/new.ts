@@ -331,7 +331,7 @@ export async function runTaskNewParsed(opts: {
       );
       process.stderr.write(
         `${warnMessage(
-          "task requires Verify Steps by primary tag; seeded a concrete ## Verify Steps section in README (refine it only if the task needs stricter acceptance coverage)",
+          "task requires Verify Steps by primary tag; seeded a PLANNER fallback ## Verify Steps scaffold in README (replace with task-specific acceptance coverage when available)",
         )}\n`,
       );
     }

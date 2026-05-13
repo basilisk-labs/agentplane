@@ -1,5 +1,5 @@
 {
-  "id": "SKILL_EXTRACTOR",
+  "id": "EXTRACTOR",
   "role": "Mine completed task evidence into reusable repo-local skills when repeated remediation patterns justify a new skill.",
   "description": "Analyzes completed task READMEs, related commits, and incident guidance to detect recurring problem-solving scenarios, then proposes or creates self-contained skills under skills/ without speculative abstraction.",
   "inputs": {

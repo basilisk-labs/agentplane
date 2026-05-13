@@ -72,12 +72,31 @@ export async function createUpgradeCommit(opts: {
   source: "local_assets" | "upgrade_bundle" | "repo_tarball";
   additions: number;
   updates: number;
+  removals: number;
   unchanged: number;
   incidentsAppendedCount: number;
 }): Promise<{ hash: string; subject: string } | null> {
   const uniquePaths = [...new Set(opts.paths.filter(Boolean))];
   if (uniquePaths.length === 0) return null;
-  await execFileAsync("git", ["add", "--", ...uniquePaths], {
+
+  const stageablePaths: string[] = [];
+  for (const rel of uniquePaths) {
+    if (await fileExists(path.join(opts.gitRoot, rel))) {
+      stageablePaths.push(rel);
+      continue;
+    }
+    try {
+      await execFileAsync("git", ["ls-files", "--error-unmatch", "--", rel], {
+        cwd: opts.gitRoot,
+        env: gitEnv(),
+      });
+      stageablePaths.push(rel);
+    } catch {
+      // Removed untracked files do not need staging.
+    }
+  }
+  if (stageablePaths.length === 0) return null;
+  await execFileAsync("git", ["add", "-A", "--", ...stageablePaths], {
     cwd: opts.gitRoot,
     env: gitEnv(),
     maxBuffer: 10 * 1024 * 1024,
@@ -103,7 +122,7 @@ export async function createUpgradeCommit(opts: {
   const body =
     `Upgrade-Version: ${opts.versionLabel}\n` +
     `Source: ${opts.source}\n` +
-    `Managed-Changes: add=${opts.additions}, update=${opts.updates}, unchanged=${opts.unchanged}\n` +
+    `Managed-Changes: add=${opts.additions}, update=${opts.updates}, remove=${opts.removals}, unchanged=${opts.unchanged}\n` +
     `Incidents-Appended: ${opts.incidentsAppendedCount}\n`;
   const allow = {
     allowTasks: false,
@@ -175,6 +194,7 @@ export async function applyManagedFiles(opts: {
   gitRoot: string;
   additions: string[];
   updates: string[];
+  removals: string[];
   backup: boolean;
   fileContents: Map<string, Buffer>;
   baselineDir: string;
@@ -221,6 +241,20 @@ export async function applyManagedFiles(opts: {
       const baselinePath = path.join(opts.baselineDir, baselineKey);
       await mkdir(path.dirname(baselinePath), { recursive: true });
       await writeFile(baselinePath, data);
+    }
+  }
+
+  for (const rel of opts.removals) {
+    const destPath = path.join(opts.gitRoot, rel);
+    if (opts.backup && (await fileExists(destPath))) {
+      const backup = await backupPath(destPath);
+      opts.createdBackups.push(backup);
+    }
+    await rm(destPath, { force: true });
+
+    const baselineKey = opts.toBaselineKey(rel);
+    if (baselineKey) {
+      await rm(path.join(opts.baselineDir, baselineKey), { force: true });
     }
   }
 }
@@ -272,7 +306,6 @@ export async function persistUpgradeState(opts: {
         generated_at: new Date().toISOString(),
         counts: {
           total: opts.reviewRecords.length,
-          needsSemanticReview: opts.reviewRecords.filter((r) => r.needsSemanticReview).length,
         },
         files: opts.reviewRecords,
       },

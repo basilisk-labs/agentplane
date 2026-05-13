@@ -308,9 +308,10 @@ function buildWikiProposal(evidence: TaskEvidence[], facts: HarvestFact[], repor
     ...sourceRefs.map((ref) => `  - ${JSON.stringify(ref)}`),
     "---",
     "",
-    "# Completed task knowledge proposal",
+    "# Completed task raw proposal scaffold",
     "",
-    "This page is a proposal generated from completed task evidence. Promote only after reviewing",
+    "This page is a raw proposal scaffold generated from completed task evidence. Semantic wiki,",
+    "fact, and graph extraction belongs to CURATOR tasks by default. Promote only after reviewing",
     "the gate report, conflict markers, stale markers, and source references.",
     "",
     "## Promotion gate",
@@ -319,7 +320,7 @@ function buildWikiProposal(evidence: TaskEvidence[], facts: HarvestFact[], repor
     `- Blockers: ${report.promotion_gate.blockers.length}`,
     `- Warnings: ${report.promotion_gate.warnings.length}`,
     "",
-    "## Extracted claims",
+    "## Scaffold claims",
     "",
   ];
   for (const fact of facts) {

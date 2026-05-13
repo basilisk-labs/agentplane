@@ -163,7 +163,7 @@ describe("runCli", () => {
       derivedId = ioDerive.stdout.trim();
       expect(derivedId).toContain("-");
       expect(ioDerive.stderr).toContain(
-        "task requires Verify Steps by primary tag; seeded a concrete ## Verify Steps section in README",
+        "task requires Verify Steps by primary tag; seeded a PLANNER fallback ## Verify Steps scaffold",
       );
     } finally {
       ioDerive.restore();
@@ -257,7 +257,7 @@ describe("runCli", () => {
       expect(code).toBe(0);
       derivedId = ioDerive.stdout.trim();
       expect(ioDerive.stderr).toContain(
-        "task requires Verify Steps by primary tag; seeded a concrete ## Verify Steps section in README",
+        "task requires Verify Steps by primary tag; seeded a PLANNER fallback ## Verify Steps scaffold",
       );
     } finally {
       ioDerive.restore();

@@ -188,7 +188,7 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
       ]);
       expect(code).toBe(0);
       taskId = ioNew.stdout.trim();
-      expect(ioNew.stderr).toContain("seeded a concrete ## Verify Steps section");
+      expect(ioNew.stderr).toContain("seeded a PLANNER fallback ## Verify Steps scaffold");
     } finally {
       ioNew.restore();
     }

@@ -23,6 +23,9 @@ export const fromCommandsCodex = commandModule(() => import("../commands/codex.j
 export const fromCommandsRuntimeCommand = commandModule(
   () => import("../../../commands/runtime.command.js"),
 );
+export const fromCommandsInsightsCommand = commandModule(
+  () => import("../../../commands/insights/insights.command.js"),
+);
 export const fromCommandsIncidentsIncidentsCommand = commandModule(
   () => import("../../../commands/incidents/incidents.command.js"),
 );
@@ -67,3 +70,7 @@ export const loadProfileSetSpec = (deps: RunDeps) =>
   import("../commands/config.js").then((m) => m.makeRunProfileSetHandler(deps));
 export const loadIdeSyncSpec = (deps: RunDeps) =>
   import("../commands/ide.js").then((m) => m.makeRunIdeSyncHandler(deps));
+export const loadInsightsReportSpec = (deps: RunDeps) =>
+  import("../../../commands/insights/insights.command.js").then((m) =>
+    m.makeRunInsightsReportHandler(deps),
+  );

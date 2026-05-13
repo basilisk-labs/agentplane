@@ -45,6 +45,13 @@ import {
   contextSpec,
   contextGraphSpec,
 } from "./context.spec.js";
+import {
+  contextCheckSpec,
+  contextLearnChangesSpec,
+  contextLearnFilesSpec,
+  contextLearnSpec,
+  contextLearnTasksSpec,
+} from "./context.learn.spec.js";
 
 export function runContextGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
   return loadDirectSubcommandNames(["context"]).then((subcommands) =>
@@ -97,11 +104,96 @@ export async function runContextHarvestGroup(
   });
 }
 
+export async function runContextLearnGroup(
+  _ctx: CommandCtx,
+  p: GroupCommandParsed,
+): Promise<number> {
+  return throwGroupCommandUsage({
+    spec: contextLearnSpec,
+    cmd: p.cmd,
+    subcommands: await loadDirectSubcommandNames(["context", "learn"]),
+    command: "context learn",
+    contextCommand: "context learn",
+  });
+}
+
 export async function runContextIngest(_ctx: CommandCtx, p: ContextIngestParsed): Promise<number> {
   return await cmdContextIngest({
     cwd: _ctx.cwd,
     rootOverride: _ctx.rootOverride,
     parsed: p,
+  });
+}
+
+export async function runContextLearnFiles(
+  _ctx: CommandCtx,
+  p: { sources: string[]; dryRun: boolean; runTask: boolean; includePrivate: boolean },
+): Promise<number> {
+  return await cmdContextIngest({
+    cwd: _ctx.cwd,
+    rootOverride: _ctx.rootOverride,
+    parsed: {
+      sources: p.sources,
+      mode: "sources",
+      dryRun: p.dryRun,
+      indexOnly: false,
+      runTask: p.runTask,
+      includePrivate: p.includePrivate,
+    },
+  });
+}
+
+export async function runContextLearnChanges(
+  _ctx: CommandCtx,
+  p: { dryRun: boolean; runTask: boolean; includePrivate: boolean },
+): Promise<number> {
+  return await cmdContextIngest({
+    cwd: _ctx.cwd,
+    rootOverride: _ctx.rootOverride,
+    parsed: {
+      sources: [],
+      mode: "changed",
+      dryRun: p.dryRun,
+      indexOnly: false,
+      runTask: p.runTask,
+      includePrivate: p.includePrivate,
+    },
+  });
+}
+
+export async function runContextLearnTasks(
+  _ctx: CommandCtx,
+  p: {
+    status: string[];
+    tag: string[];
+    task: string[];
+    since: string;
+    until: string;
+    afterTask: string;
+    limit: string;
+    batchSize: string;
+    dryRun: boolean;
+    format: "text" | "json";
+  },
+): Promise<number> {
+  return await cmdContextHarvestTasks({
+    cwd: _ctx.cwd,
+    rootOverride: _ctx.rootOverride,
+    parsed: {
+      status: p.status,
+      tag: p.tag,
+      task: p.task,
+      since: p.since,
+      until: p.until,
+      afterTask: p.afterTask,
+      limit: p.limit,
+      writeProposals: false,
+      createExtractionTasks: true,
+      batchSize: p.batchSize,
+      promote: false,
+      dryRun: p.dryRun,
+      format: p.format,
+    },
   });
 }
 
@@ -137,6 +229,14 @@ export async function runContextSearch(
 
 export async function runContextShow(_ctx: CommandCtx, p: { ref: string }): Promise<number> {
   return await cmdContextShow({
+    cwd: _ctx.cwd,
+    rootOverride: _ctx.rootOverride,
+    parsed: p,
+  });
+}
+
+export async function runContextCheck(_ctx: CommandCtx, p: { fix: boolean }): Promise<number> {
+  return await cmdContextDoctor({
     cwd: _ctx.cwd,
     rootOverride: _ctx.rootOverride,
     parsed: p,
@@ -266,4 +366,11 @@ export {
   contextSearchSpec,
   contextShowSpec,
 } from "./context.spec.js";
+export {
+  contextCheckSpec,
+  contextLearnChangesSpec,
+  contextLearnFilesSpec,
+  contextLearnSpec,
+  contextLearnTasksSpec,
+} from "./context.learn.spec.js";
 export { contextIngestSpec } from "./ingest.spec.js";

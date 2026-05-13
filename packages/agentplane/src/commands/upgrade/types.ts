@@ -7,6 +7,7 @@ export type GitHubRelease = {
 export type FrameworkManifest = {
   schema_version: 1;
   files: FrameworkManifestEntry[];
+  removals?: FrameworkManifestRemoval[];
 };
 
 export type FrameworkManifestEntry = {
@@ -17,6 +18,11 @@ export type FrameworkManifestEntry = {
   required?: boolean;
 };
 
+export type FrameworkManifestRemoval = {
+  path: string;
+  type: FrameworkManifestEntry["type"];
+};
+
 export type UpgradeReviewRecord = {
   relPath: string;
   mergeStrategy: FrameworkManifestEntry["merge_strategy"];
@@ -24,7 +30,6 @@ export type UpgradeReviewRecord = {
   changedCurrentVsBaseline: boolean | null;
   changedIncomingVsBaseline: boolean | null;
   currentDiffersFromIncoming: boolean;
-  needsSemanticReview: boolean;
   mergeApplied: boolean;
   mergePath:
     | "none"

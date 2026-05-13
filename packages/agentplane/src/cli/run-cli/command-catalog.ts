@@ -18,7 +18,7 @@ export const COMMANDS = [
 ] as const satisfies readonly CommandEntry[];
 
 export type CatalogMatch = { entry: (typeof COMMANDS)[number]; consumed: number };
-export type HelpSurfaceMode = "user" | "framework" | "all";
+export type HelpSurfaceMode = "user" | "framework" | "agent" | "all";
 
 function buildCatalogGraph(entries: readonly CommandEntry[]): CommandGraph<CommandEntry> {
   const graph = new CommandGraph<CommandEntry>((entry) => entry.spec.id);
@@ -59,6 +59,7 @@ export function getCommandInvocation(id: CommandId): string {
 
 export function isCommandVisibleInHelp(entry: CommandEntry, mode: HelpSurfaceMode): boolean {
   if (mode === "all") return true;
+  if (mode === "agent") return entry.surface !== "internal";
   if (entry.surface === "advanced" || entry.surface === "internal") return false;
   if (mode === "framework") return entry.surface === "user" || entry.surface === "framework";
   return entry.surface === "user";

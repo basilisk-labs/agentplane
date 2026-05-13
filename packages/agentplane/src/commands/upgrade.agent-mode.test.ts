@@ -14,7 +14,7 @@ async function exists(absPath: string): Promise<boolean> {
   }
 }
 
-describeWhenNotHook("upgrade agent-assisted mode", () => {
+describeWhenNotHook("upgrade plan-only mode", () => {
   it("writes an upgrade plan and does not modify managed files", async () => {
     const repo = await tempRepo({ withDefaultConfig: true });
     const { root } = repo;
@@ -73,18 +73,17 @@ describeWhenNotHook("upgrade agent-assisted mode", () => {
       const constraintsPath = path.join(agentDir, latest, "constraints.md");
       const filesJsonPath = path.join(agentDir, latest, "files.json");
       const reviewJsonPath = path.join(agentDir, latest, "review.json");
-      expect(await readFile(planPath, "utf8")).toContain("agent-assisted");
+      expect(await readFile(planPath, "utf8")).toContain("plan only");
       expect(await readFile(constraintsPath, "utf8")).toContain("Must not touch");
       expect(await readFile(filesJsonPath, "utf8")).toContain('"additions"');
 
       const review = JSON.parse(await readFile(reviewJsonPath, "utf8")) as {
-        counts?: { total?: number; needsSemanticReview?: number };
-        files?: { relPath?: string; needsSemanticReview?: boolean }[];
+        counts?: { total?: number };
+        files?: { relPath?: string }[];
       };
       expect(review.counts?.total).toBe(1);
-      expect(review.counts?.needsSemanticReview).toBe(0);
       expect(review.files?.[0]?.relPath).toBe("AGENTS.md");
-      expect(review.files?.[0]?.needsSemanticReview).toBe(false);
+      expect(review.files?.[0]).not.toHaveProperty("needs" + "SemanticReview");
     } finally {
       await repo.cleanup();
     }

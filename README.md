@@ -13,9 +13,9 @@ Git evidence: task intent, approved plan, verification, finish state, and Agent 
 task -> plan -> approve -> implement -> verify -> finish
 ```
 
-Not another agent. Not a hosted dashboard. The review trail for AI work, inside Git.
+The review trail for AI work, inside Git.
 
-No hosted runtime. No telemetry. No vendor lock-in. Everything stays in your repository.
+Use any coding agent. Keep the review trail in your repository.
 
 [![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
 [![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
@@ -108,7 +108,6 @@ Agent IDs are configurable profiles. See
 
 - Not another coding agent.
 - Not a prompt framework.
-- Not a hosted dashboard.
 - Not a replacement for Git, CI, or PR review.
 
 It is the evidence layer around the tools you already use.

@@ -1,0 +1,88 @@
+# PR Review
+
+Created: 2026-05-13T16:33:56.982Z
+
+## Task
+
+- Task: `202605131632-TDMHEC`
+- Title: Introduce bounded agentic classification and curation surfaces
+- Status: DOING
+- Branch: `task/202605131632-TDMHEC/agentic-classifiers`
+- Canonical task record: `.agentplane/tasks/202605131632-TDMHEC/README.md`
+
+## Verification
+
+- State: ok
+- Note: Review fix verified: added managed upgrade removals for legacy SKILL_EXTRACTOR cleanup, added CURATOR to managed manifest, and reran targeted upgrade tests plus typecheck/format/assets/agents/diff checks.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-13T17:49:25.683Z
+- Branch: task/202605131632-TDMHEC/agentic-classifiers
+- Head: b74ec146d3a8
+
+```text
+ .agentplane/agents/CURATOR.json                    |  20 +-
+ .../{SKILL_EXTRACTOR.json => EXTRACTOR.json}       |   2 +-
+ .agentplane/agents/INTAKE.json                     |  25 +
+ .agentplane/agents/PLANNER.json                    |  14 +-
+ .agentplane/agents/REVIEWER.json                   |  16 +-
+ .agentplane/agents/UPGRADER.json                   |   8 +-
+ .../blueprint/resolved-snapshot.json               | 516 +++++++++++++++++++++
+ docs/developer/architecture.mdx                    |   4 +-
+ docs/developer/blueprints.mdx                      |  34 +-
+ docs/developer/local-context.mdx                   |   4 +-
+ docs/help/glossary.mdx                             |   2 +-
+ docs/user/agents.mdx                               |  21 +-
+ docs/user/cli-reference.generated.mdx              |  36 +-
+ docs/user/commands.mdx                             |  11 +-
+ docs/user/local-context.mdx                        |  24 +-
+ packages/agentplane/assets/agents/CURATOR.json     |  20 +-
+ .../{SKILL_EXTRACTOR.json => EXTRACTOR.json}       |   2 +-
+ packages/agentplane/assets/agents/INTAKE.json      |  25 +
+ packages/agentplane/assets/agents/PLANNER.json     |  14 +-
+ packages/agentplane/assets/agents/REVIEWER.json    |  16 +-
+ packages/agentplane/assets/agents/UPGRADER.json    |   8 +-
+ packages/agentplane/assets/framework.manifest.json |  34 +-
+ .../agentplane/src/blueprints/builtin-builder.ts   |   2 +-
+ .../agentplane/src/blueprints/execution.test.ts    |   2 +-
+ .../agentplane/src/blueprints/validate.test.ts     |   2 +-
+ .../run-cli.core.help-snap.test.ts.snap            |   8 +-
+ .../src/cli/run-cli.core.lifecycle.plan.test.ts    |   2 +-
+ .../src/cli/run-cli.core.tasks.create.test.ts      |   4 +-
+ .../cli/run-cli.core.tasks.scaffold-derive.test.ts |   4 +-
+ .../src/commands/context/context.spec.ts           |  55 ++-
+ .../src/commands/incidents/advise.command.ts       |   2 +-
+ .../src/commands/incidents/collect.command.ts      |   2 +-
+ .../src/commands/incidents/incidents.command.ts    |   6 +-
+ .../commands/pr/internal/review-template.test.ts   |  26 ++
+ .../src/commands/pr/internal/review-template.ts    |  24 +
+ packages/agentplane/src/commands/task/derive.ts    |   2 +-
+ .../agentplane/src/commands/task/doc-template.ts   |   6 +
+ packages/agentplane/src/commands/task/new.ts       |   2 +-
+ .../src/commands/upgrade.agent-mode.test.ts        |  11 +-
+ .../agentplane/src/commands/upgrade.merge.test.ts  | 154 +++++-
+ packages/agentplane/src/commands/upgrade.spec.ts   |   6 +-
+ packages/agentplane/src/commands/upgrade.ts        |  22 +-
+ packages/agentplane/src/commands/upgrade/apply.ts  |  39 +-
+ packages/agentplane/src/commands/upgrade/plan.ts   |  52 ++-
+ packages/agentplane/src/commands/upgrade/report.ts |  17 +-
+ packages/agentplane/src/commands/upgrade/types.ts  |   7 +-
+ .../src/context/harvest-tasks-artifacts.ts         |   7 +-
+ .../src/context/harvest-tasks-extraction.ts        |   4 +-
+ .../src/runtime/incidents/advice-strategy.ts       |   1 +
+ .../src/runtime/incidents/plan-strategy.ts         |   1 +
+ .../runtime/prompt-modules/gpt55-contract.test.ts  |   3 +-
+ .../src/shared/builtin-assets.generated.ts         |  29 +-
+ 52 files changed, 1139 insertions(+), 219 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->

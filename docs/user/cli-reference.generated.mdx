@@ -85,6 +85,8 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [doctor](#doctor)
   - [doctor git-locks](#doctor-git-locks)
 - Diagnostics
+  - [insights](#insights)
+  - [insights report](#insights-report)
   - [runtime](#runtime)
   - [runtime explain](#runtime-explain)
 - Recipes
@@ -150,6 +152,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [context capability discover](#context-capability-discover)
   - [context capability search](#context-capability-search)
   - [context capability validate](#context-capability-validate)
+  - [context check](#context-check)
   - [context doctor](#context-doctor)
   - [context graph](#context-graph)
   - [context graph export](#context-graph-export)
@@ -161,6 +164,10 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [context harvest tasks](#context-harvest-tasks)
   - [context ingest](#context-ingest)
   - [context init](#context-init)
+  - [context learn](#context-learn)
+  - [context learn changes](#context-learn-changes)
+  - [context learn files](#context-learn-files)
+  - [context learn tasks](#context-learn-tasks)
   - [context reindex](#context-reindex)
   - [context search](#context-search)
   - [context show](#context-show)
@@ -2211,7 +2218,7 @@ agentplane init --quick --tool cursor
 
 Upgrade the local agentplane framework bundle in the repo.
 
-Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade applies the bundled managed files from the locally installed agentplane package assets (no network) and creates a dedicated upgrade commit. Use --dry-run to preview changes without writing files, or --agent to generate a review plan instead of applying. Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.
+Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade applies the bundled managed files from the locally installed agentplane package assets (no network) and creates a dedicated upgrade commit. Use --dry-run to preview changes without writing files, or --agent to generate a plan-only report instead of applying. Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.
 
 Usage:
 
@@ -2221,7 +2228,7 @@ agentplane upgrade [options]
 
 Options:
 
-- `--agent`: Generate an agent-assisted upgrade plan instead of applying managed files. (default=false)
+- `--agent`: Generate a plan-only upgrade report instead of applying managed files. (default=false)
 - `--auto`: Apply the upgrade automatically (same behavior as the default mode; useful for explicit scripts). (default=false)
 - `--remote`: Fetch the framework bundle from GitHub releases (requires network approvals). (default=false)
 - `--allow-tarball`: Allow falling back to a GitHub repo tarball when release assets are missing (no checksum verification). (default=false)
@@ -2254,7 +2261,7 @@ agentplane upgrade --dry-run
 agentplane upgrade --agent
 ```
 
-- Generate an agent-assisted upgrade plan instead of applying files.
+- Generate a plan-only upgrade report instead of applying files.
 
 ```sh
 agentplane upgrade --remote --tag v0.1.9 --dry-run
@@ -2354,6 +2361,53 @@ agentplane doctor git-locks --fix
 - Remove stale git index.lock after inspection.
 
 ## Diagnostics
+
+### insights
+
+Generate local-only diagnostic insights for support analysis.
+
+Usage:
+
+```text
+agentplane insights <report> [options]
+```
+
+Examples:
+
+```sh
+agentplane insights report
+```
+
+- Print a local diagnostic summary that can be shared manually.
+
+### insights report
+
+Print a local-only privacy-bounded AgentPlane diagnostic report.
+
+Usage:
+
+```text
+agentplane insights report [options]
+```
+
+Options:
+
+- `--json`: Emit the full report as machine-readable JSON. (default=false)
+- `--recent-limit <n>`: Number of recent task ids to include (default: 8, max: 25).
+
+Examples:
+
+```sh
+agentplane insights report
+```
+
+- Print a readable local diagnostic summary.
+
+```sh
+agentplane insights report --json
+```
+
+- Print the full local diagnostic report for support tooling.
 
 ### runtime
 
@@ -3533,7 +3587,7 @@ agentplane hooks uninstall
 
 ### incidents
 
-Promote external incident advice and resolve incident hints for analogous tasks.
+Route incident advice candidates through CURATOR-bounded matching and promotion gates.
 
 Usage:
 
@@ -3543,12 +3597,12 @@ agentplane incidents <collect|advise> [args] [options]
 
 Notes:
 
-- Use \`incidents collect\` to promote resolved reusable external findings into \`.agentplane/policy/incidents.md\`.
-- Use \`incidents advise\` to query registry advice by task id or lightweight scope/tags.
+- Use \`incidents collect\` to promote resolved reusable external findings into \`.agentplane/policy/incidents.md\` after deterministic validation.
+- Use \`incidents advise\` to query registry advice by task id or lightweight scope/tags; the score is a candidate scaffold for CURATOR-style judgment, not semantic truth.
 
 ### incidents advise
 
-Resolve relevant incident advice for a task or an ad hoc scope/tag query.
+Resolve bounded incident advice candidates for a task or ad hoc scope/tag query.
 
 Usage:
 
@@ -3567,7 +3621,7 @@ Options:
 
 ### incidents collect
 
-Promote reusable resolved external findings from a task into the incident registry.
+Validate and promote CURATOR-style reusable incident findings into the registry.
 
 Usage:
 
@@ -3684,6 +3738,22 @@ Usage:
 agentplane context capability validate <path>
 ```
 
+### context check
+
+Check context workspace health.
+
+Runs the human-facing context health check. Use ap context graph validate for the lower-level graph validator.
+
+Usage:
+
+```text
+agentplane context check [options]
+```
+
+Options:
+
+- `--fix`: Repair missing context directories where safe. (default=false)
+
 ### context doctor
 
 Diagnose local context health and projection consistency.
@@ -3774,9 +3844,9 @@ agentplane context harvest [<cmd> ...]
 
 ### context harvest tasks
 
-Harvest completed task evidence into wiki, fact, and graph proposals.
+Harvest completed task evidence into raw scaffolds or CURATOR extraction tasks.
 
-Selects completed tasks in oldest-first order, skips unchanged tasks with matching ingestion markers, and separates source indexing, agentic extraction task creation, wiki synthesis, promotion-gate state, and task README markers. Write modes require an initialized context workspace.
+Selects completed tasks in oldest-first order, skips unchanged tasks with matching ingestion markers, and separates raw scaffold writing, default CURATOR extraction task creation, promotion-gate state, and task README markers. Write modes require an initialized context workspace.
 
 Usage:
 
@@ -3793,8 +3863,8 @@ Options:
 - `--until <YYYY-MM-DD|YYYYMMDDHHmm>`: Only include tasks at or before this task-id timestamp prefix.
 - `--after-task <task-id>`: Continue after a previously harvested task id.
 - `--limit <n>`: Maximum number of oldest matching tasks to harvest.
-- `--write-proposals`: Write raw evidence, derived facts/graph rows, report, and wiki proposal. (default=false)
-- `--create-extraction-tasks`: Create standard CURATOR tasks for batchwise semantic extraction from task README/ACR sources. (default=false)
+- `--write-proposals`: Write raw evidence and proposal scaffold artifacts only; semantic wiki/facts/graph extraction belongs to CURATOR tasks. (default=false)
+- `--create-extraction-tasks`: Create standard CURATOR tasks for batchwise semantic extraction from task README/ACR sources. This is the default non-write action. (default=false)
 - `--batch-size <n>`: Number of selected completed tasks per generated extraction task. (default=25)
 - `--promote`: Promote the wiki proposal to semi-canonical only if the promotion gate passes. (default=false)
 - `--dry-run`: Preview selection and gate state without writing artifacts. (default=false)
@@ -3806,19 +3876,25 @@ Examples:
 agentplane context harvest tasks --tag release --limit 20 --dry-run
 ```
 
-- Preview the oldest completed release tasks before writing context proposals.
+- Preview the oldest completed release tasks before creating extraction tasks or writing raw scaffolds.
+
+```sh
+agentplane context harvest tasks --tag branch_pr --batch-size 25
+```
+
+- Create default CURATOR tasks that extract semantic wiki/fact/graph knowledge in bounded oldest-first batches.
 
 ```sh
 agentplane context harvest tasks --tag branch_pr --write-proposals
 ```
 
-- Write source-backed reusable context proposals from completed branch_pr tasks.
+- Write raw source-backed proposal scaffolds from completed branch_pr tasks.
 
 ```sh
 agentplane context harvest tasks --tag branch_pr --create-extraction-tasks --batch-size 25
 ```
 
-- Create CURATOR tasks that extract semantic wiki/fact/graph knowledge in bounded oldest-first batches.
+- Explicitly request CURATOR extraction tasks for older scripts.
 
 ### context ingest
 
@@ -3880,6 +3956,109 @@ Options:
 - `--derived-gitignore <none|all>`: Ignore machine-derived context files under .agentplane/context/derived when set to all. (choices=none|all, default=none)
 - `--repair`: Create missing files only. (default=false)
 - `--force`: Rewrite default policy files while repairing. (default=false)
+
+### context learn
+
+Create context processing tasks from files, changes, or completed tasks.
+
+Usage:
+
+```text
+agentplane context learn [<cmd> ...]
+```
+
+### context learn changes
+
+Create a context assimilation task from changed context sources.
+
+Usage:
+
+```text
+agentplane context learn changes [options]
+```
+
+Options:
+
+- `--dry-run`: Preview only; do not create a task. (default=false)
+- `--run`: Create the task and immediately run it. (default=false)
+- `--include-private`: Include context/raw/private sources in the source set. (default=false)
+
+Examples:
+
+```sh
+agentplane context learn changes
+```
+
+- Create a CURATOR task from changed local context sources.
+
+### context learn files
+
+Create a context assimilation task from explicit files or paths.
+
+Usage:
+
+```text
+agentplane context learn files <path> ... [options]
+```
+
+Options:
+
+- `--dry-run`: Preview only; do not create a task. (default=false)
+- `--run`: Create the task and immediately run it. (default=false)
+- `--include-private`: Include context/raw/private sources in the source set. (default=false)
+
+Examples:
+
+```sh
+agentplane context learn files docs/research.md context/raw/customer-notes.md
+```
+
+- Create a CURATOR task from explicit external context files.
+
+```sh
+agentplane context learn files context/raw/research --run
+```
+
+- Create and run a context assimilation task for a folder of raw sources.
+
+### context learn tasks
+
+Create CURATOR extraction tasks from completed task history.
+
+Selects completed tasks oldest-first and creates standard CURATOR tasks for semantic extraction from task README/ACR sources. It does not write wiki proposals or promote pages directly.
+
+Usage:
+
+```text
+agentplane context learn tasks [options]
+```
+
+Options:
+
+- `--status <status>`: Repeatable task status filter. Defaults to DONE. (repeatable)
+- `--tag <tag>`: Repeatable tag filter. Matches tasks with any listed tag. (repeatable)
+- `--task <task-id>`: Repeatable explicit task id filter. (repeatable)
+- `--since <YYYY-MM-DD|YYYYMMDDHHmm>`: Only include tasks at or after this task-id timestamp prefix.
+- `--until <YYYY-MM-DD|YYYYMMDDHHmm>`: Only include tasks at or before this task-id timestamp prefix.
+- `--after-task <task-id>`: Continue after a previously queued task id.
+- `--limit <n>`: Maximum number of oldest matching tasks to queue.
+- `--batch-size <n>`: Number of selected completed tasks per generated extraction task. (default=25)
+- `--dry-run`: Preview batches without creating tasks. (default=false)
+- `--format <text|json>`: Output format. (choices=text|json, default=text)
+
+Examples:
+
+```sh
+agentplane context learn tasks --tag release --limit 25
+```
+
+- Create bounded CURATOR tasks from the oldest completed release tasks.
+
+```sh
+agentplane context learn tasks --tag branch_pr --batch-size 25 --dry-run
+```
+
+- Preview task-history extraction batches without mutating task state.
 
 ### context reindex
 

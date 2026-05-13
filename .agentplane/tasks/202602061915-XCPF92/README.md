@@ -1,9 +1,10 @@
 ---
 id: "202602061915-XCPF92"
-title: "FIX2.md: контекст команд, policy, коммиты, распил"
+title: "FIX2.md: command context, policy, commits, split monoliths"
 status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
+revision: 1
 depends_on: []
 tags:
   - "workflow"
@@ -21,6 +22,7 @@ verification:
   updated_at: "2026-02-06T20:36:11.296Z"
   updated_by: "TESTER"
   note: "Verified locally on 2026-02-06T20:36:11.296Z: FIX2.md work completed via subtasks; bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli are green."
+  attempts: 0
 commit:
   hash: "c8d553f5c49aff674b71db71f96d5d9c352bb2c4"
   message: "✅ D3QVVY close: record verification and closure"
@@ -34,17 +36,59 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Note: Exported .agentplane/tasks.json snapshot after completing FIX2.md work."
+events: []
 doc_version: 3
 doc_updated_at: "2026-02-06T20:38:23.739Z"
 doc_updated_by: "ORCHESTRATOR"
-description: "Реализовать пункты из FIX2.md: убрать повторные resolve/load в командах, унифицировать guard/hooks policy, стандартизовать commit message (без обратной совместимости), дедуп утилит и распил монолитов."
+description: "Implement FIX2.md items: remove repeated resolve/load calls in commands, unify guard/hooks policy, standardize commit messages without backward compatibility, deduplicate utilities, and split monoliths."
+sections:
+  Summary: |-
+    FIX2.md: command context, policy, commits, split monoliths
+
+    Implement FIX2.md items: remove repeated resolve/load calls in commands, unify guard/hooks policy, standardize commit messages without backward compatibility, deduplicate utilities, and split monoliths.
+  Scope: |-
+    - In scope: Implement FIX2.md items: remove repeated resolve/load calls in commands, unify guard/hooks policy, standardize commit messages without backward compatibility, deduplicate utilities, and split monoliths.
+    - Out of scope: unrelated changes outside this task.
+  Plan: |-
+    Work breakdown:
+    - 202602061915-RNTNEP (DONE): CommandContext + loadBackendTask context.
+    - 202602061915-FY8TYM (DONE): start/block/finish use CommandContext, avoid repeated backend loads.
+    - 202602061915-DZBAW0 (DONE): unify CommitPolicy across guard/hooks and harden allowlist matching.
+    - 202602061915-DH1CKG (DONE): new commit subject template + structured bodies, no backward-compat.
+    - 202602061915-FXTNQ0 (DONE): dedupe recipes.ts helpers via shared modules.
+    - 202602061915-KNHP1Y (DONE): split scenario command, colon-safe git log parsing, reduce duplicated utils.
+    - 202602061915-D3QVVY (DONE): tests for CommandContext + commit body generation.
+  Verify Steps: |-
+    <!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+    1. <Action>. Expected: <observable result>.
+    2. <Action>. Expected: <observable result>.
+    3. <Action>. Expected: <observable result>.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    #### 2026-02-06T20:36:11.296Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified locally on 2026-02-06: FIX2.md work completed via subtasks; bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli are green.
+
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
 id_source: "generated"
 ---
 ## Summary
 
+FIX2.md: command context, policy, commits, split monoliths
+
+Implement FIX2.md items: remove repeated resolve/load calls in commands, unify guard/hooks policy, standardize commit messages without backward compatibility, deduplicate utilities, and split monoliths.
 
 ## Scope
 
+- In scope: Implement FIX2.md items: remove repeated resolve/load calls in commands, unify guard/hooks policy, standardize commit messages without backward compatibility, deduplicate utilities, and split monoliths.
+- Out of scope: unrelated changes outside this task.
 
 ## Plan
 
@@ -78,8 +122,9 @@ Note: Verified locally on 2026-02-06: FIX2.md work completed via subtasks; bun r
 
 ## Rollback Plan
 
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
 
 ## Findings
-
 
 ## Risks

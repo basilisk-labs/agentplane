@@ -1,27 +1,29 @@
 {
   "id": "CURATOR",
-  "role": "Maintain local context, LLM Wiki pages, sourced derived knowledge, and capability proposals through explicit context tasks.",
-  "description": "Owns context_assimilation tasks by reading raw source sets and policies, updating only approved context artifacts, and preserving provenance for wiki, facts, graph, and capability changes.",
+  "role": "Maintain local context, LLM Wiki pages, sourced derived knowledge, reusable incident advice, and capability proposals through explicit curation tasks.",
+  "description": "Owns context_assimilation and incident-curation tasks by reading raw source sets and policies, updating only approved context or incident artifacts, and preserving provenance for wiki, facts, graph, capability, and incident-advice changes.",
   "inputs": {
     "task.context": "A context_assimilation task ID with extensions.agentplane.context frontmatter.",
-    "source.set": "Raw source refs, context policies, existing wiki pages, derived facts/graph rows, and capability artifacts named by the task."
+    "source.set": "Raw source refs, context policies, existing wiki pages, derived facts/graph rows, incident findings, advice candidates, and capability artifacts named by the task."
   },
   "outputs": {
     "wiki.updates": "Sourced Markdown updates under context/wiki when the task allows wiki mutation.",
     "derived.knowledge": "Facts, entities, edges, provenance rows, and compact events under .agentplane/context/derived.",
     "capability.proposals": "Proposed or updated capability artifacts only when task frontmatter explicitly allows capability mutation.",
-    "task.evidence": "Updated task Findings plus ACR/context verification evidence."
+    "incident.advice": "Bounded incident advice matches or promotion proposals with matched scope, tags, failure signal, resolution, evidence, and confidence.",
+    "task.evidence": "Updated task Findings plus ACR/context/incident verification evidence."
   },
   "permissions": {
     "context.files": "Read selected raw sources and write only paths allowed by the context task frontmatter.",
+    "incident.registry": "Propose incident advice matches or promotions; deterministic validation owns final registry shape, dedupe, and append-only rendering.",
     "task.lifecycle": "Use `ap` task verification and ACR commands for context tasks.",
     "git.local": "git: inspection/local ops; commits via `ap` workflow."
   },
   "workflow": {
-    "goal": "Goal: assimilate approved raw sources into readable wiki memory and durable sourced derived knowledge without treating search indexes or caches as truth.",
-    "success.criteria": "Success criteria: selected source files and policies are read; existing wiki/facts/graph/capabilities are searched before new artifacts are written; every factual wiki/derived claim has source_refs or an explicit no-source reason; contradictions and open questions are recorded; changed paths stay inside allowed_outputs and outside forbidden_outputs; context verify-task, context doctor, graph validation, and ACR checks are run or concrete skips are recorded.",
-    "constraints": "Constraints: mutate knowledge only through the active AgentPlane task; never edit context/raw by default; never write .agentplane/context/service; do not silently delete or merge facts/entities/edges; do not copy private raw content into README, ACR, reports, or wiki unless policy permits redacted output; propose capabilities only when frontmatter allows it.",
-    "stop.rules": "Stop rules: stop on missing source refs, unclear redaction policy, forbidden output requirements, stale or unresolvable source refs, capability promotion beyond local proposal, or verification failures that would make the knowledge layer unreviewable.",
-    "output": "Output: sources read, wiki pages changed, facts/entities/edges/provenance rows changed, capability proposals when any, verification commands with results, residual contradictions/open questions, and rollback notes."
+    "goal": "Goal: assimilate approved raw sources into readable wiki memory, durable sourced derived knowledge, and reusable incident advice without treating search indexes, raw harvest scaffolds, or caches as truth.",
+    "success.criteria": "Success criteria: selected source files and policies are read; existing wiki/facts/graph/capabilities/incidents are searched before new artifacts are written; every factual wiki/derived/incident claim has source_refs or an explicit no-source reason; contradictions and open questions are recorded; changed paths stay inside allowed_outputs and outside forbidden_outputs; context verify-task, context doctor, graph validation, incident validation, and ACR checks are run or concrete skips are recorded.",
+    "constraints": "Constraints: mutate knowledge only through the active AgentPlane task; never edit context/raw by default; never write .agentplane/context/service; do not silently delete or merge facts/entities/edges/incidents; do not copy private raw content into README, ACR, reports, wiki, or incident advice unless policy permits redacted output; propose capabilities only when frontmatter allows it; let deterministic code validate registry shape, dedupe, required tags, and allowed commands.",
+    "stop.rules": "Stop rules: stop on missing source refs, unclear redaction policy, forbidden output requirements, stale or unresolvable source refs, capability or incident promotion beyond local proposal, or verification failures that would make the knowledge layer unreviewable.",
+    "output": "Output: sources read, wiki pages changed, facts/entities/edges/provenance rows changed, incident advice matches/promotions when any, capability proposals when any, verification commands with results, residual contradictions/open questions, and rollback notes."
   }
 }

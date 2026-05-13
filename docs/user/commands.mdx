@@ -17,13 +17,21 @@ agentplane --version
 `agentplane --help` and `agentplane help` show the normal installed-project surface by default.
 The first screen is intentionally biased toward commands an agent needs for project work: startup,
 task lifecycle, branch/PR workflow, backend sync, recipes, diagnostics, and setup.
+For context management, `agentplane` keeps the human task-factory surface visible: `context init`,
+`context learn files`, `context learn changes`, `context learn tasks`, `context search`,
+`context show`, and `context check`.
 
 Advanced recovery and maintenance commands stay available through direct help or the full registry:
 
 ```bash
+ap help context
 agentplane help task reclaim
 agentplane help --all
 ```
+
+The `ap` alias runs in agent mode and shows the full advanced surface by default, including
+low-level context pipeline commands such as `context ingest`, `context harvest tasks`,
+`context reindex`, `context graph`, `context capability`, and `context verify-task`.
 
 Inside the Agent Plane framework checkout, help automatically switches to the framework-dev surface
 and adds a dedicated `Framework Dev` group. Framework-maintainer commands such as `release`,
@@ -226,7 +234,7 @@ agentplane context show context/wiki/page.md#section=section-slug
 agentplane context ingest --changed
 agentplane context ingest ./notes.md --run
 agentplane context harvest tasks --tag release --limit 20 --dry-run
-agentplane context harvest tasks --tag branch_pr --create-extraction-tasks --batch-size 25
+agentplane context harvest tasks --tag branch_pr --batch-size 25
 agentplane context harvest tasks --tag branch_pr --write-proposals
 agentplane context verify-task <task-id>
 ```
@@ -234,10 +242,11 @@ agentplane context verify-task <task-id>
 Source artifacts live under `context/**`. Derived context artifacts live under
 `.agentplane/context/derived/**`, and the fast SQLite projection is stored in the shared cache
 database at `.agentplane/cache.sqlite`. Use `context harvest tasks` to convert completed task
-history into raw evidence, facts, graph rows, wiki proposals, and promotion-gate reports before
-promoting reusable knowledge. For semantic extraction, `--create-extraction-tasks` creates standard
-`CURATOR` tasks that read task READMEs and ACR evidence in bounded oldest-first batches, then update
-wiki/facts/graph outputs through the normal task lifecycle. Write modes also mark harvested task
+history into raw evidence scaffolds or default `CURATOR` extraction tasks before promoting reusable
+knowledge. Semantic extraction is agent-owned by default for non-write broad harvest runs: standard
+`CURATOR` tasks read task READMEs and ACR evidence in bounded oldest-first batches, then update
+wiki/facts/graph outputs through the normal task lifecycle. `--write-proposals` is the deterministic
+raw/proposal scaffold path, not the semantic truth path. Write modes also mark harvested task
 READMEs with `extensions.context_harvest` for raw ingestion and
 `extensions.context_task_extraction` for queued semantic extraction, so later broad runs can skip
 unchanged ingested or queued tasks by source digest instead of guessing from wiki files. Write modes

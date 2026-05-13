@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-base-to-string */
 import { parseGroupCommand, type GroupCommandParsed } from "../../cli/group-command.js";
-import type { CommandSpec } from "../../cli/spec/spec.js";
 import { toStringList } from "../../cli/spec/parse-utils.js";
+import type { CommandSpec } from "../../cli/spec/spec.js";
 
 export const contextSpec: CommandSpec<GroupCommandParsed> = {
   id: ["context"],
@@ -199,9 +199,9 @@ export const contextHarvestTasksSpec: CommandSpec<{
 }> = {
   id: ["context", "harvest", "tasks"],
   group: "Context",
-  summary: "Harvest completed task evidence into wiki, fact, and graph proposals.",
+  summary: "Harvest completed task evidence into raw scaffolds or CURATOR extraction tasks.",
   description:
-    "Selects completed tasks in oldest-first order, skips unchanged tasks with matching ingestion markers, and separates source indexing, agentic extraction task creation, wiki synthesis, promotion-gate state, and task README markers. Write modes require an initialized context workspace.",
+    "Selects completed tasks in oldest-first order, skips unchanged tasks with matching ingestion markers, and separates raw scaffold writing, default CURATOR extraction task creation, promotion-gate state, and task README markers. Write modes require an initialized context workspace.",
   options: [
     {
       kind: "string",
@@ -252,14 +252,15 @@ export const contextHarvestTasksSpec: CommandSpec<{
       kind: "boolean",
       name: "write-proposals",
       default: false,
-      description: "Write raw evidence, derived facts/graph rows, report, and wiki proposal.",
+      description:
+        "Write raw evidence and proposal scaffold artifacts only; semantic wiki/facts/graph extraction belongs to CURATOR tasks.",
     },
     {
       kind: "boolean",
       name: "create-extraction-tasks",
       default: false,
       description:
-        "Create standard CURATOR tasks for batchwise semantic extraction from task README/ACR sources.",
+        "Create standard CURATOR tasks for batchwise semantic extraction from task README/ACR sources. This is the default non-write action.",
     },
     {
       kind: "string",
@@ -292,32 +293,42 @@ export const contextHarvestTasksSpec: CommandSpec<{
   examples: [
     {
       cmd: "agentplane context harvest tasks --tag release --limit 20 --dry-run",
-      why: "Preview the oldest completed release tasks before writing context proposals.",
+      why: "Preview the oldest completed release tasks before creating extraction tasks or writing raw scaffolds.",
+    },
+    {
+      cmd: "agentplane context harvest tasks --tag branch_pr --batch-size 25",
+      why: "Create default CURATOR tasks that extract semantic wiki/fact/graph knowledge in bounded oldest-first batches.",
     },
     {
       cmd: "agentplane context harvest tasks --tag branch_pr --write-proposals",
-      why: "Write source-backed reusable context proposals from completed branch_pr tasks.",
+      why: "Write raw source-backed proposal scaffolds from completed branch_pr tasks.",
     },
     {
       cmd: "agentplane context harvest tasks --tag branch_pr --create-extraction-tasks --batch-size 25",
-      why: "Create CURATOR tasks that extract semantic wiki/fact/graph knowledge in bounded oldest-first batches.",
+      why: "Explicitly request CURATOR extraction tasks for older scripts.",
     },
   ],
-  parse: (raw) => ({
-    status: toStringList(raw.opts.status),
-    tag: toStringList(raw.opts.tag),
-    task: toStringList(raw.opts.task),
-    since: typeof raw.opts.since === "string" ? raw.opts.since : "",
-    until: typeof raw.opts.until === "string" ? raw.opts.until : "",
-    afterTask: typeof raw.opts["after-task"] === "string" ? raw.opts["after-task"] : "",
-    limit: typeof raw.opts.limit === "string" ? raw.opts.limit : "",
-    writeProposals: raw.opts["write-proposals"] === true,
-    createExtractionTasks: raw.opts["create-extraction-tasks"] === true,
-    batchSize: typeof raw.opts["batch-size"] === "string" ? raw.opts["batch-size"] : "25",
-    promote: raw.opts.promote === true,
-    dryRun: raw.opts["dry-run"] === true,
-    format: (raw.opts.format as "text" | "json") ?? "text",
-  }),
+  parse: (raw) => {
+    const writeProposals = raw.opts["write-proposals"] === true;
+    const promote = raw.opts.promote === true;
+    const dryRun = raw.opts["dry-run"] === true;
+    return {
+      status: toStringList(raw.opts.status),
+      tag: toStringList(raw.opts.tag),
+      task: toStringList(raw.opts.task),
+      since: typeof raw.opts.since === "string" ? raw.opts.since : "",
+      until: typeof raw.opts.until === "string" ? raw.opts.until : "",
+      afterTask: typeof raw.opts["after-task"] === "string" ? raw.opts["after-task"] : "",
+      limit: typeof raw.opts.limit === "string" ? raw.opts.limit : "",
+      writeProposals,
+      createExtractionTasks:
+        raw.opts["create-extraction-tasks"] === true || (!writeProposals && !promote && !dryRun),
+      batchSize: typeof raw.opts["batch-size"] === "string" ? raw.opts["batch-size"] : "25",
+      promote,
+      dryRun,
+      format: (raw.opts.format as "text" | "json") ?? "text",
+    };
+  },
 };
 
 export const contextGraphSummarySpec: CommandSpec<Record<string, never>> = {
