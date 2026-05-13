@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T18:32:08Z",
   "base": "main",
   "branch": "task/202605131725-VPZZ5B/remove-telemetry-runtime-copy",
   "created_at": "2026-05-13T17:28:07.677Z",
-  "head_sha": "a688b395f31588051dc1382ef5b92a9795db426f",
+  "head_sha": "7d200396e8ab8d8ff43153887333ce6b3de47e91",
   "last_verified_at": "2026-05-13T17:34:38.559Z",
   "last_verified_sha": "244c1969e513f0b5795e27d657c6d9e9afc22a7e",
+  "merge_commit": "d6d40b903b5b4080b90f43e7f07a8967f22ca810",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T18:32:08Z",
   "pr_number": 3650,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3650",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605131725-VPZZ5B",
-  "updated_at": "2026-05-13T17:37:14.382Z",
+  "updated_at": "2026-05-13T18:32:08Z",
   "verify": {
     "status": "pass"
   }

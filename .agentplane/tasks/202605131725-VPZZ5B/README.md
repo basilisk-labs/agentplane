@@ -1,7 +1,8 @@
 ---
 id: "202605131725-VPZZ5B"
 title: "Remove telemetry hosted runtime copy"
-status: "DOING"
+result_summary: "Merged via PR #3650."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "DOCS"
   note: "Removed public no hosted runtime/no telemetry/hosted dashboard copy from README, package README, docs, website content, static LLM text, and header SVG. Verified phrase search has no matches across README/package README/docs/website; format check, routing check, and doctor passed."
   attempts: 0
-commit: null
+commit:
+  hash: "d6d40b903b5b4080b90f43e7f07a8967f22ca810"
+  message: "Merge pull request #3650 from basilisk-labs/task/202605131725-VPZZ5B/remove-telemetry-runtime-copy"
 comments:
   -
     author: "DOCS"
     body: "Start: remove public no hosted runtime/no telemetry copy phrases from README, package README, docs, and website content. Verification will include phrase search, format check, routing check, and doctor."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3650 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Removed public no hosted runtime/no telemetry/hosted dashboard copy from README, package README, docs, website content, static LLM text, and header SVG. Verified phrase search has no matches across README/package README/docs/website; format check, routing check, and doctor passed."
+  -
+    type: "status"
+    at: "2026-05-13T18:32:53.606Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3650 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T17:34:38.581Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-13T18:32:53.606Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove public copy claims about no hosted runtime and no telemetry from README, package README, docs, and website content so messaging no longer depends on those trust slogans."
 sections:
   Summary: |-
