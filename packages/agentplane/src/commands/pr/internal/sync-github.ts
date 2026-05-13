@@ -132,9 +132,8 @@ export function formatGithubPrLink(
     : `${verb} GitHub PR #${prNumber}`;
 }
 
-export function shouldPersistObservedGithubPrMeta(observed: ObservedGithubPr | null): boolean {
-  if (!observed) return false;
-  return observed.status === "MERGED";
+export function shouldPersistObservedGithubPrIdentity(observed: ObservedGithubPr | null): boolean {
+  return observed !== null;
 }
 
 export function formatUnpublishedRemoteHeadReason(branch: string): string {

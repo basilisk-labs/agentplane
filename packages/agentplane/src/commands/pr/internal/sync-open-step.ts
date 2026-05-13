@@ -20,7 +20,7 @@ import {
 import { computePrDiffstat } from "./sync-branch.js";
 import {
   formatGithubPrLink,
-  shouldPersistObservedGithubPrMeta,
+  shouldPersistObservedGithubPrIdentity,
   tryCreateGithubPr,
   tryLookupExistingGithubPrByBranch,
 } from "./sync-github.js";
@@ -79,7 +79,7 @@ export async function runPrOpenSync(
     baseBranch: common.baseBranch,
   });
   if (observedGithubPr) {
-    if (shouldPersistObservedGithubPrMeta(observedGithubPr)) {
+    if (shouldPersistObservedGithubPrIdentity(observedGithubPr)) {
       nextMeta = buildObservedGithubPrMeta({
         meta: nextMeta,
         observed: observedGithubPr,
@@ -106,7 +106,7 @@ export async function runPrOpenSync(
       body: githubBody,
     });
     if (createdGithubPr.observed) {
-      if (shouldPersistObservedGithubPrMeta(createdGithubPr.observed)) {
+      if (shouldPersistObservedGithubPrIdentity(createdGithubPr.observed)) {
         nextMeta = buildObservedGithubPrMeta({
           meta: nextMeta,
           observed: createdGithubPr.observed,
