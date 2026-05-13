@@ -39,7 +39,7 @@ workflow around the code:
 task -> plan -> approve -> implement -> verify -> finish
 ```
 
-AgentPlane runs locally. It does not add a hosted runtime between your repository and your agent.
+AgentPlane keeps the review trail in Git and works alongside the agent workflow you already use.
 
 ## What it gives you
 

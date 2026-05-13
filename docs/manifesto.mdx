@@ -42,13 +42,13 @@ material that should not be committed.
 AgentPlane records commit-safe summaries, task state, verification evidence, and hashes instead of
 requiring reviewers to trust raw agent conversations.
 
-## 4. Why hosted dashboards are not the default answer
+## 4. Why the durable record belongs with the code
 
-Hosted dashboards can be useful for remote execution and central status. They are not the default
-answer when the durable record must stay with the code.
+Remote execution and central status can be useful. They are separate from the durable evidence
+record that reviewers need next to the code.
 
-AgentPlane is local-first: no hosted runtime, no telemetry, no vendor lock-in. The repository owns
-the workflow artifacts.
+AgentPlane keeps the durable workflow record with the repository. The repository owns the workflow
+artifacts.
 
 ## 5. Why ACR exists
 
