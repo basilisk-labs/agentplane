@@ -7,5 +7,5 @@
  scripts/checks/run-vitest-suite.mjs                |  87 +++-
  scripts/lib/local-ci-selection.d.ts                |   4 +-
  scripts/lib/local-ci-selection.mjs                 | 120 +++++
- scripts/lib/test-route-registry.mjs                |  15 +
- 10 files changed, 858 insertions(+), 26 deletions(-)
+ scripts/lib/test-route-registry.mjs                |  14 +
+ 10 files changed, 857 insertions(+), 26 deletions(-)

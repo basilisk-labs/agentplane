@@ -22,9 +22,9 @@ Improve AgentPlane test selection and runner ergonomics: support combined impact
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T19:04:31.686Z
+- Updated: 2026-05-13T19:06:43.757Z
 - Branch: task/202605131828-HBJ5P8/flexible-test-routing
-- Head: 91ac757bc9bc
+- Head: fa819a8ee3b4
 
 ```text
  .../blueprint/resolved-snapshot.json               | 552 +++++++++++++++++++++
@@ -36,8 +36,8 @@ Improve AgentPlane test selection and runner ergonomics: support combined impact
  scripts/checks/run-vitest-suite.mjs                |  87 +++-
  scripts/lib/local-ci-selection.d.ts                |   4 +-
  scripts/lib/local-ci-selection.mjs                 | 120 +++++
- scripts/lib/test-route-registry.mjs                |  15 +
- 10 files changed, 858 insertions(+), 26 deletions(-)
+ scripts/lib/test-route-registry.mjs                |  14 +
+ 10 files changed, 857 insertions(+), 26 deletions(-)
 ```
 
 </details>
