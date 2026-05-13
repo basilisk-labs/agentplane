@@ -61,11 +61,17 @@ function taskIsClosedForMerge(task: TaskData, mergeCommit: string): boolean {
 async function taskIsAlreadyClosedBeforeMerge(opts: {
   gitRoot: string;
   task: TaskData;
+  meta: PrMeta;
+  branch: string;
+  taskBranchPrefix: string;
   mergeCommit: string;
 }): Promise<boolean> {
   if (normalizeTaskStatus(opts.task.status) !== "DONE") return false;
   const taskCommitHash = opts.task.commit?.hash ?? "";
   if (taskCommitHash === "" || taskCommitHash === opts.mergeCommit) return false;
+  const recordedMergeCommit = opts.meta.merge_commit?.trim() ?? "";
+  if (opts.meta.status !== "MERGED" || recordedMergeCommit !== taskCommitHash) return false;
+  if (!isExplicitHostedCloseFollowupBranch(opts)) return false;
   try {
     await execFileAsync("git", ["merge-base", "--is-ancestor", taskCommitHash, opts.mergeCommit], {
       cwd: opts.gitRoot,
@@ -77,6 +83,17 @@ async function taskIsAlreadyClosedBeforeMerge(opts: {
     if (code === 1) return false;
     throw err;
   }
+}
+
+export function isExplicitHostedCloseFollowupBranch(opts: {
+  branch: string;
+  taskBranchPrefix: string;
+  task: TaskData;
+}): boolean {
+  const expectedPrefix = `${opts.taskBranchPrefix}/${opts.task.id}/`;
+  if (!opts.branch.startsWith(expectedPrefix)) return false;
+  const slug = opts.branch.slice(expectedPrefix.length).trim().toLowerCase();
+  return slug.startsWith("post-merge-") || /(?:^|-)followup(?:-|$)/u.test(slug);
 }
 
 function assertNoConflictingDoneTask(opts: { task: TaskData; mergeCommit: string }): void {
@@ -170,7 +187,16 @@ async function closeHostedTask(opts: {
     taskDirRelative,
     target,
   });
-  if (await taskIsAlreadyClosedBeforeMerge({ gitRoot, task, mergeCommit: mergeCommitOid })) {
+  if (
+    await taskIsAlreadyClosedBeforeMerge({
+      gitRoot,
+      task,
+      meta,
+      branch: target.branch,
+      taskBranchPrefix: opts.ctx.config.branch.task_prefix,
+      mergeCommit: mergeCommitOid,
+    })
+  ) {
     return {
       outcome: "noop",
       detail: `${target.taskId} is already closed before follow-up merge ${mergeCommitOid.slice(

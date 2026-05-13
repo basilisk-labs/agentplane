@@ -231,4 +231,85 @@ describe("runCli", () => {
       io.restore();
     }
   });
+
+  it("evaluator list/show exposes prompt modules without evaluator run", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const evaluatorsDir = path.join(root, ".agentplane", "evaluators");
+    await mkdir(evaluatorsDir, { recursive: true });
+    await writeFile(
+      path.join(evaluatorsDir, "custom-review.md"),
+      [
+        "---",
+        "id: custom-review",
+        "title: Custom Review",
+        "version: 1",
+        "status: preview",
+        "profile: EVALUATOR",
+        "tags:",
+        "  - review",
+        "---",
+        "",
+        "# Custom Review",
+        "",
+        "Review the diff.",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const listIo = captureStdIO();
+    try {
+      const code = await runCli(["evaluator", "list", "--root", root]);
+      expect(code).toBe(0);
+      expect(listIo.stdout).toContain("custom-review");
+      expect(listIo.stdout).toContain("recovery-context");
+    } finally {
+      listIo.restore();
+    }
+
+    const projectOnlyIo = captureStdIO();
+    try {
+      const code = await runCli(["evaluator", "list", "--builtin", "false", "--root", root]);
+      expect(code).toBe(0);
+      expect(projectOnlyIo.stdout).toContain("custom-review");
+      expect(projectOnlyIo.stdout).not.toContain("recovery-context");
+    } finally {
+      projectOnlyIo.restore();
+    }
+
+    const nestedDir = path.join(root, "nested");
+    await mkdir(nestedDir);
+    const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(nestedDir);
+    const nestedIo = captureStdIO();
+    try {
+      const code = await runCli(["evaluator", "show", "custom-review"]);
+      expect(code).toBe(0);
+      expect(nestedIo.stdout).toContain("# Custom Review");
+    } finally {
+      nestedIo.restore();
+      cwdSpy.mockRestore();
+    }
+
+    const showIo = captureStdIO();
+    try {
+      const code = await runCli(["evaluator", "show", "custom-review", "--root", root]);
+      expect(code).toBe(0);
+      expect(showIo.stdout).toContain("# Custom Review");
+      expect(showIo.stdout).toContain("Review the diff.");
+    } finally {
+      showIo.restore();
+    }
+
+    const helpIo = captureStdIO();
+    try {
+      const code = await runCli(["help", "evaluator", "--root", root]);
+      expect(code).toBe(0);
+      expect(helpIo.stdout).toContain("evaluator list");
+      expect(helpIo.stdout).toContain("evaluator show");
+      expect(helpIo.stdout).not.toContain("evaluator run");
+    } finally {
+      helpIo.restore();
+    }
+  });
 });

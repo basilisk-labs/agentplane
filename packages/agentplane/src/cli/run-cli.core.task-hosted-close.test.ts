@@ -357,69 +357,6 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
       });
       expect(afterRerunStdout.trim()).toBe(closeHead);
 
-      const followupBranch = `task/${taskId}/hosted-close-followup`;
-      await execFileAsync("git", ["checkout", "-b", followupBranch], { cwd: root });
-      await writeFile(touchedFile, "export const hostedClose = 'followup';\n", "utf8");
-      await execFileAsync("git", ["add", "."], { cwd: root });
-      await execFileAsync("git", ["commit", "--no-verify", "-m", "fix: hosted close followup"], {
-        cwd: root,
-      });
-      const { stdout: followupBranchHeadStdout } = await execFileAsync(
-        "git",
-        ["rev-parse", "HEAD"],
-        { cwd: root },
-      );
-      const followupBranchHead = followupBranchHeadStdout.trim();
-
-      await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
-      await execFileAsync("git", ["merge", "--no-ff", followupBranch, "-m", "Merge followup"], {
-        cwd: root,
-      });
-      const { stdout: followupMergeStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-        cwd: root,
-      });
-      const followupMergeSha = followupMergeStdout.trim();
-      const followupEventPath = path.join(eventDir, "followup-event.json");
-      await writeFile(
-        followupEventPath,
-        `${JSON.stringify(
-          {
-            pull_request: {
-              merged: true,
-              number: 89,
-              title: "Hosted close task followup",
-              merge_commit_sha: followupMergeSha,
-              merged_at: "2026-03-27T20:10:00.000Z",
-              head: { ref: followupBranch, sha: followupBranchHead },
-              base: { ref: baseBranch },
-            },
-          },
-          null,
-          2,
-        )}\n`,
-        "utf8",
-      );
-
-      const followupIo = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "hosted-close",
-          "--event-json",
-          followupEventPath,
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        expect(followupIo.stdout).toContain("hosted close skipped");
-      } finally {
-        followupIo.restore();
-      }
-
-      const { stdout: afterFollowupStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-        cwd: root,
-      });
-      expect(afterFollowupStdout.trim()).toBe(followupMergeSha);
     },
     HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS,
   );

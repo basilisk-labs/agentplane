@@ -1,7 +1,10 @@
+import { execFile } from "node:child_process";
 import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 
 const DOTENV_LOADED_KEYS_ENV = "AGENTPLANE_DOTENV_LOADED_KEYS";
+const execFileAsync = promisify(execFile);
 
 export function parseDotEnv(text: string): Record<string, string> {
   const out: Record<string, string> = {};
@@ -54,6 +57,119 @@ export function isDotEnvLoadedKey(key: string, env: NodeJS.ProcessEnv = process.
   return readDotEnvLoadedKeys(env).has(key);
 }
 
+async function gitStdout(rootDir: string, args: string[]): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync("git", ["-C", rootDir, ...args], {
+      timeout: 2000,
+      maxBuffer: 1024 * 1024,
+    });
+    return stdout;
+  } catch {
+    return null;
+  }
+}
+
+async function gitStdoutRaw(args: string[]): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync("git", args, {
+      timeout: 2000,
+      maxBuffer: 1024 * 1024,
+    });
+    return stdout;
+  } catch {
+    return null;
+  }
+}
+
+function firstPorcelainWorktree(output: string | null, ignoredPaths: string[] = []): string | null {
+  if (!output) return null;
+  const ignored = new Set(ignoredPaths.map((entry) => path.resolve(entry)));
+  for (const line of output.split(/\r?\n/u)) {
+    if (!line.startsWith("worktree ")) continue;
+    const rawWorktree = line.slice("worktree ".length).trim();
+    if (!rawWorktree) continue;
+    const worktree = path.resolve(rawWorktree);
+    if (ignored.has(worktree)) continue;
+    return worktree;
+  }
+  return null;
+}
+
+async function resolveDotEnvRootFromGit(
+  rootDir: string,
+  ignoredPaths: string[] = [],
+): Promise<string | null> {
+  return firstPorcelainWorktree(
+    await gitStdout(rootDir, ["worktree", "list", "--porcelain"]),
+    ignoredPaths,
+  );
+}
+
+async function readGitFileDir(resolvedRoot: string, gitPath: string): Promise<string | null> {
+  let gitFile = "";
+  try {
+    gitFile = await readFile(gitPath, "utf8");
+  } catch {
+    return null;
+  }
+
+  const match = /^gitdir:\s*(.+)\s*$/imu.exec(gitFile);
+  if (!match) return null;
+  return path.resolve(resolvedRoot, match[1]);
+}
+
+async function resolveCommonGitDir(gitDir: string): Promise<string> {
+  try {
+    const commonDirText = await readFile(path.join(gitDir, "commondir"), "utf8");
+    const commonDir = commonDirText.trim();
+    if (commonDir) return path.resolve(gitDir, commonDir);
+  } catch {
+    // Non-linked or synthetic worktrees may not have commondir.
+  }
+  return gitDir;
+}
+
+async function resolveCoreWorktree(commonGitDir: string): Promise<string | null> {
+  const output = await gitStdoutRaw([
+    "config",
+    "--file",
+    path.join(commonGitDir, "config"),
+    "--get",
+    "core.worktree",
+  ]);
+  const raw = output?.trim();
+  if (!raw) return null;
+  return path.resolve(commonGitDir, raw);
+}
+
+async function resolveWorktreeFromCommonGitDir(commonGitDir: string): Promise<string | null> {
+  const basename = path.basename(commonGitDir);
+  const parent = path.dirname(commonGitDir);
+  const candidate =
+    basename === ".git"
+      ? parent
+      : basename.endsWith(".git")
+        ? path.join(parent, basename.slice(0, -".git".length))
+        : null;
+  if (!candidate) return null;
+
+  try {
+    const candidateStats = await stat(candidate);
+    if (candidateStats.isDirectory()) return path.resolve(candidate);
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function resolveDotEnvRootFromGitDirLayout(gitDir: string): string | null {
+  const worktreesMarker = `${path.sep}.git${path.sep}worktrees${path.sep}`;
+  const markerIndex = gitDir.indexOf(worktreesMarker);
+  if (markerIndex === -1) return null;
+
+  return gitDir.slice(0, markerIndex);
+}
+
 export async function resolveDotEnvRoot(rootDir: string): Promise<string> {
   const resolvedRoot = path.resolve(rootDir);
   const gitPath = path.join(resolvedRoot, ".git");
@@ -67,31 +183,17 @@ export async function resolveDotEnvRoot(rootDir: string): Promise<string> {
   if (gitPathStats.isDirectory()) return resolvedRoot;
   if (!gitPathStats.isFile()) return resolvedRoot;
 
-  let gitFile = "";
-  try {
-    gitFile = await readFile(gitPath, "utf8");
-  } catch {
-    return resolvedRoot;
-  }
+  const gitDir = await readGitFileDir(resolvedRoot, gitPath);
+  if (!gitDir) return resolvedRoot;
+  const commonGitDir = await resolveCommonGitDir(gitDir);
 
-  const match = /^gitdir:\s*(.+)\s*$/imu.exec(gitFile);
-  if (!match) return resolvedRoot;
-  const gitDir = path.resolve(resolvedRoot, match[1]);
-  try {
-    const commonDirFile = await readFile(path.join(gitDir, "commondir"), "utf8");
-    const rawCommonDir = commonDirFile.trim();
-    if (rawCommonDir) {
-      const commonDir = path.resolve(gitDir, rawCommonDir);
-      if (path.basename(commonDir) === ".git") return path.dirname(commonDir);
-    }
-  } catch {
-    // Older or synthetic worktree layouts may not expose commondir; use the legacy marker below.
-  }
-  const worktreesMarker = `${path.sep}.git${path.sep}worktrees${path.sep}`;
-  const markerIndex = gitDir.indexOf(worktreesMarker);
-  if (markerIndex === -1) return resolvedRoot;
-
-  return gitDir.slice(0, markerIndex);
+  return (
+    (await resolveCoreWorktree(commonGitDir)) ??
+    (await resolveWorktreeFromCommonGitDir(commonGitDir)) ??
+    (await resolveDotEnvRootFromGit(resolvedRoot, [commonGitDir])) ??
+    resolveDotEnvRootFromGitDirLayout(gitDir) ??
+    resolvedRoot
+  );
 }
 
 export async function loadDotEnv(rootDir: string): Promise<void> {
