@@ -1,7 +1,8 @@
 ---
 id: "202605130823-WSWNSC"
 title: "Persist GitHub PR identity for open branch_pr artifacts"
-status: "DOING"
+result_summary: "Merged via PR #3614."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: GitHub PR identity persistence now records OPEN pull request metadata in branch_pr PR artifacts, while focused tests confirm pr open creation and pr update hydration behavior."
   attempts: 0
-commit: null
+commit:
+  hash: "47b3aa05c00e21ee4b17128d5062146ff73bcdc0"
+  message: "Merge pull request #3614 from basilisk-labs/task/202605130823-WSWNSC/persist-pr-identity"
 comments:
   -
     author: "CODER"
     body: "Start: Implement the approved PR identity persistence fix in the task worktree, keep merged lifecycle semantics scoped to MERGED only, add focused regression tests for pr open/update OPEN identity hydration, and run the declared verification checks before handoff."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3614 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: GitHub PR identity persistence now records OPEN pull request metadata in branch_pr PR artifacts, while focused tests confirm pr open creation and pr update hydration behavior."
+  -
+    type: "status"
+    at: "2026-05-13T09:34:21.935Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3614 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T08:39:31.699Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T09:34:21.935Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix branch_pr PR sync so observed OPEN and CLOSED GitHub pull request identity is persisted in task PR metadata, while merged lifecycle state remains limited to MERGED pull requests."
 sections:
   Summary: |-
