@@ -13,7 +13,7 @@ Created: 2026-05-13T16:36:18.870Z
 ## Verification
 
 - State: ok
-- Note: Fixed pre-push lint blockers in lifecycle parity additions: typed PR-open assertions, explicit index check, and ESLint TS project coverage for scripts/**/*.ts. Rechecked lint:core, workflows:command-check, focused lifecycle Vitest, and typecheck.
+- Note: Rebased on current origin/main 707ddf167 and resolved builtin generated asset hash by regeneration. Rechecked assets:builtin:check, docs:scripts:check, workflows:command-check, focused lifecycle/blueprint/command-guide Vitest, typecheck, and lint:core.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -43,7 +43,7 @@ Created: 2026-05-13T16:36:18.870Z
  .../agentplane/src/blueprints/validate.test.ts     |   8 +
  packages/agentplane/src/cli/command-guide.test.ts  |   1 +
  packages/agentplane/src/cli/command-guide.ts       |   1 +
- .../src/shared/builtin-assets.generated.ts         |   6 +-
+ .../src/shared/builtin-assets.generated.ts         |   4 +-
  .../src/workflow-lifecycle/contract.test.ts        |  39 ++
  .../agentplane/src/workflow-lifecycle/contract.ts  | 275 +++++++++++
  .../src/workflow-lifecycle/parity-check.test.ts    |  55 +++
@@ -51,7 +51,7 @@ Created: 2026-05-13T16:36:18.870Z
  scripts/README.md                                  |   4 +-
  scripts/checks/check-lifecycle-parity.ts           |  14 +
  tsconfig.eslint.json                               |   3 +-
- 22 files changed, 1204 insertions(+), 105 deletions(-)
+ 22 files changed, 1203 insertions(+), 104 deletions(-)
 ```
 
 </details>

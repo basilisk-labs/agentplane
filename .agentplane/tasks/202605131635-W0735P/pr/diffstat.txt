@@ -12,7 +12,7 @@
  .../agentplane/src/blueprints/validate.test.ts     |   8 +
  packages/agentplane/src/cli/command-guide.test.ts  |   1 +
  packages/agentplane/src/cli/command-guide.ts       |   1 +
- .../src/shared/builtin-assets.generated.ts         |   6 +-
+ .../src/shared/builtin-assets.generated.ts         |   4 +-
  .../src/workflow-lifecycle/contract.test.ts        |  39 ++
  .../agentplane/src/workflow-lifecycle/contract.ts  | 275 +++++++++++
  .../src/workflow-lifecycle/parity-check.test.ts    |  55 +++
@@ -20,4 +20,4 @@
  scripts/README.md                                  |   4 +-
  scripts/checks/check-lifecycle-parity.ts           |  14 +
  tsconfig.eslint.json                               |   3 +-
- 22 files changed, 1204 insertions(+), 105 deletions(-)
+ 22 files changed, 1203 insertions(+), 104 deletions(-)
