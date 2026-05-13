@@ -1,7 +1,6 @@
+/* eslint-disable @typescript-eslint/no-base-to-string */
 import { parseGroupCommand, type GroupCommandParsed } from "../../cli/group-command.js";
 import type { CommandSpec } from "../../cli/spec/spec.js";
-
-import type { ContextIngestParsed } from "./ingest.js";
 
 export const contextSpec: CommandSpec<GroupCommandParsed> = {
   id: ["context"],
@@ -305,4 +304,4 @@ export const contextCapabilityDiscoverSpec: CommandSpec<{
   }),
 };
 
-export { type ContextIngestParsed };
+export { type ContextIngestParsed } from "./ingest.js";

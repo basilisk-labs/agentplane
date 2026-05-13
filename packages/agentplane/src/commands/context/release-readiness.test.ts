@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/require-await */
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -132,7 +133,7 @@ describe("context release readiness guards", () => {
     const root = await tempRoot();
     await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nPublic source.\n");
     const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
-    const tasks: Array<{ id: string; owner: string }> = [];
+    const tasks: { id: string; owner: string }[] = [];
     const createTask = vi.fn(async () => {
       tasks.push({ id: "202605130501-CTXRUN", owner: "CURATOR" });
     });

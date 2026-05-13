@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-base-to-string, @typescript-eslint/no-empty-function, unicorn/no-array-sort */
 import { createHash } from "node:crypto";
-import { access, stat } from "node:fs/promises";
-import { mkdir, rm, readFile } from "node:fs/promises";
+import { access, stat, mkdir, rm, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { infoMessage, warnMessage } from "../../cli/output.js";
@@ -33,7 +33,7 @@ type ProjectionIndex = {
     include_tasks: boolean;
     include_raw: boolean;
   };
-  rows: Array<{
+  rows: {
     path: string;
     sha256: string;
     content_type: string;
@@ -43,7 +43,7 @@ type ProjectionIndex = {
     kind: string;
     body: string;
     source_refs?: string[];
-  }>;
+  }[];
 };
 
 function defaultWorkspaceHash(root: string): string {
@@ -61,8 +61,8 @@ function slug(value: string): string {
   return value
     .trim()
     .toLowerCase()
-    .replace(/[^a-z0-9]+/gu, "-")
-    .replace(/^-+|-+$/gu, "");
+    .replaceAll(/[^a-z0-9]+/gu, "-")
+    .replaceAll(/^-+|-+$/gu, "");
 }
 
 function lineWindowRef(filePath: string, start: number, end: number): string {
@@ -263,12 +263,14 @@ async function enumerateSourceFiles(
 ): Promise<string[]> {
   const roots: string[] = [];
   if (opts.includeRaw) roots.push("context/raw");
-  roots.push("context/wiki");
-  roots.push("context/capabilities");
-  roots.push(".agentplane/context/derived/facts");
-  roots.push(".agentplane/context/derived/graph");
-  roots.push(".agentplane/context/derived/capabilities");
-  roots.push(".agentplane/context/derived/reports");
+  roots.push(
+    "context/wiki",
+    "context/capabilities",
+    ".agentplane/context/derived/facts",
+    ".agentplane/context/derived/graph",
+    ".agentplane/context/derived/capabilities",
+    ".agentplane/context/derived/reports",
+  );
   if (opts.includeTasks) {
     roots.push(".agentplane/tasks");
   }

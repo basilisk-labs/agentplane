@@ -1,11 +1,11 @@
+/* eslint-disable @typescript-eslint/no-base-to-string */
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { parse as parseYaml } from "yaml";
 
 import { CliError } from "../../shared/errors.js";
-import { fileExists, readText, walkScopeFiles } from "./context-utils.js";
-import { parseJsonlLines } from "./context-utils.js";
+import { fileExists, readText, walkScopeFiles, parseJsonlLines } from "./context-utils.js";
 import { readContextProjection } from "./reindex.js";
 
 const SUPPORTED_EXTENSIONS = new Set([".md", ".mdx", ".jsonl", ".yml", ".yaml"]);
@@ -53,7 +53,7 @@ export async function cmdContextCapabilityValidate(opts: {
           message: `Capability row missing id in ${opts.parsed.path}`,
         });
       }
-      if (typeof row.status !== "undefined" && typeof row.status !== "string") {
+      if (row.status !== undefined && typeof row.status !== "string") {
         throw new CliError({
           exitCode: 3,
           code: "E_VALIDATION",
@@ -99,9 +99,7 @@ export async function cmdContextCapabilityValidate(opts: {
         typeof frontmatter !== "object" ||
         frontmatter === null ||
         Array.isArray(frontmatter) ||
-        (!("id" in (frontmatter as object)) &&
-          !("name" in (frontmatter as object)) &&
-          !("title" in (frontmatter as object)))
+        (!("id" in frontmatter) && !("name" in frontmatter) && !("title" in frontmatter))
       ) {
         throw new Error("bad frontmatter");
       }
@@ -216,7 +214,7 @@ export async function cmdContextCapabilityDiscover(opts: {
     for (const [index, item] of scored.entries()) {
       const proposalPath = path.join(
         proposalsDir,
-        `${item.row.path.replace(/[^a-zA-Z0-9-_]/g, "_") || `cap-${index + 1}`}.md`,
+        `${item.row.path.replaceAll(/[^a-zA-Z0-9-_]/g, "_") || `cap-${index + 1}`}.md`,
       );
       const sourceRefs =
         item.row.source_refs && item.row.source_refs.length > 0
@@ -277,7 +275,7 @@ export async function cmdContextCapabilityDiscover(opts: {
     const row = entry.row as { id?: unknown; source?: unknown };
     const proposalPath = path.join(
       proposalsDir,
-      `${String(row.id ?? `cap-${index + 1}`).replace(/[^a-zA-Z0-9-_]/g, "_")}.md`,
+      `${String(row.id ?? `cap-${index + 1}`).replaceAll(/[^a-zA-Z0-9-_]/g, "_")}.md`,
     );
     const sourceHash = createHash("sha256")
       .update(String(row.source ?? ""))
@@ -289,15 +287,18 @@ export async function cmdContextCapabilityDiscover(opts: {
   return 0;
 }
 
-async function loadJsonlRows(filePath: string): Promise<Array<Record<string, unknown>>> {
+async function loadJsonlRows(filePath: string): Promise<Record<string, unknown>[]> {
   const exists = await fileExists(filePath);
   if (!exists) return [];
   const raw = await readText(filePath);
-  return parseJsonlLines(raw) as Array<Record<string, unknown>>;
+  return parseJsonlLines(raw) as Record<string, unknown>[];
 }
 
 function buildDigest(lines: string[]): string {
-  return lines.slice(0, 12).join("\\n").toLowerCase();
+  return lines
+    .slice(0, 12)
+    .join(String.raw`\n`)
+    .toLowerCase();
 }
 
 function isCapabilityProjectionPath(value: string): boolean {

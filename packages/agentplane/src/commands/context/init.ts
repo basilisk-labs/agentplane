@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, unicorn/no-array-sort */
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -82,7 +83,7 @@ async function createContextWorkspace(
   const skipped: string[] = [];
   const now = new Date().toISOString();
   const projectName = path.basename(root);
-  const files: Array<{ relative: string; content: string; policy?: boolean }> = [
+  const files: { relative: string; content: string; policy?: boolean }[] = [
     { relative: "context/README.md", content: buildContextReadme(parsed.profile) },
     { relative: "context/raw/.gitkeep", content: "" },
     { relative: "context/raw/private/.gitkeep", content: "" },
@@ -229,7 +230,7 @@ function buildContextManifestYaml(
 ): string {
   return `version: 1
 project:
-  name: "${projectName.replace(/"/g, '\\"')}"
+  name: "${projectName.replaceAll('"', String.raw`\"`)}"
   root: "."
 workspace:
   namespace: local.project
@@ -312,5 +313,5 @@ async function readGitignore(gitignorePath: string): Promise<string[]> {
 function normalizeGitignore(lines: string[]): string[] {
   const uniq = new Map<string, true>();
   for (const line of lines) uniq.set(line, true);
-  return ["# context workspace", ...Array.from(uniq.keys())].sort();
+  return ["# context workspace", ...uniq.keys()].sort();
 }

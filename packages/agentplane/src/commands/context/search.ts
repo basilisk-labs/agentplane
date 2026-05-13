@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-array-sort */
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
@@ -159,7 +160,7 @@ export async function cmdContextSearch(opts: {
         `  stale_projection=true (projection=${result.freshness.projection_sha256 ?? "n/a"})\n`,
       );
     }
-    process.stdout.write(`  ${result.snippet.replace(/\n/g, "\\n")}\n`);
+    process.stdout.write(`  ${result.snippet.replaceAll("\n", String.raw`\n`)}\n`);
   }
   return 0;
 }

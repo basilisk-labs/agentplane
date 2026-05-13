@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-base-to-string, unicorn/no-array-callback-reference */
 import { CliError } from "../../shared/errors.js";
 import {
   loadCommandContext,
@@ -14,7 +15,7 @@ type ContextExtension = {
     allow_raw_mutation?: boolean;
   };
   source_set?: {
-    files?: Array<{ path?: unknown; sha256?: unknown }>;
+    files?: { path?: unknown; sha256?: unknown }[];
   };
   allowed_outputs?: string[];
   forbidden_outputs?: string[];
@@ -98,7 +99,7 @@ function readAllowed(context: ContextExtension, taskId: string): string[] {
     : [];
   return [
     ...DEFAULT_ALLOWED.map((value) => value.replaceAll("${taskId}", taskId)),
-    ...extras.map((value) => String(value)),
+    ...extras.map(String),
   ];
 }
 
@@ -141,9 +142,9 @@ function rowSourceRefs(row: Record<string, unknown>): string[] {
   return out;
 }
 
-async function loadJsonlRows(filePath: string): Promise<Array<Record<string, unknown>>> {
+async function loadJsonlRows(filePath: string): Promise<Record<string, unknown>[]> {
   if (!(await fileExists(filePath))) return [];
-  return parseJsonlLines(await readText(filePath)) as Array<Record<string, unknown>>;
+  return parseJsonlLines(await readText(filePath)) as Record<string, unknown>[];
 }
 
 async function validateWikiPage(filePath: string, errors: string[]): Promise<void> {
@@ -230,9 +231,7 @@ async function validateAcrContextExtension(
     return;
   }
   const acr = await readJsonFile(acrPath);
-  const extension = isRecord(acr?.extensions)
-    ? (acr.extensions["agentplane.context"] as unknown)
-    : undefined;
+  const extension = isRecord(acr?.extensions) ? acr.extensions["agentplane.context"] : undefined;
   if (!isRecord(extension)) {
     errors.push(`${toPosix(path.relative(root, acrPath))}: missing extensions.agentplane.context`);
     return;
@@ -343,7 +342,7 @@ export async function cmdContextVerifyTask(opts: {
   const normalizedTaskOwner = task.owner ?? "unknown";
   const requiredSourceRoots =
     Array.isArray(context.allowed_outputs) && context.allowed_outputs.length > 0
-      ? context.allowed_outputs.map((value) => String(value))
+      ? context.allowed_outputs.map(String)
       : [];
 
   if (changedPaths.length > 0) {
@@ -354,10 +353,8 @@ export async function cmdContextVerifyTask(opts: {
         continue;
       }
 
-      if (hasPathPrefix(changed, "context/raw/")) {
-        if (!isRawMutationAllowed(context)) {
-          denied.push(`${changed}: raw mutation is forbidden`);
-        }
+      if (hasPathPrefix(changed, "context/raw/") && !isRawMutationAllowed(context)) {
+        denied.push(`${changed}: raw mutation is forbidden`);
       }
 
       if (

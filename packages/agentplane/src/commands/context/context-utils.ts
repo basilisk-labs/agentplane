@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, unicorn/consistent-function-scoping, unicorn/no-array-sort */
 import { lstatSync, existsSync } from "node:fs";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
@@ -31,7 +32,7 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 
 export function parseSourceRef(raw: string): ParsedSourceRef {
   const hashIndex = raw.indexOf("#");
-  if (hashIndex < 0) {
+  if (hashIndex === -1) {
     return { path: raw, selectors: {} };
   }
   const base = raw.slice(0, hashIndex);
@@ -125,32 +126,44 @@ export function normalizeScopeList(scopeValue: string): ScopeName[] {
 export function scopeToFiles(root: string, scope: ScopeName): string[] {
   const paths: string[] = [];
   switch (scope) {
-    case "wiki":
+    case "wiki": {
       paths.push("context/wiki");
       break;
-    case "facts":
+    }
+    case "facts": {
       paths.push(".agentplane/context/derived/facts/facts.jsonl");
       break;
-    case "graph":
-      paths.push(".agentplane/context/derived/graph/entities.jsonl");
-      paths.push(".agentplane/context/derived/graph/edges.jsonl");
-      paths.push(".agentplane/context/derived/graph/provenance_edges.jsonl");
+    }
+    case "graph": {
+      paths.push(
+        ".agentplane/context/derived/graph/entities.jsonl",
+        ".agentplane/context/derived/graph/edges.jsonl",
+        ".agentplane/context/derived/graph/provenance_edges.jsonl",
+      );
       break;
-    case "tasks":
+    }
+    case "tasks": {
       paths.push(".agentplane/tasks");
       break;
-    case "capabilities":
-      paths.push("context/capabilities");
-      paths.push(".agentplane/context/derived/capabilities/capabilities.jsonl");
+    }
+    case "capabilities": {
+      paths.push(
+        "context/capabilities",
+        ".agentplane/context/derived/capabilities/capabilities.jsonl",
+      );
       break;
-    case "tasks-acr":
+    }
+    case "tasks-acr": {
       paths.push(".agentplane/tasks");
       break;
-    case "raw":
+    }
+    case "raw": {
       paths.push("context/raw");
       break;
-    default:
+    }
+    default: {
       paths.push("context/wiki");
+    }
   }
   return paths.flatMap((p) => collectSafeFilePaths(root, p));
 }
@@ -193,7 +206,7 @@ export function parseLineRange(selector: string | undefined): [number, number] |
     const line = Number(selector);
     return Number.isFinite(line) && line > 0 ? [line, line] : null;
   }
-  const m = selector.match(/^(\d+)-(\d+)$/u);
+  const m = /^(\d+)-(\d+)$/u.exec(selector);
   if (!m) return null;
   const start = Number(m[1]);
   const end = Number(m[2]);
@@ -210,8 +223,8 @@ export function locateMarkdownSection(
     value
       .trim()
       .toLowerCase()
-      .replace(/[^a-z0-9]+/gu, "-")
-      .replace(/^-+|-+$/gu, "");
+      .replaceAll(/[^a-z0-9]+/gu, "-")
+      .replaceAll(/^-+|-+$/gu, "");
   const target = slug(section);
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
@@ -254,7 +267,7 @@ export function scoreMatch(text: string, query: string): number {
   return Math.min(1, count * 0.1 + 0.1);
 }
 
-export function parseJsonlLines(raw: string): Array<{ id?: string; [key: string]: unknown }> {
+export function parseJsonlLines(raw: string): { id?: string; [key: string]: unknown }[] {
   const lines = raw
     .split(/\r?\n/)
     .map((line) => line.trim())

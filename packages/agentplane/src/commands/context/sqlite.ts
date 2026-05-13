@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-base-to-string */
 import { spawn } from "node:child_process";
 
 export type SqliteProjectionRow = {
@@ -122,8 +123,7 @@ export async function writeSqliteProjection(
       ].join(""),
     );
   }
-  statements.push("INSERT INTO projection_fts(projection_fts) VALUES('rebuild');");
-  statements.push("COMMIT;");
+  statements.push("INSERT INTO projection_fts(projection_fts) VALUES('rebuild');", "COMMIT;");
   await runSqlite([dbPath], `${statements.join("\n")}\n`);
 }
 

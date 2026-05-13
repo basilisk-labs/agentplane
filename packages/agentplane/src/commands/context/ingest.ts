@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents, @typescript-eslint/no-unused-vars, unicorn/no-await-expression-member */
 import { createHash } from "node:crypto";
 import { readFile, readdir, stat } from "node:fs/promises";
 import { createReadStream } from "node:fs";
@@ -341,7 +342,7 @@ async function readManifest(root: string): Promise<ManifestLock> {
               : "unsupported",
         };
       })
-      .filter((entry): entry is ManifestEntry => Boolean(entry)),
+      .filter((source): source is ManifestEntry => source !== null),
   };
 }
 

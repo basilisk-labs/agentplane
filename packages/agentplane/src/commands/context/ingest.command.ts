@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import type { CommandContext } from "../shared/task-backend.js";

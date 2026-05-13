@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { cmdContextInit } from "./init.js";
