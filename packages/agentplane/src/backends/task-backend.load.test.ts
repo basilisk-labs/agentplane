@@ -263,6 +263,53 @@ describe("loadTaskBackend", () => {
     expect(cloud.projectId).toBe("shared-project");
   });
 
+  it("points missing cloud credentials at the shared root .env from a worktree", async () => {
+    const worktreeRoot = path.join(tempDir, ".agentplane", "worktrees", "task-123");
+    await mkdir(path.join(tempDir, ".git", "worktrees", "task-123"), { recursive: true });
+    await mkdir(path.join(worktreeRoot, ".agentplane", "backends", "local"), { recursive: true });
+    await writeFile(
+      path.join(worktreeRoot, ".git"),
+      `gitdir: ${path.join(tempDir, ".git", "worktrees", "task-123")}\n`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(worktreeRoot, ".agentplane", "backends", "local", "backend.json"),
+      JSON.stringify({
+        id: "cloud",
+        settings: {
+          cache_dir: ".agentplane/tasks",
+        },
+      }),
+      "utf8",
+    );
+    const canonicalEnvPath = path.join(tempDir, ".env");
+    await writeFile(
+      canonicalEnvPath,
+      [
+        "AGENTPLANE_CLOUD_ENDPOINT=https://cloud.example/",
+        "AGENTPLANE_CLOUD_PROJECT_ID=shared-project",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const result = await loadTaskBackend({ cwd: worktreeRoot });
+    const cloud = result.backend as CloudBackend;
+    await expect(
+      cloud.sync({
+        direction: "push",
+        conflict: "fail",
+        quiet: true,
+        confirm: true,
+      }),
+    ).rejects.toThrow(
+      [
+        "Cloud backend is not configured: missing AGENTPLANE_CLOUD_TOKEN",
+        `Canonical env root: ${tempDir}`,
+        `Checked .env: ${canonicalEnvPath}`,
+      ].join("\n"),
+    );
+  });
+
   it("loads cloud backend credentials from the shared root .env with a separate git dir", async () => {
     const repoDir = path.join(tempDir, "repo");
     const gitDir = path.join(tempDir, "repo.git");

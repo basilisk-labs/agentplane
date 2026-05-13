@@ -2,7 +2,7 @@ import path from "node:path";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 
-import { loadDotEnv } from "../../shared/env.js";
+import { loadDotEnv, type DotEnvLoadResult } from "../../shared/env.js";
 import { isRecord } from "../../shared/guards.js";
 import {
   BackendError,
@@ -90,10 +90,16 @@ export class CloudBackend implements TaskBackend {
   staleAfterSeconds: number | null;
   private fetchImpl: typeof fetch;
   private readonly configOverrides: CloudConfigOverride[];
+  private readonly dotEnv: Pick<DotEnvLoadResult, "root" | "path" | "loaded">;
 
   constructor(
     settings: CloudBackendSettings,
-    opts: { cache: LocalBackend; root: string; fetchImpl?: typeof fetch },
+    opts: {
+      cache: LocalBackend;
+      root: string;
+      fetchImpl?: typeof fetch;
+      dotEnv?: Pick<DotEnvLoadResult, "root" | "path" | "loaded">;
+    },
   ) {
     const endpoint = firstNonEmptyString(
       process.env.AGENTPLANE_CLOUD_ENDPOINT,
@@ -117,6 +123,11 @@ export class CloudBackend implements TaskBackend {
       opts.root,
       firstNonEmptyString(settings.state_path, ".agentplane/backends/cloud/state.json"),
     );
+    this.dotEnv = opts.dotEnv ?? {
+      root: opts.root,
+      path: path.join(opts.root, ".env"),
+      loaded: false,
+    };
     this.staleAfterSeconds = normalizePositiveInteger(settings.stale_after_seconds) ?? 300;
     if (!opts.fetchImpl) configureCloudFetchAddressSelection();
     this.fetchImpl = opts.fetchImpl ?? fetch;
@@ -128,11 +139,12 @@ export class CloudBackend implements TaskBackend {
     cache: LocalBackend;
     fetchImpl?: typeof fetch;
   }): Promise<CloudBackend> {
-    await loadDotEnv(opts.root);
+    const dotEnv = await loadDotEnv(opts.root);
     return new CloudBackend(opts.settings, {
       root: opts.root,
       cache: opts.cache,
       fetchImpl: opts.fetchImpl,
+      dotEnv,
     });
   }
 
@@ -552,7 +564,12 @@ export class CloudBackend implements TaskBackend {
     const missing = this.missingConfigKeys();
     if (missing.length > 0) {
       throw new BackendError(
-        `Cloud backend is not configured: missing ${missing.join(", ")}`,
+        [
+          `Cloud backend is not configured: missing ${missing.join(", ")}`,
+          `Canonical env root: ${this.dotEnv.root}`,
+          `Checked .env: ${this.dotEnv.path}${this.dotEnv.loaded ? "" : " (not found)"}`,
+          "Fix: add the missing AGENTPLANE_CLOUD_* values to the canonical repository root .env or export them explicitly in the shell.",
+        ].join("\n"),
         "E_BACKEND",
       );
     }
