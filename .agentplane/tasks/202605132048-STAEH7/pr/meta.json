@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T21:20:37Z",
+  "base": "main",
+  "branch": "task/202605132048-STAEH7/hosted-sync-credentials",
+  "created_at": "2026-05-13T20:50:37.971Z",
+  "head_sha": "652358b562d3a6209b4ae4da6f142faaaa5c78bb",
+  "last_verified_at": "2026-05-13T21:14:43.949Z",
+  "last_verified_sha": "796fc2f100b547d8728ed2ee2c5b751247c0d6a4",
+  "merge_commit": "c069df0fda2f374f7f948b62983256895566e3cc",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T21:20:37Z",
+  "pr_number": 3678,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3678",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605132048-STAEH7",
+  "updated_at": "2026-05-13T21:20:37Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T21:32:52Z",
+  "base": "main",
+  "branch": "task/202605132054-5FV925/pr-body-format",
+  "created_at": "2026-05-13T20:55:22.001Z",
+  "head_sha": "7ed442b9ee1af8637d7f20b8c3260398a04e309f",
+  "last_verified_at": "2026-05-13T21:05:47.994Z",
+  "last_verified_sha": "403e10e9a434aeafa4ac7624336e6a4fee051293",
+  "merge_commit": "1a618ca1dc6fdcd57f97161c06d96aa6278c7f50",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T21:32:52Z",
+  "pr_number": 3683,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3683",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605132054-5FV925",
+  "updated_at": "2026-05-13T21:32:52Z",
+  "verify": {
+    "status": "pass"
+  }
+}
