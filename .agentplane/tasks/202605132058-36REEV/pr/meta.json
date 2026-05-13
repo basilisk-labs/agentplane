@@ -3,12 +3,12 @@
   "branch": "task/202605132058-36REEV/split-pr-meta",
   "created_at": "2026-05-13T20:59:57.460Z",
   "head_sha": "ad50be06756b626fcd6da82becbd13d2862dfbc6",
-  "last_verified_at": null,
-  "last_verified_sha": null,
+  "last_verified_at": "2026-05-13T21:10:56.978Z",
+  "last_verified_sha": "ad50be06756b626fcd6da82becbd13d2862dfbc6",
   "schema_version": 1,
   "task_id": "202605132058-36REEV",
   "updated_at": "2026-05-13T21:09:19.102Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
