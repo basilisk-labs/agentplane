@@ -22,9 +22,9 @@ Fix branch_pr command-order drift across gateway docs, quickstart guidance, and 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T17:13:09.794Z
+- Updated: 2026-05-13T17:26:21.877Z
 - Branch: task/202605131635-W0735P/command-order-guidance
-- Head: 347e1d3317f3
+- Head: 34a4cdd636eb
 
 ```text
  .../blueprint/resolved-snapshot.json               | 527 +++++++++++++++++++++
