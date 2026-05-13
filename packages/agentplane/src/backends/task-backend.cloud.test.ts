@@ -98,9 +98,62 @@ describe("CloudBackend", () => {
     );
 
     await expect(backend.assertLocalMutationReady()).rejects.toThrow(
-      "Safe command: agentplane backend sync cloud --direction pull",
+      "Safe command: agentplane backend sync cloud --direction pull --yes",
     );
     expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("auto-pulls a stale projection before local mutation when autosync is enabled", async () => {
+    const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
+    await mkdir(stateDir, { recursive: true });
+    await writeFile(
+      path.join(stateDir, "state.json"),
+      `${JSON.stringify({ last_checked_at: "2026-05-05T00:00:00.000Z" }, null, 2)}\n`,
+      "utf8",
+    );
+    const fetchImpl = vi.fn<typeof fetch>((url) => {
+      const href = requestUrl(url);
+      if (href.endsWith("/sync/state")) {
+        return Promise.resolve(
+          Response.json({
+            data: { open_conflicts: 0 },
+            open_conflicts: [],
+            safe_command: "agentplane backend sync cloud --direction pull --conflict=diff",
+          }),
+        );
+      }
+      if (href.endsWith("/sync/pull")) {
+        const now = new Date().toISOString();
+        return Promise.resolve(
+          Response.json({
+            data: { last_checked_at: now, tasks: [] },
+          }),
+        );
+      }
+      return Promise.resolve(Response.json({ error: "unexpected", url: href }, { status: 500 }));
+    });
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example/",
+        token: "token",
+        project_id: "project-1",
+        provider: "github-projects",
+        stale_after_seconds: 1,
+      },
+      {
+        root: tempDir,
+        cache: new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") }),
+        fetchImpl,
+        autoSyncNetworkAllowed: true,
+      },
+    );
+
+    await expect(backend.assertLocalMutationReady()).resolves.toBeUndefined();
+    expect(fetchImpl).toHaveBeenCalled();
+    const state = JSON.parse(
+      await readFile(path.join(stateDir, "state.json"), "utf8"),
+    ) as Record<string, unknown>;
+    expect(Number.isFinite(Date.parse(String(state.last_checked_at)))).toBe(true);
   });
 
   it("push sync sends local tasks and records last check time", async () => {
@@ -1030,7 +1083,7 @@ describe("CloudBackend", () => {
         tags: ["cloud"],
         verify: [],
       }),
-    ).rejects.toThrow("agentplane backend sync cloud --direction pull");
+    ).rejects.toThrow("agentplane backend sync cloud --direction pull --yes");
   });
 
   it("does not advance cloud state when pull cache write fails", async () => {

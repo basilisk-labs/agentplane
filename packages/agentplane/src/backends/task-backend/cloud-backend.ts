@@ -55,6 +55,10 @@ export type CloudBackendSettings = {
   cache_dir?: string;
   stale_after_seconds?: number;
   state_path?: string;
+  autosync_enabled?: boolean;
+  autosync_pull_on_read?: boolean;
+  autosync_pull_on_write?: boolean;
+  autosync_push_on_write?: boolean;
 };
 
 type CloudSyncStateSnapshot = {
@@ -74,7 +78,7 @@ export class CloudBackend implements TaskBackend {
     writes_task_readmes: true,
     supports_task_revisions: true,
     supports_revision_guarded_writes: true,
-    may_access_network_on_read: false,
+    may_access_network_on_read: true,
     may_access_network_on_write: true,
     supports_projection_refresh: true,
     supports_push_sync: true,
@@ -90,6 +94,11 @@ export class CloudBackend implements TaskBackend {
   private fetchImpl: typeof fetch;
   private readonly configOverrides: CloudConfigOverride[];
   private readonly dotEnv: Pick<DotEnvLoadResult, "root" | "path" | "loaded">;
+  private readonly autoSyncNetworkAllowed: boolean;
+  private readonly autoSyncEnabled: boolean;
+  private readonly autoSyncPullOnRead: boolean;
+  private readonly autoSyncPullOnWrite: boolean;
+  private readonly autoSyncPushOnWrite: boolean;
   constructor(
     settings: CloudBackendSettings,
     opts: {
@@ -97,6 +106,7 @@ export class CloudBackend implements TaskBackend {
       root: string;
       fetchImpl?: typeof fetch;
       dotEnv?: Pick<DotEnvLoadResult, "root" | "path" | "loaded">;
+      autoSyncNetworkAllowed?: boolean;
     },
   ) {
     const endpoint = firstNonEmptyString(
@@ -130,12 +140,19 @@ export class CloudBackend implements TaskBackend {
     this.staleAfterSeconds = normalizePositiveInteger(settings.stale_after_seconds) ?? 300;
     if (!opts.fetchImpl) configureCloudFetchAddressSelection();
     this.fetchImpl = opts.fetchImpl ?? fetch;
+
+    this.autoSyncNetworkAllowed = opts.autoSyncNetworkAllowed === true;
+    this.autoSyncEnabled = settings.autosync_enabled ?? this.autoSyncNetworkAllowed;
+    this.autoSyncPullOnRead = settings.autosync_pull_on_read ?? true;
+    this.autoSyncPullOnWrite = settings.autosync_pull_on_write ?? true;
+    this.autoSyncPushOnWrite = settings.autosync_push_on_write ?? true;
   }
   static async create(opts: {
     root: string;
     settings: CloudBackendSettings;
     cache: LocalBackend;
     fetchImpl?: typeof fetch;
+    autoSyncNetworkAllowed?: boolean;
   }): Promise<CloudBackend> {
     const dotEnv = await loadDotEnv(opts.root);
     return new CloudBackend(opts.settings, {
@@ -143,31 +160,37 @@ export class CloudBackend implements TaskBackend {
       cache: opts.cache,
       fetchImpl: opts.fetchImpl,
       dotEnv,
+      autoSyncNetworkAllowed: opts.autoSyncNetworkAllowed,
     });
   }
   async generateTaskId(opts: { length: number; attempts: number }): Promise<string> {
     return await this.cache.generateTaskId(opts);
   }
   async listTasks(): Promise<TaskData[]> {
+    await this.maybeAutoPull({ mode: "read", reason: "list_tasks" });
     return await this.cache.listTasks();
   }
   async listProjectionTasks(): Promise<TaskSummary[]> {
+    await this.maybeAutoPull({ mode: "read", reason: "list_projection" });
     return await this.cache.listProjectionTasks();
   }
   getLastListWarnings(): string[] {
     return this.cache.getLastListWarnings();
   }
   async getTask(taskId: string): Promise<TaskData | null> {
+    await this.maybeAutoPull({ mode: "read", reason: "get_task" });
     return await this.cache.getTask(taskId);
   }
   async getTasks(taskIds: string[]): Promise<(TaskData | null)[]> {
+    await this.maybeAutoPull({ mode: "read", reason: "get_tasks" });
     return await this.cache.getTasks(taskIds);
   }
   async getTaskDoc(taskId: string): Promise<string> {
+    await this.maybeAutoPull({ mode: "read", reason: "get_task_doc" });
     return await this.cache.getTaskDoc(taskId);
   }
   async assertLocalMutationReady(): Promise<void> {
-    await this.assertProjectionFreshForLocalMutation();
+    await this.ensureProjectionFreshForLocalMutation({ reason: "assert_local_mutation_ready" });
   }
   async setTaskDoc(
     taskId: string,
@@ -175,25 +198,29 @@ export class CloudBackend implements TaskBackend {
     updatedBy?: string,
     opts?: TaskWriteOptions,
   ): Promise<void> {
-    await this.assertProjectionFreshForLocalMutation();
+    await this.ensureProjectionFreshForLocalMutation({ reason: "set_task_doc" });
     await this.cache.setTaskDoc(taskId, doc, updatedBy, opts);
+    await this.maybeAutoPush();
   }
   async touchTaskDocMetadata(
     taskId: string,
     updatedBy?: string,
     opts?: TaskWriteOptions,
   ): Promise<void> {
-    await this.assertProjectionFreshForLocalMutation();
+    await this.ensureProjectionFreshForLocalMutation({ reason: "touch_task_doc_metadata" });
     await this.cache.touchTaskDocMetadata(taskId, updatedBy, opts);
+    await this.maybeAutoPush();
   }
 
   async writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void> {
-    await this.assertProjectionFreshForLocalMutation();
+    await this.ensureProjectionFreshForLocalMutation({ reason: "write_task" });
     await this.cache.writeTask(task, opts);
+    await this.maybeAutoPush();
   }
   async writeTasks(tasks: TaskData[], opts?: TaskWriteOptions): Promise<void> {
-    await this.assertProjectionFreshForLocalMutation();
+    await this.ensureProjectionFreshForLocalMutation({ reason: "write_tasks" });
     await this.cache.writeTasks(tasks, opts);
+    await this.maybeAutoPush();
   }
   async normalizeTasks(): Promise<{ scanned: number; changed: number }> {
     return await this.cache.normalizeTasks();
@@ -540,19 +567,58 @@ export class CloudBackend implements TaskBackend {
     });
   }
 
-  private async assertProjectionFreshForLocalMutation(): Promise<void> {
-    const state = await readCloudBackendState(this.statePath);
+  private async readState() {
+    return await readCloudBackendState(this.statePath);
+  }
+
+  private async ensureProjectionFreshForLocalMutation(opts: { reason: string }): Promise<void> {
+    const state = await this.readState();
     if (!isStale(state.last_checked_at, this.staleAfterSeconds)) return;
+
+    if (this.autoSyncEnabled && this.autoSyncPullOnWrite) {
+      await this.maybeAutoPull({ mode: "write", reason: `mutation_preflight:${opts.reason}` });
+      const refreshed = await this.readState();
+      if (!isStale(refreshed.last_checked_at, this.staleAfterSeconds)) return;
+    }
+
     throw new BackendError(
       [
         "Cloud projection is stale; refusing local task mutation.",
         "Why: the active cloud backend projection may not include recent remote task changes.",
         "Fix: pull the cloud projection before mutating local task state.",
-        "Safe command: agentplane backend sync cloud --direction pull",
+        "Safe command: agentplane backend sync cloud --direction pull --yes",
         "Stop condition: stop if pull reports open conflicts or cannot refresh the projection.",
       ].join("\n"),
       "E_BACKEND",
     );
+  }
+
+  private async maybeAutoPull(opts: { mode: "read" | "write"; reason: string }): Promise<void> {
+    if (!this.autoSyncEnabled) return;
+    if (opts.mode === "read" && !this.autoSyncPullOnRead) return;
+    if (opts.mode === "write" && !this.autoSyncPullOnWrite) return;
+    if (!this.autoSyncNetworkAllowed) return;
+    if (this.missingConfigKeys().length > 0) return;
+    const state = await this.readState();
+    if (!isStale(state.last_checked_at, this.staleAfterSeconds)) return;
+    await this.sync({
+      direction: "pull",
+      conflict: "fail",
+      quiet: true,
+      confirm: true,
+    });
+  }
+
+  private async maybeAutoPush(): Promise<void> {
+    if (!this.autoSyncEnabled || !this.autoSyncPushOnWrite) return;
+    if (!this.autoSyncNetworkAllowed) return;
+    if (this.missingConfigKeys().length > 0) return;
+    await this.sync({
+      direction: "push",
+      conflict: "fail",
+      quiet: true,
+      confirm: true,
+    });
   }
 
   private assertConfigured(): void {
