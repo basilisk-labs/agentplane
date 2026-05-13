@@ -209,7 +209,6 @@ export class CloudBackend implements TaskBackend {
     await this.cache.touchTaskDocMetadata(taskId, updatedBy, opts);
     await this.maybeAutoPush();
   }
-
   async writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void> {
     await this.ensureProjectionFreshForLocalMutation({ reason: "write_task" });
     await this.cache.writeTask(task, opts);
