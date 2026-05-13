@@ -24,9 +24,9 @@ Created: 2026-05-13T05:03:23.187Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T06:35:19.698Z
+- Updated: 2026-05-13T06:55:22.462Z
 - Branch: task/202605130501-4B49ZZ/v06-context-release-readiness
-- Head: d1dfa9350f18
+- Head: 421b6498caeb
 
 ```text
  .agentplane/WORKFLOW.md                            |   3 +-
@@ -57,8 +57,8 @@ Created: 2026-05-13T05:03:23.187Z
  packages/agentplane/src/commands/context/ingest.ts |  15 +-
  .../src/commands/context/init.command.ts           |  21 -
  packages/agentplane/src/commands/context/init.ts   |   9 +-
- .../agentplane/src/commands/context/reindex.ts     | 138 +++++-
- .../src/commands/context/release-readiness.test.ts | 176 +++++++
+ .../agentplane/src/commands/context/reindex.ts     | 143 +++++-
+ .../src/commands/context/release-readiness.test.ts | 219 ++++++++
  packages/agentplane/src/commands/context/search.ts |   3 +-
  packages/agentplane/src/commands/context/show.ts   |   1 +
  packages/agentplane/src/commands/context/sqlite.ts |  16 +-
@@ -74,7 +74,7 @@ Created: 2026-05-13T05:03:23.187Z
  scripts/check-local-tarball-install-smoke.mjs      |  12 +
  scripts/generate-builtin-assets.mjs                | 110 +++++
  website/sidebars.ts                                |  12 +-
- 45 files changed, 1902 insertions(+), 303 deletions(-)
+ 45 files changed, 1950 insertions(+), 303 deletions(-)
 ```
 
 </details>
