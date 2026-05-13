@@ -13,7 +13,6 @@ export {
   type TaskBackendBase,
   type TaskBackendCapabilities,
   type TaskBackendDocPort,
-  type TaskBackendExportPort,
   type TaskBackendFieldNameDrift,
   type TaskBackendIdentityPort,
   type TaskBackendInspectionResult,

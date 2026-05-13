@@ -218,9 +218,6 @@ export type TaskBackendInspectionPort = {
   inspectConfiguration?(): Promise<TaskBackendInspectionResult>;
 };
 
-export type TaskBackendExportPort = {
-};
-
 export type TaskBackendDocPort = {
   getTaskDoc?(taskId: string): Promise<string>;
   setTaskDoc?(
@@ -242,6 +239,5 @@ export type TaskBackend = TaskBackendBase &
   TaskBackendMutationPort &
   TaskBackendSyncPort &
   TaskBackendInspectionPort &
-  TaskBackendExportPort &
   TaskBackendDocPort &
   TaskBackendIdentityPort;

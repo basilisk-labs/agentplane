@@ -114,5 +114,4 @@ export class LocalBackend implements TaskBackend {
   async normalizeTasks(): Promise<{ scanned: number; changed: number }> {
     return await normalizeLocalTasks(this.backendContext());
   }
-
 }

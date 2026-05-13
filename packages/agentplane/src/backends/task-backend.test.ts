@@ -402,5 +402,4 @@ describe("task-backend helpers", () => {
     expect(snapshot.tasks[0]?.id).toBe("202601300000-ABCD");
     expect(snapshot.meta.checksum).toHaveLength(64);
   });
-
 });
