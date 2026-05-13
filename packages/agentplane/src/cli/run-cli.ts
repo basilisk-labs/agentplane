@@ -69,7 +69,7 @@ export async function runCli(argv: string[]): Promise<number> {
     const cwd = process.cwd();
     const helpCwd = globals.root ?? cwd;
     const defaultHelpSurface: HelpSurfaceMode = agentMode.enabled
-      ? "all"
+      ? "agent"
       : findFrameworkCheckout(helpCwd)
         ? "framework"
         : "user";

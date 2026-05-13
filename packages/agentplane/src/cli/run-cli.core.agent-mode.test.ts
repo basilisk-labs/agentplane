@@ -28,6 +28,7 @@ describe("runCli agent mode", () => {
       expect(io.stdout).toContain("context learn tasks");
       expect(io.stdout).toContain("context harvest tasks");
       expect(io.stdout).toContain("context capability");
+      expect(io.stdout).not.toContain("task normalize");
     } finally {
       io.restore();
     }
