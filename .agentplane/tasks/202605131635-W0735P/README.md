@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T18:30:36.949Z"
+  updated_at: "2026-05-13T18:47:35.290Z"
   updated_by: "CODER"
-  note: "Rebased on current origin/main 707ddf167 and resolved builtin generated asset hash by regeneration. Rechecked assets:builtin:check, docs:scripts:check, workflows:command-check, focused lifecycle/blueprint/command-guide Vitest, typecheck, and lint:core."
+  note: "Fixed GitHub Core CI dead-code baseline failure by keeping LifecycleParityFinding internal instead of exporting it. Rechecked knip:check, workflows:command-check, focused lifecycle Vitest, typecheck, and lint:core."
   attempts: 0
 commit: null
 comments:
@@ -78,8 +78,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rebased on current origin/main 707ddf167 and resolved builtin generated asset hash by regeneration. Rechecked assets:builtin:check, docs:scripts:check, workflows:command-check, focused lifecycle/blueprint/command-guide Vitest, typecheck, and lint:core."
+  -
+    type: "verify"
+    at: "2026-05-13T18:47:35.290Z"
+    author: "CODER"
+    state: "ok"
+    note: "Fixed GitHub Core CI dead-code baseline failure by keeping LifecycleParityFinding internal instead of exporting it. Rechecked knip:check, workflows:command-check, focused lifecycle Vitest, typecheck, and lint:core."
 doc_version: 3
-doc_updated_at: "2026-05-13T18:30:36.969Z"
+doc_updated_at: "2026-05-13T18:47:35.320Z"
 doc_updated_by: "CODER"
 description: "Fix branch_pr command-order drift across gateway docs, quickstart guidance, and blueprint routes; leave cleanup command references out of scope per user request."
 sections:
@@ -233,6 +239,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131635-W0735P
     
+    ### 2026-05-13T18:47:35.290Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Fixed GitHub Core CI dead-code baseline failure by keeping LifecycleParityFinding internal instead of exporting it. Rechecked knip:check, workflows:command-check, focused lifecycle Vitest, typecheck, and lint:core.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:30:36.969Z, excerpt_hash=sha256:65a5b2ab7b7e18aa7dd80c03a6f614f26c62d91bbc02a4845c97fc02e1beca87
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131635-W0735P-command-order-guidance/.agentplane/tasks/202605131635-W0735P/blueprint/resolved-snapshot.json
+    - old_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+    - current_digest: 6181d6101385635314570c67f467834fae1cd2bd77e5a5f3ee3b6ea34d405478
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131635-W0735P
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -265,6 +290,10 @@ sections:
     - Observation: GitHub marked PR dirty because main advanced from 244c1969 to 707ddf167 after the first remote push.
       Impact: The task branch needed a fresh rebase before hosted checks and merge could proceed.
       Resolution: Rebased onto origin/main 707ddf167; regenerated builtin assets to resolve generated hash conflicts; reran targeted checks successfully.
+    
+    - Observation: GitHub Core CI failed at Dead code baseline because LifecycleParityFinding was exported but only used inside parity-check.ts.
+      Impact: PR could not merge until the unused public type export was removed.
+      Resolution: Removed the unnecessary export and reran local dead-code, workflow, type, lint, and focused tests successfully.
 id_source: "generated"
 ---
 ## Summary
@@ -427,6 +456,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131635-W0735P
 
+### 2026-05-13T18:47:35.290Z — VERIFY — ok
+
+By: CODER
+
+Note: Fixed GitHub Core CI dead-code baseline failure by keeping LifecycleParityFinding internal instead of exporting it. Rechecked knip:check, workflows:command-check, focused lifecycle Vitest, typecheck, and lint:core.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:30:36.969Z, excerpt_hash=sha256:65a5b2ab7b7e18aa7dd80c03a6f614f26c62d91bbc02a4845c97fc02e1beca87
+
+Details:
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131635-W0735P-command-order-guidance/.agentplane/tasks/202605131635-W0735P/blueprint/resolved-snapshot.json
+- old_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+- current_digest: 6181d6101385635314570c67f467834fae1cd2bd77e5a5f3ee3b6ea34d405478
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131635-W0735P
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -463,3 +511,7 @@ BlueprintSnapshotRef:
 - Observation: GitHub marked PR dirty because main advanced from 244c1969 to 707ddf167 after the first remote push.
   Impact: The task branch needed a fresh rebase before hosted checks and merge could proceed.
   Resolution: Rebased onto origin/main 707ddf167; regenerated builtin assets to resolve generated hash conflicts; reran targeted checks successfully.
+
+- Observation: GitHub Core CI failed at Dead code baseline because LifecycleParityFinding was exported but only used inside parity-check.ts.
+  Impact: PR could not merge until the unused public type export was removed.
+  Resolution: Removed the unnecessary export and reran local dead-code, workflow, type, lint, and focused tests successfully.

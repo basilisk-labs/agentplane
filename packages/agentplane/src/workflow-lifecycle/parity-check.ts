@@ -9,7 +9,7 @@ import {
   type WorkflowLifecycleContract,
 } from "./contract.js";
 
-export type LifecycleParityFinding = {
+type LifecycleParityFinding = {
   code: string;
   message: string;
   file?: string;

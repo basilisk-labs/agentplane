@@ -16,7 +16,7 @@ Fix branch_pr command-order drift across gateway docs, quickstart guidance, and 
 ## Verification
 
 - State: ok
-- Note: Rebased on current origin/main 707ddf167 and resolved builtin generated asset hash by regeneration. Rechecked assets:builtin:check, docs:scripts:check, workflows:command-check, focused lifecycle/blueprint/command-guide Vitest, typecheck, and lint:core.
+- Note: Fixed GitHub Core CI dead-code baseline failure by keeping LifecycleParityFinding internal instead of exporting it. Rechecked knip:check, workflows:command-check, focused lifecycle Vitest, typecheck, and lint:core.
 - Canonical workflow state lives in the task README.
 
 <details>
