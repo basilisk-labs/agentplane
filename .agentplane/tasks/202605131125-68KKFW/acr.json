@@ -1,0 +1,219 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605131125-68KKFW",
+  "created_at": "2026-05-13T12:45:03.864Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "9f028ded025488a7ddb82326c0946de22bcf66f3",
+    "work_ref": "main",
+    "work_commit": "9f028ded025488a7ddb82326c0946de22bcf66f3"
+  },
+  "task": {
+    "task_id": "202605131125-68KKFW",
+    "title": "Split human and agent CLI output",
+    "intent": "Make the long-form agentplane command render a cleaner human-oriented output with spacing, alignment, and color while keeping the short ap command minimal and unstyled for agent consumption.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605131125-68KKFW/README.md",
+      "sha256": "sha256:065e3ad02e28214177f0d7cc3abe1f2b8c4ea157b90d96625012a4003e3971ed"
+    },
+    "approved_at": "2026-05-13T11:26:31.531Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3629.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605131125-68KKFW_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-13T11:26:31.531Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605131125-68KKFW/README.md",
+      "sha256": "sha256:065e3ad02e28214177f0d7cc3abe1f2b8c4ea157b90d96625012a4003e3971ed"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605131125-68KKFW/README.md",
+      "sha256": "sha256:065e3ad02e28214177f0d7cc3abe1f2b8c4ea157b90d96625012a4003e3971ed"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605131125-68KKFW/README.md",
+      "sha256": "sha256:065e3ad02e28214177f0d7cc3abe1f2b8c4ea157b90d96625012a4003e3971ed"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605131125-68KKFW/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:4e42cff16322e65a75b620e639325237e1928c19948587aa20bbd4ebaf87cd77"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 9f028ded025488a7ddb82326c0946de22bcf66f3 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:a6415d73edfe604793775df380ed4981399e2086795715cc85b0323da19778e5",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605131125-68KKFW/blueprint/resolved-snapshot.json",
+        "digest": "6f93c605c490d609a9c62f3d88d5e94ae82329ca7b56a7eb27f197229852c054",
+        "current_digest": "6f93c605c490d609a9c62f3d88d5e94ae82329ca7b56a7eb27f197229852c054",
+        "route_changed": false,
+        "artifact_sha256": "sha256:4e42cff16322e65a75b620e639325237e1928c19948587aa20bbd4ebaf87cd77",
+        "safe_command": "agentplane blueprint snapshot 202605131125-68KKFW"
+      }
+    }
+  }
+}

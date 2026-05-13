@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T12:44:10Z",
   "base": "main",
   "branch": "task/202605131125-68KKFW/split-cli-output",
   "created_at": "2026-05-13T11:26:55.005Z",
-  "head_sha": "8b8c95312c78d828e48593f9a39a9b2edb32f6af",
+  "head_sha": "2c1fd4634a0d8da77a9ce438231de787ba97ba43",
   "last_verified_at": "2026-05-13T12:16:56.874Z",
   "last_verified_sha": "8b8c95312c78d828e48593f9a39a9b2edb32f6af",
+  "merge_commit": "9f028ded025488a7ddb82326c0946de22bcf66f3",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T12:44:10Z",
   "pr_number": 3629,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3629",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605131125-68KKFW",
-  "updated_at": "2026-05-13T12:07:33.985Z",
+  "updated_at": "2026-05-13T12:44:10Z",
   "verify": {
     "status": "pass"
   }
