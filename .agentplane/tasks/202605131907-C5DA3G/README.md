@@ -1,10 +1,11 @@
 ---
 id: "202605131907-C5DA3G"
 title: "Temporarily switch task backend to local"
-status: "DOING"
+result_summary: "Merged via PR #3669."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 2
+revision: 3
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Config now resolves tasks_backend.config_path to .agentplane/backends/local/backend.json; task list succeeds against local backend; policy routing passes; committed diff is limited to .agentplane/WORKFLOW.md."
   attempts: 0
-commit: null
+commit:
+  hash: "a079856f688d876bd76d5825b6e202f1a10504e5"
+  message: "🚧 C5DA3G task: Temporarily switch task backend to local"
 comments:
   -
     author: "CODER"
     body: "Start: Switch active task backend routing from cloud to local in WORKFLOW.md, then verify config, task list, and policy routing from the task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3669 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Config now resolves tasks_backend.config_path to .agentplane/backends/local/backend.json; task list succeeds against local backend; policy routing passes; committed diff is limited to .agentplane/WORKFLOW.md."
+  -
+    type: "status"
+    at: "2026-05-13T19:59:55.152Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3669 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T19:14:43.347Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T19:59:55.158Z"
+doc_updated_by: "INTEGRATOR"
 description: "Switch the active AgentPlane task backend from cloud to local to reduce lifecycle latency, preserving a clear rollback path to cloud."
 sections:
   Summary: |-
