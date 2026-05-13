@@ -13,7 +13,7 @@ Created: 2026-05-13T16:03:49.901Z
 ## Verification
 
 - State: ok
-- Note: Hotspot follow-up verified: branch_pr list-state test moved out of oversized query-listing file; targeted tests passed; targeted eslint passed; typecheck passed; hotspots:check passed; policy routing passed; git diff --check passed.
+- Note: Cold-path follow-up verified: branch_pr list-state PR-meta loading is lazy and off direct task list/search/next paths; bench:cli:cold:check passed after rebuild; targeted branch_pr/list tests passed; eslint passed; typecheck passed; hotspots:check passed; policy routing passed; git diff --check passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
