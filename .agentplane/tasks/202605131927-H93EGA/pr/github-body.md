@@ -22,7 +22,7 @@ Audit unresolved Codex review threads from recent merged PRs, apply still-releva
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T19:53:15.724Z
+- Updated: 2026-05-13T19:56:41.334Z
 - Branch: task/202605131927-H93EGA/resolve-codex-review-comments
 - Head: aea9099bc129
 
