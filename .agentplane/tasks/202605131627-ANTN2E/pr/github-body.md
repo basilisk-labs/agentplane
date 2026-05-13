@@ -16,7 +16,7 @@ Add typed preflight classification for task artifact drift so active task artifa
 ## Verification
 
 - State: ok
-- Note: Verified: rebased/merged task branch onto current origin/main and reran focused validation. Checks passed on d81de768a: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts (13 pass); bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs; ap doctor; ap preflight --json --mode full reported harness_health ok and no task_artifact_drift.
+- Note: Verified: blueprint snapshot refreshed after merge-base update; HEAD 8d0f78d76 contains only task artifact snapshot refresh after d81de768a validation. Snapshot state is current; no implementation files changed after focused checks.
 - Canonical workflow state lives in the task README.
 
 <details>

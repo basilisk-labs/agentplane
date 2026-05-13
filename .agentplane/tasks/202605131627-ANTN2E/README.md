@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T18:50:55.726Z"
+  updated_at: "2026-05-13T18:53:38.273Z"
   updated_by: "CODER"
-  note: "Verified: rebased/merged task branch onto current origin/main and reran focused validation. Checks passed on d81de768a: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts (13 pass); bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs; ap doctor; ap preflight --json --mode full reported harness_health ok and no task_artifact_drift."
+  note: "Verified: blueprint snapshot refreshed after merge-base update; HEAD 8d0f78d76 contains only task artifact snapshot refresh after d81de768a validation. Snapshot state is current; no implementation files changed after focused checks."
   attempts: 0
 commit: null
 comments:
@@ -48,8 +48,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: rebased/merged task branch onto current origin/main and reran focused validation. Checks passed on d81de768a: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts (13 pass); bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs; ap doctor; ap preflight --json --mode full reported harness_health ok and no task_artifact_drift."
+  -
+    type: "verify"
+    at: "2026-05-13T18:53:38.273Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: blueprint snapshot refreshed after merge-base update; HEAD 8d0f78d76 contains only task artifact snapshot refresh after d81de768a validation. Snapshot state is current; no implementation files changed after focused checks."
 doc_version: 3
-doc_updated_at: "2026-05-13T18:50:55.813Z"
+doc_updated_at: "2026-05-13T18:53:38.318Z"
 doc_updated_by: "CODER"
 description: "Add typed preflight classification for task artifact drift so active task artifacts from parallel agents are distinguished from stale or unknown recovery drift."
 sections:
@@ -101,6 +107,25 @@ sections:
     - state: stale
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131627-ANTN2E-typed-drift-classification/.agentplane/tasks/202605131627-ANTN2E/blueprint/resolved-snapshot.json
     - old_digest: fd3872f4d231c8b1c9af0b73d3bd409a1f4561ce3873a1396f201c120940babc
+    - current_digest: a6321f39291a15d80b3a01f93a7c111221f046d392c66dcb665b621a69b25885
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131627-ANTN2E
+    
+    ### 2026-05-13T18:53:38.273Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: blueprint snapshot refreshed after merge-base update; HEAD 8d0f78d76 contains only task artifact snapshot refresh after d81de768a validation. Snapshot state is current; no implementation files changed after focused checks.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:50:55.813Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131627-ANTN2E-typed-drift-classification/.agentplane/tasks/202605131627-ANTN2E/blueprint/resolved-snapshot.json
+    - old_digest: a6321f39291a15d80b3a01f93a7c111221f046d392c66dcb665b621a69b25885
     - current_digest: a6321f39291a15d80b3a01f93a7c111221f046d392c66dcb665b621a69b25885
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131627-ANTN2E
@@ -170,6 +195,25 @@ BlueprintSnapshotRef:
 - state: stale
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131627-ANTN2E-typed-drift-classification/.agentplane/tasks/202605131627-ANTN2E/blueprint/resolved-snapshot.json
 - old_digest: fd3872f4d231c8b1c9af0b73d3bd409a1f4561ce3873a1396f201c120940babc
+- current_digest: a6321f39291a15d80b3a01f93a7c111221f046d392c66dcb665b621a69b25885
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131627-ANTN2E
+
+### 2026-05-13T18:53:38.273Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: blueprint snapshot refreshed after merge-base update; HEAD 8d0f78d76 contains only task artifact snapshot refresh after d81de768a validation. Snapshot state is current; no implementation files changed after focused checks.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:50:55.813Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131627-ANTN2E-typed-drift-classification/.agentplane/tasks/202605131627-ANTN2E/blueprint/resolved-snapshot.json
+- old_digest: a6321f39291a15d80b3a01f93a7c111221f046d392c66dcb665b621a69b25885
 - current_digest: a6321f39291a15d80b3a01f93a7c111221f046d392c66dcb665b621a69b25885
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131627-ANTN2E
