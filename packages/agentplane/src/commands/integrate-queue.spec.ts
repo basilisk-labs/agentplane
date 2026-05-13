@@ -169,7 +169,8 @@ export const integrateQueueRunNextSpec: CommandSpec<IntegrateQueueRunNextParsed>
       kind: "boolean",
       name: "drain",
       default: false,
-      description: "Keep claiming queued entries after successful integrations until the lane blocks or empties.",
+      description:
+        "Keep claiming queued entries after successful integrations until the lane blocks or empties.",
     },
   ],
   parse: (raw) => ({

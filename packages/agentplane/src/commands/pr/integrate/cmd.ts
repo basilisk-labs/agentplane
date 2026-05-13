@@ -204,7 +204,8 @@ export async function cmdIntegrate(opts: {
           : null;
       const prUrl = typeof metaSource.pr_url === "string" ? metaSource.pr_url : null;
       const prUrlTarget = prUrl?.trim() ?? "";
-      const prTarget = prUrlTarget.length > 0 ? prUrlTarget : prNumber === null ? "" : String(prNumber);
+      const prTarget =
+        prUrlTarget.length > 0 ? prUrlTarget : prNumber === null ? "" : String(prNumber);
       const prHint =
         prNumber === null ? `the GitHub PR for branch ${branch}` : `GitHub PR #${prNumber}`;
       let protectedBaseMergeFailure: string | null = null;
@@ -230,8 +231,7 @@ export async function cmdIntegrate(opts: {
           throw new CliError({
             exitCode: exitCodeForError("E_HANDOFF"),
             code: "E_HANDOFF",
-            message:
-              `${githubMerge.detail}. Wait for GitHub to merge the PR, let Task Hosted Close finish the closure tail, then pull ${base}.`,
+            message: `${githubMerge.detail}. Wait for GitHub to merge the PR, let Task Hosted Close finish the closure tail, then pull ${base}.`,
             context: withDiagnosticContext(
               {
                 task_id: task.id,
@@ -245,7 +245,8 @@ export async function cmdIntegrate(opts: {
                 hint: "Wait for GitHub auto-merge and Task Hosted Close, then pull the base branch.",
                 nextAction: {
                   command: `git pull --ff-only`,
-                  reason: "refresh the base checkout after GitHub completes the protected-base merge",
+                  reason:
+                    "refresh the base checkout after GitHub completes the protected-base merge",
                   reasonCode: "protected_base_auto_merge_wait",
                 },
               },

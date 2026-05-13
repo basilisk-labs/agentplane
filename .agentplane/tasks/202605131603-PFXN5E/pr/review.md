@@ -24,17 +24,19 @@ Created: 2026-05-13T16:03:49.901Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T16:13:38.174Z
+- Updated: 2026-05-13T16:13:43.955Z
 - Branch: task/202605131603-PFXN5E/automate-merge-queue
 - Head: 07e9c09bfab0
 
 ```text
  .github/workflows/publish.yml                      |   4 +-
  .github/workflows/task-hosted-close.yml            |   4 +-
- .../src/commands/pr/integrate/cmd.test.ts          |  85 ++++++++++++++---
- .../agentplane/src/commands/pr/integrate/cmd.ts    | 102 +++++++++++++++++++++
+ .../src/commands/integrate-queue.command.ts        | 137 +++++++++++----------
+ .../src/commands/integrate-queue.spec.ts           |   8 ++
+ .../src/commands/pr/integrate/cmd.test.ts          |  85 +++++++++++--
+ .../agentplane/src/commands/pr/integrate/cmd.ts    | 102 +++++++++++++++
  .../task/hosted-close-workflow-contract.test.ts    |   5 +-
- 5 files changed, 183 insertions(+), 17 deletions(-)
+ 7 files changed, 265 insertions(+), 80 deletions(-)
 ```
 
 </details>
