@@ -16,7 +16,7 @@ Make branch_pr completion queue verified task branches for serialized integratio
 ## Verification
 
 - State: ok
-- Note: Verified GitHub merge transport hardening: gh readiness checks, GH_TOKEN/GITHUB_TOKEN API fallback, init recommendation, quickstart guidance, focused tests, eslint, typecheck, schema check, policy routing, CLI docs freshness, quickstart smoke, blueprint snapshot, doctor, and git diff check passed.
+- Note: Command: bunx vitest run packages/agentplane/src/commands/integrate-queue.spec.test.ts packages/agentplane/src/commands/pr/integrate/queue-state.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts packages/agentplane/src/cli/command-guide.test.ts | Result: pass | Evidence: 5 files, 28 tests passed. Command: bun run typecheck | Result: pass | Evidence: tsc -b completed. Command: bunx eslint touched TS files | Result: pass | Evidence: no lint output after numeric separator fix. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: git diff --check | Result: pass | Evidence: no whitespace errors.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,6 +28,7 @@ Make branch_pr completion queue verified task branches for serialized integratio
 
 ```text
  .agentplane/policy/workflow.branch_pr.md           |   9 +-
+ .../blueprint/resolved-snapshot.json               | 514 +++++++++++++++++++++
  .github/workflows/publish.yml                      |   4 +-
  .github/workflows/task-hosted-close.yml            |   4 +-
  docs/user/cli-reference.generated.mdx              |   1 +
@@ -36,21 +37,21 @@ Make branch_pr completion queue verified task branches for serialized integratio
  packages/agentplane/src/cli/command-guide.test.ts  |   6 +-
  packages/agentplane/src/cli/command-guide.ts       |   7 +-
  ...n-cli.core.pr-flow.integrate-validation.test.ts |  10 +-
- .../cli/run-cli/commands/init/execution.test.ts    |  49 ++++
- .../src/cli/run-cli/commands/init/execution.ts     |  56 ++++-
+ .../cli/run-cli/commands/init/execution.test.ts    |  49 ++
+ .../src/cli/run-cli/commands/init/execution.ts     |  56 ++-
  .../src/cli/run-cli/commands/init/model.ts         |   1 +
  .../src/cli/run-cli/commands/init/orchestrate.ts   |   7 +
- .../src/commands/integrate-queue.command.ts        | 137 ++++++-----
+ .../src/commands/integrate-queue.command.ts        | 137 +++---
  .../src/commands/integrate-queue.spec.ts           |   9 +
- .../src/commands/pr/integrate/cmd.test.ts          | 188 ++++++++++++++-
- .../agentplane/src/commands/pr/integrate/cmd.ts    |  83 ++++++-
- .../pr/integrate/internal/github-pr-merge.ts       | 268 +++++++++++++++++++++
+ .../src/commands/pr/integrate/cmd.test.ts          | 188 +++++++-
+ .../agentplane/src/commands/pr/integrate/cmd.ts    |  83 +++-
+ .../pr/integrate/internal/github-pr-merge.ts       | 268 +++++++++++
  .../task/hosted-close-workflow-contract.test.ts    |   5 +-
  packages/core/schemas/task-handoff.schema.json     |   5 +-
  .../core/src/tasks/task-artifact-schema.handoff.ts |   5 +-
  packages/spec/schemas/task-handoff.schema.json     |   5 +-
  schemas/task-handoff.schema.json                   |   5 +-
- 23 files changed, 755 insertions(+), 122 deletions(-)
+ 24 files changed, 1269 insertions(+), 122 deletions(-)
 ```
 
 </details>

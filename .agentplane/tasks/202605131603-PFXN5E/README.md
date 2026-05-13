@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T18:28:19.641Z"
+  updated_at: "2026-05-13T18:36:31.079Z"
   updated_by: "CODER"
-  note: "Verified GitHub merge transport hardening: gh readiness checks, GH_TOKEN/GITHUB_TOKEN API fallback, init recommendation, quickstart guidance, focused tests, eslint, typecheck, schema check, policy routing, CLI docs freshness, quickstart smoke, blueprint snapshot, doctor, and git diff check passed."
+  note: "Command: bunx vitest run packages/agentplane/src/commands/integrate-queue.spec.test.ts packages/agentplane/src/commands/pr/integrate/queue-state.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts packages/agentplane/src/cli/command-guide.test.ts | Result: pass | Evidence: 5 files, 28 tests passed. Command: bun run typecheck | Result: pass | Evidence: tsc -b completed. Command: bunx eslint touched TS files | Result: pass | Evidence: no lint output after numeric separator fix. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: git diff --check | Result: pass | Evidence: no whitespace errors."
   attempts: 0
 commit: null
 comments:
@@ -67,8 +67,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified GitHub merge transport hardening: gh readiness checks, GH_TOKEN/GITHUB_TOKEN API fallback, init recommendation, quickstart guidance, focused tests, eslint, typecheck, schema check, policy routing, CLI docs freshness, quickstart smoke, blueprint snapshot, doctor, and git diff check passed."
+  -
+    type: "verify"
+    at: "2026-05-13T18:36:31.079Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx vitest run packages/agentplane/src/commands/integrate-queue.spec.test.ts packages/agentplane/src/commands/pr/integrate/queue-state.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts packages/agentplane/src/cli/command-guide.test.ts | Result: pass | Evidence: 5 files, 28 tests passed. Command: bun run typecheck | Result: pass | Evidence: tsc -b completed. Command: bunx eslint touched TS files | Result: pass | Evidence: no lint output after numeric separator fix. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: git diff --check | Result: pass | Evidence: no whitespace errors."
 doc_version: 3
-doc_updated_at: "2026-05-13T18:28:19.681Z"
+doc_updated_at: "2026-05-13T18:36:31.116Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr completion queue verified task branches for serialized integration, prefer merge commits over squash in hosted close routes, and move protected-base integration toward GitHub merge orchestration instead of a manual handoff-only stop."
 sections:
@@ -170,6 +176,25 @@ sections:
     Attempts: 0
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T17:08:39.104Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131603-PFXN5E-automate-merge-queue/.agentplane/tasks/202605131603-PFXN5E/blueprint/resolved-snapshot.json
+    - old_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+    - current_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
+    
+    ### 2026-05-13T18:36:31.079Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bunx vitest run packages/agentplane/src/commands/integrate-queue.spec.test.ts packages/agentplane/src/commands/pr/integrate/queue-state.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts packages/agentplane/src/cli/command-guide.test.ts | Result: pass | Evidence: 5 files, 28 tests passed. Command: bun run typecheck | Result: pass | Evidence: tsc -b completed. Command: bunx eslint touched TS files | Result: pass | Evidence: no lint output after numeric separator fix. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: git diff --check | Result: pass | Evidence: no whitespace errors.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:28:19.681Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     Details:
     
@@ -303,6 +328,25 @@ Note: Verified GitHub merge transport hardening: gh readiness checks, GH_TOKEN/G
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T17:08:39.104Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131603-PFXN5E-automate-merge-queue/.agentplane/tasks/202605131603-PFXN5E/blueprint/resolved-snapshot.json
+- old_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+- current_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
+
+### 2026-05-13T18:36:31.079Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx vitest run packages/agentplane/src/commands/integrate-queue.spec.test.ts packages/agentplane/src/commands/pr/integrate/queue-state.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts packages/agentplane/src/cli/command-guide.test.ts | Result: pass | Evidence: 5 files, 28 tests passed. Command: bun run typecheck | Result: pass | Evidence: tsc -b completed. Command: bunx eslint touched TS files | Result: pass | Evidence: no lint output after numeric separator fix. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: git diff --check | Result: pass | Evidence: no whitespace errors.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:28:19.681Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 Details:
 
