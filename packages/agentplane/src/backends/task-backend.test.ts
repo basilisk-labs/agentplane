@@ -1,5 +1,3 @@
-import { readFile, rm } from "node:fs/promises";
-import path from "node:path";
 import type { TaskRecord } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
@@ -8,10 +6,9 @@ import {
   extractTaskDoc,
   mergeTaskDoc,
   taskRecordToData,
-  writeTasksExportFromTasks,
   type TaskData,
 } from "./task-backend.js";
-import { mkTempDir, silenceStdIO } from "@agentplane/testkit";
+import { silenceStdIO } from "@agentplane/testkit";
 
 let restoreStdIO: (() => void) | null = null;
 
@@ -406,31 +403,4 @@ describe("task-backend helpers", () => {
     expect(snapshot.meta.checksum).toHaveLength(64);
   });
 
-  it("writeTasksExportFromTasks writes a stable snapshot", async () => {
-    const outDir = await mkTempDir();
-    const outPath = path.join(outDir, "tasks.json");
-    await writeTasksExportFromTasks({
-      outputPath: outPath,
-      tasks: [
-        {
-          id: "202601300000-ABCD",
-          title: "Task",
-          description: "",
-          status: "TODO",
-          priority: "med",
-          owner: "o",
-          depends_on: [],
-          tags: [],
-          verify: [],
-        },
-      ],
-    });
-    const raw = JSON.parse(await readFile(outPath, "utf8")) as {
-      tasks: TaskData[];
-      meta: { checksum: string };
-    };
-    expect(raw.tasks).toHaveLength(1);
-    expect(raw.meta.checksum).toHaveLength(64);
-    await rm(outDir, { recursive: true, force: true });
-  });
 });

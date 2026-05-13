@@ -4,10 +4,10 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
 import {
+  buildTasksExportSnapshot,
   parseTaskReadme,
   renderTaskReadme,
   taskDocToSectionMap,
-  writeTasksExport,
 } from "@agentplaneorg/core/tasks";
 
 import { LocalBackend } from "../../backends/task-backend.js";
@@ -216,7 +216,7 @@ describe("commands/shared/TaskStore", () => {
     expect(final).toContain('title: "after"');
   });
 
-  it("preserves doc_version=3 across task-store updates and task export", async () => {
+  it("preserves doc_version=3 across task-store updates and export snapshot building", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
     await mkdir(path.join(root, ".git"), { recursive: true });
     const taskId = "202602070000-V3OK";
@@ -236,7 +236,7 @@ describe("commands/shared/TaskStore", () => {
     const final = await readFile(readmePath, "utf8");
     expect(final).toContain("doc_version: 3");
 
-    const { snapshot } = await writeTasksExport({ cwd: root, rootOverride: root });
+    const snapshot = await buildTasksExportSnapshot({ cwd: root, rootOverride: root });
     const exported = snapshot.tasks.find((task) => task.id === taskId);
     expect(exported?.doc_version).toBe(3);
   });

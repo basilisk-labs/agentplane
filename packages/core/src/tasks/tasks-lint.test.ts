@@ -7,10 +7,10 @@ import {
   computeTasksChecksum,
   createTask,
   defaultConfig,
+  buildTasksExportSnapshot,
   lintTasksFile,
   lintTasksSnapshot,
   saveConfig,
-  writeTasksExport,
   type TasksExportSnapshot,
 } from "../index.js";
 
@@ -44,7 +44,12 @@ describe("tasks-lint", () => {
       verify: [],
     });
 
-    await writeTasksExport({ cwd: root, rootOverride: root });
+    const snapshot = await buildTasksExportSnapshot({ cwd: root, rootOverride: root });
+    await writeFile(
+      path.join(root, ".agentplane", "tasks.json"),
+      `${JSON.stringify(snapshot, null, 2)}\n`,
+      "utf8",
+    );
     const result = await lintTasksFile({ cwd: root, rootOverride: root });
     expect(result.errors).toEqual([]);
   });
@@ -64,7 +69,9 @@ describe("tasks-lint", () => {
       verify: [],
     });
 
-    const { path: outPath } = await writeTasksExport({ cwd: root, rootOverride: root });
+    const outPath = path.join(root, ".agentplane", "tasks.json");
+    const snapshot = await buildTasksExportSnapshot({ cwd: root, rootOverride: root });
+    await writeFile(outPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
     const text = await readFile(outPath, "utf8");
     const parsed = JSON.parse(text) as { tasks: unknown[]; meta: { checksum: string } };
     parsed.meta.checksum = "bad";
@@ -89,7 +96,9 @@ describe("tasks-lint", () => {
       verify: [],
     });
 
-    const { path: outPath, snapshot } = await writeTasksExport({ cwd: root, rootOverride: root });
+    const outPath = path.join(root, ".agentplane", "tasks.json");
+    const snapshot = await buildTasksExportSnapshot({ cwd: root, rootOverride: root });
+    await writeFile(outPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
 
     const a = snapshot.tasks[0];
     if (!a) throw new Error("expected task");

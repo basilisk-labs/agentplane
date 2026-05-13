@@ -26,7 +26,6 @@ export {
   taskHostedClosePrSpec,
 } from "./hosted-close-pr.command.js";
 
-export { cmdTaskExport } from "./export.js";
 export { cmdTaskObsidian } from "./obsidian.js";
 export { cmdTaskLint } from "./lint.js";
 

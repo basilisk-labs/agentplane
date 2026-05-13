@@ -312,4 +312,18 @@ describe("runCli", () => {
       helpIo.restore();
     }
   });
+
+  it("evaluator project-only catalog reports missing project roots explicitly", async () => {
+    const root = await mkTempDir();
+    const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["evaluator", "list", "--builtin", "false"]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("No AgentPlane project root found");
+    } finally {
+      io.restore();
+      cwdSpy.mockRestore();
+    }
+  });
 });

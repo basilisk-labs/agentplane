@@ -10,7 +10,6 @@ import {
   toStringSafe,
   toTaskSummaries,
   unknownTaskIdMessage,
-  writeTasksExportFromTasks,
   type TaskData,
   type TaskDocMeta,
   type TaskSummary,
@@ -76,28 +75,6 @@ export async function listRedmineProjectionTasks(
   return context.cache.listProjectionTasks
     ? await context.cache.listProjectionTasks()
     : toTaskSummaries(await context.cache.listTasks());
-}
-
-export async function exportRedmineTasksJson(
-  context: RedmineCacheDocContext,
-  outputPath: string,
-): Promise<void> {
-  const tasks = await listRedmineTasks(context);
-  await writeTasksExportFromTasks({ outputPath, tasks });
-}
-
-export async function exportRedmineProjectionSnapshot(
-  context: RedmineCacheDocContext,
-  outputPath: string,
-): Promise<void> {
-  if (!context.cache) {
-    throw new BackendError(
-      "Redmine cache is disabled; projection snapshot export is unavailable",
-      "E_BACKEND",
-    );
-  }
-  const tasks = await context.cache.listTasks();
-  await writeTasksExportFromTasks({ outputPath, tasks });
 }
 
 export async function normalizeRedmineTasks(

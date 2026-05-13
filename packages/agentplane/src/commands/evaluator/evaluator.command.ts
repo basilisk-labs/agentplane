@@ -68,6 +68,13 @@ async function loadCatalogForCommand(ctx: CommandCtx, includeBuiltin: boolean) {
     }
     projectRoot = await findGitRoot(ctx.cwd);
   }
+  if (!projectRoot && !includeBuiltin) {
+    throw new GitError({
+      message:
+        "No AgentPlane project root found for project-local evaluator catalog lookup. Run from a repository checkout or pass --root <path>.",
+      context: { command: "evaluator", root: ctx.rootOverride ?? null },
+    });
+  }
   return await loadEvaluatorCatalog({ projectRoot, includeBuiltin });
 }
 

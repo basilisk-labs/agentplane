@@ -8,8 +8,6 @@ import {
   listRedmineProjectionTasks,
   listRedmineTasks,
   normalizeRedmineTasks,
-  exportRedmineProjectionSnapshot,
-  exportRedmineTasksJson,
   setRedmineTaskDoc,
   touchRedmineTaskDocMetadata,
 } from "./redmine/backend-cache-doc.js";
@@ -68,7 +66,7 @@ export class RedmineBackend implements TaskBackend {
     may_access_network_on_write: true,
     supports_projection_refresh: true,
     supports_push_sync: true,
-    supports_snapshot_export: true,
+    supports_snapshot_export: false,
   } as const;
   baseUrl: string;
   apiKey: string;
@@ -155,17 +153,6 @@ export class RedmineBackend implements TaskBackend {
 
   async listProjectionTasks(): Promise<TaskSummary[]> {
     return await listRedmineProjectionTasks(createRedmineCacheDocContext(this.runtimeHost()));
-  }
-
-  async exportTasksJson(outputPath: string): Promise<void> {
-    await exportRedmineTasksJson(createRedmineCacheDocContext(this.runtimeHost()), outputPath);
-  }
-
-  async exportProjectionSnapshot(outputPath: string): Promise<void> {
-    await exportRedmineProjectionSnapshot(
-      createRedmineCacheDocContext(this.runtimeHost()),
-      outputPath,
-    );
   }
 
   async refreshProjection(opts: {

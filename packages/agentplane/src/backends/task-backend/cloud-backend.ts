@@ -78,7 +78,7 @@ export class CloudBackend implements TaskBackend {
     may_access_network_on_write: true,
     supports_projection_refresh: true,
     supports_push_sync: true,
-    supports_snapshot_export: true,
+    supports_snapshot_export: false,
   } as const;
 
   endpoint: string;
@@ -190,13 +190,6 @@ export class CloudBackend implements TaskBackend {
   async normalizeTasks(): Promise<{ scanned: number; changed: number }> {
     return await this.cache.normalizeTasks();
   }
-  async exportTasksJson(outputPath: string): Promise<void> {
-    await this.cache.exportTasksJson(outputPath);
-  }
-  async exportProjectionSnapshot(outputPath: string): Promise<void> {
-    await this.cache.exportProjectionSnapshot(outputPath);
-  }
-
   async refreshProjection(opts: {
     allowNetwork: boolean;
     quiet?: boolean;
