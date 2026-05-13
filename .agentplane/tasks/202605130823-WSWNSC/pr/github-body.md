@@ -15,14 +15,14 @@ Fix branch_pr PR sync so observed OPEN and CLOSED GitHub pull request identity i
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: GitHub PR identity persistence now records OPEN pull request metadata in branch_pr PR artifacts, while focused tests confirm pr open creation and pr update hydration behavior.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T08:31:17.223Z
+- Updated: 2026-05-13T08:32:19.011Z
 - Branch: task/202605130823-WSWNSC/persist-pr-identity
 - Head: 376d16b79af1
 

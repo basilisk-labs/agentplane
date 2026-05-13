@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-13T08:39:31.692Z"
+  updated_by: "CODER"
+  note: "Verified: GitHub PR identity persistence now records OPEN pull request metadata in branch_pr PR artifacts, while focused tests confirm pr open creation and pr update hydration behavior."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implement the approved PR identity persistence fix in the task worktree, keep merged lifecycle semantics scoped to MERGED only, add focused regression tests for pr open/update OPEN identity hydration, and run the declared verification checks before handoff."
+  -
+    type: "verify"
+    at: "2026-05-13T08:39:31.692Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: GitHub PR identity persistence now records OPEN pull request metadata in branch_pr PR artifacts, while focused tests confirm pr open creation and pr update hydration behavior."
 doc_version: 3
-doc_updated_at: "2026-05-13T08:24:28.848Z"
+doc_updated_at: "2026-05-13T08:39:31.699Z"
 doc_updated_by: "CODER"
 description: "Fix branch_pr PR sync so observed OPEN and CLOSED GitHub pull request identity is persisted in task PR metadata, while merged lifecycle state remains limited to MERGED pull requests."
 sections:
@@ -60,11 +66,40 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-13T08:39:31.692Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: GitHub PR identity persistence now records OPEN pull request metadata in branch_pr PR artifacts, while focused tests confirm pr open creation and pr update hydration behavior.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T08:24:28.848Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts | Result: pass | Evidence: 3 pass, 0 fail, 22 expect calls.
+    Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts | Result: pass | Evidence: 4 pass, 0 fail, 24 expect calls.
+    Command: bun run typecheck | Result: pass | Evidence: tsc -b completed with exit code 0.
+    Command: bun run lint:core | Result: pass | Evidence: eslint packages scripts eslint.config.cjs vitest.config.ts completed with exit code 0.
+    Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK.
+    Command: ap doctor | Result: pass | Evidence: doctor OK with 0 errors and 0 warnings.
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605130823-WSWNSC-persist-pr-identity/.agentplane/tasks/202605130823-WSWNSC/blueprint/resolved-snapshot.json
+    - old_digest: af11500a959eac30b62cc377d5d6cb5b0e189af4716b1b5569f8e4eeeb59d410
+    - current_digest: af11500a959eac30b62cc377d5d6cb5b0e189af4716b1b5569f8e4eeeb59d410
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605130823-WSWNSC
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: The first direct exact-file eslint attempt used an invalid invocation for this repo and failed on unresolved test helper types across untouched lines; the canonical lint:core command passed.
+      Impact: No residual product impact; verification relies on the project lint command instead of the invalid ad hoc exact-file invocation.
+      Resolution: Recorded canonical lint:core pass, typecheck pass, focused regression tests, policy routing, and doctor.
 id_source: "generated"
 ---
 ## Summary
@@ -94,6 +129,32 @@ Fix branch_pr PR sync so observed OPEN and CLOSED GitHub pull request identity i
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-13T08:39:31.692Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: GitHub PR identity persistence now records OPEN pull request metadata in branch_pr PR artifacts, while focused tests confirm pr open creation and pr update hydration behavior.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T08:24:28.848Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts | Result: pass | Evidence: 3 pass, 0 fail, 22 expect calls.
+Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts | Result: pass | Evidence: 4 pass, 0 fail, 24 expect calls.
+Command: bun run typecheck | Result: pass | Evidence: tsc -b completed with exit code 0.
+Command: bun run lint:core | Result: pass | Evidence: eslint packages scripts eslint.config.cjs vitest.config.ts completed with exit code 0.
+Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK.
+Command: ap doctor | Result: pass | Evidence: doctor OK with 0 errors and 0 warnings.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605130823-WSWNSC-persist-pr-identity/.agentplane/tasks/202605130823-WSWNSC/blueprint/resolved-snapshot.json
+- old_digest: af11500a959eac30b62cc377d5d6cb5b0e189af4716b1b5569f8e4eeeb59d410
+- current_digest: af11500a959eac30b62cc377d5d6cb5b0e189af4716b1b5569f8e4eeeb59d410
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605130823-WSWNSC
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -102,3 +163,7 @@ Fix branch_pr PR sync so observed OPEN and CLOSED GitHub pull request identity i
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: The first direct exact-file eslint attempt used an invalid invocation for this repo and failed on unresolved test helper types across untouched lines; the canonical lint:core command passed.
+  Impact: No residual product impact; verification relies on the project lint command instead of the invalid ad hoc exact-file invocation.
+  Resolution: Recorded canonical lint:core pass, typecheck pass, focused regression tests, policy routing, and doctor.
