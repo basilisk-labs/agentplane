@@ -16,13 +16,13 @@ Add a context harvest mode that creates standard AgentPlane extraction tasks for
 ## Verification
 
 - State: ok
-- Note: Verified agentic context extraction task generation: focused harvest/task-new tests pass; eslint, typecheck, docs CLI freshness, format, knip, hotspot, policy routing, docs IA, doctor, diff whitespace, and live dry-run smoke pass. Release-readiness was rerun with Vitest because Bun lacks node:sqlite in this environment.
+- Note: Verified committed implementation e237c64f2: focused harvest/task-new tests, eslint, typecheck, docs CLI freshness, format, knip, hotspot, policy routing, docs IA, doctor, diff whitespace, and live create-extraction-tasks dry-run all pass. Release-readiness passes under Vitest; Bun test lacks node:sqlite in this environment.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T15:03:01.411Z
+- Updated: 2026-05-13T15:03:05.862Z
 - Branch: task/202605131449-GS3HB0/agentic-context-extraction
 - Head: e237c64f2d50
 

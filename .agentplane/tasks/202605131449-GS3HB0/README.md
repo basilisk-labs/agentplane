@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T15:01:58.818Z"
+  updated_at: "2026-05-13T15:03:27.015Z"
   updated_by: "CODER"
-  note: "Verified agentic context extraction task generation: focused harvest/task-new tests pass; eslint, typecheck, docs CLI freshness, format, knip, hotspot, policy routing, docs IA, doctor, diff whitespace, and live dry-run smoke pass. Release-readiness was rerun with Vitest because Bun lacks node:sqlite in this environment."
+  note: "Verified committed implementation e237c64f2: focused harvest/task-new tests, eslint, typecheck, docs CLI freshness, format, knip, hotspot, policy routing, docs IA, doctor, diff whitespace, and live create-extraction-tasks dry-run all pass. Release-readiness passes under Vitest; Bun test lacks node:sqlite in this environment."
   attempts: 0
 commit: null
 comments:
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified agentic context extraction task generation: focused harvest/task-new tests pass; eslint, typecheck, docs CLI freshness, format, knip, hotspot, policy routing, docs IA, doctor, diff whitespace, and live dry-run smoke pass. Release-readiness was rerun with Vitest because Bun lacks node:sqlite in this environment."
+  -
+    type: "verify"
+    at: "2026-05-13T15:03:27.015Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified committed implementation e237c64f2: focused harvest/task-new tests, eslint, typecheck, docs CLI freshness, format, knip, hotspot, policy routing, docs IA, doctor, diff whitespace, and live create-extraction-tasks dry-run all pass. Release-readiness passes under Vitest; Bun test lacks node:sqlite in this environment."
 doc_version: 3
-doc_updated_at: "2026-05-13T15:01:58.829Z"
+doc_updated_at: "2026-05-13T15:03:27.026Z"
 doc_updated_by: "CODER"
 description: "Add a context harvest mode that creates standard AgentPlane extraction tasks for batchwise semantic knowledge extraction from completed task history, with modular prompt context and provenance requirements."
 sections:
@@ -80,6 +86,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131449-GS3HB0
     
+    ### 2026-05-13T15:03:27.015Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified committed implementation e237c64f2: focused harvest/task-new tests, eslint, typecheck, docs CLI freshness, format, knip, hotspot, policy routing, docs IA, doctor, diff whitespace, and live create-extraction-tasks dry-run all pass. Release-readiness passes under Vitest; Bun test lacks node:sqlite in this environment.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T15:01:58.829Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131449-GS3HB0-agentic-context-extraction/.agentplane/tasks/202605131449-GS3HB0/blueprint/resolved-snapshot.json
+    - old_digest: 26f4bf4ba1a7d77364547c7ee3496140e1efe1148c468b4acd413e9806fd3388
+    - current_digest: 26f4bf4ba1a7d77364547c7ee3496140e1efe1148c468b4acd413e9806fd3388
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131449-GS3HB0
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -88,6 +113,10 @@ sections:
     - Observation: Implemented --create-extraction-tasks and --batch-size for context harvest tasks. Generated CURATOR tasks carry README/ACR source packs, allowed outputs, provenance rules, queued source markers, and a replaceable prompt module address.
       Impact: Completed task history can now be processed oldest-first by standard AgentPlane tasks instead of a single deterministic wiki proposal.
       Resolution: Keep deterministic --write-proposals/--promote behavior unchanged; use --create-extraction-tasks for semantic extraction batches.
+    
+    - Observation: PR #3638 opened for the committed branch after implementing agentic extraction task batches.
+      Impact: PR metadata and task verification now refer to the committed implementation head.
+      Resolution: Proceed with PR update, push, and hosted checks.
 id_source: "generated"
 ---
 ## Summary
@@ -133,6 +162,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131449-GS3HB0
 
+### 2026-05-13T15:03:27.015Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified committed implementation e237c64f2: focused harvest/task-new tests, eslint, typecheck, docs CLI freshness, format, knip, hotspot, policy routing, docs IA, doctor, diff whitespace, and live create-extraction-tasks dry-run all pass. Release-readiness passes under Vitest; Bun test lacks node:sqlite in this environment.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T15:01:58.829Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131449-GS3HB0-agentic-context-extraction/.agentplane/tasks/202605131449-GS3HB0/blueprint/resolved-snapshot.json
+- old_digest: 26f4bf4ba1a7d77364547c7ee3496140e1efe1148c468b4acd413e9806fd3388
+- current_digest: 26f4bf4ba1a7d77364547c7ee3496140e1efe1148c468b4acd413e9806fd3388
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131449-GS3HB0
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -145,3 +193,7 @@ BlueprintSnapshotRef:
 - Observation: Implemented --create-extraction-tasks and --batch-size for context harvest tasks. Generated CURATOR tasks carry README/ACR source packs, allowed outputs, provenance rules, queued source markers, and a replaceable prompt module address.
   Impact: Completed task history can now be processed oldest-first by standard AgentPlane tasks instead of a single deterministic wiki proposal.
   Resolution: Keep deterministic --write-proposals/--promote behavior unchanged; use --create-extraction-tasks for semantic extraction batches.
+
+- Observation: PR #3638 opened for the committed branch after implementing agentic extraction task batches.
+  Impact: PR metadata and task verification now refer to the committed implementation head.
+  Resolution: Proceed with PR update, push, and hosted checks.
