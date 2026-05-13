@@ -106,7 +106,23 @@ export async function resolveGitIndexLockInfo(opts: {
   } catch (err) {
     const code = (err as { code?: unknown } | null)?.code;
     if (code === "ENOENT") return null;
-    throw err;
+    throw new CliError({
+      exitCode: 5,
+      code: "E_GIT",
+      message: `Failed to inspect Git index lock: ${lockPath}`,
+      context: {
+        ...gitMutationDiagnosticContext({
+          command: "stat index.lock",
+          cwd: opts.repoRoot,
+          repoRoot: opts.repoRoot,
+          gitDir,
+          indexLockPath: lockPath,
+          remediation:
+            "Inspect the reported git directory permissions and index state, then retry the same command.",
+        }),
+        cause: err instanceof Error ? err.message : String(err),
+      },
+    });
   }
 }
 

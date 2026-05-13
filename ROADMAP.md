@@ -94,6 +94,8 @@ By the end of this epic, users will be able to run more autonomous workflows whi
 
 This epic introduces evaluations as the feedback layer for AgentPlane. Evaluations measure whether agents, recipes, prompts, blueprints, runner behavior, and lifecycle flows are improving or regressing. The goal is to make quality changes testable rather than subjective.
 
+The initial evaluator catalog starts earlier as a public inspection surface: projects can store prompt modules under `.agentplane/evaluators`, and users can inspect them with `agentplane evaluator list` and `agentplane evaluator show <id>`. CLI execution of evaluators remains a 0.8 deliverable.
+
 By the end of this epic, users will be able to compare baseline and candidate behavior using repeatable scenarios, structured evidence, and quality gates. Teams will be able to improve recipes, prompts, and execution policies through controlled evaluation loops instead of relying on anecdotal agent performance.
 
 ## Non-goals

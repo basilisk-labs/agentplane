@@ -398,7 +398,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
       expect(code).toBe(9);
       expect(io.stderr).toContain("error [E_HANDOFF]");
-      expect(io.stderr).toContain("requires GitHub pull-request merges");
+      expect(io.stderr).toContain("branch_pr integrates into main through the task GitHub PR");
       expect(io.stderr).toContain("Task Hosted Close");
       expect(io.stderr).toContain(`next_action: agentplane task handoff show ${taskId}`);
       expect(io.stderr).toContain(
@@ -439,7 +439,9 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       };
     };
     expect(handoff.from_role).toBe("INTEGRATOR");
-    expect(handoff.reason).toBe("Protected base main requires GitHub pull-request merges.");
+    expect(handoff.reason).toBe(
+      "branch_pr integration is waiting for the GitHub PR merge into main.",
+    );
     expect(handoff.branch).toBe(branch);
     expect(handoff.base_branch).toBe("main");
     expect(handoff.pr_branch).toBe(branch);
@@ -449,14 +451,14 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       kind: "protected_base_integrate",
       status: "awaiting_github_merge",
       local_mutation: "not_performed",
-      finalize_via: "github_pr_merge_then_hosted_close",
+      finalize_via: "github_task_pr_merge_then_hosted_close",
       pr_number: null,
       handoff_show_command: `agentplane task handoff show ${taskId}`,
       base_pull_command: "git pull --ff-only",
     });
     expect(handoff.next_actions).toEqual([
       `agentplane task handoff show ${taskId}`,
-      "Merge the GitHub PR for branch " + branch + " on GitHub",
+      "Continue GitHub PR merge for the GitHub PR for branch " + branch,
       "Wait for Task Hosted Close to finish",
       "git pull --ff-only",
     ]);

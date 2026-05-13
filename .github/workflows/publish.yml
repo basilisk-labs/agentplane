@@ -732,8 +732,8 @@ jobs:
           if [ -z "$pr_url" ]; then
             pr_url="${{ steps.create_release_evidence_pr.outputs.pr_url }}"
           fi
-          if gh pr merge --squash --delete-branch "$pr_url"; then
+          if gh pr merge --merge --delete-branch "$pr_url"; then
             echo "Release evidence PR merged immediately: $pr_url"
-          elif ! gh pr merge --auto --squash --delete-branch "$pr_url"; then
+          elif ! gh pr merge --auto --merge --delete-branch "$pr_url"; then
             echo "::warning::Release evidence PR created but neither direct merge nor auto-merge could be enabled; inspect $pr_url manually."
           fi

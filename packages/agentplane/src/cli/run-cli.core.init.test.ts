@@ -221,6 +221,7 @@ describe("runCli", () => {
       "backend.json",
     );
     const agentsPath = path.join(root, "AGENTS.md");
+    const evaluatorPath = path.join(root, ".agentplane", "evaluators", "recovery-context.md");
     const baselineAgentsPath = path.join(root, ".agentplane", ".upgrade", "baseline", "AGENTS.md");
     const baselineCoderPath = path.join(
       root,
@@ -243,6 +244,7 @@ describe("runCli", () => {
     expect(await pathExists(backendPath)).toBe(true);
     expect(await pathExists(redmineBackendPath)).toBe(false);
     expect(await pathExists(agentsPath)).toBe(true);
+    expect(await pathExists(evaluatorPath)).toBe(true);
     expect(await pathExists(baselineAgentsPath)).toBe(true);
     expect(await pathExists(baselineCoderPath)).toBe(true);
     expect(await pathExists(policyPath)).toBe(true);
@@ -356,6 +358,7 @@ describe("runCli", () => {
     expect(gitignore).toContain(".agentplane/tasks.json");
     expect(gitignore).toContain("AGENTS.md");
     expect(gitignore).toContain(".agentplane/agents/");
+    expect(gitignore).toContain(".agentplane/evaluators/");
     expect(gitignore).toContain(".agentplane/policy/");
 
     const execFileAsync = promisify(execFile) as (

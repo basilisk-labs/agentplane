@@ -32,6 +32,9 @@ import type {
 } from "./integrate-queue.spec.js";
 import { integrateQueueSpec } from "./integrate-queue.spec.js";
 
+const DEFAULT_QUEUE_POLL_INTERVAL_MS = 30_000;
+const DEFAULT_QUEUE_WAIT_TIMEOUT_MS = 10 * 60_000;
+
 export {
   integrateQueueClaimSpec,
   integrateQueueEnqueueSpec,
@@ -60,6 +63,18 @@ function defaultWorker(): string {
 function renderEntry(entry: IntegrationQueueEntry): string {
   const pr = entry.pr_number ? `#${entry.pr_number}` : "no-pr";
   return `${entry.status.padEnd(7)} ${entry.task_id} ${pr} priority=${entry.priority} branch=${entry.branch}`;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function findActiveLane(entries: IntegrationQueueEntry[]): IntegrationQueueEntry | null {
+  return entries.find((entry) => entry.status === "claimed" || entry.status === "handoff") ?? null;
+}
+
+function hasQueuedEntries(entries: IntegrationQueueEntry[]): boolean {
+  return entries.some((entry) => entry.status === "queued");
 }
 
 async function rejectIfQueuedHeadChanged(opts: {
@@ -239,74 +254,110 @@ export function makeRunIntegrateQueueRunNextHandler(
   return async (ctx: CommandCtx, p: IntegrateQueueRunNextParsed): Promise<number> => {
     const commandCtx = await getCtx("integrate queue run-next");
     const gitRoot = commandCtx.resolvedProject.gitRoot;
-    const claimed = await withIntegrationQueueMutex(gitRoot, async () => {
-      const queue = await readIntegrationQueue(gitRoot);
-      const next = claimNextQueuedEntry(queue, {
-        worker: p.worker ?? defaultWorker(),
-        ...(p.leaseMs === null ? {} : { leaseMs: p.leaseMs }),
-      });
-      if (!next.entry) {
+    let lastResult = 0;
+    let ranEntry = false;
+    const startedAt = Date.now();
+    const pollIntervalMs = p.pollIntervalMs ?? DEFAULT_QUEUE_POLL_INTERVAL_MS;
+    const timeoutMs = p.timeoutMs ?? DEFAULT_QUEUE_WAIT_TIMEOUT_MS;
+
+    do {
+      const claimed = await withIntegrationQueueMutex(gitRoot, async () => {
+        const queue = await readIntegrationQueue(gitRoot);
+        const next = claimNextQueuedEntry(queue, {
+          worker: p.worker ?? defaultWorker(),
+          ...(p.leaseMs === null ? {} : { leaseMs: p.leaseMs }),
+        });
+        if (!next.entry) {
+          await writeIntegrationQueue(gitRoot, next.state);
+          return next;
+        }
+
+        const stale = await rejectIfQueuedEntryIsStale({ gitRoot, entry: next.entry });
+        if (stale) {
+          await writeIntegrationQueue(
+            gitRoot,
+            markQueueEntry(next.state, stale.task_id, "rework", stale.reason),
+          );
+          throw new CliError({
+            code: "E_VALIDATION",
+            message: stale.reason ?? "queued entry stale",
+          });
+        }
+
         await writeIntegrationQueue(gitRoot, next.state);
         return next;
+      });
+      if (!claimed.entry) {
+        const activeLane = findActiveLane(claimed.state.entries);
+        if (p.wait && (activeLane || hasQueuedEntries(claimed.state.entries))) {
+          const elapsedMs = Date.now() - startedAt;
+          if (elapsedMs >= timeoutMs) {
+            throw new CliError({
+              code: "E_HANDOFF",
+              message: activeLane
+                ? `Integration queue lane is still occupied by ${activeLane.task_id} (${activeLane.status}) after ${timeoutMs}ms.`
+                : `No integration queue entry became claimable after ${timeoutMs}ms.`,
+            });
+          }
+          if (!p.quiet) {
+            const lane = activeLane
+              ? `${activeLane.task_id} (${activeLane.status})`
+              : "queued entries";
+            createCliEmitter().line(
+              `integration queue waiting: lane=${lane} retry_in_ms=${pollIntervalMs}`,
+            );
+          }
+          await sleep(Math.min(pollIntervalMs, Math.max(1, timeoutMs - elapsedMs)));
+          continue;
+        }
+        createCliEmitter().line(emptyStateMessage("queued integration entries"));
+        return lastResult;
       }
 
-      const stale = await rejectIfQueuedEntryIsStale({ gitRoot, entry: next.entry });
-      if (stale) {
-        await writeIntegrationQueue(
-          gitRoot,
-          markQueueEntry(next.state, stale.task_id, "rework", stale.reason),
-        );
-        throw new CliError({ code: "E_VALIDATION", message: stale.reason ?? "queued entry stale" });
+      ranEntry = true;
+      const claimedEntry = claimed.entry;
+      try {
+        lastResult = await cmdIntegrate({
+          ctx: commandCtx,
+          cwd: ctx.cwd,
+          rootOverride: ctx.rootOverride,
+          taskId: claimedEntry.task_id,
+          branch: claimedEntry.branch,
+          base: claimedEntry.base,
+          mergeStrategy: "merge",
+          runVerify: p.runVerify,
+          dryRun: p.dryRun,
+          quiet: p.quiet,
+        });
+        await withIntegrationQueueMutex(gitRoot, async () => {
+          const nextQueue = await readIntegrationQueue(gitRoot);
+          await writeIntegrationQueue(
+            gitRoot,
+            markQueueEntry(nextQueue, claimedEntry.task_id, p.dryRun ? "queued" : "done"),
+          );
+        });
+      } catch (err) {
+        const handoff = err instanceof CliError && err.code === "E_HANDOFF";
+        await withIntegrationQueueMutex(gitRoot, async () => {
+          const nextQueue = await readIntegrationQueue(gitRoot);
+          await writeIntegrationQueue(
+            gitRoot,
+            markQueueEntry(
+              nextQueue,
+              claimedEntry.task_id,
+              handoff ? "handoff" : "rework",
+              handoff
+                ? "GitHub PR merge pending; wait for hosted merge/close before releasing lane"
+                : err instanceof Error
+                  ? err.message
+                  : String(err),
+            ),
+          );
+        });
+        throw err;
       }
+    } while (p.drain && !p.dryRun);
 
-      await writeIntegrationQueue(gitRoot, next.state);
-      return next;
-    });
-    if (!claimed.entry) {
-      createCliEmitter().line(emptyStateMessage("queued integration entries"));
-      return 0;
-    }
-    const claimedEntry = claimed.entry;
-    try {
-      const result = await cmdIntegrate({
-        ctx: commandCtx,
-        cwd: ctx.cwd,
-        rootOverride: ctx.rootOverride,
-        taskId: claimedEntry.task_id,
-        branch: claimedEntry.branch,
-        base: claimedEntry.base,
-        mergeStrategy: "merge",
-        runVerify: p.runVerify,
-        dryRun: p.dryRun,
-        quiet: p.quiet,
-      });
-      await withIntegrationQueueMutex(gitRoot, async () => {
-        const nextQueue = await readIntegrationQueue(gitRoot);
-        await writeIntegrationQueue(
-          gitRoot,
-          markQueueEntry(nextQueue, claimedEntry.task_id, p.dryRun ? "queued" : "done"),
-        );
-      });
-      return result;
-    } catch (err) {
-      const handoff = err instanceof CliError && err.code === "E_HANDOFF";
-      await withIntegrationQueueMutex(gitRoot, async () => {
-        const nextQueue = await readIntegrationQueue(gitRoot);
-        await writeIntegrationQueue(
-          gitRoot,
-          markQueueEntry(
-            nextQueue,
-            claimedEntry.task_id,
-            handoff ? "handoff" : "rework",
-            handoff
-              ? "protected base handoff recorded; wait for hosted merge/close before releasing lane"
-              : err instanceof Error
-                ? err.message
-                : String(err),
-          ),
-        );
-      });
-      throw err;
-    }
+    return ranEntry ? lastResult : 0;
   };
 }

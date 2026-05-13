@@ -134,6 +134,9 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [context learn tasks](#context-learn-tasks)
   - [context search](#context-search)
   - [context show](#context-show)
+- Evaluators
+  - [evaluator list](#evaluator-list)
+  - [evaluator show](#evaluator-show)
 
 ## Core
 
@@ -1187,9 +1190,13 @@ Options:
 
 - `--worker <id>`: Queue worker id.
 - `--lease-ms <ms>`: Lease duration.
+- `--poll-interval-ms <ms>`: Delay between queue retry attempts when --wait is enabled.
+- `--timeout-ms <ms>`: Maximum time to wait for the merge lane when --wait is enabled.
 - `--run-verify`: Run verify commands. (default=false)
 - `--dry-run`: Do not modify git state. (default=false)
 - `--quiet`: Reduce output noise. (default=false)
+- `--drain`: Keep claiming queued entries after successful integrations until the lane blocks or empties. (default=false)
+- `--wait`: Poll a busy merge lane until it opens or --timeout-ms elapses. (default=false)
 
 ### pr check
 
@@ -3302,3 +3309,63 @@ Usage:
 ```text
 agentplane context show <source-ref>
 ```
+
+## Evaluators
+
+### evaluator list
+
+List evaluator prompt modules from .agentplane/evaluators.
+
+Usage:
+
+```text
+agentplane evaluator list [options]
+```
+
+Options:
+
+- `--builtin <true|false>`: Include packaged evaluator modules when no project override exists. (choices=true|false, default=true)
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane evaluator list
+```
+
+- Show evaluator ids and prompt metadata.
+
+```sh
+agentplane evaluator list --json
+```
+
+- Emit machine-readable evaluator metadata.
+
+```sh
+agentplane evaluator list --builtin false
+```
+
+- Show project-local evaluators only.
+
+### evaluator show
+
+Print an evaluator prompt module.
+
+Usage:
+
+```text
+agentplane evaluator show <id> [options]
+```
+
+Options:
+
+- `--builtin <true|false>`: Include packaged evaluator modules when no project override exists. (choices=true|false, default=true)
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane evaluator show recovery-context
+```
+
+- Print the recovery-context evaluator prompt.

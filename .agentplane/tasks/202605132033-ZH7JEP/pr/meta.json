@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T21:15:58Z",
+  "base": "main",
+  "branch": "task/202605132033-ZH7JEP/hosted-close-idempotent",
+  "created_at": "2026-05-13T20:33:34.949Z",
+  "head_sha": "1ddcd0670dfaa4c597ead5b6a0cfb6359a0e3dee",
+  "last_verified_at": "2026-05-13T20:40:12.232Z",
+  "last_verified_sha": "455912bd13990fb1af9a380b47dd3402fa2c43bc",
+  "merge_commit": "d1c9701dc0d8e7a36d5b16c18e043a1d56ad25a5",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T21:15:58Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605132033-ZH7JEP",
+  "updated_at": "2026-05-13T21:15:58Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -1,5 +1,3 @@
-import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
-
 import { mapBackendError } from "../../cli/error-map.js";
 import {
   listTaskSummariesMemo,
@@ -17,6 +15,7 @@ import {
   createTaskBlueprintLifecycleResolver,
   formatTaskBlueprintListExtra,
 } from "./blueprint-summary.js";
+import { annotateBranchPrTaskListState, taskListStatusKey } from "./shared/branch-pr-list-state.js";
 
 export async function cmdTaskListWithFilters(opts: {
   ctx?: CommandContext;
@@ -28,7 +27,10 @@ export async function cmdTaskListWithFilters(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const tasks = await listTaskSummariesMemo(ctx);
+    const tasks = await annotateBranchPrTaskListState({
+      ctx,
+      tasks: await listTaskSummariesMemo(ctx),
+    });
     handleTaskListWarnings({ backend: ctx.taskBackend, strictRead: opts.filters.strictRead });
     const { depState, items } = queryTaskProjection({ tasks, filters: opts.filters });
     const resolveBlueprint = await createTaskBlueprintLifecycleResolver({
@@ -44,7 +46,7 @@ export async function cmdTaskListWithFilters(opts: {
     if (!opts.filters.quiet) {
       const counts: Record<string, number> = {};
       for (const task of items) {
-        const status = normalizeTaskStatus(task.status);
+        const status = taskListStatusKey(task);
         counts[status] = (counts[status] ?? 0) + 1;
       }
       const total = items.length;

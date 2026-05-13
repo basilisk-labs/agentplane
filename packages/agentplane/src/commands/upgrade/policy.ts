@@ -22,6 +22,7 @@ export function isAllowedUpgradePath(relPath: string): boolean {
   if (relPath === "AGENTS.md") return true;
   if (relPath === "CLAUDE.md") return true;
   if (relPath.startsWith(".agentplane/agents/") && relPath.endsWith(".json")) return true;
+  if (relPath.startsWith(".agentplane/evaluators/") && relPath.endsWith(".md")) return true;
   if (
     relPath.startsWith(".agentplane/policy/") &&
     (relPath.endsWith(".md") ||

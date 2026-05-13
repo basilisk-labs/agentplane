@@ -24,7 +24,7 @@ workspace:
   cleanup: after_finish
 tasks:
   backend:
-    config_path: .agentplane/backends/cloud/backend.json
+    config_path: .agentplane/backends/local/backend.json
   id_suffix_length_default: 6
   verify:
     required_tags:

@@ -102,6 +102,7 @@ export async function cmdStart(opts: TaskTransitionCommentCommandOptions): Promi
       taskId: opts.taskId,
       quiet: opts.quiet,
       policyAction: "task_start",
+      phase: "implement",
       build: (current) => {
         assertStartDocRequirements(current, ctx.config);
         ensurePlanApprovedIfRequired(current, ctx.config);

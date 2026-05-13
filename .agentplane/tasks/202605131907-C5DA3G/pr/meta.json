@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T19:59:05Z",
+  "base": "main",
+  "branch": "task/202605131907-C5DA3G/switch-backend-local",
+  "created_at": "2026-05-13T19:12:54.373Z",
+  "head_sha": "728970a137ded609b0c08cd7a67936b4b80b746e",
+  "last_verified_at": "2026-05-13T19:14:43.316Z",
+  "last_verified_sha": "81b7f84d11e3b800eb4c53b38e897d251fb5553b",
+  "merge_commit": "a079856f688d876bd76d5825b6e202f1a10504e5",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T19:59:05Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605131907-C5DA3G",
+  "updated_at": "2026-05-13T19:59:05Z",
+  "verify": {
+    "status": "pass"
+  }
+}
