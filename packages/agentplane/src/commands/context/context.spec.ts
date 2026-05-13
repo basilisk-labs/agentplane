@@ -23,6 +23,8 @@ export const contextInitSpec: CommandSpec<{
   id: ["context", "init"],
   group: "Context",
   summary: "Initialize local context workspace and system manifest.",
+  description:
+    "Creates the local context workspace in an initialized AgentPlane project. When run in an empty standalone directory, it first initializes AgentPlane with safe non-interactive defaults, then writes the context workspace. Non-empty uninitialized directories must run agentplane init explicitly first.",
   options: [
     {
       kind: "string",

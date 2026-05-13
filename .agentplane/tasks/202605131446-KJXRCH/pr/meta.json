@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605131446-KJXRCH/context-init-bootstrap",
+  "created_at": "2026-05-13T14:47:31.010Z",
+  "head_sha": "96cceefd607d178c95b2b18c92e10f938584b6b2",
+  "last_verified_at": "2026-05-13T14:55:37.946Z",
+  "last_verified_sha": "87dfdcee66362a970d1f354f872e44f71d66f4b5",
+  "pr_number": 3637,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3637",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605131446-KJXRCH",
+  "updated_at": "2026-05-13T15:12:53.540Z",
+  "verify": {
+    "status": "pass"
+  }
+}

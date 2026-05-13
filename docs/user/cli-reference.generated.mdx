@@ -3857,6 +3857,8 @@ agentplane context ingest --dry-run src/index.ts src/lib/context.ts
 
 Initialize local context workspace and system manifest.
 
+Creates the local context workspace in an initialized AgentPlane project. When run in an empty standalone directory, it first initializes AgentPlane with safe non-interactive defaults, then writes the context workspace. Non-empty uninitialized directories must run agentplane init explicitly first.
+
 Usage:
 
 ```text
