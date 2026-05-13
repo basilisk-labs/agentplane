@@ -61,7 +61,7 @@ type HarvestFact = {
 
 type GraphRow = Record<string, unknown> & { id: string; source_refs: string[] };
 
-export type HarvestOutput = {
+type HarvestOutput = {
   selected: HarvestTask[];
   evidence: TaskEvidence[];
   facts: HarvestFact[];
