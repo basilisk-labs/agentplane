@@ -2,7 +2,6 @@ import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 import type { TaskSummary } from "../../../backends/task-backend.js";
 import type { CommandContext } from "../../shared/task-backend.js";
-import { readPrMetaIfPresent, resolveLocalMergedPrMeta } from "../hosted-merge-sync/pr-meta.js";
 
 const BRANCH_PR_LIST_STATE_KEY = "agentplane.branch_pr_list_state";
 
@@ -56,6 +55,8 @@ export async function annotateBranchPrTaskListState(opts: {
   tasks: TaskSummary[];
 }): Promise<TaskSummary[]> {
   if (opts.ctx.config.workflow_mode !== "branch_pr") return opts.tasks;
+  const { readPrMetaIfPresent, resolveLocalMergedPrMeta } =
+    await import("../hosted-merge-sync/pr-meta.js");
 
   const annotated: TaskSummary[] = [];
   for (const task of opts.tasks) {
