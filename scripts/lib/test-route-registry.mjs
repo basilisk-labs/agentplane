@@ -361,7 +361,6 @@ export const VITEST_SUITES = {
     maxWorkers: "4",
     pool: "forks",
   },
-  critical: CRITICAL_CLI_SUITE,
   "critical-cli": CRITICAL_CLI_SUITE,
   "platform-critical": {
     files: PLATFORM_CRITICAL_FILES,
