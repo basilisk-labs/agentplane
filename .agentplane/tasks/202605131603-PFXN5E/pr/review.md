@@ -24,27 +24,28 @@ Created: 2026-05-13T16:03:49.901Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T18:30:21.702Z
+- Updated: 2026-05-13T18:39:25.908Z
 - Branch: task/202605131603-PFXN5E/automate-merge-queue
-- Head: bf0a9545d028
+- Head: 55efd144474a
 
 ```text
- .agentplane/policy/workflow.branch_pr.md           |   9 +-
+ .agentplane/policy/workflow.branch_pr.md           |  11 +-
  .../blueprint/resolved-snapshot.json               | 514 +++++++++++++++++++++
  .github/workflows/publish.yml                      |   4 +-
  .github/workflows/task-hosted-close.yml            |   4 +-
- docs/user/cli-reference.generated.mdx              |   1 +
- .../agentplane/assets/policy/workflow.branch_pr.md |   9 +-
+ docs/user/cli-reference.generated.mdx              |   4 +
+ .../agentplane/assets/policy/workflow.branch_pr.md |  11 +-
  packages/agentplane/src/cli/bootstrap-guide.ts     |   4 +-
- packages/agentplane/src/cli/command-guide.test.ts  |   6 +-
+ packages/agentplane/src/cli/command-guide.test.ts  |   8 +-
  packages/agentplane/src/cli/command-guide.ts       |   7 +-
  ...n-cli.core.pr-flow.integrate-validation.test.ts |  10 +-
  .../cli/run-cli/commands/init/execution.test.ts    |  49 ++
  .../src/cli/run-cli/commands/init/execution.ts     |  56 ++-
  .../src/cli/run-cli/commands/init/model.ts         |   1 +
  .../src/cli/run-cli/commands/init/orchestrate.ts   |   7 +
- .../src/commands/integrate-queue.command.ts        | 137 +++---
- .../src/commands/integrate-queue.spec.ts           |   9 +
+ .../src/commands/integrate-queue.command.ts        | 177 ++++---
+ .../src/commands/integrate-queue.spec.test.ts      |  29 ++
+ .../src/commands/integrate-queue.spec.ts           |  43 ++
  .../src/commands/pr/integrate/cmd.test.ts          | 188 +++++++-
  .../agentplane/src/commands/pr/integrate/cmd.ts    |  83 +++-
  .../pr/integrate/internal/github-pr-merge.ts       | 268 +++++++++++
@@ -53,7 +54,7 @@ Created: 2026-05-13T16:03:49.901Z
  .../core/src/tasks/task-artifact-schema.handoff.ts |   5 +-
  packages/spec/schemas/task-handoff.schema.json     |   5 +-
  schemas/task-handoff.schema.json                   |   5 +-
- 24 files changed, 1269 insertions(+), 122 deletions(-)
+ 25 files changed, 1378 insertions(+), 125 deletions(-)
 ```
 
 </details>
