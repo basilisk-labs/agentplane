@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T19:08:09Z",
   "base": "main",
   "branch": "task/202605131815-Y9VGVQ/shared-root-env-sync",
   "created_at": "2026-05-13T18:17:32.377Z",
-  "head_sha": "ebcb625a0132454b0cc6a7253da22a9095ed7f0f",
+  "head_sha": "a2269d925248caa90e0c3c042da3cdb8f770dd28",
   "last_verified_at": "2026-05-13T18:49:43.851Z",
   "last_verified_sha": "9246be6131552d82fce48953b1e24c459adf0ded",
+  "merge_commit": "d78f7a75ebf1515434bce0a5ab2da6f508f1de8e",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T19:08:09Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605131815-Y9VGVQ",
-  "updated_at": "2026-05-13T18:51:38.284Z",
+  "updated_at": "2026-05-13T19:08:09Z",
   "verify": {
     "status": "pass"
   }
