@@ -2,7 +2,7 @@ import path from "node:path";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 
-import { loadDotEnv } from "../../shared/env.js";
+import { loadDotEnv, type DotEnvLoadResult } from "../../shared/env.js";
 import { isRecord } from "../../shared/guards.js";
 import {
   BackendError,
@@ -80,7 +80,6 @@ export class CloudBackend implements TaskBackend {
     supports_push_sync: true,
     supports_snapshot_export: true,
   } as const;
-
   endpoint: string;
   token: string;
   projectId: string;
@@ -90,10 +89,15 @@ export class CloudBackend implements TaskBackend {
   staleAfterSeconds: number | null;
   private fetchImpl: typeof fetch;
   private readonly configOverrides: CloudConfigOverride[];
-
+  private readonly dotEnv: Pick<DotEnvLoadResult, "root" | "path" | "loaded">;
   constructor(
     settings: CloudBackendSettings,
-    opts: { cache: LocalBackend; root: string; fetchImpl?: typeof fetch },
+    opts: {
+      cache: LocalBackend;
+      root: string;
+      fetchImpl?: typeof fetch;
+      dotEnv?: Pick<DotEnvLoadResult, "root" | "path" | "loaded">;
+    },
   ) {
     const endpoint = firstNonEmptyString(
       process.env.AGENTPLANE_CLOUD_ENDPOINT,
@@ -113,29 +117,34 @@ export class CloudBackend implements TaskBackend {
       AGENTPLANE_CLOUD_PROVIDER: this.provider ?? "",
     });
     this.cache = opts.cache;
-    this.statePath = path.resolve(
-      opts.root,
-      firstNonEmptyString(settings.state_path, ".agentplane/backends/cloud/state.json"),
+    const statePath = firstNonEmptyString(
+      settings.state_path,
+      ".agentplane/backends/cloud/state.json",
     );
+    this.statePath = path.resolve(opts.root, statePath);
+    this.dotEnv = opts.dotEnv ?? {
+      root: opts.root,
+      path: path.join(opts.root, ".env"),
+      loaded: false,
+    };
     this.staleAfterSeconds = normalizePositiveInteger(settings.stale_after_seconds) ?? 300;
     if (!opts.fetchImpl) configureCloudFetchAddressSelection();
     this.fetchImpl = opts.fetchImpl ?? fetch;
   }
-
   static async create(opts: {
     root: string;
     settings: CloudBackendSettings;
     cache: LocalBackend;
     fetchImpl?: typeof fetch;
   }): Promise<CloudBackend> {
-    await loadDotEnv(opts.root);
+    const dotEnv = await loadDotEnv(opts.root);
     return new CloudBackend(opts.settings, {
       root: opts.root,
       cache: opts.cache,
       fetchImpl: opts.fetchImpl,
+      dotEnv,
     });
   }
-
   async generateTaskId(opts: { length: number; attempts: number }): Promise<string> {
     return await this.cache.generateTaskId(opts);
   }
@@ -160,7 +169,6 @@ export class CloudBackend implements TaskBackend {
   async assertLocalMutationReady(): Promise<void> {
     await this.assertProjectionFreshForLocalMutation();
   }
-
   async setTaskDoc(
     taskId: string,
     doc: string,
@@ -196,7 +204,6 @@ export class CloudBackend implements TaskBackend {
   async exportProjectionSnapshot(outputPath: string): Promise<void> {
     await this.cache.exportProjectionSnapshot(outputPath);
   }
-
   async refreshProjection(opts: {
     allowNetwork: boolean;
     quiet?: boolean;
@@ -552,7 +559,12 @@ export class CloudBackend implements TaskBackend {
     const missing = this.missingConfigKeys();
     if (missing.length > 0) {
       throw new BackendError(
-        `Cloud backend is not configured: missing ${missing.join(", ")}`,
+        [
+          `Cloud backend is not configured: missing ${missing.join(", ")}`,
+          `Canonical env root: ${this.dotEnv.root}`,
+          `Checked .env: ${this.dotEnv.path}${this.dotEnv.loaded ? "" : " (not found)"}`,
+          "Fix: add the missing AGENTPLANE_CLOUD_* values to the canonical repository root .env or export them explicitly in the shell.",
+        ].join("\n"),
         "E_BACKEND",
       );
     }

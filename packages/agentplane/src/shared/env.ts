@@ -6,6 +6,13 @@ import { promisify } from "node:util";
 const DOTENV_LOADED_KEYS_ENV = "AGENTPLANE_DOTENV_LOADED_KEYS";
 const execFileAsync = promisify(execFile);
 
+export type DotEnvLoadResult = {
+  root: string;
+  path: string;
+  loaded: boolean;
+  loadedKeys: string[];
+};
+
 export function parseDotEnv(text: string): Record<string, string> {
   const out: Record<string, string> = {};
   const lines = text.split(/\r?\n/u);
@@ -196,7 +203,7 @@ export async function resolveDotEnvRoot(rootDir: string): Promise<string> {
   );
 }
 
-export async function loadDotEnv(rootDir: string): Promise<void> {
+export async function loadDotEnv(rootDir: string): Promise<DotEnvLoadResult> {
   const envRoot = await resolveDotEnvRoot(rootDir);
   const envPath = path.join(envRoot, ".env");
   let text = "";
@@ -204,13 +211,16 @@ export async function loadDotEnv(rootDir: string): Promise<void> {
     text = await readFile(envPath, "utf8");
   } catch (err) {
     const code = (err as { code?: string } | null)?.code;
-    if (code === "ENOENT") return;
+    if (code === "ENOENT") return { root: envRoot, path: envPath, loaded: false, loadedKeys: [] };
     throw err;
   }
   const parsed = parseDotEnv(text);
+  const loadedKeys: string[] = [];
   for (const [key, value] of Object.entries(parsed)) {
     if (process.env[key] !== undefined) continue;
     process.env[key] = value;
     recordDotEnvLoadedKey(key);
+    loadedKeys.push(key);
   }
+  return { root: envRoot, path: envPath, loaded: true, loadedKeys };
 }
