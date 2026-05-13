@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-base-to-string */
 import { parseGroupCommand, type GroupCommandParsed } from "../../cli/group-command.js";
-import type { CommandSpec } from "../../cli/spec/spec.js";
 import { toStringList } from "../../cli/spec/parse-utils.js";
+import type { CommandSpec } from "../../cli/spec/spec.js";
 
 export const contextSpec: CommandSpec<GroupCommandParsed> = {
   id: ["context"],

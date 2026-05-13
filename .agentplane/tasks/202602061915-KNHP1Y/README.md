@@ -1,9 +1,10 @@
 ---
 id: "202602061915-KNHP1Y"
-title: "P3: Распил run-cli.ts / recipes.ts / task-backend.ts"
+title: "P3: Split run-cli.ts / recipes.ts / task-backend.ts"
 status: "DONE"
 priority: "med"
 owner: "CODER"
+revision: 1
 depends_on: []
 tags:
   - "refactor"
@@ -19,6 +20,7 @@ verification:
   updated_at: "2026-02-06T20:27:58.516Z"
   updated_by: "TESTER"
   note: "Verified locally on 2026-02-06T20:27:58.516Z: scenario command extracted to its own module, git log hash/subject parsing made colon-safe; bun run lint, bun run test:agentplane, and bun run test:cli pass."
+  attempts: 0
 commit:
   hash: "44068eea70533c28c83b8aa859dde0fc86f28b98"
   message: "✨ KNHP1Y refactor"
@@ -29,17 +31,55 @@ comments:
   -
     author: "CODER"
     body: "Verified: Split scenario command implementation into its own module, extracted colon-safe git log hash/subject parsing, and reduced duplicated helper usage in task-backend; ran bun run lint, bun run test:agentplane, and bun run test:cli."
+events: []
 doc_version: 3
 doc_updated_at: "2026-02-06T20:28:45.820Z"
 doc_updated_by: "CODER"
-description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-DH1CKG) Разнести монолиты по доменным модулям, убрать локальные утилиты, упростить тестирование; без сохранения старых внутренних API, если не требуется."
+description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-DH1CKG) Split monoliths into domain modules, remove local utilities, and simplify testing; do not preserve old internal APIs unless required."
+sections:
+  Summary: |-
+    P3: Split run-cli.ts / recipes.ts / task-backend.ts
+
+    (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-DH1CKG) Split monoliths into domain modules, remove local utilities, and simplify testing; do not preserve old internal APIs unless required.
+  Scope: |-
+    - In scope: (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-DH1CKG) Split monoliths into domain modules, remove local utilities, and simplify testing; do not preserve old internal APIs unless required.
+    - Out of scope: unrelated changes outside this task.
+  Plan: |-
+    1) Split commands/recipes.ts into focused modules (recipes vs scenario) while keeping run-cli wiring intact.
+    2) Extract colon-safe git log parsing into a shared helper and update all %H:%s call sites.
+    3) Remove a few duplicated micro-utils from backends/task-backend.ts by importing shared helpers (start with isRecord).
+    4) Run bun run lint + bun run test:cli + bun run test:agentplane.
+  Verify Steps: |-
+    <!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+    1. <Action>. Expected: <observable result>.
+    2. <Action>. Expected: <observable result>.
+    3. <Action>. Expected: <observable result>.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    #### 2026-02-06T20:27:58.516Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified locally on 2026-02-06: scenario command extracted to its own module, git log hash/subject parsing made colon-safe; bun run lint, bun run test:agentplane, and bun run test:cli pass.
+
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
 id_source: "generated"
 ---
 ## Summary
 
+P3: Split run-cli.ts / recipes.ts / task-backend.ts
+
+(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-DH1CKG) Split monoliths into domain modules, remove local utilities, and simplify testing; do not preserve old internal APIs unless required.
 
 ## Scope
 
+- In scope: (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-DH1CKG) Split monoliths into domain modules, remove local utilities, and simplify testing; do not preserve old internal APIs unless required.
+- Out of scope: unrelated changes outside this task.
 
 ## Plan
 
@@ -69,8 +109,9 @@ Note: Verified locally on 2026-02-06: scenario command extracted to its own modu
 
 ## Rollback Plan
 
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
 
 ## Findings
-
 
 ## Risks
