@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T17:14:58.915Z"
+  updated_at: "2026-05-13T17:24:03.652Z"
   updated_by: "CODER"
-  note: "Lifecycle parity contract verified at current branch head: workflows:command-check, focused Vitest, typecheck, policy routing, doctor, builtin asset freshness, formatting, and verify-show all passed."
+  note: "Rebased on current main and reverified before publish: workflows:command-check, focused Vitest, typecheck, assets:builtin:check, policy routing, doctor, and verify-show passed."
   attempts: 0
 commit: null
 comments:
@@ -54,8 +54,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Lifecycle parity contract verified at current branch head: workflows:command-check, focused Vitest, typecheck, policy routing, doctor, builtin asset freshness, formatting, and verify-show all passed."
+  -
+    type: "verify"
+    at: "2026-05-13T17:24:03.652Z"
+    author: "CODER"
+    state: "ok"
+    note: "Rebased on current main and reverified before publish: workflows:command-check, focused Vitest, typecheck, assets:builtin:check, policy routing, doctor, and verify-show passed."
 doc_version: 3
-doc_updated_at: "2026-05-13T17:14:58.949Z"
+doc_updated_at: "2026-05-13T17:24:03.681Z"
 doc_updated_by: "CODER"
 description: "Fix branch_pr command-order drift across gateway docs, quickstart guidance, and blueprint routes; leave cleanup command references out of scope per user request."
 sections:
@@ -133,6 +139,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131635-W0735P
     
+    ### 2026-05-13T17:24:03.652Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Rebased on current main and reverified before publish: workflows:command-check, focused Vitest, typecheck, assets:builtin:check, policy routing, doctor, and verify-show passed.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T17:14:58.949Z, excerpt_hash=sha256:65a5b2ab7b7e18aa7dd80c03a6f614f26c62d91bbc02a4845c97fc02e1beca87
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131635-W0735P-command-order-guidance/.agentplane/tasks/202605131635-W0735P/blueprint/resolved-snapshot.json
+    - old_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+    - current_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131635-W0735P
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -149,6 +174,10 @@ sections:
     - Observation: Verification was rerun after the lifecycle contract implementation commit so PR freshness can track the current branch head plus task-local artifact commits.
       Impact: PR metadata can treat later task artifact commits as task-local advances instead of stale code changes.
       Resolution: Refresh PR artifacts after this verification record and keep subsequent commits limited to task artifacts.
+    
+    - Observation: Branch was rebased onto current main 244c1969 before publishing and merge.
+      Impact: Remote PR and merge will use current base instead of the older c5f2d3ca base.
+      Resolution: Verification rerun after rebase; PR artifacts will be refreshed after this verification record.
 id_source: "generated"
 ---
 ## Summary
@@ -235,6 +264,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131635-W0735P
 
+### 2026-05-13T17:24:03.652Z — VERIFY — ok
+
+By: CODER
+
+Note: Rebased on current main and reverified before publish: workflows:command-check, focused Vitest, typecheck, assets:builtin:check, policy routing, doctor, and verify-show passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T17:14:58.949Z, excerpt_hash=sha256:65a5b2ab7b7e18aa7dd80c03a6f614f26c62d91bbc02a4845c97fc02e1beca87
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131635-W0735P-command-order-guidance/.agentplane/tasks/202605131635-W0735P/blueprint/resolved-snapshot.json
+- old_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+- current_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131635-W0735P
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -255,3 +303,7 @@ BlueprintSnapshotRef:
 - Observation: Verification was rerun after the lifecycle contract implementation commit so PR freshness can track the current branch head plus task-local artifact commits.
   Impact: PR metadata can treat later task artifact commits as task-local advances instead of stale code changes.
   Resolution: Refresh PR artifacts after this verification record and keep subsequent commits limited to task artifacts.
+
+- Observation: Branch was rebased onto current main 244c1969 before publishing and merge.
+  Impact: Remote PR and merge will use current base instead of the older c5f2d3ca base.
+  Resolution: Verification rerun after rebase; PR artifacts will be refreshed after this verification record.

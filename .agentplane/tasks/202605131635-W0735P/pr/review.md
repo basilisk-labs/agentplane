@@ -13,7 +13,7 @@ Created: 2026-05-13T16:36:18.870Z
 ## Verification
 
 - State: ok
-- Note: Lifecycle parity contract verified at current branch head: workflows:command-check, focused Vitest, typecheck, policy routing, doctor, builtin asset freshness, formatting, and verify-show all passed.
+- Note: Rebased on current main and reverified before publish: workflows:command-check, focused Vitest, typecheck, assets:builtin:check, policy routing, doctor, and verify-show passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
