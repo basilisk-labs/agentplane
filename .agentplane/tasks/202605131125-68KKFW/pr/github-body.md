@@ -22,20 +22,21 @@ Make the long-form agentplane command render a cleaner human-oriented output wit
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T12:05:39.768Z
+- Updated: 2026-05-13T12:07:33.985Z
 - Branch: task/202605131125-68KKFW/split-cli-output
-- Head: aa468c8a0eed
+- Head: 8b8c95312c78
 
 ```text
  .../blueprint/resolved-snapshot.json               | 513 +++++++++++++++++++++
  .../src/backends/task-backend/cloud-pull.ts        |   5 +-
  .../task-backend/redmine/backend-sync/sync.ts      |  10 +-
+ .../run-cli.core.help-snap.test.ts.snap            | 362 +--------------
  packages/agentplane/src/cli/output.test.ts         |  34 +-
  packages/agentplane/src/cli/output.ts              | 127 ++++-
  .../agentplane/src/cli/run-cli.core.init.test.ts   |   3 +
  packages/agentplane/src/commands/acr/validate.ts   |   3 +-
  packages/agentplane/src/commands/doctor.run.ts     |   4 +-
- 8 files changed, 677 insertions(+), 22 deletions(-)
+ 9 files changed, 700 insertions(+), 361 deletions(-)
 ```
 
 </details>
