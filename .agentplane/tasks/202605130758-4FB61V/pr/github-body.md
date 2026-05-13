@@ -27,11 +27,12 @@ Remove template placeholders from v0.5.0 release notes and harden release notes 
 - Head: 24b1dc2ed0f2
 
 ```text
- docs/releases/v0.5.0.md                            | 32 ++---------
- .../commands/release/apply.preflight.package.ts    | 50 ++++++++++++++++
- .../src/commands/release/apply.preflight.test.ts   | 66 +++++++++++++++++++++-
- scripts/check-release-notes.mjs                    | 42 ++++++++++++++
- 4 files changed, 161 insertions(+), 29 deletions(-)
+ .../blueprint/resolved-snapshot.json               | 415 +++++++++++++++++++++
+ docs/releases/v0.5.0.md                            |  32 +-
+ .../commands/release/apply.preflight.package.ts    |  50 +++
+ .../src/commands/release/apply.preflight.test.ts   |  66 +++-
+ scripts/check-release-notes.mjs                    |  42 +++
+ 5 files changed, 576 insertions(+), 29 deletions(-)
 ```
 
 </details>
