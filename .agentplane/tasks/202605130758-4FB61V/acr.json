@@ -1,0 +1,216 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605130758-4FB61V",
+  "created_at": "2026-05-13T10:22:04.048Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "52d2c4532f4878da5732440262bb7de2e218b213",
+    "work_ref": "main",
+    "work_commit": "52d2c4532f4878da5732440262bb7de2e218b213"
+  },
+  "task": {
+    "task_id": "202605130758-4FB61V",
+    "title": "Fix release notes template leakage",
+    "intent": "Remove template placeholders from v0.5.0 release notes and harden release notes validation against placeholder leakage.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605130758-4FB61V/README.md",
+      "sha256": "sha256:2a8f811658c1b131f86ac4e88c3596eb599f0028532f25e9ffeece16779cd647"
+    },
+    "approved_at": "2026-05-13T07:59:05.437Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3620.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605130758-4FB61V_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-13T07:59:05.437Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605130758-4FB61V/README.md",
+      "sha256": "sha256:2a8f811658c1b131f86ac4e88c3596eb599f0028532f25e9ffeece16779cd647"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605130758-4FB61V/README.md",
+      "sha256": "sha256:2a8f811658c1b131f86ac4e88c3596eb599f0028532f25e9ffeece16779cd647"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605130758-4FB61V/README.md",
+      "sha256": "sha256:2a8f811658c1b131f86ac4e88c3596eb599f0028532f25e9ffeece16779cd647"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605130758-4FB61V/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:9ee629c8340f1a9ef8943f9d4990b2c5b8403cb77373e926f1ac0584074cf2b1"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 52d2c4532f4878da5732440262bb7de2e218b213 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:17d0ff1fb89687e43b4db5b679e1f788b28d4a22fbc8aede6a84fae362b6054e",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "release.strict",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "release.approval",
+          "kind": "approval",
+          "produced_by": "approval_gate",
+          "required": true
+        },
+        {
+          "id": "release.plan",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "release.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "release.publish",
+          "kind": "external_link",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        },
+        {
+          "id": "release.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605130758-4FB61V/blueprint/resolved-snapshot.json",
+        "digest": "635a98e00703d73845f4676cd40ee2164795af185a09d0e0b7dd4b3f4f0faa03",
+        "current_digest": "635a98e00703d73845f4676cd40ee2164795af185a09d0e0b7dd4b3f4f0faa03",
+        "route_changed": false,
+        "artifact_sha256": "sha256:9ee629c8340f1a9ef8943f9d4990b2c5b8403cb77373e926f1ac0584074cf2b1",
+        "safe_command": "agentplane blueprint snapshot 202605130758-4FB61V"
+      }
+    }
+  }
+}

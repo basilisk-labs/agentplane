@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T10:21:19Z",
   "base": "main",
   "branch": "task/202605130758-4FB61V/release-notes-template-guard",
   "created_at": "2026-05-13T08:09:10.107Z",
-  "head_sha": "0698e414f6ced818c0aa3b5568d9e057fa02860f",
+  "head_sha": "d55bdea7662ca28ff27a62ea508334e2d1fe71a0",
   "last_verified_at": "2026-05-13T09:54:05.898Z",
   "last_verified_sha": "24b1dc2ed0f276aa7b95f94ac4a098e07864595e",
+  "merge_commit": "52d2c4532f4878da5732440262bb7de2e218b213",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T10:21:19Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605130758-4FB61V",
-  "updated_at": "2026-05-13T10:14:41.383Z",
+  "updated_at": "2026-05-13T10:21:19Z",
   "verify": {
     "status": "pass"
   }
