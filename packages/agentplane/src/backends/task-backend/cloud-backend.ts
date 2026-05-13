@@ -1,5 +1,4 @@
 import path from "node:path";
-import { randomUUID } from "node:crypto";
 
 import { loadDotEnv, type DotEnvLoadResult } from "../../shared/env.js";
 import { isRecord } from "../../shared/guards.js";
@@ -14,37 +13,30 @@ import {
 } from "./shared.js";
 import type { LocalBackend } from "./local-backend.js";
 import { buildCloudPullPlan, emitCloudPullDiffSummary, readOpenConflicts } from "./cloud-pull.js";
+import { requestCloudPush } from "./cloud-backend-push.js";
 import {
-  CLOUD_PUSH_BATCH_RETRY_DELAYS_MS,
-  CLOUD_PUSH_BATCH_REQUEST_TIMEOUT_MS,
-  CLOUD_PUSH_BATCH_TASK_BYTES,
   CLOUD_PULL_REQUEST_TIMEOUT_MS,
   CLOUD_REQUEST_TIMEOUT_MS,
-  CLOUD_PUSH_DIRECT_BODY_LIMIT_BYTES,
   CloudHttpError,
   CloudNetworkError,
   cloudConfigOverrides,
   cloudConflictMessage,
   cloudHttpErrorMessage,
-  cloudPushBatchFinalized,
   cloudNetworkErrorMessage,
   configureCloudFetchAddressSelection,
   createTimeoutSignal,
   isOptionalSyncStateFailure,
-  isCloudRetriableError,
   isStale,
   normalizeCloudPullResponse,
   normalizePositiveInteger,
   readCloudJson,
   readCloudSyncStateDiagnostics,
   readSafeCommand,
-  splitTasksByPayloadBytes,
   unavailableCloudSyncStateDiagnostics,
   type CloudConfigOverride,
   type CloudSyncStateDiagnostics,
   type CloudSyncResponse,
 } from "./cloud-backend-utils.js";
-import { sleep } from "./shared/concurrency.js";
 import { firstNonEmptyString } from "./shared/strings.js";
 
 export type CloudBackendSettings = {
@@ -285,7 +277,14 @@ export class CloudBackend implements TaskBackend {
     }
     const response =
       opts.direction === "push"
-        ? await this.requestCloudPush(localTasks, opts)
+        ? await requestCloudPush({
+            provider: this.provider,
+            projectId: this.projectId,
+            localTasks,
+            conflict: opts.conflict,
+            quiet: opts.quiet,
+            request: this.request.bind(this),
+          })
         : await this.request<CloudSyncResponse>(
             `/v1/projects/${encodeURIComponent(this.projectId)}/sync/${action}`,
             {
@@ -407,105 +406,6 @@ export class CloudBackend implements TaskBackend {
       unavailable: false,
       diagnostics: readCloudSyncStateDiagnostics(data, conflicts.length),
     };
-  }
-
-  private async requestCloudPush(
-    localTasks: TaskData[],
-    opts: {
-      conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
-      quiet: boolean;
-    },
-  ): Promise<CloudSyncResponse> {
-    const directBody = JSON.stringify({
-      provider: this.provider,
-      direction: "push",
-      conflict: opts.conflict,
-      tasks: localTasks,
-    });
-    if (Buffer.byteLength(directBody, "utf8") <= CLOUD_PUSH_DIRECT_BODY_LIMIT_BYTES) {
-      return await this.request<CloudSyncResponse>(
-        `/v1/projects/${encodeURIComponent(this.projectId)}/sync/push`,
-        { method: "POST", body: directBody },
-        { timeoutMs: CLOUD_REQUEST_TIMEOUT_MS },
-      );
-    }
-
-    const chunks = splitTasksByPayloadBytes(localTasks, CLOUD_PUSH_BATCH_TASK_BYTES);
-    const batchId = `batch_${Date.now()}_${randomUUID()}`;
-    let lastResponse: CloudSyncResponse | null = null;
-    for (const [index, tasks] of chunks.entries()) {
-      lastResponse = await this.requestCloudPushBatchChunk({
-        batchId,
-        chunkIndex: index,
-        totalChunks: chunks.length,
-        totalTasks: localTasks.length,
-        tasks,
-        conflict: opts.conflict,
-        quiet: opts.quiet,
-      });
-      if (!opts.quiet) {
-        process.stderr.write(
-          `cloud push uploaded batch ${index + 1}/${chunks.length} tasks=${tasks.length}\n`,
-        );
-      }
-      if (index === chunks.length - 1 && !cloudPushBatchFinalized(lastResponse)) {
-        throw new BackendError(
-          [
-            "Cloud backend batch push did not finalize.",
-            "Why: the service did not confirm that every expected chunk was received before replacing the projection.",
-            "Fix: retry the cloud push; chunks are idempotent for one batch id during the run.",
-            "Safe command: agentplane backend sync cloud --direction push --yes",
-            "Stop condition: stop if the service repeatedly reports an incomplete batch after all chunks are uploaded.",
-          ].join("\n"),
-          "E_BACKEND",
-        );
-      }
-    }
-    return lastResponse ?? { data: { last_checked_at: new Date().toISOString() } };
-  }
-
-  private async requestCloudPushBatchChunk(opts: {
-    batchId: string;
-    chunkIndex: number;
-    totalChunks: number;
-    totalTasks: number;
-    tasks: TaskData[];
-    conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
-    quiet: boolean;
-  }): Promise<CloudSyncResponse> {
-    const body = JSON.stringify({
-      provider: this.provider,
-      direction: "push",
-      conflict: opts.conflict,
-      batch: {
-        id: opts.batchId,
-        total_batches: opts.totalChunks,
-        total_tasks: opts.totalTasks,
-        chunk_index: opts.chunkIndex,
-        finalize: opts.chunkIndex === opts.totalChunks - 1,
-      },
-      tasks: opts.tasks,
-    });
-    for (let attempt = 0; ; attempt += 1) {
-      try {
-        return await this.request<CloudSyncResponse>(
-          `/v1/projects/${encodeURIComponent(this.projectId)}/sync/push-batch`,
-          { method: "POST", body },
-          { timeoutMs: CLOUD_PUSH_BATCH_REQUEST_TIMEOUT_MS },
-        );
-      } catch (error) {
-        if (!isCloudRetriableError(error) || attempt >= CLOUD_PUSH_BATCH_RETRY_DELAYS_MS.length) {
-          throw error;
-        }
-        const delayMs = CLOUD_PUSH_BATCH_RETRY_DELAYS_MS[attempt] ?? 0;
-        if (!opts.quiet) {
-          process.stderr.write(
-            `cloud push retrying batch ${opts.chunkIndex + 1}/${opts.totalChunks} after transient error attempt=${attempt + 1}\n`,
-          );
-        }
-        await sleep(delayMs);
-      }
-    }
   }
 
   async inspectConfiguration(): Promise<TaskBackendInspectionResult> {
