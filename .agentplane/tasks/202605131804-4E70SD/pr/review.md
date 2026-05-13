@@ -24,9 +24,9 @@ Created: 2026-05-13T18:09:21.608Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T18:47:51.611Z
+- Updated: 2026-05-13T18:55:17.018Z
 - Branch: task/202605131804-4E70SD/phase-aware-policy
-- Head: 25b87381c06e
+- Head: f8741fe95a5f
 
 ```text
  .../blueprint/resolved-snapshot.json               | 551 +++++++++++++++++++++
@@ -50,7 +50,8 @@ Created: 2026-05-13T18:09:21.608Z
  packages/agentplane/src/policy/rules/phase.ts      |  74 +++
  packages/agentplane/src/policy/taxonomy.ts         |  30 ++
  packages/agentplane/src/shared/errors.ts           |   2 +
- 21 files changed, 920 insertions(+), 18 deletions(-)
+ scripts/baselines/knip-baseline.json               |  10 -
+ 22 files changed, 920 insertions(+), 28 deletions(-)
 ```
 
 </details>

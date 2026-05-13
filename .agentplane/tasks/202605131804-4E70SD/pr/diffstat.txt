@@ -19,4 +19,5 @@
  packages/agentplane/src/policy/rules/phase.ts      |  74 +++
  packages/agentplane/src/policy/taxonomy.ts         |  30 ++
  packages/agentplane/src/shared/errors.ts           |   2 +
- 21 files changed, 920 insertions(+), 18 deletions(-)
+ scripts/baselines/knip-baseline.json               |  10 -
+ 22 files changed, 920 insertions(+), 28 deletions(-)
