@@ -2,7 +2,7 @@ import { loadConfig } from "@agentplaneorg/core/config";
 import { resolveProject } from "@agentplaneorg/core/project";
 
 import type { CommandHandler } from "../cli/spec/spec.js";
-import { warnMessage, successMessage } from "../cli/output.js";
+import { infoMessage, successMessage, warnMessage } from "../cli/output.js";
 import type { DoctorParsed } from "./doctor.spec.js";
 import { loadCommandContext } from "./shared/task-backend.js";
 import { checkDoneTaskCommitInvariants } from "./doctor/archive.js";
@@ -35,7 +35,7 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
   });
 
   const reportProgress = (message: string): void => {
-    process.stderr.write(`ℹ️ doctor: ${message}\n`);
+    process.stderr.write(`${infoMessage(`doctor: ${message}`)}\n`);
   };
 
   const runChecks = async (): Promise<string[]> => {
