@@ -20,7 +20,7 @@ export type CliReportOptions = {
   stream?: CliEmitterStream;
 };
 
-export type CliPresentationMode = "agent" | "human";
+type CliPresentationMode = "agent" | "human";
 
 export type CliEmitter = {
   line: (text: string, stream?: CliEmitterStream) => void;
