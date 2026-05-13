@@ -20,7 +20,10 @@ import {
 import { runReleasePlan } from "./plan.command.js";
 import { runReleaseApply, runReleaseCandidate } from "./apply.command.js";
 import { cleanHookEnv, packageDependencyExists } from "./apply.mutation.js";
-import { readOptionalAgentplaneDependencyVersion } from "./apply.preflight.package.js";
+import {
+  readOptionalAgentplaneDependencyVersion,
+  validateReleaseNotes,
+} from "./apply.preflight.package.js";
 
 const execFileAsync = promisify(execFile);
 const RELEASE_APPLY_LONG_TIMEOUT_MS = 120_000;
@@ -60,6 +63,67 @@ describeWhenNotHook(
 
       await expect(readOptionalAgentplaneDependencyVersion(pkgPath)).resolves.toBeNull();
       await expect(packageDependencyExists(pkgPath, "agentplane")).resolves.toBe(false);
+    });
+
+    it("rejects release notes that still contain template placeholder text", async () => {
+      const root = await mkGitRepoRoot();
+      const notesPath = path.join(root, "docs", "releases", "v0.2.7.md");
+      await mkdir(path.dirname(notesPath), { recursive: true });
+      await writeFile(
+        notesPath,
+        [
+          "# Release Notes - v0.2.7",
+          "",
+          "## Summary",
+          "",
+          "- 2-4 bullets with the main release outcomes in plain language.",
+          "",
+          "## Added",
+          "",
+          "- New features or capabilities.",
+          "",
+          "## Writing Rules",
+          "",
+          "- Cover all differences from the release plan (`changes.md`/`changes.json`).",
+          "",
+        ].join("\n"),
+        "utf8",
+      );
+
+      await expect(validateReleaseNotes(notesPath, 1)).rejects.toThrow(
+        /template writing instructions/u,
+      );
+    });
+
+    it("rejects release notes with duplicate section headings", async () => {
+      const root = await mkGitRepoRoot();
+      const notesPath = path.join(root, "docs", "releases", "v0.2.7.md");
+      await mkdir(path.dirname(notesPath), { recursive: true });
+      await writeFile(
+        notesPath,
+        [
+          "# Release Notes - v0.2.7",
+          "",
+          "## Summary",
+          "",
+          "- Agents now get deterministic release evidence.",
+          "- Publish checks now cover package parity.",
+          "",
+          "## Added",
+          "",
+          "- Added release evidence checks.",
+          "",
+          "## Added",
+          "",
+          "- Added package parity checks.",
+          "",
+        ].join("\n"),
+        "utf8",
+      );
+
+      await expect(validateReleaseNotes(notesPath, 1)).rejects.toThrow(
+        /duplicate section headings.*Added/u,
+      );
     });
 
     it(
