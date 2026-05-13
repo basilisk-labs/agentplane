@@ -24,9 +24,9 @@ Created: 2026-05-13T16:51:39.705Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T18:41:35.579Z
+- Updated: 2026-05-13T19:04:02.835Z
 - Branch: task/202605131649-61129E/public-cli-docs-surface
-- Head: cf2f9cc879b0
+- Head: 50e8397902b3
 
 ```text
  .../blueprint/resolved-snapshot.json               |  512 +++++
@@ -44,7 +44,7 @@ Created: 2026-05-13T16:51:39.705Z
  docs/user/backends/redmine.mdx                     |   12 +-
  docs/user/branching-and-pr-artifacts.mdx           |    2 +-
  docs/user/breaking-changes.mdx                     |    3 +-
- docs/user/cli-reference.generated.mdx              | 2038 +-------------------
+ docs/user/cli-reference.generated.mdx              | 2049 +-------------------
  docs/user/commands.mdx                             |   67 +-
  docs/user/local-context.mdx                        |    7 +-
  docs/user/setup.mdx                                |   12 -
@@ -54,14 +54,14 @@ Created: 2026-05-13T16:51:39.705Z
  docs/user/workflow-migration.mdx                   |   23 +-
  docs/user/workflow.mdx                             |   10 +-
  docs/workflow-guides/branch-pr.mdx                 |    4 +-
- .../src/cli/run-cli.core.docs-cli.test.ts          |    6 +
+ .../src/cli/run-cli.core.docs-cli.test.ts          |    9 +
  .../agentplane/src/cli/run-cli/registry.run.ts     |    7 +-
- packages/agentplane/src/cli/spec/docs-render.ts    |   21 +-
+ packages/agentplane/src/cli/spec/docs-render.ts    |   20 +-
  scripts/checks/check-agent-onboarding-scenario.mjs |   16 +-
  scripts/checks/check-docs-ia.mjs                   |    1 -
  website/sidebars.ts                                |   35 -
- website/static/llms-full.txt                       |  753 ++++----
- 32 files changed, 1169 insertions(+), 2655 deletions(-)
+ website/static/llms-full.txt                       |  753 +++----
+ 32 files changed, 1164 insertions(+), 2673 deletions(-)
 ```
 
 </details>
