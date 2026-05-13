@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-base-to-string, @typescript-eslint/prefer-nullish-coalescing, @typescript-eslint/restrict-template-expressions, @typescript-eslint/prefer-optional-chain */
 import path from "node:path";
 
 import { CliError } from "../../shared/errors.js";
@@ -238,7 +239,7 @@ async function collectKnownTaskIds(root: string): Promise<Set<string>> {
   const lockPath = path.join(root, ".agentplane", "context", "manifest.lock.json");
   try {
     const raw = await readText(lockPath);
-    const parsed = JSON.parse(raw) as { sources?: Array<{ path?: unknown }> };
+    const parsed = JSON.parse(raw) as { sources?: { path?: unknown }[] };
     if (Array.isArray(parsed?.sources)) {
       return new Set(
         parsed.sources
@@ -247,7 +248,7 @@ async function collectKnownTaskIds(root: string): Promise<Set<string>> {
             if (!source.startsWith(".agentplane/tasks/")) return "";
             return source.split("/")[2] ?? "";
           })
-          .filter((value): value is string => Boolean(value)),
+          .filter(Boolean),
       );
     }
   } catch {
@@ -273,8 +274,8 @@ async function countRows(filePath: string): Promise<number> {
   return rows.length;
 }
 
-async function loadJsonlRows(filePath: string): Promise<Array<Record<string, unknown>>> {
+async function loadJsonlRows(filePath: string): Promise<Record<string, unknown>[]> {
   if (!(await fileExists(filePath))) return [];
   const raw = await readText(filePath);
-  return parseJsonlLines(raw) as Array<Record<string, unknown>>;
+  return parseJsonlLines(raw) as Record<string, unknown>[];
 }

@@ -124,8 +124,10 @@
     "docs:site:check": "bun run docs:site:generate && bun run docs:site:typecheck && bun run docs:site:build && bun run docs:site:check:design",
     "logging:check": "node scripts/check-no-console.mjs",
     "release:bun:smoke": "node scripts/smoke-bun-compiled-cli.mjs",
-    "release:bun:generate": "node scripts/generate-bun-cli-assets.mjs",
-    "release:bun:check": "node scripts/generate-bun-cli-assets.mjs --check"
+    "assets:builtin:generate": "node scripts/generate-builtin-assets.mjs",
+    "assets:builtin:check": "node scripts/generate-builtin-assets.mjs --check",
+    "release:bun:generate": "bun run assets:builtin:generate && node scripts/generate-bun-cli-assets.mjs",
+    "release:bun:check": "bun run assets:builtin:check && node scripts/generate-bun-cli-assets.mjs --check"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

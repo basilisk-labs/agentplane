@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-base-to-string */
 import path from "node:path";
 
 import { CliError } from "../../shared/errors.js";

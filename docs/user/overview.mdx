@@ -1,6 +1,6 @@
 ---
 title: "Overview"
-description: "Learn how AgentPlane makes AI-agent work traceable inside Git."
+description: "Learn how AgentPlane makes AI-agent work traceable inside Git with task evidence and local context."
 ---
 
 ## What AgentPlane is
@@ -8,7 +8,7 @@ description: "Learn how AgentPlane makes AI-agent work traceable inside Git."
 AgentPlane is Git-native infrastructure for traceable AI work.
 
 It wraps coding-agent changes in repository-owned evidence: task intent, approved plan,
-verification results, finish state, Git metadata, and Agent Change Record.
+verification results, local context artifacts, finish state, Git metadata, and Agent Change Record.
 
 Use your existing agent to edit code. Use AgentPlane to make the work reviewable after the chat
 window, terminal session, or IDE context is gone.
@@ -32,6 +32,7 @@ task -> plan -> approve -> implement -> verify -> finish
 - Policy gateway through `AGENTS.md` or `CLAUDE.md`.
 - Explicit task lifecycle.
 - Verification evidence.
+- Local context ingestion, projection, search, and task-context verification.
 - ACR generation and validation.
 - `direct` and `branch_pr` workflows.
 
@@ -53,19 +54,33 @@ The visible payoff is a repo-owned task trail:
 .agentplane/tasks/<task-id>/acr.json
 ```
 
+For research-heavy tasks, local context adds a second repo-owned trail:
+
+```text
+.agentplane/context/derived/context.sqlite
+context/wiki/**/*
+context/facts/**/*.jsonl
+context/graph/**/*.jsonl
+```
+
 ## Source of truth model
 
 - Workflow policy: `AGENTS.md` or `CLAUDE.md`.
 - Repo workflow/configuration: `.agentplane/WORKFLOW.md`.
 - Task state: `.agentplane/tasks/`.
+- Local context source artifacts: `context/**`.
+- Local context derived projection: `.agentplane/context/derived/context.sqlite`.
 - ACR evidence projection: `.agentplane/tasks/<task-id>/acr.json`.
 - Command behavior: installed `agentplane` CLI.
 - Git history: commits, branches, and review workflow.
 
+`context/**` is the editable source layer. `.agentplane/context/derived/**` is generated and can be
+rebuilt with `agentplane context reindex`.
+
 ## Next steps
 
 1. Install and initialize from [Setup](setup).
-2. Read [Agent Change Record](agent-change-record).
-3. Pick a [workflow guide](../workflow-guides) for your coding agent or review setup.
-4. Learn the [Workflow](workflow).
+2. Read [Local context](local-context) if your task needs reusable repository knowledge.
+3. Read [Agent Change Record](agent-change-record).
+4. Pick a [workflow guide](../workflow-guides) for your coding agent or review setup.
 5. Install a [Recipe](../recipes) only when you need an extension package.

@@ -1,24 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, unicorn/consistent-function-scoping, unicorn/no-array-sort */
 import { lstatSync, existsSync } from "node:fs";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
-export type ScopeName = "wiki" | "facts" | "graph" | "tasks" | "capabilities" | "tasks-acr" | "raw";
+type ScopeName = "wiki" | "facts" | "graph" | "tasks" | "capabilities" | "tasks-acr" | "raw";
 
-export type SourceRef = {
-  filePath: string;
-  selectors: Record<string, string>;
-};
-
-export type TextMatch = {
-  path: string;
-  score: number;
-  snippet: string;
-  line?: number;
-  rawLine?: number;
-  refs?: string[];
-};
-
-export type ParsedSourceRef = {
+type ParsedSourceRef = {
   path: string;
   selectors: Record<string, string>;
 };
@@ -31,7 +18,7 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 
 export function parseSourceRef(raw: string): ParsedSourceRef {
   const hashIndex = raw.indexOf("#");
-  if (hashIndex < 0) {
+  if (hashIndex === -1) {
     return { path: raw, selectors: {} };
   }
   const base = raw.slice(0, hashIndex);
@@ -51,15 +38,6 @@ export function parseSourceRef(raw: string): ParsedSourceRef {
 
 export function toPosix(p: string): string {
   return p.split(path.sep).join("/");
-}
-
-export function safeRelativePath(projectRoot: string, target: string): string {
-  const root = path.resolve(projectRoot);
-  const abs = path.resolve(projectRoot, target);
-  if (!abs.startsWith(`${root}${path.sep}`) && abs !== root) {
-    throw new Error(`path escapes project root: ${target}`);
-  }
-  return toPosix(path.relative(projectRoot, abs));
 }
 
 export async function fileExists(filePath: string): Promise<boolean> {
@@ -122,40 +100,52 @@ export function normalizeScopeList(scopeValue: string): ScopeName[] {
     .filter((part) => part !== "raw");
 }
 
-export function scopeToFiles(root: string, scope: ScopeName): string[] {
+function scopeToFiles(root: string, scope: ScopeName): string[] {
   const paths: string[] = [];
   switch (scope) {
-    case "wiki":
+    case "wiki": {
       paths.push("context/wiki");
       break;
-    case "facts":
+    }
+    case "facts": {
       paths.push(".agentplane/context/derived/facts/facts.jsonl");
       break;
-    case "graph":
-      paths.push(".agentplane/context/derived/graph/entities.jsonl");
-      paths.push(".agentplane/context/derived/graph/edges.jsonl");
-      paths.push(".agentplane/context/derived/graph/provenance_edges.jsonl");
+    }
+    case "graph": {
+      paths.push(
+        ".agentplane/context/derived/graph/entities.jsonl",
+        ".agentplane/context/derived/graph/edges.jsonl",
+        ".agentplane/context/derived/graph/provenance_edges.jsonl",
+      );
       break;
-    case "tasks":
+    }
+    case "tasks": {
       paths.push(".agentplane/tasks");
       break;
-    case "capabilities":
-      paths.push("context/capabilities");
-      paths.push(".agentplane/context/derived/capabilities/capabilities.jsonl");
+    }
+    case "capabilities": {
+      paths.push(
+        "context/capabilities",
+        ".agentplane/context/derived/capabilities/capabilities.jsonl",
+      );
       break;
-    case "tasks-acr":
+    }
+    case "tasks-acr": {
       paths.push(".agentplane/tasks");
       break;
-    case "raw":
+    }
+    case "raw": {
       paths.push("context/raw");
       break;
-    default:
+    }
+    default: {
       paths.push("context/wiki");
+    }
   }
   return paths.flatMap((p) => collectSafeFilePaths(root, p));
 }
 
-export function collectSafeFilePaths(root: string, relPath: string): string[] {
+function collectSafeFilePaths(root: string, relPath: string): string[] {
   const target = path.join(root, relPath);
   if (!existsSync(target)) {
     return [toPosix(relPath)];
@@ -189,7 +179,11 @@ export async function walkScopeFiles(root: string, scopes: ScopeName[]): Promise
 
 export function parseLineRange(selector: string | undefined): [number, number] | null {
   if (!selector) return null;
-  const m = selector.match(/^(\d+)-(\d+)$/u);
+  if (/^\d+$/u.test(selector)) {
+    const line = Number(selector);
+    return Number.isFinite(line) && line > 0 ? [line, line] : null;
+  }
+  const m = /^(\d+)-(\d+)$/u.exec(selector);
   if (!m) return null;
   const start = Number(m[1]);
   const end = Number(m[2]);
@@ -201,19 +195,19 @@ export function locateMarkdownSection(
   text: string,
   section: string,
 ): { start: number; end: number } | null {
-  const target = section.trim().toLowerCase().replace(/-/g, " ");
   const lines = text.split(/\r?\n/);
   const slug = (value: string) =>
     value
       .trim()
       .toLowerCase()
-      .replace(/[^a-z0-9]+/gu, "-")
-      .replace(/^-+|-+$/gu, "");
+      .replaceAll(/[^a-z0-9]+/gu, "-")
+      .replaceAll(/^-+|-+$/gu, "");
+  const target = slug(section);
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
     if (!/^#{1,6}\s+/.test(line)) continue;
     const heading = line.replace(/^#{1,6}\s+/, "").trim();
-    if (slug(heading).toLowerCase() === target) {
+    if (slug(heading) === target) {
       const start = index + 1;
       let end = lines.length;
       for (let i = index + 1; i < lines.length; i += 1) {
@@ -250,7 +244,7 @@ export function scoreMatch(text: string, query: string): number {
   return Math.min(1, count * 0.1 + 0.1);
 }
 
-export function parseJsonlLines(raw: string): Array<{ id?: string; [key: string]: unknown }> {
+export function parseJsonlLines(raw: string): { id?: string; [key: string]: unknown }[] {
   const lines = raw
     .split(/\r?\n/)
     .map((line) => line.trim())

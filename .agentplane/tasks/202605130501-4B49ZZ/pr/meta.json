@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605130501-4B49ZZ/v06-context-release-readiness",
+  "created_at": "2026-05-13T05:03:23.187Z",
+  "head_sha": "421b6498caebd4d20e8f6bec015604964c9f2aff",
+  "last_verified_at": "2026-05-13T05:27:33.531Z",
+  "last_verified_sha": "b58727ba0aa5924532f724a129c03be78be9e1a8",
+  "schema_version": 1,
+  "task_id": "202605130501-4B49ZZ",
+  "updated_at": "2026-05-13T06:55:22.462Z",
+  "verify": {
+    "status": "pass"
+  }
+}

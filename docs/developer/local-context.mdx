@@ -1,0 +1,69 @@
+---
+title: "Local context implementation"
+description: "Implementation contract for AgentPlane local context artifacts, projection, ingestion, and verification."
+---
+
+## Boundary
+
+Local context is a file-first subsystem:
+
+- source artifacts are versioned under `context/**`
+- derived search state is generated under `.agentplane/context/derived/**`
+- task context evidence is linked from `.agentplane/tasks/<task-id>/**`
+- ACR records may include the `extensions.agentplane.context` extension
+
+The SQLite projection is not the source of truth. It is rebuilt by `context reindex`.
+
+## Owning code paths
+
+| Surface                 | Code path                                                                                            |
+| ----------------------- | ---------------------------------------------------------------------------------------------------- |
+| Command specs           | `packages/agentplane/src/commands/context/*.spec.ts`                                                 |
+| CLI handlers            | `packages/agentplane/src/commands/context/*.ts`                                                      |
+| Shared parsing and refs | `packages/agentplane/src/commands/context/context-utils.ts`                                          |
+| SQLite projection       | `packages/agentplane/src/commands/context/sqlite.ts`                                                 |
+| ACR context extension   | `packages/agentplane/src/commands/acr/**`                                                            |
+| Runner handoff          | `packages/agentplane/src/commands/context/ingest.ts`, `packages/agentplane/src/commands/task/run/**` |
+
+## Projection contract
+
+`context reindex` writes projection rows from:
+
+- wiki markdown files, including section-level refs
+- fact JSONL rows
+- graph JSONL entities and edges
+- capability markdown files
+- raw text windows, excluding `context/raw/private/**`
+
+Projection rows must carry source refs precise enough for `context show` to recover the backing
+material. Markdown sections use `#section=<slug>`, line ranges use `#lines=<start>-<end>`, and
+single-line refs use `#line=<line>`.
+
+## Verification contract
+
+`context verify-task <task-id>` is an evidence gate, not a formatter. It should reject task context
+outputs when provenance is missing or structurally inconsistent:
+
+- source-set files missing or lacking `sha256:` hashes
+- wiki changes with no source marker
+- facts without source refs, confidence, or status
+- graph edges pointing to unknown entities
+- provenance rows without source and target
+- capability notes without source refs
+- completed context tasks without the ACR context extension
+
+For in-progress tasks, missing ACR is allowed because the normal close path runs context validation
+before `acr generate`.
+
+## Release checks
+
+Before a context-bearing release, run:
+
+```bash
+bun test packages/agentplane/src/commands/context/release-readiness.test.ts
+bun run docs:cli:check
+bun run package:install-smoke
+```
+
+Add broader gates (`typecheck`, release parity, docs IA, and packaged smoke) when the change touches
+shared CLI behavior, generated assets, or release metadata.

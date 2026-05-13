@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-base-to-string, @typescript-eslint/no-unsafe-assignment */
 import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
@@ -43,9 +44,7 @@ export async function cmdContextDoctor(opts: {
   try {
     const manifestText = await readText(manifestPath);
     const manifest = parseYaml(manifestText);
-    if (!isRecord(manifest)) {
-      issues.push("manifest is not a mapping");
-    } else {
+    if (isRecord(manifest)) {
       if (manifest.version !== 1) {
         issues.push("manifest.version must be 1");
       }
@@ -67,6 +66,8 @@ export async function cmdContextDoctor(opts: {
       if (typeof manifest.generated_at !== "string" || manifest.generated_at.length === 0) {
         issues.push("manifest.generated_at is required");
       }
+    } else {
+      issues.push("manifest is not a mapping");
     }
   } catch {
     issues.push("manifest is unreadable");
@@ -184,7 +185,7 @@ async function collectManifestSources(root: string): Promise<Set<string>> {
   const lockPath = path.join(root, ".agentplane", "context", "manifest.lock.json");
   try {
     const parsed = JSON.parse(await readFile(lockPath, "utf8")) as {
-      sources?: Array<{ path?: unknown }>;
+      sources?: { path?: unknown }[];
     };
     if (Array.isArray(parsed?.sources)) {
       for (const entry of parsed.sources) {

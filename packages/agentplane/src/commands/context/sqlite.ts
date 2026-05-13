@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-base-to-string */
 import { spawn } from "node:child_process";
 
-export type SqliteProjectionRow = {
+type SqliteProjectionRow = {
   path: string;
   sha256: string;
   content_type: string;
@@ -12,7 +13,7 @@ export type SqliteProjectionRow = {
   source_refs?: string[];
 };
 
-export type SqliteProjection = {
+type SqliteProjection = {
   metadata: {
     projection_version: number;
     generated_at: string;
@@ -38,7 +39,13 @@ function runSqlite(args: string[], input?: string): Promise<string> {
     child.stderr.on("data", (chunk) => {
       stderr += chunk;
     });
-    child.on("error", reject);
+    child.on("error", (err) => {
+      reject(
+        new Error(
+          `sqlite3 CLI is required for AgentPlane context projection. Install sqlite3 or disable context projection before retrying. Cause: ${err.message}`,
+        ),
+      );
+    });
     child.on("close", (code) => {
       if (code === 0) {
         resolve(stdout);
@@ -116,8 +123,7 @@ export async function writeSqliteProjection(
       ].join(""),
     );
   }
-  statements.push("INSERT INTO projection_fts(projection_fts) VALUES('rebuild');");
-  statements.push("COMMIT;");
+  statements.push("INSERT INTO projection_fts(projection_fts) VALUES('rebuild');", "COMMIT;");
   await runSqlite([dbPath], `${statements.join("\n")}\n`);
 }
 

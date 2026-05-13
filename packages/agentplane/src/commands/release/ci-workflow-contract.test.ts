@@ -44,8 +44,9 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain(
       "!(github.event_name == 'workflow_dispatch' && github.event.inputs.sha != '') &&",
     );
+    expect(workflow).toContain("github.event_name == 'pull_request' ||");
     expect(workflow).toContain("github.event_name == 'push' &&");
-    expect(workflow).toContain("github.ref == 'refs/heads/main' &&");
+    expect(workflow).toContain("github.ref == 'refs/heads/main'");
     expect(workflow).toContain("needs.changes.outputs.core == 'true' &&");
     expect(workflow).toContain("needs.test.result == 'success' &&");
     expect(workflow).toContain("needs.test-windows.result == 'success'");
@@ -65,13 +66,13 @@ describe("Core CI workflow contract", () => {
     expect(workflow).toContain("name: release-ready-${{ steps.target.outputs.sha }}");
   });
 
-  it("keeps task-artifact-only diffs out of the heavy core gate", async () => {
+  it("runs core PR checks for mixed code/docs diffs while excluding task-artifact-only diffs", async () => {
     const ciWorkflow = await readFile(CI_WORKFLOW_PATH, "utf8");
     const prepublishWorkflow = await readFile(PREPUBLISH_WORKFLOW_PATH, "utf8");
     const filters = await readFile(PATH_FILTERS_PATH, "utf8");
 
     expect(ciWorkflow).toContain("filters: .github/path-filters.yml");
-    expect(ciWorkflow).toContain("predicate-quantifier: every");
+    expect(ciWorkflow).toContain("predicate-quantifier: some");
     expect(prepublishWorkflow).toContain("filters: .github/path-filters.yml");
     expect(prepublishWorkflow).toContain("predicate-quantifier: every");
     expect(filters).toContain(".agentplane/**");

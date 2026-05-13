@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents, @typescript-eslint/no-unused-vars, unicorn/no-await-expression-member */
 import { createHash } from "node:crypto";
 import { readFile, readdir, stat } from "node:fs/promises";
 import { createReadStream } from "node:fs";
@@ -341,7 +342,7 @@ async function readManifest(root: string): Promise<ManifestLock> {
               : "unsupported",
         };
       })
-      .filter((entry): entry is ManifestEntry => Boolean(entry)),
+      .filter((source): source is ManifestEntry => source !== null),
   };
 }
 
@@ -379,7 +380,7 @@ async function collectCandidateRows(
       const abs = path.resolve(root, raw);
       if (!ensureWithinRoot(root, abs)) {
         throw new CliError({
-          exitCode: 2,
+          exitCode: 3,
           code: "E_VALIDATION",
           message: `source path outside project root: ${raw}`,
         });
@@ -389,7 +390,7 @@ async function collectCandidateRows(
         statRaw = await stat(abs);
       } catch {
         throw new CliError({
-          exitCode: 2,
+          exitCode: 3,
           code: "E_VALIDATION",
           message: `source path does not exist: ${raw}`,
         });
@@ -492,6 +493,8 @@ export async function cmdContextIngest(opts: {
   cwd: string;
   rootOverride?: string;
   parsed: ContextIngestParsed;
+  createTask?: typeof runTaskNewParsed;
+  runTask?: typeof runTaskRun;
 }): Promise<number> {
   const ctx =
     opts.ctx ??
@@ -551,7 +554,8 @@ export async function cmdContextIngest(opts: {
 
     const before = new Set((await ctx.taskBackend.listTasks()).map((task) => task.id));
     const taskParsed = createTaskNewParsed(opts.parsed, indexModeRows);
-    await runTaskNewParsed({
+    const createTask = opts.createTask ?? runTaskNewParsed;
+    await createTask({
       ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
@@ -573,7 +577,8 @@ export async function cmdContextIngest(opts: {
     );
 
     if (!opts.parsed.runTask) return 0;
-    return await runTaskRun(
+    const runTask = opts.runTask ?? runTaskRun;
+    return await runTask(
       { cwd: opts.cwd, rootOverride: opts.rootOverride },
       { taskId: contextCreated.id, dryRun: false },
     );

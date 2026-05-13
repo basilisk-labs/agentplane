@@ -143,6 +143,25 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [incidents collect](#incidents-collect)
 - IDE
   - [ide sync](#ide-sync)
+- Context
+  - [context](#context)
+  - [context capability](#context-capability)
+  - [context capability discover](#context-capability-discover)
+  - [context capability search](#context-capability-search)
+  - [context capability validate](#context-capability-validate)
+  - [context doctor](#context-doctor)
+  - [context graph](#context-graph)
+  - [context graph export](#context-graph-export)
+  - [context graph neighbors](#context-graph-neighbors)
+  - [context graph show](#context-graph-show)
+  - [context graph summary](#context-graph-summary)
+  - [context graph validate](#context-graph-validate)
+  - [context ingest](#context-ingest)
+  - [context init](#context-init)
+  - [context reindex](#context-reindex)
+  - [context search](#context-search)
+  - [context show](#context-show)
+  - [context verify-task](#context-verify-task)
 - Advanced
   - [task add](#task-add)
   - [task close-duplicate](#task-close-duplicate)
@@ -572,10 +591,10 @@ Options:
 - `--owner <id>`: Owner id (e.g. CODER). (required)
 - `--priority <low|normal|med|high>`: Task priority (default: med). (choices=low|normal|med|high, default=med)
 - `--tag <tag>`: Repeatable. Adds a tag (must provide at least one). (repeatable)
-- `--task-kind <analysis|content|docs|code|release|ops>`: Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops)
-- `--mutation-scope <none|docs|code|release|ops|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|unknown)
+- `--task-kind <analysis|content|docs|code|release|ops|context>`: Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops|context)
+- `--mutation-scope <none|docs|code|release|ops|context|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
 - `--risk <risk>`: Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
-- `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|runner.execution|post_run.improvement_review|release.strict|ops.approval)
+- `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|runner.execution|post_run.improvement_review|release.strict|ops.approval)
 - `--depends-on <task-id>`: Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
 - `--verify <command>`: Repeatable. Verification commands/checks to run for this task. (repeatable)
 - `--show-blueprint`: Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
@@ -3567,6 +3586,255 @@ agentplane ide sync --ide cursor
 ```
 
 - Generate Cursor rules only.
+
+## Context
+
+### context
+
+Manage local project context, durable derivations, projections, and search surfaces.
+
+Context commands cover local knowledge-workspace bootstrap, raw-source indexing, wiki/derived mutation, verification, and discovery surfaces.
+
+Usage:
+
+```text
+agentplane context [<cmd> ...]
+```
+
+### context capability
+
+Capability maintenance fallback under context namespace.
+
+Usage:
+
+```text
+agentplane context capability [<cmd> ...]
+```
+
+### context capability discover
+
+Discover capability candidates from context operations.
+
+Usage:
+
+```text
+agentplane context capability discover --from <from> [options]
+```
+
+Options:
+
+- `--from <from>`: Source domain for discovery. (required)
+- `--min-support <n>`: Minimum evidence threshold for proposal. (default=3)
+- `--write-proposals`: Write proposed capability artifacts in context/capabilities. (default=false)
+
+### context capability search
+
+Search capability registry and candidate surface.
+
+Usage:
+
+```text
+agentplane context capability search <query>
+```
+
+### context capability validate
+
+Validate a unified capability artifact.
+
+Usage:
+
+```text
+agentplane context capability validate <path>
+```
+
+### context doctor
+
+Diagnose local context health and projection consistency.
+
+Usage:
+
+```text
+agentplane context doctor [options]
+```
+
+Options:
+
+- `--fix`: Attempt safe local fixes for detected issues. (default=false)
+
+### context graph
+
+Validate and inspect derived context graph.
+
+Usage:
+
+```text
+agentplane context graph [<cmd> ...]
+```
+
+### context graph export
+
+Export graph artifacts for offline consumption.
+
+Usage:
+
+```text
+agentplane context graph export [options]
+```
+
+Options:
+
+- `--format <json|jsonl|csv>`: Export format. (choices=json|jsonl|csv, default=json)
+
+### context graph neighbors
+
+Show direct neighbors for one graph node.
+
+Usage:
+
+```text
+agentplane context graph neighbors <entity-id>
+```
+
+### context graph show
+
+Show a node with neighborhood summary.
+
+Usage:
+
+```text
+agentplane context graph show <entity-id>
+```
+
+### context graph summary
+
+Print a context-graph summary.
+
+Usage:
+
+```text
+agentplane context graph summary
+```
+
+### context graph validate
+
+Validate derived graph JSONL rows and references.
+
+Usage:
+
+```text
+agentplane context graph validate
+```
+
+### context ingest
+
+Create and optionally run a context assimilation task.
+
+Collects source context hints, creates a task with context task_kind, and can run it through the shared runner.
+
+Usage:
+
+```text
+agentplane context ingest [<source> ...] [options]
+```
+
+Options:
+
+- `--changed`: Process only changed sources in the current context (default mode). (default=false)
+- `--all`: Process all available sources instead of only changed sources. (default=false)
+- `--dry-run`: Preview only; do not create a task. (default=false)
+- `--index-only`: Index raw context sources into local projection without creating a context assimilation task. (default=false)
+- `--run`: Create task and immediately run it via \`task run\`. (default=false)
+- `--include-private`: Include context/raw/private sources in the local source set. (default=false)
+
+Examples:
+
+```sh
+agentplane context ingest --changed
+```
+
+- Create a context task from currently changed sources.
+
+```sh
+agentplane context ingest --all --run
+```
+
+- Create a full context task and run it immediately.
+
+```sh
+agentplane context ingest --dry-run src/index.ts src/lib/context.ts
+```
+
+- Preview context ingestion for explicit sources.
+
+### context init
+
+Initialize local context workspace and system manifest.
+
+Usage:
+
+```text
+agentplane context init [options]
+```
+
+Options:
+
+- `--profile <minimal|wiki|codebase|research>`: Select an initial context profile. (choices=minimal|wiki|codebase|research, default=wiki)
+- `--raw-gitignore <none|all>`: Ignore raw sources by default when set to all. (choices=none|all, default=none)
+- `--derived-gitignore <none|all>`: Ignore machine-derived context files under .agentplane/context/derived when set to all. (choices=none|all, default=none)
+- `--repair`: Create missing files only. (default=false)
+- `--force`: Rewrite default policy files while repairing. (default=false)
+
+### context reindex
+
+Rebuild local SQLite projection from source artifacts.
+
+Usage:
+
+```text
+agentplane context reindex [options]
+```
+
+Options:
+
+- `--include-tasks`: Include task READMEs and ACR during projection refresh. (default=false)
+- `--include-raw`: Include raw source text during projection refresh. (default=false)
+- `--reset`: Drop projection before reindex. (default=false)
+
+### context search
+
+Search indexed local context, facts, graph, tasks, and capabilities.
+
+Usage:
+
+```text
+agentplane context search <query> [options]
+```
+
+Options:
+
+- `--scope <scope>`: Comma-separated scope list. (default=wiki,facts,graph,tasks,capabilities)
+- `--format <text|json>`: Output format. (choices=text|json, default=text)
+- `--explain`: Include score explanation metadata. (default=false)
+
+### context show
+
+Resolve a context source reference and print addressed content.
+
+Usage:
+
+```text
+agentplane context show <source-ref>
+```
+
+### context verify-task
+
+Validate mutations for a context_assimilation task.
+
+Usage:
+
+```text
+agentplane context verify-task <task-id>
+```
 
 ## Advanced
 
