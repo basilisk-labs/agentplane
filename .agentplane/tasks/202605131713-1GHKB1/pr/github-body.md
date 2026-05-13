@@ -22,7 +22,7 @@ Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modul
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T17:46:20.298Z
+- Updated: 2026-05-13T17:46:28.017Z
 - Branch: task/202605131713-1GHKB1/public-evaluator-catalog
 - Head: 6e62f49892e2
 
