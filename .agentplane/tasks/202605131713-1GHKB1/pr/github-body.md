@@ -22,13 +22,13 @@ Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modul
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T18:52:06.443Z
+- Updated: 2026-05-13T19:05:46.869Z
 - Branch: task/202605131713-1GHKB1/public-evaluator-catalog
-- Head: 79a606254d7f
+- Head: 53589b7f80d1
 
 ```text
  .agentplane/evaluators/recovery-context.md         |  47 ++
- .../blueprint/resolved-snapshot.json               | 514 +++++++++++++++++++++
+ .../blueprint/resolved-snapshot.json               | 528 +++++++++++++++++++++
  ROADMAP.md                                         |   2 +
  docs/user/cli-reference.generated.mdx              |  84 ++++
  docs/user/commands.mdx                             |  15 +
@@ -50,7 +50,7 @@ Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modul
  .../src/shared/builtin-assets.generated.ts         |   9 +-
  .../agentplane/src/shared/protected-paths.test.ts  |  21 +
  packages/agentplane/src/shared/protected-paths.ts  |   6 +-
- 23 files changed, 1220 insertions(+), 3 deletions(-)
+ 23 files changed, 1234 insertions(+), 3 deletions(-)
 ```
 
 </details>

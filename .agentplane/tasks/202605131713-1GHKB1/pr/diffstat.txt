@@ -1,5 +1,5 @@
  .agentplane/evaluators/recovery-context.md         |  47 ++
- .../blueprint/resolved-snapshot.json               | 514 +++++++++++++++++++++
+ .../blueprint/resolved-snapshot.json               | 528 +++++++++++++++++++++
  ROADMAP.md                                         |   2 +
  docs/user/cli-reference.generated.mdx              |  84 ++++
  docs/user/commands.mdx                             |  15 +
@@ -21,4 +21,4 @@
  .../src/shared/builtin-assets.generated.ts         |   9 +-
  .../agentplane/src/shared/protected-paths.test.ts  |  21 +
  packages/agentplane/src/shared/protected-paths.ts  |   6 +-
- 23 files changed, 1220 insertions(+), 3 deletions(-)
+ 23 files changed, 1234 insertions(+), 3 deletions(-)
