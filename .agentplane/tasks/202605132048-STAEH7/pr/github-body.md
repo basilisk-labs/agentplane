@@ -30,12 +30,16 @@ Acceptance:
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T20:50:37.971Z
+- Updated: 2026-05-13T20:58:56.979Z
 - Branch: task/202605132048-STAEH7/hosted-sync-credentials
-- Head: e994762415e3
+- Head: 796fc2f100b5
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 392 +++++++++++++++++++++
+ .../src/backends/task-backend.load.test.ts         |  47 +++
+ .../src/backends/task-backend/cloud-backend.ts     |  25 +-
+ packages/agentplane/src/shared/env.ts              |  14 +-
+ 4 files changed, 472 insertions(+), 6 deletions(-)
 ```
 
 </details>
