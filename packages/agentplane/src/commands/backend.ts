@@ -137,7 +137,9 @@ export async function cmdBackendSyncParsed(opts: {
           context: { command: "backend sync", reason_code: "watch_interval_too_small" },
         });
       }
-      const maxIterations = Number.isFinite(opts.flags.maxIterations) ? opts.flags.maxIterations : 0;
+      const maxIterations = Number.isFinite(opts.flags.maxIterations)
+        ? opts.flags.maxIterations
+        : 0;
       await runBackendSyncWatch({
         backend,
         conflict: opts.flags.conflict,

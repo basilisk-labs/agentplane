@@ -6,13 +6,15 @@ import { applyTaskStatusTransitionCommand } from "./transition-command.js";
 
 vi.mock("./workflow-transition-service.js", () => {
   return {
-    executeTaskStatusTransitionRequest: vi.fn().mockImplementation(({ task }: { task: unknown }) => {
-      return {
-        intents: {},
-        nextTask: { ...(task as Record<string, unknown>), status: "DONE" },
-        deferredWarnings: [],
-      };
-    }),
+    executeTaskStatusTransitionRequest: vi
+      .fn()
+      .mockImplementation(({ task }: { task: unknown }) => {
+        return {
+          intents: {},
+          nextTask: { ...(task as Record<string, unknown>), status: "DONE" },
+          deferredWarnings: [],
+        };
+      }),
     readDeferredTaskTransitionWarnings: vi.fn().mockReturnValue([]),
   };
 });
@@ -22,7 +24,10 @@ function mkCtx(overrides: Partial<CommandContext>): CommandContext {
   config.workflow_mode = "direct";
   config.agents.approvals.require_network = true;
   return {
-    resolvedProject: { gitRoot: "/tmp", agentplaneDir: "/tmp/.agentplane" } as unknown as CommandContext["resolvedProject"],
+    resolvedProject: {
+      gitRoot: "/tmp",
+      agentplaneDir: "/tmp/.agentplane",
+    } as unknown as CommandContext["resolvedProject"],
     config,
     taskBackend: {} as unknown as CommandContext["taskBackend"],
     backendId: "cloud",
