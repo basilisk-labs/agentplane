@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T16:35:58.385Z"
+  updated_at: "2026-05-13T18:50:55.726Z"
   updated_by: "CODER"
-  note: "Verified: typed task artifact drift classification distinguishes active parallel task artifacts from actionable drift. Checks passed: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts; bun run --filter=agentplane typecheck; bunx prettier --check touched files; bunx eslint touched files; node .agentplane/policy/check-routing.mjs; ap doctor. ap preflight --json --mode full shows active task artifacts as actionable=false; remaining warning is expected tracked implementation changes before commit."
+  note: "Verified: rebased/merged task branch onto current origin/main and reran focused validation. Checks passed on d81de768a: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts (13 pass); bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs; ap doctor; ap preflight --json --mode full reported harness_health ok and no task_artifact_drift."
   attempts: 0
 commit: null
 comments:
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: typed task artifact drift classification distinguishes active parallel task artifacts from actionable drift. Checks passed: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts; bun run --filter=agentplane typecheck; bunx prettier --check touched files; bunx eslint touched files; node .agentplane/policy/check-routing.mjs; ap doctor. ap preflight --json --mode full shows active task artifacts as actionable=false; remaining warning is expected tracked implementation changes before commit."
+  -
+    type: "verify"
+    at: "2026-05-13T18:50:55.726Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: rebased/merged task branch onto current origin/main and reran focused validation. Checks passed on d81de768a: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts (13 pass); bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs; ap doctor; ap preflight --json --mode full reported harness_health ok and no task_artifact_drift."
 doc_version: 3
-doc_updated_at: "2026-05-13T16:35:58.416Z"
+doc_updated_at: "2026-05-13T18:50:55.813Z"
 doc_updated_by: "CODER"
 description: "Add typed preflight classification for task artifact drift so active task artifacts from parallel agents are distinguished from stale or unknown recovery drift."
 sections:
@@ -77,6 +83,25 @@ sections:
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131627-ANTN2E-typed-drift-classification/.agentplane/tasks/202605131627-ANTN2E/blueprint/resolved-snapshot.json
     - old_digest: fd3872f4d231c8b1c9af0b73d3bd409a1f4561ce3873a1396f201c120940babc
     - current_digest: fd3872f4d231c8b1c9af0b73d3bd409a1f4561ce3873a1396f201c120940babc
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131627-ANTN2E
+    
+    ### 2026-05-13T18:50:55.726Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: rebased/merged task branch onto current origin/main and reran focused validation. Checks passed on d81de768a: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts (13 pass); bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs; ap doctor; ap preflight --json --mode full reported harness_health ok and no task_artifact_drift.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T16:35:58.416Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131627-ANTN2E-typed-drift-classification/.agentplane/tasks/202605131627-ANTN2E/blueprint/resolved-snapshot.json
+    - old_digest: fd3872f4d231c8b1c9af0b73d3bd409a1f4561ce3873a1396f201c120940babc
+    - current_digest: a6321f39291a15d80b3a01f93a7c111221f046d392c66dcb665b621a69b25885
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131627-ANTN2E
     
@@ -127,6 +152,25 @@ BlueprintSnapshotRef:
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131627-ANTN2E-typed-drift-classification/.agentplane/tasks/202605131627-ANTN2E/blueprint/resolved-snapshot.json
 - old_digest: fd3872f4d231c8b1c9af0b73d3bd409a1f4561ce3873a1396f201c120940babc
 - current_digest: fd3872f4d231c8b1c9af0b73d3bd409a1f4561ce3873a1396f201c120940babc
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131627-ANTN2E
+
+### 2026-05-13T18:50:55.726Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: rebased/merged task branch onto current origin/main and reran focused validation. Checks passed on d81de768a: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts (13 pass); bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs; ap doctor; ap preflight --json --mode full reported harness_health ok and no task_artifact_drift.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T16:35:58.416Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131627-ANTN2E-typed-drift-classification/.agentplane/tasks/202605131627-ANTN2E/blueprint/resolved-snapshot.json
+- old_digest: fd3872f4d231c8b1c9af0b73d3bd409a1f4561ce3873a1396f201c120940babc
+- current_digest: a6321f39291a15d80b3a01f93a7c111221f046d392c66dcb665b621a69b25885
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131627-ANTN2E
 

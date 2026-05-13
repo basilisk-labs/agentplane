@@ -16,15 +16,15 @@ Add typed preflight classification for task artifact drift so active task artifa
 ## Verification
 
 - State: ok
-- Note: Verified: typed task artifact drift classification distinguishes active parallel task artifacts from actionable drift. Checks passed: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts; bun run --filter=agentplane typecheck; bunx prettier --check touched files; bunx eslint touched files; node .agentplane/policy/check-routing.mjs; ap doctor. ap preflight --json --mode full shows active task artifacts as actionable=false; remaining warning is expected tracked implementation changes before commit.
+- Note: Verified: rebased/merged task branch onto current origin/main and reran focused validation. Checks passed on d81de768a: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts (13 pass); bun run --filter=agentplane typecheck; node .agentplane/policy/check-routing.mjs; ap doctor; ap preflight --json --mode full reported harness_health ok and no task_artifact_drift.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T16:36:38.040Z
+- Updated: 2026-05-13T18:50:56.346Z
 - Branch: task/202605131627-ANTN2E/typed-drift-classification
-- Head: f2e97e507c41
+- Head: d81de768aed2
 
 ```text
  .../blueprint/resolved-snapshot.json               | 513 +++++++++++++++++++++
