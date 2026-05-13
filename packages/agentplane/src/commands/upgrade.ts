@@ -169,6 +169,7 @@ export async function cmdUpgradeParsed(opts: {
       const {
         additions,
         updates,
+        removals,
         skipped,
         merged,
         fileContents,
@@ -183,14 +184,14 @@ export async function cmdUpgradeParsed(opts: {
       });
 
       if (flags.dryRun) {
-        printUpgradeDryRun({ additions, updates, skipped, merged });
+        printUpgradeDryRun({ additions, updates, removals, skipped, merged });
         return 0;
       }
 
       if (flags.mode === "agent") {
         // Fast no-op path: nothing to apply.
         // Skip generating per-run artifacts to keep agent-mode upgrades cheap.
-        if (additions.length === 0 && updates.length === 0) {
+        if (additions.length === 0 && updates.length === 0 && removals.length === 0) {
           process.stdout.write("Upgrade plan: no managed changes detected\n");
           return 0;
         }
@@ -201,6 +202,7 @@ export async function cmdUpgradeParsed(opts: {
           manifest: materialized.manifest,
           additions,
           updates,
+          removals,
           skipped,
           merged,
           reviewRecords,
@@ -213,6 +215,7 @@ export async function cmdUpgradeParsed(opts: {
         gitRoot: resolved.gitRoot,
         additions,
         updates,
+        removals,
         backup: flags.backup,
         fileContents,
         baselineDir: baselineDirNew,
@@ -236,7 +239,7 @@ export async function cmdUpgradeParsed(opts: {
         process.stdout.write(`Task README migration: ${details}\n`);
       }
 
-      const hasManagedMutations = additions.length > 0 || updates.length > 0;
+      const hasManagedMutations = additions.length > 0 || updates.length > 0 || removals.length > 0;
       const legacyConfigWasTracked = await isTrackedFile(resolved.gitRoot, CONFIG_REL_PATH);
       const shouldMutateConfig = await persistUpgradeState({
         agentplaneDir: resolved.agentplaneDir,
@@ -272,6 +275,7 @@ export async function cmdUpgradeParsed(opts: {
         ...new Set([
           ...additions,
           ...updates,
+          ...removals,
           ...migratedTaskDocs.changedPaths,
           ...workflowArtifacts.commitPaths,
           ...(shouldMutateConfig ? [WORKFLOW_REL_PATH] : []),
@@ -287,13 +291,14 @@ export async function cmdUpgradeParsed(opts: {
         source: materialized.bundleLayout,
         additions: additions.length,
         updates: updates.length,
+        removals: removals.length,
         unchanged: skipped.length,
         incidentsAppendedCount,
       });
       await cleanupAutoUpgradeArtifacts({ upgradeStateDir, createdBackups });
 
       process.stdout.write(
-        `Upgrade applied: ${additions.length} add, ${updates.length} update, ${skipped.length} unchanged\n`,
+        `Upgrade applied: ${additions.length} add, ${updates.length} update, ${removals.length} remove, ${skipped.length} unchanged\n`,
       );
       if (workflowArtifacts.changedPaths.length > 0) {
         process.stdout.write(

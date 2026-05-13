@@ -7,6 +7,7 @@ export type GitHubRelease = {
 export type FrameworkManifest = {
   schema_version: 1;
   files: FrameworkManifestEntry[];
+  removals?: FrameworkManifestRemoval[];
 };
 
 export type FrameworkManifestEntry = {
@@ -15,6 +16,11 @@ export type FrameworkManifestEntry = {
   type: "markdown" | "json" | "text";
   merge_strategy: "agents_policy_markdown" | "agent_json_3way" | "agent_json_merge";
   required?: boolean;
+};
+
+export type FrameworkManifestRemoval = {
+  path: string;
+  type: FrameworkManifestEntry["type"];
 };
 
 export type UpgradeReviewRecord = {

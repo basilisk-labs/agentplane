@@ -18,6 +18,7 @@ import type { FrameworkManifest, UpgradeReviewRecord } from "./types.js";
 export type ManagedUpgradePlan = {
   additions: string[];
   updates: string[];
+  removals: string[];
   skipped: string[];
   merged: string[];
   fileContents: Map<string, Buffer>;
@@ -56,6 +57,7 @@ export async function planManagedUpgrade(opts: {
 }): Promise<ManagedUpgradePlan> {
   const additions: string[] = [];
   const updates: string[] = [];
+  const removals: string[] = [];
   const skipped: string[] = [];
   const merged: string[] = [];
   const fileContents = new Map<string, Buffer>();
@@ -69,13 +71,13 @@ export async function planManagedUpgrade(opts: {
     return rel;
   };
 
-  for (const entry of opts.manifest.files) {
-    const relRaw = entry.path.replaceAll("\\", "/").trim();
+  const normalizeManagedRel = (relInput: string): string => {
+    const relRaw = relInput.replaceAll("\\", "/").trim();
     if (!relRaw || relRaw.startsWith("..") || path.isAbsolute(relRaw)) {
       throw new CliError({
         exitCode: 3,
         code: "E_VALIDATION",
-        message: `Invalid manifest path: ${entry.path}`,
+        message: `Invalid manifest path: ${relInput}`,
       });
     }
     if (isDeniedUpgradePath(relRaw)) {
@@ -92,8 +94,11 @@ export async function planManagedUpgrade(opts: {
         message: `Manifest path not allowed: ${relRaw}`,
       });
     }
+    return remapManagedGatewayRel(relRaw);
+  };
 
-    const rel = remapManagedGatewayRel(relRaw);
+  for (const entry of opts.manifest.files) {
+    const rel = normalizeManagedRel(entry.path);
     const destPath = path.join(opts.gitRoot, rel);
     const kind = await getPathKind(destPath);
     if (kind === "dir") {
@@ -246,9 +251,45 @@ export async function planManagedUpgrade(opts: {
     });
   }
 
+  for (const removal of opts.manifest.removals ?? []) {
+    const rel = normalizeManagedRel(removal.path);
+    const destPath = path.join(opts.gitRoot, rel);
+    const kind = await getPathKind(destPath);
+    if (kind === null) {
+      skipped.push(rel);
+      continue;
+    }
+    if (kind === "dir") {
+      throw new CliError({
+        exitCode: exitCodeForError("E_IO"),
+        code: "E_IO",
+        message: `Upgrade removal target is a directory: ${rel}`,
+      });
+    }
+
+    const currentText = await readFile(destPath, "utf8");
+    const baselineKey = toUpgradeBaselineKey(rel);
+    const baselineText = baselineKey
+      ? await readUpgradeBaseline({
+          baselineDirNew: opts.baselineDirNew,
+          baselineDirLegacy: opts.baselineDirLegacy,
+          baselineKey,
+        })
+      : null;
+    if (
+      baselineText !== null &&
+      textChangedForType({ type: removal.type, aText: currentText, bText: baselineText }) === false
+    ) {
+      removals.push(rel);
+    } else {
+      skipped.push(rel);
+    }
+  }
+
   return {
     additions,
     updates,
+    removals,
     skipped,
     merged,
     fileContents,

@@ -8,14 +8,16 @@ const output = createCliEmitter();
 export function printUpgradeDryRun(opts: {
   additions: string[];
   updates: string[];
+  removals: string[];
   skipped: string[];
   merged: string[];
 }): void {
   output.line(
-    `Upgrade dry-run: ${opts.additions.length} add, ${opts.updates.length} update, ${opts.skipped.length} unchanged`,
+    `Upgrade dry-run: ${opts.additions.length} add, ${opts.updates.length} update, ${opts.removals.length} remove, ${opts.skipped.length} unchanged`,
   );
   for (const rel of opts.additions) output.line(`ADD ${rel}`);
   for (const rel of opts.updates) output.line(`UPDATE ${rel}`);
+  for (const rel of opts.removals) output.line(`REMOVE ${rel}`);
   for (const rel of opts.skipped) output.line(`SKIP ${rel}`);
   for (const rel of opts.merged) output.line(`MERGE ${rel}`);
 }
@@ -26,6 +28,7 @@ export async function writeUpgradeAgentReview(opts: {
   manifest: FrameworkManifest;
   additions: string[];
   updates: string[];
+  removals: string[];
   skipped: string[];
   merged: string[];
   reviewRecords: UpgradeReviewRecord[];
@@ -41,6 +44,7 @@ export async function writeUpgradeAgentReview(opts: {
     `## Summary\n\n` +
     `- additions: ${opts.additions.length}\n` +
     `- updates: ${opts.updates.length}\n` +
+    `- removals: ${opts.removals.length}\n` +
     `- unchanged: ${opts.skipped.length}\n` +
     `- merged (auto-safe transforms already applied to incoming): ${opts.merged.length}\n\n` +
     `## Managed files (manifest)\n\n` +
@@ -51,6 +55,8 @@ export async function writeUpgradeAgentReview(opts: {
     (opts.additions.length > 0 ? "\n" : "") +
     opts.updates.map((p) => `- UPDATE ${p}`).join("\n") +
     (opts.updates.length > 0 ? "\n" : "") +
+    opts.removals.map((p) => `- REMOVE ${p}`).join("\n") +
+    (opts.removals.length > 0 ? "\n" : "") +
     opts.merged.map((p) => `- MERGE ${p}`).join("\n") +
     (opts.merged.length > 0 ? "\n" : "") +
     opts.skipped.map((p) => `- SKIP ${p}`).join("\n") +
@@ -94,6 +100,7 @@ export async function writeUpgradeAgentReview(opts: {
       {
         additions: opts.additions,
         updates: opts.updates,
+        removals: opts.removals,
         skipped: opts.skipped,
         merged: opts.merged,
       },

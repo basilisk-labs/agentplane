@@ -182,6 +182,142 @@ describe("upgrade merge behavior", () => {
     expect(agentsReview).not.toHaveProperty("needs" + "SemanticReview");
   });
 
+  it("removes legacy managed files only when they still match the upgrade baseline", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const agentsDir = path.join(root, ".agentplane", "agents");
+    await mkdir(agentsDir, { recursive: true });
+    const legacyExtractor = JSON.stringify({ id: "SKILL_EXTRACTOR", role: "old" }, null, 2);
+    const legacyPath = path.join(agentsDir, "SKILL_EXTRACTOR.json");
+    const baselinePath = path.join(
+      root,
+      ".agentplane",
+      ".upgrade",
+      "baseline",
+      "agents",
+      "SKILL_EXTRACTOR.json",
+    );
+    await mkdir(path.dirname(baselinePath), { recursive: true });
+    await writeFile(legacyPath, legacyExtractor, "utf8");
+    await writeFile(baselinePath, legacyExtractor, "utf8");
+
+    const incomingExtractor = JSON.stringify({ id: "EXTRACTOR", role: "new" }, null, 2);
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "framework.manifest.json": JSON.stringify(
+        {
+          schema_version: 1,
+          files: [
+            {
+              path: ".agentplane/agents/EXTRACTOR.json",
+              source_path: "agents/EXTRACTOR.json",
+              type: "json",
+              merge_strategy: "agent_json_3way",
+              required: true,
+            },
+          ],
+          removals: [
+            {
+              path: ".agentplane/agents/SKILL_EXTRACTOR.json",
+              type: "json",
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "agents/EXTRACTOR.json": incomingExtractor,
+    });
+
+    const code = await cmdUpgradeParsed({
+      cwd: root,
+      rootOverride: root,
+      flags: {
+        bundle: bundlePath,
+        checksum: checksumPath,
+        mode: "auto",
+        remote: false,
+        allowTarball: false,
+        dryRun: false,
+        backup: false,
+        yes: true,
+      },
+    });
+    expect(code).toBe(0);
+
+    await expect(readFile(legacyPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+    await expect(readFile(baselinePath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+    expect(JSON.parse(await readFile(path.join(agentsDir, "EXTRACTOR.json"), "utf8"))).toEqual({
+      id: "EXTRACTOR",
+      role: "new",
+    });
+
+    const { stdout: commitBodyOut } = await execFileAsync("git", ["log", "-1", "--pretty=%B"], {
+      cwd: root,
+    });
+    expect(String(commitBodyOut ?? "")).toContain("remove=1");
+  }, 60_000);
+
+  it("keeps legacy managed removal targets when they have local edits", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const agentsDir = path.join(root, ".agentplane", "agents");
+    await mkdir(agentsDir, { recursive: true });
+    const baselineExtractor = JSON.stringify({ id: "SKILL_EXTRACTOR", role: "old" }, null, 2);
+    const localExtractor = JSON.stringify(
+      { id: "SKILL_EXTRACTOR", role: "old", local: true },
+      null,
+      2,
+    );
+    const legacyPath = path.join(agentsDir, "SKILL_EXTRACTOR.json");
+    const baselinePath = path.join(
+      root,
+      ".agentplane",
+      ".upgrade",
+      "baseline",
+      "agents",
+      "SKILL_EXTRACTOR.json",
+    );
+    await mkdir(path.dirname(baselinePath), { recursive: true });
+    await writeFile(legacyPath, localExtractor, "utf8");
+    await writeFile(baselinePath, baselineExtractor, "utf8");
+
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "framework.manifest.json": JSON.stringify(
+        {
+          schema_version: 1,
+          files: [],
+          removals: [
+            {
+              path: ".agentplane/agents/SKILL_EXTRACTOR.json",
+              type: "json",
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+    });
+
+    const code = await cmdUpgradeParsed({
+      cwd: root,
+      rootOverride: root,
+      flags: {
+        bundle: bundlePath,
+        checksum: checksumPath,
+        mode: "auto",
+        remote: false,
+        allowTarball: false,
+        dryRun: false,
+        backup: false,
+        yes: true,
+      },
+    });
+    expect(code).toBe(0);
+    expect(await readFile(legacyPath, "utf8")).toBe(localExtractor);
+  }, 60_000);
+
   it("updates directly when current equals baseline (no local edits)", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

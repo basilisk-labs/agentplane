@@ -16,6 +16,13 @@
       "required": true
     },
     {
+      "path": ".agentplane/agents/CURATOR.json",
+      "source_path": "agents/CURATOR.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
       "path": ".agentplane/agents/DOCS.json",
       "source_path": "agents/DOCS.json",
       "type": "json",
@@ -210,6 +217,12 @@
       "type": "markdown",
       "merge_strategy": "agents_policy_markdown",
       "required": true
+    }
+  ],
+  "removals": [
+    {
+      "path": ".agentplane/agents/SKILL_EXTRACTOR.json",
+      "type": "json"
     }
   ]
 }
