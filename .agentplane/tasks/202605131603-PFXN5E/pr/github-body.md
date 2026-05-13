@@ -22,9 +22,9 @@ Make branch_pr completion queue verified task branches for serialized integratio
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T18:44:21.176Z
+- Updated: 2026-05-13T19:06:11.873Z
 - Branch: task/202605131603-PFXN5E/automate-merge-queue
-- Head: f14dc099a191
+- Head: e081a880bc81
 
 ```text
  .agentplane/policy/workflow.branch_pr.md           |  11 +-
@@ -44,15 +44,15 @@ Make branch_pr completion queue verified task branches for serialized integratio
  .../src/commands/integrate-queue.command.ts        | 177 ++++---
  .../src/commands/integrate-queue.spec.test.ts      |  29 ++
  .../src/commands/integrate-queue.spec.ts           |  43 ++
- .../src/commands/pr/integrate/cmd.test.ts          | 188 +++++++-
- .../agentplane/src/commands/pr/integrate/cmd.ts    |  83 +++-
+ .../src/commands/pr/integrate/cmd.test.ts          | 249 +++++++++-
+ .../agentplane/src/commands/pr/integrate/cmd.ts    | 109 ++++-
  .../pr/integrate/internal/github-pr-merge.ts       | 268 +++++++++++
  .../task/hosted-close-workflow-contract.test.ts    |   5 +-
  packages/core/schemas/task-handoff.schema.json     |   5 +-
  .../core/src/tasks/task-artifact-schema.handoff.ts |   5 +-
  packages/spec/schemas/task-handoff.schema.json     |   5 +-
  schemas/task-handoff.schema.json                   |   5 +-
- 25 files changed, 1378 insertions(+), 125 deletions(-)
+ 25 files changed, 1466 insertions(+), 124 deletions(-)
 ```
 
 </details>
