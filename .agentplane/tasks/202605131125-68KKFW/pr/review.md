@@ -24,9 +24,9 @@ Created: 2026-05-13T11:26:55.005Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T11:50:27.751Z
+- Updated: 2026-05-13T11:57:06.791Z
 - Branch: task/202605131125-68KKFW/split-cli-output
-- Head: 0cf47920f46b
+- Head: ec32aeedaa16
 
 ```text
  .../blueprint/resolved-snapshot.json               | 513 +++++++++++++++++++++
@@ -34,12 +34,10 @@ Created: 2026-05-13T11:26:55.005Z
  .../task-backend/redmine/backend-sync/sync.ts      |  10 +-
  packages/agentplane/src/cli/output.test.ts         |  34 +-
  packages/agentplane/src/cli/output.ts              | 127 ++++-
- .../agentplane/src/cli/run-cli.core.init.test.ts   |   1 +
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |   3 +
  packages/agentplane/src/commands/acr/validate.ts   |   3 +-
  packages/agentplane/src/commands/doctor.run.ts     |   4 +-
- .../src/runtime/shared/runtime-artifacts.ts        |   1 +
- scripts/oversized-test-baseline.json               |   8 +-
- 10 files changed, 682 insertions(+), 24 deletions(-)
+ 8 files changed, 677 insertions(+), 22 deletions(-)
 ```
 
 </details>
