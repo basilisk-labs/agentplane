@@ -95,26 +95,16 @@ async function loadOrBootstrapCommandContext(opts: {
   cwd: string;
   rootOverride?: string | null;
 }): Promise<CommandContext> {
+  const root = path.resolve(opts.rootOverride ?? opts.cwd);
+  const target = await inspectBootstrapTarget(root);
+  if (target?.canBootstrap) {
+    return await bootstrapEmptyProjectForContextInit(root);
+  }
+
   try {
     return await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
   } catch (err) {
-    return await bootstrapEmptyProjectForContextInit(opts, err);
-  }
-}
-
-async function bootstrapEmptyProjectForContextInit(
-  opts: { cwd: string; rootOverride?: string | null },
-  originalError: unknown,
-): Promise<CommandContext> {
-  const root = path.resolve(opts.rootOverride ?? opts.cwd);
-  const entries = await readBootstrapTargetEntries(root, originalError);
-  const meaningfulEntries = entries.filter((entry) => !SAFE_EMPTY_PLACEHOLDERS.has(entry));
-  const canBootstrap =
-    meaningfulEntries.length === 0 ||
-    (meaningfulEntries.length === 1 && meaningfulEntries[0] === ".git");
-
-  if (!canBootstrap) {
-    if (!meaningfulEntries.includes(".agentplane")) {
+    if (target && !target.hasAgentplaneDir && isMissingProjectError(err)) {
       throw new CliError({
         exitCode: exitCodeForError("E_USAGE"),
         code: "E_USAGE",
@@ -123,9 +113,30 @@ async function bootstrapEmptyProjectForContextInit(
           "Run agentplane init explicitly before context init for non-empty directories.",
       });
     }
-    throw originalError;
+    throw err;
   }
+}
 
+type BootstrapTarget = {
+  canBootstrap: boolean;
+  hasAgentplaneDir: boolean;
+};
+
+async function inspectBootstrapTarget(root: string): Promise<BootstrapTarget | null> {
+  const entries = await readBootstrapTargetEntries(root);
+  if (!entries) return null;
+  const meaningfulEntries = entries.filter((entry) => !SAFE_EMPTY_PLACEHOLDERS.has(entry));
+  const canBootstrap =
+    meaningfulEntries.length === 0 ||
+    (meaningfulEntries.length === 1 && meaningfulEntries[0] === ".git");
+
+  return {
+    canBootstrap,
+    hasAgentplaneDir: meaningfulEntries.includes(".agentplane"),
+  };
+}
+
+async function bootstrapEmptyProjectForContextInit(root: string): Promise<CommandContext> {
   const parentGitRoot = await detectParentGitRoot(root);
   if (parentGitRoot) {
     throw new CliError({
@@ -151,12 +162,21 @@ async function bootstrapEmptyProjectForContextInit(
   return await loadCommandContext({ cwd: root, rootOverride: root });
 }
 
-async function readBootstrapTargetEntries(root: string, originalError: unknown): Promise<string[]> {
+async function readBootstrapTargetEntries(root: string): Promise<string[] | null> {
   try {
     return await readdir(root);
   } catch {
-    throw originalError;
+    return null;
   }
+}
+
+function isMissingProjectError(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err);
+  return (
+    message.startsWith("Not a git repository") ||
+    message.includes("ENOENT") ||
+    message.includes(".agentplane")
+  );
 }
 
 async function createContextWorkspace(
