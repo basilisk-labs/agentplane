@@ -1,0 +1,14 @@
+ README.md                                       |  5 ++---
+ docs/assets/header.svg                          |  2 +-
+ docs/compare.mdx                                |  2 +-
+ docs/developer/workflow-harness-test-matrix.mdx |  2 +-
+ docs/manifesto.mdx                              | 10 +++++-----
+ docs/showcase.mdx                               |  2 +-
+ docs/user/agent-change-record.mdx               |  3 +--
+ docs/user/overview.mdx                          |  1 -
+ docs/user/website-ia.mdx                        |  2 +-
+ packages/agentplane/README.md                   |  5 ++---
+ website/CONTENT.md                              |  2 +-
+ website/src/data/homepage-content.ts            |  8 ++++----
+ website/static/llms-full.txt                    |  2 +-
+ 13 files changed, 21 insertions(+), 25 deletions(-)
