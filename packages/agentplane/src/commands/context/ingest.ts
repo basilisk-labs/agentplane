@@ -188,6 +188,7 @@ function createTaskNewParsed(
         forbidden_outputs: [
           "context/raw/**",
           "context/raw/private/**",
+          ".agentplane/cache.sqlite",
           ".agentplane/context/service/**",
         ],
         policies: {

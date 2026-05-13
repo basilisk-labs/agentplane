@@ -57,7 +57,8 @@ The visible payoff is a repo-owned task trail:
 For research-heavy tasks, local context adds a second repo-owned trail:
 
 ```text
-.agentplane/context/derived/context.sqlite
+.agentplane/cache.sqlite
+.agentplane/context/derived/**/*
 context/wiki/**/*
 context/facts/**/*.jsonl
 context/graph/**/*.jsonl
@@ -69,13 +70,15 @@ context/graph/**/*.jsonl
 - Repo workflow/configuration: `.agentplane/WORKFLOW.md`.
 - Task state: `.agentplane/tasks/`.
 - Local context source artifacts: `context/**`.
-- Local context derived projection: `.agentplane/context/derived/context.sqlite`.
+- Local context derived artifacts: `.agentplane/context/derived/**`.
+- Shared local projection cache: `.agentplane/cache.sqlite`.
 - ACR evidence projection: `.agentplane/tasks/<task-id>/acr.json`.
 - Command behavior: installed `agentplane` CLI.
 - Git history: commits, branches, and review workflow.
 
-`context/**` is the editable source layer. `.agentplane/context/derived/**` is generated and can be
-rebuilt with `agentplane context reindex`.
+`context/**` is the editable source layer. `.agentplane/context/derived/**` and
+`.agentplane/cache.sqlite` are generated/disposable and can be rebuilt with
+`agentplane context reindex`.
 
 ## Next steps
 

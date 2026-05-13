@@ -10,10 +10,10 @@ import { loadCommandContext, type CommandContext } from "../shared/task-backend.
 import type { ContextInitParsed } from "./context.spec.js";
 
 const DEFAULT_GITIGNORE_ENTRIES = [
+  ".agentplane/cache.sqlite",
+  ".agentplane/cache.sqlite-wal",
+  ".agentplane/cache.sqlite-shm",
   ".agentplane/context/service/",
-  ".agentplane/context/service/local.sqlite",
-  ".agentplane/context/service/local.sqlite-wal",
-  ".agentplane/context/service/local.sqlite-shm",
   ".agentplane/context/service/cache/",
   ".agentplane/context/service/embeddings/",
   ".agentplane/context/service/remotes/",
@@ -267,7 +267,7 @@ service:
   root: .agentplane/context/service
   index:
     type: sqlite
-    path: .agentplane/context/service/local.sqlite
+    path: .agentplane/cache.sqlite
     fts: true
     cache_task_readmes: true
     cache_acr_summaries: true

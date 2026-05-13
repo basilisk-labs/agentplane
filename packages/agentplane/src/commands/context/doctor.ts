@@ -6,6 +6,7 @@ import path from "node:path";
 import { parse as parseYaml } from "yaml";
 
 import { CliError } from "../../shared/errors.js";
+import { resolveAgentplaneCacheSqlitePath } from "../../shared/cache-paths.js";
 import { parseJsonlLines, fileExists, readText } from "./context-utils.js";
 import { readContextProjection } from "./reindex.js";
 import { checkSqliteProjection } from "./sqlite.js";
@@ -99,16 +100,13 @@ export async function cmdContextDoctor(opts: {
     }
   }
 
-  for (const file of [
-    ".agentplane/context/manifest.lock.json",
-    ".agentplane/context/service/local.sqlite",
-  ]) {
+  for (const file of [".agentplane/context/manifest.lock.json", ".agentplane/cache.sqlite"]) {
     if (!(await fileExists(path.join(root, file)))) {
       issues.push(`missing context registry artifact: ${file}`);
     }
   }
 
-  const sqlitePath = path.join(root, ".agentplane/context/service/local.sqlite");
+  const sqlitePath = resolveAgentplaneCacheSqlitePath(root);
   if (await fileExists(sqlitePath)) {
     const sqliteOk = await checkSqliteProjection(sqlitePath);
     if (!sqliteOk) {
