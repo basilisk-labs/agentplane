@@ -24,9 +24,9 @@ Created: 2026-05-13T16:03:49.901Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T18:39:25.908Z
+- Updated: 2026-05-13T18:44:21.176Z
 - Branch: task/202605131603-PFXN5E/automate-merge-queue
-- Head: 55efd144474a
+- Head: f14dc099a191
 
 ```text
  .agentplane/policy/workflow.branch_pr.md           |  11 +-
