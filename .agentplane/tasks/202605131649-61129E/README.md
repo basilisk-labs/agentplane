@@ -1,7 +1,8 @@
 ---
 id: "202605131649-61129E"
 title: "Align public CLI docs with user command surface"
-status: "DOING"
+result_summary: "Merged via PR #3646."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -27,11 +28,16 @@ verification:
   updated_by: "CODER"
   note: "Addressed PR review comment r3236216569: group-only CLI docs filtering now treats optional single-token dispatch args named cmd/command/subcommand as group dispatchers, not only variadic dispatchers. Rebuilt generated CLI reference and confirmed task doc/task verify wrappers are absent while task run remains."
   attempts: 0
-commit: null
+commit:
+  hash: "f05ad5aa98a07557dcec0bed0790b4dae335fc0d"
+  message: "Merge pull request #3646 from basilisk-labs/task/202605131649-61129E/public-cli-docs-surface"
 comments:
   -
     author: "CODER"
     body: "Start: align public CLI documentation with the actual user command surface, keeping developer-only and advanced commands out of the main public flow while preserving generated reference accuracy."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3646 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -64,9 +70,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Addressed PR review comment r3236216569: group-only CLI docs filtering now treats optional single-token dispatch args named cmd/command/subcommand as group dispatchers, not only variadic dispatchers. Rebuilt generated CLI reference and confirmed task doc/task verify wrappers are absent while task run remains."
+  -
+    type: "status"
+    at: "2026-05-13T19:05:25.109Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3646 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T19:03:07.651Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T19:05:25.109Z"
+doc_updated_by: "INTEGRATOR"
 description: "Separate public user command documentation from developer/advanced surfaces, remove stale command examples, and keep generated CLI reference focused on actionable user commands."
 sections:
   Summary: |-
