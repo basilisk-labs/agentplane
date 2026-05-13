@@ -1,16 +1,16 @@
 {
-  "artifact_state": "remote_failed",
-  "artifact_state_reason": "task branch push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.\nfatal: Authentication failed for 'https://github.com/basilisk-labs/agentplane.git/'",
-  "artifact_state_updated_at": "2026-05-13T21:12:59.907Z",
   "base": "main",
   "branch": "task/202605132058-36REEV/split-pr-meta",
   "created_at": "2026-05-13T20:59:57.460Z",
   "head_sha": "ad50be06756b626fcd6da82becbd13d2862dfbc6",
   "last_verified_at": "2026-05-13T21:10:56.978Z",
   "last_verified_sha": "ad50be06756b626fcd6da82becbd13d2862dfbc6",
+  "pr_number": 3684,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3684",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202605132058-36REEV",
-  "updated_at": "2026-05-13T21:09:19.102Z",
+  "updated_at": "2026-05-13T21:32:02.633Z",
   "verify": {
     "status": "pass"
   }
