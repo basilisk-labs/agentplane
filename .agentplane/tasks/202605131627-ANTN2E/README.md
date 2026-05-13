@@ -1,7 +1,8 @@
 ---
 id: "202605131627-ANTN2E"
 title: "Classify task artifact drift for parallel agents"
-status: "DOING"
+result_summary: "Merged via PR #3643."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: addressed PR review by restricting ignore_parallel_agent to active task README artifacts only. Active non-README artifacts now remain actionable/inspect. Checks passed on 02926e918: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts (14 pass); bun run --filter=agentplane typecheck; bunx prettier --check touched files; bunx eslint touched files; node .agentplane/policy/check-routing.mjs; ap doctor."
   attempts: 0
-commit: null
+commit:
+  hash: "8d341eaa0601031e11627eaa20fb19ec9b08cd71"
+  message: "Merge pull request #3643 from basilisk-labs/task/202605131627-ANTN2E/typed-drift-classification"
 comments:
   -
     author: "CODER"
     body: "Start: implement typed task artifact drift classification in preflight with focused tests and compatibility-preserving JSON fields."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3643 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: addressed PR review by restricting ignore_parallel_agent to active task README artifacts only. Active non-README artifacts now remain actionable/inspect. Checks passed on 02926e918: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts (14 pass); bun run --filter=agentplane typecheck; bunx prettier --check touched files; bunx eslint touched files; node .agentplane/policy/check-routing.mjs; ap doctor."
+  -
+    type: "status"
+    at: "2026-05-13T19:13:20.006Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3643 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T19:11:21.289Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T19:13:20.006Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add typed preflight classification for task artifact drift so active task artifacts from parallel agents are distinguished from stale or unknown recovery drift."
 sections:
   Summary: |-
