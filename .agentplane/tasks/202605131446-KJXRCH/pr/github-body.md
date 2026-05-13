@@ -22,19 +22,20 @@ Make agentplane context init in an empty directory initialize the AgentPlane pro
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T14:54:04.085Z
+- Updated: 2026-05-13T14:59:10.294Z
 - Branch: task/202605131446-KJXRCH/context-init-bootstrap
-- Head: 87dfdcee6636
+- Head: ddacc0117be9
 
 ```text
  .../blueprint/resolved-snapshot.json               | 514 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   2 +
  docs/user/local-context.mdx                        |   5 +
  docs/user/setup.mdx                                |   4 +
  .../agentplane/src/cli/run-cli.core.init.test.ts   |  89 ++++
  .../src/cli/run-cli/command-catalog/project.ts     |   2 +-
  .../src/commands/context/context.spec.ts           |   2 +
  packages/agentplane/src/commands/context/init.ts   |  89 +++-
- 7 files changed, 702 insertions(+), 3 deletions(-)
+ 8 files changed, 704 insertions(+), 3 deletions(-)
 ```
 
 </details>
