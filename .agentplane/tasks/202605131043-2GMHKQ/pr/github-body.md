@@ -22,9 +22,9 @@ Consolidate AgentPlane generated projection surfaces under .agentplane/generated
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T13:16:42.947Z
+- Updated: 2026-05-13T13:17:09.369Z
 - Branch: task/202605131043-2GMHKQ/generated-scripts-context-refactor
-- Head: be1ece1cb5f9
+- Head: 844e6461ec56
 
 ```text
  .../blueprint/resolved-snapshot.json               |  512 +++++++++
@@ -154,7 +154,7 @@ Consolidate AgentPlane generated projection surfaces under .agentplane/generated
  scripts/generate-builtin-assets.mjs                |  112 +-
  scripts/generate-bun-cli-assets.mjs                |  245 +----
  scripts/generate-llms-full.mjs                     |   52 +-
- scripts/generate-recipes-inventory.mjs             |  174 +---
+ scripts/generate-recipes-inventory.mjs             |  180 +---
  scripts/generate-release-distribution.mjs          |  531 +---------
  scripts/generate-roadmap-illustration.mjs          |   51 +-
  scripts/generate-scripts-readme.mjs                |  187 +---
@@ -245,7 +245,7 @@ Consolidate AgentPlane generated projection surfaces under .agentplane/generated
  scripts/workflow/run-workflows-lint.mjs            |   38 +
  .../workflow/verify-global-agentplane-install.mjs  |  172 ++++
  scripts/workflow/wait-remote-pr-checks.mjs         |  594 +++++++++++
- 218 files changed, 21886 insertions(+), 19993 deletions(-)
+ 218 files changed, 21891 insertions(+), 19994 deletions(-)
 ```
 
 </details>

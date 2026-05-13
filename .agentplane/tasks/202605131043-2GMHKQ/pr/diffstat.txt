@@ -125,7 +125,7 @@
  scripts/generate-builtin-assets.mjs                |  112 +-
  scripts/generate-bun-cli-assets.mjs                |  245 +----
  scripts/generate-llms-full.mjs                     |   52 +-
- scripts/generate-recipes-inventory.mjs             |  174 +---
+ scripts/generate-recipes-inventory.mjs             |  180 +---
  scripts/generate-release-distribution.mjs          |  531 +---------
  scripts/generate-roadmap-illustration.mjs          |   51 +-
  scripts/generate-scripts-readme.mjs                |  187 +---
@@ -216,4 +216,4 @@
  scripts/workflow/run-workflows-lint.mjs            |   38 +
  .../workflow/verify-global-agentplane-install.mjs  |  172 ++++
  scripts/workflow/wait-remote-pr-checks.mjs         |  594 +++++++++++
- 218 files changed, 21886 insertions(+), 19993 deletions(-)
+ 218 files changed, 21891 insertions(+), 19994 deletions(-)
