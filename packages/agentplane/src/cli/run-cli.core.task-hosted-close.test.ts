@@ -356,6 +356,7 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
         cwd: root,
       });
       expect(afterRerunStdout.trim()).toBe(closeHead);
+
     },
     HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS,
   );
