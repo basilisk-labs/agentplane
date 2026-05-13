@@ -15,8 +15,8 @@ Make the long-form agentplane command render a cleaner human-oriented output wit
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Implemented split CLI presentation: agentplane keeps human formatting with aligned report labels and optional ANSI color, while ap/agent mode removes emoji and alignment for raw agent-oriented output. Verified with targeted tests, typecheck, build, knip, pre-push, and hosted GitHub checks.
 - Canonical workflow state lives in the task README.
 
 <details>
