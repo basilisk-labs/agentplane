@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605130823-WZVTNK/fast-suite-regressions",
+  "created_at": "2026-05-13T08:25:51.685Z",
+  "head_sha": "5f696652f7ca61dcca907757cefeb7cefbf9b080",
+  "last_verified_at": "2026-05-13T09:00:27.976Z",
+  "last_verified_sha": "4640997a58ec83be9fb6c841734ba919bf2486e6",
+  "schema_version": 1,
+  "task_id": "202605130823-WZVTNK",
+  "updated_at": "2026-05-13T09:15:48.531Z",
+  "verify": {
+    "status": "pass"
+  }
+}

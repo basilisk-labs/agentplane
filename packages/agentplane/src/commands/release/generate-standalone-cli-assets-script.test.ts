@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { existsSync } from "node:fs";
-import { mkdir, mkdtemp, readFile, rm } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -17,6 +17,19 @@ async function makeTempRoot() {
   const root = await mkdtemp(path.join(tmpdir(), "agentplane-standalone-test-"));
   tempRoots.push(root);
   return root;
+}
+
+async function makeNoNpmEnv(root: string) {
+  const binDir = path.join(root, "bin");
+  await mkdir(binDir, { recursive: true });
+  const npmPath = path.join(binDir, "npm");
+  await writeFile(
+    npmPath,
+    "#!/usr/bin/env node\nconsole.error('npm must not be invoked in synthetic standalone check mode');\nprocess.exit(42);\n",
+    "utf8",
+  );
+  await chmod(npmPath, 0o755);
+  return { ...process.env, PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}` };
 }
 
 afterEach(async () => {
@@ -60,7 +73,8 @@ describe("generate-standalone-cli-assets script", () => {
   it(
     "generates POSIX standalone archive layout in offline check mode",
     async () => {
-      const outDir = path.join(await makeTempRoot(), "out");
+      const root = await makeTempRoot();
+      const outDir = path.join(root, "out");
 
       await execFileAsync(
         "node",
@@ -79,7 +93,7 @@ describe("generate-standalone-cli-assets script", () => {
           "--synthetic-node",
           "--skip-install",
         ],
-        { cwd: process.cwd() },
+        { cwd: process.cwd(), env: await makeNoNpmEnv(root) },
       );
 
       const archivePath = path.join(outDir, "agentplane-v1.2.3-darwin-arm64.tar.gz");
@@ -124,7 +138,8 @@ describe("generate-standalone-cli-assets script", () => {
   it(
     "generates Windows standalone archive layout in offline check mode",
     async () => {
-      const outDir = path.join(await makeTempRoot(), "out");
+      const root = await makeTempRoot();
+      const outDir = path.join(root, "out");
 
       await execFileAsync(
         "node",
@@ -143,7 +158,7 @@ describe("generate-standalone-cli-assets script", () => {
           "--synthetic-node",
           "--skip-install",
         ],
-        { cwd: process.cwd() },
+        { cwd: process.cwd(), env: await makeNoNpmEnv(root) },
       );
 
       const archivePath = path.join(outDir, "agentplane-v1.2.3-win32-x64.zip");
@@ -174,9 +189,11 @@ describe("generate-standalone-cli-assets script", () => {
   it(
     "validates every contract target through --check without writing final outputs",
     async () => {
-      const outDir = path.join(await makeTempRoot(), "out");
+      const root = await makeTempRoot();
+      const outDir = path.join(root, "out");
       const { stdout } = await execFileAsync("node", [SCRIPT_PATH, "--out", outDir, "--check"], {
         cwd: process.cwd(),
+        env: await makeNoNpmEnv(root),
       });
 
       expect(stdout).toContain("standalone CLI assets check");
@@ -242,7 +259,8 @@ describe("generate-standalone-cli-assets script", () => {
   it(
     "smoke-tests a standalone archive fixture without a PATH node dependency",
     async () => {
-      const outDir = path.join(await makeTempRoot(), "out");
+      const root = await makeTempRoot();
+      const outDir = path.join(root, "out");
       const target = hostStandaloneTarget();
 
       await execFileAsync(
@@ -262,7 +280,7 @@ describe("generate-standalone-cli-assets script", () => {
           "--synthetic-node",
           "--skip-install",
         ],
-        { cwd: process.cwd() },
+        { cwd: process.cwd(), env: await makeNoNpmEnv(root) },
       );
 
       const extension = target.startsWith("win32-") ? "zip" : "tar.gz";
