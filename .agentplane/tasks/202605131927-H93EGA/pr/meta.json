@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T19:58:43Z",
   "base": "main",
   "branch": "task/202605131927-H93EGA/resolve-codex-review-comments",
   "created_at": "2026-05-13T19:28:39.640Z",
-  "head_sha": "aea9099bc12910edae71fa489697c163c652336b",
+  "head_sha": "8605c611b938aa8d35d1346acfdab158e75c73f4",
   "last_verified_at": "2026-05-13T19:53:13.412Z",
   "last_verified_sha": "aea9099bc12910edae71fa489697c163c652336b",
+  "merge_commit": "d7fc637d1d8c40b074aaba63b28b7360f7fb8716",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T19:58:43Z",
   "pr_number": 3670,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3670",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605131927-H93EGA",
-  "updated_at": "2026-05-13T19:56:41.334Z",
+  "updated_at": "2026-05-13T19:58:43Z",
   "verify": {
     "status": "pass"
   }

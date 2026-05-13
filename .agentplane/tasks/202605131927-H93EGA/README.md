@@ -1,7 +1,8 @@
 ---
 id: "202605131927-H93EGA"
 title: "Resolve Codex review comments from merged PRs"
-status: "DOING"
+result_summary: "Merged via PR #3670."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Resolved seven current Codex review findings from recent merged PRs with seven focused commits; targeted Vitest suite passed (66 tests) and policy routing passed."
   attempts: 0
-commit: null
+commit:
+  hash: "d7fc637d1d8c40b074aaba63b28b7360f7fb8716"
+  message: "Merge task 202605131927-H93EGA: resolve Codex review comments"
 comments:
   -
     author: "CODER"
     body: "Start: Audit the seven unresolved Codex GitHub review threads from recent merged PRs against current main, apply each still-relevant fix as its own commit in this task worktree, run focused verification, and resolve the reviewed GitHub threads only after evidence is recorded."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3670 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Resolved seven current Codex review findings from recent merged PRs with seven focused commits; targeted Vitest suite passed (66 tests) and policy routing passed."
+  -
+    type: "status"
+    at: "2026-05-13T19:59:33.353Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3670 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T19:53:13.429Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T19:59:33.353Z"
+doc_updated_by: "INTEGRATOR"
 description: "Audit unresolved Codex review threads from recent merged PRs, apply still-relevant fixes as separate commits, and resolve GitHub review threads with evidence."
 sections:
   Summary: |-
