@@ -1,7 +1,7 @@
 import path from "node:path";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 
-export type CloudBackendState = { last_checked_at: string | null };
+type CloudBackendState = { last_checked_at: string | null };
 
 export async function readCloudBackendState(statePath: string): Promise<CloudBackendState> {
   try {
