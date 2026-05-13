@@ -1,0 +1,198 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605131725-VPZZ5B",
+  "created_at": "2026-05-13T18:32:53.653Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "d6d40b903b5b4080b90f43e7f07a8967f22ca810",
+    "work_ref": "main",
+    "work_commit": "d6d40b903b5b4080b90f43e7f07a8967f22ca810"
+  },
+  "task": {
+    "task_id": "202605131725-VPZZ5B",
+    "title": "Remove telemetry hosted runtime copy",
+    "intent": "Remove public copy claims about no hosted runtime and no telemetry from README, package README, docs, and website content so messaging no longer depends on those trust slogans.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605131725-VPZZ5B/README.md",
+      "sha256": "sha256:892a0e9065fb30119f625395223f2b03b6f2a74733e30583f3c31a2f3e1cd846"
+    },
+    "approved_at": "2026-05-13T17:26:23.169Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3650.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605131725-VPZZ5B_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-13T17:26:23.169Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605131725-VPZZ5B/README.md",
+      "sha256": "sha256:892a0e9065fb30119f625395223f2b03b6f2a74733e30583f3c31a2f3e1cd846"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605131725-VPZZ5B/README.md",
+      "sha256": "sha256:892a0e9065fb30119f625395223f2b03b6f2a74733e30583f3c31a2f3e1cd846"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605131725-VPZZ5B/README.md",
+      "sha256": "sha256:892a0e9065fb30119f625395223f2b03b6f2a74733e30583f3c31a2f3e1cd846"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit d6d40b903b5b4080b90f43e7f07a8967f22ca810 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:82190f8c7af919ff73c3f5c323b595e135d5a1e7b29038b9646ef4b87cd252c1",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "docs.change",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "docs.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "docs.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "docs.artifact",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "missing",
+        "path": ".agentplane/tasks/202605131725-VPZZ5B/blueprint/resolved-snapshot.json",
+        "digest": null,
+        "current_digest": "d2d053a433eec346fbe888dd4b1bf1a446de207068e28b7d0ee78978d5ef49c9",
+        "route_changed": null,
+        "artifact_sha256": null,
+        "safe_command": "agentplane blueprint snapshot 202605131725-VPZZ5B"
+      }
+    }
+  }
+}

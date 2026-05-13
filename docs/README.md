@@ -13,14 +13,18 @@ Marketing and positioning source documents moved to the `marketing/` submodule
 (`basilisk-labs/agentplane-marketing`). The public docs routes for `manifesto`, `compare`,
 `listing`, `showcase`, and `user/website-ia` stay here as thin compatibility pages.
 
-Docs are organized into an agent-first navigation model on top of `docs/user/`, `docs/developer/`, and `docs/help/`:
+Docs are organized into an agent-first public navigation model on top of `docs/user/`, `docs/help/`,
+`docs/workflow-guides/`, `docs/recipes/`, `docs/reference/`, and `docs/releases/`:
 
 - `Start`
 - `Work on a task`
 - `Upgrade & recover`
 - `Reference & integrations`
-- `Developer`
 - `Release notes`
+
+Framework maintainer documentation for developing AgentPlane itself lives under `docs/developer/`.
+It is direct-link only and intentionally omitted from the public sidebar and public docs index.
+Use `docs/developer/harness-dev.mdx` as the maintainer entrypoint.
 
 Canonical docs ownership and section boundaries are defined in:
 

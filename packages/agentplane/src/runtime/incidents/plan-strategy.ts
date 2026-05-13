@@ -32,6 +32,7 @@ function parseIncidentFindingBlocks(findings: string): (IncidentFindingCandidate
   shouldPromote: boolean;
   skipReason: IncidentSkippedFinding["reason"] | null;
 })[] {
+  // Deterministic parser for CURATOR-style incident findings; semantic promotion remains bounded by the authored fields.
   const lines = normalizeLines(findings);
   const candidates: (IncidentFindingCandidate & {
     shouldPromote: boolean;

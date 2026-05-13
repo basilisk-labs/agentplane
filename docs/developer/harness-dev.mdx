@@ -1,0 +1,56 @@
+---
+title: "Harness/dev documentation"
+description: "Direct-link maintainer entrypoint for developing AgentPlane itself."
+---
+
+## Scope
+
+These pages are for framework maintainers working on AgentPlane internals, harness behavior,
+release mechanics, and developer-only command surfaces.
+
+They are intentionally omitted from the public user sidebar and public docs index. Public user docs
+should describe day-to-day repository operation and link to generated user command reference only.
+
+## Entry points
+
+- [Design principles](./design-principles)
+- [Architecture](./architecture)
+- [Project layout](./project-layout)
+- [Module topology](./module-topology)
+- [CLI contract](./cli-contract)
+- [CLI help JSON](./cli-help-json)
+- [Workflow contract](./workflow-contract)
+- [Workflow harness test matrix](./workflow-harness-test-matrix)
+- [Harness engineering](./harness-engineering)
+- [Local context implementation](./local-context)
+- [Agent Change Record implementation](./agent-change-record-implementation)
+- [Close taxonomy](./close-taxonomy)
+- [Testing and quality](./testing-and-quality)
+- [Release and publishing](./release-and-publishing)
+- [Contributing](./contributing)
+
+## Framework checkout handoff
+
+Inside the AgentPlane framework repository, the installed `agentplane` wrapper delegates to the
+repo-local development binary after bootstrap. Check the active runtime with:
+
+```bash
+agentplane runtime explain
+```
+
+For fresh clones, worktrees, or stale repo-local builds, use the canonical framework bootstrap:
+
+```bash
+bun run framework:dev:bootstrap
+```
+
+Set `AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1` only when you intentionally need to bypass the
+repo-local development runtime.
+
+If commands fail with `refusing to run a stale repo build`, rebuild with the bootstrap command,
+then verify the repo-local handoff with:
+
+```bash
+node packages/agentplane/bin/agentplane.js runtime explain
+agentplane runtime explain
+```

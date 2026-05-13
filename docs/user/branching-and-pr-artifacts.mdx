@@ -69,12 +69,12 @@ from projection prose when the task README/frontmatter or `meta.json` says other
 Treat these as two separate layers:
 
 1. `agentplane pr open|update|check` maintains the repository-local review packet under `.agentplane/tasks/<task-id>/pr/`.
-2. `gh pr ...` is the hosted-review layer that triggers server-side required checks using the derived `github-title.txt` and `github-body.md` projections from that same local packet.
+2. A normal `agentplane pr open` run publishes the task branch and creates or links the hosted GitHub PR from the derived `github-title.txt` and `github-body.md` projections. Use `--sync-only` only when local artifacts must be refreshed without remote side effects.
 
 If this repository requires remote checks before `main` moves, do both:
 
 - keep local PR artifacts current with `agentplane`;
-- push the task branch and wait for hosted required checks with the workflow helper or raw `gh`.
+- record task-branch verification, then wait for hosted required checks with the workflow helper or raw `gh`.
 
 If a hosted GitHub PR is merged directly into `main` instead of going through local
 `agentplane integrate`, the repository now pushes a deterministic closure branch for the
@@ -90,7 +90,7 @@ manual PR link on the merged task PR instead of failing silently.
 
 ## Commands
 
-See [`cli-contract`](../developer/cli-contract) for the authoritative command surface.
+See the [generated CLI reference](cli-reference.generated) for the public command surface.
 
 Typical branch_pr flow:
 
@@ -102,12 +102,11 @@ agentplane task start-ready <task-id> --author CODER --body "Start: ..."
 # edit files
 git add <changed-files>
 git commit -m "Implement <task>"
+agentplane task verify-show <task-id>
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
-git push -u origin task/<task-id>/<slug>
-gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
-bun run workflow:wait-remote-checks
 agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
+bun run workflow:wait-remote-checks
 cd <base-checkout>
 agentplane pr check <task-id>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify

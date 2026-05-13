@@ -15,7 +15,8 @@ Install-first runtime model:
 - `agentplane` keeps a local task projection under `.agentplane/`.
 - Ordinary task reads (`task list`, `task show`, `doctor`) use the local projection by default.
 - `agentplane backend sync redmine --direction pull` refreshes the projection from Redmine.
-- `agentplane task export` can generate a tasks JSON snapshot from the current projection when an integration needs a local file.
+- Advanced export can generate a tasks JSON snapshot from the current projection when an integration
+  needs a local file; inspect hidden maintenance commands with `agentplane help --all`.
 
 ## Required environment keys
 
@@ -94,12 +95,9 @@ Operational rule:
 
 ## Canonical-state migration
 
-To backfill structured `canonical_state` into legacy Redmine issues that still only carry the
-older doc-based projection, run:
-
-```bash
-agentplane backend migrate-canonical-state redmine --yes
-```
+Canonical-state backfill is an advanced maintenance path for legacy Redmine installations. It is
+implemented in the CLI, but it is intentionally hidden from the normal public command surface.
+Inspect hidden maintenance commands with `agentplane help --all` before using it.
 
 The command scans the current Redmine task set, skips issues that already store
 `canonical_state`, skips issues that cannot be reconstructed from legacy doc content, and reports

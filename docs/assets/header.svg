@@ -17,7 +17,7 @@
 <text class="display" x="96" y="332" font-size="92" fill="#070707" font-weight="830" letter-spacing="-5.06">Traceable AI</text>
 <text class="display" x="96" y="448" font-size="92" fill="#070707" font-weight="830" letter-spacing="-5.06">work in Git</text>
 <text class="sans" x="100" y="535" font-size="31" fill="#404650" font-weight="430">Task intent · approved plan · verification · ACR</text>
-<text class="sans" x="100" y="580" font-size="31" fill="#404650" font-weight="430">closure metadata · no hosted runtime</text>
+<text class="sans" x="100" y="580" font-size="31" fill="#404650" font-weight="430">closure metadata · review trail</text>
 <text class="mono" x="100" y="704" font-size="30" fill="#070707">.agentplane/tasks/&lt;task-id&gt;/</text>
 <rect x="592" y="684.2" width="12.6" height="4" fill="#005CFF" rx="2"/>
 <line x1="100" y1="737" x2="660" y2="737" stroke="#DCD9D1" stroke-width="1.3"/>

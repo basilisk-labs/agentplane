@@ -7,7 +7,7 @@ description: "Incident procedure when .agentplane/WORKFLOW.md becomes invalid an
 
 - `agentplane preflight` reports `workflow loaded: no`.
 - `agentplane doctor` returns `WF_*` errors.
-- `agentplane workflow build --validate` fails.
+- The workflow contract cannot be normalized by `agentplane doctor --fix`.
 
 ## Containment
 
@@ -15,7 +15,6 @@ description: "Incident procedure when .agentplane/WORKFLOW.md becomes invalid an
 2. Collect diagnostics:
 
 ```bash
-agentplane workflow build --validate --dry-run
 agentplane doctor
 ```
 
@@ -35,7 +34,7 @@ agentplane doctor
 Use when active `.agentplane/WORKFLOW.md` is malformed or manually corrupted.
 
 ```bash
-agentplane workflow restore
+agentplane help --all
 agentplane doctor
 agentplane preflight --mode full
 ```
@@ -52,11 +51,9 @@ agentplane preflight --json
 After incident:
 
 1. Remove kill-switch env.
-2. Rebuild and validate workflow.
-3. Confirm `doctor` and `preflight` pass with enforcement enabled.
+2. Confirm `doctor` and `preflight` pass with enforcement enabled.
 
 ## Exit criteria
 
-- `agentplane workflow build --validate --dry-run` returns `0`.
 - `agentplane doctor` returns `0`.
 - `agentplane preflight --mode full` reports workflow loaded successfully.

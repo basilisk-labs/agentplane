@@ -203,6 +203,7 @@ export function renderQuickstart(): string {
     ...renderQuickstartCommandBlock([
       'agentplane task new --title "Demo task" --description "Inspect AgentPlane artifacts" --owner DOCS --tag docs',
       'agentplane task plan set <task-id> --text "Inspect the generated task README and verification section." --updated-by DOCS',
+      "agentplane task plan approve <task-id> --by ORCHESTRATOR",
       "agentplane task start-ready <task-id> --author DOCS --body-file ./start-note.txt",
       "agentplane task verify-show <task-id>",
     ]),

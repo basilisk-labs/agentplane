@@ -31,7 +31,9 @@ it no longer owns the SQLite file.
 
 ## Task-history extraction
 
-`context harvest tasks --create-extraction-tasks` is the agentic layer for completed task history.
+`context harvest tasks` uses `CURATOR` extraction tasks as the default non-write semantic layer for
+completed task history. `--create-extraction-tasks` remains an explicit compatibility flag for
+scripts that want to name the action.
 It does not treat the deterministic `context/raw/tasks/*.json` snapshot as the semantic source.
 Instead, it creates standard `CURATOR` tasks whose context extension names the source task READMEs,
 ACR files, source digests, allowed outputs, and a replaceable prompt module.

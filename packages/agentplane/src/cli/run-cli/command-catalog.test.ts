@@ -73,10 +73,15 @@ describe("command catalog graph", () => {
     expect(findCommandEntry(["release"])?.surface).toBe("framework");
     expect(findCommandEntry(["release", "apply"])?.surface).toBe("framework");
     expect(findCommandEntry(["task", "normalize"])?.surface).toBe("internal");
+    expect(findCommandEntry(["context", "learn", "tasks"])?.surface).toBe("user");
+    expect(findCommandEntry(["context", "harvest", "tasks"])?.surface).toBe("advanced");
 
     const normalHelpIds = getHelpCommandEntries("user").map((entry) => entry.spec.id.join(" "));
     expect(normalHelpIds).not.toContain("release");
     expect(normalHelpIds).not.toContain("task normalize");
+    expect(normalHelpIds).not.toContain("context harvest tasks");
+    expect(normalHelpIds).toContain("context learn tasks");
+    expect(normalHelpIds).toContain("context check");
     expect(normalHelpIds).toContain("task");
     expect(normalHelpIds).toContain("work start");
 
@@ -89,5 +94,6 @@ describe("command catalog graph", () => {
     const allHelpIds = getHelpCommandEntries("all").map((entry) => entry.spec.id.join(" "));
     expect(allHelpIds).toContain("release");
     expect(allHelpIds).toContain("task normalize");
+    expect(allHelpIds).toContain("context harvest tasks");
   });
 });

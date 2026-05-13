@@ -4,6 +4,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { backendNotSupportedMessage, createCliEmitter } from "../cli/output.js";
 import { mapBackendError } from "../cli/error-map.js";
 import { CliError } from "../shared/errors.js";
+import { resolveDotEnvRoot } from "../shared/env.js";
 import type { TaskBackend } from "../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "./shared/task-backend.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
@@ -334,7 +335,8 @@ export async function cmdBackendConnectParsed(opts: {
     };
     await writeFile(ctx.backendConfigPath, `${JSON.stringify(next, null, 2)}\n`, "utf8");
     if (opts.flags.token) {
-      await upsertDotEnvValues(path.join(ctx.resolvedProject.gitRoot, ".env"), {
+      const envRoot = await resolveDotEnvRoot(ctx.resolvedProject.gitRoot);
+      await upsertDotEnvValues(path.join(envRoot, ".env"), {
         AGENTPLANE_CLOUD_TOKEN: opts.flags.token,
       });
     }

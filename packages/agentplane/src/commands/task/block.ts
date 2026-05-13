@@ -47,6 +47,7 @@ export async function cmdBlock(opts: TaskTransitionCommentCommandOptions): Promi
       taskId: opts.taskId,
       quiet: opts.quiet,
       policyAction: "task_block",
+      phase: "implement",
       build: () => ({
         at,
         toStatus: "BLOCKED",

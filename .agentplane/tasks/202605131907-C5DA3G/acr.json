@@ -1,0 +1,210 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605131907-C5DA3G",
+  "created_at": "2026-05-13T19:59:55.208Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "a079856f688d876bd76d5825b6e202f1a10504e5",
+    "work_ref": "main",
+    "work_commit": "a079856f688d876bd76d5825b6e202f1a10504e5"
+  },
+  "task": {
+    "task_id": "202605131907-C5DA3G",
+    "title": "Temporarily switch task backend to local",
+    "intent": "Switch the active AgentPlane task backend from cloud to local to reduce lifecycle latency, preserving a clear rollback path to cloud.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605131907-C5DA3G/README.md",
+      "sha256": "sha256:0f865718f2dfaddb9abb553d9c42a31f8947da8208f8d809a88b21a44d8c9f09"
+    },
+    "approved_at": "2026-05-13T19:07:42.068Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3669.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605131907-C5DA3G_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-13T19:07:42.068Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605131907-C5DA3G/README.md",
+      "sha256": "sha256:0f865718f2dfaddb9abb553d9c42a31f8947da8208f8d809a88b21a44d8c9f09"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605131907-C5DA3G/README.md",
+      "sha256": "sha256:0f865718f2dfaddb9abb553d9c42a31f8947da8208f8d809a88b21a44d8c9f09"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605131907-C5DA3G/README.md",
+      "sha256": "sha256:0f865718f2dfaddb9abb553d9c42a31f8947da8208f8d809a88b21a44d8c9f09"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605131907-C5DA3G/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:5ac907034c1800bf3b1d96aa6e951f0930565c296eda964189bfdbcba7f943c9"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit a079856f688d876bd76d5825b6e202f1a10504e5 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:cbbc4df45b47f77938a1a676c9b4b4e4ac17bbc7ead4e09e08b909e34688b94e",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "ops.approval",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "ops.approval",
+          "kind": "approval",
+          "produced_by": "approval_gate",
+          "required": true
+        },
+        {
+          "id": "ops.rollback",
+          "kind": "rollback",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "ops.action",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "ops.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605131907-C5DA3G/blueprint/resolved-snapshot.json",
+        "digest": "a2fd7f05031d212492e4a695f793b5aaa7b7d641633c804c6ae0ef6649742ed5",
+        "current_digest": "a2fd7f05031d212492e4a695f793b5aaa7b7d641633c804c6ae0ef6649742ed5",
+        "route_changed": false,
+        "artifact_sha256": "sha256:5ac907034c1800bf3b1d96aa6e951f0930565c296eda964189bfdbcba7f943c9",
+        "safe_command": "agentplane blueprint snapshot 202605131907-C5DA3G"
+      }
+    }
+  }
+}

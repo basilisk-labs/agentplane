@@ -27,14 +27,51 @@ function assertSafeCatalogPathSegment(value: string, label: string): void {
 
 export function pickLatestVersion(
   entry: CatalogEntry,
+  opts: { agentplaneVersion?: string | null } = {},
 ): NonNullable<CatalogEntry["versions"]>[number] {
   const versions = entry.versions ?? [];
   if (versions.length === 0) {
     throw new ValidationError({ message: `Blueprint ${entry.id} has no installable versions.` });
   }
-  return versions
-    .toSorted((a, b) => a.version.localeCompare(b.version, undefined, { numeric: true }))
-    .at(-1)!;
+  const candidates =
+    opts.agentplaneVersion && parseSemver(opts.agentplaneVersion)
+      ? versions.filter((version) =>
+          isVersionCompatible(opts.agentplaneVersion!, version.min_agentplane_version),
+        )
+      : versions;
+  if (candidates.length === 0) {
+    throw new ValidationError({
+      message: `Blueprint ${entry.id} has no installable versions compatible with AgentPlane ${opts.agentplaneVersion}.`,
+    });
+  }
+  return candidates.toSorted((a, b) => compareSemverish(a.version, b.version)).at(-1)!;
+}
+
+function parseSemver(version: string): [number, number, number] | null {
+  const match = /^v?(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/u.exec(version.trim());
+  if (!match) return null;
+  return [Number(match[1]), Number(match[2]), Number(match[3])];
+}
+
+function compareSemverish(left: string, right: string): number {
+  const parsedLeft = parseSemver(left);
+  const parsedRight = parseSemver(right);
+  if (parsedLeft && parsedRight) {
+    for (let idx = 0; idx < parsedLeft.length; idx += 1) {
+      const delta = parsedLeft[idx] - parsedRight[idx];
+      if (delta !== 0) return delta;
+    }
+    return 0;
+  }
+  return left.localeCompare(right, undefined, { numeric: true });
+}
+
+function isVersionCompatible(agentplaneVersion: string, minAgentplaneVersion?: string): boolean {
+  if (!minAgentplaneVersion) return true;
+  const current = parseSemver(agentplaneVersion);
+  const minimum = parseSemver(minAgentplaneVersion);
+  if (!current || !minimum) return true;
+  return compareSemverish(agentplaneVersion, minAgentplaneVersion) >= 0;
 }
 
 export async function resolvePackageRoot(extractedDir: string): Promise<string> {

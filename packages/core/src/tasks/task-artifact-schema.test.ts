@@ -334,6 +334,30 @@ describe("task-artifact-schema", () => {
     ).not.toThrow();
   });
 
+  it("defaults missing verification attempts in task README frontmatter", () => {
+    expect(() =>
+      validateTaskReadmeFrontmatter({
+        id: "202603251535-DPZ4NN",
+        title: "Legacy verification fixture",
+        status: "DONE",
+        priority: "high",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["code"],
+        verify: [],
+        plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+        verification: { state: "ok", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        events: [],
+        doc_version: 3,
+        doc_updated_at: "2026-03-25T17:20:00.000Z",
+        doc_updated_by: "CODER",
+        description: "Fixture",
+        id_source: "generated",
+      } satisfies Record<string, unknown>),
+    ).not.toThrow();
+  });
+
   it("accepts specialized blueprint requests in task artifact schemas", () => {
     const task = withTaskReadmeFrontmatterDefaults({
       id: "202603251535-DPZ4NN",

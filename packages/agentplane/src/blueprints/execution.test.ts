@@ -22,7 +22,7 @@ function plan(): BlueprintPlanArtifact {
       {
         id: "intake",
         kind: "intake",
-        mode: "deterministic",
+        mode: "agentic",
         required: true,
         protected: false,
         allowedCommands: [],

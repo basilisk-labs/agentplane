@@ -17,18 +17,18 @@ agentplane --version
 `agentplane --help` and `agentplane help` show the normal installed-project surface by default.
 The first screen is intentionally biased toward commands an agent needs for project work: startup,
 task lifecycle, branch/PR workflow, backend sync, recipes, diagnostics, and setup.
+For context management, `agentplane` keeps the human task-factory surface visible: `context init`,
+`context learn files`, `context learn changes`, `context learn tasks`, `context search`,
+`context show`, and `context check`.
 
 Advanced recovery and maintenance commands stay available through direct help or the full registry:
 
 ```bash
-agentplane help task reclaim
 agentplane help --all
 ```
 
-Inside the Agent Plane framework checkout, help automatically switches to the framework-dev surface
-and adds a dedicated `Framework Dev` group. Framework-maintainer commands such as `release`,
-`workflow build`, `docs cli`, and bundled Codex plugin installation are not shown in the normal
-installed-project help surface.
+Framework-maintainer commands for developing AgentPlane itself are intentionally outside the public
+user command path and live in the direct-link developer docs.
 
 ## Quickstart
 
@@ -40,14 +40,6 @@ The same startup model is expanded on the docs site here:
 
 - [Agent bootstrap](agent-bootstrap.generated)
   This is a public docs-page expansion of `agentplane quickstart`, not a file that installed repositories should depend on locally.
-
-Inside the Agent Plane framework checkout, `agentplane` from `PATH` now delegates to the
-repo-local binary automatically. For fresh clones, worktrees, or stale repo-local builds, use the
-canonical framework bootstrap:
-
-```bash
-bun run framework:dev:bootstrap
-```
 
 ## Init
 
@@ -80,12 +72,9 @@ agentplane init --setup-profile normal --workflow direct --backend local --execu
 agentplane init --dry-run --yes --output json
 ```
 
-Workflow contract operations:
+Workflow diagnostics and repair:
 
 ```bash
-agentplane workflow build --validate --dry-run
-agentplane workflow build --validate
-agentplane workflow restore
 agentplane doctor --fix
 ```
 
@@ -108,17 +97,8 @@ Use this when you need to prove which binary is active, whether you are on
 `repo-local`, `repo-local-handoff`, or a global install, and which `agentplane` /
 `@agentplaneorg/core` package roots are actually being resolved at runtime.
 
-Inside the Agent Plane framework checkout, the same command now acts as the canonical
-framework-dev workflow surface: it prints the canonical bootstrap command, manual fallback steps,
-the repo-local verify command, the reinstall helper, the follow-up global runtime check, and the
-optional force-global override in one place.
-
 If the repository expects a newer CLI than the active runtime, `runtime explain` and `doctor` now
 print a concrete recovery path and a follow-up `agentplane runtime explain` verification step.
-
-If watched runtime paths are dirty inside the framework checkout, `agentplane runtime explain` and
-`agentplane doctor` warn and continue as read-only diagnostics; stricter commands still keep the
-stale-build hard-fail.
 
 ## Tasks
 
@@ -132,7 +112,6 @@ agentplane task run <task-id> --dry-run
 agentplane task run <task-id>
 agentplane task run show <task-id> [run-id]
 agentplane task run tail <task-id> [run-id] --lines 20
-agentplane task run trace <task-id> [run-id]
 agentplane task doc set <task-id> --section Summary --text "..."
 agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 ```
@@ -143,8 +122,9 @@ agentplane task doc set <task-id> --full-doc --file ./task-readme.md
   refusal metadata, timeout reason, metrics, capability summaries, and artifact paths from
   `run-state.json` / `result.json`.
 - Use `task run tail` when you only need the last N raw trace lines from `agent-trace.jsonl`.
-- Use `task run trace` when you need the full raw trace artifact unchanged. When `run-id` is
-  omitted, `show`, `tail`, and `trace` all select the latest run for the task.
+- Advanced raw-trace export remains available through the hidden help surface when you need the full
+  artifact unchanged. When `run-id` is omitted, `show`, `tail`, and advanced trace export all select
+  the latest run for the task.
 - Use `agent-trace.jsonl` and `stderr.log` when you need the raw runner trace.
 - Use `codex-last-message.md` only as a side artifact for human inspection when the adapter writes it.
 - Task-facing runner logs stay compact and English-only: they expose status, metrics, and artifact paths, but
@@ -160,21 +140,16 @@ agentplane task doc set <task-id> --full-doc --file ./task-readme.md
   `runner.custom.enforcement.mode=codex_sandbox_full_auto`. When wrapper mode is active, the same
   line also shows the currently supported sandbox values.
 
-## Task export (optional)
+## Advanced task projections
 
-Generate an optional integration snapshot:
-
-```bash
-agentplane task export
-agentplane task obsidian
-agentplane task obsidian clean
-agentplane task lint
-```
+Optional projection and maintenance commands are intentionally outside the normal public happy path.
+They remain available for integrations, legacy recovery, and framework maintenance through the
+hidden help surface (`agentplane help --all`).
 
 The exported snapshot is derived from the current backend projection. It is not the canonical
 source of truth.
 
-`agentplane task obsidian` writes a Markdown navigation projection under
+The Obsidian projection command writes a Markdown navigation projection under
 `.agentplane/generated/obsidian/` for compatibility with Obsidian and plain Markdown browsers:
 
 - `.agentplane/generated/obsidian/index.md`
@@ -186,8 +161,9 @@ source of truth.
 Open `.agentplane/generated/obsidian/` as an Obsidian vault to browse task IDs, statuses, owners,
 tags, and dependency links while keeping `.agentplane/tasks/<task-id>/README.md` as the canonical
 task record.
-`agentplane task obsidian clean` removes only the generated Obsidian projection files; it does not
-delete canonical task READMEs or non-generated Markdown files.
+The companion cleanup command removes only the generated Obsidian projection files; it does not
+delete canonical task READMEs or non-generated Markdown files. Inspect its exact syntax with
+the hidden help surface.
 
 This surface is a generated task-wiki/navigation adapter, not a separate storage authority. Legacy
 generated files in the `.agentplane/` root are still cleaned when they carry the generated marker.
@@ -218,15 +194,14 @@ projection:
 
 ```bash
 agentplane context init
-agentplane context status
-agentplane context list
+agentplane context doctor
 agentplane context reindex
 agentplane context search "query"
 agentplane context show context/wiki/page.md#section=section-slug
 agentplane context ingest --changed
 agentplane context ingest ./notes.md --run
 agentplane context harvest tasks --tag release --limit 20 --dry-run
-agentplane context harvest tasks --tag branch_pr --create-extraction-tasks --batch-size 25
+agentplane context harvest tasks --tag branch_pr --batch-size 25
 agentplane context harvest tasks --tag branch_pr --write-proposals
 agentplane context verify-task <task-id>
 ```
@@ -234,15 +209,20 @@ agentplane context verify-task <task-id>
 Source artifacts live under `context/**`. Derived context artifacts live under
 `.agentplane/context/derived/**`, and the fast SQLite projection is stored in the shared cache
 database at `.agentplane/cache.sqlite`. Use `context harvest tasks` to convert completed task
-history into raw evidence, facts, graph rows, wiki proposals, and promotion-gate reports before
-promoting reusable knowledge. For semantic extraction, `--create-extraction-tasks` creates standard
-`CURATOR` tasks that read task READMEs and ACR evidence in bounded oldest-first batches, then update
-wiki/facts/graph outputs through the normal task lifecycle. Write modes also mark harvested task
+history into raw evidence scaffolds or default `CURATOR` extraction tasks before promoting reusable
+knowledge. Semantic extraction is agent-owned by default for non-write broad harvest runs: standard
+`CURATOR` tasks read task READMEs and ACR evidence in bounded oldest-first batches, then update
+wiki/facts/graph outputs through the normal task lifecycle. `--write-proposals` is the deterministic
+raw/proposal scaffold path, not the semantic truth path. Write modes also mark harvested task
 READMEs with `extensions.context_harvest` for raw ingestion and
 `extensions.context_task_extraction` for queued semantic extraction, so later broad runs can skip
 unchanged ingested or queued tasks by source digest instead of guessing from wiki files. Write modes
 require `agentplane context init` first. Use `context verify-task` before closing work that creates
 or relies on context artifacts. See [Local context](local-context).
+
+There is no public `context list` command by design. Search is the primary discovery surface; use
+`context graph summary`, `context graph show`, and `context graph neighbors` when you need structured
+graph inspection instead of text search.
 
 ## Backend sync (remote backends)
 
@@ -268,16 +248,19 @@ Configured branch_pr path in this repository:
 
 ```bash
 agentplane work start <task-id> --agent CODER --slug <slug> --worktree
+agentplane task start-ready <task-id> --author CODER --body "Start: ..."
+git add <changed-files>
+git commit -m "Implement <task>"
+agentplane task verify-show <task-id>
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
-git push -u origin task/<task-id>/<slug>
-gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
+agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
 bun run workflow:wait-remote-checks
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <git-rev> --close-commit
 ```
 
-`agentplane pr ...` manages local PR artifacts under `.agentplane/tasks/<task-id>/pr/`, including `review.md`, `github-title.txt`, and `github-body.md`. Hosted GitHub PR creation still uses `gh pr create`, but the title/body should come from those derived files rather than `--fill`. The canonical required-check wait step is `bun run workflow:wait-remote-checks`, which delegates to `gh pr checks --watch --required --fail-fast`. `agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass `--merge-strategy squash` only when compacting history is intentional.
+`agentplane pr ...` manages local PR artifacts under `.agentplane/tasks/<task-id>/pr/`, including `review.md`, `github-title.txt`, and `github-body.md`. A normal `agentplane pr open` run also publishes the task branch and creates or links the hosted GitHub PR; use `--sync-only` only when you intentionally want local artifacts without remote side effects. The canonical required-check wait step is `bun run workflow:wait-remote-checks`, which delegates to `gh pr checks --watch --required --fail-fast`. `agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass `--merge-strategy squash` only when compacting history is intentional.
 
 GitHub protection audit for this repository:
 
@@ -345,10 +328,13 @@ Status/comment-driven commits are allowed only on major transitions:
 
 ```bash
 agentplane work start <task-id> --agent CODER --slug <slug> --worktree
+agentplane task start-ready <task-id> --author CODER --body "Start: ..."
+git add <changed-files>
+git commit -m "Implement <task>"
+agentplane task verify-show <task-id>
 agentplane pr open <task-id>
 agentplane pr update <task-id>
-git push -u origin task/<task-id>/<slug>
-gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
+agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
 bun run workflow:wait-remote-checks
 agentplane pr check <task-id>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify

@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 const DOTENV_LOADED_KEYS_ENV = "AGENTPLANE_DOTENV_LOADED_KEYS";
@@ -54,8 +54,48 @@ export function isDotEnvLoadedKey(key: string, env: NodeJS.ProcessEnv = process.
   return readDotEnvLoadedKeys(env).has(key);
 }
 
+export async function resolveDotEnvRoot(rootDir: string): Promise<string> {
+  const resolvedRoot = path.resolve(rootDir);
+  const gitPath = path.join(resolvedRoot, ".git");
+  let gitPathStats;
+  try {
+    gitPathStats = await stat(gitPath);
+  } catch {
+    return resolvedRoot;
+  }
+
+  if (gitPathStats.isDirectory()) return resolvedRoot;
+  if (!gitPathStats.isFile()) return resolvedRoot;
+
+  let gitFile = "";
+  try {
+    gitFile = await readFile(gitPath, "utf8");
+  } catch {
+    return resolvedRoot;
+  }
+
+  const match = /^gitdir:\s*(.+)\s*$/imu.exec(gitFile);
+  if (!match) return resolvedRoot;
+  const gitDir = path.resolve(resolvedRoot, match[1]);
+  try {
+    const rawCommonDir = (await readFile(path.join(gitDir, "commondir"), "utf8")).trim();
+    if (rawCommonDir) {
+      const commonDir = path.resolve(gitDir, rawCommonDir);
+      if (path.basename(commonDir) === ".git") return path.dirname(commonDir);
+    }
+  } catch {
+    // Older or synthetic worktree layouts may not expose commondir; use the legacy marker below.
+  }
+  const worktreesMarker = `${path.sep}.git${path.sep}worktrees${path.sep}`;
+  const markerIndex = gitDir.indexOf(worktreesMarker);
+  if (markerIndex === -1) return resolvedRoot;
+
+  return gitDir.slice(0, markerIndex);
+}
+
 export async function loadDotEnv(rootDir: string): Promise<void> {
-  const envPath = path.join(rootDir, ".env");
+  const envRoot = await resolveDotEnvRoot(rootDir);
+  const envPath = path.join(envRoot, ".env");
   let text = "";
   try {
     text = await readFile(envPath, "utf8");

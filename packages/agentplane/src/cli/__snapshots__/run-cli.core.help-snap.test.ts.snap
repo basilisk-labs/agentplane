@@ -140,9 +140,9 @@ Commands:
     hooks run  Run a managed hook (use \`--\` to pass through additional arguments).
     hooks uninstall  Uninstall managed git hooks installed by agentplane.
   Policy:
-    incidents  Promote external incident advice and resolve incident hints for analogous tasks.
-    incidents advise  Resolve relevant incident advice for a task or an ad hoc scope/tag query.
-    incidents collect  Promote reusable resolved external findings from a task into the incident registry.
+    incidents  Route incident advice candidates through CURATOR-bounded matching and promotion gates.
+    incidents advise  Resolve bounded incident advice candidates for a task or ad hoc scope/tag query.
+    incidents collect  Validate and promote CURATOR-style reusable incident findings into the registry.
   IDE:
     ide sync  Generate IDE entrypoints from policy gateway file (AGENTS.md or CLAUDE.md).
   Context:
@@ -158,6 +158,8 @@ Commands:
     context graph show  Show a node with neighborhood summary.
     context graph summary  Print a context-graph summary.
     context graph validate  Validate derived graph JSONL rows and references.
+    context harvest  Harvest existing project evidence into source-backed context proposals.
+    context harvest tasks  Harvest completed task evidence into raw scaffolds or CURATOR extraction tasks.
     context ingest  Create and optionally run a context assimilation task.
     context init  Initialize local context workspace and system manifest.
     context reindex  Rebuild local SQLite projection from source artifacts.

@@ -8,6 +8,19 @@ function probeValueOrUnknown(probe: { ok: boolean; value?: string | boolean }): 
   return probe.ok && probe.value !== undefined ? String(probe.value) : "unknown";
 }
 
+function renderTaskArtifactDrift(report: PreflightReport): string {
+  const drift = report.task_artifact_drift;
+  if (!drift.present) return "none";
+  const parts = [
+    `tasks=${drift.task_ids.join(", ")}`,
+    `active_parallel=${drift.counts.active_parallel_task_artifact}`,
+    `stale_done_handoff=${drift.counts.stale_done_handoff}`,
+    `unknown=${drift.counts.unknown_task_artifact}`,
+    `actionable=${drift.actionable ? "yes" : "no"}`,
+  ];
+  return parts.join("; ");
+}
+
 export function renderPreflightText(report: PreflightReport): string[] {
   const lines = [
     "Preflight Summary",
@@ -18,7 +31,7 @@ export function renderPreflightText(report: PreflightReport): string[] {
     `- workflow loaded: ${probeYesNo(report.workflow_loaded)}`,
     `- task list loaded: ${probeYesNo(report.task_list_loaded)}`,
     `- working tree clean (tracked-only): ${probeValueOrUnknown(report.working_tree_clean_tracked)}`,
-    `- task artifact drift: ${report.task_artifact_drift.present ? report.task_artifact_drift.task_ids.join(", ") : "none"}`,
+    `- task artifact drift: ${renderTaskArtifactDrift(report)}`,
     `- message format guard: ${report.message_format_guard.ok ? "ok" : "failed"}`,
     `- current git branch: ${probeValueOrUnknown(report.current_branch)}`,
     `- workflow_mode: ${report.workflow_mode}`,

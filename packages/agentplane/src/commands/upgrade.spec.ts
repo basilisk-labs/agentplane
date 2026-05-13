@@ -9,13 +9,13 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
   group: "Setup",
   summary: "Upgrade the local agentplane framework bundle in the repo.",
   description:
-    "Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade applies the bundled managed files from the locally installed agentplane package assets (no network) and creates a dedicated upgrade commit. Use --dry-run to preview changes without writing files, or --agent to generate a review plan instead of applying. Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.",
+    "Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade applies the bundled managed files from the locally installed agentplane package assets (no network) and creates a dedicated upgrade commit. Use --dry-run to preview changes without writing files, or --agent to generate a plan-only report instead of applying. Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.",
   options: [
     {
       kind: "boolean",
       name: "agent",
       default: false,
-      description: "Generate an agent-assisted upgrade plan instead of applying managed files.",
+      description: "Generate a plan-only upgrade report instead of applying managed files.",
     },
     {
       kind: "boolean",
@@ -119,7 +119,7 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
     },
     {
       cmd: "agentplane upgrade --agent",
-      why: "Generate an agent-assisted upgrade plan instead of applying files.",
+      why: "Generate a plan-only upgrade report instead of applying files.",
     },
     {
       cmd: "agentplane upgrade --remote --tag v0.1.9 --dry-run",

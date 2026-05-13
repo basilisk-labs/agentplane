@@ -15,8 +15,10 @@ import {
   renderPostIntegrateBootstrapGuidance,
   shouldRecommendPostIntegrateBootstrap,
 } from "./internal/bootstrap-guidance.js";
+import { PolicyEngine } from "../../../policy/engine.js";
 import { gitRevParse } from "../../shared/git-ops.js";
 import type { CommandContext } from "../../shared/task-backend.js";
+import { throwIfPolicyDecisionDenied } from "../../shared/policy-deny.js";
 import {
   buildTaskHandoffArtifact,
   resolveTaskHandoffPaths,
@@ -140,6 +142,22 @@ export async function cmdIntegrate(opts: {
     let shouldRunVerify = prepared.shouldRunVerify;
     let branchHeadSha = prepared.branchHeadSha;
     const changedPaths = prepared.changedPaths;
+
+    throwIfPolicyDecisionDenied(
+      new PolicyEngine().evaluate({
+        action: "integrate",
+        phase: "integrate",
+        config: prepared.ctx.config,
+        taskId: task.id,
+        task: {
+          status: task.status,
+          planApprovalState: task.plan_approval?.state ?? null,
+          verificationState: task.verification?.state ?? null,
+          workflowMode: prepared.ctx.config.workflow_mode,
+        },
+        git: { stagedPaths: [], currentBranch: base, baseBranch: base },
+      }),
+    );
 
     if (opts.dryRun) {
       if (!opts.quiet) {

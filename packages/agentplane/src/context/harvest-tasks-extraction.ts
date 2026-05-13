@@ -137,12 +137,12 @@ function buildExtractionPromptModule(): PromptModule {
     },
     title: "Context task-history extraction prompt",
     summary:
-      "Reusable CURATOR prompt module for extracting sourced wiki, facts, and graph updates from completed task READMEs and ACR evidence.",
+      "Default CURATOR prompt module for extracting sourced wiki, facts, and graph updates from completed task READMEs and ACR evidence.",
     content_kind: "markdown",
     content: [
       "# Context Task Extraction",
       "",
-      "You are CURATOR processing a bounded batch of completed AgentPlane tasks.",
+      "You are CURATOR processing a bounded batch of completed AgentPlane tasks. This is the default semantic harvest path; raw harvest proposal artifacts are only scaffolds.",
       "",
       "Read each source task README first. Read ACR evidence when present. Treat generated raw JSON, search rows, and caches as supporting indexes, not as semantic truth.",
       "",

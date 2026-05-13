@@ -27,6 +27,7 @@ Managed ownership remains framework-first:
 Bundled agent profiles are intentionally narrow overlays, not a second policy gateway.
 
 - Each profile should own one clear decision boundary and one dominant deliverable type.
+- Agent IDs should be one word in uppercase. Use role descriptions for specialization instead of compound IDs.
 - Profiles should prefer explicit assumptions, stop conditions, and escalation rules over long narrative guidance.
 - Outputs should be evidence-oriented: changed files, checks run, remaining risks, and follow-up boundaries.
 - Task-local observations belong in task `## Findings`; reusable external ones can be promoted into `.agentplane/policy/incidents.md` by recording `Observation` / `Impact` / `Resolution` plus `Fixability: external` (or `IncidentExternal: true`), with optional `Incident*` overrides when the inferred advice needs refinement.
@@ -47,9 +48,16 @@ Use this order when an agent enters a repository:
 - Translates a goal into a plan and requests approval.
 - Creates no non-executable tasks.
 
+## INTAKE
+
+- Classifies incoming work into task kind, mutation scope, risk flags, owner, and blueprint recommendation.
+- Produces bounded routing proposals; deterministic code still validates allowed commands, policy gates, and workflow mode.
+
 ## PLANNER
 
 - Owns executable task creation and dependency graph updates.
+- Owns task-specific `Verify Steps` generation from requested outcome, tags, touched areas, and blueprint summary.
+- Treats deterministic verify-step scaffolds as fallback only.
 - For a single work item, creates exactly one task.
 - Reuses matching open tasks when scope and owner align.
 - Splits tasks only at real ownership/dependency boundaries.
@@ -75,6 +83,7 @@ Use this order when an agent enters a repository:
 
 - Reviews risk, regressions, and policy compliance.
 - Records findings with severity and exact file references.
+- May provide optional bounded `reviewer_summary` text for PR artifacts, but does not replace canonical sections, raw evidence, or freshness checks.
 
 ## INTEGRATOR
 
@@ -85,9 +94,19 @@ Use this order when an agent enters a repository:
 
 - CREATOR adds new agents when no existing role fits the need.
 
+## CURATOR
+
+- Owns semantic context harvest extraction for wiki, facts, graph, capability proposals, and reusable incident advice.
+- Treats raw harvest outputs and incident score matches as scaffolds, not semantic truth.
+
+## EXTRACTOR
+
+- Mines repeated completed-task evidence into repo-local skills when the pattern is proven reusable.
+
 ## UPGRADER
 
-- Reviews upgrade reports and verifies replace-first framework updates.
+- Verifies replace-first framework updates and plan-only upgrade reports.
+- Does not own semantic human edits to managed agent files during upgrade.
 - Ensures incident history in `.agentplane/policy/incidents.md` remains append-only during upgrades.
 
 ## REDMINE

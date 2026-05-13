@@ -24,7 +24,7 @@ const output = createCliEmitter();
 export const incidentsAdviseSpec: CommandSpec<IncidentsAdviseParsed> = {
   id: ["incidents", "advise"],
   group: "Policy",
-  summary: "Resolve relevant incident advice for a task or an ad hoc scope/tag query.",
+  summary: "Resolve bounded incident advice candidates for a task or ad hoc scope/tag query.",
   args: [{ name: "task-id", required: false, valueHint: "<task-id>" }],
   options: [
     {

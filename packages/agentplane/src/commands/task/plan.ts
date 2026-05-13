@@ -6,7 +6,11 @@ import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import type { PlanApprovalState } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
-import { applyTaskMutation, withTaskMutationStorage } from "../shared/task-mutation.js";
+import {
+  applyTaskMutation,
+  assertTaskMutationPolicy,
+  withTaskMutationStorage,
+} from "../shared/task-mutation.js";
 import {
   setTaskFieldsIntent,
   setTaskSectionIntent,
@@ -83,6 +87,8 @@ export async function cmdTaskPlanSet(opts: {
     await applyTaskMutation({
       ctx,
       taskId: opts.taskId,
+      policyAction: "task_plan_set",
+      phase: "plan",
       build: async (current) => {
         const currentDocRaw =
           (typeof current.doc === "string" ? current.doc : "") ||
@@ -182,6 +188,13 @@ export async function cmdTaskPlanApprove(opts: {
       local: async (store) => {
         await store.get(opts.taskId);
         await store.patch(opts.taskId, (current) => {
+          assertTaskMutationPolicy({
+            ctx,
+            taskId: opts.taskId,
+            task: current,
+            action: "task_plan_approve",
+            phase: "plan",
+          });
           const currentDoc = ensureDocSections(
             String(current.doc ?? ""),
             config.tasks.doc.required_sections,
@@ -201,6 +214,13 @@ export async function cmdTaskPlanApprove(opts: {
       },
       remote: async () => {
         const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
+        assertTaskMutationPolicy({
+          ctx,
+          taskId: opts.taskId,
+          task,
+          action: "task_plan_approve",
+          phase: "plan",
+        });
         const existingDoc =
           (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
         const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
@@ -262,6 +282,13 @@ export async function cmdTaskPlanReject(opts: {
       local: async (store) => {
         await store.get(opts.taskId);
         await store.patch(opts.taskId, (current) => {
+          assertTaskMutationPolicy({
+            ctx,
+            taskId: opts.taskId,
+            task: current,
+            action: "task_plan_reject",
+            phase: "plan",
+          });
           const currentDoc = ensureDocSections(
             String(current.doc ?? ""),
             config.tasks.doc.required_sections,
@@ -281,6 +308,13 @@ export async function cmdTaskPlanReject(opts: {
       },
       remote: async () => {
         const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
+        assertTaskMutationPolicy({
+          ctx,
+          taskId: opts.taskId,
+          task,
+          action: "task_plan_reject",
+          phase: "plan",
+        });
         const existingDoc =
           (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
         const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);

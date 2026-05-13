@@ -1,6 +1,8 @@
 import { invalidValueMessage } from "../../cli/output.js";
+import { PolicyEngine } from "../../policy/engine.js";
 import { CliError } from "../../shared/errors.js";
 import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../incidents/shared.js";
+import { throwIfPolicyDecisionDenied } from "../shared/policy-deny.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { assertBlueprintEvidenceBeforeFinish } from "./finish-blueprint-evidence.js";
@@ -41,6 +43,7 @@ export async function executeFinishPlan(opts: {
   await appendStructuredFindingIfNeeded({ ctx, options, plan });
 
   const loadedState = await loadFinishTasks({ ctx, options, plan });
+  assertFinishPhasePolicy({ ctx, loadedTasks: loadedState.loadedTasks });
   await assertBlueprintEvidenceBeforeFinish({ ctx, loadedTasks: loadedState.loadedTasks });
   await collectIncidentsForLoadedTasks({
     ctx,
@@ -158,6 +161,30 @@ export async function executeFinishPlan(opts: {
   }
 
   return 0;
+}
+
+function assertFinishPhasePolicy(opts: {
+  ctx: CommandContext;
+  loadedTasks: LoadedFinishTask[];
+}): void {
+  const engine = new PolicyEngine();
+  for (const { taskId, task } of opts.loadedTasks) {
+    throwIfPolicyDecisionDenied(
+      engine.evaluate({
+        action: "task_finish",
+        phase: "finish",
+        config: opts.ctx.config,
+        taskId,
+        task: {
+          status: task.status,
+          planApprovalState: task.plan_approval?.state ?? null,
+          verificationState: task.verification?.state ?? null,
+          workflowMode: opts.ctx.config.workflow_mode,
+        },
+        git: { stagedPaths: [] },
+      }),
+    );
+  }
 }
 
 async function shouldSkipAlreadyHandledBranchPrCloseTail(opts: {

@@ -22,12 +22,13 @@ export const TASK_PLAN_APPROVAL_SCHEMA = z
 export const TASK_VERIFICATION_SCHEMA = z
   .object({
     state: z.enum(VERIFICATION_STATE_VALUES),
-    attempts: z.number().int().min(0),
+    attempts: z.number().int().min(0).optional(),
     updated_at: NULLABLE_ISO_UTC_TIMESTAMP,
     updated_by: z.string().nullable(),
     note: z.string().nullable(),
   })
-  .passthrough();
+  .passthrough()
+  .transform((value) => ({ ...value, attempts: value.attempts ?? 0 }));
 
 export function normalizeApprovalRecord(
   value: unknown,

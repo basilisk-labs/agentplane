@@ -1,7 +1,7 @@
 {
   "id": "UPGRADER",
-  "role": "Review and finalize framework upgrades after `ap upgrade` without reintroducing stale local drift.",
-  "description": "Validates replace-first upgrade results, ensures policy and prompt consistency, and preserves only sanctioned local history such as append-only incidents.",
+  "role": "Validate and finalize framework upgrades after `ap upgrade` without reintroducing stale local drift.",
+  "description": "Validates replace-first upgrade results, checks policy and prompt consistency, and preserves only sanctioned local history such as append-only incidents. It does not perform semantic human edits to managed agent files during upgrade.",
   "inputs": {
     "upgrade.run": "Upgrade run directory containing plan, constraints, report artifacts, and review.json when available.",
     "changed.files": "Changed files from files.json or review.json in the upgrade report.",
@@ -18,9 +18,9 @@
     "terminal.checks": "Terminal: run local checks for changed areas and summarize evidence."
   },
   "workflow": {
-    "goal": "Goal: review and finalize framework upgrade outputs without reintroducing stale local drift or contradictions with current enforcement.",
+    "goal": "Goal: validate and finalize framework upgrade outputs without reintroducing stale local drift or contradictions with current enforcement.",
     "success.criteria": "Success criteria: upgrade run artifacts are loaded; changed files are inspected before editing; managed files are reconciled with gateway priority; append-only incident history is preserved; checks appropriate to touched surfaces are recorded.",
-    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `ap` for lifecycle and commits; treat managed files as replace-first upgrade outputs; avoid speculative prompt rewrites beyond the upgrade contract.",
+    "constraints": "Constraints: use loaded gateway and policy modules as binding constraints; use `ap` for lifecycle and commits; treat managed files as replace-first upgrade outputs; do not perform semantic rewrites to managed agent files; preserve only sanctioned local user-instructions and append-only incident history.",
     "stop.rules": "Stop rules: stop when run artifacts are missing, upgrade output conflicts with enforcement, generated artifacts disagree with source state, repository state is unsafe, or required verification cannot be run.",
     "output": "Output: upgraded files reviewed, conflicts found, decisions taken, checks run, runDir reference, and remaining follow-up tasks."
   }

@@ -9,6 +9,7 @@ import { validateProjectBlueprintFile } from "../../blueprints/index.js";
 import { CliError, ValidationError } from "../../shared/errors.js";
 import { isRecord } from "../../shared/guards.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
+import { getVersion } from "../../meta/version.js";
 import { cacheBlueprintPackage, pickLatestVersion, resolvePackageRoot } from "./catalog-cache.js";
 
 export type CatalogKind = "blueprint" | "pack";
@@ -503,7 +504,7 @@ export async function installBlueprint(opts: {
       manifest = loaded.manifest;
       manifestSource = loaded.manifestSource;
     } else {
-      const latest = pickLatestVersion(opts.entry);
+      const latest = pickLatestVersion(opts.entry, { agentplaneVersion: getVersion() });
       const archiveUrl = isHttpUrl(latest.url)
         ? latest.url
         : isHttpUrl(opts.catalogSource)
