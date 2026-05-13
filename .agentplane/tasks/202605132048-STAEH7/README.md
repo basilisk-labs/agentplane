@@ -1,10 +1,11 @@
 ---
 id: "202605132048-STAEH7"
 title: "Fix branch_pr hosted sync credential resolution"
-status: "DOING"
+result_summary: "Merged via PR #3678."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: bun test packages/agentplane/src/backends/task-backend.load.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts passed (31 tests); node .agentplane/policy/check-routing.mjs passed; ./node_modules/.bin/eslint packages/agentplane/src/shared/env.ts packages/agentplane/src/backends/task-backend/cloud-backend.ts packages/agentplane/src/backends/task-backend.load.test.ts passed; bunx prettier --check touched files passed; bun run hotspots:check passed after keeping cloud-backend.ts at the 600-line hotspot threshold; ap doctor previously OK with one pre-existing branch_pr closure warning for 202605111603-XQM14A."
   attempts: 0
-commit: null
+commit:
+  hash: "c069df0fda2f374f7f948b62983256895566e3cc"
+  message: "Merge pull request #3678 from basilisk-labs/task/202605132048-STAEH7/hosted-sync-credentials"
 comments:
   -
     author: "CODER"
     body: "Start: tightening cloud hosted sync credential diagnostics from branch_pr worktrees so missing-token failures identify the canonical root .env path while preserving secret-safe output."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3678 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bun test packages/agentplane/src/backends/task-backend.load.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts passed (31 tests); node .agentplane/policy/check-routing.mjs passed; ./node_modules/.bin/eslint packages/agentplane/src/shared/env.ts packages/agentplane/src/backends/task-backend/cloud-backend.ts packages/agentplane/src/backends/task-backend.load.test.ts passed; bunx prettier --check touched files passed; bun run hotspots:check passed after keeping cloud-backend.ts at the 600-line hotspot threshold; ap doctor previously OK with one pre-existing branch_pr closure warning for 202605111603-XQM14A."
+  -
+    type: "status"
+    at: "2026-05-13T21:21:22.653Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3678 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T21:14:43.965Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T21:21:22.658Z"
+doc_updated_by: "INTEGRATOR"
 description: |-
   GitHub issue: https://github.com/basilisk-labs/agentplane/issues/3654 (#3654)
   
