@@ -27,12 +27,13 @@ Fix branch_pr PR sync so observed OPEN and CLOSED GitHub pull request identity i
 - Head: 376d16b79af1
 
 ```text
- .../run-cli.core.pr-flow.pr-open.network.test.ts   | 16 ++--
- ...n-cli.core.pr-flow.pr-validation.update.test.ts | 91 ++++++++++++++++++++++
- .../src/commands/pr/internal/sync-github.ts        |  5 +-
- .../src/commands/pr/internal/sync-open-step.ts     |  6 +-
- .../src/commands/pr/internal/sync-update-step.ts   |  4 +-
- 5 files changed, 106 insertions(+), 16 deletions(-)
+ .../blueprint/resolved-snapshot.json               | 514 +++++++++++++++++++++
+ .../run-cli.core.pr-flow.pr-open.network.test.ts   |  16 +-
+ ...n-cli.core.pr-flow.pr-validation.update.test.ts |  91 ++++
+ .../src/commands/pr/internal/sync-github.ts        |   5 +-
+ .../src/commands/pr/internal/sync-open-step.ts     |   6 +-
+ .../src/commands/pr/internal/sync-update-step.ts   |   4 +-
+ 6 files changed, 620 insertions(+), 16 deletions(-)
 ```
 
 </details>
