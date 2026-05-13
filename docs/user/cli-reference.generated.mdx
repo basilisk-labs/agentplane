@@ -12,15 +12,12 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [role](#role)
 - Task
   - [ready](#ready)
-  - [task](#task)
   - [task comment](#task-comment)
-  - [task doc](#task-doc)
   - [task doc set](#task-doc-set)
   - [task doc show](#task-doc-show)
   - [task list](#task-list)
   - [task new](#task-new)
   - [task next](#task-next)
-  - [task plan](#task-plan)
   - [task plan approve](#task-plan-approve)
   - [task plan set](#task-plan-set)
   - [task run](#task-run)
@@ -29,7 +26,6 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task search](#task-search)
   - [task show](#task-show)
   - [task start-ready](#task-start-ready)
-  - [task verify](#task-verify)
   - [task verify ok](#task-verify-ok)
   - [task verify rework](#task-verify-rework)
   - [task verify-show](#task-verify-show)
@@ -42,13 +38,11 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [work start](#work-start)
 - PR
   - [integrate](#integrate)
-  - [integrate queue](#integrate-queue)
   - [integrate queue claim](#integrate-queue-claim)
   - [integrate queue enqueue](#integrate-queue-enqueue)
   - [integrate queue list](#integrate-queue-list)
   - [integrate queue release](#integrate-queue-release)
   - [integrate queue run-next](#integrate-queue-run-next)
-  - [pr](#pr)
   - [pr check](#pr-check)
   - [pr close](#pr-close)
   - [pr close-superseded](#pr-close-superseded)
@@ -57,17 +51,14 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [pr open](#pr-open)
   - [pr update](#pr-update)
 - Branch
-  - [branch base](#branch-base)
   - [branch base clear](#branch-base-clear)
   - [branch base explain](#branch-base-explain)
   - [branch base get](#branch-base-get)
   - [branch base set](#branch-base-set)
   - [branch remove](#branch-remove)
   - [branch status](#branch-status)
-  - [cleanup](#cleanup)
   - [cleanup merged](#cleanup-merged)
 - Backend
-  - [backend](#backend)
   - [backend connect](#backend-connect)
   - [backend inspect](#backend-inspect)
   - [backend sync](#backend-sync)
@@ -85,13 +76,10 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [doctor](#doctor)
   - [doctor git-locks](#doctor-git-locks)
 - Diagnostics
-  - [runtime](#runtime)
   - [runtime explain](#runtime-explain)
 - Recipes
-  - [recipes](#recipes)
   - [recipes active](#recipes-active)
   - [recipes add](#recipes-add)
-  - [recipes cache](#recipes-cache)
   - [recipes cache prune](#recipes-cache-prune)
   - [recipes detach](#recipes-detach)
   - [recipes disable](#recipes-disable)
@@ -105,7 +93,6 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [recipes remove](#recipes-remove)
   - [recipes update](#recipes-update)
 - Blueprints
-  - [blueprint](#blueprint)
   - [blueprint drift](#blueprint-drift)
   - [blueprint examples](#blueprint-examples)
   - [blueprint explain](#blueprint-explain)
@@ -114,14 +101,11 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [blueprint scaffold](#blueprint-scaffold)
   - [blueprint snapshot](#blueprint-snapshot)
   - [blueprint validate](#blueprint-validate)
-  - [blueprints](#blueprints)
-  - [blueprints catalog](#blueprints-catalog)
   - [blueprints catalog info](#blueprints-catalog-info)
   - [blueprints catalog list](#blueprints-catalog-list)
   - [blueprints catalog refresh](#blueprints-catalog-refresh)
   - [blueprints install](#blueprints-install)
 - ACR
-  - [acr](#acr)
   - [acr check](#acr-check)
   - [acr explain](#acr-explain)
   - [acr generate](#acr-generate)
@@ -129,40 +113,32 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [acr validate](#acr-validate)
 - Guard
   - [commit](#commit)
-  - [guard](#guard)
   - [guard clean](#guard-clean)
   - [guard commit](#guard-commit)
   - [guard suggest-allow](#guard-suggest-allow)
 - Hooks
-  - [hooks](#hooks)
   - [hooks install](#hooks-install)
   - [hooks run](#hooks-run)
   - [hooks uninstall](#hooks-uninstall)
 - Policy
-  - [incidents](#incidents)
   - [incidents advise](#incidents-advise)
   - [incidents collect](#incidents-collect)
 - IDE
   - [ide sync](#ide-sync)
 - Context
-  - [context](#context)
-  - [context capability](#context-capability)
   - [context capability discover](#context-capability-discover)
   - [context capability search](#context-capability-search)
   - [context capability validate](#context-capability-validate)
   - [context check](#context-check)
   - [context doctor](#context-doctor)
-  - [context graph](#context-graph)
   - [context graph export](#context-graph-export)
   - [context graph neighbors](#context-graph-neighbors)
   - [context graph show](#context-graph-show)
   - [context graph summary](#context-graph-summary)
   - [context graph validate](#context-graph-validate)
-  - [context harvest](#context-harvest)
   - [context harvest tasks](#context-harvest-tasks)
   - [context ingest](#context-ingest)
   - [context init](#context-init)
-  - [context learn](#context-learn)
   - [context learn changes](#context-learn-changes)
   - [context learn files](#context-learn-files)
   - [context learn tasks](#context-learn-tasks)
@@ -175,9 +151,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task close-duplicate](#task-close-duplicate)
   - [task close-noop](#task-close-noop)
   - [task derive](#task-derive)
-  - [task findings](#task-findings)
   - [task findings add](#task-findings-add)
-  - [task handoff](#task-handoff)
   - [task handoff record](#task-handoff-record)
   - [task handoff show](#task-handoff-show)
   - [task hosted-close](#task-hosted-close)
@@ -196,15 +170,11 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task set-status](#task-set-status)
   - [task update](#task-update)
 - Framework Dev
-  - [codex](#codex)
-  - [codex plugin](#codex-plugin)
   - [codex plugin install](#codex-plugin-install)
   - [docs cli](#docs-cli)
-  - [release](#release)
   - [release apply](#release-apply)
   - [release candidate](#release-candidate)
   - [release plan](#release-plan)
-  - [workflow](#workflow)
   - [workflow build](#workflow-build)
   - [workflow debug](#workflow-debug)
   - [workflow land](#workflow-land)
@@ -371,78 +341,6 @@ agentplane ready 202602030608-F1Q8AB
 
 - Print readiness details.
 
-### task
-
-Task lifecycle and task-store commands.
-
-Usage:
-
-```text
-agentplane task <subcommand> [args] [options]
-```
-
-Notes:
-
-- Direct task route: task new -&gt; task plan set -&gt; task plan approve -&gt; task start-ready -&gt; task verify-show -&gt; verify -&gt; finish.
-- Use \`agentplane help task plan\`, \`agentplane help task doc\`, and \`agentplane help task verify\` to inspect task sub-areas.
-- Verification recording and closure stay top-level lifecycle commands: \`agentplane verify ...\` and \`agentplane finish ...\`.
-
-Examples:
-
-```sh
-agentplane task new --title "..." --description "..." --owner CODER --tag code
-```
-
-- Create a task.
-
-```sh
-agentplane task plan set <task-id> --text "..." --updated-by ORCHESTRATOR
-```
-
-- Write the execution plan.
-
-```sh
-agentplane task start-ready <task-id> --author CODER --body "Start: ..."
-```
-
-- Start the task after approval.
-
-```sh
-agentplane task verify-show <task-id>
-```
-
-- Show Verify Steps before running checks.
-
-```sh
-agentplane task run <task-id>
-```
-
-- Run an existing task through the shared runner flow.
-
-```sh
-agentplane task handoff record <task-id> --from CODER --reason "Paused for handoff"
-```
-
-- Persist a first-class handoff snapshot.
-
-```sh
-agentplane task hosted-close --event-json "$GITHUB_EVENT_PATH"
-```
-
-- Apply deterministic task closure from a merged hosted PR event on an automation branch.
-
-```sh
-agentplane task hosted-close-pr 202604091218-JREJ4K
-```
-
-- Open the hosted closure PR after a manual handoff comment leaves only the remote task-close branch.
-
-```sh
-agentplane task resume-context <task-id>
-```
-
-- Inspect deterministic recovery context before resuming or retrying a run.
-
 ### task comment
 
 Append a comment to a task.
@@ -466,18 +364,6 @@ agentplane task comment 202602030608-F1Q8AB --author CODER --body "Investigated 
 ```
 
 - Add a comment and bump doc metadata.
-
-### task doc
-
-Task doc commands (show/set).
-
-Usage:
-
-```text
-agentplane task doc show <task-id> [--section <name>] [--quiet]
-agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>) [--updated-by <id>]
-agentplane task doc set <task-id> --full-doc (--text <text> | --file <path>) [--updated-by <id>]
-```
 
 ### task doc set
 
@@ -660,36 +546,6 @@ agentplane task next --limit 3
 ```
 
 - Limit output.
-
-### task plan
-
-Task plan commands (set/approve/reject).
-
-Usage:
-
-```text
-agentplane task plan <set|approve|reject> [args] [options]
-```
-
-Examples:
-
-```sh
-agentplane task plan set <task-id> --text "..." --updated-by ORCHESTRATOR
-```
-
-- Write or replace the task plan.
-
-```sh
-agentplane task plan approve <task-id> --by ORCHESTRATOR
-```
-
-- Approve the current task plan.
-
-```sh
-agentplane task plan reject <task-id> --by ORCHESTRATOR --note "..."
-```
-
-- Reject the current task plan with a note.
 
 ### task plan approve
 
@@ -917,17 +773,6 @@ agentplane task start-ready 202602030608-F1Q8AB --author CODER --body "Start: im
 ```
 
 - Check readiness and transition to DOING without command chaining.
-
-### task verify
-
-Record verification results (ok/rework).
-
-Usage:
-
-```text
-agentplane task verify ok <task-id> --by <id> --note <text> [--details <text> | --file <path>] [--quiet]
-agentplane task verify rework <task-id> --by <id> --note <text> [--details <text> | --file <path>] [--quiet]
-```
 
 ### task verify ok
 
@@ -1321,30 +1166,6 @@ agentplane integrate 202602030608-F1Q8AB --run-verify
 
 - Integrate with verify.
 
-### integrate queue
-
-Serialize branch_pr integration into one merge lane.
-
-Usage:
-
-```text
-agentplane integrate queue <enqueue|list|claim|release|run-next> [args] [options]
-```
-
-Examples:
-
-```sh
-agentplane integrate queue enqueue 202602030608-F1Q8AB --branch task/202602030608-F1Q8AB/fix
-```
-
-- Add a verified task branch to the integration queue.
-
-```sh
-agentplane integrate queue run-next --run-verify
-```
-
-- Run one queued integration.
-
 ### integrate queue claim
 
 Claim the next queued integration candidate without running integrate.
@@ -1423,60 +1244,6 @@ Options:
 - `--run-verify`: Run verify commands. (default=false)
 - `--dry-run`: Do not modify git state. (default=false)
 - `--quiet`: Reduce output noise. (default=false)
-
-### pr
-
-Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).
-
-Usage:
-
-```text
-agentplane pr <open|update|check|flow status|note|close|close-superseded> <task-id|pr-number> [options]
-```
-
-Examples:
-
-```sh
-agentplane pr open 202602030608-F1Q8AB --author CODER
-```
-
-- Create PR artifacts.
-
-```sh
-agentplane pr update 202602030608-F1Q8AB
-```
-
-- Refresh review.md plus github-title/body projections.
-
-```sh
-agentplane pr check 202602030608-F1Q8AB
-```
-
-- Validate PR artifacts.
-
-```sh
-agentplane pr flow status 202602030608-F1Q8AB
-```
-
-- Show task branch, remote PR, close-tail, and next-action state.
-
-```sh
-agentplane pr note 202602030608-F1Q8AB --author REVIEWER --body "Looks good"
-```
-
-- Append a handoff note.
-
-```sh
-agentplane pr close 123 --comment "Superseded by #456" --delete-remote-branch
-```
-
-- Close a stale GitHub PR through REST and optionally delete its remote head branch.
-
-```sh
-agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch
-```
-
-- Close a superseded task PR from task artifacts after protected-main closure.
 
 ### pr check
 
@@ -1643,42 +1410,6 @@ agentplane pr update 202602030608-F1Q8AB
 
 ## Branch
 
-### branch base
-
-Manage the pinned base branch used in branch_pr workflow.
-
-Usage:
-
-```text
-agentplane branch base <get|set|clear|explain> [args] [options]
-```
-
-Examples:
-
-```sh
-agentplane branch base get
-```
-
-- Print the pinned base branch.
-
-```sh
-agentplane branch base set --current
-```
-
-- Pin the current branch as base.
-
-```sh
-agentplane branch base clear
-```
-
-- Clear the pinned base branch.
-
-```sh
-agentplane branch base explain
-```
-
-- Show current/pinned/effective base details.
-
 ### branch base clear
 
 Clear the pinned base branch.
@@ -1804,24 +1535,6 @@ agentplane branch status --base main
 
 - Check against an explicit base.
 
-### cleanup
-
-Clean up local branches/worktrees.
-
-Usage:
-
-```text
-agentplane cleanup <merged> [options]
-```
-
-Examples:
-
-```sh
-agentplane cleanup merged --yes
-```
-
-- Delete merged task branches/worktrees.
-
 ### cleanup merged
 
 Delete merged task branches/worktrees (branch_pr workflow).
@@ -1875,26 +1588,6 @@ agentplane cleanup merged --finalize
 - One-command post-merge base refresh and local/remote cleanup.
 
 ## Backend
-
-### backend
-
-Backend-related operations.
-
-This is a command group. Use a subcommand such as \`agentplane backend sync ...\`, \`agentplane backend inspect ...\`, \`agentplane backend connect ...\`, or \`agentplane backend migrate-canonical-state ...\`.
-
-Usage:
-
-```text
-agentplane backend [<cmd> ...]
-```
-
-Examples:
-
-```sh
-agentplane backend sync local --direction pull
-```
-
-- Sync the backend.
 
 ### backend connect
 
@@ -2360,24 +2053,6 @@ agentplane doctor git-locks --fix
 
 ## Diagnostics
 
-### runtime
-
-Inspect which agentplane runtime/binary/package sources are active.
-
-Usage:
-
-```text
-agentplane runtime <explain> [options]
-```
-
-Examples:
-
-```sh
-agentplane runtime explain
-```
-
-- Show active runtime details.
-
 ### runtime explain
 
 Explain the active binary, runtime mode, and resolved package roots.
@@ -2407,16 +2082,6 @@ agentplane runtime explain --json
 - Show runtime details for scripts and diagnostics tooling.
 
 ## Recipes
-
-### recipes
-
-Recipe management commands.
-
-Usage:
-
-```text
-agentplane recipes <subcommand> [options]
-```
 
 ### recipes active
 
@@ -2467,16 +2132,6 @@ agentplane recipes add tdd@1.2.0 --mode link
 ```
 
 - Link a cached recipe into the project for local recipe development.
-
-### recipes cache
-
-Manage recipes cache.
-
-Usage:
-
-```text
-agentplane recipes cache <subcommand> [options]
-```
 
 ### recipes cache prune
 
@@ -2789,44 +2444,6 @@ agentplane recipes update tdd --force
 
 ## Blueprints
 
-### blueprint
-
-List and explain blueprint routing without executing a task.
-
-This is a command group. Use \`agentplane blueprint examples\`, \`agentplane blueprint list\`, \`agentplane blueprint explain ...\`, \`agentplane blueprint scaffold ...\`, or \`agentplane blueprint validate ...\`.
-
-Usage:
-
-```text
-agentplane blueprint [<cmd> ...]
-```
-
-Examples:
-
-```sh
-agentplane blueprint examples
-```
-
-- Show practical route inspection commands.
-
-```sh
-agentplane blueprint list
-```
-
-- Show built-in blueprint routes.
-
-```sh
-agentplane blueprint scaffold analysis.custom
-```
-
-- Create a project-local blueprint scaffold.
-
-```sh
-agentplane blueprint explain 202605051957-5WRJZK
-```
-
-- Explain the resolved route for a task.
-
 ### blueprint drift
 
 Check whether a task resolved blueprint snapshot is current.
@@ -3053,26 +2670,6 @@ agentplane blueprint validate --project
 
 - Validate the project-local blueprint registry directory.
 
-### blueprints
-
-Manage external blueprint catalogs and installs.
-
-Usage:
-
-```text
-agentplane blueprints <subcommand> [options]
-```
-
-### blueprints catalog
-
-Manage the cached external blueprint catalog index.
-
-Usage:
-
-```text
-agentplane blueprints catalog [<cmd> ...]
-```
-
 ### blueprints catalog info
 
 Show cached external blueprint or pack metadata.
@@ -3136,26 +2733,6 @@ Options:
 - `--json`: Emit JSON. (default=false)
 
 ## ACR
-
-### acr
-
-Generate, validate, check, explain, and print Agent Change Record artifacts.
-
-This is a command group. Use a subcommand such as \`agentplane acr generate ...\`, \`agentplane acr validate ...\`, or \`agentplane acr schema\`.
-
-Usage:
-
-```text
-agentplane acr [<cmd> ...]
-```
-
-Examples:
-
-```sh
-agentplane acr generate 202605031625-886KZ6 --work-commit HEAD --write
-```
-
-- Generate a task-local ACR.
 
 ### acr check
 
@@ -3350,16 +2927,6 @@ agentplane commit 202602030608-F1Q8AB --close
 
 - Create a close commit for the task README using a deterministic message builder.
 
-### guard
-
-Guard commands (commit checks, git hygiene, and allowlist helpers).
-
-Usage:
-
-```text
-agentplane guard <command> [args] [options]
-```
-
 ### guard clean
 
 Ensure the git index has no staged files.
@@ -3456,16 +3023,6 @@ agentplane guard suggest-allow --format args
 
 ## Hooks
 
-### hooks
-
-Manage and run git hooks installed by agentplane.
-
-Usage:
-
-```text
-agentplane hooks <command> [args] [options]
-```
-
 ### hooks install
 
 Install managed git hooks and the agentplane shim.
@@ -3535,21 +3092,6 @@ agentplane hooks uninstall
 - Remove agentplane hooks from .git/hooks/.
 
 ## Policy
-
-### incidents
-
-Route incident advice candidates through CURATOR-bounded matching and promotion gates.
-
-Usage:
-
-```text
-agentplane incidents <collect|advise> [args] [options]
-```
-
-Notes:
-
-- Use \`incidents collect\` to promote resolved reusable external findings into \`.agentplane/policy/incidents.md\` after deterministic validation.
-- Use \`incidents advise\` to query registry advice by task id or lightweight scope/tags; the score is a candidate scaffold for CURATOR-style judgment, not semantic truth.
 
 ### incidents advise
 
@@ -3631,28 +3173,6 @@ agentplane ide sync --ide cursor
 
 ## Context
 
-### context
-
-Manage local project context, durable derivations, projections, and search surfaces.
-
-Context commands cover local knowledge-workspace bootstrap, raw-source indexing, wiki/derived mutation, verification, and discovery surfaces.
-
-Usage:
-
-```text
-agentplane context [<cmd> ...]
-```
-
-### context capability
-
-Capability maintenance fallback under context namespace.
-
-Usage:
-
-```text
-agentplane context capability [<cmd> ...]
-```
-
 ### context capability discover
 
 Discover capability candidates from context operations.
@@ -3719,16 +3239,6 @@ Options:
 
 - `--fix`: Attempt safe local fixes for detected issues. (default=false)
 
-### context graph
-
-Validate and inspect derived context graph.
-
-Usage:
-
-```text
-agentplane context graph [<cmd> ...]
-```
-
 ### context graph export
 
 Export graph artifacts for offline consumption.
@@ -3781,16 +3291,6 @@ Usage:
 
 ```text
 agentplane context graph validate
-```
-
-### context harvest
-
-Harvest existing project evidence into source-backed context proposals.
-
-Usage:
-
-```text
-agentplane context harvest [<cmd> ...]
 ```
 
 ### context harvest tasks
@@ -3907,16 +3407,6 @@ Options:
 - `--derived-gitignore <none|all>`: Ignore machine-derived context files under .agentplane/context/derived when set to all. (choices=none|all, default=none)
 - `--repair`: Create missing files only. (default=false)
 - `--force`: Rewrite default policy files while repairing. (default=false)
-
-### context learn
-
-Create context processing tasks from files, changes, or completed tasks.
-
-Usage:
-
-```text
-agentplane context learn [<cmd> ...]
-```
 
 ### context learn changes
 
@@ -4187,16 +3677,6 @@ agentplane task derive 202602070101-ABCD --title "Implement X" --description "Do
 
 - Create an implementation task derived from a spike with seeded verify steps.
 
-### task findings
-
-Structured Findings/Notes commands; incident promotion is explicit opt-in.
-
-Usage:
-
-```text
-agentplane task findings add <task-id> --observation <text> --impact <text> --resolution <text> [--promote] [--external|--repo-fixable] [--incident-scope <text>] [--incident-tag <tag>] [--incident-match <term>] [--incident-advice <text>] [--incident-rule <text>] [--updated-by <id>]
-```
-
 ### task findings add
 
 Append a structured task-local Findings/Notes block; use --promote for incidents.
@@ -4236,17 +3716,6 @@ agentplane task findings add 202602030608-F1Q8AB --observation "One manual follo
 ```
 
 - Keep an observation task-local without feeding incidents collection.
-
-### task handoff
-
-Task handoff commands (record/show).
-
-Usage:
-
-```text
-agentplane task handoff record <task-id> --from <role> --reason <text> [--to <role>] [--run-id <id>]
-agentplane task handoff show <task-id> [--json]
-```
 
 ### task handoff record
 
@@ -4664,26 +4133,6 @@ agentplane task update 202602030608-F1Q8AB --replace-depends-on --depends-on 202
 
 ## Framework Dev
 
-### codex
-
-Codex integration commands.
-
-Usage:
-
-```text
-agentplane codex <subcommand> [options]
-```
-
-### codex plugin
-
-Install and inspect bundled Codex plugin integrations.
-
-Usage:
-
-```text
-agentplane codex plugin <subcommand> [options]
-```
-
 ### codex plugin install
 
 Install the bundled AgentPlane plugin into a local Codex marketplace.
@@ -4739,16 +4188,6 @@ agentplane docs cli --out docs/user/cli-reference.generated.mdx
 ```
 
 - Generate docs.
-
-### release
-
-Prepare a release (agent-assisted notes + version bump workflow).
-
-Usage:
-
-```text
-agentplane release <command> [args] [options]
-```
 
 ### release apply
 
@@ -4861,16 +4300,6 @@ agentplane release plan --minor --yes
 ```
 
 - Generate a plan for the next minor release (explicit approval required).
-
-### workflow
-
-Workflow contract commands.
-
-Usage:
-
-```text
-agentplane workflow <subcommand> [options]
-```
 
 ### workflow build
 
