@@ -1,0 +1,13 @@
+ .../blueprint/resolved-snapshot.json               | 513 +++++++++++++++++++++
+ docs/developer/local-context.mdx                   |  34 +-
+ docs/user/cli-reference.generated.mdx              |  10 +-
+ docs/user/commands.mdx                             |  14 +-
+ docs/user/local-context.mdx                        |  13 +
+ .../src/commands/context/context.spec.ts           |  24 +-
+ .../commands/context/harvest-tasks-extraction.ts   |   1 +
+ .../src/commands/context/harvest-tasks.test.ts     | 233 +++++++++-
+ .../src/commands/context/harvest-tasks.ts          | 124 ++++-
+ packages/agentplane/src/commands/task/new.ts       |   3 +-
+ .../src/context/harvest-tasks-artifacts.ts         |  18 +-
+ .../src/context/harvest-tasks-extraction.ts        | 317 +++++++++++++
+ 12 files changed, 1282 insertions(+), 22 deletions(-)

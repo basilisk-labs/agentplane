@@ -72,6 +72,8 @@ function parsed(input: Partial<ContextHarvestTasksParsed> = {}): ContextHarvestT
     afterTask: input.afterTask ?? "",
     limit: input.limit ?? "",
     writeProposals: input.writeProposals ?? false,
+    createExtractionTasks: input.createExtractionTasks ?? false,
+    batchSize: input.batchSize ?? "25",
     promote: input.promote ?? false,
     dryRun: input.dryRun ?? false,
     format: input.format ?? "text",
@@ -86,7 +88,8 @@ function ctx(root: string, tasks: TaskData[]): CommandContext {
       listTasks: () => Promise.resolve(tasks),
       writeTask: (updated: TaskData) => {
         const index = tasks.findIndex((task) => task.id === updated.id);
-        if (index !== -1) tasks[index] = updated;
+        if (index === -1) tasks.push(updated);
+        else tasks[index] = updated;
         return Promise.resolve();
       },
     },
@@ -266,6 +269,234 @@ describe("context harvest tasks", () => {
         parsed: parsed({ tag: ["release"], writeProposals: true }),
       }),
     ).rejects.toThrow(/context init/u);
+  });
+
+  it("creates CURATOR extraction tasks in oldest-first batches without writing raw evidence", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const createdParsed: unknown[] = [];
+    const tasks = [
+      task({ id: "202604030900-THIRD3", title: "Third context task", tags: ["workflow"] }),
+      task({ id: "202604010900-FIRST1", title: "First context task", tags: ["workflow"] }),
+      task({ id: "202604020900-SECOND", title: "Second context task", tags: ["workflow"] }),
+    ];
+    const commandCtx = ctx(root, tasks);
+    let createdCount = 0;
+
+    await cmdContextHarvestTasks({
+      ctx: commandCtx,
+      cwd: root,
+      parsed: parsed({
+        tag: ["workflow"],
+        createExtractionTasks: true,
+        batchSize: "2",
+        format: "json",
+      }),
+      createTask: async ({ ctx, parsed }) => {
+        createdCount += 1;
+        createdParsed.push(parsed);
+        await ctx.taskBackend.writeTask({
+          id: `202604040900-CURAT${createdCount}`,
+          title: parsed.title,
+          status: "TODO",
+          owner: parsed.owner,
+          priority: parsed.priority,
+          tags: parsed.tags,
+          description: parsed.description,
+          extensions: parsed.extensions,
+        } as TaskData);
+        return 0;
+      },
+    });
+
+    expect(createdParsed).toHaveLength(2);
+    expect(createdParsed[0]).toMatchObject({
+      owner: "CURATOR",
+      tags: ["context", "assimilation", "task-harvest"],
+      taskKind: "context",
+      mutationScope: "context",
+      blueprintRequest: "context.assimilation",
+    });
+    const first = createdParsed[0] as {
+      extensions: {
+        "agentplane.context": {
+          source_set: { sources: { id: string; readme_path: string; acr_path: string }[] };
+          prompt_modules: { address: { value: string }; content: string }[];
+        };
+      };
+    };
+    expect(first.extensions["agentplane.context"].source_set.sources).toMatchObject([
+      {
+        id: "202604010900-FIRST1",
+        title: "First context task",
+        status: "DONE",
+        tags: ["workflow"],
+        readme_path: ".agentplane/tasks/202604010900-FIRST1/README.md",
+        acr_path: ".agentplane/tasks/202604010900-FIRST1/acr.json",
+        existing_harvest_marker: null,
+      },
+      {
+        id: "202604020900-SECOND",
+        title: "Second context task",
+        status: "DONE",
+        tags: ["workflow"],
+        readme_path: ".agentplane/tasks/202604020900-SECOND/README.md",
+        acr_path: ".agentplane/tasks/202604020900-SECOND/acr.json",
+        existing_harvest_marker: null,
+      },
+    ]);
+    expect(first.extensions["agentplane.context"].source_set.sources[0]?.source_digest).toMatch(
+      /^sha256:/,
+    );
+    expect(first.extensions["agentplane.context"].source_set.sources[1]?.source_digest).toMatch(
+      /^sha256:/,
+    );
+    expect(first.extensions["agentplane.context"].prompt_modules[0]?.address.value).toBe(
+      "framework/template/generated.artifact/context_task_extraction/v1",
+    );
+    expect(first.extensions["agentplane.context"].prompt_modules[0]?.content).toContain(
+      "Read each source task README first",
+    );
+    expect(tasks.find((row) => row.id === "202604010900-FIRST1")?.extensions).toMatchObject({
+      context_task_extraction: {
+        pipeline: "context.harvest.tasks",
+        state: "queued",
+        extraction_task_id: "202604040900-CURAT1",
+        prompt_module_ref: "framework/template/generated.artifact/context_task_extraction/v1",
+      },
+    });
+    await expect(
+      readFile(path.join(root, "context/raw/tasks/202604010900-FIRST1.json")),
+    ).rejects.toThrow();
+  });
+
+  it("preserves harvest markers when proposal writing and extraction task creation are combined", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const tasks = [
+      task({
+        id: "202604010900-FIRST1",
+        title: "First context task",
+        tags: ["workflow"],
+      }),
+    ];
+    const commandCtx = ctx(root, tasks);
+
+    await cmdContextHarvestTasks({
+      ctx: commandCtx,
+      cwd: root,
+      parsed: parsed({
+        tag: ["workflow"],
+        writeProposals: true,
+        createExtractionTasks: true,
+        format: "json",
+      }),
+      createTask: async ({ ctx, parsed }) => {
+        await ctx.taskBackend.writeTask({
+          id: "202604040900-CURAT1",
+          title: parsed.title,
+          status: "TODO",
+          owner: parsed.owner,
+          priority: parsed.priority,
+          tags: parsed.tags,
+          description: parsed.description,
+          extensions: parsed.extensions,
+        } as TaskData);
+        return 0;
+      },
+    });
+
+    expect(tasks.find((row) => row.id === "202604010900-FIRST1")?.extensions).toMatchObject({
+      context_harvest: {
+        pipeline: "context.harvest.tasks",
+        state: "ingested",
+        raw_evidence_path: "context/raw/tasks/202604010900-FIRST1.json",
+        wiki_proposal_path: "context/wiki/proposals/task-harvest/done-workflow.md",
+      },
+      context_task_extraction: {
+        pipeline: "context.harvest.tasks",
+        state: "queued",
+        extraction_task_id: "202604040900-CURAT1",
+      },
+    });
+  });
+
+  it("does not treat raw harvest markers as semantic extraction completion", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    const tasks = [
+      task({
+        id: "202604010900-REL001",
+        title: "Release gate hardening",
+        tags: ["release", "code"],
+      }),
+    ];
+
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ tag: ["release"], writeProposals: true }),
+    });
+    out.mockClear();
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({
+        tag: ["release"],
+        createExtractionTasks: true,
+        dryRun: true,
+        format: "json",
+      }),
+    });
+
+    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      selected_task_ids: string[];
+      extraction_task_batches: { source_task_ids: string[] }[];
+    };
+    expect(payload.selected_task_ids).toEqual(["202604010900-REL001"]);
+    expect(payload.extraction_task_batches[0]?.source_task_ids).toEqual(["202604010900-REL001"]);
+  });
+
+  it("previews extraction task batches on dry-run without creating tasks", async () => {
+    const root = await tempRoot();
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, [
+        task({ id: "202604010900-FIRST1", title: "First context task", tags: ["workflow"] }),
+        task({ id: "202604020900-SECOND", title: "Second context task", tags: ["workflow"] }),
+      ]),
+      cwd: root,
+      parsed: parsed({
+        tag: ["workflow"],
+        createExtractionTasks: true,
+        batchSize: "1",
+        dryRun: true,
+        format: "json",
+      }),
+      createTask: () => Promise.reject(new Error("dry-run must not create tasks")),
+    });
+
+    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      extraction_task_batches: { source_task_ids: string[]; created_task_id: string | null }[];
+      created_extraction_task_ids: string[];
+    };
+    expect(payload.extraction_task_batches).toEqual([
+      {
+        batch_index: 1,
+        batch_count: 2,
+        source_task_ids: ["202604010900-FIRST1"],
+        created_task_id: null,
+      },
+      {
+        batch_index: 2,
+        batch_count: 2,
+        source_task_ids: ["202604020900-SECOND"],
+        created_task_id: null,
+      },
+    ]);
+    expect(payload.created_extraction_task_ids).toEqual([]);
   });
 
   it("sanitizes explicit task filters before deriving proposal paths", async () => {

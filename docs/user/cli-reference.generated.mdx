@@ -3776,7 +3776,7 @@ agentplane context harvest [<cmd> ...]
 
 Harvest completed task evidence into wiki, fact, and graph proposals.
 
-Selects completed tasks in oldest-first order, skips unchanged tasks with matching ingestion markers, and separates source indexing, knowledge extraction, wiki synthesis, promotion-gate state, and task README markers. Write modes require an initialized context workspace.
+Selects completed tasks in oldest-first order, skips unchanged tasks with matching ingestion markers, and separates source indexing, agentic extraction task creation, wiki synthesis, promotion-gate state, and task README markers. Write modes require an initialized context workspace.
 
 Usage:
 
@@ -3794,6 +3794,8 @@ Options:
 - `--after-task <task-id>`: Continue after a previously harvested task id.
 - `--limit <n>`: Maximum number of oldest matching tasks to harvest.
 - `--write-proposals`: Write raw evidence, derived facts/graph rows, report, and wiki proposal. (default=false)
+- `--create-extraction-tasks`: Create standard CURATOR tasks for batchwise semantic extraction from task README/ACR sources. (default=false)
+- `--batch-size <n>`: Number of selected completed tasks per generated extraction task. (default=25)
 - `--promote`: Promote the wiki proposal to semi-canonical only if the promotion gate passes. (default=false)
 - `--dry-run`: Preview selection and gate state without writing artifacts. (default=false)
 - `--format <text|json>`: Output format. (choices=text|json, default=text)
@@ -3811,6 +3813,12 @@ agentplane context harvest tasks --tag branch_pr --write-proposals
 ```
 
 - Write source-backed reusable context proposals from completed branch_pr tasks.
+
+```sh
+agentplane context harvest tasks --tag branch_pr --create-extraction-tasks --batch-size 25
+```
+
+- Create CURATOR tasks that extract semantic wiki/fact/graph knowledge in bounded oldest-first batches.
 
 ### context ingest
 

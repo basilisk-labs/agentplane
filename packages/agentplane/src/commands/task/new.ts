@@ -272,6 +272,7 @@ export async function runTaskNewParsed(opts: {
   cwd: string;
   rootOverride?: string;
   parsed: TaskNewParsed;
+  printTaskId?: boolean;
 }): Promise<number> {
   const p = sanitizeTaskNewParsed(opts.parsed);
   try {
@@ -410,7 +411,7 @@ export async function runTaskNewParsed(opts: {
     }
 
     await ctx.taskBackend.writeTask(task);
-    process.stdout.write(`${taskId}\n`);
+    if (opts.printTaskId !== false) process.stdout.write(`${taskId}\n`);
     if (p.showBlueprint) {
       const summary = await resolveTaskBlueprintLifecycleSummary({
         task,
