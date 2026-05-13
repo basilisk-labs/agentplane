@@ -22,12 +22,16 @@ Add typed preflight classification for task artifact drift so active task artifa
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T16:28:41.913Z
+- Updated: 2026-05-13T16:36:19.222Z
 - Branch: task/202605131627-ANTN2E/typed-drift-classification
-- Head: c5f2d3ca04b9
+- Head: f2e97e507c41
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 513 +++++++++++++++++++++
+ .../cli/run-cli.core.branch-meta.readiness.test.ts | 163 ++++++-
+ .../cli/run-cli/commands/core/preflight-render.ts  |  15 +-
+ .../cli/run-cli/commands/core/preflight-report.ts  | 136 +++++-
+ 4 files changed, 818 insertions(+), 9 deletions(-)
 ```
 
 </details>
