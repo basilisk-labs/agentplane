@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T17:54:50Z",
   "base": "main",
   "branch": "task/202605131632-TDMHEC/agentic-classifiers",
   "created_at": "2026-05-13T16:33:56.982Z",
-  "head_sha": "b74ec146d3a8f08f9527c5f1c11c123de71d7196",
+  "head_sha": "7869aab4812367dead0360346d4b16ae5ea7e680",
   "last_verified_at": "2026-05-13T17:49:25.583Z",
   "last_verified_sha": "b74ec146d3a8f08f9527c5f1c11c123de71d7196",
+  "merge_commit": "0025f4c9587690ca94d5e09d3a5ae26b7a0aafff",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T17:54:50Z",
   "pr_number": 3649,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3649",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605131632-TDMHEC",
-  "updated_at": "2026-05-13T17:49:25.683Z",
+  "updated_at": "2026-05-13T17:54:50Z",
   "verify": {
     "status": "pass"
   }
