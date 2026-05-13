@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T18:53:38.273Z"
+  updated_at: "2026-05-13T19:11:21.237Z"
   updated_by: "CODER"
-  note: "Verified: blueprint snapshot refreshed after merge-base update; HEAD 8d0f78d76 contains only task artifact snapshot refresh after d81de768a validation. Snapshot state is current; no implementation files changed after focused checks."
+  note: "Verified: addressed PR review by restricting ignore_parallel_agent to active task README artifacts only. Active non-README artifacts now remain actionable/inspect. Checks passed on 02926e918: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts (14 pass); bun run --filter=agentplane typecheck; bunx prettier --check touched files; bunx eslint touched files; node .agentplane/policy/check-routing.mjs; ap doctor."
   attempts: 0
 commit: null
 comments:
@@ -54,8 +54,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: blueprint snapshot refreshed after merge-base update; HEAD 8d0f78d76 contains only task artifact snapshot refresh after d81de768a validation. Snapshot state is current; no implementation files changed after focused checks."
+  -
+    type: "verify"
+    at: "2026-05-13T19:11:21.237Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: addressed PR review by restricting ignore_parallel_agent to active task README artifacts only. Active non-README artifacts now remain actionable/inspect. Checks passed on 02926e918: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts (14 pass); bun run --filter=agentplane typecheck; bunx prettier --check touched files; bunx eslint touched files; node .agentplane/policy/check-routing.mjs; ap doctor."
 doc_version: 3
-doc_updated_at: "2026-05-13T18:53:38.318Z"
+doc_updated_at: "2026-05-13T19:11:21.289Z"
 doc_updated_by: "CODER"
 description: "Add typed preflight classification for task artifact drift so active task artifacts from parallel agents are distinguished from stale or unknown recovery drift."
 sections:
@@ -119,6 +125,25 @@ sections:
     Attempts: 0
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:50:55.813Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131627-ANTN2E-typed-drift-classification/.agentplane/tasks/202605131627-ANTN2E/blueprint/resolved-snapshot.json
+    - old_digest: a6321f39291a15d80b3a01f93a7c111221f046d392c66dcb665b621a69b25885
+    - current_digest: a6321f39291a15d80b3a01f93a7c111221f046d392c66dcb665b621a69b25885
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131627-ANTN2E
+    
+    ### 2026-05-13T19:11:21.237Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: addressed PR review by restricting ignore_parallel_agent to active task README artifacts only. Active non-README artifacts now remain actionable/inspect. Checks passed on 02926e918: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts (14 pass); bun run --filter=agentplane typecheck; bunx prettier --check touched files; bunx eslint touched files; node .agentplane/policy/check-routing.mjs; ap doctor.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:53:38.318Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     Details:
     
@@ -207,6 +232,25 @@ Note: Verified: blueprint snapshot refreshed after merge-base update; HEAD 8d0f7
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:50:55.813Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131627-ANTN2E-typed-drift-classification/.agentplane/tasks/202605131627-ANTN2E/blueprint/resolved-snapshot.json
+- old_digest: a6321f39291a15d80b3a01f93a7c111221f046d392c66dcb665b621a69b25885
+- current_digest: a6321f39291a15d80b3a01f93a7c111221f046d392c66dcb665b621a69b25885
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131627-ANTN2E
+
+### 2026-05-13T19:11:21.237Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: addressed PR review by restricting ignore_parallel_agent to active task README artifacts only. Active non-README artifacts now remain actionable/inspect. Checks passed on 02926e918: bun test packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts (14 pass); bun run --filter=agentplane typecheck; bunx prettier --check touched files; bunx eslint touched files; node .agentplane/policy/check-routing.mjs; ap doctor.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:53:38.318Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 Details:
 
