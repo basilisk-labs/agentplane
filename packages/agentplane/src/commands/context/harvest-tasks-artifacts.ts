@@ -7,6 +7,15 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { fileExists, isRecord, parseJsonlLines, readText } from "./context-utils.js";
+import {
+  alreadyHarvestedUnchanged,
+  buildTaskHarvestLedgerRows,
+  buildTaskHarvestMarkers,
+  taskText,
+  taskTextDigest,
+  type TaskHarvestLedgerRow,
+  type TaskHarvestMarker,
+} from "./harvest-tasks-markers.js";
 
 export type ContextHarvestTasksParsed = {
   status: string[];
@@ -71,7 +80,10 @@ type HarvestOutput = {
   wikiProposal: string;
   wikiPath: string;
   promotedPath: string;
+  reportPath: string;
   report: HarvestReport;
+  markers: Record<string, TaskHarvestMarker>;
+  ledgerRows: TaskHarvestLedgerRow[];
 };
 
 type HarvestReport = {
@@ -183,30 +195,6 @@ function taskMatches(task: HarvestTask, opts: ContextHarvestTasksParsed): boolea
   return true;
 }
 
-function sectionText(task: TaskData, section: string): string {
-  const sections = isRecord(task.sections) ? task.sections : {};
-  const value = sections[section];
-  return typeof value === "string" ? value.trim() : "";
-}
-
-function taskText(task: HarvestTask): string {
-  const parts = [
-    task.title,
-    typeof task.description === "string" ? task.description : "",
-    sectionText(task, "Summary"),
-    sectionText(task, "Plan"),
-    sectionText(task, "Verification"),
-    sectionText(task, "Findings"),
-    task.commit && typeof task.commit.message === "string" ? task.commit.message : "",
-  ];
-  if (Array.isArray(task.comments)) {
-    for (const comment of task.comments) {
-      if (isRecord(comment) && typeof comment.body === "string") parts.push(comment.body);
-    }
-  }
-  return parts.filter((part) => part.trim()).join("\n\n");
-}
-
 function buildEvidence(task: HarvestTask, now: string): TaskEvidence {
   const text = taskText(task);
   const refs = [`.agentplane/tasks/${task.id}/README.md`];
@@ -226,7 +214,7 @@ function buildEvidence(task: HarvestTask, now: string): TaskEvidence {
     commit: task.commit && isRecord(task.commit) ? task.commit : null,
     source_refs: refs,
     extracted_at: now,
-    text_digest: `sha256:${createHash("sha256").update(text).digest("hex")}`,
+    text_digest: taskTextDigest(task),
     excerpts: text
       .split(/\r?\n/u)
       .map((line) => line.trim())
@@ -424,6 +412,10 @@ function buildReport(opts: {
   };
 }
 
+function reportPathForWiki(wikiPath: string): string {
+  return `.agentplane/context/derived/reports/task-harvest-${stableHash(wikiPath)}.json`;
+}
+
 async function readJsonlRecords(filePath: string): Promise<Record<string, unknown>[]> {
   if (!(await fileExists(filePath))) return [];
   return parseJsonlLines(await readText(filePath));
@@ -444,6 +436,7 @@ export function selectTasks(tasks: TaskData[], parsed: ContextHarvestTasksParsed
   const limit = parseLimit(parsed.limit);
   const selected = asTaskList(tasks)
     .filter((task) => taskMatches(task, parsed))
+    .filter((task) => !alreadyHarvestedUnchanged(task, parsed))
     .sort((a, b) => a.id.localeCompare(b.id));
   return limit === null ? selected : selected.slice(0, limit);
 }
@@ -465,6 +458,8 @@ export function buildOutput(
   const wikiPath = `context/wiki/proposals/task-harvest/${reportSlug(parsed)}.md`;
   const promotedPath = `context/wiki/task-harvest/${reportSlug(parsed)}.md`;
   const report = buildReport({ parsed, facts, evidence, ...graph, wikiPath, promotedPath, now });
+  const reportPath = reportPathForWiki(wikiPath);
+  const markers = buildTaskHarvestMarkers({ evidence, facts, reportPath, wikiPath, report });
   return {
     selected,
     evidence,
@@ -473,7 +468,10 @@ export function buildOutput(
     wikiProposal: buildWikiProposal(evidence, facts, report),
     wikiPath,
     promotedPath,
+    reportPath,
     report,
+    markers,
+    ledgerRows: buildTaskHarvestLedgerRows(markers),
   };
 }
 
@@ -489,10 +487,17 @@ export async function writeOutputs(
     if (await writeJsonStableIfChanged(path.join(root, rel), row)) changed.push(rel);
   }
 
-  const reportPath = `.agentplane/context/derived/reports/task-harvest-${stableHash(output.wikiPath)}.json`;
-  await mkdir(path.dirname(path.join(root, reportPath)), { recursive: true });
-  if (await writeJsonStableIfChanged(path.join(root, reportPath), output.report)) {
-    changed.push(reportPath);
+  await mkdir(path.dirname(path.join(root, output.reportPath)), { recursive: true });
+  if (await writeJsonStableIfChanged(path.join(root, output.reportPath), output.report)) {
+    changed.push(output.reportPath);
+  }
+  if (
+    await mergeJsonl(
+      path.join(root, ".agentplane/context/derived/ingestion/tasks.jsonl"),
+      output.ledgerRows,
+    )
+  ) {
+    changed.push(".agentplane/context/derived/ingestion/tasks.jsonl");
   }
   if (
     await mergeJsonl(path.join(root, ".agentplane/context/derived/facts/facts.jsonl"), output.facts)

@@ -3,7 +3,7 @@ import path from "node:path";
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { fileExists } from "./context-utils.js";
+import { fileExists, isRecord } from "./context-utils.js";
 import {
   buildOutput,
   renderText,
@@ -11,6 +11,7 @@ import {
   writeOutputs,
   type ContextHarvestTasksParsed,
 } from "./harvest-tasks-artifacts.js";
+import type { TaskHarvestMarker } from "./harvest-tasks-markers.js";
 
 export { readHarvestReport, type ContextHarvestTasksParsed } from "./harvest-tasks-artifacts.js";
 
@@ -40,6 +41,29 @@ async function assertContextWorkspaceReady(root: string): Promise<void> {
   }
 }
 
+function sameMarker(current: unknown, next: TaskHarvestMarker): boolean {
+  return isRecord(current) && JSON.stringify(current) === JSON.stringify(next);
+}
+
+async function writeTaskMarkers(ctx: CommandContext, output: ReturnType<typeof buildOutput>) {
+  const changed: string[] = [];
+  for (const task of output.selected) {
+    const marker = output.markers[task.id];
+    if (!marker) continue;
+    const extensions = isRecord(task.extensions) ? task.extensions : {};
+    if (sameMarker(extensions.context_harvest, marker)) continue;
+    await ctx.taskBackend.writeTask({
+      ...task,
+      extensions: {
+        ...extensions,
+        context_harvest: marker,
+      },
+    });
+    changed.push(`.agentplane/tasks/${task.id}/README.md`);
+  }
+  return changed;
+}
+
 export async function cmdContextHarvestTasks(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -59,7 +83,12 @@ export async function cmdContextHarvestTasks(opts: {
   }
 
   const changed =
-    opts.parsed.dryRun || !shouldWrite ? [] : await writeOutputs(root, output, opts.parsed.promote);
+    opts.parsed.dryRun || !shouldWrite
+      ? []
+      : [
+          ...(await writeOutputs(root, output, opts.parsed.promote)),
+          ...(await writeTaskMarkers(ctx, output)),
+        ];
   const payload = {
     ...output.report,
     selected_task_ids: selected.map((task) => task.id),

@@ -68,8 +68,13 @@ tasks oldest-first, then keeps the pipeline stages separate:
 
 Use `--tag`, `--task`, `--since`, `--until`, `--after-task`, and `--limit` to advance gradually from
 older completed work toward newer changes. The command never promotes by default; `--write-proposals`
-only writes evidence, derived rows, reports, and proposal pages. Write modes require an initialized
-context workspace from `agentplane context init`; dry-run mode can be used before initialization.
+only writes evidence, derived rows, reports, proposal pages, a task-ingestion ledger, and
+`extensions.context_harvest` markers back into the harvested task READMEs. Those markers include the
+source digest, raw evidence path, report path, proposal path, promotion state, fact IDs, and source
+refs. Later broad runs skip tasks whose marker digest still matches the README evidence; explicit
+`--task` selection and `--promote` can still revisit a marked task when needed. Write modes require
+an initialized context workspace from `agentplane context init`; dry-run mode can be used before
+initialization.
 
 ## Verify task context
 

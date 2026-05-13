@@ -197,7 +197,7 @@ export const contextHarvestTasksSpec: CommandSpec<{
   group: "Context",
   summary: "Harvest completed task evidence into wiki, fact, and graph proposals.",
   description:
-    "Selects completed tasks in oldest-first order and separates source indexing, knowledge extraction, wiki synthesis, and promotion-gate state. Write modes require an initialized context workspace.",
+    "Selects completed tasks in oldest-first order, skips unchanged tasks with matching ingestion markers, and separates source indexing, knowledge extraction, wiki synthesis, promotion-gate state, and task README markers. Write modes require an initialized context workspace.",
   options: [
     {
       kind: "string",

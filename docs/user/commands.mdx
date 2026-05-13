@@ -228,7 +228,10 @@ agentplane context verify-task <task-id>
 Source artifacts live under `context/**`. The SQLite projection under
 `.agentplane/context/derived/**` is generated output. Use `context harvest tasks` to convert
 completed task history into raw evidence, facts, graph rows, wiki proposals, and promotion-gate
-reports before promoting reusable knowledge; write modes require `agentplane context init` first.
+reports before promoting reusable knowledge. Write modes also mark harvested task READMEs with
+`extensions.context_harvest` and maintain `.agentplane/context/derived/ingestion/tasks.jsonl`, so
+later broad runs can skip unchanged ingested tasks by source digest instead of guessing from wiki
+files. Write modes require `agentplane context init` first.
 Use `context verify-task` before closing work that creates or relies on context artifacts. See
 [Local context](local-context).
 

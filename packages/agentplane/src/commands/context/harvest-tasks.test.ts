@@ -82,7 +82,14 @@ function ctx(root: string, tasks: TaskData[]): CommandContext {
   return {
     resolvedProject: { gitRoot: root },
     config: { paths: { workflow_dir: ".agentplane/tasks" } },
-    taskBackend: { listTasks: () => Promise.resolve(tasks) },
+    taskBackend: {
+      listTasks: () => Promise.resolve(tasks),
+      writeTask: (updated: TaskData) => {
+        const index = tasks.findIndex((task) => task.id === updated.id);
+        if (index !== -1) tasks[index] = updated;
+        return Promise.resolve();
+      },
+    },
     backendId: "local",
     backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
     memo: {},
@@ -160,6 +167,65 @@ describe("context harvest tasks", () => {
     expect(graph).toContain('"task:202604010900-REL001"');
     expect(proposal).toContain("promotion_state: proposal");
     expect(proposal).toContain("source_refs:");
+    expect(tasks[0]?.extensions?.context_harvest).toMatchObject({
+      pipeline: "context.harvest.tasks",
+      state: "ingested",
+      raw_evidence_path: "context/raw/tasks/202604010900-REL001.json",
+      wiki_proposal_path: "context/wiki/proposals/task-harvest/done-release.md",
+      promotion_state: "proposal",
+    });
+    const ledger = await readFile(
+      path.join(root, ".agentplane/context/derived/ingestion/tasks.jsonl"),
+      "utf8",
+    );
+    expect(ledger).toContain('"task_id":"202604010900-REL001"');
+  });
+
+  it("skips unchanged tasks with matching ingestion markers unless their evidence changes", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    const tasks = [
+      task({
+        id: "202604010900-REL001",
+        title: "Release gate hardening",
+        tags: ["release", "code"],
+      }),
+    ];
+
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ tag: ["release"], writeProposals: true }),
+    });
+
+    out.mockClear();
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ tag: ["release"], dryRun: true, format: "json" }),
+    });
+    const unchanged = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      selected_task_ids: string[];
+    };
+    expect(unchanged.selected_task_ids).toEqual([]);
+
+    const harvested = tasks[0];
+    if (!harvested) throw new Error("expected harvested task");
+    tasks[0] = {
+      ...harvested,
+      sections: { ...harvested.sections, Summary: "Release gate hardening updated summary" },
+    };
+    out.mockClear();
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, tasks),
+      cwd: root,
+      parsed: parsed({ tag: ["release"], dryRun: true, format: "json" }),
+    });
+    const changed = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      selected_task_ids: string[];
+    };
+    expect(changed.selected_task_ids).toEqual(["202604010900-REL001"]);
   });
 
   it("blocks promotion when duplicate task claims need manual conflict review", async () => {
