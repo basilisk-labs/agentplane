@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605131049-2NHAWN/context-task-harvest",
+  "created_at": "2026-05-13T10:49:55.784Z",
+  "head_sha": "e7b2d39b5713641c3766119821b4604fa1338834",
+  "last_verified_at": "2026-05-13T11:27:55.562Z",
+  "last_verified_sha": "91ed87d0f8e3bc8d9cd16daa43ce5fce826cd9f7",
+  "pr_number": 3626,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3626",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605131049-2NHAWN",
+  "updated_at": "2026-05-13T12:49:07.349Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -224,13 +224,20 @@ agentplane context search "query"
 agentplane context show context/wiki/page.md#section=section-slug
 agentplane context ingest --changed
 agentplane context ingest ./notes.md --run
+agentplane context harvest tasks --tag release --limit 20 --dry-run
+agentplane context harvest tasks --tag branch_pr --write-proposals
 agentplane context verify-task <task-id>
 ```
 
 Source artifacts live under `context/**`. Derived context artifacts live under
 `.agentplane/context/derived/**`, and the fast SQLite projection is stored in the shared cache
-database at `.agentplane/cache.sqlite`. Use `context verify-task` before closing work that creates
-or relies on context artifacts. See [Local context](local-context).
+database at `.agentplane/cache.sqlite`. Use `context harvest tasks` to convert completed task
+history into raw evidence, facts, graph rows, wiki proposals, and promotion-gate reports before
+promoting reusable knowledge. Write modes also mark harvested task READMEs with
+`extensions.context_harvest` and maintain `.agentplane/context/derived/ingestion/tasks.jsonl`, so
+later broad runs can skip unchanged ingested tasks by source digest instead of guessing from wiki
+files. Write modes require `agentplane context init` first. Use `context verify-task` before
+closing work that creates or relies on context artifacts. See [Local context](local-context).
 
 ## Backend sync (remote backends)
 

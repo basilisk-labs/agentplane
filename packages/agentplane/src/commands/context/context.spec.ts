@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-base-to-string */
 import { parseGroupCommand, type GroupCommandParsed } from "../../cli/group-command.js";
 import type { CommandSpec } from "../../cli/spec/spec.js";
+import { toStringList } from "../../cli/spec/parse-utils.js";
 
 export const contextSpec: CommandSpec<GroupCommandParsed> = {
   id: ["context"],
@@ -169,6 +170,130 @@ export const contextGraphSpec: CommandSpec<GroupCommandParsed> = {
   summary: "Validate and inspect derived context graph.",
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   parse: (raw) => parseGroupCommand(raw),
+};
+
+export const contextHarvestSpec: CommandSpec<GroupCommandParsed> = {
+  id: ["context", "harvest"],
+  group: "Context",
+  summary: "Harvest existing project evidence into source-backed context proposals.",
+  args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
+  parse: (raw) => parseGroupCommand(raw),
+};
+
+export const contextHarvestTasksSpec: CommandSpec<{
+  status: string[];
+  tag: string[];
+  task: string[];
+  since: string;
+  until: string;
+  afterTask: string;
+  limit: string;
+  writeProposals: boolean;
+  promote: boolean;
+  dryRun: boolean;
+  format: "text" | "json";
+}> = {
+  id: ["context", "harvest", "tasks"],
+  group: "Context",
+  summary: "Harvest completed task evidence into wiki, fact, and graph proposals.",
+  description:
+    "Selects completed tasks in oldest-first order, skips unchanged tasks with matching ingestion markers, and separates source indexing, knowledge extraction, wiki synthesis, promotion-gate state, and task README markers. Write modes require an initialized context workspace.",
+  options: [
+    {
+      kind: "string",
+      name: "status",
+      repeatable: true,
+      valueHint: "<status>",
+      description: "Repeatable task status filter. Defaults to DONE.",
+    },
+    {
+      kind: "string",
+      name: "tag",
+      repeatable: true,
+      valueHint: "<tag>",
+      description: "Repeatable tag filter. Matches tasks with any listed tag.",
+    },
+    {
+      kind: "string",
+      name: "task",
+      repeatable: true,
+      valueHint: "<task-id>",
+      description: "Repeatable explicit task id filter.",
+    },
+    {
+      kind: "string",
+      name: "since",
+      valueHint: "<YYYY-MM-DD|YYYYMMDDHHmm>",
+      description: "Only include tasks at or after this task-id timestamp prefix.",
+    },
+    {
+      kind: "string",
+      name: "until",
+      valueHint: "<YYYY-MM-DD|YYYYMMDDHHmm>",
+      description: "Only include tasks at or before this task-id timestamp prefix.",
+    },
+    {
+      kind: "string",
+      name: "after-task",
+      valueHint: "<task-id>",
+      description: "Continue after a previously harvested task id.",
+    },
+    {
+      kind: "string",
+      name: "limit",
+      valueHint: "<n>",
+      description: "Maximum number of oldest matching tasks to harvest.",
+    },
+    {
+      kind: "boolean",
+      name: "write-proposals",
+      default: false,
+      description: "Write raw evidence, derived facts/graph rows, report, and wiki proposal.",
+    },
+    {
+      kind: "boolean",
+      name: "promote",
+      default: false,
+      description: "Promote the wiki proposal to semi-canonical only if the promotion gate passes.",
+    },
+    {
+      kind: "boolean",
+      name: "dry-run",
+      default: false,
+      description: "Preview selection and gate state without writing artifacts.",
+    },
+    {
+      kind: "string",
+      name: "format",
+      choices: ["text", "json"],
+      default: "text",
+      valueHint: "<text|json>",
+      description: "Output format.",
+    },
+  ],
+  examples: [
+    {
+      cmd: "agentplane context harvest tasks --tag release --limit 20 --dry-run",
+      why: "Preview the oldest completed release tasks before writing context proposals.",
+    },
+    {
+      cmd: "agentplane context harvest tasks --tag branch_pr --write-proposals",
+      why: "Write source-backed reusable context proposals from completed branch_pr tasks.",
+    },
+  ],
+  parse: (raw) => ({
+    status: toStringList(raw.opts.status),
+    tag: toStringList(raw.opts.tag),
+    task: toStringList(raw.opts.task),
+    since: typeof raw.opts.since === "string" ? raw.opts.since : "",
+    until: typeof raw.opts.until === "string" ? raw.opts.until : "",
+    afterTask: typeof raw.opts["after-task"] === "string" ? raw.opts["after-task"] : "",
+    limit: typeof raw.opts.limit === "string" ? raw.opts.limit : "",
+    writeProposals: raw.opts["write-proposals"] === true,
+    promote: raw.opts.promote === true,
+    dryRun: raw.opts["dry-run"] === true,
+    format: (raw.opts.format as "text" | "json") ?? "text",
+  }),
 };
 
 export const contextGraphSummarySpec: CommandSpec<Record<string, never>> = {

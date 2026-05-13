@@ -50,6 +50,34 @@ agentplane context ingest ./notes.md --run
 files. `--changed` uses changed files from Git. `--run` hands the ingest task to the configured
 runner adapter instead of only preparing the request.
 
+## Harvest completed tasks
+
+```bash
+agentplane context harvest tasks --tag release --limit 20 --dry-run
+agentplane context harvest tasks --tag branch_pr --write-proposals
+agentplane context harvest tasks --task 202605100837-PJZW2E --write-proposals
+```
+
+`context harvest tasks` turns completed task history into context proposals. It scans matching
+tasks oldest-first, then keeps the pipeline stages separate:
+
+- source indexing: task README, comments, and commit metadata become raw evidence under
+  `context/raw/tasks/**`
+- knowledge extraction: task-backed claims are written as fact rows with `source_refs`,
+  confidence, status, stale markers, and conflict markers
+- wiki synthesis: a human-readable proposal is written under `context/wiki/proposals/task-harvest/**`
+- promotion: `--promote` writes a semi-canonical page only when the promotion gate has no blockers
+
+Use `--tag`, `--task`, `--since`, `--until`, `--after-task`, and `--limit` to advance gradually from
+older completed work toward newer changes. The command never promotes by default; `--write-proposals`
+only writes evidence, derived rows, reports, proposal pages, a task-ingestion ledger, and
+`extensions.context_harvest` markers back into the harvested task READMEs. Those markers include the
+source digest, raw evidence path, report path, proposal path, promotion state, fact IDs, and source
+refs. Later broad runs skip tasks whose marker digest still matches the README evidence; explicit
+`--task` selection and `--promote` can still revisit a marked task when needed. Write modes require
+an initialized context workspace from `agentplane context init`; dry-run mode can be used before
+initialization.
+
 ## Verify task context
 
 ```bash
