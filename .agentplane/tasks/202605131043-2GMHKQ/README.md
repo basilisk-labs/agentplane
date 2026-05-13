@@ -1,7 +1,8 @@
 ---
 id: "202605131043-2GMHKQ"
 title: "Move generated projections under .agentplane/generated"
-status: "DOING"
+result_summary: "Merged via PR #3634."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: Obsidian/task navigation projection now writes to .agentplane/generated/obsidian with legacy generated-root cleanup. Checks passed: focused obsidian/context Vitest, typecheck, eslint, prettier, docs:cli:check, docs:ia:check, framework:dev:bootstrap."
   attempts: 0
-commit: null
+commit:
+  hash: "d61a19de647411b18df12fa28bd417b59b67043c"
+  message: "Merge task 202605131043-2GMHKQ: generated scripts context refactor"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing generated projection relocation with compatibility paths, focused tests, and docs updates in the batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3634 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: Obsidian/task navigation projection now writes to .agentplane/generated/obsidian with legacy generated-root cleanup. Checks passed: focused obsidian/context Vitest, typecheck, eslint, prettier, docs:cli:check, docs:ia:check, framework:dev:bootstrap."
+  -
+    type: "status"
+    at: "2026-05-13T13:41:37.876Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3634 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T13:13:34.336Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T13:41:37.876Z"
+doc_updated_by: "INTEGRATOR"
 description: "Consolidate AgentPlane generated projection surfaces under .agentplane/generated, including task navigation/Obsidian output as a wiki/navigation adapter while preserving compatibility and cleanup behavior."
 sections:
   Summary: |-

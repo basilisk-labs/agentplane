@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T13:40:49Z",
   "base": "main",
   "branch": "task/202605131043-2GMHKQ/generated-scripts-context-refactor",
   "created_at": "2026-05-13T13:15:04.831Z",
-  "head_sha": "fc4e4f0866e2fa373fe19bc9d600ac7c78f56b42",
+  "head_sha": "66670fc2560fba9d6173c494e627d15e2ed2e819",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "d61a19de647411b18df12fa28bd417b59b67043c",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T13:40:49Z",
   "pr_number": 3634,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3634",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605131043-2GMHKQ",
-  "updated_at": "2026-05-13T13:28:25.589Z",
+  "updated_at": "2026-05-13T13:40:49Z",
   "verify": {
     "status": "skipped"
   }
