@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605131043-2GMHKQ/generated-scripts-context-refactor",
+  "created_at": "2026-05-13T13:15:04.831Z",
+  "head_sha": "0262aae6b97dfeabfc506ae1cf5ac1ca2b017a1d",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605131043-2GMHKQ",
+  "updated_at": "2026-05-13T13:15:04.831Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
