@@ -1,7 +1,8 @@
 ---
 id: "202605130823-WZVTNK"
 title: "Stabilize fast suite regressions"
-status: "DOING"
+result_summary: "Merged via PR #3616."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Targeted checks, full test:fast, typecheck, lint, logging, doctor, and routing validation passed after fixes."
   attempts: 0
-commit: null
+commit:
+  hash: "2403cb53698f699ffc587051d9743ca109a3b4b5"
+  message: "Merge pull request #3616 from basilisk-labs/task/202605130823-WZVTNK/fast-suite-regressions"
 comments:
   -
     author: "CODER"
     body: "Start: Stabilizing the confirmed fast-suite failures in wait-remote checks, process supervision timeout metadata, and release asset generation tests within the approved task scope."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3616 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Targeted checks, full test:fast, typecheck, lint, logging, doctor, and routing validation passed after fixes."
+  -
+    type: "status"
+    at: "2026-05-13T09:30:27.228Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3616 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T09:00:27.986Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T09:30:27.228Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix current fast-suite failures in wait-remote checks, runner process supervision timeout metadata, and release asset generation tests; classify placeholder/stub findings so production TODO debt is not hidden by allowed sentinels."
 sections:
   Summary: |-
