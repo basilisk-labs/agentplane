@@ -22,9 +22,9 @@ Complete v0.6 context release hardening: reconcile checkout, regenerate bundled 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T05:29:03.014Z
+- Updated: 2026-05-13T05:38:26.131Z
 - Branch: task/202605130501-4B49ZZ/v06-context-release-readiness
-- Head: 53b2ac10757e
+- Head: b631c78248db
 
 ```text
  .agentplane/WORKFLOW.md                            |   3 +-
@@ -43,12 +43,23 @@ Complete v0.6 context release hardening: reconcile checkout, regenerate bundled 
  docs/user/setup.mdx                                |  24 +-
  package.json                                       |   6 +-
  packages/agentplane/package.json                   |   6 +-
- .../src/commands/context/context-utils.ts          |   8 +-
- packages/agentplane/src/commands/context/ingest.ts |   8 +-
- .../agentplane/src/commands/context/reindex.ts     | 116 ++++-
- .../src/commands/context/release-readiness.test.ts | 175 +++++++
- packages/agentplane/src/commands/context/sqlite.ts |   8 +-
- .../agentplane/src/commands/context/verify-task.ts | 189 ++++++-
+ .../agentplane/src/commands/context/capability.ts  |  23 +-
+ .../src/commands/context/context-utils.ts          |  57 ++-
+ .../src/commands/context/context.command.ts        |   1 +
+ .../src/commands/context/context.spec.ts           |   5 +-
+ packages/agentplane/src/commands/context/doctor.ts |   9 +-
+ packages/agentplane/src/commands/context/graph.ts  |   9 +-
+ .../src/commands/context/ingest.command.ts         |   1 +
+ .../agentplane/src/commands/context/ingest.spec.ts |   1 +
+ packages/agentplane/src/commands/context/ingest.ts |  11 +-
+ .../src/commands/context/init.command.ts           |   1 +
+ packages/agentplane/src/commands/context/init.ts   |   7 +-
+ .../agentplane/src/commands/context/reindex.ts     | 138 +++++-
+ .../src/commands/context/release-readiness.test.ts | 176 +++++++
+ packages/agentplane/src/commands/context/search.ts |   3 +-
+ packages/agentplane/src/commands/context/show.ts   |   1 +
+ packages/agentplane/src/commands/context/sqlite.ts |  12 +-
+ .../agentplane/src/commands/context/verify-task.ts | 198 +++++++-
  .../src/shared/builtin-assets.generated.ts         |  65 +--
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
@@ -59,7 +70,7 @@ Complete v0.6 context release hardening: reconcile checkout, regenerate bundled 
  scripts/check-local-tarball-install-smoke.mjs      |  12 +
  scripts/generate-builtin-assets.mjs                | 110 +++++
  website/sidebars.ts                                |  12 +-
- 32 files changed, 1796 insertions(+), 181 deletions(-)
+ 43 files changed, 1882 insertions(+), 244 deletions(-)
 ```
 
 </details>
