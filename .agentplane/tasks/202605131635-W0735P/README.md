@@ -1,7 +1,8 @@
 ---
 id: "202605131635-W0735P"
 title: "Align branch_pr command order guidance"
-status: "DOING"
+result_summary: "Merged via PR #3648."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Fixed GitHub Core CI dead-code baseline failure by keeping LifecycleParityFinding internal instead of exporting it. Rechecked knip:check, workflows:command-check, focused lifecycle Vitest, typecheck, and lint:core."
   attempts: 0
-commit: null
+commit:
+  hash: "7ed90fb3811d16017b377ace5aebe72a23765520"
+  message: "Merge pull request #3648 from basilisk-labs/task/202605131635-W0735P/command-order-guidance"
 comments:
   -
     author: "CODER"
     body: "Start: Align branch_pr command-order guidance across gateway docs, quickstart source, user docs, and blueprint routes while leaving cleanup command references unchanged."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3648 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -84,9 +90,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Fixed GitHub Core CI dead-code baseline failure by keeping LifecycleParityFinding internal instead of exporting it. Rechecked knip:check, workflows:command-check, focused lifecycle Vitest, typecheck, and lint:core."
+  -
+    type: "status"
+    at: "2026-05-13T18:54:43.759Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3648 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T18:47:35.320Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T18:54:43.759Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix branch_pr command-order drift across gateway docs, quickstart guidance, and blueprint routes; leave cleanup command references out of scope per user request."
 sections:
   Summary: |-
