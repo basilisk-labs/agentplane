@@ -28,5 +28,6 @@ export const AGENT_PROMPT_GITIGNORE_LINES = [
   "AGENTS.md",
   "CLAUDE.md",
   ".agentplane/agents/",
+  ".agentplane/evaluators/",
   ".agentplane/policy/",
 ] as const;

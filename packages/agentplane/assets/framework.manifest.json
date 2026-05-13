@@ -107,6 +107,13 @@
       "required": true
     },
     {
+      "path": ".agentplane/evaluators/recovery-context.md",
+      "source_path": "evaluators/recovery-context.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
       "path": ".agentplane/policy/check-routing.mjs",
       "source_path": "policy/check-routing.mjs",
       "type": "text",
