@@ -22,12 +22,12 @@ Separate public user command documentation from developer/advanced surfaces, rem
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T18:29:53.747Z
+- Updated: 2026-05-13T18:41:35.579Z
 - Branch: task/202605131649-61129E/public-cli-docs-surface
-- Head: 5d3e8e0c7f72
+- Head: cf2f9cc879b0
 
 ```text
- .../blueprint/resolved-snapshot.json               |  512 ++++++
+ .../blueprint/resolved-snapshot.json               |  512 +++++
  docs/README.md                                     |    8 +-
  .../documentation-information-architecture.mdx     |   11 +-
  docs/developer/harness-dev.mdx                     |   56 +
@@ -42,7 +42,7 @@ Separate public user command documentation from developer/advanced surfaces, rem
  docs/user/backends/redmine.mdx                     |   12 +-
  docs/user/branching-and-pr-artifacts.mdx           |    2 +-
  docs/user/breaking-changes.mdx                     |    3 +-
- docs/user/cli-reference.generated.mdx              | 1899 +-------------------
+ docs/user/cli-reference.generated.mdx              | 2038 +-------------------
  docs/user/commands.mdx                             |   67 +-
  docs/user/local-context.mdx                        |    7 +-
  docs/user/setup.mdx                                |   12 -
@@ -58,8 +58,8 @@ Separate public user command documentation from developer/advanced surfaces, rem
  scripts/checks/check-agent-onboarding-scenario.mjs |   16 +-
  scripts/checks/check-docs-ia.mjs                   |    1 -
  website/sidebars.ts                                |   35 -
- website/static/llms-full.txt                       |  754 ++++----
- 32 files changed, 1110 insertions(+), 2576 deletions(-)
+ website/static/llms-full.txt                       |  753 ++++----
+ 32 files changed, 1169 insertions(+), 2655 deletions(-)
 ```
 
 </details>
