@@ -1,0 +1,7 @@
+ .../blueprint/resolved-snapshot.json               | 526 +++++++++++++++++++++
+ packages/agentplane/bin/agentplane.js              |  61 ++-
+ .../src/cli/bootstrap-framework-dev-script.test.ts |  74 +++
+ scripts/checks/run-local-ci.mjs                    |   9 +-
+ scripts/lib/framework-build-lock.mjs               | 113 +++++
+ scripts/workflow/bootstrap-framework-dev.mjs       |  31 +-
+ 6 files changed, 790 insertions(+), 24 deletions(-)
