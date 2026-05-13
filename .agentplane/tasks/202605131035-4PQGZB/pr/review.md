@@ -24,9 +24,9 @@ Created: 2026-05-13T10:36:04.946Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T10:48:40.525Z
+- Updated: 2026-05-13T11:00:46.404Z
 - Branch: task/202605131035-4PQGZB/pr-flow-status
-- Head: 061ff5948b9f
+- Head: 43e3edc6a5a0
 
 ```text
  .../blueprint/resolved-snapshot.json               | 513 +++++++++++++++++++++
@@ -35,16 +35,16 @@ Created: 2026-05-13T10:36:04.946Z
  .../src/cli/run-cli.core.pr-flow.status.test.ts    |  82 ++++
  .../src/cli/run-cli/command-catalog/project.ts     |   3 +
  .../src/cli/run-cli/command-loaders/project.ts     |   4 +
- .../src/cli/wait-remote-pr-checks-script.test.ts   |  37 +-
- packages/agentplane/src/commands/pr/flow-status.ts | 302 ++++++++++++
+ .../src/cli/wait-remote-pr-checks-script.test.ts   |  64 ++-
+ packages/agentplane/src/commands/pr/flow-status.ts | 309 +++++++++++++
  packages/agentplane/src/commands/pr/pr.command.ts  |  15 +
  packages/agentplane/src/commands/pr/pr.spec.ts     |  27 +-
  .../agentplane/src/commands/task/finish-execute.ts |   7 +-
  .../src/commands/task/hosted-close-pr.execute.ts   |   6 +
  .../src/commands/task/hosted-close-pr.report.ts    |   5 +-
  .../src/commands/task/hosted-close-pr.types.ts     |   6 +
- scripts/wait-remote-pr-checks.mjs                  |  46 +-
- 15 files changed, 1417 insertions(+), 9 deletions(-)
+ scripts/wait-remote-pr-checks.mjs                  |  48 +-
+ 15 files changed, 1453 insertions(+), 9 deletions(-)
 ```
 
 </details>
