@@ -1,0 +1,1 @@
+🚧 0ASXKY task: Harden shared env root worktree detection [202605131918-0ASXKY]
