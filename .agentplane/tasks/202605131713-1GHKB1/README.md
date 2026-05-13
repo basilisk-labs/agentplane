@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T19:05:02.534Z"
+  updated_at: "2026-05-13T19:27:44.955Z"
   updated_by: "CODER"
-  note: "Post-second-rebase verification passed: build; focused evaluator/init/upgrade/release-smoke and lifecycle contract tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke."
+  note: "Review fixes passed: typecheck; docs CLI freshness; builtin assets freshness; evaluator regression test; exact-file eslint/prettier; policy routing; doctor; local evaluator smoke for --builtin false and nested cwd."
   attempts: 0
 commit: null
 comments:
@@ -61,8 +61,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Post-second-rebase verification passed: build; focused evaluator/init/upgrade/release-smoke and lifecycle contract tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke."
+  -
+    type: "verify"
+    at: "2026-05-13T19:27:44.955Z"
+    author: "CODER"
+    state: "ok"
+    note: "Review fixes passed: typecheck; docs CLI freshness; builtin assets freshness; evaluator regression test; exact-file eslint/prettier; policy routing; doctor; local evaluator smoke for --builtin false and nested cwd."
 doc_version: 3
-doc_updated_at: "2026-05-13T19:05:02.562Z"
+doc_updated_at: "2026-05-13T19:27:44.992Z"
 doc_updated_by: "CODER"
 description: "Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modules, with list/show support now and evaluator run explicitly deferred to the v0.8 roadmap."
 sections:
@@ -156,6 +162,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
     
+    ### 2026-05-13T19:27:44.955Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Review fixes passed: typecheck; docs CLI freshness; builtin assets freshness; evaluator regression test; exact-file eslint/prettier; policy routing; doctor; local evaluator smoke for --builtin false and nested cwd.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:05:02.562Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131713-1GHKB1-public-evaluator-catalog/.agentplane/tasks/202605131713-1GHKB1/blueprint/resolved-snapshot.json
+    - old_digest: 72486767bf784731a9326405cb5d27e9e1337c782a14c4a1b8ad3041e6e5e78e
+    - current_digest: 72486767bf784731a9326405cb5d27e9e1337c782a14c4a1b8ad3041e6e5e78e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -176,6 +201,10 @@ sections:
     - Observation: origin/main advanced again to lifecycle command-order guidance (#3661), changing the resolved blueprint snapshot. Rebased onto the new base and refreshed the blueprint snapshot.
       Impact: Task branch now carries evaluator changes on the latest branch_pr lifecycle contract base without admin merge or branch-protection bypass.
       Resolution: Resolved the generated builtin-assets conflict with assets:builtin:generate, rebuilt CLI docs from fresh dist, and reran touched-scope verification.
+    
+    - Observation: Codex review found two evaluator catalog regressions: project-root lookup errors were swallowed into builtin-only fallback, and the advertised builtin toggle could not disable packaged evaluator modules.
+      Impact: Project evaluators now resolve from nested cwd without --root, explicit --root failures surface as Git errors, and users can request project-only evaluator listings with --builtin false.
+      Resolution: Used read-only git-root discovery for no-root evaluator catalog lookup, converted --builtin to a true|false string option, regenerated CLI docs, and added regression coverage.
 id_source: "generated"
 ---
 ## Summary
@@ -278,6 +307,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
 
+### 2026-05-13T19:27:44.955Z — VERIFY — ok
+
+By: CODER
+
+Note: Review fixes passed: typecheck; docs CLI freshness; builtin assets freshness; evaluator regression test; exact-file eslint/prettier; policy routing; doctor; local evaluator smoke for --builtin false and nested cwd.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:05:02.562Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131713-1GHKB1-public-evaluator-catalog/.agentplane/tasks/202605131713-1GHKB1/blueprint/resolved-snapshot.json
+- old_digest: 72486767bf784731a9326405cb5d27e9e1337c782a14c4a1b8ad3041e6e5e78e
+- current_digest: 72486767bf784731a9326405cb5d27e9e1337c782a14c4a1b8ad3041e6e5e78e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -302,3 +350,7 @@ BlueprintSnapshotRef:
 - Observation: origin/main advanced again to lifecycle command-order guidance (#3661), changing the resolved blueprint snapshot. Rebased onto the new base and refreshed the blueprint snapshot.
   Impact: Task branch now carries evaluator changes on the latest branch_pr lifecycle contract base without admin merge or branch-protection bypass.
   Resolution: Resolved the generated builtin-assets conflict with assets:builtin:generate, rebuilt CLI docs from fresh dist, and reran touched-scope verification.
+
+- Observation: Codex review found two evaluator catalog regressions: project-root lookup errors were swallowed into builtin-only fallback, and the advertised builtin toggle could not disable packaged evaluator modules.
+  Impact: Project evaluators now resolve from nested cwd without --root, explicit --root failures surface as Git errors, and users can request project-only evaluator listings with --builtin false.
+  Resolution: Used read-only git-root discovery for no-root evaluator catalog lookup, converted --builtin to a true|false string option, regenerated CLI docs, and added regression coverage.

@@ -13,7 +13,7 @@ Created: 2026-05-13T17:46:20.298Z
 ## Verification
 
 - State: ok
-- Note: Post-second-rebase verification passed: build; focused evaluator/init/upgrade/release-smoke and lifecycle contract tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke.
+- Note: Review fixes passed: typecheck; docs CLI freshness; builtin assets freshness; evaluator regression test; exact-file eslint/prettier; policy routing; doctor; local evaluator smoke for --builtin false and nested cwd.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,19 +24,19 @@ Created: 2026-05-13T17:46:20.298Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T19:05:46.869Z
+- Updated: 2026-05-13T19:27:45.367Z
 - Branch: task/202605131713-1GHKB1/public-evaluator-catalog
-- Head: 53589b7f80d1
+- Head: 828c6fe33f07
 
 ```text
  .agentplane/evaluators/recovery-context.md         |  47 ++
  .../blueprint/resolved-snapshot.json               | 528 +++++++++++++++++++++
  ROADMAP.md                                         |   2 +
- docs/user/cli-reference.generated.mdx              |  84 ++++
+ docs/user/cli-reference.generated.mdx              |  63 +++
  docs/user/commands.mdx                             |  15 +
  .../assets/evaluators/recovery-context.md          |  47 ++
  packages/agentplane/assets/framework.manifest.json |   7 +
- ...n-cli.core.branch-meta.workflow-profile.test.ts |  58 +++
+ ...n-cli.core.branch-meta.workflow-profile.test.ts |  81 ++++
  .../agentplane/src/cli/run-cli.core.init.test.ts   |   3 +
  .../src/cli/run-cli/command-catalog/project.ts     |   9 +
  .../src/cli/run-cli/command-loaders/project.ts     |   4 +
@@ -44,15 +44,15 @@ Created: 2026-05-13T17:46:20.298Z
  .../cli/run-cli/commands/init/steps/apply.test.ts  |   8 +
  .../src/cli/run-cli/commands/init/steps/apply.ts   |  10 +
  .../cli/run-cli/commands/init/write-evaluators.ts  |  41 ++
- .../src/commands/evaluator/evaluator.command.ts    | 101 ++++
- .../src/commands/evaluator/evaluator.spec.ts       |  90 ++++
+ .../src/commands/evaluator/evaluator.command.ts    | 108 +++++
+ .../src/commands/evaluator/evaluator.spec.ts       | 102 ++++
  packages/agentplane/src/commands/upgrade/policy.ts |   1 +
  packages/agentplane/src/evaluators/catalog.ts      | 127 +++++
  .../src/runtime/shared/runtime-artifacts.ts        |   1 +
  .../src/shared/builtin-assets.generated.ts         |   9 +-
  .../agentplane/src/shared/protected-paths.test.ts  |  21 +
  packages/agentplane/src/shared/protected-paths.ts  |   6 +-
- 23 files changed, 1234 insertions(+), 3 deletions(-)
+ 23 files changed, 1255 insertions(+), 3 deletions(-)
 ```
 
 </details>
