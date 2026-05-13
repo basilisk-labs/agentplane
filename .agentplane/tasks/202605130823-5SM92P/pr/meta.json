@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T09:45:43Z",
   "base": "main",
   "branch": "task/202605130823-5SM92P/human-readable-merge-messages",
   "created_at": "2026-05-13T08:23:55.197Z",
-  "head_sha": "b3f8a9ffba80e6e608141ee32b3ab7574449d98a",
+  "head_sha": "11e81a5100a34e0f3477b00df07241cf65b21b21",
   "last_verified_at": "2026-05-13T09:09:22.333Z",
   "last_verified_sha": "f45a3bd1d6a59e961d0f0c5858331c12f1f7e0a2",
+  "merge_commit": "a5f35f26b5e7b6a791886bc779eae3a42d5bd4fc",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T09:45:43Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605130823-5SM92P",
-  "updated_at": "2026-05-13T09:40:20.072Z",
+  "updated_at": "2026-05-13T09:45:43Z",
   "verify": {
     "status": "pass"
   }

@@ -1,7 +1,8 @@
 ---
 id: "202605130823-5SM92P"
 title: "Improve Agentplane PR merge messages with structured human-readable summaries"
-status: "DOING"
+result_summary: "Merged via PR #3615."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Post-CI fix verified: knip:check, format:check, typecheck, lint:core, and targeted merge-message/commit-policy tests passed after making MergeMessageInput internal."
   attempts: 0
-commit: null
+commit:
+  hash: "a5f35f26b5e7b6a791886bc779eae3a42d5bd4fc"
+  message: "Merge pull request #3615 from basilisk-labs/task/202605130823-5SM92P/human-readable-merge-messages"
 comments:
   -
     author: "CODER"
     body: "Start: Implement deterministic human-readable close and merge commit messages in the dedicated task worktree, preserving audit refs while moving operational metadata out of the subject."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3615 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Post-CI fix verified: knip:check, format:check, typecheck, lint:core, and targeted merge-message/commit-policy tests passed after making MergeMessageInput internal."
+  -
+    type: "status"
+    at: "2026-05-13T09:46:32.869Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3615 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T09:09:22.340Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T09:46:32.869Z"
+doc_updated_by: "INTEGRATOR"
 description: "Replace close/merge commit message rendering with deterministic human-readable summaries, structured verification/key-file sections, and metadata refs trailers."
 sections:
   Summary: |-
