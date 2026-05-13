@@ -1,7 +1,8 @@
 ---
 id: "202605131049-2NHAWN"
 title: "Harvest completed tasks into context knowledge"
-status: "DOING"
+result_summary: "Merged via PR #3626."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -26,11 +27,16 @@ verification:
   updated_by: "CODER"
   note: "Verified task-harvest pipeline after unused export correction: knip baseline, focused context tests, eslint, and full pre-push fast CI passed on 91ed87d0f."
   attempts: 0
-commit: null
+commit:
+  hash: "2a7e5ff749e8c0d9ce4025293a1ebfeab001c6a8"
+  message: "Merge pull request #3626 from basilisk-labs/task/202605131049-2NHAWN/context-task-harvest"
 comments:
   -
     author: "CODER"
     body: "Start: Implement task-scoped context harvesting for completed tasks with source evidence, extraction artifacts, wiki/fact/graph proposals, and promotion gate validation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3626 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -51,9 +57,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified task-harvest pipeline after unused export correction: knip baseline, focused context tests, eslint, and full pre-push fast CI passed on 91ed87d0f."
+  -
+    type: "status"
+    at: "2026-05-13T12:58:04.661Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3626 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T11:27:55.569Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T12:58:04.661Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a context pipeline operation that harvests completed tasks into source-backed wiki, fact, graph, and promotion-gate artifacts with provenance, conflict handling, and stale markers."
 sections:
   Summary: |-
