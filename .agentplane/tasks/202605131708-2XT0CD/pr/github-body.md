@@ -22,12 +22,24 @@ Translate existing Russian AgentPlane task titles and descriptions to English, t
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T17:09:47.153Z
+- Updated: 2026-05-13T17:22:36.649Z
 - Branch: task/202605131708-2XT0CD/translate-task-artifacts
-- Head: c5f2d3ca04b9
+- Head: bd4781a333d5
 
 ```text
-No changes detected.
+ .agentplane/tasks/202602061915-D3QVVY/README.md    |  32 +-
+ .agentplane/tasks/202602061915-DH1CKG/README.md    |  44 ++-
+ .agentplane/tasks/202602061915-DZBAW0/README.md    |  34 +-
+ .agentplane/tasks/202602061915-FXTNQ0/README.md    |  33 +-
+ .agentplane/tasks/202602061915-FY8TYM/README.md    |  33 +-
+ .agentplane/tasks/202602061915-KNHP1Y/README.md    |  33 +-
+ .agentplane/tasks/202602061915-RNTNEP/README.md    |  33 +-
+ .agentplane/tasks/202602061915-XCPF92/README.md    |  37 ++-
+ .agentplane/tasks/202602070956-RYPQJ5/README.md    |  62 +++-
+ .agentplane/tasks/202605012059-GWA2MF/README.md    |  59 ++--
+ .agentplane/tasks/202605121704-F6295Q/README.md    |   2 +-
+ .../blueprint/resolved-snapshot.json               | 358 +++++++++++++++++++++
+ 12 files changed, 691 insertions(+), 69 deletions(-)
 ```
 
 </details>
