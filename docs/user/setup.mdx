@@ -104,6 +104,26 @@ Expected files:
 .agentplane/tasks/<task-id>/acr.json
 ```
 
+## Enable local context
+
+Use local context when agents need reusable project knowledge, source-backed facts, or task-scoped
+research material.
+
+```bash
+agentplane context init
+agentplane context reindex
+agentplane context search "first task"
+```
+
+For a task that needs context ingestion:
+
+```bash
+agentplane context ingest --changed
+agentplane context verify-task <task-id>
+```
+
+See [Local context](local-context) for source refs, privacy boundaries, and verification rules.
+
 ## Setup profiles
 
 Choose profiles after you understand the first artifact:
@@ -155,12 +175,8 @@ Agents do not treat `incidents.md` as part of the normal startup reading path fo
 for recovery, incident response, or tasks that directly modify incident policy.
 
 For older or partially upgraded repositories, use [Upgrade recovery](../help/legacy-upgrade-recovery).
-
-Upgrade recovery starts from three repository states:
-
-1. **Clean managed state**: managed files match the installed framework contract.
-2. **Partial upgrade state**: an upgrade started but did not finish all managed file updates.
-3. **Manual drift state**: managed files were edited outside the framework upgrade path.
+That page owns the legacy state model and recovery procedures; this setup page describes the current
+initialization path only.
 
 ## Verify setup
 

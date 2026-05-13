@@ -4,7 +4,7 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { isRecord, toPosix } from "./context-utils.js";
+import { fileExists, isRecord, parseJsonlLines, readText, toPosix } from "./context-utils.js";
 import path from "node:path";
 
 type ContextExtension = {
@@ -12,6 +12,9 @@ type ContextExtension = {
     propose_capabilities?: boolean;
     update_capabilities?: boolean;
     allow_raw_mutation?: boolean;
+  };
+  source_set?: {
+    files?: Array<{ path?: unknown; sha256?: unknown }>;
   };
   allowed_outputs?: string[];
   forbidden_outputs?: string[];
@@ -119,6 +122,176 @@ function isRawMutationAllowed(context: ContextExtension): boolean {
   return context.assimilation?.allow_raw_mutation === true;
 }
 
+async function readJsonFile(filePath: string): Promise<Record<string, unknown> | null> {
+  try {
+    const parsed = JSON.parse(await readText(filePath)) as unknown;
+    return isRecord(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function rowSourceRefs(row: Record<string, unknown>): string[] {
+  const out: string[] = [];
+  if (typeof row.source_ref === "string" && row.source_ref.trim()) out.push(row.source_ref);
+  if (typeof row.source === "string" && row.source.trim()) out.push(row.source);
+  if (Array.isArray(row.source_refs)) {
+    out.push(...row.source_refs.filter((value): value is string => typeof value === "string"));
+  }
+  return out;
+}
+
+async function loadJsonlRows(filePath: string): Promise<Array<Record<string, unknown>>> {
+  if (!(await fileExists(filePath))) return [];
+  return parseJsonlLines(await readText(filePath)) as Array<Record<string, unknown>>;
+}
+
+async function validateWikiPage(filePath: string, errors: string[]): Promise<void> {
+  if (!filePath.endsWith(".md") && !filePath.endsWith(".mdx")) return;
+  const text = await readText(filePath);
+  if (!/source_refs\s*:|source_ref\s*:|no-source\s*:|no_source\s*:/u.test(text)) {
+    errors.push(`${filePath}: wiki page must include source_refs or an explicit no-source reason`);
+  }
+}
+
+async function validateFacts(filePath: string, errors: string[]): Promise<void> {
+  for (const row of await loadJsonlRows(filePath)) {
+    const id = String(row.id ?? "<unknown>");
+    if (rowSourceRefs(row).length === 0) {
+      errors.push(`${filePath}#${id}: fact row has no source_ref/source_refs`);
+    }
+    if (typeof row.confidence !== "number" || !Number.isFinite(row.confidence)) {
+      errors.push(`${filePath}#${id}: fact row must include numeric confidence`);
+    }
+    if (typeof row.status !== "string" || !row.status.trim()) {
+      errors.push(`${filePath}#${id}: fact row must include status`);
+    }
+  }
+}
+
+async function validateGraph(root: string, errors: string[]): Promise<void> {
+  const graphRoot = path.join(root, ".agentplane/context/derived/graph");
+  const entities = await loadJsonlRows(path.join(graphRoot, "entities.jsonl"));
+  const entityIds = new Set(entities.map((row) => String(row.id ?? "")).filter(Boolean));
+  for (const row of await loadJsonlRows(path.join(graphRoot, "edges.jsonl"))) {
+    const id = String(row.id ?? "<unknown>");
+    const from = String(row.from ?? "");
+    const to = String(row.to ?? "");
+    if (!from || !entityIds.has(from))
+      errors.push(`edges.jsonl#${id}: missing from entity ${from}`);
+    if (!to || !entityIds.has(to)) errors.push(`edges.jsonl#${id}: missing to entity ${to}`);
+    if (rowSourceRefs(row).length === 0) {
+      errors.push(`edges.jsonl#${id}: edge row has no source_ref/source_refs`);
+    }
+  }
+  for (const row of await loadJsonlRows(path.join(graphRoot, "provenance_edges.jsonl"))) {
+    const id = String(row.id ?? "<unknown>");
+    if (rowSourceRefs(row).length === 0) {
+      errors.push(`provenance_edges.jsonl#${id}: provenance row has no source`);
+    }
+    if (typeof row.target !== "string" && typeof row.artifact !== "string") {
+      errors.push(`provenance_edges.jsonl#${id}: provenance row must include target or artifact`);
+    }
+  }
+}
+
+async function validateCapabilityArtifact(filePath: string, errors: string[]): Promise<void> {
+  const text = await readText(filePath);
+  if (filePath.endsWith(".jsonl")) {
+    for (const row of parseJsonlLines(text)) {
+      const id = String(row.id ?? "<unknown>");
+      if (typeof row.id !== "string" || !row.id.trim()) {
+        errors.push(`${filePath}#${id}: capability row missing id`);
+      }
+      if (rowSourceRefs(row).length === 0) {
+        errors.push(`${filePath}#${id}: capability row has no source_refs`);
+      }
+    }
+    return;
+  }
+  if ((filePath.endsWith(".md") || filePath.endsWith(".mdx")) && !text.trim().startsWith("---")) {
+    errors.push(`${filePath}: capability markdown must use YAML frontmatter`);
+  }
+}
+
+async function validateAcrContextExtension(
+  root: string,
+  task: VerificationInput,
+  context: ContextExtension,
+  errors: string[],
+): Promise<void> {
+  const acrPath = path.join(root, ".agentplane/tasks", task.id, "acr.json");
+  if (!(await fileExists(acrPath))) {
+    if (task.status === "DONE") {
+      errors.push(
+        `${toPosix(path.relative(root, acrPath))}: ACR file is required for completed context tasks`,
+      );
+    }
+    return;
+  }
+  const acr = await readJsonFile(acrPath);
+  const extension = isRecord(acr?.extensions)
+    ? (acr.extensions["agentplane.context"] as unknown)
+    : undefined;
+  if (!isRecord(extension)) {
+    errors.push(`${toPosix(path.relative(root, acrPath))}: missing extensions.agentplane.context`);
+    return;
+  }
+  const acrSourceSet = isRecord(extension.source_set) ? extension.source_set : {};
+  const acrFiles = Array.isArray(acrSourceSet.files) ? acrSourceSet.files : [];
+  const taskFiles = Array.isArray(context.source_set?.files) ? context.source_set.files : [];
+  if (acrFiles.length !== taskFiles.length) {
+    errors.push(
+      `${toPosix(path.relative(root, acrPath))}: source_set.files count does not match task frontmatter`,
+    );
+  }
+}
+
+async function validateContextArtifacts(opts: {
+  root: string;
+  task: VerificationInput;
+  context: ContextExtension;
+  changedPaths: string[];
+}): Promise<string[]> {
+  const errors: string[] = [];
+  const sourceFiles = Array.isArray(opts.context.source_set?.files)
+    ? opts.context.source_set.files
+    : [];
+  if (sourceFiles.length === 0) {
+    errors.push("extensions.agentplane.context.source_set.files must not be empty");
+  }
+  for (const file of sourceFiles) {
+    if (typeof file.path !== "string" || !file.path.trim()) {
+      errors.push("source_set file is missing path");
+    }
+    if (typeof file.sha256 !== "string" || !file.sha256.startsWith("sha256:")) {
+      errors.push(`source_set file has invalid sha256: ${String(file.path ?? "<unknown>")}`);
+    }
+  }
+
+  const pathsToCheck = new Set(opts.changedPaths);
+  if (opts.changedPaths.length === 0) {
+    pathsToCheck.add(".agentplane/context/derived/facts/facts.jsonl");
+    pathsToCheck.add(".agentplane/context/derived/graph/entities.jsonl");
+    pathsToCheck.add(".agentplane/context/derived/graph/edges.jsonl");
+    pathsToCheck.add(".agentplane/context/derived/graph/provenance_edges.jsonl");
+  }
+
+  for (const rel of pathsToCheck) {
+    const abs = path.join(opts.root, rel);
+    if (!(await fileExists(abs))) continue;
+    if (rel.startsWith("context/wiki/")) await validateWikiPage(abs, errors);
+    if (rel === ".agentplane/context/derived/facts/facts.jsonl") await validateFacts(abs, errors);
+    if (rel.startsWith("context/capabilities/")) await validateCapabilityArtifact(abs, errors);
+    if (rel.startsWith(".agentplane/context/derived/capabilities/")) {
+      await validateCapabilityArtifact(abs, errors);
+    }
+  }
+  await validateGraph(opts.root, errors);
+  await validateAcrContextExtension(opts.root, opts.task, opts.context, errors);
+  return errors;
+}
+
 export async function cmdContextVerifyTask(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -220,6 +393,20 @@ export async function cmdContextVerifyTask(opts: {
     process.stdout.write(
       `context verify-task ${opts.parsed.taskId}: no changed_paths reported by task evidence\n`,
     );
+  }
+
+  const artifactErrors = await validateContextArtifacts({
+    root: ctx.resolvedProject.gitRoot,
+    task: normalizedTask,
+    context,
+    changedPaths,
+  });
+  if (artifactErrors.length > 0) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: `context verify-task failed for ${opts.parsed.taskId}: ${artifactErrors.length} artifact validation issue(s)\n- ${artifactErrors.join("\n- ")}`,
+    });
   }
 
   process.stdout.write(

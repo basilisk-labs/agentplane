@@ -38,7 +38,13 @@ function runSqlite(args: string[], input?: string): Promise<string> {
     child.stderr.on("data", (chunk) => {
       stderr += chunk;
     });
-    child.on("error", reject);
+    child.on("error", (err) => {
+      reject(
+        new Error(
+          `sqlite3 CLI is required for AgentPlane context projection. Install sqlite3 or disable context projection before retrying. Cause: ${err.message}`,
+        ),
+      );
+    });
     child.on("close", (code) => {
       if (code === 0) {
         resolve(stdout);

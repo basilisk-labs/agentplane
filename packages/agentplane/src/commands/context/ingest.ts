@@ -492,6 +492,8 @@ export async function cmdContextIngest(opts: {
   cwd: string;
   rootOverride?: string;
   parsed: ContextIngestParsed;
+  createTask?: typeof runTaskNewParsed;
+  runTask?: typeof runTaskRun;
 }): Promise<number> {
   const ctx =
     opts.ctx ??
@@ -551,7 +553,8 @@ export async function cmdContextIngest(opts: {
 
     const before = new Set((await ctx.taskBackend.listTasks()).map((task) => task.id));
     const taskParsed = createTaskNewParsed(opts.parsed, indexModeRows);
-    await runTaskNewParsed({
+    const createTask = opts.createTask ?? runTaskNewParsed;
+    await createTask({
       ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
@@ -573,7 +576,8 @@ export async function cmdContextIngest(opts: {
     );
 
     if (!opts.parsed.runTask) return 0;
-    return await runTaskRun(
+    const runTask = opts.runTask ?? runTaskRun;
+    return await runTask(
       { cwd: opts.cwd, rootOverride: opts.rootOverride },
       { taskId: contextCreated.id, dryRun: false },
     );

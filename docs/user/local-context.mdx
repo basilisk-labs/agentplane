@@ -1,0 +1,83 @@
+---
+title: "Local context"
+description: "Use repo-owned context artifacts for reusable agent memory, task grounding, and source-backed evidence."
+---
+
+## What local context is
+
+Local context is AgentPlane's repository-owned memory layer. It keeps reusable project knowledge in
+versioned files, then builds a SQLite projection for fast search and retrieval.
+
+Use it when an agent needs facts, wiki pages, graph edges, capability notes, or task-specific
+source sets that should survive outside one chat session.
+
+## Source of truth
+
+Editable source artifacts live under `context/**`:
+
+- `context/wiki/**`: human-readable pages.
+- `context/facts/**/*.jsonl`: structured facts.
+- `context/graph/**/*.jsonl`: entities and edges.
+- `context/capabilities/**/*.md`: capability notes for agents.
+- `context/raw/**`: ingested raw material.
+- `context/raw/private/**`: private raw material excluded from the generated projection.
+
+Generated projection artifacts live under `.agentplane/context/derived/**`. The main projection is
+`.agentplane/context/derived/context.sqlite`. Treat it as disposable output.
+
+## Initialize and search
+
+```bash
+agentplane context init
+agentplane context reindex
+agentplane context search "release checklist"
+agentplane context show context/wiki/release.md#section=publish-gate
+```
+
+`context show` resolves whole files, markdown sections, and line ranges. Markdown section refs use
+stable slugs such as `#section=publish-gate`; line refs use `#lines=12-24` or `#line=12`.
+
+## Ingest
+
+```bash
+agentplane context ingest --changed
+agentplane context ingest ./notes.md --run
+```
+
+`context ingest` creates a task-scoped intake request and writes context artifacts from the selected
+files. `--changed` uses changed files from Git. `--run` hands the ingest task to the configured
+runner adapter instead of only preparing the request.
+
+## Verify task context
+
+```bash
+agentplane context verify-task <task-id>
+```
+
+The verifier checks that task-facing context claims are source-backed:
+
+- task source-set entries point at existing files and include `sha256:` hashes
+- changed wiki pages carry `source_refs`, `source_ref`, `no-source`, or `no_source`
+- fact rows include provenance, confidence, and status
+- graph edges reference known entities and include source refs
+- capability notes include source refs
+- completed context tasks have an ACR context extension
+
+Run it before closing tasks that write or rely on context artifacts.
+
+## Privacy boundary
+
+`context/raw/private/**` is for private input files that may be useful during ingestion but should
+not be projected into search. Keep secrets out of public context artifacts and out of task summaries.
+The local context layer is repository-owned; it is not a secrets vault.
+
+## Common commands
+
+```bash
+agentplane context status
+agentplane context list
+agentplane context search "<query>"
+agentplane context show <ref>
+agentplane context reindex
+agentplane context verify-task <task-id>
+```

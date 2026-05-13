@@ -189,6 +189,10 @@ export async function walkScopeFiles(root: string, scopes: ScopeName[]): Promise
 
 export function parseLineRange(selector: string | undefined): [number, number] | null {
   if (!selector) return null;
+  if (/^\d+$/u.test(selector)) {
+    const line = Number(selector);
+    return Number.isFinite(line) && line > 0 ? [line, line] : null;
+  }
   const m = selector.match(/^(\d+)-(\d+)$/u);
   if (!m) return null;
   const start = Number(m[1]);
@@ -201,7 +205,6 @@ export function locateMarkdownSection(
   text: string,
   section: string,
 ): { start: number; end: number } | null {
-  const target = section.trim().toLowerCase().replace(/-/g, " ");
   const lines = text.split(/\r?\n/);
   const slug = (value: string) =>
     value
@@ -209,11 +212,12 @@ export function locateMarkdownSection(
       .toLowerCase()
       .replace(/[^a-z0-9]+/gu, "-")
       .replace(/^-+|-+$/gu, "");
+  const target = slug(section);
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
     if (!/^#{1,6}\s+/.test(line)) continue;
     const heading = line.replace(/^#{1,6}\s+/, "").trim();
-    if (slug(heading).toLowerCase() === target) {
+    if (slug(heading) === target) {
       const start = index + 1;
       let end = lines.length;
       for (let i = index + 1; i < lines.length; i += 1) {

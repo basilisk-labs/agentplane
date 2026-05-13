@@ -46,6 +46,7 @@ const sidebars: SidebarsConfig = {
       items: [
         "user/overview",
         "user/setup",
+        "user/local-context",
         "user/agent-change-record",
         "help/glossary",
         "manifesto",
@@ -92,8 +93,14 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Agent Change Record",
-      items: ["user/agent-change-record", "developer/agent-change-record-implementation"],
+      label: "Context and evidence",
+      items: [
+        "user/local-context",
+        "user/agent-change-record",
+        "developer/agent-change-record-implementation",
+        "user/agent-discovery",
+        "user/indexing-and-webmaster-operations",
+      ],
     },
     {
       type: "category",
@@ -141,6 +148,7 @@ const sidebars: SidebarsConfig = {
         "developer/architecture",
         "developer/project-layout",
         "developer/module-topology",
+        "developer/local-context",
         "developer/documentation-information-architecture",
         "developer/cli-contract",
         "developer/cli-help-json",

@@ -76,6 +76,18 @@ const main = defineScript({
       run("git", ["add", "README.md"], { cwd: repo });
       run("git", ["commit", "-m", "seed"], { cwd: repo });
       run(agentplane, ["init", "--yes"], { cwd: repo });
+      run(agentplane, ["context", "init"], { cwd: repo });
+      mkdirSync(path.join(repo, "context", "raw", "smoke"), { recursive: true });
+      writeFileSync(
+        path.join(repo, "context", "raw", "smoke", "source.md"),
+        "# Smoke context\n\nPackaged install context smoke source.\n",
+        "utf8",
+      );
+      run(agentplane, ["context", "ingest", "--dry-run", "context/raw/smoke/source.md"], {
+        cwd: repo,
+      });
+      run(agentplane, ["context", "reindex", "--include-raw"], { cwd: repo });
+      run(agentplane, ["context", "search", "Packaged", "--format", "json"], { cwd: repo });
       const taskId = run(
         agentplane,
         [

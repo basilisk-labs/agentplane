@@ -1,83 +1,34 @@
 ---
 title: "AgentPlane Documentation"
-description: "Docs for AgentPlane, the Git-native evidence layer for traceable AI work."
+description: "Docs for AgentPlane, the Git-native evidence and local context layer for traceable AI work."
 ---
 
 # AgentPlane documentation
 
-AgentPlane turns AI-agent changes into reviewable Git evidence: task, plan, verification, Agent
-Change Record, and closure.
+AgentPlane turns AI-agent work into reviewable Git evidence: task intent, plan, verification, local
+context, Agent Change Record, and closure.
 
-## What are you trying to do?
-
-### I want to try AgentPlane locally
-
-[Run the 90-second quickstart](user/setup).
-
-### I use Claude Code, Codex, Cursor, or Aider
-
-[Pick a workflow guide](workflow-guides).
-
-### I review agent-generated PRs
-
-[Add task evidence and ACR validation](user/agent-change-record).
-
-### I need to understand the evidence format
-
-[Read Agent Change Record](user/agent-change-record).
-
-### I am operating AgentPlane in a team repo
-
-[Use branch_pr and CI gates](workflow-guides/branch-pr).
-
-### I am upgrading an existing workspace
-
-[Read upgrade and recovery](help/legacy-upgrade-recovery).
-
-## Reading order
+## Start here
 
 1. [Overview](user/overview)
 2. [Setup](user/setup)
-3. [Agent Change Record](user/agent-change-record)
-4. [Why AgentPlane exists](manifesto)
-5. [How AgentPlane compares](compare)
+3. [Task lifecycle](user/task-lifecycle)
+4. [Local context](user/local-context)
+5. [Agent Change Record](user/agent-change-record)
 6. [Workflow guides](workflow-guides)
 7. [CLI reference](user/cli-reference.generated)
 
-## Main sections
+## Current docs map
 
-- Start here: overview, setup, first task, ACR, glossary.
-- Concepts: Git-native evidence, task lifecycle, source-of-truth model, privacy, workflow modes.
-- Workflows: solo local work, branch_pr, agent PRs, GitHub Actions, maintainer review.
-- Use with agents: Claude Code, Codex, Cursor, Aider, and generic terminal agents.
-- ACR: overview, record shape, generate/validate/explain, CI gate, schema.
-- Recipes: optional signed behavior modules.
-- Operations: upgrade, recovery, doctor, troubleshooting, backends.
-- Reference: CLI, configuration, task README contract, backend model, hooks, policy.
-- Developer: architecture, CLI contract, contributing, release process.
-
-## Complete docs index
-
-### Start here
+### Start
 
 - [Overview](user/overview)
 - [Setup](user/setup)
-- [Agent Change Record](user/agent-change-record)
-- [Glossary](help/glossary)
-- [Why AgentPlane exists](manifesto)
-- [How AgentPlane compares](compare)
 - [Prerequisites](user/prerequisites)
 - [Agent bootstrap](user/agent-bootstrap.generated)
+- [Glossary](help/glossary)
 
 ### Work on a task
-
-- [Task lifecycle](user/task-lifecycle)
-- [Commands](user/commands)
-- [Workflow](user/workflow)
-- [Branching and PR artifacts](user/branching-and-pr-artifacts)
-- [Workflow guides overview](workflow-guides)
-
-### Concepts
 
 - [Workflow](user/workflow)
 - [Task lifecycle](user/task-lifecycle)
@@ -86,7 +37,16 @@ Change Record, and closure.
 - [Tasks and backends](user/tasks-and-backends)
 - [Configuration](user/configuration)
 
-### Workflows
+### Context and evidence
+
+- [Agents](user/agents)
+- [Local context](user/local-context)
+- [Agent Change Record](user/agent-change-record)
+- [ACR implementation](developer/agent-change-record-implementation)
+- [Agent discovery](user/agent-discovery)
+- [Indexing and webmaster operations](user/indexing-and-webmaster-operations)
+
+### Workflow guides
 
 - [Workflow guides overview](workflow-guides)
 - [Claude Code](workflow-guides/claude-code)
@@ -96,56 +56,31 @@ Change Record, and closure.
 - [GitHub Actions](workflow-guides/github-actions)
 - [branch_pr workflow](workflow-guides/branch-pr)
 
-### Use with agents
-
-- [Agents](user/agents)
-- [Claude Code](workflow-guides/claude-code)
-- [Codex](workflow-guides/codex)
-- [Cursor](workflow-guides/cursor)
-- [Aider](workflow-guides/aider)
-
-### Agent Change Record
-
-- [ACR overview](user/agent-change-record)
-- [ACR implementation plan](developer/agent-change-record-implementation)
-
 ### Recipes
 
 - [Recipes overview](recipes)
 - [Code Map recipe](recipes/code-map)
 
-### Upgrade & recover
-
-- [Breaking changes](user/breaking-changes)
-- [Workflow migration](user/workflow-migration)
-- [Upgrade recovery](help/legacy-upgrade-recovery)
-- [Troubleshooting by symptom](help/troubleshooting-by-symptom)
-- [Troubleshooting](help/troubleshooting)
-
-### Operations
-
-- [Breaking changes](user/breaking-changes)
-- [Workflow migration](user/workflow-migration)
-- [Upgrade recovery](help/legacy-upgrade-recovery)
-- [Troubleshooting by symptom](help/troubleshooting-by-symptom)
-- [Troubleshooting](help/troubleshooting)
-
-### Reference
+### Operations and recovery
 
 - [Backends](user/backends)
 - [Local backend](user/backends/local)
 - [Cloud backend](user/backends/cloud)
 - [Redmine backend](user/backends/redmine)
 - [Redmine guide](user/redmine)
-- [Agent discovery](user/agent-discovery)
-- [Indexing and webmaster operations](user/indexing-and-webmaster-operations)
-- [Website IA](user/website-ia)
-- [Listing submission profile](listing)
+- [Breaking changes](user/breaking-changes)
+- [Workflow migration](user/workflow-migration)
+- [Upgrade recovery](help/legacy-upgrade-recovery)
+- [Broken workflow runbook](help/broken-workflow-runbook)
+- [Troubleshooting by symptom](help/troubleshooting-by-symptom)
+- [Troubleshooting](help/troubleshooting)
+
+### Reference
+
 - [CLI reference](user/cli-reference.generated)
-- [Generated reference](reference/generated-reference)
-
-### Community
-
+- [Generated package reference](reference/generated-reference)
+- [Listing submission profile](listing)
+- [Website IA](user/website-ia)
 - [Showcase](showcase)
 
 ### Developer
@@ -154,9 +89,10 @@ Change Record, and closure.
 - [Architecture](developer/architecture)
 - [Project layout](developer/project-layout)
 - [Module topology](developer/module-topology)
+- [Local context implementation](developer/local-context)
 - [Documentation information architecture](developer/documentation-information-architecture)
 - [CLI contract](developer/cli-contract)
-- [CLI help JSON contract](developer/cli-help-json)
+- [CLI help JSON](developer/cli-help-json)
 - [Workflow contract](developer/workflow-contract)
 - [Workflow harness test matrix](developer/workflow-harness-test-matrix)
 - [Harness engineering](developer/harness-engineering)
@@ -172,17 +108,12 @@ Change Record, and closure.
 - [Recipes: how it works](developer/recipes-how-it-works)
 - [Recipes development](developer/recipes-development)
 - [Recipes safety](developer/recipes-safety)
+- [Release and publishing](developer/release-and-publishing)
 - [Testing and quality](developer/testing-and-quality)
 - [Code quality](developer/code-quality)
 - [Performance baselines](developer/performance-baselines)
-- [Release and publishing](developer/release-and-publishing)
 - [Contributing](developer/contributing)
 
-### Release notes
+### Releases
 
-- [Latest release notes](releases)
-
-### Help
-
-- [Broken workflow runbook](help/broken-workflow-runbook)
-- [Glossary](help/glossary)
+- [Release notes](releases)
