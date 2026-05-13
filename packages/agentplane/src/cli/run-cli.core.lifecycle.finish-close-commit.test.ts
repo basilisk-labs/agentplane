@@ -215,7 +215,8 @@ describe("runCli", () => {
       const { stdout: headSubject } = await execFileAsync("git", ["show", "-s", "--format=%s"], {
         cwd: root,
       });
-      expect(headSubject).toContain("close:");
+      expect(headSubject.trim()).toBe("docs: finish close commit");
+      expect(headSubject).not.toContain("close:");
     },
   );
 
@@ -333,7 +334,8 @@ describe("runCli", () => {
 
       expect(task.frontmatter.commit?.hash).toBe(parentHash.trim());
       expect(task.frontmatter.commit?.hash).not.toBe(headHash.trim());
-      expect(headSubject.trim()).toContain("close:");
+      expect(headSubject.trim()).toBe("docs: finish commit-from-comment close commit");
+      expect(headSubject).not.toContain("close:");
     },
   );
 

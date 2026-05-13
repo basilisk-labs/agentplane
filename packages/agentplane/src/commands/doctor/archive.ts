@@ -26,6 +26,11 @@ type HistoricalCommitFinding = {
   severity: "WARN" | "INFO";
 };
 
+type CommitSummary = {
+  subject: string;
+  body: string;
+};
+
 function pluralize(count: number, singular: string, plural = `${singular}s`): string {
   return count === 1 ? singular : plural;
 }
@@ -57,6 +62,24 @@ function collectTaskEvidenceText(task: TaskSnapshotRecord): string {
     ...(Array.isArray(task.tags) ? task.tags.filter((tag) => typeof tag === "string") : []),
   ];
   return chunks.filter(Boolean).join("\n");
+}
+
+function escapeRegExp(input: string): string {
+  return input.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+}
+
+function taskRefsBody(body: string, taskId: string): boolean {
+  const shortId = taskShortId(taskId);
+  return new RegExp(
+    String.raw`^\s*-\s*Agentplane task:\s*(?:${escapeRegExp(taskId)}|${escapeRegExp(shortId)})\s*$`,
+    "imu",
+  ).test(body);
+}
+
+function isCloseCommitReference(task: TaskSnapshotRecord, subject: string, body: string): boolean {
+  if (/\bclose:/iu.test(subject)) return true;
+  if (typeof task.id !== "string") return false;
+  return /\nRefs:\n/iu.test(`\n${body}`) && taskRefsBody(body, task.id);
 }
 
 function classifyUnknownHistoricalHash(task: TaskSnapshotRecord): "INFO" {
@@ -184,13 +207,14 @@ export async function checkDoneTaskCommitInvariants(
   }
   if (hashes.size === 0) return problems;
 
-  const subjectByHash = await resolveCommitSubjects(repoRoot, [...hashes]);
+  const commitByHash = await resolveCommitSummaries(repoRoot, [...hashes]);
 
   for (const task of done) {
     const id = typeof task.id === "string" ? task.id : "<unknown>";
     const hash = typeof task.commit?.hash === "string" ? task.commit.hash.trim() : "";
     if (!hash) continue;
-    const subject = subjectByHash.get(hash) ?? "";
+    const commit = commitByHash.get(hash);
+    const subject = commit?.subject ?? "";
     if (!subject) {
       unknownHashFindings.push({
         id,
@@ -199,7 +223,7 @@ export async function checkDoneTaskCommitInvariants(
       });
       continue;
     }
-    if (/\bclose:/iu.test(subject)) {
+    if (isCloseCommitReference(task, subject, commit?.body ?? "")) {
       const severity = classifyCloseCommitReference(task, subject);
       const finding = { id, hash, subject, severity };
       if (severity === "WARN") closeCommitWarnFindings.push(finding);
@@ -236,36 +260,37 @@ export async function checkDoneTaskCommitInvariants(
   return problems;
 }
 
-async function resolveCommitSubjects(
+async function resolveCommitSummaries(
   repoRoot: string,
   hashes: string[],
-): Promise<Map<string, string>> {
-  const subjectByHash = new Map<string, string>();
-  if (hashes.length === 0) return subjectByHash;
+): Promise<Map<string, CommitSummary>> {
+  const commitByHash = new Map<string, CommitSummary>();
+  if (hashes.length === 0) return commitByHash;
 
   for (const chunk of chunked(hashes, 200)) {
     try {
       const { stdout } = await execFileAsync(
         "git",
-        ["show", "-s", "--no-patch", "--format=%H%x00%s%x00", "--ignore-missing", ...chunk],
+        ["show", "-s", "--no-patch", "--format=%H%x00%s%x00%b%x00", "--ignore-missing", ...chunk],
         {
           cwd: repoRoot,
           env: gitEnv(),
         },
       );
       const parts = String(stdout ?? "").split("\u0000");
-      for (let i = 0; i + 1 < parts.length; i += 2) {
+      for (let i = 0; i + 2 < parts.length; i += 3) {
         const hash = parts[i]?.trim() ?? "";
         const subject = parts[i + 1]?.trim() ?? "";
+        const body = parts[i + 2]?.trim() ?? "";
         if (!hash) continue;
-        subjectByHash.set(hash, subject);
+        commitByHash.set(hash, { subject, body });
       }
     } catch {
       // Preserve old behavior: unknown/unreadable hashes are reported later as empty subject.
     }
   }
 
-  return subjectByHash;
+  return commitByHash;
 }
 
 function chunked<T>(items: T[], size: number): T[][] {

@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605130823-5SM92P/human-readable-merge-messages",
+  "created_at": "2026-05-13T08:23:55.197Z",
+  "head_sha": "b3f8a9ffba80e6e608141ee32b3ab7574449d98a",
+  "last_verified_at": "2026-05-13T09:09:22.333Z",
+  "last_verified_sha": "f45a3bd1d6a59e961d0f0c5858331c12f1f7e0a2",
+  "schema_version": 1,
+  "task_id": "202605130823-5SM92P",
+  "updated_at": "2026-05-13T09:40:20.072Z",
+  "verify": {
+    "status": "pass"
+  }
+}

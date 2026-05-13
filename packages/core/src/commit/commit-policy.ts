@@ -4,8 +4,8 @@ export type CommitPolicyResult = {
 };
 
 export type CommitTaskIntent = {
-  taskKind?: "analysis" | "content" | "docs" | "code" | "release" | "ops";
-  mutationScope?: "none" | "docs" | "code" | "release" | "ops" | "unknown";
+  taskKind?: "analysis" | "content" | "docs" | "code" | "release" | "ops" | "context";
+  mutationScope?: "none" | "docs" | "code" | "release" | "ops" | "context" | "unknown";
   blueprintRequest?:
     | "analysis.light"
     | "content.light"
@@ -14,10 +14,12 @@ export type CommitTaskIntent = {
     | "code.branch_pr"
     | "performance.benchmark"
     | "quality.regression"
+    | "context.assimilation"
     | "runner.execution"
     | "post_run.improvement_review"
     | "release.strict"
     | "ops.approval";
+  tags?: string[];
 };
 
 const NON_TASK_SUFFIX = "DEV";
@@ -67,6 +69,10 @@ export function commitScopesForTaskIntent(intent: CommitTaskIntent): string[] {
   }
   if (intent.taskKind) scopes.add(intent.taskKind);
   if (intent.blueprintRequest) scopes.add(intent.blueprintRequest.split(".")[0] ?? "");
+  for (const tag of intent.tags ?? []) {
+    const normalized = rootScope(tag);
+    if (normalized && new RegExp(`^${SCOPE_PATTERN}$`).test(normalized)) scopes.add(normalized);
+  }
   return [...scopes].filter(Boolean).toSorted();
 }
 
@@ -169,11 +175,27 @@ function parseNonTaskSubjectTemplate(subject: string): {
   return { emoji, scope, summary };
 }
 
+function parseHumanTaskSubjectTemplate(subject: string): {
+  scope: string;
+  summary: string;
+} | null {
+  const trimmed = subject.trim();
+  if (!trimmed) return null;
+
+  const match = new RegExp(String.raw`^(${SCOPE_PATTERN}):\s+(.+)$`).exec(trimmed);
+  if (!match) return null;
+  const scope = match[1] ?? "";
+  const summary = (match[2] ?? "").trim();
+  if (!scope || !summary) return null;
+  return { scope, summary };
+}
+
 export function validateCommitSubject(opts: {
   subject: string;
   taskId?: string;
   genericTokens: string[];
   taskIntent?: CommitTaskIntent;
+  allowHumanTaskSubject?: boolean;
 }): CommitPolicyResult {
   const errors: string[] = [];
   const subject = opts.subject.trim();
@@ -184,25 +206,42 @@ export function validateCommitSubject(opts: {
 
   if (taskSuffix) {
     const template = parseTaskSubjectTemplate(subject);
-    if (!template) {
-      errors.push(
-        "commit subject must match: <emoji> <suffix> <scope>: <summary>",
-        `example: ✅ ${taskSuffix} close: <summary>`,
-        `example: 🚧 ${taskSuffix} task: <summary>`,
-      );
-      return { ok: false, errors };
-    }
-    if (template.suffix.toLowerCase() !== taskSuffix.toLowerCase()) {
-      errors.push("commit subject must include the task suffix as the second token");
-    }
-    if (
-      opts.taskIntent &&
-      !isTaskIntentCommitScope({ scope: template.scope, intent: opts.taskIntent })
-    ) {
-      const expected = commitScopesForTaskIntent(opts.taskIntent).join(", ") || "task intent scope";
-      errors.push(
-        `commit scope '${template.scope}' does not match task intent; expected one of: ${expected}, task, close, integrate`,
-      );
+    if (template) {
+      if (template.suffix.toLowerCase() !== taskSuffix.toLowerCase()) {
+        errors.push("commit subject must include the task suffix as the second token");
+      }
+      if (
+        opts.taskIntent &&
+        !isTaskIntentCommitScope({ scope: template.scope, intent: opts.taskIntent })
+      ) {
+        const expected =
+          commitScopesForTaskIntent(opts.taskIntent).join(", ") || "task intent scope";
+        errors.push(
+          `commit scope '${template.scope}' does not match task intent; expected one of: ${expected}, task, close, integrate`,
+        );
+      }
+    } else {
+      const humanTaskSubject = opts.allowHumanTaskSubject
+        ? parseHumanTaskSubjectTemplate(subject)
+        : null;
+      if (!humanTaskSubject) {
+        errors.push(
+          "commit subject must match: <emoji> <suffix> <scope>: <summary>",
+          `example: ✅ ${taskSuffix} close: <summary>`,
+          `example: 🚧 ${taskSuffix} task: <summary>`,
+        );
+        return { ok: false, errors };
+      }
+      if (
+        opts.taskIntent &&
+        !isTaskIntentCommitScope({ scope: humanTaskSubject.scope, intent: opts.taskIntent })
+      ) {
+        const expected =
+          commitScopesForTaskIntent(opts.taskIntent).join(", ") || "task intent scope";
+        errors.push(
+          `commit scope '${humanTaskSubject.scope}' does not match task intent; expected one of: ${expected}, task, close, integrate`,
+        );
+      }
     }
   } else {
     // Non-task commits: `<emoji> <scope>: <summary>`.
@@ -236,6 +275,7 @@ export function validateCommitSubject(opts: {
   }
 
   const parsedForSummary =
+    parseHumanTaskSubjectTemplate(subject) ??
     parseNonTaskSubjectTemplate(subject) ??
     (() => {
       const t = parseTaskSubjectTemplate(subject);

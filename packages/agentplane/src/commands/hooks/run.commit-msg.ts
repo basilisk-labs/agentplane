@@ -80,7 +80,11 @@ export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
     config: loaded.config,
     taskId,
     git: { stagedPaths: await new GitContext({ gitRoot: resolved.gitRoot }).statusStagedPaths() },
-    commit: { subject, taskIntent },
+    commit: {
+      subject,
+      taskIntent,
+      allowHumanTaskSubject: envFlag("AGENTPLANE_ALLOW_HUMAN_TASK_SUBJECT"),
+    },
     allow: { allowUpgrade: envFlag("AGENTPLANE_ALLOW_UPGRADE") },
   });
   throwIfPolicyDenied(res);

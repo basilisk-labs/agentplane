@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 import type { TaskData } from "../../../backends/task-backend.js";
 import { nowIso } from "../../task/shared.js";
 
-import { buildCloseCommitMessage } from "./close-message.js";
+import { buildCloseCommitMessage, renderMergeMessage } from "./close-message.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -71,20 +71,17 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject).toContain("✅ R18Y1Q close:");
-    expect(msg.subject).toContain("(202602081506-R18Y1Q)");
-    expect(msg.subject).toContain("[cli,code]");
-    expect(msg.body).toContain("Scope: cli, code");
-    expect(msg.body).toContain(
-      "Verify: Verified: bun run test:full; manual: agentplane commit --close",
-    );
+    expect(msg.subject).toBe("cli: add close commit mode");
+    expect(msg.subject).not.toContain("✅");
+    expect(msg.subject).not.toContain("R18Y1Q");
+    expect(msg.body).toContain("Summary:\n- Add close commit mode.");
+    expect(msg.body).toContain("Verification:\n- Bun run test:full passed.");
+    expect(msg.body).toContain("Refs:\n- Agentplane task: R18Y1Q");
+    expect(msg.body).toContain("- Agentplane run: 202602081506-R18Y1Q");
 
     // Key files should be based on churn ordering and exclude task artifacts.
-    const keyLine = msg.body.split("\n").find((l) => l.startsWith("Key files:"));
-    expect(keyLine).toBeTruthy();
-    expect(keyLine).toContain("src/b.ts");
-    expect(keyLine).toContain("src/a.ts");
-    expect(keyLine).not.toContain(".agentplane/tasks/");
+    expect(msg.body).toContain("Key files:\n- src/b.ts\n- src/a.ts");
+    expect(msg.body).not.toContain(".agentplane/tasks/");
   });
 
   it("uses a clear fallback marker when result_summary is missing", async () => {
@@ -104,7 +101,8 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject).toContain("(no result_summary)");
+    expect(msg.subject).toBe("cli: add close commit mode");
+    expect(msg.subject).not.toContain("(no result_summary)");
   });
 
   it("uses spike emoji and does not require verify summary", async () => {
@@ -129,8 +127,9 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject.startsWith("🧪")).toBe(true);
-    expect(msg.body).toContain("Verify: not required (spike)");
+    expect(msg.subject).toBe("cli: spike close message builder");
+    expect(msg.subject.startsWith("🧪")).toBe(false);
+    expect(msg.body).toContain("Verification:\n- Not required (spike).");
   });
 
   it("throws when task status is not DONE", async () => {
@@ -192,12 +191,11 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject).toContain("[backend,cli,code,frontend,+1]");
-    expect(msg.subject.endsWith("... (202602081506-R18Y1Q) [backend,cli,code,frontend,+1]")).toBe(
-      true,
+    expect(msg.subject).toBe(
+      "cli: this summary is intentionally very long to exceed the close subject...",
     );
-    expect(msg.body).toContain("Verify: ok (see task verification note)");
-    expect(msg.body).toContain("Notes: breaking; risk=high");
+    expect(msg.body).toContain("Verification:\n- Ok (see task verification note).");
+    expect(msg.body).toContain("Why:\n- Task metadata: breaking; risk=high.");
   });
 
   it("uses verify command fallback and can emit no key files", async () => {
@@ -217,7 +215,175 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     };
 
     const msg = await buildCloseCommitMessage({ gitRoot: root, task, keyFilesLimit: 0 });
-    expect(msg.body).toContain("Verify: bun run test:unit; bun run lint");
-    expect(msg.body).toContain("Key files: (none)");
+    expect(msg.body).toContain(
+      "Verification:\n- Bun run test:unit passed.\n- Bun run lint passed.",
+    );
+    expect(msg.body).not.toContain("Key files:");
+  });
+});
+
+describe("renderMergeMessage", () => {
+  it("renders full structured input", () => {
+    expect(
+      renderMergeMessage({
+        scope: "context",
+        prTitle: "Add context release readiness tests for v0.6",
+        sourcePrNumber: 3612,
+        mergePrNumber: 3613,
+        taskId: "202605130501-4B49ZZ",
+        runId: "202605130501-4B49ZZ",
+        summary: [
+          "Added and verified the local and hosted v0.6 context readiness flow.",
+          "Updated generated CLI docs and context verification coverage.",
+        ],
+        why: [
+          "The v0.6 context release needs parity between local checks, hosted checks, and generated documentation before shipping.",
+        ],
+        changed: [
+          "Updated context release-readiness tests.",
+          "Refined context verification and reindex command behavior.",
+          "Regenerated CLI reference documentation.",
+        ],
+        verification: [
+          "typecheck",
+          "context release-readiness tests",
+          "release parity",
+          "local and hosted readiness checks",
+        ],
+        keyFiles: [
+          "docs/user/cli-reference.generated.mdx",
+          "packages/agentplane/src/commands/context/release-readiness.test.ts",
+          "packages/agentplane/src/commands/context/verify-task.ts",
+          "packages/agentplane/src/commands/context/reindex.ts",
+          "docs/index.mdx",
+        ],
+      }),
+    ).toMatchInlineSnapshot(`
+      "context: add context release readiness tests for v0.6
+
+      Summary:
+      - Added and verified the local and hosted v0.6 context readiness flow.
+      - Updated generated CLI docs and context verification coverage.
+      Why:
+      - The v0.6 context release needs parity between local checks, hosted checks, and generated documentation before shipping.
+      Changed:
+      - Updated context release-readiness tests.
+      - Refined context verification and reindex command behavior.
+      - Regenerated CLI reference documentation.
+      Verification:
+      - Typecheck passed.
+      - Context release-readiness tests passed.
+      - Release parity checks passed.
+      - Local and hosted readiness checks passed.
+      Key files:
+      - docs/user/cli-reference.generated.mdx
+      - packages/agentplane/src/commands/context/release-readiness.test.ts
+      - packages/agentplane/src/commands/context/verify-task.ts
+      - packages/agentplane/src/commands/context/reindex.ts
+      - docs/index.mdx
+      Refs:
+      - Source PR: #3612
+      - Merge PR: #3613
+      - Agentplane task: 4B49ZZ
+      - Agentplane run: 202605130501-4B49ZZ"
+    `);
+  });
+
+  it("omits Why when no PR body or safe why source is present", () => {
+    const message = renderMergeMessage({
+      scope: "docs",
+      prTitle: "Regenerate CLI reference for context commands",
+      verification: ["docs generation", "lint"],
+      keyFiles: ["docs/user/cli-reference.generated.mdx"],
+      taskId: "202605130501-4B49ZZ",
+    });
+    expect(message).not.toContain("Why:");
+    expect(message).toMatchInlineSnapshot(`
+      "docs: regenerate CLI reference for context commands
+
+      Summary:
+      - Regenerate CLI reference for context commands.
+      Changed:
+      - Updated documentation artifacts.
+      Verification:
+      - Docs generation passed.
+      - Lint passed.
+      Key files:
+      - docs/user/cli-reference.generated.mdx
+      Refs:
+      - Agentplane task: 4B49ZZ"
+    `);
+  });
+
+  it("derives a meaningful subject from files when generated title is noisy", () => {
+    expect(
+      renderMergeMessage({
+        prTitle: "✅ 4B49ZZ close: Merged via PR #3612. (202605130501-4B49ZZ) [code] (#3613)",
+        taskId: "202605130501-4B49ZZ",
+        runId: "202605130501-4B49ZZ",
+        sourcePrNumber: 3612,
+        mergePrNumber: 3613,
+        keyFiles: [
+          "packages/agentplane/src/commands/context/release-readiness.test.ts",
+          "packages/agentplane/src/commands/context/verify-task.ts",
+          "docs/user/cli-reference.generated.mdx",
+        ],
+      }).split("\n")[0],
+    ).toBe("context: update v0.6 release readiness flow");
+  });
+
+  it("splits long verification text into non-truncated bullets", () => {
+    expect(
+      renderMergeMessage({
+        scope: "release",
+        prTitle: "Verify local and hosted v0.6 parity",
+        verification: [
+          "Local and hosted v0.6 readiness checks passed: typecheck, context release-readiness tests, release parity, release:build, docs generation, lint",
+        ],
+      }),
+    ).toContain(
+      [
+        "Verification:",
+        "- Typecheck passed.",
+        "- Context release-readiness tests passed.",
+        "- Release parity checks passed.",
+        "- Release build passed.",
+        "- Docs generation passed.",
+        "- Lint passed.",
+      ].join("\n"),
+    );
+  });
+
+  it("caps many key files", () => {
+    const files = Array.from({ length: 20 }, (_, index) => `src/file-${index + 1}.ts`);
+    expect(
+      renderMergeMessage({
+        scope: "code",
+        prTitle: "Improve merge message rendering",
+        keyFiles: files,
+      }),
+    ).toContain("- +12 more files");
+  });
+
+  it("renders metadata-only fallback", () => {
+    expect(
+      renderMergeMessage({
+        scope: "code",
+        taskId: "202605130501-4B49ZZ",
+        runId: "202605130501-4B49ZZ",
+        sourcePrNumber: 3612,
+        mergePrNumber: 3613,
+      }),
+    ).toMatchInlineSnapshot(`
+      "code: merge Agentplane task 4B49ZZ
+
+      Summary:
+      - Merged Agentplane task 4B49ZZ.
+      Refs:
+      - Source PR: #3612
+      - Merge PR: #3613
+      - Agentplane task: 4B49ZZ
+      - Agentplane run: 202605130501-4B49ZZ"
+    `);
   });
 });

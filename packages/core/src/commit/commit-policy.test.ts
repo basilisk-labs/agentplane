@@ -104,6 +104,47 @@ describe("commit-policy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("accepts human-readable task subjects only when explicitly allowed", () => {
+    const strict = validateCommitSubject({
+      subject: "context: add v0.6 release readiness checks",
+      taskId: "202601010101-ABCDEF",
+      genericTokens: ["update", "tasks"],
+    });
+    expect(strict.ok).toBe(false);
+    expect(strict.errors.join("\n")).toContain(
+      "commit subject must match: <emoji> <suffix> <scope>: <summary>",
+    );
+
+    const allowed = validateCommitSubject({
+      subject: "context: add v0.6 release readiness checks",
+      taskId: "202601010101-ABCDEF",
+      genericTokens: ["update", "tasks"],
+      allowHumanTaskSubject: true,
+    });
+    expect(allowed.ok).toBe(true);
+  });
+
+  it("validates allowed human-readable task subject scopes against task intent", () => {
+    const allowedByTag = validateCommitSubject({
+      subject: "git: render human-readable merge messages",
+      taskId: "202601010101-ABCDEF",
+      genericTokens: ["update", "tasks"],
+      allowHumanTaskSubject: true,
+      taskIntent: { taskKind: "code", mutationScope: "code", tags: ["git", "workflow"] },
+    });
+    expect(allowedByTag.ok).toBe(true);
+
+    const rejected = validateCommitSubject({
+      subject: "docs: render human-readable merge messages",
+      taskId: "202601010101-ABCDEF",
+      genericTokens: ["update", "tasks"],
+      allowHumanTaskSubject: true,
+      taskIntent: { taskKind: "code", mutationScope: "code", tags: ["git", "workflow"] },
+    });
+    expect(rejected.ok).toBe(false);
+    expect(rejected.errors.join("\n")).toContain("commit scope 'docs' does not match task intent");
+  });
+
   it("derives task-intent commit scopes without using the commit as the selector", () => {
     expect(
       commitScopesForTaskIntent({

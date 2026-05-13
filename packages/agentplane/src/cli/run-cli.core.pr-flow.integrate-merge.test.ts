@@ -394,7 +394,8 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     const { stdout: headSubject } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
       cwd: root,
     });
-    expect(headSubject.trim()).toContain("close:");
+    expect(headSubject.trim()).toBe(`code: integrate: merge task/${taskId}/integrate-artifacts`);
+    expect(headSubject).not.toContain("✅");
     const { stdout: headFiles } = await execFileAsync("git", ["show", "--name-only", "--format="], {
       cwd: root,
     });
