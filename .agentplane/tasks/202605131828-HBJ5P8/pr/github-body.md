@@ -22,24 +22,25 @@ Improve AgentPlane test selection and runner ergonomics: support combined impact
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T20:09:00.719Z
+- Updated: 2026-05-13T20:33:20.125Z
 - Branch: task/202605131828-HBJ5P8/flexible-test-routing
-- Head: 03cf024181d9
+- Head: b263353a5d66
 
 ```text
- .../blueprint/resolved-snapshot.json               | 552 ++++++++++++++++++++
- docs/user/cli-reference.generated.mdx              | 571 ---------------------
- package.json                                       |   5 +-
+ .../blueprint/resolved-snapshot.json               | 552 +++++++++++++++++++++
+ package.json                                       |   3 +-
+ .../backends/task-backend/cloud-backend-state.ts   |  29 ++
+ .../src/backends/task-backend/cloud-backend.ts     |  38 +-
  .../agentplane/src/cli/local-ci-selection.test.ts  |  32 +-
- packages/agentplane/src/cli/spec/docs-render.ts    |  17 +-
  .../commands/release/release-ci-contract.test.ts   |   7 +
- scripts/README.md                                  |   5 +-
+ scripts/README.md                                  |   3 +-
  scripts/checks/run-local-ci.mjs                    |  62 ++-
  scripts/checks/run-vitest-suite.mjs                |  87 +++-
  scripts/lib/local-ci-selection.d.ts                |   4 +-
  scripts/lib/local-ci-selection.mjs                 | 120 +++++
  scripts/lib/test-route-registry.mjs                |  14 +
- 12 files changed, 876 insertions(+), 600 deletions(-)
+ scripts/oversized-test-baseline.json               |   6 +-
+ 13 files changed, 896 insertions(+), 61 deletions(-)
 ```
 
 </details>
