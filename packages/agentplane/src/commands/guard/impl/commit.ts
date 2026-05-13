@@ -436,7 +436,11 @@ async function cmdCloseCommit(
   }
 
   const task = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });
-  const msg = await buildCloseCommitMessage({ gitRoot: opts.ctx.resolvedProject.gitRoot, task });
+  const msg = await buildCloseCommitMessage({
+    gitRoot: opts.ctx.resolvedProject.gitRoot,
+    workflowDir: opts.ctx.config.paths.workflow_dir,
+    task,
+  });
   const readmeAbs = taskReadmePathForTask({
     gitRoot: opts.ctx.resolvedProject.gitRoot,
     workflowDir: opts.ctx.config.paths.workflow_dir,
@@ -507,6 +511,7 @@ async function cmdCloseCommit(
     allowHooks: false,
     allowCI: false,
     requireClean: true,
+    allowHumanTaskSubject: true,
     ignoredUnstagedTrackedPaths,
     quiet: opts.quiet,
   });
@@ -520,6 +525,7 @@ async function cmdCloseCommit(
     allowHooks: false,
     allowCI: false,
     allowStaleDist: true,
+    allowHumanTaskSubject: true,
     gitIdentity: await resolveCanonicalGitIdentity(),
   });
   const [closeChangedPaths, closeStagedPaths] = await Promise.all([

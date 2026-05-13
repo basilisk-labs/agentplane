@@ -51,6 +51,7 @@ export function buildGitCommitEnv(opts: {
   allowHooks: boolean;
   allowCI: boolean;
   allowStaleDist?: boolean;
+  allowHumanTaskSubject?: boolean;
   gitIdentity?: CanonicalGitIdentity | null;
 }): NodeJS.ProcessEnv {
   return {
@@ -73,5 +74,6 @@ export function buildGitCommitEnv(opts: {
     AGENTPLANE_ALLOW_HOOKS: opts.allowHooks ? "1" : "0",
     AGENTPLANE_ALLOW_CI: opts.allowCI ? "1" : "0",
     ...(opts.allowStaleDist ? { AGENTPLANE_DEV_ALLOW_STALE_DIST: "1" } : null),
+    ...(opts.allowHumanTaskSubject ? { AGENTPLANE_ALLOW_HUMAN_TASK_SUBJECT: "1" } : null),
   };
 }

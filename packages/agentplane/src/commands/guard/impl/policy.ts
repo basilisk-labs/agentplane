@@ -20,6 +20,7 @@ export type GuardCommitOptions = {
   allowHooks: boolean;
   allowCI: boolean;
   requireClean: boolean;
+  allowHumanTaskSubject?: boolean;
   ignoredUnstagedTrackedPaths?: string[];
   quiet: boolean;
 };
@@ -67,7 +68,7 @@ export async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> 
       currentBranch,
       baseBranch,
     },
-    commit: { subject: opts.message },
+    commit: { subject: opts.message, allowHumanTaskSubject: opts.allowHumanTaskSubject },
     allow: {
       prefixes: opts.allow,
       allowTasks: opts.allowTasks,

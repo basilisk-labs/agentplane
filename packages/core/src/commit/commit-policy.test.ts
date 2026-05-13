@@ -104,6 +104,26 @@ describe("commit-policy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("accepts human-readable task subjects only when explicitly allowed", () => {
+    const strict = validateCommitSubject({
+      subject: "context: add v0.6 release readiness checks",
+      taskId: "202601010101-ABCDEF",
+      genericTokens: ["update", "tasks"],
+    });
+    expect(strict.ok).toBe(false);
+    expect(strict.errors.join("\n")).toContain(
+      "commit subject must match: <emoji> <suffix> <scope>: <summary>",
+    );
+
+    const allowed = validateCommitSubject({
+      subject: "context: add v0.6 release readiness checks",
+      taskId: "202601010101-ABCDEF",
+      genericTokens: ["update", "tasks"],
+      allowHumanTaskSubject: true,
+    });
+    expect(allowed.ok).toBe(true);
+  });
+
   it("derives task-intent commit scopes without using the commit as the selector", () => {
     expect(
       commitScopesForTaskIntent({

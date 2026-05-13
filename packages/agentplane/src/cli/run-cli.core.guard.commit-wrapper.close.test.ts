@@ -88,14 +88,12 @@ describe("runCli commit wrapper: close", { timeout: COMMIT_WRAPPER_SUITE_TIMEOUT
       const bodyRes = await execFileAsync("git", ["log", "-1", "--pretty=%b"], { cwd: root });
       const subject = subjectRes.stdout.trim();
       const body = bodyRes.stdout.trim();
-      expect(subject).toContain("✅ R18Y1Q close:");
-      expect(subject).toContain("(202602081506-R18Y1Q)");
-      expect(subject).toContain("[cli,code,git]");
-      expect(body).toContain("Scope: cli, code, git");
-      expect(body).toContain(
-        "Verify: Verified: bun run test:full; manual: agentplane commit --close",
-      );
-      expect(body).toContain("Key files: src/app.ts");
+      expect(subject).toBe("cli: generate deterministic close commits");
+      expect(subject).not.toContain("✅ R18Y1Q close:");
+      expect(body).toContain("Summary:\n- Generate deterministic close commits.");
+      expect(body).toContain("Verification:\n- Bun run test:full passed.");
+      expect(body).toContain("Key files:\n- src/app.ts");
+      expect(body).toContain("Refs:\n- Agentplane task: R18Y1Q");
 
       // Close commit should touch only the task README.
       const showRes = await execFileAsync("git", ["show", "--name-only", "--format="], {

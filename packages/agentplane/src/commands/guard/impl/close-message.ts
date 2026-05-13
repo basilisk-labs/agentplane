@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { extractTaskSuffix } from "@agentplaneorg/core/commit";
@@ -29,10 +30,6 @@ function isMissingCommitObjectError(err: unknown): boolean {
   );
 }
 
-function uniqSorted(values: string[]): string[] {
-  return [...new Set(values)].toSorted((a, b) => a.localeCompare(b));
-}
-
 function uniqInOrder(values: string[]): string[] {
   const seen = new Set<string>();
   const out: string[] = [];
@@ -47,11 +44,6 @@ function uniqInOrder(values: string[]): string[] {
 function isTaskArtifactPath(p: string): boolean {
   const norm = p.replaceAll("\\", "/");
   return norm.startsWith(".agentplane/tasks/") || norm.startsWith("tasks/");
-}
-
-function normalizeResultFallback(title: string): string {
-  const trimmed = title.trim().replaceAll(/\s+/g, " ");
-  return trimmed.length > 90 ? `${trimmed.slice(0, 87)}...` : trimmed;
 }
 
 function clampList<T>(items: T[], max: number): T[] {
@@ -104,40 +96,325 @@ function pickKeyFiles(opts: { entries: NumstatEntry[]; limit: number }): string[
   return clampList(uniqInOrder(filtered), opts.limit);
 }
 
-function formatTagsForSubject(tags: string[]): string {
-  const norm = uniqSorted(tags.map((t) => t.trim()).filter(Boolean));
-  const filtered = norm.filter((t) => t !== "spike");
-  const max = 4;
-  const shown = filtered.slice(0, max);
-  const extra = filtered.length - shown.length;
-  if (shown.length === 0) return "";
-  const base = shown.join(",");
-  return extra > 0 ? `[${base},+${extra}]` : `[${base}]`;
-}
-
-function formatTagsForBody(tags: string[]): string {
-  const norm = uniqSorted(tags.map((t) => t.trim()).filter(Boolean));
-  return norm.join(", ");
-}
-
-function normalizeOneLine(s: string, maxChars: number): string {
+function normalizeOneLine(s: string, maxChars = 180): string {
   const trimmed = s.trim().replaceAll(/\s+/g, " ");
   if (!trimmed) return "";
   const max = Math.max(1, Math.floor(maxChars));
-  return trimmed.length > max ? `${trimmed.slice(0, Math.max(1, max - 3))}...` : trimmed;
+  if (trimmed.length <= max) return trimmed;
+  const slice = trimmed.slice(0, Math.max(1, max - 1));
+  const lastSpace = slice.lastIndexOf(" ");
+  const safeSlice = lastSpace > Math.floor(max * 0.65) ? slice.slice(0, lastSpace) : slice;
+  return `${safeSlice.trimEnd()}...`;
 }
 
-function buildVerifySummary(task: TaskData, isSpike: boolean): string {
-  if (isSpike) return "not required (spike)";
+function isNoisyOperationalTitle(value: string): boolean {
+  const text = value.trim();
+  return (
+    text.length === 0 ||
+    /merged via pr\s+#?\d+/iu.test(text) ||
+    /\bclose:\b/iu.test(text) ||
+    /^\p{Emoji_Presentation}/u.test(text) ||
+    /^\S+\s+close:/iu.test(text)
+  );
+}
+
+function stripOperationalNoise(value: string): string {
+  return value
+    .replaceAll(/^\p{Emoji_Presentation}\s*/gu, "")
+    .replaceAll(/\b[A-Z0-9]{4,8}\s+close:\s*/giu, "")
+    .replaceAll(/\bclose:\s*/giu, "")
+    .replaceAll(/\bMerged via PR\s+#\d+\.?/giu, "")
+    .replaceAll(/\(\d{12}-[A-Z0-9]{4,8}\)/giu, "")
+    .replaceAll(/\[[a-z0-9_,+\-\s]+\]/giu, "")
+    .replaceAll(/\(#\d+\)/gu, "")
+    .trim()
+    .replaceAll(/\s+/g, " ");
+}
+
+function sentence(value: string): string {
+  const trimmed = normalizeOneLine(value).replaceAll(/[.。]+$/g, "");
+  if (!trimmed) return "";
+  return `${trimmed[0]?.toUpperCase() ?? ""}${trimmed.slice(1)}.`;
+}
+
+function lowerFirst(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  return `${trimmed[0]?.toLowerCase() ?? ""}${trimmed.slice(1)}`;
+}
+
+function normalizeSubjectSummary(value: string): string {
+  let text = stripOperationalNoise(value)
+    .replace(/^add(?:ed)?\s+/iu, "add ")
+    .replace(/^implement(?:ed)?\s+/iu, "implement ")
+    .replace(/^improve(?:d)?\s+/iu, "improve ")
+    .replace(/^update(?:d)?\s+/iu, "update ")
+    .replace(/^regenerate(?:d)?\s+/iu, "regenerate ")
+    .replace(/^verify(?:ied)?\s+/iu, "verify ");
+  text = lowerFirst(text).replaceAll(/[.。]+$/g, "");
+  return normalizeOneLine(text, 72);
+}
+
+function normalizeScope(opts: {
+  scope?: string;
+  tags?: string[];
+  title?: string;
+  files?: string[];
+}): string {
+  const preferred = [
+    "context",
+    "cli",
+    "docs",
+    "release",
+    "tests",
+    "traces",
+    "recipes",
+    "cloud",
+    "infra",
+  ];
+  const raw = [opts.scope, ...(opts.tags ?? [])]
+    .map((value) => value?.trim().toLowerCase() ?? "")
+    .filter(Boolean);
+  const rawSet = new Set(raw);
+  for (const candidate of preferred) {
+    if (rawSet.has(candidate)) return candidate;
+  }
+
+  const files = opts.files ?? [];
+  const title = opts.title?.toLowerCase() ?? "";
+  if (files.some((file) => file.includes("/commands/context/")) || /\bcontext\b/u.test(title)) {
+    return "context";
+  }
+  if (files.length > 0 && files.every((file) => file.startsWith("docs/"))) return "docs";
+  if (files.some((file) => /\.(test|spec)\.tsx?$/u.test(file))) return "tests";
+  if (files.some((file) => file.startsWith("docs/"))) return "docs";
+  if (files.some((file) => file.includes("/cli/") || file.includes("/commands/"))) return "cli";
+  if (files.some((file) => file.includes("/release/")) || /\brelease\b/u.test(title)) {
+    return "release";
+  }
+  if (rawSet.has("git")) return "git";
+  return "code";
+}
+
+function titleFromFileClusters(files: string[]): string {
+  if (files.some((file) => file.includes("/commands/context/"))) {
+    if (files.some((file) => /v0\.6|release-readiness/iu.test(file))) {
+      return "update v0.6 release readiness flow";
+    }
+    return "update context command workflow";
+  }
+  if (files.length > 0 && files.every((file) => file.startsWith("docs/"))) {
+    return "update documentation";
+  }
+  if (files.some((file) => /\.(test|spec)\.tsx?$/u.test(file))) {
+    return "update test coverage";
+  }
+  return "";
+}
+
+function normalizeSubject(input: MergeMessageInput): string {
+  const files = input.keyFiles?.length ? input.keyFiles : (input.changedFiles ?? []);
+  const scope = normalizeScope({
+    scope: input.scope,
+    tags: input.tags,
+    title: input.prTitle,
+    files,
+  });
+  const candidates = [input.prTitle, ...(input.summary ?? [])]
+    .map((value) => (typeof value === "string" ? value : ""))
+    .find((value) => value.trim() && !isNoisyOperationalTitle(value));
+  let summary = normalizeSubjectSummary(candidates ?? "");
+  if (!summary) summary = titleFromFileClusters(files);
+  if (!summary && input.taskId)
+    summary = `merge Agentplane task ${extractTaskSuffix(input.taskId)}`;
+  if (!summary) summary = "merge Agentplane task";
+  const subject = `${scope}: ${summary}`;
+  return normalizeOneLine(subject, 88);
+}
+
+function splitVerificationText(value: string): string[] {
+  const withoutPrefix = value
+    .replaceAll(/^Verified:\s*/giu, "")
+    .replaceAll(/^Verify:\s*/giu, "")
+    .trim();
+  const colon = /\bpassed:\s*(.+)$/iu.exec(withoutPrefix)?.[1];
+  const source = colon ?? withoutPrefix;
+  return source
+    .split(/[;,]/u)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+function normalizeCheckLabel(value: string): string {
+  const text = value.trim().replaceAll(/\s+/g, " ");
+  const lower = text.toLowerCase();
+  if (lower === "typecheck" || lower === "type check") return "Typecheck";
+  if (lower === "lint") return "Lint";
+  if (lower === "release:build" || lower === "release build") return "Release build";
+  if (lower === "docs generation" || lower === "doc generation") return "Docs generation";
+  if (lower === "release parity") return "Release parity checks";
+  if (lower === "local and hosted readiness checks") return "Local and hosted readiness checks";
+  return `${text[0]?.toUpperCase() ?? ""}${text.slice(1)}`;
+}
+
+function normalizeVerification(checks: string[] | undefined): string[] {
+  const expanded = (checks ?? []).flatMap((check) => splitVerificationText(check));
+  return uniqInOrder(
+    expanded
+      .map((check) => normalizeCheckLabel(check).replace(/\s+passed$/iu, ""))
+      .filter(Boolean)
+      .map((check) => {
+        const lower = check.toLowerCase();
+        if (lower.startsWith("not required")) return `${check}.`;
+        if (lower.startsWith("ok ")) return `${check}.`;
+        if (lower === "pending" || lower === "needs_rework" || lower === "blocked_external") {
+          return `${check}.`;
+        }
+        return `${check} passed.`;
+      }),
+  );
+}
+
+function buildVerificationInput(task: TaskData, isSpike: boolean): string[] {
+  if (isSpike) return ["not required (spike)"];
   const state = task.verification?.state ?? "pending";
   const note = typeof task.verification?.note === "string" ? task.verification.note : "";
-  if (state === "ok" && note.trim()) return normalizeOneLine(note, 120);
+  if (state === "ok" && note.trim()) return [note];
   const cmds = Array.isArray(task.verify)
     ? task.verify.filter((c) => typeof c === "string" && c.trim())
     : [];
-  if (cmds.length > 0) return cmds.join("; ");
-  if (state === "ok") return "ok (see task verification note)";
-  return String(state);
+  if (cmds.length > 0) return cmds;
+  if (state === "ok") return ["ok (see task verification note)"];
+  return [String(state)];
+}
+
+function deriveChanged(files: string[]): string[] {
+  const bullets: string[] = [];
+  if (files.some((file) => file.includes("/commands/context/"))) {
+    bullets.push("Updated context command behavior and coverage.");
+  }
+  if (files.some((file) => file.includes("release-readiness"))) {
+    bullets.push("Updated release-readiness checks.");
+  }
+  if (files.some((file) => file.startsWith("docs/"))) {
+    bullets.push("Updated documentation artifacts.");
+  }
+  if (files.some((file) => /\.(test|spec)\.tsx?$/u.test(file))) {
+    bullets.push("Updated automated test coverage.");
+  }
+  return uniqInOrder(bullets);
+}
+
+function capBullets(items: string[], max: number, moreText: (count: number) => string): string[] {
+  const shown = items.slice(0, max);
+  const extra = items.length - shown.length;
+  return extra > 0 ? [...shown, moreText(extra)] : shown;
+}
+
+function extractPrNumber(value: string | undefined): number | undefined {
+  const match = /PR\s+#(\d+)/iu.exec(value ?? "");
+  if (!match?.[1]) return undefined;
+  const parsed = Number(match[1]);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+function shortTaskId(taskId: string | undefined): string | undefined {
+  const trimmed = taskId?.trim() ?? "";
+  return trimmed ? extractTaskSuffix(trimmed) : undefined;
+}
+
+type MaybePrMeta = {
+  pr_number?: unknown;
+};
+
+async function readPrNumberFromMeta(opts: {
+  gitRoot: string;
+  workflowDir: string;
+  taskId: string;
+}): Promise<number | undefined> {
+  const metaPath = path.join(opts.gitRoot, opts.workflowDir, opts.taskId, "pr", "meta.json");
+  try {
+    const parsed = JSON.parse(await readFile(metaPath, "utf8")) as MaybePrMeta;
+    const value = parsed.pr_number;
+    return typeof value === "number" && Number.isInteger(value) && value > 0 ? value : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function formatSection(title: string, lines: string[]): string[] {
+  const cleaned = lines.map((line) => line.trim()).filter(Boolean);
+  if (cleaned.length === 0) return [];
+  return [`${title}:`, ...cleaned.map((line) => `- ${line}`)];
+}
+
+export type MergeMessageInput = {
+  scope?: string;
+  tags?: string[];
+  prTitle?: string;
+  prBody?: string;
+  sourcePrNumber?: number;
+  mergePrNumber?: number;
+  taskId?: string;
+  runId?: string;
+  authorName?: string;
+  authorEmail?: string;
+  coAuthors?: { name: string; email: string }[];
+  summary?: string[];
+  why?: string[];
+  changed?: string[];
+  verification?: string[];
+  keyFiles?: string[];
+  changedFiles?: string[];
+  diffStats?: {
+    filesChanged: number;
+    insertions?: number;
+    deletions?: number;
+  };
+};
+
+export function renderMergeMessage(input: MergeMessageInput): string {
+  const subject = normalizeSubject(input);
+  const files = uniqInOrder([...(input.keyFiles ?? []), ...(input.changedFiles ?? [])]);
+  const keyFileSource = input.keyFiles ?? input.changedFiles ?? [];
+  const keyFiles = capBullets(keyFileSource.slice(0, 20), 8, (count) => `+${count} more files`);
+  const verification = capBullets(normalizeVerification(input.verification), 8, (count) => {
+    return `+${count} more checks recorded in Agentplane run metadata.`;
+  });
+  const summaryCandidates = input.summary?.length
+    ? input.summary
+    : input.prTitle
+      ? [input.prTitle]
+      : [];
+  const summary = summaryCandidates
+    .map((candidate) => sentence(candidate))
+    .filter(Boolean)
+    .filter((line) => !isNoisyOperationalTitle(line));
+  const changed = (input.changed ?? []).map((candidate) => sentence(candidate)).filter(Boolean);
+  const refs = [
+    input.sourcePrNumber ? `Source PR: #${input.sourcePrNumber}` : "",
+    input.mergePrNumber ? `Merge PR: #${input.mergePrNumber}` : "",
+    input.taskId ? `Agentplane task: ${shortTaskId(input.taskId) ?? input.taskId}` : "",
+    input.runId ? `Agentplane run: ${input.runId}` : "",
+  ].filter(Boolean);
+
+  const body = [
+    ...formatSection(
+      "Summary",
+      summary.length > 0
+        ? summary
+        : input.taskId
+          ? [`Merged Agentplane task ${shortTaskId(input.taskId) ?? input.taskId}.`]
+          : [],
+    ),
+    ...formatSection("Why", input.why ?? []),
+    ...formatSection("Changed", changed.length > 0 ? changed : deriveChanged(files)),
+    ...formatSection("Verification", verification),
+    ...formatSection("Key files", keyFiles),
+    ...formatSection("Refs", refs),
+  ];
+
+  return body.length > 0 ? `${subject}\n\n${body.join("\n")}` : subject;
 }
 
 export type CloseCommitMessage = {
@@ -149,6 +426,7 @@ export async function buildCloseCommitMessage(opts: {
   gitRoot: string;
   task: TaskData;
   keyFilesLimit?: number;
+  workflowDir?: string;
 }): Promise<CloseCommitMessage> {
   const task = opts.task;
   const tags = Array.isArray(task.tags)
@@ -173,36 +451,48 @@ export async function buildCloseCommitMessage(opts: {
     });
   }
 
-  const suffix = extractTaskSuffix(task.id);
   const resultSummary = typeof task.result_summary === "string" ? task.result_summary.trim() : "";
-  const result = resultSummary
-    ? normalizeResultFallback(resultSummary)
-    : `${normalizeResultFallback(task.title)} (no result_summary)`;
-
-  const tagBracket = formatTagsForSubject(tags);
-  const emoji = isSpike ? "🧪" : "✅";
-  // CommitPolicy requires scope to match: [a-z][a-z0-9_-]* (no punctuation like parentheses).
-  // Include the task id as part of the summary for scanability.
-  const subject = `${emoji} ${suffix} close: ${result} (${task.id})${tagBracket ? ` ${tagBracket}` : ""}`;
-
-  const verifySummary = buildVerifySummary(task, isSpike);
   const entries = await gitNumstatForCommit(opts.gitRoot, implCommit);
-  const keyFiles = pickKeyFiles({ entries, limit: opts.keyFilesLimit ?? 5 });
-  const keyFilesText = keyFiles.length > 0 ? keyFiles.join(", ") : "(none)";
+  const keyFiles = pickKeyFiles({ entries, limit: opts.keyFilesLimit ?? 8 });
 
   const notes: string[] = [];
   if (task.breaking === true) notes.push("breaking");
   if (typeof task.risk_level === "string" && task.risk_level.trim())
     notes.push(`risk=${task.risk_level.trim()}`);
 
-  const bodyLines = [
-    `Scope: ${formatTagsForBody(tags) || "(none)"}`,
-    `Verify: ${verifySummary}`,
-    `Key files: ${keyFilesText}`,
-    notes.length > 0 ? `Notes: ${notes.join("; ")}` : null,
-  ].filter((l): l is string => typeof l === "string");
-
-  return { subject, body: bodyLines.join("\n") };
+  const workflowDir = opts.workflowDir ?? ".agentplane/tasks";
+  const prFromMeta = await readPrNumberFromMeta({
+    gitRoot: opts.gitRoot,
+    workflowDir,
+    taskId: task.id,
+  });
+  const sourcePrNumber = prFromMeta ?? extractPrNumber(resultSummary);
+  const title =
+    resultSummary && !isNoisyOperationalTitle(resultSummary) ? resultSummary : task.title;
+  const rendered = renderMergeMessage({
+    scope: normalizeScope({ tags, title, files: keyFiles }),
+    tags,
+    prTitle: title,
+    sourcePrNumber,
+    taskId: task.id,
+    runId:
+      typeof task.origin?.run_id === "string" && task.origin.run_id.trim()
+        ? task.origin.run_id.trim()
+        : task.id,
+    summary: [title],
+    changed: deriveChanged(keyFiles),
+    verification: buildVerificationInput(task, isSpike),
+    keyFiles,
+    changedFiles: entries.map((entry) => entry.file).filter((file) => !isTaskArtifactPath(file)),
+    diffStats: {
+      filesChanged: entries.length,
+      insertions: entries.reduce((sum, entry) => sum + entry.added, 0),
+      deletions: entries.reduce((sum, entry) => sum + entry.deleted, 0),
+    },
+    why: notes.length > 0 ? [`Task metadata: ${notes.join("; ")}.`] : [],
+  });
+  const [subject, ...bodyLines] = rendered.split("\n");
+  return { subject: subject ?? "", body: bodyLines.join("\n").trim() };
 }
 
 export function taskReadmePathForTask(opts: {

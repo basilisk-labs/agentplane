@@ -14,6 +14,7 @@ export function commitSubjectRule(ctx: PolicyContext): PolicyResult {
     taskId: (ctx.taskId ?? "").trim() || undefined,
     genericTokens: ctx.config.commit.generic_tokens,
     taskIntent: ctx.commit?.taskIntent,
+    allowHumanTaskSubject: ctx.commit?.allowHumanTaskSubject,
   });
   if (!policy.ok) {
     return {
