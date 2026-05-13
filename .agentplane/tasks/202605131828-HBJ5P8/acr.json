@@ -1,0 +1,255 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605131828-HBJ5P8",
+  "created_at": "2026-05-13T21:57:46.154Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "38e5e82573fca82f0cfe866d1dcf87d7cf200e5e",
+    "work_ref": "main",
+    "work_commit": "38e5e82573fca82f0cfe866d1dcf87d7cf200e5e"
+  },
+  "task": {
+    "task_id": "202605131828-HBJ5P8",
+    "title": "Make test routing faster and more flexible",
+    "intent": "Improve AgentPlane test selection and runner ergonomics: support combined impacted buckets, add a smoke local CI mode, route critical CLI tests through the chunked suite runner, and capture timing evidence for slow tests.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605131828-HBJ5P8/README.md",
+      "sha256": "sha256:49cf4da21a02b1811c6bed30e20037ed259be6e4b3c91034417e6835b07ddd6a"
+    },
+    "approved_at": "2026-05-13T18:29:19.620Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3665.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": [
+      {
+        "check_id": "verify-1",
+        "type": "other",
+        "command": "AGENTPLANE_FAST_CHANGED_FILES=$'packages/agentplane/src/commands/task/shared.ts\\npackages/agentplane/src/commands/pr/input-validation.ts' node scripts/checks/run-local-ci.mjs --mode smoke",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-2",
+        "type": "test",
+        "command": "bun test packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/commands/release/release-ci-contract.test.ts",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-3",
+        "type": "test",
+        "command": "node scripts/checks/check-vitest-projects.mjs",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-4",
+        "type": "test",
+        "command": "node scripts/checks/run-vitest-suite.mjs critical --report-json .agentplane/tmp/critical-timing.json",
+        "status": "passed"
+      },
+      {
+        "check_id": "verify-5",
+        "type": "test",
+        "command": "node scripts/checks/run-vitest-suite.mjs precommit --report-json .agentplane/tmp/precommit-timing.json",
+        "status": "passed"
+      }
+    ]
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605131828-HBJ5P8_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-13T18:29:19.620Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605131828-HBJ5P8/README.md",
+      "sha256": "sha256:49cf4da21a02b1811c6bed30e20037ed259be6e4b3c91034417e6835b07ddd6a"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605131828-HBJ5P8/README.md",
+      "sha256": "sha256:49cf4da21a02b1811c6bed30e20037ed259be6e4b3c91034417e6835b07ddd6a"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605131828-HBJ5P8/README.md",
+      "sha256": "sha256:49cf4da21a02b1811c6bed30e20037ed259be6e4b3c91034417e6835b07ddd6a"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": true,
+    "residual_risks": [],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 38e5e82573fca82f0cfe866d1dcf87d7cf200e5e if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:6b6119b6df7635eb30db3b603c3d18de1ac9bd9ac58b5f19bec6ce7e25bbd402",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "runner.execution",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "verify_record",
+        "hosted_checks",
+        "publish_or_integrate",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "runner.bundle",
+          "kind": "artifact",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "runner.invocation",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "runner.result_manifest",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "runner.trace",
+          "kind": "artifact",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "runner.execution_state",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "runner.replay_or_resume",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "runner.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "stale",
+        "path": ".agentplane/tasks/202605131828-HBJ5P8/blueprint/resolved-snapshot.json",
+        "digest": "fff3e289c5ecdc18b883480fa8b62bded6e6d9000a1598d367ccbbcac6a071c9",
+        "current_digest": "6b28200192315ee915062b3d3a5b00efa09aaa850c5689c2c7d8357dc8c93a17",
+        "route_changed": true,
+        "artifact_sha256": null,
+        "safe_command": "agentplane blueprint snapshot 202605131828-HBJ5P8"
+      }
+    }
+  }
+}
