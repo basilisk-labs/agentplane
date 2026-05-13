@@ -23,6 +23,12 @@ export type TaskBlueprintLifecycleSummary = {
   error?: string;
 };
 
+export type TaskBlueprintLifecycleResolver = (
+  task: TaskData | TaskSummary,
+) => TaskBlueprintLifecycleSummary;
+
+type ProjectBlueprintRegistry = Awaited<ReturnType<typeof createTrustedProjectBlueprintRegistry>>;
+
 function lifecycleSummaryFromExplain(
   taskId: string,
   output: BlueprintExplainOutput,
@@ -50,36 +56,75 @@ function lifecycleSummaryFromExplain(
   };
 }
 
+function errorMessage(value: unknown): string {
+  if (value instanceof Error) return value.message;
+  if (typeof value === "string") return value;
+  if (typeof value === "number" || typeof value === "boolean" || typeof value === "bigint") {
+    return value.toString();
+  }
+  try {
+    return JSON.stringify(value) ?? "unknown error";
+  } catch {
+    return "unknown error";
+  }
+}
+
 export async function resolveTaskBlueprintLifecycleSummary(opts: {
   task: TaskData | TaskSummary;
   config: AgentplaneConfig;
   projectRoot?: string;
 }): Promise<TaskBlueprintLifecycleSummary> {
-  const input = blueprintResolveInputFromTask({ task: opts.task as TaskData, config: opts.config });
-  try {
-    const projectRegistry = opts.projectRoot
-      ? await createTrustedProjectBlueprintRegistry(opts.projectRoot)
-      : null;
-    const resolved = resolveBlueprint({
-      input,
-      ...(projectRegistry
-        ? {
-            registry: projectRegistry.registry,
-            projectBlueprintIds: projectRegistry.projectBlueprintIds,
-          }
-        : {}),
-    });
-    return lifecycleSummaryFromExplain(
-      opts.task.id,
-      explainResolvedBlueprint({ resolved, input, workflowMode: input.workflowMode }),
-    );
-  } catch (error) {
-    return {
-      explain_command: `agentplane blueprint explain ${opts.task.id}`,
-      snapshot_command: `agentplane blueprint snapshot ${opts.task.id}`,
-      error: error instanceof Error ? error.message : String(error),
-    };
+  const resolver = await createTaskBlueprintLifecycleResolver({
+    config: opts.config,
+    projectRoot: opts.projectRoot,
+  });
+  return resolver(opts.task);
+}
+
+export async function createTaskBlueprintLifecycleResolver(opts: {
+  config: AgentplaneConfig;
+  projectRoot?: string;
+}): Promise<TaskBlueprintLifecycleResolver> {
+  let projectRegistry: ProjectBlueprintRegistry | null = null;
+  let projectRegistryError: unknown = null;
+  if (opts.projectRoot) {
+    try {
+      projectRegistry = await createTrustedProjectBlueprintRegistry(opts.projectRoot);
+    } catch (error) {
+      projectRegistryError = error;
+    }
   }
+  return (task) => {
+    const input = blueprintResolveInputFromTask({ task: task as TaskData, config: opts.config });
+    try {
+      if (projectRegistryError) {
+        return {
+          explain_command: `agentplane blueprint explain ${task.id}`,
+          snapshot_command: `agentplane blueprint snapshot ${task.id}`,
+          error: errorMessage(projectRegistryError),
+        };
+      }
+      const resolved = resolveBlueprint({
+        input,
+        ...(projectRegistry
+          ? {
+              registry: projectRegistry.registry,
+              projectBlueprintIds: projectRegistry.projectBlueprintIds,
+            }
+          : {}),
+      });
+      return lifecycleSummaryFromExplain(
+        task.id,
+        explainResolvedBlueprint({ resolved, input, workflowMode: input.workflowMode }),
+      );
+    } catch (error) {
+      return {
+        explain_command: `agentplane blueprint explain ${task.id}`,
+        snapshot_command: `agentplane blueprint snapshot ${task.id}`,
+        error: errorMessage(error),
+      };
+    }
+  };
 }
 
 export function formatTaskBlueprintListExtra(summary: TaskBlueprintLifecycleSummary): string {

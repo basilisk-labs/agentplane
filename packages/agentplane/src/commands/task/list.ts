@@ -14,8 +14,8 @@ import {
   type TaskListFilters,
 } from "./shared.js";
 import {
+  createTaskBlueprintLifecycleResolver,
   formatTaskBlueprintListExtra,
-  resolveTaskBlueprintLifecycleSummary,
 } from "./blueprint-summary.js";
 
 export async function cmdTaskListWithFilters(opts: {
@@ -31,12 +31,12 @@ export async function cmdTaskListWithFilters(opts: {
     const tasks = await listTaskSummariesMemo(ctx);
     handleTaskListWarnings({ backend: ctx.taskBackend, strictRead: opts.filters.strictRead });
     const { depState, items } = queryTaskProjection({ tasks, filters: opts.filters });
+    const resolveBlueprint = await createTaskBlueprintLifecycleResolver({
+      config: ctx.config,
+      projectRoot: ctx.resolvedProject.gitRoot,
+    });
     for (const task of items) {
-      const blueprint = await resolveTaskBlueprintLifecycleSummary({
-        task,
-        config: ctx.config,
-        projectRoot: ctx.resolvedProject.gitRoot,
-      });
+      const blueprint = resolveBlueprint(task);
       process.stdout.write(
         `${formatTaskLine(task, depState.get(task.id), [formatTaskBlueprintListExtra(blueprint)])}\n`,
       );

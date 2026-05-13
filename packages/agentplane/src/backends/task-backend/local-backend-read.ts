@@ -20,6 +20,10 @@ import {
 } from "../task-index.js";
 
 import {
+  readFreshSqliteTaskProjection,
+  writeSqliteTaskProjection,
+} from "./local-task-sqlite-cache.js";
+import {
   mapLimit,
   taskRecordToData,
   validateTaskId,
@@ -114,6 +118,14 @@ export async function listLocalTasks(
 ): Promise<TaskData[] | TaskSummary[]> {
   const projectionOnly = mode === "projection";
   const writeIndex = opts.writeIndex ?? true;
+  if (projectionOnly) {
+    const sqliteProjection = await readFreshSqliteTaskProjection({ tasksDir: context.root });
+    if (sqliteProjection) {
+      context.setLastListWarnings?.([]);
+      return sqliteProjection;
+    }
+  }
+
   const tasks: (TaskData | TaskSummary)[] = [];
   const warnings: string[] = [];
   const entries = await readdir(context.root, { withFileTypes: true }).catch(() => []);
@@ -273,6 +285,14 @@ export async function listLocalTasks(
     } catch {
       // Best-effort cache; ignore failures.
     }
+  }
+
+  if (warnings.length === 0) {
+    await writeSqliteTaskProjection({
+      tasksDir: context.root,
+      tasks: Object.values(nextById).map((entry) => entry.task),
+      fingerprintEntries: readmeFingerprint.entries,
+    });
   }
 
   context.setLastListWarnings?.(warnings);

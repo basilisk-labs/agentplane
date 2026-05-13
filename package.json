@@ -9,6 +9,9 @@
     "node": ">=20"
   },
   "packageManager": "bun@1.3.6",
+  "trustedDependencies": [
+    "better-sqlite3"
+  ],
   "scripts": {
     "postinstall": "lefthook install",
     "build": "tsc -b && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle",
