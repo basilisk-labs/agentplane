@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T18:32:54.637Z"
+  updated_at: "2026-05-13T18:49:43.851Z"
   updated_by: "CODER"
-  note: "Verified: bun test packages/agentplane/src/backends/task-backend.load.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts passed (29 tests); node .agentplane/policy/check-routing.mjs passed; ap doctor OK with pre-existing cloud service degradation warning; cloud-sync npm test -- --run test/server.test.ts passed (38 tests), npm run typecheck passed, npm test passed (19 files, 123 tests), npm run build passed, agentplane doctor OK, policy routing OK."
+  note: "Verified: bun test packages/agentplane/src/backends/task-backend.load.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts passed (29 tests); node .agentplane/policy/check-routing.mjs passed; ap doctor OK with pre-existing cloud backend sync degraded warning reason=rate_limited."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bun test packages/agentplane/src/backends/task-backend.load.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts passed (29 tests); node .agentplane/policy/check-routing.mjs passed; ap doctor OK with pre-existing cloud service degradation warning; cloud-sync npm test -- --run test/server.test.ts passed (38 tests), npm run typecheck passed, npm test passed (19 files, 123 tests), npm run build passed, agentplane doctor OK, policy routing OK."
+  -
+    type: "verify"
+    at: "2026-05-13T18:49:43.851Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: bun test packages/agentplane/src/backends/task-backend.load.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts passed (29 tests); node .agentplane/policy/check-routing.mjs passed; ap doctor OK with pre-existing cloud backend sync degraded warning reason=rate_limited."
 doc_version: 3
-doc_updated_at: "2026-05-13T18:32:54.684Z"
+doc_updated_at: "2026-05-13T18:49:43.861Z"
 doc_updated_by: "CODER"
 description: "Load hosted backend credentials from the canonical repository root .env across branch_pr worktrees, and prevent cloud push from using stale task projections."
 sections:
@@ -82,6 +88,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131815-Y9VGVQ
     
+    ### 2026-05-13T18:49:43.851Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: bun test packages/agentplane/src/backends/task-backend.load.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts passed (29 tests); node .agentplane/policy/check-routing.mjs passed; ap doctor OK with pre-existing cloud backend sync degraded warning reason=rate_limited.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:32:54.684Z, excerpt_hash=sha256:211e0626146195c97ec313d2687067c210532835230b2e706d9cc783ea914404
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131815-Y9VGVQ-shared-root-env-sync/.agentplane/tasks/202605131815-Y9VGVQ/blueprint/resolved-snapshot.json
+    - old_digest: 38bba6ab122e485d1869be63ad6ff4dc757b968aa9677c76488383e1e96c05da
+    - current_digest: 38bba6ab122e485d1869be63ad6ff4dc757b968aa9677c76488383e1e96c05da
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131815-Y9VGVQ
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -90,6 +115,10 @@ sections:
     - Observation: Cloud backend sync state remains degraded with reason=rate_limited in the public AgentPlane doctor output; this is external service state, not a local regression.
       Impact: Local hosted-sync credentials now resolve from the shared root .env across worktrees; direct cloud-sync push rejects legacy tasks.json export snapshots.
       Resolution: Implemented root .env resolution and added service-side stale export rejection with tests.
+    
+    - Observation: Focused AgentPlane repo verification rerun on 2026-05-14 from task worktree.
+      Impact: Shared root .env resolution and backend connect token write behavior are covered locally; cloud service degradation remains external operational state.
+      Resolution: No local rework needed for AgentPlane repo patch.
 id_source: "generated"
 ---
 ## Summary
@@ -136,6 +165,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131815-Y9VGVQ
 
+### 2026-05-13T18:49:43.851Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: bun test packages/agentplane/src/backends/task-backend.load.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts passed (29 tests); node .agentplane/policy/check-routing.mjs passed; ap doctor OK with pre-existing cloud backend sync degraded warning reason=rate_limited.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:32:54.684Z, excerpt_hash=sha256:211e0626146195c97ec313d2687067c210532835230b2e706d9cc783ea914404
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131815-Y9VGVQ-shared-root-env-sync/.agentplane/tasks/202605131815-Y9VGVQ/blueprint/resolved-snapshot.json
+- old_digest: 38bba6ab122e485d1869be63ad6ff4dc757b968aa9677c76488383e1e96c05da
+- current_digest: 38bba6ab122e485d1869be63ad6ff4dc757b968aa9677c76488383e1e96c05da
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131815-Y9VGVQ
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -148,3 +196,7 @@ BlueprintSnapshotRef:
 - Observation: Cloud backend sync state remains degraded with reason=rate_limited in the public AgentPlane doctor output; this is external service state, not a local regression.
   Impact: Local hosted-sync credentials now resolve from the shared root .env across worktrees; direct cloud-sync push rejects legacy tasks.json export snapshots.
   Resolution: Implemented root .env resolution and added service-side stale export rejection with tests.
+
+- Observation: Focused AgentPlane repo verification rerun on 2026-05-14 from task worktree.
+  Impact: Shared root .env resolution and backend connect token write behavior are covered locally; cloud service degradation remains external operational state.
+  Resolution: No local rework needed for AgentPlane repo patch.

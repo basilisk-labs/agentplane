@@ -79,7 +79,7 @@ export async function resolveDotEnvRoot(rootDir: string): Promise<string> {
   const gitDir = path.resolve(resolvedRoot, match[1]);
   const worktreesMarker = `${path.sep}.git${path.sep}worktrees${path.sep}`;
   const markerIndex = gitDir.indexOf(worktreesMarker);
-  if (markerIndex < 0) return resolvedRoot;
+  if (markerIndex === -1) return resolvedRoot;
 
   return gitDir.slice(0, markerIndex);
 }

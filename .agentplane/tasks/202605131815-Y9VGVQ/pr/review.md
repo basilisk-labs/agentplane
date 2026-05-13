@@ -13,7 +13,7 @@ Created: 2026-05-13T18:17:32.377Z
 ## Verification
 
 - State: ok
-- Note: Verified: bun test packages/agentplane/src/backends/task-backend.load.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts passed (29 tests); node .agentplane/policy/check-routing.mjs passed; ap doctor OK with pre-existing cloud service degradation warning; cloud-sync npm test -- --run test/server.test.ts passed (38 tests), npm run typecheck passed, npm test passed (19 files, 123 tests), npm run build passed, agentplane doctor OK, policy routing OK.
+- Note: Verified: bun test packages/agentplane/src/backends/task-backend.load.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts passed (29 tests); node .agentplane/policy/check-routing.mjs passed; ap doctor OK with pre-existing cloud backend sync degraded warning reason=rate_limited.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
