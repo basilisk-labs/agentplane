@@ -3,23 +3,9 @@ import { lstatSync, existsSync } from "node:fs";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
-export type ScopeName = "wiki" | "facts" | "graph" | "tasks" | "capabilities" | "tasks-acr" | "raw";
+type ScopeName = "wiki" | "facts" | "graph" | "tasks" | "capabilities" | "tasks-acr" | "raw";
 
-export type SourceRef = {
-  filePath: string;
-  selectors: Record<string, string>;
-};
-
-export type TextMatch = {
-  path: string;
-  score: number;
-  snippet: string;
-  line?: number;
-  rawLine?: number;
-  refs?: string[];
-};
-
-export type ParsedSourceRef = {
+type ParsedSourceRef = {
   path: string;
   selectors: Record<string, string>;
 };
@@ -52,15 +38,6 @@ export function parseSourceRef(raw: string): ParsedSourceRef {
 
 export function toPosix(p: string): string {
   return p.split(path.sep).join("/");
-}
-
-export function safeRelativePath(projectRoot: string, target: string): string {
-  const root = path.resolve(projectRoot);
-  const abs = path.resolve(projectRoot, target);
-  if (!abs.startsWith(`${root}${path.sep}`) && abs !== root) {
-    throw new Error(`path escapes project root: ${target}`);
-  }
-  return toPosix(path.relative(projectRoot, abs));
 }
 
 export async function fileExists(filePath: string): Promise<boolean> {
@@ -123,7 +100,7 @@ export function normalizeScopeList(scopeValue: string): ScopeName[] {
     .filter((part) => part !== "raw");
 }
 
-export function scopeToFiles(root: string, scope: ScopeName): string[] {
+function scopeToFiles(root: string, scope: ScopeName): string[] {
   const paths: string[] = [];
   switch (scope) {
     case "wiki": {
@@ -168,7 +145,7 @@ export function scopeToFiles(root: string, scope: ScopeName): string[] {
   return paths.flatMap((p) => collectSafeFilePaths(root, p));
 }
 
-export function collectSafeFilePaths(root: string, relPath: string): string[] {
+function collectSafeFilePaths(root: string, relPath: string): string[] {
   const target = path.join(root, relPath);
   if (!existsSync(target)) {
     return [toPosix(relPath)];

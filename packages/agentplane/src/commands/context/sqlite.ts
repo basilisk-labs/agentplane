@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-base-to-string */
 import { spawn } from "node:child_process";
 
-export type SqliteProjectionRow = {
+type SqliteProjectionRow = {
   path: string;
   sha256: string;
   content_type: string;
@@ -13,7 +13,7 @@ export type SqliteProjectionRow = {
   source_refs?: string[];
 };
 
-export type SqliteProjection = {
+type SqliteProjection = {
   metadata: {
     projection_version: number;
     generated_at: string;
