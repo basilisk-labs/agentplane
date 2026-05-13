@@ -24,11 +24,12 @@ Created: 2026-05-13T09:48:18.945Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T10:55:46.526Z
+- Updated: 2026-05-13T10:57:45.462Z
 - Branch: task/202605130947-V6846F/cli-perf-read-paths
-- Head: 81deff325fae
+- Head: 50bec8f503ae
 
 ```text
+ .agentplane/context/service/README.md              |   7 +
  .../blueprint/resolved-snapshot.json               | 550 +++++++++++++++++++++
  .agentplane/tasks/202605131043-2GMHKQ/README.md    |  92 ++++
  .agentplane/tasks/202605131043-802HWG/README.md    |  92 ++++
@@ -57,7 +58,7 @@ Created: 2026-05-13T09:48:18.945Z
  packages/agentplane/src/commands/task/list.ts      |  12 +-
  packages/agentplane/src/shared/cache-paths.ts      |   7 +
  packages/agentplane/src/shared/sqlite-driver.ts    |  39 ++
- 28 files changed, 1747 insertions(+), 245 deletions(-)
+ 29 files changed, 1754 insertions(+), 245 deletions(-)
 ```
 
 </details>
