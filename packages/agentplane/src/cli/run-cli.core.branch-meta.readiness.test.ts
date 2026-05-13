@@ -278,7 +278,14 @@ describe("runCli", () => {
       expect(code).toBe(0);
       const payload = JSON.parse(io.stdout) as {
         working_tree_clean_tracked?: { value?: boolean };
-        task_artifact_drift?: { present?: boolean; task_ids?: string[]; paths?: string[] };
+        task_artifact_drift?: {
+          present?: boolean;
+          actionable?: boolean;
+          task_ids?: string[];
+          paths?: string[];
+          counts?: { unknown_task_artifact?: number };
+          items?: { classification?: string; action?: string; status?: string }[];
+        };
         harness_health?: { status?: string; reasons?: string[] };
         next_actions?: { command?: string; reason?: string }[];
       };
@@ -290,6 +297,13 @@ describe("runCli", () => {
       expect(payload.task_artifact_drift?.paths).toContain(
         ".agentplane/tasks/202604100023-OTHER/README.md",
       );
+      expect(payload.task_artifact_drift?.actionable).toBe(true);
+      expect(payload.task_artifact_drift?.counts?.unknown_task_artifact).toBe(1);
+      expect(payload.task_artifact_drift?.items?.[0]).toMatchObject({
+        classification: "unknown_task_artifact",
+        action: "inspect",
+        status: "unknown",
+      });
       expect(payload.harness_health?.status).toBe("warn");
       expect(payload.harness_health?.reasons).toContain("task_artifact_drift");
       expect(payload.next_actions).toEqual(
@@ -299,6 +313,147 @@ describe("runCli", () => {
           }),
         ]),
       );
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("preflight --json treats active task artifacts as parallel-agent context, not harness drift", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202604100023-ACTIVE";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    await mkdir(taskDir, { recursive: true });
+    await writeFile(
+      path.join(taskDir, "README.md"),
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "Parallel agent task",
+          status: "TODO",
+          priority: "med",
+          owner: "CODER",
+          depends_on: [],
+          tags: ["code"],
+          verify: [],
+          comments: [],
+          doc_version: 3,
+          doc_updated_at: "2026-04-10T00:23:00.000Z",
+          doc_updated_by: "ORCHESTRATOR",
+          description: "Active task artifact from another agent.",
+          sections: {
+            Summary: "Parallel agent task",
+            Scope: "- In scope: active task artifact.",
+            Plan: "Keep this artifact visible without warning on harness health.",
+            "Verify Steps": "1. Run preflight.",
+            Verification: "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+            "Rollback Plan": "- Remove the artifact.",
+            Findings: "",
+          },
+        },
+        "## Summary\n\nParallel agent task\n",
+      ),
+      "utf8",
+    );
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["preflight", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        task_artifact_drift?: {
+          present?: boolean;
+          actionable?: boolean;
+          counts?: { active_parallel_task_artifact?: number };
+          items?: { classification?: string; action?: string; status?: string }[];
+        };
+        harness_health?: { reasons?: string[] };
+        next_actions?: { command?: string; reason?: string }[];
+      };
+      expect(payload.task_artifact_drift?.present).toBe(true);
+      expect(payload.task_artifact_drift?.actionable).toBe(false);
+      expect(payload.task_artifact_drift?.counts?.active_parallel_task_artifact).toBe(1);
+      expect(payload.task_artifact_drift?.items?.[0]).toMatchObject({
+        classification: "active_parallel_task_artifact",
+        action: "ignore_parallel_agent",
+        status: "TODO",
+      });
+      expect(payload.harness_health?.reasons ?? []).not.toContain("task_artifact_drift");
+      expect(payload.next_actions ?? []).not.toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            command: "git status --short --untracked-files=all -- .agentplane/tasks",
+          }),
+        ]),
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("preflight --json classifies completed-task handoff artifacts as cleanup candidates", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202604100023-DONE01";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    const handoffDir = path.join(taskDir, "handoff");
+    await mkdir(handoffDir, { recursive: true });
+    await writeFile(
+      path.join(taskDir, "README.md"),
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "Completed task",
+          status: "DONE",
+          priority: "med",
+          owner: "CODER",
+          depends_on: [],
+          tags: ["code"],
+          verify: [],
+          comments: [],
+          doc_version: 3,
+          doc_updated_at: "2026-04-10T00:23:00.000Z",
+          doc_updated_by: "INTEGRATOR",
+          description: "Completed task with stale handoff residue.",
+          sections: {
+            Summary: "Completed task",
+            Scope: "- In scope: completed task.",
+            Plan: "Classify handoff residue.",
+            "Verify Steps": "1. Run preflight.",
+            Verification: "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+            "Rollback Plan": "- Remove the artifact.",
+            Findings: "",
+          },
+        },
+        "## Summary\n\nCompleted task\n",
+      ),
+      "utf8",
+    );
+    await writeFile(path.join(handoffDir, "latest.json"), "{}\n", "utf8");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["preflight", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        task_artifact_drift?: {
+          actionable?: boolean;
+          counts?: { stale_done_handoff?: number };
+          items?: { path?: string; classification?: string; action?: string; status?: string }[];
+        };
+        harness_health?: { reasons?: string[] };
+      };
+      expect(payload.task_artifact_drift?.actionable).toBe(true);
+      expect(payload.task_artifact_drift?.counts?.stale_done_handoff).toBe(1);
+      expect(payload.task_artifact_drift?.items).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            path: `.agentplane/tasks/${taskId}/handoff/latest.json`,
+            classification: "stale_done_handoff",
+            action: "cleanup_candidate",
+            status: "DONE",
+          }),
+        ]),
+      );
+      expect(payload.harness_health?.reasons).toContain("task_artifact_drift");
     } finally {
       io.restore();
     }
@@ -314,9 +469,11 @@ describe("runCli", () => {
     try {
       const code = await runCli(["preflight", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("- task artifact drift: 202604100023-OTHER");
       expect(io.stdout).toContain(
-        "- git status --short --untracked-files=all -- .agentplane/tasks: task artifact drift detected for 202604100023-OTHER",
+        "- task artifact drift: tasks=202604100023-OTHER; active_parallel=0; stale_done_handoff=0; unknown=1; actionable=yes",
+      );
+      expect(io.stdout).toContain(
+        "- git status --short --untracked-files=all -- .agentplane/tasks: actionable task artifact drift detected for 202604100023-OTHER",
       );
     } finally {
       io.restore();
