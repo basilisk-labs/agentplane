@@ -125,7 +125,7 @@ The snapshot is derived from the current backend projection. It is not the canon
 
 Do not edit generated tasks export snapshots manually.
 
-## Obsidian task navigation
+## Task navigation projection
 
 An optional Markdown navigation projection can be generated for humans and agents:
 
@@ -133,7 +133,8 @@ An optional Markdown navigation projection can be generated for humans and agent
 agentplane task obsidian
 ```
 
-This writes gitignored Markdown files under `.agentplane/`:
+This writes gitignored Markdown files under `.agentplane/` for compatibility with Obsidian and
+plain Markdown browsers:
 
 - `.agentplane/index.md`
 - `.agentplane/tasks.md`
@@ -141,7 +142,8 @@ This writes gitignored Markdown files under `.agentplane/`:
 - `.agentplane/by-tag/*.md`
 - `.agentplane/by-owner/*.md`
 
-Open `.agentplane/` as an Obsidian vault to browse tasks without renaming every task README.
+Open `.agentplane/` as an Obsidian vault, or read the files as a lightweight task wiki, to browse
+tasks without renaming every task README.
 Task IDs link back to `.agentplane/tasks/<task-id>/README.md`, and dependency cells link to the
 same canonical README paths.
 
@@ -157,6 +159,10 @@ canonical task READMEs and non-generated Markdown files.
 This projection can make manual navigation and agent context gathering faster because a reader can
 open or grep a compact grouped index instead of scanning thousands of task README files. It does not
 replace backend reads, projection caches, or task README frontmatter as runtime authority.
+
+Conceptually, this is a generated wiki/navigation output adapter over the task projection, not a
+separate Obsidian-owned storage model. Future generated navigation surfaces should converge under
+`.agentplane/generated/**` instead of adding more root-level files under `.agentplane/`.
 
 ## Active backend
 

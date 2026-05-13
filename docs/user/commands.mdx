@@ -174,7 +174,8 @@ agentplane task lint
 The exported snapshot is derived from the current backend projection. It is not the canonical
 source of truth.
 
-`agentplane task obsidian` writes a Markdown navigation projection under `.agentplane/`:
+`agentplane task obsidian` writes a Markdown navigation projection under `.agentplane/` for
+compatibility with Obsidian and plain Markdown browsers:
 
 - `.agentplane/index.md`
 - `.agentplane/tasks.md`
@@ -186,6 +187,9 @@ Open `.agentplane/` as an Obsidian vault to browse task IDs, statuses, owners, t
 links while keeping `.agentplane/tasks/<task-id>/README.md` as the canonical task record.
 `agentplane task obsidian clean` removes only the generated Obsidian projection files; it does not
 delete canonical task READMEs or non-generated Markdown files.
+
+This surface is a generated task-wiki/navigation adapter, not a separate storage authority. New
+generated navigation artifacts should converge under `.agentplane/generated/**`.
 
 ## Agent Change Record
 
@@ -223,9 +227,10 @@ agentplane context ingest ./notes.md --run
 agentplane context verify-task <task-id>
 ```
 
-Source artifacts live under `context/**`. The SQLite projection under
-`.agentplane/context/derived/**` is generated output. Use `context verify-task` before closing work
-that creates or relies on context artifacts. See [Local context](local-context).
+Source artifacts live under `context/**`. Derived context artifacts live under
+`.agentplane/context/derived/**`, and the fast SQLite projection is stored in the shared cache
+database at `.agentplane/cache.sqlite`. Use `context verify-task` before closing work that creates
+or relies on context artifacts. See [Local context](local-context).
 
 ## Backend sync (remote backends)
 

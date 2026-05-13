@@ -22,8 +22,10 @@ Editable source artifacts live under `context/**`:
 - `context/raw/**`: ingested raw material.
 - `context/raw/private/**`: private raw material excluded from the generated projection.
 
-Generated projection artifacts live under `.agentplane/context/derived/**`. The main projection is
-`.agentplane/context/derived/context.sqlite`. Treat it as disposable output.
+Generated context artifacts live under `.agentplane/context/derived/**`. The fast local search
+projection is stored in the shared AgentPlane cache database at `.agentplane/cache.sqlite`; context
+owns only its projection tables inside that file. Treat both the derived artifacts and the SQLite
+cache as disposable output.
 
 ## Initialize and search
 

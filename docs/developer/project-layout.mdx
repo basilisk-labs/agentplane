@@ -13,6 +13,7 @@ description: "How the repository is structured and where key components live."
 - `packages/testkit/`: shared test helpers
 - `docs/`: user and developer documentation
 - `scripts/`: repository maintenance and sync scripts
+- `marketing/`: optional Git submodule for marketing operations initiated from this repository
 - `.github/workflows/`: CI and publish pipelines
 
 ## CLI package layout
@@ -42,7 +43,15 @@ After `agentplane init`, a project uses:
 - `.agentplane/agents/*.json`: local agent profiles
 - `.agentplane/tasks/<task-id>/README.md`: canonical one-file task containers; frontmatter is the operational source of truth and the markdown body is a generated projection
 - generated tasks export JSON: optional snapshot for external integrations
-- `.agentplane/cache/`: runtime cache (index/update-check metadata)
+- `.agentplane/cache.sqlite`: shared disposable SQLite projection/cache database; README task files and
+  context source files remain the source of truth
+- `.agentplane/cache/`: filesystem runtime cache (locks, index/update-check metadata, and other
+  non-SQLite cache entries)
+- `.agentplane/context/service/`: context-owned service workspace for context-only cache,
+  embeddings, and remote metadata; it does not own the global SQLite database
+- `.agentplane/generated/`: generated runtime projections such as recipe overlays and prompt graph
+  diagnostics; generated task/wiki navigation should converge here rather than adding more files to
+  the `.agentplane/` root
 - `.agentplane/.upgrade/`: temporary/diagnostic upgrade artifacts
 - `.agentplane/.release/`: temporary release planning artifacts
 

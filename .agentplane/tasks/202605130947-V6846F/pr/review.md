@@ -13,7 +13,7 @@ Created: 2026-05-13T09:48:18.945Z
 ## Verification
 
 - State: ok
-- Note: Moved the shared SQLite projection database to .agentplane/cache.sqlite and kept context/service for context-owned service subdirectories. Evidence: focused Vitest 32/32 passed; exact-file ESLint passed; targeted TS compile passed; agentplane package build passed; smoke verified task list and context reindex both create .agentplane/cache.sqlite; cold-path benchmark still improves read-heavy paths.
+- Note: Updated docs to describe .agentplane/cache.sqlite as the global SQLite projection/cache database and recorded follow-up backlog tasks for generated projections, scripts layout, and context domain extraction. Evidence: docs IA check passed and stale local.sqlite/context.sqlite references are absent from current docs/code surfaces.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
