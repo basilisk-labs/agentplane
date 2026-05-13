@@ -22,9 +22,9 @@ Separate public user command documentation from developer/advanced surfaces, rem
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T17:35:14.916Z
+- Updated: 2026-05-13T17:50:15.602Z
 - Branch: task/202605131649-61129E/public-cli-docs-surface
-- Head: e3ec4ca1a1eb
+- Head: ac60f690bb40
 
 ```text
  .../blueprint/resolved-snapshot.json               |  512 ++++++
