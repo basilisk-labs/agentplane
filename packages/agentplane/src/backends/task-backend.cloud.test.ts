@@ -928,6 +928,53 @@ describe("CloudBackend", () => {
     });
   });
 
+  it("falls back to pull conflict data when sync state body parsing fails", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    const task: TaskData = {
+      id: "202605051806-C1D2",
+      title: "Local title",
+      description: "Existing task",
+      status: "TODO",
+      priority: "med",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["cloud"],
+      verify: [],
+    };
+    await cache.writeTask(task);
+    const fetchImpl = vi.fn<typeof fetch>((input) => {
+      const url = input instanceof Request ? input.url : input.toString();
+      if (url.endsWith("/sync/state")) {
+        return Promise.resolve(new Response("{", { status: 200 }));
+      }
+      return Promise.resolve(
+        Response.json({
+          data: {
+            tasks: [{ id: task.id, title: "Remote title", status: "DONE" }],
+            last_checked_at: "2026-05-06T00:00:00.000Z",
+          },
+        }),
+      );
+    });
+    const backend = new CloudBackend(
+      { endpoint: "https://cloud.example", token: "token", project_id: "project-1" },
+      { root: tempDir, cache, fetchImpl },
+    );
+
+    await backend.sync({
+      direction: "pull",
+      conflict: "prefer-remote",
+      quiet: true,
+      confirm: true,
+    });
+
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    await expect(cache.getTask(task.id)).resolves.toMatchObject({
+      title: "Remote title",
+      status: "DONE",
+    });
+  });
+
   it("service remediation payload is included in HTTP errors", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
     const fetchImpl = vi.fn<typeof fetch>(() =>
