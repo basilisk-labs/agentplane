@@ -27,26 +27,27 @@ Audit unresolved Codex review threads from recent merged PRs, apply still-releva
 - Head: aea9099bc129
 
 ```text
- .../src/backends/task-backend.cloud.test.ts        | 47 ++++++++++++++++++++++
- .../src/backends/task-backend/cloud-backend.ts     | 12 +++++-
- .../src/commands/blueprints/catalog-cache.test.ts  | 40 ++++++++++++++++++
- .../src/commands/blueprints/catalog-cache.ts       | 43 ++++++++++++++++++--
- .../agentplane/src/commands/blueprints/catalog.ts  |  3 +-
- .../src/commands/doctor.command.runtime.test.ts    | 29 +++++++++++++
- packages/agentplane/src/commands/doctor/fixes.ts   | 16 +++++---
- packages/agentplane/src/shared/env.test.ts         | 23 +++++++++++
- packages/agentplane/src/shared/env.ts              |  9 +++++
- packages/agentplane/src/shared/git-mutation.ts     | 18 ++++++++-
- .../schemas/task-readme-frontmatter.schema.json    |  2 +-
- packages/core/schemas/tasks-export.schema.json     |  2 +-
- .../core/src/tasks/task-artifact-schema.test.ts    | 24 +++++++++++
- packages/core/src/tasks/task-artifact-schema.ts    |  8 +++-
- .../src/tasks/task-artifact-schema.verification.ts |  5 ++-
- .../schemas/task-readme-frontmatter.schema.json    |  2 +-
- packages/spec/schemas/tasks-export.schema.json     |  2 +-
- schemas/task-readme-frontmatter.schema.json        |  2 +-
- schemas/tasks-export.schema.json                   |  2 +-
- 19 files changed, 267 insertions(+), 22 deletions(-)
+ .../blueprint/resolved-snapshot.json               | 528 +++++++++++++++++++++
+ .../src/backends/task-backend.cloud.test.ts        |  47 ++
+ .../src/backends/task-backend/cloud-backend.ts     |  12 +-
+ .../src/commands/blueprints/catalog-cache.test.ts  |  40 ++
+ .../src/commands/blueprints/catalog-cache.ts       |  43 +-
+ .../agentplane/src/commands/blueprints/catalog.ts  |   3 +-
+ .../src/commands/doctor.command.runtime.test.ts    |  29 ++
+ packages/agentplane/src/commands/doctor/fixes.ts   |  16 +-
+ packages/agentplane/src/shared/env.test.ts         |  23 +
+ packages/agentplane/src/shared/env.ts              |   9 +
+ packages/agentplane/src/shared/git-mutation.ts     |  18 +-
+ .../schemas/task-readme-frontmatter.schema.json    |   2 +-
+ packages/core/schemas/tasks-export.schema.json     |   2 +-
+ .../core/src/tasks/task-artifact-schema.test.ts    |  24 +
+ packages/core/src/tasks/task-artifact-schema.ts    |   8 +-
+ .../src/tasks/task-artifact-schema.verification.ts |   5 +-
+ .../schemas/task-readme-frontmatter.schema.json    |   2 +-
+ packages/spec/schemas/tasks-export.schema.json     |   2 +-
+ schemas/task-readme-frontmatter.schema.json        |   2 +-
+ schemas/tasks-export.schema.json                   |   2 +-
+ 20 files changed, 795 insertions(+), 22 deletions(-)
 ```
 
 </details>
