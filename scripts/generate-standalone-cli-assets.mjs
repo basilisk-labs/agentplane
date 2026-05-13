@@ -417,6 +417,9 @@ async function buildTarget({
   if (syntheticNode && skipInstall) {
     await materializeSyntheticAgentplanePackage(packageRoot, version);
   } else {
+    if (!cliTarball || !coreTarball || !recipesTarball) {
+      throw new Error("Standalone package tarballs are required when synthetic skip-install mode is disabled");
+    }
     await extractCliPackage(cliTarball, packageRoot);
     await sanitizeStandalonePackageJson(packageRoot, { coreTarball, recipesTarball });
     dependencyStatus = await installProductionDependencies(repoRoot, packageRoot, skipInstall);
@@ -505,10 +508,16 @@ async function buildStandaloneAssets(repoRoot, args) {
   try {
     const targets = selectTargets(args.targets);
     const packDir = path.join(workRoot, ".npm-pack");
-    await mkdir(packDir, { recursive: true });
-    const cliTarball = packWorkspacePackage(repoRoot, CLI_PACKAGE_DIR, packDir);
-    const coreTarball = packWorkspacePackage(repoRoot, CORE_PACKAGE_DIR, packDir);
-    const recipesTarball = packWorkspacePackage(repoRoot, RECIPES_PACKAGE_DIR, packDir);
+    const useSyntheticPackage = args.check || (args.syntheticNode && args.skipInstall);
+    let cliTarball = null;
+    let coreTarball = null;
+    let recipesTarball = null;
+    if (!useSyntheticPackage) {
+      await mkdir(packDir, { recursive: true });
+      cliTarball = packWorkspacePackage(repoRoot, CLI_PACKAGE_DIR, packDir);
+      coreTarball = packWorkspacePackage(repoRoot, CORE_PACKAGE_DIR, packDir);
+      recipesTarball = packWorkspacePackage(repoRoot, RECIPES_PACKAGE_DIR, packDir);
+    }
     const assets = [];
     for (const target of targets) {
       assets.push(

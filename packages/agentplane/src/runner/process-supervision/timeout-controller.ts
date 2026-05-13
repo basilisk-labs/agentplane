@@ -84,16 +84,16 @@ export function createTimeoutController(opts: {
     }
     const graceMs = opts.timeout_policy.terminate_grace_ms;
     if (graceMs <= 0) {
-      opts.mutable.killSentAt = new Date().toISOString();
-      void patchRunningSupervision({
-        timeout_reason: reason,
-        timeout_requested_at: opts.mutable.timeoutRequestedAt,
-        terminate_sent_at: opts.mutable.terminateSentAt,
-        kill_sent_at: opts.mutable.killSentAt,
-        force_killed: true,
-        heartbeat_at: opts.mutable.killSentAt,
-      }).catch(opts.finish_with_error);
       if (opts.pid && isProcessAlive(opts.pid)) {
+        opts.mutable.killSentAt = new Date().toISOString();
+        void patchRunningSupervision({
+          timeout_reason: reason,
+          timeout_requested_at: opts.mutable.timeoutRequestedAt,
+          terminate_sent_at: opts.mutable.terminateSentAt,
+          kill_sent_at: opts.mutable.killSentAt,
+          force_killed: true,
+          heartbeat_at: opts.mutable.killSentAt,
+        }).catch(opts.finish_with_error);
         try {
           process.kill(opts.pid, "SIGKILL");
         } catch (err) {
@@ -107,6 +107,7 @@ export function createTimeoutController(opts: {
     }
     killTimer = setTimeout(() => {
       if (opts.is_settled() || !opts.mutable.timeoutReason) return;
+      if (!opts.pid || !isProcessAlive(opts.pid)) return;
       opts.mutable.killSentAt = new Date().toISOString();
       void patchRunningSupervision({
         timeout_reason: opts.mutable.timeoutReason,
