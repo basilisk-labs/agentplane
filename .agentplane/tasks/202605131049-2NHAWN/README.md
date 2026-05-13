@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T11:02:32.328Z"
+  updated_at: "2026-05-13T11:27:55.562Z"
   updated_by: "CODER"
-  note: "Implemented context harvest tasks with provenance-backed raw evidence, fact/graph proposal rows, wiki synthesis, promotion gate, context-init write gate, docs, and focused tests."
+  note: "Verified task-harvest pipeline after unused export correction: knip baseline, focused context tests, eslint, and full pre-push fast CI passed on 91ed87d0f."
   attempts: 0
 commit: null
 comments:
@@ -45,14 +45,20 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented context harvest tasks with provenance-backed raw evidence, fact/graph proposal rows, wiki synthesis, promotion gate, context-init write gate, docs, and focused tests."
+  -
+    type: "verify"
+    at: "2026-05-13T11:27:55.562Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified task-harvest pipeline after unused export correction: knip baseline, focused context tests, eslint, and full pre-push fast CI passed on 91ed87d0f."
 doc_version: 3
-doc_updated_at: "2026-05-13T11:02:32.337Z"
+doc_updated_at: "2026-05-13T11:27:55.569Z"
 doc_updated_by: "CODER"
 description: "Add a context pipeline operation that harvests completed tasks into source-backed wiki, fact, graph, and promotion-gate artifacts with provenance, conflict handling, and stale markers."
 sections:
   Summary: |-
     Harvest completed tasks into context knowledge
-
+    
     Add a context pipeline operation that harvests completed tasks into source-backed wiki, fact, graph, and promotion-gate artifacts with provenance, conflict handling, and stale markers.
   Scope: |-
     - In scope: Add a context pipeline operation that harvests completed tasks into source-backed wiki, fact, graph, and promotion-gate artifacts with provenance, conflict handling, and stale markers.
@@ -72,16 +78,16 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-13T11:02:32.328Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Implemented context harvest tasks with provenance-backed raw evidence, fact/graph proposal rows, wiki synthesis, promotion gate, context-init write gate, docs, and focused tests.
     Attempts: 0
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T11:02:05.847Z, excerpt_hash=sha256:a19d9e14ef8367c92a0333b619f0318bc617e0e260731a2130a22e6889466006
-
+    
     Details:
-
+    
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131049-2NHAWN-context-task-harvest/.agentplane/tasks/202605131049-2NHAWN/blueprint/resolved-snapshot.json
@@ -89,7 +95,26 @@ sections:
     - current_digest: d327d812c821253c0baa732615c6ae00be6d383ef8bf74c06a69e3afb215291e
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131049-2NHAWN
-
+    
+    ### 2026-05-13T11:27:55.562Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified task-harvest pipeline after unused export correction: knip baseline, focused context tests, eslint, and full pre-push fast CI passed on 91ed87d0f.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T11:02:32.337Z, excerpt_hash=sha256:a19d9e14ef8367c92a0333b619f0318bc617e0e260731a2130a22e6889466006
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131049-2NHAWN-context-task-harvest/.agentplane/tasks/202605131049-2NHAWN/blueprint/resolved-snapshot.json
+    - old_digest: d327d812c821253c0baa732615c6ae00be6d383ef8bf74c06a69e3afb215291e
+    - current_digest: d327d812c821253c0baa732615c6ae00be6d383ef8bf74c06a69e3afb215291e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131049-2NHAWN
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -138,6 +163,25 @@ Note: Implemented context harvest tasks with provenance-backed raw evidence, fac
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T11:02:05.847Z, excerpt_hash=sha256:a19d9e14ef8367c92a0333b619f0318bc617e0e260731a2130a22e6889466006
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131049-2NHAWN-context-task-harvest/.agentplane/tasks/202605131049-2NHAWN/blueprint/resolved-snapshot.json
+- old_digest: d327d812c821253c0baa732615c6ae00be6d383ef8bf74c06a69e3afb215291e
+- current_digest: d327d812c821253c0baa732615c6ae00be6d383ef8bf74c06a69e3afb215291e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131049-2NHAWN
+
+### 2026-05-13T11:27:55.562Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified task-harvest pipeline after unused export correction: knip baseline, focused context tests, eslint, and full pre-push fast CI passed on 91ed87d0f.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T11:02:32.337Z, excerpt_hash=sha256:a19d9e14ef8367c92a0333b619f0318bc617e0e260731a2130a22e6889466006
 
 Details:
 

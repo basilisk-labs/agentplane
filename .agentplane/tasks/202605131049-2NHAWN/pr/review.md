@@ -13,7 +13,7 @@ Created: 2026-05-13T10:49:55.784Z
 ## Verification
 
 - State: ok
-- Note: Implemented context harvest tasks with provenance-backed raw evidence, fact/graph proposal rows, wiki synthesis, promotion gate, context-init write gate, docs, and focused tests.
+- Note: Verified task-harvest pipeline after unused export correction: knip baseline, focused context tests, eslint, and full pre-push fast CI passed on 91ed87d0f.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,9 +24,9 @@ Created: 2026-05-13T10:49:55.784Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T11:18:23.661Z
+- Updated: 2026-05-13T11:27:55.592Z
 - Branch: task/202605131049-2NHAWN/context-task-harvest
-- Head: d7bd1edcc83e
+- Head: 91ed87d0f8e3
 
 ```text
  .../blueprint/resolved-snapshot.json               | 520 +++++++++++++++++++
