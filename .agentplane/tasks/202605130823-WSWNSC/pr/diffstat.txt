@@ -1,0 +1,11 @@
+ .agentplane/policy/workflow.branch_pr.md           |   5 +
+ .../blueprint/resolved-snapshot.json               | 514 +++++++++++++++++++++
+ .../agentplane/assets/policy/workflow.branch_pr.md |   5 +
+ .../run-cli.core.pr-flow.pr-open.network.test.ts   |  16 +-
+ ...n-cli.core.pr-flow.pr-validation.update.test.ts |  91 ++++
+ .../src/commands/pr/internal/sync-github.ts        |   5 +-
+ .../src/commands/pr/internal/sync-open-step.ts     |   6 +-
+ .../src/commands/pr/internal/sync-update-step.ts   |   4 +-
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  38 ++
+ packages/agentplane/src/commands/shared/pr-meta.ts |  10 +-
+ 10 files changed, 677 insertions(+), 17 deletions(-)

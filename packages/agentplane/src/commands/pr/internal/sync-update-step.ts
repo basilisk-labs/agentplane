@@ -18,7 +18,7 @@ import {
 } from "./review-template.js";
 import { computePrDiffstat } from "./sync-branch.js";
 import {
-  shouldPersistObservedGithubPrMeta,
+  shouldPersistObservedGithubPrIdentity,
   tryLookupExistingGithubPrByBranch,
 } from "./sync-github.js";
 import type { PrSyncCommonState } from "./sync-model.js";
@@ -50,7 +50,7 @@ export async function runPrUpdateSync(common: PrSyncCommonState): Promise<{ meta
     branch: common.branch,
     baseBranch: common.baseBranch,
   });
-  if (shouldPersistObservedGithubPrMeta(observedGithubPr)) {
+  if (shouldPersistObservedGithubPrIdentity(observedGithubPr)) {
     nextMeta = buildObservedGithubPrMeta({
       meta: nextMeta,
       observed: observedGithubPr!,
