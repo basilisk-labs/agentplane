@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T10:23:32.804Z"
+  updated_at: "2026-05-13T10:35:10.369Z"
   updated_by: "CODER"
-  note: "Implemented unified SQLite projection cache with embedded better-sqlite3 driver. Evidence: focused Vitest 32/32 passed; exact-file ESLint passed; targeted TS compile passed; framework bootstrap passed; cold-path benchmark after native rebuild improved task_list 1159.331ms -> 355.393ms, task_search 1123.773ms -> 366.110ms, task_next 1164.330ms -> 371.164ms."
+  note: "Moved the shared SQLite projection database to .agentplane/cache.sqlite and kept context/service for context-owned service subdirectories. Evidence: focused Vitest 32/32 passed; exact-file ESLint passed; targeted TS compile passed; agentplane package build passed; smoke verified task list and context reindex both create .agentplane/cache.sqlite; cold-path benchmark still improves read-heavy paths."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented unified SQLite projection cache with embedded better-sqlite3 driver. Evidence: focused Vitest 32/32 passed; exact-file ESLint passed; targeted TS compile passed; framework bootstrap passed; cold-path benchmark after native rebuild improved task_list 1159.331ms -> 355.393ms, task_search 1123.773ms -> 366.110ms, task_next 1164.330ms -> 371.164ms."
+  -
+    type: "verify"
+    at: "2026-05-13T10:35:10.369Z"
+    author: "CODER"
+    state: "ok"
+    note: "Moved the shared SQLite projection database to .agentplane/cache.sqlite and kept context/service for context-owned service subdirectories. Evidence: focused Vitest 32/32 passed; exact-file ESLint passed; targeted TS compile passed; agentplane package build passed; smoke verified task list and context reindex both create .agentplane/cache.sqlite; cold-path benchmark still improves read-heavy paths."
 doc_version: 3
-doc_updated_at: "2026-05-13T10:23:32.810Z"
+doc_updated_at: "2026-05-13T10:35:10.375Z"
 doc_updated_by: "CODER"
 description: "Analyze the current AgentPlane CLI performance code after recent changes and implement behavior-preserving speedups for hot read-heavy paths."
 sections:
@@ -86,14 +92,37 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605130947-V6846F
     
+    ### 2026-05-13T10:35:10.369Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Moved the shared SQLite projection database to .agentplane/cache.sqlite and kept context/service for context-owned service subdirectories. Evidence: focused Vitest 32/32 passed; exact-file ESLint passed; targeted TS compile passed; agentplane package build passed; smoke verified task list and context reindex both create .agentplane/cache.sqlite; cold-path benchmark still improves read-heavy paths.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T10:23:32.810Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605130947-V6846F-cli-perf-read-paths/.agentplane/tasks/202605130947-V6846F/blueprint/resolved-snapshot.json
+    - old_digest: 4178befc44e30568c554d526972a8cc76dd7357389df383138ad3d7b39429985
+    - current_digest: 4178befc44e30568c554d526972a8cc76dd7357389df383138ad3d7b39429985
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605130947-V6846F
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: |-
     - Observation: Baseline command: node scripts/measure-cli-cold-path.mjs --suite cli-cold-path --runs 2 --warmups 1. Baseline medians before cache: quickstart 208.652ms, task_list 1159.331ms, task_search 1123.773ms, task_next 1164.330ms, preflight_quick 323.897ms. Final medians: quickstart 206.022ms, task_list 355.393ms, task_search 366.110ms, task_next 371.164ms, preflight_quick 403.428ms.
-      Impact: Task read-heavy paths now reuse .agentplane/context/service/local.sqlite with task_projection_* tables while README.md remains source of truth; context projection uses the same embedded driver without sqlite3 CLI spawn.
+      Impact: Task read-heavy paths now reuse .agentplane/cache.sqlite with task_projection_* tables while README.md remains source of truth; context projection uses the same embedded driver without sqlite3 CLI spawn.
       Resolution: Added better-sqlite3 as trusted dependency, shared embedded sqlite driver, stale-safe task projection cache, focused tests, and cached blueprint resolver for task list.
+    
+    - Observation: Final medians after path move: task_list 436.038ms, task_search 354.972ms, task_next 359.987ms versus original baseline task_list 1159.331ms, task_search 1123.773ms, task_next 1164.330ms.
+      Impact: The cache path now matches ownership: one global AgentPlane cache DB at .agentplane/cache.sqlite, with context projection and task projection separated by tables and owner metadata.
+      Resolution: Updated task projection path resolver, context init manifest/gitignore, context reindex/read path, context doctor, context assimilation forbidden outputs, tests, and docs evidence text.
 id_source: "generated"
 ---
 ## Summary
@@ -143,6 +172,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605130947-V6846F
 
+### 2026-05-13T10:35:10.369Z — VERIFY — ok
+
+By: CODER
+
+Note: Moved the shared SQLite projection database to .agentplane/cache.sqlite and kept context/service for context-owned service subdirectories. Evidence: focused Vitest 32/32 passed; exact-file ESLint passed; targeted TS compile passed; agentplane package build passed; smoke verified task list and context reindex both create .agentplane/cache.sqlite; cold-path benchmark still improves read-heavy paths.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T10:23:32.810Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605130947-V6846F-cli-perf-read-paths/.agentplane/tasks/202605130947-V6846F/blueprint/resolved-snapshot.json
+- old_digest: 4178befc44e30568c554d526972a8cc76dd7357389df383138ad3d7b39429985
+- current_digest: 4178befc44e30568c554d526972a8cc76dd7357389df383138ad3d7b39429985
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605130947-V6846F
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -153,5 +201,9 @@ BlueprintSnapshotRef:
 ## Findings
 
 - Observation: Baseline command: node scripts/measure-cli-cold-path.mjs --suite cli-cold-path --runs 2 --warmups 1. Baseline medians before cache: quickstart 208.652ms, task_list 1159.331ms, task_search 1123.773ms, task_next 1164.330ms, preflight_quick 323.897ms. Final medians: quickstart 206.022ms, task_list 355.393ms, task_search 366.110ms, task_next 371.164ms, preflight_quick 403.428ms.
-  Impact: Task read-heavy paths now reuse .agentplane/context/service/local.sqlite with task_projection_* tables while README.md remains source of truth; context projection uses the same embedded driver without sqlite3 CLI spawn.
+  Impact: Task read-heavy paths now reuse .agentplane/cache.sqlite with task_projection_* tables while README.md remains source of truth; context projection uses the same embedded driver without sqlite3 CLI spawn.
   Resolution: Added better-sqlite3 as trusted dependency, shared embedded sqlite driver, stale-safe task projection cache, focused tests, and cached blueprint resolver for task list.
+
+- Observation: Final medians after path move: task_list 436.038ms, task_search 354.972ms, task_next 359.987ms versus original baseline task_list 1159.331ms, task_search 1123.773ms, task_next 1164.330ms.
+  Impact: The cache path now matches ownership: one global AgentPlane cache DB at .agentplane/cache.sqlite, with context projection and task projection separated by tables and owner metadata.
+  Resolution: Updated task projection path resolver, context init manifest/gitignore, context reindex/read path, context doctor, context assimilation forbidden outputs, tests, and docs evidence text.

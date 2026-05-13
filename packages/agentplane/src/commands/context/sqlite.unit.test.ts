@@ -20,7 +20,7 @@ describe("context SQLite projection", () => {
   });
 
   it("writes, reads, and integrity-checks projections through the embedded driver", async () => {
-    const dbPath = path.join(tempDir, ".agentplane", "context", "service", "local.sqlite");
+    const dbPath = path.join(tempDir, ".agentplane", "cache.sqlite");
 
     await writeSqliteProjection(dbPath, {
       metadata: {

@@ -263,7 +263,7 @@ describe("LocalBackend", () => {
     await mkdir(path.join(tempDir, ".git"), { recursive: true });
 
     expect(resolveTaskProjectionSqlitePath(tasksDir)).toBe(
-      path.join(tempDir, ".agentplane", "context", "service", "local.sqlite"),
+      path.join(tempDir, ".agentplane", "cache.sqlite"),
     );
   });
 

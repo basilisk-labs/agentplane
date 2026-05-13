@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 
+import { resolveAgentplaneCacheSqlitePath } from "../../shared/cache-paths.js";
 import { openSqliteDatabase, type SqliteDatabase } from "../../shared/sqlite-driver.js";
 import type { TaskSummary } from "./shared.js";
 
@@ -56,7 +57,7 @@ function maybeRepoRootFromTasksDir(tasksDir: string): string | null {
 export function resolveTaskProjectionSqlitePath(tasksDir: string): string {
   const gitRoot = maybeRepoRootFromTasksDir(tasksDir);
   if (gitRoot) {
-    return path.join(gitRoot, ".agentplane", "context", "service", "local.sqlite");
+    return resolveAgentplaneCacheSqlitePath(gitRoot);
   }
   return path.join(tasksDir, ".cache", TASK_SQLITE_CACHE_FILENAME);
 }

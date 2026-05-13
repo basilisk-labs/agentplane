@@ -4,6 +4,7 @@ import { access, stat, mkdir, rm, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { infoMessage, warnMessage } from "../../cli/output.js";
+import { resolveAgentplaneCacheSqlitePath } from "../../shared/cache-paths.js";
 import {
   collectMatchingFiles,
   parseJsonlLines,
@@ -310,7 +311,7 @@ export async function cmdContextReindex(opts: {
 }): Promise<number> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const service = path.join(root, ".agentplane", "context", "service");
-  const sqlitePath = path.join(service, "local.sqlite");
+  const sqlitePath = resolveAgentplaneCacheSqlitePath(root);
 
   if (opts.parsed.reset) {
     await rm(sqlitePath, { force: true }).catch(() => {});
@@ -382,7 +383,7 @@ export async function cmdContextReindex(opts: {
 }
 
 export async function readContextProjection(root: string): Promise<ProjectionIndex | null> {
-  const sqlitePath = path.join(root, ".agentplane", "context", "service", "local.sqlite");
+  const sqlitePath = resolveAgentplaneCacheSqlitePath(root);
   const sqliteProjection = await readSqliteProjection(sqlitePath).catch(() => null);
   if (sqliteProjection) return sqliteProjection;
   try {
