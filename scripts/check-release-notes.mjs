@@ -72,6 +72,55 @@ const parseArgs = (argv) => {
   };
 };
 
+const RELEASE_NOTE_TEMPLATE_PLACEHOLDERS = [
+  "2-4 bullets with the main release outcomes in plain language.",
+  "New features or capabilities.",
+  "Behavior/UX improvements that users will notice.",
+  "Bug fixes and regressions.",
+  'Breaking changes, migration steps, or "none".',
+  "Release checks completed (for example: release:prepublish, parity, publish gates).",
+  "Cover all differences from the release plan (`changes.md`/`changes.json`).",
+  "Use detailed, human-readable language, not raw commit log text.",
+  "Keep concrete bullets with explicit outcomes.",
+  "Keep at least one bullet per listed change from `changes.md`/`changes.json`.",
+];
+
+function duplicateSectionHeadings(content) {
+  const seen = new Set();
+  const duplicates = new Set();
+  for (const match of content.matchAll(/^##\s+(.+?)\s*$/gmu)) {
+    const heading = String(match[1] ?? "").trim();
+    if (!heading) continue;
+    const key = heading.toLowerCase();
+    if (seen.has(key)) duplicates.add(heading);
+    seen.add(key);
+  }
+  return [...duplicates].toSorted((a, b) => a.localeCompare(b));
+}
+
+function releaseNoteLinesOutsideCodeFences(content) {
+  const lines = content.split(/\r?\n/u);
+  let inFence = false;
+  const visibleLines = [];
+  for (const line of lines) {
+    if (/^\s*```/.test(line)) {
+      inFence = !inFence;
+      continue;
+    }
+    if (!inFence) visibleLines.push(line);
+  }
+  return visibleLines;
+}
+
+function unreplacedTemplateBullet(content) {
+  const placeholders = new Set(RELEASE_NOTE_TEMPLATE_PLACEHOLDERS);
+  for (const line of releaseNoteLinesOutsideCodeFences(content)) {
+    const match = /^\s*[-*]\s+(.+?)\s*$/u.exec(line);
+    if (match?.[1] && placeholders.has(match[1])) return match[1];
+  }
+  return null;
+}
+
 const main = defineCheck({
   name: "check-release-notes",
   parseArgs,
@@ -117,6 +166,21 @@ const main = defineCheck({
       const content = fs.readFileSync(fullPath, "utf8");
       if (!/release\s+notes/i.test(content)) {
         errors.push(`Release notes must include a "Release Notes" heading in ${relPath}.`);
+      }
+      if (/^##\s+Writing Rules\s*$/mu.test(content)) {
+        errors.push(`Release notes must not include template writing instructions in ${relPath}.`);
+      }
+      const templateBullet = unreplacedTemplateBullet(content);
+      if (templateBullet) {
+        errors.push(
+          `Release notes must replace template placeholder bullet in ${relPath}: ${templateBullet}`,
+        );
+      }
+      const duplicateHeadings = duplicateSectionHeadings(content);
+      if (duplicateHeadings.length > 0) {
+        errors.push(
+          `Release notes must not include duplicate section headings in ${relPath}: ${duplicateHeadings.join(", ")}`,
+        );
       }
       const minBullets = Math.max(
         minBulletsOverride ?? 0,

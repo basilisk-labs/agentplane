@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605130758-4FB61V/release-notes-template-guard",
+  "created_at": "2026-05-13T08:09:10.107Z",
+  "head_sha": "0698e414f6ced818c0aa3b5568d9e057fa02860f",
+  "last_verified_at": "2026-05-13T09:54:05.898Z",
+  "last_verified_sha": "24b1dc2ed0f276aa7b95f94ac4a098e07864595e",
+  "schema_version": 1,
+  "task_id": "202605130758-4FB61V",
+  "updated_at": "2026-05-13T10:14:41.383Z",
+  "verify": {
+    "status": "pass"
+  }
+}
