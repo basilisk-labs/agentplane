@@ -24,12 +24,24 @@ Created: 2026-05-13T14:50:25.406Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T14:50:25.406Z
+- Updated: 2026-05-13T15:03:01.411Z
 - Branch: task/202605131449-GS3HB0/agentic-context-extraction
-- Head: 5f62ee4395aa
+- Head: e237c64f2d50
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 513 +++++++++++++++++++++
+ docs/developer/local-context.mdx                   |  34 +-
+ docs/user/cli-reference.generated.mdx              |  10 +-
+ docs/user/commands.mdx                             |  14 +-
+ docs/user/local-context.mdx                        |  13 +
+ .../src/commands/context/context.spec.ts           |  24 +-
+ .../commands/context/harvest-tasks-extraction.ts   |   1 +
+ .../src/commands/context/harvest-tasks.test.ts     | 182 +++++++-
+ .../src/commands/context/harvest-tasks.ts          | 110 ++++-
+ packages/agentplane/src/commands/task/new.ts       |   3 +-
+ .../src/context/harvest-tasks-artifacts.ts         |  18 +-
+ .../src/context/harvest-tasks-extraction.ts        | 317 +++++++++++++
+ 12 files changed, 1217 insertions(+), 22 deletions(-)
 ```
 
 </details>
