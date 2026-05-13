@@ -57,8 +57,8 @@ function compareSemverish(left: string, right: string): number {
   const parsedLeft = parseSemver(left);
   const parsedRight = parseSemver(right);
   if (parsedLeft && parsedRight) {
-    for (const [idx, leftPart] of parsedLeft.entries()) {
-      const delta = leftPart - parsedRight[idx];
+    for (const [idx, value] of parsedLeft.entries()) {
+      const delta = value - parsedRight[idx];
       if (delta !== 0) return delta;
     }
     return 0;
