@@ -16,7 +16,7 @@ Fix branch_pr command-order drift across gateway docs, quickstart guidance, and 
 ## Verification
 
 - State: ok
-- Note: Expanded lifecycle contract work verified: workflow lifecycle parity checker passes in workflows:command-check, focused Vitest passes, typecheck passes, policy routing OK, doctor OK, builtin assets fresh, formatting passed, verify-show current.
+- Note: Lifecycle parity contract verified at current branch head: workflows:command-check, focused Vitest, typecheck, policy routing, doctor, builtin asset freshness, formatting, and verify-show all passed.
 - Canonical workflow state lives in the task README.
 
 <details>
