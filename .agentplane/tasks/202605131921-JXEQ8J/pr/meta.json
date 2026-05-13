@@ -1,4 +1,7 @@
 {
+  "artifact_state": "remote_failed",
+  "artifact_state_reason": "task branch push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.\nfatal: Authentication failed for 'https://github.com/basilisk-labs/agentplane.git/'",
+  "artifact_state_updated_at": "2026-05-13T19:42:09.369Z",
   "base": "main",
   "branch": "task/202605131921-JXEQ8J/cloud-auto-sync",
   "created_at": "2026-05-13T19:40:40.747Z",
