@@ -24,12 +24,22 @@ Created: 2026-05-13T10:49:55.784Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T10:49:55.784Z
+- Updated: 2026-05-13T11:05:59.681Z
 - Branch: task/202605131049-2NHAWN/context-task-harvest
-- Head: d7bfe336f295
+- Head: b1acddb07b2b
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 520 ++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |  52 ++
+ docs/user/commands.mdx                             |   9 +-
+ docs/user/local-context.mdx                        |  23 +
+ .../src/cli/run-cli/command-catalog/project.ts     |   4 +
+ .../src/commands/context/context.command.ts        |  29 +
+ .../src/commands/context/context.spec.ts           | 125 ++++
+ packages/agentplane/src/commands/context/doctor.ts |  32 +-
+ .../src/commands/context/harvest-tasks.test.ts     | 219 +++++++
+ .../src/commands/context/harvest-tasks.ts          | 677 +++++++++++++++++++++
+ 10 files changed, 1687 insertions(+), 3 deletions(-)
 ```
 
 </details>
