@@ -51,7 +51,7 @@ events:
 doc_version: 3
 doc_updated_at: "2026-05-12T17:11:47.739Z"
 doc_updated_by: "INTEGRATOR"
-description: "Пост для блога о назначении blueprints, почему они нужны и как помогают в релизах"
+description: "Blog post about the purpose of blueprints, why they are needed, and how they help with releases."
 sections:
   Summary: "Add a docs blog post in Russian explaining what Blueprints are and why they matter for stable releases."
   Scope: |-

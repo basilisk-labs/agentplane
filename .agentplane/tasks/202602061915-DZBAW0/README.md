@@ -1,9 +1,10 @@
 ---
 id: "202602061915-DZBAW0"
-title: "P1: Единый CommitPolicy для guard и hooks"
+title: "P1: Unified CommitPolicy for guards and hooks"
 status: "DONE"
 priority: "high"
 owner: "CODER"
+revision: 1
 depends_on: []
 tags:
   - "git"
@@ -21,6 +22,7 @@ verification:
   updated_at: "2026-02-06T19:37:41.003Z"
   updated_by: "TESTER"
   note: "bun run test:agentplane passed."
+  attempts: 0
 commit:
   hash: "55aa964f36b865424c44e860ad31671faf618524"
   message: "✨ DZBAW0 git"
@@ -31,10 +33,37 @@ comments:
   -
     author: "CODER"
     body: "Verified: Guard and hooks share consistent commit policy behavior (tasks_path from config, robust allowlist matching, branch_pr base restrictions); commit-msg hook requires AGENTPLANE_TASK_ID; bun run test:agentplane passed."
+events: []
 doc_version: 3
 doc_updated_at: "2026-02-06T19:39:09.220Z"
 doc_updated_by: "CODER"
-description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Унифицировать policy: protected paths из config, allowlist matching через path.relative, commit-msg и guard используют core validateCommitSubject; hooks не должны дергать backend/network."
+description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Unify policy handling: protected paths from config, allowlist matching via path.relative, commit-msg and guard use core validateCommitSubject, and hooks must not call backend/network."
+sections:
+  Summary: ""
+  Scope: ""
+  Plan: |-
+    1) Extract shared commit/allowlist path policy helpers.
+    2) Use config.paths.tasks_path in guard, and switch allowlist matching to path.relative-based logic.
+    3) Add branch_pr base-branch restrictions to guard commit (align with pre-commit hook).
+    4) Make commit-msg hook avoid backend/network (require AGENTPLANE_TASK_ID if needed).
+    5) Update tests and run bun run test:agentplane.
+  Verify Steps: |-
+    <!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+    1. <Action>. Expected: <observable result>.
+    2. <Action>. Expected: <observable result>.
+    3. <Action>. Expected: <observable result>.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    #### 2026-02-06T19:37:41.003Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: bun run test:agentplane passed.
+
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: ""
+  Findings: ""
 id_source: "generated"
 ---
 ## Summary
@@ -74,6 +103,5 @@ Note: bun run test:agentplane passed.
 
 
 ## Findings
-
 
 ## Risks
