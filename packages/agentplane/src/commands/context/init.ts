@@ -67,7 +67,7 @@ export async function cmdContextInit(opts: {
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw new CliError({
-      exitCode: 3,
+      exitCode: 8,
       code: "E_RUNTIME",
       message: `context init failed: ${(err as Error).message}`,
     });

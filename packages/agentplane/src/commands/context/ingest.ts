@@ -380,7 +380,7 @@ async function collectCandidateRows(
       const abs = path.resolve(root, raw);
       if (!ensureWithinRoot(root, abs)) {
         throw new CliError({
-          exitCode: 2,
+          exitCode: 3,
           code: "E_VALIDATION",
           message: `source path outside project root: ${raw}`,
         });
@@ -390,7 +390,7 @@ async function collectCandidateRows(
         statRaw = await stat(abs);
       } catch {
         throw new CliError({
-          exitCode: 2,
+          exitCode: 3,
           code: "E_VALIDATION",
           message: `source path does not exist: ${raw}`,
         });
