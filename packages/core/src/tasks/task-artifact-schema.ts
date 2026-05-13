@@ -70,7 +70,11 @@ export function validateAcr(value: unknown): AgentChangeRecord {
 }
 
 export function validateTaskReadmeFrontmatter(value: unknown): TaskFrontmatter {
-  return assertValid("task README frontmatter", TASK_README_FRONTMATTER_ZOD_SCHEMA, value);
+  return assertValid(
+    "task README frontmatter",
+    TASK_README_FRONTMATTER_ZOD_SCHEMA,
+    value,
+  ) as TaskFrontmatter;
 }
 
 export function listTasksExportSnapshotSchemaErrors(value: unknown): string[] {
@@ -78,7 +82,7 @@ export function listTasksExportSnapshotSchemaErrors(value: unknown): string[] {
 }
 
 export function validateTasksExportSnapshot(value: unknown): TasksExportSnapshot {
-  return assertValid("tasks.json", TASKS_EXPORT_ZOD_SCHEMA, value);
+  return assertValid("tasks.json", TASKS_EXPORT_ZOD_SCHEMA, value) as TasksExportSnapshot;
 }
 
 export function listTaskPrMetaSchemaErrors(value: unknown): string[] {

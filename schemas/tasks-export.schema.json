@@ -497,7 +497,7 @@
                 "type": ["string", "null"]
               }
             },
-            "required": ["state", "attempts", "updated_at", "updated_by", "note"],
+            "required": ["state", "updated_at", "updated_by", "note"],
             "additionalProperties": true
           },
           "commit": {
