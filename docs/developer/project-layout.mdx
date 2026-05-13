@@ -12,14 +12,17 @@ description: "How the repository is structured and where key components live."
 - `schemas/`: root discovery catalog for public JSON Schemas
 - `packages/testkit/`: shared test helpers
 - `docs/`: user and developer documentation
-- `scripts/`: repository maintenance and sync scripts
+- `scripts/`: repository maintenance scripts, grouped by ownership (`checks/`, `generate/`,
+  `bench/`, `release/`, `workflow/`, with root compatibility wrappers)
 - `marketing/`: optional Git submodule for marketing operations initiated from this repository
 - `.github/workflows/`: CI and publish pipelines
 
 ## CLI package layout
 
 - `packages/agentplane/src/cli/`: parser, help rendering, command wiring
-- `packages/agentplane/src/commands/`: command handlers and domain logic
+- `packages/agentplane/src/commands/`: command handlers and thin CLI adapters
+- `packages/agentplane/src/context/`: context domain logic for local projection, ingest, doctor,
+  verification, SQLite projection, and task-harvest artifacts
 - `packages/agentplane/src/backends/`: task backend adapters
 - `packages/agentplane/src/**/shared/`: layer-scoped shared helpers; see
   [Module topology](module-topology) before moving helpers between layers
@@ -32,8 +35,8 @@ description: "How the repository is structured and where key components live."
 - `schemas/*.schema.json`: root discovery catalog for generated public schemas
 - `packages/spec/schemas/*.schema.json`: generated schema mirrors for tooling and published distribution
 - `packages/core/schemas/*.schema.json`: synchronized runtime-package mirrors
-- `scripts/sync-schemas.mjs`: sync/check tool for schema parity
-- `scripts/sync-agent-templates.mjs`: sync/check tool for agent profile parity (`assets/agents` vs `.agentplane/agents` in this repository)
+- `scripts/generate/sync-schemas.mjs`: sync/check tool for schema parity
+- `scripts/generate/sync-agent-templates.mjs`: sync/check tool for agent profile parity (`assets/agents` vs `.agentplane/agents` in this repository)
 
 ## Project runtime directories
 

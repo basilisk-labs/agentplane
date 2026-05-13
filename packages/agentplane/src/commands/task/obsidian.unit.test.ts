@@ -106,14 +106,18 @@ describe("Obsidian task projection", () => {
     ]);
 
     const taskList = result.files.find((file) => file.path === "tasks.md")?.content ?? "";
-    expect(taskList).toContain("[202605050001-AAAAAA](tasks/202605050001-AAAAAA/README.md)");
+    expect(taskList).toContain("[202605050001-AAAAAA](../../tasks/202605050001-AAAAAA/README.md)");
     expect(taskList).toContain(String.raw`First \| task`);
-    expect(taskList).toContain("[202605050001-AAAAAA](tasks/202605050001-AAAAAA/README.md)");
+    expect(taskList).toContain("[202605050001-AAAAAA](../../tasks/202605050001-AAAAAA/README.md)");
 
     const docsTag = result.files.find((file) => file.path === "by-tag/docs.md")?.content ?? "";
     expect(docsTag).toContain("[Index](../index.md)");
-    expect(docsTag).toContain("[202605050001-BBBBBB](../tasks/202605050001-BBBBBB/README.md)");
-    expect(docsTag).toContain("[202605050001-AAAAAA](../tasks/202605050001-AAAAAA/README.md)");
+    expect(docsTag).toContain(
+      "[202605050001-BBBBBB](../../../tasks/202605050001-BBBBBB/README.md)",
+    );
+    expect(docsTag).toContain(
+      "[202605050001-AAAAAA](../../../tasks/202605050001-AAAAAA/README.md)",
+    );
 
     expect(result.files.map((file) => file.path)).toEqual([
       "index.md",
@@ -127,26 +131,41 @@ describe("Obsidian task projection", () => {
     ]);
   });
 
-  it("writes the projection under .agentplane and removes stale group pages", async () => {
+  it("writes the projection under .agentplane/generated and removes stale group pages", async () => {
     const root = await mkRoot();
     await writeObsidianTaskProjection({
       root,
       tasks: [task({ id: "202605050001-AAAAAA", tags: ["code"] })],
     });
-    await mkdir(path.join(root, ".agentplane", "by-tag"), { recursive: true });
-    await writeFile(path.join(root, ".agentplane", "by-tag", "manual.md"), "# Manual\n", "utf8");
+    await mkdir(path.join(root, ".agentplane", "generated", "obsidian", "by-tag"), {
+      recursive: true,
+    });
+    await writeFile(
+      path.join(root, ".agentplane", "generated", "obsidian", "by-tag", "manual.md"),
+      "# Manual\n",
+      "utf8",
+    );
     await writeObsidianTaskProjection({
       root,
       tasks: [task({ id: "202605050001-BBBBBB", tags: ["docs"] })],
     });
 
     await expect(
-      readFile(path.join(root, ".agentplane", "by-tag", "code.md"), "utf8"),
+      readFile(
+        path.join(root, ".agentplane", "generated", "obsidian", "by-tag", "code.md"),
+        "utf8",
+      ),
     ).rejects.toThrow();
-    const manual = await readFile(path.join(root, ".agentplane", "by-tag", "manual.md"), "utf8");
+    const manual = await readFile(
+      path.join(root, ".agentplane", "generated", "obsidian", "by-tag", "manual.md"),
+      "utf8",
+    );
     expect(manual).toBe("# Manual\n");
-    const docs = await readFile(path.join(root, ".agentplane", "by-tag", "docs.md"), "utf8");
-    expect(docs).toContain("[202605050001-BBBBBB](../tasks/202605050001-BBBBBB/README.md)");
+    const docs = await readFile(
+      path.join(root, ".agentplane", "generated", "obsidian", "by-tag", "docs.md"),
+      "utf8",
+    );
+    expect(docs).toContain("[202605050001-BBBBBB](../../../tasks/202605050001-BBBBBB/README.md)");
   });
 
   it("cleans generated projection files without removing canonical or manual files", async () => {
@@ -163,25 +182,34 @@ describe("Obsidian task projection", () => {
       "# Canonical\n",
       "utf8",
     );
-    await writeFile(path.join(root, ".agentplane", "by-tag", "manual.md"), "# Manual\n", "utf8");
+    await writeFile(
+      path.join(root, ".agentplane", "generated", "obsidian", "by-tag", "manual.md"),
+      "# Manual\n",
+      "utf8",
+    );
 
     const result = await cleanObsidianTaskProjection({ root });
 
     expect(result.deleted).toEqual(
       expect.arrayContaining([
-        ".agentplane/index.md",
-        ".agentplane/tasks.md",
-        ".agentplane/by-tag/code.md",
+        ".agentplane/generated/obsidian/index.md",
+        ".agentplane/generated/obsidian/tasks.md",
+        ".agentplane/generated/obsidian/by-tag/code.md",
       ]),
     );
     expect(result.deleted).not.toContain(".agentplane/tasks/202605050001-AAAAAA/README.md");
-    await expect(readFile(path.join(root, ".agentplane", "index.md"), "utf8")).rejects.toThrow();
+    await expect(
+      readFile(path.join(root, ".agentplane", "generated", "obsidian", "index.md"), "utf8"),
+    ).rejects.toThrow();
     const canonical = await readFile(
       path.join(root, ".agentplane", "tasks", "202605050001-AAAAAA", "README.md"),
       "utf8",
     );
     expect(canonical).toBe("# Canonical\n");
-    const manual = await readFile(path.join(root, ".agentplane", "by-tag", "manual.md"), "utf8");
+    const manual = await readFile(
+      path.join(root, ".agentplane", "generated", "obsidian", "by-tag", "manual.md"),
+      "utf8",
+    );
     expect(manual).toBe("# Manual\n");
   });
 
@@ -212,15 +240,18 @@ describe("Obsidian task projection", () => {
       expect(code).toBe(0);
       expect(listProjectionTasks).toHaveBeenCalledTimes(1);
       expect(stdout).toHaveBeenCalledWith(
-        ".agentplane/index.md\n.agentplane/tasks.md\nfiles=5 tasks=1\n",
+        ".agentplane/generated/obsidian/index.md\n.agentplane/generated/obsidian/tasks.md\nfiles=5 tasks=1\n",
       );
     } finally {
       stdout.mockRestore();
     }
 
-    const index = await readFile(path.join(root, ".agentplane", "index.md"), "utf8");
+    const index = await readFile(
+      path.join(root, ".agentplane", "generated", "obsidian", "index.md"),
+      "utf8",
+    );
     expect(index).toContain(
-      "Task README files under `tasks/<task-id>/README.md` remain canonical.",
+      "Task README files under `.agentplane/tasks/<task-id>/README.md` remain canonical.",
     );
   });
 

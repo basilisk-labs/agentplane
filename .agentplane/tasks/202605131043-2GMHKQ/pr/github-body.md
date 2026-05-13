@@ -1,0 +1,253 @@
+Task: `202605131043-2GMHKQ`
+Title: Move generated projections under .agentplane/generated
+Canonical task record: `.agentplane/tasks/202605131043-2GMHKQ/README.md`
+
+## Summary
+
+Move generated projections under .agentplane/generated
+
+Consolidate AgentPlane generated projection surfaces under .agentplane/generated, including task navigation/Obsidian output as a wiki/navigation adapter while preserving compatibility and cleanup behavior.
+
+## Scope
+
+- In scope: Consolidate AgentPlane generated projection surfaces under .agentplane/generated, including task navigation/Obsidian output as a wiki/navigation adapter while preserving compatibility and cleanup behavior.
+- Out of scope: unrelated refactors not required for "Move generated projections under .agentplane/generated".
+
+## Verification
+
+- State: ok
+- Note: Verified: Obsidian/task navigation projection now writes to .agentplane/generated/obsidian with legacy generated-root cleanup. Checks passed: focused obsidian/context Vitest, typecheck, eslint, prettier, docs:cli:check, docs:ia:check, framework:dev:bootstrap.
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-13T13:28:25.589Z
+- Branch: task/202605131043-2GMHKQ/generated-scripts-context-refactor
+- Head: fc4e4f0866e2
+
+```text
+ .../blueprint/resolved-snapshot.json               |  512 +++++++++
+ .agentplane/tasks/202605131043-802HWG/README.md    |   91 +-
+ .../blueprint/resolved-snapshot.json               |  512 +++++++++
+ .agentplane/tasks/202605131043-GD7RJJ/README.md    |   91 +-
+ .../blueprint/resolved-snapshot.json               |  512 +++++++++
+ docs/developer/project-layout.mdx                  |   11 +-
+ docs/user/cli-reference.generated.mdx              |    8 +-
+ docs/user/commands.mdx                             |   27 +-
+ docs/user/tasks-and-backends.mdx                   |   23 +-
+ package.json                                       |  168 +--
+ packages/agentplane/package.json                   |    8 +-
+ .../src/commands/context/context-utils.ts          |  262 +----
+ packages/agentplane/src/commands/context/doctor.ts |  272 +----
+ .../commands/context/harvest-tasks-artifacts.ts    |  572 +---------
+ .../src/commands/context/harvest-tasks-markers.ts  |  132 +--
+ packages/agentplane/src/commands/context/ingest.ts |  592 +----------
+ .../agentplane/src/commands/context/reindex.ts     |  396 +------
+ packages/agentplane/src/commands/context/sqlite.ts |  217 +---
+ .../agentplane/src/commands/context/verify-task.ts |  422 +-------
+ .../commands/release/release-check-script.test.ts  |    7 +-
+ .../commands/release/release-ci-contract.test.ts   |   12 +-
+ .../src/commands/task/obsidian.command.ts          |    8 +-
+ packages/agentplane/src/commands/task/obsidian.ts  |   61 +-
+ .../src/commands/task/obsidian.unit.test.ts        |   71 +-
+ packages/agentplane/src/context/context-utils.ts   |  261 +++++
+ packages/agentplane/src/context/doctor.ts          |  271 +++++
+ .../src/context/harvest-tasks-artifacts.ts         |  571 ++++++++++
+ .../src/context/harvest-tasks-markers.ts           |  131 +++
+ packages/agentplane/src/context/ingest.ts          |  590 +++++++++++
+ packages/agentplane/src/context/reindex.ts         |  395 +++++++
+ packages/agentplane/src/context/sqlite.ts          |  212 ++++
+ packages/agentplane/src/context/verify-task.ts     |  421 ++++++++
+ packages/agentplane/src/runner/codex-smoke.test.ts |    7 +-
+ .../src/runtime/shared/runtime-artifacts.ts        |    1 +
+ packages/core/package.json                         |    8 +-
+ packages/recipes/package.json                      |    8 +-
+ scripts/README.md                                  |  224 ++--
+ scripts/bench/cli-benchmark-runner.mjs             |  249 +++++
+ scripts/bench/compare-cli-perf.mjs                 |  220 ++++
+ scripts/bench/compare-cli-walltime.mjs             |  238 +++++
+ scripts/bench/measure-cli-cold-path.mjs            |   20 +
+ scripts/bench/measure-cli-perf.mjs                 |   13 +
+ scripts/bench/measure-cli-walltime.mjs             |  209 ++++
+ scripts/bootstrap-framework-dev.mjs                |  362 +------
+ scripts/check-acr-example-version.mjs              |   32 +-
+ scripts/check-agent-bootstrap-fresh.mjs            |  287 +-----
+ scripts/check-agent-onboarding-scenario.mjs        |  158 +--
+ scripts/check-agentplane-artifacts.mjs             |  119 +--
+ scripts/check-blueprint-release-gate.mjs           |   55 +-
+ scripts/check-cli-cold-baseline.mjs                |  261 +----
+ scripts/check-cli-reference-fresh.mjs              |   42 +-
+ scripts/check-cli-walltime-baseline.mjs            |  202 +---
+ scripts/check-clone-baseline.mjs                   |  310 +-----
+ scripts/check-coverage-thresholds.mjs              |   49 +-
+ scripts/check-critical-test-route.mjs              |   94 +-
+ scripts/check-depcruise-known-violations.mjs       |  142 +--
+ scripts/check-design-language.mjs                  |  117 +--
+ scripts/check-docs-ia.mjs                          |  380 +------
+ scripts/check-github-protection-contract.mjs       |  142 +--
+ scripts/check-knip-baseline.mjs                    |  252 +----
+ scripts/check-local-tarball-install-smoke.mjs      |  119 +--
+ scripts/check-no-console.mjs                       |  129 +--
+ scripts/check-npm-version-availability.mjs         |   83 +-
+ scripts/check-oversized-test-baseline.mjs          |  289 +-----
+ scripts/check-package-tarball.mjs                  |  150 +--
+ scripts/check-policy-routing.mjs                   |    2 +-
+ scripts/check-published-packages.mjs               |  114 +-
+ scripts/check-recipes-inventory-fresh.mjs          |   24 +-
+ scripts/check-release-demo.mjs                     |   40 +-
+ scripts/check-release-incidents.mjs                |   51 +-
+ scripts/check-release-notes.mjs                    |  214 +---
+ scripts/check-release-parity.mjs                   |   26 +-
+ scripts/check-release-recovery-state.mjs           | 1087 +-------------------
+ scripts/check-release-version.mjs                  |   54 +-
+ scripts/check-significant-coverage.mjs             |   41 +-
+ scripts/check-spec-examples.mjs                    |  206 +---
+ scripts/check-task-state.mjs                       |  107 +-
+ scripts/check-test-routing.mjs                     |  144 +--
+ scripts/check-types-files.mjs                      |   96 +-
+ scripts/check-vitest-projects.mjs                  |   41 +-
+ scripts/check-workflow-command-contract.mjs        |  114 +-
+ scripts/check-workflow-harness-coverage.mjs        |   51 +-
+ scripts/checks/check-acr-example-version.mjs       |   31 +
+ scripts/checks/check-agent-bootstrap-fresh.mjs     |  286 +++++
+ scripts/checks/check-agent-onboarding-scenario.mjs |  157 +++
+ scripts/checks/check-agentplane-artifacts.mjs      |  118 +++
+ scripts/checks/check-blueprint-release-gate.mjs    |   54 +
+ scripts/checks/check-cli-cold-baseline.mjs         |  260 +++++
+ scripts/checks/check-cli-reference-fresh.mjs       |   41 +
+ scripts/checks/check-cli-walltime-baseline.mjs     |  201 ++++
+ scripts/checks/check-clone-baseline.mjs            |  309 ++++++
+ scripts/checks/check-coverage-thresholds.mjs       |   48 +
+ scripts/checks/check-critical-test-route.mjs       |   93 ++
+ .../checks/check-depcruise-known-violations.mjs    |  141 +++
+ scripts/checks/check-design-language.mjs           |  116 +++
+ scripts/checks/check-docs-ia.mjs                   |  379 +++++++
+ .../checks/check-github-protection-contract.mjs    |  141 +++
+ scripts/checks/check-knip-baseline.mjs             |  251 +++++
+ scripts/checks/check-no-console.mjs                |  128 +++
+ scripts/checks/check-oversized-test-baseline.mjs   |  284 +++++
+ scripts/checks/check-policy-routing.mjs            |    1 +
+ scripts/checks/check-recipes-inventory-fresh.mjs   |   23 +
+ scripts/checks/check-significant-coverage.mjs      |   40 +
+ scripts/checks/check-spec-examples.mjs             |  205 ++++
+ scripts/checks/check-task-state.mjs                |  106 ++
+ scripts/checks/check-test-routing.mjs              |  129 +++
+ scripts/checks/check-types-files.mjs               |   95 ++
+ scripts/checks/check-vitest-projects.mjs           |   40 +
+ scripts/checks/check-workflow-command-contract.mjs |  113 ++
+ scripts/checks/check-workflow-harness-coverage.mjs |   50 +
+ scripts/checks/ci-scope.mjs                        |  115 +++
+ scripts/checks/hotspot-report.mjs                  |  508 +++++++++
+ scripts/checks/run-backend-live-suite.mjs          |   99 ++
+ scripts/checks/run-checks.mjs                      |   91 ++
+ scripts/checks/run-commit-msg-hook.mjs             |   26 +
+ scripts/checks/run-local-ci.mjs                    |  233 +++++
+ scripts/checks/run-pre-commit-hook.mjs             |  123 +++
+ scripts/checks/run-pre-commit-test-fast.mjs        |   31 +
+ scripts/checks/run-pre-push-hook.mjs               |  331 ++++++
+ scripts/checks/run-significant-coverage-suite.mjs  |   29 +
+ scripts/checks/run-vitest-suite.mjs                |  162 +++
+ scripts/ci-scope.mjs                               |  116 +--
+ scripts/cli-benchmark-runner.mjs                   |  253 +----
+ scripts/compare-cli-perf.mjs                       |  221 +---
+ scripts/compare-cli-walltime.mjs                   |  239 +----
+ scripts/enforce-github-publish.mjs                 |   12 +-
+ scripts/generate-agent-bootstrap-doc.mjs           |   57 +-
+ scripts/generate-builtin-assets.mjs                |  111 +-
+ scripts/generate-bun-cli-assets.mjs                |  244 +----
+ scripts/generate-llms-full.mjs                     |   51 +-
+ scripts/generate-recipes-inventory.mjs             |  180 +---
+ scripts/generate-release-distribution.mjs          |  530 +---------
+ scripts/generate-roadmap-illustration.mjs          |   50 +-
+ scripts/generate-scripts-readme.mjs                |  186 +---
+ scripts/generate-standalone-cli-assets.mjs         |  590 +----------
+ scripts/generate-website-docs.mjs                  |   89 +-
+ scripts/generate/generate-agent-bootstrap-doc.mjs  |   56 +
+ scripts/generate/generate-builtin-assets.mjs       |  110 ++
+ scripts/generate/generate-bun-cli-assets.mjs       |  243 +++++
+ scripts/generate/generate-llms-full.mjs            |   50 +
+ scripts/generate/generate-recipes-inventory.mjs    |  171 +++
+ scripts/generate/generate-release-distribution.mjs |  529 ++++++++++
+ scripts/generate/generate-roadmap-illustration.mjs |   49 +
+ scripts/generate/generate-scripts-readme.mjs       |  187 ++++
+ .../generate/generate-standalone-cli-assets.mjs    |  589 +++++++++++
+ scripts/generate/generate-website-docs.mjs         |   88 ++
+ scripts/generate/render-ghcr-image-metadata.mjs    |  217 ++++
+ scripts/generate/render-homebrew-formula.mjs       |  194 ++++
+ scripts/generate/render-scoop-manifest.mjs         |  175 ++++
+ .../generate/render-setup-agentplane-action.mjs    |  268 +++++
+ scripts/generate/sync-agent-templates.mjs          |   74 ++
+ scripts/generate/sync-schemas.mjs                  |   91 ++
+ scripts/hotspot-report.mjs                         |  509 +--------
+ scripts/manifest.mjs                               |  823 +--------------
+ scripts/measure-cli-cold-path.mjs                  |   21 +-
+ scripts/measure-cli-perf.mjs                       |   14 +-
+ scripts/measure-cli-walltime.mjs                   |  213 +---
+ scripts/prepare-hosted-task-closure.mjs            |  163 +--
+ scripts/prune-package-js.mjs                       |   25 +-
+ scripts/publish-external-distribution.mjs          |  360 +------
+ scripts/reinstall-global-agentplane.sh             |   41 +-
+ scripts/release-task-evidence.mjs                  |  516 +---------
+ .../release/check-local-tarball-install-smoke.mjs  |  118 +++
+ scripts/release/check-npm-version-availability.mjs |   82 ++
+ scripts/release/check-package-tarball.mjs          |  149 +++
+ scripts/release/check-published-packages.mjs       |  113 ++
+ scripts/release/check-release-demo.mjs             |   39 +
+ scripts/release/check-release-incidents.mjs        |   50 +
+ scripts/release/check-release-notes.mjs            |  213 ++++
+ scripts/release/check-release-parity.mjs           |   25 +
+ scripts/release/check-release-recovery-state.mjs   | 1086 +++++++++++++++++++
+ scripts/release/check-release-version.mjs          |   53 +
+ scripts/release/enforce-github-publish.mjs         |   11 +
+ scripts/release/manifest.mjs                       |  822 +++++++++++++++
+ scripts/release/prune-package-js.mjs               |   24 +
+ scripts/release/publish-external-distribution.mjs  |  359 +++++++
+ scripts/release/release-check.mjs                  |    2 +
+ scripts/release/release-task-evidence.mjs          |  515 ++++++++++
+ scripts/release/resolve-canonical-release-sha.mjs  |  244 +++++
+ scripts/release/resolve-release-ready-source.mjs   |   94 ++
+ scripts/release/run-local-release-e2e.mjs          |  357 +++++++
+ scripts/release/smoke-bun-compiled-cli.mjs         |  208 ++++
+ scripts/release/smoke-standalone-cli-artifact.mjs  |  280 +++++
+ scripts/render-ghcr-image-metadata.mjs             |  218 +---
+ scripts/render-homebrew-formula.mjs                |  195 +---
+ scripts/render-scoop-manifest.mjs                  |  176 +---
+ scripts/render-setup-agentplane-action.mjs         |  269 +----
+ scripts/repair-historical-task-commits.mjs         |  120 +--
+ scripts/resolve-canonical-release-sha.mjs          |  245 +----
+ scripts/resolve-release-ready-source.mjs           |   95 +-
+ scripts/run-backend-live-suite.mjs                 |  100 +-
+ scripts/run-checks.mjs                             |   92 +-
+ scripts/run-commit-msg-hook.mjs                    |   27 +-
+ scripts/run-local-ci.mjs                           |  234 +----
+ scripts/run-local-release-e2e.mjs                  |  358 +------
+ scripts/run-pre-commit-hook.mjs                    |  124 +--
+ scripts/run-pre-commit-test-fast.mjs               |   32 +-
+ scripts/run-pre-push-hook.mjs                      |  332 +-----
+ scripts/run-runner-codex-approval-probe.mjs        |  220 +---
+ scripts/run-runner-codex-smoke.mjs                 |  600 +----------
+ scripts/run-significant-coverage-suite.mjs         |   30 +-
+ scripts/run-vitest-suite.mjs                       |  165 +--
+ scripts/run-workflow-coverage-suite.mjs            |   30 +-
+ scripts/run-workflows-lint.mjs                     |   39 +-
+ scripts/smoke-bun-compiled-cli.mjs                 |  209 +---
+ scripts/smoke-standalone-cli-artifact.mjs          |  281 +----
+ scripts/sync-agent-templates.mjs                   |   75 +-
+ scripts/sync-schemas.mjs                           |   92 +-
+ scripts/verify-global-agentplane-install.mjs       |  173 +---
+ scripts/wait-remote-pr-checks.mjs                  |  595 +----------
+ scripts/workflow/bootstrap-framework-dev.mjs       |  361 +++++++
+ scripts/workflow/prepare-hosted-task-closure.mjs   |  162 +++
+ scripts/workflow/reinstall-global-agentplane.sh    |   38 +
+ .../workflow/repair-historical-task-commits.mjs    |  119 +++
+ .../workflow/run-runner-codex-approval-probe.mjs   |  219 ++++
+ scripts/workflow/run-runner-codex-smoke.mjs        |  599 +++++++++++
+ scripts/workflow/run-workflow-coverage-suite.mjs   |   29 +
+ scripts/workflow/run-workflows-lint.mjs            |   38 +
+ .../workflow/verify-global-agentplane-install.mjs  |  172 ++++
+ scripts/workflow/wait-remote-pr-checks.mjs         |  594 +++++++++++
+ 220 files changed, 21866 insertions(+), 19950 deletions(-)
+```
+
+</details>

@@ -135,6 +135,10 @@ describe("classifyCodexSmokeRun", () => {
       path.join(REPO_ROOT, "scripts", "run-runner-codex-smoke.mjs"),
       "utf8",
     );
+    const smokeImplementation = await readFile(
+      path.join(REPO_ROOT, "scripts", "workflow", "run-runner-codex-smoke.mjs"),
+      "utf8",
+    );
 
     expect(packageJson.scripts?.["runner:codex:smoke"]).toBe(
       "bun scripts/run-runner-codex-smoke.mjs",
@@ -144,6 +148,7 @@ describe("classifyCodexSmokeRun", () => {
     expect(packageJson.scripts?.["ci:local:full"] ?? "").not.toContain("runner:codex:smoke");
     expect(localCiScript).not.toContain("runner:codex:smoke");
     expect(prePushHook).not.toContain("runner:codex:smoke");
-    expect(smokeScript).toContain("--live-custom-wrapper");
+    expect(smokeScript).toContain("./workflow/run-runner-codex-smoke.mjs");
+    expect(smokeImplementation).toContain("--live-custom-wrapper");
   });
 });

@@ -133,17 +133,17 @@ An optional Markdown navigation projection can be generated for humans and agent
 agentplane task obsidian
 ```
 
-This writes gitignored Markdown files under `.agentplane/` for compatibility with Obsidian and
-plain Markdown browsers:
+This writes gitignored Markdown files under `.agentplane/generated/obsidian/` for compatibility
+with Obsidian and plain Markdown browsers:
 
-- `.agentplane/index.md`
-- `.agentplane/tasks.md`
-- `.agentplane/by-status/*.md`
-- `.agentplane/by-tag/*.md`
-- `.agentplane/by-owner/*.md`
+- `.agentplane/generated/obsidian/index.md`
+- `.agentplane/generated/obsidian/tasks.md`
+- `.agentplane/generated/obsidian/by-status/*.md`
+- `.agentplane/generated/obsidian/by-tag/*.md`
+- `.agentplane/generated/obsidian/by-owner/*.md`
 
-Open `.agentplane/` as an Obsidian vault, or read the files as a lightweight task wiki, to browse
-tasks without renaming every task README.
+Open `.agentplane/generated/obsidian/` as an Obsidian vault, or read the files as a lightweight
+task wiki, to browse tasks without renaming every task README.
 Task IDs link back to `.agentplane/tasks/<task-id>/README.md`, and dependency cells link to the
 same canonical README paths.
 
@@ -161,8 +161,9 @@ open or grep a compact grouped index instead of scanning thousands of task READM
 replace backend reads, projection caches, or task README frontmatter as runtime authority.
 
 Conceptually, this is a generated wiki/navigation output adapter over the task projection, not a
-separate Obsidian-owned storage model. Future generated navigation surfaces should converge under
-`.agentplane/generated/**` instead of adding more root-level files under `.agentplane/`.
+separate Obsidian-owned storage model. Legacy generated files under `.agentplane/index.md`,
+`.agentplane/tasks.md`, and `.agentplane/by-*` are removed by `agentplane task obsidian clean` when
+they carry the generated marker.
 
 ## Active backend
 

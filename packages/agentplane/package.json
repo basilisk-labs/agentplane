@@ -62,11 +62,11 @@
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
     "build": "npm run clean && tsc -b --force && npm run build:bundle",
-    "build:bundle": "node ../../scripts/prune-package-js.mjs dist && tsup && node ../../scripts/manifest.mjs build .",
+    "build:bundle": "node ../../scripts/release/prune-package-js.mjs dist && tsup && node ../../scripts/release/manifest.mjs build .",
     "typecheck": "tsc -b",
-    "prepack": "npm run clean && npm run build && node ../../scripts/manifest.mjs sanitize .",
-    "postpack": "node ../../scripts/manifest.mjs build .",
-    "prepublishOnly": "node ../../scripts/enforce-github-publish.mjs && npm run prepack"
+    "prepack": "npm run clean && npm run build && node ../../scripts/release/manifest.mjs sanitize .",
+    "postpack": "node ../../scripts/release/manifest.mjs build .",
+    "prepublishOnly": "node ../../scripts/release/enforce-github-publish.mjs && npm run prepack"
   },
   "dependencies": {
     "@agentplaneorg/core": "0.6.0",

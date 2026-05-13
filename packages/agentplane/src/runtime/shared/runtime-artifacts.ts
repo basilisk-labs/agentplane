@@ -7,6 +7,7 @@ export const RUNTIME_GITIGNORE_LINES = [
   ".agentplane/cache.sqlite-wal",
   ".agentplane/cache.sqlite-shm",
   ".agentplane/recipes-cache",
+  ".agentplane/generated/obsidian",
   ".agentplane/.upgrade",
   ".agentplane/.release",
   ".agentplane/upgrade",

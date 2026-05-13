@@ -1,0 +1,1 @@
+🚧 2GMHKQ task: Move generated projections under .agentplane/generated [202605131043-2GMHKQ]

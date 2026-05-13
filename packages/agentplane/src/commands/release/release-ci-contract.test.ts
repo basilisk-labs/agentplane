@@ -37,9 +37,9 @@ describe("release CI contract", () => {
     expect(scripts["ci:test"]).toContain("bun run typecheck");
     expect(releaseExtras).toContain("bun run coverage:workflow-suite");
     expect(releaseExtras).toContain("bun run coverage:significant-suite");
-    expect(releaseExtras).toContain("node scripts/run-vitest-suite.mjs release-ci-base");
+    expect(releaseExtras).toContain("node scripts/checks/run-vitest-suite.mjs release-ci-base");
     expect(releaseExtras.indexOf("bun run coverage:workflow-suite")).toBeGreaterThan(
-      releaseExtras.indexOf("node scripts/run-vitest-suite.mjs release-ci-base"),
+      releaseExtras.indexOf("node scripts/checks/run-vitest-suite.mjs release-ci-base"),
     );
     expect(releaseExtras.indexOf("bun run coverage:significant-suite")).toBeGreaterThan(
       releaseExtras.indexOf("bun run coverage:workflow-suite"),
@@ -86,8 +86,10 @@ describe("release CI contract", () => {
   });
 
   it("keeps the developer reinstall helper on the minimal runtime build path", async () => {
-    const reinstall = await readRootText("scripts/reinstall-global-agentplane.sh");
+    const wrapper = await readRootText("scripts/reinstall-global-agentplane.sh");
+    const reinstall = await readRootText("scripts/workflow/reinstall-global-agentplane.sh");
 
+    expect(wrapper).toContain("workflow/reinstall-global-agentplane.sh");
     expect(reinstall).toContain("bun run --filter=@agentplaneorg/core build");
     expect(reinstall).toContain("bun run --filter=agentplane build:bundle");
     expect(reinstall).toContain("npm link");
@@ -124,8 +126,10 @@ describe("release CI contract", () => {
   });
 
   it("checks the generated bootstrap doc against the actual runtime-source source path", async () => {
-    const checkScript = await readRootText("scripts/check-agent-bootstrap-fresh.mjs");
+    const wrapper = await readRootText("scripts/check-agent-bootstrap-fresh.mjs");
+    const checkScript = await readRootText("scripts/checks/check-agent-bootstrap-fresh.mjs");
 
+    expect(wrapper).toContain("./checks/check-agent-bootstrap-fresh.mjs");
     expect(checkScript).toContain('"runtime",\n  "shared",\n  "runtime-source.ts"');
     expect(checkScript).not.toContain('"dist",\n  "shared",\n  "runtime-source.js"');
   });

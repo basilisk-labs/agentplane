@@ -11,12 +11,17 @@ describe("release-check script", () => {
 
   it("includes the v0.5 blueprint integration release gate", async () => {
     const script = await readFile(path.resolve(process.cwd(), "scripts/release-check.mjs"), "utf8");
-    const gate = await readFile(
+    const gateWrapper = await readFile(
       path.resolve(process.cwd(), "scripts/check-blueprint-release-gate.mjs"),
+      "utf8",
+    );
+    const gate = await readFile(
+      path.resolve(process.cwd(), "scripts/checks/check-blueprint-release-gate.mjs"),
       "utf8",
     );
 
     expect(script).toContain("./check-blueprint-release-gate.mjs");
+    expect(gateWrapper).toContain("./checks/check-blueprint-release-gate.mjs");
     expect(gate).toContain("blueprint report");
     expect(gate).toContain("Project blueprint compatibility");
     expect(gate).toContain("blueprint-execution-plan.json");
