@@ -31,10 +31,10 @@ describe("command-guide", () => {
   it("documents merge-preserving branch_pr integration by default", () => {
     const text = renderRoleTyped("integrator");
     expect(text).toContain(
-      "agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify",
+      "agentplane integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000",
     );
-    expect(text).toContain("default integrate strategy is `merge`");
-    expect(text).toContain("--merge-strategy squash");
+    expect(text).toContain("primary integration route is the task GitHub PR");
+    expect(text).toContain("gh pr merge --auto --merge");
     expect(text).not.toContain("--merge-strategy squash --run-verify");
   });
 
@@ -78,6 +78,8 @@ describe("command-guide", () => {
     expect(text).toContain("activate ORCHESTRATOR for planning and the task owner role");
     expect(text).toContain("agentplane task start-ready");
     expect(text).toContain("agentplane pr check <task-id>");
+    expect(text).toContain("GitHub CLI");
+    expect(text).toContain("GH_TOKEN");
     expect(text).toContain("Framework maintainers may use repo-local helper scripts");
     expect(text).toContain("workflow:wait-remote-checks");
     expect(text).not.toContain(

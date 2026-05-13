@@ -103,6 +103,7 @@ export type InitPlan = {
     gitRootExisted: boolean;
     parentGitRoot: string | null;
     outputMode: "text" | "json";
+    githubCliInstalled: boolean | null;
   };
   effects: InitEffect[];
   conflicts: string[];

@@ -16,8 +16,8 @@ Use this module when `workflow_mode=branch_pr`.
 5. Publish/update PR artifacts from the task worktree.
 6. Verify on the task branch.
 7. Queue verified task branches for serialized integration when more than one agent is ready to merge.
-8. CHECKPOINT B: integrate on base branch by INTEGRATOR.
-9. CHECKPOINT C: finish task(s) on base with verification evidence.
+8. CHECKPOINT B: INTEGRATOR runs integration from the base checkout; protected bases finalize through the task GitHub PR merge, not a direct local base mutation.
+9. CHECKPOINT C: finish/close-tail evidence lands after the task PR merge and hosted close route complete.
 10. Remove merged task branches/worktrees once the hosted-close/finish route has landed.
 
 ## Related task batch worktrees
@@ -48,7 +48,7 @@ agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
 agentplane pr update <task-id>
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
 agentplane integrate queue enqueue <task-id> --branch task/<task-id>/<slug>
-agentplane integrate queue run-next --run-verify
+agentplane integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 ```
@@ -65,13 +65,16 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
 - A related task batch MAY reuse one primary task worktree when all included tasks are approved,
   listed, verified independently, and merged through the primary task PR.
 - `pr open` without `--sync-only` SHOULD complete in one pass: sync local artifacts, auto-publish the task branch to `origin` when it has no upstream yet, then create/link the remote GitHub PR.
+- In `branch_pr`, the task GitHub PR is the primary integration mechanism. Local `integrate`
+  serializes the lane and drives the provider merge route; it MUST NOT treat GitHub PR merge as an
+  exceptional shortcut around local base mutation.
 - If protected `main` requires GitHub PR merges, the agent MUST create/update the GitHub PR,
   wait until all hosted checks are complete and stable (including late agent checks that appear
   after the first green rollup), then merge it through GitHub. If auto-merge remains blocked
   after stable green checks, the agent MUST continue with the permitted GitHub merge route
   available to its credentials instead of stopping at enabled auto-merge.
 - `integrate` defaults to the `merge` strategy so task branch commits stay in base history. Use `--merge-strategy squash` only when intentionally compacting branch history.
-- When several task PRs are ready together, use the integration queue so only one branch owns the merge lane; stale branch heads move to rework instead of blocking later queued work.
+- When several task PRs are ready together, use the integration queue so only one branch owns the merge lane; agents waiting behind `claimed` or `handoff` entries SHOULD use bounded polling (`--wait --poll-interval-ms 30000 --timeout-ms 600000`) instead of retrying ad hoc; stale branch heads move to rework instead of blocking later queued work.
 - `task start-ready` MAY surface targeted incident advice for analogous scope/tags; follow it before widening scope.
 - Keep structured resolved external findings in the task README; mark reusable ones with `Fixability: external` (or `IncidentExternal: true`) and let base-branch `finish` or `agentplane incidents collect <task-id>` promote them into `.agentplane/policy/incidents.md`, using optional `Incident*` fields only when the inferred scope/advice needs refinement. Plain `Findings` text remains task-local and does not update the shared incident registry.
 - MUST stop and request re-approval on material drift.
