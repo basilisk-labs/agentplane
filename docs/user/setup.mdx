@@ -115,6 +115,10 @@ agentplane context reindex
 agentplane context search "first task"
 ```
 
+In an empty standalone directory, `agentplane context init` also performs the initial AgentPlane
+bootstrap before writing context files. For non-empty uninitialized projects, run `agentplane init`
+first so conflicts and gateway/workflow choices stay explicit.
+
 For a task that needs context ingestion:
 
 ```bash

@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars, unicorn/no-array-sort */
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { infoMessage } from "../../cli/output.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
+import { cmdInit } from "../../cli/run-cli/commands/init/orchestrate.js";
+import { detectParentGitRoot } from "../../cli/run-cli/commands/init/git.js";
+import type { InitParsed } from "../../cli/run-cli/commands/init/model.js";
+import type { CommandSpec } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
@@ -28,6 +33,15 @@ const POLICY_FILES = new Set([
   ".agentplane/context/policies/sync.rules.yaml",
 ]);
 
+const SAFE_EMPTY_PLACEHOLDERS = new Set([".DS_Store"]);
+
+const contextBootstrapInitSpec: CommandSpec<InitParsed> = {
+  id: ["init"],
+  group: "Setup",
+  summary: "Initialize agentplane project files before context bootstrap.",
+  parse: () => ({ yes: true }),
+};
+
 type InitReport = {
   created: string[];
   rewritten: string[];
@@ -43,7 +57,10 @@ export async function cmdContextInit(opts: {
   try {
     const ctx =
       opts.ctx ??
-      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+      (await loadOrBootstrapCommandContext({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+      }));
     const root = ctx.resolvedProject.gitRoot;
     const report = await createContextWorkspace(root, opts.parsed);
     const wroteGitignore = await ensureContextGitignore(root, opts.parsed);
@@ -71,6 +88,74 @@ export async function cmdContextInit(opts: {
       code: "E_RUNTIME",
       message: `context init failed: ${(err as Error).message}`,
     });
+  }
+}
+
+async function loadOrBootstrapCommandContext(opts: {
+  cwd: string;
+  rootOverride?: string | null;
+}): Promise<CommandContext> {
+  try {
+    return await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+  } catch (err) {
+    return await bootstrapEmptyProjectForContextInit(opts, err);
+  }
+}
+
+async function bootstrapEmptyProjectForContextInit(
+  opts: { cwd: string; rootOverride?: string | null },
+  originalError: unknown,
+): Promise<CommandContext> {
+  const root = path.resolve(opts.rootOverride ?? opts.cwd);
+  const entries = await readBootstrapTargetEntries(root, originalError);
+  const meaningfulEntries = entries.filter((entry) => !SAFE_EMPTY_PLACEHOLDERS.has(entry));
+  const canBootstrap =
+    meaningfulEntries.length === 0 ||
+    (meaningfulEntries.length === 1 && meaningfulEntries[0] === ".git");
+
+  if (!canBootstrap) {
+    if (!meaningfulEntries.includes(".agentplane")) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_USAGE"),
+        code: "E_USAGE",
+        message:
+          "context init can bootstrap AgentPlane only in an empty directory. " +
+          "Run agentplane init explicitly before context init for non-empty directories.",
+      });
+    }
+    throw originalError;
+  }
+
+  const parentGitRoot = await detectParentGitRoot(root);
+  if (parentGitRoot) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_USAGE"),
+      code: "E_USAGE",
+      message:
+        "context init can bootstrap AgentPlane only in a standalone empty directory. " +
+        `Target ${root} is inside parent Git repository ${parentGitRoot}. ` +
+        "Run agentplane init explicitly from the intended project root.",
+    });
+  }
+
+  process.stdout.write(
+    infoMessage("agentplane project not found; bootstrapping empty directory") + "\n",
+  );
+  await cmdInit({
+    cwd: root,
+    rootOverride: root,
+    outputMode: "text",
+    flags: { yes: true },
+    spec: contextBootstrapInitSpec,
+  });
+  return await loadCommandContext({ cwd: root, rootOverride: root });
+}
+
+async function readBootstrapTargetEntries(root: string, originalError: unknown): Promise<string[]> {
+  try {
+    return await readdir(root);
+  } catch {
+    throw originalError;
   }
 }
 

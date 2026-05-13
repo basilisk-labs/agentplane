@@ -401,6 +401,95 @@ describe("runCli", () => {
     expect(stdout.trim()).toBe("");
   });
 
+  it("context init bootstraps AgentPlane in an empty directory", { timeout: 60_000 }, async () => {
+    const root = await mkTempDir();
+    const originalEnv = {
+      GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME,
+      GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL,
+      GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME,
+      GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL,
+    };
+    process.env.GIT_AUTHOR_NAME = "Test User";
+    process.env.GIT_AUTHOR_EMAIL = "test@example.com";
+    process.env.GIT_COMMITTER_NAME = "Test User";
+    process.env.GIT_COMMITTER_EMAIL = "test@example.com";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["context", "init", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("bootstrapping empty directory");
+    } finally {
+      io.restore();
+      process.env.GIT_AUTHOR_NAME = originalEnv.GIT_AUTHOR_NAME;
+      process.env.GIT_AUTHOR_EMAIL = originalEnv.GIT_AUTHOR_EMAIL;
+      process.env.GIT_COMMITTER_NAME = originalEnv.GIT_COMMITTER_NAME;
+      process.env.GIT_COMMITTER_EMAIL = originalEnv.GIT_COMMITTER_EMAIL;
+    }
+
+    expect(await pathExists(path.join(root, ".git"))).toBe(true);
+    expect(await pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).toBe(true);
+    expect(await pathExists(path.join(root, "AGENTS.md"))).toBe(true);
+    expect(await pathExists(path.join(root, "context", "README.md"))).toBe(true);
+    expect(
+      await pathExists(path.join(root, ".agentplane", "context", "agentplane.context.yaml")),
+    ).toBe(true);
+  });
+
+  it("context init remains idempotent in an initialized AgentPlane project", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    expect(await runCli(["init", "--yes", "--root", root])).toBe(0);
+    expect(await runCli(["context", "init", "--root", root])).toBe(0);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["context", "init", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("context already initialized");
+      expect(io.stdout).not.toContain("bootstrapping empty directory");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("context init rejects non-empty uninitialized directories", async () => {
+    const root = await mkTempDir();
+    await writeFile(path.join(root, "README.md"), "# Existing project\n", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["context", "init", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("only in an empty directory");
+    } finally {
+      io.restore();
+    }
+
+    expect(await pathExists(path.join(root, ".agentplane"))).toBe(false);
+  });
+
+  it("context init rejects empty nested directories inside a parent git repository", async () => {
+    const parent = await mkTempDir();
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["init", "-b", "main"], { cwd: parent, env: cleanGitEnv() });
+    const nested = path.join(parent, "packages", "api");
+    await mkdir(nested, { recursive: true });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["context", "init", "--root", nested]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("standalone empty directory");
+      expect(io.stderr).toContain(await realpath(parent));
+    } finally {
+      io.restore();
+    }
+
+    expect(await pathExists(path.join(nested, ".git"))).toBe(false);
+    expect(await pathExists(path.join(nested, ".agentplane"))).toBe(false);
+  });
+
   it(
     "init --backend redmine leaves a clean tree in a fresh repository",
     { timeout: 60_000 },

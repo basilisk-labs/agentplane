@@ -36,6 +36,11 @@ agentplane context search "release checklist"
 agentplane context show context/wiki/release.md#section=publish-gate
 ```
 
+When `agentplane context init` runs in an empty standalone directory, it bootstraps the AgentPlane
+project first and then creates the context workspace. In a non-empty directory that is not already an
+AgentPlane project, run `agentplane init` explicitly before `agentplane context init` so the project
+gateway, workflow, backend, and conflict handling stay visible.
+
 `context show` resolves whole files, markdown sections, and line ranges. Markdown section refs use
 stable slugs such as `#section=publish-gate`; line refs use `#lines=12-24` or `#line=12`.
 

@@ -213,7 +213,7 @@ export const PROJECT_COMMANDS = [
   fromCommandsRecipesInstallRun(recipesInstallSpec, "runRecipesInstall", { needs: "none" }),
   fromCommandsContextCommand(contextSpec, "runContextGroup"),
   declareCommand(contextIngestSpec, { load: loadContextIngestSpec }),
-  fromCommandsContextCommand(contextInitSpec, "runContextInit"),
+  fromCommandsContextCommand(contextInitSpec, "runContextInit", { needs: "none" }),
   fromCommandsContextCommand(contextReindexSpec, "runContextReindex"),
   fromCommandsContextCommand(contextSearchSpec, "runContextSearch"),
   fromCommandsContextCommand(contextShowSpec, "runContextShow"),
