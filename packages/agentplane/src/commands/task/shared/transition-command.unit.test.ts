@@ -6,10 +6,10 @@ import { applyTaskStatusTransitionCommand } from "./transition-command.js";
 
 vi.mock("./workflow-transition-service.js", () => {
   return {
-    executeTaskStatusTransitionRequest: vi.fn().mockImplementation(({ task }: { task: any }) => {
+    executeTaskStatusTransitionRequest: vi.fn().mockImplementation(({ task }: { task: unknown }) => {
       return {
         intents: {},
-        nextTask: { ...task, status: "DONE" },
+        nextTask: { ...(task as Record<string, unknown>), status: "DONE" },
         deferredWarnings: [],
       };
     }),
@@ -19,18 +19,18 @@ vi.mock("./workflow-transition-service.js", () => {
 
 function mkCtx(overrides: Partial<CommandContext>): CommandContext {
   const config = defaultConfig();
-  (config as any).workflow_mode = "direct";
-  (config as any).agents.approvals.require_network = true;
+  config.workflow_mode = "direct";
+  config.agents.approvals.require_network = true;
   return {
-    resolvedProject: { gitRoot: "/tmp", agentplaneDir: "/tmp/.agentplane" } as any,
-    config: config as any,
-    taskBackend: {} as any,
+    resolvedProject: { gitRoot: "/tmp", agentplaneDir: "/tmp/.agentplane" } as unknown as CommandContext["resolvedProject"],
+    config,
+    taskBackend: {} as unknown as CommandContext["taskBackend"],
     backendId: "cloud",
     backendConfigPath: "/tmp/.agentplane/backends/cloud/backend.json",
-    git: {} as any,
+    git: {} as unknown as CommandContext["git"],
     memo: {},
     ...overrides,
-  };
+  } as unknown as CommandContext;
 }
 
 describe("applyTaskStatusTransitionCommand", () => {
@@ -68,7 +68,7 @@ describe("applyTaskStatusTransitionCommand", () => {
         getTask,
         writeTask,
         sync,
-      } as any,
+      } as unknown as CommandContext["taskBackend"],
     });
 
     await applyTaskStatusTransitionCommand({
@@ -82,7 +82,7 @@ describe("applyTaskStatusTransitionCommand", () => {
           comment: null,
           author: null,
           force: true,
-        } as any;
+        } as unknown;
       },
     });
 

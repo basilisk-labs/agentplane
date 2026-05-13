@@ -88,7 +88,7 @@ export const backendSyncSpec: CommandSpec<BackendSyncParsed> = {
     conflict: (raw.opts.conflict ?? "diff") as BackendSyncParsed["conflict"],
     watch: raw.opts.watch === true,
     intervalMs:
-      typeof raw.opts["interval-ms"] === "string" ? Number(raw.opts["interval-ms"]) : 30000,
+      typeof raw.opts["interval-ms"] === "string" ? Number(raw.opts["interval-ms"]) : 30_000,
     maxIterations:
       typeof raw.opts["max-iterations"] === "string" ? Number(raw.opts["max-iterations"]) : 0,
     yes: raw.opts.yes === true,

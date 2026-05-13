@@ -128,7 +128,7 @@ export async function cmdBackendSyncParsed(opts: {
           context: { command: "backend sync", reason_code: "watch_requires_pull" },
         });
       }
-      const intervalMs = Number.isFinite(opts.flags.intervalMs) ? opts.flags.intervalMs : 30000;
+      const intervalMs = Number.isFinite(opts.flags.intervalMs) ? opts.flags.intervalMs : 30_000;
       if (intervalMs < 250) {
         throw new CliError({
           exitCode: 2,
@@ -137,9 +137,7 @@ export async function cmdBackendSyncParsed(opts: {
           context: { command: "backend sync", reason_code: "watch_interval_too_small" },
         });
       }
-      const maxIterations = Number.isFinite(opts.flags.maxIterations)
-        ? opts.flags.maxIterations
-        : 0;
+      const maxIterations = Number.isFinite(opts.flags.maxIterations) ? opts.flags.maxIterations : 0;
       await runBackendSyncWatch({
         backend,
         conflict: opts.flags.conflict,
@@ -178,8 +176,7 @@ async function runBackendSyncWatch(opts: {
   process.once("SIGINT", onSigInt);
   try {
     let iteration = 0;
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
+    while (!aborted) {
       iteration += 1;
       await opts.backend.sync!({
         direction: "pull",
@@ -187,16 +184,10 @@ async function runBackendSyncWatch(opts: {
         quiet: opts.quiet,
         confirm: opts.confirm,
       });
-      if (aborted) {
-        break;
-      }
       if (opts.maxIterations > 0 && iteration >= opts.maxIterations) {
         break;
       }
       await sleepTimeout(opts.intervalMs);
-      if (aborted) {
-        break;
-      }
     }
   } finally {
     process.removeListener("SIGINT", onSigInt);
