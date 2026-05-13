@@ -24,9 +24,9 @@ Created: 2026-05-13T09:48:18.945Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T10:46:23.253Z
+- Updated: 2026-05-13T10:55:46.526Z
 - Branch: task/202605130947-V6846F/cli-perf-read-paths
-- Head: 8ca5ef731f34
+- Head: 81deff325fae
 
 ```text
  .../blueprint/resolved-snapshot.json               | 550 +++++++++++++++++++++
@@ -50,14 +50,14 @@ Created: 2026-05-13T09:48:18.945Z
  packages/agentplane/src/commands/context/ingest.ts |   1 +
  packages/agentplane/src/commands/context/init.ts   |   8 +-
  .../agentplane/src/commands/context/reindex.ts     |   5 +-
- packages/agentplane/src/commands/context/sqlite.ts | 299 +++++------
+ packages/agentplane/src/commands/context/sqlite.ts | 326 ++++++------
  .../src/commands/context/sqlite.unit.test.ts       |  72 +++
  .../agentplane/src/commands/context/verify-task.ts |  12 +-
  .../src/commands/task/blueprint-summary.ts         |  93 +++-
  packages/agentplane/src/commands/task/list.ts      |  12 +-
  packages/agentplane/src/shared/cache-paths.ts      |   7 +
  packages/agentplane/src/shared/sqlite-driver.ts    |  39 ++
- 28 files changed, 1747 insertions(+), 218 deletions(-)
+ 28 files changed, 1747 insertions(+), 245 deletions(-)
 ```
 
 </details>
