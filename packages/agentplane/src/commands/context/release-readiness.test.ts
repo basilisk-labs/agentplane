@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { CommandContext } from "../shared/task-backend.js";
 import { cmdContextIngest } from "./ingest.js";
 import { cmdContextReindex, readContextProjection } from "./reindex.js";
+import { cmdContextSearch } from "./search.js";
 import { cmdContextShow } from "./show.js";
 import { cmdContextVerifyTask } from "./verify-task.js";
 
@@ -38,7 +39,7 @@ describe("context release readiness guards", () => {
     await write(
       root,
       "context/wiki/payments.md",
-      "# Payments\n\nIntro\n\n## Refund Idempotency\n\nRefunds are idempotent.\n",
+      "# Payments\n\nIntro\n\n## Refund Idempotency\n\nRefunds are idempotent.\n\n## Refund Idempotency\n\nDuplicate heading stays addressable.\n",
     );
     await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nPublic source.\n");
     await write(root, "context/raw/private/secret.md", "# Secret\n\nDo not index.\n");
@@ -57,7 +58,49 @@ describe("context release readiness guards", () => {
         (row) => row.path === "context/wiki/payments.md#section=refund-idempotency",
       ),
     ).toBe(true);
+    expect(
+      projection?.rows.some(
+        (row) => row.path === "context/wiki/payments.md#section=refund-idempotency-2",
+      ),
+    ).toBe(true);
+    const fileRow = projection?.rows.find((row) => row.path === "context/wiki/payments.md");
+    const sectionRow = projection?.rows.find(
+      (row) => row.path === "context/wiki/payments.md#section=refund-idempotency",
+    );
+    expect(sectionRow?.sha256).toBe(fileRow?.sha256);
     expect(projection?.rows.some((row) => row.path.includes("context/raw/private"))).toBe(false);
+  });
+
+  it("does not mark fresh markdown section projection rows as stale", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/wiki/payments.md",
+      "# Payments\n\nIntro\n\n## Refund Idempotency\n\nRefunds are idempotent.\n",
+    );
+    await cmdContextReindex({
+      cwd: root,
+      parsed: { includeTasks: false, includeRaw: true, reset: false },
+    });
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextSearch({
+      cwd: root,
+      parsed: {
+        query: "refunds",
+        scope: "context",
+        format: "json",
+        explain: false,
+      },
+    });
+
+    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      results: { ref: string; freshness: { stale: boolean } }[];
+    };
+    const sectionResult = payload.results.find(
+      (result) => result.ref === "context/wiki/payments.md#section=refund-idempotency",
+    );
+    expect(sectionResult?.freshness.stale).toBe(false);
   });
 
   it("resolves markdown sections by slug", async () => {

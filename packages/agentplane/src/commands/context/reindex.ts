@@ -120,10 +120,12 @@ function selectorForJsonlRow(filePath: string): string {
 function projectMarkdownRows(filePath: string, content: string): ProjectionSourceRow[] {
   const rel = toPosix(filePath);
   const lines = content.split(/\r?\n/);
+  const fileSha256 = `sha256:${createHash("sha256").update(content).digest("hex")}`;
+  const sectionSlugCounts = new Map<string, number>();
   const rows: ProjectionSourceRow[] = [
     {
       path: rel,
-      sha256: `sha256:${createHash("sha256").update(content).digest("hex")}`,
+      sha256: fileSha256,
       content_type: deriveContentType(filePath),
       kind: "markdown",
       source_refs: [rel],
@@ -137,6 +139,9 @@ function projectMarkdownRows(filePath: string, content: string): ProjectionSourc
     const heading = line.replace(/^#{1,6}\s+/, "").trim();
     const headingSlug = slug(heading);
     if (!headingSlug) continue;
+    const slugCount = (sectionSlugCounts.get(headingSlug) ?? 0) + 1;
+    sectionSlugCounts.set(headingSlug, slugCount);
+    const sectionSlug = slugCount === 1 ? headingSlug : `${headingSlug}-${slugCount}`;
     let end = lines.length;
     for (let next = index + 1; next < lines.length; next += 1) {
       if (/^#{1,6}\s+/.test(lines[next] ?? "")) {
@@ -148,11 +153,11 @@ function projectMarkdownRows(filePath: string, content: string): ProjectionSourc
     const endLine = Math.max(startLine, end);
     const body = lines.slice(index, end).join("\n");
     rows.push({
-      path: `${rel}#section=${headingSlug}`,
-      sha256: `sha256:${createHash("sha256").update(body).digest("hex")}`,
+      path: `${rel}#section=${sectionSlug}`,
+      sha256: fileSha256,
       content_type: deriveContentType(filePath),
       kind: "markdown-section",
-      source_refs: [`${rel}#section=${headingSlug}`, lineWindowRef(rel, startLine, endLine)],
+      source_refs: [`${rel}#section=${sectionSlug}`, lineWindowRef(rel, startLine, endLine)],
       body: pickProjectionPayload(body),
       size_bytes: body.length,
     });
