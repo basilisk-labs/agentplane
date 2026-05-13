@@ -24,14 +24,15 @@ Created: 2026-05-13T18:29:54.674Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T19:11:58.775Z
+- Updated: 2026-05-13T19:56:12.639Z
 - Branch: task/202605131828-HBJ5P8/flexible-test-routing
-- Head: fa819a8ee3b4
+- Head: 9bb993a531a8
 
 ```text
  .../blueprint/resolved-snapshot.json               | 552 +++++++++++++++++++++
  package.json                                       |   3 +-
  .../agentplane/src/cli/local-ci-selection.test.ts  |  32 +-
+ packages/agentplane/src/cli/spec/docs-render.ts    |  17 +-
  .../commands/release/release-ci-contract.test.ts   |   6 +
  scripts/README.md                                  |   3 +-
  scripts/checks/run-local-ci.mjs                    |  62 ++-
@@ -39,7 +40,7 @@ Created: 2026-05-13T18:29:54.674Z
  scripts/lib/local-ci-selection.d.ts                |   4 +-
  scripts/lib/local-ci-selection.mjs                 | 120 +++++
  scripts/lib/test-route-registry.mjs                |  14 +
- 10 files changed, 857 insertions(+), 26 deletions(-)
+ 11 files changed, 873 insertions(+), 27 deletions(-)
 ```
 
 </details>
