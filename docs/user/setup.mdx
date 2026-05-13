@@ -178,6 +178,12 @@ For older or partially upgraded repositories, use [Upgrade recovery](../help/leg
 That page owns the legacy state model and recovery procedures; this setup page describes the current
 initialization path only.
 
+Recovery routing starts from three repository states:
+
+1. **Clean managed state**: managed files match the installed framework contract.
+2. **Partial upgrade state**: an upgrade started but did not finish all managed file updates.
+3. **Manual drift state**: managed files were edited outside the framework upgrade path.
+
 ## Verify setup
 
 ```bash
