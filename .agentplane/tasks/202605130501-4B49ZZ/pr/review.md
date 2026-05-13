@@ -12,8 +12,8 @@ Created: 2026-05-13T05:03:23.187Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Local and hosted v0.6 readiness checks passed: typecheck, context release-readiness tests, release parity, release:bun:check, docs cli/IA/bootstrap/onboarding, package install smoke with context commands, release:check, ap doctor, and hosted PR #3612 required checks.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -17,10 +17,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-13T05:27:33.531Z"
+  updated_by: "CODER"
+  note: "Local and hosted v0.6 readiness checks passed: typecheck, context release-readiness tests, release parity, release:bun:check, docs cli/IA/bootstrap/onboarding, package install smoke with context commands, release:check, ap doctor, and hosted PR #3612 required checks."
   attempts: 0
 commit: null
 comments:
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: execute the approved v0.6 context release readiness plan, including release hardening, documentation refresh, generated assets, packaged smoke coverage, and verification evidence from the dedicated branch_pr worktree."
+  -
+    type: "verify"
+    at: "2026-05-13T05:27:33.531Z"
+    author: "CODER"
+    state: "ok"
+    note: "Local and hosted v0.6 readiness checks passed: typecheck, context release-readiness tests, release parity, release:bun:check, docs cli/IA/bootstrap/onboarding, package install smoke with context commands, release:check, ap doctor, and hosted PR #3612 required checks."
 doc_version: 3
-doc_updated_at: "2026-05-13T05:03:23.103Z"
+doc_updated_at: "2026-05-13T05:27:33.551Z"
 doc_updated_by: "CODER"
 description: "Complete v0.6 context release hardening: reconcile checkout, regenerate bundled assets, document context commands, version/release notes, runner handoff smoke, mutation guard/source-ref/redaction/SQLite/install-smoke hardening, and documentation IA cleanup."
 sections:
@@ -54,6 +60,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-13T05:27:33.531Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Local and hosted v0.6 readiness checks passed: typecheck, context release-readiness tests, release parity, release:bun:check, docs cli/IA/bootstrap/onboarding, package install smoke with context commands, release:check, ap doctor, and hosted PR #3612 required checks.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T05:03:23.103Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605130501-4B49ZZ-v06-context-release-readiness/.agentplane/tasks/202605130501-4B49ZZ/blueprint/resolved-snapshot.json
+    - old_digest: 5719bea51170fb041a2c6d5d12d2df9893d752ff106dc8f426c3df6c5891d0b7
+    - current_digest: 5719bea51170fb041a2c6d5d12d2df9893d752ff106dc8f426c3df6c5891d0b7
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605130501-4B49ZZ
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -85,6 +110,25 @@ Plan: (1) preserve unrelated Q4N03A local drift and fast-forward base to origin/
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-13T05:27:33.531Z — VERIFY — ok
+
+By: CODER
+
+Note: Local and hosted v0.6 readiness checks passed: typecheck, context release-readiness tests, release parity, release:bun:check, docs cli/IA/bootstrap/onboarding, package install smoke with context commands, release:check, ap doctor, and hosted PR #3612 required checks.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T05:03:23.103Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605130501-4B49ZZ-v06-context-release-readiness/.agentplane/tasks/202605130501-4B49ZZ/blueprint/resolved-snapshot.json
+- old_digest: 5719bea51170fb041a2c6d5d12d2df9893d752ff106dc8f426c3df6c5891d0b7
+- current_digest: 5719bea51170fb041a2c6d5d12d2df9893d752ff106dc8f426c3df6c5891d0b7
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605130501-4B49ZZ
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
