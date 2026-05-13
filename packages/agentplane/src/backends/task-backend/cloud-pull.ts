@@ -1,3 +1,4 @@
+import { infoMessage } from "../../cli/output.js";
 import type { TaskData } from "./shared.js";
 
 export type CloudPullPlan = {
@@ -55,7 +56,9 @@ export function emitCloudPullDiffSummary(opts: {
   const ignoredRemoteOnly = opts.plan?.ignoredRemoteOnly ?? [];
   process.stdout.write(
     [
-      `ℹ️ cloud pull diff changed=${changed.length} ignored_remote_only=${ignoredRemoteOnly.length} conflicts=${opts.conflicts.length}`,
+      infoMessage(
+        `cloud pull diff changed=${changed.length} ignored_remote_only=${ignoredRemoteOnly.length} conflicts=${opts.conflicts.length}`,
+      ),
       ...changed
         .slice(0, 20)
         .map((entry) => `- changed ${entry.taskId}: ${entry.fields.join(",")}`),

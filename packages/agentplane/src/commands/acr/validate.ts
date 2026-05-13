@@ -8,6 +8,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { successMessage } from "../../cli/output.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { loadTaskFromContext } from "../shared/task-backend.js";
 import { acrValidationError } from "./remediation.js";
@@ -198,7 +199,7 @@ export function emitValidationResult(
     process.stdout.write(`${JSON.stringify({ command, ...result }, null, 2)}\n`);
     return;
   }
-  process.stdout.write(`✅ ${command} ${path.basename(result.acr_path)}\n`);
+  process.stdout.write(`${successMessage(command, path.basename(result.acr_path))}\n`);
 }
 
 export function defaultAcrPath(ctx: CommandContext, taskId: string): string {

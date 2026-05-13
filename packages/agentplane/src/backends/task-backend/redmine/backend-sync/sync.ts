@@ -1,3 +1,4 @@
+import { infoMessage, successMessage } from "../../../../cli/output.js";
 import { BackendError, toStringSafe, type TaskData } from "../../shared.js";
 import type { RedmineSyncContext } from "./context.js";
 
@@ -32,7 +33,7 @@ export async function syncPushRedmine(
   const tasks = await context.cache.listTasks();
   const dirty = tasks.filter((task) => task.dirty);
   if (dirty.length === 0) {
-    if (!quiet) process.stdout.write("ℹ️ no local task changes to push\n");
+    if (!quiet) process.stdout.write(`${infoMessage("no local task changes to push")}\n`);
     return;
   }
   if (!confirm) {
@@ -42,7 +43,8 @@ export async function syncPushRedmine(
     throw new BackendError("Refusing to push without --yes (preview above)", "E_BACKEND");
   }
   await context.writeTasks(dirty);
-  if (!quiet) process.stdout.write(`✅ pushed ${dirty.length} task(s) (dirty)\n`);
+  if (!quiet)
+    process.stdout.write(`${successMessage("pushed", `${dirty.length} task(s)`, "dirty")}\n`);
 }
 
 export async function syncPullRedmine(
@@ -79,7 +81,9 @@ export async function syncPullRedmine(
     }
     await context.cacheTask(remoteTask, false);
   }
-  if (!quiet) process.stdout.write(`✅ pulled ${remoteById.size} task(s) (remote)\n`);
+  if (!quiet) {
+    process.stdout.write(`${successMessage("pulled", `${remoteById.size} task(s)`, "remote")}\n`);
+  }
 }
 
 export async function handleRedmineConflict(
