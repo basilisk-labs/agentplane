@@ -24,9 +24,9 @@ Created: 2026-05-13T16:51:39.705Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T17:18:43.502Z
+- Updated: 2026-05-13T17:35:14.916Z
 - Branch: task/202605131649-61129E/public-cli-docs-surface
-- Head: 2d20789ed834
+- Head: e3ec4ca1a1eb
 
 ```text
  .../blueprint/resolved-snapshot.json               |  512 ++++++
@@ -44,9 +44,9 @@ Created: 2026-05-13T16:51:39.705Z
  docs/user/backends/redmine.mdx                     |   12 +-
  docs/user/branching-and-pr-artifacts.mdx           |    2 +-
  docs/user/breaking-changes.mdx                     |    3 +-
- docs/user/cli-reference.generated.mdx              | 1650 +-------------------
- docs/user/commands.mdx                             |   62 +-
- docs/user/local-context.mdx                        |    6 +-
+ docs/user/cli-reference.generated.mdx              | 1893 +-------------------
+ docs/user/commands.mdx                             |   67 +-
+ docs/user/local-context.mdx                        |    7 +-
  docs/user/setup.mdx                                |   12 -
  docs/user/task-lifecycle.mdx                       |   36 +-
  docs/user/tasks-and-backends.mdx                   |   26 +-
@@ -60,8 +60,8 @@ Created: 2026-05-13T16:51:39.705Z
  scripts/checks/check-agent-onboarding-scenario.mjs |   16 +-
  scripts/checks/check-docs-ia.mjs                   |    1 -
  website/sidebars.ts                                |   35 -
- website/static/llms-full.txt                       |  750 ++++-----
- 32 files changed, 1106 insertions(+), 2321 deletions(-)
+ website/static/llms-full.txt                       |  753 ++++----
+ 32 files changed, 1109 insertions(+), 2570 deletions(-)
 ```
 
 </details>
