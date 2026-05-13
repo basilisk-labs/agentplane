@@ -165,6 +165,11 @@ export async function listLocalTasks(
       hasMissingReadmes,
     });
     if (cachedProjection) {
+      await writeSqliteTaskProjection({
+        tasksDir: context.root,
+        tasks: cachedProjection,
+        fingerprintEntries: readmeFingerprint.entries,
+      });
       context.setLastListWarnings?.([]);
       return cachedProjection;
     }

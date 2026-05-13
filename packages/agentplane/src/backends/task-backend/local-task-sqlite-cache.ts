@@ -66,13 +66,19 @@ function gitOutput(gitRoot: string, args: string[]): string {
   return execFileSync("git", args, { cwd: gitRoot, encoding: "utf8" }).trim();
 }
 
-function gitOutputLines(gitRoot: string, args: string[]): string[] {
-  const out = gitOutput(gitRoot, args);
+function gitStatusPorcelainRecords(gitRoot: string, args: string[]): string[] {
+  const out = execFileSync("git", args, { cwd: gitRoot, encoding: "utf8" });
   if (!out) return [];
-  return out
-    .split(/\r?\n/u)
-    .map((line) => line.trim())
-    .filter(Boolean);
+  const parts = out.split("\0").filter((part) => part.length > 0);
+  const records: string[] = [];
+  for (let index = 0; index < parts.length; index += 1) {
+    const record = parts[index] ?? "";
+    records.push(record);
+    if (/[RC]/u.test(record.slice(0, 2))) {
+      index += 1;
+    }
+  }
+  return records;
 }
 
 function walkFilesSync(targetPath: string): string[] {
@@ -94,12 +100,30 @@ function walkFilesSync(targetPath: string): string[] {
   return files;
 }
 
-function parsePorcelainPath(line: string): string | null {
+export function parseTaskProjectionPorcelainPath(line: string): string | null {
+  const statusCode = line.slice(0, 2);
   const raw = line.length > 3 ? line.slice(3).trim() : "";
   if (!raw) return null;
   const renameSeparator = " -> ";
-  if (raw.includes(renameSeparator)) return raw.split(renameSeparator).at(-1) ?? null;
-  return raw;
+  const pathToken =
+    /[RC]/u.test(statusCode) && raw.includes(renameSeparator)
+      ? (raw.split(renameSeparator).at(-1) ?? "")
+      : raw;
+  return unquotePorcelainPath(pathToken);
+}
+
+function unquotePorcelainPath(raw: string): string {
+  if (!(raw.startsWith('"') && raw.endsWith('"'))) return raw;
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (typeof parsed === "string") return parsed;
+  } catch {
+    // Fall through to a conservative dequote below.
+  }
+  return raw
+    .slice(1, -1)
+    .replaceAll(String.raw`\"`, '"')
+    .replaceAll(String.raw`\\`, "\\");
 }
 
 function dirtyFileEntries(
@@ -109,7 +133,7 @@ function dirtyFileEntries(
   const seen = new Set<string>();
   const files: { path: string; sha256: string | null; size: number | null }[] = [];
   for (const line of status) {
-    const relPath = parsePorcelainPath(line);
+    const relPath = parseTaskProjectionPorcelainPath(line);
     if (!relPath || seen.has(relPath)) continue;
     seen.add(relPath);
     const absolutePath = path.join(gitRoot, relPath);
@@ -145,9 +169,10 @@ function buildGitCacheKey(tasksDir: string): TaskProjectionCacheKey | null {
   const relativeTasksPath = toPosix(path.relative(gitRoot, path.resolve(tasksDir)));
   try {
     const head = gitOutput(gitRoot, ["rev-parse", "HEAD"]);
-    const status = gitOutputLines(gitRoot, [
+    const status = gitStatusPorcelainRecords(gitRoot, [
       "status",
       "--porcelain=v1",
+      "-z",
       "--untracked-files=all",
       "--",
       relativeTasksPath,
