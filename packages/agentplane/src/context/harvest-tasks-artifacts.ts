@@ -3,9 +3,9 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-import type { TaskData } from "../../backends/task-backend.js";
-import { CliError } from "../../shared/errors.js";
-import { writeJsonStableIfChanged, writeTextIfChanged } from "../../shared/write-if-changed.js";
+import type { TaskData } from "../backends/task-backend.js";
+import { CliError } from "../shared/errors.js";
+import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
 import { fileExists, isRecord, parseJsonlLines, readText } from "./context-utils.js";
 import {
   alreadyHarvestedUnchanged,

@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-import type { TaskData } from "../../backends/task-backend.js";
+import type { TaskData } from "../backends/task-backend.js";
 import { isRecord } from "./context-utils.js";
 
 export type TaskHarvestMarker = {

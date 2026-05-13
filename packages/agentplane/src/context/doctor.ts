@@ -5,10 +5,10 @@ import { createReadStream } from "node:fs";
 import path from "node:path";
 import { parse as parseYaml } from "yaml";
 
-import { CliError } from "../../shared/errors.js";
-import { resolveAgentplaneCacheSqlitePath } from "../../shared/cache-paths.js";
+import { CliError } from "../shared/errors.js";
+import { resolveAgentplaneCacheSqlitePath } from "../shared/cache-paths.js";
 import { parseJsonlLines, fileExists, readText } from "./context-utils.js";
-import { readHarvestReport } from "./harvest-tasks.js";
+import { readHarvestReport } from "./harvest-tasks-artifacts.js";
 import { readContextProjection } from "./reindex.js";
 import { checkSqliteProjection } from "./sqlite.js";
 

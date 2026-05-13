@@ -1,2 +1,2 @@
-import "./check-package-tarball.mjs";
-import "./check-blueprint-release-gate.mjs";
+#!/usr/bin/env node
+import "./release/release-check.mjs";

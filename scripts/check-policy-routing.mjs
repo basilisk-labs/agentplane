@@ -1,1 +1,2 @@
-import "../packages/agentplane/assets/policy/check-routing.mjs";
+#!/usr/bin/env node
+import "./checks/check-policy-routing.mjs";

@@ -1,9 +1,9 @@
 ---
 id: "202605131043-GD7RJJ"
 title: "Reorganize repository scripts by ownership"
-status: "TODO"
+status: "DOING"
 priority: "med"
-owner: "PLANNER"
+owner: "CODER"
 revision: 1
 origin:
   system: "manual"
@@ -12,22 +12,38 @@ tags:
   - "code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-05-13T13:01:20.953Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-13T13:13:43.175Z"
+  updated_by: "CODER"
+  note: "Verified: root script implementations are grouped under scripts/checks, scripts/generate, scripts/bench, scripts/release, and scripts/workflow with root compatibility wrappers and updated package script references. Checks passed: docs:scripts:check, check:types-files, hotspots:check, clone:check, knip:check, arch:check, eslint/prettier, framework:dev:bootstrap."
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Reorganizing repository scripts by ownership while preserving callable package and compatibility entrypoints."
+events:
+  -
+    type: "status"
+    at: "2026-05-13T13:01:45.883Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Reorganizing repository scripts by ownership while preserving callable package and compatibility entrypoints."
+  -
+    type: "verify"
+    at: "2026-05-13T13:13:43.175Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: root script implementations are grouped under scripts/checks, scripts/generate, scripts/bench, scripts/release, and scripts/workflow with root compatibility wrappers and updated package script references. Checks passed: docs:scripts:check, check:types-files, hotspots:check, clone:check, knip:check, arch:check, eslint/prettier, framework:dev:bootstrap."
 doc_version: 3
-doc_updated_at: "2026-05-13T10:45:19.852Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-13T13:13:43.180Z"
+doc_updated_by: "CODER"
 description: "Split the root scripts directory into purpose-owned groups such as checks, generate, bench, release, workflow, and shared lib, updating package scripts and compatibility surfaces safely."
 sections:
   Summary: |-
@@ -37,17 +53,32 @@ sections:
   Scope: |-
     - In scope: Split the root scripts directory into purpose-owned groups such as checks, generate, bench, release, workflow, and shared lib, updating package scripts and compatibility surfaces safely.
     - Out of scope: unrelated refactors not required for "Reorganize repository scripts by ownership".
-  Plan: |-
-    1. Inventory root scripts by purpose and current package.json callers.
-    2. Move scripts into scripts/checks, scripts/generate, scripts/bench, scripts/release, scripts/workflow, and scripts/lib with compatibility wrappers only where needed.
-    3. Update package scripts, docs, CI references, and tests in one controlled sweep.
-    4. Verify scripts README generation, package scripts, and selected CI/check commands.
+  Plan: "Batch member under primary 202605131043-2GMHKQ. Scope: reorganize root scripts into purpose-owned directories, update package/docs/CI references, and preserve compatibility for existing script entrypoints. Verification: package script reference scan, focused script checks, typecheck/lint, and hosted checks."
   Verify Steps: |-
     1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
     2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-13T13:13:43.175Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: root script implementations are grouped under scripts/checks, scripts/generate, scripts/bench, scripts/release, and scripts/workflow with root compatibility wrappers and updated package script references. Checks passed: docs:scripts:check, check:types-files, hotspots:check, clone:check, knip:check, arch:check, eslint/prettier, framework:dev:bootstrap.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T13:01:45.883Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131043-2GMHKQ-generated-scripts-context-refactor/.agentplane/tasks/202605131043-GD7RJJ/blueprint/resolved-snapshot.json
+    - old_digest: 17d6bee1ca04234e1fd06fbd7539e0704090dcb7ee5b7a46cd8d51ae8522f260
+    - current_digest: 17d6bee1ca04234e1fd06fbd7539e0704090dcb7ee5b7a46cd8d51ae8522f260
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131043-GD7RJJ
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -68,10 +99,7 @@ Split the root scripts directory into purpose-owned groups such as checks, gener
 
 ## Plan
 
-1. Inventory root scripts by purpose and current package.json callers.
-2. Move scripts into scripts/checks, scripts/generate, scripts/bench, scripts/release, scripts/workflow, and scripts/lib with compatibility wrappers only where needed.
-3. Update package scripts, docs, CI references, and tests in one controlled sweep.
-4. Verify scripts README generation, package scripts, and selected CI/check commands.
+Batch member under primary 202605131043-2GMHKQ. Scope: reorganize root scripts into purpose-owned directories, update package/docs/CI references, and preserve compatibility for existing script entrypoints. Verification: package script reference scan, focused script checks, typecheck/lint, and hosted checks.
 
 ## Verify Steps
 
@@ -82,6 +110,25 @@ Split the root scripts directory into purpose-owned groups such as checks, gener
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-13T13:13:43.175Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: root script implementations are grouped under scripts/checks, scripts/generate, scripts/bench, scripts/release, and scripts/workflow with root compatibility wrappers and updated package script references. Checks passed: docs:scripts:check, check:types-files, hotspots:check, clone:check, knip:check, arch:check, eslint/prettier, framework:dev:bootstrap.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T13:01:45.883Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131043-2GMHKQ-generated-scripts-context-refactor/.agentplane/tasks/202605131043-GD7RJJ/blueprint/resolved-snapshot.json
+- old_digest: 17d6bee1ca04234e1fd06fbd7539e0704090dcb7ee5b7a46cd8d51ae8522f260
+- current_digest: 17d6bee1ca04234e1fd06fbd7539e0704090dcb7ee5b7a46cd8d51ae8522f260
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131043-GD7RJJ
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

@@ -10,7 +10,7 @@ export type TaskObsidianParsed = {
 export const taskObsidianSpec: CommandSpec<TaskObsidianParsed> = {
   id: ["task", "obsidian"],
   group: "Task",
-  summary: "Generate Obsidian-friendly Markdown task navigation under .agentplane.",
+  summary: "Generate Obsidian-friendly Markdown task navigation under .agentplane/generated.",
   description:
     "Writes derived Markdown indexes for browsing tasks by status, tag, owner, and dependencies without changing task READMEs as the canonical source.",
   options: [
@@ -24,7 +24,7 @@ export const taskObsidianSpec: CommandSpec<TaskObsidianParsed> = {
   examples: [
     {
       cmd: "agentplane task obsidian",
-      why: "Write .agentplane/index.md, .agentplane/tasks.md, and grouped navigation files.",
+      why: "Write .agentplane/generated/obsidian/index.md, tasks.md, and grouped navigation files.",
     },
   ],
   parse: (raw) => ({
@@ -35,14 +35,14 @@ export const taskObsidianSpec: CommandSpec<TaskObsidianParsed> = {
 export const taskObsidianCleanSpec: CommandSpec<Record<string, never>> = {
   id: ["task", "obsidian", "clean"],
   group: "Task",
-  summary: "Remove generated Obsidian task navigation files under .agentplane.",
+  summary: "Remove generated Obsidian task navigation files under .agentplane/generated.",
   description:
     "Deletes only AgentPlane-generated Obsidian projection files and directories while preserving canonical task READMEs and non-generated Markdown files.",
   options: [],
   examples: [
     {
       cmd: "agentplane task obsidian clean",
-      why: "Remove .agentplane/index.md, .agentplane/tasks.md, and generated grouped navigation files.",
+      why: "Remove .agentplane/generated/obsidian files and legacy generated root projection files.",
     },
   ],
   parse: () => ({}),

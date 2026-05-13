@@ -3,8 +3,8 @@ import { createHash } from "node:crypto";
 import { access, stat, mkdir, rm, readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { infoMessage, warnMessage } from "../../cli/output.js";
-import { resolveAgentplaneCacheSqlitePath } from "../../shared/cache-paths.js";
+import { infoMessage, warnMessage } from "../cli/output.js";
+import { resolveAgentplaneCacheSqlitePath } from "../shared/cache-paths.js";
 import {
   collectMatchingFiles,
   parseJsonlLines,

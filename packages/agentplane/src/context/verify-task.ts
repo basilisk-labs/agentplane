@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-base-to-string, unicorn/no-array-callback-reference */
-import { CliError } from "../../shared/errors.js";
+import { CliError } from "../shared/errors.js";
 import {
   loadCommandContext,
   loadTaskFromContext,
   type CommandContext,
-} from "../shared/task-backend.js";
+} from "../commands/shared/task-backend.js";
 import { fileExists, isRecord, parseJsonlLines, readText, toPosix } from "./context-utils.js";
 import path from "node:path";
 

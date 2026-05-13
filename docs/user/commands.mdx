@@ -174,22 +174,23 @@ agentplane task lint
 The exported snapshot is derived from the current backend projection. It is not the canonical
 source of truth.
 
-`agentplane task obsidian` writes a Markdown navigation projection under `.agentplane/` for
-compatibility with Obsidian and plain Markdown browsers:
+`agentplane task obsidian` writes a Markdown navigation projection under
+`.agentplane/generated/obsidian/` for compatibility with Obsidian and plain Markdown browsers:
 
-- `.agentplane/index.md`
-- `.agentplane/tasks.md`
-- `.agentplane/by-status/*.md`
-- `.agentplane/by-tag/*.md`
-- `.agentplane/by-owner/*.md`
+- `.agentplane/generated/obsidian/index.md`
+- `.agentplane/generated/obsidian/tasks.md`
+- `.agentplane/generated/obsidian/by-status/*.md`
+- `.agentplane/generated/obsidian/by-tag/*.md`
+- `.agentplane/generated/obsidian/by-owner/*.md`
 
-Open `.agentplane/` as an Obsidian vault to browse task IDs, statuses, owners, tags, and dependency
-links while keeping `.agentplane/tasks/<task-id>/README.md` as the canonical task record.
+Open `.agentplane/generated/obsidian/` as an Obsidian vault to browse task IDs, statuses, owners,
+tags, and dependency links while keeping `.agentplane/tasks/<task-id>/README.md` as the canonical
+task record.
 `agentplane task obsidian clean` removes only the generated Obsidian projection files; it does not
 delete canonical task READMEs or non-generated Markdown files.
 
-This surface is a generated task-wiki/navigation adapter, not a separate storage authority. New
-generated navigation artifacts should converge under `.agentplane/generated/**`.
+This surface is a generated task-wiki/navigation adapter, not a separate storage authority. Legacy
+generated files in the `.agentplane/` root are still cleaned when they carry the generated marker.
 
 ## Agent Change Record
 

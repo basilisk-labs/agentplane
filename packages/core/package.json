@@ -94,11 +94,11 @@
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
     "build": "tsc -b && bun run build:bundle",
-    "build:bundle": "node ../../scripts/prune-package-js.mjs dist && tsup && node ../../scripts/manifest.mjs build .",
+    "build:bundle": "node ../../scripts/release/prune-package-js.mjs dist && tsup && node ../../scripts/release/manifest.mjs build .",
     "typecheck": "tsc -b",
-    "prepack": "bun run clean && bun run build && node ../../scripts/manifest.mjs sanitize .",
-    "postpack": "node ../../scripts/manifest.mjs build .",
-    "prepublishOnly": "node ../../scripts/enforce-github-publish.mjs && npm run prepack"
+    "prepack": "bun run clean && bun run build && node ../../scripts/release/manifest.mjs sanitize .",
+    "postpack": "node ../../scripts/release/manifest.mjs build .",
+    "prepublishOnly": "node ../../scripts/release/enforce-github-publish.mjs && npm run prepack"
   },
   "dependencies": {
     "canonicalize": "^3.0.0",

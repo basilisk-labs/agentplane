@@ -4,13 +4,13 @@ import { readFile, readdir, stat } from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import path from "node:path";
 
-import { mapBackendError } from "../../cli/error-map.js";
-import { CliError } from "../../shared/errors.js";
-import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
-import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import type { TaskNewParsed } from "../task/new.js";
-import { runTaskNewParsed } from "../task/new.js";
-import { runTaskRun } from "../task/run.command.js";
+import { mapBackendError } from "../cli/error-map.js";
+import { CliError } from "../shared/errors.js";
+import { writeJsonStableIfChanged } from "../shared/write-if-changed.js";
+import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
+import type { TaskNewParsed } from "../commands/task/new.js";
+import { runTaskNewParsed } from "../commands/task/new.js";
+import { runTaskRun } from "../commands/task/run.command.js";
 import { cmdContextReindex } from "./reindex.js";
 
 type ContextIngestMode = "changed" | "all" | "sources";

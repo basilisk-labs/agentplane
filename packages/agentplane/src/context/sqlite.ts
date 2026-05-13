@@ -2,7 +2,7 @@
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 
-import { openSqliteDatabase, type SqliteDatabase } from "../../shared/sqlite-driver.js";
+import { openSqliteDatabase, type SqliteDatabase } from "../shared/sqlite-driver.js";
 
 type SqliteProjectionRow = {
   path: string;

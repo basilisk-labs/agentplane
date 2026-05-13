@@ -4217,7 +4217,7 @@ agentplane task lint
 
 ### task obsidian
 
-Generate Obsidian-friendly Markdown task navigation under .agentplane.
+Generate Obsidian-friendly Markdown task navigation under .agentplane/generated.
 
 Writes derived Markdown indexes for browsing tasks by status, tag, owner, and dependencies without changing task READMEs as the canonical source.
 
@@ -4237,11 +4237,11 @@ Examples:
 agentplane task obsidian
 ```
 
-- Write .agentplane/index.md, .agentplane/tasks.md, and grouped navigation files.
+- Write .agentplane/generated/obsidian/index.md, tasks.md, and grouped navigation files.
 
 ### task obsidian clean
 
-Remove generated Obsidian task navigation files under .agentplane.
+Remove generated Obsidian task navigation files under .agentplane/generated.
 
 Deletes only AgentPlane-generated Obsidian projection files and directories while preserving canonical task READMEs and non-generated Markdown files.
 
@@ -4257,7 +4257,7 @@ Examples:
 agentplane task obsidian clean
 ```
 
-- Remove .agentplane/index.md, .agentplane/tasks.md, and generated grouped navigation files.
+- Remove .agentplane/generated/obsidian files and legacy generated root projection files.
 
 ### task plan reject
 
