@@ -139,31 +139,24 @@ export class CloudBackend implements TaskBackend {
   async generateTaskId(opts: { length: number; attempts: number }): Promise<string> {
     return await this.cache.generateTaskId(opts);
   }
-
   async listTasks(): Promise<TaskData[]> {
     return await this.cache.listTasks();
   }
-
   async listProjectionTasks(): Promise<TaskSummary[]> {
     return await this.cache.listProjectionTasks();
   }
-
   getLastListWarnings(): string[] {
     return this.cache.getLastListWarnings();
   }
-
   async getTask(taskId: string): Promise<TaskData | null> {
     return await this.cache.getTask(taskId);
   }
-
   async getTasks(taskIds: string[]): Promise<(TaskData | null)[]> {
     return await this.cache.getTasks(taskIds);
   }
-
   async getTaskDoc(taskId: string): Promise<string> {
     return await this.cache.getTaskDoc(taskId);
   }
-
   async assertLocalMutationReady(): Promise<void> {
     await this.assertProjectionFreshForLocalMutation();
   }
@@ -177,7 +170,6 @@ export class CloudBackend implements TaskBackend {
     await this.assertProjectionFreshForLocalMutation();
     await this.cache.setTaskDoc(taskId, doc, updatedBy, opts);
   }
-
   async touchTaskDocMetadata(
     taskId: string,
     updatedBy?: string,
@@ -191,20 +183,16 @@ export class CloudBackend implements TaskBackend {
     await this.assertProjectionFreshForLocalMutation();
     await this.cache.writeTask(task, opts);
   }
-
   async writeTasks(tasks: TaskData[], opts?: TaskWriteOptions): Promise<void> {
     await this.assertProjectionFreshForLocalMutation();
     await this.cache.writeTasks(tasks, opts);
   }
-
   async normalizeTasks(): Promise<{ scanned: number; changed: number }> {
     return await this.cache.normalizeTasks();
   }
-
   async exportTasksJson(outputPath: string): Promise<void> {
     await this.cache.exportTasksJson(outputPath);
   }
-
   async exportProjectionSnapshot(outputPath: string): Promise<void> {
     await this.cache.exportProjectionSnapshot(outputPath);
   }
