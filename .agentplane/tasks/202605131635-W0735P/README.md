@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T17:12:26.420Z"
+  updated_at: "2026-05-13T17:14:58.915Z"
   updated_by: "CODER"
-  note: "Expanded lifecycle contract work verified: workflow lifecycle parity checker passes in workflows:command-check, focused Vitest passes, typecheck passes, policy routing OK, doctor OK, builtin assets fresh, formatting passed, verify-show current."
+  note: "Lifecycle parity contract verified at current branch head: workflows:command-check, focused Vitest, typecheck, policy routing, doctor, builtin asset freshness, formatting, and verify-show all passed."
   attempts: 0
 commit: null
 comments:
@@ -48,8 +48,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Expanded lifecycle contract work verified: workflow lifecycle parity checker passes in workflows:command-check, focused Vitest passes, typecheck passes, policy routing OK, doctor OK, builtin assets fresh, formatting passed, verify-show current."
+  -
+    type: "verify"
+    at: "2026-05-13T17:14:58.915Z"
+    author: "CODER"
+    state: "ok"
+    note: "Lifecycle parity contract verified at current branch head: workflows:command-check, focused Vitest, typecheck, policy routing, doctor, builtin asset freshness, formatting, and verify-show all passed."
 doc_version: 3
-doc_updated_at: "2026-05-13T17:12:26.446Z"
+doc_updated_at: "2026-05-13T17:14:58.949Z"
 doc_updated_by: "CODER"
 description: "Fix branch_pr command-order drift across gateway docs, quickstart guidance, and blueprint routes; leave cleanup command references out of scope per user request."
 sections:
@@ -108,6 +114,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131635-W0735P
     
+    ### 2026-05-13T17:14:58.915Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Lifecycle parity contract verified at current branch head: workflows:command-check, focused Vitest, typecheck, policy routing, doctor, builtin asset freshness, formatting, and verify-show all passed.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T17:12:26.446Z, excerpt_hash=sha256:65a5b2ab7b7e18aa7dd80c03a6f614f26c62d91bbc02a4845c97fc02e1beca87
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131635-W0735P-command-order-guidance/.agentplane/tasks/202605131635-W0735P/blueprint/resolved-snapshot.json
+    - old_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+    - current_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131635-W0735P
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -120,6 +145,10 @@ sections:
     - Observation: The branch_pr and direct code workflow order is now represented in packages/agentplane/src/workflow-lifecycle/contract.ts and checked by scripts/checks/check-lifecycle-parity.ts.
       Impact: Blueprint route order, quickstart guidance, gateway blocks, and current workflow docs now have a semantic parity gate instead of relying on manual review.
       Resolution: workflows:command-check runs the lifecycle parity checker; focused tests cover contract route order and drift detection.
+    
+    - Observation: Verification was rerun after the lifecycle contract implementation commit so PR freshness can track the current branch head plus task-local artifact commits.
+      Impact: PR metadata can treat later task artifact commits as task-local advances instead of stale code changes.
+      Resolution: Refresh PR artifacts after this verification record and keep subsequent commits limited to task artifacts.
 id_source: "generated"
 ---
 ## Summary
@@ -187,6 +216,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131635-W0735P
 
+### 2026-05-13T17:14:58.915Z — VERIFY — ok
+
+By: CODER
+
+Note: Lifecycle parity contract verified at current branch head: workflows:command-check, focused Vitest, typecheck, policy routing, doctor, builtin asset freshness, formatting, and verify-show all passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T17:12:26.446Z, excerpt_hash=sha256:65a5b2ab7b7e18aa7dd80c03a6f614f26c62d91bbc02a4845c97fc02e1beca87
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131635-W0735P-command-order-guidance/.agentplane/tasks/202605131635-W0735P/blueprint/resolved-snapshot.json
+- old_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+- current_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131635-W0735P
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -203,3 +251,7 @@ BlueprintSnapshotRef:
 - Observation: The branch_pr and direct code workflow order is now represented in packages/agentplane/src/workflow-lifecycle/contract.ts and checked by scripts/checks/check-lifecycle-parity.ts.
   Impact: Blueprint route order, quickstart guidance, gateway blocks, and current workflow docs now have a semantic parity gate instead of relying on manual review.
   Resolution: workflows:command-check runs the lifecycle parity checker; focused tests cover contract route order and drift detection.
+
+- Observation: Verification was rerun after the lifecycle contract implementation commit so PR freshness can track the current branch head plus task-local artifact commits.
+  Impact: PR metadata can treat later task artifact commits as task-local advances instead of stale code changes.
+  Resolution: Refresh PR artifacts after this verification record and keep subsequent commits limited to task artifacts.
