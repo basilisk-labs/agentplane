@@ -98,7 +98,10 @@ async function maybeAutoPushCloudAfterStatusMutation(opts: {
   if (opts.ctx.backendId !== "cloud") {
     return;
   }
-  const backend = opts.ctx.taskBackend as unknown as { autoPushOnMutation?: boolean; sync?: unknown };
+  const backend = opts.ctx.taskBackend as unknown as {
+    autoPushOnMutation?: boolean;
+    sync?: unknown;
+  };
   if (backend.autoPushOnMutation !== true) {
     return;
   }
