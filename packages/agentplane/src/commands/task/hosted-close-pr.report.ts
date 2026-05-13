@@ -56,7 +56,7 @@ export function reportHostedClosePrExecutionResult(result: HostedClosePrExecutio
     case "already-merged-pr": {
       output.info(
         normalizeGithubPrLink(result.outcome.prNumber, result.outcome.prUrl, "linked to") +
-          "; already merged, no follow-up PR needed",
+          `; already merged, close_branch=${result.outcome.closeBranch}, base=${result.outcome.baseBranch}, merge=${shortHostedCloseSha(result.outcome.mergeCommit)}`,
       );
       output.success(
         "task hosted-close-pr",
@@ -66,6 +66,9 @@ export function reportHostedClosePrExecutionResult(result: HostedClosePrExecutio
       return;
     }
     case "existing-pr": {
+      output.info(
+        `hosted close-tail already open: close_branch=${result.outcome.closeBranch}, base=${result.outcome.baseBranch}, merge=${shortHostedCloseSha(result.outcome.mergeCommit)}`,
+      );
       output.success(
         "task hosted-close-pr",
         result.outcome.taskId,

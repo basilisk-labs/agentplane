@@ -57,12 +57,18 @@ export type HostedClosePrOutcome =
   | {
       kind: "already-merged-pr";
       taskId: string;
+      closeBranch: string;
+      baseBranch: string;
+      mergeCommit: string;
       prNumber: number;
       prUrl: string | null;
     }
   | {
       kind: "existing-pr";
       taskId: string;
+      closeBranch: string;
+      baseBranch: string;
+      mergeCommit: string;
       prNumber: number;
       prUrl: string | null;
     }
