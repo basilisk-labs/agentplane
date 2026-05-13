@@ -1,0 +1,1 @@
+🚧 5SM92P task: Improve Agentplane PR merge messages with structured human-readable summaries [202605130823-5SM92P]
