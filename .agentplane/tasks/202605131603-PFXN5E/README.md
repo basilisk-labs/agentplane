@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T16:11:35.161Z"
+  updated_at: "2026-05-13T16:35:13.190Z"
   updated_by: "CODER"
-  note: "Updated verification after diagnostic refinement: eslint on changed TS passed; focused Vitest for hosted-close workflow and integrate command passed (2 files, 9 tests); bun run typecheck passed; git diff --check passed."
+  note: "Final verification after queue drain/docs refresh: focused integrate and queue tests passed (4 files, 18 tests); eslint passed for changed TS; bun run typecheck passed; format/checks passed through pre-push up to the cold-start timing guard; PR branch pushed at 401d1ac6d."
   attempts: 0
 commit: null
 comments:
@@ -49,8 +49,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Updated verification after diagnostic refinement: eslint on changed TS passed; focused Vitest for hosted-close workflow and integrate command passed (2 files, 9 tests); bun run typecheck passed; git diff --check passed."
+  -
+    type: "verify"
+    at: "2026-05-13T16:35:13.190Z"
+    author: "CODER"
+    state: "ok"
+    note: "Final verification after queue drain/docs refresh: focused integrate and queue tests passed (4 files, 18 tests); eslint passed for changed TS; bun run typecheck passed; format/checks passed through pre-push up to the cold-start timing guard; PR branch pushed at 401d1ac6d."
 doc_version: 3
-doc_updated_at: "2026-05-13T16:11:35.181Z"
+doc_updated_at: "2026-05-13T16:35:13.205Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr completion queue verified task branches for serialized integration, prefer merge commits over squash in hosted close routes, and move protected-base integration toward GitHub merge orchestration instead of a manual handoff-only stop."
 sections:
@@ -95,6 +101,25 @@ sections:
     Attempts: 0
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T16:09:55.176Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131603-PFXN5E-automate-merge-queue/.agentplane/tasks/202605131603-PFXN5E/blueprint/resolved-snapshot.json
+    - old_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+    - current_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
+    
+    ### 2026-05-13T16:35:13.190Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Final verification after queue drain/docs refresh: focused integrate and queue tests passed (4 files, 18 tests); eslint passed for changed TS; bun run typecheck passed; format/checks passed through pre-push up to the cold-start timing guard; PR branch pushed at 401d1ac6d.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T16:11:35.181Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     Details:
     
@@ -164,6 +189,25 @@ Note: Updated verification after diagnostic refinement: eslint on changed TS pas
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T16:09:55.176Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131603-PFXN5E-automate-merge-queue/.agentplane/tasks/202605131603-PFXN5E/blueprint/resolved-snapshot.json
+- old_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+- current_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
+
+### 2026-05-13T16:35:13.190Z — VERIFY — ok
+
+By: CODER
+
+Note: Final verification after queue drain/docs refresh: focused integrate and queue tests passed (4 files, 18 tests); eslint passed for changed TS; bun run typecheck passed; format/checks passed through pre-push up to the cold-start timing guard; PR branch pushed at 401d1ac6d.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T16:11:35.181Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 Details:
 
