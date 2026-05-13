@@ -24,12 +24,17 @@ Created: 2026-05-13T18:17:32.377Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T18:17:32.377Z
+- Updated: 2026-05-13T18:33:34.462Z
 - Branch: task/202605131815-Y9VGVQ/shared-root-env-sync
-- Head: 707ddf167b73
+- Head: 9246be613155
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 392 +++++++++++++++++++++
+ .../src/backends/task-backend.load.test.ts         |  37 ++
+ .../src/cli/run-cli.core.backend-sync.test.ts      |  59 ++++
+ packages/agentplane/src/commands/backend.ts        |   4 +-
+ packages/agentplane/src/shared/env.ts              |  35 +-
+ 5 files changed, 524 insertions(+), 3 deletions(-)
 ```
 
 </details>
