@@ -1,7 +1,8 @@
 ---
 id: "202605131804-4E70SD"
 title: "Add phase-aware policy engine"
-status: "DOING"
+result_summary: "Merged via PR #3660."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: phase-aware policy engine added and wired into lifecycle choke points. Checks passed: bun run typecheck; policy/evaluate tests; policy/engine tests; plan unit tests; workflow verify hooks; finish validation tests; integrate cmd tests; workflow.test; targeted eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor."
   attempts: 0
-commit: null
+commit:
+  hash: "63e0da7dc2a67d686e635e54ff9352ff0f8f8fb2"
+  message: "🚧 4E70SD task: Add phase-aware policy engine"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing phase-aware policy engine in the dedicated branch_pr worktree, scoped to lifecycle phase model and central policy decisions only."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3660 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: phase-aware policy engine added and wired into lifecycle choke points. Checks passed: bun run typecheck; policy/evaluate tests; policy/engine tests; plan unit tests; workflow verify hooks; finish validation tests; integrate cmd tests; workflow.test; targeted eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor."
+  -
+    type: "status"
+    at: "2026-05-13T19:12:58.649Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3660 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T18:34:29.419Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T19:12:58.649Z"
+doc_updated_by: "INTEGRATOR"
 description: "Introduce explicit lifecycle phases and route core task lifecycle commands through a central phase-aware policy decision layer without adding Runner or mutation allowlist contracts."
 sections:
   Summary: |-
