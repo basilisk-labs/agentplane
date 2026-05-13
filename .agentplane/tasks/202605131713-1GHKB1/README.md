@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T17:44:14.733Z"
+  updated_at: "2026-05-13T18:50:01.673Z"
   updated_by: "CODER"
-  note: "Verification passed: typecheck; focused evaluator/init/upgrade/release-smoke tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke."
+  note: "Rebased verification passed after refreshing blueprint snapshot: build; typecheck; focused evaluator/init/upgrade/release-smoke tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke."
   attempts: 0
 commit: null
 comments:
@@ -43,14 +43,26 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verification passed: typecheck; focused evaluator/init/upgrade/release-smoke tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke."
+  -
+    type: "verify"
+    at: "2026-05-13T18:49:29.166Z"
+    author: "CODER"
+    state: "ok"
+    note: "Rebased verification passed: build; typecheck; focused evaluator/init/upgrade/release-smoke tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke."
+  -
+    type: "verify"
+    at: "2026-05-13T18:50:01.673Z"
+    author: "CODER"
+    state: "ok"
+    note: "Rebased verification passed after refreshing blueprint snapshot: build; typecheck; focused evaluator/init/upgrade/release-smoke tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke."
 doc_version: 3
-doc_updated_at: "2026-05-13T17:44:14.771Z"
+doc_updated_at: "2026-05-13T18:50:01.692Z"
 doc_updated_by: "CODER"
 description: "Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modules, with list/show support now and evaluator run explicitly deferred to the v0.8 roadmap."
 sections:
   Summary: |-
     Add public evaluator catalog commands
-
+    
     Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modules, with list/show support now and evaluator run explicitly deferred to the v0.8 roadmap.
   Scope: |-
     - In scope: Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modules, with list/show support now and evaluator run explicitly deferred to the v0.8 roadmap.
@@ -63,16 +75,16 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-13T17:44:14.733Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Verification passed: typecheck; focused evaluator/init/upgrade/release-smoke tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke.
     Attempts: 0
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T17:15:45.315Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
-
+    
     Details:
-
+    
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131713-1GHKB1-public-evaluator-catalog/.agentplane/tasks/202605131713-1GHKB1/blueprint/resolved-snapshot.json
@@ -80,7 +92,45 @@ sections:
     - current_digest: 5d392286ac670a04f8c0a0b80fb593bc84bbf5dcf827b53f3b703e2e5da2b242
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
-
+    
+    ### 2026-05-13T18:49:29.166Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Rebased verification passed: build; typecheck; focused evaluator/init/upgrade/release-smoke tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T17:44:14.771Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131713-1GHKB1-public-evaluator-catalog/.agentplane/tasks/202605131713-1GHKB1/blueprint/resolved-snapshot.json
+    - old_digest: 5d392286ac670a04f8c0a0b80fb593bc84bbf5dcf827b53f3b703e2e5da2b242
+    - current_digest: dc35f553ca855fd3f31ab645cc981f36111b003c3457680de3a0ee96810712a1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
+    
+    ### 2026-05-13T18:50:01.673Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Rebased verification passed after refreshing blueprint snapshot: build; typecheck; focused evaluator/init/upgrade/release-smoke tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:49:29.194Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131713-1GHKB1-public-evaluator-catalog/.agentplane/tasks/202605131713-1GHKB1/blueprint/resolved-snapshot.json
+    - old_digest: dc35f553ca855fd3f31ab645cc981f36111b003c3457680de3a0ee96810712a1
+    - current_digest: dc35f553ca855fd3f31ab645cc981f36111b003c3457680de3a0ee96810712a1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -89,6 +139,14 @@ sections:
     - Observation: Added public evaluator list/show catalog commands, seeded recovery-context prompt module into .agentplane/evaluators during init, and kept evaluator execution out of the command catalog for v0.8.
       Impact: Users can inspect evaluator prompt modules publicly now without exposing a premature run surface.
       Resolution: Fresh repo-local build and smoke confirmed evaluator list/show resolve the project-local recovery-context module.
+    
+    - Observation: origin/main advanced with other active AgentPlane tasks, causing PR mergeStateStatus=DIRTY. Rebased task branch onto origin/main and regenerated builtin assets from the merged asset tree.
+      Impact: PR is based on current main without using admin merge or branch-protection bypass.
+      Resolution: Resolved generated asset conflict by rerunning assets:builtin:generate, rebuilt CLI dist before docs generation, and reran targeted checks on the rebased head.
+    
+    - Observation: origin/main advanced with other active AgentPlane tasks, causing PR mergeStateStatus=DIRTY. Rebased task branch onto origin/main, regenerated builtin assets from the merged asset tree, rebuilt CLI dist before docs generation, and refreshed the task blueprint snapshot.
+      Impact: Task evidence now matches the rebased branch and current code.branch_pr route; no admin merge or branch-protection bypass was used.
+      Resolution: Resolved generated asset conflict with assets:builtin:generate and reran targeted verification on the rebased head.
 id_source: "generated"
 ---
 ## Summary
@@ -134,6 +192,44 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
 
+### 2026-05-13T18:49:29.166Z — VERIFY — ok
+
+By: CODER
+
+Note: Rebased verification passed: build; typecheck; focused evaluator/init/upgrade/release-smoke tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T17:44:14.771Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131713-1GHKB1-public-evaluator-catalog/.agentplane/tasks/202605131713-1GHKB1/blueprint/resolved-snapshot.json
+- old_digest: 5d392286ac670a04f8c0a0b80fb593bc84bbf5dcf827b53f3b703e2e5da2b242
+- current_digest: dc35f553ca855fd3f31ab645cc981f36111b003c3457680de3a0ee96810712a1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
+
+### 2026-05-13T18:50:01.673Z — VERIFY — ok
+
+By: CODER
+
+Note: Rebased verification passed after refreshing blueprint snapshot: build; typecheck; focused evaluator/init/upgrade/release-smoke tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:49:29.194Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131713-1GHKB1-public-evaluator-catalog/.agentplane/tasks/202605131713-1GHKB1/blueprint/resolved-snapshot.json
+- old_digest: dc35f553ca855fd3f31ab645cc981f36111b003c3457680de3a0ee96810712a1
+- current_digest: dc35f553ca855fd3f31ab645cc981f36111b003c3457680de3a0ee96810712a1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -146,3 +242,11 @@ BlueprintSnapshotRef:
 - Observation: Added public evaluator list/show catalog commands, seeded recovery-context prompt module into .agentplane/evaluators during init, and kept evaluator execution out of the command catalog for v0.8.
   Impact: Users can inspect evaluator prompt modules publicly now without exposing a premature run surface.
   Resolution: Fresh repo-local build and smoke confirmed evaluator list/show resolve the project-local recovery-context module.
+
+- Observation: origin/main advanced with other active AgentPlane tasks, causing PR mergeStateStatus=DIRTY. Rebased task branch onto origin/main and regenerated builtin assets from the merged asset tree.
+  Impact: PR is based on current main without using admin merge or branch-protection bypass.
+  Resolution: Resolved generated asset conflict by rerunning assets:builtin:generate, rebuilt CLI dist before docs generation, and reran targeted checks on the rebased head.
+
+- Observation: origin/main advanced with other active AgentPlane tasks, causing PR mergeStateStatus=DIRTY. Rebased task branch onto origin/main, regenerated builtin assets from the merged asset tree, rebuilt CLI dist before docs generation, and refreshed the task blueprint snapshot.
+  Impact: Task evidence now matches the rebased branch and current code.branch_pr route; no admin merge or branch-protection bypass was used.
+  Resolution: Resolved generated asset conflict with assets:builtin:generate and reran targeted verification on the rebased head.
