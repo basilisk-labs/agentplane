@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T15:03:27.015Z"
+  updated_at: "2026-05-13T15:42:11.003Z"
   updated_by: "CODER"
-  note: "Verified committed implementation e237c64f2: focused harvest/task-new tests, eslint, typecheck, docs CLI freshness, format, knip, hotspot, policy routing, docs IA, doctor, diff whitespace, and live create-extraction-tasks dry-run all pass. Release-readiness passes under Vitest; Bun test lacks node:sqlite in this environment."
+  note: "Verified review-thread fix 96adf5697: combined --write-proposals and --create-extraction-tasks now preserves context_harvest while adding context_task_extraction; bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts passes 11/11."
   attempts: 0
 commit: null
 comments:
@@ -48,8 +48,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified committed implementation e237c64f2: focused harvest/task-new tests, eslint, typecheck, docs CLI freshness, format, knip, hotspot, policy routing, docs IA, doctor, diff whitespace, and live create-extraction-tasks dry-run all pass. Release-readiness passes under Vitest; Bun test lacks node:sqlite in this environment."
+  -
+    type: "verify"
+    at: "2026-05-13T15:42:11.003Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified review-thread fix 96adf5697: combined --write-proposals and --create-extraction-tasks now preserves context_harvest while adding context_task_extraction; bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts passes 11/11."
 doc_version: 3
-doc_updated_at: "2026-05-13T15:03:27.026Z"
+doc_updated_at: "2026-05-13T15:42:11.021Z"
 doc_updated_by: "CODER"
 description: "Add a context harvest mode that creates standard AgentPlane extraction tasks for batchwise semantic knowledge extraction from completed task history, with modular prompt context and provenance requirements."
 sections:
@@ -105,6 +111,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131449-GS3HB0
     
+    ### 2026-05-13T15:42:11.003Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified review-thread fix 96adf5697: combined --write-proposals and --create-extraction-tasks now preserves context_harvest while adding context_task_extraction; bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts passes 11/11.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T15:03:27.026Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131449-GS3HB0-agentic-context-extraction/.agentplane/tasks/202605131449-GS3HB0/blueprint/resolved-snapshot.json
+    - old_digest: 26f4bf4ba1a7d77364547c7ee3496140e1efe1148c468b4acd413e9806fd3388
+    - current_digest: 26f4bf4ba1a7d77364547c7ee3496140e1efe1148c468b4acd413e9806fd3388
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131449-GS3HB0
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -117,6 +142,10 @@ sections:
     - Observation: PR #3638 opened for the committed branch after implementing agentic extraction task batches.
       Impact: PR metadata and task verification now refer to the committed implementation head.
       Resolution: Proceed with PR update, push, and hosted checks.
+    
+    - Observation: Resolved PR #3638 P1 review finding by writing extraction markers against the latest backend task state after harvest marker writes.
+      Impact: Combined harvest modes no longer drop ingestion provenance markers, so later harvest runs can still detect already ingested tasks.
+      Resolution: Added regression coverage for the combined mode and de-duplicated reported changed paths.
 id_source: "generated"
 ---
 ## Summary
@@ -181,6 +210,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131449-GS3HB0
 
+### 2026-05-13T15:42:11.003Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified review-thread fix 96adf5697: combined --write-proposals and --create-extraction-tasks now preserves context_harvest while adding context_task_extraction; bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts passes 11/11.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T15:03:27.026Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131449-GS3HB0-agentic-context-extraction/.agentplane/tasks/202605131449-GS3HB0/blueprint/resolved-snapshot.json
+- old_digest: 26f4bf4ba1a7d77364547c7ee3496140e1efe1148c468b4acd413e9806fd3388
+- current_digest: 26f4bf4ba1a7d77364547c7ee3496140e1efe1148c468b4acd413e9806fd3388
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131449-GS3HB0
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -197,3 +245,7 @@ BlueprintSnapshotRef:
 - Observation: PR #3638 opened for the committed branch after implementing agentic extraction task batches.
   Impact: PR metadata and task verification now refer to the committed implementation head.
   Resolution: Proceed with PR update, push, and hosted checks.
+
+- Observation: Resolved PR #3638 P1 review finding by writing extraction markers against the latest backend task state after harvest marker writes.
+  Impact: Combined harvest modes no longer drop ingestion provenance markers, so later harvest runs can still detect already ingested tasks.
+  Resolution: Added regression coverage for the combined mode and de-duplicated reported changed paths.
