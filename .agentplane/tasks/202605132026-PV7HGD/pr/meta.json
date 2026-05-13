@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605132026-PV7HGD/cloud-autosync",
+  "created_at": "2026-05-13T20:27:38.160Z",
+  "head_sha": "e7236d29af203d6d845cae3dd40935de54f9772a",
+  "last_verified_at": "2026-05-13T20:36:01.518Z",
+  "last_verified_sha": "e7236d29af203d6d845cae3dd40935de54f9772a",
+  "schema_version": 1,
+  "task_id": "202605132026-PV7HGD",
+  "updated_at": "2026-05-13T20:36:01.690Z",
+  "verify": {
+    "status": "pass"
+  }
+}
