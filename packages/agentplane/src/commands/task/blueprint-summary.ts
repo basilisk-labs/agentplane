@@ -23,7 +23,7 @@ export type TaskBlueprintLifecycleSummary = {
   error?: string;
 };
 
-export type TaskBlueprintLifecycleResolver = (
+type TaskBlueprintLifecycleResolver = (
   task: TaskData | TaskSummary,
 ) => TaskBlueprintLifecycleSummary;
 
