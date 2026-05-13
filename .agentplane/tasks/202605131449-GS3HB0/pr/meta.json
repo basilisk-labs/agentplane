@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T15:54:09Z",
   "base": "main",
   "branch": "task/202605131449-GS3HB0/agentic-context-extraction",
   "created_at": "2026-05-13T14:50:25.406Z",
-  "head_sha": "96adf5697296acbe55341471c0530e71387de694",
+  "head_sha": "2c6ab217aba1bd696671e418fea748a260596126",
   "last_verified_at": "2026-05-13T15:42:11.003Z",
   "last_verified_sha": "96adf5697296acbe55341471c0530e71387de694",
+  "merge_commit": "e14291b1153a6c406acf342e71dbf58290682eb4",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T15:54:09Z",
   "pr_number": 3638,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3638",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605131449-GS3HB0",
-  "updated_at": "2026-05-13T15:42:11.065Z",
+  "updated_at": "2026-05-13T15:54:09Z",
   "verify": {
     "status": "pass"
   }
