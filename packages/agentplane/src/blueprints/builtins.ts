@@ -266,6 +266,7 @@ export const BUILTIN_BLUEPRINTS = [
       evidence("code_pr.paths", "changed_paths", "work_unit", "Changed source paths."),
       evidence("code_pr.fast_checks", "check_result", "fast_local_checks", "Fast local checks."),
       evidence("code_pr.pr", "external_link", "pr_artifact", "Pull request artifact."),
+      evidence("code_pr.verify", "check_result", "verify_record", "Task branch verification."),
       evidence("code_pr.hosted", "check_result", "hosted_checks", "Hosted check evidence."),
       evidence("code_pr.commit", "commit", "publish_or_integrate", "Integration commit."),
     ],

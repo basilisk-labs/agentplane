@@ -72,6 +72,7 @@ describe("command-guide", () => {
     expect(text).toContain("## First screen");
     expect(text).toContain("## First visible payoff");
     expect(text).toContain('agentplane task new --title "Demo task"');
+    expect(text).toContain("agentplane task plan approve <task-id> --by ORCHESTRATOR");
     expect(text).toContain(".agentplane/tasks/<task-id>/");
     expect(text).toContain("## Go deeper");
     expect(text).toContain("activate ORCHESTRATOR for planning and the task owner role");

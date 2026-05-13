@@ -80,8 +80,11 @@ ap finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --comm
 
 ```bash
 ap work start <task-id> --agent <ROLE> --slug <slug> --worktree
+ap task start-ready <task-id> --author <ROLE> --body "Start: ..."
+git commit -m "Implement <task>"
 ap pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
-ap pr update <task-id>
+ap task verify-show <task-id>
+ap verify <task-id> --ok|--rework --by <ROLE> --note "..."
 ap integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 ap finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 ```
@@ -91,9 +94,6 @@ ap finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --
 ```bash
 ap vshow <task-id>
 ap verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]
-ap incidents advise <task-id>
-ap incidents collect <task-id> --check
-ap doctor
 node .agentplane/policy/check-routing.mjs
 ```
 

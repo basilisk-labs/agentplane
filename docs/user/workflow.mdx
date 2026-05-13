@@ -20,8 +20,8 @@ This repository is configured for `branch_pr`, so the normal guarded route is:
 2. Create the task, set the plan, and approve it.
 3. Start a dedicated branch/worktree with `agentplane work start ... --worktree`.
 4. Implement changes on the task branch, create the implementation commit there, and keep local PR artifacts current.
-5. Push the task branch, open a hosted PR, and wait for required remote checks.
-6. Record verification on the task branch, then integrate on the base branch only after remote green.
+5. Let normal `agentplane pr open` publish/link the hosted PR, then record verification on the task branch.
+6. Wait for required remote checks, then integrate on the base branch only after local verification and remote green.
 7. Finish on the base branch after integration with `--commit <implementation-git-rev> --close-commit`.
 
 For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
@@ -39,10 +39,9 @@ git add <changed-files>
 git commit -m "Implement <task>"
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
-git push -u origin task/<task-id>/<slug>
-gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
-bun run workflow:wait-remote-checks
+agentplane task verify-show <task-id>
 agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
+bun run workflow:wait-remote-checks
 cd <base-checkout>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <implementation-git-rev> --close-commit

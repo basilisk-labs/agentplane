@@ -33,6 +33,7 @@ export const codeBranchPrNodes = [
     evidence: ["artifact", "external_link"],
     allowedCommands: ["agentplane pr open <task-id> --branch <branch> --author <ROLE>"],
   }),
+  node({ kind: "verify_record", evidence: ["check_result"], protected: true }),
   node({ kind: "hosted_checks", evidence: ["check_result", "external_link"] }),
   node({
     kind: "publish_or_integrate",
@@ -40,6 +41,5 @@ export const codeBranchPrNodes = [
     protected: true,
     allowedCommands: ["agentplane integrate <task-id> --branch <branch> --run-verify"],
   }),
-  node({ kind: "verify_record", evidence: ["check_result"], protected: true }),
   node({ kind: "finish", evidence: ["commit"], protected: true }),
 ] as const;
