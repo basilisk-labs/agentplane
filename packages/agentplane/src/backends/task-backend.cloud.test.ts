@@ -150,9 +150,10 @@ describe("CloudBackend", () => {
 
     await expect(backend.assertLocalMutationReady()).resolves.toBeUndefined();
     expect(fetchImpl).toHaveBeenCalled();
-    const state = JSON.parse(
-      await readFile(path.join(stateDir, "state.json"), "utf8"),
-    ) as Record<string, unknown>;
+    const state = JSON.parse(await readFile(path.join(stateDir, "state.json"), "utf8")) as Record<
+      string,
+      unknown
+    >;
     expect(Number.isFinite(Date.parse(String(state.last_checked_at)))).toBe(true);
   });
 

@@ -21,11 +21,7 @@ export async function requestCloudPush(opts: {
   localTasks: TaskData[];
   conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
   quiet: boolean;
-  request: <T>(
-    pathname: string,
-    init: RequestInit,
-    opts?: { timeoutMs?: number },
-  ) => Promise<T>;
+  request: <T>(pathname: string, init: RequestInit, opts?: { timeoutMs?: number }) => Promise<T>;
 }): Promise<CloudSyncResponse> {
   const directBody = JSON.stringify({
     provider: opts.provider,
@@ -124,4 +120,3 @@ async function requestCloudPushBatchChunk(opts: {
     }
   }
 }
-
