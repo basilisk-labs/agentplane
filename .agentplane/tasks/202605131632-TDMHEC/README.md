@@ -1,7 +1,8 @@
 ---
 id: "202605131632-TDMHEC"
 title: "Introduce bounded agentic classification and curation surfaces"
-status: "DOING"
+result_summary: "Merged via PR #3649."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -26,11 +27,16 @@ verification:
   updated_by: "CODER"
   note: "Review fix verified: added managed upgrade removals for legacy SKILL_EXTRACTOR cleanup, added CURATOR to managed manifest, and reran targeted upgrade tests plus typecheck/format/assets/agents/diff checks."
   attempts: 0
-commit: null
+commit:
+  hash: "0025f4c9587690ca94d5e09d3a5ae26b7a0aafff"
+  message: "Merge pull request #3649 from basilisk-labs/task/202605131632-TDMHEC/agentic-classifiers"
 comments:
   -
     author: "CODER"
     body: "Start: implement bounded one-word agent role contracts for intake classification, incident curation, context harvest extraction, PLANNER-owned Verify Steps, and optional PR reviewer summaries while preserving deterministic validation gates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3649 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -57,9 +63,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Review fix verified: added managed upgrade removals for legacy SKILL_EXTRACTOR cleanup, added CURATOR to managed manifest, and reran targeted upgrade tests plus typecheck/format/assets/agents/diff checks."
+  -
+    type: "status"
+    at: "2026-05-13T17:55:35.664Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3649 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T17:49:25.607Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T17:55:35.664Z"
+doc_updated_by: "INTEGRATOR"
 description: "Move semantic task intake, incident curation, context harvest extraction, and PR summary guidance behind named one-word agent roles while preserving deterministic validation gates. Remove obsolete upgrade semantic review framing."
 sections:
   Summary: |-
