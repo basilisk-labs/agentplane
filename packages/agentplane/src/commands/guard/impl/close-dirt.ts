@@ -34,17 +34,27 @@ function isActiveTaskStatus(status: unknown): boolean {
   return normalizeTaskStatus(status) !== "DONE";
 }
 
+const IGNORED_CLOSE_RUNTIME_PATHS = new Set([
+  ".agentplane/cache.sqlite",
+  ".agentplane/cache.sqlite-shm",
+  ".agentplane/cache.sqlite-wal",
+]);
+
 export async function resolveIgnoredDirectCloseDirtyPaths(opts: {
   ctx: CommandContext;
   taskId: string;
 }): Promise<string[]> {
-  if (opts.ctx.config.workflow_mode !== "direct") return [];
+  const unstagedTrackedPaths = await opts.ctx.git.statusUnstagedTrackedPaths();
+  const ignored = new Set<string>(
+    unstagedTrackedPaths.filter((relPath) => IGNORED_CLOSE_RUNTIME_PATHS.has(relPath)),
+  );
+  if (opts.ctx.config.workflow_mode !== "direct") {
+    return [...ignored].toSorted((a, b) => a.localeCompare(b));
+  }
   if (opts.ctx.config.close_commit.direct_dirty_policy !== "allow_other_task_readmes") {
-    return [];
+    return [...ignored].toSorted((a, b) => a.localeCompare(b));
   }
 
-  const unstagedTrackedPaths = await opts.ctx.git.statusUnstagedTrackedPaths();
-  const ignored = new Set<string>();
   for (const relPath of unstagedTrackedPaths) {
     const otherTaskId = otherTaskIdForReadmePath({
       relPath,
