@@ -134,6 +134,9 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [context learn tasks](#context-learn-tasks)
   - [context search](#context-search)
   - [context show](#context-show)
+- Evaluators
+  - [evaluator list](#evaluator-list)
+  - [evaluator show](#evaluator-show)
 
 ## Core
 
@@ -3302,3 +3305,57 @@ Usage:
 ```text
 agentplane context show <source-ref>
 ```
+
+## Evaluators
+
+### evaluator list
+
+List evaluator prompt modules from .agentplane/evaluators.
+
+Usage:
+
+```text
+agentplane evaluator list [options]
+```
+
+Options:
+
+- `--builtin`: Include packaged evaluator modules when no project override exists. (default=true)
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane evaluator list
+```
+
+- Show evaluator ids and prompt metadata.
+
+```sh
+agentplane evaluator list --json
+```
+
+- Emit machine-readable evaluator metadata.
+
+### evaluator show
+
+Print an evaluator prompt module.
+
+Usage:
+
+```text
+agentplane evaluator show <id> [options]
+```
+
+Options:
+
+- `--builtin`: Include packaged evaluator modules when no project override exists. (default=true)
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane evaluator show recovery-context
+```
+
+- Print the recovery-context evaluator prompt.

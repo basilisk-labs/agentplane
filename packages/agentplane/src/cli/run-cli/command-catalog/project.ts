@@ -107,6 +107,11 @@ import {
   contextLearnSpec,
   contextLearnTasksSpec,
 } from "../../../commands/context/context.learn.spec.js";
+import {
+  evaluatorListSpec,
+  evaluatorShowSpec,
+  evaluatorSpec,
+} from "../../../commands/evaluator/evaluator.command.js";
 
 import { declareCommand, type CommandEntry } from "./kernel.js";
 import {
@@ -168,6 +173,7 @@ import {
   loadBlueprintReportSpec,
   loadBlueprintValidateSpec,
   loadBlueprintScaffoldSpec,
+  fromCommandsEvaluatorCommand,
   fromCommandsBlueprintsCommand,
   loadContextIngestSpec,
   fromCommandsContextCommand,
@@ -189,6 +195,9 @@ export const PROJECT_COMMANDS = [
   declareCommand(blueprintReportSpec, { load: loadBlueprintReportSpec, needs: "none" }),
   declareCommand(blueprintScaffoldSpec, { load: loadBlueprintScaffoldSpec, needs: "none" }),
   declareCommand(blueprintValidateSpec, { load: loadBlueprintValidateSpec, needs: "none" }),
+  fromCommandsEvaluatorCommand(evaluatorSpec, "runEvaluatorGroup", { needs: "none" }),
+  fromCommandsEvaluatorCommand(evaluatorListSpec, "runEvaluatorList", { needs: "none" }),
+  fromCommandsEvaluatorCommand(evaluatorShowSpec, "runEvaluatorShow", { needs: "none" }),
   fromCommandsBlueprintsCommand(blueprintsSpec, "runBlueprints", { needs: "none" }),
   fromCommandsBlueprintsCommand(blueprintsCatalogSpec, "runBlueprintsCatalog", { needs: "none" }),
   fromCommandsBlueprintsCommand(blueprintsCatalogRefreshSpec, "runBlueprintsCatalogRefresh", {

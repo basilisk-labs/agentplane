@@ -18,6 +18,7 @@ import type { InitPromptClack } from "./steps/contracts.js";
 import { previewInstall } from "./ui.js";
 import { ensureAgentsFiles } from "./write-agents.js";
 import { ensureAgentplaneDirs, writeBackendStubs, writeInitConfig } from "./write-config.js";
+import { ensureEvaluatorFiles } from "./write-evaluators.js";
 import { ensureInitCloudEnvTemplate, ensureInitRedmineEnvTemplate } from "./write-env.js";
 import { ensureInitGitignore } from "./write-gitignore.js";
 import { ensureInitWorkflow } from "./write-workflow.js";
@@ -75,6 +76,7 @@ export async function collectInitAndHookConflicts(opts: {
     opts.paths.agentplaneDir,
     path.join(opts.paths.agentplaneDir, "tasks"),
     path.join(opts.paths.agentplaneDir, "agents"),
+    path.join(opts.paths.agentplaneDir, "evaluators"),
     path.join(opts.paths.agentplaneDir, "cache"),
     path.join(opts.paths.agentplaneDir, "backends"),
     path.join(opts.paths.agentplaneDir, "backends", opts.answers.backend),
@@ -129,6 +131,15 @@ function initWriteEffects(opts: { paths: ResolvedInitPaths; answers: InitAnswers
       kind: "write_file",
       path: gateway,
       summary: `Write ${opts.answers.policyGateway} policy gateway`,
+      destructive: false,
+      reversible: true,
+      requiresNetwork: false,
+      risk: "low",
+    },
+    {
+      kind: "write_file",
+      path: ".agentplane/evaluators/recovery-context.md",
+      summary: "Write evaluator prompt module catalog",
       destructive: false,
       reversible: true,
       requiresNetwork: false,
@@ -402,6 +413,13 @@ export async function applyInitPlan(opts: {
           await ensureInitCloudEnvTemplate({ gitRoot: paths.gitRoot });
           installPaths.push(".env.example");
         }
+        return installPaths;
+      },
+      evaluators: async () => {
+        const { installPaths } = await ensureEvaluatorFiles({
+          gitRoot: paths.gitRoot,
+          agentplaneDir: paths.agentplaneDir,
+        });
         return installPaths;
       },
       workflow: async () => {

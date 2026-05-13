@@ -15,6 +15,7 @@ type InitApplyInstallCommitWriter = (installPaths: readonly string[]) => Promise
 type InitApplyPlan = {
   config: InitApplyStepWriter;
   agents: InitApplyStepWriter;
+  evaluators: InitApplyStepWriter;
   workflow: InitApplyStepWriter;
   gitignore: InitApplyStepWriter;
   hooks?: InitApplyStepWriter;
@@ -77,6 +78,15 @@ export async function applyInitWithProgress(opts: {
     run: async () => asInstallPaths(await opts.plan.agents()),
   });
   installPaths.push(...agentsPaths);
+
+  const evaluatorPaths = await withStep({
+    clack: opts.clack,
+    start: "Writing evaluators",
+    success: "Wrote evaluators",
+    failure: "Failed to write evaluators",
+    run: async () => asInstallPaths(await opts.plan.evaluators()),
+  });
+  installPaths.push(...evaluatorPaths);
 
   const workflowPaths = await withStep({
     clack: opts.clack,

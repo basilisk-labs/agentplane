@@ -36,8 +36,10 @@ export const POLICY_PATH_PREFIXES = [
   "CLAUDE.md",
   "packages/agentplane/assets/AGENTS.md",
   "packages/agentplane/assets/policy",
+  "packages/agentplane/assets/evaluators",
   ".agentplane/policy",
   ".agentplane/agents",
+  ".agentplane/evaluators",
 ] as const;
 export const CONFIG_PATH_PREFIXES = [".agentplane/config.json", ".agentplane/backends"] as const;
 export const HOOK_PATH_PREFIXES = ["lefthook.yml"] as const;
@@ -117,8 +119,10 @@ export function protectedPathKindForFile(opts: {
     p === "CLAUDE.md" ||
     p === "packages/agentplane/assets/AGENTS.md" ||
     gitPathIsUnderPrefix(p, "packages/agentplane/assets/policy") ||
+    gitPathIsUnderPrefix(p, "packages/agentplane/assets/evaluators") ||
     gitPathIsUnderPrefix(p, ".agentplane/policy") ||
-    gitPathIsUnderPrefix(p, ".agentplane/agents")
+    gitPathIsUnderPrefix(p, ".agentplane/agents") ||
+    gitPathIsUnderPrefix(p, ".agentplane/evaluators")
   ) {
     return "policy";
   }
