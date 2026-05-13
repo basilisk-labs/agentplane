@@ -24,9 +24,9 @@ Created: 2026-05-13T16:36:18.870Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T17:27:27.315Z
+- Updated: 2026-05-13T17:39:15.792Z
 - Branch: task/202605131635-W0735P/command-order-guidance
-- Head: 34a4cdd636eb
+- Head: 0a1ca86a4f8d
 
 ```text
  .../blueprint/resolved-snapshot.json               | 527 +++++++++++++++++++++
@@ -48,8 +48,9 @@ Created: 2026-05-13T16:36:18.870Z
  .../agentplane/src/workflow-lifecycle/contract.ts  | 275 +++++++++++
  .../src/workflow-lifecycle/parity-check.test.ts    |  55 +++
  .../src/workflow-lifecycle/parity-check.ts         | 207 ++++++++
+ scripts/README.md                                  |   4 +-
  scripts/checks/check-lifecycle-parity.ts           |  14 +
- 20 files changed, 1200 insertions(+), 102 deletions(-)
+ 21 files changed, 1202 insertions(+), 104 deletions(-)
 ```
 
 </details>

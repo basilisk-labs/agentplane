@@ -17,5 +17,6 @@
  .../agentplane/src/workflow-lifecycle/contract.ts  | 275 +++++++++++
  .../src/workflow-lifecycle/parity-check.test.ts    |  55 +++
  .../src/workflow-lifecycle/parity-check.ts         | 207 ++++++++
+ scripts/README.md                                  |   4 +-
  scripts/checks/check-lifecycle-parity.ts           |  14 +
- 20 files changed, 1200 insertions(+), 102 deletions(-)
+ 21 files changed, 1202 insertions(+), 104 deletions(-)
