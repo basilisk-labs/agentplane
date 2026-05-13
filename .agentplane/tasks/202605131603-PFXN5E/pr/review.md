@@ -13,7 +13,7 @@ Created: 2026-05-13T16:03:49.901Z
 ## Verification
 
 - State: ok
-- Note: Command: bunx vitest run packages/agentplane/src/commands/integrate-queue.spec.test.ts packages/agentplane/src/commands/pr/integrate/queue-state.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts packages/agentplane/src/cli/command-guide.test.ts | Result: pass | Evidence: 5 files, 28 tests passed. Command: bun run typecheck | Result: pass | Evidence: tsc -b completed. Command: bunx eslint touched TS files | Result: pass | Evidence: no lint output after numeric separator fix. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: git diff --check | Result: pass | Evidence: no whitespace errors.
+- Note: Review-thread fix verified: protected-base GitHub merge now leaves integrate queue in handoff until Task Hosted Close; focused integrate/queue/guide tests passed; eslint targeted files passed; typecheck passed; policy routing passed; git diff --check passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
