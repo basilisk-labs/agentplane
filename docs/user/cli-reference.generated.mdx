@@ -85,6 +85,8 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [doctor](#doctor)
   - [doctor git-locks](#doctor-git-locks)
 - Diagnostics
+  - [insights](#insights)
+  - [insights report](#insights-report)
   - [runtime](#runtime)
   - [runtime explain](#runtime-explain)
 - Recipes
@@ -2354,6 +2356,53 @@ agentplane doctor git-locks --fix
 - Remove stale git index.lock after inspection.
 
 ## Diagnostics
+
+### insights
+
+Generate local-only diagnostic insights for support analysis.
+
+Usage:
+
+```text
+agentplane insights <report> [options]
+```
+
+Examples:
+
+```sh
+agentplane insights report
+```
+
+- Print a local diagnostic summary that can be shared manually.
+
+### insights report
+
+Print a local-only privacy-bounded AgentPlane diagnostic report.
+
+Usage:
+
+```text
+agentplane insights report [options]
+```
+
+Options:
+
+- `--json`: Emit the full report as machine-readable JSON. (default=false)
+- `--recent-limit <n>`: Number of recent task ids to include (default: 8, max: 25).
+
+Examples:
+
+```sh
+agentplane insights report
+```
+
+- Print a readable local diagnostic summary.
+
+```sh
+agentplane insights report --json
+```
+
+- Print the full local diagnostic report for support tooling.
 
 ### runtime
 
