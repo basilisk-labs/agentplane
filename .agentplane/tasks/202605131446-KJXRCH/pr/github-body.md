@@ -1,0 +1,39 @@
+Task: `202605131446-KJXRCH`
+Title: Bootstrap AgentPlane from context init
+Canonical task record: `.agentplane/tasks/202605131446-KJXRCH/README.md`
+
+## Summary
+
+Bootstrap AgentPlane from context init
+
+Make agentplane context init in an empty directory initialize the AgentPlane project scaffold and then the local context layer, while preserving existing context init behavior and guarded failure modes for unsafe roots.
+
+## Scope
+
+- In scope: Make agentplane context init in an empty directory initialize the AgentPlane project scaffold and then the local context layer, while preserving existing context init behavior and guarded failure modes for unsafe roots.
+- Out of scope: unrelated refactors not required for "Bootstrap AgentPlane from context init".
+
+## Verification
+
+- State: pending
+- Note: Not recorded yet.
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-13T14:53:48.235Z
+- Branch: task/202605131446-KJXRCH/context-init-bootstrap
+- Head: 87dfdcee6636
+
+```text
+ docs/user/local-context.mdx                        |  5 ++
+ docs/user/setup.mdx                                |  4 +
+ .../agentplane/src/cli/run-cli.core.init.test.ts   | 89 ++++++++++++++++++++++
+ .../src/cli/run-cli/command-catalog/project.ts     |  2 +-
+ .../src/commands/context/context.spec.ts           |  2 +
+ packages/agentplane/src/commands/context/init.ts   | 89 +++++++++++++++++++++-
+ 6 files changed, 188 insertions(+), 3 deletions(-)
+```
+
+</details>
