@@ -93,7 +93,7 @@ function isGroupDispatchArg(arg: NonNullable<HelpJson["args"]>[number]): boolean
 function isGroupOnlyCommand(spec: HelpJson, allSpecs: readonly HelpJson[]): boolean {
   const hasChildCommands = allSpecs.some((candidate) => isPrefix(spec.id, candidate.id));
   if (!hasChildCommands) return false;
-  return (spec.args ?? []).some(isGroupDispatchArg);
+  return (spec.args ?? []).some((arg) => isGroupDispatchArg(arg));
 }
 
 export function renderCliDocsMdx(specs: readonly HelpJson[]): string {
