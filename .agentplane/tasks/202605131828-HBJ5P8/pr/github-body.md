@@ -16,7 +16,7 @@ Improve AgentPlane test selection and runner ergonomics: support combined impact
 ## Verification
 
 - State: ok
-- Note: Implemented flexible mixed-bucket test routing, smoke local CI mode, chunked critical-cli runner, JSON timing reports, and script/test contract updates.
+- Note: Verified: flexible test routing, smoke local CI mode, critical-cli chunk runner, timing reports, route registry, eslint, generated scripts docs, diff hygiene, and policy routing pass on current task branch head.
 - Canonical workflow state lives in the task README.
 
 <details>

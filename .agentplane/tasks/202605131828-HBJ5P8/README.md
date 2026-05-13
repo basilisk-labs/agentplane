@@ -25,9 +25,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T19:10:14.447Z"
+  updated_at: "2026-05-13T19:19:14.913Z"
   updated_by: "CODER"
-  note: "Implemented flexible mixed-bucket test routing, smoke local CI mode, chunked critical-cli runner, JSON timing reports, and script/test contract updates."
+  note: "Verified: flexible test routing, smoke local CI mode, critical-cli chunk runner, timing reports, route registry, eslint, generated scripts docs, diff hygiene, and policy routing pass on current task branch head."
   attempts: 0
 commit: null
 comments:
@@ -58,8 +58,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented flexible mixed-bucket test routing, smoke local CI mode, chunked critical-cli runner, JSON timing reports, and script/test contract updates."
+  -
+    type: "verify"
+    at: "2026-05-13T19:19:14.913Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: flexible test routing, smoke local CI mode, critical-cli chunk runner, timing reports, route registry, eslint, generated scripts docs, diff hygiene, and policy routing pass on current task branch head."
 doc_version: 3
-doc_updated_at: "2026-05-13T19:10:14.474Z"
+doc_updated_at: "2026-05-13T19:19:14.935Z"
 doc_updated_by: "CODER"
 description: "Improve AgentPlane test selection and runner ergonomics: support combined impacted buckets, add a smoke local CI mode, route critical CLI tests through the chunked suite runner, and capture timing evidence for slow tests."
 sections:
@@ -110,6 +116,25 @@ sections:
     - Command: bun run docs:scripts:check; git diff --check; node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: scripts README up to date; whitespace clean; policy routing OK. | Scope: generated docs, diff hygiene, policy route.
     - Command: AGENTPLANE_FAST_CHANGED_FILES=$'packages/agentplane/src/commands/task/shared.ts
     packages/agentplane/src/commands/pr/internal/sync.ts' node scripts/checks/run-local-ci.mjs --mode smoke | Result: fail | Evidence: selector correctly chose targeted (mixed:pr+task), but existing PR bucket tests had 13 unrelated failures in pr-flow assertions. | Scope: exposed pre-existing PR bucket breadth/drift, not caused by this diff.
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131828-HBJ5P8-flexible-test-routing/.agentplane/tasks/202605131828-HBJ5P8/blueprint/resolved-snapshot.json
+    - old_digest: fff3e289c5ecdc18b883480fa8b62bded6e6d9000a1598d367ccbbcac6a071c9
+    - current_digest: fff3e289c5ecdc18b883480fa8b62bded6e6d9000a1598d367ccbbcac6a071c9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131828-HBJ5P8
+    
+    ### 2026-05-13T19:19:14.913Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: flexible test routing, smoke local CI mode, critical-cli chunk runner, timing reports, route registry, eslint, generated scripts docs, diff hygiene, and policy routing pass on current task branch head.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:10:14.474Z, excerpt_hash=sha256:9c6bde3ec9d6f0f3662586ee594c4b6dfaaaeaae4ae20cd6d94235d012605a5d
+    
+    Details:
     
     BlueprintSnapshotRef:
     - state: current
@@ -182,6 +207,25 @@ packages/agentplane/src/commands/doctor.run.ts' node scripts/checks/run-local-ci
 - Command: bun run docs:scripts:check; git diff --check; node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: scripts README up to date; whitespace clean; policy routing OK. | Scope: generated docs, diff hygiene, policy route.
 - Command: AGENTPLANE_FAST_CHANGED_FILES=$'packages/agentplane/src/commands/task/shared.ts
 packages/agentplane/src/commands/pr/internal/sync.ts' node scripts/checks/run-local-ci.mjs --mode smoke | Result: fail | Evidence: selector correctly chose targeted (mixed:pr+task), but existing PR bucket tests had 13 unrelated failures in pr-flow assertions. | Scope: exposed pre-existing PR bucket breadth/drift, not caused by this diff.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131828-HBJ5P8-flexible-test-routing/.agentplane/tasks/202605131828-HBJ5P8/blueprint/resolved-snapshot.json
+- old_digest: fff3e289c5ecdc18b883480fa8b62bded6e6d9000a1598d367ccbbcac6a071c9
+- current_digest: fff3e289c5ecdc18b883480fa8b62bded6e6d9000a1598d367ccbbcac6a071c9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131828-HBJ5P8
+
+### 2026-05-13T19:19:14.913Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: flexible test routing, smoke local CI mode, critical-cli chunk runner, timing reports, route registry, eslint, generated scripts docs, diff hygiene, and policy routing pass on current task branch head.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:10:14.474Z, excerpt_hash=sha256:9c6bde3ec9d6f0f3662586ee594c4b6dfaaaeaae4ae20cd6d94235d012605a5d
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current
