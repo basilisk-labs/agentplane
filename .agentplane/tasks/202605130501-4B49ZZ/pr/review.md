@@ -24,15 +24,15 @@ Created: 2026-05-13T05:03:23.187Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T06:19:27.500Z
+- Updated: 2026-05-13T06:35:19.698Z
 - Branch: task/202605130501-4B49ZZ/v06-context-release-readiness
-- Head: 11b7017b12cd
+- Head: d1dfa9350f18
 
 ```text
  .agentplane/WORKFLOW.md                            |   3 +-
  .../blueprint/resolved-snapshot.json               | 550 +++++++++++++++++++++
  .agentplane/workflows/last-known-good.md           |   3 +-
- .github/workflows/ci.yml                           |   2 +-
+ .github/workflows/ci.yml                           |  11 +-
  .../documentation-information-architecture.mdx     |  16 +-
  .../evaluation-and-recursive-improvement.mdx       |   7 +-
  docs/developer/local-context.mdx                   |  69 +++
@@ -63,7 +63,7 @@ Created: 2026-05-13T05:03:23.187Z
  packages/agentplane/src/commands/context/show.ts   |   1 +
  packages/agentplane/src/commands/context/sqlite.ts |  16 +-
  .../agentplane/src/commands/context/verify-task.ts | 198 +++++++-
- .../commands/release/ci-workflow-contract.test.ts  |   4 +-
+ .../commands/release/ci-workflow-contract.test.ts  |   7 +-
  .../src/shared/builtin-assets.generated.ts         |  65 +--
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
@@ -74,7 +74,7 @@ Created: 2026-05-13T05:03:23.187Z
  scripts/check-local-tarball-install-smoke.mjs      |  12 +
  scripts/generate-builtin-assets.mjs                | 110 +++++
  website/sidebars.ts                                |  12 +-
- 45 files changed, 1893 insertions(+), 300 deletions(-)
+ 45 files changed, 1902 insertions(+), 303 deletions(-)
 ```
 
 </details>
