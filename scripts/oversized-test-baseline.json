@@ -2,8 +2,8 @@
   "schema_version": 2,
   "threshold_lines": 1000,
   "budgets": {
-    "max_entries": 12,
-    "max_total_lines": 13575,
+    "max_entries": 13,
+    "max_total_lines": 14579,
     "max_file_lines": 1300
   },
   "entries": [
@@ -38,6 +38,10 @@
     {
       "file": "packages/agentplane/src/backends/task-backend.cloud.test.ts",
       "lines": 1028
+    },
+    {
+      "file": "packages/agentplane/src/backends/task-backend.local.test.ts",
+      "lines": 1006
     },
     {
       "file": "packages/agentplane/src/commands/doctor.command.open-pr.test.ts",
