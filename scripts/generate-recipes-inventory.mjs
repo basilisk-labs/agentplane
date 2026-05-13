@@ -1,10 +1,21 @@
 import { spawnSync } from "node:child_process";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const result = spawnSync(
-  process.execPath,
-  ["scripts/generate/generate-recipes-inventory.mjs", ...process.argv.slice(2)],
-  {
+export * from "./generate/generate-recipes-inventory.mjs";
+
+const scriptPath = fileURLToPath(import.meta.url);
+const invokedAsScript =
+  process.argv[1] && path.resolve(process.argv[1]) === path.resolve(scriptPath);
+
+if (invokedAsScript) {
+  const targetPath = path.join(
+    path.dirname(scriptPath),
+    "generate",
+    "generate-recipes-inventory.mjs",
+  );
+  const result = spawnSync(process.execPath, [targetPath, ...process.argv.slice(2)], {
     stdio: "inherit",
-  },
-);
-process.exitCode = result.status ?? 1;
+  });
+  process.exitCode = result.status ?? 1;
+}
