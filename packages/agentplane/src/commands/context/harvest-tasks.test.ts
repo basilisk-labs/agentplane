@@ -370,6 +370,57 @@ describe("context harvest tasks", () => {
     ).rejects.toThrow();
   });
 
+  it("preserves harvest markers when proposal writing and extraction task creation are combined", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const tasks = [
+      task({
+        id: "202604010900-FIRST1",
+        title: "First context task",
+        tags: ["workflow"],
+      }),
+    ];
+    const commandCtx = ctx(root, tasks);
+
+    await cmdContextHarvestTasks({
+      ctx: commandCtx,
+      cwd: root,
+      parsed: parsed({
+        tag: ["workflow"],
+        writeProposals: true,
+        createExtractionTasks: true,
+        format: "json",
+      }),
+      createTask: async ({ ctx, parsed }) => {
+        await ctx.taskBackend.writeTask({
+          id: "202604040900-CURAT1",
+          title: parsed.title,
+          status: "TODO",
+          owner: parsed.owner,
+          priority: parsed.priority,
+          tags: parsed.tags,
+          description: parsed.description,
+          extensions: parsed.extensions,
+        } as TaskData);
+        return 0;
+      },
+    });
+
+    expect(tasks.find((row) => row.id === "202604010900-FIRST1")?.extensions).toMatchObject({
+      context_harvest: {
+        pipeline: "context.harvest.tasks",
+        state: "ingested",
+        raw_evidence_path: "context/raw/tasks/202604010900-FIRST1.json",
+        wiki_proposal_path: "context/wiki/proposals/task-harvest/done-workflow.md",
+      },
+      context_task_extraction: {
+        pipeline: "context.harvest.tasks",
+        state: "queued",
+        extraction_task_id: "202604040900-CURAT1",
+      },
+    });
+  });
+
   it("does not treat raw harvest markers as semantic extraction completion", async () => {
     const root = await tempRoot();
     await initContextWorkspace(root);

@@ -98,11 +98,25 @@ async function createExtractionTasks(opts: {
   }
   const sourceChangedPaths: string[] = [];
   const queuedAt = new Date().toISOString();
+  const latestTasks = await opts.ctx.taskBackend.listTasks();
+  const latestById = new Map(
+    latestTasks
+      .filter((task): task is TaskData & { id: string; title: string; status: string } => {
+        return (
+          typeof task.id === "string" &&
+          typeof task.title === "string" &&
+          typeof task.status === "string"
+        );
+      })
+      .map((task) => [task.id, task]),
+  );
   for (const plan of plans) {
     const extractionTaskId = createdTaskIds[plan.batch_index - 1];
     if (!extractionTaskId) continue;
     for (const sourceTaskId of plan.source_task_ids) {
-      const task = opts.output.selected.find((candidate) => candidate.id === sourceTaskId);
+      const task =
+        latestById.get(sourceTaskId) ??
+        opts.output.selected.find((candidate) => candidate.id === sourceTaskId);
       if (!task) continue;
       const marker = buildTaskExtractionMarker({
         task,
@@ -180,7 +194,7 @@ export async function cmdContextHarvestTasks(opts: {
           parsed: opts.parsed,
           createTask: opts.createTask,
         });
-  const changed = [...written, ...extraction.changedPaths];
+  const changed = [...new Set([...written, ...extraction.changedPaths])];
   const payload = {
     ...output.report,
     selected_task_ids: selected.map((task) => task.id),
