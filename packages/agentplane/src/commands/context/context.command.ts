@@ -13,6 +13,7 @@ import { cmdContextSearch } from "./search.js";
 import { cmdContextShow } from "./show.js";
 import { cmdContextDoctor } from "./doctor.js";
 import { cmdContextVerifyTask } from "./verify-task.js";
+import { cmdContextHarvestTasks, type ContextHarvestTasksParsed } from "./harvest-tasks.js";
 import {
   cmdContextGraphSummary,
   cmdContextGraphShow,
@@ -36,6 +37,8 @@ import {
   contextGraphShowSpec,
   contextGraphSummarySpec,
   contextGraphValidateSpec,
+  contextHarvestSpec,
+  contextHarvestTasksSpec,
   contextReindexSpec,
   contextSearchSpec,
   contextShowSpec,
@@ -78,6 +81,19 @@ export async function runContextCapabilityGroup(
     subcommands: await loadDirectSubcommandNames(["context", "capability"]),
     command: "context capability",
     contextCommand: "context capability",
+  });
+}
+
+export async function runContextHarvestGroup(
+  _ctx: CommandCtx,
+  p: GroupCommandParsed,
+): Promise<number> {
+  return throwGroupCommandUsage({
+    spec: contextHarvestSpec,
+    cmd: p.cmd,
+    subcommands: await loadDirectSubcommandNames(["context", "harvest"]),
+    command: "context harvest",
+    contextCommand: "context harvest",
   });
 }
 
@@ -140,6 +156,17 @@ export async function runContextVerifyTask(
   p: { taskId: string },
 ): Promise<number> {
   return await cmdContextVerifyTask({
+    cwd: _ctx.cwd,
+    rootOverride: _ctx.rootOverride,
+    parsed: p,
+  });
+}
+
+export async function runContextHarvestTasks(
+  _ctx: CommandCtx,
+  p: ContextHarvestTasksParsed,
+): Promise<number> {
+  return await cmdContextHarvestTasks({
     cwd: _ctx.cwd,
     rootOverride: _ctx.rootOverride,
     parsed: p,
@@ -233,6 +260,8 @@ export {
   contextGraphShowSpec,
   contextGraphSummarySpec,
   contextGraphValidateSpec,
+  contextHarvestSpec,
+  contextHarvestTasksSpec,
   contextReindexSpec,
   contextSearchSpec,
   contextShowSpec,

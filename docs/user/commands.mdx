@@ -220,12 +220,17 @@ agentplane context search "query"
 agentplane context show context/wiki/page.md#section=section-slug
 agentplane context ingest --changed
 agentplane context ingest ./notes.md --run
+agentplane context harvest tasks --tag release --limit 20 --dry-run
+agentplane context harvest tasks --tag branch_pr --write-proposals
 agentplane context verify-task <task-id>
 ```
 
 Source artifacts live under `context/**`. The SQLite projection under
-`.agentplane/context/derived/**` is generated output. Use `context verify-task` before closing work
-that creates or relies on context artifacts. See [Local context](local-context).
+`.agentplane/context/derived/**` is generated output. Use `context harvest tasks` to convert
+completed task history into raw evidence, facts, graph rows, wiki proposals, and promotion-gate
+reports before promoting reusable knowledge; write modes require `agentplane context init` first.
+Use `context verify-task` before closing work that creates or relies on context artifacts. See
+[Local context](local-context).
 
 ## Backend sync (remote backends)
 

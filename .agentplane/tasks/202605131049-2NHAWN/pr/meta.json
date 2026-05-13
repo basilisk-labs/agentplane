@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605131049-2NHAWN/context-task-harvest",
+  "created_at": "2026-05-13T10:49:55.784Z",
+  "head_sha": "d7bfe336f295dfc1b4d831c9b9e8032bb8da6a2f",
+  "last_verified_at": "2026-05-13T11:02:32.328Z",
+  "last_verified_sha": "d7bfe336f295dfc1b4d831c9b9e8032bb8da6a2f",
+  "schema_version": 1,
+  "task_id": "202605131049-2NHAWN",
+  "updated_at": "2026-05-13T10:49:55.784Z",
+  "verify": {
+    "status": "pass"
+  }
+}

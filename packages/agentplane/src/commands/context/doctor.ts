@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-base-to-string, @typescript-eslint/no-unsafe-assignment */
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
 import path from "node:path";
@@ -7,6 +7,7 @@ import { parse as parseYaml } from "yaml";
 
 import { CliError } from "../../shared/errors.js";
 import { parseJsonlLines, fileExists, readText } from "./context-utils.js";
+import { readHarvestReport } from "./harvest-tasks.js";
 import { readContextProjection } from "./reindex.js";
 import { checkSqliteProjection } from "./sqlite.js";
 
@@ -144,6 +145,7 @@ export async function cmdContextDoctor(opts: {
   ]) {
     await checkSourceRefs(path.join(root, file), manifestSources, root, warnings);
   }
+  await checkHarvestReports(root, issues, warnings);
 
   if (issues.length > 0) {
     process.stderr.write(
@@ -239,5 +241,33 @@ async function checkSourceRefs(
     }
   } catch {
     warnings.push(`artifact unreadable: ${artifactPath}`);
+  }
+}
+
+async function checkHarvestReports(
+  root: string,
+  issues: string[],
+  warnings: string[],
+): Promise<void> {
+  const reportsRoot = path.join(root, ".agentplane/context/derived/reports");
+  let entries: string[] = [];
+  try {
+    entries = await readdir(reportsRoot);
+  } catch {
+    return;
+  }
+  for (const entry of entries.filter((name) => name.startsWith("task-harvest-"))) {
+    const rel = `.agentplane/context/derived/reports/${entry}`;
+    const report = await readHarvestReport(path.join(root, rel));
+    if (!report) {
+      issues.push(`invalid task harvest report: ${rel}`);
+      continue;
+    }
+    if (report.promotion_gate.state === "promoted" && report.promotion_gate.blockers.length > 0) {
+      issues.push(`promoted task harvest report has blockers: ${rel}`);
+    }
+    if (report.source_refs.length === 0) {
+      warnings.push(`task harvest report has no source refs: ${rel}`);
+    }
   }
 }

@@ -156,6 +156,8 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [context graph show](#context-graph-show)
   - [context graph summary](#context-graph-summary)
   - [context graph validate](#context-graph-validate)
+  - [context harvest](#context-harvest)
+  - [context harvest tasks](#context-harvest-tasks)
   - [context ingest](#context-ingest)
   - [context init](#context-init)
   - [context reindex](#context-reindex)
@@ -3724,6 +3726,56 @@ Usage:
 ```text
 agentplane context graph validate
 ```
+
+### context harvest
+
+Harvest existing project evidence into source-backed context proposals.
+
+Usage:
+
+```text
+agentplane context harvest [<cmd> ...]
+```
+
+### context harvest tasks
+
+Harvest completed task evidence into wiki, fact, and graph proposals.
+
+Selects completed tasks in oldest-first order and separates source indexing, knowledge extraction, wiki synthesis, and promotion-gate state. Write modes require an initialized context workspace.
+
+Usage:
+
+```text
+agentplane context harvest tasks [options]
+```
+
+Options:
+
+- `--status <status>`: Repeatable task status filter. Defaults to DONE. (repeatable)
+- `--tag <tag>`: Repeatable tag filter. Matches tasks with any listed tag. (repeatable)
+- `--task <task-id>`: Repeatable explicit task id filter. (repeatable)
+- `--since <YYYY-MM-DD|YYYYMMDDHHmm>`: Only include tasks at or after this task-id timestamp prefix.
+- `--until <YYYY-MM-DD|YYYYMMDDHHmm>`: Only include tasks at or before this task-id timestamp prefix.
+- `--after-task <task-id>`: Continue after a previously harvested task id.
+- `--limit <n>`: Maximum number of oldest matching tasks to harvest.
+- `--write-proposals`: Write raw evidence, derived facts/graph rows, report, and wiki proposal. (default=false)
+- `--promote`: Promote the wiki proposal to semi-canonical only if the promotion gate passes. (default=false)
+- `--dry-run`: Preview selection and gate state without writing artifacts. (default=false)
+- `--format <text|json>`: Output format. (choices=text|json, default=text)
+
+Examples:
+
+```sh
+agentplane context harvest tasks --tag release --limit 20 --dry-run
+```
+
+- Preview the oldest completed release tasks before writing context proposals.
+
+```sh
+agentplane context harvest tasks --tag branch_pr --write-proposals
+```
+
+- Write source-backed reusable context proposals from completed branch_pr tasks.
 
 ### context ingest
 
