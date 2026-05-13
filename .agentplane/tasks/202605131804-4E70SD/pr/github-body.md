@@ -22,7 +22,7 @@ Introduce explicit lifecycle phases and route core task lifecycle commands throu
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T18:36:41.462Z
+- Updated: 2026-05-13T18:47:51.611Z
 - Branch: task/202605131804-4E70SD/phase-aware-policy
 - Head: 25b87381c06e
 
