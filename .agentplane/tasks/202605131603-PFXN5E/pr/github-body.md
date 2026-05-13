@@ -30,11 +30,11 @@ Make branch_pr completion queue verified task branches for serialized integratio
  .github/workflows/publish.yml                      |   4 +-
  .github/workflows/task-hosted-close.yml            |   4 +-
  .../src/commands/integrate-queue.command.ts        | 137 +++++++++++----------
- .../src/commands/integrate-queue.spec.ts           |   8 ++
+ .../src/commands/integrate-queue.spec.ts           |   9 ++
  .../src/commands/pr/integrate/cmd.test.ts          |  85 +++++++++++--
- .../agentplane/src/commands/pr/integrate/cmd.ts    | 102 +++++++++++++++
+ .../agentplane/src/commands/pr/integrate/cmd.ts    | 103 ++++++++++++++++
  .../task/hosted-close-workflow-contract.test.ts    |   5 +-
- 7 files changed, 265 insertions(+), 80 deletions(-)
+ 7 files changed, 267 insertions(+), 80 deletions(-)
 ```
 
 </details>
