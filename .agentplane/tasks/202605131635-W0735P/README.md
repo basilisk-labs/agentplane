@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T17:38:06.244Z"
+  updated_at: "2026-05-13T17:50:53.754Z"
   updated_by: "CODER"
-  note: "Pre-push fast CI found stale scripts/README.md after lifecycle parity script wiring; regenerated scripts README and rechecked docs:scripts:check plus workflows:command-check."
+  note: "Fixed pre-push lint blockers in lifecycle parity additions: typed PR-open assertions, explicit index check, and ESLint TS project coverage for scripts/**/*.ts. Rechecked lint:core, workflows:command-check, focused lifecycle Vitest, and typecheck."
   attempts: 0
 commit: null
 comments:
@@ -66,8 +66,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Pre-push fast CI found stale scripts/README.md after lifecycle parity script wiring; regenerated scripts README and rechecked docs:scripts:check plus workflows:command-check."
+  -
+    type: "verify"
+    at: "2026-05-13T17:50:53.754Z"
+    author: "CODER"
+    state: "ok"
+    note: "Fixed pre-push lint blockers in lifecycle parity additions: typed PR-open assertions, explicit index check, and ESLint TS project coverage for scripts/**/*.ts. Rechecked lint:core, workflows:command-check, focused lifecycle Vitest, and typecheck."
 doc_version: 3
-doc_updated_at: "2026-05-13T17:38:06.281Z"
+doc_updated_at: "2026-05-13T17:50:53.772Z"
 doc_updated_by: "CODER"
 description: "Fix branch_pr command-order drift across gateway docs, quickstart guidance, and blueprint routes; leave cleanup command references out of scope per user request."
 sections:
@@ -183,6 +189,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131635-W0735P
     
+    ### 2026-05-13T17:50:53.754Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Fixed pre-push lint blockers in lifecycle parity additions: typed PR-open assertions, explicit index check, and ESLint TS project coverage for scripts/**/*.ts. Rechecked lint:core, workflows:command-check, focused lifecycle Vitest, and typecheck.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T17:38:06.281Z, excerpt_hash=sha256:65a5b2ab7b7e18aa7dd80c03a6f614f26c62d91bbc02a4845c97fc02e1beca87
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131635-W0735P-command-order-guidance/.agentplane/tasks/202605131635-W0735P/blueprint/resolved-snapshot.json
+    - old_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+    - current_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131635-W0735P
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -207,6 +232,10 @@ sections:
     - Observation: scripts/README.md was missing the new check-lifecycle-parity command in workflows:* script rows.
       Impact: Pre-push blocked until generated script inventory matched package scripts.
       Resolution: Regenerated scripts/README.md with bun run docs:scripts:generate; docs:scripts:check and workflows:command-check pass.
+    
+    - Observation: pre-push full-fast surfaced lint errors only after scripts/README.md changed the selector from docs-only to full-fast.
+      Impact: Remote push remained blocked until lifecycle parity code and script lint project coverage were corrected.
+      Resolution: Applied lint fixes and reran lint:core, workflows:command-check, focused lifecycle Vitest, and typecheck successfully.
 id_source: "generated"
 ---
 ## Summary
@@ -331,6 +360,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131635-W0735P
 
+### 2026-05-13T17:50:53.754Z — VERIFY — ok
+
+By: CODER
+
+Note: Fixed pre-push lint blockers in lifecycle parity additions: typed PR-open assertions, explicit index check, and ESLint TS project coverage for scripts/**/*.ts. Rechecked lint:core, workflows:command-check, focused lifecycle Vitest, and typecheck.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T17:38:06.281Z, excerpt_hash=sha256:65a5b2ab7b7e18aa7dd80c03a6f614f26c62d91bbc02a4845c97fc02e1beca87
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131635-W0735P-command-order-guidance/.agentplane/tasks/202605131635-W0735P/blueprint/resolved-snapshot.json
+- old_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+- current_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131635-W0735P
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -359,3 +407,7 @@ BlueprintSnapshotRef:
 - Observation: scripts/README.md was missing the new check-lifecycle-parity command in workflows:* script rows.
   Impact: Pre-push blocked until generated script inventory matched package scripts.
   Resolution: Regenerated scripts/README.md with bun run docs:scripts:generate; docs:scripts:check and workflows:command-check pass.
+
+- Observation: pre-push full-fast surfaced lint errors only after scripts/README.md changed the selector from docs-only to full-fast.
+  Impact: Remote push remained blocked until lifecycle parity code and script lint project coverage were corrected.
+  Resolution: Applied lint fixes and reran lint:core, workflows:command-check, focused lifecycle Vitest, and typecheck successfully.

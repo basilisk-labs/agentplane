@@ -78,7 +78,7 @@ function orderedMissingOrDrift(text: string, order: readonly string[]): string |
   let cursor = -1;
   for (const marker of order) {
     const next = text.indexOf(marker, cursor + 1);
-    if (next < 0) {
+    if (next === -1) {
       return `missing or out of order marker: ${marker}`;
     }
     cursor = next;

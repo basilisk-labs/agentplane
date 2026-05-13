@@ -16,7 +16,7 @@ Fix branch_pr command-order drift across gateway docs, quickstart guidance, and 
 ## Verification
 
 - State: ok
-- Note: Pre-push fast CI found stale scripts/README.md after lifecycle parity script wiring; regenerated scripts README and rechecked docs:scripts:check plus workflows:command-check.
+- Note: Fixed pre-push lint blockers in lifecycle parity additions: typed PR-open assertions, explicit index check, and ESLint TS project coverage for scripts/**/*.ts. Rechecked lint:core, workflows:command-check, focused lifecycle Vitest, and typecheck.
 - Canonical workflow state lives in the task README.
 
 <details>

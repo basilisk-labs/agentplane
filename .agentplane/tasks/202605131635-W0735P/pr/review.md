@@ -13,7 +13,7 @@ Created: 2026-05-13T16:36:18.870Z
 ## Verification
 
 - State: ok
-- Note: Pre-push fast CI found stale scripts/README.md after lifecycle parity script wiring; regenerated scripts README and rechecked docs:scripts:check plus workflows:command-check.
+- Note: Fixed pre-push lint blockers in lifecycle parity additions: typed PR-open assertions, explicit index check, and ESLint TS project coverage for scripts/**/*.ts. Rechecked lint:core, workflows:command-check, focused lifecycle Vitest, and typecheck.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

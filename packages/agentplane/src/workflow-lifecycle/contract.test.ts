@@ -20,10 +20,10 @@ describe("workflow lifecycle contract", () => {
     expect(ids.indexOf("verify_show")).toBeLessThan(ids.indexOf("pr_open"));
     expect(ids.indexOf("verify")).toBeLessThan(ids.indexOf("hosted_checks"));
     expect(ids.indexOf("hosted_checks")).toBeLessThan(ids.indexOf("integrate"));
-    expect(steps.find((step) => step.id === "pr_open")).toMatchObject({
-      cwd: "task_worktree",
-      sideEffects: expect.arrayContaining(["git_remote"]),
-    });
+    const prOpen = steps.find((step) => step.id === "pr_open");
+    expect(prOpen?.cwd).toBe("task_worktree");
+    expect(prOpen?.sideEffects).toEqual(expect.arrayContaining(["git_remote"]));
+
     expect(steps.find((step) => step.id === "integrate")).toMatchObject({
       role: "INTEGRATOR",
       cwd: "base_checkout",
