@@ -22,9 +22,9 @@ Make branch_pr completion queue verified task branches for serialized integratio
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T16:13:43.955Z
+- Updated: 2026-05-13T16:37:33.831Z
 - Branch: task/202605131603-PFXN5E/automate-merge-queue
-- Head: 07e9c09bfab0
+- Head: f208d75106b9
 
 ```text
  .github/workflows/publish.yml                      |   4 +-
