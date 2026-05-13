@@ -1,10 +1,11 @@
 ---
 id: "202605131603-PFXN5E"
 title: "Automate branch_pr merge queue finalization"
-status: "DOING"
+result_summary: "Merged via PR #3641."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 2
+revision: 3
 origin:
   system: "manual"
 depends_on: []
@@ -24,7 +25,9 @@ verification:
   updated_by: "CODER"
   note: "Post-main-merge verified: resolved conflict in pr integrate command by preserving PolicyEngine check from main and PFXN5E protected-base GitHub merge handoff behavior; focused integrate queue tests passed; targeted eslint passed; typecheck passed; framework bootstrap passed before merge commit."
   attempts: 0
-commit: null
+commit:
+  hash: "10c3d383c2968600239c7b739dabbadaad3acd55"
+  message: "Merge pull request #3641 from basilisk-labs/task/202605131603-PFXN5E/automate-merge-queue"
 comments:
   -
     author: "CODER"
@@ -32,6 +35,9 @@ comments:
   -
     author: "CODER"
     body: "Start: implement branch_pr merged-pending-close list state contract."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3641 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -119,9 +125,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Post-main-merge verified: resolved conflict in pr integrate command by preserving PolicyEngine check from main and PFXN5E protected-base GitHub merge handoff behavior; focused integrate queue tests passed; targeted eslint passed; typecheck passed; framework bootstrap passed before merge commit."
+  -
+    type: "status"
+    at: "2026-05-13T20:18:38.456Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3641 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T20:15:02.569Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T20:18:38.465Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make branch_pr completion queue verified task branches for serialized integration, prefer merge commits over squash in hosted close routes, and move protected-base integration toward GitHub merge orchestration instead of a manual handoff-only stop."
 sections:
   Summary: |-

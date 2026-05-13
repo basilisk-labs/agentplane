@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T20:17:54Z",
   "base": "main",
   "branch": "task/202605131603-PFXN5E/automate-merge-queue",
   "created_at": "2026-05-13T16:03:49.901Z",
-  "head_sha": "05ee309984646d4804717b6217da0f980b1d21d2",
+  "head_sha": "1bb13e5ce0f8c6a878d2f30bcc757a1a70d0bed1",
   "last_verified_at": "2026-05-13T20:15:02.549Z",
   "last_verified_sha": "05ee309984646d4804717b6217da0f980b1d21d2",
+  "merge_commit": "10c3d383c2968600239c7b739dabbadaad3acd55",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T20:17:54Z",
   "pr_number": 3641,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3641",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605131603-PFXN5E",
-  "updated_at": "2026-05-13T20:15:04.530Z",
+  "updated_at": "2026-05-13T20:17:54Z",
   "verify": {
     "status": "pass"
   }
