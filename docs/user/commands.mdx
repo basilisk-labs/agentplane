@@ -277,16 +277,19 @@ Configured branch_pr path in this repository:
 
 ```bash
 agentplane work start <task-id> --agent CODER --slug <slug> --worktree
+agentplane task start-ready <task-id> --author CODER --body "Start: ..."
+git add <changed-files>
+git commit -m "Implement <task>"
+agentplane task verify-show <task-id>
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
-git push -u origin task/<task-id>/<slug>
-gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
+agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
 bun run workflow:wait-remote-checks
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <git-rev> --close-commit
 ```
 
-`agentplane pr ...` manages local PR artifacts under `.agentplane/tasks/<task-id>/pr/`, including `review.md`, `github-title.txt`, and `github-body.md`. Hosted GitHub PR creation still uses `gh pr create`, but the title/body should come from those derived files rather than `--fill`. The canonical required-check wait step is `bun run workflow:wait-remote-checks`, which delegates to `gh pr checks --watch --required --fail-fast`. `agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass `--merge-strategy squash` only when compacting history is intentional.
+`agentplane pr ...` manages local PR artifacts under `.agentplane/tasks/<task-id>/pr/`, including `review.md`, `github-title.txt`, and `github-body.md`. A normal `agentplane pr open` run also publishes the task branch and creates or links the hosted GitHub PR; use `--sync-only` only when you intentionally want local artifacts without remote side effects. The canonical required-check wait step is `bun run workflow:wait-remote-checks`, which delegates to `gh pr checks --watch --required --fail-fast`. `agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass `--merge-strategy squash` only when compacting history is intentional.
 
 GitHub protection audit for this repository:
 
@@ -354,10 +357,13 @@ Status/comment-driven commits are allowed only on major transitions:
 
 ```bash
 agentplane work start <task-id> --agent CODER --slug <slug> --worktree
+agentplane task start-ready <task-id> --author CODER --body "Start: ..."
+git add <changed-files>
+git commit -m "Implement <task>"
+agentplane task verify-show <task-id>
 agentplane pr open <task-id>
 agentplane pr update <task-id>
-git push -u origin task/<task-id>/<slug>
-gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
+agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
 bun run workflow:wait-remote-checks
 agentplane pr check <task-id>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify

@@ -13,10 +13,11 @@ This repository is configured for `branch_pr`, so the normal guarded route is:
 2. Create the task and approve the plan.
 3. `work start ... --worktree` on base, then execute implementation on the task branch/worktree.
 4. Run `task start-ready`, implement, and commit implementation changes in the task worktree.
-5. Keep PR artifacts current, push the task branch, open a hosted PR, and wait for required remote checks.
-6. Run `verify` on the task branch, then `integrate` on the base branch only after remote checks pass.
-7. `finish` on the base branch with `--commit <git-rev>` and `--close-commit`.
-8. Clean up the task worktree/branch after hosted merge closure.
+5. Keep PR artifacts current with `pr open` / `pr update`; normal `pr open` also publishes and links the hosted PR.
+6. Run `task verify-show` and `verify` on the task branch, then wait for required remote checks.
+7. Run `integrate` on the base branch only after verification and remote checks pass.
+8. `finish` on the base branch with `--commit <git-rev>` and `--close-commit`.
+9. Clean up the task worktree/branch after hosted merge closure.
 
 ```bash
 agentplane config show
@@ -25,12 +26,13 @@ agentplane task list
 git status --short --untracked-files=no
 agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree
 agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
+git add <changed-files>
+git commit -m "Implement <task>"
+agentplane task verify-show <task-id>
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
 agentplane pr update <task-id>
-git push -u origin task/<task-id>/<slug>
-gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
-bun run workflow:wait-remote-checks
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
+bun run workflow:wait-remote-checks
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 agentplane work end <task-id>
@@ -179,18 +181,16 @@ sequenceDiagram
   CLI->>B: Write task + deps
   E->>CLI: work start <task-id>
   CLI->>G: Create branch + worktree
-  E->>CLI: pr open / update
-  CLI->>B: Write PR artifacts
-  E->>G: Push task branch to origin
-  E->>G: Open hosted PR + wait for required checks
   E->>CLI: start <task-id>
   CLI->>B: Update task status + comment
   E->>G: Implement changes
+  E->>G: Commit changes
+  E->>CLI: pr open / update
+  CLI->>B: Write PR artifacts
+  CLI->>G: Publish/link hosted PR
   E->>CLI: verify <task-id> --ok --by <id> --note <text>
   CLI->>B: Append verification record
-  E->>G: Commit changes
-  E->>CLI: pr update / note
-  CLI->>B: Update PR artifacts + handoff notes
+  E->>G: Wait for required hosted checks
   G-->>E: Required checks green
   I->>CLI: pr check / integrate
   CLI->>G: Merge to base (merge commit by default)

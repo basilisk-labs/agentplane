@@ -36,13 +36,14 @@ agentplane task verify-show <task-id>
 agentplane pr open <task-id> --branch task/<task-id>/cli-help-copy --author CODER
 agentplane pr update <task-id>
 agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
+bun run workflow:wait-remote-checks
 ```
 
 Back on base checkout:
 
 ```bash
+agentplane pr check <task-id>
 agentplane integrate <task-id> --branch task/<task-id>/cli-help-copy --run-verify
-# optionally run remote-gate if repository policy requires it
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: branch integrated after review and verification." --result "CLI help copy updated" --commit <implementation-git-rev> --close-commit
 agentplane work end <task-id>
 ```
