@@ -80,7 +80,6 @@ export class CloudBackend implements TaskBackend {
     supports_push_sync: true,
     supports_snapshot_export: true,
   } as const;
-
   endpoint: string;
   token: string;
   projectId: string;
@@ -91,7 +90,6 @@ export class CloudBackend implements TaskBackend {
   private fetchImpl: typeof fetch;
   private readonly configOverrides: CloudConfigOverride[];
   private readonly dotEnv: Pick<DotEnvLoadResult, "root" | "path" | "loaded">;
-
   constructor(
     settings: CloudBackendSettings,
     opts: {
@@ -119,10 +117,11 @@ export class CloudBackend implements TaskBackend {
       AGENTPLANE_CLOUD_PROVIDER: this.provider ?? "",
     });
     this.cache = opts.cache;
-    this.statePath = path.resolve(
-      opts.root,
-      firstNonEmptyString(settings.state_path, ".agentplane/backends/cloud/state.json"),
+    const statePath = firstNonEmptyString(
+      settings.state_path,
+      ".agentplane/backends/cloud/state.json",
     );
+    this.statePath = path.resolve(opts.root, statePath);
     this.dotEnv = opts.dotEnv ?? {
       root: opts.root,
       path: path.join(opts.root, ".env"),
@@ -132,7 +131,6 @@ export class CloudBackend implements TaskBackend {
     if (!opts.fetchImpl) configureCloudFetchAddressSelection();
     this.fetchImpl = opts.fetchImpl ?? fetch;
   }
-
   static async create(opts: {
     root: string;
     settings: CloudBackendSettings;
@@ -147,7 +145,6 @@ export class CloudBackend implements TaskBackend {
       dotEnv,
     });
   }
-
   async generateTaskId(opts: { length: number; attempts: number }): Promise<string> {
     return await this.cache.generateTaskId(opts);
   }
@@ -172,7 +169,6 @@ export class CloudBackend implements TaskBackend {
   async assertLocalMutationReady(): Promise<void> {
     await this.assertProjectionFreshForLocalMutation();
   }
-
   async setTaskDoc(
     taskId: string,
     doc: string,
@@ -208,7 +204,6 @@ export class CloudBackend implements TaskBackend {
   async exportProjectionSnapshot(outputPath: string): Promise<void> {
     await this.cache.exportProjectionSnapshot(outputPath);
   }
-
   async refreshProjection(opts: {
     allowNetwork: boolean;
     quiet?: boolean;
