@@ -39,8 +39,13 @@ doc_updated_at: "2026-02-06T19:39:09.220Z"
 doc_updated_by: "CODER"
 description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Unify policy handling: protected paths from config, allowlist matching via path.relative, commit-msg and guard use core validateCommitSubject, and hooks must not call backend/network."
 sections:
-  Summary: ""
-  Scope: ""
+  Summary: |-
+    P1: Unified CommitPolicy for guards and hooks
+
+    (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Unify policy handling: protected paths from config, allowlist matching via path.relative, commit-msg and guard use core validateCommitSubject, and hooks must not call backend/network.
+  Scope: |-
+    - In scope: (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Unify policy handling: protected paths from config, allowlist matching via path.relative, commit-msg and guard use core validateCommitSubject, and hooks must not call backend/network.
+    - Out of scope: unrelated changes outside this task.
   Plan: |-
     1) Extract shared commit/allowlist path policy helpers.
     2) Use config.paths.tasks_path in guard, and switch allowlist matching to path.relative-based logic.
@@ -62,15 +67,22 @@ sections:
     Note: bun run test:agentplane passed.
 
     <!-- END VERIFICATION RESULTS -->
-  Rollback Plan: ""
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
   Findings: ""
 id_source: "generated"
 ---
 ## Summary
 
+P1: Unified CommitPolicy for guards and hooks
+
+(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Unify policy handling: protected paths from config, allowlist matching via path.relative, commit-msg and guard use core validateCommitSubject, and hooks must not call backend/network.
 
 ## Scope
 
+- In scope: (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Unify policy handling: protected paths from config, allowlist matching via path.relative, commit-msg and guard use core validateCommitSubject, and hooks must not call backend/network.
+- Out of scope: unrelated changes outside this task.
 
 ## Plan
 
@@ -101,6 +113,8 @@ Note: bun run test:agentplane passed.
 
 ## Rollback Plan
 
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
 
 ## Findings
 

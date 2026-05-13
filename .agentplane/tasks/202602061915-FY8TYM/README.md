@@ -37,8 +37,13 @@ doc_updated_at: "2026-02-06T19:29:06.811Z"
 doc_updated_by: "CODER"
 description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Move start/block/finish commands to CommandContext: one backend per command; do not call loadBackendTask in a loop inside finish."
 sections:
-  Summary: ""
-  Scope: ""
+  Summary: |-
+    P0: start/block/finish without reloading backend
+
+    (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Move start/block/finish commands to CommandContext: one backend per command; do not call loadBackendTask in a loop inside finish.
+  Scope: |-
+    - In scope: (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Move start/block/finish commands to CommandContext: one backend per command; do not call loadBackendTask in a loop inside finish.
+    - Out of scope: unrelated changes outside this task.
   Plan: |-
     1) Switch cmdStart/cmdBlock/cmdFinish to call loadCommandContext once per invocation.
     2) Load tasks via loadTaskFromContext instead of loadBackendTask (no repeated loadTaskBackend).
@@ -59,15 +64,22 @@ sections:
     Note: bun run test:agentplane passed.
 
     <!-- END VERIFICATION RESULTS -->
-  Rollback Plan: ""
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
   Findings: ""
 id_source: "generated"
 ---
 ## Summary
 
+P0: start/block/finish without reloading backend
+
+(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Move start/block/finish commands to CommandContext: one backend per command; do not call loadBackendTask in a loop inside finish.
 
 ## Scope
 
+- In scope: (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Move start/block/finish commands to CommandContext: one backend per command; do not call loadBackendTask in a loop inside finish.
+- Out of scope: unrelated changes outside this task.
 
 ## Plan
 
@@ -97,6 +109,8 @@ Note: bun run test:agentplane passed.
 
 ## Rollback Plan
 
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
 
 ## Findings
 

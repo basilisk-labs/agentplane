@@ -37,8 +37,13 @@ doc_updated_at: "2026-02-06T20:28:45.820Z"
 doc_updated_by: "CODER"
 description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-DH1CKG) Split monoliths into domain modules, remove local utilities, and simplify testing; do not preserve old internal APIs unless required."
 sections:
-  Summary: ""
-  Scope: ""
+  Summary: |-
+    P3: Split run-cli.ts / recipes.ts / task-backend.ts
+
+    (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-DH1CKG) Split monoliths into domain modules, remove local utilities, and simplify testing; do not preserve old internal APIs unless required.
+  Scope: |-
+    - In scope: (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-DH1CKG) Split monoliths into domain modules, remove local utilities, and simplify testing; do not preserve old internal APIs unless required.
+    - Out of scope: unrelated changes outside this task.
   Plan: |-
     1) Split commands/recipes.ts into focused modules (recipes vs scenario) while keeping run-cli wiring intact.
     2) Extract colon-safe git log parsing into a shared helper and update all %H:%s call sites.
@@ -59,15 +64,22 @@ sections:
     Note: Verified locally on 2026-02-06: scenario command extracted to its own module, git log hash/subject parsing made colon-safe; bun run lint, bun run test:agentplane, and bun run test:cli pass.
 
     <!-- END VERIFICATION RESULTS -->
-  Rollback Plan: ""
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
   Findings: ""
 id_source: "generated"
 ---
 ## Summary
 
+P3: Split run-cli.ts / recipes.ts / task-backend.ts
+
+(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-DH1CKG) Split monoliths into domain modules, remove local utilities, and simplify testing; do not preserve old internal APIs unless required.
 
 ## Scope
 
+- In scope: (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-DH1CKG) Split monoliths into domain modules, remove local utilities, and simplify testing; do not preserve old internal APIs unless required.
+- Out of scope: unrelated changes outside this task.
 
 ## Plan
 
@@ -97,6 +109,8 @@ Note: Verified locally on 2026-02-06: scenario command extracted to its own modu
 
 ## Rollback Plan
 
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
 
 ## Findings
 

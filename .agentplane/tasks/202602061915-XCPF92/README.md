@@ -42,8 +42,13 @@ doc_updated_at: "2026-02-06T20:38:23.739Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement FIX2.md items: remove repeated resolve/load calls in commands, unify guard/hooks policy, standardize commit messages without backward compatibility, deduplicate utilities, and split monoliths."
 sections:
-  Summary: ""
-  Scope: ""
+  Summary: |-
+    FIX2.md: command context, policy, commits, split monoliths
+
+    Implement FIX2.md items: remove repeated resolve/load calls in commands, unify guard/hooks policy, standardize commit messages without backward compatibility, deduplicate utilities, and split monoliths.
+  Scope: |-
+    - In scope: Implement FIX2.md items: remove repeated resolve/load calls in commands, unify guard/hooks policy, standardize commit messages without backward compatibility, deduplicate utilities, and split monoliths.
+    - Out of scope: unrelated changes outside this task.
   Plan: |-
     Work breakdown:
     - 202602061915-RNTNEP (DONE): CommandContext + loadBackendTask context.
@@ -68,15 +73,22 @@ sections:
     Note: Verified locally on 2026-02-06: FIX2.md work completed via subtasks; bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli are green.
 
     <!-- END VERIFICATION RESULTS -->
-  Rollback Plan: ""
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
   Findings: ""
 id_source: "generated"
 ---
 ## Summary
 
+FIX2.md: command context, policy, commits, split monoliths
+
+Implement FIX2.md items: remove repeated resolve/load calls in commands, unify guard/hooks policy, standardize commit messages without backward compatibility, deduplicate utilities, and split monoliths.
 
 ## Scope
 
+- In scope: Implement FIX2.md items: remove repeated resolve/load calls in commands, unify guard/hooks policy, standardize commit messages without backward compatibility, deduplicate utilities, and split monoliths.
+- Out of scope: unrelated changes outside this task.
 
 ## Plan
 
@@ -110,6 +122,8 @@ Note: Verified locally on 2026-02-06: FIX2.md work completed via subtasks; bun r
 
 ## Rollback Plan
 
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
 
 ## Findings
 

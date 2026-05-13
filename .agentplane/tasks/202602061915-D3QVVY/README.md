@@ -38,8 +38,13 @@ doc_updated_at: "2026-02-06T20:34:41.178Z"
 doc_updated_by: "TESTER"
 description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-FY8TYM,202602061915-DZBAW0,202602061915-DH1CKG,202602061915-FXTNQ0,202602061915-KNHP1Y) Add/update unit and CLI tests for the new context, allowlist matching, commit-msg/guard policy, and commit message generation."
 sections:
-  Summary: ""
-  Scope: ""
+  Summary: |-
+    Tests: cover CommandContext and CommitPolicy
+
+    (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-FY8TYM,202602061915-DZBAW0,202602061915-DH1CKG,202602061915-FXTNQ0,202602061915-KNHP1Y) Add/update unit and CLI tests for the new context, allowlist matching, commit-msg/guard policy, and commit message generation.
+  Scope: |-
+    - In scope: (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-FY8TYM,202602061915-DZBAW0,202602061915-DH1CKG,202602061915-FXTNQ0,202602061915-KNHP1Y) Add/update unit and CLI tests for the new context, allowlist matching, commit-msg/guard policy, and commit message generation.
+    - Out of scope: unrelated changes outside this task.
   Plan: |-
     1) Add unit tests for CommandContext helpers (loadCommandContext/loadTaskFromContext) using a temp repo with local backend config.
     2) Add coverage for comment-driven commit body generation (Task/Agent/Status/Comment) and subject validation edge cases.
@@ -59,15 +64,22 @@ sections:
     Note: Verified locally on 2026-02-06: added CommandContext tests and commit-from-comment body assertions; bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli pass.
 
     <!-- END VERIFICATION RESULTS -->
-  Rollback Plan: ""
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
   Findings: ""
 id_source: "generated"
 ---
 ## Summary
 
+Tests: cover CommandContext and CommitPolicy
+
+(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-FY8TYM,202602061915-DZBAW0,202602061915-DH1CKG,202602061915-FXTNQ0,202602061915-KNHP1Y) Add/update unit and CLI tests for the new context, allowlist matching, commit-msg/guard policy, and commit message generation.
 
 ## Scope
 
+- In scope: (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-FY8TYM,202602061915-DZBAW0,202602061915-DH1CKG,202602061915-FXTNQ0,202602061915-KNHP1Y) Add/update unit and CLI tests for the new context, allowlist matching, commit-msg/guard policy, and commit message generation.
+- Out of scope: unrelated changes outside this task.
 
 ## Plan
 
@@ -96,6 +108,8 @@ Note: Verified locally on 2026-02-06: added CommandContext tests and commit-from
 
 ## Rollback Plan
 
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
 
 ## Findings
 

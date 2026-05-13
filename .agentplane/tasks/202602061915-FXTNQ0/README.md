@@ -37,8 +37,13 @@ doc_updated_at: "2026-02-06T20:13:38.747Z"
 doc_updated_by: "CODER"
 description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Remove local dedupeStrings/resolvePathFallback/isRecord helpers from recipes.ts and move to or reuse shared/core utilities."
 sections:
-  Summary: ""
-  Scope: ""
+  Summary: |-
+    P0: Deduplicate utilities in recipes.ts
+
+    (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Remove local dedupeStrings/resolvePathFallback/isRecord helpers from recipes.ts and move to or reuse shared/core utilities.
+  Scope: |-
+    - In scope: (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Remove local dedupeStrings/resolvePathFallback/isRecord helpers from recipes.ts and move to or reuse shared/core utilities.
+    - Out of scope: unrelated changes outside this task.
   Plan: |-
     1) Remove local copies of dedupeStrings/resolvePathFallback/isRecord from recipes.ts.
     2) Import canonical helpers from shared/core modules.
@@ -59,15 +64,22 @@ sections:
     Note: Verified locally on 2026-02-06: dedupe refactor in recipes.ts; bun run lint and bun run test:cli pass.
 
     <!-- END VERIFICATION RESULTS -->
-  Rollback Plan: ""
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
   Findings: ""
 id_source: "generated"
 ---
 ## Summary
 
+P0: Deduplicate utilities in recipes.ts
+
+(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Remove local dedupeStrings/resolvePathFallback/isRecord helpers from recipes.ts and move to or reuse shared/core utilities.
 
 ## Scope
 
+- In scope: (Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Remove local dedupeStrings/resolvePathFallback/isRecord helpers from recipes.ts and move to or reuse shared/core utilities.
+- Out of scope: unrelated changes outside this task.
 
 ## Plan
 
@@ -97,6 +109,8 @@ Note: Verified locally on 2026-02-06: dedupe refactor in recipes.ts; bun run lin
 
 ## Rollback Plan
 
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
 
 ## Findings
 

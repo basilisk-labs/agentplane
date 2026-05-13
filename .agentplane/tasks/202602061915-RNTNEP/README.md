@@ -38,8 +38,13 @@ doc_updated_at: "2026-02-06T19:24:03.231Z"
 doc_updated_by: "CODER"
 description: "(Tracking=202602061915-XCPF92) Introduce a unified Execution/CommandContext (resolved project, config, backend) per command invocation; provide an API for loading tasks from the context; remove repeated resolveProject/loadConfig/loadTaskBackend calls."
 sections:
-  Summary: ""
-  Scope: ""
+  Summary: |-
+    P0: CommandContext for CLI commands
+
+    (Tracking=202602061915-XCPF92) Introduce a unified Execution/CommandContext (resolved project, config, backend) per command invocation; provide an API for loading tasks from the context; remove repeated resolveProject/loadConfig/loadTaskBackend calls.
+  Scope: |-
+    - In scope: (Tracking=202602061915-XCPF92) Introduce a unified Execution/CommandContext (resolved project, config, backend) per command invocation; provide an API for loading tasks from the context; remove repeated resolveProject/loadConfig/loadTaskBackend calls.
+    - Out of scope: unrelated changes outside this task.
   Plan: |-
     1) Add CommandContext builder that loads resolved+config+backend once per command.
     2) Add ctx-aware helpers to load tasks without reloading backend.
@@ -60,15 +65,22 @@ sections:
     Note: bun run test:agentplane (vitest) passed.
 
     <!-- END VERIFICATION RESULTS -->
-  Rollback Plan: ""
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
   Findings: ""
 id_source: "generated"
 ---
 ## Summary
 
+P0: CommandContext for CLI commands
+
+(Tracking=202602061915-XCPF92) Introduce a unified Execution/CommandContext (resolved project, config, backend) per command invocation; provide an API for loading tasks from the context; remove repeated resolveProject/loadConfig/loadTaskBackend calls.
 
 ## Scope
 
+- In scope: (Tracking=202602061915-XCPF92) Introduce a unified Execution/CommandContext (resolved project, config, backend) per command invocation; provide an API for loading tasks from the context; remove repeated resolveProject/loadConfig/loadTaskBackend calls.
+- Out of scope: unrelated changes outside this task.
 
 ## Plan
 
@@ -98,6 +110,8 @@ Note: bun run test:agentplane (vitest) passed.
 
 ## Rollback Plan
 
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
 
 ## Findings
 
