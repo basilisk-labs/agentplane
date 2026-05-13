@@ -150,6 +150,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [context capability discover](#context-capability-discover)
   - [context capability search](#context-capability-search)
   - [context capability validate](#context-capability-validate)
+  - [context check](#context-check)
   - [context doctor](#context-doctor)
   - [context graph](#context-graph)
   - [context graph export](#context-graph-export)
@@ -161,6 +162,10 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [context harvest tasks](#context-harvest-tasks)
   - [context ingest](#context-ingest)
   - [context init](#context-init)
+  - [context learn](#context-learn)
+  - [context learn changes](#context-learn-changes)
+  - [context learn files](#context-learn-files)
+  - [context learn tasks](#context-learn-tasks)
   - [context reindex](#context-reindex)
   - [context search](#context-search)
   - [context show](#context-show)
@@ -3684,6 +3689,22 @@ Usage:
 agentplane context capability validate <path>
 ```
 
+### context check
+
+Check context workspace health.
+
+Runs the human-facing context health check. Use ap context graph validate for the lower-level graph validator.
+
+Usage:
+
+```text
+agentplane context check [options]
+```
+
+Options:
+
+- `--fix`: Repair missing context directories where safe. (default=false)
+
 ### context doctor
 
 Diagnose local context health and projection consistency.
@@ -3880,6 +3901,109 @@ Options:
 - `--derived-gitignore <none|all>`: Ignore machine-derived context files under .agentplane/context/derived when set to all. (choices=none|all, default=none)
 - `--repair`: Create missing files only. (default=false)
 - `--force`: Rewrite default policy files while repairing. (default=false)
+
+### context learn
+
+Create context processing tasks from files, changes, or completed tasks.
+
+Usage:
+
+```text
+agentplane context learn [<cmd> ...]
+```
+
+### context learn changes
+
+Create a context assimilation task from changed context sources.
+
+Usage:
+
+```text
+agentplane context learn changes [options]
+```
+
+Options:
+
+- `--dry-run`: Preview only; do not create a task. (default=false)
+- `--run`: Create the task and immediately run it. (default=false)
+- `--include-private`: Include context/raw/private sources in the source set. (default=false)
+
+Examples:
+
+```sh
+agentplane context learn changes
+```
+
+- Create a CURATOR task from changed local context sources.
+
+### context learn files
+
+Create a context assimilation task from explicit files or paths.
+
+Usage:
+
+```text
+agentplane context learn files <path> ... [options]
+```
+
+Options:
+
+- `--dry-run`: Preview only; do not create a task. (default=false)
+- `--run`: Create the task and immediately run it. (default=false)
+- `--include-private`: Include context/raw/private sources in the source set. (default=false)
+
+Examples:
+
+```sh
+agentplane context learn files docs/research.md context/raw/customer-notes.md
+```
+
+- Create a CURATOR task from explicit external context files.
+
+```sh
+agentplane context learn files context/raw/research --run
+```
+
+- Create and run a context assimilation task for a folder of raw sources.
+
+### context learn tasks
+
+Create CURATOR extraction tasks from completed task history.
+
+Selects completed tasks oldest-first and creates standard CURATOR tasks for semantic extraction from task README/ACR sources. It does not write wiki proposals or promote pages directly.
+
+Usage:
+
+```text
+agentplane context learn tasks [options]
+```
+
+Options:
+
+- `--status <status>`: Repeatable task status filter. Defaults to DONE. (repeatable)
+- `--tag <tag>`: Repeatable tag filter. Matches tasks with any listed tag. (repeatable)
+- `--task <task-id>`: Repeatable explicit task id filter. (repeatable)
+- `--since <YYYY-MM-DD|YYYYMMDDHHmm>`: Only include tasks at or after this task-id timestamp prefix.
+- `--until <YYYY-MM-DD|YYYYMMDDHHmm>`: Only include tasks at or before this task-id timestamp prefix.
+- `--after-task <task-id>`: Continue after a previously queued task id.
+- `--limit <n>`: Maximum number of oldest matching tasks to queue.
+- `--batch-size <n>`: Number of selected completed tasks per generated extraction task. (default=25)
+- `--dry-run`: Preview batches without creating tasks. (default=false)
+- `--format <text|json>`: Output format. (choices=text|json, default=text)
+
+Examples:
+
+```sh
+agentplane context learn tasks --tag release --limit 25
+```
+
+- Create bounded CURATOR tasks from the oldest completed release tasks.
+
+```sh
+agentplane context learn tasks --tag branch_pr --batch-size 25 --dry-run
+```
+
+- Preview task-history extraction batches without mutating task state.
 
 ### context reindex
 

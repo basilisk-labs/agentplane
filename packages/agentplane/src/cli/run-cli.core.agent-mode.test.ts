@@ -19,6 +19,20 @@ afterEach(() => {
 });
 
 describe("runCli agent mode", () => {
+  it("shows the full advanced help surface for the ap alias", async () => {
+    process.env.AGENTPLANE_CLI_ALIAS = "ap";
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["help"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("context learn tasks");
+      expect(io.stdout).toContain("context harvest tasks");
+      expect(io.stdout).toContain("context capability");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("emits structured JSON for global parse errors", async () => {
     process.env.AGENTPLANE_CLI_ALIAS = "ap";
     const io = captureStdIO();

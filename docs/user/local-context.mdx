@@ -31,9 +31,9 @@ cache as disposable output.
 
 ```bash
 agentplane context init
-agentplane context reindex
 agentplane context search "release checklist"
 agentplane context show context/wiki/release.md#section=publish-gate
+agentplane context check
 ```
 
 When `agentplane context init` runs in an empty standalone directory, it bootstraps the AgentPlane
@@ -44,28 +44,35 @@ gateway, workflow, backend, and conflict handling stay visible.
 `context show` resolves whole files, markdown sections, and line ranges. Markdown section refs use
 stable slugs such as `#section=publish-gate`; line refs use `#lines=12-24` or `#line=12`.
 
-## Ingest
+## Learn from files and changes
 
 ```bash
-agentplane context ingest --changed
-agentplane context ingest ./notes.md --run
+agentplane context learn changes
+agentplane context learn files ./notes.md --run
 ```
 
-`context ingest` creates a task-scoped intake request and writes context artifacts from the selected
-files. `--changed` uses changed files from Git. `--run` hands the ingest task to the configured
-runner adapter instead of only preparing the request.
+`context learn` is the human-facing task factory for reusable context. `learn changes` creates a
+context assimilation task from changed local context sources. `learn files` creates one from explicit
+files or directories. `--run` hands the generated task to the configured runner adapter instead of
+only preparing the request.
 
-## Harvest completed tasks
+`ap context ingest` remains the lower-level pipeline command for agents and automation, including
+`--all` and `--index-only`.
+
+## Learn from completed tasks
 
 ```bash
-agentplane context harvest tasks --tag release --limit 20 --dry-run
-agentplane context harvest tasks --tag branch_pr --create-extraction-tasks --batch-size 25
-agentplane context harvest tasks --tag branch_pr --write-proposals
-agentplane context harvest tasks --task 202605100837-PJZW2E --write-proposals
+agentplane context learn tasks --tag release --limit 20 --dry-run
+agentplane context learn tasks --tag branch_pr --batch-size 25
 ```
 
-`context harvest tasks` turns completed task history into context proposals. It scans matching
-tasks oldest-first, then keeps the pipeline stages separate:
+`context learn tasks` turns completed task history into standard `CURATOR` extraction tasks. It
+scans matching tasks oldest-first and creates bounded batches controlled by `--batch-size`. Each
+generated task uses the task README and ACR as semantic sources and carries provenance, allowed
+outputs, stale-marker, conflict-marker, and prompt-module requirements.
+
+The advanced `ap context harvest tasks` command exposes the full context pipeline and keeps its
+stages separate:
 
 - source indexing: task README, comments, and commit metadata become raw evidence under
   `context/raw/tasks/**`
@@ -75,23 +82,17 @@ tasks oldest-first, then keeps the pipeline stages separate:
 - promotion: `--promote` writes a semi-canonical page only when the promotion gate has no blockers
 
 Use `--tag`, `--task`, `--since`, `--until`, `--after-task`, and `--limit` to advance gradually from
-older completed work toward newer changes. The command never promotes by default; `--write-proposals`
-only writes evidence, derived rows, reports, proposal pages, a task-ingestion ledger, and
+older completed work toward newer changes. Human `learn tasks` never promotes or writes wiki
+proposals directly; it creates extraction tasks. Advanced `ap context harvest tasks
+--write-proposals` writes evidence, derived rows, reports, proposal pages, a task-ingestion ledger, and
 `extensions.context_harvest` markers back into the harvested task READMEs. Those markers include the
 source digest, raw evidence path, report path, proposal path, promotion state, fact IDs, and source
 refs. Later broad runs skip tasks whose marker digest still matches the README evidence; explicit
-`--task` selection and `--promote` can still revisit a marked task when needed. Write modes require
-an initialized context workspace from `agentplane context init`; dry-run mode can be used before
-initialization.
+`--task` selection and `--promote` can still revisit a marked task when needed. `learn tasks` and
+advanced write modes require an initialized context workspace from `agentplane context init`;
+dry-run mode can be used before initialization.
 
-Use `--create-extraction-tasks` when completed task history needs agentic semantic extraction rather
-than deterministic one-claim-per-task proposals. It creates standard `CURATOR` tasks in oldest-first
-batches controlled by `--batch-size`. Each generated task carries an
-`extensions.agentplane.context` source pack with the selected task README paths, ACR paths, source
-digests, allowed outputs, provenance requirements, and a replaceable prompt module for extracting
-wiki pages, facts, entities, relations, stale markers, and conflict markers. This mode does not write
-`context/raw/tasks/*.json` by itself; the source of semantic truth is the task README and ACR
-evidence named in the generated task. It also marks source tasks with
+Task-learning mode marks source tasks with
 `extensions.context_task_extraction` so later broad runs do not create duplicate extraction tasks
 while the README digest is unchanged. Raw-ingestion markers from `--write-proposals` do not count as
 semantic extraction completion.
@@ -99,7 +100,7 @@ semantic extraction completion.
 ## Verify task context
 
 ```bash
-agentplane context verify-task <task-id>
+ap context verify-task <task-id>
 ```
 
 The verifier checks that task-facing context claims are source-backed:
@@ -122,10 +123,14 @@ The local context layer is repository-owned; it is not a secrets vault.
 ## Common commands
 
 ```bash
-agentplane context status
-agentplane context list
+agentplane context init
+agentplane context learn changes
+agentplane context learn files <path>
+agentplane context learn tasks --tag <tag> --batch-size 25
 agentplane context search "<query>"
 agentplane context show <ref>
-agentplane context reindex
-agentplane context verify-task <task-id>
+agentplane context check
+ap context reindex
+ap context harvest tasks --tag <tag> --write-proposals
+ap context verify-task <task-id>
 ```

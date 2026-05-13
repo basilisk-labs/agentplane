@@ -17,13 +17,21 @@ agentplane --version
 `agentplane --help` and `agentplane help` show the normal installed-project surface by default.
 The first screen is intentionally biased toward commands an agent needs for project work: startup,
 task lifecycle, branch/PR workflow, backend sync, recipes, diagnostics, and setup.
+For context management, `agentplane` keeps the human task-factory surface visible: `context init`,
+`context learn files`, `context learn changes`, `context learn tasks`, `context search`,
+`context show`, and `context check`.
 
 Advanced recovery and maintenance commands stay available through direct help or the full registry:
 
 ```bash
+ap help context
 agentplane help task reclaim
 agentplane help --all
 ```
+
+The `ap` alias runs in agent mode and shows the full advanced surface by default, including
+low-level context pipeline commands such as `context ingest`, `context harvest tasks`,
+`context reindex`, `context graph`, `context capability`, and `context verify-task`.
 
 Inside the Agent Plane framework checkout, help automatically switches to the framework-dev surface
 and adds a dedicated `Framework Dev` group. Framework-maintainer commands such as `release`,
