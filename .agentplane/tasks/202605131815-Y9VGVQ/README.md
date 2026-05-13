@@ -1,7 +1,8 @@
 ---
 id: "202605131815-Y9VGVQ"
 title: "Use shared root env for hosted sync"
-status: "DOING"
+result_summary: "Merged via PR #3662."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: bun test packages/agentplane/src/backends/task-backend.load.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts passed (29 tests); node .agentplane/policy/check-routing.mjs passed; ap doctor OK with pre-existing cloud backend sync degraded warning reason=rate_limited."
   attempts: 0
-commit: null
+commit:
+  hash: "d78f7a75ebf1515434bce0a5ab2da6f508f1de8e"
+  message: "Use shared root env for hosted sync"
 comments:
   -
     author: "CODER"
     body: "Start: Implement shared root environment resolution for hosted sync commands and prevent stale local task projections from reintroducing outdated hosted metadata."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3662 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bun test packages/agentplane/src/backends/task-backend.load.test.ts packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts passed (29 tests); node .agentplane/policy/check-routing.mjs passed; ap doctor OK with pre-existing cloud backend sync degraded warning reason=rate_limited."
+  -
+    type: "status"
+    at: "2026-05-13T19:08:49.409Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3662 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T18:49:43.861Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T19:08:49.409Z"
+doc_updated_by: "INTEGRATOR"
 description: "Load hosted backend credentials from the canonical repository root .env across branch_pr worktrees, and prevent cloud push from using stale task projections."
 sections:
   Summary: |-
