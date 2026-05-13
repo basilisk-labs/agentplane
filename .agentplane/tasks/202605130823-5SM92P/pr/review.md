@@ -24,9 +24,9 @@ Created: 2026-05-13T08:23:55.197Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T09:36:28.307Z
+- Updated: 2026-05-13T09:40:20.072Z
 - Branch: task/202605130823-5SM92P/human-readable-merge-messages
-- Head: 4d2804a9a9ad
+- Head: b3f8a9ffba80
 
 ```text
  .../blueprint/resolved-snapshot.json               | 514 +++++++++++++++++++++
@@ -34,7 +34,7 @@ Created: 2026-05-13T08:23:55.197Z
  ...run-cli.core.lifecycle.finish-branch-pr.test.ts |   9 +-
  ...-cli.core.lifecycle.finish-close-commit.test.ts |   6 +-
  .../run-cli.core.pr-flow.integrate-merge.test.ts   |   3 +-
- .../src/commands/doctor.command.runtime.test.ts    |  60 ++-
+ .../agentplane/src/commands/doctor/archive.test.ts |  63 +++
  packages/agentplane/src/commands/doctor/archive.ts |  47 +-
  .../src/commands/guard/impl/close-message.test.ts  | 212 ++++++++-
  .../src/commands/guard/impl/close-message.ts       | 396 +++++++++++++---
@@ -47,7 +47,7 @@ Created: 2026-05-13T08:23:55.197Z
  .../agentplane/src/policy/rules/commit-subject.ts  |   1 +
  packages/core/src/commit/commit-policy.test.ts     |  41 ++
  packages/core/src/commit/commit-policy.ts          |  82 +++-
- 18 files changed, 1282 insertions(+), 128 deletions(-)
+ 18 files changed, 1287 insertions(+), 126 deletions(-)
 ```
 
 </details>
