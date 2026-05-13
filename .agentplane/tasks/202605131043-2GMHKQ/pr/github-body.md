@@ -22,9 +22,9 @@ Consolidate AgentPlane generated projection surfaces under .agentplane/generated
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T13:17:09.369Z
+- Updated: 2026-05-13T13:18:53.371Z
 - Branch: task/202605131043-2GMHKQ/generated-scripts-context-refactor
-- Head: 844e6461ec56
+- Head: 194d1c1e4539
 
 ```text
  .../blueprint/resolved-snapshot.json               |  512 +++++++++
@@ -67,45 +67,45 @@ Consolidate AgentPlane generated projection surfaces under .agentplane/generated
  scripts/bench/measure-cli-cold-path.mjs            |   20 +
  scripts/bench/measure-cli-perf.mjs                 |   13 +
  scripts/bench/measure-cli-walltime.mjs             |  209 ++++
- scripts/bootstrap-framework-dev.mjs                |  363 +------
- scripts/check-acr-example-version.mjs              |   33 +-
- scripts/check-agent-bootstrap-fresh.mjs            |  288 +-----
- scripts/check-agent-onboarding-scenario.mjs        |  159 +--
- scripts/check-agentplane-artifacts.mjs             |  120 +--
- scripts/check-blueprint-release-gate.mjs           |   56 +-
- scripts/check-cli-cold-baseline.mjs                |  262 +----
- scripts/check-cli-reference-fresh.mjs              |   43 +-
- scripts/check-cli-walltime-baseline.mjs            |  203 +---
- scripts/check-clone-baseline.mjs                   |  311 +-----
- scripts/check-coverage-thresholds.mjs              |   50 +-
- scripts/check-critical-test-route.mjs              |   95 +-
- scripts/check-depcruise-known-violations.mjs       |  143 +--
- scripts/check-design-language.mjs                  |  118 +--
- scripts/check-docs-ia.mjs                          |  381 +------
- scripts/check-github-protection-contract.mjs       |  143 +--
- scripts/check-knip-baseline.mjs                    |  253 +----
- scripts/check-local-tarball-install-smoke.mjs      |  120 +--
- scripts/check-no-console.mjs                       |  130 +--
- scripts/check-npm-version-availability.mjs         |   84 +-
- scripts/check-oversized-test-baseline.mjs          |  286 +----
- scripts/check-package-tarball.mjs                  |  151 +--
- scripts/check-policy-routing.mjs                   |    3 +-
- scripts/check-published-packages.mjs               |  115 +--
- scripts/check-recipes-inventory-fresh.mjs          |   25 +-
- scripts/check-release-demo.mjs                     |   41 +-
- scripts/check-release-incidents.mjs                |   52 +-
- scripts/check-release-notes.mjs                    |  215 +---
- scripts/check-release-parity.mjs                   |   27 +-
- scripts/check-release-recovery-state.mjs           | 1088 +-------------------
- scripts/check-release-version.mjs                  |   55 +-
- scripts/check-significant-coverage.mjs             |   42 +-
- scripts/check-spec-examples.mjs                    |  207 +---
- scripts/check-task-state.mjs                       |  108 +-
- scripts/check-test-routing.mjs                     |  131 +--
- scripts/check-types-files.mjs                      |   97 +-
- scripts/check-vitest-projects.mjs                  |   42 +-
- scripts/check-workflow-command-contract.mjs        |  115 +--
- scripts/check-workflow-harness-coverage.mjs        |   52 +-
+ scripts/bootstrap-framework-dev.mjs                |  362 +------
+ scripts/check-acr-example-version.mjs              |   32 +-
+ scripts/check-agent-bootstrap-fresh.mjs            |  287 +-----
+ scripts/check-agent-onboarding-scenario.mjs        |  158 +--
+ scripts/check-agentplane-artifacts.mjs             |  119 +--
+ scripts/check-blueprint-release-gate.mjs           |   55 +-
+ scripts/check-cli-cold-baseline.mjs                |  261 +----
+ scripts/check-cli-reference-fresh.mjs              |   42 +-
+ scripts/check-cli-walltime-baseline.mjs            |  202 +---
+ scripts/check-clone-baseline.mjs                   |  310 +-----
+ scripts/check-coverage-thresholds.mjs              |   49 +-
+ scripts/check-critical-test-route.mjs              |   94 +-
+ scripts/check-depcruise-known-violations.mjs       |  142 +--
+ scripts/check-design-language.mjs                  |  117 +--
+ scripts/check-docs-ia.mjs                          |  380 +------
+ scripts/check-github-protection-contract.mjs       |  142 +--
+ scripts/check-knip-baseline.mjs                    |  252 +----
+ scripts/check-local-tarball-install-smoke.mjs      |  119 +--
+ scripts/check-no-console.mjs                       |  129 +--
+ scripts/check-npm-version-availability.mjs         |   83 +-
+ scripts/check-oversized-test-baseline.mjs          |  285 +----
+ scripts/check-package-tarball.mjs                  |  150 +--
+ scripts/check-policy-routing.mjs                   |    2 +-
+ scripts/check-published-packages.mjs               |  114 +-
+ scripts/check-recipes-inventory-fresh.mjs          |   24 +-
+ scripts/check-release-demo.mjs                     |   40 +-
+ scripts/check-release-incidents.mjs                |   51 +-
+ scripts/check-release-notes.mjs                    |  214 +---
+ scripts/check-release-parity.mjs                   |   26 +-
+ scripts/check-release-recovery-state.mjs           | 1087 +-------------------
+ scripts/check-release-version.mjs                  |   54 +-
+ scripts/check-significant-coverage.mjs             |   41 +-
+ scripts/check-spec-examples.mjs                    |  206 +---
+ scripts/check-task-state.mjs                       |  107 +-
+ scripts/check-test-routing.mjs                     |  130 +--
+ scripts/check-types-files.mjs                      |   96 +-
+ scripts/check-vitest-projects.mjs                  |   41 +-
+ scripts/check-workflow-command-contract.mjs        |  114 +-
+ scripts/check-workflow-harness-coverage.mjs        |   51 +-
  scripts/checks/check-acr-example-version.mjs       |   31 +
  scripts/checks/check-agent-bootstrap-fresh.mjs     |  286 +++++
  scripts/checks/check-agent-onboarding-scenario.mjs |  157 +++
@@ -145,21 +145,21 @@ Consolidate AgentPlane generated projection surfaces under .agentplane/generated
  scripts/checks/run-pre-push-hook.mjs               |  331 ++++++
  scripts/checks/run-significant-coverage-suite.mjs  |   29 +
  scripts/checks/run-vitest-suite.mjs                |  162 +++
- scripts/ci-scope.mjs                               |  117 +--
- scripts/cli-benchmark-runner.mjs                   |  254 +----
- scripts/compare-cli-perf.mjs                       |  222 +---
- scripts/compare-cli-walltime.mjs                   |  240 +----
- scripts/enforce-github-publish.mjs                 |   13 +-
- scripts/generate-agent-bootstrap-doc.mjs           |   58 +-
- scripts/generate-builtin-assets.mjs                |  112 +-
- scripts/generate-bun-cli-assets.mjs                |  245 +----
- scripts/generate-llms-full.mjs                     |   52 +-
- scripts/generate-recipes-inventory.mjs             |  180 +---
- scripts/generate-release-distribution.mjs          |  531 +---------
- scripts/generate-roadmap-illustration.mjs          |   51 +-
- scripts/generate-scripts-readme.mjs                |  187 +---
- scripts/generate-standalone-cli-assets.mjs         |  591 +----------
- scripts/generate-website-docs.mjs                  |   90 +-
+ scripts/ci-scope.mjs                               |  116 +--
+ scripts/cli-benchmark-runner.mjs                   |  253 +----
+ scripts/compare-cli-perf.mjs                       |  221 +---
+ scripts/compare-cli-walltime.mjs                   |  239 +----
+ scripts/enforce-github-publish.mjs                 |   12 +-
+ scripts/generate-agent-bootstrap-doc.mjs           |   57 +-
+ scripts/generate-builtin-assets.mjs                |  111 +-
+ scripts/generate-bun-cli-assets.mjs                |  244 +----
+ scripts/generate-llms-full.mjs                     |   51 +-
+ scripts/generate-recipes-inventory.mjs             |  177 +---
+ scripts/generate-release-distribution.mjs          |  530 +---------
+ scripts/generate-roadmap-illustration.mjs          |   50 +-
+ scripts/generate-scripts-readme.mjs                |  186 +---
+ scripts/generate-standalone-cli-assets.mjs         |  590 +----------
+ scripts/generate-website-docs.mjs                  |   89 +-
  scripts/generate/generate-agent-bootstrap-doc.mjs  |   56 +
  scripts/generate/generate-builtin-assets.mjs       |  110 ++
  scripts/generate/generate-bun-cli-assets.mjs       |  243 +++++
@@ -176,17 +176,17 @@ Consolidate AgentPlane generated projection surfaces under .agentplane/generated
  .../generate/render-setup-agentplane-action.mjs    |  268 +++++
  scripts/generate/sync-agent-templates.mjs          |   74 ++
  scripts/generate/sync-schemas.mjs                  |   91 ++
- scripts/hotspot-report.mjs                         |  510 +--------
- scripts/manifest.mjs                               |  824 +--------------
- scripts/measure-cli-cold-path.mjs                  |   22 +-
- scripts/measure-cli-perf.mjs                       |   15 +-
- scripts/measure-cli-walltime.mjs                   |  214 +---
- scripts/prepare-hosted-task-closure.mjs            |  164 +--
- scripts/prune-package-js.mjs                       |   26 +-
- scripts/publish-external-distribution.mjs          |  361 +------
+ scripts/hotspot-report.mjs                         |  509 +--------
+ scripts/manifest.mjs                               |  823 +--------------
+ scripts/measure-cli-cold-path.mjs                  |   21 +-
+ scripts/measure-cli-perf.mjs                       |   14 +-
+ scripts/measure-cli-walltime.mjs                   |  213 +---
+ scripts/prepare-hosted-task-closure.mjs            |  163 +--
+ scripts/prune-package-js.mjs                       |   25 +-
+ scripts/publish-external-distribution.mjs          |  360 +------
  scripts/reinstall-global-agentplane.sh             |   41 +-
- scripts/release-check.mjs                          |    4 +-
- scripts/release-task-evidence.mjs                  |  517 +---------
+ scripts/release-check.mjs                          |    3 +-
+ scripts/release-task-evidence.mjs                  |  516 +---------
  .../release/check-local-tarball-install-smoke.mjs  |  118 +++
  scripts/release/check-npm-version-availability.mjs |   82 ++
  scripts/release/check-package-tarball.mjs          |  149 +++
@@ -202,39 +202,39 @@ Consolidate AgentPlane generated projection surfaces under .agentplane/generated
  scripts/release/prune-package-js.mjs               |   24 +
  scripts/release/publish-external-distribution.mjs  |  359 +++++++
  scripts/release/release-check.mjs                  |    2 +
- scripts/release/release-task-evidence.mjs          |  515 +++++++++
+ scripts/release/release-task-evidence.mjs          |  515 ++++++++++
  scripts/release/resolve-canonical-release-sha.mjs  |  244 +++++
  scripts/release/resolve-release-ready-source.mjs   |   94 ++
  scripts/release/run-local-release-e2e.mjs          |  357 +++++++
  scripts/release/smoke-bun-compiled-cli.mjs         |  208 ++++
  scripts/release/smoke-standalone-cli-artifact.mjs  |  280 +++++
- scripts/render-ghcr-image-metadata.mjs             |  219 +---
- scripts/render-homebrew-formula.mjs                |  196 +---
- scripts/render-scoop-manifest.mjs                  |  177 +---
- scripts/render-setup-agentplane-action.mjs         |  270 +----
- scripts/repair-historical-task-commits.mjs         |  121 +--
- scripts/resolve-canonical-release-sha.mjs          |  246 +----
- scripts/resolve-release-ready-source.mjs           |   96 +-
- scripts/run-backend-live-suite.mjs                 |  101 +-
- scripts/run-checks.mjs                             |   93 +-
- scripts/run-commit-msg-hook.mjs                    |   28 +-
- scripts/run-local-ci.mjs                           |  235 +----
- scripts/run-local-release-e2e.mjs                  |  359 +------
- scripts/run-pre-commit-hook.mjs                    |  125 +--
- scripts/run-pre-commit-test-fast.mjs               |   33 +-
- scripts/run-pre-push-hook.mjs                      |  333 +-----
- scripts/run-runner-codex-approval-probe.mjs        |  221 +---
- scripts/run-runner-codex-smoke.mjs                 |  601 +----------
- scripts/run-significant-coverage-suite.mjs         |   31 +-
- scripts/run-vitest-suite.mjs                       |  164 +--
- scripts/run-workflow-coverage-suite.mjs            |   31 +-
- scripts/run-workflows-lint.mjs                     |   40 +-
- scripts/smoke-bun-compiled-cli.mjs                 |  210 +---
- scripts/smoke-standalone-cli-artifact.mjs          |  282 +----
- scripts/sync-agent-templates.mjs                   |   76 +-
- scripts/sync-schemas.mjs                           |   93 +-
- scripts/verify-global-agentplane-install.mjs       |  174 +---
- scripts/wait-remote-pr-checks.mjs                  |  596 +----------
+ scripts/render-ghcr-image-metadata.mjs             |  218 +---
+ scripts/render-homebrew-formula.mjs                |  195 +---
+ scripts/render-scoop-manifest.mjs                  |  176 +---
+ scripts/render-setup-agentplane-action.mjs         |  269 +----
+ scripts/repair-historical-task-commits.mjs         |  120 +--
+ scripts/resolve-canonical-release-sha.mjs          |  245 +----
+ scripts/resolve-release-ready-source.mjs           |   95 +-
+ scripts/run-backend-live-suite.mjs                 |  100 +-
+ scripts/run-checks.mjs                             |   92 +-
+ scripts/run-commit-msg-hook.mjs                    |   27 +-
+ scripts/run-local-ci.mjs                           |  234 +----
+ scripts/run-local-release-e2e.mjs                  |  358 +------
+ scripts/run-pre-commit-hook.mjs                    |  124 +--
+ scripts/run-pre-commit-test-fast.mjs               |   32 +-
+ scripts/run-pre-push-hook.mjs                      |  332 +-----
+ scripts/run-runner-codex-approval-probe.mjs        |  220 +---
+ scripts/run-runner-codex-smoke.mjs                 |  600 +----------
+ scripts/run-significant-coverage-suite.mjs         |   30 +-
+ scripts/run-vitest-suite.mjs                       |  163 +--
+ scripts/run-workflow-coverage-suite.mjs            |   30 +-
+ scripts/run-workflows-lint.mjs                     |   39 +-
+ scripts/smoke-bun-compiled-cli.mjs                 |  209 +---
+ scripts/smoke-standalone-cli-artifact.mjs          |  281 +----
+ scripts/sync-agent-templates.mjs                   |   75 +-
+ scripts/sync-schemas.mjs                           |   92 +-
+ scripts/verify-global-agentplane-install.mjs       |  173 +---
+ scripts/wait-remote-pr-checks.mjs                  |  595 +----------
  scripts/workflow/bootstrap-framework-dev.mjs       |  361 +++++++
  scripts/workflow/prepare-hosted-task-closure.mjs   |  162 +++
  scripts/workflow/reinstall-global-agentplane.sh    |   38 +
@@ -245,7 +245,7 @@ Consolidate AgentPlane generated projection surfaces under .agentplane/generated
  scripts/workflow/run-workflows-lint.mjs            |   38 +
  .../workflow/verify-global-agentplane-install.mjs  |  172 ++++
  scripts/workflow/wait-remote-pr-checks.mjs         |  594 +++++++++++
- 218 files changed, 21891 insertions(+), 19994 deletions(-)
+ 218 files changed, 21799 insertions(+), 19993 deletions(-)
 ```
 
 </details>
