@@ -12,8 +12,8 @@ Created: 2026-05-13T08:09:10.107Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified release notes template leakage fix: v0.5.0 placeholders removed; release notes validators reject template placeholders, Writing Rules blocks, and duplicate section headings. Checks passed: bun test packages/agentplane/src/commands/release/apply.preflight.test.ts; bunx eslint scripts/check-release-notes.mjs packages/agentplane/src/commands/release/apply.preflight.package.ts packages/agentplane/src/commands/release/apply.preflight.test.ts; node scripts/check-release-notes.mjs --tag v0.5.0; node .agentplane/policy/check-routing.mjs; ap doctor; git diff --check.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

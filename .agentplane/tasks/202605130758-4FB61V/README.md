@@ -17,10 +17,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-13T09:54:05.898Z"
+  updated_by: "CODER"
+  note: "Verified release notes template leakage fix: v0.5.0 placeholders removed; release notes validators reject template placeholders, Writing Rules blocks, and duplicate section headings. Checks passed: bun test packages/agentplane/src/commands/release/apply.preflight.test.ts; bunx eslint scripts/check-release-notes.mjs packages/agentplane/src/commands/release/apply.preflight.package.ts packages/agentplane/src/commands/release/apply.preflight.test.ts; node scripts/check-release-notes.mjs --tag v0.5.0; node .agentplane/policy/check-routing.mjs; ap doctor; git diff --check."
   attempts: 0
 commit: null
 comments:
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: fixing the leaked v0.5.0 release-note template block and adding a focused validation guard for placeholders, duplicate sections, and published writing rules."
+  -
+    type: "verify"
+    at: "2026-05-13T09:54:05.898Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified release notes template leakage fix: v0.5.0 placeholders removed; release notes validators reject template placeholders, Writing Rules blocks, and duplicate section headings. Checks passed: bun test packages/agentplane/src/commands/release/apply.preflight.test.ts; bunx eslint scripts/check-release-notes.mjs packages/agentplane/src/commands/release/apply.preflight.package.ts packages/agentplane/src/commands/release/apply.preflight.test.ts; node scripts/check-release-notes.mjs --tag v0.5.0; node .agentplane/policy/check-routing.mjs; ap doctor; git diff --check."
 doc_version: 3
-doc_updated_at: "2026-05-13T08:09:10.034Z"
+doc_updated_at: "2026-05-13T09:54:05.903Z"
 doc_updated_by: "CODER"
 description: "Remove template placeholders from v0.5.0 release notes and harden release notes validation against placeholder leakage."
 sections:
@@ -54,6 +60,25 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-13T09:54:05.898Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified release notes template leakage fix: v0.5.0 placeholders removed; release notes validators reject template placeholders, Writing Rules blocks, and duplicate section headings. Checks passed: bun test packages/agentplane/src/commands/release/apply.preflight.test.ts; bunx eslint scripts/check-release-notes.mjs packages/agentplane/src/commands/release/apply.preflight.package.ts packages/agentplane/src/commands/release/apply.preflight.test.ts; node scripts/check-release-notes.mjs --tag v0.5.0; node .agentplane/policy/check-routing.mjs; ap doctor; git diff --check.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T08:09:10.034Z, excerpt_hash=sha256:4ce5acdba341738551e924ae56fe237cecb172ad2ab47aa81ecdbf9d4771f32c
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605130758-4FB61V-release-notes-template-guard/.agentplane/tasks/202605130758-4FB61V/blueprint/resolved-snapshot.json
+    - old_digest: 635a98e00703d73845f4676cd40ee2164795af185a09d0e0b7dd4b3f4f0faa03
+    - current_digest: 635a98e00703d73845f4676cd40ee2164795af185a09d0e0b7dd4b3f4f0faa03
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605130758-4FB61V
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -85,6 +110,25 @@ Remove template placeholders from v0.5.0 release notes and harden release notes 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-13T09:54:05.898Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified release notes template leakage fix: v0.5.0 placeholders removed; release notes validators reject template placeholders, Writing Rules blocks, and duplicate section headings. Checks passed: bun test packages/agentplane/src/commands/release/apply.preflight.test.ts; bunx eslint scripts/check-release-notes.mjs packages/agentplane/src/commands/release/apply.preflight.package.ts packages/agentplane/src/commands/release/apply.preflight.test.ts; node scripts/check-release-notes.mjs --tag v0.5.0; node .agentplane/policy/check-routing.mjs; ap doctor; git diff --check.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T08:09:10.034Z, excerpt_hash=sha256:4ce5acdba341738551e924ae56fe237cecb172ad2ab47aa81ecdbf9d4771f32c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605130758-4FB61V-release-notes-template-guard/.agentplane/tasks/202605130758-4FB61V/blueprint/resolved-snapshot.json
+- old_digest: 635a98e00703d73845f4676cd40ee2164795af185a09d0e0b7dd4b3f4f0faa03
+- current_digest: 635a98e00703d73845f4676cd40ee2164795af185a09d0e0b7dd4b3f4f0faa03
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605130758-4FB61V
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
