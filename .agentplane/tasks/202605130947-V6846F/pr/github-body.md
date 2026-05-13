@@ -22,9 +22,9 @@ Analyze the current AgentPlane CLI performance code after recent changes and imp
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T11:03:29.013Z
+- Updated: 2026-05-13T11:18:08.440Z
 - Branch: task/202605130947-V6846F/cli-perf-read-paths
-- Head: d30bfb8b34a7
+- Head: 6e8c5a1f24c6
 
 ```text
  .agentplane/context/service/README.md              |   7 +
@@ -33,15 +33,14 @@ Analyze the current AgentPlane CLI performance code after recent changes and imp
  .agentplane/tasks/202605131043-802HWG/README.md    |  92 ++++
  .agentplane/tasks/202605131043-GD7RJJ/README.md    |  92 ++++
  .gitignore                                         |   3 +
- bun.lock                                           |  65 ++-
+ bun.lock                                           |  12 +-
  docs/developer/local-context.mdx                   |  24 +-
  docs/developer/project-layout.mdx                  |  11 +-
  docs/user/commands.mdx                             |  13 +-
  docs/user/local-context.mdx                        |   6 +-
  docs/user/overview.mdx                             |  11 +-
  docs/user/tasks-and-backends.mdx                   |  12 +-
- package.json                                       |   3 +
- packages/agentplane/package.json                   |   4 +-
+ packages/agentplane/package.json                   |   2 +-
  .../src/backends/task-backend.local.test.ts        |  50 ++
  .../backends/task-backend/local-backend-read.ts    |  20 +
  .../task-backend/local-task-sqlite-cache.ts        | 361 ++++++++++++++
@@ -49,14 +48,15 @@ Analyze the current AgentPlane CLI performance code after recent changes and imp
  packages/agentplane/src/commands/context/ingest.ts |   1 +
  packages/agentplane/src/commands/context/init.ts   |   8 +-
  .../agentplane/src/commands/context/reindex.ts     |   5 +-
+ .../agentplane/src/commands/context/sqlite.test.ts |  87 ----
  packages/agentplane/src/commands/context/sqlite.ts | 326 ++++++------
  .../src/commands/context/sqlite.unit.test.ts       |  72 +++
  .../agentplane/src/commands/context/verify-task.ts |  12 +-
  .../src/commands/task/blueprint-summary.ts         |  93 +++-
  packages/agentplane/src/commands/task/list.ts      |  12 +-
  packages/agentplane/src/shared/cache-paths.ts      |   7 +
- packages/agentplane/src/shared/sqlite-driver.ts    |  39 ++
- 29 files changed, 1754 insertions(+), 245 deletions(-)
+ packages/agentplane/src/shared/sqlite-driver.ts    | 137 +++++
+ 29 files changed, 1797 insertions(+), 329 deletions(-)
 ```
 
 </details>
