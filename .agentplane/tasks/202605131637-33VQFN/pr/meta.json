@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605131637-33VQFN/insights-report",
+  "created_at": "2026-05-13T16:38:35.527Z",
+  "head_sha": "36bfc0aa25ed96b468fde947f5b027d9dc4b50ba",
+  "last_verified_at": "2026-05-13T17:12:25.652Z",
+  "last_verified_sha": "c5f2d3ca04b90e1e83e7e25fb92dd310a9d27d25",
+  "pr_number": 3645,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3645",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605131637-33VQFN",
+  "updated_at": "2026-05-13T17:14:15.847Z",
+  "verify": {
+    "status": "pass"
+  }
+}
