@@ -1,7 +1,8 @@
 ---
 id: "202605130947-V6846F"
 title: "Optimize CLI read-heavy startup paths"
-status: "DOING"
+result_summary: "Merged via PR #3625."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Updated docs to describe .agentplane/cache.sqlite as the global SQLite projection/cache database and recorded follow-up backlog tasks for generated projections, scripts layout, and context domain extraction. Evidence: docs IA check passed and stale local.sqlite/context.sqlite references are absent from current docs/code surfaces."
   attempts: 0
-commit: null
+commit:
+  hash: "b274d81aa9ffdbd545265678bf9042268df23da1"
+  message: "Merge pull request #3625 from basilisk-labs/task/202605130947-V6846F/cli-perf-read-paths"
 comments:
   -
     author: "CODER"
     body: "Start: Analyze current CLI performance code, implement behavior-preserving optimizations for read-heavy startup/task-list paths, then verify with focused tests and benchmark evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3625 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -55,9 +61,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Updated docs to describe .agentplane/cache.sqlite as the global SQLite projection/cache database and recorded follow-up backlog tasks for generated projections, scripts layout, and context domain extraction. Evidence: docs IA check passed and stale local.sqlite/context.sqlite references are absent from current docs/code surfaces."
+  -
+    type: "status"
+    at: "2026-05-13T11:36:38.210Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3625 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T10:45:46.921Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T11:36:38.210Z"
+doc_updated_by: "INTEGRATOR"
 description: "Analyze the current AgentPlane CLI performance code after recent changes and implement behavior-preserving speedups for hot read-heavy paths."
 sections:
   Summary: |-
