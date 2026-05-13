@@ -100,6 +100,8 @@ async function recordVerificationResult(opts: {
   await applyTaskMutation({
     ctx,
     taskId: opts.taskId,
+    policyAction: "task_verify",
+    phase: "verify",
     build: async (current) => {
       const doc =
         (typeof current.doc === "string" ? current.doc : "") ||

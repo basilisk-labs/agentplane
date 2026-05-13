@@ -4,7 +4,16 @@ import type { PolicyActionId } from "./taxonomy.js";
 
 export type PolicyAction = PolicyActionId;
 
-export type PolicyProblemCode = "E_USAGE" | "E_GIT" | "E_INTERNAL";
+export type PolicyPhase = "preflight" | "plan" | "implement" | "verify" | "finish" | "integrate";
+
+export type TaskPolicyState = {
+  status?: string | null;
+  planApprovalState?: string | null;
+  verificationState?: string | null;
+  workflowMode?: AgentplaneConfig["workflow_mode"];
+};
+
+export type PolicyProblemCode = "E_USAGE" | "E_GIT" | "E_PHASE_POLICY" | "E_INTERNAL";
 
 export type PolicyProblem = {
   code: PolicyProblemCode;
@@ -23,6 +32,9 @@ export type PolicyContext = {
 
   config: AgentplaneConfig;
   taskId: string;
+
+  phase?: PolicyPhase;
+  task?: TaskPolicyState;
 
   // Git facts must be injected; policy code must not run git itself.
   git: {

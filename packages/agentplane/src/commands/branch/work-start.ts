@@ -7,7 +7,9 @@ import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv, gitListTaskBranches, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
+import { PolicyEngine } from "../../policy/engine.js";
 import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
+import { throwIfPolicyDecisionDenied } from "../shared/policy-deny.js";
 import { isPathWithin } from "../shared/path.js";
 import {
   ensureBranchPrBaseCheckout,
@@ -99,6 +101,21 @@ export async function cmdWorkStart(opts: {
       taskId: opts.taskId,
     });
     ensurePlanApprovedIfRequired(task, config);
+    throwIfPolicyDecisionDenied(
+      new PolicyEngine().evaluate({
+        action: "work_start",
+        phase: "implement",
+        config,
+        taskId: task.id,
+        task: {
+          status: task.status,
+          planApprovalState: task.plan_approval?.state ?? null,
+          verificationState: task.verification?.state ?? null,
+          workflowMode: config.workflow_mode,
+        },
+        git: { stagedPaths: [] },
+      }),
+    );
 
     const currentBranch = await gitCurrentBranch(resolved.gitRoot);
 

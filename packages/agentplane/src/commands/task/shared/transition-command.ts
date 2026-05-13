@@ -1,4 +1,5 @@
 import type { TaskData } from "../../../backends/task-backend.js";
+import type { PolicyPhase } from "../../../policy/model.js";
 import type { PolicyActionId } from "../../../policy/taxonomy.js";
 import { CliError } from "../../../shared/errors.js";
 import { applyTaskMutation } from "../../shared/task-mutation.js";
@@ -22,6 +23,7 @@ export async function applyTaskStatusTransitionCommand(opts: {
   taskId: string;
   quiet: boolean;
   policyAction?: PolicyActionId;
+  phase?: PolicyPhase;
   build: (
     current: TaskData,
   ) => TaskStatusTransitionCommandRequest | Promise<TaskStatusTransitionCommandRequest>;
@@ -37,6 +39,7 @@ export async function applyTaskStatusTransitionCommand(opts: {
       ctx: opts.ctx,
       taskId: opts.taskId,
       policyAction: opts.policyAction ?? "task_status_transition",
+      phase: opts.phase,
       build: async (current) => {
         const request = await opts.build(current);
         execution = await executeTaskStatusTransitionRequest({

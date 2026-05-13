@@ -12,6 +12,7 @@ describe("cli contract exit codes", () => {
       E_COMMIT_ALLOW_EMPTY: ExitCode.Usage,
       E_COMMIT_ALLOW_NO_MATCH: ExitCode.Usage,
       E_COMMIT_ALLOW_TASK_ARTIFACT_DENIED: ExitCode.Usage,
+      E_PHASE_POLICY: ExitCode.Usage,
       E_GIT: ExitCode.Git,
       E_GIT_LOCKED: ExitCode.Git,
       E_GIT_PERMISSION: ExitCode.Git,
