@@ -293,7 +293,6 @@ const BACKEND_CRITICAL_FILES = [
   "packages/agentplane/src/backends/task-backend/redmine/env.test.ts",
   "packages/agentplane/src/commands/backend.test.ts",
   "packages/agentplane/src/commands/shared/task-backend.test.ts",
-  "packages/agentplane/src/commands/task/export.unit.test.ts",
   "packages/agentplane/src/commands/task/migrate-doc.test.ts",
   "packages/agentplane/src/commands/doctor.fast.test.ts",
   "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts",
