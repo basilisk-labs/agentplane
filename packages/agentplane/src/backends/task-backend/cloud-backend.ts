@@ -57,13 +57,6 @@ export type CloudBackendSettings = {
   state_path?: string;
 };
 
-type CloudSyncStateResponse = {
-  data?: unknown;
-  conflicts?: unknown;
-  openConflicts?: unknown;
-  open_conflicts?: unknown;
-  safe_command?: unknown;
-};
 type CloudSyncStateSnapshot = {
   conflicts: unknown[];
   safeCommand: string | null;
@@ -360,9 +353,9 @@ export class CloudBackend implements TaskBackend {
       }
       throw new BackendError(await cloudHttpErrorMessage(res), "E_BACKEND");
     }
-    let response: CloudSyncStateResponse;
+    let response: Record<string, unknown>;
     try {
-      response = await readCloudJson<CloudSyncStateResponse>(res, CLOUD_REQUEST_TIMEOUT_MS);
+      response = await readCloudJson<Record<string, unknown>>(res, CLOUD_REQUEST_TIMEOUT_MS);
     } catch {
       return {
         conflicts: [],
@@ -574,10 +567,11 @@ export class CloudBackend implements TaskBackend {
   }
 
   private missingConfigKeys(): string[] {
-    const missing: string[] = [];
-    if (!this.endpoint) missing.push("AGENTPLANE_CLOUD_ENDPOINT");
-    if (!this.token) missing.push("AGENTPLANE_CLOUD_TOKEN");
-    if (!this.projectId) missing.push("AGENTPLANE_CLOUD_PROJECT_ID");
-    return missing;
+    const required = [
+      [this.endpoint, "AGENTPLANE_CLOUD_ENDPOINT"],
+      [this.token, "AGENTPLANE_CLOUD_TOKEN"],
+      [this.projectId, "AGENTPLANE_CLOUD_PROJECT_ID"],
+    ] as const;
+    return required.flatMap(([value, key]) => (value ? [] : [key]));
   }
 }
