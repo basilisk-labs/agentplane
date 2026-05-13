@@ -80,7 +80,6 @@ import { recipesSpec } from "../../../commands/recipes/recipes.command.js";
 import { recipesUpdateSpec } from "../../../commands/recipes/update.command.js";
 import { contextIngestSpec } from "../../../commands/context/ingest.spec.js";
 import {
-  contextCheckSpec,
   contextCapabilityDiscoverSpec,
   contextCapabilitySearchSpec,
   contextCapabilitySpec,
@@ -95,16 +94,19 @@ import {
   contextHarvestSpec,
   contextHarvestTasksSpec,
   contextInitSpec,
-  contextLearnChangesSpec,
-  contextLearnFilesSpec,
-  contextLearnSpec,
-  contextLearnTasksSpec,
   contextReindexSpec,
   contextSearchSpec,
   contextShowSpec,
   contextSpec,
   contextVerifyTaskSpec,
 } from "../../../commands/context/context.spec.js";
+import {
+  contextCheckSpec,
+  contextLearnChangesSpec,
+  contextLearnFilesSpec,
+  contextLearnSpec,
+  contextLearnTasksSpec,
+} from "../../../commands/context/context.learn.spec.js";
 
 import { declareCommand, type CommandEntry } from "./kernel.js";
 import {

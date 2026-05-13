@@ -27,7 +27,6 @@ import {
   cmdContextCapabilityDiscover,
 } from "./capability.js";
 import {
-  contextCheckSpec,
   contextCapabilitySpec,
   contextCapabilityDiscoverSpec,
   contextCapabilitySearchSpec,
@@ -45,11 +44,14 @@ import {
   contextShowSpec,
   contextSpec,
   contextGraphSpec,
+} from "./context.spec.js";
+import {
+  contextCheckSpec,
   contextLearnChangesSpec,
   contextLearnFilesSpec,
   contextLearnSpec,
   contextLearnTasksSpec,
-} from "./context.spec.js";
+} from "./context.learn.spec.js";
 
 export function runContextGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
   return loadDirectSubcommandNames(["context"]).then((subcommands) =>
@@ -349,7 +351,6 @@ export async function runContextCapabilityDiscover(
 }
 
 export {
-  contextCheckSpec,
   contextCapabilityDiscoverSpec,
   contextCapabilitySearchSpec,
   contextCapabilityValidateSpec,
@@ -361,12 +362,15 @@ export {
   contextGraphValidateSpec,
   contextHarvestSpec,
   contextHarvestTasksSpec,
-  contextLearnChangesSpec,
-  contextLearnFilesSpec,
-  contextLearnSpec,
-  contextLearnTasksSpec,
   contextReindexSpec,
   contextSearchSpec,
   contextShowSpec,
 } from "./context.spec.js";
+export {
+  contextCheckSpec,
+  contextLearnChangesSpec,
+  contextLearnFilesSpec,
+  contextLearnSpec,
+  contextLearnTasksSpec,
+} from "./context.learn.spec.js";
 export { contextIngestSpec } from "./ingest.spec.js";
