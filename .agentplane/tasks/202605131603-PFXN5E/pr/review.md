@@ -13,7 +13,7 @@ Created: 2026-05-13T16:03:49.901Z
 ## Verification
 
 - State: ok
-- Note: Verified branch_pr PR-first integration route: lint changed files, focused integrate tests, targeted protected-base validation, typecheck, schema sync check, policy routing, CLI docs freshness, quickstart smoke, and git diff check all passed.
+- Note: Verified GitHub merge transport hardening: gh readiness checks, GH_TOKEN/GITHUB_TOKEN API fallback, init recommendation, quickstart guidance, focused tests, eslint, typecheck, schema check, policy routing, CLI docs freshness, quickstart smoke, blueprint snapshot, doctor, and git diff check passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -45,9 +45,9 @@ Created: 2026-05-13T16:03:49.901Z
  .../task/hosted-close-workflow-contract.test.ts    |   5 +-
  packages/core/schemas/task-handoff.schema.json     |   5 +-
  .../core/src/tasks/task-artifact-schema.handoff.ts |   5 +-
- packages/spec/schemas/task-handoff.schema.json     |  81 +++++++++---
- schemas/task-handoff.schema.json                   |  81 +++++++++---
- 18 files changed, 462 insertions(+), 140 deletions(-)
+ packages/spec/schemas/task-handoff.schema.json     |   5 +-
+ schemas/task-handoff.schema.json                   |   5 +-
+ 18 files changed, 338 insertions(+), 112 deletions(-)
 ```
 
 </details>

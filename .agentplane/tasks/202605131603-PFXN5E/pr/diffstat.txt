@@ -14,6 +14,6 @@
  .../task/hosted-close-workflow-contract.test.ts    |   5 +-
  packages/core/schemas/task-handoff.schema.json     |   5 +-
  .../core/src/tasks/task-artifact-schema.handoff.ts |   5 +-
- packages/spec/schemas/task-handoff.schema.json     |  81 +++++++++---
- schemas/task-handoff.schema.json                   |  81 +++++++++---
- 18 files changed, 462 insertions(+), 140 deletions(-)
+ packages/spec/schemas/task-handoff.schema.json     |   5 +-
+ schemas/task-handoff.schema.json                   |   5 +-
+ 18 files changed, 338 insertions(+), 112 deletions(-)
