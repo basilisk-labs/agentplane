@@ -52,6 +52,15 @@ describe("runCli docs cli", () => {
       expect(text).toContain("# CLI Reference (Generated)");
       expect(text).toContain("## Task");
       expect(text).toContain("### task new");
+      expect(text).toContain("### task run");
+      expect(text).toContain("### cleanup merged");
+      expect(text).not.toContain("### cleanup\n");
+      expect(text).not.toContain("### task\n");
+      expect(text).not.toContain("### task doc\n");
+      expect(text).not.toContain("### task verify\n");
+      expect(text).not.toContain("## Framework Dev");
+      expect(text).not.toContain("## Maintenance");
+      expect(text).not.toContain("### task export");
       expect(text).toContain(
         "Allow the optional tasks export snapshot plus artifacts under the active task subtree; standalone path scope.",
       );

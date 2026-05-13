@@ -11,7 +11,6 @@ const NAV_DOC_ROOTS = new Set([
   "user",
   "workflow-guides",
   "recipes",
-  "developer",
   "help",
   "reference",
   "archive",

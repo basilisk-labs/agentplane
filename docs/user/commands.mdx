@@ -24,19 +24,11 @@ For context management, `agentplane` keeps the human task-factory surface visibl
 Advanced recovery and maintenance commands stay available through direct help or the full registry:
 
 ```bash
-ap help context
-agentplane help task reclaim
 agentplane help --all
 ```
 
-The `ap` alias runs in agent mode and shows the full advanced surface by default, including
-low-level context pipeline commands such as `context ingest`, `context harvest tasks`,
-`context reindex`, `context graph`, `context capability`, and `context verify-task`.
-
-Inside the Agent Plane framework checkout, help automatically switches to the framework-dev surface
-and adds a dedicated `Framework Dev` group. Framework-maintainer commands such as `release`,
-`workflow build`, `docs cli`, and bundled Codex plugin installation are not shown in the normal
-installed-project help surface.
+Framework-maintainer commands for developing AgentPlane itself are intentionally outside the public
+user command path and live in the direct-link developer docs.
 
 ## Quickstart
 
@@ -48,14 +40,6 @@ The same startup model is expanded on the docs site here:
 
 - [Agent bootstrap](agent-bootstrap.generated)
   This is a public docs-page expansion of `agentplane quickstart`, not a file that installed repositories should depend on locally.
-
-Inside the Agent Plane framework checkout, `agentplane` from `PATH` now delegates to the
-repo-local binary automatically. For fresh clones, worktrees, or stale repo-local builds, use the
-canonical framework bootstrap:
-
-```bash
-bun run framework:dev:bootstrap
-```
 
 ## Init
 
@@ -88,12 +72,9 @@ agentplane init --setup-profile normal --workflow direct --backend local --execu
 agentplane init --dry-run --yes --output json
 ```
 
-Workflow contract operations:
+Workflow diagnostics and repair:
 
 ```bash
-agentplane workflow build --validate --dry-run
-agentplane workflow build --validate
-agentplane workflow restore
 agentplane doctor --fix
 ```
 
@@ -116,17 +97,8 @@ Use this when you need to prove which binary is active, whether you are on
 `repo-local`, `repo-local-handoff`, or a global install, and which `agentplane` /
 `@agentplaneorg/core` package roots are actually being resolved at runtime.
 
-Inside the Agent Plane framework checkout, the same command now acts as the canonical
-framework-dev workflow surface: it prints the canonical bootstrap command, manual fallback steps,
-the repo-local verify command, the reinstall helper, the follow-up global runtime check, and the
-optional force-global override in one place.
-
 If the repository expects a newer CLI than the active runtime, `runtime explain` and `doctor` now
 print a concrete recovery path and a follow-up `agentplane runtime explain` verification step.
-
-If watched runtime paths are dirty inside the framework checkout, `agentplane runtime explain` and
-`agentplane doctor` warn and continue as read-only diagnostics; stricter commands still keep the
-stale-build hard-fail.
 
 ## Tasks
 
@@ -140,7 +112,6 @@ agentplane task run <task-id> --dry-run
 agentplane task run <task-id>
 agentplane task run show <task-id> [run-id]
 agentplane task run tail <task-id> [run-id] --lines 20
-agentplane task run trace <task-id> [run-id]
 agentplane task doc set <task-id> --section Summary --text "..."
 agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 ```
@@ -151,8 +122,9 @@ agentplane task doc set <task-id> --full-doc --file ./task-readme.md
   refusal metadata, timeout reason, metrics, capability summaries, and artifact paths from
   `run-state.json` / `result.json`.
 - Use `task run tail` when you only need the last N raw trace lines from `agent-trace.jsonl`.
-- Use `task run trace` when you need the full raw trace artifact unchanged. When `run-id` is
-  omitted, `show`, `tail`, and `trace` all select the latest run for the task.
+- Advanced raw-trace export remains available through the hidden help surface when you need the full
+  artifact unchanged. When `run-id` is omitted, `show`, `tail`, and advanced trace export all select
+  the latest run for the task.
 - Use `agent-trace.jsonl` and `stderr.log` when you need the raw runner trace.
 - Use `codex-last-message.md` only as a side artifact for human inspection when the adapter writes it.
 - Task-facing runner logs stay compact and English-only: they expose status, metrics, and artifact paths, but
@@ -168,21 +140,16 @@ agentplane task doc set <task-id> --full-doc --file ./task-readme.md
   `runner.custom.enforcement.mode=codex_sandbox_full_auto`. When wrapper mode is active, the same
   line also shows the currently supported sandbox values.
 
-## Task export (optional)
+## Advanced task projections
 
-Generate an optional integration snapshot:
-
-```bash
-agentplane task export
-agentplane task obsidian
-agentplane task obsidian clean
-agentplane task lint
-```
+Optional projection and maintenance commands are intentionally outside the normal public happy path.
+They remain available for integrations, legacy recovery, and framework maintenance through the
+hidden help surface (`agentplane help --all`).
 
 The exported snapshot is derived from the current backend projection. It is not the canonical
 source of truth.
 
-`agentplane task obsidian` writes a Markdown navigation projection under
+The Obsidian projection command writes a Markdown navigation projection under
 `.agentplane/generated/obsidian/` for compatibility with Obsidian and plain Markdown browsers:
 
 - `.agentplane/generated/obsidian/index.md`
@@ -194,8 +161,9 @@ source of truth.
 Open `.agentplane/generated/obsidian/` as an Obsidian vault to browse task IDs, statuses, owners,
 tags, and dependency links while keeping `.agentplane/tasks/<task-id>/README.md` as the canonical
 task record.
-`agentplane task obsidian clean` removes only the generated Obsidian projection files; it does not
-delete canonical task READMEs or non-generated Markdown files.
+The companion cleanup command removes only the generated Obsidian projection files; it does not
+delete canonical task READMEs or non-generated Markdown files. Inspect its exact syntax with
+the hidden help surface.
 
 This surface is a generated task-wiki/navigation adapter, not a separate storage authority. Legacy
 generated files in the `.agentplane/` root are still cleaned when they carry the generated marker.
@@ -226,8 +194,7 @@ projection:
 
 ```bash
 agentplane context init
-agentplane context status
-agentplane context list
+agentplane context doctor
 agentplane context reindex
 agentplane context search "query"
 agentplane context show context/wiki/page.md#section=section-slug
@@ -252,6 +219,10 @@ READMEs with `extensions.context_harvest` for raw ingestion and
 unchanged ingested or queued tasks by source digest instead of guessing from wiki files. Write modes
 require `agentplane context init` first. Use `context verify-task` before closing work that creates
 or relies on context artifacts. See [Local context](local-context).
+
+There is no public `context list` command by design. Search is the primary discovery surface; use
+`context graph summary`, `context graph show`, and `context graph neighbors` when you need structured
+graph inspection instead of text search.
 
 ## Backend sync (remote backends)
 
