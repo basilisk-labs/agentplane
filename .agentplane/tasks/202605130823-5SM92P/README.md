@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-13T08:56:07.077Z"
+  updated_by: "CODER"
+  note: "Command: bun run format:check. Result: pass. Evidence: Prettier reports all matched files use code style. Scope: repository formatting. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: TypeScript project references. Command: bun run lint:core. Result: pass. Evidence: eslint packages/scripts completed with exit 0. Scope: touched core and agentplane source. Command: targeted vitest close-message/commit-policy/commit-wrapper/finish/integrate suites. Result: pass. Evidence: 6 files, 56 tests passed. Scope: merge message renderer, close commits, branch_pr finish, integrate close-tail. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Command: ap doctor. Result: pass. Evidence: doctor OK with 0 errors and 0 warnings."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implement deterministic human-readable close and merge commit messages in the dedicated task worktree, preserving audit refs while moving operational metadata out of the subject."
+  -
+    type: "verify"
+    at: "2026-05-13T08:56:07.077Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run format:check. Result: pass. Evidence: Prettier reports all matched files use code style. Scope: repository formatting. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: TypeScript project references. Command: bun run lint:core. Result: pass. Evidence: eslint packages/scripts completed with exit 0. Scope: touched core and agentplane source. Command: targeted vitest close-message/commit-policy/commit-wrapper/finish/integrate suites. Result: pass. Evidence: 6 files, 56 tests passed. Scope: merge message renderer, close commits, branch_pr finish, integrate close-tail. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Command: ap doctor. Result: pass. Evidence: doctor OK with 0 errors and 0 warnings."
 doc_version: 3
-doc_updated_at: "2026-05-13T08:23:55.154Z"
+doc_updated_at: "2026-05-13T08:56:07.097Z"
 doc_updated_by: "CODER"
 description: "Replace close/merge commit message rendering with deterministic human-readable summaries, structured verification/key-file sections, and metadata refs trailers."
 sections:
@@ -56,11 +62,33 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-13T08:56:07.077Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Command: bun run format:check. Result: pass. Evidence: Prettier reports all matched files use code style. Scope: repository formatting. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: TypeScript project references. Command: bun run lint:core. Result: pass. Evidence: eslint packages/scripts completed with exit 0. Scope: touched core and agentplane source. Command: targeted vitest close-message/commit-policy/commit-wrapper/finish/integrate suites. Result: pass. Evidence: 6 files, 56 tests passed. Scope: merge message renderer, close commits, branch_pr finish, integrate close-tail. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Command: ap doctor. Result: pass. Evidence: doctor OK with 0 errors and 0 warnings.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T08:23:55.154Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605130823-5SM92P-human-readable-merge-messages/.agentplane/tasks/202605130823-5SM92P/blueprint/resolved-snapshot.json
+    - old_digest: d3f62125065dcb4d74f15d207f6fb03c7f54508788772e3204121b212edbfa61
+    - current_digest: d3f62125065dcb4d74f15d207f6fb03c7f54508788772e3204121b212edbfa61
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605130823-5SM92P
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Full bun run lint currently fails in lint:website on pre-existing website type-resolution/no-unsafe diagnostics under website/src; this task did not touch website files.
+      Impact: Verification for touched OSS core code is covered by lint:core, typecheck, targeted regression suites, routing, and doctor; unrelated website lint debt remains outside this task scope.
+      Resolution: Recorded the full-lint limitation as out-of-scope and used focused core/touched checks for this code change.
 id_source: "generated"
 ---
 ## Summary
@@ -87,6 +115,25 @@ Implement deterministic human-readable Agentplane close/merge commit messages. S
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-13T08:56:07.077Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run format:check. Result: pass. Evidence: Prettier reports all matched files use code style. Scope: repository formatting. Command: bun run typecheck. Result: pass. Evidence: tsc -b exited 0. Scope: TypeScript project references. Command: bun run lint:core. Result: pass. Evidence: eslint packages/scripts completed with exit 0. Scope: touched core and agentplane source. Command: targeted vitest close-message/commit-policy/commit-wrapper/finish/integrate suites. Result: pass. Evidence: 6 files, 56 tests passed. Scope: merge message renderer, close commits, branch_pr finish, integrate close-tail. Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Command: ap doctor. Result: pass. Evidence: doctor OK with 0 errors and 0 warnings.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T08:23:55.154Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605130823-5SM92P-human-readable-merge-messages/.agentplane/tasks/202605130823-5SM92P/blueprint/resolved-snapshot.json
+- old_digest: d3f62125065dcb4d74f15d207f6fb03c7f54508788772e3204121b212edbfa61
+- current_digest: d3f62125065dcb4d74f15d207f6fb03c7f54508788772e3204121b212edbfa61
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605130823-5SM92P
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -95,3 +142,7 @@ Implement deterministic human-readable Agentplane close/merge commit messages. S
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Full bun run lint currently fails in lint:website on pre-existing website type-resolution/no-unsafe diagnostics under website/src; this task did not touch website files.
+  Impact: Verification for touched OSS core code is covered by lint:core, typecheck, targeted regression suites, routing, and doctor; unrelated website lint debt remains outside this task scope.
+  Resolution: Recorded the full-lint limitation as out-of-scope and used focused core/touched checks for this code change.
