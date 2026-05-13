@@ -86,6 +86,8 @@ Commands:
     doctor  Check workspace invariants for a normal agentplane installation (with optional dev source checks).
     doctor git-locks  Check Git index lock state for this repository and suggest cleanup.
   Diagnostics:
+    insights  Generate local-only diagnostic insights for support analysis.
+    insights report  Print a local-only privacy-bounded AgentPlane diagnostic report.
     runtime  Inspect which agentplane runtime/binary/package sources are active.
     runtime explain  Explain the active binary, runtime mode, and resolved package roots.
   Recipes:
@@ -147,25 +149,14 @@ Commands:
     ide sync  Generate IDE entrypoints from policy gateway file (AGENTS.md or CLAUDE.md).
   Context:
     context  Manage local project context, durable derivations, projections, and search surfaces.
-    context capability  Capability maintenance fallback under context namespace.
-    context capability discover  Discover capability candidates from context operations.
-    context capability search  Search capability registry and candidate surface.
-    context capability validate  Validate a unified capability artifact.
-    context doctor  Diagnose local context health and projection consistency.
-    context graph  Validate and inspect derived context graph.
-    context graph export  Export graph artifacts for offline consumption.
-    context graph neighbors  Show direct neighbors for one graph node.
-    context graph show  Show a node with neighborhood summary.
-    context graph summary  Print a context-graph summary.
-    context graph validate  Validate derived graph JSONL rows and references.
-    context harvest  Harvest existing project evidence into source-backed context proposals.
-    context harvest tasks  Harvest completed task evidence into raw scaffolds or CURATOR extraction tasks.
-    context ingest  Create and optionally run a context assimilation task.
+    context check  Check context workspace health.
     context init  Initialize local context workspace and system manifest.
-    context reindex  Rebuild local SQLite projection from source artifacts.
+    context learn  Create context processing tasks from files, changes, or completed tasks.
+    context learn changes  Create a context assimilation task from changed context sources.
+    context learn files  Create a context assimilation task from explicit files or paths.
+    context learn tasks  Create CURATOR extraction tasks from completed task history.
     context search  Search indexed local context, facts, graph, tasks, and capabilities.
     context show  Resolve a context source reference and print addressed content.
-    context verify-task  Validate mutations for a context_assimilation task.
   Framework Dev:
     codex  Codex integration commands.
     codex plugin  Install and inspect bundled Codex plugin integrations.
