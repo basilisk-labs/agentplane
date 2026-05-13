@@ -1,7 +1,8 @@
 ---
 id: "202605131602-NEE2TR"
 title: "Split human context command surface"
-status: "DOING"
+result_summary: "Merged via PR #3642."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified human/ap context surface split at 1589d71f8: focused context/help tests pass, typecheck passes, docs CLI reference is fresh, policy routing and doctor pass, and smoke commands confirm agentplane shows learn/check while ap shows advanced harvest/ingest/capability."
   attempts: 0
-commit: null
+commit:
+  hash: "c3e34d56e16323ce989a611a1f083745b983fbf3"
+  message: "Merge pull request #3642 from basilisk-labs/task/202605131602-NEE2TR/human-context-surface"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing the approved human context command surface in a dedicated branch_pr worktree, reusing existing context handlers and keeping low-level pipeline commands available for ap."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3642 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified human/ap context surface split at 1589d71f8: focused context/help tests pass, typecheck passes, docs CLI reference is fresh, policy routing and doctor pass, and smoke commands confirm agentplane shows learn/check while ap shows advanced harvest/ingest/capability."
+  -
+    type: "status"
+    at: "2026-05-13T17:05:22.617Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3642 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T16:13:58.728Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T17:05:22.617Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a simpler human-facing agentplane context surface for creating context processing tasks from external files and completed tasks while keeping ap as the advanced agent/pipeline surface."
 sections:
   Summary: |-
