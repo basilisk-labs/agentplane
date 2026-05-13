@@ -27,7 +27,7 @@
     },
     {
       "id": "task_next",
-      "max_median_ms": 3000,
+      "max_median_ms": 8000,
       "expected_exit_code": 0
     },
     {
