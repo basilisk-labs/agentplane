@@ -29,6 +29,7 @@ describe("release CI contract", () => {
     expect(scripts.ci).toBe("bun run ci:contract && bun run ci:test");
     expect(scripts["ci:local:smoke"]).toBe("node scripts/checks/run-local-ci.mjs --mode smoke");
     expect(scripts["test:critical"]).toBe("node scripts/checks/run-vitest-suite.mjs critical-cli");
+    expect(scripts["bench:cli:cold:check"]).toContain("--attempts 3");
     expect(releaseCiCheck).toBe("bun run ci:contract && bun run ci:release-extras");
     expect(releaseCheck).toContain("bun run release:incidents:check");
     expect(releaseCheck.indexOf("bun run release:incidents:check")).toBeLessThan(

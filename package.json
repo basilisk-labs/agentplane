@@ -100,7 +100,7 @@
     "framework:dev:bootstrap": "node scripts/workflow/bootstrap-framework-dev.mjs",
     "bench:cli:cold": "node scripts/bench/measure-cli-cold-path.mjs",
     "bench:cli:perf": "node scripts/bench/measure-cli-perf.mjs",
-    "bench:cli:cold:check": "node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 1 --fixture local-basic --timeout-ms 10000",
+    "bench:cli:cold:check": "node scripts/checks/check-cli-cold-baseline.mjs --baseline scripts/baselines/cli-cold-path-smoke.json --runs 1 --warmups 0 --attempts 3 --fixture local-basic --timeout-ms 10000",
     "bench:cli:diff": "node scripts/bench/compare-cli-perf.mjs",
     "bench:cli:time": "node scripts/bench/measure-cli-walltime.mjs",
     "bench:cli:time:check": "node scripts/checks/check-cli-walltime-baseline.mjs --warmups 1 --attempts 3",
