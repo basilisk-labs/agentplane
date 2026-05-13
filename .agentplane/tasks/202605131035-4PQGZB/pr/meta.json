@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605131035-4PQGZB/pr-flow-status",
+  "created_at": "2026-05-13T10:36:04.946Z",
+  "head_sha": "d7bfe336f295dfc1b4d831c9b9e8032bb8da6a2f",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605131035-4PQGZB",
+  "updated_at": "2026-05-13T10:36:04.946Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

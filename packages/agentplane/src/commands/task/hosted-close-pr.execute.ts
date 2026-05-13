@@ -143,6 +143,9 @@ export async function executeHostedClosePrPlan(
       outcome: {
         kind: "existing-pr",
         taskId: plan.taskId,
+        closeBranch: plan.closeBranch,
+        baseBranch: plan.baseBranch,
+        mergeCommit: plan.mergeCommit,
         prNumber: existingNumber,
         prUrl: existingPr?.html_url ?? null,
       },
@@ -174,6 +177,9 @@ export async function executeHostedClosePrPlan(
       outcome: {
         kind: "already-merged-pr",
         taskId: plan.taskId,
+        closeBranch: plan.closeBranch,
+        baseBranch: plan.baseBranch,
+        mergeCommit: plan.mergeCommit,
         prNumber: mergedNumber,
         prUrl: mergedPr?.html_url ?? null,
       },

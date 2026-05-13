@@ -11,6 +11,7 @@ import {
   type PrCheckParsed,
   type PrCloseParsed,
   type PrCloseSupersededParsed,
+  type PrFlowStatusParsed,
   type PrNoteParsed,
   type PrOpenParsed,
   type PrUpdateParsed,
@@ -19,6 +20,7 @@ import {
 import { cmdPrCheck } from "./check.js";
 import { cmdPrCloseSuperseded } from "./close-superseded.js";
 import { cmdPrClose } from "./close.js";
+import { cmdPrFlowStatus } from "./flow-status.js";
 import { cmdPrNote } from "./note.js";
 import { cmdPrOpen } from "./open.js";
 import { cmdPrUpdate } from "./update.js";
@@ -27,6 +29,7 @@ export {
   prCheckSpec,
   prCloseSpec,
   prCloseSupersededSpec,
+  prFlowStatusSpec,
   prNoteSpec,
   prOpenSpec,
   prSpec,
@@ -82,6 +85,18 @@ export function makeRunPrCheckHandler(getCtx: (cmd: string) => Promise<CommandCo
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       taskId: p.taskId,
+    });
+  };
+}
+
+export function makeRunPrFlowStatusHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+  return async (ctx: CommandCtx, p: PrFlowStatusParsed): Promise<number> => {
+    return await cmdPrFlowStatus({
+      ctx: await getCtx("pr flow status"),
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride,
+      taskId: p.taskId,
+      json: p.json,
     });
   };
 }

@@ -155,6 +155,10 @@ export const loadPrUpdateSpec = (deps: RunDeps) =>
   import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrUpdateHandler(deps.getCtx));
 export const loadPrCheckSpec = (deps: RunDeps) =>
   import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrCheckHandler(deps.getCtx));
+export const loadPrFlowStatusSpec = (deps: RunDeps) =>
+  import("../../../commands/pr/pr.command.js").then((m) =>
+    m.makeRunPrFlowStatusHandler(deps.getCtx),
+  );
 export const loadPrCloseSpec = (deps: RunDeps) =>
   import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrCloseHandler(deps.getCtx));
 export const loadPrCloseSupersededSpec = (deps: RunDeps) =>

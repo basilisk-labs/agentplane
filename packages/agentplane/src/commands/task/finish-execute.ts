@@ -175,8 +175,11 @@ async function shouldSkipAlreadyHandledBranchPrCloseTail(opts: {
   if (!closeTailState.alreadyHandled) return false;
 
   if (!opts.options.quiet) {
+    const detail = closeTailState.closeBranch
+      ? `hosted close already owns ${closeTailState.closeBranch} for base ${closeTailState.baseBranch}`
+      : `close commit already recorded on base ${closeTailState.baseBranch}`;
     process.stdout.write(
-      "branch_pr close tail already exists on base or hosted close; skipping local task artifact writes.\n",
+      `branch_pr close tail already handled: ${detail}; skipping local task artifact writes.\n`,
     );
   }
   return true;
@@ -438,7 +441,7 @@ async function finalizeCloseTail(opts: {
       return;
     }
     process.stdout.write(
-      "branch_pr close tail already exists on base; skipping local task-close branch materialization.\n",
+      "branch_pr close tail already handled; skipping local task-close branch materialization.\n",
     );
     return;
   }
