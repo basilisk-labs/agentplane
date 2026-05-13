@@ -119,6 +119,13 @@ function remoteStatusFromObserved(
   };
 }
 
+function normalizeBaseBranch(value: string | null | undefined): string | null {
+  const trimmed = value?.trim() ?? "";
+  if (!trimmed) return null;
+  const branch = trimmed.startsWith("refs/heads/") ? trimmed.slice("refs/heads/".length) : trimmed;
+  return branch.startsWith("origin/") ? branch.slice("origin/".length) : branch;
+}
+
 function closeBranchName(taskId: string, mergeCommit: string): string {
   return `task-close/${taskId}/${mergeCommit.slice(0, 12)}`;
 }
@@ -215,14 +222,14 @@ async function resolvePrFlowStatus(opts: {
     ? await tryLookupExistingGithubPrByBranch({
         gitRoot: resolved.gitRoot,
         branch,
-        baseBranch: meta?.base ?? null,
+        baseBranch: normalizeBaseBranch(meta?.base),
       })
     : null;
   const pr = remoteStatusFromObserved(observed, meta);
   const baseBranch =
     pr.state === "not_found"
-      ? (meta?.base ?? "origin/main")
-      : (pr.base ?? meta?.base ?? "origin/main");
+      ? (normalizeBaseBranch(meta?.base) ?? "main")
+      : (normalizeBaseBranch(pr.base) ?? normalizeBaseBranch(meta?.base) ?? "main");
   const closeTail = await resolveCloseTailStatus({
     gitRoot: resolved.gitRoot,
     workflowDir: config.paths.workflow_dir,

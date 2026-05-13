@@ -532,6 +532,8 @@ async function waitForPullRequestChecks(repoSlug, pr, requiredContexts, options,
       continue;
     }
 
+    stableReadyPolls = 0;
+    lastReadyFingerprint = "";
     lastFingerprint = fingerprint;
     if (idleAttempts < options.maxAttempts) await sleep(options.intervalMs);
   }

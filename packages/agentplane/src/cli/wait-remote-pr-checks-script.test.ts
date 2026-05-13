@@ -141,6 +141,10 @@ async function writeGhMock(root: string) {
     "    if (attempt === 0) return { state: 'success', statuses: [ { context: 'Core CI / test', state: 'success', description: 'done' }, { context: 'Docs CI / docs', state: 'success', description: 'done' } ] };",
     "    return { state: 'success', statuses: [ { context: 'Core CI / test', state: 'success', description: 'done' }, { context: 'Docs CI / docs', state: 'success', description: 'done' }, { context: 'Release-ready manifest', state: 'success', description: 'done' } ] };",
     "  }",
+    "  if (scenario === 'ready-flaps') {",
+    "    if (attempt === 1) return pending;",
+    "    return success;",
+    "  }",
     "  if (headSha === 'head-sha-2' && scenario === 'multi-second-failure') return failure;",
     "  if (scenario === 'timeout') return pending;",
     "  if (scenario === 'progressing-in-progress') return attempt < 2 ? pending : success;",
@@ -328,6 +332,29 @@ describe("wait-remote-pr-checks script", () => {
     expect(output).toContain("Release-ready manifest=pending");
     expect(output).toContain("ready; waiting for stable check set (1/2)");
     expect(output).toContain("Release-ready manifest=success");
+    expect(output).toContain("required checks passed for PR #123");
+  });
+
+  it("resets ready stability after a non-ready poll", async () => {
+    const root = await makeTempRoot();
+    const { stateFile } = await writeGhMock(root);
+
+    const result = await runScript(["123"], {
+      env: {
+        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+        GH_SCENARIO: "ready-flaps",
+        GH_STATE_FILE: stateFile,
+        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "5",
+        AGENTPLANE_REMOTE_CHECK_STABLE_POLLS: "2",
+      },
+    });
+
+    expect(result.exitCode, transcript(result)).toBe(0);
+    const output = transcript(result);
+    expect(output).toContain("poll 2");
+    expect(output).toContain("Core CI / test=pending");
+    expect(output).toContain("poll 4");
     expect(output).toContain("required checks passed for PR #123");
   });
 
