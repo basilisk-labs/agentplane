@@ -1,7 +1,8 @@
 ---
 id: "202605131043-GD7RJJ"
 title: "Reorganize repository scripts by ownership"
-status: "DOING"
+result_summary: "Reorganized repository scripts by ownership with root compatibility wrappers and updated script docs; merged via PR #3634."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: root script implementations are grouped under scripts/checks, scripts/generate, scripts/bench, scripts/release, and scripts/workflow with root compatibility wrappers and updated package script references. Checks passed: docs:scripts:check, check:types-files, hotspots:check, clone:check, knip:check, arch:check, eslint/prettier, framework:dev:bootstrap."
   attempts: 0
-commit: null
+commit:
+  hash: "d61a19de647411b18df12fa28bd417b59b67043c"
+  message: "Merge task 202605131043-2GMHKQ: generated scripts context refactor"
 comments:
   -
     author: "CODER"
     body: "Start: Reorganizing repository scripts by ownership while preserving callable package and compatibility entrypoints."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated through PR #3634 with the scripts ownership reorganization included; hosted Core and Docs checks passed, and main includes merge d61a19de."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: root script implementations are grouped under scripts/checks, scripts/generate, scripts/bench, scripts/release, and scripts/workflow with root compatibility wrappers and updated package script references. Checks passed: docs:scripts:check, check:types-files, hotspots:check, clone:check, knip:check, arch:check, eslint/prettier, framework:dev:bootstrap."
+  -
+    type: "status"
+    at: "2026-05-13T13:45:55.252Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated through PR #3634 with the scripts ownership reorganization included; hosted Core and Docs checks passed, and main includes merge d61a19de."
 doc_version: 3
-doc_updated_at: "2026-05-13T13:13:43.180Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T13:45:55.252Z"
+doc_updated_by: "INTEGRATOR"
 description: "Split the root scripts directory into purpose-owned groups such as checks, generate, bench, release, workflow, and shared lib, updating package scripts and compatibility surfaces safely."
 sections:
   Summary: |-
