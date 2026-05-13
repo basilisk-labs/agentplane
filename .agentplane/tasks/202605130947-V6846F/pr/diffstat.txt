@@ -1,4 +1,7 @@
  .../blueprint/resolved-snapshot.json               | 550 +++++++++++++++++++++
+ .agentplane/tasks/202605131043-2GMHKQ/README.md    |  92 ++++
+ .agentplane/tasks/202605131043-802HWG/README.md    |  92 ++++
+ .agentplane/tasks/202605131043-GD7RJJ/README.md    |  92 ++++
  .gitignore                                         |   3 +
  bun.lock                                           |  65 ++-
  docs/developer/local-context.mdx                   |  24 +-
@@ -23,4 +26,4 @@
  packages/agentplane/src/commands/task/list.ts      |  12 +-
  packages/agentplane/src/shared/cache-paths.ts      |   7 +
  packages/agentplane/src/shared/sqlite-driver.ts    |  39 ++
- 25 files changed, 1471 insertions(+), 218 deletions(-)
+ 28 files changed, 1747 insertions(+), 218 deletions(-)
