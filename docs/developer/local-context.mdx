@@ -20,14 +20,32 @@ it no longer owns the SQLite file.
 
 ## Owning code paths
 
-| Surface                  | Code path                                                                                               |
-| ------------------------ | ------------------------------------------------------------------------------------------------------- |
-| Command specs            | `packages/agentplane/src/commands/context/*.spec.ts`                                                    |
-| CLI handlers             | `packages/agentplane/src/commands/context/*.ts`                                                         |
-| Shared parsing and refs  | `packages/agentplane/src/commands/context/context-utils.ts`                                             |
-| SQLite driver/projection | `packages/agentplane/src/shared/sqlite-driver.ts`, `packages/agentplane/src/commands/context/sqlite.ts` |
-| ACR context extension    | `packages/agentplane/src/commands/acr/**`                                                               |
-| Runner handoff           | `packages/agentplane/src/commands/context/ingest.ts`, `packages/agentplane/src/commands/task/run/**`    |
+| Surface                  | Code path                                                                                                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Command specs            | `packages/agentplane/src/commands/context/*.spec.ts`                                                                                                                |
+| CLI handlers             | `packages/agentplane/src/commands/context/*.ts`                                                                                                                     |
+| Shared parsing and refs  | `packages/agentplane/src/commands/context/context-utils.ts`                                                                                                         |
+| SQLite driver/projection | `packages/agentplane/src/shared/sqlite-driver.ts`, `packages/agentplane/src/commands/context/sqlite.ts`                                                             |
+| ACR context extension    | `packages/agentplane/src/commands/acr/**`                                                                                                                           |
+| Runner handoff           | `packages/agentplane/src/commands/context/ingest.ts`, `packages/agentplane/src/context/harvest-tasks-extraction.ts`, `packages/agentplane/src/commands/task/run/**` |
+
+## Task-history extraction
+
+`context harvest tasks --create-extraction-tasks` is the agentic layer for completed task history.
+It does not treat the deterministic `context/raw/tasks/*.json` snapshot as the semantic source.
+Instead, it creates standard `CURATOR` tasks whose context extension names the source task READMEs,
+ACR files, source digests, allowed outputs, and a replaceable prompt module.
+
+The generated prompt module uses the normal prompt-module schema with a stable address:
+
+```text
+framework/template/generated.artifact/context_task_extraction/v1
+```
+
+This keeps task-history extraction improvable through the same module/mutation model as other
+AgentPlane prompts. The generated task remains the execution boundary: a CURATOR agent reads the
+source pack, searches existing wiki/facts/graph rows, writes sourced updates, records stale/conflict
+markers, and verifies through context gates before promotion.
 
 ## Projection contract
 

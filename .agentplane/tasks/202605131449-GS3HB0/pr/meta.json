@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605131449-GS3HB0/agentic-context-extraction",
+  "created_at": "2026-05-13T14:50:25.406Z",
+  "head_sha": "5f62ee4395aaecdd9edb0479d6f89c3d61f4ddab",
+  "last_verified_at": "2026-05-13T15:01:58.818Z",
+  "last_verified_sha": "5f62ee4395aaecdd9edb0479d6f89c3d61f4ddab",
+  "schema_version": 1,
+  "task_id": "202605131449-GS3HB0",
+  "updated_at": "2026-05-13T14:50:25.406Z",
+  "verify": {
+    "status": "pass"
+  }
+}

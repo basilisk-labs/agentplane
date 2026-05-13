@@ -7,6 +7,7 @@ import type { TaskData } from "../backends/task-backend.js";
 import { CliError } from "../shared/errors.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
 import { fileExists, isRecord, parseJsonlLines, readText } from "./context-utils.js";
+import { alreadyQueuedForExtractionUnchanged } from "./harvest-tasks-extraction.js";
 import {
   alreadyHarvestedUnchanged,
   buildTaskHarvestLedgerRows,
@@ -26,6 +27,8 @@ export type ContextHarvestTasksParsed = {
   afterTask: string;
   limit: string;
   writeProposals: boolean;
+  createExtractionTasks: boolean;
+  batchSize: string;
   promote: boolean;
   dryRun: boolean;
   format: "text" | "json";
@@ -436,7 +439,11 @@ export function selectTasks(tasks: TaskData[], parsed: ContextHarvestTasksParsed
   const limit = parseLimit(parsed.limit);
   const selected = asTaskList(tasks)
     .filter((task) => taskMatches(task, parsed))
-    .filter((task) => !alreadyHarvestedUnchanged(task, parsed))
+    .filter((task) =>
+      parsed.createExtractionTasks
+        ? !alreadyQueuedForExtractionUnchanged(task, parsed)
+        : !alreadyHarvestedUnchanged(task, parsed),
+    )
     .sort((a, b) => a.id.localeCompare(b.id));
   return limit === null ? selected : selected.slice(0, limit);
 }
@@ -542,7 +549,11 @@ export async function writeOutputs(
   return changed;
 }
 
-export function renderText(output: HarvestOutput, changed: string[]): string {
+export function renderText(
+  output: HarvestOutput,
+  changed: string[],
+  extraction?: { planned: number; created: string[] },
+): string {
   return [
     "context harvest tasks",
     `- selected tasks: ${output.report.counts.selected_tasks}`,
@@ -552,6 +563,9 @@ export function renderText(output: HarvestOutput, changed: string[]): string {
     `- stale candidates: ${output.report.counts.stale_candidates}`,
     `- conflict candidates: ${output.report.counts.conflict_candidates}`,
     `- promotion gate: ${output.report.promotion_gate.state}`,
+    `- extraction task batches: ${extraction?.planned ?? 0}`,
+    `- created extraction tasks: ${extraction?.created.length ?? 0}`,
+    ...(extraction?.created ?? []).map((item) => `  - ${item}`),
     `- proposal: ${output.wikiPath}`,
     `- promoted: ${output.report.promotion_gate.promoted_path ?? "not promoted"}`,
     `- changed paths: ${changed.length}`,

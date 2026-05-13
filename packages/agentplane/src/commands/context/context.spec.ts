@@ -189,6 +189,8 @@ export const contextHarvestTasksSpec: CommandSpec<{
   afterTask: string;
   limit: string;
   writeProposals: boolean;
+  createExtractionTasks: boolean;
+  batchSize: string;
   promote: boolean;
   dryRun: boolean;
   format: "text" | "json";
@@ -197,7 +199,7 @@ export const contextHarvestTasksSpec: CommandSpec<{
   group: "Context",
   summary: "Harvest completed task evidence into wiki, fact, and graph proposals.",
   description:
-    "Selects completed tasks in oldest-first order, skips unchanged tasks with matching ingestion markers, and separates source indexing, knowledge extraction, wiki synthesis, promotion-gate state, and task README markers. Write modes require an initialized context workspace.",
+    "Selects completed tasks in oldest-first order, skips unchanged tasks with matching ingestion markers, and separates source indexing, agentic extraction task creation, wiki synthesis, promotion-gate state, and task README markers. Write modes require an initialized context workspace.",
   options: [
     {
       kind: "string",
@@ -252,6 +254,20 @@ export const contextHarvestTasksSpec: CommandSpec<{
     },
     {
       kind: "boolean",
+      name: "create-extraction-tasks",
+      default: false,
+      description:
+        "Create standard CURATOR tasks for batchwise semantic extraction from task README/ACR sources.",
+    },
+    {
+      kind: "string",
+      name: "batch-size",
+      default: "25",
+      valueHint: "<n>",
+      description: "Number of selected completed tasks per generated extraction task.",
+    },
+    {
+      kind: "boolean",
       name: "promote",
       default: false,
       description: "Promote the wiki proposal to semi-canonical only if the promotion gate passes.",
@@ -280,6 +296,10 @@ export const contextHarvestTasksSpec: CommandSpec<{
       cmd: "agentplane context harvest tasks --tag branch_pr --write-proposals",
       why: "Write source-backed reusable context proposals from completed branch_pr tasks.",
     },
+    {
+      cmd: "agentplane context harvest tasks --tag branch_pr --create-extraction-tasks --batch-size 25",
+      why: "Create CURATOR tasks that extract semantic wiki/fact/graph knowledge in bounded oldest-first batches.",
+    },
   ],
   parse: (raw) => ({
     status: toStringList(raw.opts.status),
@@ -290,6 +310,8 @@ export const contextHarvestTasksSpec: CommandSpec<{
     afterTask: typeof raw.opts["after-task"] === "string" ? raw.opts["after-task"] : "",
     limit: typeof raw.opts.limit === "string" ? raw.opts.limit : "",
     writeProposals: raw.opts["write-proposals"] === true,
+    createExtractionTasks: raw.opts["create-extraction-tasks"] === true,
+    batchSize: typeof raw.opts["batch-size"] === "string" ? raw.opts["batch-size"] : "25",
     promote: raw.opts.promote === true,
     dryRun: raw.opts["dry-run"] === true,
     format: (raw.opts.format as "text" | "json") ?? "text",

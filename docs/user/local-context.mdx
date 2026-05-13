@@ -54,6 +54,7 @@ runner adapter instead of only preparing the request.
 
 ```bash
 agentplane context harvest tasks --tag release --limit 20 --dry-run
+agentplane context harvest tasks --tag branch_pr --create-extraction-tasks --batch-size 25
 agentplane context harvest tasks --tag branch_pr --write-proposals
 agentplane context harvest tasks --task 202605100837-PJZW2E --write-proposals
 ```
@@ -77,6 +78,18 @@ refs. Later broad runs skip tasks whose marker digest still matches the README e
 `--task` selection and `--promote` can still revisit a marked task when needed. Write modes require
 an initialized context workspace from `agentplane context init`; dry-run mode can be used before
 initialization.
+
+Use `--create-extraction-tasks` when completed task history needs agentic semantic extraction rather
+than deterministic one-claim-per-task proposals. It creates standard `CURATOR` tasks in oldest-first
+batches controlled by `--batch-size`. Each generated task carries an
+`extensions.agentplane.context` source pack with the selected task README paths, ACR paths, source
+digests, allowed outputs, provenance requirements, and a replaceable prompt module for extracting
+wiki pages, facts, entities, relations, stale markers, and conflict markers. This mode does not write
+`context/raw/tasks/*.json` by itself; the source of semantic truth is the task README and ACR
+evidence named in the generated task. It also marks source tasks with
+`extensions.context_task_extraction` so later broad runs do not create duplicate extraction tasks
+while the README digest is unchanged. Raw-ingestion markers from `--write-proposals` do not count as
+semantic extraction completion.
 
 ## Verify task context
 
