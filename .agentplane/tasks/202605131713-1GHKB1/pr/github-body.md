@@ -22,9 +22,9 @@ Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modul
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T17:46:28.017Z
+- Updated: 2026-05-13T18:42:28.057Z
 - Branch: task/202605131713-1GHKB1/public-evaluator-catalog
-- Head: 6e62f49892e2
+- Head: c6226453a93f
 
 ```text
  .agentplane/evaluators/recovery-context.md         |  47 ++
@@ -42,7 +42,7 @@ Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modul
  .../cli/run-cli/commands/init/steps/apply.test.ts  |   8 +
  .../src/cli/run-cli/commands/init/steps/apply.ts   |  10 +
  .../cli/run-cli/commands/init/write-evaluators.ts  |  41 ++
- .../src/commands/evaluator/evaluator.command.ts    | 103 +++++
+ .../src/commands/evaluator/evaluator.command.ts    | 101 ++++
  .../src/commands/evaluator/evaluator.spec.ts       |  90 ++++
  packages/agentplane/src/commands/upgrade/policy.ts |   1 +
  packages/agentplane/src/evaluators/catalog.ts      | 127 +++++
@@ -50,7 +50,7 @@ Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modul
  .../src/shared/builtin-assets.generated.ts         |  11 +-
  .../agentplane/src/shared/protected-paths.test.ts  |  21 +
  packages/agentplane/src/shared/protected-paths.ts  |   6 +-
- 23 files changed, 1223 insertions(+), 4 deletions(-)
+ 23 files changed, 1221 insertions(+), 4 deletions(-)
 ```
 
 </details>
