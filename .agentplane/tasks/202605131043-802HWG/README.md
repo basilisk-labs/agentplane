@@ -1,7 +1,8 @@
 ---
 id: "202605131043-802HWG"
 title: "Extract local context domain logic from command handlers"
-status: "DOING"
+result_summary: "Moved local context domain logic into packages/agentplane/src/context with thin commands/context adapters; merged via PR #3634."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: context domain implementation moved to packages/agentplane/src/context with commands/context wrappers kept as CLI adapters. Checks passed: focused context Vitest, typecheck, eslint, prettier, arch:check, knip:check, docs:ia:check, framework:dev:bootstrap."
   attempts: 0
-commit: null
+commit:
+  hash: "d61a19de647411b18df12fa28bd417b59b67043c"
+  message: "Merge task 202605131043-2GMHKQ: generated scripts context refactor"
 comments:
   -
     author: "CODER"
     body: "Start: Extracting context domain modules from CLI command handlers with behavior-compatible command adapters."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated through PR #3634 with the context domain extraction included; hosted Core and Docs checks passed, and main includes merge d61a19de."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: context domain implementation moved to packages/agentplane/src/context with commands/context wrappers kept as CLI adapters. Checks passed: focused context Vitest, typecheck, eslint, prettier, arch:check, knip:check, docs:ia:check, framework:dev:bootstrap."
+  -
+    type: "status"
+    at: "2026-05-13T13:44:53.466Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated through PR #3634 with the context domain extraction included; hosted Core and Docs checks passed, and main includes merge d61a19de."
 doc_version: 3
-doc_updated_at: "2026-05-13T13:13:51.510Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T13:44:53.466Z"
+doc_updated_by: "INTEGRATOR"
 description: "Move domain logic from packages/agentplane/src/commands/context into a src/context domain layer while keeping command handlers as thin CLI adapters."
 sections:
   Summary: |-
