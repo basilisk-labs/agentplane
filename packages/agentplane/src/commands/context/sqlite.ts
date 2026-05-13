@@ -56,7 +56,7 @@ async function openRequiredDatabase(
     fileMustExist: opts?.readonly === true,
   });
   if (!db) {
-    throw new Error("better-sqlite3 driver is required for AgentPlane SQLite projections.");
+    throw new Error("node:sqlite is required for AgentPlane SQLite projections.");
   }
   return db;
 }
