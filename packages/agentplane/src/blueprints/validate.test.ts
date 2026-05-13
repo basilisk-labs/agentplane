@@ -43,7 +43,7 @@ function docsPlan() {
 
 describe("blueprint built-ins", () => {
   it("validates every built-in blueprint", () => {
-    expect(BUILTIN_BLUEPRINTS).toHaveLength(11);
+    expect(BUILTIN_BLUEPRINTS).toHaveLength(12);
 
     for (const blueprint of BUILTIN_BLUEPRINTS) {
       expect(validateBlueprint(blueprint), blueprint.id).toEqual({ ok: true, errors: [] });
@@ -58,6 +58,7 @@ describe("blueprint built-ins", () => {
       "code.branch_pr",
       "code.direct",
       "content.light",
+      "context.assimilation",
       "docs.change",
       "ops.approval",
       "performance.benchmark",

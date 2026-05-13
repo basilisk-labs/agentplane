@@ -98,6 +98,7 @@ function blueprintForTaskKind(kind: TaskKind, workflowMode?: WorkflowMode): Blue
   }
   if (kind === "content") return "content.light";
   if (kind === "docs") return "docs.change";
+  if (kind === "context") return "context.assimilation";
   if (kind === "release") return "release.strict";
   if (kind === "ops") return "ops.approval";
   return "analysis.light";

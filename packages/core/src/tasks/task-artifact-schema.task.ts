@@ -16,8 +16,24 @@ import { TASK_STATUS_VALUES } from "./task-status.js";
 
 const TASK_PRIORITY_VALUES = ["low", "normal", "med", "high"] as const;
 const TASK_RISK_LEVEL_VALUES = ["low", "med", "high"] as const;
-const TASK_KIND_VALUES = ["analysis", "content", "docs", "code", "release", "ops"] as const;
-const TASK_MUTATION_SCOPE_VALUES = ["none", "docs", "code", "release", "ops", "unknown"] as const;
+const TASK_KIND_VALUES = [
+  "analysis",
+  "content",
+  "docs",
+  "code",
+  "release",
+  "ops",
+  "context",
+] as const;
+const TASK_MUTATION_SCOPE_VALUES = [
+  "none",
+  "docs",
+  "code",
+  "release",
+  "ops",
+  "context",
+  "unknown",
+] as const;
 const TASK_RISK_FLAG_VALUES = [
   "network",
   "credentials",
@@ -35,6 +51,7 @@ const TASK_BLUEPRINT_REQUEST_VALUES = [
   "code.branch_pr",
   "performance.benchmark",
   "quality.regression",
+  "context.assimilation",
   "runner.execution",
   "post_run.improvement_review",
   "release.strict",
@@ -162,6 +179,7 @@ export const TASK_README_FRONTMATTER_ZOD_SCHEMA = z
     sections: TASK_SECTIONS_SCHEMA.optional(),
     dirty: z.boolean().optional(),
     id_source: NON_EMPTY_STRING.optional(),
+    extensions: z.record(z.string(), z.unknown()).optional(),
   })
   .passthrough();
 

@@ -46,6 +46,7 @@ export async function validateAcrTarget(
     if (task.id !== resolved.record.task.task_id) {
       throw acrValidationError("ACR_E_TASK_NOT_FOUND", "ACR task id does not resolve locally.");
     }
+    assertContextAcrExtension(task, resolved.record);
     await assertGitCommit(opts.ctx.resolvedProject.gitRoot, resolved.record.repository.base_commit);
     await assertGitCommit(opts.ctx.resolvedProject.gitRoot, resolved.record.repository.work_commit);
     const ancestor = await gitIsAncestor(
@@ -95,6 +96,38 @@ export async function validateAcrTarget(
     record_id: resolved.record.record_id,
     warnings,
   };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function assertContextAcrExtension(
+  task: Awaited<ReturnType<typeof loadTaskFromContext>>,
+  record: AgentChangeRecord,
+): void {
+  if (task.task_kind !== "context") return;
+  const extensions = isRecord(record.extensions) ? record.extensions : {};
+  const context = extensions["agentplane.context"];
+  if (!isRecord(context)) {
+    throw acrValidationError(
+      "ACR_E_CONTEXT_EXTENSION_REQUIRED",
+      "Context task ACR requires extensions.agentplane.context.",
+    );
+  }
+  if (context.schema_version !== 1) {
+    throw acrValidationError(
+      "ACR_E_CONTEXT_EXTENSION_SCHEMA",
+      "Context ACR extension schema_version must be 1.",
+    );
+  }
+  const sourceSet = context.source_set;
+  if (!isRecord(sourceSet) || !Array.isArray(sourceSet.files) || sourceSet.files.length === 0) {
+    throw acrValidationError(
+      "ACR_E_CONTEXT_SOURCE_SET_REQUIRED",
+      "Context ACR extension requires source_set.files.",
+    );
+  }
 }
 
 export function assertAcrCiSemantics(record: AgentChangeRecord, opts: AcrCiSemanticOptions): void {

@@ -42,4 +42,24 @@ describe("blueprintResolveInputFromTask", () => {
       workflowMode: "branch_pr",
     });
   });
+
+  it("accepts context task kind and mutation scope", () => {
+    const input = blueprintResolveInputFromTask({
+      config,
+      task: task({
+        task_kind: "context",
+        mutation_scope: "context",
+        blueprint_request: "context.assimilation",
+        tags: ["context"],
+      }),
+    });
+
+    expect(input).toMatchObject({
+      taskKind: "context",
+      mutation: "context",
+      mutationScope: "context",
+      blueprintRequest: "context.assimilation",
+      workflowMode: "branch_pr",
+    });
+  });
 });

@@ -50,15 +50,15 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     {
       kind: "string",
       name: "task-kind",
-      valueHint: "<analysis|content|docs|code|release|ops>",
-      choices: ["analysis", "content", "docs", "code", "release", "ops"],
+      valueHint: "<analysis|content|docs|code|release|ops|context>",
+      choices: ["analysis", "content", "docs", "code", "release", "ops", "context"],
       description: "Structured blueprint task-kind intent. Tags/title remain fallback hints.",
     },
     {
       kind: "string",
       name: "mutation-scope",
-      valueHint: "<none|docs|code|release|ops|unknown>",
-      choices: ["none", "docs", "code", "release", "ops", "unknown"],
+      valueHint: "<none|docs|code|release|ops|context|unknown>",
+      choices: ["none", "docs", "code", "release", "ops", "context", "unknown"],
       description: "Structured mutation scope used by blueprint resolution.",
     },
     {
@@ -89,6 +89,7 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
         "code.branch_pr",
         "performance.benchmark",
         "quality.regression",
+        "context.assimilation",
         "runner.execution",
         "post_run.improvement_review",
         "release.strict",

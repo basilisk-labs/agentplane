@@ -90,9 +90,12 @@ export async function readTaskReadmeCached(opts: {
 export async function ensureUnchangedOnDisk(opts: {
   readmePath: string;
   expectedMtimeMs: number;
+  expectedRawText: string;
 }): Promise<void> {
   const st = await stat(opts.readmePath);
-  if (st.mtimeMs !== opts.expectedMtimeMs) {
+  const currentText =
+    st.mtimeMs === opts.expectedMtimeMs ? await readFile(opts.readmePath, "utf8") : null;
+  if (st.mtimeMs !== opts.expectedMtimeMs || currentText !== opts.expectedRawText) {
     throw new CliError({
       exitCode: exitCodeForError("E_IO"),
       code: "E_IO",
@@ -104,10 +107,13 @@ export async function ensureUnchangedOnDisk(opts: {
 export async function didReadmeChangeOnDisk(opts: {
   readmePath: string;
   expectedMtimeMs: number;
+  expectedRawText?: string;
 }): Promise<boolean> {
   try {
     const st = await stat(opts.readmePath);
-    return st.mtimeMs !== opts.expectedMtimeMs;
+    if (st.mtimeMs !== opts.expectedMtimeMs) return true;
+    if (opts.expectedRawText === undefined) return false;
+    return (await readFile(opts.readmePath, "utf8")) !== opts.expectedRawText;
   } catch (err) {
     const code = (err as { code?: string } | null)?.code;
     if (code === "ENOENT") return true;
@@ -158,6 +164,7 @@ export async function writeTaskReadme(opts: {
   await ensureUnchangedOnDisk({
     readmePath: entry.readmePath,
     expectedMtimeMs: entry.mtimeMs,
+    expectedRawText: entry.rawText,
   });
 
   return await writeTextIfChanged(entry.readmePath, nextText);

@@ -115,6 +115,7 @@ export type TaskGraphDraftTask = {
   mutation_scope?: TaskData["mutation_scope"];
   risk_flags?: TaskData["risk_flags"];
   blueprint_request?: TaskData["blueprint_request"];
+  extensions?: TaskData["extensions"];
   verify: string[];
   depends_on: string[];
   doc: string;

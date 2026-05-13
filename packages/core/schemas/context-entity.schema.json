@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentplane.org/schemas/context-entity.schema.json",
+  "title": "Context entity (v1)",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "type": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "aliases": { "type": "array", "items": { "type": "string" } },
+    "description": { "type": "string" },
+    "metadata": { "type": "object" }
+  },
+  "required": ["id", "type", "name"],
+  "additionalProperties": true
+}

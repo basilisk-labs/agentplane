@@ -90,6 +90,10 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
     origin: task.origin ?? undefined,
     depends_on: task.depends_on ?? [],
     tags: task.tags ?? [],
+    task_kind: task.task_kind,
+    mutation_scope: task.mutation_scope,
+    risk_flags: task.risk_flags,
+    blueprint_request: task.blueprint_request,
     verify: task.verify ?? [],
     plan_approval: planApproval,
     verification,
@@ -102,6 +106,7 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
     doc_updated_by: task.doc_updated_by,
     description: task.description ?? "",
     sections,
+    extensions: task.extensions,
     id_source: task.id_source,
     dirty: task.dirty,
   };

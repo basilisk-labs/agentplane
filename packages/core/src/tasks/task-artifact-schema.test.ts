@@ -377,6 +377,43 @@ describe("task-artifact-schema", () => {
     ).not.toThrow();
   });
 
+  it("accepts context task kinds and context.assimilation blueprint request", () => {
+    const task = withTaskReadmeFrontmatterDefaults({
+      id: "202605130152-3JZSHZ",
+      title: "Context assimilation fixture",
+      status: "TODO",
+      priority: "high",
+      owner: "DOCS",
+      depends_on: [],
+      tags: ["context", "docs"],
+      task_kind: "context",
+      mutation_scope: "context",
+      blueprint_request: "context.assimilation",
+      verify: [],
+      plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+      verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+      comments: [],
+      doc_version: 3,
+      doc_updated_at: "2026-05-13T10:00:00.000Z",
+      doc_updated_by: "DOCS",
+      description: "Fixture",
+      id_source: "generated",
+    });
+
+    expect(() => validateTaskReadmeFrontmatter(task)).not.toThrow();
+    expect(() =>
+      validateTasksExportSnapshot({
+        tasks: [{ ...task, commit: null, dirty: false }],
+        meta: {
+          schema_version: 1,
+          managed_by: "agentplane",
+          checksum_algo: "sha256",
+          checksum: "abc",
+        },
+      }),
+    ).not.toThrow();
+  });
+
   it("normalizes legacy medium priority before README schema validation", () => {
     expect(() =>
       validateTaskReadmeFrontmatter(

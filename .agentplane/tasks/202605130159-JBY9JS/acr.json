@@ -1,0 +1,673 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605130159-JBY9JS",
+  "created_at": "2026-05-13T04:46:54.514Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "29c87a1edccb78141547050fd7ab377414331a53",
+    "work_ref": "task/202605130159-local-context-contract",
+    "work_commit": "e1a0e88b9f5d8bcd35258c83111bdafd2b9a2daa"
+  },
+  "task": {
+    "task_id": "202605130159-JBY9JS",
+    "title": "Implement local context contract",
+    "intent": "Implement the v0.6 local context contract surface: layout, schemas, ingest task creation, context.assimilation routing, mutation guard, validators, SQLite projection/search, capability commands, and ACR extension.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "PLANNER",
+    "name": "PLANNER",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605130159-JBY9JS/README.md",
+      "sha256": "sha256:c5705ed14f177b584f6bd76e511bf64d2edd442e7a6c99c70906cdeaa4f8e75a"
+    },
+    "approved_at": "2026-05-13T01:59:53.757Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "pass",
+    "diff_stats": {
+      "files_changed": 66,
+      "insertions": 5549,
+      "deletions": 128
+    },
+    "files": [
+      {
+        "path": ".agentplane/agents/CURATOR.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605130159-JBY9JS/README.md",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605130159-JBY9JS/acr.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": ".agentplane/tasks/202605130159-JBY9JS/blueprint/resolved-snapshot.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "bun.lock",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/assets/agents/CURATOR.json",
+        "status": "added",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/package.json",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/backends/task-backend/shared/record.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/backends/task-backend/shared/types.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/blueprints/builtins.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/blueprints/model.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/blueprints/resolve.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/blueprints/validate.test.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tests"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/command-catalog/project.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/cli/run-cli/command-loaders/project.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/acr/generate.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/acr/validate.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/blueprint/task-input.test.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tests",
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/blueprint/task-input.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/capability.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/context-utils.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/context.command.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/context.spec.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/doctor.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/graph.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/ingest.command.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/ingest.spec.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/ingest.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/init.command.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/init.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/reindex.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/search.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/show.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/sqlite.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/context/verify-task.ts",
+        "status": "added",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/hooks/task-context.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/shared/task-backend.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/shared/task-store/readme.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/shared/task-store/store.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/new.spec.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/commands/task/new.ts",
+        "status": "modified",
+        "risk_categories": [
+          "cli"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/runtime/task-intake/resolve-materialize.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/runtime/task-intake/resolve-normalize.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/runtime/task-intake/resolve.test.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tests"
+        ]
+      },
+      {
+        "path": "packages/agentplane/src/runtime/task-intake/types.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/core/schemas/agentplane-context.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/core/schemas/context-capability-artifact.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/core/schemas/context-edge.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/core/schemas/context-entity.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/core/schemas/context-fact.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/core/schemas/context-provenance-edge.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/core/schemas/task-readme-frontmatter.schema.json",
+        "status": "modified",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/core/schemas/tasks-export.schema.json",
+        "status": "modified",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/core/src/tasks/task-artifact-schema.task.ts",
+        "status": "modified",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/core/src/tasks/task-artifact-schema.test.ts",
+        "status": "modified",
+        "risk_categories": [
+          "schema",
+          "tests"
+        ]
+      },
+      {
+        "path": "packages/core/src/tasks/task-readme.ts",
+        "status": "modified",
+        "risk_categories": [
+          "tooling"
+        ]
+      },
+      {
+        "path": "packages/spec/schemas/agentplane-context.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/spec/schemas/context-capability-artifact.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/spec/schemas/context-edge.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/spec/schemas/context-entity.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/spec/schemas/context-fact.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/spec/schemas/context-provenance-edge.schema.json",
+        "status": "added",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/spec/schemas/task-readme-frontmatter.schema.json",
+        "status": "modified",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "packages/spec/schemas/tasks-export.schema.json",
+        "status": "modified",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "schemas/task-readme-frontmatter.schema.json",
+        "status": "modified",
+        "risk_categories": [
+          "schema"
+        ]
+      },
+      {
+        "path": "schemas/tasks-export.schema.json",
+        "status": "modified",
+        "risk_categories": [
+          "schema"
+        ]
+      }
+    ],
+    "risk": {
+      "level": "medium",
+      "categories": [
+        "tooling",
+        "tests",
+        "cli",
+        "schema"
+      ],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605130159-JBY9JS_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-13T01:59:53.757Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605130159-JBY9JS/README.md",
+      "sha256": "sha256:c5705ed14f177b584f6bd76e511bf64d2edd442e7a6c99c70906cdeaa4f8e75a"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605130159-JBY9JS/README.md",
+      "sha256": "sha256:c5705ed14f177b584f6bd76e511bf64d2edd442e7a6c99c70906cdeaa4f8e75a"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605130159-JBY9JS/README.md",
+      "sha256": "sha256:c5705ed14f177b584f6bd76e511bf64d2edd442e7a6c99c70906cdeaa4f8e75a"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit e1a0e88b9f5d8bcd35258c83111bdafd2b9a2daa if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:72f28078112c1d0cfaf7fadeffd6e692bb240329afaafb3628c2b233fe40a3ae",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "analysis.light",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "analysis.sources",
+          "kind": "sources",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "analysis.assumptions",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "analysis.weak_links",
+          "kind": "weak_links",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "analysis.final",
+          "kind": "final_output",
+          "produced_by": "work_unit",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "stale",
+        "path": ".agentplane/tasks/202605130159-JBY9JS/blueprint/resolved-snapshot.json",
+        "digest": "3ec26b3a53ec5af897c06cb3d1d1f266fa041f311197ed58433bac2e4594ab06",
+        "current_digest": "c80f1a0b131a81c91794bd7e607cf98b94a91c5684c58e10b9c19629dbd8f47c",
+        "route_changed": false,
+        "artifact_sha256": null,
+        "safe_command": "agentplane blueprint snapshot 202605130159-JBY9JS"
+      }
+    }
+  }
+}

@@ -92,11 +92,11 @@
     },
     "task_kind": {
       "type": "string",
-      "enum": ["analysis", "content", "docs", "code", "release", "ops"]
+      "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
     },
     "mutation_scope": {
       "type": "string",
-      "enum": ["none", "docs", "code", "release", "ops", "unknown"]
+      "enum": ["none", "docs", "code", "release", "ops", "context", "unknown"]
     },
     "risk_flags": {
       "type": "array",
@@ -123,6 +123,7 @@
         "code.branch_pr",
         "performance.benchmark",
         "quality.regression",
+        "context.assimilation",
         "runner.execution",
         "post_run.improvement_review",
         "release.strict",
@@ -591,6 +592,10 @@
     "id_source": {
       "type": "string",
       "minLength": 1
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": {}
     }
   },
   "required": [

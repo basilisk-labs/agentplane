@@ -37,8 +37,8 @@ export type TaskData = {
   origin?: TaskOrigin | null;
   depends_on: string[];
   tags: string[];
-  task_kind?: "analysis" | "content" | "docs" | "code" | "release" | "ops";
-  mutation_scope?: "none" | "docs" | "code" | "release" | "ops" | "unknown";
+  task_kind?: "analysis" | "content" | "docs" | "code" | "release" | "ops" | "context";
+  mutation_scope?: "none" | "docs" | "code" | "release" | "ops" | "context" | "unknown";
   risk_flags?: (
     | "network"
     | "credentials"
@@ -56,6 +56,7 @@ export type TaskData = {
     | "code.branch_pr"
     | "performance.benchmark"
     | "quality.regression"
+    | "context.assimilation"
     | "runner.execution"
     | "post_run.improvement_review"
     | "release.strict"
@@ -69,6 +70,7 @@ export type TaskData = {
   events?: TaskEvent[];
   doc?: string;
   sections?: TaskDocSections;
+  extensions?: Record<string, unknown>;
   doc_version?: TaskDocVersion;
   doc_updated_at?: string;
   doc_updated_by?: string;
