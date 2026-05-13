@@ -13,7 +13,7 @@ Created: 2026-05-13T16:51:39.705Z
 ## Verification
 
 - State: ok
-- Note: Verified docs/code alignment: docs:cli:check, docs:onboarding:check, docs:ia:check, check-routing, agentplane doctor, package build, and targeted docs-cli test passed. Generated CLI reference now contains cleanup merged and excludes group roots plus advanced/internal docs surface.
+- Note: Re-verified after rebasing onto origin/main: package build, docs generation, docs:cli:check, docs:onboarding:check, docs:ia:check, check-routing, agentplane doctor, docs:site:typecheck, and targeted docs-cli test with extended timeout passed. Public generated reference still excludes group roots and advanced/internal command groups.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
