@@ -1,7 +1,8 @@
 ---
 id: "202605130501-4B49ZZ"
 title: "Prepare v0.6 context release readiness"
-status: "DOING"
+result_summary: "Merged via PR #3612."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Local and hosted v0.6 readiness checks passed: typecheck, context release-readiness tests, release parity, release:bun:check, docs cli/IA/bootstrap/onboarding, package install smoke with context commands, release:check, ap doctor, and hosted PR #3612 required checks."
   attempts: 0
-commit: null
+commit:
+  hash: "2c54ffa82de685e798a81a44a3ccdfa1241ec7d6"
+  message: "Merge pull request #3612 from basilisk-labs/task/202605130501-4B49ZZ/v06-context-release-readiness"
 comments:
   -
     author: "CODER"
     body: "Start: execute the approved v0.6 context release readiness plan, including release hardening, documentation refresh, generated assets, packaged smoke coverage, and verification evidence from the dedicated branch_pr worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3612 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local and hosted v0.6 readiness checks passed: typecheck, context release-readiness tests, release parity, release:bun:check, docs cli/IA/bootstrap/onboarding, package install smoke with context commands, release:check, ap doctor, and hosted PR #3612 required checks."
+  -
+    type: "status"
+    at: "2026-05-13T07:05:46.644Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3612 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T05:27:33.551Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T07:05:46.644Z"
+doc_updated_by: "INTEGRATOR"
 description: "Complete v0.6 context release hardening: reconcile checkout, regenerate bundled assets, document context commands, version/release notes, runner handoff smoke, mutation guard/source-ref/redaction/SQLite/install-smoke hardening, and documentation IA cleanup."
 sections:
   Summary: |-
