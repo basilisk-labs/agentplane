@@ -24,9 +24,9 @@ Created: 2026-05-13T18:17:32.377Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T18:33:34.462Z
+- Updated: 2026-05-13T18:51:38.284Z
 - Branch: task/202605131815-Y9VGVQ/shared-root-env-sync
-- Head: 9246be613155
+- Head: ebcb625a0132
 
 ```text
  .../blueprint/resolved-snapshot.json               | 392 +++++++++++++++++++++

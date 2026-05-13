@@ -22,9 +22,9 @@ Load hosted backend credentials from the canonical repository root .env across b
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T18:33:34.462Z
+- Updated: 2026-05-13T18:51:38.284Z
 - Branch: task/202605131815-Y9VGVQ/shared-root-env-sync
-- Head: 9246be613155
+- Head: ebcb625a0132
 
 ```text
  .../blueprint/resolved-snapshot.json               | 392 +++++++++++++++++++++
