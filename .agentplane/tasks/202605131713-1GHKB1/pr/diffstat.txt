@@ -18,7 +18,7 @@
  packages/agentplane/src/commands/upgrade/policy.ts |   1 +
  packages/agentplane/src/evaluators/catalog.ts      | 127 +++++
  .../src/runtime/shared/runtime-artifacts.ts        |   1 +
- .../src/shared/builtin-assets.generated.ts         |  11 +-
+ .../src/shared/builtin-assets.generated.ts         |   9 +-
  .../agentplane/src/shared/protected-paths.test.ts  |  21 +
  packages/agentplane/src/shared/protected-paths.ts  |   6 +-
- 23 files changed, 1221 insertions(+), 4 deletions(-)
+ 23 files changed, 1220 insertions(+), 3 deletions(-)
