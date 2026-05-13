@@ -4,7 +4,7 @@ title: "Automate branch_pr merge queue finalization"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 1
+revision: 2
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T19:42:09.491Z"
+  updated_at: "2026-05-13T20:15:02.549Z"
   updated_by: "CODER"
-  note: "Cold-path follow-up verified: branch_pr list-state PR-meta loading is lazy and off direct task list/search/next paths; bench:cli:cold:check passed after rebuild; targeted branch_pr/list tests passed; eslint passed; typecheck passed; hotspots:check passed; policy routing passed; git diff --check passed."
+  note: "Post-main-merge verified: resolved conflict in pr integrate command by preserving PolicyEngine check from main and PFXN5E protected-base GitHub merge handoff behavior; focused integrate queue tests passed; targeted eslint passed; typecheck passed; framework bootstrap passed before merge commit."
   attempts: 0
 commit: null
 comments:
@@ -113,8 +113,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Cold-path follow-up verified: branch_pr list-state PR-meta loading is lazy and off direct task list/search/next paths; bench:cli:cold:check passed after rebuild; targeted branch_pr/list tests passed; eslint passed; typecheck passed; hotspots:check passed; policy routing passed; git diff --check passed."
+  -
+    type: "verify"
+    at: "2026-05-13T20:15:02.549Z"
+    author: "CODER"
+    state: "ok"
+    note: "Post-main-merge verified: resolved conflict in pr integrate command by preserving PolicyEngine check from main and PFXN5E protected-base GitHub merge handoff behavior; focused integrate queue tests passed; targeted eslint passed; typecheck passed; framework bootstrap passed before merge commit."
 doc_version: 3
-doc_updated_at: "2026-05-13T19:42:09.505Z"
+doc_updated_at: "2026-05-13T20:15:02.569Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr completion queue verified task branches for serialized integration, prefer merge commits over squash in hosted close routes, and move protected-base integration toward GitHub merge orchestration instead of a manual handoff-only stop."
 sections:
@@ -339,6 +345,25 @@ sections:
     - old_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
     - current_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
     - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
+    
+    ### 2026-05-13T20:15:02.549Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Post-main-merge verified: resolved conflict in pr integrate command by preserving PolicyEngine check from main and PFXN5E protected-base GitHub merge handoff behavior; focused integrate queue tests passed; targeted eslint passed; typecheck passed; framework bootstrap passed before merge commit.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:42:09.505Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131603-PFXN5E-automate-merge-queue/.agentplane/tasks/202605131603-PFXN5E/blueprint/resolved-snapshot.json
+    - old_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+    - current_digest: 68f6ed42dd450fb3e1be8c52cd56014b295c2d5704a0ae416840628b9d220dc4
+    - route_changed: yes
     - safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
     
     <!-- END VERIFICATION RESULTS -->
@@ -586,6 +611,25 @@ BlueprintSnapshotRef:
 - old_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
 - current_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
 - route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
+
+### 2026-05-13T20:15:02.549Z — VERIFY — ok
+
+By: CODER
+
+Note: Post-main-merge verified: resolved conflict in pr integrate command by preserving PolicyEngine check from main and PFXN5E protected-base GitHub merge handoff behavior; focused integrate queue tests passed; targeted eslint passed; typecheck passed; framework bootstrap passed before merge commit.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:42:09.505Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131603-PFXN5E-automate-merge-queue/.agentplane/tasks/202605131603-PFXN5E/blueprint/resolved-snapshot.json
+- old_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+- current_digest: 68f6ed42dd450fb3e1be8c52cd56014b295c2d5704a0ae416840628b9d220dc4
+- route_changed: yes
 - safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
 
 <!-- END VERIFICATION RESULTS -->
