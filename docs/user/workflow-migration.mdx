@@ -13,31 +13,21 @@ Each repository should have:
 
 ## Repair steps
 
-1. Validate the candidate contract:
-
-```bash
-agentplane workflow build --validate --dry-run
-```
-
-2. Apply safe doctor fixes:
+1. Apply safe doctor fixes:
 
 ```bash
 agentplane doctor --fix
 agentplane doctor
 ```
 
-3. Rebuild the active workflow contract when needed:
+2. If doctor reports that the active workflow contract needs maintainer-level recovery, inspect the
+   hidden recovery surface:
 
 ```bash
-agentplane workflow build --validate
+agentplane help --all
 ```
 
-4. If the active workflow was corrupted, restore from the snapshot:
-
-```bash
-agentplane workflow restore
-agentplane doctor
-```
+3. Re-run `agentplane doctor` after the recovery command reports success.
 
 ## Kill-switch (emergency only)
 
@@ -55,5 +45,4 @@ Effects:
 Recovery:
 
 1. Remove the variable.
-2. Run `agentplane workflow build --validate --dry-run`.
-3. Run `agentplane doctor`.
+2. Run `agentplane doctor`.

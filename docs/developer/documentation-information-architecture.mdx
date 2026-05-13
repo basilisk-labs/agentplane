@@ -32,6 +32,9 @@ Use `docs/developer/*` for implementation and maintenance details:
 - Release and publishing pipeline.
 - Contribution standards and quality gates.
 
+Developer pages are maintainer-facing docs for developing AgentPlane itself. They remain routable by
+direct link, but they must not be listed in the public user sidebar or the public docs index.
+
 ### Help
 
 Use `docs/help/*` for diagnosis and recovery:
@@ -62,9 +65,11 @@ The public docs entrypoints should mirror the same workflow model the CLI and ga
 5. **Recipes**: installable recipe packages and catalog/runtime behavior.
 6. **Operations and recovery**: backends, upgrade state model, migration, recovery runbooks.
 7. **Reference**: generated CLI/package reference and integration records.
-8. **Developer**: implementation and maintenance details.
-9. **Release notes**: historical record only.
-10. **Archive**: historical records, ADRs, and retired program notes.
+8. **Release notes**: historical record only.
+9. **Archive**: historical records, ADRs, and retired program notes.
+
+Implementation and harness-development docs live behind the direct-link developer entrypoint,
+`docs/developer/harness-dev.mdx`, outside the public navigation model.
 
 ## Canonical mapping
 

@@ -78,9 +78,28 @@ function normalizeGeneratedMdx(text: string): string {
   }
 }
 
+function isPrefix(parent: readonly string[], child: readonly string[]): boolean {
+  return parent.length < child.length && parent.every((segment, index) => child[index] === segment);
+}
+
+function isGroupDispatchArg(arg: NonNullable<HelpJson["args"]>[number]): boolean {
+  return (
+    arg.required === false &&
+    arg.variadic === true &&
+    ["cmd", "command", "subcommand"].includes(arg.name)
+  );
+}
+
+function isGroupOnlyCommand(spec: HelpJson, allSpecs: readonly HelpJson[]): boolean {
+  const hasChildCommands = allSpecs.some((candidate) => isPrefix(spec.id, candidate.id));
+  if (!hasChildCommands) return false;
+  return (spec.args ?? []).some(isGroupDispatchArg);
+}
+
 export function renderCliDocsMdx(specs: readonly HelpJson[]): string {
+  const actionableSpecs = specs.filter((spec) => !isGroupOnlyCommand(spec, specs));
   const byGroup = new Map<string, readonly HelpJson[]>();
-  for (const s of specs) {
+  for (const s of actionableSpecs) {
     const g = s.group || "Other";
     byGroup.set(g, [...(byGroup.get(g) ?? []), s]);
   }

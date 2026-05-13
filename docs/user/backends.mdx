@@ -42,7 +42,8 @@ Remote backends follow the same install-first model as the local backend:
 - `agentplane backend sync <id> --direction pull` refreshes the projection from the remote source;
 - `agentplane backend sync <id> --direction push --yes` pushes local dirty state back to the
   remote source;
-- `agentplane task export` writes an integration snapshot from the current projection.
+- advanced export commands can write an integration snapshot from the current projection when an
+  integration still needs a local JSON file.
 
 Do not assume ordinary task reads will hit the network implicitly.
 

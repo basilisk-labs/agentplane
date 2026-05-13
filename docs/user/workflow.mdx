@@ -75,7 +75,7 @@ In AgentPlane, speed comes from reducing ambiguity rather than skipping controls
 - keep changes small and frequent;
 - run preflight/doctor early;
 - verify each increment before moving to the next one;
-- prefer deterministic recovery (`workflow restore`) over manual patching.
+- prefer deterministic recovery over manual patching.
 
 This makes high-throughput agent work predictable for both solo and team repos.
 
@@ -96,15 +96,11 @@ agentplane preflight --mode full
 If preflight reports `workflow loaded: no`, fix the contract first:
 
 ```bash
-agentplane workflow build --validate --dry-run
 agentplane doctor --fix
+agentplane doctor
 ```
 
-If the active workflow is broken and blocks work, restore from snapshot:
-
-```bash
-agentplane workflow restore
-```
+If the active workflow is broken and doctor cannot repair it, use [Workflow contract recovery](workflow-migration).
 
 ## direct mode
 

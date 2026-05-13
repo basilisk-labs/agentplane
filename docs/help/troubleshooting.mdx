@@ -6,7 +6,8 @@ description: "Fix common setup and workflow issues when using Agent Plane locall
 ## exported tasks.json looks stale
 
 - Why this happens: the optional tasks export snapshot is not the live task store.
-- What to do: run `agentplane task export` and then re-check your downstream tool.
+- What to do: inspect hidden maintenance commands with `agentplane help --all`, regenerate the
+  advanced export snapshot, and then re-check your downstream tool.
 
 ## command fails with config validation errors
 
@@ -16,65 +17,6 @@ description: "Fix common setup and workflow issues when using Agent Plane locall
 - Validate the config shape against `schemas/config.schema.json` in this repository.
 - Use `agentplane init --yes` to regenerate defaults if the repository can be reset to a clean baseline.
 - Re-apply only intentional local config changes.
-
-## linked dev binary refuses to run because build is stale
-
-- Symptom: commands fail with `refusing to run a stale repo build`.
-- Why this happens: you are running the linked development binary from inside the Agent Plane
-  framework checkout, the global wrapper delegated to the repo-local binary, and `dist/` is older
-  than the current source tree.
-- What to do:
-- Run the canonical framework bootstrap:
-
-```bash
-bun run framework:dev:bootstrap
-```
-
-- Manual fallback if you need to repair steps individually:
-
-```bash
-bun install
-git submodule update --init --recursive agentplane-recipes
-bun run --filter=@agentplaneorg/core build
-bun run --filter=agentplane build
-bun run --filter=@agentplane/testkit build
-```
-
-- After a rebuild, strict commands should run again even if the watched runtime tree is still dirty
-  relative to git, as long as the rebuilt `dist/` snapshot matches the current runtime source.
-- Safe inspection commands such as `agentplane doctor`, `agentplane runtime explain`,
-  `agentplane task list`, `agentplane task show`, `agentplane task doc show`,
-  `agentplane task next`, `agentplane task search`, `agentplane task verify-show`,
-  `agentplane ready`, `agentplane config show`, `agentplane quickstart`, and
-  `agentplane role <ROLE>` warn and continue even while stale-build blocking is still active for
-  stricter commands inside the framework checkout.
-- Retry the original command after the rebuild.
-- Run `node packages/agentplane/bin/agentplane.js runtime explain` to verify the repo-local runtime,
-  then `agentplane runtime explain` if you need to confirm the installed wrapper handoff path.
-- If you are outside the framework checkout, the linked binary should warn and continue instead of
-  hard-failing.
-- If you intentionally need the global installed CLI inside the framework checkout, set
-  `AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1`.
-
-## runtime source is unclear inside the framework checkout
-
-- Symptom: docs, behavior, or package versions seem inconsistent while working in the framework repo.
-- Why this happens: the active process may be using a global install, repo-local handoff, or a
-  directly invoked repo-local binary.
-- What to do:
-
-```bash
-agentplane runtime explain
-```
-
-- Read the reported `Mode`, `Active binary`, `Resolved agentplane`, and
-  `Resolved @agentplaneorg/core` lines first.
-- If mode is `global-in-framework`, run `bun run framework:dev:bootstrap`, then verify the repo-local
-  runtime with `node packages/agentplane/bin/agentplane.js runtime explain`. Run
-  `scripts/reinstall-global-agentplane.sh` only if the global PATH command itself should point at
-  this checkout, then verify again with `agentplane runtime explain`.
-- If mode is `global-forced-in-framework`, unset `AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1` unless you
-  intentionally want the global runtime, then verify again with `agentplane runtime explain`.
 
 ## working tree is dirty before commit or finish
 
@@ -109,22 +51,6 @@ agentplane runtime explain
 - Re-check `task list`, `task show`, or `doctor` after the pull so you are reading the refreshed
   projection.
 - If push still fails, run sync with an explicit conflict policy and inspect changed fields.
-
-## release apply stops before push
-
-- Why this happens: `release:prepublish` gate failed (tests/lint/build/sync checks).
-- What to do:
-- Run `bun run release:prepublish`.
-- Run `bun run release:recover` to classify tag/version/notes drift before retrying.
-- If GitHub shows mixed workflow results, run `bun run release:recover -- --check-github` to see
-  whether the release SHA is missing its `release-ready` artifact, is ready but unpublished, or was
-  already published and only a sibling `Core CI` run failed.
-- If you rerun `Publish to npm` manually, pass the exact release commit as the workflow `sha` input;
-  use `ref` only as a fallback when the exact commit is unknown.
-- If npm history may already contain the target version, run `bun run release:recover -- --check-registry`.
-- Fix reported errors first, then rerun the workflow-appropriate release step:
-  - `direct`: `agentplane release apply --push`
-  - `branch_pr`: `agentplane release candidate --push`, review/merge the candidate PR, then explicitly dispatch `Publish to npm` with the release commit `sha`
 
 ## init completed, but repo is not clean
 
