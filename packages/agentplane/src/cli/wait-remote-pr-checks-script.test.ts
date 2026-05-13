@@ -29,7 +29,11 @@ const isScriptTransientGhTransportErrorTyped = isScriptTransientGhTransportError
 
 const tempRoots: string[] = [];
 type RunScriptResult = { exitCode: number; stdout: string; stderr: string };
-type RunScriptOptions = { env?: Record<string, string> };
+type RunScriptOptions = { cwd?: string; env?: Record<string, string> };
+
+const DEFAULT_BRANCH_ENV = {
+  GITHUB_HEAD_REF: "task/test-default-target",
+};
 
 function toText(value: unknown) {
   if (typeof value === "string") return value;
@@ -53,6 +57,28 @@ async function writeExecutable(root: string, relativePath: string, content: stri
   await mkdir(path.dirname(target), { recursive: true });
   await writeFile(target, `${content}\n`, { encoding: "utf8", mode: 0o755 });
   return target;
+}
+
+async function makeDetachedGitRoot() {
+  const root = await makeTempRoot();
+  await execFileAsync("git", ["init"], { cwd: root });
+  await writeFile(path.join(root, "README.md"), "detached checkout fixture\n", "utf8");
+  await execFileAsync("git", ["add", "README.md"], { cwd: root });
+  await execFileAsync(
+    "git",
+    [
+      "-c",
+      "user.name=agentplane-test",
+      "-c",
+      "user.email=agentplane-test@example.com",
+      "commit",
+      "-m",
+      "fixture",
+    ],
+    { cwd: root },
+  );
+  await execFileAsync("git", ["checkout", "--detach", "HEAD"], { cwd: root });
+  return root;
 }
 
 async function writeGhMock(root: string) {
@@ -170,8 +196,14 @@ async function writeGhMock(root: string) {
 async function runScript(args: string[], opts: RunScriptOptions = {}): Promise<RunScriptResult> {
   try {
     const result = await execFileAsync(SCRIPT_RUNTIME, [SCRIPT_PATH, ...args], {
-      cwd: process.cwd(),
-      env: { ...process.env, ...opts.env },
+      cwd: opts.cwd ?? process.cwd(),
+      env: {
+        ...process.env,
+        BRANCH_NAME: "",
+        GITHUB_HEAD_REF: "",
+        GITHUB_REPOSITORY: "",
+        ...opts.env,
+      },
       maxBuffer: 10 * 1024 * 1024,
     });
     return {
@@ -242,7 +274,7 @@ describe("wait-remote-pr-checks script", () => {
         GH_SCENARIO: "success",
         GH_STATE_FILE: stateFile,
         GH_CALL_LOG: callLog,
-        GITHUB_HEAD_REF: "task/test-default-target",
+        ...DEFAULT_BRANCH_ENV,
         AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
         AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "3",
       },
@@ -304,6 +336,25 @@ describe("wait-remote-pr-checks script", () => {
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain("Unknown option: --mystery");
     expect(result.stderr).not.toContain("required checks passed");
+  });
+
+  it("fails explicitly for detached push checkouts without an explicit PR target", async () => {
+    const root = await makeTempRoot();
+    const detachedRoot = await makeDetachedGitRoot();
+    const { stateFile } = await writeGhMock(root);
+
+    const result = await runScript([], {
+      cwd: detachedRoot,
+      env: {
+        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+        GH_STATE_FILE: stateFile,
+        GH_SCENARIO: "success",
+      },
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain("Unable to resolve current branch for gh pr view");
+    expect(result.stderr).toContain("Pass a PR number/url/branch explicitly");
   });
 
   it(
@@ -466,6 +517,7 @@ describe("wait-remote-pr-checks script", () => {
           PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
           GH_STATE_FILE: stateFile,
           GH_SCENARIO: "timeout",
+          ...DEFAULT_BRANCH_ENV,
           AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
           AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
         },
@@ -491,6 +543,7 @@ describe("wait-remote-pr-checks script", () => {
           PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
           GH_STATE_FILE: stateFile,
           GH_SCENARIO: "progressing-in-progress",
+          ...DEFAULT_BRANCH_ENV,
           AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
           AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
         },
@@ -517,6 +570,7 @@ describe("wait-remote-pr-checks script", () => {
           PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
           GH_STATE_FILE: stateFile,
           GH_SCENARIO: "stuck-in-progress",
+          ...DEFAULT_BRANCH_ENV,
           AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
           AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
         },

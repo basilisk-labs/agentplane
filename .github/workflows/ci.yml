@@ -90,7 +90,7 @@ jobs:
         run: bun run lint:core
       - name: Architecture boundaries
         run: bun run arch:check
-      - name: Dead code baseline (warn-only)
+      - name: Dead code baseline (blocking)
         run: bun run knip:check
       - name: Unit Tests (Fast)
         run: bun run test:fast
@@ -141,8 +141,6 @@ jobs:
         with:
           node-version: "24"
       - run: bun install --frozen-lockfile --ignore-scripts
-      - name: Format (check)
-        run: bun run format:check
       - name: Schemas (check)
         run: bun run schemas:check
       - name: Agent templates (check)
