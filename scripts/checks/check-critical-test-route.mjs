@@ -7,6 +7,7 @@ import { getVitestWorkspaceProjects } from "../lib/test-route-registry.mjs";
 const CRITICAL_TIMEOUT_MINUTES = 10;
 const CRITICAL_VITEST_TIMEOUT_MS = 60_000;
 const VITEST_TIMEOUT_LITERAL = "60_000";
+const TEST_CRITICAL_SCRIPT = "node scripts/checks/run-vitest-suite.mjs critical-cli";
 
 const WORKFLOW_FILES = [".github/workflows/ci.yml", ".github/workflows/prepublish.yml"];
 
@@ -41,9 +42,8 @@ function assertWorkflowCriticalStep(workflowPath) {
 function assertPackageScript() {
   const pkg = JSON.parse(readRepoFile("package.json"));
   const actual = pkg.scripts?.["test:critical"];
-  const expected = "vitest --config vitest.workspace.ts run --project critical";
-  if (actual !== expected) {
-    throw new Error(`package.json test:critical must be exactly: ${expected}`);
+  if (actual !== TEST_CRITICAL_SCRIPT) {
+    throw new Error(`package.json test:critical must be exactly: ${TEST_CRITICAL_SCRIPT}`);
   }
 }
 

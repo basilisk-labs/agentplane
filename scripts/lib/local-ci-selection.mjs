@@ -145,6 +145,93 @@ const CLI_DOCS_RELEVANT_PATTERNS = [
   /^docs\/user\/agent-bootstrap\.generated\.mdx$/,
 ];
 
+const TARGET_BUCKET_DEFINITIONS = [
+  {
+    bucket: "task",
+    reason: "task_command_paths_only",
+    patterns: TASK_BUCKET_PATTERNS,
+    testFiles: TASK_TEST_FILES,
+    vitestPool: "threads",
+  },
+  {
+    bucket: "doctor",
+    reason: "doctor_command_paths_only",
+    patterns: DOCTOR_BUCKET_PATTERNS,
+    testFiles: DOCTOR_TEST_FILES,
+    vitestPool: "threads",
+  },
+  {
+    bucket: "backend",
+    reason: "backend_projection_paths_only",
+    patterns: BACKEND_BUCKET_PATTERNS,
+    testFiles: BACKEND_TEST_FILES,
+    vitestPool: "forks",
+  },
+  {
+    bucket: "hooks",
+    reason: "hook_and_ci_routing_paths_only",
+    patterns: HOOKS_BUCKET_PATTERNS,
+    testFiles: HOOKS_TEST_FILES,
+    vitestPool: "threads",
+  },
+  {
+    bucket: "workflow",
+    reason: "workflow_contract_paths_only",
+    patterns: WORKFLOW_BUCKET_PATTERNS,
+    testFiles: WORKFLOW_TEST_FILES,
+    vitestPool: "threads",
+  },
+  {
+    bucket: "cli-help",
+    reason: "cli_help_and_spec_paths_only",
+    patterns: CLI_HELP_BUCKET_PATTERNS,
+    testFiles: CLI_HELP_TEST_FILES,
+    vitestPool: "threads",
+  },
+  {
+    bucket: "cli-core",
+    reason: "cli_core_execution_paths_only",
+    patterns: CLI_CORE_BUCKET_PATTERNS,
+    testFiles: CLI_CORE_TEST_FILES,
+    vitestPool: "threads",
+  },
+  {
+    bucket: "pr",
+    reason: "pr_paths_only",
+    patterns: PR_BUCKET_PATTERNS,
+    testFiles: PR_TEST_FILES,
+    vitestPool: "threads",
+  },
+  {
+    bucket: "cli-runtime",
+    reason: "cli_runtime_handoff_paths_only",
+    patterns: CLI_RUNTIME_BUCKET_PATTERNS,
+    testFiles: CLI_RUNTIME_TEST_FILES,
+    vitestPool: "threads",
+  },
+  {
+    bucket: "release",
+    reason: "release_paths_only",
+    patterns: RELEASE_BUCKET_PATTERNS,
+    testFiles: RELEASE_TEST_FILES,
+    vitestPool: "threads",
+  },
+  {
+    bucket: "upgrade",
+    reason: "upgrade_paths_only",
+    patterns: UPGRADE_BUCKET_PATTERNS,
+    testFiles: UPGRADE_TEST_FILES,
+    vitestPool: "threads",
+  },
+  {
+    bucket: "guard",
+    reason: "guard_paths_only",
+    patterns: GUARD_BUCKET_PATTERNS,
+    testFiles: GUARD_TEST_FILES,
+    vitestPool: "threads",
+  },
+];
+
 export function parseChangedFilesEnv(rawValue) {
   const raw = String(rawValue ?? "").trim();
   if (!raw) return [];
@@ -167,6 +254,36 @@ function stripNeutralPaths(paths, neutralPatterns) {
     (filePath) => !neutralPatterns.some((pattern) => pattern.test(filePath)),
   );
   return filtered.length > 0 ? filtered : paths;
+}
+
+function uniqueSorted(values) {
+  return [...new Set(values)].toSorted((a, b) => a.localeCompare(b));
+}
+
+function collectCombinedTargetedPlan(files, effectiveFiles) {
+  const matched = [];
+  for (const filePath of effectiveFiles) {
+    const bucket = TARGET_BUCKET_DEFINITIONS.find((entry) =>
+      entry.patterns.some((pattern) => pattern.test(filePath)),
+    );
+    if (!bucket) return null;
+    matched.push(bucket);
+  }
+
+  const buckets = uniqueSorted(matched.map((entry) => entry.bucket));
+  if (buckets.length <= 1) return null;
+
+  const selected = TARGET_BUCKET_DEFINITIONS.filter((entry) => buckets.includes(entry.bucket));
+  return {
+    kind: "targeted",
+    bucket: "mixed",
+    buckets,
+    reason: "mixed_targeted_paths",
+    files,
+    lintTargets: effectiveFiles,
+    testFiles: uniqueSorted(selected.flatMap((entry) => entry.testFiles)),
+    vitestPool: selected.some((entry) => entry.vitestPool === "forks") ? "forks" : "threads",
+  };
 }
 
 export function selectFastCiPlan(changedFiles) {
@@ -323,6 +440,9 @@ export function selectFastCiPlan(changedFiles) {
       vitestPool: "threads",
     };
   }
+
+  const combinedPlan = collectCombinedTargetedPlan(files, effectiveFiles);
+  if (combinedPlan) return combinedPlan;
 
   if (anyPathMatches(effectiveFiles, BROAD_FALLBACK_PATTERNS)) {
     return { kind: "full-fast", reason: "broad_or_infra_sensitive_change", files };

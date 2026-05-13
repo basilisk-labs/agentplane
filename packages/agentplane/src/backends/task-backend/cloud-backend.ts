@@ -1,9 +1,9 @@
 import path from "node:path";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 
 import { loadDotEnv, type DotEnvLoadResult } from "../../shared/env.js";
 import { isRecord } from "../../shared/guards.js";
+import { readCloudBackendState, writeCloudBackendState } from "./cloud-backend-state.js";
 import {
   BackendError,
   type TaskBackend,
@@ -310,13 +310,13 @@ export class CloudBackend implements TaskBackend {
       }
     }
     if (opts.direction === "pull") {
-      await this.writeState({
+      await writeCloudBackendState(this.statePath, {
         last_checked_at: pull.lastCheckedAt ?? new Date().toISOString(),
       });
       return;
     }
     if (!pull.lastCheckedAt) return;
-    await this.writeState({
+    await writeCloudBackendState(this.statePath, {
       last_checked_at: pull.lastCheckedAt,
     });
   }
@@ -483,7 +483,7 @@ export class CloudBackend implements TaskBackend {
 
   async inspectConfiguration(): Promise<TaskBackendInspectionResult> {
     const missing = this.missingConfigKeys();
-    const state = await this.readState();
+    const state = await readCloudBackendState(this.statePath);
     const syncState =
       missing.length === 0
         ? await this.requestCloudSyncState(this.projectId).catch(() => null)
@@ -541,7 +541,7 @@ export class CloudBackend implements TaskBackend {
   }
 
   private async assertProjectionFreshForLocalMutation(): Promise<void> {
-    const state = await this.readState();
+    const state = await readCloudBackendState(this.statePath);
     if (!isStale(state.last_checked_at, this.staleAfterSeconds)) return;
     throw new BackendError(
       [
@@ -577,23 +577,5 @@ export class CloudBackend implements TaskBackend {
       [this.projectId, "AGENTPLANE_CLOUD_PROJECT_ID"],
     ] as const;
     return required.flatMap(([value, key]) => (value ? [] : [key]));
-  }
-  private async readState(): Promise<{ last_checked_at: string | null }> {
-    try {
-      const raw = JSON.parse(await readFile(this.statePath, "utf8")) as {
-        last_checked_at?: unknown;
-      } | null;
-      const lastCheckedAt = raw && typeof raw === "object" ? raw.last_checked_at : null;
-      if (typeof lastCheckedAt === "string") return { last_checked_at: lastCheckedAt };
-    } catch (err) {
-      const code = (err as { code?: string } | null)?.code;
-      if (code !== "ENOENT") throw err;
-    }
-    return { last_checked_at: null };
-  }
-
-  private async writeState(state: { last_checked_at: string }): Promise<void> {
-    await mkdir(path.dirname(this.statePath), { recursive: true });
-    await writeFile(this.statePath, `${JSON.stringify(state, null, 2)}\n`);
   }
 }
