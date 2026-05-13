@@ -3,13 +3,11 @@
  .../backends/task-backend/cloud-backend-state.ts   |  29 ++
  .../src/backends/task-backend/cloud-backend.ts     |  34 +-
  .../agentplane/src/cli/local-ci-selection.test.ts  |  32 +-
- .../src/commands/blueprints/catalog-cache.ts       |   4 +-
  .../commands/release/release-ci-contract.test.ts   |   7 +
- packages/agentplane/src/shared/env.ts              |   3 +-
  scripts/README.md                                  |   3 +-
  scripts/checks/run-local-ci.mjs                    |  62 ++-
  scripts/checks/run-vitest-suite.mjs                |  87 +++-
  scripts/lib/local-ci-selection.d.ts                |   4 +-
  scripts/lib/local-ci-selection.mjs                 | 120 +++++
  scripts/lib/test-route-registry.mjs                |  14 +
- 14 files changed, 897 insertions(+), 57 deletions(-)
+ 12 files changed, 893 insertions(+), 54 deletions(-)
