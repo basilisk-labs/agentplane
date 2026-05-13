@@ -30,14 +30,14 @@
     },
     "packages/agentplane": {
       "name": "agentplane",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "bin": {
         "ap": "bin/ap.js",
         "agentplane": "bin/agentplane.js",
       },
       "dependencies": {
-        "@agentplaneorg/core": "0.5.0",
-        "@agentplaneorg/recipes": "0.5.0",
+        "@agentplaneorg/core": "0.6.0",
+        "@agentplaneorg/recipes": "0.6.0",
         "@clack/prompts": "^1.2.0",
         "yaml": "^2.7.1",
         "yauzl": "^2.10.0",
@@ -51,7 +51,7 @@
     },
     "packages/core": {
       "name": "@agentplaneorg/core",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "dependencies": {
         "canonicalize": "^3.0.0",
         "execa": "^5.1.1",
@@ -63,7 +63,7 @@
     },
     "packages/recipes": {
       "name": "@agentplaneorg/recipes",
-      "version": "0.5.0",
+      "version": "0.6.0",
     },
     "packages/spec": {
       "name": "@agentplane/spec",
@@ -73,7 +73,7 @@
       "name": "@agentplane/testkit",
       "version": "0.0.0",
       "dependencies": {
-        "@agentplaneorg/core": "0.5.0",
+        "@agentplaneorg/core": "0.6.0",
       },
     },
     "website": {

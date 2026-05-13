@@ -53,6 +53,7 @@ Commands:
     pr check  Check that PR artifacts are present and valid.
     pr close  Close a GitHub PR through REST with optional remote head-branch deletion.
     pr close-superseded  Close a superseded task PR using task artifacts.
+    pr flow status  Show branch_pr task branch, remote PR, close-tail, and next-action state.
     pr note  Append a handoff note into PR review.md.
     pr open  Create PR artifacts for a task and, unless --sync-only is set, publish/link the remote GitHub PR.
     pr update  Update PR artifacts (review packet, diffstat, and GitHub projections).
@@ -144,6 +145,25 @@ Commands:
     incidents collect  Promote reusable resolved external findings from a task into the incident registry.
   IDE:
     ide sync  Generate IDE entrypoints from policy gateway file (AGENTS.md or CLAUDE.md).
+  Context:
+    context  Manage local project context, durable derivations, projections, and search surfaces.
+    context capability  Capability maintenance fallback under context namespace.
+    context capability discover  Discover capability candidates from context operations.
+    context capability search  Search capability registry and candidate surface.
+    context capability validate  Validate a unified capability artifact.
+    context doctor  Diagnose local context health and projection consistency.
+    context graph  Validate and inspect derived context graph.
+    context graph export  Export graph artifacts for offline consumption.
+    context graph neighbors  Show direct neighbors for one graph node.
+    context graph show  Show a node with neighborhood summary.
+    context graph summary  Print a context-graph summary.
+    context graph validate  Validate derived graph JSONL rows and references.
+    context ingest  Create and optionally run a context assimilation task.
+    context init  Initialize local context workspace and system manifest.
+    context reindex  Rebuild local SQLite projection from source artifacts.
+    context search  Search indexed local context, facts, graph, tasks, and capabilities.
+    context show  Resolve a context source reference and print addressed content.
+    context verify-task  Validate mutations for a context_assimilation task.
   Framework Dev:
     codex  Codex integration commands.
     codex plugin  Install and inspect bundled Codex plugin integrations.
@@ -229,10 +249,10 @@ Options:
   --owner <id>  Owner id (e.g. CODER). (required)
   --priority <low|normal|med|high>  Task priority (default: med). (choices=low|normal|med|high, default=med)
   --tag <tag>  Repeatable. Adds a tag (must provide at least one). (repeatable, min=1)
-  --task-kind <analysis|content|docs|code|release|ops>  Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops)
-  --mutation-scope <none|docs|code|release|ops|unknown>  Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|unknown)
+  --task-kind <analysis|content|docs|code|release|ops|context>  Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops|context)
+  --mutation-scope <none|docs|code|release|ops|context|unknown>  Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
   --risk <risk>  Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
-  --blueprint-request <id>  Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|runner.execution|post_run.improvement_review|release.strict|ops.approval)
+  --blueprint-request <id>  Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|runner.execution|post_run.improvement_review|release.strict|ops.approval)
   --depends-on <task-id>  Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
   --verify <command>  Repeatable. Verification commands/checks to run for this task. (repeatable)
   --show-blueprint  Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)

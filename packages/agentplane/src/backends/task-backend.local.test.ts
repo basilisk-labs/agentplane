@@ -4,6 +4,10 @@ import { renderTaskReadme } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { LocalBackend, toTaskSummary, type TaskData, type TaskSummary } from "./task-backend.js";
+import {
+  readFreshSqliteTaskProjection,
+  resolveTaskProjectionSqlitePath,
+} from "./task-backend/local-task-sqlite-cache.js";
 import { mkTempDir, silenceStdIO } from "@agentplane/testkit";
 
 type QuerySummaryView = Pick<
@@ -215,6 +219,52 @@ describe("LocalBackend", () => {
 
     expect(projection.map((entry) => entry.id)).toEqual([task.id]);
     await expect(stat(indexPath)).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
+  it("writes a SQLite projection cache from projection-only reads", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const task: TaskData = {
+      id: "202601300014-ABCD",
+      title: "SQLite projection",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: ["projection"],
+      verify: [],
+      comments: [{ author: "TESTER", body: "cached summary" }],
+      doc: "## Summary\n\nSQLite body",
+    };
+    await backend.writeTask(task);
+
+    const projection = await backend.listProjectionTasks();
+    const readmePath = path.join(tempDir, task.id, "README.md");
+    const readmeStat = await stat(readmePath);
+    const sqlitePath = resolveTaskProjectionSqlitePath(tempDir);
+    const sqliteProjection = await readFreshSqliteTaskProjection({
+      tasksDir: tempDir,
+      fingerprintEntries: [
+        { path: readmePath, mtimeMs: readmeStat.mtimeMs, size: readmeStat.size },
+      ],
+    });
+
+    expect(projection.map((entry) => entry.id)).toEqual([task.id]);
+    const sqliteStat = await stat(sqlitePath);
+
+    expect(sqliteStat.size).toBeGreaterThan(0);
+    expect(sqliteProjection?.map((entry) => pickQuerySummary(entry))).toEqual(
+      projection.map((entry) => pickQuerySummary(entry)),
+    );
+  });
+
+  it("stores repository task projections in the shared context SQLite file", async () => {
+    const tasksDir = path.join(tempDir, ".agentplane", "tasks");
+    await mkdir(path.join(tempDir, ".git"), { recursive: true });
+
+    expect(resolveTaskProjectionSqlitePath(tasksDir)).toBe(
+      path.join(tempDir, ".agentplane", "cache.sqlite"),
+    );
   });
 
   it("reparses projection entries after README invalidation", async () => {

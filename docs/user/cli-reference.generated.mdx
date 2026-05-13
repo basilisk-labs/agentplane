@@ -52,6 +52,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [pr check](#pr-check)
   - [pr close](#pr-close)
   - [pr close-superseded](#pr-close-superseded)
+  - [pr flow status](#pr-flow-status)
   - [pr note](#pr-note)
   - [pr open](#pr-open)
   - [pr update](#pr-update)
@@ -1425,7 +1426,7 @@ Manage local PR review and GitHub publication artifacts for a task (branch_pr wo
 Usage:
 
 ```text
-agentplane pr <open|update|check|note|close|close-superseded> <task-id|pr-number> [options]
+agentplane pr <open|update|check|flow status|note|close|close-superseded> <task-id|pr-number> [options]
 ```
 
 Examples:
@@ -1447,6 +1448,12 @@ agentplane pr check 202602030608-F1Q8AB
 ```
 
 - Validate PR artifacts.
+
+```sh
+agentplane pr flow status 202602030608-F1Q8AB
+```
+
+- Show task branch, remote PR, close-tail, and next-action state.
 
 ```sh
 agentplane pr note 202602030608-F1Q8AB --author REVIEWER --body "Looks good"
@@ -1529,6 +1536,34 @@ agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch
 ```
 
 - Repair a stale task PR after the task has already been merged to main.
+
+### pr flow status
+
+Show branch_pr task branch, remote PR, close-tail, and next-action state.
+
+Usage:
+
+```text
+agentplane pr flow status <task-id> [options]
+```
+
+Options:
+
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane pr flow status 202602030608-F1Q8AB
+```
+
+- Inspect current PR flow state before merge or cleanup.
+
+```sh
+agentplane pr flow status 202602030608-F1Q8AB --json
+```
+
+- Emit machine-readable flow state.
 
 ### pr note
 

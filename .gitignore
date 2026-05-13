@@ -15,6 +15,9 @@ coverage
 *.tsbuildinfo
 .agentplane/worktrees
 .agentplane/cache
+.agentplane/cache.sqlite
+.agentplane/cache.sqlite-wal
+.agentplane/cache.sqlite-shm
 .agentplane/bin
 .agentplane/backends/*/state.json
 .agentplane/recipes-cache

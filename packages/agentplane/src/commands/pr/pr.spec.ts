@@ -11,7 +11,7 @@ export const prSpec: CommandSpec<PrGroupParsed> = {
   summary:
     "Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).",
   synopsis: [
-    "agentplane pr <open|update|check|note|close|close-superseded> <task-id|pr-number> [options]",
+    "agentplane pr <open|update|check|flow status|note|close|close-superseded> <task-id|pr-number> [options]",
   ],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [
@@ -21,6 +21,10 @@ export const prSpec: CommandSpec<PrGroupParsed> = {
       why: "Refresh review.md plus github-title/body projections.",
     },
     { cmd: "agentplane pr check 202602030608-F1Q8AB", why: "Validate PR artifacts." },
+    {
+      cmd: "agentplane pr flow status 202602030608-F1Q8AB",
+      why: "Show task branch, remote PR, close-tail, and next-action state.",
+    },
     {
       cmd: 'agentplane pr note 202602030608-F1Q8AB --author REVIEWER --body "Looks good"',
       why: "Append a handoff note.",
@@ -140,6 +144,27 @@ export const prCheckSpec: CommandSpec<PrCheckParsed> = {
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   examples: [{ cmd: "agentplane pr check 202602030608-F1Q8AB", why: "Check artifacts." }],
   parse: (raw) => ({ taskId: String(raw.args["task-id"]) }),
+};
+
+export type PrFlowStatusParsed = { taskId: string; json: boolean };
+
+export const prFlowStatusSpec: CommandSpec<PrFlowStatusParsed> = {
+  id: ["pr", "flow", "status"],
+  group: "PR",
+  summary: "Show branch_pr task branch, remote PR, close-tail, and next-action state.",
+  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
+  examples: [
+    {
+      cmd: "agentplane pr flow status 202602030608-F1Q8AB",
+      why: "Inspect current PR flow state before merge or cleanup.",
+    },
+    {
+      cmd: "agentplane pr flow status 202602030608-F1Q8AB --json",
+      why: "Emit machine-readable flow state.",
+    },
+  ],
+  parse: (raw) => ({ taskId: String(raw.args["task-id"]), json: raw.opts.json === true }),
 };
 
 export type PrNoteParsed = { taskId: string; author: string; body?: string; bodyFile?: string };

@@ -129,6 +129,7 @@ async function writeGhMock(root: string) {
     "function prPayload(target) { const mergeStateStatus = scenario === 'dirty-pr' ? 'DIRTY' : 'CLEAN'; if (target === '456') { return { number: 456, headRefOid: 'head-sha-2', baseRefName: 'main', url: 'https://github.com/basilisk-labs/agentplane/pull/456', title: 'Check polling 2', mergeStateStatus }; } return { number: 123, headRefOid: 'head-sha-1', baseRefName: 'main', url: 'https://github.com/basilisk-labs/agentplane/pull/123', title: 'Check polling', mergeStateStatus }; }",
     "function repoPayload() { return { nameWithOwner: 'basilisk-labs/agentplane' }; }",
     "function protectionPayload() { return { required_status_checks: { strict: true, contexts: ['Core CI / test', 'Docs CI / docs'], checks: [ { context: 'Core CI / test', app_id: 123 }, { context: 'Docs CI / docs', app_id: 456 } ] } }; }",
+    "function lateProtectionPayload() { return { required_status_checks: { strict: true, contexts: ['Core CI / test', 'Docs CI / docs', 'Release-ready manifest'], checks: [ { context: 'Core CI / test', app_id: 123 }, { context: 'Docs CI / docs', app_id: 456 }, { context: 'Release-ready manifest', app_id: 789 } ] } }; }",
     "function statusPayload(headSha) {",
     "  const currentMap = readState();",
     "  const attempts = currentMap.statusCallsByHead && typeof currentMap.statusCallsByHead === 'object' ? currentMap.statusCallsByHead : {};",
@@ -136,6 +137,14 @@ async function writeGhMock(root: string) {
     "  const pending = { state: 'pending', statuses: [ { context: 'Core CI / test', state: 'pending', description: 'running' }, { context: 'Docs CI / docs', state: 'pending', description: 'queued' } ] };",
     "  const success = { state: 'success', statuses: [ { context: 'Core CI / test', state: 'success', description: 'done' }, { context: 'Docs CI / docs', state: 'success', description: 'done' } ] };",
     "  const failure = { state: 'failure', statuses: [ { context: 'Core CI / test', state: 'failure', description: 'failed' }, { context: 'Docs CI / docs', state: 'success', description: 'done' } ] };",
+    "  if (scenario === 'late-required-check') {",
+    "    if (attempt === 0) return { state: 'success', statuses: [ { context: 'Core CI / test', state: 'success', description: 'done' }, { context: 'Docs CI / docs', state: 'success', description: 'done' } ] };",
+    "    return { state: 'success', statuses: [ { context: 'Core CI / test', state: 'success', description: 'done' }, { context: 'Docs CI / docs', state: 'success', description: 'done' }, { context: 'Release-ready manifest', state: 'success', description: 'done' } ] };",
+    "  }",
+    "  if (scenario === 'ready-flaps') {",
+    "    if (attempt === 1) return pending;",
+    "    return success;",
+    "  }",
     "  if (headSha === 'head-sha-2' && scenario === 'multi-second-failure') return failure;",
     "  if (scenario === 'timeout') return pending;",
     "  if (scenario === 'progressing-in-progress') return attempt < 2 ? pending : success;",
@@ -179,7 +188,7 @@ async function writeGhMock(root: string) {
     String.raw`if (args[0] === 'api' && /\/branches\/main\/protection$/.test(args[1])) {`,
     "  if (scenario === 'auth-failure') fail('gh: Authentication required');",
     "  nextCount('protectionCalls');",
-    "  ok(protectionPayload());",
+    "  ok(scenario === 'late-required-check' ? lateProtectionPayload() : protectionPayload());",
     "}",
     String.raw`if (args[0] === 'api' && /\/commits\/head-sha-1\/status$/.test(args[1])) { const payload = statusPayload('head-sha-1'); nextCount('statusCallsByHead', 'head-sha-1'); ok(payload); }`,
     String.raw`if (args[0] === 'api' && /\/commits\/head-sha-2\/status$/.test(args[1])) { const payload = statusPayload('head-sha-2'); nextCount('statusCallsByHead', 'head-sha-2'); ok(payload); }`,
@@ -283,7 +292,8 @@ describe("wait-remote-pr-checks script", () => {
     expect(result.exitCode).toBe(0);
     const output = transcript(result);
     expect(output).toContain("poll 1 (idle 1/3)");
-    expect(output).toContain("poll 2 (idle 0/3)");
+    expect(output).toContain("ready; waiting for stable check set (1/2)");
+    expect(output).toContain("poll 3 (idle 0/3)");
     expect(output).toContain("required checks passed for PR #123");
 
     const callLogText = await readFile(callLog, "utf8");
@@ -299,6 +309,53 @@ describe("wait-remote-pr-checks script", () => {
     expect(callLogText).toContain(
       `["api","repos/basilisk-labs/agentplane/commits/head-sha-1/status"]`,
     );
+  });
+
+  it("waits for the ready check set to stay stable before passing", async () => {
+    const root = await makeTempRoot();
+    const { stateFile } = await writeGhMock(root);
+
+    const result = await runScript(["123"], {
+      env: {
+        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+        GH_SCENARIO: "late-required-check",
+        GH_STATE_FILE: stateFile,
+        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "4",
+        AGENTPLANE_REMOTE_CHECK_STABLE_POLLS: "2",
+      },
+    });
+
+    expect(result.exitCode, transcript(result)).toBe(0);
+    const output = transcript(result);
+    expect(output).toContain("poll 1");
+    expect(output).toContain("Release-ready manifest=pending");
+    expect(output).toContain("ready; waiting for stable check set (1/2)");
+    expect(output).toContain("Release-ready manifest=success");
+    expect(output).toContain("required checks passed for PR #123");
+  });
+
+  it("resets ready stability after a non-ready poll", async () => {
+    const root = await makeTempRoot();
+    const { stateFile } = await writeGhMock(root);
+
+    const result = await runScript(["123"], {
+      env: {
+        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+        GH_SCENARIO: "ready-flaps",
+        GH_STATE_FILE: stateFile,
+        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "5",
+        AGENTPLANE_REMOTE_CHECK_STABLE_POLLS: "2",
+      },
+    });
+
+    expect(result.exitCode, transcript(result)).toBe(0);
+    const output = transcript(result);
+    expect(output).toContain("poll 2");
+    expect(output).toContain("Core CI / test=pending");
+    expect(output).toContain("poll 4");
+    expect(output).toContain("required checks passed for PR #123");
   });
 
   it("accepts --pr as an alias for a positional PR target", async () => {
@@ -520,6 +577,7 @@ describe("wait-remote-pr-checks script", () => {
           ...DEFAULT_BRANCH_ENV,
           AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
           AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
+          AGENTPLANE_REMOTE_CHECK_STABLE_POLLS: "1",
         },
       });
 
@@ -546,6 +604,7 @@ describe("wait-remote-pr-checks script", () => {
           ...DEFAULT_BRANCH_ENV,
           AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
           AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
+          AGENTPLANE_REMOTE_CHECK_STABLE_POLLS: "1",
         },
       });
 
@@ -573,6 +632,7 @@ describe("wait-remote-pr-checks script", () => {
           ...DEFAULT_BRANCH_ENV,
           AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
           AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "2",
+          AGENTPLANE_REMOTE_CHECK_STABLE_POLLS: "1",
         },
       });
 

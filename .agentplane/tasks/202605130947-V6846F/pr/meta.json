@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T11:35:51Z",
+  "base": "main",
+  "branch": "task/202605130947-V6846F/cli-perf-read-paths",
+  "created_at": "2026-05-13T09:48:18.945Z",
+  "head_sha": "f10eb8b66580f9385532805dc99c952ffe561424",
+  "last_verified_at": "2026-05-13T10:45:46.911Z",
+  "last_verified_sha": "1c5bf21c6005d06986da3f64db43cdf243b0cd0a",
+  "merge_commit": "b274d81aa9ffdbd545265678bf9042268df23da1",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T11:35:51Z",
+  "pr_number": 3625,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3625",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605130947-V6846F",
+  "updated_at": "2026-05-13T11:35:51Z",
+  "verify": {
+    "status": "pass"
+  }
+}

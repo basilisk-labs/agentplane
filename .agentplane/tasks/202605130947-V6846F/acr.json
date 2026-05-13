@@ -1,0 +1,231 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605130947-V6846F",
+  "created_at": "2026-05-13T11:36:38.258Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "b274d81aa9ffdbd545265678bf9042268df23da1",
+    "work_ref": "main",
+    "work_commit": "b274d81aa9ffdbd545265678bf9042268df23da1"
+  },
+  "task": {
+    "task_id": "202605130947-V6846F",
+    "title": "Optimize CLI read-heavy startup paths",
+    "intent": "Analyze the current AgentPlane CLI performance code after recent changes and implement behavior-preserving speedups for hot read-heavy paths.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605130947-V6846F/README.md",
+      "sha256": "sha256:0bc4bcec124d61cc1bae816239cec0ac634e45300b1218cc600b3e15ec192564"
+    },
+    "approved_at": "2026-05-13T10:22:15.001Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3625.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605130947-V6846F_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-13T10:22:15.001Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605130947-V6846F/README.md",
+      "sha256": "sha256:0bc4bcec124d61cc1bae816239cec0ac634e45300b1218cc600b3e15ec192564"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605130947-V6846F/README.md",
+      "sha256": "sha256:0bc4bcec124d61cc1bae816239cec0ac634e45300b1218cc600b3e15ec192564"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605130947-V6846F/README.md",
+      "sha256": "sha256:0bc4bcec124d61cc1bae816239cec0ac634e45300b1218cc600b3e15ec192564"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605130947-V6846F/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:48662995dc106a5deb0354cf93d7174b04406368264afbd6fc6a8f67adf3e898"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit b274d81aa9ffdbd545265678bf9042268df23da1 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:0006829267ca22f5b980d655fec5512e9d2b0515ce8d1a740e4fb75eb4caebaf",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "performance.benchmark",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "benchmark.baseline",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "benchmark.method",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "benchmark.runs",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "benchmark.threshold",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "benchmark.comparison",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "benchmark.verdict",
+          "kind": "final_output",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "benchmark.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605130947-V6846F/blueprint/resolved-snapshot.json",
+        "digest": "4178befc44e30568c554d526972a8cc76dd7357389df383138ad3d7b39429985",
+        "current_digest": "4178befc44e30568c554d526972a8cc76dd7357389df383138ad3d7b39429985",
+        "route_changed": false,
+        "artifact_sha256": "sha256:48662995dc106a5deb0354cf93d7174b04406368264afbd6fc6a8f67adf3e898",
+        "safe_command": "agentplane blueprint snapshot 202605130947-V6846F"
+      }
+    }
+  }
+}

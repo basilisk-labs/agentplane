@@ -55,7 +55,12 @@ const DEFAULT_ALLOWED = [
   ".agentplane/tasks/${taskId}/acr.json",
 ];
 
-const DEFAULT_FORBIDDEN = ["context/raw/", "context/raw/private/", ".agentplane/context/service/"];
+const DEFAULT_FORBIDDEN = [
+  "context/raw/",
+  "context/raw/private/",
+  ".agentplane/cache.sqlite",
+  ".agentplane/context/service/",
+];
 
 function normalizePath(path: string): string {
   return toPosix(path).replace(/^\/+/, "");
@@ -348,7 +353,10 @@ export async function cmdContextVerifyTask(opts: {
   if (changedPaths.length > 0) {
     const denied: string[] = [];
     for (const changed of changedPaths) {
-      if (changed.startsWith(".agentplane/context/service/")) {
+      if (
+        changed === ".agentplane/cache.sqlite" ||
+        changed.startsWith(".agentplane/context/service/")
+      ) {
         denied.push(`${changed}: forbidden service mutation`);
         continue;
       }

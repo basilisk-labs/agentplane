@@ -1,0 +1,10 @@
+ .../blueprint/resolved-snapshot.json               | 513 +++++++++++++++++++++
+ .../src/backends/task-backend/cloud-pull.ts        |   5 +-
+ .../task-backend/redmine/backend-sync/sync.ts      |  10 +-
+ .../run-cli.core.help-snap.test.ts.snap            | 362 +--------------
+ packages/agentplane/src/cli/output.test.ts         |  34 +-
+ packages/agentplane/src/cli/output.ts              | 127 ++++-
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |   3 +
+ packages/agentplane/src/commands/acr/validate.ts   |   3 +-
+ packages/agentplane/src/commands/doctor.run.ts     |   4 +-
+ 9 files changed, 700 insertions(+), 361 deletions(-)

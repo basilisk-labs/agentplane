@@ -1,5 +1,6 @@
 import type { Logger, LoggerMode } from "@agentplaneorg/core/logger";
 import { createLogger } from "@agentplaneorg/core/logger";
+import { visibleLen } from "../shared/ansi.js";
 
 export type CliOutputWriter = {
   write: (chunk: string) => unknown;
@@ -18,6 +19,8 @@ export type CliReportOptions = {
   header?: string;
   stream?: CliEmitterStream;
 };
+
+type CliPresentationMode = "agent" | "human";
 
 export type CliEmitter = {
   line: (text: string, stream?: CliEmitterStream) => void;
@@ -75,24 +78,90 @@ function ensureTrailingNewline(text: string): string {
   return text.endsWith("\n") ? text : `${text}\n`;
 }
 
-function renderReportLine(entry: CliReportEntry): string {
+function isTruthyEnv(value: string | undefined): boolean {
+  if (!value) return false;
+  const normalized = value.trim().toLowerCase();
+  return normalized === "1" || normalized === "true" || normalized === "yes";
+}
+
+export function resolveCliPresentationMode(
+  env: NodeJS.ProcessEnv = process.env,
+): CliPresentationMode {
+  const alias = env.AGENTPLANE_CLI_ALIAS?.trim().toLowerCase();
+  if (alias === "ap" || isTruthyEnv(env.AGENTPLANE_AGENT_MODE)) return "agent";
+  return "human";
+}
+
+function shouldUseColor(opts?: {
+  stream?: CliEmitterStream;
+  writer?: CliOutputWriter;
+  env?: NodeJS.ProcessEnv;
+}): boolean {
+  const env = opts?.env ?? process.env;
+  if (
+    env.NO_COLOR !== undefined ||
+    env.AGENTPLANE_COLOR === "0" ||
+    env.AGENTPLANE_COLOR === "never"
+  ) {
+    return false;
+  }
+  if (env.AGENTPLANE_COLOR === "always" || env.FORCE_COLOR) return true;
+  const writer = opts?.writer ?? (opts?.stream === "stderr" ? process.stderr : process.stdout);
+  return Boolean((writer as { isTTY?: boolean }).isTTY);
+}
+
+function color(code: number, text: string, enabled: boolean): string {
+  return enabled ? `\u001B[${code}m${text}\u001B[0m` : text;
+}
+
+function dim(text: string, enabled: boolean): string {
+  return color(2, text, enabled);
+}
+
+function cyan(text: string, enabled: boolean): string {
+  return color(36, text, enabled);
+}
+
+function green(text: string, enabled: boolean): string {
+  return color(32, text, enabled);
+}
+
+function yellow(text: string, enabled: boolean): string {
+  return color(33, text, enabled);
+}
+
+function renderReportLine(
+  entry: CliReportEntry,
+  labelWidth?: number,
+  colorEnabled = false,
+): string {
   if (typeof entry === "string") return entry;
   if (entry.value === undefined || entry.value === null) return `${entry.label}:`;
-  return `${entry.label}: ${String(entry.value)}`;
+  const label = `${entry.label}:`;
+  const alignedLabel = labelWidth ? label.padEnd(labelWidth + 1) : label;
+  return `${cyan(alignedLabel, colorEnabled)} ${String(entry.value)}`;
+}
+
+function plainSuccessMessage(action: string, target?: string, details?: string): string {
+  const base = target ? `${action} ${target}` : action;
+  const suffix = details ? ` (${details})` : "";
+  return `${base}${suffix}`;
 }
 
 export function successMessage(action: string, target?: string, details?: string): string {
-  const base = target ? `${action} ${target}` : action;
-  const suffix = details ? ` (${details})` : "";
-  return `✅ ${base}${suffix}`;
+  const text = plainSuccessMessage(action, target, details);
+  if (resolveCliPresentationMode() === "agent") return text;
+  return `${green("✅", shouldUseColor())} ${text}`;
 }
 
 export function infoMessage(message: string): string {
-  return `ℹ️ ${message}`;
+  if (resolveCliPresentationMode() === "agent") return message;
+  return `${cyan("ℹ️", shouldUseColor())} ${message}`;
 }
 
 export function warnMessage(message: string): string {
-  return `⚠️ ${message}`;
+  if (resolveCliPresentationMode() === "agent") return `warning: ${message}`;
+  return `${yellow("⚠️", shouldUseColor({ stream: "stderr" }))} ${message}`;
 }
 
 export function usageMessage(usage: string, example?: string): string {
@@ -152,13 +221,30 @@ function renderTextLine(text: string): string {
 }
 
 function renderTextLines(lines: Iterable<string>): string {
-  return Array.from(lines, renderTextLine).join("");
+  return [...lines].map((line) => renderTextLine(line)).join("");
 }
 
-function renderReportBlock(entries: Iterable<CliReportEntry>, options?: CliReportOptions): string {
-  const lines = options?.header ? [options.header] : [];
-  for (const entry of entries) {
-    lines.push(renderReportLine(entry));
+function renderReportBlock(
+  entries: Iterable<CliReportEntry>,
+  options?: CliReportOptions & {
+    mode?: CliPresentationMode;
+    color?: boolean;
+  },
+): string {
+  const mode = options?.mode ?? resolveCliPresentationMode();
+  const values = [...entries];
+  const labelWidth =
+    mode === "human"
+      ? Math.max(
+          0,
+          ...values.map((entry) => (typeof entry === "string" ? 0 : visibleLen(entry.label))),
+        )
+      : undefined;
+  const lines = options?.header
+    ? [mode === "human" ? dim(options.header, options.color ?? false) : options.header]
+    : [];
+  for (const entry of values) {
+    lines.push(renderReportLine(entry, labelWidth, mode === "human" && (options?.color ?? false)));
   }
   return renderTextLines(lines);
 }
@@ -174,10 +260,20 @@ export function createCliEmitter(streams?: {
   stderr?: CliOutputWriter;
   loggerMode?: LoggerMode;
   logger?: Logger;
+  presentationMode?: CliPresentationMode;
+  color?: boolean;
 }): CliEmitter {
   const stdout = streams?.stdout ?? process.stdout;
   const stderr = streams?.stderr ?? process.stderr;
   const logger = streams?.logger ?? createLogger({ mode: streams?.loggerMode, stdout, stderr });
+  const presentationMode = streams?.presentationMode ?? resolveCliPresentationMode();
+  const colorForStream = (stream: CliEmitterStream): boolean =>
+    streams?.color ??
+    (presentationMode === "human" &&
+      shouldUseColor({
+        stream,
+        writer: stream === "stderr" ? stderr : stdout,
+      }));
 
   const line = (text: string, stream: CliEmitterStream = "stdout"): void => {
     logger.write({ kind: "line", text, stream });
@@ -209,9 +305,14 @@ export function createCliEmitter(streams?: {
   };
 
   const report = (entries: Iterable<CliReportEntry>, options?: CliReportOptions): void => {
-    const block = renderReportBlock(entries, options);
+    const stream = options?.stream ?? "stdout";
+    const block = renderReportBlock(entries, {
+      ...options,
+      mode: presentationMode,
+      color: colorForStream(stream),
+    });
     for (const valueLine of block.trimEnd().split("\n")) {
-      logger.write({ kind: "line", text: valueLine, stream: options?.stream ?? "stdout" });
+      logger.write({ kind: "line", text: valueLine, stream });
     }
   };
 

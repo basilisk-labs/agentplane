@@ -12,6 +12,7 @@ const execFileAsync = promisify(execFile);
 
 const DEFAULT_MAX_ATTEMPTS = 60;
 const DEFAULT_INTERVAL_MS = 5000;
+const DEFAULT_STABLE_POLLS = 2;
 
 const IGNORED_LEGACY_FLAGS = new Set(["--watch", "--required", "--fail-fast"]);
 
@@ -58,6 +59,10 @@ function parseArgs(argv) {
       process.env.AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS,
       DEFAULT_MAX_ATTEMPTS,
     ),
+    stablePolls: parsePositiveInteger(
+      process.env.AGENTPLANE_REMOTE_CHECK_STABLE_POLLS,
+      DEFAULT_STABLE_POLLS,
+    ),
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -80,6 +85,15 @@ function parseArgs(argv) {
       index += 1;
       continue;
     }
+    if (arg === "--stable-polls") {
+      const value = argv[index + 1];
+      if (!value) throw new Error("Missing value for --stable-polls");
+      const parsed = parsePositiveInteger(value, Number.NaN);
+      if (!Number.isInteger(parsed)) throw new Error("Invalid value for --stable-polls");
+      options.stablePolls = parsed;
+      index += 1;
+      continue;
+    }
     if (arg.startsWith("--repo=")) {
       const value = arg.slice("--repo=".length);
       if (!value) throw new Error("Missing value for --repo");
@@ -90,6 +104,14 @@ function parseArgs(argv) {
       const value = arg.slice("--pr=".length);
       if (!value) throw new Error("Missing value for --pr");
       options.targetArgs.push(value);
+      continue;
+    }
+    if (arg.startsWith("--stable-polls=")) {
+      const value = arg.slice("--stable-polls=".length);
+      if (!value) throw new Error("Missing value for --stable-polls");
+      const parsed = parsePositiveInteger(value, Number.NaN);
+      if (!Number.isInteger(parsed)) throw new Error("Invalid value for --stable-polls");
+      options.stablePolls = parsed;
       continue;
     }
     if (IGNORED_LEGACY_FLAGS.has(arg)) {
@@ -449,6 +471,13 @@ function pendingFingerprint(items) {
     .join("##");
 }
 
+function checksFingerprint(items) {
+  return items
+    .map((item) => `${item.name}:${item.outcome}`)
+    .toSorted()
+    .join("##");
+}
+
 function formatPullRequestPrefix(pr, index, total) {
   const title = pr.title ? ` (${pr.title})` : "";
   const position = total > 1 ? ` [${index}/${total}]` : "";
@@ -466,6 +495,8 @@ async function waitForPullRequestChecks(repoSlug, pr, requiredContexts, options,
   let poll = 0;
   let idleAttempts = 0;
   let lastFingerprint = "";
+  let lastReadyFingerprint = "";
+  let stableReadyPolls = 0;
 
   while (idleAttempts < options.maxAttempts) {
     poll += 1;
@@ -486,10 +517,23 @@ async function waitForPullRequestChecks(repoSlug, pr, requiredContexts, options,
     }
 
     if (summary.ready) {
-      process.stdout.write(`required checks passed for ${prefix}\n`);
-      return { ok: true };
+      const readyFingerprint = checksFingerprint(summary.items);
+      stableReadyPolls = readyFingerprint === lastReadyFingerprint ? stableReadyPolls + 1 : 1;
+      lastReadyFingerprint = readyFingerprint;
+      if (stableReadyPolls >= options.stablePolls) {
+        process.stdout.write(`required checks passed for ${prefix}\n`);
+        return { ok: true };
+      }
+      process.stdout.write(
+        `${prefix} ready; waiting for stable check set (${stableReadyPolls}/${options.stablePolls})\n`,
+      );
+      lastFingerprint = fingerprint;
+      await sleep(options.intervalMs);
+      continue;
     }
 
+    stableReadyPolls = 0;
+    lastReadyFingerprint = "";
     lastFingerprint = fingerprint;
     if (idleAttempts < options.maxAttempts) await sleep(options.intervalMs);
   }

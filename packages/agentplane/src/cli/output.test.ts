@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import {
   backendNotSupportedMessage,
@@ -14,6 +14,7 @@ import {
   missingFileMessage,
   missingValueMessage,
   requiredFieldMessage,
+  resolveCliPresentationMode,
   successMessage,
   usageMessage,
   warnMessage,
@@ -32,6 +33,18 @@ function createMemoryWriter(): { text: () => string; write: (chunk: string) => u
 }
 
 describe("cli/output", () => {
+  const envSnapshot = { ...process.env };
+
+  afterEach(() => {
+    for (const key of Object.keys(process.env)) {
+      if (!(key in envSnapshot)) delete process.env[key];
+    }
+    for (const [key, value] of Object.entries(envSnapshot)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  });
+
   it("formats success and info messages", () => {
     expect(successMessage("done")).toBe("✅ done");
     expect(successMessage("saved", "file.txt")).toBe("✅ saved file.txt");
@@ -66,6 +79,23 @@ describe("cli/output", () => {
     expect(missingFileMessage("file.txt", "root")).toBe("Missing file.txt at root");
     expect(emptyStateMessage("tasks")).toBe("No tasks found.");
     expect(emptyStateMessage("tasks", "Create one.")).toBe("No tasks found. Create one.");
+  });
+
+  it("renders ap/agent-mode messages without human decoration", () => {
+    process.env.AGENTPLANE_CLI_ALIAS = "ap";
+
+    expect(resolveCliPresentationMode()).toBe("agent");
+    expect(successMessage("saved", "file.txt", "ok")).toBe("saved file.txt (ok)");
+    expect(infoMessage("note")).toBe("note");
+    expect(warnMessage("careful")).toBe("warning: careful");
+
+    const stdout = createMemoryWriter();
+    const emitter = createCliEmitter({ stdout, stderr: createMemoryWriter() });
+    emitter.report([
+      { label: "task_id", value: "TASK-2" },
+      { label: "status", value: "ready" },
+    ]);
+    expect(stdout.text()).toBe(["task_id: TASK-2", "status: ready"].join("\n") + "\n");
   });
 
   it("formats workflow mode messages", () => {
@@ -113,7 +143,7 @@ describe("cli/output", () => {
         "  ]",
         "ℹ️ task inspect: TASK-2",
         "task_id: TASK-2",
-        "status: ready",
+        "status:  ready",
         "✅ saved TASK-2",
       ].join("\n") + "\n",
     );

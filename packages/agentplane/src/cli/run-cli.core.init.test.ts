@@ -277,6 +277,9 @@ describe("runCli", () => {
     expect(gitignore).toContain(".env");
     expect(gitignore).toContain(".agentplane/worktrees");
     expect(gitignore).toContain(".agentplane/cache");
+    expect(gitignore).toContain(".agentplane/cache.sqlite");
+    expect(gitignore).toContain(".agentplane/cache.sqlite-wal");
+    expect(gitignore).toContain(".agentplane/cache.sqlite-shm");
     expect(gitignore).toContain(".agentplane/recipes-cache");
     expect(gitignore).toContain(".agentplane/.upgrade");
     expect(gitignore).toContain(".agentplane/.release");

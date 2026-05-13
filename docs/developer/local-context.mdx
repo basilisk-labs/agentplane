@@ -12,22 +12,26 @@ Local context is a file-first subsystem:
 - task context evidence is linked from `.agentplane/tasks/<task-id>/**`
 - ACR records may include the `extensions.agentplane.context` extension
 
-The SQLite projection is not the source of truth. It is rebuilt by `context reindex`.
+The shared SQLite projection/cache database is `.agentplane/cache.sqlite`. It is not the source of
+truth. Context owns only its projection tables inside that database, and `context reindex` may
+rebuild those tables from source artifacts. `.agentplane/context/service/**` remains a
+context-owned service workspace for context-only cache directories, embeddings, and remote metadata;
+it no longer owns the SQLite file.
 
 ## Owning code paths
 
-| Surface                 | Code path                                                                                            |
-| ----------------------- | ---------------------------------------------------------------------------------------------------- |
-| Command specs           | `packages/agentplane/src/commands/context/*.spec.ts`                                                 |
-| CLI handlers            | `packages/agentplane/src/commands/context/*.ts`                                                      |
-| Shared parsing and refs | `packages/agentplane/src/commands/context/context-utils.ts`                                          |
-| SQLite projection       | `packages/agentplane/src/commands/context/sqlite.ts`                                                 |
-| ACR context extension   | `packages/agentplane/src/commands/acr/**`                                                            |
-| Runner handoff          | `packages/agentplane/src/commands/context/ingest.ts`, `packages/agentplane/src/commands/task/run/**` |
+| Surface                  | Code path                                                                                               |
+| ------------------------ | ------------------------------------------------------------------------------------------------------- |
+| Command specs            | `packages/agentplane/src/commands/context/*.spec.ts`                                                    |
+| CLI handlers             | `packages/agentplane/src/commands/context/*.ts`                                                         |
+| Shared parsing and refs  | `packages/agentplane/src/commands/context/context-utils.ts`                                             |
+| SQLite driver/projection | `packages/agentplane/src/shared/sqlite-driver.ts`, `packages/agentplane/src/commands/context/sqlite.ts` |
+| ACR context extension    | `packages/agentplane/src/commands/acr/**`                                                               |
+| Runner handoff           | `packages/agentplane/src/commands/context/ingest.ts`, `packages/agentplane/src/commands/task/run/**`    |
 
 ## Projection contract
 
-`context reindex` writes projection rows from:
+`context reindex` writes context projection rows into `.agentplane/cache.sqlite` from:
 
 - wiki markdown files, including section-level refs
 - fact JSONL rows

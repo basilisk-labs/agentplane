@@ -1,0 +1,219 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605131035-4PQGZB",
+  "created_at": "2026-05-13T11:12:23.755Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "165a7551dd7d1f4dafa0e4952c178005271c8483",
+    "work_ref": "main",
+    "work_commit": "165a7551dd7d1f4dafa0e4952c178005271c8483"
+  },
+  "task": {
+    "task_id": "202605131035-4PQGZB",
+    "title": "Improve provider-neutral PR flow observability",
+    "intent": "Add provider-neutral PR flow status and stricter close/check diagnostics without implementing merge-through-gh; GitHub is the first provider but interfaces should leave room for GitLab and other git servers.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605131035-4PQGZB/README.md",
+      "sha256": "sha256:c2edf1bf8aa17a2029e5bad762ad809adc602ad40f3dfb33877cf230c0762735"
+    },
+    "approved_at": "2026-05-13T10:35:18.964Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3624.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605131035-4PQGZB_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-13T10:35:18.964Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605131035-4PQGZB/README.md",
+      "sha256": "sha256:c2edf1bf8aa17a2029e5bad762ad809adc602ad40f3dfb33877cf230c0762735"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605131035-4PQGZB/README.md",
+      "sha256": "sha256:c2edf1bf8aa17a2029e5bad762ad809adc602ad40f3dfb33877cf230c0762735"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605131035-4PQGZB/README.md",
+      "sha256": "sha256:c2edf1bf8aa17a2029e5bad762ad809adc602ad40f3dfb33877cf230c0762735"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605131035-4PQGZB/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:0faba8dbbc1bde8a0506ad027773bd2b1ed7203d85f0d414311079bf7e1cc008"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 165a7551dd7d1f4dafa0e4952c178005271c8483 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:3518a75331e0e0cd5eb5dcf2d8fa5b461cc9e9a05f19b95f1497301ede07ff30",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605131035-4PQGZB/blueprint/resolved-snapshot.json",
+        "digest": "2c668b223f0da51d98b5a6b8c379cb2f27e91e4e86be8a9cd69570ae5900faae",
+        "current_digest": "2c668b223f0da51d98b5a6b8c379cb2f27e91e4e86be8a9cd69570ae5900faae",
+        "route_changed": false,
+        "artifact_sha256": "sha256:0faba8dbbc1bde8a0506ad027773bd2b1ed7203d85f0d414311079bf7e1cc008",
+        "safe_command": "agentplane blueprint snapshot 202605131035-4PQGZB"
+      }
+    }
+  }
+}
