@@ -62,7 +62,7 @@
       {
         "id": "intake",
         "kind": "intake",
-        "mode": "deterministic",
+        "mode": "agentic",
         "required": true,
         "protected": false,
         "allowedCommands": [],
@@ -284,7 +284,7 @@
     {
       "id": "intake",
       "kind": "intake",
-      "mode": "deterministic",
+      "mode": "agentic",
       "required": true,
       "protected": false,
       "allowedCommands": [],
@@ -508,6 +508,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "fd3872f4d231c8b1c9af0b73d3bd409a1f4561ce3873a1396f201c120940babc"
+    "value": "a6321f39291a15d80b3a01f93a7c111221f046d392c66dcb665b621a69b25885"
   }
 }
