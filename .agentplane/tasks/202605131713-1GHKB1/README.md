@@ -1,10 +1,11 @@
 ---
 id: "202605131713-1GHKB1"
 title: "Add public evaluator catalog commands"
-status: "DOING"
+result_summary: "Merged via PR #3652."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 1
+revision: 2
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "CI format failure fixed and verified: format:check passes after formatting docs-render.ts; previous review-fix checks still covered evaluator root lookup and --builtin false behavior."
   attempts: 0
-commit: null
+commit:
+  hash: "4398f9e0e7d3131ea8828c151dab9e6e152d1713"
+  message: "🚧 1GHKB1 task: Add public evaluator catalog commands [202605131713-1GHKB1] (#3652)"
 comments:
   -
     author: "CODER"
     body: "Start: implement public evaluator catalog commands, seeded evaluator prompt modules, docs, and focused tests while deferring evaluator run to v0.8."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3652 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -73,9 +79,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "CI format failure fixed and verified: format:check passes after formatting docs-render.ts; previous review-fix checks still covered evaluator root lookup and --builtin false behavior."
+  -
+    type: "status"
+    at: "2026-05-13T20:51:30.457Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3652 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T19:36:20.597Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T20:51:30.465Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modules, with list/show support now and evaluator run explicitly deferred to the v0.8 roadmap."
 sections:
   Summary: |-
