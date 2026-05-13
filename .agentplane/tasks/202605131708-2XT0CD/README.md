@@ -1,7 +1,8 @@
 ---
 id: "202605131708-2XT0CD"
 title: "Translate Russian task artifacts to English"
-status: "DOING"
+result_summary: "Merged via PR #3647."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Command: metadata Cyrillic scan over .agentplane/tasks/*/README.md title/description. Result: pass. Evidence: metadata_cyrillic_count=0 after translating 11 local task artifacts. Command: GitHub issue scan for #1530,#1531,#1532,#1533,#1534,#1535,#1536,#1537,#1552,#3244 title/body. Result: pass. Evidence: github_cyrillic_count=0 after updating synced issues. Command: git diff --check. Result: pass after trimming generated trailing whitespace. Command: node .agentplane/policy/check-routing.mjs. Result: pass, policy routing OK. Command: agentplane doctor. Result: pass, doctor OK with info-only runtime details. Cloud push note: ap backend sync cloud --direction push was attempted but failed because AGENTPLANE_CLOUD_TOKEN is not configured in this environment; local repo artifacts and GitHub issues were updated directly."
   attempts: 0
-commit: null
+commit:
+  hash: "e1dc9649166c14d34859af02222f90e598943fb7"
+  message: "Merge pull request #3647 from basilisk-labs/task/202605131708-2XT0CD/translate-task-artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: translate Russian task metadata and synced GitHub issue text through the approved branch_pr cleanup task."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3647 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: metadata Cyrillic scan over .agentplane/tasks/*/README.md title/description. Result: pass. Evidence: metadata_cyrillic_count=0 after translating 11 local task artifacts. Command: GitHub issue scan for #1530,#1531,#1532,#1533,#1534,#1535,#1536,#1537,#1552,#3244 title/body. Result: pass. Evidence: github_cyrillic_count=0 after updating synced issues. Command: git diff --check. Result: pass after trimming generated trailing whitespace. Command: node .agentplane/policy/check-routing.mjs. Result: pass, policy routing OK. Command: agentplane doctor. Result: pass, doctor OK with info-only runtime details. Cloud push note: ap backend sync cloud --direction push was attempted but failed because AGENTPLANE_CLOUD_TOKEN is not configured in this environment; local repo artifacts and GitHub issues were updated directly."
+  -
+    type: "status"
+    at: "2026-05-13T17:45:09.093Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3647 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T17:21:02.633Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T17:45:09.093Z"
+doc_updated_by: "INTEGRATOR"
 description: "Translate existing Russian AgentPlane task titles and descriptions to English, then align synced GitHub Issues/Project cards so repository task artifacts follow artifacts_language=en."
 sections:
   Summary: |-
