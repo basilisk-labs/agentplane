@@ -22,9 +22,9 @@ Remove the obsolete .agentplane/tasks.json export snapshot surface now that task
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T21:29:59.252Z
+- Updated: 2026-05-13T21:58:47.251Z
 - Branch: task/202605132103-J5YVSS/remove-tasks-json
-- Head: 93cc8955e0d9
+- Head: 6755f1e11c37
 
 ```text
  .agentplane/tasks/202605132049-69HCQ3/README.md    | 171 +++++++
@@ -43,16 +43,19 @@ Remove the obsolete .agentplane/tasks.json export snapshot surface now that task
  .../adapters/task-backend/task-backend-adapter.ts  |  11 -
  .../src/backends/task-backend.local.test.ts        |  12 +-
  .../backends/task-backend.redmine.cache.test.ts    |  17 +-
- .../agentplane/src/backends/task-backend.test.ts   |  32 +-
- packages/agentplane/src/backends/task-backend.ts   |   1 -
+ .../agentplane/src/backends/task-backend.test.ts   |  33 +-
+ packages/agentplane/src/backends/task-backend.ts   |   2 -
  .../src/backends/task-backend/cloud-backend.ts     |   9 +-
  .../backends/task-backend/local-backend-write.ts   |  17 -
- .../src/backends/task-backend/local-backend.ts     |  11 +-
+ .../src/backends/task-backend/local-backend.ts     |  12 +-
  .../src/backends/task-backend/redmine-backend.ts   |  15 +-
  .../task-backend/redmine/backend-cache-doc.ts      |  23 -
  .../src/backends/task-backend/redmine/live.test.ts |  17 +-
+ .../agentplane/src/backends/task-backend/shared.ts |   1 -
  .../src/backends/task-backend/shared/export.ts     |  13 -
- .../src/backends/task-backend/shared/types.ts      |   2 -
+ .../src/backends/task-backend/shared/types.ts      |   6 -
+ .../agentplane/src/cli/local-ci-selection.test.ts  |   3 -
+ packages/agentplane/src/cli/release-smoke.test.ts  |  28 +-
  ...n-cli.core.branch-meta.workflow-profile.test.ts |  14 +
  .../src/cli/run-cli.core.tasks.export.test.ts      | 162 ------
  .../src/cli/run-cli/command-catalog/task.ts        |   7 -
@@ -69,7 +72,7 @@ Remove the obsolete .agentplane/tasks.json export snapshot surface now that task
  .../agentplane/src/commands/task/migrate-doc.ts    |  53 +-
  .../agentplane/src/commands/task/set-status.ts     |   2 +-
  packages/agentplane/src/commands/upgrade.ts        |   1 -
- packages/agentplane/src/commands/workflow.test.ts  |  15 +-
+ packages/agentplane/src/commands/workflow.test.ts  |  17 +-
  packages/agentplane/src/commands/workflow.ts       |   1 -
  .../src/commands/workflow.verify-hooks.test.ts     |   3 +-
  packages/agentplane/src/ports/task-backend-port.ts |   1 -
@@ -78,7 +81,8 @@ Remove the obsolete .agentplane/tasks.json export snapshot surface now that task
  packages/core/src/tasks/tasks-export.test.ts       |  18 +-
  packages/core/src/tasks/tasks-export.ts            |  20 -
  packages/core/src/tasks/tasks-lint.test.ts         |  17 +-
- 51 files changed, 3364 insertions(+), 633 deletions(-)
+ scripts/lib/test-route-registry.mjs                |   1 -
+ 55 files changed, 3367 insertions(+), 672 deletions(-)
 ```
 
 </details>
