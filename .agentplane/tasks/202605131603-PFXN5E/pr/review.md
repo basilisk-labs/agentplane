@@ -6,7 +6,7 @@ Created: 2026-05-13T16:03:49.901Z
 
 - Task: `202605131603-PFXN5E`
 - Title: Automate branch_pr merge queue finalization
-- Status: DOING
+- Status: DONE
 - Branch: `task/202605131603-PFXN5E/automate-merge-queue`
 - Canonical task record: `.agentplane/tasks/202605131603-PFXN5E/README.md`
 
@@ -24,47 +24,12 @@ Created: 2026-05-13T16:03:49.901Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T20:15:04.530Z
+- Updated: 2026-05-13T20:17:54Z
 - Branch: task/202605131603-PFXN5E/automate-merge-queue
-- Head: 05ee30998464
+- Head: 1bb13e5ce0f8
 
 ```text
- .agentplane/policy/workflow.branch_pr.md           |  11 +-
- .../blueprint/resolved-snapshot.json               | 514 +++++++++++++++++++++
- .github/workflows/publish.yml                      |   4 +-
- .github/workflows/task-hosted-close.yml            |   4 +-
- docs/user/cli-reference.generated.mdx              |   4 +
- package.json                                       |   2 +-
- .../agentplane/assets/policy/workflow.branch_pr.md |  11 +-
- .../task-backend/local-task-sqlite-cache.ts        |  12 +-
- packages/agentplane/src/cli/bootstrap-guide.ts     |   4 +-
- packages/agentplane/src/cli/command-guide.test.ts  |   8 +-
- packages/agentplane/src/cli/command-guide.ts       |   7 +-
- ...n-cli.core.pr-flow.integrate-validation.test.ts |  10 +-
- ...run-cli.core.tasks.branch-pr-list-state.test.ts | 115 +++++
- .../cli/run-cli/commands/init/execution.test.ts    |  49 ++
- .../src/cli/run-cli/commands/init/execution.ts     |  56 ++-
- .../src/cli/run-cli/commands/init/model.ts         |   1 +
- .../src/cli/run-cli/commands/init/orchestrate.ts   |   7 +
- .../src/commands/integrate-queue.command.ts        | 177 ++++---
- .../src/commands/integrate-queue.spec.test.ts      |  29 ++
- .../src/commands/integrate-queue.spec.ts           |  43 ++
- .../src/commands/pr/integrate/cmd.test.ts          | 249 +++++++++-
- .../agentplane/src/commands/pr/integrate/cmd.ts    | 109 ++++-
- .../pr/integrate/internal/github-pr-merge.ts       | 268 +++++++++++
- .../task/hosted-close-workflow-contract.test.ts    |   5 +-
- packages/agentplane/src/commands/task/list.ts      |  10 +-
- packages/agentplane/src/commands/task/next.ts      |   6 +-
- packages/agentplane/src/commands/task/search.ts    |   6 +-
- .../commands/task/shared/branch-pr-list-state.ts   | 108 +++++
- .../src/commands/task/shared/dependencies.ts       |   8 +-
- .../agentplane/src/commands/task/shared/listing.ts |   9 +-
- packages/core/schemas/task-handoff.schema.json     |   5 +-
- .../core/src/tasks/task-artifact-schema.handoff.ts |   5 +-
- packages/spec/schemas/task-handoff.schema.json     |   5 +-
- schemas/task-handoff.schema.json                   |   5 +-
- scripts/README.md                                  |   2 +-
- 35 files changed, 1729 insertions(+), 139 deletions(-)
+No changes detected.
 ```
 
 </details>
