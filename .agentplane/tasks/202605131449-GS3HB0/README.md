@@ -1,7 +1,8 @@
 ---
 id: "202605131449-GS3HB0"
 title: "Create agentic context extraction tasks"
-status: "DOING"
+result_summary: "Merged via PR #3638."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified review-thread fix 96adf5697: combined --write-proposals and --create-extraction-tasks now preserves context_harvest while adding context_task_extraction; bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts passes 11/11."
   attempts: 0
-commit: null
+commit:
+  hash: "e14291b1153a6c406acf342e71dbf58290682eb4"
+  message: "Merge pull request #3638 from basilisk-labs/task/202605131449-GS3HB0/agentic-context-extraction"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing agentic context extraction task generation as a bounded extension of context harvest, using standard task lifecycle records and focused verification in the task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3638 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -54,9 +60,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified review-thread fix 96adf5697: combined --write-proposals and --create-extraction-tasks now preserves context_harvest while adding context_task_extraction; bun test packages/agentplane/src/commands/context/harvest-tasks.test.ts passes 11/11."
+  -
+    type: "status"
+    at: "2026-05-13T15:54:58.612Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3638 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T15:42:11.021Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T15:54:58.612Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a context harvest mode that creates standard AgentPlane extraction tasks for batchwise semantic knowledge extraction from completed task history, with modular prompt context and provenance requirements."
 sections:
   Summary: |-
