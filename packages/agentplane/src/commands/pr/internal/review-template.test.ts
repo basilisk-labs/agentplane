@@ -112,6 +112,48 @@ describe("review-template batch rendering", () => {
     expect(body).toContain("- 2026-01-27T00:00:00Z CODER: Ready for review.");
   });
 
+  it("renders long verification commands as fenced bash blocks for hosted PR readability", () => {
+    const task = {
+      ...makeTask(),
+      verification: {
+        state: "ok",
+        note: "bun test packages/agentplane/src/backends/task-backend.load.test.ts packages/agentplane/src/commands/run-cli.core.init.test.ts packages/agentplane/src/shared/env.test.ts",
+      },
+    } satisfies TaskData;
+    const body = renderGithubPrBody({
+      task,
+      autoSummary: "<details><summary>Raw evidence</summary></details>",
+    });
+
+    expect(body).toContain("- Note:\n\n```bash\nbun test");
+    expect(body).toContain(" \\\n  packages/agentplane/src/commands/run-cli.core.init.test.ts");
+    expect(body).toContain("```\n- Canonical workflow state lives in the task README.");
+    expect(body).not.toContain("- Note: bun test packages/agentplane");
+  });
+
+  it("renders long verification prose as wrapped fenced text blocks", () => {
+    const task = {
+      ...makeTask(),
+      verification: {
+        state: "ok",
+        note: [
+          "Implemented hosted PR body formatting and verified the renderer with focused tests,",
+          "changed-file lint, prettier checks, package typecheck, policy routing validation,",
+          "and workflow doctor so future generated descriptions stay readable in GitHub.",
+        ].join(" "),
+      },
+    } satisfies TaskData;
+    const body = renderGithubPrBody({
+      task,
+      autoSummary: "<details><summary>Raw evidence</summary></details>",
+    });
+
+    expect(body).toContain("- Note:\n\n```text\nImplemented hosted PR body formatting");
+    expect(body).toContain("\nlint, prettier checks");
+    expect(body).toContain("```\n- Canonical workflow state lives in the task README.");
+    expect(body).not.toContain("- Note: Implemented hosted PR body formatting and verified");
+  });
+
   it("includes optional bounded reviewer_summary without replacing canonical sections", () => {
     const task = {
       ...makeTask(),
