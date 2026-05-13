@@ -1,10 +1,11 @@
 ---
 id: "202605132033-ZH7JEP"
 title: "Make hosted-close idempotent for closed follow-up PRs"
-status: "DOING"
+result_summary: "Merged via PR #3676."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Verified hosted-close follow-up idempotence and post-merge lint recovery."
   attempts: 0
-commit: null
+commit:
+  hash: "d1c9701dc0d8e7a36d5b16c18e043a1d56ad25a5"
+  message: "Merge pull request #3676 from basilisk-labs/task/202605132033-ZH7JEP/hosted-close-idempotent"
 comments:
   -
     author: "CODER"
     body: "Start: implement hosted-close idempotence for already closed follow-up PRs while preserving conflicting DONE protection."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3676 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified hosted-close follow-up idempotence and post-merge lint recovery."
+  -
+    type: "status"
+    at: "2026-05-13T21:16:39.882Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3676 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T20:40:12.239Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T21:16:39.888Z"
+doc_updated_by: "INTEGRATOR"
 description: "Allow hosted-close to no-op when a follow-up PR uses an already DONE task id and the recorded DONE commit is an ancestor of the new merge commit."
 sections:
   Summary: |-
