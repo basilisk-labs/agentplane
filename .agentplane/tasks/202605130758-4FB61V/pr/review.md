@@ -24,17 +24,17 @@ Created: 2026-05-13T08:09:10.107Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T09:53:33.482Z
+- Updated: 2026-05-13T10:14:41.383Z
 - Branch: task/202605130758-4FB61V/release-notes-template-guard
-- Head: 24b1dc2ed0f2
+- Head: 0698e414f6ce
 
 ```text
  .../blueprint/resolved-snapshot.json               | 415 +++++++++++++++++++++
  docs/releases/v0.5.0.md                            |  32 +-
- .../commands/release/apply.preflight.package.ts    |  50 +++
- .../src/commands/release/apply.preflight.test.ts   |  66 +++-
- scripts/check-release-notes.mjs                    |  42 +++
- 5 files changed, 576 insertions(+), 29 deletions(-)
+ .../commands/release/apply.preflight.package.ts    |  72 ++++
+ .../src/commands/release/apply.preflight.test.ts   |  91 ++++-
+ scripts/check-release-notes.mjs                    |  64 ++++
+ 5 files changed, 645 insertions(+), 29 deletions(-)
 ```
 
 </details>
