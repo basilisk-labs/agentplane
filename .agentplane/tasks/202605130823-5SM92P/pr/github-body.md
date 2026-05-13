@@ -22,9 +22,9 @@ Replace close/merge commit message rendering with deterministic human-readable s
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T09:09:05.779Z
+- Updated: 2026-05-13T09:36:28.307Z
 - Branch: task/202605130823-5SM92P/human-readable-merge-messages
-- Head: f45a3bd1d6a5
+- Head: 4d2804a9a9ad
 
 ```text
  .../blueprint/resolved-snapshot.json               | 514 +++++++++++++++++++++
@@ -32,17 +32,20 @@ Replace close/merge commit message rendering with deterministic human-readable s
  ...run-cli.core.lifecycle.finish-branch-pr.test.ts |   9 +-
  ...-cli.core.lifecycle.finish-close-commit.test.ts |   6 +-
  .../run-cli.core.pr-flow.integrate-merge.test.ts   |   3 +-
+ .../src/commands/doctor.command.runtime.test.ts    |  60 ++-
+ packages/agentplane/src/commands/doctor/archive.ts |  47 +-
  .../src/commands/guard/impl/close-message.test.ts  | 212 ++++++++-
  .../src/commands/guard/impl/close-message.ts       | 396 +++++++++++++---
  .../agentplane/src/commands/guard/impl/commit.ts   |   8 +-
  packages/agentplane/src/commands/guard/impl/env.ts |   2 +
  .../agentplane/src/commands/guard/impl/policy.ts   |   3 +-
  .../src/commands/hooks/run.commit-msg.ts           |   6 +-
+ .../agentplane/src/commands/hooks/task-context.ts  |   5 +-
  packages/agentplane/src/policy/model.ts            |   1 +
  .../agentplane/src/policy/rules/commit-subject.ts  |   1 +
- packages/core/src/commit/commit-policy.test.ts     |  20 +
- packages/core/src/commit/commit-policy.ts          |  62 ++-
- 15 files changed, 1145 insertions(+), 112 deletions(-)
+ packages/core/src/commit/commit-policy.test.ts     |  41 ++
+ packages/core/src/commit/commit-policy.ts          |  82 +++-
+ 18 files changed, 1282 insertions(+), 128 deletions(-)
 ```
 
 </details>
