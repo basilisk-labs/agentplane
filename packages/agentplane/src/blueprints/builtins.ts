@@ -1,7 +1,7 @@
 import type { Blueprint } from "./model.js";
 import { SPECIALIZED_CODE_BLUEPRINTS } from "./builtins-specialized.js";
 import { blueprint, evidence, node } from "./builtin-builder.js";
-import { codeBranchPrNodes } from "./builtin-routes.js";
+import { codeBranchPrNodes, codeDirectNodes } from "./builtin-routes.js";
 
 const analysisNodes = [
   node({ kind: "intake" }),
@@ -47,30 +47,6 @@ const docsNodes = [
   node({ kind: "work_unit", evidence: ["changed_paths", "artifact"] }),
   node({ kind: "deterministic_check", evidence: ["check_result"] }),
   node({ kind: "artifact_write", evidence: ["artifact"] }),
-  node({ kind: "verify_record", evidence: ["check_result"], protected: true }),
-  node({ kind: "finish", evidence: ["commit"], protected: true }),
-] as const;
-
-const codeDirectNodes = [
-  node({ kind: "intake" }),
-  node({ kind: "scope", evidence: ["assumptions"] }),
-  node({ kind: "approval_gate", evidence: ["approval"], protected: true }),
-  node({
-    kind: "context_resolve",
-    evidence: ["context_manifest"],
-    policyModules: [
-      ".agentplane/policy/security.must.md",
-      ".agentplane/policy/dod.core.md",
-      ".agentplane/policy/dod.code.md",
-      ".agentplane/policy/workflow.direct.md",
-    ],
-  }),
-  node({ kind: "work_unit", evidence: ["changed_paths"] }),
-  node({
-    kind: "deterministic_check",
-    evidence: ["check_result"],
-    allowedCommands: ["agentplane task verify-show <task-id>", "project focused checks"],
-  }),
   node({ kind: "verify_record", evidence: ["check_result"], protected: true }),
   node({ kind: "finish", evidence: ["commit"], protected: true }),
 ] as const;

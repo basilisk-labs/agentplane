@@ -82,8 +82,8 @@ ap finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --comm
 ap work start <task-id> --agent <ROLE> --slug <slug> --worktree
 ap task start-ready <task-id> --author <ROLE> --body "Start: ..."
 git commit -m "Implement <task>"
-ap pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
 ap task verify-show <task-id>
+ap pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
 ap verify <task-id> --ok|--rework --by <ROLE> --note "..."
 ap integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 ap finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit

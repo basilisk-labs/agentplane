@@ -102,9 +102,9 @@ agentplane task start-ready <task-id> --author CODER --body "Start: ..."
 # edit files
 git add <changed-files>
 git commit -m "Implement <task>"
+agentplane task verify-show <task-id>
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
-agentplane task verify-show <task-id>
 agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
 bun run workflow:wait-remote-checks
 cd <base-checkout>
