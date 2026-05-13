@@ -77,6 +77,15 @@ export async function resolveDotEnvRoot(rootDir: string): Promise<string> {
   const match = /^gitdir:\s*(.+)\s*$/imu.exec(gitFile);
   if (!match) return resolvedRoot;
   const gitDir = path.resolve(resolvedRoot, match[1]);
+  try {
+    const rawCommonDir = (await readFile(path.join(gitDir, "commondir"), "utf8")).trim();
+    if (rawCommonDir) {
+      const commonDir = path.resolve(gitDir, rawCommonDir);
+      if (path.basename(commonDir) === ".git") return path.dirname(commonDir);
+    }
+  } catch {
+    // Older or synthetic worktree layouts may not expose commondir; use the legacy marker below.
+  }
   const worktreesMarker = `${path.sep}.git${path.sep}worktrees${path.sep}`;
   const markerIndex = gitDir.indexOf(worktreesMarker);
   if (markerIndex === -1) return resolvedRoot;
