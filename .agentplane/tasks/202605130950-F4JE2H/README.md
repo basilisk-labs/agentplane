@@ -1,7 +1,8 @@
 ---
 id: "202605130950-F4JE2H"
 title: "Stabilize recent GitHub CI failure modes"
-status: "DOING"
+result_summary: "Merged via PR #3621."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: CI failure stabilization covers detached GitHub check waiting, sqlite EPIPE handling, and CI gate noise with focused tests, fast suite, critical suite, lint, typecheck, Knip, workflow lint, policy routing, and doctor."
   attempts: 0
-commit: null
+commit:
+  hash: "424c521495e4d470fd26f20d10cc16603846e767"
+  message: "Merge PR #3621: stabilize CI failure modes"
 comments:
   -
     author: "CODER"
     body: "Start: Implement the approved CI stability fixes in the dedicated task worktree, keeping changes scoped to wait-remote-pr-checks tests, sqlite child-process error handling, and CI gate labeling/runtime adjustments."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3621 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: CI failure stabilization covers detached GitHub check waiting, sqlite EPIPE handling, and CI gate noise with focused tests, fast suite, critical suite, lint, typecheck, Knip, workflow lint, policy routing, and doctor."
+  -
+    type: "status"
+    at: "2026-05-13T10:08:31.940Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3621 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T10:01:36.583Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T10:08:31.940Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make recent GitHub Actions failures less likely by hermeticizing wait-remote-pr-checks tests, handling sqlite stdin pipe errors, and reducing CI gate noise without weakening code quality."
 sections:
   Summary: |-

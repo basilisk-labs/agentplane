@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T10:07:50Z",
   "base": "main",
   "branch": "task/202605130950-F4JE2H/ci-failure-stability",
   "created_at": "2026-05-13T09:51:03.514Z",
-  "head_sha": "7587eeffa3af1fa54a1eff9c57b763e57fcd9fc6",
+  "head_sha": "d2a866ac5f6a828244fcd2c7d542b903f8132cee",
   "last_verified_at": "2026-05-13T10:01:36.578Z",
   "last_verified_sha": "7587eeffa3af1fa54a1eff9c57b763e57fcd9fc6",
+  "merge_commit": "424c521495e4d470fd26f20d10cc16603846e767",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T10:07:50Z",
   "pr_number": 3621,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3621",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605130950-F4JE2H",
-  "updated_at": "2026-05-13T10:01:25.161Z",
+  "updated_at": "2026-05-13T10:07:50Z",
   "verify": {
     "status": "pass"
   }
