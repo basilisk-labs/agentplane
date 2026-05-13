@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentplane.org/schemas/context-edge.schema.json",
+  "title": "Context edge (v1)",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "from": { "type": "string", "minLength": 1 },
+    "to": { "type": "string", "minLength": 1 },
+    "relation": { "type": "string", "minLength": 1 },
+    "weight": { "type": "number" },
+    "evidence": { "type": "string" }
+  },
+  "required": ["id", "from", "to", "relation"],
+  "additionalProperties": true
+}

@@ -13,8 +13,24 @@ import type {
 const CODE_TAGS = ["code", "backend", "frontend", "cli"] as const;
 const DOCS_TAGS = ["docs", "documentation", "roadmap"] as const;
 const OPS_TAGS = ["ops", "deploy", "config"] as const;
-const TASK_KIND_VALUES = new Set(["analysis", "content", "docs", "code", "release", "ops"]);
-const MUTATION_SCOPE_VALUES = new Set(["none", "docs", "code", "release", "ops", "unknown"]);
+const TASK_KIND_VALUES = new Set([
+  "analysis",
+  "content",
+  "docs",
+  "code",
+  "release",
+  "ops",
+  "context",
+]);
+const MUTATION_SCOPE_VALUES = new Set([
+  "none",
+  "docs",
+  "code",
+  "release",
+  "ops",
+  "context",
+  "unknown",
+]);
 const RISK_FLAG_VALUES = new Set([
   "network",
   "credentials",
@@ -32,6 +48,7 @@ const BLUEPRINT_REQUEST_VALUES = new Set([
   "code.branch_pr",
   "performance.benchmark",
   "quality.regression",
+  "context.assimilation",
   "runner.execution",
   "post_run.improvement_review",
   "release.strict",

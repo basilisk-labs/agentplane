@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentplane.org/schemas/context-provenance-edge.schema.json",
+  "title": "Context provenance edge (v1)",
+  "type": "object",
+  "properties": {
+    "source": { "type": "string", "minLength": 1 },
+    "task": { "type": "string", "minLength": 1 },
+    "target": { "type": "string", "minLength": 1 },
+    "artifact": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "format": "date-time" }
+  },
+  "required": ["source", "task", "target"],
+  "additionalProperties": true
+}

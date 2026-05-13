@@ -6,6 +6,7 @@ export type BuiltinBlueprintId =
   | "code.branch_pr"
   | "performance.benchmark"
   | "quality.regression"
+  | "context.assimilation"
   | "runner.execution"
   | "post_run.improvement_review"
   | "release.strict"
@@ -13,7 +14,7 @@ export type BuiltinBlueprintId =
 
 export type BlueprintId = BuiltinBlueprintId | (string & {});
 
-export type TaskKind = "analysis" | "content" | "docs" | "code" | "release" | "ops";
+export type TaskKind = "analysis" | "content" | "docs" | "code" | "release" | "ops" | "context";
 
 export type WorkflowMode = "direct" | "branch_pr";
 
@@ -70,7 +71,7 @@ export type RecipeExtensionKind =
 
 export type StopRuleSeverity = "stop" | "approval_required" | "warn";
 
-export type MutationKind = "none" | "docs" | "code" | "release" | "ops" | "unknown";
+export type MutationKind = "none" | "docs" | "code" | "release" | "ops" | "context" | "unknown";
 
 export type RiskFlag =
   | "network"

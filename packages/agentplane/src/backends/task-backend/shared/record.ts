@@ -20,8 +20,24 @@ import {
 import { toStringArray } from "./strings.js";
 import type { TaskData } from "./types.js";
 
-const TASK_KIND_VALUES = new Set(["analysis", "content", "docs", "code", "release", "ops"]);
-const MUTATION_SCOPE_VALUES = new Set(["none", "docs", "code", "release", "ops", "unknown"]);
+const TASK_KIND_VALUES = new Set([
+  "analysis",
+  "content",
+  "docs",
+  "code",
+  "release",
+  "ops",
+  "context",
+]);
+const MUTATION_SCOPE_VALUES = new Set([
+  "none",
+  "docs",
+  "code",
+  "release",
+  "ops",
+  "context",
+  "unknown",
+]);
 const RISK_FLAG_VALUES = new Set([
   "network",
   "credentials",
@@ -39,6 +55,7 @@ const BLUEPRINT_REQUEST_VALUES = new Set([
   "code.branch_pr",
   "performance.benchmark",
   "quality.regression",
+  "context.assimilation",
   "runner.execution",
   "post_run.improvement_review",
   "release.strict",
@@ -137,6 +154,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     commit,
     comments,
     events,
+    extensions: isRecord(fm.extensions) ? fm.extensions : undefined,
     doc_version:
       typeof fm.doc_version === "number" ? normalizeTaskDocVersion(fm.doc_version) : undefined,
     doc_updated_at: typeof fm.doc_updated_at === "string" ? fm.doc_updated_at : undefined,

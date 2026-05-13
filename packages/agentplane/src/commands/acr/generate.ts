@@ -262,6 +262,7 @@ export async function generateAcr(opts: {
     },
     extensions: {
       "agentplane.blueprint": blueprint,
+      ...buildAcrContextExtension(task),
     },
   };
   const record = {
@@ -278,6 +279,28 @@ export async function generateAcr(opts: {
       ? defaultAcrPath(opts.ctx, opts.taskId)
       : null;
   return { record, acrPath, warnings: [] };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function buildAcrContextExtension(
+  task: Awaited<ReturnType<typeof loadTaskFromContext>>,
+): Record<string, unknown> {
+  if (task.task_kind !== "context") return {};
+  const extensions = isRecord(task.extensions) ? task.extensions : {};
+  const context = extensions["agentplane.context"];
+  if (!isRecord(context)) return {};
+  return {
+    "agentplane.context": {
+      ...structuredClone(context),
+      task_id: task.id,
+      task_kind: task.task_kind,
+      mutation_scope: task.mutation_scope ?? null,
+      blueprint_request: task.blueprint_request ?? null,
+    },
+  };
 }
 
 async function buildAcrBlueprintExtension(opts: {

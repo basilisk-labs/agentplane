@@ -39,14 +39,31 @@ export type TaskNewParsed = {
   mutationScope?: TaskData["mutation_scope"];
   riskFlags?: NonNullable<TaskData["risk_flags"]>;
   blueprintRequest?: TaskData["blueprint_request"];
+  extensions?: TaskData["extensions"];
   dependsOn: string[];
   verify: string[];
   showBlueprint: boolean;
   allowDuplicate: boolean;
 };
 
-const TASK_KIND_VALUES = new Set(["analysis", "content", "docs", "code", "release", "ops"]);
-const MUTATION_SCOPE_VALUES = new Set(["none", "docs", "code", "release", "ops", "unknown"]);
+const TASK_KIND_VALUES = new Set([
+  "analysis",
+  "content",
+  "docs",
+  "code",
+  "release",
+  "ops",
+  "context",
+]);
+const MUTATION_SCOPE_VALUES = new Set([
+  "none",
+  "docs",
+  "code",
+  "release",
+  "ops",
+  "context",
+  "unknown",
+]);
 const RISK_FLAG_VALUES = new Set([
   "network",
   "credentials",
@@ -64,6 +81,7 @@ const BLUEPRINT_REQUEST_VALUES = new Set([
   "code.branch_pr",
   "performance.benchmark",
   "quality.regression",
+  "context.assimilation",
   "runner.execution",
   "post_run.improvement_review",
   "release.strict",
@@ -182,6 +200,7 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
     mutationScope,
     riskFlags,
     blueprintRequest,
+    ...(p.extensions ? { extensions: structuredClone(p.extensions) } : {}),
     dependsOn,
     verify,
   };
@@ -365,6 +384,7 @@ export async function runTaskNewParsed(opts: {
           ...(p.mutationScope ? { mutation_scope: p.mutationScope } : {}),
           ...(p.riskFlags && p.riskFlags.length > 0 ? { risk_flags: p.riskFlags } : {}),
           ...(p.blueprintRequest ? { blueprint_request: p.blueprintRequest } : {}),
+          ...(p.extensions ? { extensions: p.extensions } : {}),
           depends_on: p.dependsOn,
           verify: p.verify,
           doc: taskDoc,

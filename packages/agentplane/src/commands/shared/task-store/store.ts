@@ -117,6 +117,7 @@ export class TaskStore implements TaskStoreContract {
           (await didReadmeChangeOnDisk({
             readmePath: entry.readmePath,
             expectedMtimeMs: entry.mtimeMs,
+            expectedRawText: entry.rawText,
           }))
         ) {
           this.cache.delete(taskId);

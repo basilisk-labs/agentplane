@@ -112,6 +112,30 @@ const opsNodes = [
   node({ kind: "finish", evidence: ["final_output"], protected: true }),
 ] as const;
 
+const contextAssimilationNodes = [
+  node({ kind: "intake", evidence: ["sources"] }),
+  node({ kind: "scope", evidence: ["assumptions"] }),
+  node({
+    kind: "context_resolve",
+    evidence: ["context_manifest", "sources"],
+    policyModules: [".agentplane/policy/security.must.md", ".agentplane/policy/dod.core.md"],
+  }),
+  node({ kind: "work_unit", evidence: ["changed_paths", "artifact", "weak_links"] }),
+  node({
+    kind: "deterministic_check",
+    evidence: ["check_result"],
+    allowedCommands: [
+      "agentplane context verify-task <task-id>",
+      "agentplane context doctor",
+      "agentplane context graph validate",
+      "agentplane acr check <task-id>",
+    ],
+  }),
+  node({ kind: "artifact_write", evidence: ["artifact"] }),
+  node({ kind: "verify_record", evidence: ["check_result"], protected: true }),
+  node({ kind: "finish", evidence: ["commit"], protected: true }),
+] as const;
+
 export const BUILTIN_BLUEPRINTS = [
   blueprint({
     id: "analysis.light",
@@ -247,6 +271,72 @@ export const BUILTIN_BLUEPRINTS = [
     ],
   }),
   ...SPECIALIZED_CODE_BLUEPRINTS,
+  blueprint({
+    id: "context.assimilation",
+    title: "Context assimilation",
+    description:
+      "Assimilate selected raw sources into local wiki, optional capability proposals, and durable derived knowledge through an explicit CURATOR task.",
+    taskKinds: ["context"],
+    workflowModes: ["direct", "branch_pr"],
+    allowedCommands: [
+      "agentplane context verify-task <task-id>",
+      "agentplane context doctor",
+      "agentplane context graph validate",
+      "agentplane context search <query> --format json",
+      "agentplane acr generate <task-id> --write",
+      "agentplane acr check <task-id>",
+      "agentplane verify <task-id> --ok|--rework",
+    ],
+    policyModules: [".agentplane/policy/security.must.md", ".agentplane/policy/dod.core.md"],
+    contextBudget: {
+      maxPolicyModules: 2,
+      maxPromptBlocks: 14,
+      rationale:
+        "Context assimilation needs source-set policy, mutation boundaries, and evidence checks without loading code or release policy by default.",
+    },
+    nodes: contextAssimilationNodes,
+    requiredEvidence: [
+      evidence("context.sources", "sources", "intake", "Selected raw source set and hashes."),
+      evidence(
+        "context.policies",
+        "context_manifest",
+        "context_resolve",
+        "Context manifest and policy files read for the task.",
+      ),
+      evidence(
+        "context.changed_paths",
+        "changed_paths",
+        "work_unit",
+        "Wiki, derived, capability, task, and ACR paths changed by the assimilation.",
+      ),
+      evidence(
+        "context.artifacts",
+        "artifact",
+        "artifact_write",
+        "Updated wiki pages, facts/entities/edges/provenance rows, or capability proposals.",
+      ),
+      evidence(
+        "context.verification",
+        "check_result",
+        "deterministic_check",
+        "context verify-task, doctor, graph validation, search, and ACR check results.",
+      ),
+      evidence("context.commit", "commit", "finish", "Close or integration commit."),
+    ],
+    stopRules: [
+      {
+        id: "context_without_source_refs",
+        severity: "stop",
+        reason: "Context-derived claims require source_refs or an explicit no-source reason.",
+      },
+      {
+        id: "context_forbidden_output",
+        severity: "stop",
+        reason:
+          "Context tasks must not mutate raw sources or service projections unless explicitly allowed.",
+      },
+    ],
+  }),
   blueprint({
     id: "release.strict",
     title: "Strict release",

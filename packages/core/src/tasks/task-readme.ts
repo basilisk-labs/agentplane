@@ -268,6 +268,7 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
     "doc_updated_by",
     "description",
     "sections",
+    "extensions",
     "id_source",
     "dirty",
   ] as const;

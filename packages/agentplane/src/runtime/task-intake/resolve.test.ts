@@ -118,6 +118,17 @@ describe("runtime/task-intake", () => {
           priority: "high",
           origin: { system: "manual" },
           tags: ["framework", "intake"],
+          task_kind: "context",
+          mutation_scope: "context",
+          blueprint_request: "context.assimilation",
+          extensions: {
+            "agentplane.context": {
+              schema_version: 1,
+              source_set: {
+                files: [{ path: "context/raw/spec.md", sha256: "sha256:test" }],
+              },
+            },
+          },
           depends_on: ["EXT-100"],
           verify: ["bun run typecheck"],
           doc: "## Summary\n\nPrepare intake contracts.\n",
@@ -170,6 +181,17 @@ describe("runtime/task-intake", () => {
       task: {
         id: "TASK-100",
         depends_on: ["EXT-100"],
+        task_kind: "context",
+        mutation_scope: "context",
+        blueprint_request: "context.assimilation",
+        extensions: {
+          "agentplane.context": {
+            schema_version: 1,
+            source_set: {
+              files: [{ path: "context/raw/spec.md", sha256: "sha256:test" }],
+            },
+          },
+        },
       },
     });
     expect(plan.tasks[1]).toMatchObject({

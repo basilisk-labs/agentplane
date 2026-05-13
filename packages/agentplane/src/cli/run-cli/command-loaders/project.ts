@@ -122,6 +122,9 @@ export const loadBackendSpec = (deps: RunDeps) =>
   import("../../../commands/backend/sync.command.js").then((m) =>
     m.makeRunBackendHandler(deps.getCtx),
   );
+export const fromCommandsContextCommand = commandModule(
+  () => import("../../../commands/context/context.command.js"),
+);
 export const loadBackendSyncSpec = (deps: RunDeps) =>
   import("../../../commands/backend/sync.command.js").then((m) =>
     m.makeRunBackendSyncHandler(deps.getCtx),
@@ -140,6 +143,10 @@ export const loadBackendMigrateCanonicalStateSpec = (deps: RunDeps) =>
   );
 export const loadSyncSpec = (deps: RunDeps) =>
   import("../../../commands/sync.command.js").then((m) => m.makeRunSyncHandler(deps.getCtx));
+export const loadContextIngestSpec = (deps: RunDeps) =>
+  import("../../../commands/context/ingest.command.js").then((m) =>
+    m.makeRunContextIngestHandler(deps.getCtx),
+  );
 export const loadPrSpec = (deps: RunDeps) =>
   import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrHandler(deps.getCtx));
 export const loadPrOpenSpec = (deps: RunDeps) =>

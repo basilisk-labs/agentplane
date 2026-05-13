@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentplane.org/schemas/agentplane-context.schema.json",
+  "title": "AgentPlane context manifest (v1)",
+  "type": "object",
+  "properties": {
+    "version": { "type": "number", "const": 1 },
+    "project": {
+      "type": "object",
+      "required": ["name", "root"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "root": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "control": {
+      "type": "object",
+      "required": ["root", "policies"],
+      "properties": {
+        "root": { "type": "string", "minLength": 1 },
+        "policies": {
+          "type": "object",
+          "required": ["rules", "wiki_rules", "capability_rules", "redaction", "sync"],
+          "properties": {
+            "rules": { "type": "string", "minLength": 1 },
+            "wiki_rules": { "type": "string", "minLength": 1 },
+            "capability_rules": { "type": "string", "minLength": 1 },
+            "redaction": { "type": "string", "minLength": 1 },
+            "sync": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "workspace": {
+      "type": "object",
+      "required": ["namespace", "mode", "root", "raw", "wiki", "capabilities"],
+      "properties": {
+        "namespace": { "type": "string", "minLength": 1 },
+        "mode": { "type": "string", "minLength": 1 },
+        "root": { "type": "string", "minLength": 1 },
+        "raw": { "type": "string", "minLength": 1 },
+        "wiki": { "type": "string", "minLength": 1 },
+        "capabilities": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "lock": {
+      "type": "object",
+      "required": ["path"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 }
+      }
+    },
+    "derived": {
+      "type": "object",
+      "required": ["root", "facts", "graph", "capabilities", "reports"],
+      "properties": {
+        "root": { "type": "string", "minLength": 1 },
+        "facts": { "type": "string", "minLength": 1 },
+        "graph": {
+          "type": "object",
+          "required": ["entities", "edges", "provenance_edges"],
+          "properties": {
+            "entities": { "type": "string", "minLength": 1 },
+            "edges": { "type": "string", "minLength": 1 },
+            "provenance_edges": { "type": "string", "minLength": 1 }
+          }
+        },
+        "capabilities": {
+          "type": "object",
+          "required": ["registry", "edges"],
+          "properties": {
+            "registry": { "type": "string", "minLength": 1 },
+            "edges": { "type": "string", "minLength": 1 }
+          }
+        },
+        "reports": {
+          "type": "object",
+          "required": ["events"],
+          "properties": { "events": { "type": "string", "minLength": 1 } }
+        }
+      }
+    },
+    "service": {
+      "type": "object",
+      "required": ["root", "index"],
+      "properties": {
+        "root": { "type": "string", "minLength": 1 },
+        "index": {
+          "type": "object",
+          "required": ["type", "path"],
+          "properties": {
+            "type": { "type": "string", "minLength": 1 },
+            "path": { "type": "string", "minLength": 1 },
+            "fts": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "agentplane": {
+      "type": "object",
+      "required": ["tasks_root"],
+      "properties": { "tasks_root": { "type": "string", "minLength": 1 } }
+    },
+    "remotes": { "type": "array", "items": { "type": "string" } }
+  },
+  "required": [
+    "version",
+    "project",
+    "workspace",
+    "control",
+    "lock",
+    "derived",
+    "agentplane",
+    "service"
+  ],
+  "additionalProperties": true
+}

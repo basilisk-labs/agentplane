@@ -77,6 +77,26 @@ import { recipesListSpec } from "../../../commands/recipes/list.command.js";
 import { recipesRemoveSpec } from "../../../commands/recipes/remove.command.js";
 import { recipesSpec } from "../../../commands/recipes/recipes.command.js";
 import { recipesUpdateSpec } from "../../../commands/recipes/update.command.js";
+import { contextIngestSpec } from "../../../commands/context/ingest.spec.js";
+import {
+  contextCapabilityDiscoverSpec,
+  contextCapabilitySearchSpec,
+  contextCapabilitySpec,
+  contextCapabilityValidateSpec,
+  contextDoctorSpec,
+  contextGraphNeighborsSpec,
+  contextGraphExportSpec,
+  contextGraphShowSpec,
+  contextGraphSpec,
+  contextGraphSummarySpec,
+  contextGraphValidateSpec,
+  contextInitSpec,
+  contextReindexSpec,
+  contextSearchSpec,
+  contextShowSpec,
+  contextSpec,
+  contextVerifyTaskSpec,
+} from "../../../commands/context/context.spec.js";
 
 import { declareCommand, type CommandEntry } from "./kernel.js";
 import {
@@ -138,6 +158,8 @@ import {
   loadBlueprintValidateSpec,
   loadBlueprintScaffoldSpec,
   fromCommandsBlueprintsCommand,
+  loadContextIngestSpec,
+  fromCommandsContextCommand,
 } from "../command-loaders/project.js";
 
 export const PROJECT_COMMANDS = [
@@ -185,6 +207,24 @@ export const PROJECT_COMMANDS = [
   fromCommandsRecipesDetachCommand(recipesDetachSpec, "runRecipesDetach", {}),
   fromRecipesCachePruneSpec(recipesCachePruneSpec, "runRecipesCachePrune"),
   fromCommandsRecipesInstallRun(recipesInstallSpec, "runRecipesInstall", { needs: "none" }),
+  fromCommandsContextCommand(contextSpec, "runContextGroup"),
+  declareCommand(contextIngestSpec, { load: loadContextIngestSpec }),
+  fromCommandsContextCommand(contextInitSpec, "runContextInit"),
+  fromCommandsContextCommand(contextReindexSpec, "runContextReindex"),
+  fromCommandsContextCommand(contextSearchSpec, "runContextSearch"),
+  fromCommandsContextCommand(contextShowSpec, "runContextShow"),
+  fromCommandsContextCommand(contextDoctorSpec, "runContextDoctor"),
+  fromCommandsContextCommand(contextVerifyTaskSpec, "runContextVerifyTask"),
+  fromCommandsContextCommand(contextGraphSpec, "runContextGraphGroup"),
+  fromCommandsContextCommand(contextGraphSummarySpec, "runContextGraphSummary"),
+  fromCommandsContextCommand(contextGraphShowSpec, "runContextGraphShow"),
+  fromCommandsContextCommand(contextGraphNeighborsSpec, "runContextGraphNeighbors"),
+  fromCommandsContextCommand(contextGraphValidateSpec, "runContextGraphValidate"),
+  fromCommandsContextCommand(contextGraphExportSpec, "runContextGraphExport"),
+  fromCommandsContextCommand(contextCapabilitySpec, "runContextCapabilityGroup"),
+  fromCommandsContextCommand(contextCapabilityValidateSpec, "runContextCapabilityValidate"),
+  fromCommandsContextCommand(contextCapabilitySearchSpec, "runContextCapabilitySearch"),
+  fromCommandsContextCommand(contextCapabilityDiscoverSpec, "runContextCapabilityDiscover"),
   fromCommandsBranchBaseCommand(branchBaseSpec, "runBranchBase", { needs: "none" }),
   fromCommandsBranchBaseCommand(branchBaseGetSpec, "runBranchBaseGet", {}),
   fromBranchBaseSetSpec(branchBaseSetSpec, "runBranchBaseSet"),

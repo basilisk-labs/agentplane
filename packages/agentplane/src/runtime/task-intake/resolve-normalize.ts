@@ -105,6 +105,7 @@ export function normalizeDraftTasks(tasks: readonly TaskGraphDraftTask[]): TaskG
         ? { risk_flags: dedupeTrimmed(task.risk_flags).toSorted() as typeof task.risk_flags }
         : {}),
       ...(task.blueprint_request ? { blueprint_request: task.blueprint_request } : {}),
+      ...(task.extensions ? { extensions: structuredClone(task.extensions) } : {}),
       verify: dedupeTrimmed(task.verify).toSorted(),
       depends_on: dedupeTrimmed(task.depends_on).toSorted(),
       doc,

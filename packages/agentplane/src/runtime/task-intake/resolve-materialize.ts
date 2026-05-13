@@ -78,6 +78,9 @@ function buildMaterializedTask(opts: {
     ...(opts.draftTask.blueprint_request
       ? { blueprint_request: opts.draftTask.blueprint_request }
       : {}),
+    ...(opts.draftTask.extensions
+      ? { extensions: structuredClone(opts.draftTask.extensions) }
+      : {}),
     verify: [...opts.draftTask.verify],
     comments: [],
     events: [],
