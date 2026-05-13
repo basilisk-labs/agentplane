@@ -211,13 +211,19 @@ async function withIsolatedRedmineEnv<T>(fn: () => Promise<T>): Promise<T> {
   }
 }
 
-async function gitInitWithCommit(root: string, subject: string): Promise<string> {
+async function gitInitWithCommit(root: string, subject: string, body?: string): Promise<string> {
   await execFileAsync("git", ["init", "-q", "-b", "main"], { cwd: root });
   await execFileAsync("git", ["config", "user.name", "Doctor Test"], { cwd: root });
   await execFileAsync("git", ["config", "user.email", "doctor@example.com"], { cwd: root });
   await writeFile(path.join(root, "file.txt"), `${subject}\n`, "utf8");
   await execFileAsync("git", ["add", "file.txt"], { cwd: root });
-  await execFileAsync("git", ["commit", "--no-verify", "-m", subject], { cwd: root });
+  await execFileAsync(
+    "git",
+    ["commit", "--no-verify", "-m", subject, ...(body ? ["-m", body] : [])],
+    {
+      cwd: root,
+    },
+  );
   const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
   return stdout.trim();
 }
@@ -497,6 +503,56 @@ describe(
         expect(output).not.toContain(
           "[WARN] DONE task implementation commit points to a close commit: 202602111824-ABC123",
         );
+      } finally {
+        stderr.restore();
+      }
+    });
+
+    it("detects structured human-readable close commits by Agentplane refs", async () => {
+      const ws = await mkWorkspace();
+      const closeHash = await gitInitWithCommit(
+        ws.root,
+        "context: add v0.6 release readiness checks",
+        [
+          "Summary:",
+          "- Added and verified the local and hosted v0.6 context readiness flow.",
+          "",
+          "Refs:",
+          "- Source PR: #3612",
+          "- Merge PR: #3613",
+          "- Agentplane task: ABC123",
+          "- Agentplane run: 202605130501-ABC123",
+        ].join("\n"),
+      );
+      const stderr = captureStderr();
+      try {
+        await writeFile(
+          path.join(ws.root, ".agentplane", "tasks.json"),
+          JSON.stringify(
+            {
+              tasks: [
+                {
+                  id: "202602111826-ABC123",
+                  status: "DONE",
+                  commit: { hash: closeHash },
+                },
+              ],
+            },
+            null,
+            2,
+          ),
+          "utf8",
+        );
+        const rc = await runDoctor(
+          { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+          { fix: false, dev: false },
+        );
+        expect(rc).toBe(0);
+        const output = stderr.output();
+        expect(output).toContain(
+          "[WARN] DONE task implementation commit points to a close commit: 202602111826-ABC123",
+        );
+        expect(output).toContain("(context: add v0.6 release readiness checks)");
       } finally {
         stderr.restore();
       }
