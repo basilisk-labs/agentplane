@@ -89,7 +89,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "INTEGRATOR",
     lines: [
       SHARED_STARTUP_NOTE,
-      `- branch_pr: the primary integration route is the task GitHub PR. Require a green hosted PR gate first (${BRANCH_PR_HOSTED_GATE_GUIDANCE}), then run \`agentplane pr check <task-id>\` -> \`agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify\`; on protected bases, integrate drives \`gh pr merge --auto --merge\` and holds the queue lane until GitHub merges the PR and Task Hosted Close finishes.`,
+      `- branch_pr: the primary integration route is the task GitHub PR. Require a green hosted PR gate first (${BRANCH_PR_HOSTED_GATE_GUIDANCE}), then run \`agentplane pr check <task-id>\` -> \`agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify\`; on protected bases, integrate drives \`gh pr merge --auto --merge\` when GitHub CLI is installed/authenticated, falls back to the GitHub API with explicit GH_TOKEN/GITHUB_TOKEN, and holds the queue lane until GitHub merges the PR and Task Hosted Close finishes.`,
       "- branch_pr close tail: after the task PR merges, `Task Hosted Close` pushes the deterministic closure branch and opens the follow-up closure PR when organization policy allows Actions PR creation; otherwise it leaves a manual PR link on the merged task PR. Pull the updated base branch after that closure PR merges instead of creating a local finish-only tail commit.",
       `- direct: the task owner normally closes with \`${COMMAND_SNIPPETS.core.finishTask}\` plus \`--result-file ./result.txt\`.`,
       "- For branch-level flags and branch/base diagnostics, use `agentplane help work start`, `agentplane help integrate`, and `agentplane help branch base`.",
@@ -190,6 +190,7 @@ export function renderQuickstart(): string {
     "Configured workflow route:",
     "",
     `- \`branch_pr\`: base checkout owns plan/approve and the merge lane; the task worktree owns implementation commits and local PR artifacts; the primary finalization route is the task GitHub PR, so INTEGRATOR runs \`pr check\` and \`integrate\` from the base checkout to drive/hold the GitHub PR merge until Task Hosted Close lands the close tail.`,
+    "- `branch_pr` GitHub transport: install GitHub CLI yourself (`brew install gh` on macOS, `winget install --id GitHub.cli` on Windows, or the Linux package from `https://cli.github.com/manual/installation`), then run `gh auth login`; if `gh` is unavailable, `integrate` can use explicit `GH_TOKEN`/`GITHUB_TOKEN` as a GitHub API fallback.",
     `- \`direct\`: task setup is \`${BOOTSTRAP_TASK_PREP_COMMANDS[0]}\` -> \`${BOOTSTRAP_TASK_PREP_COMMANDS[1]}\` -> \`${BOOTSTRAP_TASK_PREP_COMMANDS[2]}\`.`,
     `- \`direct\`: execution is \`${COMMAND_SNIPPETS.core.startTask}\` -> \`${COMMAND_SNIPPETS.core.taskVerifyShow}\` -> \`${COMMAND_SNIPPETS.core.verifyTask}\` -> \`${COMMAND_SNIPPETS.core.finishTask}\` with \`--result-file ./result.txt\`.`,
     "- Lifecycle/status commits are task-state checkpoints; they are not implementation commits. In `branch_pr`, `finish --commit-from-comment` is unsupported because finish runs from the base checkout.",

@@ -77,6 +77,8 @@ describe("command-guide", () => {
     expect(text).toContain("activate ORCHESTRATOR for planning and the task owner role");
     expect(text).toContain("agentplane task start-ready");
     expect(text).toContain("agentplane pr check <task-id>");
+    expect(text).toContain("GitHub CLI");
+    expect(text).toContain("GH_TOKEN");
     expect(text).toContain("Framework maintainers may use repo-local helper scripts");
     expect(text).toContain("workflow:wait-remote-checks");
     expect(text).not.toContain(

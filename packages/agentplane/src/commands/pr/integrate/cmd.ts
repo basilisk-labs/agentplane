@@ -1,5 +1,8 @@
 import path from "node:path";
 
+import { gitEnv } from "@agentplaneorg/core/git";
+import { execFileAsync } from "@agentplaneorg/core/process";
+
 import { mapBackendError } from "../../../cli/error-map.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { createCliEmitter } from "../../../cli/output.js";
@@ -12,8 +15,6 @@ import {
   renderPostIntegrateBootstrapGuidance,
   shouldRecommendPostIntegrateBootstrap,
 } from "./internal/bootstrap-guidance.js";
-import { execFileAsync } from "@agentplaneorg/core/process";
-import { gitEnv } from "@agentplaneorg/core/git";
 import { gitRevParse } from "../../shared/git-ops.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 import {
@@ -23,61 +24,13 @@ import {
 } from "../../shared/task-handoff.js";
 
 import { finalizeIntegrate } from "./internal/finalize.js";
+import { runProtectedBaseGithubMerge } from "./internal/github-pr-merge.js";
 import { runMergeCommit, runRebaseFastForward, runSquashMerge } from "./internal/merge.js";
 import { maybeRunPreIntegrateBootstrap } from "./internal/pre-integrate-bootstrap.js";
 import { maybeRunPostIntegrateBootstrap } from "./internal/post-integrate-bootstrap.js";
 import { prepareIntegrate } from "./internal/prepare.js";
 import { resolveWorktreeForIntegrate } from "./internal/worktree.js";
 import { runVerifyCommands } from "./verify.js";
-
-function summarizeGhMergeFailure(err: unknown): string {
-  const stderr =
-    typeof (err as { stderr?: unknown } | null)?.stderr === "string"
-      ? String((err as { stderr?: unknown }).stderr).trim()
-      : "";
-  const stdout =
-    typeof (err as { stdout?: unknown } | null)?.stdout === "string"
-      ? String((err as { stdout?: unknown }).stdout).trim()
-      : "";
-  const message = err instanceof Error ? err.message.trim() : String(err).trim();
-  return stderr || stdout || message || "unknown failure";
-}
-
-async function runProtectedBaseGithubMerge(opts: {
-  gitRoot: string;
-  prTarget: string;
-}): Promise<{ status: "merged" | "auto_merge_enabled"; detail: string }> {
-  try {
-    await execFileAsync(
-      "gh",
-      ["pr", "merge", "--auto", "--merge", "--delete-branch", opts.prTarget],
-      {
-        cwd: opts.gitRoot,
-        env: gitEnv(),
-      },
-    );
-    return {
-      status: "auto_merge_enabled",
-      detail: `GitHub PR merge queued with --auto --merge: ${opts.prTarget}`,
-    };
-  } catch (autoErr) {
-    try {
-      await execFileAsync("gh", ["pr", "merge", "--merge", "--delete-branch", opts.prTarget], {
-        cwd: opts.gitRoot,
-        env: gitEnv(),
-      });
-      return { status: "merged", detail: `GitHub PR merged with --merge: ${opts.prTarget}` };
-    } catch (directErr) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_HANDOFF"),
-        code: "E_HANDOFF",
-        message:
-          "Unable to drive the branch_pr GitHub PR merge route automatically. " +
-          `auto=${summarizeGhMergeFailure(autoErr)}; direct=${summarizeGhMergeFailure(directErr)}`,
-      });
-    }
-  }
-}
 
 async function recordProtectedBaseIntegrateHandoff(opts: {
   ctx: CommandContext;
