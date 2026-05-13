@@ -124,6 +124,27 @@ describe("commit-policy", () => {
     expect(allowed.ok).toBe(true);
   });
 
+  it("validates allowed human-readable task subject scopes against task intent", () => {
+    const allowedByTag = validateCommitSubject({
+      subject: "git: render human-readable merge messages",
+      taskId: "202601010101-ABCDEF",
+      genericTokens: ["update", "tasks"],
+      allowHumanTaskSubject: true,
+      taskIntent: { taskKind: "code", mutationScope: "code", tags: ["git", "workflow"] },
+    });
+    expect(allowedByTag.ok).toBe(true);
+
+    const rejected = validateCommitSubject({
+      subject: "docs: render human-readable merge messages",
+      taskId: "202601010101-ABCDEF",
+      genericTokens: ["update", "tasks"],
+      allowHumanTaskSubject: true,
+      taskIntent: { taskKind: "code", mutationScope: "code", tags: ["git", "workflow"] },
+    });
+    expect(rejected.ok).toBe(false);
+    expect(rejected.errors.join("\n")).toContain("commit scope 'docs' does not match task intent");
+  });
+
   it("derives task-intent commit scopes without using the commit as the selector", () => {
     expect(
       commitScopesForTaskIntent({

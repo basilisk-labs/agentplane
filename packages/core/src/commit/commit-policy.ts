@@ -4,8 +4,8 @@ export type CommitPolicyResult = {
 };
 
 export type CommitTaskIntent = {
-  taskKind?: "analysis" | "content" | "docs" | "code" | "release" | "ops";
-  mutationScope?: "none" | "docs" | "code" | "release" | "ops" | "unknown";
+  taskKind?: "analysis" | "content" | "docs" | "code" | "release" | "ops" | "context";
+  mutationScope?: "none" | "docs" | "code" | "release" | "ops" | "context" | "unknown";
   blueprintRequest?:
     | "analysis.light"
     | "content.light"
@@ -14,10 +14,12 @@ export type CommitTaskIntent = {
     | "code.branch_pr"
     | "performance.benchmark"
     | "quality.regression"
+    | "context.assimilation"
     | "runner.execution"
     | "post_run.improvement_review"
     | "release.strict"
     | "ops.approval";
+  tags?: string[];
 };
 
 const NON_TASK_SUFFIX = "DEV";
@@ -67,6 +69,10 @@ export function commitScopesForTaskIntent(intent: CommitTaskIntent): string[] {
   }
   if (intent.taskKind) scopes.add(intent.taskKind);
   if (intent.blueprintRequest) scopes.add(intent.blueprintRequest.split(".")[0] ?? "");
+  for (const tag of intent.tags ?? []) {
+    const normalized = rootScope(tag);
+    if (normalized && new RegExp(`^${SCOPE_PATTERN}$`).test(normalized)) scopes.add(normalized);
+  }
   return [...scopes].filter(Boolean).toSorted();
 }
 
@@ -225,6 +231,16 @@ export function validateCommitSubject(opts: {
           `example: 🚧 ${taskSuffix} task: <summary>`,
         );
         return { ok: false, errors };
+      }
+      if (
+        opts.taskIntent &&
+        !isTaskIntentCommitScope({ scope: humanTaskSubject.scope, intent: opts.taskIntent })
+      ) {
+        const expected =
+          commitScopesForTaskIntent(opts.taskIntent).join(", ") || "task intent scope";
+        errors.push(
+          `commit scope '${humanTaskSubject.scope}' does not match task intent; expected one of: ${expected}, task, close, integrate`,
+        );
       }
     }
   } else {

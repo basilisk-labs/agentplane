@@ -106,6 +106,9 @@ export async function readTaskIntent(opts: {
     taskKind: stringValue(fm.task_kind, TASK_KIND_VALUES),
     mutationScope: stringValue(fm.mutation_scope, MUTATION_SCOPE_VALUES),
     blueprintRequest: stringValue(fm.blueprint_request, BLUEPRINT_REQUEST_VALUES),
+    tags: Array.isArray(fm.tags) ? fm.tags.filter((tag) => typeof tag === "string") : undefined,
   };
-  return intent.taskKind || intent.mutationScope || intent.blueprintRequest ? intent : undefined;
+  return intent.taskKind || intent.mutationScope || intent.blueprintRequest || intent.tags?.length
+    ? intent
+    : undefined;
 }
