@@ -170,10 +170,6 @@ export async function cmdIntegrate(opts: {
             gitRoot: resolved.gitRoot,
             prTarget,
           });
-          if (githubMerge.status === "merged") {
-            if (!opts.quiet) output.success("integrate github merge", task.id, githubMerge.detail);
-            return 0;
-          }
           await recordProtectedBaseIntegrateHandoff({
             ctx: prepared.ctx,
             taskId: task.id,
@@ -183,6 +179,31 @@ export async function cmdIntegrate(opts: {
             prNumber,
             prUrl,
           });
+          if (githubMerge.status === "merged") {
+            throw new CliError({
+              exitCode: exitCodeForError("E_HANDOFF"),
+              code: "E_HANDOFF",
+              message: `${githubMerge.detail}. Wait for Task Hosted Close to finish the closure tail, then pull ${base}.`,
+              context: withDiagnosticContext(
+                {
+                  task_id: task.id,
+                  branch,
+                  base_branch: base,
+                  reason_code: "protected_base_github_merge_completed",
+                },
+                {
+                  state: `branch_pr GitHub PR merged for ${task.id}`,
+                  likelyCause: `branch_pr keeps the integration lane occupied until Task Hosted Close lands the close tail on ${base}`,
+                  hint: "Wait for Task Hosted Close to finish, then pull the base branch before releasing the queue lane.",
+                  nextAction: {
+                    command: `git pull --ff-only`,
+                    reason: "refresh the base checkout after Task Hosted Close finishes",
+                    reasonCode: "protected_base_github_merge_completed",
+                  },
+                },
+              ),
+            });
+          }
           throw new CliError({
             exitCode: exitCodeForError("E_HANDOFF"),
             code: "E_HANDOFF",
@@ -208,7 +229,12 @@ export async function cmdIntegrate(opts: {
           });
         } catch (err) {
           if (!(err instanceof CliError) || err.code !== "E_HANDOFF") throw err;
-          if (err.context?.reason_code === "protected_base_auto_merge_enabled") throw err;
+          if (
+            err.context?.reason_code === "protected_base_auto_merge_enabled" ||
+            err.context?.reason_code === "protected_base_github_merge_completed"
+          ) {
+            throw err;
+          }
           protectedBaseMergeFailure = err.message;
         }
       }
