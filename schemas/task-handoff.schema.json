@@ -191,7 +191,10 @@
           "anyOf": [
             {
               "type": "string",
-              "enum": ["github_pr_merge_then_hosted_close"]
+              "enum": [
+                "github_pr_merge_then_hosted_close",
+                "github_task_pr_merge_then_hosted_close"
+              ]
             },
             {
               "type": "null"

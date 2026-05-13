@@ -14,6 +14,7 @@ import {
   taskTextBlob,
   type TaskListFilters,
 } from "./shared.js";
+import { annotateBranchPrTaskListState } from "./shared/branch-pr-list-state.js";
 
 export async function cmdTaskSearch(opts: {
   ctx?: CommandContext;
@@ -35,7 +36,10 @@ export async function cmdTaskSearch(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const tasks = await listTaskSummariesMemo(ctx);
+    const tasks = await annotateBranchPrTaskListState({
+      ctx,
+      tasks: await listTaskSummariesMemo(ctx),
+    });
     handleTaskListWarnings({ backend: ctx.taskBackend, strictRead: opts.filters.strictRead });
     if (opts.regex) {
       let pattern: RegExp;

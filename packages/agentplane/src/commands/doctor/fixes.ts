@@ -62,10 +62,7 @@ async function pathExists(absPath: string): Promise<boolean> {
   }
 }
 
-async function hasManagedHookSurface(repoRoot: string): Promise<boolean> {
-  const shimPath = path.join(repoRoot, ".agentplane", "bin", "agentplane");
-  if ((await pathExists(shimPath)) && (await fileIsManaged(shimPath, SHIM_MARKER))) return true;
-
+async function hasManagedHookFiles(repoRoot: string): Promise<boolean> {
   let hooksDir: string;
   try {
     hooksDir = await resolveGitHooksDir(repoRoot);
@@ -83,8 +80,15 @@ async function hasManagedHookSurface(repoRoot: string): Promise<boolean> {
 export async function safeFixManagedHooks(
   repoRoot: string,
 ): Promise<{ changed: boolean; note: string }> {
-  if (!(await hasManagedHookSurface(repoRoot))) {
-    return { changed: false, note: "Skip: no AgentPlane-managed hook surface found." };
+  if (!(await hasManagedHookFiles(repoRoot))) {
+    const shimPath = path.join(repoRoot, ".agentplane", "bin", "agentplane");
+    const hasShim = (await pathExists(shimPath)) && (await fileIsManaged(shimPath, SHIM_MARKER));
+    return {
+      changed: false,
+      note: hasShim
+        ? "Skip: no AgentPlane-managed hook files found; leaving intentionally removed hooks untouched."
+        : "Skip: no AgentPlane-managed hook files found.",
+    };
   }
 
   const conflicts = await collectHooksInstallConflicts({

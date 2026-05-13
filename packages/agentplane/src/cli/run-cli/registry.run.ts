@@ -2,7 +2,7 @@ import { CommandRegistry } from "../spec/registry.js";
 import { helpSpec, makeHelpHandler } from "../spec/help.js";
 
 import { makeHelpJsonFromSpecs } from "../../commands/docs/cli.command.js";
-import { COMMANDS, makeHelpSpecForEntry } from "./command-catalog.js";
+import { COMMANDS, getHelpCommandEntries, makeHelpSpecForEntry } from "./command-catalog.js";
 import type { RunDeps } from "./command-catalog/kernel.js";
 
 export function buildRegistry(opts: {
@@ -12,7 +12,10 @@ export function buildRegistry(opts: {
 }): CommandRegistry {
   const registry = new CommandRegistry();
   const getHelpJsonForDocs = () =>
-    makeHelpJsonFromSpecs([helpSpec, ...COMMANDS.map((entry) => makeHelpSpecForEntry(entry))]);
+    makeHelpJsonFromSpecs([
+      helpSpec,
+      ...getHelpCommandEntries("user").map((entry) => makeHelpSpecForEntry(entry)),
+    ]);
   const deps: RunDeps = {
     getCtx: opts.getCtx,
     getResolvedProject: opts.getResolvedProject,

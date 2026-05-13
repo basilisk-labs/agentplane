@@ -12,86 +12,185 @@ acr-schema: https://agentplane.org/schemas/acr-v0.1.schema.json
 
 ## Source: docs/manifesto.mdx
 
-The canonical manifesto now lives in the AgentPlane marketing repository:
+# Why AI work needs a Git-native evidence layer
 
-- [docs/positioning/manifesto.mdx](https://github.com/basilisk-labs/agentplane-marketing/blob/main/docs/positioning/manifesto.mdx)
+Coding agents made software changes cheaper. They did not make those changes accountable.
 
-Keep this page as a public docs route so existing links to `/docs/manifesto` continue to resolve.
+A generated diff is not enough when the work spans prompts, retries, tools, branches, checks,
+approvals, and handoffs. AgentPlane exists to preserve the operational evidence around AI-authored
+changes inside the repository where review already happens.
 
-## Source: docs/compare.mdx
+## 1. The failure mode
 
-The canonical comparison page now lives in the AgentPlane marketing repository:
+AI agents can now edit real repositories, not just draft snippets. They update code, docs, tests,
+release paths, and configuration. That creates a new review problem: the repository shows the final
+diff, but the reasoning trail often remains in a chat transcript, terminal scrollback, or IDE state.
 
-- [docs/positioning/compare.mdx](https://github.com/basilisk-labs/agentplane-marketing/blob/main/docs/positioning/compare.mdx)
+The weak link is not only "can the agent write code?" It is "can the team reconstruct, verify, and
+govern what happened?"
 
-Keep this page as a public docs route so existing links to `/docs/compare` continue to resolve.
+## 2. Why Git alone is not enough
 
-## Source: docs/user/overview.mdx
+Git is the right durable substrate. It stores content, branches, commits, and review history. But a
+commit does not reliably answer:
 
-## What AgentPlane is
+- What was the agent asked to do?
+- Which plan constrained the change?
+- Which checks actually ran?
+- Which policy decisions or waivers applied?
+- Why is the work safe to merge or revert?
 
-AgentPlane is a local CLI for agent-driven development inside a Git repository.
+AgentPlane keeps Git as the source of truth and adds the missing evidence beside the diff.
 
-It makes Claude Code, Codex, Cursor, Aider, and similar coding-agent work auditable by recording the
-workflow around the code:
+## 3. Why chat transcripts are not enough
+
+Chat transcripts are useful context, but they are poor review artifacts. They are long, mutable,
+private, tool-specific, and often unavailable to the next reviewer. They can include sensitive
+material that should not be committed.
+
+AgentPlane records commit-safe summaries, task state, verification evidence, and hashes instead of
+requiring reviewers to trust raw agent conversations.
+
+## 4. Why the durable record belongs with the code
+
+Remote execution and central status can be useful. They are separate from the durable evidence
+record that reviewers need next to the code.
+
+AgentPlane keeps the durable workflow record with the repository. The repository owns the workflow
+artifacts.
+
+## 5. Why ACR exists
+
+An Agent Change Record is the evidence file for AI-authored work. It is a commit-safe JSON artifact
+that records task intent, approved plan, agent/toolchain identity, Git commits, policy decisions,
+verification results, and merge readiness.
+
+Humans can read `agentplane acr explain`. CI can run `agentplane acr check`. External tools can read
+`.agentplane/tasks/<task-id>/acr.json`.
+
+## 6. What AgentPlane refuses to do
+
+AgentPlane is not another coding agent. It does not choose a model, generate code for you, replace
+Git, replace CI, or replace pull request review.
+
+It wraps the tools you already use with a repo-local lifecycle:
 
 ```text
 task -> plan -> approve -> implement -> verify -> finish
 ```
 
-AgentPlane runs locally. It does not add a hosted runtime between your repository and your agent.
+## 7. The operating bet
 
-## What it gives you
+Every serious agent change should leave an Agent Change Record.
 
-- A repo policy gateway: `AGENTS.md` or `CLAUDE.md`.
-- A repo-local workspace: `.agentplane/`.
-- Task records with ownership, plan, status, and dependencies.
-- Explicit verification state.
-- Finish records tied to Git revisions.
-- Workflow modes for fast local loops and stricter branch/PR handoff.
-- [Agent Change Record](agent-change-record) evidence manifests for portable review and optional CI
-  validation of agent-authored changes.
+That is the category bet: AI-authored work needs a durable evidence artifact, and the easiest place
+to keep it is the Git repository that already owns review, revert, audit, and merge.
 
-## What it does not do
+## Source: docs/compare.mdx
 
-- It is not an agent.
-- It is not a hosted agent platform.
-- It is not a prompt framework.
+# AgentPlane is not another coding agent
+
+Claude Code, Codex, Cursor, Aider, and similar tools generate or edit code. AgentPlane records the
+evidence that makes their work reviewable: task scope, approved plan, role ownership, verification,
+branch handoff, closure, and Agent Change Record.
+
+## Comparison matrix
+
+| Surface                              | Best at                            | Missing by itself              | AgentPlane adds                    |
+| ------------------------------------ | ---------------------------------- | ------------------------------ | ---------------------------------- |
+| Claude Code / Codex / Cursor / Aider | Generating and editing code        | Durable task evidence          | Lifecycle records and ACR          |
+| `AGENTS.md` / `CLAUDE.md`            | Instructions and policy            | State, approvals, verification | Commands, gates, artifacts         |
+| Git                                  | Diffs and history                  | Intent, plan, verification     | Evidence around the diff           |
+| CI                                   | Automated checks                   | Task context and closure state | Verification evidence and ACR gate |
+| Hosted agent dashboards              | Central status or remote execution | Repo-local source of truth     | Durable Git-owned evidence         |
+
+## Coding agents
+
+Coding agents are responsible for changing files. AgentPlane is responsible for making that work
+traceable after the session is gone.
+
+Use AgentPlane when you need a reviewer to answer:
+
+- What was the task?
+- Which plan constrained the work?
+- What evidence proves verification happened?
+- Which commit represents the work?
+- Is the ACR merge-ready?
+
+## `AGENTS.md` and `CLAUDE.md`
+
+Instruction files describe policy. They do not record whether a specific agent task followed that
+policy.
+
+AgentPlane keeps the policy gateway, then adds task state, plan approval, verification, finish
+metadata, PR artifacts, and ACR.
+
+## Git-only workflows
+
+Git remains the source of truth for content and history. AgentPlane does not replace it.
+
+The gap is that a commit hash does not describe the agent's task, plan, verification, or policy
+decisions. AgentPlane stores those records beside the commit so review and revert have enough
+context.
+
+## CI
+
+CI proves that configured checks ran. It usually does not know why the agent changed the files or
+which task evidence belongs to the pull request.
+
+AgentPlane can record verification as task evidence and use `agentplane acr check <task-id> --mode
+ci` as an ACR readiness gate.
+
+## Hosted agent platforms
+
+Hosted runtimes and dashboards are useful when you need remote execution, central queues, or sandbox
+management.
+
+AgentPlane.org is not a hosted agent runtime or sandbox API. It is a local-first Git evidence layer
+for AI work in repositories.
+
+## Summary
+
+Use any coding agent. Keep the evidence in Git.
+
+## Source: docs/user/overview.mdx
+
+## What AgentPlane is
+
+AgentPlane is Git-native infrastructure for traceable AI work.
+
+It wraps coding-agent changes in repository-owned evidence: task intent, approved plan,
+verification results, local context artifacts, finish state, Git metadata, and Agent Change Record.
+
+Use your existing agent to edit code. Use AgentPlane to make the work reviewable after the chat
+window, terminal session, or IDE context is gone.
+
+```text
+task -> plan -> approve -> implement -> verify -> finish
+```
+
+## What AgentPlane does not do
+
+- It does not generate code for you.
+- It does not choose a model.
 - It does not replace Git.
-- It does not replace your editor or terminal.
-- It does not replace Claude Code, Codex, Cursor, Aider, or other coding agents.
+- It does not replace CI.
+- It does not replace pull request review.
 
-## How the pieces fit
+## What AgentPlane gives you
 
-1. `agentplane init` creates the policy gateway and `.agentplane/` workspace.
-2. A task records what the agent is supposed to solve.
-3. A plan records the intended approach before implementation.
-4. Verification records what was checked.
-5. Finish records why the work is considered closed.
-6. Agent Change Record packages task evidence into a portable, hash-checked manifest that can be
-   generated, validated, explained, and refreshed automatically on finish.
+- Repo-local task records.
+- Policy gateway through `AGENTS.md` or `CLAUDE.md`.
+- Explicit task lifecycle.
+- Verification evidence.
+- Local context ingestion, projection, search, and task-context verification.
+- ACR generation and validation.
+- `direct` and `branch_pr` workflows.
 
-## Source of truth model
+## First artifact before first abstraction
 
-- Workflow policy: `AGENTS.md` or `CLAUDE.md`.
-- Repo workflow/configuration: `.agentplane/WORKFLOW.md`.
-- Task state: `.agentplane/tasks/`.
-- Command behavior: installed `agentplane` CLI.
-- Git history: commits, branches, and review workflow.
-
-## Next steps
-
-1. Install and initialize from [Setup](setup).
-2. Learn the [Workflow](workflow).
-3. Pick a [Workflow guide](../workflow-guides) for your coding agent or review setup.
-4. Install a [Recipe](../recipes) only when you need an AgentPlane extension package.
-5. Use [Commands](commands) for exact flags.
-
-## Source: docs/user/setup.mdx
-
-## Install CLI
-
-The shortest path is:
+The fastest way to understand AgentPlane is to create a harmless task and inspect the files it
+writes:
 
 ```bash
 npm i -g agentplane
@@ -99,82 +198,178 @@ agentplane init
 agentplane quickstart
 ```
 
+The visible payoff is a repo-owned task trail:
+
+```text
+.agentplane/tasks/<task-id>/README.md
+.agentplane/tasks/<task-id>/acr.json
+```
+
+For research-heavy tasks, local context adds a second repo-owned trail:
+
+```text
+.agentplane/cache.sqlite
+.agentplane/context/derived/**/*
+context/wiki/**/*
+context/facts/**/*.jsonl
+context/graph/**/*.jsonl
+```
+
+## Source of truth model
+
+- Workflow policy: `AGENTS.md` or `CLAUDE.md`.
+- Repo workflow/configuration: `.agentplane/WORKFLOW.md`.
+- Task state: `.agentplane/tasks/`.
+- Local context source artifacts: `context/**`.
+- Local context derived artifacts: `.agentplane/context/derived/**`.
+- Shared local projection cache: `.agentplane/cache.sqlite`.
+- ACR evidence projection: `.agentplane/tasks/<task-id>/acr.json`.
+- Command behavior: installed `agentplane` CLI.
+- Git history: commits, branches, and review workflow.
+
+`context/**` is the editable source layer. `.agentplane/context/derived/**` and
+`.agentplane/cache.sqlite` are generated/disposable and can be rebuilt with
+`agentplane context reindex`.
+
+## Next steps
+
+1. Install and initialize from [Setup](setup).
+2. Read [Local context](local-context) if your task needs reusable repository knowledge.
+3. Read [Agent Change Record](agent-change-record).
+4. Pick a [workflow guide](../workflow-guides) for your coding agent or review setup.
+5. Install a [Recipe](../recipes) only when you need an extension package.
+
+## Source: docs/user/setup.mdx
+
+## Install AgentPlane
+
 Requirements:
 
 - Node.js 20+
-- Git repository
+- Git
 - Local terminal
-
-You can also inspect the CLI without a global install:
-
-```bash
-npx agentplane --help
-```
-
-Alternative global install:
 
 ```bash
 npm i -g agentplane
-# or
-bun add -g agentplane
-agentplane --help
+agentplane init
+agentplane quickstart
 ```
 
-If the shell says `agentplane` is not recognized (common on fresh Windows setup), use:
+Prefer no global install:
 
 ```bash
-npx agentplane --help
+npx agentplane init
+npx agentplane quickstart
 ```
 
-Quick checks on Windows:
-
-```powershell
-where agentplane
-npm config get prefix
-```
-
-If `where agentplane` returns nothing, reopen the terminal after global install or use `npx agentplane ...`.
+On fresh Windows shells, use `npx agentplane ...` if `agentplane` is not yet on `PATH`, then reopen
+the terminal after global install.
 
 ## Initialize repository
 
-Run from repository root:
+Run from the repository root:
 
 ```bash
 agentplane init
 ```
 
-`init` creates:
+`init` creates the local evidence surface:
 
-- `AGENTS.md` in repo root.
-- `.agentplane/WORKFLOW.md` (validated workflow/config contract).
-- `.agentplane/agents/*`.
-- `.agentplane/backends/<selected-backend>/backend.json`.
-- `.agentplane/tasks/` workspace directories.
-- `.agentplane/workflows/last-known-good.md` (rollback snapshot).
+- `AGENTS.md` or `CLAUDE.md` as the repository policy gateway.
+- `.agentplane/WORKFLOW.md` as the workflow/config contract.
+- `.agentplane/tasks/` for task records, verification evidence, PR artifacts, and ACR.
 
-If `.git` does not exist in that folder, `init` creates a new git repository there.
+If `.git` does not exist in that folder, `init` creates a new Git repository there.
 
-## Interactive choices in init
+To inspect the setup without writes, use dry-run:
 
-`agentplane init` now starts with a setup profile:
+```bash
+agentplane init --dry-run --yes
+agentplane init --dry-run --yes --output json
+```
 
-- `Light`: compact flow, minimum enforcement, maximum flexibility.
-- `Normal` (default): balanced approvals and checks for most teams.
-- `Full Harness`: strict guardrails and full questionnaire.
+Dry-run builds the same setup plan but does not create `.git`, `.agentplane`, gateway files,
+backups, hooks, or commits. Use it before re-initializing repositories that already contain
+AgentPlane-related files.
 
-Hooks default by profile:
+## Create your first task
 
-- `Light`: hooks disabled by default.
-- `Normal`: hooks enabled by default.
-- `Full Harness`: hooks enabled by default.
+Use a harmless task first. The goal is to see the artifact shape before giving an agent broad edit
+scope.
 
-You can override the default explicitly with `--hooks true|false`.
+```bash
+agentplane task new \
+  --title "Demo: make AI work traceable" \
+  --description "Create a harmless task and inspect the evidence artifacts." \
+  --priority med \
+  --owner CODER \
+  --tag docs
 
-Use `--setup-profile full-harness` to force the full questionnaire.
+agentplane task plan set <task-id> \
+  --text "Inspect the generated task record and ACR path." \
+  --updated-by CODER
 
-In the interactive happy-path, `plan` and `verify` approvals now follow the selected setup profile instead of being asked as separate questions. Keep using `--require-plan-approval` and `--require-verify-approval` only when you want to override the profile defaults explicitly.
+agentplane task plan approve <task-id> --by ORCHESTRATOR
+agentplane task start-ready <task-id> \
+  --author CODER \
+  --body "Start: inspect repo-local artifacts before broad agent edits."
+agentplane task verify-show <task-id>
+agentplane verify <task-id> --ok --by CODER --note "Inspected task evidence."
+agentplane finish <task-id> \
+  --author CODER \
+  --body "Verified: evidence exists and the local traceability path is visible." \
+  --result "First traceable task complete" \
+  --commit HEAD
+agentplane acr explain <task-id>
+```
 
-Non-interactive setup is available through flags:
+Expected files:
+
+```text
+.agentplane/tasks/<task-id>/README.md
+.agentplane/tasks/<task-id>/acr.json
+```
+
+## Enable local context
+
+Use local context when agents need reusable project knowledge, source-backed facts, or task-scoped
+research material.
+
+```bash
+agentplane context init
+agentplane context reindex
+agentplane context search "first task"
+```
+
+In an empty standalone directory, `agentplane context init` also performs the initial AgentPlane
+bootstrap before writing context files. For non-empty uninitialized projects, run `agentplane init`
+first so conflicts and gateway/workflow choices stay explicit.
+
+For a task that needs context ingestion:
+
+```bash
+agentplane context ingest --changed
+agentplane context verify-task <task-id>
+```
+
+See [Local context](local-context) for source refs, privacy boundaries, and verification rules.
+
+## Setup profiles
+
+Choose profiles after you understand the first artifact:
+
+- `Light`: solo experiments with minimal enforcement.
+- `Normal`: default team-safe workflow.
+- Team Strict: stricter approvals, hooks, and CI-oriented guardrails. In the current CLI this
+  profile is selected with `full-harness`.
+
+```bash
+agentplane profile set light
+agentplane profile set normal
+agentplane profile set full-harness
+```
+
+Non-interactive setup:
 
 ```bash
 agentplane init \
@@ -188,235 +383,59 @@ agentplane init \
   --yes
 ```
 
-Backend choice:
+## Backends and advanced setup
 
-- `local` stores tasks in the repository and is the default setup.
-- `cloud` connects the repository to a cloud sync service while ordinary task reads continue to use
-  a local projection.
-- Direct backend integrations such as `redmine` are available when a project needs that specific
-  backend.
+Start with the local backend. It stores task evidence in the repository and is the default path.
 
-You can switch profile later without re-running init:
+Use the advanced backend docs only when you need them:
 
-```bash
-agentplane profile set light
-agentplane profile set normal
-agentplane profile set full-harness
-```
-
-## Cloud backend connect flow
-
-When `--backend cloud` is selected, init creates cloud backend config with non-secret connection
-settings. Run the connect command next:
-
-```bash
-agentplane backend connect cloud \
-  --endpoint https://sync.agentplane.cloud \
-  --project-id <project_id> \
-  --token <token>
-```
-
-The browser connect flow returns the `project_id` and CLI token. The CLI stores the token only in the
-ignored project `.env`, while backend JSON keeps non-secret metadata. After connect, refresh the
-local projection:
-
-```bash
-agentplane backend sync cloud --direction pull
-```
-
-## Redmine env files on init
-
-If `--backend redmine` is selected, `init` writes a template to `.env.example` and creates `.env` when missing.
-
-Credentials are read from env at runtime; secrets are not stored in backend JSON.
-
-## Keep agent files out of git (optional)
-
-```bash
-agentplane init --gitignore-agents
-```
-
-This appends ignores for `AGENTS.md` and `.agentplane/agents/` and skips the init commit.
-
-## Upgrade a workspace
-
-```bash
-agentplane upgrade
-```
-
-Default mode applies the managed framework files from the installed CLI bundle and creates a dedicated upgrade commit.
+- [Backends overview](backends)
+- [Cloud backend](backends/cloud)
+- [Redmine backend](backends/redmine)
 
 ### Managed ownership contract
 
-Treat these files as framework-owned:
+Treat `AGENTS.md`, `.agentplane/policy/**`, `.agentplane/WORKFLOW.md`, and other files written by
+`agentplane init` or `agentplane upgrade` as framework-owned managed files.
 
-- `AGENTS.md`
-- `.agentplane/policy/**`
-- other managed framework files written by `agentplane init` and `agentplane upgrade`
+Use `.agentplane/policy/incidents.md` for sanctioned local incident rules. Do not hand-edit the rest
+of the managed policy tree during normal project work; expect `agentplane upgrade` to replace or
+reconcile those files.
+Agents do not treat `incidents.md` as part of the normal startup reading path for agents; it is
+for recovery, incident response, or tasks that directly modify incident policy.
 
-Treat this file as the sanctioned local override area:
+For older or partially upgraded repositories, use [Upgrade recovery](../help/legacy-upgrade-recovery).
+That page owns the legacy state model and recovery procedures; this setup page describes the current
+initialization path only.
 
-- `.agentplane/policy/incidents.md`
+Recovery routing starts from three repository states:
 
-Operational rule:
+1. **Clean managed state**: managed files match the installed framework contract.
+2. **Partial upgrade state**: an upgrade started but did not finish all managed file updates.
+3. **Manual drift state**: managed files were edited outside the framework upgrade path.
 
-- record situational directives in `incidents.md`;
-- do not treat `incidents.md` as part of the normal startup reading path for agents; consult it only during recovery, incident handling, or direct work on that file;
-- do not hand-edit the rest of the managed policy tree in normal project work;
-- expect `agentplane upgrade` to replace or reconcile framework-owned files on apply.
-
-### Upgrade state model
-
-Think about upgrade in three states:
-
-1. **Clean managed state**
-   `AGENTS.md`, `.agentplane/policy/**`, `.agentplane/WORKFLOW.md`, `.agentplane/workflows/last-known-good.md`, and other managed/runtime framework files match the installed CLI bundle.
-   Normal path:
-
-   ```bash
-   agentplane upgrade
-   ```
-
-2. **Partial upgrade state**
-   The gateway or part of the managed tree changed, but not all managed files were updated.
-   Typical recovery:
-
-   ```bash
-   agentplane doctor
-   agentplane upgrade --yes
-   ```
-
-3. **Manual drift state**
-   Managed files were edited by hand, or the workspace was updated with an older CLI than expected.
-   Recovery starts with diagnostics and may require reinstalling/updating the CLI first:
-
-   ```bash
-   agentplane doctor
-   agentplane upgrade --remote --yes
-   ```
-
-- managed files are replace-first on apply, except `.agentplane/policy/incidents.md`, which is append-only when local content already exists;
-- upgrade also restores required workflow runtime artifacts for the current contract, even when those files were missing from an older initialized repository;
-- upgrade prints the bundle source, resolved version label, and selected mode before doing any work.
-
-Non-default modes:
-
-```bash
-agentplane upgrade --dry-run
-agentplane upgrade --agent
-```
-
-`--dry-run` is the preview path.
-
-If an older project ends up with a new gateway but missing policy modules after upgrade, use the
-[Upgrade recovery](../help/legacy-upgrade-recovery) runbook.
-
-If `agentplane doctor` reports that active tasks still use legacy README v2 docs or that the
-workspace is in an active v2/v3 mixed state after an upgrade, normalize task docs before
-continuing active work:
-
-```bash
-agentplane task migrate-doc --all
-agentplane doctor
-```
-
-Use this after the managed framework files are already up to date. `agentplane upgrade` updates the
-framework-owned files; `task migrate-doc --all` updates task-local README docs to the README v3
-contract.
-
-## Preflight modes
-
-Quick preflight is now the default and is optimized for fast readiness checks:
-
-```bash
-agentplane preflight
-agentplane preflight --json
-```
-
-For full backend/task-list probing, use full mode:
-
-```bash
-agentplane preflight --mode full
-# or
-agentplane preflight --full
-```
-
-## Verify setup quickly
+## Verify setup
 
 ```bash
 agentplane config show
 agentplane quickstart
 agentplane task list
-agentplane workflow build --validate --dry-run
 agentplane doctor
 ```
 
-Then use `agentplane role <ROLE>` for role-specific guidance. If you are browsing the docs site,
-[Agent bootstrap](agent-bootstrap.generated) is the expanded reference page for the same startup
-model; installed repositories should not depend on that file existing locally.
+Then use `agentplane role <ROLE>` for role-specific guidance.
 
-## Working inside the AgentPlane framework checkout
+## Optional recipes
 
-If you run `agentplane` from `PATH` inside this framework repository, the global wrapper now
-detects the checkout and delegates automatically to the repo-local binary from this checkout.
-
-The repo-local binary still checks whether `dist/` matches the current source tree.
-
-- To inspect which runtime is currently active, run:
-
-```bash
-agentplane runtime explain
-```
-
-It prints the active binary path, runtime mode, and the resolved `agentplane` /
-`@agentplaneorg/core` package roots.
-
-- Inside the framework checkout, a stale build is a hard stop. Rebuild first:
-
-```bash
-bun run --filter=@agentplaneorg/core build
-bun run --filter=agentplane build
-bun run --filter=@agentplane/testkit build
-```
-
-- If you intentionally want to keep using the global installed CLI inside the framework checkout,
-  set:
-
-```bash
-AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1
-```
-
-- Outside the framework checkout, the linked global binary continues to use its own installed
-  package and does not hand off.
-
-The gateway preflight commands are still the correct commands. Inside the framework repository
-they now resolve to the repo-local binary automatically and therefore assume a fresh local build.
-
-## Core workflow operations
-
-```bash
-agentplane workflow debug
-agentplane workflow sync
-agentplane workflow land
-```
-
-Each command writes evidence to `.agentplane/workflows/evidence/`.
-
-## Install optional recipes (extensions)
+Recipes are extensions, not the first step. Add them after the task -> plan -> verify -> ACR flow is
+clear.
 
 ```bash
 agentplane recipes list-remote --refresh --yes
 agentplane recipes install code-map --refresh --yes
-agentplane recipes add code-map
-agentplane recipes active
-agentplane recipes explain code-map
 ```
 
-`recipes install` fills the global cache. `recipes add` vendors the selected package into the current
-repository, after which runtime reads only `.agentplane/recipes/` from the project.
-
-Recipe packages may still carry scenario assets for recipe-owned automation, but they are no longer
-part of the public CLI surface.
+Start with [Code Map](../recipes/code-map) when you need lightweight repository mapping.
 
 ## Source: docs/user/workflow.mdx
 
@@ -436,10 +455,10 @@ This repository is configured for `branch_pr`, so the normal guarded route is:
 1. Run preflight.
 2. Create the task, set the plan, and approve it.
 3. Start a dedicated branch/worktree with `agentplane work start ... --worktree`.
-4. Implement changes on the task branch and keep local PR artifacts current.
+4. Implement changes on the task branch, create the implementation commit there, and keep local PR artifacts current.
 5. Push the task branch, open a hosted PR, and wait for required remote checks.
 6. Record verification on the task branch, then integrate on the base branch only after remote green.
-7. Finish on the base branch after integration.
+7. Finish on the base branch after integration with `--commit <implementation-git-rev> --close-commit`.
 
 For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
 
@@ -449,18 +468,28 @@ agentplane quickstart
 agentplane task list
 git status --short --untracked-files=no
 agentplane work start <task-id> --agent CODER --slug <slug> --worktree
+cd .agentplane/worktrees/<task-id>-<slug>
+agentplane task start-ready <task-id> --author CODER --body "Start: ..."
+# edit files
+git add <changed-files>
+git commit -m "Implement <task>"
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
 git push -u origin task/<task-id>/<slug>
 gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
 bun run workflow:wait-remote-checks
+agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
+cd <base-checkout>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <git-rev> --close-commit
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <implementation-git-rev> --close-commit
 ```
 
 `direct` remains supported, but in this repository it is an explicit alternative rather than the default guarded path.
 `agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass
 `--merge-strategy squash` only when compacting history is intentional.
+Lifecycle/status commits are task-state checkpoints. They are not implementation commits, and
+`finish --commit-from-comment` is unsupported in `branch_pr` because finish runs on the base
+checkout.
 
 ## Default direct path
 
@@ -482,7 +511,7 @@ In AgentPlane, speed comes from reducing ambiguity rather than skipping controls
 - keep changes small and frequent;
 - run preflight/doctor early;
 - verify each increment before moving to the next one;
-- prefer deterministic recovery (`workflow restore`) over manual patching.
+- prefer deterministic recovery over manual patching.
 
 This makes high-throughput agent work predictable for both solo and team repos.
 
@@ -503,15 +532,11 @@ agentplane preflight --mode full
 If preflight reports `workflow loaded: no`, fix the contract first:
 
 ```bash
-agentplane workflow build --validate --dry-run
 agentplane doctor --fix
+agentplane doctor
 ```
 
-If the active workflow is broken and blocks work, restore from snapshot:
-
-```bash
-agentplane workflow restore
-```
+If the active workflow is broken and doctor cannot repair it, use [Workflow contract recovery](workflow-migration).
 
 ## direct mode
 
@@ -526,10 +551,11 @@ agentplane workflow restore
 - One task per branch/worktree.
 - PR artifacts live under `.agentplane/tasks/<task-id>/pr/`.
 - `agentplane work start ... --worktree` is required.
+- Implementation commits are created in the task worktree.
 - Local integration runs through `agentplane integrate`.
 - Good for teams, stricter review, and integration boundaries.
 - Hosted PR creation and remote required checks run through `gh`.
-- When remote checks are required, `agentplane integrate` and `finish` happen only after `bun run workflow:wait-remote-checks` returns green.
+- When remote checks are required, `agentplane integrate` and `finish --commit <implementation-git-rev> --close-commit` happen on the base checkout only after `bun run workflow:wait-remote-checks` returns green.
 
 ## Status transitions
 
@@ -603,11 +629,12 @@ This repository is configured for `branch_pr`, so the normal guarded route is:
 
 1. Preflight.
 2. Create the task and approve the plan.
-3. `work start ... --worktree`.
-4. Implement changes on the task branch and keep local PR artifacts current.
-5. Push the task branch, open a hosted PR, and wait for required remote checks.
-6. `verify` on the task branch, then `integrate` on the base branch only after remote green.
-7. `finish` on the base branch with `--result` and `--commit`.
+3. `work start ... --worktree` on base, then execute implementation on the task branch/worktree.
+4. Run `task start-ready`, implement, and commit implementation changes in the task worktree.
+5. Keep PR artifacts current, push the task branch, open a hosted PR, and wait for required remote checks.
+6. Run `verify` on the task branch, then `integrate` on the base branch only after remote checks pass.
+7. `finish` on the base branch with `--commit <git-rev>` and `--close-commit`.
+8. Clean up the task worktree/branch after hosted merge closure.
 
 ```bash
 agentplane config show
@@ -615,6 +642,7 @@ agentplane quickstart
 agentplane task list
 git status --short --untracked-files=no
 agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree
+agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
 agentplane pr update <task-id>
 git push -u origin task/<task-id>/<slug>
@@ -623,6 +651,7 @@ bun run workflow:wait-remote-checks
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
+agentplane cleanup merged --finalize
 ```
 
 `direct` remains supported, but here it is an explicit alternative rather than the default guarded route.
@@ -666,7 +695,8 @@ A task moves through the same core stages in both modes:
    refresh when `acr.write_on_finish=true`.
 9. **Evidence projection**: validate the task-local Agent Change Record against task, policy,
    verification, finish, and Git evidence.
-10. **Export (optional)**: export a task snapshot for integrations (for example `agentplane task export`).
+10. **Project and integration projections (optional)**: advanced maintenance surfaces can export or
+    regenerate derived task projections from the current backend state.
 
 Task creation targets executable work only.
 Task graph planning splits work into atomic tasks, each assigned to one specific owner.
@@ -730,7 +760,7 @@ sequenceDiagram
   E->>CLI: finish <task-id> --author <id> --body <text> --result <one-line>
   CLI->>B: Close task + store commit metadata
   CLI->>B: Refresh task-local acr.json when enabled
-  E->>CLI: acr validate / acr explain / task export (optional)
+  E->>CLI: acr validate / acr explain (optional)
 ```
 
 ## branch_pr mode
@@ -787,7 +817,7 @@ sequenceDiagram
   I->>CLI: finish <task-id> --author <id> --body <text> --result <one-line>
   CLI->>B: Close task + store commit metadata
   CLI->>B: Refresh task-local acr.json when enabled
-  I->>CLI: acr validate / acr explain / task export (optional)
+  I->>CLI: acr validate / acr explain (optional)
 ```
 
 ## Guardrails and policies
@@ -819,8 +849,6 @@ sequenceDiagram
   `.agentplane/tasks/<task-id>/acr.json`; it must validate against task state rather than become a
   separate task source of truth.
 - **Commit policy**: commit subjects must include the task ID suffix.
-- **Duplicate closure shortcut**: for accidental duplicate tasks, use one command:
-  - `agentplane task close-duplicate <task-id> --of <canonical-task-id> --author <ROLE>`
 - **Preferred close flow (single command)**:
   - In `direct`, `agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --commit <git-rev>` closes task metadata and creates the deterministic close commit in one step by default.
 - **Exceptional/manual close paths**:
@@ -828,7 +856,9 @@ sequenceDiagram
   - In `branch_pr`, or when you want to be explicit, use `--close-commit`.
   - Add `--close-unstage-others` when unrelated staged files are present and you are using explicit `--close-commit`.
 - **Docs updates**: task README sections are updated via `agentplane task doc set`; keep the active `doc_version` contract explicit when editing task docs.
-- **Exports**: task snapshots are updated only via `agentplane` commands.
+- **Advanced closure and maintenance commands**: exceptional close helpers, hosted-close recovery,
+  projection export, and task migration commands are not part of the normal user lifecycle. Use
+  `agentplane help --all` when maintaining AgentPlane itself or recovering legacy state.
 
 ## Lifecycle and close taxonomy
 
@@ -837,22 +867,10 @@ task state, task README, and git history agree about the terminal outcome. The
 commands below differ by workflow mode and by whether the task is closed as
 completed work, a no-op, a duplicate, or a hosted PR outcome.
 
-| Command                                                              | Mode                                               | When to use                                                                        | Git writes                                                                            | Task docs writes                                                                    | Final status                                     |
-| -------------------------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `agentplane finish <task-id>`                                        | `direct`                                           | Normal close after local verification and an implementation commit.                | Creates the deterministic close commit by default.                                    | Appends the Verified close record, stores commit metadata, and updates frontmatter. | `DONE`                                           |
-| `agentplane finish <task-id> --close-commit`                         | `branch_pr` base checkout or explicit direct close | Close after integration, or force the explicit close-commit path.                  | Creates the close commit after validating the close snapshot.                         | Same close metadata as `finish`; in `branch_pr`, the base task record is canonical. | `DONE`                                           |
-| `agentplane finish <task-id> --no-close-commit`                      | `direct` fallback                                  | Leave close commit handling manual after recording the finish result.              | Records finish metadata without creating the deterministic close commit.              | `DONE`                                                                              |
-| `agentplane task close-noop <task-id>`                               | `direct`                                           | Close a task that intentionally produced no implementation change.                 | Creates a task-only close/status commit when the command path requires one.           | Records the no-op reason in the task README.                                        | `DONE`                                           |
-| `agentplane task close-duplicate <task-id> --of <canonical-task-id>` | `direct`                                           | Close an accidental duplicate and point to the canonical task.                     | Creates the close/status commit for the duplicate task record.                        | Records the duplicate relationship and terminal reason.                             | `DONE`                                           |
-| `agentplane task hosted-close <task-id>`                             | `branch_pr` base checkout                          | Reconcile a task after a hosted PR merge already represents the shipped work.      | Records or reuses the hosted merge/close state on base.                               | Refreshes task and PR metadata from the hosted merge evidence.                      | `DONE`                                           |
-| `agentplane task hosted-close-pr <task-id>`                          | `branch_pr` base checkout                          | Open or skip a follow-up close PR when hosted merge state needs base-side closure. | May create a follow-up close branch/PR unless the canonical close is already present. | Recreates or refreshes base PR metadata before deciding the close route.            | `DONE` or no-op when already closed              |
-| `agentplane pr close <task-id>`                                      | `branch_pr` task PR                                | Close an open hosted PR without marking the task completed.                        | Uses the hosted provider and may delete the remote head branch.                       | Updates local PR artifacts when the command path has a task context.                | Task status unchanged                            |
-| `agentplane pr close-superseded <task-id>`                           | `branch_pr` task PR                                | Close a PR for work that was superseded by another task or branch.                 | Closes the hosted PR and may delete the remote branch.                                | Records superseded close evidence in PR artifacts.                                  | Task status unchanged unless separately finished |
-
-Use `finish` for normal completion. Use `close-noop` and `close-duplicate`
-only when the terminal reason is not "implemented and verified". Use `pr close`
-commands for hosted PR lifecycle only; they are not substitutes for task
-closure.
+Normal users should use `finish` for task completion and `pr close` commands only for hosted PR
+lifecycle. The no-op, duplicate, hosted-close, hosted-close-pr, and migration helpers are advanced
+maintenance surfaces. They remain implemented and available through `agentplane help --all`, but
+they are intentionally not part of the public happy path.
 
 ## Related docs
 
@@ -861,7 +879,6 @@ closure.
 - [Branching and PR artifacts](branching-and-pr-artifacts)
 - [Tasks and backends](tasks-and-backends)
 - [Configuration](configuration)
-- [Developer close taxonomy](../developer/close-taxonomy)
 
 ## Source: docs/user/commands.mdx
 
@@ -879,18 +896,18 @@ agentplane --version
 `agentplane --help` and `agentplane help` show the normal installed-project surface by default.
 The first screen is intentionally biased toward commands an agent needs for project work: startup,
 task lifecycle, branch/PR workflow, backend sync, recipes, diagnostics, and setup.
+For context management, `agentplane` keeps the human task-factory surface visible: `context init`,
+`context learn files`, `context learn changes`, `context learn tasks`, `context search`,
+`context show`, and `context check`.
 
 Advanced recovery and maintenance commands stay available through direct help or the full registry:
 
 ```bash
-agentplane help task reclaim
 agentplane help --all
 ```
 
-Inside the Agent Plane framework checkout, help automatically switches to the framework-dev surface
-and adds a dedicated `Framework Dev` group. Framework-maintainer commands such as `release`,
-`workflow build`, `docs cli`, and bundled Codex plugin installation are not shown in the normal
-installed-project help surface.
+Framework-maintainer commands for developing AgentPlane itself are intentionally outside the public
+user command path and live in the direct-link developer docs.
 
 ## Quickstart
 
@@ -903,14 +920,6 @@ The same startup model is expanded on the docs site here:
 - [Agent bootstrap](agent-bootstrap.generated)
   This is a public docs-page expansion of `agentplane quickstart`, not a file that installed repositories should depend on locally.
 
-Inside the Agent Plane framework checkout, `agentplane` from `PATH` now delegates to the
-repo-local binary automatically. For fresh clones, worktrees, or stale repo-local builds, use the
-canonical framework bootstrap:
-
-```bash
-bun run framework:dev:bootstrap
-```
-
 ## Init
 
 ```bash
@@ -918,6 +927,8 @@ agentplane init
 ```
 
 If the directory is not a git repository, `agentplane init` initializes git in that directory.
+Use `agentplane init --dry-run --yes` to preview the setup plan without creating `.git`,
+`.agentplane`, backups, hooks, or commits. Add `--output json` for a machine-readable plan.
 
 Interactive init now starts with a profile menu:
 
@@ -937,14 +948,12 @@ Non-interactive:
 
 ```bash
 agentplane init --setup-profile normal --workflow direct --backend local --execution-profile balanced --strict-unsafe-confirm true --hooks true --require-network-approval true --yes
+agentplane init --dry-run --yes --output json
 ```
 
-Workflow contract operations:
+Workflow diagnostics and repair:
 
 ```bash
-agentplane workflow build --validate --dry-run
-agentplane workflow build --validate
-agentplane workflow restore
 agentplane doctor --fix
 ```
 
@@ -967,17 +976,8 @@ Use this when you need to prove which binary is active, whether you are on
 `repo-local`, `repo-local-handoff`, or a global install, and which `agentplane` /
 `@agentplaneorg/core` package roots are actually being resolved at runtime.
 
-Inside the Agent Plane framework checkout, the same command now acts as the canonical
-framework-dev workflow surface: it prints the canonical bootstrap command, manual fallback steps,
-the repo-local verify command, the reinstall helper, the follow-up global runtime check, and the
-optional force-global override in one place.
-
 If the repository expects a newer CLI than the active runtime, `runtime explain` and `doctor` now
 print a concrete recovery path and a follow-up `agentplane runtime explain` verification step.
-
-If watched runtime paths are dirty inside the framework checkout, `agentplane runtime explain` and
-`agentplane doctor` warn and continue as read-only diagnostics; stricter commands still keep the
-stale-build hard-fail.
 
 ## Tasks
 
@@ -991,7 +991,6 @@ agentplane task run <task-id> --dry-run
 agentplane task run <task-id>
 agentplane task run show <task-id> [run-id]
 agentplane task run tail <task-id> [run-id] --lines 20
-agentplane task run trace <task-id> [run-id]
 agentplane task doc set <task-id> --section Summary --text "..."
 agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 ```
@@ -1002,8 +1001,9 @@ agentplane task doc set <task-id> --full-doc --file ./task-readme.md
   refusal metadata, timeout reason, metrics, capability summaries, and artifact paths from
   `run-state.json` / `result.json`.
 - Use `task run tail` when you only need the last N raw trace lines from `agent-trace.jsonl`.
-- Use `task run trace` when you need the full raw trace artifact unchanged. When `run-id` is
-  omitted, `show`, `tail`, and `trace` all select the latest run for the task.
+- Advanced raw-trace export remains available through the hidden help surface when you need the full
+  artifact unchanged. When `run-id` is omitted, `show`, `tail`, and advanced trace export all select
+  the latest run for the task.
 - Use `agent-trace.jsonl` and `stderr.log` when you need the raw runner trace.
 - Use `codex-last-message.md` only as a side artifact for human inspection when the adapter writes it.
 - Task-facing runner logs stay compact and English-only: they expose status, metrics, and artifact paths, but
@@ -1019,32 +1019,33 @@ agentplane task doc set <task-id> --full-doc --file ./task-readme.md
   `runner.custom.enforcement.mode=codex_sandbox_full_auto`. When wrapper mode is active, the same
   line also shows the currently supported sandbox values.
 
-## Task export (optional)
+## Advanced task projections
 
-Generate an optional integration snapshot:
-
-```bash
-agentplane task export
-agentplane task obsidian
-agentplane task obsidian clean
-agentplane task lint
-```
+Optional projection and maintenance commands are intentionally outside the normal public happy path.
+They remain available for integrations, legacy recovery, and framework maintenance through the
+hidden help surface (`agentplane help --all`).
 
 The exported snapshot is derived from the current backend projection. It is not the canonical
 source of truth.
 
-`agentplane task obsidian` writes a Markdown navigation projection under `.agentplane/`:
+The Obsidian projection command writes a Markdown navigation projection under
+`.agentplane/generated/obsidian/` for compatibility with Obsidian and plain Markdown browsers:
 
-- `.agentplane/index.md`
-- `.agentplane/tasks.md`
-- `.agentplane/by-status/*.md`
-- `.agentplane/by-tag/*.md`
-- `.agentplane/by-owner/*.md`
+- `.agentplane/generated/obsidian/index.md`
+- `.agentplane/generated/obsidian/tasks.md`
+- `.agentplane/generated/obsidian/by-status/*.md`
+- `.agentplane/generated/obsidian/by-tag/*.md`
+- `.agentplane/generated/obsidian/by-owner/*.md`
 
-Open `.agentplane/` as an Obsidian vault to browse task IDs, statuses, owners, tags, and dependency
-links while keeping `.agentplane/tasks/<task-id>/README.md` as the canonical task record.
-`agentplane task obsidian clean` removes only the generated Obsidian projection files; it does not
-delete canonical task READMEs or non-generated Markdown files.
+Open `.agentplane/generated/obsidian/` as an Obsidian vault to browse task IDs, statuses, owners,
+tags, and dependency links while keeping `.agentplane/tasks/<task-id>/README.md` as the canonical
+task record.
+The companion cleanup command removes only the generated Obsidian projection files; it does not
+delete canonical task READMEs or non-generated Markdown files. Inspect its exact syntax with
+the hidden help surface.
+
+This surface is a generated task-wiki/navigation adapter, not a separate storage authority. Legacy
+generated files in the `.agentplane/` root are still cleaned when they carry the generated marker.
 
 ## Agent Change Record
 
@@ -1064,6 +1065,43 @@ task lifecycle evidence. `finish` refreshes the task-local ACR automatically whe
 derived projection, not a second source of truth. `acr validate --mode schema` checks only JSON
 shape; `acr check --mode ci` enforces merge-ready semantics. See
 [Agent Change Record](agent-change-record).
+
+## Local context
+
+Local context commands manage repository-owned memory artifacts and the generated search
+projection:
+
+```bash
+agentplane context init
+agentplane context doctor
+agentplane context reindex
+agentplane context search "query"
+agentplane context show context/wiki/page.md#section=section-slug
+agentplane context ingest --changed
+agentplane context ingest ./notes.md --run
+agentplane context harvest tasks --tag release --limit 20 --dry-run
+agentplane context harvest tasks --tag branch_pr --batch-size 25
+agentplane context harvest tasks --tag branch_pr --write-proposals
+agentplane context verify-task <task-id>
+```
+
+Source artifacts live under `context/**`. Derived context artifacts live under
+`.agentplane/context/derived/**`, and the fast SQLite projection is stored in the shared cache
+database at `.agentplane/cache.sqlite`. Use `context harvest tasks` to convert completed task
+history into raw evidence scaffolds or default `CURATOR` extraction tasks before promoting reusable
+knowledge. Semantic extraction is agent-owned by default for non-write broad harvest runs: standard
+`CURATOR` tasks read task READMEs and ACR evidence in bounded oldest-first batches, then update
+wiki/facts/graph outputs through the normal task lifecycle. `--write-proposals` is the deterministic
+raw/proposal scaffold path, not the semantic truth path. Write modes also mark harvested task
+READMEs with `extensions.context_harvest` for raw ingestion and
+`extensions.context_task_extraction` for queued semantic extraction, so later broad runs can skip
+unchanged ingested or queued tasks by source digest instead of guessing from wiki files. Write modes
+require `agentplane context init` first. Use `context verify-task` before closing work that creates
+or relies on context artifacts. See [Local context](local-context).
+
+There is no public `context list` command by design. Search is the primary discovery surface; use
+`context graph summary`, `context graph show`, and `context graph neighbors` when you need structured
+graph inspection instead of text search.
 
 ## Backend sync (remote backends)
 
@@ -1225,7 +1263,8 @@ recipes: recipes add domain guidance and prompt/runtime assets; blueprints add t
 definitions that can become project-local trusted routes.
 
 `blueprints catalog refresh` caches an external catalog index under `~/.agentplane/blueprints`.
-`blueprints install` vendors selected blueprint definitions into the project-local blueprint store.
+`blueprints install` caches blueprint package contents under `~/.agentplane/blueprint-catalog` and
+materializes the selected definition files into the project-local `.agentplane/blueprints` store.
 Installing a blueprint does not activate it unless `--activate` is passed. Activation updates the
 project-local blueprint trust config with an explicit allowlist.
 

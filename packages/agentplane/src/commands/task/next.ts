@@ -11,6 +11,7 @@ import {
   queryTaskProjection,
   type TaskListFilters,
 } from "./shared.js";
+import { annotateBranchPrTaskListState } from "./shared/branch-pr-list-state.js";
 
 export async function cmdTaskNext(opts: {
   ctx?: CommandContext;
@@ -22,7 +23,10 @@ export async function cmdTaskNext(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const tasks = await listTaskSummariesMemo(ctx);
+    const tasks = await annotateBranchPrTaskListState({
+      ctx,
+      tasks: await listTaskSummariesMemo(ctx),
+    });
     handleTaskListWarnings({ backend: ctx.taskBackend, strictRead: opts.filters.strictRead });
     const { depState, filtered, items } = queryTaskProjection({
       tasks,

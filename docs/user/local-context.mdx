@@ -138,10 +138,11 @@ agentplane context init
 agentplane context learn changes
 agentplane context learn files <path>
 agentplane context learn tasks --tag <tag> --batch-size 25
+agentplane context doctor
 agentplane context search "<query>"
 agentplane context show <ref>
 agentplane context check
-ap context reindex
-ap context harvest tasks --tag <tag> --write-proposals
-ap context verify-task <task-id>
 ```
+
+`context list` is intentionally not a public command. Use search for discovery and the graph
+inspection commands when you need structured neighborhood views.

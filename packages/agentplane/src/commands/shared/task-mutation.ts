@@ -1,6 +1,8 @@
 import type { TaskData, TaskWriteOptions } from "../../backends/task-backend.js";
 import { PolicyEngine } from "../../policy/engine.js";
+import type { PolicyPhase, TaskPolicyState } from "../../policy/model.js";
 import type { PolicyActionId } from "../../policy/taxonomy.js";
+import { throwIfPolicyDecisionDenied } from "./policy-deny.js";
 import {
   backendUsesLocalTaskStore,
   loadTaskFromContext,
@@ -25,6 +27,33 @@ export type TaskCollectionMutationPlan<TResult> = {
   result: TResult;
 };
 
+function taskPolicyStateFromTask(task: TaskData, ctx: CommandContext): TaskPolicyState {
+  return {
+    status: task.status,
+    planApprovalState: task.plan_approval?.state ?? null,
+    verificationState: task.verification?.state ?? null,
+    workflowMode: ctx.config.workflow_mode,
+  };
+}
+
+export function assertTaskMutationPolicy(opts: {
+  ctx: CommandContext;
+  taskId: string;
+  task: TaskData;
+  action: PolicyActionId;
+  phase?: PolicyPhase;
+}): void {
+  const decision = new PolicyEngine().evaluate({
+    action: opts.action,
+    phase: opts.phase,
+    config: opts.ctx.config,
+    taskId: opts.taskId,
+    task: taskPolicyStateFromTask(opts.task, opts.ctx),
+    git: { stagedPaths: [] },
+  });
+  throwIfPolicyDecisionDenied(decision);
+}
+
 export async function withTaskMutationStorage<TResult>(opts: {
   ctx: CommandContext;
   local: (store: ReturnType<typeof getTaskStore>) => Promise<TResult> | TResult;
@@ -40,23 +69,26 @@ export async function applyTaskMutation(opts: {
   ctx: CommandContext;
   taskId: string;
   policyAction?: PolicyActionId;
+  phase?: PolicyPhase;
   build: (
     current: TaskData,
   ) => Promise<TaskMutationPlan | null | undefined> | TaskMutationPlan | null | undefined;
   writeOptions?: TaskWriteOptions;
 }): Promise<{ changed: boolean; task: TaskData; mode: "local-store" | "backend" }> {
-  void new PolicyEngine().evaluate({
-    action: opts.policyAction ?? "task_mutation",
-    config: opts.ctx.config,
-    taskId: opts.taskId,
-    git: { stagedPaths: [] },
-  });
+  const policyAction = opts.policyAction ?? "task_mutation";
 
   if (backendUsesLocalTaskStore(opts.ctx)) {
     const store = getTaskStore(opts.ctx);
     const result = await store.update(
       opts.taskId,
       async (current) => {
+        assertTaskMutationPolicy({
+          ctx: opts.ctx,
+          taskId: opts.taskId,
+          task: current,
+          action: policyAction,
+          phase: opts.phase,
+        });
         const plan = await opts.build({ ...current });
         if (!plan) return current;
         if (plan.nextTask !== undefined) return plan.nextTask;
@@ -83,6 +115,14 @@ export async function applyTaskMutation(opts: {
       materializedCurrent = { ...current, doc: currentDoc };
     }
   }
+
+  assertTaskMutationPolicy({
+    ctx: opts.ctx,
+    taskId: opts.taskId,
+    task: materializedCurrent,
+    action: policyAction,
+    phase: opts.phase,
+  });
 
   const plan = await opts.build({ ...materializedCurrent });
   if (!plan) return { changed: false, task: current, mode: "backend" };

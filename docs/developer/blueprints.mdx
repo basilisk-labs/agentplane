@@ -582,6 +582,12 @@ Blueprint nodes are reusable building blocks. They are not task statuses. A task
 The first implementation should ship a small registry. The goal is route clarity, not a complete
 workflow language.
 
+Code workflow order is anchored in `packages/agentplane/src/workflow-lifecycle/contract.ts`.
+`code.direct` and `code.branch_pr` blueprint nodes are built from that typed lifecycle contract
+instead of duplicating route order by hand. `bun run workflows:command-check` also runs lifecycle
+parity checks against the gateway, quickstart, blueprint registry, and current workflow docs so
+order-sensitive drift fails before merge.
+
 | Blueprint        | Default use case                                       | Workflow modes        | Must not include by default               |
 | ---------------- | ------------------------------------------------------ | --------------------- | ----------------------------------------- |
 | `analysis.light` | Read-only analysis, research, review synthesis         | any                   | worktree, PR, CI, merge, publish          |
@@ -666,8 +672,8 @@ For code changes in repositories configured for branch PR workflow mode.
 
 ```text
 intake -> scope -> approval_gate -> context_resolve -> worktree_start -> work_unit
--> fast_local_checks -> pr_artifact -> hosted_checks -> publish_or_integrate
--> verify_record -> finish
+-> fast_local_checks -> pr_artifact -> verify_record -> hosted_checks
+-> publish_or_integrate -> finish
 ```
 
 Expected evidence:

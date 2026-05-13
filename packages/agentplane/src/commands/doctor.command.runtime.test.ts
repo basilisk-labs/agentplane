@@ -926,6 +926,35 @@ describe(
       expect(hook).not.toContain("command -v agentplane");
     });
 
+    it("does not reinstall hooks when only the managed shim remains", async () => {
+      const ws = await mkWorkspace();
+      await gitInitWithCommit(ws.root, "feat: initial");
+      await writeManagedHookSurface(ws.root, {
+        hooks: [],
+        shimText: [
+          "#!/usr/bin/env sh",
+          "# agentplane-hook-shim (do not edit)",
+          'exec agentplane "$@"',
+          "",
+        ].join("\n"),
+      });
+      const stderr = captureStderr();
+      try {
+        const rc = await runDoctor(
+          { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+          { fix: true, dev: false },
+        );
+        expect(rc).toBe(0);
+        expect(stderr.output()).toContain("managed AgentPlane hook shim");
+      } finally {
+        stderr.restore();
+      }
+
+      await expect(
+        readFile(path.join(ws.root, ".git", "hooks", "pre-push"), "utf8"),
+      ).rejects.toThrow();
+    });
+
     it("reports unmanaged hooks without suggesting silent overwrite", async () => {
       const ws = await mkWorkspace();
       await gitInitWithCommit(ws.root, "feat: initial");

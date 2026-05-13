@@ -1,6 +1,7 @@
 import { doctorSpec } from "../../../commands/doctor.spec.js";
 import { doctorGitLocksSpec } from "../../../commands/doctor-git-locks.spec.js";
 import { runtimeExplainSpec, runtimeSpec } from "../../../commands/runtime.spec.js";
+import { insightsReportSpec, insightsSpec } from "../../../commands/insights/insights.spec.js";
 import { upgradeSpec } from "../../../commands/upgrade.spec.js";
 import { workflowBuildSpec } from "../../../commands/workflow-build.command.js";
 import { workflowSpec } from "../../../commands/workflow.command.js";
@@ -43,6 +44,7 @@ import {
   fromCommandsCorePreflight,
   fromCommandsCodex,
   fromCommandsRuntimeCommand,
+  fromCommandsInsightsCommand,
   fromCommandsIncidentsIncidentsCommand,
   fromCommandsCoreRole,
   fromCommandsDoctorRun,
@@ -61,6 +63,7 @@ import {
   loadModeSetSpec,
   loadProfileSetSpec,
   loadIdeSyncSpec,
+  loadInsightsReportSpec,
 } from "../command-loaders/core.js";
 
 export const CORE_COMMANDS = [
@@ -115,6 +118,11 @@ export const CORE_COMMANDS = [
   }),
   fromCommandsRuntimeCommand(runtimeSpec, "runRuntime", { needs: "none" }),
   fromCommandsRuntimeCommand(runtimeExplainSpec, "runRuntimeExplain", { needs: "none" }),
+  fromCommandsInsightsCommand(insightsSpec, "runInsights", { needs: "none" }),
+  declareCommand(insightsReportSpec, {
+    load: loadInsightsReportSpec,
+    needs: "project+config",
+  }),
   fromCommandsDoctorGitLocksCommand(doctorGitLocksSpec, "runDoctorGitLocks", {
     needs: "project",
   }),

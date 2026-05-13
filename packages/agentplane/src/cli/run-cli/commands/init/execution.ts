@@ -2,6 +2,7 @@ import path from "node:path";
 
 import { buildExecutionProfile } from "@agentplaneorg/core/config";
 import { setPinnedBaseBranch } from "@agentplaneorg/core/git";
+import { runProcess } from "@agentplaneorg/core/process";
 
 import { collectHooksInstallConflicts } from "../../../../commands/hooks/install.js";
 import { cmdHooksInstall, ensureInitCommit } from "../../../../commands/workflow.js";
@@ -93,6 +94,26 @@ export async function collectInitAndHookConflicts(opts: {
 
 function rel(root: string, filePath: string): string {
   return path.relative(root, filePath) || ".";
+}
+
+export const GITHUB_CLI_INIT_RECOMMENDATION =
+  "GitHub CLI (gh) is recommended for branch_pr PR merges. Install it yourself (macOS: `brew install gh`; Windows: `winget install --id GitHub.cli`; Linux: see `https://cli.github.com/manual/installation`), then run `gh auth login`. AgentPlane will not install it for you; explicit GH_TOKEN/GITHUB_TOKEN can be used as the API fallback.";
+
+export async function detectGithubCliInstalled(cwd: string): Promise<boolean> {
+  try {
+    await runProcess({
+      command: "gh",
+      args: ["--version"],
+      cwd,
+      encoding: "utf8",
+      stdout: "ignore",
+      stderr: "ignore",
+      timeoutMs: 3000,
+    });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function initWriteEffects(opts: { paths: ResolvedInitPaths; answers: InitAnswers }): InitEffect[] {
@@ -206,6 +227,7 @@ export function buildInitPlan(opts: {
   outputMode: "text" | "json";
   includeInstallCommit: boolean;
   initMode: InitPlan["mode"];
+  githubCliInstalled?: boolean | null;
 }): InitPlan {
   const hasConflictStrategy = opts.conflictMode.backup || opts.conflictMode.force;
   const conflictEffects: InitEffect[] = hasConflictStrategy
@@ -233,6 +255,23 @@ export function buildInitPlan(opts: {
       risk: "medium",
     });
   }
+  const githubCliInstalled =
+    opts.answers.workflow === "branch_pr" ? (opts.githubCliInstalled ?? null) : null;
+  const warnings = [
+    ...(opts.conflicts.length > 0 && !hasConflictStrategy
+      ? ["Conflicts require --backup or --force before apply."]
+      : []),
+    ...(opts.answers.workflow === "branch_pr" && githubCliInstalled === false
+      ? [GITHUB_CLI_INIT_RECOMMENDATION]
+      : []),
+  ];
+  const nextSteps = [
+    ...(opts.answers.workflow === "branch_pr" && githubCliInstalled === false
+      ? ["Install GitHub CLI yourself, then run `gh auth login`."]
+      : []),
+    "agentplane quickstart",
+    'agentplane task new --title "Trace first AI-assisted change" --owner CODER --tag code',
+  ];
   return {
     schemaVersion: "init-plan/v1",
     agentplaneVersion: getVersion(),
@@ -258,17 +297,12 @@ export function buildInitPlan(opts: {
       gitRootExisted: opts.paths.gitRootExisted,
       parentGitRoot: opts.paths.parentGitRoot,
       outputMode: opts.outputMode,
+      githubCliInstalled,
     },
     effects,
     conflicts: opts.conflicts.map((conflict) => rel(opts.paths.gitRoot, conflict)),
-    warnings:
-      opts.conflicts.length > 0 && !hasConflictStrategy
-        ? ["Conflicts require --backup or --force before apply."]
-        : [],
-    nextSteps: [
-      "agentplane quickstart",
-      'agentplane task new --title "Trace first AI-assisted change" --owner CODER --tag code',
-    ],
+    warnings,
+    nextSteps,
   };
 }
 
@@ -292,6 +326,12 @@ export async function maybeConfirmInteractiveApply(opts: {
     { label: "Blueprints", value: opts.answers.blueprints.join(", ") || "none" },
     { label: "Git init", value: !opts.paths.gitRootExisted },
     { label: "Conflicts", value: opts.plan.conflicts.join(", ") || "none" },
+    ...(opts.plan.context.githubCliInstalled === false
+      ? [{ label: "GitHub CLI", value: "missing; install gh yourself and run gh auth login" }]
+      : []),
+    ...(opts.plan.warnings.length > 0
+      ? [{ label: "Warnings", value: opts.plan.warnings.join(" | ") }]
+      : []),
     { label: "Install commit", value: !opts.flags.gitignoreAgents },
   ]);
   const confirmed = assertConfirmed(

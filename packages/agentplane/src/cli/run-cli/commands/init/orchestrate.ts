@@ -16,6 +16,7 @@ import {
   applyInitPlan,
   buildInitPlan,
   collectInitAndHookConflicts,
+  detectGithubCliInstalled,
   maybeConfirmInteractiveApply,
   resolveConflictStrategy,
   resolveInitPaths,
@@ -56,6 +57,9 @@ function renderDryRunPlanText(plan: ReturnType<typeof buildInitPlan>): string {
     `Git init: ${String(!plan.context.gitRootExisted)}`,
     `Parent Git: ${plan.context.parentGitRoot ?? "none"}`,
     `Conflicts: ${plan.conflicts.length === 0 ? "none" : plan.conflicts.join(", ")}`,
+    ...(plan.warnings.length > 0
+      ? ["Warnings:", ...plan.warnings.map((warning) => `- ${warning}`)]
+      : []),
     "Effects:",
     ...plan.effects.map((effect) => {
       const pathSuffix = effect.path ? ` ${effect.path}` : "";
@@ -117,6 +121,8 @@ export async function cmdInit(opts: {
       gitRoot: paths.gitRoot,
       conflicts,
     });
+    const githubCliInstalled =
+      answers.workflow === "branch_pr" ? await detectGithubCliInstalled(paths.gitRoot) : null;
     const plan = buildInitPlan({
       paths,
       answers,
@@ -125,6 +131,7 @@ export async function cmdInit(opts: {
       outputMode: opts.outputMode ?? "text",
       includeInstallCommit: !opts.flags.gitignoreAgents,
       initMode,
+      githubCliInstalled,
     });
     if (opts.flags.dryRun) {
       if ((opts.outputMode ?? "text") === "json") {

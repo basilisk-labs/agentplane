@@ -1,0 +1,1 @@
+🚧 61129E task: Align public CLI docs with user command surface [202605131649-61129E]

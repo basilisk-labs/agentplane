@@ -95,6 +95,14 @@ describe("blueprint built-ins", () => {
       expect(kinds).not.toContain("publish_or_integrate");
     }
   });
+
+  it("records branch_pr verification before hosted checks and integration", () => {
+    const kinds = requireBlueprint("code.branch_pr").nodes.map((node) => node.kind);
+
+    expect(kinds.indexOf("pr_artifact")).toBeLessThan(kinds.indexOf("verify_record"));
+    expect(kinds.indexOf("verify_record")).toBeLessThan(kinds.indexOf("hosted_checks"));
+    expect(kinds.indexOf("verify_record")).toBeLessThan(kinds.indexOf("publish_or_integrate"));
+  });
 });
 
 describe("blueprint validation", () => {
