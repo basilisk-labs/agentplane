@@ -27,11 +27,12 @@ Make recent GitHub Actions failures less likely by hermeticizing wait-remote-pr-
 - Head: 7587eeffa3af
 
 ```text
- .github/workflows/ci.yml                           |  4 +-
- .../src/cli/wait-remote-pr-checks-script.test.ts   | 62 ++++++++++++++-
- .../agentplane/src/commands/context/sqlite.test.ts | 87 ++++++++++++++++++++++
- packages/agentplane/src/commands/context/sqlite.ts | 37 +++++++--
- 4 files changed, 178 insertions(+), 12 deletions(-)
+ .../blueprint/resolved-snapshot.json               | 554 +++++++++++++++++++++
+ .github/workflows/ci.yml                           |   4 +-
+ .../src/cli/wait-remote-pr-checks-script.test.ts   |  62 ++-
+ .../agentplane/src/commands/context/sqlite.test.ts |  87 ++++
+ packages/agentplane/src/commands/context/sqlite.ts |  37 +-
+ 5 files changed, 732 insertions(+), 12 deletions(-)
 ```
 
 </details>
