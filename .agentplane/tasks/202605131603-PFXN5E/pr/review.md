@@ -24,9 +24,9 @@ Created: 2026-05-13T16:03:49.901Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T19:41:04.439Z
+- Updated: 2026-05-13T19:48:26.720Z
 - Branch: task/202605131603-PFXN5E/automate-merge-queue
-- Head: 08e1d16c7033
+- Head: 83b1881c4060
 
 ```text
  .agentplane/policy/workflow.branch_pr.md           |  11 +-
@@ -34,6 +34,7 @@ Created: 2026-05-13T16:03:49.901Z
  .github/workflows/publish.yml                      |   4 +-
  .github/workflows/task-hosted-close.yml            |   4 +-
  docs/user/cli-reference.generated.mdx              |   4 +
+ package.json                                       |   2 +-
  .../agentplane/assets/policy/workflow.branch_pr.md |  11 +-
  .../task-backend/local-task-sqlite-cache.ts        |  12 +-
  packages/agentplane/src/cli/bootstrap-guide.ts     |   4 +-
@@ -62,7 +63,8 @@ Created: 2026-05-13T16:03:49.901Z
  .../core/src/tasks/task-artifact-schema.handoff.ts |   5 +-
  packages/spec/schemas/task-handoff.schema.json     |   5 +-
  schemas/task-handoff.schema.json                   |   5 +-
- 33 files changed, 1727 insertions(+), 137 deletions(-)
+ scripts/README.md                                  |   2 +-
+ 35 files changed, 1729 insertions(+), 139 deletions(-)
 ```
 
 </details>
