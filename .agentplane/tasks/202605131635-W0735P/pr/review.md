@@ -24,9 +24,9 @@ Created: 2026-05-13T16:36:18.870Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T18:30:52.925Z
+- Updated: 2026-05-13T18:48:05.835Z
 - Branch: task/202605131635-W0735P/command-order-guidance
-- Head: b8148ab1ecda
+- Head: bb5233d8639a
 
 ```text
  .../blueprint/resolved-snapshot.json               | 527 +++++++++++++++++++++
