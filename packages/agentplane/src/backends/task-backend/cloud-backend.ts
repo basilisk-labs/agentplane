@@ -364,7 +364,17 @@ export class CloudBackend implements TaskBackend {
       }
       throw new BackendError(await cloudHttpErrorMessage(res), "E_BACKEND");
     }
-    const response = await readCloudJson<CloudSyncStateResponse>(res, CLOUD_REQUEST_TIMEOUT_MS);
+    let response: CloudSyncStateResponse;
+    try {
+      response = await readCloudJson<CloudSyncStateResponse>(res, CLOUD_REQUEST_TIMEOUT_MS);
+    } catch {
+      return {
+        conflicts: [],
+        safeCommand: null,
+        unavailable: true,
+        diagnostics: unavailableCloudSyncStateDiagnostics(true),
+      };
+    }
     const data = isRecord(response.data) ? response.data : {};
     const conflicts = readOpenConflicts(
       response.openConflicts ??
