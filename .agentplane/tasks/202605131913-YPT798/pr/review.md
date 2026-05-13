@@ -24,11 +24,12 @@ Created: 2026-05-13T19:14:51.451Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T21:33:08.527Z
+- Updated: 2026-05-13T21:35:03.501Z
 - Branch: task/202605131913-YPT798/serialize-build-lane
-- Head: 7d9b80321b7a
+- Head: 1b95ce17c41a
 
 ```text
+ .agentplane/policy/incidents.md                    |   1 +
  .../blueprint/resolved-snapshot.json               | 526 +++++++++++++++++++++
  packages/agentplane/assets/policy/incidents.md     |   1 +
  packages/agentplane/bin/agentplane.js              |  61 ++-
@@ -37,7 +38,7 @@ Created: 2026-05-13T19:14:51.451Z
  scripts/checks/run-local-ci.mjs                    |   9 +-
  scripts/lib/framework-build-lock.mjs               | 113 +++++
  scripts/workflow/bootstrap-framework-dev.mjs       |  31 +-
- 8 files changed, 792 insertions(+), 28 deletions(-)
+ 9 files changed, 793 insertions(+), 28 deletions(-)
 ```
 
 </details>
