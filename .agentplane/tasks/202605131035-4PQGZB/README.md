@@ -1,7 +1,8 @@
 ---
 id: "202605131035-4PQGZB"
 title: "Improve provider-neutral PR flow observability"
-status: "DOING"
+result_summary: "Merged via PR #3624."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: focused CLI tests, typecheck, lint, format, workflow lint, routing check, docs CLI check, critical tests, knip check, and PR flow status smoke passed."
   attempts: 0
-commit: null
+commit:
+  hash: "165a7551dd7d1f4dafa0e4952c178005271c8483"
+  message: "Merge pull request #3624 from basilisk-labs/task/202605131035-4PQGZB/pr-flow-status"
 comments:
   -
     author: "CODER"
     body: "Start: Implement provider-neutral PR flow observability, stable remote-check waiting, and clearer close-tail diagnostics in the dedicated branch_pr worktree without adding a gh-based merge wrapper."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3624 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: focused CLI tests, typecheck, lint, format, workflow lint, routing check, docs CLI check, critical tests, knip check, and PR flow status smoke passed."
+  -
+    type: "status"
+    at: "2026-05-13T11:12:23.708Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3624 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T10:50:37.716Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T11:12:23.708Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add provider-neutral PR flow status and stricter close/check diagnostics without implementing merge-through-gh; GitHub is the first provider but interfaces should leave room for GitLab and other git servers."
 sections:
   Summary: |-
