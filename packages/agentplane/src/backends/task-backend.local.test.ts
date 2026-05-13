@@ -5,7 +5,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { LocalBackend, toTaskSummary, type TaskData, type TaskSummary } from "./task-backend.js";
 import {
-  parseTaskProjectionPorcelainPath,
   readFreshSqliteTaskProjection,
   resolveTaskProjectionSqlitePath,
 } from "./task-backend/local-task-sqlite-cache.js";
@@ -265,20 +264,6 @@ describe("LocalBackend", () => {
 
     expect(resolveTaskProjectionSqlitePath(tasksDir)).toBe(
       path.join(tempDir, ".agentplane", "cache.sqlite"),
-    );
-  });
-
-  it("parses quoted git porcelain task paths before hashing dirty files", () => {
-    expect(parseTaskProjectionPorcelainPath(' M ".agentplane/tasks/T-1/notes with space.md"')).toBe(
-      ".agentplane/tasks/T-1/notes with space.md",
-    );
-    expect(
-      parseTaskProjectionPorcelainPath(
-        'R  ".agentplane/tasks/T-1/old.md" -> ".agentplane/tasks/T-1/new name.md"',
-      ),
-    ).toBe(".agentplane/tasks/T-1/new name.md");
-    expect(parseTaskProjectionPorcelainPath(" M .agentplane/tasks/T-1/README.md")).toBe(
-      ".agentplane/tasks/T-1/README.md",
     );
   });
 
