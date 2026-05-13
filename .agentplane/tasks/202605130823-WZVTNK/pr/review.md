@@ -24,16 +24,16 @@ Created: 2026-05-13T08:25:51.685Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T09:00:56.547Z
+- Updated: 2026-05-13T09:15:48.531Z
 - Branch: task/202605130823-WZVTNK/fast-suite-regressions
-- Head: cf42208809c3
+- Head: 5f696652f7ca
 
 ```text
  .../blueprint/resolved-snapshot.json               | 551 +++++++++++++++++++++
  .../generate-standalone-cli-assets-script.test.ts  |  34 +-
  .../process-supervision/timeout-controller.ts      |  19 +-
- scripts/generate-standalone-cli-assets.mjs         |  17 +-
- 4 files changed, 600 insertions(+), 21 deletions(-)
+ scripts/generate-standalone-cli-assets.mjs         |  19 +-
+ 4 files changed, 602 insertions(+), 21 deletions(-)
 ```
 
 </details>
