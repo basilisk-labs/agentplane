@@ -22,14 +22,20 @@ Analyze the current AgentPlane CLI performance code after recent changes and imp
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T10:35:34.710Z
+- Updated: 2026-05-13T10:46:02.567Z
 - Branch: task/202605130947-V6846F/cli-perf-read-paths
-- Head: 1c5bf21c6005
+- Head: 08eeadf5b4c1
 
 ```text
  .../blueprint/resolved-snapshot.json               | 550 +++++++++++++++++++++
  .gitignore                                         |   3 +
  bun.lock                                           |  65 ++-
+ docs/developer/local-context.mdx                   |  24 +-
+ docs/developer/project-layout.mdx                  |  11 +-
+ docs/user/commands.mdx                             |  13 +-
+ docs/user/local-context.mdx                        |   6 +-
+ docs/user/overview.mdx                             |  11 +-
+ docs/user/tasks-and-backends.mdx                   |  12 +-
  package.json                                       |   3 +
  packages/agentplane/package.json                   |   4 +-
  .../src/backends/task-backend.local.test.ts        |  50 ++
@@ -46,7 +52,7 @@ Analyze the current AgentPlane CLI performance code after recent changes and imp
  packages/agentplane/src/commands/task/list.ts      |  12 +-
  packages/agentplane/src/shared/cache-paths.ts      |   7 +
  packages/agentplane/src/shared/sqlite-driver.ts    |  39 ++
- 19 files changed, 1418 insertions(+), 194 deletions(-)
+ 25 files changed, 1471 insertions(+), 218 deletions(-)
 ```
 
 </details>
