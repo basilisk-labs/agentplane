@@ -78,7 +78,8 @@ export async function resolveDotEnvRoot(rootDir: string): Promise<string> {
   if (!match) return resolvedRoot;
   const gitDir = path.resolve(resolvedRoot, match[1]);
   try {
-    const rawCommonDir = (await readFile(path.join(gitDir, "commondir"), "utf8")).trim();
+    const commonDirFile = await readFile(path.join(gitDir, "commondir"), "utf8");
+    const rawCommonDir = commonDirFile.trim();
     if (rawCommonDir) {
       const commonDir = path.resolve(gitDir, rawCommonDir);
       if (path.basename(commonDir) === ".git") return path.dirname(commonDir);
