@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605131907-C5DA3G/switch-backend-local",
+  "created_at": "2026-05-13T19:12:54.373Z",
+  "head_sha": "81b7f84d11e3b800eb4c53b38e897d251fb5553b",
+  "last_verified_at": "2026-05-13T19:14:43.316Z",
+  "last_verified_sha": "81b7f84d11e3b800eb4c53b38e897d251fb5553b",
+  "schema_version": 1,
+  "task_id": "202605131907-C5DA3G",
+  "updated_at": "2026-05-13T19:14:43.472Z",
+  "verify": {
+    "status": "pass"
+  }
+}
