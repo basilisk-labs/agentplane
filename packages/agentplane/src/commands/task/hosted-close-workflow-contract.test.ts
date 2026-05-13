@@ -24,8 +24,9 @@ describe("Task hosted-close workflow contract", () => {
     );
     expect(workflow).toContain("task hosted-close");
     expect(workflow).toContain("gh pr create");
-    expect(workflow).toContain('if gh pr merge --squash --delete-branch "$pr_url"; then');
-    expect(workflow).toContain("gh pr merge --auto --squash --delete-branch");
+    expect(workflow).toContain('if gh pr merge --merge --delete-branch "$pr_url"; then');
+    expect(workflow).toContain("gh pr merge --auto --merge --delete-branch");
+    expect(workflow).not.toContain("gh pr merge --squash");
     expect(workflow).toContain(
       "Hosted closure PR created but neither direct merge nor auto-merge could be enabled",
     );

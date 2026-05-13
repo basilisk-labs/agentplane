@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   cleanupIntegratedBranch: vi.fn(),
   createCliEmitter: vi.fn(),
+  execFileAsync: vi.fn(),
   finalizeIntegrate: vi.fn(),
   gitRevParse: vi.fn(),
   buildTaskHandoffArtifact: vi.fn(),
@@ -21,6 +22,9 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("../../../cli/output.js", () => ({
   createCliEmitter: mocks.createCliEmitter,
+}));
+vi.mock("@agentplaneorg/core/process", () => ({
+  execFileAsync: mocks.execFileAsync,
 }));
 vi.mock("../../shared/merged-branch-cleanup.js", () => ({
   cleanupMergedLocalBranch: mocks.cleanupIntegratedBranch,
@@ -89,6 +93,7 @@ describe("pr/integrate/cmd", () => {
       success: vi.fn(),
     };
     mocks.createCliEmitter.mockReturnValue(emitter);
+    mocks.execFileAsync.mockResolvedValue({ stdout: "", stderr: "" });
     mocks.prepareIntegrate.mockResolvedValue({
       ctx: { config: {}, git: {}, taskBackend: {}, resolvedProject: { gitRoot: "/repo" } },
       resolved: { gitRoot: "/repo" },
@@ -278,7 +283,7 @@ describe("pr/integrate/cmd", () => {
     expect(emitter.warn).not.toHaveBeenCalled();
   });
 
-  it("records a first-class protected-base handoff route before raising E_HANDOFF", async () => {
+  it("merges a protected-base GitHub PR from the local integrate command when PR metadata is available", async () => {
     mocks.prepareIntegrate.mockResolvedValue({
       ctx: {
         config: { paths: { workflow_dir: ".agentplane/tasks" } },
@@ -319,6 +324,71 @@ describe("pr/integrate/cmd", () => {
     });
     const { cmdIntegrate } = await import("./cmd.js");
 
+    const exitCode = await cmdIntegrate({
+      cwd: "/repo",
+      taskId: "T-1",
+      mergeStrategy: "squash",
+      runVerify: false,
+      dryRun: false,
+      quiet: false,
+    });
+
+    expect(exitCode).toBe(0);
+    expect(mocks.execFileAsync).toHaveBeenCalledWith(
+      "gh",
+      ["pr", "merge", "--merge", "--delete-branch", "https://github.com/example/repo/pull/338"],
+      expect.objectContaining({ cwd: "/repo" }),
+    );
+    expect(emitter.success).toHaveBeenCalledWith(
+      "integrate github merge",
+      "T-1",
+      "GitHub PR merged with --merge: https://github.com/example/repo/pull/338",
+    );
+    expect(mocks.buildTaskHandoffArtifact).not.toHaveBeenCalled();
+    expect(mocks.writeTaskHandoff).not.toHaveBeenCalled();
+    expect(mocks.runSquashMerge).not.toHaveBeenCalled();
+    expect(mocks.finalizeIntegrate).not.toHaveBeenCalled();
+  });
+
+  it("records a first-class protected-base handoff route when GitHub merge cannot be attempted", async () => {
+    mocks.prepareIntegrate.mockResolvedValue({
+      ctx: {
+        config: { paths: { workflow_dir: ".agentplane/tasks" } },
+        git: {},
+        taskBackend: {},
+        resolvedProject: { gitRoot: "/repo" },
+      },
+      resolved: { gitRoot: "/repo" },
+      loadedConfig: {
+        workflow_mode: "branch_pr",
+        paths: {
+          worktrees_dir: ".agentplane/worktrees",
+          workflow_dir: ".agentplane/tasks",
+        },
+        commit: { generic_tokens: [] },
+      },
+      task: { id: "T-1", title: "Task", tags: [], verify: [], status: "DOING" },
+      prDir: "/repo/.agentplane/tasks/T-1/pr",
+      metaPath: "/repo/.agentplane/tasks/T-1/pr/meta.json",
+      diffstatPath: "/repo/.agentplane/tasks/T-1/pr/diffstat.txt",
+      verifyLogPath: "/repo/.agentplane/tasks/T-1/pr/verify.log",
+      metaSource: {
+        base: "main",
+        branch: "task/T-1",
+        head_sha: "head-sha",
+      },
+      branch: "task/T-1",
+      base: "main",
+      verifyLogText: "",
+      branchHeadSha: "head-sha",
+      changedPaths: [],
+      verifyCommands: [],
+      alreadyVerifiedSha: null,
+      shouldRunVerify: false,
+      protectedBaseRequiresPrMerge: true,
+    });
+    const { cmdIntegrate } = await import("./cmd.js");
+
     const caught = await cmdIntegrate({
       cwd: "/repo",
       taskId: "T-1",
@@ -328,14 +398,7 @@ describe("pr/integrate/cmd", () => {
       quiet: false,
     }).catch((err: unknown) => err);
 
-    expect(caught).toMatchObject({
-      code: "E_HANDOFF",
-    });
-    expect(caught).toBeTruthy();
-    const cliError = caught as { context?: Record<string, unknown> };
-    expect(cliError.context?.diagnostic_next_action_command).toBe(
-      "agentplane task handoff show T-1",
-    );
+    expect(caught).toMatchObject({ code: "E_HANDOFF" });
 
     expect(mocks.buildTaskHandoffArtifact).toHaveBeenCalled();
     const handoffCall = mocks.buildTaskHandoffArtifact.mock.calls[0]?.[0] as
@@ -349,8 +412,8 @@ describe("pr/integrate/cmd", () => {
       status: "awaiting_github_merge",
       local_mutation: "not_performed",
       finalize_via: "github_pr_merge_then_hosted_close",
-      pr_number: 338,
-      pr_url: "https://github.com/example/repo/pull/338",
+      pr_number: null,
+      pr_url: null,
       handoff_show_command: "agentplane task handoff show T-1",
       base_pull_command: "git pull --ff-only",
     });

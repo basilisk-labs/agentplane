@@ -30,6 +30,55 @@ import { prepareIntegrate } from "./internal/prepare.js";
 import { resolveWorktreeForIntegrate } from "./internal/worktree.js";
 import { runVerifyCommands } from "./verify.js";
 
+function summarizeGhMergeFailure(err: unknown): string {
+  const stderr =
+    typeof (err as { stderr?: unknown } | null)?.stderr === "string"
+      ? String((err as { stderr?: unknown }).stderr).trim()
+      : "";
+  const stdout =
+    typeof (err as { stdout?: unknown } | null)?.stdout === "string"
+      ? String((err as { stdout?: unknown }).stdout).trim()
+      : "";
+  const message = err instanceof Error ? err.message.trim() : String(err).trim();
+  return stderr || stdout || message || "unknown failure";
+}
+
+async function runProtectedBaseGithubMerge(opts: {
+  gitRoot: string;
+  prTarget: string;
+}): Promise<{ status: "merged" | "auto_merge_enabled"; detail: string }> {
+  try {
+    await execFileAsync("gh", ["pr", "merge", "--merge", "--delete-branch", opts.prTarget], {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    });
+    return { status: "merged", detail: `GitHub PR merged with --merge: ${opts.prTarget}` };
+  } catch (directErr) {
+    try {
+      await execFileAsync(
+        "gh",
+        ["pr", "merge", "--auto", "--merge", "--delete-branch", opts.prTarget],
+        {
+          cwd: opts.gitRoot,
+          env: gitEnv(),
+        },
+      );
+      return {
+        status: "auto_merge_enabled",
+        detail: `GitHub auto-merge enabled with --merge: ${opts.prTarget}`,
+      };
+    } catch (autoErr) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_HANDOFF"),
+        code: "E_HANDOFF",
+        message:
+          "Unable to merge protected-base GitHub PR automatically. " +
+          `direct=${summarizeGhMergeFailure(directErr)}; auto=${summarizeGhMergeFailure(autoErr)}`,
+      });
+    }
+  }
+}
+
 async function recordProtectedBaseIntegrateHandoff(opts: {
   ctx: CommandContext;
   taskId: string;
@@ -154,8 +203,60 @@ export async function cmdIntegrate(opts: {
           ? metaSource.pr_number
           : null;
       const prUrl = typeof metaSource.pr_url === "string" ? metaSource.pr_url : null;
+      const prUrlTarget = prUrl?.trim() ?? "";
+      const prTarget = prUrlTarget.length > 0 ? prUrlTarget : prNumber === null ? "" : String(prNumber);
       const prHint =
         prNumber === null ? `the GitHub PR for branch ${branch}` : `GitHub PR #${prNumber}`;
+      let protectedBaseMergeFailure: string | null = null;
+      if (prTarget) {
+        try {
+          const githubMerge = await runProtectedBaseGithubMerge({
+            gitRoot: resolved.gitRoot,
+            prTarget,
+          });
+          if (githubMerge.status === "merged") {
+            if (!opts.quiet) output.success("integrate github merge", task.id, githubMerge.detail);
+            return 0;
+          }
+          await recordProtectedBaseIntegrateHandoff({
+            ctx: prepared.ctx,
+            taskId: task.id,
+            branch,
+            base,
+            branchHeadSha,
+            prNumber,
+            prUrl,
+          });
+          throw new CliError({
+            exitCode: exitCodeForError("E_HANDOFF"),
+            code: "E_HANDOFF",
+            message:
+              `${githubMerge.detail}. Wait for GitHub to merge the PR, let Task Hosted Close finish the closure tail, then pull ${base}.`,
+            context: withDiagnosticContext(
+              {
+                task_id: task.id,
+                branch,
+                base_branch: base,
+                reason_code: "protected_base_auto_merge_enabled",
+              },
+              {
+                state: `protected-base auto-merge enabled for ${task.id}`,
+                likelyCause: `base branch ${base} is protected and GitHub accepted auto-merge instead of immediate merge`,
+                hint: "Wait for GitHub auto-merge and Task Hosted Close, then pull the base branch.",
+                nextAction: {
+                  command: `git pull --ff-only`,
+                  reason: "refresh the base checkout after GitHub completes the protected-base merge",
+                  reasonCode: "protected_base_auto_merge_wait",
+                },
+              },
+            ),
+          });
+        } catch (err) {
+          if (!(err instanceof CliError) || err.code !== "E_HANDOFF") throw err;
+          if (err.context?.reason_code === "protected_base_auto_merge_enabled") throw err;
+          protectedBaseMergeFailure = err.message;
+        }
+      }
       await recordProtectedBaseIntegrateHandoff({
         ctx: prepared.ctx,
         taskId: task.id,
@@ -170,6 +271,7 @@ export async function cmdIntegrate(opts: {
         code: "E_HANDOFF",
         message:
           `Base branch ${base} requires GitHub pull-request merges; integrate will not mutate it locally. ` +
+          (protectedBaseMergeFailure ? `${protectedBaseMergeFailure}. ` : "") +
           `Merge ${prHint} on GitHub, let Task Hosted Close finish the closure tail, then pull ${base}.`,
         context: withDiagnosticContext(
           {
