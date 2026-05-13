@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202605131043-2GMHKQ/generated-scripts-context-refactor",
   "created_at": "2026-05-13T13:15:04.831Z",
-  "head_sha": "194d1c1e4539c156d3f8881160bad9d1f56a8752",
+  "head_sha": "fc4e4f0866e2fa373fe19bc9d600ac7c78f56b42",
   "last_verified_at": null,
   "last_verified_sha": null,
   "pr_number": 3634,
@@ -10,7 +10,7 @@
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202605131043-2GMHKQ",
-  "updated_at": "2026-05-13T13:18:53.371Z",
+  "updated_at": "2026-05-13T13:28:25.589Z",
   "verify": {
     "status": "skipped"
   }

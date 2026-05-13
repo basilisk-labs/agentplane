@@ -24,9 +24,9 @@ Created: 2026-05-13T13:15:04.831Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T13:18:53.371Z
+- Updated: 2026-05-13T13:28:25.589Z
 - Branch: task/202605131043-2GMHKQ/generated-scripts-context-refactor
-- Head: 194d1c1e4539
+- Head: fc4e4f0866e2
 
 ```text
  .../blueprint/resolved-snapshot.json               |  512 +++++++++
@@ -38,7 +38,7 @@ Created: 2026-05-13T13:15:04.831Z
  docs/user/cli-reference.generated.mdx              |    8 +-
  docs/user/commands.mdx                             |   27 +-
  docs/user/tasks-and-backends.mdx                   |   23 +-
- package.json                                       |  174 ++--
+ package.json                                       |  168 +--
  packages/agentplane/package.json                   |    8 +-
  .../src/commands/context/context-utils.ts          |  262 +----
  packages/agentplane/src/commands/context/doctor.ts |  272 +----
@@ -48,6 +48,8 @@ Created: 2026-05-13T13:15:04.831Z
  .../agentplane/src/commands/context/reindex.ts     |  396 +------
  packages/agentplane/src/commands/context/sqlite.ts |  217 +---
  .../agentplane/src/commands/context/verify-task.ts |  422 +-------
+ .../commands/release/release-check-script.test.ts  |    7 +-
+ .../commands/release/release-ci-contract.test.ts   |   12 +-
  .../src/commands/task/obsidian.command.ts          |    8 +-
  packages/agentplane/src/commands/task/obsidian.ts  |   61 +-
  .../src/commands/task/obsidian.unit.test.ts        |   71 +-
@@ -59,10 +61,11 @@ Created: 2026-05-13T13:15:04.831Z
  packages/agentplane/src/context/reindex.ts         |  395 +++++++
  packages/agentplane/src/context/sqlite.ts          |  212 ++++
  packages/agentplane/src/context/verify-task.ts     |  421 ++++++++
+ packages/agentplane/src/runner/codex-smoke.test.ts |    7 +-
  .../src/runtime/shared/runtime-artifacts.ts        |    1 +
  packages/core/package.json                         |    8 +-
  packages/recipes/package.json                      |    8 +-
- scripts/README.md                                  |  240 ++---
+ scripts/README.md                                  |  224 ++--
  scripts/bench/cli-benchmark-runner.mjs             |  249 +++++
  scripts/bench/compare-cli-perf.mjs                 |  220 ++++
  scripts/bench/compare-cli-walltime.mjs             |  238 +++++
@@ -89,7 +92,7 @@ Created: 2026-05-13T13:15:04.831Z
  scripts/check-local-tarball-install-smoke.mjs      |  119 +--
  scripts/check-no-console.mjs                       |  129 +--
  scripts/check-npm-version-availability.mjs         |   83 +-
- scripts/check-oversized-test-baseline.mjs          |  285 +----
+ scripts/check-oversized-test-baseline.mjs          |  289 +-----
  scripts/check-package-tarball.mjs                  |  150 +--
  scripts/check-policy-routing.mjs                   |    2 +-
  scripts/check-published-packages.mjs               |  114 +-
@@ -103,7 +106,7 @@ Created: 2026-05-13T13:15:04.831Z
  scripts/check-significant-coverage.mjs             |   41 +-
  scripts/check-spec-examples.mjs                    |  206 +---
  scripts/check-task-state.mjs                       |  107 +-
- scripts/check-test-routing.mjs                     |  130 +--
+ scripts/check-test-routing.mjs                     |  144 +--
  scripts/check-types-files.mjs                      |   96 +-
  scripts/check-vitest-projects.mjs                  |   41 +-
  scripts/check-workflow-command-contract.mjs        |  114 +-
@@ -156,7 +159,7 @@ Created: 2026-05-13T13:15:04.831Z
  scripts/generate-builtin-assets.mjs                |  111 +-
  scripts/generate-bun-cli-assets.mjs                |  244 +----
  scripts/generate-llms-full.mjs                     |   51 +-
- scripts/generate-recipes-inventory.mjs             |  177 +---
+ scripts/generate-recipes-inventory.mjs             |  180 +---
  scripts/generate-release-distribution.mjs          |  530 +---------
  scripts/generate-roadmap-illustration.mjs          |   50 +-
  scripts/generate-scripts-readme.mjs                |  186 +---
@@ -187,7 +190,6 @@ Created: 2026-05-13T13:15:04.831Z
  scripts/prune-package-js.mjs                       |   25 +-
  scripts/publish-external-distribution.mjs          |  360 +------
  scripts/reinstall-global-agentplane.sh             |   41 +-
- scripts/release-check.mjs                          |    3 +-
  scripts/release-task-evidence.mjs                  |  516 +---------
  .../release/check-local-tarball-install-smoke.mjs  |  118 +++
  scripts/release/check-npm-version-availability.mjs |   82 ++
@@ -228,7 +230,7 @@ Created: 2026-05-13T13:15:04.831Z
  scripts/run-runner-codex-approval-probe.mjs        |  220 +---
  scripts/run-runner-codex-smoke.mjs                 |  600 +----------
  scripts/run-significant-coverage-suite.mjs         |   30 +-
- scripts/run-vitest-suite.mjs                       |  163 +--
+ scripts/run-vitest-suite.mjs                       |  165 +--
  scripts/run-workflow-coverage-suite.mjs            |   30 +-
  scripts/run-workflows-lint.mjs                     |   39 +-
  scripts/smoke-bun-compiled-cli.mjs                 |  209 +---
@@ -247,7 +249,7 @@ Created: 2026-05-13T13:15:04.831Z
  scripts/workflow/run-workflows-lint.mjs            |   38 +
  .../workflow/verify-global-agentplane-install.mjs  |  172 ++++
  scripts/workflow/wait-remote-pr-checks.mjs         |  594 +++++++++++
- 218 files changed, 21799 insertions(+), 19993 deletions(-)
+ 220 files changed, 21866 insertions(+), 19950 deletions(-)
 ```
 
 </details>
