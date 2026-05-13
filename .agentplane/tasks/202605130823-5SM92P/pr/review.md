@@ -24,9 +24,9 @@ Created: 2026-05-13T08:23:55.197Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T08:55:29.904Z
+- Updated: 2026-05-13T09:09:05.779Z
 - Branch: task/202605130823-5SM92P/human-readable-merge-messages
-- Head: df590194f1e1
+- Head: f45a3bd1d6a5
 
 ```text
  .../blueprint/resolved-snapshot.json               | 514 +++++++++++++++++++++
