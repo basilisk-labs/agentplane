@@ -152,6 +152,7 @@ export type IntegrateQueueRunNextParsed = {
   runVerify: boolean;
   dryRun: boolean;
   quiet: boolean;
+  drain: boolean;
 };
 
 export const integrateQueueRunNextSpec: CommandSpec<IntegrateQueueRunNextParsed> = {
@@ -164,6 +165,12 @@ export const integrateQueueRunNextSpec: CommandSpec<IntegrateQueueRunNextParsed>
     { kind: "boolean", name: "run-verify", default: false, description: "Run verify commands." },
     { kind: "boolean", name: "dry-run", default: false, description: "Do not modify git state." },
     { kind: "boolean", name: "quiet", default: false, description: "Reduce output noise." },
+    {
+      kind: "boolean",
+      name: "drain",
+      default: false,
+      description: "Keep claiming queued entries after successful integrations until the lane blocks or empties.",
+    },
   ],
   parse: (raw) => ({
     worker: typeof raw.opts.worker === "string" ? raw.opts.worker : null,
@@ -171,6 +178,7 @@ export const integrateQueueRunNextSpec: CommandSpec<IntegrateQueueRunNextParsed>
     runVerify: raw.opts["run-verify"] === true,
     dryRun: raw.opts["dry-run"] === true,
     quiet: raw.opts.quiet === true,
+    drain: raw.opts.drain === true,
   }),
   validateRaw: (raw) => {
     validateOptionalPositiveInteger(raw.opts["lease-ms"], integrateQueueRunNextSpec, "lease-ms");

@@ -1,0 +1,6 @@
+ .github/workflows/publish.yml                      |   4 +-
+ .github/workflows/task-hosted-close.yml            |   4 +-
+ .../src/commands/pr/integrate/cmd.test.ts          |  85 ++++++++++++++---
+ .../agentplane/src/commands/pr/integrate/cmd.ts    | 102 +++++++++++++++++++++
+ .../task/hosted-close-workflow-contract.test.ts    |   5 +-
+ 5 files changed, 183 insertions(+), 17 deletions(-)
