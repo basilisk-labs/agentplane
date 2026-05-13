@@ -83,10 +83,7 @@ function isPrefix(parent: readonly string[], child: readonly string[]): boolean 
 }
 
 function isGroupDispatchArg(arg: NonNullable<HelpJson["args"]>[number]): boolean {
-  return (
-    arg.required === false &&
-    ["cmd", "command", "subcommand"].includes(arg.name)
-  );
+  return arg.required === false && ["cmd", "command", "subcommand"].includes(arg.name);
 }
 
 function isGroupOnlyCommand(spec: HelpJson, allSpecs: readonly HelpJson[]): boolean {
