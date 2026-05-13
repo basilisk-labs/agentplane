@@ -6,4 +6,6 @@
  .../src/commands/pr/internal/sync-github.ts        |   5 +-
  .../src/commands/pr/internal/sync-open-step.ts     |   6 +-
  .../src/commands/pr/internal/sync-update-step.ts   |   4 +-
- 8 files changed, 630 insertions(+), 16 deletions(-)
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  38 ++
+ packages/agentplane/src/commands/shared/pr-meta.ts |  10 +-
+ 10 files changed, 677 insertions(+), 17 deletions(-)

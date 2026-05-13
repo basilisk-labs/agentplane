@@ -22,9 +22,9 @@ Fix branch_pr PR sync so observed OPEN and CLOSED GitHub pull request identity i
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T08:59:14.164Z
+- Updated: 2026-05-13T09:15:44.471Z
 - Branch: task/202605130823-WSWNSC/persist-pr-identity
-- Head: be9c1e06e426
+- Head: 4ddf33019c6c
 
 ```text
  .agentplane/policy/workflow.branch_pr.md           |   5 +
@@ -35,7 +35,9 @@ Fix branch_pr PR sync so observed OPEN and CLOSED GitHub pull request identity i
  .../src/commands/pr/internal/sync-github.ts        |   5 +-
  .../src/commands/pr/internal/sync-open-step.ts     |   6 +-
  .../src/commands/pr/internal/sync-update-step.ts   |   4 +-
- 8 files changed, 630 insertions(+), 16 deletions(-)
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  38 ++
+ packages/agentplane/src/commands/shared/pr-meta.ts |  10 +-
+ 10 files changed, 677 insertions(+), 17 deletions(-)
 ```
 
 </details>
