@@ -127,7 +127,7 @@ function classifyTaskArtifactDriftItem(opts: {
   artifactKind: TaskArtifactKind;
   status: TaskStatus | "unknown";
 }): TaskArtifactDriftItem {
-  if (isActiveParallelStatus(opts.status)) {
+  if (isActiveParallelStatus(opts.status) && opts.artifactKind === "task_readme") {
     return {
       path: opts.path,
       task_id: opts.taskId,
@@ -135,7 +135,7 @@ function classifyTaskArtifactDriftItem(opts: {
       classification: "active_parallel_task_artifact",
       action: "ignore_parallel_agent",
       status: opts.status,
-      reason: "artifact belongs to an active task and may be owned by another parallel agent",
+      reason: "README belongs to an active task and may be owned by another parallel agent",
     };
   }
   if (opts.status === "DONE" && opts.artifactKind === "handoff") {

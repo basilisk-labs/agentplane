@@ -390,6 +390,82 @@ describe("runCli", () => {
     }
   });
 
+  it("preflight --json keeps non-README active task artifacts actionable", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202604100023-ACTIVE";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    const handoffDir = path.join(taskDir, "handoff");
+    await mkdir(handoffDir, { recursive: true });
+    await writeFile(
+      path.join(taskDir, "README.md"),
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "Active task with handoff residue",
+          status: "DOING",
+          priority: "med",
+          owner: "CODER",
+          depends_on: [],
+          tags: ["code"],
+          verify: [],
+          comments: [],
+          doc_version: 3,
+          doc_updated_at: "2026-04-10T00:23:00.000Z",
+          doc_updated_by: "CODER",
+          description: "Active task with a non-README artifact.",
+          sections: {
+            Summary: "Active task with handoff residue",
+            Scope: "- In scope: active handoff artifact.",
+            Plan: "Keep non-README artifacts inspectable.",
+            "Verify Steps": "1. Run preflight.",
+            Verification: "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+            "Rollback Plan": "- Remove the artifact.",
+            Findings: "",
+          },
+        },
+        "## Summary\n\nActive task with handoff residue\n",
+      ),
+      "utf8",
+    );
+    await writeFile(path.join(handoffDir, "latest.json"), "{}\n", "utf8");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["preflight", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        task_artifact_drift?: {
+          actionable?: boolean;
+          counts?: { unknown_task_artifact?: number };
+          items?: {
+            path?: string;
+            artifact_kind?: string;
+            classification?: string;
+            action?: string;
+            status?: string;
+          }[];
+        };
+        harness_health?: { reasons?: string[] };
+      };
+      expect(payload.task_artifact_drift?.actionable).toBe(true);
+      expect(payload.task_artifact_drift?.counts?.unknown_task_artifact).toBe(1);
+      expect(payload.task_artifact_drift?.items).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            path: `.agentplane/tasks/${taskId}/handoff/latest.json`,
+            artifact_kind: "handoff",
+            classification: "unknown_task_artifact",
+            action: "inspect",
+            status: "DOING",
+          }),
+        ]),
+      );
+      expect(payload.harness_health?.reasons).toContain("task_artifact_drift");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("preflight --json classifies completed-task handoff artifacts as cleanup candidates", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
