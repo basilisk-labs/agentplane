@@ -1,0 +1,219 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605131446-KJXRCH",
+  "created_at": "2026-05-13T15:40:18.484Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "9ff81d2390c61ffc40cf2e6c07974ffe818c17dc",
+    "work_ref": "main",
+    "work_commit": "9ff81d2390c61ffc40cf2e6c07974ffe818c17dc"
+  },
+  "task": {
+    "task_id": "202605131446-KJXRCH",
+    "title": "Bootstrap AgentPlane from context init",
+    "intent": "Make agentplane context init in an empty directory initialize the AgentPlane project scaffold and then the local context layer, while preserving existing context init behavior and guarded failure modes for unsafe roots.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605131446-KJXRCH/README.md",
+      "sha256": "sha256:432425d11f348b23fa7118e5748e2b81f819711135919306538ff4ccfafb46d4"
+    },
+    "approved_at": "2026-05-13T14:47:15.578Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3637.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605131446-KJXRCH_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-13T14:47:15.578Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605131446-KJXRCH/README.md",
+      "sha256": "sha256:432425d11f348b23fa7118e5748e2b81f819711135919306538ff4ccfafb46d4"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605131446-KJXRCH/README.md",
+      "sha256": "sha256:432425d11f348b23fa7118e5748e2b81f819711135919306538ff4ccfafb46d4"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605131446-KJXRCH/README.md",
+      "sha256": "sha256:432425d11f348b23fa7118e5748e2b81f819711135919306538ff4ccfafb46d4"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605131446-KJXRCH/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:cf765a0a7d006ac5c7cad792e34a9878b30a70d0b2d03d1246b07802fd368871"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 9ff81d2390c61ffc40cf2e6c07974ffe818c17dc if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:53117f97b8d62982795fd00932fe34320eb0ae56f45afce4f8e5e31576564b52",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "hosted_checks",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605131446-KJXRCH/blueprint/resolved-snapshot.json",
+        "digest": "d1b062f04987e25aca9d85dfeed2ae0e1c63db73cf4310f4a4b98f04cd9c5b01",
+        "current_digest": "d1b062f04987e25aca9d85dfeed2ae0e1c63db73cf4310f4a4b98f04cd9c5b01",
+        "route_changed": false,
+        "artifact_sha256": "sha256:cf765a0a7d006ac5c7cad792e34a9878b30a70d0b2d03d1246b07802fd368871",
+        "safe_command": "agentplane blueprint snapshot 202605131446-KJXRCH"
+      }
+    }
+  }
+}

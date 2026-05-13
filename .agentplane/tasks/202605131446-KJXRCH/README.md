@@ -1,7 +1,8 @@
 ---
 id: "202605131446-KJXRCH"
 title: "Bootstrap AgentPlane from context init"
-status: "DOING"
+result_summary: "Merged via PR #3637."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified context init empty-directory bootstrap with targeted source CLI tests, package typecheck, exact-file lint, CLI docs freshness, routing check, doctor, repo-local bin smoke, pre-push fast CI, and hosted PR checks."
   attempts: 0
-commit: null
+commit:
+  hash: "9ff81d2390c61ffc40cf2e6c07974ffe818c17dc"
+  message: "Merge pull request #3637 from basilisk-labs/task/202605131446-KJXRCH/context-init-bootstrap"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved context init bootstrap behavior in the dedicated branch_pr worktree, with guarded empty-directory project initialization, current idempotent context behavior preserved, targeted CLI tests, and docs updates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3637 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified context init empty-directory bootstrap with targeted source CLI tests, package typecheck, exact-file lint, CLI docs freshness, routing check, doctor, repo-local bin smoke, pre-push fast CI, and hosted PR checks."
+  -
+    type: "status"
+    at: "2026-05-13T15:40:18.421Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3637 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T14:55:37.952Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T15:40:18.421Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make agentplane context init in an empty directory initialize the AgentPlane project scaffold and then the local context layer, while preserving existing context init behavior and guarded failure modes for unsafe roots."
 sections:
   Summary: |-
