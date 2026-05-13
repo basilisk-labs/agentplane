@@ -84,6 +84,11 @@ function isTruthyEnv(value: string | undefined): boolean {
   return normalized === "1" || normalized === "true" || normalized === "yes";
 }
 
+function isForceColorEnabled(value: string | undefined): boolean {
+  if (value === undefined) return false;
+  return value.trim() !== "" && value.trim() !== "0";
+}
+
 export function resolveCliPresentationMode(
   env: NodeJS.ProcessEnv = process.env,
 ): CliPresentationMode {
@@ -105,7 +110,7 @@ function shouldUseColor(opts?: {
   ) {
     return false;
   }
-  if (env.AGENTPLANE_COLOR === "always" || env.FORCE_COLOR) return true;
+  if (env.AGENTPLANE_COLOR === "always" || isForceColorEnabled(env.FORCE_COLOR)) return true;
   const writer = opts?.writer ?? (opts?.stream === "stderr" ? process.stderr : process.stdout);
   return Boolean((writer as { isTTY?: boolean }).isTTY);
 }

@@ -98,6 +98,17 @@ describe("cli/output", () => {
     expect(stdout.text()).toBe(["task_id: TASK-2", "status: ready"].join("\n") + "\n");
   });
 
+  it("treats FORCE_COLOR=0 as disabled", () => {
+    delete process.env.NO_COLOR;
+    delete process.env.AGENTPLANE_COLOR;
+
+    process.env.FORCE_COLOR = "1";
+    expect(successMessage("done")).toBe("\u001B[32m✅\u001B[0m done");
+
+    process.env.FORCE_COLOR = "0";
+    expect(successMessage("done")).toBe("✅ done");
+  });
+
   it("formats workflow mode messages", () => {
     expect(workflowModeMessage("direct", "branch_pr")).toBe(
       "Invalid workflow_mode: direct (expected branch_pr)",
