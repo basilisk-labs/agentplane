@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T17:24:03.652Z"
+  updated_at: "2026-05-13T17:38:06.244Z"
   updated_by: "CODER"
-  note: "Rebased on current main and reverified before publish: workflows:command-check, focused Vitest, typecheck, assets:builtin:check, policy routing, doctor, and verify-show passed."
+  note: "Pre-push fast CI found stale scripts/README.md after lifecycle parity script wiring; regenerated scripts README and rechecked docs:scripts:check plus workflows:command-check."
   attempts: 0
 commit: null
 comments:
@@ -60,8 +60,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rebased on current main and reverified before publish: workflows:command-check, focused Vitest, typecheck, assets:builtin:check, policy routing, doctor, and verify-show passed."
+  -
+    type: "verify"
+    at: "2026-05-13T17:38:06.244Z"
+    author: "CODER"
+    state: "ok"
+    note: "Pre-push fast CI found stale scripts/README.md after lifecycle parity script wiring; regenerated scripts README and rechecked docs:scripts:check plus workflows:command-check."
 doc_version: 3
-doc_updated_at: "2026-05-13T17:24:03.681Z"
+doc_updated_at: "2026-05-13T17:38:06.281Z"
 doc_updated_by: "CODER"
 description: "Fix branch_pr command-order drift across gateway docs, quickstart guidance, and blueprint routes; leave cleanup command references out of scope per user request."
 sections:
@@ -158,6 +164,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131635-W0735P
     
+    ### 2026-05-13T17:38:06.244Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Pre-push fast CI found stale scripts/README.md after lifecycle parity script wiring; regenerated scripts README and rechecked docs:scripts:check plus workflows:command-check.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T17:24:03.681Z, excerpt_hash=sha256:65a5b2ab7b7e18aa7dd80c03a6f614f26c62d91bbc02a4845c97fc02e1beca87
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131635-W0735P-command-order-guidance/.agentplane/tasks/202605131635-W0735P/blueprint/resolved-snapshot.json
+    - old_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+    - current_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131635-W0735P
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -178,6 +203,10 @@ sections:
     - Observation: Branch was rebased onto current main 244c1969 before publishing and merge.
       Impact: Remote PR and merge will use current base instead of the older c5f2d3ca base.
       Resolution: Verification rerun after rebase; PR artifacts will be refreshed after this verification record.
+    
+    - Observation: scripts/README.md was missing the new check-lifecycle-parity command in workflows:* script rows.
+      Impact: Pre-push blocked until generated script inventory matched package scripts.
+      Resolution: Regenerated scripts/README.md with bun run docs:scripts:generate; docs:scripts:check and workflows:command-check pass.
 id_source: "generated"
 ---
 ## Summary
@@ -283,6 +312,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131635-W0735P
 
+### 2026-05-13T17:38:06.244Z — VERIFY — ok
+
+By: CODER
+
+Note: Pre-push fast CI found stale scripts/README.md after lifecycle parity script wiring; regenerated scripts README and rechecked docs:scripts:check plus workflows:command-check.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T17:24:03.681Z, excerpt_hash=sha256:65a5b2ab7b7e18aa7dd80c03a6f614f26c62d91bbc02a4845c97fc02e1beca87
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131635-W0735P-command-order-guidance/.agentplane/tasks/202605131635-W0735P/blueprint/resolved-snapshot.json
+- old_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+- current_digest: c2e0b6bfc190bcdf7e34b78fe99b359b7b7793352acebd24255de2eb2ec6a180
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131635-W0735P
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -307,3 +355,7 @@ BlueprintSnapshotRef:
 - Observation: Branch was rebased onto current main 244c1969 before publishing and merge.
   Impact: Remote PR and merge will use current base instead of the older c5f2d3ca base.
   Resolution: Verification rerun after rebase; PR artifacts will be refreshed after this verification record.
+
+- Observation: scripts/README.md was missing the new check-lifecycle-parity command in workflows:* script rows.
+  Impact: Pre-push blocked until generated script inventory matched package scripts.
+  Resolution: Regenerated scripts/README.md with bun run docs:scripts:generate; docs:scripts:check and workflows:command-check pass.

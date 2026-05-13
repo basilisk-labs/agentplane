@@ -13,7 +13,7 @@ Created: 2026-05-13T16:36:18.870Z
 ## Verification
 
 - State: ok
-- Note: Rebased on current main and reverified before publish: workflows:command-check, focused Vitest, typecheck, assets:builtin:check, policy routing, doctor, and verify-show passed.
+- Note: Pre-push fast CI found stale scripts/README.md after lifecycle parity script wiring; regenerated scripts README and rechecked docs:scripts:check plus workflows:command-check.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-05-13T16:36:18.870Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T17:26:21.877Z
+- Updated: 2026-05-13T17:27:27.315Z
 - Branch: task/202605131635-W0735P/command-order-guidance
 - Head: 34a4cdd636eb
 
