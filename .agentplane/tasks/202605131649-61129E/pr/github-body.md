@@ -16,7 +16,7 @@ Separate public user command documentation from developer/advanced surfaces, rem
 ## Verification
 
 - State: ok
-- Note: Re-verified after rebasing onto current origin/main 707ddf167: package build, docs regeneration, docs:cli:check, docs:onboarding:check, docs:ia:check, lint:core, agentplane doctor, and targeted docs-cli test passed. Generated public CLI reference contains real user/action commands only and excludes group roots plus advanced/internal groups.
+- Note: Addressed PR review comment r3236216569: group-only CLI docs filtering now treats optional single-token dispatch args named cmd/command/subcommand as group dispatchers, not only variadic dispatchers. Rebuilt generated CLI reference and confirmed task doc/task verify wrappers are absent while task run remains.
 - Canonical workflow state lives in the task README.
 
 <details>

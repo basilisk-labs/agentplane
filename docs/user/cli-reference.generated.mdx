@@ -13,7 +13,6 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 - Task
   - [ready](#ready)
   - [task comment](#task-comment)
-  - [task doc](#task-doc)
   - [task doc set](#task-doc-set)
   - [task doc show](#task-doc-show)
   - [task list](#task-list)
@@ -27,7 +26,6 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task search](#task-search)
   - [task show](#task-show)
   - [task start-ready](#task-start-ready)
-  - [task verify](#task-verify)
   - [task verify ok](#task-verify-ok)
   - [task verify rework](#task-verify-rework)
   - [task verify-show](#task-verify-show)
@@ -312,18 +310,6 @@ agentplane task comment 202602030608-F1Q8AB --author CODER --body "Investigated 
 ```
 
 - Add a comment and bump doc metadata.
-
-### task doc
-
-Task doc commands (show/set).
-
-Usage:
-
-```text
-agentplane task doc show <task-id> [--section <name>] [--quiet]
-agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>) [--updated-by <id>]
-agentplane task doc set <task-id> --full-doc (--text <text> | --file <path>) [--updated-by <id>]
-```
 
 ### task doc set
 
@@ -733,17 +719,6 @@ agentplane task start-ready 202602030608-F1Q8AB --author CODER --body "Start: im
 ```
 
 - Check readiness and transition to DOING without command chaining.
-
-### task verify
-
-Record verification results (ok/rework).
-
-Usage:
-
-```text
-agentplane task verify ok <task-id> --by <id> --note <text> [--details <text> | --file <path>] [--quiet]
-agentplane task verify rework <task-id> --by <id> --note <text> [--details <text> | --file <path>] [--quiet]
-```
 
 ### task verify ok
 

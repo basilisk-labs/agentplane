@@ -23,9 +23,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T18:30:29.868Z"
+  updated_at: "2026-05-13T19:03:07.583Z"
   updated_by: "CODER"
-  note: "Re-verified after rebasing onto current origin/main 707ddf167: package build, docs regeneration, docs:cli:check, docs:onboarding:check, docs:ia:check, lint:core, agentplane doctor, and targeted docs-cli test passed. Generated public CLI reference contains real user/action commands only and excludes group roots plus advanced/internal groups."
+  note: "Addressed PR review comment r3236216569: group-only CLI docs filtering now treats optional single-token dispatch args named cmd/command/subcommand as group dispatchers, not only variadic dispatchers. Rebuilt generated CLI reference and confirmed task doc/task verify wrappers are absent while task run remains."
   attempts: 0
 commit: null
 comments:
@@ -58,8 +58,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Re-verified after rebasing onto current origin/main 707ddf167: package build, docs regeneration, docs:cli:check, docs:onboarding:check, docs:ia:check, lint:core, agentplane doctor, and targeted docs-cli test passed. Generated public CLI reference contains real user/action commands only and excludes group roots plus advanced/internal groups."
+  -
+    type: "verify"
+    at: "2026-05-13T19:03:07.583Z"
+    author: "CODER"
+    state: "ok"
+    note: "Addressed PR review comment r3236216569: group-only CLI docs filtering now treats optional single-token dispatch args named cmd/command/subcommand as group dispatchers, not only variadic dispatchers. Rebuilt generated CLI reference and confirmed task doc/task verify wrappers are absent while task run remains."
 doc_version: 3
-doc_updated_at: "2026-05-13T18:30:29.894Z"
+doc_updated_at: "2026-05-13T19:03:07.651Z"
 doc_updated_by: "CODER"
 description: "Separate public user command documentation from developer/advanced surfaces, remove stale command examples, and keep generated CLI reference focused on actionable user commands."
 sections:
@@ -142,6 +148,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131649-61129E
     
+    ### 2026-05-13T19:03:07.583Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Addressed PR review comment r3236216569: group-only CLI docs filtering now treats optional single-token dispatch args named cmd/command/subcommand as group dispatchers, not only variadic dispatchers. Rebuilt generated CLI reference and confirmed task doc/task verify wrappers are absent while task run remains.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:30:29.894Z, excerpt_hash=sha256:de5e186a3bd82f4d9d74fbbd65009163b725739ee36387bcbf6fc4cd8efec075
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: stale
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131649-61129E-public-cli-docs-surface/.agentplane/tasks/202605131649-61129E/blueprint/resolved-snapshot.json
+    - old_digest: a8880e511722d361a92cf2f3adf9983b11c9ce9ba6480eb83ac165b8653a305b
+    - current_digest: a048dc32343f5b17a7cd1158432b7c92d4afa817b192d2fd64fa6da95ea21257
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131649-61129E
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -158,6 +183,10 @@ sections:
     - Observation: A full pre-push fast CI run was attempted and passed format, schemas, agent templates, policy routing, release parity, cold-start baseline, build, docs freshness, recipes inventory, scripts README, onboarding, hotspot baseline, vitest routing, lint:core, and most fast tests, but one release-smoke test failed once in the broad suite with exit 5. The same failing test passed when rerun directly. docs:site:build also remains blocked by an existing Docusaurus duplicate / route/default-export SSG issue outside this task.
       Impact: Task-specific checks and targeted regression checks are green; broad hook has a known unrelated flaky/interference failure, so the branch was pushed with explicit residual risk rather than widening scope.
       Resolution: Recorded residual verification caveat; kept scope limited to CLI docs generation and public/developer documentation separation.
+    
+    - Observation: Checks after review fix: docs:cli:check, docs:ia:check, docs:onboarding:check, agentplane doctor, lint:core, and targeted docs-cli test with --timeout 15000 all passed.
+      Impact: Public generated CLI reference no longer leaks non-actionable single-subcommand group wrappers.
+      Resolution: Updated docs renderer, generated reference, and regression assertions; ready to reply/resolve the PR thread.
 id_source: "generated"
 ---
 ## Summary
@@ -248,6 +277,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131649-61129E
 
+### 2026-05-13T19:03:07.583Z — VERIFY — ok
+
+By: CODER
+
+Note: Addressed PR review comment r3236216569: group-only CLI docs filtering now treats optional single-token dispatch args named cmd/command/subcommand as group dispatchers, not only variadic dispatchers. Rebuilt generated CLI reference and confirmed task doc/task verify wrappers are absent while task run remains.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:30:29.894Z, excerpt_hash=sha256:de5e186a3bd82f4d9d74fbbd65009163b725739ee36387bcbf6fc4cd8efec075
+
+Details:
+
+BlueprintSnapshotRef:
+- state: stale
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131649-61129E-public-cli-docs-surface/.agentplane/tasks/202605131649-61129E/blueprint/resolved-snapshot.json
+- old_digest: a8880e511722d361a92cf2f3adf9983b11c9ce9ba6480eb83ac165b8653a305b
+- current_digest: a048dc32343f5b17a7cd1158432b7c92d4afa817b192d2fd64fa6da95ea21257
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131649-61129E
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -268,3 +316,7 @@ BlueprintSnapshotRef:
 - Observation: A full pre-push fast CI run was attempted and passed format, schemas, agent templates, policy routing, release parity, cold-start baseline, build, docs freshness, recipes inventory, scripts README, onboarding, hotspot baseline, vitest routing, lint:core, and most fast tests, but one release-smoke test failed once in the broad suite with exit 5. The same failing test passed when rerun directly. docs:site:build also remains blocked by an existing Docusaurus duplicate / route/default-export SSG issue outside this task.
   Impact: Task-specific checks and targeted regression checks are green; broad hook has a known unrelated flaky/interference failure, so the branch was pushed with explicit residual risk rather than widening scope.
   Resolution: Recorded residual verification caveat; kept scope limited to CLI docs generation and public/developer documentation separation.
+
+- Observation: Checks after review fix: docs:cli:check, docs:ia:check, docs:onboarding:check, agentplane doctor, lint:core, and targeted docs-cli test with --timeout 15000 all passed.
+  Impact: Public generated CLI reference no longer leaks non-actionable single-subcommand group wrappers.
+  Resolution: Updated docs renderer, generated reference, and regression assertions; ready to reply/resolve the PR thread.
