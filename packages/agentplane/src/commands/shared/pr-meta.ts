@@ -220,6 +220,11 @@ export function buildObservedGithubPrMeta(opts: {
     delete nextMeta.merged_at;
     delete nextMeta.merge_commit;
     delete nextMeta.merge_strategy;
+    if (nextMeta.artifact_state !== "handoff") {
+      delete nextMeta.artifact_state;
+      delete nextMeta.artifact_state_reason;
+      delete nextMeta.artifact_state_updated_at;
+    }
   }
 
   const changed =
@@ -229,7 +234,10 @@ export function buildObservedGithubPrMeta(opts: {
     (nextMeta.base ?? null) !== (opts.meta.base ?? null) ||
     (nextMeta.head_sha ?? null) !== (opts.meta.head_sha ?? null) ||
     (nextMeta.merged_at ?? null) !== (opts.meta.merged_at ?? null) ||
-    (nextMeta.merge_commit ?? null) !== (opts.meta.merge_commit ?? null);
+    (nextMeta.merge_commit ?? null) !== (opts.meta.merge_commit ?? null) ||
+    (nextMeta.artifact_state ?? null) !== (opts.meta.artifact_state ?? null) ||
+    (nextMeta.artifact_state_reason ?? null) !== (opts.meta.artifact_state_reason ?? null) ||
+    (nextMeta.artifact_state_updated_at ?? null) !== (opts.meta.artifact_state_updated_at ?? null);
 
   if (changed) {
     nextMeta.updated_at = opts.at;

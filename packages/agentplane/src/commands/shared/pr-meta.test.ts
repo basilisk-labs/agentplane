@@ -318,6 +318,44 @@ describe("pr-meta shell invocations", () => {
     );
   });
 
+  it("clears stale remote failure lifecycle when an open GitHub PR is observed", () => {
+    const meta = buildObservedGithubPrMeta({
+      meta: {
+        schema_version: 1,
+        task_id: "202601010101-ABCDE",
+        branch: "task/202601010101-ABCDE/example",
+        created_at: "2026-01-27T00:00:00Z",
+        updated_at: "2026-01-27T00:00:00Z",
+        artifact_state: "remote_failed",
+        artifact_state_reason: "GitHub auth or permissions unavailable",
+        artifact_state_updated_at: "2026-01-27T00:10:00Z",
+        verify: { status: "skipped" },
+      },
+      observed: {
+        prNumber: 321,
+        prUrl: "https://github.com/example/repo/pull/321",
+        status: "OPEN",
+        base: "main",
+        headSha: "deadbeef",
+      },
+      at: "2026-01-28T00:00:00Z",
+    });
+
+    expect(meta).toEqual(
+      expect.objectContaining({
+        pr_number: 321,
+        pr_url: "https://github.com/example/repo/pull/321",
+        status: "OPEN",
+        base: "main",
+        head_sha: "deadbeef",
+        updated_at: "2026-01-28T00:00:00Z",
+      }),
+    );
+    expect(meta.artifact_state).toBeUndefined();
+    expect(meta.artifact_state_reason).toBeUndefined();
+    expect(meta.artifact_state_updated_at).toBeUndefined();
+  });
+
   it("keeps updated_at byte-stable when observed remote PR identity is unchanged", () => {
     expect(
       buildObservedGithubPrMeta({
