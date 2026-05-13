@@ -1,9 +1,10 @@
 ---
 id: "202602061915-DH1CKG"
-title: "P2: Новый стандарт commit message (emoji map + body), без совместимости"
+title: "P2: New commit message standard (emoji map + body), no compatibility"
 status: "DONE"
 priority: "high"
 owner: "CODER"
+revision: 1
 depends_on: []
 tags:
   - "git"
@@ -21,6 +22,7 @@ verification:
   updated_at: "2026-02-06T19:58:30.972Z"
   updated_by: "TESTER"
   note: "Verified locally on 2026-02-06T19:58:30.972Z: bun run test:core and bun run test:cli both pass (vitest)."
+  attempts: 0
 commit:
   hash: "b7f74c7c3f9e97e0dccef6a8a9f9547a140442af"
   message: "✨ DH1CKG commit"
@@ -31,10 +33,47 @@ comments:
   -
     author: "CODER"
     body: "Verified: Enforced <emoji> <suffix> <scope>: <summary> subject standard (no backward-compat), generated structured bodies for comment-driven commits, updated hooks/docs/tests; ran bun run test:core and bun run test:cli."
+events: []
 doc_version: 3
 doc_updated_at: "2026-02-06T20:03:11.697Z"
 doc_updated_by: "CODER"
-description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-DZBAW0) Реализовать action/status emoji map, subject template, автогенерацию body для comment-driven коммитов; обновить commit-msg hook под новый формат без обратной совместимости; обновить docs (AGENTS.md)."
+description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-DZBAW0) Implement action/status emoji mapping, subject template, and body autogeneration for comment-driven commits; update the commit-msg hook for the new format without backward compatibility; update docs (AGENTS.md)."
+sections:
+  Summary: "Enforced a new commit subject standard (<emoji> <suffix> <scope>: <summary>) with no backward compatibility; comment-driven commits now generate a structured body (Task/Agent/Status/Comment); hooks/guard/docs/tests updated accordingly."
+  Scope: |-
+    - core: enforce commit subject template in validateCommitSubject (no backward compat)
+    - agentplane: generate subject+body for comment-driven commits (start/block/finish/set-status)
+    - hooks: commit-msg uses core validator and requires AGENTPLANE_TASK_ID
+    - docs/tests: update AGENTS.md, command guide, and CLI tests to match the new template
+  Plan: |-
+    1. Update core CommitPolicy to enforce `<emoji> <suffix> <scope>: <summary>` (and keep anti-generic checks).
+    2. Update comment-driven commit generation to produce the new subject format and an informative body.
+    3. Update commit-msg hook to validate via core CommitPolicy and require `AGENTPLANE_TASK_ID`.
+    4. Update docs and examples (AGENTS.md, assets) to reflect the new standard and emoji map.
+    5. Update/repair affected tests and run `bun run test:core` + `bun run test:cli`.
+  Verify Steps: |-
+    <!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+    1. <Action>. Expected: <observable result>.
+    2. <Action>. Expected: <observable result>.
+    3. <Action>. Expected: <observable result>.
+  Verification: |-
+    Local verification: bun run test:core, bun run test:cli (see verify record below).
+
+    <!-- BEGIN VERIFICATION RESULTS -->
+    #### 2026-02-06T19:58:30.972Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified locally on 2026-02-06: bun run test:core and bun run test:cli both pass (vitest).
+
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    1. Revert the implementation commit for this task.
+    2. Restore the previous commit subject validator in core (accepting `<emoji> <suffix> <summary>`).
+    3. Relax commit-msg hook to not require `AGENTPLANE_TASK_ID` (or accept a fallback path).
+    4. Re-run `bun run test:core` + `bun run test:cli`.
+  Findings: ""
 id_source: "generated"
 ---
 ## Summary
@@ -85,7 +124,6 @@ Note: Verified locally on 2026-02-06: bun run test:core and bun run test:cli bot
 4. Re-run `bun run test:core` + `bun run test:cli`.
 
 ## Findings
-
 
 ## Risks
 
