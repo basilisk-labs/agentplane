@@ -51,6 +51,7 @@ export type CloudBackendSettings = {
   autosync_pull_on_read?: boolean;
   autosync_pull_on_write?: boolean;
   autosync_push_on_write?: boolean;
+  auto_push_on_mutation?: boolean;
 };
 
 type CloudSyncStateSnapshot = {
@@ -83,6 +84,7 @@ export class CloudBackend implements TaskBackend {
   cache: LocalBackend;
   statePath: string;
   staleAfterSeconds: number | null;
+  autoPushOnMutation: boolean;
   private fetchImpl: typeof fetch;
   private readonly configOverrides: CloudConfigOverride[];
   private readonly dotEnv: Pick<DotEnvLoadResult, "root" | "path" | "loaded">;
@@ -113,6 +115,10 @@ export class CloudBackend implements TaskBackend {
     );
     this.provider =
       firstNonEmptyString(process.env.AGENTPLANE_CLOUD_PROVIDER, settings.provider) || null;
+    this.autoPushOnMutation =
+      process.env.AGENTPLANE_CLOUD_AUTO_PUSH_ON_MUTATION === "1" ||
+      process.env.AGENTPLANE_CLOUD_AUTO_PUSH_ON_MUTATION === "true" ||
+      settings.auto_push_on_mutation === true;
     this.configOverrides = cloudConfigOverrides(settings, {
       AGENTPLANE_CLOUD_ENDPOINT: this.endpoint,
       AGENTPLANE_CLOUD_PROJECT_ID: this.projectId,

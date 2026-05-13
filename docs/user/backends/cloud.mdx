@@ -127,6 +127,27 @@ Operational rule:
 - use `push --yes` when local task state should become visible to connected remote views;
 - ordinary task reads do not implicitly refresh from the network.
 
+### Watch mode (pull)
+
+To keep the local projection updated while you change GitHub issue state or Project fields, run a
+long-lived pull loop:
+
+```bash
+agentplane backend sync cloud --direction pull --watch --yes
+```
+
+Defaults:
+
+- `--interval-ms 30000`
+- runs until interrupted (or use `--max-iterations N` for bounded runs/tests)
+
+### Optional auto-push on status mutations
+
+If the cloud backend is configured with `auto_push_on_mutation=true` (or the environment variable
+`AGENTPLANE_CLOUD_AUTO_PUSH_ON_MUTATION=1` is set), AgentPlane will push after successful status
+mutations (for example `task start-ready`, `task block`, `task set-status`, `task finish`) so GitHub
+issue state stays in sync without an extra manual push step.
+
 Cloud pull writes the local projection cache. In a git repository, that means a successful pull can
 produce ordinary working-tree changes under `.agentplane/tasks/**`, as if those task files had been
 edited locally. Review and commit those projection changes through the same repository workflow as

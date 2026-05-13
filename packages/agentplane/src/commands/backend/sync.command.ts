@@ -51,6 +51,27 @@ export const backendSyncSpec: CommandSpec<BackendSyncParsed> = {
       default: "diff",
       description: "Conflict handling policy (default: diff).",
     },
+    {
+      kind: "boolean",
+      name: "watch",
+      default: false,
+      description: "Watch mode (pull only): periodically pull until interrupted or max iterations.",
+    },
+    {
+      kind: "string",
+      name: "interval-ms",
+      valueHint: "<ms>",
+      default: "30000",
+      description: "Watch mode polling interval in milliseconds (default: 30000).",
+    },
+    {
+      kind: "string",
+      name: "max-iterations",
+      valueHint: "<n>",
+      default: "0",
+      description:
+        "Watch mode: stop after N iterations (0 means run until interrupted). Useful for tests.",
+    },
     { kind: "boolean", name: "yes", default: false, description: "Auto-approve network access." },
     { kind: "boolean", name: "quiet", default: false, description: "Reduce output noise." },
   ],
@@ -65,6 +86,11 @@ export const backendSyncSpec: CommandSpec<BackendSyncParsed> = {
     backendId: String(raw.args.id),
     direction: (raw.opts.direction ?? "push") as BackendSyncParsed["direction"],
     conflict: (raw.opts.conflict ?? "diff") as BackendSyncParsed["conflict"],
+    watch: raw.opts.watch === true,
+    intervalMs:
+      typeof raw.opts["interval-ms"] === "string" ? Number(raw.opts["interval-ms"]) : 30000,
+    maxIterations:
+      typeof raw.opts["max-iterations"] === "string" ? Number(raw.opts["max-iterations"]) : 0,
     yes: raw.opts.yes === true,
     quiet: raw.opts.quiet === true,
   }),
