@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { spawnSync } from "node:child_process";
 
 const result = spawnSync(
@@ -8,4 +7,4 @@ const result = spawnSync(
     stdio: "inherit",
   },
 );
-process.exit(result.status ?? 1);
+process.exitCode = result.status ?? 1;
