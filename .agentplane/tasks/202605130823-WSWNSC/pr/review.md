@@ -24,19 +24,20 @@ Created: 2026-05-13T08:24:28.892Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T08:55:41.069Z
+- Updated: 2026-05-13T08:59:14.164Z
 - Branch: task/202605130823-WSWNSC/persist-pr-identity
-- Head: e2dbd33af2b4
+- Head: be9c1e06e426
 
 ```text
  .agentplane/policy/workflow.branch_pr.md           |   5 +
  .../blueprint/resolved-snapshot.json               | 514 +++++++++++++++++++++
+ .../agentplane/assets/policy/workflow.branch_pr.md |   5 +
  .../run-cli.core.pr-flow.pr-open.network.test.ts   |  16 +-
  ...n-cli.core.pr-flow.pr-validation.update.test.ts |  91 ++++
  .../src/commands/pr/internal/sync-github.ts        |   5 +-
  .../src/commands/pr/internal/sync-open-step.ts     |   6 +-
  .../src/commands/pr/internal/sync-update-step.ts   |   4 +-
- 7 files changed, 625 insertions(+), 16 deletions(-)
+ 8 files changed, 630 insertions(+), 16 deletions(-)
 ```
 
 </details>
