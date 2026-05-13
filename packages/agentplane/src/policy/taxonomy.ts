@@ -19,8 +19,11 @@ export type KnownPolicyActionId =
   | "task_finish"
   | "task_plan_set"
   | "task_plan_approve"
+  | "task_plan_reject"
   | "task_verify"
   | "task_run"
+  | "integrate"
+  | "work_start"
   | "scenario_execute"
   | "recipe_install"
   | "recipe_list_remote"
@@ -252,6 +255,15 @@ const POLICY_ACTIONS: Record<KnownPolicyActionId, BuiltinPolicyActionDescriptor>
     approval: null,
     enforcement: "none",
   },
+  task_plan_reject: {
+    family: "task",
+    summary: "Reject a task plan and keep implementation blocked until revision.",
+    mutates_state: true,
+    risky: false,
+    destructive: false,
+    approval: null,
+    enforcement: "none",
+  },
   task_verify: {
     family: "task",
     summary: "Record task verification evidence and outcome.",
@@ -264,6 +276,24 @@ const POLICY_ACTIONS: Record<KnownPolicyActionId, BuiltinPolicyActionDescriptor>
   task_run: {
     family: "runner",
     summary: "Prepare or execute a runner invocation for a task.",
+    mutates_state: true,
+    risky: true,
+    destructive: false,
+    approval: null,
+    enforcement: "none",
+  },
+  integrate: {
+    family: "workflow",
+    summary: "Integrate a task branch back into the base workflow path.",
+    mutates_state: true,
+    risky: true,
+    destructive: false,
+    approval: null,
+    enforcement: "none",
+  },
+  work_start: {
+    family: "workflow",
+    summary: "Prepare the owner work branch or worktree for task implementation.",
     mutates_state: true,
     risky: true,
     destructive: false,

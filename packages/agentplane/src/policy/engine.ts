@@ -1,12 +1,21 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 
 import { evaluatePolicy } from "./evaluate.js";
+import { evaluatePhasePolicy, resolvePolicyPhase } from "./rules/phase.js";
+import { mergeResults } from "./result.js";
 import { resolvePolicyActionDescriptor, type PolicyActionDescriptor } from "./taxonomy.js";
-import type { PolicyAction, PolicyContext, PolicyProblem, PolicyResult } from "./model.js";
+import type {
+  PolicyAction,
+  PolicyContext,
+  PolicyPhase,
+  PolicyProblem,
+  PolicyResult,
+} from "./model.js";
 
 export type PolicyDecision = {
   ok: boolean;
   action: PolicyActionDescriptor;
+  phase: PolicyPhase | null;
   violations: PolicyViolation[];
 };
 
@@ -44,15 +53,21 @@ export class PolicyEngine {
   evaluate(ctx: PolicyEngineContext): PolicyDecision {
     const action = ctx.action;
     const descriptor = resolvePolicyActionDescriptor(action);
+    const phase = resolvePolicyPhase(descriptor.id, ctx.phase);
+    const phaseResult = evaluatePhasePolicy({
+      ...(ctx as unknown as PolicyContext),
+      action: descriptor.id,
+      phase: phase ?? ctx.phase,
+    });
 
     // Delegate existing policy actions to the current rule engine.
     if (descriptor.enforcement === "git_rules") {
-      const result = evaluatePolicy(ctx as unknown as PolicyContext);
-      return { ok: result.ok, action: descriptor, violations: toViolations(result) };
+      const result = mergeResults(evaluatePolicy(ctx as unknown as PolicyContext), phaseResult);
+      return { ok: result.ok, action: descriptor, phase, violations: toViolations(result) };
     }
 
     // Default: no-op. Usecases should still call into the engine so we can harden
     // policy coverage incrementally without duplicating checks across commands.
-    return { ok: true, action: descriptor, violations: [] };
+    return { ok: phaseResult.ok, action: descriptor, phase, violations: toViolations(phaseResult) };
   }
 }

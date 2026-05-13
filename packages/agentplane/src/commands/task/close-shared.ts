@@ -23,6 +23,7 @@ export async function recordVerifiedNoopClosure(opts: {
     taskId: opts.taskId,
     quiet: opts.quiet,
     policyAction: "task_finish",
+    phase: "finish",
     build: (task) => {
       if (!opts.force && normalizeTaskStatus(task.status) === "DONE") {
         throw new CliError({

@@ -99,6 +99,7 @@ export async function cmdTaskSetStatus(opts: {
       taskId: opts.taskId,
       quiet: opts.quiet,
       policyAction: "task_set_status",
+      phase: "implement",
       build: (current) => {
         const currentEventAuthor = resolveDocUpdatedBy(current, opts.author);
         return {
