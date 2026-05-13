@@ -1,7 +1,8 @@
 ---
 id: "202605131637-33VQFN"
 title: "Add local insights report command"
-status: "DOING"
+result_summary: "Merged via PR #3645."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: implemented local-only insights report CLI with privacy-bounded payload, generated CLI docs, and targeted command coverage. Checks passed: bun test packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli.core.insights-report.test.ts (8 pass); bun run typecheck; bun run lint:core; bun run format:check; node .agentplane/policy/check-routing.mjs; ap doctor; node packages/agentplane/bin/agentplane.js insights report --json --recent-limit 1. Full bun run lint still fails in unrelated website TypeScript/Docusaurus typing files outside this task scope; core lint passes."
   attempts: 0
-commit: null
+commit:
+  hash: "092f19afeea175340b18f5e9905f0f86e0b2acb5"
+  message: "Merge pull request #3645 from basilisk-labs/task/202605131637-33VQFN/insights-report"
 comments:
   -
     author: "CODER"
     body: "Start: implement a local-only insights report CLI command in the dedicated task worktree, preserving privacy boundaries and adding targeted command coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3645 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: implemented local-only insights report CLI with privacy-bounded payload, generated CLI docs, and targeted command coverage. Checks passed: bun test packages/agentplane/src/cli/run-cli/command-catalog.test.ts packages/agentplane/src/cli/run-cli.core.insights-report.test.ts (8 pass); bun run typecheck; bun run lint:core; bun run format:check; node .agentplane/policy/check-routing.mjs; ap doctor; node packages/agentplane/bin/agentplane.js insights report --json --recent-limit 1. Full bun run lint still fails in unrelated website TypeScript/Docusaurus typing files outside this task scope; core lint passes."
+  -
+    type: "status"
+    at: "2026-05-13T18:35:19.117Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3645 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T17:12:25.687Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T18:35:19.117Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement a local-only agentplane insights report command that summarizes privacy-safe repository and AgentPlane diagnostic state for user-shared support analysis without uploading telemetry."
 sections:
   Summary: |-
