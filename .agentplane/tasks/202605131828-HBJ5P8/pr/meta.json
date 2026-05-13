@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605131828-HBJ5P8/flexible-test-routing",
+  "created_at": "2026-05-13T18:29:54.674Z",
+  "head_sha": "707ddf167b736bb4fb9c40d33b8d8d1dd83870af",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605131828-HBJ5P8",
+  "updated_at": "2026-05-13T18:29:54.674Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

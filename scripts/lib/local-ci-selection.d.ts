@@ -22,7 +22,9 @@ export type FastCiPlan =
         | "cli-runtime"
         | "release"
         | "upgrade"
-        | "guard";
+        | "guard"
+        | "mixed";
+      buckets?: string[];
       reason: string;
       files: string[];
       lintTargets: string[];
