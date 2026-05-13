@@ -1,4 +1,4 @@
-import { resolveProject } from "@agentplaneorg/core/project";
+import { findGitRoot, resolveProject } from "@agentplaneorg/core/project";
 
 import {
   loadDirectSubcommandNames,
@@ -6,7 +6,7 @@ import {
   type GroupCommandParsed,
 } from "../../cli/group-command.js";
 import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
-import { CliError } from "../../shared/errors.js";
+import { CliError, GitError } from "../../shared/errors.js";
 import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
 import {
   evaluatorSpec,
@@ -58,8 +58,15 @@ async function loadCatalogForCommand(ctx: CommandCtx, includeBuiltin: boolean) {
   try {
     const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
     projectRoot = resolved.gitRoot;
-  } catch {
-    projectRoot = ctx.rootOverride ?? null;
+  } catch (err) {
+    if (ctx.rootOverride) {
+      const message = err instanceof Error ? err.message : String(err);
+      throw new GitError({
+        message,
+        context: { command: "evaluator", root: ctx.rootOverride },
+      });
+    }
+    projectRoot = await findGitRoot(ctx.cwd);
   }
   return await loadEvaluatorCatalog({ projectRoot, includeBuiltin });
 }

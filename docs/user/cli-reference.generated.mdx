@@ -3320,7 +3320,7 @@ agentplane evaluator list [options]
 
 Options:
 
-- `--builtin`: Include packaged evaluator modules when no project override exists. (default=true)
+- `--builtin <true|false>`: Include packaged evaluator modules when no project override exists. (choices=true|false, default=true)
 - `--json`: Emit JSON. (default=false)
 
 Examples:
@@ -3337,6 +3337,12 @@ agentplane evaluator list --json
 
 - Emit machine-readable evaluator metadata.
 
+```sh
+agentplane evaluator list --builtin false
+```
+
+- Show project-local evaluators only.
+
 ### evaluator show
 
 Print an evaluator prompt module.
@@ -3349,7 +3355,7 @@ agentplane evaluator show <id> [options]
 
 Options:
 
-- `--builtin`: Include packaged evaluator modules when no project override exists. (default=true)
+- `--builtin <true|false>`: Include packaged evaluator modules when no project override exists. (choices=true|false, default=true)
 - `--json`: Emit JSON. (default=false)
 
 Examples:

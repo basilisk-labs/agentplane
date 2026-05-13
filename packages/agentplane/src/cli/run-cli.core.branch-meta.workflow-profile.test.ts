@@ -268,6 +268,29 @@ describe("runCli", () => {
       listIo.restore();
     }
 
+    const projectOnlyIo = captureStdIO();
+    try {
+      const code = await runCli(["evaluator", "list", "--builtin", "false", "--root", root]);
+      expect(code).toBe(0);
+      expect(projectOnlyIo.stdout).toContain("custom-review");
+      expect(projectOnlyIo.stdout).not.toContain("recovery-context");
+    } finally {
+      projectOnlyIo.restore();
+    }
+
+    const nestedDir = path.join(root, "nested");
+    await mkdir(nestedDir);
+    const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(nestedDir);
+    const nestedIo = captureStdIO();
+    try {
+      const code = await runCli(["evaluator", "show", "custom-review"]);
+      expect(code).toBe(0);
+      expect(nestedIo.stdout).toContain("# Custom Review");
+    } finally {
+      nestedIo.restore();
+      cwdSpy.mockRestore();
+    }
+
     const showIo = captureStdIO();
     try {
       const code = await runCli(["evaluator", "show", "custom-review", "--root", root]);

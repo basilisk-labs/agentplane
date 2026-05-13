@@ -13,6 +13,10 @@ export type EvaluatorShowParsed = {
   builtin: boolean;
 };
 
+function parseBuiltinFlag(value: unknown): boolean {
+  return value !== "false";
+}
+
 export const evaluatorSpec: CommandSpec<GroupCommandParsed> = {
   id: ["evaluator"],
   group: "Evaluators",
@@ -36,9 +40,11 @@ export const evaluatorListSpec: CommandSpec<EvaluatorListParsed> = {
   summary: "List evaluator prompt modules from .agentplane/evaluators.",
   options: [
     {
-      kind: "boolean",
+      kind: "string",
       name: "builtin",
-      default: true,
+      valueHint: "<true|false>",
+      choices: ["true", "false"],
+      default: "true",
       description: "Include packaged evaluator modules when no project override exists.",
     },
     { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
@@ -46,10 +52,14 @@ export const evaluatorListSpec: CommandSpec<EvaluatorListParsed> = {
   examples: [
     { cmd: "agentplane evaluator list", why: "Show evaluator ids and prompt metadata." },
     { cmd: "agentplane evaluator list --json", why: "Emit machine-readable evaluator metadata." },
+    {
+      cmd: "agentplane evaluator list --builtin false",
+      why: "Show project-local evaluators only.",
+    },
   ],
   parse: (raw) => ({
     json: raw.opts.json === true,
-    builtin: raw.opts.builtin !== false,
+    builtin: parseBuiltinFlag(raw.opts.builtin),
   }),
 };
 
@@ -60,9 +70,11 @@ export const evaluatorShowSpec: CommandSpec<EvaluatorShowParsed> = {
   args: [{ name: "id", required: true, valueHint: "<id>" }],
   options: [
     {
-      kind: "boolean",
+      kind: "string",
       name: "builtin",
-      default: true,
+      valueHint: "<true|false>",
+      choices: ["true", "false"],
+      default: "true",
       description: "Include packaged evaluator modules when no project override exists.",
     },
     { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
@@ -85,6 +97,6 @@ export const evaluatorShowSpec: CommandSpec<EvaluatorShowParsed> = {
   parse: (raw) => ({
     id: String(raw.args.id ?? "").trim(),
     json: raw.opts.json === true,
-    builtin: raw.opts.builtin !== false,
+    builtin: parseBuiltinFlag(raw.opts.builtin),
   }),
 };
