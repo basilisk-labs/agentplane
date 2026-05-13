@@ -16,7 +16,7 @@ Make branch_pr completion queue verified task branches for serialized integratio
 ## Verification
 
 - State: ok
-- Note: Follow-up verified: merged branch_pr artifacts now surface as MERGED_PENDING_CLOSE in task list/search/next instead of ordinary TODO; git stderr from HEAD-less task cache probes is suppressed; targeted task listing, integrate queue, and integrate tests passed; targeted eslint passed; typecheck passed; framework bootstrap passed; policy routing passed; git diff --check passed.
+- Note: Hotspot follow-up verified: branch_pr list-state test moved out of oversized query-listing file; targeted tests passed; targeted eslint passed; typecheck passed; hotspots:check passed; policy routing passed; git diff --check passed.
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T19:20:51.467Z"
+  updated_at: "2026-05-13T19:29:06.972Z"
   updated_by: "CODER"
-  note: "Follow-up verified: merged branch_pr artifacts now surface as MERGED_PENDING_CLOSE in task list/search/next instead of ordinary TODO; git stderr from HEAD-less task cache probes is suppressed; targeted task listing, integrate queue, and integrate tests passed; targeted eslint passed; typecheck passed; framework bootstrap passed; policy routing passed; git diff --check passed."
+  note: "Hotspot follow-up verified: branch_pr list-state test moved out of oversized query-listing file; targeted tests passed; targeted eslint passed; typecheck passed; hotspots:check passed; policy routing passed; git diff --check passed."
   attempts: 0
 commit: null
 comments:
@@ -101,8 +101,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Follow-up verified: merged branch_pr artifacts now surface as MERGED_PENDING_CLOSE in task list/search/next instead of ordinary TODO; git stderr from HEAD-less task cache probes is suppressed; targeted task listing, integrate queue, and integrate tests passed; targeted eslint passed; typecheck passed; framework bootstrap passed; policy routing passed; git diff --check passed."
+  -
+    type: "verify"
+    at: "2026-05-13T19:29:06.972Z"
+    author: "CODER"
+    state: "ok"
+    note: "Hotspot follow-up verified: branch_pr list-state test moved out of oversized query-listing file; targeted tests passed; targeted eslint passed; typecheck passed; hotspots:check passed; policy routing passed; git diff --check passed."
 doc_version: 3
-doc_updated_at: "2026-05-13T19:20:51.492Z"
+doc_updated_at: "2026-05-13T19:29:06.999Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr completion queue verified task branches for serialized integration, prefer merge commits over squash in hosted close routes, and move protected-base integration toward GitHub merge orchestration instead of a manual handoff-only stop."
 sections:
@@ -280,6 +286,25 @@ sections:
     Attempts: 0
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:17:46.494Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131603-PFXN5E-automate-merge-queue/.agentplane/tasks/202605131603-PFXN5E/blueprint/resolved-snapshot.json
+    - old_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+    - current_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
+    
+    ### 2026-05-13T19:29:06.972Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Hotspot follow-up verified: branch_pr list-state test moved out of oversized query-listing file; targeted tests passed; targeted eslint passed; typecheck passed; hotspots:check passed; policy routing passed; git diff --check passed.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:20:51.492Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     Details:
     
@@ -489,6 +514,25 @@ Note: Follow-up verified: merged branch_pr artifacts now surface as MERGED_PENDI
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:17:46.494Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131603-PFXN5E-automate-merge-queue/.agentplane/tasks/202605131603-PFXN5E/blueprint/resolved-snapshot.json
+- old_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+- current_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
+
+### 2026-05-13T19:29:06.972Z — VERIFY — ok
+
+By: CODER
+
+Note: Hotspot follow-up verified: branch_pr list-state test moved out of oversized query-listing file; targeted tests passed; targeted eslint passed; typecheck passed; hotspots:check passed; policy routing passed; git diff --check passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:20:51.492Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 Details:
 
