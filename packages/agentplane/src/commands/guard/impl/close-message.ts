@@ -348,7 +348,7 @@ function formatSection(title: string, lines: string[]): string[] {
   return [`${title}:`, ...cleaned.map((line) => `- ${line}`)];
 }
 
-export type MergeMessageInput = {
+type MergeMessageInput = {
   scope?: string;
   tags?: string[];
   prTitle?: string;
