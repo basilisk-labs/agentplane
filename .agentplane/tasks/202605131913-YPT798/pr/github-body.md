@@ -22,19 +22,20 @@ Prevent concurrent framework bootstrap/build/pre-push paths from deleting shared
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T21:17:24.602Z
+- Updated: 2026-05-13T21:33:08.527Z
 - Branch: task/202605131913-YPT798/serialize-build-lane
-- Head: d0d89c65d620
+- Head: 7d9b80321b7a
 
 ```text
  .../blueprint/resolved-snapshot.json               | 526 +++++++++++++++++++++
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  packages/agentplane/bin/agentplane.js              |  61 ++-
  .../src/cli/bootstrap-framework-dev-script.test.ts |  74 +++
  packages/agentplane/src/cli/spec/docs-render.ts    |   5 +-
  scripts/checks/run-local-ci.mjs                    |   9 +-
  scripts/lib/framework-build-lock.mjs               | 113 +++++
  scripts/workflow/bootstrap-framework-dev.mjs       |  31 +-
- 7 files changed, 791 insertions(+), 28 deletions(-)
+ 8 files changed, 792 insertions(+), 28 deletions(-)
 ```
 
 </details>
