@@ -9,8 +9,6 @@ import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
 import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
 import {
-  evaluatorListSpec,
-  evaluatorShowSpec,
   evaluatorSpec,
   type EvaluatorListParsed,
   type EvaluatorShowParsed,
