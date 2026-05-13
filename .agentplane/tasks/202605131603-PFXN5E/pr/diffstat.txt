@@ -24,11 +24,11 @@
  packages/agentplane/src/commands/task/list.ts      |  10 +-
  packages/agentplane/src/commands/task/next.ts      |   6 +-
  packages/agentplane/src/commands/task/search.ts    |   6 +-
- .../commands/task/shared/branch-pr-list-state.ts   | 107 +++++
+ .../commands/task/shared/branch-pr-list-state.ts   | 108 +++++
  .../src/commands/task/shared/dependencies.ts       |   8 +-
  .../agentplane/src/commands/task/shared/listing.ts |   9 +-
  packages/core/schemas/task-handoff.schema.json     |   5 +-
  .../core/src/tasks/task-artifact-schema.handoff.ts |   5 +-
  packages/spec/schemas/task-handoff.schema.json     |   5 +-
  schemas/task-handoff.schema.json                   |   5 +-
- 33 files changed, 1726 insertions(+), 137 deletions(-)
+ 33 files changed, 1727 insertions(+), 137 deletions(-)

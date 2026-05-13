@@ -24,9 +24,9 @@ Created: 2026-05-13T16:03:49.901Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T19:28:41.976Z
+- Updated: 2026-05-13T19:41:04.439Z
 - Branch: task/202605131603-PFXN5E/automate-merge-queue
-- Head: 673a7169d2b2
+- Head: 08e1d16c7033
 
 ```text
  .agentplane/policy/workflow.branch_pr.md           |  11 +-
@@ -55,14 +55,14 @@ Created: 2026-05-13T16:03:49.901Z
  packages/agentplane/src/commands/task/list.ts      |  10 +-
  packages/agentplane/src/commands/task/next.ts      |   6 +-
  packages/agentplane/src/commands/task/search.ts    |   6 +-
- .../commands/task/shared/branch-pr-list-state.ts   | 107 +++++
+ .../commands/task/shared/branch-pr-list-state.ts   | 108 +++++
  .../src/commands/task/shared/dependencies.ts       |   8 +-
  .../agentplane/src/commands/task/shared/listing.ts |   9 +-
  packages/core/schemas/task-handoff.schema.json     |   5 +-
  .../core/src/tasks/task-artifact-schema.handoff.ts |   5 +-
  packages/spec/schemas/task-handoff.schema.json     |   5 +-
  schemas/task-handoff.schema.json                   |   5 +-
- 33 files changed, 1726 insertions(+), 137 deletions(-)
+ 33 files changed, 1727 insertions(+), 137 deletions(-)
 ```
 
 </details>
