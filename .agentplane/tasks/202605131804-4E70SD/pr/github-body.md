@@ -22,12 +22,13 @@ Introduce explicit lifecycle phases and route core task lifecycle commands throu
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T18:55:17.018Z
+- Updated: 2026-05-13T19:02:14.133Z
 - Branch: task/202605131804-4E70SD/phase-aware-policy
-- Head: f8741fe95a5f
+- Head: ca2bd6c78b1a
 
 ```text
  .../blueprint/resolved-snapshot.json               | 551 +++++++++++++++++++++
+ packages/agentplane/src/cli/cli-contract.test.ts   |   1 +
  packages/agentplane/src/cli/exit-codes.ts          |   1 +
  .../agentplane/src/commands/branch/work-start.ts   |  17 +
  .../agentplane/src/commands/pr/integrate/cmd.ts    |  18 +
@@ -49,7 +50,7 @@ Introduce explicit lifecycle phases and route core task lifecycle commands throu
  packages/agentplane/src/policy/taxonomy.ts         |  30 ++
  packages/agentplane/src/shared/errors.ts           |   2 +
  scripts/baselines/knip-baseline.json               |  10 -
- 22 files changed, 920 insertions(+), 28 deletions(-)
+ 23 files changed, 921 insertions(+), 28 deletions(-)
 ```
 
 </details>
