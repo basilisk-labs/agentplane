@@ -82,17 +82,42 @@ describeWhenNotHook(
           "",
           "- New features or capabilities.",
           "",
-          "## Writing Rules",
-          "",
-          "- Cover all differences from the release plan (`changes.md`/`changes.json`).",
-          "",
         ].join("\n"),
         "utf8",
       );
 
       await expect(validateReleaseNotes(notesPath, 1)).rejects.toThrow(
-        /template writing instructions/u,
+        /template placeholder bullet/u,
       );
+    });
+
+    it("allows release notes to mention old template bullets inside fenced examples", async () => {
+      const root = await mkGitRepoRoot();
+      const notesPath = path.join(root, "docs", "releases", "v0.2.7.md");
+      await mkdir(path.dirname(notesPath), { recursive: true });
+      await writeFile(
+        notesPath,
+        [
+          "# Release Notes - v0.2.7",
+          "",
+          "## Summary",
+          "",
+          "- Release notes validation now rejects unreplaced template bullets.",
+          "- The check still allows historical examples in fenced snippets.",
+          "",
+          "## Fixed",
+          "",
+          "- The old template looked like this:",
+          "",
+          "```md",
+          "- 2-4 bullets with the main release outcomes in plain language.",
+          "```",
+          "",
+        ].join("\n"),
+        "utf8",
+      );
+
+      await expect(validateReleaseNotes(notesPath, 1)).resolves.toBeUndefined();
     });
 
     it("rejects release notes with duplicate section headings", async () => {

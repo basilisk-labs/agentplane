@@ -98,6 +98,29 @@ function duplicateSectionHeadings(content) {
   return [...duplicates].toSorted((a, b) => a.localeCompare(b));
 }
 
+function releaseNoteLinesOutsideCodeFences(content) {
+  const lines = content.split(/\r?\n/u);
+  let inFence = false;
+  const visibleLines = [];
+  for (const line of lines) {
+    if (/^\s*```/.test(line)) {
+      inFence = !inFence;
+      continue;
+    }
+    if (!inFence) visibleLines.push(line);
+  }
+  return visibleLines;
+}
+
+function unreplacedTemplateBullet(content) {
+  const placeholders = new Set(RELEASE_NOTE_TEMPLATE_PLACEHOLDERS);
+  for (const line of releaseNoteLinesOutsideCodeFences(content)) {
+    const match = /^\s*[-*]\s+(.+?)\s*$/u.exec(line);
+    if (match?.[1] && placeholders.has(match[1])) return match[1];
+  }
+  return null;
+}
+
 const main = defineCheck({
   name: "check-release-notes",
   parseArgs,
@@ -147,12 +170,11 @@ const main = defineCheck({
       if (/^##\s+Writing Rules\s*$/mu.test(content)) {
         errors.push(`Release notes must not include template writing instructions in ${relPath}.`);
       }
-      for (const placeholder of RELEASE_NOTE_TEMPLATE_PLACEHOLDERS) {
-        if (content.includes(placeholder)) {
-          errors.push(
-            `Release notes must replace template placeholder text in ${relPath}: ${placeholder}`,
-          );
-        }
+      const templateBullet = unreplacedTemplateBullet(content);
+      if (templateBullet) {
+        errors.push(
+          `Release notes must replace template placeholder bullet in ${relPath}: ${templateBullet}`,
+        );
       }
       const duplicateHeadings = duplicateSectionHeadings(content);
       if (duplicateHeadings.length > 0) {

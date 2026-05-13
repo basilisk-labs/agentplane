@@ -83,6 +83,29 @@ function duplicateSectionHeadings(content: string): string[] {
   return [...duplicates].toSorted((a, b) => a.localeCompare(b));
 }
 
+function releaseNoteLinesOutsideCodeFences(content: string): string[] {
+  const lines = content.split(/\r?\n/u);
+  let inFence = false;
+  const visibleLines: string[] = [];
+  for (const line of lines) {
+    if (/^\s*```/.test(line)) {
+      inFence = !inFence;
+      continue;
+    }
+    if (!inFence) visibleLines.push(line);
+  }
+  return visibleLines;
+}
+
+function unreplacedTemplateBullet(content: string): string | null {
+  const placeholders: ReadonlySet<string> = new Set(RELEASE_NOTE_TEMPLATE_PLACEHOLDERS);
+  for (const line of releaseNoteLinesOutsideCodeFences(content)) {
+    const match = /^\s*[-*]\s+(.+?)\s*$/u.exec(line);
+    if (match?.[1] && placeholders.has(match[1])) return match[1];
+  }
+  return null;
+}
+
 export async function validateReleaseNotes(notesPath: string, minBullets: number): Promise<void> {
   const content = await readFile(notesPath, "utf8");
   if (!/release\s+notes/i.test(content)) {
@@ -99,14 +122,13 @@ export async function validateReleaseNotes(notesPath: string, minBullets: number
       message: `Release notes must not include template writing instructions in ${notesPath}.`,
     });
   }
-  for (const placeholder of RELEASE_NOTE_TEMPLATE_PLACEHOLDERS) {
-    if (content.includes(placeholder)) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_VALIDATION"),
-        code: "E_VALIDATION",
-        message: `Release notes must replace template placeholder text in ${notesPath}: ${placeholder}`,
-      });
-    }
+  const templateBullet = unreplacedTemplateBullet(content);
+  if (templateBullet) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: `Release notes must replace template placeholder bullet in ${notesPath}: ${templateBullet}`,
+    });
   }
   const duplicateHeadings = duplicateSectionHeadings(content);
   if (duplicateHeadings.length > 0) {
