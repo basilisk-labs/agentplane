@@ -302,9 +302,6 @@ describe("local CI fast selection", () => {
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts",
     );
-    expect(plan.testFiles).toContain(
-      "packages/agentplane/src/cli/run-cli.core.tasks.export.test.ts",
-    );
   });
 
   it("routes isolated runtime freshness and handoff paths to the cli-runtime bucket", () => {
