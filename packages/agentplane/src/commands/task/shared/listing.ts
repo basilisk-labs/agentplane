@@ -1,4 +1,4 @@
-import { normalizeTaskStatus, parseTaskStatus } from "@agentplaneorg/core/tasks";
+import { parseTaskStatus } from "@agentplaneorg/core/tasks";
 
 import { invalidValueForFlag, missingValueMessage, warnMessage } from "../../../cli/output.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
@@ -7,6 +7,7 @@ import { CliError } from "../../../shared/errors.js";
 import { dedupeStrings } from "../../../shared/strings.js";
 import { buildDependencyState, type DependencyState } from "./dependencies.js";
 import { toStringArray } from "./tags.js";
+import { taskListStatusKey } from "./branch-pr-list-state.js";
 
 export type TaskListFilters = {
   status: string[];
@@ -136,9 +137,11 @@ function filterTaskProjectionByStatus(
     return tasks;
   }
   const wanted = new Set(
-    statuses.map((status) => parseTaskStatus(status)).filter((status) => status !== null),
+    statuses
+      .map((status) => parseTaskStatus(status) ?? status.trim().toUpperCase())
+      .filter((status) => status !== null && status !== ""),
   );
-  return tasks.filter((task) => wanted.has(normalizeTaskStatus(task.status)));
+  return tasks.filter((task) => wanted.has(taskListStatusKey(task)));
 }
 
 function filterTaskProjectionByOwner(

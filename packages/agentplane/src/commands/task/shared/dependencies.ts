@@ -8,6 +8,7 @@ import {
 } from "../../../backends/task-backend.js";
 import { CliError } from "../../../shared/errors.js";
 import { dedupeStrings } from "../../../shared/strings.js";
+import { taskListBranchPrExtraFields, taskListStatusLabel } from "./branch-pr-list-state.js";
 import { toStringArray } from "./tags.js";
 
 export type DependencyState = {
@@ -168,7 +169,7 @@ export function formatTaskLine(
   depState?: DependencyState,
   extraFields: readonly string[] = [],
 ): string {
-  const status = normalizeTaskStatus(task.status);
+  const status = taskListStatusLabel(task);
   const extras: string[] = [];
   if (task.owner?.trim()) extras.push(`owner=${task.owner.trim()}`);
   if (task.priority !== undefined && String(task.priority).trim()) {
@@ -180,7 +181,10 @@ export function formatTaskLine(
   if (tags.length > 0) extras.push(`tags=${tags.join(",")}`);
   const verify = dedupeStrings(toStringArray(task.verify));
   if (verify.length > 0) extras.push(`verify=${verify.length}`);
-  extras.push(...extraFields.filter((field) => field.trim().length > 0));
+  extras.push(
+    ...taskListBranchPrExtraFields(task),
+    ...extraFields.filter((field) => field.trim().length > 0),
+  );
   const suffix = extras.length > 0 ? ` (${extras.join(", ")})` : "";
   return `${task.id} [${status}] ${task.title?.trim() || "(untitled task)"}${suffix}`;
 }

@@ -63,11 +63,19 @@ export function resolveTaskProjectionSqlitePath(tasksDir: string): string {
 }
 
 function gitOutput(gitRoot: string, args: string[]): string {
-  return execFileSync("git", args, { cwd: gitRoot, encoding: "utf8" }).trim();
+  return execFileSync("git", args, {
+    cwd: gitRoot,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"],
+  }).trim();
 }
 
 function gitStatusPorcelainRecords(gitRoot: string, args: string[]): string[] {
-  const out = execFileSync("git", args, { cwd: gitRoot, encoding: "utf8" });
+  const out = execFileSync("git", args, {
+    cwd: gitRoot,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"],
+  });
   if (!out) return [];
   const parts = out.split("\0").filter((part) => part.length > 0);
   const records: string[] = [];

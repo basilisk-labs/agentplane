@@ -20,15 +20,18 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T19:06:51.827Z"
+  updated_at: "2026-05-13T19:17:46.443Z"
   updated_by: "CODER"
-  note: "Review-thread fix verified: protected-base GitHub merge now leaves integrate queue in handoff until Task Hosted Close; focused integrate/queue/guide tests passed; eslint targeted files passed; typecheck passed; policy routing passed; git diff --check passed."
+  note: "Verified: merged branch_pr tasks now surface as MERGED_PENDING_CLOSE in task list/search/next until canonical hosted close; targeted query-listing tests passed; integrate cmd Vitest passed; targeted eslint/prettier passed; agentplane build passed; doctor and policy routing passed."
   attempts: 0
 commit: null
 comments:
   -
     author: "CODER"
     body: "Start: implement branch_pr merge queue finalization and hosted merge-method changes from the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Start: implement branch_pr merged-pending-close list state contract."
 events:
   -
     type: "status"
@@ -79,8 +82,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Review-thread fix verified: protected-base GitHub merge now leaves integrate queue in handoff until Task Hosted Close; focused integrate/queue/guide tests passed; eslint targeted files passed; typecheck passed; policy routing passed; git diff --check passed."
+  -
+    type: "status"
+    at: "2026-05-13T19:13:46.079Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Start: implement branch_pr merged-pending-close list state contract."
+  -
+    type: "verify"
+    at: "2026-05-13T19:17:46.443Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: merged branch_pr tasks now surface as MERGED_PENDING_CLOSE in task list/search/next until canonical hosted close; targeted query-listing tests passed; integrate cmd Vitest passed; targeted eslint/prettier passed; agentplane build passed; doctor and policy routing passed."
 doc_version: 3
-doc_updated_at: "2026-05-13T19:06:51.865Z"
+doc_updated_at: "2026-05-13T19:17:46.494Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr completion queue verified task branches for serialized integration, prefer merge commits over squash in hosted close routes, and move protected-base integration toward GitHub merge orchestration instead of a manual handoff-only stop."
 sections:
@@ -220,6 +236,25 @@ sections:
     Attempts: 0
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:36:31.116Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131603-PFXN5E-automate-merge-queue/.agentplane/tasks/202605131603-PFXN5E/blueprint/resolved-snapshot.json
+    - old_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+    - current_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
+    
+    ### 2026-05-13T19:17:46.443Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: merged branch_pr tasks now surface as MERGED_PENDING_CLOSE in task list/search/next until canonical hosted close; targeted query-listing tests passed; integrate cmd Vitest passed; targeted eslint/prettier passed; agentplane build passed; doctor and policy routing passed.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:13:46.079Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
     
     Details:
     
@@ -391,6 +426,25 @@ Note: Review-thread fix verified: protected-base GitHub merge now leaves integra
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:36:31.116Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131603-PFXN5E-automate-merge-queue/.agentplane/tasks/202605131603-PFXN5E/blueprint/resolved-snapshot.json
+- old_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+- current_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
+
+### 2026-05-13T19:17:46.443Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: merged branch_pr tasks now surface as MERGED_PENDING_CLOSE in task list/search/next until canonical hosted close; targeted query-listing tests passed; integrate cmd Vitest passed; targeted eslint/prettier passed; agentplane build passed; doctor and policy routing passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:13:46.079Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
 
 Details:
 

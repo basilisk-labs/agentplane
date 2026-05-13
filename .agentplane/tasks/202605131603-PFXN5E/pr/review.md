@@ -13,7 +13,7 @@ Created: 2026-05-13T16:03:49.901Z
 ## Verification
 
 - State: ok
-- Note: Review-thread fix verified: protected-base GitHub merge now leaves integrate queue in handoff until Task Hosted Close; focused integrate/queue/guide tests passed; eslint targeted files passed; typecheck passed; policy routing passed; git diff --check passed.
+- Note: Verified: merged branch_pr tasks now surface as MERGED_PENDING_CLOSE in task list/search/next until canonical hosted close; targeted query-listing tests passed; integrate cmd Vitest passed; targeted eslint/prettier passed; agentplane build passed; doctor and policy routing passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
