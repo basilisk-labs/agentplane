@@ -24,9 +24,9 @@ Created: 2026-05-13T13:15:04.831Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T13:15:04.831Z
+- Updated: 2026-05-13T13:16:42.947Z
 - Branch: task/202605131043-2GMHKQ/generated-scripts-context-refactor
-- Head: 0262aae6b97d
+- Head: be1ece1cb5f9
 
 ```text
  .../blueprint/resolved-snapshot.json               |  512 +++++++++
@@ -156,7 +156,7 @@ Created: 2026-05-13T13:15:04.831Z
  scripts/generate-builtin-assets.mjs                |  112 +-
  scripts/generate-bun-cli-assets.mjs                |  245 +----
  scripts/generate-llms-full.mjs                     |   52 +-
- scripts/generate-recipes-inventory.mjs             |  173 +---
+ scripts/generate-recipes-inventory.mjs             |  174 +---
  scripts/generate-release-distribution.mjs          |  531 +---------
  scripts/generate-roadmap-illustration.mjs          |   51 +-
  scripts/generate-scripts-readme.mjs                |  187 +---
@@ -247,7 +247,7 @@ Created: 2026-05-13T13:15:04.831Z
  scripts/workflow/run-workflows-lint.mjs            |   38 +
  .../workflow/verify-global-agentplane-install.mjs  |  172 ++++
  scripts/workflow/wait-remote-pr-checks.mjs         |  594 +++++++++++
- 218 files changed, 21883 insertions(+), 19995 deletions(-)
+ 218 files changed, 21886 insertions(+), 19993 deletions(-)
 ```
 
 </details>
