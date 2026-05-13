@@ -22,14 +22,15 @@ Complete v0.6 context release hardening: reconcile checkout, regenerate bundled 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T05:47:50.858Z
+- Updated: 2026-05-13T06:02:06.147Z
 - Branch: task/202605130501-4B49ZZ/v06-context-release-readiness
-- Head: ae03c56b6be6
+- Head: 51559c24c6b9
 
 ```text
  .agentplane/WORKFLOW.md                            |   3 +-
  .../blueprint/resolved-snapshot.json               | 550 +++++++++++++++++++++
  .agentplane/workflows/last-known-good.md           |   3 +-
+ .github/workflows/ci.yml                           |   2 +-
  .../documentation-information-architecture.mdx     |  16 +-
  .../evaluation-and-recursive-improvement.mdx       |   7 +-
  docs/developer/local-context.mdx                   |  69 +++
@@ -70,7 +71,7 @@ Complete v0.6 context release hardening: reconcile checkout, regenerate bundled 
  scripts/check-local-tarball-install-smoke.mjs      |  12 +
  scripts/generate-builtin-assets.mjs                | 110 +++++
  website/sidebars.ts                                |  12 +-
- 43 files changed, 1885 insertions(+), 247 deletions(-)
+ 44 files changed, 1886 insertions(+), 248 deletions(-)
 ```
 
 </details>
