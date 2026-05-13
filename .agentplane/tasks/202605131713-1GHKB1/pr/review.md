@@ -13,7 +13,7 @@ Created: 2026-05-13T17:46:20.298Z
 ## Verification
 
 - State: ok
-- Note: Rebased verification passed after refreshing blueprint snapshot: build; typecheck; focused evaluator/init/upgrade/release-smoke tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke.
+- Note: Post-second-rebase verification passed: build; focused evaluator/init/upgrade/release-smoke and lifecycle contract tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T18:50:01.673Z"
+  updated_at: "2026-05-13T19:05:02.534Z"
   updated_by: "CODER"
-  note: "Rebased verification passed after refreshing blueprint snapshot: build; typecheck; focused evaluator/init/upgrade/release-smoke tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke."
+  note: "Post-second-rebase verification passed: build; focused evaluator/init/upgrade/release-smoke and lifecycle contract tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke."
   attempts: 0
 commit: null
 comments:
@@ -55,8 +55,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rebased verification passed after refreshing blueprint snapshot: build; typecheck; focused evaluator/init/upgrade/release-smoke tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke."
+  -
+    type: "verify"
+    at: "2026-05-13T19:05:02.534Z"
+    author: "CODER"
+    state: "ok"
+    note: "Post-second-rebase verification passed: build; focused evaluator/init/upgrade/release-smoke and lifecycle contract tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke."
 doc_version: 3
-doc_updated_at: "2026-05-13T18:50:01.692Z"
+doc_updated_at: "2026-05-13T19:05:02.562Z"
 doc_updated_by: "CODER"
 description: "Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modules, with list/show support now and evaluator run explicitly deferred to the v0.8 roadmap."
 sections:
@@ -131,6 +137,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
     
+    ### 2026-05-13T19:05:02.534Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Post-second-rebase verification passed: build; focused evaluator/init/upgrade/release-smoke and lifecycle contract tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:50:01.692Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131713-1GHKB1-public-evaluator-catalog/.agentplane/tasks/202605131713-1GHKB1/blueprint/resolved-snapshot.json
+    - old_digest: 72486767bf784731a9326405cb5d27e9e1337c782a14c4a1b8ad3041e6e5e78e
+    - current_digest: 72486767bf784731a9326405cb5d27e9e1337c782a14c4a1b8ad3041e6e5e78e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -147,6 +172,10 @@ sections:
     - Observation: origin/main advanced with other active AgentPlane tasks, causing PR mergeStateStatus=DIRTY. Rebased task branch onto origin/main, regenerated builtin assets from the merged asset tree, rebuilt CLI dist before docs generation, and refreshed the task blueprint snapshot.
       Impact: Task evidence now matches the rebased branch and current code.branch_pr route; no admin merge or branch-protection bypass was used.
       Resolution: Resolved generated asset conflict with assets:builtin:generate and reran targeted verification on the rebased head.
+    
+    - Observation: origin/main advanced again to lifecycle command-order guidance (#3661), changing the resolved blueprint snapshot. Rebased onto the new base and refreshed the blueprint snapshot.
+      Impact: Task branch now carries evaluator changes on the latest branch_pr lifecycle contract base without admin merge or branch-protection bypass.
+      Resolution: Resolved the generated builtin-assets conflict with assets:builtin:generate, rebuilt CLI docs from fresh dist, and reran touched-scope verification.
 id_source: "generated"
 ---
 ## Summary
@@ -230,6 +259,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
 
+### 2026-05-13T19:05:02.534Z — VERIFY — ok
+
+By: CODER
+
+Note: Post-second-rebase verification passed: build; focused evaluator/init/upgrade/release-smoke and lifecycle contract tests; docs CLI freshness; builtin assets freshness; policy routing; doctor; local evaluator list/show smoke.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T18:50:01.692Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131713-1GHKB1-public-evaluator-catalog/.agentplane/tasks/202605131713-1GHKB1/blueprint/resolved-snapshot.json
+- old_digest: 72486767bf784731a9326405cb5d27e9e1337c782a14c4a1b8ad3041e6e5e78e
+- current_digest: 72486767bf784731a9326405cb5d27e9e1337c782a14c4a1b8ad3041e6e5e78e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -250,3 +298,7 @@ BlueprintSnapshotRef:
 - Observation: origin/main advanced with other active AgentPlane tasks, causing PR mergeStateStatus=DIRTY. Rebased task branch onto origin/main, regenerated builtin assets from the merged asset tree, rebuilt CLI dist before docs generation, and refreshed the task blueprint snapshot.
   Impact: Task evidence now matches the rebased branch and current code.branch_pr route; no admin merge or branch-protection bypass was used.
   Resolution: Resolved generated asset conflict with assets:builtin:generate and reran targeted verification on the rebased head.
+
+- Observation: origin/main advanced again to lifecycle command-order guidance (#3661), changing the resolved blueprint snapshot. Rebased onto the new base and refreshed the blueprint snapshot.
+  Impact: Task branch now carries evaluator changes on the latest branch_pr lifecycle contract base without admin merge or branch-protection bypass.
+  Resolution: Resolved the generated builtin-assets conflict with assets:builtin:generate, rebuilt CLI docs from fresh dist, and reran touched-scope verification.

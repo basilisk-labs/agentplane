@@ -168,6 +168,18 @@
         ]
       },
       {
+        "id": "verify_record",
+        "kind": "verify_record",
+        "mode": "record",
+        "required": true,
+        "protected": true,
+        "allowedCommands": [],
+        "policyModules": [],
+        "evidenceKinds": [
+          "check_result"
+        ]
+      },
+      {
         "id": "hosted_checks",
         "kind": "hosted_checks",
         "mode": "deterministic",
@@ -193,18 +205,6 @@
         "evidenceKinds": [
           "commit",
           "external_link"
-        ]
-      },
-      {
-        "id": "verify_record",
-        "kind": "verify_record",
-        "mode": "record",
-        "required": true,
-        "protected": true,
-        "allowedCommands": [],
-        "policyModules": [],
-        "evidenceKinds": [
-          "check_result"
         ]
       },
       {
@@ -241,6 +241,13 @@
         "producedBy": "pr_artifact",
         "required": true,
         "description": "Pull request artifact."
+      },
+      {
+        "id": "code_pr.verify",
+        "kind": "check_result",
+        "producedBy": "verify_record",
+        "required": true,
+        "description": "Task branch verification."
       },
       {
         "id": "code_pr.hosted",
@@ -390,6 +397,18 @@
       ]
     },
     {
+      "id": "verify_record",
+      "kind": "verify_record",
+      "mode": "record",
+      "required": true,
+      "protected": true,
+      "allowedCommands": [],
+      "policyModules": [],
+      "evidenceKinds": [
+        "check_result"
+      ]
+    },
+    {
       "id": "hosted_checks",
       "kind": "hosted_checks",
       "mode": "deterministic",
@@ -415,18 +434,6 @@
       "evidenceKinds": [
         "commit",
         "external_link"
-      ]
-    },
-    {
-      "id": "verify_record",
-      "kind": "verify_record",
-      "mode": "record",
-      "required": true,
-      "protected": true,
-      "allowedCommands": [],
-      "policyModules": [],
-      "evidenceKinds": [
-        "check_result"
       ]
     },
     {
@@ -463,6 +470,13 @@
       "producedBy": "pr_artifact",
       "required": true,
       "description": "Pull request artifact."
+    },
+    {
+      "id": "code_pr.verify",
+      "kind": "check_result",
+      "producedBy": "verify_record",
+      "required": true,
+      "description": "Task branch verification."
     },
     {
       "id": "code_pr.hosted",
@@ -509,6 +523,6 @@
   ],
   "digest": {
     "algorithm": "sha256",
-    "value": "dc35f553ca855fd3f31ab645cc981f36111b003c3457680de3a0ee96810712a1"
+    "value": "72486767bf784731a9326405cb5d27e9e1337c782a14c4a1b8ad3041e6e5e78e"
   }
 }
