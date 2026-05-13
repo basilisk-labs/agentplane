@@ -1,7 +1,8 @@
 ---
 id: "202605131125-68KKFW"
 title: "Split human and agent CLI output"
-status: "DOING"
+result_summary: "Merged via PR #3629."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 revision: 1
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented split CLI presentation: agentplane keeps human formatting with aligned report labels and optional ANSI color, while ap/agent mode removes emoji and alignment for raw agent-oriented output. Verified with targeted tests, typecheck, build, knip, pre-push, and hosted GitHub checks."
   attempts: 0
-commit: null
+commit:
+  hash: "9f028ded025488a7ddb82326c0946de22bcf66f3"
+  message: "Merge pull request #3629 from basilisk-labs/task/202605131125-68KKFW/split-cli-output"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved CLI presentation split in the task worktree. Scope is limited to output-mode detection, focused formatting helpers, and targeted verification for agentplane versus ap output."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3629 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented split CLI presentation: agentplane keeps human formatting with aligned report labels and optional ANSI color, while ap/agent mode removes emoji and alignment for raw agent-oriented output. Verified with targeted tests, typecheck, build, knip, pre-push, and hosted GitHub checks."
+  -
+    type: "status"
+    at: "2026-05-13T12:45:03.824Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3629 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T12:16:56.880Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T12:45:03.824Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make the long-form agentplane command render a cleaner human-oriented output with spacing, alignment, and color while keeping the short ap command minimal and unstyled for agent consumption."
 sections:
   Summary: |-
