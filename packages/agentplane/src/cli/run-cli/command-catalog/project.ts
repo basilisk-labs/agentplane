@@ -100,6 +100,13 @@ import {
   contextSpec,
   contextVerifyTaskSpec,
 } from "../../../commands/context/context.spec.js";
+import {
+  contextCheckSpec,
+  contextLearnChangesSpec,
+  contextLearnFilesSpec,
+  contextLearnSpec,
+  contextLearnTasksSpec,
+} from "../../../commands/context/context.learn.spec.js";
 
 import { declareCommand, type CommandEntry } from "./kernel.js";
 import {
@@ -212,25 +219,50 @@ export const PROJECT_COMMANDS = [
   fromRecipesCachePruneSpec(recipesCachePruneSpec, "runRecipesCachePrune"),
   fromCommandsRecipesInstallRun(recipesInstallSpec, "runRecipesInstall", { needs: "none" }),
   fromCommandsContextCommand(contextSpec, "runContextGroup"),
-  declareCommand(contextIngestSpec, { load: loadContextIngestSpec }),
+  declareCommand(contextIngestSpec, { load: loadContextIngestSpec, surface: "advanced" }),
   fromCommandsContextCommand(contextInitSpec, "runContextInit", { needs: "none" }),
-  fromCommandsContextCommand(contextReindexSpec, "runContextReindex"),
+  fromCommandsContextCommand(contextLearnSpec, "runContextLearnGroup"),
+  fromCommandsContextCommand(contextLearnFilesSpec, "runContextLearnFiles"),
+  fromCommandsContextCommand(contextLearnChangesSpec, "runContextLearnChanges"),
+  fromCommandsContextCommand(contextLearnTasksSpec, "runContextLearnTasks"),
+  fromCommandsContextCommand(contextCheckSpec, "runContextCheck"),
+  fromCommandsContextCommand(contextReindexSpec, "runContextReindex", { surface: "advanced" }),
   fromCommandsContextCommand(contextSearchSpec, "runContextSearch"),
   fromCommandsContextCommand(contextShowSpec, "runContextShow"),
-  fromCommandsContextCommand(contextDoctorSpec, "runContextDoctor"),
-  fromCommandsContextCommand(contextVerifyTaskSpec, "runContextVerifyTask"),
-  fromCommandsContextCommand(contextHarvestSpec, "runContextHarvestGroup"),
-  fromCommandsContextCommand(contextHarvestTasksSpec, "runContextHarvestTasks"),
-  fromCommandsContextCommand(contextGraphSpec, "runContextGraphGroup"),
-  fromCommandsContextCommand(contextGraphSummarySpec, "runContextGraphSummary"),
-  fromCommandsContextCommand(contextGraphShowSpec, "runContextGraphShow"),
-  fromCommandsContextCommand(contextGraphNeighborsSpec, "runContextGraphNeighbors"),
-  fromCommandsContextCommand(contextGraphValidateSpec, "runContextGraphValidate"),
-  fromCommandsContextCommand(contextGraphExportSpec, "runContextGraphExport"),
-  fromCommandsContextCommand(contextCapabilitySpec, "runContextCapabilityGroup"),
-  fromCommandsContextCommand(contextCapabilityValidateSpec, "runContextCapabilityValidate"),
-  fromCommandsContextCommand(contextCapabilitySearchSpec, "runContextCapabilitySearch"),
-  fromCommandsContextCommand(contextCapabilityDiscoverSpec, "runContextCapabilityDiscover"),
+  fromCommandsContextCommand(contextDoctorSpec, "runContextDoctor", { surface: "advanced" }),
+  fromCommandsContextCommand(contextVerifyTaskSpec, "runContextVerifyTask", {
+    surface: "advanced",
+  }),
+  fromCommandsContextCommand(contextHarvestSpec, "runContextHarvestGroup", { surface: "advanced" }),
+  fromCommandsContextCommand(contextHarvestTasksSpec, "runContextHarvestTasks", {
+    surface: "advanced",
+  }),
+  fromCommandsContextCommand(contextGraphSpec, "runContextGraphGroup", { surface: "advanced" }),
+  fromCommandsContextCommand(contextGraphSummarySpec, "runContextGraphSummary", {
+    surface: "advanced",
+  }),
+  fromCommandsContextCommand(contextGraphShowSpec, "runContextGraphShow", { surface: "advanced" }),
+  fromCommandsContextCommand(contextGraphNeighborsSpec, "runContextGraphNeighbors", {
+    surface: "advanced",
+  }),
+  fromCommandsContextCommand(contextGraphValidateSpec, "runContextGraphValidate", {
+    surface: "advanced",
+  }),
+  fromCommandsContextCommand(contextGraphExportSpec, "runContextGraphExport", {
+    surface: "advanced",
+  }),
+  fromCommandsContextCommand(contextCapabilitySpec, "runContextCapabilityGroup", {
+    surface: "advanced",
+  }),
+  fromCommandsContextCommand(contextCapabilityValidateSpec, "runContextCapabilityValidate", {
+    surface: "advanced",
+  }),
+  fromCommandsContextCommand(contextCapabilitySearchSpec, "runContextCapabilitySearch", {
+    surface: "advanced",
+  }),
+  fromCommandsContextCommand(contextCapabilityDiscoverSpec, "runContextCapabilityDiscover", {
+    surface: "advanced",
+  }),
   fromCommandsBranchBaseCommand(branchBaseSpec, "runBranchBase", { needs: "none" }),
   fromCommandsBranchBaseCommand(branchBaseGetSpec, "runBranchBaseGet", {}),
   fromBranchBaseSetSpec(branchBaseSetSpec, "runBranchBaseSet"),

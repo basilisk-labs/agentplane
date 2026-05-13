@@ -1,0 +1,11 @@
+ .../blueprint/resolved-snapshot.json               | 513 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              | 124 +++++
+ docs/user/commands.mdx                             |   8 +
+ docs/user/local-context.mdx                        |  71 +--
+ .../src/cli/run-cli.core.agent-mode.test.ts        |  14 +
+ packages/agentplane/src/cli/run-cli.ts             |   8 +-
+ .../src/cli/run-cli/command-catalog.test.ts        |   6 +
+ .../src/cli/run-cli/command-catalog/project.ts     |  62 ++-
+ .../src/commands/context/context.command.ts        | 103 +++++
+ .../src/commands/context/context.spec.ts           | 240 ++++++++++
+ 10 files changed, 1097 insertions(+), 52 deletions(-)

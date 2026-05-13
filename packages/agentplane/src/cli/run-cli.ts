@@ -68,9 +68,11 @@ export async function runCli(argv: string[]): Promise<number> {
     jsonErrors = globals.jsonErrors || outputMode === "json";
     const cwd = process.cwd();
     const helpCwd = globals.root ?? cwd;
-    const defaultHelpSurface: HelpSurfaceMode = findFrameworkCheckout(helpCwd)
-      ? "framework"
-      : "user";
+    const defaultHelpSurface: HelpSurfaceMode = agentMode.enabled
+      ? "agent"
+      : findFrameworkCheckout(helpCwd)
+        ? "framework"
+        : "user";
     let matched: ReturnType<typeof matchCommandCatalog> | null = null;
     let maybeResolvedProjectPromise: Promise<CliResolvedProject | null> | null = null;
     const getMaybeResolvedProject = async (): Promise<CliResolvedProject | null> => {
