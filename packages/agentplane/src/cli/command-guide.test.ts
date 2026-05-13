@@ -31,7 +31,7 @@ describe("command-guide", () => {
   it("documents merge-preserving branch_pr integration by default", () => {
     const text = renderRoleTyped("integrator");
     expect(text).toContain(
-      "agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify",
+      "agentplane integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000",
     );
     expect(text).toContain("primary integration route is the task GitHub PR");
     expect(text).toContain("gh pr merge --auto --merge");

@@ -48,7 +48,7 @@ agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
 agentplane pr update <task-id>
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
 agentplane integrate queue enqueue <task-id> --branch task/<task-id>/<slug>
-agentplane integrate queue run-next --run-verify --drain
+agentplane integrate queue run-next --run-verify --drain --wait --poll-interval-ms 30000 --timeout-ms 600000
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 ```
@@ -74,7 +74,7 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
   after stable green checks, the agent MUST continue with the permitted GitHub merge route
   available to its credentials instead of stopping at enabled auto-merge.
 - `integrate` defaults to the `merge` strategy so task branch commits stay in base history. Use `--merge-strategy squash` only when intentionally compacting branch history.
-- When several task PRs are ready together, use the integration queue so only one branch owns the merge lane; stale branch heads move to rework instead of blocking later queued work.
+- When several task PRs are ready together, use the integration queue so only one branch owns the merge lane; agents waiting behind `claimed` or `handoff` entries SHOULD use bounded polling (`--wait --poll-interval-ms 30000 --timeout-ms 600000`) instead of retrying ad hoc; stale branch heads move to rework instead of blocking later queued work.
 - `task start-ready` MAY surface targeted incident advice for analogous scope/tags; follow it before widening scope.
 - Keep structured resolved external findings in the task README; mark reusable ones with `Fixability: external` (or `IncidentExternal: true`) and let base-branch `finish` or `agentplane incidents collect <task-id>` promote them into `.agentplane/policy/incidents.md`, using optional `Incident*` fields only when the inferred scope/advice needs refinement. Plain `Findings` text remains task-local and does not update the shared incident registry.
 - MUST stop and request re-approval on material drift.

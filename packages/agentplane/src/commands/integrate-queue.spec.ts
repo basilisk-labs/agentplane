@@ -149,10 +149,13 @@ export const integrateQueueReleaseSpec: CommandSpec<IntegrateQueueReleaseParsed>
 export type IntegrateQueueRunNextParsed = {
   worker: string | null;
   leaseMs: number | null;
+  pollIntervalMs: number | null;
+  timeoutMs: number | null;
   runVerify: boolean;
   dryRun: boolean;
   quiet: boolean;
   drain: boolean;
+  wait: boolean;
 };
 
 export const integrateQueueRunNextSpec: CommandSpec<IntegrateQueueRunNextParsed> = {
@@ -162,6 +165,18 @@ export const integrateQueueRunNextSpec: CommandSpec<IntegrateQueueRunNextParsed>
   options: [
     { kind: "string", name: "worker", valueHint: "<id>", description: "Queue worker id." },
     { kind: "string", name: "lease-ms", valueHint: "<ms>", description: "Lease duration." },
+    {
+      kind: "string",
+      name: "poll-interval-ms",
+      valueHint: "<ms>",
+      description: "Delay between queue retry attempts when --wait is enabled.",
+    },
+    {
+      kind: "string",
+      name: "timeout-ms",
+      valueHint: "<ms>",
+      description: "Maximum time to wait for the merge lane when --wait is enabled.",
+    },
     { kind: "boolean", name: "run-verify", default: false, description: "Run verify commands." },
     { kind: "boolean", name: "dry-run", default: false, description: "Do not modify git state." },
     { kind: "boolean", name: "quiet", default: false, description: "Reduce output noise." },
@@ -172,16 +187,35 @@ export const integrateQueueRunNextSpec: CommandSpec<IntegrateQueueRunNextParsed>
       description:
         "Keep claiming queued entries after successful integrations until the lane blocks or empties.",
     },
+    {
+      kind: "boolean",
+      name: "wait",
+      default: false,
+      description: "Poll a busy merge lane until it opens or --timeout-ms elapses.",
+    },
   ],
   parse: (raw) => ({
     worker: typeof raw.opts.worker === "string" ? raw.opts.worker : null,
     leaseMs: parseOptionalPositiveInteger(raw.opts["lease-ms"]),
+    pollIntervalMs: parseOptionalPositiveInteger(raw.opts["poll-interval-ms"]),
+    timeoutMs: parseOptionalPositiveInteger(raw.opts["timeout-ms"]),
     runVerify: raw.opts["run-verify"] === true,
     dryRun: raw.opts["dry-run"] === true,
     quiet: raw.opts.quiet === true,
     drain: raw.opts.drain === true,
+    wait: raw.opts.wait === true,
   }),
   validateRaw: (raw) => {
     validateOptionalPositiveInteger(raw.opts["lease-ms"], integrateQueueRunNextSpec, "lease-ms");
+    validateOptionalPositiveInteger(
+      raw.opts["poll-interval-ms"],
+      integrateQueueRunNextSpec,
+      "poll-interval-ms",
+    );
+    validateOptionalPositiveInteger(
+      raw.opts["timeout-ms"],
+      integrateQueueRunNextSpec,
+      "timeout-ms",
+    );
   },
 };

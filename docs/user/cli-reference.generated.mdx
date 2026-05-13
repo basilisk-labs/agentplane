@@ -1415,10 +1415,13 @@ Options:
 
 - `--worker <id>`: Queue worker id.
 - `--lease-ms <ms>`: Lease duration.
+- `--poll-interval-ms <ms>`: Delay between queue retry attempts when --wait is enabled.
+- `--timeout-ms <ms>`: Maximum time to wait for the merge lane when --wait is enabled.
 - `--run-verify`: Run verify commands. (default=false)
 - `--dry-run`: Do not modify git state. (default=false)
 - `--quiet`: Reduce output noise. (default=false)
 - `--drain`: Keep claiming queued entries after successful integrations until the lane blocks or empties. (default=false)
+- `--wait`: Poll a busy merge lane until it opens or --timeout-ms elapses. (default=false)
 
 ### pr
 

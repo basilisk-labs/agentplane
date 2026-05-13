@@ -32,6 +32,9 @@ import type {
 } from "./integrate-queue.spec.js";
 import { integrateQueueSpec } from "./integrate-queue.spec.js";
 
+const DEFAULT_QUEUE_POLL_INTERVAL_MS = 30_000;
+const DEFAULT_QUEUE_WAIT_TIMEOUT_MS = 10 * 60_000;
+
 export {
   integrateQueueClaimSpec,
   integrateQueueEnqueueSpec,
@@ -60,6 +63,18 @@ function defaultWorker(): string {
 function renderEntry(entry: IntegrationQueueEntry): string {
   const pr = entry.pr_number ? `#${entry.pr_number}` : "no-pr";
   return `${entry.status.padEnd(7)} ${entry.task_id} ${pr} priority=${entry.priority} branch=${entry.branch}`;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function findActiveLane(entries: IntegrationQueueEntry[]): IntegrationQueueEntry | null {
+  return entries.find((entry) => entry.status === "claimed" || entry.status === "handoff") ?? null;
+}
+
+function hasQueuedEntries(entries: IntegrationQueueEntry[]): boolean {
+  return entries.some((entry) => entry.status === "queued");
 }
 
 async function rejectIfQueuedHeadChanged(opts: {
@@ -241,6 +256,9 @@ export function makeRunIntegrateQueueRunNextHandler(
     const gitRoot = commandCtx.resolvedProject.gitRoot;
     let lastResult = 0;
     let ranEntry = false;
+    const startedAt = Date.now();
+    const pollIntervalMs = p.pollIntervalMs ?? DEFAULT_QUEUE_POLL_INTERVAL_MS;
+    const timeoutMs = p.timeoutMs ?? DEFAULT_QUEUE_WAIT_TIMEOUT_MS;
 
     do {
       const claimed = await withIntegrationQueueMutex(gitRoot, async () => {
@@ -270,6 +288,28 @@ export function makeRunIntegrateQueueRunNextHandler(
         return next;
       });
       if (!claimed.entry) {
+        const activeLane = findActiveLane(claimed.state.entries);
+        if (p.wait && (activeLane || hasQueuedEntries(claimed.state.entries))) {
+          const elapsedMs = Date.now() - startedAt;
+          if (elapsedMs >= timeoutMs) {
+            throw new CliError({
+              code: "E_HANDOFF",
+              message: activeLane
+                ? `Integration queue lane is still occupied by ${activeLane.task_id} (${activeLane.status}) after ${timeoutMs}ms.`
+                : `No integration queue entry became claimable after ${timeoutMs}ms.`,
+            });
+          }
+          if (!p.quiet) {
+            const lane = activeLane
+              ? `${activeLane.task_id} (${activeLane.status})`
+              : "queued entries";
+            createCliEmitter().line(
+              `integration queue waiting: lane=${lane} retry_in_ms=${pollIntervalMs}`,
+            );
+          }
+          await sleep(Math.min(pollIntervalMs, Math.max(1, timeoutMs - elapsedMs)));
+          continue;
+        }
         createCliEmitter().line(emptyStateMessage("queued integration entries"));
         return lastResult;
       }
