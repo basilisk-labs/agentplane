@@ -16,7 +16,7 @@ Make branch_pr completion queue verified task branches for serialized integratio
 ## Verification
 
 - State: ok
-- Note: Verified: merged branch_pr tasks now surface as MERGED_PENDING_CLOSE in task list/search/next until canonical hosted close; targeted query-listing tests passed; integrate cmd Vitest passed; targeted eslint/prettier passed; agentplane build passed; doctor and policy routing passed.
+- Note: Follow-up verified: merged branch_pr artifacts now surface as MERGED_PENDING_CLOSE in task list/search/next instead of ordinary TODO; git stderr from HEAD-less task cache probes is suppressed; targeted task listing, integrate queue, and integrate tests passed; targeted eslint passed; typecheck passed; framework bootstrap passed; policy routing passed; git diff --check passed.
 - Canonical workflow state lives in the task README.
 
 <details>
