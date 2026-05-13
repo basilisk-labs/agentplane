@@ -5,7 +5,7 @@ import type { CommandContext } from "../../shared/task-backend.js";
 
 const BRANCH_PR_LIST_STATE_KEY = "agentplane.branch_pr_list_state";
 
-export const MERGED_PENDING_CLOSE_STATUS = "MERGED_PENDING_CLOSE";
+const MERGED_PENDING_CLOSE_STATUS = "MERGED_PENDING_CLOSE";
 const MERGED_PENDING_CLOSE_LABEL = "MERGED->DONE?";
 
 type BranchPrMergedPendingCloseState = {
