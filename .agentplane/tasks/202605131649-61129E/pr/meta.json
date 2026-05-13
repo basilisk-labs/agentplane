@@ -2,12 +2,12 @@
   "base": "main",
   "branch": "task/202605131649-61129E/public-cli-docs-surface",
   "created_at": "2026-05-13T16:51:39.705Z",
-  "head_sha": "c5f2d3ca04b90e1e83e7e25fb92dd310a9d27d25",
+  "head_sha": "2d20789ed83457ef92a9e5f7e9dfce25c18a7ec0",
   "last_verified_at": "2026-05-13T17:17:04.604Z",
   "last_verified_sha": "c5f2d3ca04b90e1e83e7e25fb92dd310a9d27d25",
   "schema_version": 1,
   "task_id": "202605131649-61129E",
-  "updated_at": "2026-05-13T16:51:39.705Z",
+  "updated_at": "2026-05-13T17:17:58.112Z",
   "verify": {
     "status": "pass"
   }
