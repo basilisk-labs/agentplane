@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605131913-YPT798/serialize-build-lane",
+  "created_at": "2026-05-13T19:14:51.451Z",
+  "head_sha": "eef518b167a3d07df83227b9eec9ca3476780fc4",
+  "last_verified_at": "2026-05-13T19:31:26.576Z",
+  "last_verified_sha": "eef518b167a3d07df83227b9eec9ca3476780fc4",
+  "schema_version": 1,
+  "task_id": "202605131913-YPT798",
+  "updated_at": "2026-05-13T19:14:51.451Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -2,7 +2,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { mkdir, rm, stat } from "node:fs/promises";
+import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { distExists, isPackageBuildFresh } from "./dist-guard.js";
@@ -202,13 +202,54 @@ async function withBootstrapLock(repoRoot, fn) {
     await mkdir(lockDir, { recursive: false });
   } catch (error) {
     if (error?.code !== "EEXIST") throw error;
-    process.stderr.write(
-      "error: another framework dev bootstrap is already running.\n" +
-        `Retry after the lock is released: ${path.relative(repoRoot, lockDir)}\n`,
-    );
-    process.exitCode = 2;
-    return true;
+    const owner = await (async () => {
+      try {
+        return JSON.parse(await readFile(path.join(lockDir, "owner.json"), "utf8"));
+      } catch {
+        return null;
+      }
+    })();
+    if (owner && typeof owner.pid === "number") {
+      let alive = true;
+      try {
+        process.kill(owner.pid, 0);
+      } catch (ownerError) {
+        alive = ownerError?.code === "EPERM";
+      }
+      if (alive) {
+        process.stderr.write(
+          "error: another framework dev bootstrap is already running.\n" +
+            `Retry after the lock is released: ${path.relative(repoRoot, lockDir)}\n`,
+        );
+        process.exitCode = 2;
+        return true;
+      }
+      await rm(lockDir, { recursive: true, force: true });
+      await mkdir(lockDir, { recursive: false });
+    } else {
+      process.stderr.write(
+        "error: another framework dev bootstrap is already running.\n" +
+          `Retry after the lock is released: ${path.relative(repoRoot, lockDir)}\n`,
+      );
+      process.exitCode = 2;
+      return true;
+    }
   }
+
+  await writeFile(
+    path.join(lockDir, "owner.json"),
+    JSON.stringify(
+      {
+        pid: process.pid,
+        operation: "agentplane-auto-bootstrap",
+        acquired_at: new Date().toISOString(),
+        repo_root: repoRoot,
+      },
+      null,
+      2,
+    ) + "\n",
+    "utf8",
+  );
 
   try {
     return await fn();
@@ -239,6 +280,12 @@ async function autoBootstrapAndRerun(repoRoot, staleReasons, commandPolicy) {
       env: {
         ...process.env,
         AGENTPLANE_DEV_AUTO_BOOTSTRAP: "0",
+        AGENTPLANE_FRAMEWORK_BUILD_LOCK_PATH: path.join(
+          repoRoot,
+          ".agentplane",
+          "cache",
+          "framework-dev-bootstrap.lock",
+        ),
       },
     });
 

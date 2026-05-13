@@ -109,6 +109,80 @@ describe("bootstrap-framework-dev script", () => {
     ]);
   });
 
+  it("holds the framework build lock while running build and verify steps", async () => {
+    const { runFrameworkDevBootstrap } = await loadBootstrapModule();
+    const repoRoot = await mkFrameworkRepo();
+    const lockDir = path.join(repoRoot, ".agentplane", "cache", "framework-dev-bootstrap.lock");
+    const observedLocks: string[] = [];
+    const exec = (currentRepoRoot: string, cmd: string, args: string[]) => {
+      recordCallExec(currentRepoRoot, cmd, args, []);
+      if (cmd === "bun" && args.includes("build")) {
+        observedLocks.push(fs.readFileSync(path.join(lockDir, "owner.json"), "utf8"));
+      }
+    };
+
+    runFrameworkDevBootstrap(repoRoot, exec, {
+      resolveCommonRepoRoot: () => repoRoot,
+    });
+
+    expect(observedLocks.length).toBeGreaterThan(0);
+    expect(observedLocks[0]).toContain('"operation": "framework-dev-bootstrap"');
+    await expect(lstat(lockDir)).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
+  it("rejects concurrent framework bootstrap while the build lock is held", async () => {
+    const { runFrameworkDevBootstrap } = await loadBootstrapModule();
+    const repoRoot = await mkFrameworkRepo();
+    const lockDir = path.join(repoRoot, ".agentplane", "cache", "framework-dev-bootstrap.lock");
+    await mkdir(lockDir, { recursive: true });
+    await writeFile(
+      path.join(lockDir, "owner.json"),
+      JSON.stringify({
+        pid: process.pid,
+        operation: "other-build",
+        acquired_at: "2026-01-01T00:00:00Z",
+      }),
+      "utf8",
+    );
+
+    expect(() =>
+      runFrameworkDevBootstrap(
+        repoRoot,
+        (currentRepoRoot: string, cmd: string, args: string[]) =>
+          recordCallExec(currentRepoRoot, cmd, args, []),
+        {
+          resolveCommonRepoRoot: () => repoRoot,
+        },
+      ),
+    ).toThrow(/Another framework dev build is already running/);
+  });
+
+  it("clears stale framework build locks before bootstrapping", async () => {
+    const { runFrameworkDevBootstrap } = await loadBootstrapModule();
+    const repoRoot = await mkFrameworkRepo();
+    const lockDir = path.join(repoRoot, ".agentplane", "cache", "framework-dev-bootstrap.lock");
+    await mkdir(lockDir, { recursive: true });
+    await writeFile(
+      path.join(lockDir, "owner.json"),
+      JSON.stringify({
+        pid: 999_999_999,
+        operation: "interrupted-build",
+        acquired_at: "2026-01-01T00:00:00Z",
+      }),
+      "utf8",
+    );
+    const calls: string[] = [];
+    const exec = (currentRepoRoot: string, cmd: string, args: string[]) =>
+      recordCallExec(currentRepoRoot, cmd, args, calls);
+
+    runFrameworkDevBootstrap(repoRoot, exec, {
+      resolveCommonRepoRoot: () => repoRoot,
+    });
+
+    expect(calls).toContain("bun run --filter=agentplane build");
+    await expect(lstat(lockDir)).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
   it("skips install and submodule init when prerequisites already exist", async () => {
     const { runFrameworkDevBootstrap } = await loadBootstrapModule();
     const repoRoot = await mkFrameworkRepo();
