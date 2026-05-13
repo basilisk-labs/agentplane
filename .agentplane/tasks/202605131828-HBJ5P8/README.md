@@ -1,10 +1,11 @@
 ---
 id: "202605131828-HBJ5P8"
 title: "Make test routing faster and more flexible"
-status: "DOING"
+result_summary: "Merged via PR #3665."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 1
+revision: 2
 origin:
   system: "manual"
 depends_on: []
@@ -29,7 +30,9 @@ verification:
   updated_by: "CODER"
   note: "Verified: flexible test routing, smoke local CI mode, critical-cli chunk runner, timing reports, route registry, eslint, generated scripts docs, diff hygiene, and policy routing pass on current task branch head."
   attempts: 0
-commit: null
+commit:
+  hash: "38e5e82573fca82f0cfe866d1dcf87d7cf200e5e"
+  message: "Merge pull request #3665 from basilisk-labs/task/202605131828-HBJ5P8/flexible-test-routing"
 comments:
   -
     author: "CODER"
@@ -37,6 +40,9 @@ comments:
   -
     author: "CODER"
     body: "Start: Implement approved faster and more flexible test routing in the existing task worktree, preserving branch_pr isolation and verifying selector, suite registry, smoke mode, and timing report behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3665 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -64,9 +70,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: flexible test routing, smoke local CI mode, critical-cli chunk runner, timing reports, route registry, eslint, generated scripts docs, diff hygiene, and policy routing pass on current task branch head."
+  -
+    type: "status"
+    at: "2026-05-13T21:57:46.089Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3665 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T19:19:14.935Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-13T21:57:46.096Z"
+doc_updated_by: "INTEGRATOR"
 description: "Improve AgentPlane test selection and runner ergonomics: support combined impacted buckets, add a smoke local CI mode, route critical CLI tests through the chunked suite runner, and capture timing evidence for slow tests."
 sections:
   Summary: |-
