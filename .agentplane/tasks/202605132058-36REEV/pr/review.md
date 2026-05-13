@@ -24,12 +24,20 @@ Created: 2026-05-13T20:59:57.460Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T20:59:57.460Z
+- Updated: 2026-05-13T21:09:19.102Z
 - Branch: task/202605132058-36REEV/split-pr-meta
-- Head: 403e10e9a434
+- Head: ad50be06756b
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 528 ++++++++++++++++++
+ packages/agentplane/src/commands/shared/pr-meta.ts | 614 +--------------------
+ .../src/commands/shared/pr-meta/builders.ts        | 229 ++++++++
+ .../src/commands/shared/pr-meta/helpers.ts         |  86 +++
+ .../src/commands/shared/pr-meta/lifecycle.ts       |  60 ++
+ .../src/commands/shared/pr-meta/parser.ts          | 132 +++++
+ .../src/commands/shared/pr-meta/types.ts           |  34 ++
+ .../src/commands/shared/pr-meta/verify-log.ts      |  71 +++
+ 8 files changed, 1169 insertions(+), 585 deletions(-)
 ```
 
 </details>
