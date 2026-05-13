@@ -22,7 +22,7 @@ Prevent concurrent framework bootstrap/build/pre-push paths from deleting shared
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T21:15:08.827Z
+- Updated: 2026-05-13T21:17:24.602Z
 - Branch: task/202605131913-YPT798/serialize-build-lane
 - Head: d0d89c65d620
 
