@@ -40,8 +40,8 @@ function mkCtx(overrides: Partial<CommandContext>): CommandContext {
 
 describe("applyTaskStatusTransitionCommand", () => {
   it("auto-pushes to cloud backend after status mutation when enabled", async () => {
-    const sync = vi.fn().mockResolvedValue(undefined);
-    const writeTask = vi.fn().mockResolvedValue(undefined);
+    const sync = vi.fn().mockResolvedValue();
+    const writeTask = vi.fn().mockResolvedValue();
     const getTask = vi.fn().mockResolvedValue({
       id: "T-1",
       title: "Title",
@@ -80,15 +80,14 @@ describe("applyTaskStatusTransitionCommand", () => {
       ctx,
       taskId: "T-1",
       quiet: true,
-      build: async () => {
-        return {
+      build: () =>
+        ({
           action: "set_status",
           status: "DONE",
           comment: null,
           author: null,
           force: true,
-        } as unknown;
-      },
+        }) as unknown,
     });
 
     expect(writeTask).toHaveBeenCalledTimes(1);
