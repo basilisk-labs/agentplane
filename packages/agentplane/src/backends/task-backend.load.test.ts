@@ -1,5 +1,7 @@
+import { execFile } from "node:child_process";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -12,6 +14,8 @@ import {
   type TaskData,
 } from "./task-backend.js";
 import { mkTempDir, silenceStdIO } from "@agentplane/testkit";
+
+const execFileAsync = promisify(execFile);
 
 describe("loadTaskBackend", () => {
   let tempDir = "";
@@ -257,6 +261,46 @@ describe("loadTaskBackend", () => {
     expect(cloud.endpoint).toBe("https://cloud.example");
     expect(cloud.token).toBe("shared-token");
     expect(cloud.projectId).toBe("shared-project");
+  });
+
+  it("loads cloud backend credentials from the shared root .env with a separate git dir", async () => {
+    const repoDir = path.join(tempDir, "repo");
+    const gitDir = path.join(tempDir, "repo.git");
+    const worktreeRoot = path.join(tempDir, "linked-worktree");
+    await execFileAsync("git", ["init", "--separate-git-dir", gitDir, repoDir]);
+    await execFileAsync("git", ["-C", repoDir, "config", "user.email", "test@example.com"]);
+    await execFileAsync("git", ["-C", repoDir, "config", "user.name", "Test User"]);
+    await writeFile(path.join(repoDir, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["-C", repoDir, "add", "seed.txt"]);
+    await execFileAsync("git", ["-C", repoDir, "commit", "-m", "seed"]);
+    await execFileAsync("git", ["-C", repoDir, "worktree", "add", worktreeRoot, "-b", "task"]);
+    await mkdir(path.join(worktreeRoot, ".agentplane", "backends", "local"), { recursive: true });
+    await writeFile(
+      path.join(worktreeRoot, ".agentplane", "backends", "local", "backend.json"),
+      JSON.stringify({
+        id: "cloud",
+        settings: {
+          cache_dir: ".agentplane/tasks",
+        },
+      }),
+      "utf8",
+    );
+    await writeFile(
+      path.join(repoDir, ".env"),
+      [
+        "AGENTPLANE_CLOUD_ENDPOINT=https://cloud.example/",
+        "AGENTPLANE_CLOUD_TOKEN=separate-gitdir-token",
+        "AGENTPLANE_CLOUD_PROJECT_ID=separate-gitdir-project",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const result = await loadTaskBackend({ cwd: worktreeRoot });
+    expect(result.backendId).toBe("cloud");
+    const cloud = result.backend as CloudBackend;
+    expect(cloud.endpoint).toBe("https://cloud.example");
+    expect(cloud.token).toBe("separate-gitdir-token");
+    expect(cloud.projectId).toBe("separate-gitdir-project");
   });
 
   it("parses quoted .env values and resolves backend directories", async () => {
