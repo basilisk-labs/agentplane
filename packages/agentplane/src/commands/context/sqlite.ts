@@ -31,6 +31,17 @@ function runSqlite(args: string[], input?: string): Promise<string> {
     const child = spawn("sqlite3", args, { stdio: ["pipe", "pipe", "pipe"] });
     let stdout = "";
     let stderr = "";
+    let stdinError: Error | null = null;
+    let settled = false;
+    const settle = (error: Error | null, value?: string) => {
+      if (settled) return;
+      settled = true;
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve(value ?? "");
+    };
     child.stdout.setEncoding("utf8");
     child.stderr.setEncoding("utf8");
     child.stdout.on("data", (chunk) => {
@@ -40,20 +51,36 @@ function runSqlite(args: string[], input?: string): Promise<string> {
       stderr += chunk;
     });
     child.on("error", (err) => {
-      reject(
+      settle(
         new Error(
           `sqlite3 CLI is required for AgentPlane context projection. Install sqlite3 or disable context projection before retrying. Cause: ${err.message}`,
         ),
       );
     });
+    child.stdin.on("error", (err) => {
+      stdinError = err;
+    });
     child.on("close", (code) => {
-      if (code === 0) {
-        resolve(stdout);
+      if (code === 0 && !stdinError) {
+        settle(null, stdout);
         return;
       }
-      reject(new Error(stderr.trim() || `sqlite3 exited with code ${code ?? "unknown"}`));
+      const stderrText = stderr.trim();
+      if (stderrText) {
+        settle(new Error(stderrText));
+        return;
+      }
+      if (stdinError) {
+        settle(new Error(`sqlite3 stdin write failed: ${stdinError.message}`));
+        return;
+      }
+      settle(new Error(`sqlite3 exited with code ${code ?? "unknown"}`));
     });
-    child.stdin.end(input ?? "");
+    try {
+      child.stdin.end(input ?? "");
+    } catch (err) {
+      stdinError = err instanceof Error ? err : new Error(String(err));
+    }
   });
 }
 
