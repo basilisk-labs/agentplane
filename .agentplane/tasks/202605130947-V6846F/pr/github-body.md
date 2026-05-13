@@ -22,9 +22,9 @@ Analyze the current AgentPlane CLI performance code after recent changes and imp
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T11:18:08.440Z
+- Updated: 2026-05-13T11:35:36.818Z
 - Branch: task/202605130947-V6846F/cli-perf-read-paths
-- Head: 6e8c5a1f24c6
+- Head: ce7148152234
 
 ```text
  .agentplane/context/service/README.md              |   7 +
@@ -41,9 +41,9 @@ Analyze the current AgentPlane CLI performance code after recent changes and imp
  docs/user/overview.mdx                             |  11 +-
  docs/user/tasks-and-backends.mdx                   |  12 +-
  packages/agentplane/package.json                   |   2 +-
- .../src/backends/task-backend.local.test.ts        |  50 ++
- .../backends/task-backend/local-backend-read.ts    |  20 +
- .../task-backend/local-task-sqlite-cache.ts        | 361 ++++++++++++++
+ .../src/backends/task-backend.local.test.ts        |  65 +++
+ .../backends/task-backend/local-backend-read.ts    |  25 +
+ .../task-backend/local-task-sqlite-cache.ts        | 386 +++++++++++++++
  packages/agentplane/src/commands/context/doctor.ts |   8 +-
  packages/agentplane/src/commands/context/ingest.ts |   1 +
  packages/agentplane/src/commands/context/init.ts   |   8 +-
@@ -56,7 +56,7 @@ Analyze the current AgentPlane CLI performance code after recent changes and imp
  packages/agentplane/src/commands/task/list.ts      |  12 +-
  packages/agentplane/src/shared/cache-paths.ts      |   7 +
  packages/agentplane/src/shared/sqlite-driver.ts    | 137 +++++
- 29 files changed, 1797 insertions(+), 329 deletions(-)
+ 29 files changed, 1842 insertions(+), 329 deletions(-)
 ```
 
 </details>

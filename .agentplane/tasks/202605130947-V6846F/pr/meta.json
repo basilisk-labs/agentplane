@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202605130947-V6846F/cli-perf-read-paths",
   "created_at": "2026-05-13T09:48:18.945Z",
-  "head_sha": "6e8c5a1f24c6aa531afd5b0c3cf1105d77b80f58",
+  "head_sha": "ce714815223440c83590b3d6017ae029a46e4ad2",
   "last_verified_at": "2026-05-13T10:45:46.911Z",
   "last_verified_sha": "1c5bf21c6005d06986da3f64db43cdf243b0cd0a",
   "pr_number": 3625,
@@ -10,7 +10,7 @@
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202605130947-V6846F",
-  "updated_at": "2026-05-13T11:18:08.440Z",
+  "updated_at": "2026-05-13T11:35:36.818Z",
   "verify": {
     "status": "pass"
   }
