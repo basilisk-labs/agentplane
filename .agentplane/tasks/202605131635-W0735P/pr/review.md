@@ -24,9 +24,9 @@ Created: 2026-05-13T16:36:18.870Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T17:39:15.792Z
+- Updated: 2026-05-13T17:51:11.424Z
 - Branch: task/202605131635-W0735P/command-order-guidance
-- Head: 0a1ca86a4f8d
+- Head: 45d275fbed2f
 
 ```text
  .../blueprint/resolved-snapshot.json               | 527 +++++++++++++++++++++
@@ -50,7 +50,8 @@ Created: 2026-05-13T16:36:18.870Z
  .../src/workflow-lifecycle/parity-check.ts         | 207 ++++++++
  scripts/README.md                                  |   4 +-
  scripts/checks/check-lifecycle-parity.ts           |  14 +
- 21 files changed, 1202 insertions(+), 104 deletions(-)
+ tsconfig.eslint.json                               |   3 +-
+ 22 files changed, 1204 insertions(+), 105 deletions(-)
 ```
 
 </details>

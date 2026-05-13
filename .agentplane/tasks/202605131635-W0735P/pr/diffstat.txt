@@ -19,4 +19,5 @@
  .../src/workflow-lifecycle/parity-check.ts         | 207 ++++++++
  scripts/README.md                                  |   4 +-
  scripts/checks/check-lifecycle-parity.ts           |  14 +
- 21 files changed, 1202 insertions(+), 104 deletions(-)
+ tsconfig.eslint.json                               |   3 +-
+ 22 files changed, 1204 insertions(+), 105 deletions(-)
