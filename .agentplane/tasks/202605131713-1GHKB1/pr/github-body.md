@@ -16,15 +16,15 @@ Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modul
 ## Verification
 
 - State: ok
-- Note: Review fixes passed: typecheck; docs CLI freshness; builtin assets freshness; evaluator regression test; exact-file eslint/prettier; policy routing; doctor; local evaluator smoke for --builtin false and nested cwd.
+- Note: CI format failure fixed and verified: format:check passes after formatting docs-render.ts; previous review-fix checks still covered evaluator root lookup and --builtin false behavior.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T19:27:45.367Z
+- Updated: 2026-05-13T19:36:24.353Z
 - Branch: task/202605131713-1GHKB1/public-evaluator-catalog
-- Head: 828c6fe33f07
+- Head: ec5b035ca1d1
 
 ```text
  .agentplane/evaluators/recovery-context.md         |  47 ++
@@ -42,6 +42,7 @@ Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modul
  .../cli/run-cli/commands/init/steps/apply.test.ts  |   8 +
  .../src/cli/run-cli/commands/init/steps/apply.ts   |  10 +
  .../cli/run-cli/commands/init/write-evaluators.ts  |  41 ++
+ packages/agentplane/src/cli/spec/docs-render.ts    |   5 +-
  .../src/commands/evaluator/evaluator.command.ts    | 108 +++++
  .../src/commands/evaluator/evaluator.spec.ts       | 102 ++++
  packages/agentplane/src/commands/upgrade/policy.ts |   1 +
@@ -50,7 +51,7 @@ Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modul
  .../src/shared/builtin-assets.generated.ts         |   9 +-
  .../agentplane/src/shared/protected-paths.test.ts  |  21 +
  packages/agentplane/src/shared/protected-paths.ts  |   6 +-
- 23 files changed, 1255 insertions(+), 3 deletions(-)
+ 24 files changed, 1256 insertions(+), 7 deletions(-)
 ```
 
 </details>

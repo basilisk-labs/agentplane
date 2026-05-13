@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T19:27:44.955Z"
+  updated_at: "2026-05-13T19:36:20.533Z"
   updated_by: "CODER"
-  note: "Review fixes passed: typecheck; docs CLI freshness; builtin assets freshness; evaluator regression test; exact-file eslint/prettier; policy routing; doctor; local evaluator smoke for --builtin false and nested cwd."
+  note: "CI format failure fixed and verified: format:check passes after formatting docs-render.ts; previous review-fix checks still covered evaluator root lookup and --builtin false behavior."
   attempts: 0
 commit: null
 comments:
@@ -67,8 +67,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Review fixes passed: typecheck; docs CLI freshness; builtin assets freshness; evaluator regression test; exact-file eslint/prettier; policy routing; doctor; local evaluator smoke for --builtin false and nested cwd."
+  -
+    type: "verify"
+    at: "2026-05-13T19:36:20.533Z"
+    author: "CODER"
+    state: "ok"
+    note: "CI format failure fixed and verified: format:check passes after formatting docs-render.ts; previous review-fix checks still covered evaluator root lookup and --builtin false behavior."
 doc_version: 3
-doc_updated_at: "2026-05-13T19:27:44.992Z"
+doc_updated_at: "2026-05-13T19:36:20.597Z"
 doc_updated_by: "CODER"
 description: "Add a public evaluator CLI surface backed by .agentplane/evaluators prompt modules, with list/show support now and evaluator run explicitly deferred to the v0.8 roadmap."
 sections:
@@ -181,6 +187,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
     
+    ### 2026-05-13T19:36:20.533Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: CI format failure fixed and verified: format:check passes after formatting docs-render.ts; previous review-fix checks still covered evaluator root lookup and --builtin false behavior.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:27:44.992Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131713-1GHKB1-public-evaluator-catalog/.agentplane/tasks/202605131713-1GHKB1/blueprint/resolved-snapshot.json
+    - old_digest: 72486767bf784731a9326405cb5d27e9e1337c782a14c4a1b8ad3041e6e5e78e
+    - current_digest: 72486767bf784731a9326405cb5d27e9e1337c782a14c4a1b8ad3041e6e5e78e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -205,6 +230,10 @@ sections:
     - Observation: Codex review found two evaluator catalog regressions: project-root lookup errors were swallowed into builtin-only fallback, and the advertised builtin toggle could not disable packaged evaluator modules.
       Impact: Project evaluators now resolve from nested cwd without --root, explicit --root failures surface as Git errors, and users can request project-only evaluator listings with --builtin false.
       Resolution: Used read-only git-root discovery for no-root evaluator catalog lookup, converted --builtin to a true|false string option, regenerated CLI docs, and added regression coverage.
+    
+    - Observation: GitHub Core CI test failed at format:check on packages/agentplane/src/cli/spec/docs-render.ts after rebasing onto the new public CLI docs surface.
+      Impact: Remote Core CI should progress past formatting on the next push; evaluator review fixes remain unchanged.
+      Resolution: Formatted docs-render.ts with Prettier, reran format:check successfully, rebuilt framework runtime for the watched source change, and committed the format fix.
 id_source: "generated"
 ---
 ## Summary
@@ -326,6 +355,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
 
+### 2026-05-13T19:36:20.533Z — VERIFY — ok
+
+By: CODER
+
+Note: CI format failure fixed and verified: format:check passes after formatting docs-render.ts; previous review-fix checks still covered evaluator root lookup and --builtin false behavior.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:27:44.992Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131713-1GHKB1-public-evaluator-catalog/.agentplane/tasks/202605131713-1GHKB1/blueprint/resolved-snapshot.json
+- old_digest: 72486767bf784731a9326405cb5d27e9e1337c782a14c4a1b8ad3041e6e5e78e
+- current_digest: 72486767bf784731a9326405cb5d27e9e1337c782a14c4a1b8ad3041e6e5e78e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131713-1GHKB1
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -354,3 +402,7 @@ BlueprintSnapshotRef:
 - Observation: Codex review found two evaluator catalog regressions: project-root lookup errors were swallowed into builtin-only fallback, and the advertised builtin toggle could not disable packaged evaluator modules.
   Impact: Project evaluators now resolve from nested cwd without --root, explicit --root failures surface as Git errors, and users can request project-only evaluator listings with --builtin false.
   Resolution: Used read-only git-root discovery for no-root evaluator catalog lookup, converted --builtin to a true|false string option, regenerated CLI docs, and added regression coverage.
+
+- Observation: GitHub Core CI test failed at format:check on packages/agentplane/src/cli/spec/docs-render.ts after rebasing onto the new public CLI docs surface.
+  Impact: Remote Core CI should progress past formatting on the next push; evaluator review fixes remain unchanged.
+  Resolution: Formatted docs-render.ts with Prettier, reran format:check successfully, rebuilt framework runtime for the watched source change, and committed the format fix.
