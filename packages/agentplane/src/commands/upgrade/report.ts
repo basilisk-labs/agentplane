@@ -29,16 +29,15 @@ export async function writeUpgradeAgentReview(opts: {
   skipped: string[];
   merged: string[];
   reviewRecords: UpgradeReviewRecord[];
-}): Promise<{ relRunDir: string; needsReviewCount: number }> {
+}): Promise<{ relRunDir: string }> {
   const runId = new Date().toISOString().replaceAll(":", "-").replaceAll(".", "-");
   const runDir = path.join(opts.runRoot, runId);
   await mkdir(runDir, { recursive: true });
 
   const managedFiles = opts.manifest.files.map((f) => f.path.replaceAll("\\", "/").trim());
-  const needsReviewCount = opts.reviewRecords.filter((r) => r.needsSemanticReview).length;
   const planMd =
     `# agentplane upgrade plan (${runId})\n\n` +
-    `Mode: agent-assisted review (no files modified)\n\n` +
+    `Mode: plan only (no files modified)\n\n` +
     `## Summary\n\n` +
     `- additions: ${opts.additions.length}\n` +
     `- updates: ${opts.updates.length}\n` +
@@ -110,7 +109,6 @@ export async function writeUpgradeAgentReview(opts: {
         generated_at: new Date().toISOString(),
         counts: {
           total: opts.reviewRecords.length,
-          needsSemanticReview: needsReviewCount,
         },
         files: opts.reviewRecords,
       },
@@ -120,5 +118,5 @@ export async function writeUpgradeAgentReview(opts: {
     "utf8",
   );
 
-  return { relRunDir: path.relative(opts.gitRoot, runDir), needsReviewCount };
+  return { relRunDir: path.relative(opts.gitRoot, runDir) };
 }

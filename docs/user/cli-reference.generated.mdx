@@ -2211,7 +2211,7 @@ agentplane init --quick --tool cursor
 
 Upgrade the local agentplane framework bundle in the repo.
 
-Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade applies the bundled managed files from the locally installed agentplane package assets (no network) and creates a dedicated upgrade commit. Use --dry-run to preview changes without writing files, or --agent to generate a review plan instead of applying. Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.
+Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade applies the bundled managed files from the locally installed agentplane package assets (no network) and creates a dedicated upgrade commit. Use --dry-run to preview changes without writing files, or --agent to generate a plan-only report instead of applying. Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.
 
 Usage:
 
@@ -2221,7 +2221,7 @@ agentplane upgrade [options]
 
 Options:
 
-- `--agent`: Generate an agent-assisted upgrade plan instead of applying managed files. (default=false)
+- `--agent`: Generate a plan-only upgrade report instead of applying managed files. (default=false)
 - `--auto`: Apply the upgrade automatically (same behavior as the default mode; useful for explicit scripts). (default=false)
 - `--remote`: Fetch the framework bundle from GitHub releases (requires network approvals). (default=false)
 - `--allow-tarball`: Allow falling back to a GitHub repo tarball when release assets are missing (no checksum verification). (default=false)
@@ -2254,7 +2254,7 @@ agentplane upgrade --dry-run
 agentplane upgrade --agent
 ```
 
-- Generate an agent-assisted upgrade plan instead of applying files.
+- Generate a plan-only upgrade report instead of applying files.
 
 ```sh
 agentplane upgrade --remote --tag v0.1.9 --dry-run
@@ -3533,7 +3533,7 @@ agentplane hooks uninstall
 
 ### incidents
 
-Promote external incident advice and resolve incident hints for analogous tasks.
+Route incident advice candidates through CURATOR-bounded matching and promotion gates.
 
 Usage:
 
@@ -3543,12 +3543,12 @@ agentplane incidents <collect|advise> [args] [options]
 
 Notes:
 
-- Use \`incidents collect\` to promote resolved reusable external findings into \`.agentplane/policy/incidents.md\`.
-- Use \`incidents advise\` to query registry advice by task id or lightweight scope/tags.
+- Use \`incidents collect\` to promote resolved reusable external findings into \`.agentplane/policy/incidents.md\` after deterministic validation.
+- Use \`incidents advise\` to query registry advice by task id or lightweight scope/tags; the score is a candidate scaffold for CURATOR-style judgment, not semantic truth.
 
 ### incidents advise
 
-Resolve relevant incident advice for a task or an ad hoc scope/tag query.
+Resolve bounded incident advice candidates for a task or ad hoc scope/tag query.
 
 Usage:
 
@@ -3567,7 +3567,7 @@ Options:
 
 ### incidents collect
 
-Promote reusable resolved external findings from a task into the incident registry.
+Validate and promote CURATOR-style reusable incident findings into the registry.
 
 Usage:
 
@@ -3774,9 +3774,9 @@ agentplane context harvest [<cmd> ...]
 
 ### context harvest tasks
 
-Harvest completed task evidence into wiki, fact, and graph proposals.
+Harvest completed task evidence into raw scaffolds or CURATOR extraction tasks.
 
-Selects completed tasks in oldest-first order, skips unchanged tasks with matching ingestion markers, and separates source indexing, agentic extraction task creation, wiki synthesis, promotion-gate state, and task README markers. Write modes require an initialized context workspace.
+Selects completed tasks in oldest-first order, skips unchanged tasks with matching ingestion markers, and separates raw scaffold writing, default CURATOR extraction task creation, promotion-gate state, and task README markers. Write modes require an initialized context workspace.
 
 Usage:
 
@@ -3793,8 +3793,8 @@ Options:
 - `--until <YYYY-MM-DD|YYYYMMDDHHmm>`: Only include tasks at or before this task-id timestamp prefix.
 - `--after-task <task-id>`: Continue after a previously harvested task id.
 - `--limit <n>`: Maximum number of oldest matching tasks to harvest.
-- `--write-proposals`: Write raw evidence, derived facts/graph rows, report, and wiki proposal. (default=false)
-- `--create-extraction-tasks`: Create standard CURATOR tasks for batchwise semantic extraction from task README/ACR sources. (default=false)
+- `--write-proposals`: Write raw evidence and proposal scaffold artifacts only; semantic wiki/facts/graph extraction belongs to CURATOR tasks. (default=false)
+- `--create-extraction-tasks`: Create standard CURATOR tasks for batchwise semantic extraction from task README/ACR sources. This is the default non-write action. (default=false)
 - `--batch-size <n>`: Number of selected completed tasks per generated extraction task. (default=25)
 - `--promote`: Promote the wiki proposal to semi-canonical only if the promotion gate passes. (default=false)
 - `--dry-run`: Preview selection and gate state without writing artifacts. (default=false)
@@ -3806,19 +3806,25 @@ Examples:
 agentplane context harvest tasks --tag release --limit 20 --dry-run
 ```
 
-- Preview the oldest completed release tasks before writing context proposals.
+- Preview the oldest completed release tasks before creating extraction tasks or writing raw scaffolds.
+
+```sh
+agentplane context harvest tasks --tag branch_pr --batch-size 25
+```
+
+- Create default CURATOR tasks that extract semantic wiki/fact/graph knowledge in bounded oldest-first batches.
 
 ```sh
 agentplane context harvest tasks --tag branch_pr --write-proposals
 ```
 
-- Write source-backed reusable context proposals from completed branch_pr tasks.
+- Write raw source-backed proposal scaffolds from completed branch_pr tasks.
 
 ```sh
 agentplane context harvest tasks --tag branch_pr --create-extraction-tasks --batch-size 25
 ```
 
-- Create CURATOR tasks that extract semantic wiki/fact/graph knowledge in bounded oldest-first batches.
+- Explicitly request CURATOR extraction tasks for older scripts.
 
 ### context ingest
 

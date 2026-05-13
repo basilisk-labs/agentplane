@@ -147,7 +147,7 @@ export async function cmdUpgradeParsed(opts: {
         assetsDirUrl: ASSETS_DIR_URL,
         ensureApproved,
       });
-      const modeLabel = flags.dryRun ? "dry-run" : flags.mode === "agent" ? "review" : "apply";
+      const modeLabel = flags.dryRun ? "dry-run" : flags.mode === "agent" ? "plan" : "apply";
       process.stdout.write(
         `Upgrade source: ${describeUpgradeSource({
           bundleLayout: materialized.bundleLayout,
@@ -187,17 +187,15 @@ export async function cmdUpgradeParsed(opts: {
         return 0;
       }
 
-      const needsReview = reviewRecords.filter((r) => r.needsSemanticReview);
-
       if (flags.mode === "agent") {
-        // Fast no-op path: nothing to apply and no semantic review candidates.
+        // Fast no-op path: nothing to apply.
         // Skip generating per-run artifacts to keep agent-mode upgrades cheap.
-        if (additions.length === 0 && updates.length === 0 && needsReview.length === 0) {
+        if (additions.length === 0 && updates.length === 0) {
           process.stdout.write("Upgrade plan: no managed changes detected\n");
           return 0;
         }
 
-        const { relRunDir, needsReviewCount } = await writeUpgradeAgentReview({
+        const { relRunDir } = await writeUpgradeAgentReview({
           gitRoot: resolved.gitRoot,
           runRoot: path.join(upgradeStateDir, "agent"),
           manifest: materialized.manifest,
@@ -208,7 +206,6 @@ export async function cmdUpgradeParsed(opts: {
           reviewRecords,
         });
         process.stdout.write(`Upgrade plan written: ${relRunDir}\n`);
-        process.stdout.write(`Review-required files: ${needsReviewCount}\n`);
         return 0;
       }
 

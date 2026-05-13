@@ -83,14 +83,15 @@ describe("upgrade merge behavior", () => {
 
     const lastReviewPath = path.join(root, ".agentplane", ".upgrade", "last-review.json");
     const lastReview = JSON.parse(await readFile(lastReviewPath, "utf8")) as {
-      files?: { relPath?: string; needsSemanticReview?: boolean }[];
+      files?: { relPath?: string }[];
     };
+    const removedSemanticKey = "needs" + "SemanticReview";
     expect(
-      lastReview.files?.some((f) => f.relPath === "AGENTS.md" && f.needsSemanticReview === false),
+      lastReview.files?.some((f) => f.relPath === "AGENTS.md" && !(removedSemanticKey in f)),
     ).toBe(true);
     expect(
       lastReview.files?.some(
-        (f) => f.relPath === ".agentplane/agents/CODER.json" && f.needsSemanticReview === false,
+        (f) => f.relPath === ".agentplane/agents/CODER.json" && !(removedSemanticKey in f),
       ),
     ).toBe(true);
 
@@ -122,7 +123,7 @@ describe("upgrade merge behavior", () => {
     expect(commitBody).toContain("Upgrade-Version:");
   }, 60_000);
 
-  it("does not require semantic review when baseline differs but current equals incoming", async () => {
+  it("records equality when baseline differs but current equals incoming", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
@@ -174,12 +175,11 @@ describe("upgrade merge behavior", () => {
       files?: {
         relPath?: string;
         currentDiffersFromIncoming?: boolean;
-        needsSemanticReview?: boolean;
       }[];
     };
     const agentsReview = lastReview.files?.find((f) => f.relPath === "AGENTS.md");
     expect(agentsReview?.currentDiffersFromIncoming).toBe(false);
-    expect(agentsReview?.needsSemanticReview).toBe(false);
+    expect(agentsReview).not.toHaveProperty("needs" + "SemanticReview");
   });
 
   it("updates directly when current equals baseline (no local edits)", async () => {
@@ -236,13 +236,12 @@ describe("upgrade merge behavior", () => {
       files?: {
         relPath?: string;
         changedCurrentVsBaseline?: boolean | null;
-        needsSemanticReview?: boolean;
         mergeApplied?: boolean;
       }[];
     };
     const agentsReview = lastReview.files?.find((f) => f.relPath === "AGENTS.md");
     expect(agentsReview?.changedCurrentVsBaseline).toBe(false);
-    expect(agentsReview?.needsSemanticReview).toBe(false);
+    expect(agentsReview).not.toHaveProperty("needs" + "SemanticReview");
     expect(agentsReview?.mergeApplied).toBe(false);
   });
 
@@ -315,7 +314,6 @@ describe("upgrade merge behavior", () => {
     const lastReview = JSON.parse(await readFile(lastReviewPath, "utf8")) as {
       files?: {
         relPath?: string;
-        needsSemanticReview?: boolean;
         mergeApplied?: boolean;
         mergePath?: string;
       }[];
@@ -323,7 +321,7 @@ describe("upgrade merge behavior", () => {
     const incidentsReview = lastReview.files?.find(
       (f) => f.relPath === ".agentplane/policy/incidents.md",
     );
-    expect(incidentsReview?.needsSemanticReview).toBe(false);
+    expect(incidentsReview).not.toHaveProperty("needs" + "SemanticReview");
     expect(incidentsReview?.mergeApplied).toBe(true);
     expect(incidentsReview?.mergePath).toBe("incidentsAppend");
   });

@@ -272,7 +272,6 @@ export async function persistUpgradeState(opts: {
         generated_at: new Date().toISOString(),
         counts: {
           total: opts.reviewRecords.length,
-          needsSemanticReview: opts.reviewRecords.filter((r) => r.needsSemanticReview).length,
         },
         files: opts.reviewRecords,
       },

@@ -171,7 +171,6 @@ export async function planManagedUpgrade(opts: {
         changedCurrentVsBaseline,
         changedIncomingVsBaseline,
         currentDiffersFromIncoming: false,
-        needsSemanticReview: false,
         mergeApplied: false,
         mergePath: "none",
       });
@@ -188,7 +187,6 @@ export async function planManagedUpgrade(opts: {
         changedCurrentVsBaseline,
         changedIncomingVsBaseline,
         currentDiffersFromIncoming: true,
-        needsSemanticReview: false,
         mergeApplied: false,
         mergePath: "none",
       });
@@ -230,7 +228,6 @@ export async function planManagedUpgrade(opts: {
       changedCurrentVsBaseline,
       changedIncomingVsBaseline,
       currentDiffersFromIncoming,
-      needsSemanticReview: false,
       mergeApplied,
       mergePath,
     });

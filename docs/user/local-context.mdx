@@ -59,24 +59,27 @@ runner adapter instead of only preparing the request.
 
 ```bash
 agentplane context harvest tasks --tag release --limit 20 --dry-run
-agentplane context harvest tasks --tag branch_pr --create-extraction-tasks --batch-size 25
+agentplane context harvest tasks --tag branch_pr --batch-size 25
 agentplane context harvest tasks --tag branch_pr --write-proposals
 agentplane context harvest tasks --task 202605100837-PJZW2E --write-proposals
 ```
 
-`context harvest tasks` turns completed task history into context proposals. It scans matching
-tasks oldest-first, then keeps the pipeline stages separate:
+`context harvest tasks` turns completed task history into raw scaffolds or `CURATOR` extraction
+tasks. It scans matching tasks oldest-first, then keeps the pipeline stages separate:
 
 - source indexing: task README, comments, and commit metadata become raw evidence under
   `context/raw/tasks/**`
-- knowledge extraction: task-backed claims are written as fact rows with `source_refs`,
-  confidence, status, stale markers, and conflict markers
+- raw scaffold extraction: deterministic task-backed claims are written as proposal fact rows with
+  `source_refs`, confidence, status, stale markers, and conflict markers
+- semantic extraction: default non-write harvest runs create `CURATOR` tasks that extract wiki,
+  facts, and graph updates through the normal task lifecycle
 - wiki synthesis: a human-readable proposal is written under `context/wiki/proposals/task-harvest/**`
 - promotion: `--promote` writes a semi-canonical page only when the promotion gate has no blockers
 
 Use `--tag`, `--task`, `--since`, `--until`, `--after-task`, and `--limit` to advance gradually from
-older completed work toward newer changes. The command never promotes by default; `--write-proposals`
-only writes evidence, derived rows, reports, proposal pages, a task-ingestion ledger, and
+older completed work toward newer changes. The command never promotes by default; non-write broad
+runs create `CURATOR` extraction tasks by default. `--write-proposals` only writes raw evidence,
+derived scaffold rows, reports, proposal pages, a task-ingestion ledger, and
 `extensions.context_harvest` markers back into the harvested task READMEs. Those markers include the
 source digest, raw evidence path, report path, proposal path, promotion state, fact IDs, and source
 refs. Later broad runs skip tasks whose marker digest still matches the README evidence; explicit
@@ -84,9 +87,10 @@ refs. Later broad runs skip tasks whose marker digest still matches the README e
 an initialized context workspace from `agentplane context init`; dry-run mode can be used before
 initialization.
 
-Use `--create-extraction-tasks` when completed task history needs agentic semantic extraction rather
-than deterministic one-claim-per-task proposals. It creates standard `CURATOR` tasks in oldest-first
-batches controlled by `--batch-size`. Each generated task carries an
+Use the default non-write mode, or explicit `--create-extraction-tasks` for older scripts, when
+completed task history needs agentic semantic extraction rather than deterministic one-claim-per-task
+proposals. It creates standard `CURATOR` tasks in oldest-first batches controlled by `--batch-size`.
+Each generated task carries an
 `extensions.agentplane.context` source pack with the selected task README paths, ACR paths, source
 digests, allowed outputs, provenance requirements, and a replaceable prompt module for extracting
 wiki pages, facts, entities, relations, stale markers, and conflict markers. This mode does not write

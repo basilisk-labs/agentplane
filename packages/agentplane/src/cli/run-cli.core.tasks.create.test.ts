@@ -513,7 +513,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
       ]);
       expect(code).toBe(0);
       id = io.stdout.trim();
-      expect(io.stderr).toContain("seeded a concrete ## Verify Steps section");
+      expect(io.stderr).toContain("seeded a PLANNER fallback ## Verify Steps scaffold");
     } finally {
       io.restore();
     }
@@ -557,7 +557,7 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
       ]);
       expect(code).toBe(0);
       id = io.stdout.trim();
-      expect(io.stderr).toContain("seeded a concrete ## Verify Steps section");
+      expect(io.stderr).toContain("seeded a PLANNER fallback ## Verify Steps scaffold");
     } finally {
       io.restore();
     }

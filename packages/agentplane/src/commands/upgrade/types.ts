@@ -24,7 +24,6 @@ export type UpgradeReviewRecord = {
   changedCurrentVsBaseline: boolean | null;
   changedIncomingVsBaseline: boolean | null;
   currentDiffersFromIncoming: boolean;
-  needsSemanticReview: boolean;
   mergeApplied: boolean;
   mergePath:
     | "none"

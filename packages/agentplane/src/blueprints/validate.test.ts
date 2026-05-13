@@ -179,7 +179,7 @@ describe("blueprint validation", () => {
       {
         id: "hosted_checks",
         kind: "hosted_checks",
-        mode: "deterministic",
+        mode: "agentic",
         required: true,
       },
     ];
