@@ -16,21 +16,23 @@ Implement automatic cloud projection refresh + push after local task mutations, 
 ## Verification
 
 - State: ok
-- Note: Auto-sync implemented for cloud backend. Verified locally: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts (all pass).
+- Note: Refactor: split cloud push helper to satisfy hotspot limit (<600 loc). Verified locally: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T20:36:01.690Z
+- Updated: 2026-05-13T20:39:51.978Z
 - Branch: task/202605132026-PV7HGD/cloud-autosync
-- Head: e7236d29af20
+- Head: beb35d8d3b37
 
 ```text
- .../src/backends/task-backend.cloud.test.ts        | 57 ++++++++++++++-
- .../src/backends/task-backend/cloud-backend.ts     | 84 +++++++++++++++++++---
- .../agentplane/src/backends/task-backend/load.ts   |  2 +
- 3 files changed, 132 insertions(+), 11 deletions(-)
+ .../blueprint/resolved-snapshot.json               | 529 +++++++++++++++++++++
+ .../src/backends/task-backend.cloud.test.ts        |  57 ++-
+ .../backends/task-backend/cloud-backend-push.ts    | 127 +++++
+ .../src/backends/task-backend/cloud-backend.ts     | 202 ++++----
+ .../agentplane/src/backends/task-backend/load.ts   |   2 +
+ 5 files changed, 797 insertions(+), 120 deletions(-)
 ```
 
 </details>

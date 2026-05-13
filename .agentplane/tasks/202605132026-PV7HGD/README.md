@@ -4,7 +4,7 @@ title: "Cloud backend: auto-sync on task reads/writes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T20:36:01.518Z"
+  updated_at: "2026-05-13T20:39:51.814Z"
   updated_by: "CODER"
-  note: "Auto-sync implemented for cloud backend. Verified locally: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts (all pass)."
+  note: "Refactor: split cloud push helper to satisfy hotspot limit (<600 loc). Verified locally: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts."
   attempts: 0
 commit: null
 comments:
@@ -44,8 +44,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Auto-sync implemented for cloud backend. Verified locally: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts (all pass)."
+  -
+    type: "verify"
+    at: "2026-05-13T20:39:51.814Z"
+    author: "CODER"
+    state: "ok"
+    note: "Refactor: split cloud push helper to satisfy hotspot limit (<600 loc). Verified locally: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts."
 doc_version: 3
-doc_updated_at: "2026-05-13T20:36:01.526Z"
+doc_updated_at: "2026-05-13T20:39:51.819Z"
 doc_updated_by: "CODER"
 description: "Implement automatic cloud projection refresh + push after local task mutations, so local ↔ cloud ↔ GitHub status stays in sync without explicit 'backend sync'. User request: bidirectional sync local folder ↔ GitHub via cloud backend."
 sections:
@@ -79,6 +85,25 @@ sections:
     Attempts: 0
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T20:27:37.798Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605132026-PV7HGD-cloud-autosync/.agentplane/tasks/202605132026-PV7HGD/blueprint/resolved-snapshot.json
+    - old_digest: a4ccdd692cc733d6b5ac6c796a283e64fa564e1f0812be7a3c64bee81a61faa7
+    - current_digest: a4ccdd692cc733d6b5ac6c796a283e64fa564e1f0812be7a3c64bee81a61faa7
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605132026-PV7HGD
+    
+    ### 2026-05-13T20:39:51.814Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Refactor: split cloud push helper to satisfy hotspot limit (<600 loc). Verified locally: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T20:36:01.526Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
     
     Details:
     
@@ -136,6 +161,25 @@ Note: Auto-sync implemented for cloud backend. Verified locally: bun test packag
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T20:27:37.798Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605132026-PV7HGD-cloud-autosync/.agentplane/tasks/202605132026-PV7HGD/blueprint/resolved-snapshot.json
+- old_digest: a4ccdd692cc733d6b5ac6c796a283e64fa564e1f0812be7a3c64bee81a61faa7
+- current_digest: a4ccdd692cc733d6b5ac6c796a283e64fa564e1f0812be7a3c64bee81a61faa7
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605132026-PV7HGD
+
+### 2026-05-13T20:39:51.814Z — VERIFY — ok
+
+By: CODER
+
+Note: Refactor: split cloud push helper to satisfy hotspot limit (<600 loc). Verified locally: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T20:36:01.526Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 
