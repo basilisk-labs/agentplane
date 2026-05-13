@@ -22,7 +22,7 @@ Improve AgentPlane test selection and runner ergonomics: support combined impact
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T19:06:43.757Z
+- Updated: 2026-05-13T19:11:58.775Z
 - Branch: task/202605131828-HBJ5P8/flexible-test-routing
 - Head: fa819a8ee3b4
 
