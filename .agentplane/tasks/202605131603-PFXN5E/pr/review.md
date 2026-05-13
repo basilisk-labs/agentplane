@@ -13,7 +13,7 @@ Created: 2026-05-13T16:03:49.901Z
 ## Verification
 
 - State: ok
-- Note: Final verification after queue drain/docs refresh: focused integrate and queue tests passed (4 files, 18 tests); eslint passed for changed TS; bun run typecheck passed; format/checks passed through pre-push up to the cold-start timing guard; PR branch pushed at 401d1ac6d.
+- Note: Verified branch_pr PR-first integration route: lint changed files, focused integrate tests, targeted protected-base validation, typecheck, schema sync check, policy routing, CLI docs freshness, quickstart smoke, and git diff check all passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T16:35:13.190Z"
+  updated_at: "2026-05-13T17:08:39.080Z"
   updated_by: "CODER"
-  note: "Final verification after queue drain/docs refresh: focused integrate and queue tests passed (4 files, 18 tests); eslint passed for changed TS; bun run typecheck passed; format/checks passed through pre-push up to the cold-start timing guard; PR branch pushed at 401d1ac6d."
+  note: "Verified branch_pr PR-first integration route: lint changed files, focused integrate tests, targeted protected-base validation, typecheck, schema sync check, policy routing, CLI docs freshness, quickstart smoke, and git diff check all passed."
   attempts: 0
 commit: null
 comments:
@@ -55,14 +55,20 @@ events:
     author: "CODER"
     state: "ok"
     note: "Final verification after queue drain/docs refresh: focused integrate and queue tests passed (4 files, 18 tests); eslint passed for changed TS; bun run typecheck passed; format/checks passed through pre-push up to the cold-start timing guard; PR branch pushed at 401d1ac6d."
+  -
+    type: "verify"
+    at: "2026-05-13T17:08:39.080Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified branch_pr PR-first integration route: lint changed files, focused integrate tests, targeted protected-base validation, typecheck, schema sync check, policy routing, CLI docs freshness, quickstart smoke, and git diff check all passed."
 doc_version: 3
-doc_updated_at: "2026-05-13T16:35:13.205Z"
+doc_updated_at: "2026-05-13T17:08:39.104Z"
 doc_updated_by: "CODER"
 description: "Make branch_pr completion queue verified task branches for serialized integration, prefer merge commits over squash in hosted close routes, and move protected-base integration toward GitHub merge orchestration instead of a manual handoff-only stop."
 sections:
   Summary: |-
     Automate branch_pr merge queue finalization
-    
+
     Make branch_pr completion queue verified task branches for serialized integration, prefer merge commits over squash in hosted close routes, and move protected-base integration toward GitHub merge orchestration instead of a manual handoff-only stop.
   Scope: |-
     - In scope: Make branch_pr completion queue verified task branches for serialized integration, prefer merge commits over squash in hosted close routes, and move protected-base integration toward GitHub merge orchestration instead of a manual handoff-only stop.
@@ -75,16 +81,16 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-13T16:09:55.166Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: Command: bunx vitest run packages/agentplane/src/commands/release/release-ci-contract.test.ts packages/agentplane/src/commands/task/hosted-close-workflow-contract.test.ts packages/agentplane/src/commands/pr/integrate/cmd.test.ts packages/agentplane/src/commands/pr/integrate/queue-state.test.ts packages/agentplane/src/commands/pr/integrate/queue-mutex.test.ts; Result: pass; Evidence: 5 files, 26 tests passed. Command: bun run typecheck; Result: pass; Evidence: tsc -b completed. Command: bunx eslint changed TS files; Result: pass. Command: git diff --check && node .agentplane/policy/check-routing.mjs && agentplane doctor; Result: pass; Evidence: routing OK, doctor OK.
     Attempts: 0
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T16:03:49.825Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
-    
+
     Details:
-    
+
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131603-PFXN5E-automate-merge-queue/.agentplane/tasks/202605131603-PFXN5E/blueprint/resolved-snapshot.json
@@ -92,18 +98,18 @@ sections:
     - current_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
-    
+
     ### 2026-05-13T16:11:35.161Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: Updated verification after diagnostic refinement: eslint on changed TS passed; focused Vitest for hosted-close workflow and integrate command passed (2 files, 9 tests); bun run typecheck passed; git diff --check passed.
     Attempts: 0
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T16:09:55.176Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
-    
+
     Details:
-    
+
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131603-PFXN5E-automate-merge-queue/.agentplane/tasks/202605131603-PFXN5E/blueprint/resolved-snapshot.json
@@ -111,18 +117,18 @@ sections:
     - current_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
-    
+
     ### 2026-05-13T16:35:13.190Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: Final verification after queue drain/docs refresh: focused integrate and queue tests passed (4 files, 18 tests); eslint passed for changed TS; bun run typecheck passed; format/checks passed through pre-push up to the cold-start timing guard; PR branch pushed at 401d1ac6d.
     Attempts: 0
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T16:11:35.181Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
-    
+
     Details:
-    
+
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131603-PFXN5E-automate-merge-queue/.agentplane/tasks/202605131603-PFXN5E/blueprint/resolved-snapshot.json
@@ -130,12 +136,34 @@ sections:
     - current_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
-    
+
+    ### 2026-05-13T17:08:39.080Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified branch_pr PR-first integration route: lint changed files, focused integrate tests, targeted protected-base validation, typecheck, schema sync check, policy routing, CLI docs freshness, quickstart smoke, and git diff check all passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T16:35:13.205Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131603-PFXN5E-automate-merge-queue/.agentplane/tasks/202605131603-PFXN5E/blueprint/resolved-snapshot.json
+    - old_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+    - current_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: branch_pr policy and CLI guidance now define task GitHub PR merge as the primary integration route; local integrate serializes the lane and drives gh pr merge --auto --merge before handoff.
+      Impact: Agents should no longer treat protected-base PR merge as a fallback/admin shortcut or expect local base mutation in branch_pr.
+      Resolution: Updated integrate command, queue handoff wording, quickstart/bootstrap guide, branch_pr policy mirror, handoff schema enum, and focused tests.
 id_source: "generated"
 ---
 ## Summary
@@ -219,6 +247,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
 
+### 2026-05-13T17:08:39.080Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified branch_pr PR-first integration route: lint changed files, focused integrate tests, targeted protected-base validation, typecheck, schema sync check, policy routing, CLI docs freshness, quickstart smoke, and git diff check all passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T16:35:13.205Z, excerpt_hash=sha256:0c911ba57bbda86e6b1d4b2c31f39ff10ccc1febf923fdb7f66dbb574080a0d7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605131603-PFXN5E-automate-merge-queue/.agentplane/tasks/202605131603-PFXN5E/blueprint/resolved-snapshot.json
+- old_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+- current_digest: a3f40c350103e72529e1deffeab13887253e81b561a19614c304fc3908a40253
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131603-PFXN5E
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -227,3 +274,7 @@ BlueprintSnapshotRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: branch_pr policy and CLI guidance now define task GitHub PR merge as the primary integration route; local integrate serializes the lane and drives gh pr merge --auto --merge before handoff.
+  Impact: Agents should no longer treat protected-base PR merge as a fallback/admin shortcut or expect local base mutation in branch_pr.
+  Resolution: Updated integrate command, queue handoff wording, quickstart/bootstrap guide, branch_pr policy mirror, handoff schema enum, and focused tests.

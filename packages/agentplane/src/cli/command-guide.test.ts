@@ -33,8 +33,8 @@ describe("command-guide", () => {
     expect(text).toContain(
       "agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify",
     );
-    expect(text).toContain("default integrate strategy is `merge`");
-    expect(text).toContain("--merge-strategy squash");
+    expect(text).toContain("primary integration route is the task GitHub PR");
+    expect(text).toContain("gh pr merge --auto --merge");
     expect(text).not.toContain("--merge-strategy squash --run-verify");
   });
 

@@ -48,32 +48,32 @@ async function runProtectedBaseGithubMerge(opts: {
   prTarget: string;
 }): Promise<{ status: "merged" | "auto_merge_enabled"; detail: string }> {
   try {
-    await execFileAsync("gh", ["pr", "merge", "--merge", "--delete-branch", opts.prTarget], {
-      cwd: opts.gitRoot,
-      env: gitEnv(),
-    });
-    return { status: "merged", detail: `GitHub PR merged with --merge: ${opts.prTarget}` };
-  } catch (directErr) {
+    await execFileAsync(
+      "gh",
+      ["pr", "merge", "--auto", "--merge", "--delete-branch", opts.prTarget],
+      {
+        cwd: opts.gitRoot,
+        env: gitEnv(),
+      },
+    );
+    return {
+      status: "auto_merge_enabled",
+      detail: `GitHub PR merge queued with --auto --merge: ${opts.prTarget}`,
+    };
+  } catch (autoErr) {
     try {
-      await execFileAsync(
-        "gh",
-        ["pr", "merge", "--auto", "--merge", "--delete-branch", opts.prTarget],
-        {
-          cwd: opts.gitRoot,
-          env: gitEnv(),
-        },
-      );
-      return {
-        status: "auto_merge_enabled",
-        detail: `GitHub auto-merge enabled with --merge: ${opts.prTarget}`,
-      };
-    } catch (autoErr) {
+      await execFileAsync("gh", ["pr", "merge", "--merge", "--delete-branch", opts.prTarget], {
+        cwd: opts.gitRoot,
+        env: gitEnv(),
+      });
+      return { status: "merged", detail: `GitHub PR merged with --merge: ${opts.prTarget}` };
+    } catch (directErr) {
       throw new CliError({
         exitCode: exitCodeForError("E_HANDOFF"),
         code: "E_HANDOFF",
         message:
-          "Unable to merge protected-base GitHub PR automatically. " +
-          `direct=${summarizeGhMergeFailure(directErr)}; auto=${summarizeGhMergeFailure(autoErr)}`,
+          "Unable to drive the branch_pr GitHub PR merge route automatically. " +
+          `auto=${summarizeGhMergeFailure(autoErr)}; direct=${summarizeGhMergeFailure(directErr)}`,
       });
     }
   }
@@ -107,11 +107,11 @@ async function recordProtectedBaseIntegrateHandoff(opts: {
       task_id: opts.taskId,
       created_at: new Date().toISOString(),
       from_role: "INTEGRATOR",
-      reason: `Protected base ${opts.base} requires GitHub pull-request merges.`,
+      reason: `branch_pr integration is waiting for the GitHub PR merge into ${opts.base}.`,
       note:
         prUrl.length > 0
-          ? `Merge ${prLabel}: ${prUrl}. After GitHub merge, wait for Task Hosted Close, then pull ${opts.base}.`
-          : `Merge ${prLabel} on GitHub. After GitHub merge, wait for Task Hosted Close, then pull ${opts.base}.`,
+          ? `Continue the primary branch_pr merge route for ${prLabel}: ${prUrl}. After GitHub merges it, wait for Task Hosted Close, then pull ${opts.base}.`
+          : `Continue the primary branch_pr merge route for ${prLabel}. After GitHub merges it, wait for Task Hosted Close, then pull ${opts.base}.`,
       branch: opts.branch,
       base_branch: opts.base,
       head_sha: opts.branchHeadSha,
@@ -121,7 +121,7 @@ async function recordProtectedBaseIntegrateHandoff(opts: {
         kind: "protected_base_integrate",
         status: "awaiting_github_merge",
         local_mutation: "not_performed",
-        finalize_via: "github_pr_merge_then_hosted_close",
+        finalize_via: "github_task_pr_merge_then_hosted_close",
         pr_number: opts.prNumber,
         pr_url: prUrl.length > 0 ? prUrl : null,
         handoff_show_command: handoffShowCommand,
@@ -129,7 +129,9 @@ async function recordProtectedBaseIntegrateHandoff(opts: {
       },
       next_actions: [
         handoffShowCommand,
-        prUrl.length > 0 ? `Merge ${prLabel}: ${prUrl}` : `Merge ${prLabel} on GitHub`,
+        prUrl.length > 0
+          ? `Continue GitHub PR merge for ${prLabel}: ${prUrl}`
+          : `Continue GitHub PR merge for ${prLabel}`,
         `Wait for Task Hosted Close to finish`,
         `git pull --ff-only`,
       ],
@@ -240,13 +242,12 @@ export async function cmdIntegrate(opts: {
                 reason_code: "protected_base_auto_merge_enabled",
               },
               {
-                state: `protected-base auto-merge enabled for ${task.id}`,
-                likelyCause: `base branch ${base} is protected and GitHub accepted auto-merge instead of immediate merge`,
-                hint: "Wait for GitHub auto-merge and Task Hosted Close, then pull the base branch.",
+                state: `branch_pr GitHub PR merge queued for ${task.id}`,
+                likelyCause: `branch_pr uses the GitHub task PR merge as the primary finalization route for protected base ${base}`,
+                hint: "Wait for GitHub to merge the task PR and Task Hosted Close to finish, then pull the base branch.",
                 nextAction: {
                   command: `git pull --ff-only`,
-                  reason:
-                    "refresh the base checkout after GitHub completes the protected-base merge",
+                  reason: "refresh the base checkout after GitHub completes the task PR merge",
                   reasonCode: "protected_base_auto_merge_wait",
                 },
               },
@@ -271,9 +272,9 @@ export async function cmdIntegrate(opts: {
         exitCode: exitCodeForError("E_HANDOFF"),
         code: "E_HANDOFF",
         message:
-          `Base branch ${base} requires GitHub pull-request merges; integrate will not mutate it locally. ` +
+          `branch_pr integrates into ${base} through the task GitHub PR, not by mutating ${base} directly. ` +
           (protectedBaseMergeFailure ? `${protectedBaseMergeFailure}. ` : "") +
-          `Merge ${prHint} on GitHub, let Task Hosted Close finish the closure tail, then pull ${base}.`,
+          `Continue the GitHub PR merge route for ${prHint}, let Task Hosted Close finish the closure tail, then pull ${base}.`,
         context: withDiagnosticContext(
           {
             task_id: task.id,
@@ -282,12 +283,12 @@ export async function cmdIntegrate(opts: {
             reason_code: "protected_base_integrate_handoff",
           },
           {
-            state: `protected-base integrate routed to GitHub merge handoff for ${task.id}`,
-            likelyCause: `base branch ${base} is protected by a GitHub pull-request merge policy, so local integrate must stop before mutating ${base}`,
-            hint: "Inspect the persisted handoff artifact for the canonical finalize route, then merge the PR on GitHub and let Task Hosted Close finish the close tail.",
+            state: `branch_pr integrate is waiting on the GitHub task PR merge for ${task.id}`,
+            likelyCause: `the configured branch_pr route finalizes protected base ${base} through the GitHub task PR`,
+            hint: "Inspect the persisted lane artifact, continue the GitHub PR merge route, and let Task Hosted Close finish the close tail.",
             nextAction: {
               command: `agentplane task handoff show ${task.id}`,
-              reason: "inspect the persisted protected-base finalize route before continuing",
+              reason: "inspect the persisted GitHub PR merge route before continuing",
               reasonCode: "protected_base_integrate_handoff",
             },
           },

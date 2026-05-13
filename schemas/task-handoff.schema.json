@@ -111,7 +111,13 @@
           "anyOf": [
             {
               "type": "string",
-              "enum": ["prepared", "running", "success", "failed", "cancelled"]
+              "enum": [
+                "prepared",
+                "running",
+                "success",
+                "failed",
+                "cancelled"
+              ]
             },
             {
               "type": "null"
@@ -133,7 +139,14 @@
           "anyOf": [
             {
               "type": "string",
-              "enum": ["run", "resume", "retry", "wait", "cancel_then_resume", "none"]
+              "enum": [
+                "run",
+                "resume",
+                "retry",
+                "wait",
+                "cancel_then_resume",
+                "none"
+              ]
             },
             {
               "type": "null"
@@ -141,19 +154,34 @@
           ]
         },
         "next_command": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "resume_command": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "retry_command": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "state_path": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "trace_path": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "additionalProperties": true
@@ -163,13 +191,17 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": ["protected_base_integrate"]
+          "enum": [
+            "protected_base_integrate"
+          ]
         },
         "status": {
           "anyOf": [
             {
               "type": "string",
-              "enum": ["awaiting_github_merge"]
+              "enum": [
+                "awaiting_github_merge"
+              ]
             },
             {
               "type": "null"
@@ -180,7 +212,9 @@
           "anyOf": [
             {
               "type": "string",
-              "enum": ["not_performed"]
+              "enum": [
+                "not_performed"
+              ]
             },
             {
               "type": "null"
@@ -191,7 +225,10 @@
           "anyOf": [
             {
               "type": "string",
-              "enum": ["github_pr_merge_then_hosted_close"]
+              "enum": [
+                "github_pr_merge_then_hosted_close",
+                "github_task_pr_merge_then_hosted_close"
+              ]
             },
             {
               "type": "null"
@@ -221,13 +258,21 @@
           ]
         },
         "handoff_show_command": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "base_pull_command": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
-      "required": ["kind"],
+      "required": [
+        "kind"
+      ],
       "additionalProperties": true
     },
     "next_actions": {
@@ -259,6 +304,12 @@
       }
     }
   },
-  "required": ["schema_version", "task_id", "created_at", "from_role", "reason"],
+  "required": [
+    "schema_version",
+    "task_id",
+    "created_at",
+    "from_role",
+    "reason"
+  ],
   "additionalProperties": true
 }

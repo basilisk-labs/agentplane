@@ -307,7 +307,7 @@ export function makeRunIntegrateQueueRunNextHandler(
               claimedEntry.task_id,
               handoff ? "handoff" : "rework",
               handoff
-                ? "protected base handoff recorded; wait for hosted merge/close before releasing lane"
+                ? "GitHub PR merge pending; wait for hosted merge/close before releasing lane"
                 : err instanceof Error
                   ? err.message
                   : String(err),

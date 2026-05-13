@@ -17,7 +17,10 @@ const RUNNER_OUTCOME_STATUS_VALUES = [
 const HANDOFF_ROUTE_KIND_VALUES = ["protected_base_integrate"] as const;
 const HANDOFF_ROUTE_STATUS_VALUES = ["awaiting_github_merge"] as const;
 const HANDOFF_LOCAL_MUTATION_VALUES = ["not_performed"] as const;
-const HANDOFF_FINALIZE_VIA_VALUES = ["github_pr_merge_then_hosted_close"] as const;
+const HANDOFF_FINALIZE_VIA_VALUES = [
+  "github_pr_merge_then_hosted_close",
+  "github_task_pr_merge_then_hosted_close",
+] as const;
 const RUNNER_NEXT_ACTION_VALUES = [
   "run",
   "resume",

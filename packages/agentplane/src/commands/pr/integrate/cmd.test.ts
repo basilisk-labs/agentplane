@@ -283,7 +283,7 @@ describe("pr/integrate/cmd", () => {
     expect(emitter.warn).not.toHaveBeenCalled();
   });
 
-  it("merges a protected-base GitHub PR from the local integrate command when PR metadata is available", async () => {
+  it("queues the task GitHub PR merge from local integrate when protected-base PR metadata is available", async () => {
     mocks.prepareIntegrate.mockResolvedValue({
       ctx: {
         config: { paths: { workflow_dir: ".agentplane/tasks" } },
@@ -324,28 +324,45 @@ describe("pr/integrate/cmd", () => {
     });
     const { cmdIntegrate } = await import("./cmd.js");
 
-    const exitCode = await cmdIntegrate({
+    const caught = await cmdIntegrate({
       cwd: "/repo",
       taskId: "T-1",
       mergeStrategy: "squash",
       runVerify: false,
       dryRun: false,
       quiet: false,
-    });
+    }).catch((err: unknown) => err);
 
-    expect(exitCode).toBe(0);
+    expect(caught).toMatchObject({ code: "E_HANDOFF" });
+    const cliError = caught as { context?: { reason_code?: unknown } };
+    expect(cliError.context?.reason_code).toBe("protected_base_auto_merge_enabled");
     expect(mocks.execFileAsync).toHaveBeenCalledWith(
       "gh",
-      ["pr", "merge", "--merge", "--delete-branch", "https://github.com/example/repo/pull/338"],
+      [
+        "pr",
+        "merge",
+        "--auto",
+        "--merge",
+        "--delete-branch",
+        "https://github.com/example/repo/pull/338",
+      ],
       expect.objectContaining({ cwd: "/repo" }),
     );
-    expect(emitter.success).toHaveBeenCalledWith(
-      "integrate github merge",
-      "T-1",
-      "GitHub PR merged with --merge: https://github.com/example/repo/pull/338",
+    expect(mocks.buildTaskHandoffArtifact).toHaveBeenCalled();
+    const handoffCall = mocks.buildTaskHandoffArtifact.mock.calls[0]?.[0] as
+      | { reason?: string; route?: Record<string, unknown> }
+      | undefined;
+    expect(handoffCall?.reason).toBe(
+      "branch_pr integration is waiting for the GitHub PR merge into main.",
     );
-    expect(mocks.buildTaskHandoffArtifact).not.toHaveBeenCalled();
-    expect(mocks.writeTaskHandoff).not.toHaveBeenCalled();
+    expect(handoffCall?.route).toMatchObject({
+      kind: "protected_base_integrate",
+      status: "awaiting_github_merge",
+      finalize_via: "github_task_pr_merge_then_hosted_close",
+      pr_number: 338,
+      pr_url: "https://github.com/example/repo/pull/338",
+    });
+    expect(mocks.writeTaskHandoff).toHaveBeenCalled();
     expect(mocks.runSquashMerge).not.toHaveBeenCalled();
     expect(mocks.finalizeIntegrate).not.toHaveBeenCalled();
   });
@@ -411,7 +428,7 @@ describe("pr/integrate/cmd", () => {
       kind: "protected_base_integrate",
       status: "awaiting_github_merge",
       local_mutation: "not_performed",
-      finalize_via: "github_pr_merge_then_hosted_close",
+      finalize_via: "github_task_pr_merge_then_hosted_close",
       pr_number: null,
       pr_url: null,
       handoff_show_command: "agentplane task handoff show T-1",
