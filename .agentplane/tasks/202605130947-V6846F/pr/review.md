@@ -24,9 +24,9 @@ Created: 2026-05-13T09:48:18.945Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T10:57:45.462Z
+- Updated: 2026-05-13T11:03:29.013Z
 - Branch: task/202605130947-V6846F/cli-perf-read-paths
-- Head: 50bec8f503ae
+- Head: d30bfb8b34a7
 
 ```text
  .agentplane/context/service/README.md              |   7 +
