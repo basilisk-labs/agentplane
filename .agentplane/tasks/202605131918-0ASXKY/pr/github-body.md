@@ -22,7 +22,7 @@ Address PR #3662 review feedback by resolving the shared .env root without assum
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T19:50:11.014Z
+- Updated: 2026-05-13T19:52:03.891Z
 - Branch: task/202605131918-0ASXKY/harden-env-root
 - Head: 10b643372150
 
