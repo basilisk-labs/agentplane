@@ -24,12 +24,18 @@ Created: 2026-05-13T20:33:34.949Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T20:33:34.949Z
+- Updated: 2026-05-13T20:41:27.238Z
 - Branch: task/202605132033-ZH7JEP/hosted-close-idempotent
-- Head: 455912bd1399
+- Head: ffd9c1fa6412
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 322 +++++++++++++++++++++
+ .../src/cli/run-cli.core.task-hosted-close.test.ts |  64 ++++
+ .../src/commands/blueprints/catalog-cache.ts       |   4 +-
+ .../src/commands/guard/impl/close-dirt.ts          |  18 +-
+ .../src/commands/task/hosted-close.command.ts      |  33 +++
+ packages/agentplane/src/shared/env.ts              |   3 +-
+ 6 files changed, 437 insertions(+), 7 deletions(-)
 ```
 
 </details>
