@@ -418,7 +418,9 @@ async function buildTarget({
     await materializeSyntheticAgentplanePackage(packageRoot, version);
   } else {
     if (!cliTarball || !coreTarball || !recipesTarball) {
-      throw new Error("Standalone package tarballs are required when synthetic skip-install mode is disabled");
+      throw new Error(
+        "Standalone package tarballs are required when synthetic skip-install mode is disabled",
+      );
     }
     await extractCliPackage(cliTarball, packageRoot);
     await sanitizeStandalonePackageJson(packageRoot, { coreTarball, recipesTarball });
