@@ -24,12 +24,15 @@ Created: 2026-05-13T20:55:22.001Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T20:55:22.001Z
+- Updated: 2026-05-13T21:10:13.815Z
 - Branch: task/202605132054-5FV925/pr-body-format
-- Head: 403e10e9a434
+- Head: 127993a496d6
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 527 +++++++++++++++++++++
+ .../commands/pr/internal/review-template.test.ts   |  42 ++
+ .../src/commands/pr/internal/review-template.ts    | 127 ++++-
+ 3 files changed, 684 insertions(+), 12 deletions(-)
 ```
 
 </details>
