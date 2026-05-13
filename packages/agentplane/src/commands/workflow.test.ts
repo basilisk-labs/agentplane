@@ -602,7 +602,9 @@ describe("commands/workflow", () => {
       const code = await cmdTaskLint({ cwd: root });
       expect(code).toBe(0);
       expect(ioLint.stdout).toContain("OK");
-      await expect(readFile(path.join(root, ".agentplane", "tasks.json"), "utf8")).rejects.toMatchObject({
+      await expect(
+        readFile(path.join(root, ".agentplane", "tasks.json"), "utf8"),
+      ).rejects.toMatchObject({
         code: "ENOENT",
       });
     } finally {

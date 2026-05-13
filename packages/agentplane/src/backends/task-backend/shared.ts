@@ -7,7 +7,6 @@ export type {
   TaskBackendBase,
   TaskBackendCapabilities,
   TaskBackendDocPort,
-  TaskBackendExportPort,
   TaskBackendFieldNameDrift,
   TaskBackendIdentityPort,
   TaskBackendInspectionResult,
