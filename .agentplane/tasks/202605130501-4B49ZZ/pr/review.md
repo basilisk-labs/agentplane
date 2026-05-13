@@ -24,9 +24,9 @@ Created: 2026-05-13T05:03:23.187Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T05:23:35.512Z
+- Updated: 2026-05-13T05:29:03.014Z
 - Branch: task/202605130501-4B49ZZ/v06-context-release-readiness
-- Head: b58727ba0aa5
+- Head: 53b2ac10757e
 
 ```text
  .agentplane/WORKFLOW.md                            |   3 +-
@@ -57,10 +57,11 @@ Created: 2026-05-13T05:03:23.187Z
  packages/recipes/src/index.ts                      |   2 +-
  packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
+ scripts/README.md                                  |   8 +-
  scripts/check-local-tarball-install-smoke.mjs      |  12 +
  scripts/generate-builtin-assets.mjs                | 110 +++++
  website/sidebars.ts                                |  12 +-
- 31 files changed, 1790 insertions(+), 179 deletions(-)
+ 32 files changed, 1796 insertions(+), 181 deletions(-)
 ```
 
 </details>
