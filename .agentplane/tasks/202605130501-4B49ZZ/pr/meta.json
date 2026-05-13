@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T07:05:03Z",
   "base": "main",
   "branch": "task/202605130501-4B49ZZ/v06-context-release-readiness",
   "created_at": "2026-05-13T05:03:23.187Z",
-  "head_sha": "421b6498caebd4d20e8f6bec015604964c9f2aff",
+  "head_sha": "acd7d1c6e2a927fd12905201ab615d51388ad210",
   "last_verified_at": "2026-05-13T05:27:33.531Z",
   "last_verified_sha": "b58727ba0aa5924532f724a129c03be78be9e1a8",
+  "merge_commit": "2c54ffa82de685e798a81a44a3ccdfa1241ec7d6",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T07:05:03Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605130501-4B49ZZ",
-  "updated_at": "2026-05-13T06:55:22.462Z",
+  "updated_at": "2026-05-13T07:05:03Z",
   "verify": {
     "status": "pass"
   }
