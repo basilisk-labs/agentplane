@@ -17,7 +17,6 @@ import {
 import { isRecord } from "../../shared/guards.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 
-import { listLocalTasks } from "./local-backend-read.js";
 import {
   assertExpectedRevision,
   storedRevisionFromFrontmatter,
@@ -39,7 +38,6 @@ import {
   resolveDocUpdatedByFromTask,
   taskRecordToData,
   validateTaskId,
-  writeTasksExportFromTasks,
   type TaskData,
   type TaskWriteOptions,
 } from "./shared.js";
@@ -341,19 +339,4 @@ export async function normalizeLocalTasks(
   const scanned = results.reduce((acc, result) => acc + (result.scanned ? 1 : 0), 0);
   const changed = results.reduce((acc, result) => acc + (result.changed ? 1 : 0), 0);
   return { scanned, changed };
-}
-
-export async function exportLocalTasksJson(
-  context: LocalBackendContext,
-  outputPath: string,
-): Promise<void> {
-  const tasks = await listLocalTasks(context, "full");
-  await writeTasksExportFromTasks({ outputPath, tasks });
-}
-
-export async function exportLocalProjectionSnapshot(
-  context: LocalBackendContext,
-  outputPath: string,
-): Promise<void> {
-  await exportLocalTasksJson(context, outputPath);
 }

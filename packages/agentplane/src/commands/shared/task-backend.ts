@@ -129,7 +129,7 @@ export function getTaskBackendCapabilities(ctx: CommandContext) {
     may_access_network_on_write: !isLocal,
     supports_projection_refresh: !isLocal,
     supports_push_sync: !isLocal,
-    supports_snapshot_export: true,
+    supports_snapshot_export: false,
   } satisfies TaskBackendCapabilities;
 }
 
@@ -303,23 +303,4 @@ export async function listTaskProjection(ctx: CommandContext): Promise<TaskSumma
     return await listTaskSummariesMemo(ctx);
   }
   return null;
-}
-
-export async function exportTaskProjectionSnapshot(opts: {
-  ctx: CommandContext;
-  outputPath: string;
-}): Promise<void> {
-  if (opts.ctx.taskBackend.exportProjectionSnapshot) {
-    await opts.ctx.taskBackend.exportProjectionSnapshot(opts.outputPath);
-    return;
-  }
-  if (opts.ctx.taskBackend.exportTasksJson) {
-    await opts.ctx.taskBackend.exportTasksJson(opts.outputPath);
-    return;
-  }
-  throw new CliError({
-    exitCode: 3,
-    code: "E_VALIDATION",
-    message: "Configured backend does not support exporting a task snapshot",
-  });
 }

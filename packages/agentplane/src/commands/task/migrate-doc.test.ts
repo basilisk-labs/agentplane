@@ -577,7 +577,7 @@ Already normalized.
     expect(migratedCurrent).not.toContain("## Notes");
   });
 
-  it("refreshes the local tasks export snapshot automatically after migration", async () => {
+  it("migrates task docs without refreshing legacy tasks.json snapshots", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
@@ -693,8 +693,8 @@ Already normalized.
       }[];
     };
     const migratedTask = exported.tasks?.find((task) => task.id === taskId);
-    expect(migratedTask?.doc_version).toBe(3);
-    expect(migratedTask?.revision).toBe(1);
-    expect(migratedTask?.sections?.Findings).toContain("Already normalized.");
+    expect(migratedTask?.doc_version).toBe(2);
+    expect(migratedTask?.revision).toBeUndefined();
+    expect(migratedTask?.sections).toBeUndefined();
   });
 });

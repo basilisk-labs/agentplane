@@ -34,13 +34,12 @@ describe("TaskBackendAdapter", () => {
           may_access_network_on_write: true,
           supports_projection_refresh: true,
           supports_push_sync: true,
-          supports_snapshot_export: true,
+          supports_snapshot_export: false,
         },
         listTasks: vi.fn().mockResolvedValue([]),
         listProjectionTasks,
         getTask: vi.fn().mockResolvedValue(null),
         writeTask: vi.fn().mockResolvedValue(),
-        exportProjectionSnapshot: vi.fn().mockResolvedValue(),
       },
     } as unknown as CommandContext;
 

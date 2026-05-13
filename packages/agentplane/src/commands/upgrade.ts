@@ -230,7 +230,6 @@ export async function cmdUpgradeParsed(opts: {
             taskIds: [],
             resolvedProject: resolved,
             config: loaded.config,
-            ctx: commandCtx,
           })
         : { changed: 0, changedPaths: [] };
       if (flags.migrateTaskDocs) {

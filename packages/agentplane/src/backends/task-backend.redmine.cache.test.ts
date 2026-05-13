@@ -91,19 +91,10 @@ describe("RedmineBackend cache export and unavailable paths", () => {
       },
       { cache },
     );
-    const helper = backend as unknown as {
-      listTasksRemote: () => Promise<TaskData[]>;
-    };
-    helper.listTasksRemote = vi.fn(() => {
-      throw new Error("remote should not be called during projection snapshot export");
-    });
-
-    const outPath = path.join(tempDir, "tasks-projection.json");
-    await backend.exportProjectionSnapshot(outPath);
-
-    const raw = JSON.parse(await readFile(outPath, "utf8")) as { tasks: TaskData[] };
-    expect(raw.tasks).toHaveLength(1);
-    expect(raw.tasks[0]?.id).toBe(task.id);
+    expect(backend.capabilities.supports_snapshot_export).toBe(false);
+    const rows = await backend.listProjectionTasks();
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.id).toBe(task.id);
   });
 
   it("surfaces errors when redmine unavailable without cache", async () => {

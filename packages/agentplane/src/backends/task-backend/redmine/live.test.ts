@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, rm } from "node:fs/promises";
 import { existsSync, readFileSync as readFileSyncCompat } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -79,7 +79,6 @@ describeWhenEnvPresent(shouldRunRedmineLiveSuite())("Redmine live projection con
   it("refreshes projection from Redmine and exports a snapshot without remote writes", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), TMP_PREFIX));
     const cacheDir = path.join(root, ".agentplane", "tasks");
-    const snapshotPath = path.join(root, ".agentplane", "tasks.json");
     const cache = new LocalBackend({ dir: cacheDir });
     const backend = new RedmineBackend({}, { cache });
 
@@ -100,19 +99,7 @@ describeWhenEnvPresent(shouldRunRedmineLiveSuite())("Redmine live projection con
       const loaded = await backend.getTask(firstTaskId);
       expect(loaded?.id).toBe(firstTaskId);
 
-      await backend.exportProjectionSnapshot(snapshotPath);
-
-      const snapshot = JSON.parse(await readFile(snapshotPath, "utf8")) as {
-        tasks?: { id?: string }[];
-        meta?: { schema_version?: number; managed_by?: string };
-      };
-      expect(Array.isArray(snapshot.tasks)).toBe(true);
-      expect(snapshot.tasks?.length).toBe(projectionTasks.length);
-      expect(snapshot.tasks?.some((task) => task.id === firstTaskId)).toBe(true);
-      expect(snapshot.meta).toMatchObject({
-        schema_version: 1,
-        managed_by: "agentplane",
-      });
+      expect(backend.capabilities.supports_snapshot_export).toBe(false);
     } finally {
       await rm(root, { recursive: true, force: true });
     }

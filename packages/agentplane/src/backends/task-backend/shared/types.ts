@@ -219,8 +219,6 @@ export type TaskBackendInspectionPort = {
 };
 
 export type TaskBackendExportPort = {
-  exportProjectionSnapshot?(outputPath: string): Promise<void>;
-  exportTasksJson?(outputPath: string): Promise<void>;
 };
 
 export type TaskBackendDocPort = {

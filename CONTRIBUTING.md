@@ -64,9 +64,8 @@ Notes:
   config requires it.
 - `agentplane finish` records the verified closeout and, in `direct` mode,
   creates the deterministic close commit by default.
-- `agentplane task export` writes an export-only snapshot for integrations;
-  `.agentplane/tasks.json` is not the canonical backlog and must not be edited
-  by hand.
+- Task README files under `.agentplane/tasks/<task-id>/README.md` are the
+  canonical local task artifacts; the derived sqlite cache is rebuildable.
 
 ## 4. Keep docs and CLI references current
 

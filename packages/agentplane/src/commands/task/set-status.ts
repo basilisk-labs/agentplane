@@ -126,7 +126,7 @@ export async function cmdTaskSetStatus(opts: {
       },
     });
 
-    // tasks.json is export-only; generated via `agentplane task export`.
+    // Legacy tasks.json exports are not generated during status commits.
 
     if (opts.commitFromComment) {
       if (!opts.body) {

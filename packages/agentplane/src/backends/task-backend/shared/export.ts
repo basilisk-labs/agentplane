@@ -1,14 +1,10 @@
 import { createHash } from "node:crypto";
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
 import {
   canonicalizeJson,
   normalizeTaskStatus,
   type TasksExportSnapshot,
 } from "@agentplaneorg/core/tasks";
 import { validateTasksExportSnapshot } from "@agentplaneorg/core/schemas";
-
-import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 
 import { DEFAULT_DOC_UPDATED_BY } from "./constants.js";
 import { normalizeDocVersion, resolveDocUpdatedByFromTask } from "./doc.js";
@@ -130,13 +126,4 @@ export function buildTasksExportSnapshotFromTasks(tasks: TaskData[]): TasksExpor
       checksum,
     },
   });
-}
-
-export async function writeTasksExportFromTasks(opts: {
-  outputPath: string;
-  tasks: TaskData[];
-}): Promise<void> {
-  const snapshot = buildTasksExportSnapshotFromTasks(opts.tasks);
-  await mkdir(path.dirname(opts.outputPath), { recursive: true });
-  await writeJsonStableIfChanged(opts.outputPath, snapshot);
 }
