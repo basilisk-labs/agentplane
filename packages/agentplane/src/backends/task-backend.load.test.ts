@@ -222,6 +222,43 @@ describe("loadTaskBackend", () => {
     fetchSpy.mockRestore();
   });
 
+  it("loads cloud backend credentials from the shared root .env when running in a worktree", async () => {
+    const worktreeRoot = path.join(tempDir, ".agentplane", "worktrees", "task-123");
+    await mkdir(path.join(tempDir, ".git", "worktrees", "task-123"), { recursive: true });
+    await mkdir(path.join(worktreeRoot, ".agentplane", "backends", "local"), { recursive: true });
+    await writeFile(
+      path.join(worktreeRoot, ".git"),
+      `gitdir: ${path.join(tempDir, ".git", "worktrees", "task-123")}\n`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(worktreeRoot, ".agentplane", "backends", "local", "backend.json"),
+      JSON.stringify({
+        id: "cloud",
+        settings: {
+          cache_dir: ".agentplane/tasks",
+        },
+      }),
+      "utf8",
+    );
+    await writeFile(
+      path.join(tempDir, ".env"),
+      [
+        "AGENTPLANE_CLOUD_ENDPOINT=https://cloud.example/",
+        "AGENTPLANE_CLOUD_TOKEN=shared-token",
+        "AGENTPLANE_CLOUD_PROJECT_ID=shared-project",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const result = await loadTaskBackend({ cwd: worktreeRoot });
+    expect(result.backendId).toBe("cloud");
+    const cloud = result.backend as CloudBackend;
+    expect(cloud.endpoint).toBe("https://cloud.example");
+    expect(cloud.token).toBe("shared-token");
+    expect(cloud.projectId).toBe("shared-project");
+  });
+
   it("parses quoted .env values and resolves backend directories", async () => {
     const agentplaneDir = path.join(tempDir, ".agentplane");
     const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");

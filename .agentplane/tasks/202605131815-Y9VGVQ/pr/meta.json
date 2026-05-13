@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605131815-Y9VGVQ/shared-root-env-sync",
+  "created_at": "2026-05-13T18:17:32.377Z",
+  "head_sha": "ebcb625a0132454b0cc6a7253da22a9095ed7f0f",
+  "last_verified_at": "2026-05-13T18:49:43.851Z",
+  "last_verified_sha": "9246be6131552d82fce48953b1e24c459adf0ded",
+  "schema_version": 1,
+  "task_id": "202605131815-Y9VGVQ",
+  "updated_at": "2026-05-13T18:51:38.284Z",
+  "verify": {
+    "status": "pass"
+  }
+}
