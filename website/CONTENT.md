@@ -49,7 +49,7 @@ The homepage must not frame AgentPlane as:
 1. a generic AI coding assistant,
 2. an autonomous company OS,
 3. a prompt framework,
-4. a hosted runtime or control dashboard,
+4. a replacement for Git, CI, or PR review,
 5. a smarter wrapper around AGENTS.md alone.
 
 ## 2026 visual direction

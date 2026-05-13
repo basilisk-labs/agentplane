@@ -97,7 +97,6 @@ does not match local task evidence is invalid.
 ACR v0.1 deliberately stays narrow:
 
 - It does not replace AgentPlane task records.
-- It does not require a hosted dashboard.
 - It does not store raw prompts by default.
 - It does not store raw model transcripts by default.
 - It does not store secrets, environment variables, credentials, or private tokens.
@@ -293,7 +292,7 @@ remote metadata, or skipped checks must be represented explicitly as `unknown`, 
 
 For ACR to work beyond AgentPlane, the format needs these properties:
 
-1. Git-native: a record can live in any Git repository without a hosted control plane.
+1. Git-native: a record can live in any Git repository and move with the codebase.
 2. Evidence-first: claims are backed by hashes, local paths, Git revisions, and policy decisions.
 3. Privacy-safe: the default public artifact is commit-safe.
 4. Producer-neutral: AgentPlane can produce ACR, but other tools can implement the same schema.

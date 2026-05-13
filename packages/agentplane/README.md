@@ -6,7 +6,7 @@
 coding-agent changes into reviewable Git evidence: task intent, approved plan, verification, finish
 state, and Agent Change Record.
 
-No hosted runtime. No telemetry. No vendor lock-in. Everything stays in your repository.
+Use any coding agent. Keep the review trail in your repository.
 
 [![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
 [![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
@@ -57,8 +57,7 @@ AGENTS.md or CLAUDE.md   Policy gateway for the repository
 .agentplane/workflows/  Last-known-good workflow snapshot
 ```
 
-AgentPlane does not run a hosted control plane. It records the task trail inside the repository you
-already review.
+AgentPlane records the task trail inside the repository you already review.
 
 ## One task loop
 
