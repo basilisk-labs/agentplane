@@ -1606,6 +1606,9 @@ Options:
 
 - `--direction <push|pull>`: Sync direction (default: push). (choices=push|pull, default=push)
 - `--conflict <diff|prefer-local|prefer-remote|fail>`: Conflict handling policy (default: diff). (choices=diff|prefer-local|prefer-remote|fail, default=diff)
+- `--watch`: Watch mode (pull only): periodically pull until interrupted or max iterations. (default=false)
+- `--interval-ms <ms>`: Watch mode polling interval in milliseconds (default: 30000). (default=30000)
+- `--max-iterations <n>`: Watch mode: stop after N iterations (0 means run until interrupted). Useful for tests. (default=0)
 - `--yes`: Auto-approve network access. (default=false)
 - `--quiet`: Reduce output noise. (default=false)
 
