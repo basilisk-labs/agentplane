@@ -31,12 +31,13 @@ Created: 2026-05-13T16:03:49.901Z
 ```text
  .github/workflows/publish.yml                      |   4 +-
  .github/workflows/task-hosted-close.yml            |   4 +-
+ docs/user/cli-reference.generated.mdx              |   1 +
  .../src/commands/integrate-queue.command.ts        | 137 +++++++++++----------
  .../src/commands/integrate-queue.spec.ts           |   9 ++
  .../src/commands/pr/integrate/cmd.test.ts          |  85 +++++++++++--
  .../agentplane/src/commands/pr/integrate/cmd.ts    | 103 ++++++++++++++++
  .../task/hosted-close-workflow-contract.test.ts    |   5 +-
- 7 files changed, 267 insertions(+), 80 deletions(-)
+ 8 files changed, 268 insertions(+), 80 deletions(-)
 ```
 
 </details>
