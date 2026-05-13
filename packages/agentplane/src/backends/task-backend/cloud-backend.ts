@@ -57,13 +57,6 @@ export type CloudBackendSettings = {
   state_path?: string;
 };
 
-type CloudSyncStateResponse = {
-  data?: unknown;
-  conflicts?: unknown;
-  openConflicts?: unknown;
-  open_conflicts?: unknown;
-  safe_command?: unknown;
-};
 type CloudSyncStateSnapshot = {
   conflicts: unknown[];
   safeCommand: string | null;
@@ -364,9 +357,9 @@ export class CloudBackend implements TaskBackend {
       }
       throw new BackendError(await cloudHttpErrorMessage(res), "E_BACKEND");
     }
-    let response: CloudSyncStateResponse;
+    let response: Record<string, unknown>;
     try {
-      response = await readCloudJson<CloudSyncStateResponse>(res, CLOUD_REQUEST_TIMEOUT_MS);
+      response = await readCloudJson<Record<string, unknown>>(res, CLOUD_REQUEST_TIMEOUT_MS);
     } catch {
       return {
         conflicts: [],
@@ -578,23 +571,20 @@ export class CloudBackend implements TaskBackend {
   }
 
   private missingConfigKeys(): string[] {
-    const missing: string[] = [];
-    if (!this.endpoint) missing.push("AGENTPLANE_CLOUD_ENDPOINT");
-    if (!this.token) missing.push("AGENTPLANE_CLOUD_TOKEN");
-    if (!this.projectId) missing.push("AGENTPLANE_CLOUD_PROJECT_ID");
-    return missing;
+    const required = [
+      [this.endpoint, "AGENTPLANE_CLOUD_ENDPOINT"],
+      [this.token, "AGENTPLANE_CLOUD_TOKEN"],
+      [this.projectId, "AGENTPLANE_CLOUD_PROJECT_ID"],
+    ] as const;
+    return required.flatMap(([value, key]) => (value ? [] : [key]));
   }
-
   private async readState(): Promise<{ last_checked_at: string | null }> {
     try {
-      const raw = JSON.parse(await readFile(this.statePath, "utf8")) as unknown;
-      if (
-        raw &&
-        typeof raw === "object" &&
-        typeof (raw as { last_checked_at?: unknown }).last_checked_at === "string"
-      ) {
-        return { last_checked_at: (raw as { last_checked_at: string }).last_checked_at };
-      }
+      const raw = JSON.parse(await readFile(this.statePath, "utf8")) as {
+        last_checked_at?: unknown;
+      } | null;
+      const lastCheckedAt = raw && typeof raw === "object" ? raw.last_checked_at : null;
+      if (typeof lastCheckedAt === "string") return { last_checked_at: lastCheckedAt };
     } catch (err) {
       const code = (err as { code?: string } | null)?.code;
       if (code !== "ENOENT") throw err;
@@ -604,6 +594,6 @@ export class CloudBackend implements TaskBackend {
 
   private async writeState(state: { last_checked_at: string }): Promise<void> {
     await mkdir(path.dirname(this.statePath), { recursive: true });
-    await writeFile(this.statePath, `${JSON.stringify(state, null, 2)}\n`, "utf8");
+    await writeFile(this.statePath, `${JSON.stringify(state, null, 2)}\n`);
   }
 }
