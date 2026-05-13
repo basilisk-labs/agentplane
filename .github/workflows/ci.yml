@@ -39,7 +39,7 @@ jobs:
         id: filter
         with:
           filters: .github/path-filters.yml
-          predicate-quantifier: every
+          predicate-quantifier: some
 
   test:
     needs: changes
