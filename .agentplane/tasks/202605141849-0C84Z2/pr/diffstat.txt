@@ -1,0 +1,3 @@
+ .../agentplane/src/backends/task-backend.test.ts   | 72 ++++++++++++++++++++++
+ .../src/backends/task-backend/shared/record.ts     | 18 +++++-
+ 2 files changed, 89 insertions(+), 1 deletion(-)

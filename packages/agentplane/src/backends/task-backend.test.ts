@@ -301,6 +301,43 @@ describe("task-backend helpers", () => {
     });
   });
 
+  it("taskRecordToData preserves configured body-only sections when frontmatter sections exist", () => {
+    const record = {
+      id: "202605140000-ISS3747",
+      frontmatter: {
+        id: "202605140000-ISS3747",
+        title: "Task",
+        description: "Desc",
+        status: "TODO",
+        priority: "med",
+        owner: "tester",
+        revision: 1,
+        doc_version: 3,
+        sections: {
+          Summary: "Canonical summary",
+          Plan: "Canonical plan",
+        },
+      },
+      body: [
+        "## Summary",
+        "",
+        "Stale body summary",
+        "",
+        "## Risks",
+        "",
+        "Custom required risk section.",
+      ].join("\n"),
+    } as unknown as TaskRecord;
+
+    const data = taskRecordToData(record);
+    expect(data.doc).toContain("## Risks\n\nCustom required risk section.");
+    expect(data.sections).toEqual({
+      Summary: "Canonical summary",
+      Plan: "Canonical plan",
+      Risks: "Custom required risk section.",
+    });
+  });
+
   it("taskRecordToData derives canonical sections from legacy README body", () => {
     const record = {
       id: "202601300000-LEGACY",
@@ -322,6 +359,41 @@ describe("task-backend helpers", () => {
     expect(data.sections).toEqual({
       Summary: "Legacy summary",
       Findings: "Legacy finding",
+    });
+  });
+
+  it("taskRecordToData preserves raw legacy doc order when frontmatter sections are absent", () => {
+    const record = {
+      id: "202601300000-LEGACYORDER",
+      frontmatter: {
+        id: "202601300000-LEGACYORDER",
+        title: "Task",
+        description: "Desc",
+        status: "TODO",
+        priority: "med",
+        owner: "tester",
+      },
+      body: [
+        "## Summary",
+        "",
+        "First",
+        "",
+        "## Findings",
+        "",
+        "Second",
+        "",
+        "## Plan",
+        "",
+        "Third",
+      ].join("\n"),
+    } as unknown as TaskRecord;
+
+    const data = taskRecordToData(record);
+    expect(data.doc).toBe("## Summary\n\nFirst\n\n## Findings\n\nSecond\n\n## Plan\n\nThird");
+    expect(data.sections).toEqual({
+      Summary: "First",
+      Findings: "Second",
+      Plan: "Third",
     });
   });
 

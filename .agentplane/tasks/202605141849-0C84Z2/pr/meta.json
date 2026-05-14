@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605141849-0C84Z2/fix-doc-section-readback-3747",
+  "created_at": "2026-05-14T18:50:37.324Z",
+  "head_sha": "984c07dd9c555666d43ea300c14570dcbc82f4d4",
+  "last_verified_at": "2026-05-14T19:21:14.035Z",
+  "last_verified_sha": "984c07dd9c555666d43ea300c14570dcbc82f4d4",
+  "pr_number": 3750,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3750",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605141849-0C84Z2",
+  "updated_at": "2026-05-14T19:21:14.069Z",
+  "verify": {
+    "status": "pass"
+  }
+}
