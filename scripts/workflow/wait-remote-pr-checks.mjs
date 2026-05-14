@@ -59,8 +59,9 @@ function parseNonNegativeInteger(value, fallback) {
 
 function maxAttemptsFromTimeoutMs(timeoutMs, intervalMs) {
   if (!Number.isInteger(timeoutMs) || timeoutMs <= 0) return null;
-  if (!Number.isInteger(intervalMs) || intervalMs <= 0) return null;
-  return Math.max(1, Math.ceil(timeoutMs / intervalMs));
+  if (!Number.isInteger(intervalMs) || intervalMs < 0) return null;
+  const effectiveIntervalMs = Math.max(1, intervalMs);
+  return Math.max(1, Math.ceil(timeoutMs / effectiveIntervalMs));
 }
 
 function parseArgs(argv) {

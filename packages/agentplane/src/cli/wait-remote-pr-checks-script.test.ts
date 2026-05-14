@@ -419,6 +419,28 @@ describe("wait-remote-pr-checks script", () => {
     expect(output).toContain("timed out waiting for required checks after 3 idle polls");
   });
 
+  it("honors --timeout-ms when the poll interval is zero", async () => {
+    const root = await makeTempRoot();
+    const { stateFile } = await writeGhMock(root);
+
+    const result = await runScript(["--timeout-ms=2"], {
+      env: {
+        PATH: `${path.join(root, "bin")}:${process.env.PATH ?? ""}`,
+        GH_STATE_FILE: stateFile,
+        GH_SCENARIO: "timeout",
+        ...DEFAULT_BRANCH_ENV,
+        AGENTPLANE_REMOTE_CHECK_INTERVAL_MS: "0",
+        AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS: "99",
+        AGENTPLANE_REMOTE_CHECK_STABLE_POLLS: "1",
+      },
+    });
+
+    expect(result.exitCode).toBe(1);
+    const output = transcript(result);
+    expect(output).toContain("poll 2 (idle 2/2)");
+    expect(output).toContain("timed out waiting for required checks after 2 idle polls");
+  });
+
   it("fails explicitly for detached push checkouts without an explicit PR target", async () => {
     const root = await makeTempRoot();
     const detachedRoot = await makeDetachedGitRoot();
