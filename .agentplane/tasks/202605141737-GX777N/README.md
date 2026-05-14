@@ -1,10 +1,11 @@
 ---
 id: "202605141737-GX777N"
 title: "Enrich feedback issue diagnostics"
-status: "DOING"
+result_summary: "Merged via PR #3745."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bun test packages/agentplane/src/cli/run-cli.core.insights-report.test.ts; Result: pass, 6 tests. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass. Command: bun run docs:cli:check; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Command: ap doctor; Result: OK with two unrelated existing branch_pr reconciliation warnings. External: created test feedback issue #3744 with Agent context and failure metadata, raw branch name absent."
   attempts: 0
-commit: null
+commit:
+  hash: "bea4a0b17fd2ee29fb111156d8585838fdd84665"
+  message: "Merge pull request #3745 from basilisk-labs/task/202605141737-GX777N/feedback-issue-diagnostics"
 comments:
   -
     author: "CODER"
     body: "Start: implement privacy-bounded feedback issue diagnostics in the dedicated task worktree, including tests and a sanitized test issue creation attempt."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3745 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/run-cli.core.insights-report.test.ts; Result: pass, 6 tests. Command: bun run typecheck; Result: pass. Command: bun run lint:core; Result: pass. Command: bun run format:check; Result: pass. Command: bun run docs:cli:check; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Command: ap doctor; Result: OK with two unrelated existing branch_pr reconciliation warnings. External: created test feedback issue #3744 with Agent context and failure metadata, raw branch name absent."
+  -
+    type: "status"
+    at: "2026-05-14T19:37:45.942Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3745 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T18:03:11.887Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T19:37:45.949Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add privacy-bounded failure context and required agent context support to AgentPlane insights issue reports, then create a test feedback issue."
 sections:
   Summary: |-
