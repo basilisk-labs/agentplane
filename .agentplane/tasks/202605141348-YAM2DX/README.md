@@ -1,10 +1,11 @@
 ---
 id: "202605141348-YAM2DX"
 title: "Clarify context wiki structure guidance"
-status: "DOING"
+result_summary: "Merged via PR #3715."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "DOCS"
   note: "Command: bun test packages/agentplane/src/cli/run-cli.core.init.test.ts --timeout 120000; Result: pass; Evidence: 27 tests passed, including context init bootstraps AgentPlane and verifies generated context/wiki/AGENTS.md guidance. Scope: context init scaffold and regression coverage. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: policy routing. Command: ap doctor; Result: pass with unrelated warnings; Evidence: doctor (OK), warnings only for pre-existing branch_pr reconciliation drift on older tasks. Scope: repository runtime health."
   attempts: 0
-commit: null
+commit:
+  hash: "2f4e8b4d31abd269357abee9eccaaf83e2b22a0f"
+  message: "Merge pull request #3715 from basilisk-labs/task/202605141348-YAM2DX/wiki-structure-guidance"
 comments:
   -
     author: "DOCS"
     body: "Start: update the context wiki agent-notes scaffold to require project-specific structure selection, then verify the generated context init behavior with focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3715 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/run-cli.core.init.test.ts --timeout 120000; Result: pass; Evidence: 27 tests passed, including context init bootstraps AgentPlane and verifies generated context/wiki/AGENTS.md guidance. Scope: context init scaffold and regression coverage. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: policy routing. Command: ap doctor; Result: pass with unrelated warnings; Evidence: doctor (OK), warnings only for pre-existing branch_pr reconciliation drift on older tasks. Scope: repository runtime health."
+  -
+    type: "status"
+    at: "2026-05-14T14:21:36.531Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3715 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T13:54:33.982Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-14T14:21:36.536Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the generated context/wiki/AGENTS.md template so agents analyze the base project and choose an appropriate wiki structure instead of assuming one fixed hierarchy."
 sections:
   Summary: |-
