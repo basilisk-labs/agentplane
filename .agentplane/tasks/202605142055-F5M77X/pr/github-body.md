@@ -22,9 +22,9 @@ Prepare, verify, publish, and prove AgentPlane patch release v0.6.1 from the cur
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T21:55:22.319Z
+- Updated: 2026-05-14T21:56:57.615Z
 - Branch: task/202605142055-F5M77X/release-v0-6-1
-- Head: 01eeaf15192b
+- Head: 6cc6dccb21f1
 
 ```text
  .../blueprint/resolved-snapshot.json               | 417 +++++++++++++++++++++
@@ -39,12 +39,12 @@ Prepare, verify, publish, and prove AgentPlane patch release v0.6.1 from the cur
  .../run-cli.core.pr-flow.integrate-merge.test.ts   |   7 +-
  ...n-cli.core.pr-flow.integrate-strategies.test.ts |   7 +-
  ...n-cli.core.pr-flow.integrate-validation.test.ts |   7 +-
- .../src/cli/run-cli.core.pr-flow.test.ts           |   2 +
+ .../src/cli/run-cli.core.pr-flow.test.ts           |   2 +-
  .../src/cli/run-cli.core.task-hosted-close.test.ts |   1 +
  .../src/workflow-runtime/validate-frontmatter.ts   |   1 +
  packages/core/src/config/workflow-file.ts          |   2 +
  packages/testkit/src/hooks.ts                      |   7 +-
- 17 files changed, 1010 insertions(+), 29 deletions(-)
+ 17 files changed, 1009 insertions(+), 30 deletions(-)
 ```
 
 </details>
