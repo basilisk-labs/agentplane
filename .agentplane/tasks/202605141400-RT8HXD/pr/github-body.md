@@ -28,12 +28,17 @@ clean.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T14:02:12.360Z
+- Updated: 2026-05-14T14:09:49.252Z
 - Branch: task/202605141400-RT8HXD/release-evidence-hardening
-- Head: 3d5c3b4706ea
+- Head: 6e8a0f7a57f7
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 526 +++++++++++++++++++++
+ .../publish-external-distribution-script.test.ts   |  89 ++++
+ .../release/release-task-evidence-script.test.ts   |  47 ++
+ scripts/release/publish-external-distribution.mjs  |   7 +-
+ scripts/release/release-task-evidence.mjs          |   1 +
+ 5 files changed, 667 insertions(+), 3 deletions(-)
 ```
 
 </details>
