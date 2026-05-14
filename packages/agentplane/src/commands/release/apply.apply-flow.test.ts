@@ -12,6 +12,7 @@ import {
 } from "@agentplane/testkit";
 import {
   seedReleaseWorkspace,
+  validReleaseNotesBody,
   withDryRunReleaseMode,
   writeReleaseNotes,
   writeWorkflowMode,
@@ -49,7 +50,7 @@ describeWhenNotHook(
         await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
         await writeFile(
           path.join(root, "docs", "releases", "v0.2.7.md"),
-          ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+          validReleaseNotesBody("0.2.7"),
           "utf8",
         );
 
@@ -111,11 +112,7 @@ describeWhenNotHook(
           { bump: "patch", yes: false },
         );
         expect(rcPlan).toBe(0);
-        await writeReleaseNotes(
-          root,
-          "0.2.7",
-          ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
-        );
+        await writeReleaseNotes(root, "0.2.7", validReleaseNotesBody("0.2.7"));
 
         const rcApply = await withDryRunReleaseMode(async () =>
           runReleaseCandidate(

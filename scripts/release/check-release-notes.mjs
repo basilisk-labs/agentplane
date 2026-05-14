@@ -1,63 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
 import { defineCheck, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
-
-function parseSemverTag(tag) {
-  const match = /^v(\d+)\.(\d+)\.(\d+)$/u.exec(tag.trim());
-  if (!match) return null;
-  return {
-    major: Number(match[1]),
-    minor: Number(match[2]),
-    patch: Number(match[3]),
-  };
-}
-
-function compareSemverTags(a, b) {
-  const pa = parseSemverTag(a);
-  const pb = parseSemverTag(b);
-  if (!pa || !pb) return a.localeCompare(b);
-  if (pa.major !== pb.major) return pa.major - pb.major;
-  if (pa.minor !== pb.minor) return pa.minor - pb.minor;
-  return pa.patch - pb.patch;
-}
-
-function listReleaseTags(rootDir) {
-  try {
-    const out = execFileSync("git", ["tag", "--list", "v[0-9]*.[0-9]*.[0-9]*"], {
-      cwd: rootDir,
-      encoding: "utf8",
-    });
-    return out
-      .split(/\r?\n/u)
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .toSorted(compareSemverTags);
-  } catch {
-    return [];
-  }
-}
-
-function requiredBulletsFromGitRange(rootDir, tag) {
-  const releaseTags = listReleaseTags(rootDir);
-  const index = releaseTags.indexOf(tag);
-  const prevTag = index > 0 ? releaseTags[index - 1] : null;
-  const range = prevTag ? `${prevTag}..${tag}` : tag;
-  try {
-    const out = execFileSync("git", ["log", "--no-merges", "--pretty=format:%H", range], {
-      cwd: rootDir,
-      encoding: "utf8",
-      maxBuffer: 10 * 1024 * 1024,
-    });
-    const count = out
-      .split(/\r?\n/u)
-      .map((line) => line.trim())
-      .filter(Boolean).length;
-    return Math.max(1, count);
-  } catch {
-    return 1;
-  }
-}
 
 const parseArgs = (argv) => {
   const { flags } = parseScriptArgs(argv, { valueFlags: ["tag", "min-bullets"] });
@@ -85,11 +28,38 @@ const RELEASE_NOTE_TEMPLATE_PLACEHOLDERS = [
   "Keep at least one bullet per listed change from `changes.md`/`changes.json`.",
 ];
 
+const REQUIRED_RELEASE_NOTE_SECTIONS = [
+  "Summary",
+  "Added",
+  "Improved",
+  "Fixed",
+  "Upgrade Notes",
+  "Verification",
+];
+
+function releaseNotesHeadingPresent(content, tag) {
+  const headingPattern = new RegExp(
+    `^#\\s+Release\\s+Notes\\s*(?:[-:—]\\s*)?${tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`,
+    "iu",
+  );
+  return releaseNoteLinesOutsideCodeFences(content).some((line) => headingPattern.test(line));
+}
+
+function sectionHeadings(content) {
+  return releaseNoteLinesOutsideCodeFences(content)
+    .map((line) => /^##\s+(.+?)\s*$/u.exec(line)?.[1]?.trim() ?? null)
+    .filter(Boolean);
+}
+
+function missingRequiredSections(content) {
+  const headings = new Set(sectionHeadings(content).map((heading) => heading.toLowerCase()));
+  return REQUIRED_RELEASE_NOTE_SECTIONS.filter((section) => !headings.has(section.toLowerCase()));
+}
+
 function duplicateSectionHeadings(content) {
   const seen = new Set();
   const duplicates = new Set();
-  for (const match of content.matchAll(/^##\s+(.+?)\s*$/gmu)) {
-    const heading = String(match[1] ?? "").trim();
+  for (const heading of sectionHeadings(content)) {
     if (!heading) continue;
     const key = heading.toLowerCase();
     if (seen.has(key)) duplicates.add(heading);
@@ -164,8 +134,16 @@ const main = defineCheck({
         continue;
       }
       const content = fs.readFileSync(fullPath, "utf8");
-      if (!/release\s+notes/i.test(content)) {
-        errors.push(`Release notes must include a "Release Notes" heading in ${relPath}.`);
+      if (!releaseNotesHeadingPresent(content, tag)) {
+        errors.push(
+          `Release notes must include a top-level "Release Notes - ${tag}" heading in ${relPath}.`,
+        );
+      }
+      const missingSections = missingRequiredSections(content);
+      if (missingSections.length > 0) {
+        errors.push(
+          `Release notes must include required template sections in ${relPath}: ${missingSections.join(", ")}`,
+        );
       }
       if (/^##\s+Writing Rules\s*$/mu.test(content)) {
         errors.push(`Release notes must not include template writing instructions in ${relPath}.`);
@@ -182,10 +160,7 @@ const main = defineCheck({
           `Release notes must not include duplicate section headings in ${relPath}: ${duplicateHeadings.join(", ")}`,
         );
       }
-      const minBullets = Math.max(
-        minBulletsOverride ?? 0,
-        requiredBulletsFromGitRange(rootDir, tag),
-      );
+      const minBullets = minBulletsOverride ?? REQUIRED_RELEASE_NOTE_SECTIONS.length;
       const bulletCount = content
         .split(/\r?\n/)
         .filter((line) => /^\s*[-*]\s+\S+/.test(line)).length;

@@ -1,0 +1,1 @@
+🚧 QGDT9K task: Fix v0.6.0 release notes quality gate [202605141314-QGDT9K]
