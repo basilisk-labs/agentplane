@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../docs/assets/readme-headers/scripts.svg" alt="AgentPlane scripts header" style="width:100%;max-width:100%;"/>
+</p>
+
 # Scripts README
 
 > Generated file. Do not edit manually.
