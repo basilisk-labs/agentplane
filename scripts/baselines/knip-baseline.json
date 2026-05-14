@@ -22,7 +22,7 @@
       "types": [
         {
           "name": "CloudPullPlan",
-          "line": 3,
+          "line": 4,
           "col": 13
         }
       ]
@@ -47,12 +47,12 @@
       "exports": [
         {
           "name": "handleRedmineConflict",
-          "line": 85,
+          "line": 89,
           "col": 23
         },
         {
           "name": "syncPushRedmine",
-          "line": 24,
+          "line": 25,
           "col": 23
         }
       ]
@@ -521,12 +521,12 @@
       "types": [
         {
           "name": "BlueprintDefinition",
-          "line": 97,
+          "line": 98,
           "col": 13
         },
         {
           "name": "BlueprintState",
-          "line": 98,
+          "line": 99,
           "col": 13
         }
       ]
@@ -695,27 +695,27 @@
       "types": [
         {
           "name": "CliEmitter",
-          "line": 22,
+          "line": 25,
           "col": 13
         },
         {
           "name": "CliEmitterStream",
-          "line": 8,
+          "line": 9,
           "col": 13
         },
         {
           "name": "CliOutputWriter",
-          "line": 4,
+          "line": 5,
           "col": 13
         },
         {
           "name": "CliReportOptions",
-          "line": 17,
+          "line": 18,
           "col": 13
         },
         {
           "name": "CommandResult",
-          "line": 40,
+          "line": 43,
           "col": 13
         }
       ]
@@ -807,7 +807,7 @@
       "types": [
         {
           "name": "ResolvedInitPaths",
-          "line": 28,
+          "line": 30,
           "col": 13
         }
       ]
@@ -934,7 +934,7 @@
       "exports": [
         {
           "name": "inferMutationFromTask",
-          "line": 51,
+          "line": 68,
           "col": 17
         }
       ]
@@ -986,7 +986,7 @@
       "types": [
         {
           "name": "CloseCommitMessage",
-          "line": 143,
+          "line": 420,
           "col": 13
         }
       ]
@@ -1128,17 +1128,17 @@
       "exports": [
         {
           "name": "renderPrHandoffNotes",
-          "line": 165,
+          "line": 288,
           "col": 17
         },
         {
           "name": "updateAutoSummaryBlock",
-          "line": 143,
+          "line": 266,
           "col": 17
         },
         {
           "name": "updateHandoffNotesBlock",
-          "line": 174,
+          "line": 297,
           "col": 17
         }
       ]
@@ -1175,7 +1175,7 @@
       "exports": [
         {
           "name": "formatUnpublishedRemoteHeadReason",
-          "line": 140,
+          "line": 139,
           "col": 17
         }
       ],
@@ -1562,7 +1562,7 @@
       "exports": [
         {
           "name": "applyReleaseMutation",
-          "line": 22,
+          "line": 24,
           "col": 23
         }
       ]
@@ -1748,28 +1748,13 @@
       "types": [
         {
           "name": "ObservedGithubPrState",
-          "line": 11,
-          "col": 13
-        },
-        {
-          "name": "PrArtifactState",
-          "line": 33,
-          "col": 13
-        },
-        {
-          "name": "PrArtifactTextState",
-          "line": 27,
-          "col": 13
+          "line": 2,
+          "col": 3
         },
         {
           "name": "PrBatchMeta",
-          "line": 10,
-          "col": 13
-        },
-        {
-          "name": "ShellInvocation",
-          "line": 308,
-          "col": 13
+          "line": 3,
+          "col": 3
         }
       ]
     },
@@ -1778,17 +1763,17 @@
       "exports": [
         {
           "name": "backendHasLocalCanonicalSource",
-          "line": 131,
+          "line": 136,
           "col": 17
         },
         {
           "name": "backendWritesTaskReadmes",
-          "line": 135,
+          "line": 140,
           "col": 17
         },
         {
           "name": "getTaskBackendCapabilities",
-          "line": 110,
+          "line": 115,
           "col": 17
         }
       ]
@@ -1815,7 +1800,7 @@
       "types": [
         {
           "name": "TaskCollectionMutationPlan",
-          "line": 23,
+          "line": 25,
           "col": 13
         }
       ]
@@ -2277,7 +2262,7 @@
       "types": [
         {
           "name": "QueryTaskProjectionResult",
-          "line": 174,
+          "line": 177,
           "col": 13
         }
       ]
@@ -2526,12 +2511,12 @@
       "types": [
         {
           "name": "ActionId",
-          "line": 20,
+          "line": 29,
           "col": 13
         },
         {
           "name": "PolicyEngineContext",
-          "line": 22,
+          "line": 31,
           "col": 13
         }
       ]
@@ -3577,14 +3562,14 @@
       "exports": [
         {
           "name": "HandoffError",
-          "line": 114,
+          "line": 116,
           "col": 14
         }
       ],
       "types": [
         {
           "name": "JsonErrorGuidance",
-          "line": 144,
+          "line": 146,
           "col": 13
         }
       ]
@@ -3594,7 +3579,7 @@
       "types": [
         {
           "name": "GitMutationMutexContext",
-          "line": 113,
+          "line": 129,
           "col": 13
         }
       ]
@@ -3819,9 +3804,9 @@
   "counts": {
     "files": 1,
     "exports": 205,
-    "types": 371,
+    "types": 366,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 577
+    "total": 572
   }
 }

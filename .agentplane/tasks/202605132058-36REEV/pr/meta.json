@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605132058-36REEV/split-pr-meta",
+  "created_at": "2026-05-13T20:59:57.460Z",
+  "head_sha": "ab343f9a369de2a1e8d398b3d6afea3c604f270a",
+  "last_verified_at": "2026-05-13T21:10:56.978Z",
+  "last_verified_sha": "ad50be06756b626fcd6da82becbd13d2862dfbc6",
+  "pr_number": 3684,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3684",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605132058-36REEV",
+  "updated_at": "2026-05-14T06:51:05.175Z",
+  "verify": {
+    "status": "pass"
+  }
+}
