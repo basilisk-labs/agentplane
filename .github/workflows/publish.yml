@@ -585,6 +585,12 @@ jobs:
           name: publish-result
           path: .agentplane/.release/publish/publish-result.json
           if-no-files-found: error
+      - name: Fail incomplete publish-result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/publish/publish-result.json','utf8')); if (!payload.success) { console.error(payload.message); process.exit(1); }"
       - name: Prepare release task evidence
         if: always()
         id: release_evidence

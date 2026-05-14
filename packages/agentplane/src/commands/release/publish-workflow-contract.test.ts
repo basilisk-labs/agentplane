@@ -49,6 +49,8 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("node scripts/manifest.mjs publish-result");
     expect(workflow).toContain("name: publish-result");
     expect(workflow).toContain("path: .agentplane/.release/publish/publish-result.json");
+    expect(workflow).toContain("Fail incomplete publish-result");
+    expect(workflow).toContain("if (!payload.success)");
     expect(workflow).toContain("Generate release distribution assets");
     expect(workflow).toContain("node scripts/generate-release-distribution.mjs");
     expect(workflow).toContain("Smoke Bun release assets");
@@ -265,6 +267,8 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("Publish Scoop bucket PR");
     expect(workflow).toContain("Publish setup-agentplane PR");
     expect(workflow).toContain("distribution-module-${{ github.event.inputs.module }}");
+    expect(workflow).toContain("Fail incomplete external distribution module");
+    expect(workflow).toContain('["published", "unchanged"].includes(payload.status)');
     expect(workflow).not.toContain("npm publish");
     expect(workflow).not.toContain("Write npm auth config");
   });

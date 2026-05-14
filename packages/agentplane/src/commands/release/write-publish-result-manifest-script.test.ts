@@ -286,7 +286,7 @@ describe("manifest script publish-result command", () => {
     );
   });
 
-  it("marks publish incomplete when required external distribution results are not confirmed", async () => {
+  it("marks publish incomplete when an external distribution PR is only opened", async () => {
     const root = await makeRoot();
     const homebrewResult = path.join(root, ".agentplane", ".release", "publish", "homebrew.json");
     const scoopResult = path.join(root, ".agentplane", ".release", "publish", "scoop.json");
@@ -373,7 +373,81 @@ describe("manifest script publish-result command", () => {
       metadata: { ok: false },
     });
     expect(payload.failures).toContain(
+      "external distribution homebrew not confirmed (status=pr_opened)",
+    );
+    expect(payload.failures).toContain(
       "external distribution scoop not confirmed (status=skipped_missing_credentials reason=missing_credentials)",
     );
+  });
+
+  it("accepts merged and verified external distribution results as publish proof", async () => {
+    const root = await makeRoot();
+    const homebrewResult = path.join(root, ".agentplane", ".release", "publish", "homebrew.json");
+    await mkdir(path.dirname(homebrewResult), { recursive: true });
+    await writeFile(
+      homebrewResult,
+      `${JSON.stringify({
+        schemaVersion: 1,
+        module: "homebrew",
+        repository: "basilisk-labs/homebrew-tap",
+        status: "published",
+        prUrl: "https://github.com/basilisk-labs/homebrew-tap/pull/7",
+        verification: {
+          ok: true,
+          branch: "main",
+          sha: "a".repeat(40),
+        },
+      })}\n`,
+      "utf8",
+    );
+
+    const result = await runScript(root, [
+      "--json",
+      "--sha",
+      "abc123",
+      "--version",
+      "0.4.2",
+      "--tag",
+      "v0.4.2",
+      "--job-status",
+      "success",
+      "--core-prepublished",
+      "true",
+      "--recipes-prepublished",
+      "true",
+      "--cli-prepublished",
+      "true",
+      "--core-outcome",
+      "skipped",
+      "--recipes-outcome",
+      "skipped",
+      "--cli-outcome",
+      "skipped",
+      "--smoke-outcome",
+      "success",
+      "--tag-exists",
+      "true",
+      "--tag-outcome",
+      "skipped",
+      "--release-outcome",
+      "success",
+      "--external-result",
+      homebrewResult,
+    ]);
+
+    const payload = JSON.parse(String(result.stdout ?? "")) as {
+      success: boolean;
+      failures: string[];
+      external: {
+        modules: { name: string; status: string; verification?: { ok: boolean } }[];
+      };
+    };
+    expect(payload.success).toBe(true);
+    expect(payload.failures).toHaveLength(0);
+    expect(payload.external.modules[0]).toMatchObject({
+      name: "homebrew",
+      status: "published",
+      verification: { ok: true },
+    });
   });
 });

@@ -321,6 +321,12 @@ gh workflow run publish-distribution-module.yml \
   -f module=homebrew
 ```
 
+The release result is fail-closed for AgentPlane-owned external channels. Opening a Homebrew,
+Scoop, or `setup-agentplane` PR is only a handoff state and must not be recorded as completed
+publication. The channel is publish-confirmed only after the PR is merged, the target repository's
+default branch contains the rendered files for the exact version, and `setup-agentplane` has the
+matching `vX.Y.Z` tag.
+
 External moderated registries such as `homebrew/core`, winget, Chocolatey, AUR, and nixpkgs are
 follow-up publication targets. They should be opened as PR jobs or manual recovery tasks after the
 release is already published, because their review queues are outside the AgentPlane release SLA.
@@ -466,6 +472,5 @@ versions, or release notes for you.
 - verify `SHA256SUMS` covers all install and upgrade assets
 - verify the GHCR tags recorded in `ghcr-result.json` resolve and `agentplane --version` works in
   the container
-- verify Homebrew tap, Scoop bucket, and setup-action module artifacts are either externally
-  published by a follow-up PR or explicitly recorded as `skipped_missing_credentials` with recovery
-  instructions
+- verify Homebrew tap, Scoop bucket, and setup-action module artifacts are published on their
+  target default branches, or explicitly recorded as incomplete with recovery instructions
