@@ -6,6 +6,10 @@ export const workflowGuidesUrl = "/docs/workflow-guides";
 export const recipesUrl = "/docs/recipes";
 export const comparisonUrl = "/docs/compare";
 export const quickstartUrl = "/docs/user/setup";
+export const contributingUrl =
+  "https://github.com/basilisk-labs/agentplane/blob/main/CONTRIBUTING.md";
+export const securityUrl = "https://github.com/basilisk-labs/agentplane/blob/main/SECURITY.md";
+export const roadmapUrl = "https://github.com/basilisk-labs/agentplane/blob/main/ROADMAP.md";
 export const installCommand = "npm i -g agentplane";
 export const recipesIndexUrl =
   "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json";
@@ -27,12 +31,21 @@ export const homepageContent = {
       "AgentPlane wraps Claude Code, Codex, Cursor, Aider, and other coding agents with task intent, approved plans, verification evidence, commits, and Agent Change Records inside your repository.",
   },
   hero: {
-    eyebrow: "LOCAL-FIRST EVIDENCE LAYER FOR CODING AGENTS",
-    title: "Make AI-authored code reviewable in Git.",
+    eyebrow: "OPEN-SOURCE CLI FOR CODING AGENTS",
+    title: "Open-source CLI for reviewable AI-agent work in Git.",
     subtitle:
       "AgentPlane wraps Claude Code, Codex, Cursor, Aider, and other coding agents with task intent, approved plans, verification evidence, commits, and Agent Change Records - all inside your repository.",
     flow: "intent -> plan -> agent work -> verify -> commit",
-    proofLine: "Local-first. Git-native. Works with your existing coding agent.",
+    proofLine: "Run locally. No signup. No hosted runtime required.",
+    trustItems: [
+      "MIT licensed",
+      "Local-first",
+      "Works with Git",
+      "Node.js 24+",
+      "No cloud account required",
+      "Security policy",
+      "Contributing guide",
+    ],
   },
   heroArtifacts: [
     {
@@ -68,7 +81,29 @@ export const homepageContent = {
     title: "Copy this, run it in any repo.",
     text: "The first win is not a dashboard. It is a local evidence trail you can inspect in Git.",
     lines: [installCommand, "agentplane init", "agentplane quickstart"],
+    expectedArtifacts: [
+      ".agentplane/tasks/<task-id>/README.md",
+      ".agentplane/tasks/<task-id>/acr.json",
+    ],
     afterAction: "Tried it? Star the repo.",
+  },
+  projectStatus: {
+    title: "Project status",
+    text: "AgentPlane is an early open-source CLI for local-first, Git-native AI-agent workflow evidence.",
+    currentScope: [
+      "repo-local task lifecycle",
+      "plan / verify / finish flow",
+      "Agent Change Record generation and validation",
+      "direct and branch_pr workflows",
+      "local context",
+      "signed recipes catalog",
+    ],
+    notInScope: [
+      "replacing your coding agent",
+      "replacing Git, CI, or PR review",
+      "hosted runtime dependency",
+      "cloud account requirement",
+    ],
   },
   artifacts: {
     title: "What AgentPlane writes.",
@@ -123,7 +158,7 @@ export const homepageContent = {
       {
         label: "Hosted dashboards",
         value:
-          "They move workflow state elsewhere. AgentPlane keeps the durable record in the repository.",
+          "They help with team visibility, alerts, and governance. AgentPlane keeps the durable evidence record in Git.",
       },
       {
         label: "Git alone",
@@ -161,8 +196,28 @@ export const homepageContent = {
   },
   context: {
     title: "Advanced: context and recipes stay below the core flow.",
-    text: "For teams, hosted traces and shared dashboards can come later. The CLI works locally today. Context and recipes extend the evidence layer after the first task -> plan -> verify loop is clear.",
+    text: "For teams, hosted traces and shared dashboards can sync around the Git record later. The CLI works locally today. Context and recipes extend the evidence layer after the first task -> plan -> verify loop is clear.",
     action: { label: "Open context docs", to: contextUrl },
+  },
+  contribute: {
+    title: "Contribute",
+    text: "AgentPlane is early and useful contributions are small, concrete, and evidence-backed.",
+    items: [
+      "fix unclear docs",
+      "add workflow examples for real coding agents",
+      "improve CLI reference wording",
+      "add reproducible bug reports",
+      "share public ACR examples",
+    ],
+    note: "Open an issue before larger behavior changes.",
+  },
+  security: {
+    title: "Security",
+    text: "Please do not report vulnerabilities in public issues. Use security@agentplane.dev or GitHub private vulnerability reporting.",
+  },
+  roadmap: {
+    title: "Roadmap",
+    text: "AgentPlane is moving from repo-local evidence toward reusable recipes, typed execution paths, local context, controlled runners, and evaluation loops. See ROADMAP.md for direction, not promises.",
   },
   recipesCatalog: {
     title: "Recipes are extensions, not the first step.",

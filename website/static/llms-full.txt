@@ -146,8 +146,33 @@ ci` as an ACR readiness gate.
 Hosted runtimes and dashboards are useful when you need remote execution, central queues, or sandbox
 management.
 
-AgentPlane.org is not a hosted agent runtime or sandbox API. It is a local-first Git evidence layer
-for AI work in repositories.
+AgentPlane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first Git evidence
+layer for AI work in repositories.
+
+Hosted dashboards are useful for team visibility, shared history, alerts, and governance.
+AgentPlane OSS keeps the durable evidence record in Git, so Cloud can sync and collaborate around
+the record without becoming the only source of truth.
+
+## When to use AgentPlane
+
+Use AgentPlane when:
+
+- your coding agent changes real repositories;
+- reviewers need task intent, plan, verification, and closure evidence;
+- AI-authored pull requests need a repeatable review contract;
+- you want durable artifacts in Git instead of transient chat history.
+
+Do not use AgentPlane when:
+
+- you only need a prompt playground;
+- you want a hosted sandbox runtime;
+- you want an agent framework to choose models and tools;
+- you do not use Git-based review.
+
+## Works with, not against
+
+Claude Code, Codex, Cursor, and Aider generate or edit code. Git stores the diff. CI runs checks.
+AgentPlane records the evidence around the work.
 
 ## Summary
 
@@ -183,7 +208,8 @@ task -> plan -> approve -> implement -> verify -> finish
 - Policy gateway through `AGENTS.md` or `CLAUDE.md`.
 - Explicit task lifecycle.
 - Verification evidence.
-- Local context ingestion, projection, search, and task-context verification.
+- Local context management: raw sources, wiki pages, facts, graph edges, projection, search, and
+  task-context verification.
 - ACR generation and validation.
 - `direct` and `branch_pr` workflows.
 
@@ -214,6 +240,9 @@ context/wiki/**/*
 context/facts/**/*.jsonl
 context/graph/**/*.jsonl
 ```
+
+This is AgentPlane's implementation of the LLM Wiki pattern for repositories: agents maintain a
+source-backed knowledge layer in Git instead of re-reading every raw source on every question.
 
 ## Source of truth model
 

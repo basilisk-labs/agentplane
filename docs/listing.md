@@ -44,5 +44,5 @@ Repo-local evidence layer for AI-authored software changes.
 
 ## Differentiation note
 
-AgentPlane.org is not a hosted agent runtime or sandbox API. It is a local-first Git evidence layer
-for AI work in repositories.
+AgentPlane OSS CLI is not a hosted agent runtime or sandbox API. It is a local-first Git evidence
+layer for AI work in repositories.

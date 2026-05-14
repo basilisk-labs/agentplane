@@ -3,6 +3,20 @@ import type * as Preset from "@docusaurus/preset-classic";
 
 const gtmContainerId = process.env.GTM_CONTAINER_ID ?? "GTM-P4FNLHQF";
 const gaMeasurementId = process.env.GA_MEASUREMENT_ID ?? "G-L8T8ZZ8RSG";
+const githubEditBaseUrl = "https://github.com/basilisk-labs/agentplane/edit/main";
+
+function repoEditUrl(sourcePath: string): string {
+  const cleanPath = sourcePath.replace(/^(?:\.\.\/)+/, "");
+  return `${githubEditBaseUrl}/${cleanPath}`;
+}
+
+function docsEditUrl(docPath: string): string {
+  return repoEditUrl(`docs/${docPath}`);
+}
+
+function blogEditUrl(blogPath: string): string {
+  return repoEditUrl(`website/blog/${blogPath}`);
+}
 
 const config = {
   title: "AgentPlane",
@@ -39,7 +53,7 @@ const config = {
           exclude: ["**/README.md"],
           sidebarPath: "./sidebars.ts",
           routeBasePath: "/docs",
-          editUrl: "https://github.com/basilisk-labs/agentplane/tree/main/",
+          editUrl: ({ docPath }: { docPath: string }) => docsEditUrl(docPath),
         },
         blog: {
           showReadingTime: true,
@@ -52,7 +66,7 @@ const config = {
             type: ["rss", "atom"],
             xslt: true,
           },
-          editUrl: "https://github.com/basilisk-labs/agentplane/tree/main/website/",
+          editUrl: ({ blogPath }: { blogPath: string }) => blogEditUrl(blogPath),
         },
         gtag: {
           trackingID: gaMeasurementId,
@@ -127,6 +141,12 @@ const config = {
           activeBaseRegex: "^/docs/compare",
         },
         {
+          to: "/docs/recipes",
+          label: "Recipes",
+          position: "right",
+          activeBaseRegex: "^/docs/recipes",
+        },
+        {
           to: "/docs/user/setup",
           label: "Quickstart",
           position: "right",
@@ -196,19 +216,39 @@ const config = {
           ],
         },
         {
-          title: "Project",
+          title: "Open Source",
           items: [
             {
               label: "GitHub",
               href: "https://github.com/basilisk-labs/agentplane",
             },
             {
-              label: "Policy",
-              href: "https://github.com/basilisk-labs/agentplane/blob/main/POLICY.md",
+              label: "Contributing",
+              href: "https://github.com/basilisk-labs/agentplane/blob/main/CONTRIBUTING.md",
+            },
+            {
+              label: "Issues",
+              href: "https://github.com/basilisk-labs/agentplane/issues",
+            },
+            {
+              label: "Discussions",
+              href: "https://github.com/basilisk-labs/agentplane/discussions",
+            },
+            {
+              label: "Roadmap",
+              href: "https://github.com/basilisk-labs/agentplane/blob/main/ROADMAP.md",
+            },
+            {
+              label: "Releases",
+              href: "https://github.com/basilisk-labs/agentplane/releases",
             },
             {
               label: "Security",
               href: "https://github.com/basilisk-labs/agentplane/blob/main/SECURITY.md",
+            },
+            {
+              label: "License",
+              href: "https://github.com/basilisk-labs/agentplane/blob/main/LICENSE",
             },
           ],
         },
@@ -216,12 +256,8 @@ const config = {
           title: "Community",
           items: [
             {
-              label: "Contributing",
-              href: "https://github.com/basilisk-labs/agentplane/blob/main/CONTRIBUTING.md",
-            },
-            {
-              label: "Discussions",
-              href: "https://github.com/basilisk-labs/agentplane/discussions",
+              label: "Policy",
+              href: "https://github.com/basilisk-labs/agentplane/blob/main/POLICY.md",
             },
             {
               label: "Showcase",
