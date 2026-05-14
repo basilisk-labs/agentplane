@@ -4,7 +4,7 @@ title: "Generate README header image"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-14T10:08:37.992Z"
+  updated_at: "2026-05-14T10:09:55.531Z"
   updated_by: "CODER"
-  note: "README header generator implemented and verified."
+  note: "Post-commit verification remains green for README header generator."
   attempts: 0
 commit: null
 comments:
@@ -41,8 +41,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "README header generator implemented and verified."
+  -
+    type: "verify"
+    at: "2026-05-14T10:09:55.531Z"
+    author: "CODER"
+    state: "ok"
+    note: "Post-commit verification remains green for README header generator."
 doc_version: 3
-doc_updated_at: "2026-05-14T10:08:38.002Z"
+doc_updated_at: "2026-05-14T10:09:55.541Z"
 doc_updated_by: "CODER"
 description: "Add an algorithmic README header image generator that includes the AgentPlane logo, release-derived wording, and version number, then wire the generated asset into the root README."
 sections:
@@ -81,6 +87,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605141002-R9MPV5
     
+    ### 2026-05-14T10:09:55.531Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Post-commit verification remains green for README header generator.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T10:08:38.002Z, excerpt_hash=sha256:465c7d07d0c63ad16d56601e8bff2614ef73a29c4ff3465e9aafa01abc669b19
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141002-R9MPV5-readme-header-image/.agentplane/tasks/202605141002-R9MPV5/blueprint/resolved-snapshot.json
+    - old_digest: ba36ff1bdc2fa34f8bd2dd55ae5151fd4d3b7117fee80269e59854abba812a5c
+    - current_digest: ba36ff1bdc2fa34f8bd2dd55ae5151fd4d3b7117fee80269e59854abba812a5c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605141002-R9MPV5
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -89,6 +114,10 @@ sections:
     - Observation: Commands passed: bun run docs:readme-header:generate; bun run docs:readme-header:check; bunx eslint scripts/generate/generate-readme-header.mjs; bunx prettier --check README.md package.json scripts/generate/generate-readme-header.mjs .agentplane/tasks/202605141002-R9MPV5/README.md; node .agentplane/policy/check-routing.mjs; git diff --check; agentplane doctor. Visual render passed with qlmanage thumbnail at /tmp/header.svg.png. Latest published GitHub release was checked with gh release list: v0.5.0 Latest; local package/docs are 0.6.0 but not the published latest release.
       Impact: README now uses generated docs/assets/header.svg containing the logo, release-derived copy, and version number. Existing docs/assets/header.png remains untouched for other public surfaces.
       Resolution: No task-local rework required. Doctor reported unrelated pre-existing branch_pr reconciliation warnings for other tasks.
+    
+    - Observation: Head commit 224991f8c contains the generator, generated SVG, README link, and task PR artifacts. Re-run checks passed before commit: docs:readme-header:generate/check, targeted eslint/prettier, policy routing, git diff --check, agentplane doctor, qlmanage SVG render.
+      Impact: PR #3706 points at the verified task branch.
+      Resolution: No rework required.
 id_source: "generated"
 ---
 ## Summary
@@ -136,6 +165,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605141002-R9MPV5
 
+### 2026-05-14T10:09:55.531Z — VERIFY — ok
+
+By: CODER
+
+Note: Post-commit verification remains green for README header generator.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T10:08:38.002Z, excerpt_hash=sha256:465c7d07d0c63ad16d56601e8bff2614ef73a29c4ff3465e9aafa01abc669b19
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141002-R9MPV5-readme-header-image/.agentplane/tasks/202605141002-R9MPV5/blueprint/resolved-snapshot.json
+- old_digest: ba36ff1bdc2fa34f8bd2dd55ae5151fd4d3b7117fee80269e59854abba812a5c
+- current_digest: ba36ff1bdc2fa34f8bd2dd55ae5151fd4d3b7117fee80269e59854abba812a5c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605141002-R9MPV5
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -148,3 +196,7 @@ BlueprintSnapshotRef:
 - Observation: Commands passed: bun run docs:readme-header:generate; bun run docs:readme-header:check; bunx eslint scripts/generate/generate-readme-header.mjs; bunx prettier --check README.md package.json scripts/generate/generate-readme-header.mjs .agentplane/tasks/202605141002-R9MPV5/README.md; node .agentplane/policy/check-routing.mjs; git diff --check; agentplane doctor. Visual render passed with qlmanage thumbnail at /tmp/header.svg.png. Latest published GitHub release was checked with gh release list: v0.5.0 Latest; local package/docs are 0.6.0 but not the published latest release.
   Impact: README now uses generated docs/assets/header.svg containing the logo, release-derived copy, and version number. Existing docs/assets/header.png remains untouched for other public surfaces.
   Resolution: No task-local rework required. Doctor reported unrelated pre-existing branch_pr reconciliation warnings for other tasks.
+
+- Observation: Head commit 224991f8c contains the generator, generated SVG, README link, and task PR artifacts. Re-run checks passed before commit: docs:readme-header:generate/check, targeted eslint/prettier, policy routing, git diff --check, agentplane doctor, qlmanage SVG render.
+  Impact: PR #3706 points at the verified task branch.
+  Resolution: No rework required.
