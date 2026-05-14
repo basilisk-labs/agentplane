@@ -1,0 +1,5 @@
+ docs/user/local-context.mdx                                 | 10 ++++++++++
+ packages/agentplane/assets/agents/CURATOR.json              |  4 ++--
+ packages/agentplane/src/commands/context/init.ts            |  3 +++
+ packages/agentplane/src/context/harvest-tasks-extraction.ts |  6 ++++++
+ 4 files changed, 21 insertions(+), 2 deletions(-)
