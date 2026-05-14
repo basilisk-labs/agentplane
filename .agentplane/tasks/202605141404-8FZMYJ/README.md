@@ -1,10 +1,11 @@
 ---
 id: "202605141404-8FZMYJ"
 title: "Fail closed on external release publication"
-status: "DOING"
+result_summary: "Merged via PR #3721."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Focused release publication checks passed: publish-result now treats pr_opened as incomplete, external publisher verifies merged default-branch state, setup-agentplane tag publication is covered, workflow contract fails incomplete publish-result, routing check passed."
   attempts: 0
-commit: null
+commit:
+  hash: "1179937242f753b558d8155117a59e577a9c57be"
+  message: "Merge pull request #3721 from basilisk-labs/task/202605141404-8FZMYJ/external-release-publish-proof"
 comments:
   -
     author: "CODER"
     body: "Start: implementing fail-closed external release publication proof with focused release workflow tests and documentation updates."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3721 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused release publication checks passed: publish-result now treats pr_opened as incomplete, external publisher verifies merged default-branch state, setup-agentplane tag publication is covered, workflow contract fails incomplete publish-result, routing check passed."
+  -
+    type: "status"
+    at: "2026-05-14T16:38:28.517Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3721 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T14:22:56.364Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T16:38:28.523Z"
+doc_updated_by: "INTEGRATOR"
 description: "External distribution PR handoff must not be treated as completed publication; release evidence must require merged/default-branch verified channels or mark the release incomplete."
 sections:
   Summary: |-
