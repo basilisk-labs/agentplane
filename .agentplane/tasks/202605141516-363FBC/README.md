@@ -1,10 +1,11 @@
 ---
 id: "202605141516-363FBC"
 title: "Ignore SQLite cache on read-heavy commands"
-status: "DOING"
+result_summary: "Merged via PR #3726."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified after Codex review fix: SQLite gitignore repair is best-effort, so projection cache writes continue even if .gitignore cannot be read or updated. Evidence: focused LocalBackend SQLite gitignore regression tests pass, LocalBackend/context release readiness tests pass, exact-file ESLint passes, typecheck passes, and hotspots baseline passes."
   attempts: 0
-commit: null
+commit:
+  hash: "24e4883bd27fba448575a45b8b629772036da65b"
+  message: "Merge pull request #3726 from basilisk-labs/task/202605141516-363FBC/sqlite-cache-ignore"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing the approved SQLite cache ignore repair in the dedicated task worktree, scoped to runtime gitignore/cache handling plus a regression test for stale initialized repositories."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3726 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified after Codex review fix: SQLite gitignore repair is best-effort, so projection cache writes continue even if .gitignore cannot be read or updated. Evidence: focused LocalBackend SQLite gitignore regression tests pass, LocalBackend/context release readiness tests pass, exact-file ESLint passes, typecheck passes, and hotspots baseline passes."
+  -
+    type: "status"
+    at: "2026-05-14T16:20:24.684Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3726 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T16:18:28.209Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T16:20:24.690Z"
+doc_updated_by: "INTEGRATOR"
 description: "Ensure read-heavy commands that create the shared SQLite cache also prevent .agentplane/cache.sqlite and WAL/SHM files from appearing as untracked files in older AgentPlane repositories whose .gitignore predates the v0.6 cache ignore entries."
 sections:
   Summary: |-
