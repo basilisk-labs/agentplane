@@ -1,3 +1,5 @@
+import type { BlueprintRouteDecisionSgrResult } from "../runtime/sgr/index.js";
+
 export type BuiltinBlueprintId =
   | "analysis.light"
   | "content.light"
@@ -543,4 +545,5 @@ export type BlueprintExplainOutput = {
   acceptedRecipeExtensions: readonly AcceptedRecipeExtension[];
   rejectedRecipeExtensions: readonly RejectedRecipeExtension[];
   stopReasons: readonly StopReason[];
+  sgrDecision: BlueprintRouteDecisionSgrResult;
 };

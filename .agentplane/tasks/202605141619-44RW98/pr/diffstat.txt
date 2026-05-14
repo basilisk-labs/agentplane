@@ -1,0 +1,4 @@
+ .../blueprint/resolved-snapshot.json               | 552 +++++++++++++++++++++
+ packages/agentplane/src/runner/playbooks.ts        |   6 +-
+ packages/agentplane/src/runner/types.ts            |  15 -
+ 3 files changed, 555 insertions(+), 18 deletions(-)

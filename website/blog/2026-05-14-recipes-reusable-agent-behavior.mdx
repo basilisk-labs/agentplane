@@ -1,0 +1,90 @@
+---
+slug: recipes-reusable-agent-behavior
+title: "Recipes: reusable agent behavior without copy-paste prompts"
+description: "Recipes improve AgentPlane by packaging repeatable agent behavior as inspectable repository assets instead of opaque prompt blobs."
+authors: [team]
+tags: [recipes, workflow, operations]
+---
+
+Every team that works with coding agents eventually invents a small library of "the way we do
+things here." A release has a shape. A code-map task has a shape. A review response has a shape.
+Someone writes a prompt, someone else copies it, and a month later nobody knows which version is the
+real one.
+
+Recipes are AgentPlane's answer to that drift.
+
+They are not meant to replace the project policy. They are not a second agent framework hiding next
+to the repo. A useful recipe is narrower than that: a reusable behavior package that can be
+installed, inspected, checked, and kept inside the same task lifecycle as normal work.
+
+<!-- truncate -->
+
+## The problem with copied prompts
+
+Copied prompts feel cheap at the start. They are easy to paste into an agent session and easy to
+tweak when something feels off. The cost shows up later.
+
+The prompt gets out of sync with the repository. It names files that moved. It describes checks that
+no longer exist. It contains a good recovery rule, but only in the private notebook of the person
+who wrote it. Another agent gets a slightly different version and behaves differently on the same
+kind of task.
+
+That is not a tooling problem in the abstract. It is a review problem. If behavior changes because a
+prompt was copied badly, the repository has no good record of what changed.
+
+Recipes make reusable behavior part of the repository story.
+
+## Why modular prompts changed the recipe story
+
+AgentPlane's recipe work became much more useful once prompt material stopped being one large text
+surface. With modular prompt assembly, behavior can be named, compiled, and checked as smaller
+parts. A recipe can target a module instead of replacing an entire instruction file.
+
+That changes the risk profile. Installing a recipe should not feel like letting an unknown prompt
+rewrite the whole operating model. It should feel closer to adding a reviewed capability: here is
+the behavior, here is where it binds, here is the policy it depends on, here is how to verify that
+it landed cleanly.
+
+The early recipe system is still intentionally conservative. That is fine. Extensibility is only
+useful if teams can understand what they extended.
+
+## What recipes make better
+
+Recipes make repeated work less dependent on memory.
+
+A code-map recipe can give agents a repeatable way to inspect a repository before changing it. A
+release-oriented recipe can preserve the evidence habit that keeps publication safe. A future
+review recipe can encode what kind of comments should become code changes, task findings, or
+follow-up issues.
+
+The important part is not that a recipe saves a few commands. The important part is that the
+behavior becomes reviewable. It can be versioned. It can be discussed. It can be removed. It can be
+checked against the project instead of living as a private prompt.
+
+This is why recipes fit AgentPlane's larger model. AgentPlane is not trying to make agents more
+mysterious. It is trying to make their work easier to inspect after the session is gone.
+
+## Recipes and policy have different jobs
+
+Policy says what must be true in this repository. Recipes add reusable ways to do work within those
+constraints.
+
+That distinction matters. If a rule is mandatory for every agent, it belongs in the gateway or a
+canonical policy module. If a behavior is useful for a class of tasks, but optional or replaceable,
+it belongs in recipe space.
+
+Keeping that boundary clean prevents recipes from becoming a second policy system. It also keeps
+projects honest about what they are installing. The recipe can help, but the repository still owns
+the final rules.
+
+## The practical shift
+
+The practical shift is from prompt reuse to behavior reuse.
+
+Prompt reuse is fragile because it depends on text staying correct outside the system that uses it.
+Behavior reuse is stronger because it has a place in the repository, a version, and a verification
+path.
+
+That is what recipes add to AgentPlane. They let teams build on repeated agent workflows without
+turning those workflows into folklore. Less paste. Less guessing. More inspectable behavior close to
+the code it affects.

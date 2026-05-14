@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T19:22:52Z",
+  "base": "main",
+  "branch": "task/202605141849-0C84Z2/fix-doc-section-readback-3747",
+  "created_at": "2026-05-14T18:50:37.324Z",
+  "head_sha": "d2876a62cf3024202e2be5e1d28b368348e1d657",
+  "last_verified_at": "2026-05-14T19:21:14.035Z",
+  "last_verified_sha": "984c07dd9c555666d43ea300c14570dcbc82f4d4",
+  "merge_commit": "61b8b9c7f2a2a1684be4cef8f57e96647ad70c0f",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T19:22:52Z",
+  "pr_number": 3750,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3750",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605141849-0C84Z2",
+  "updated_at": "2026-05-14T19:22:52Z",
+  "verify": {
+    "status": "pass"
+  }
+}

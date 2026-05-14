@@ -4,7 +4,7 @@ title: "Add opt-in GitHub issue feedback prompts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-14T15:52:06.454Z"
+  updated_at: "2026-05-14T19:42:36.044Z"
   updated_by: "CODER"
-  note: "Final verification on head 2fac48f7. Implemented explicit feedback.github_issues opt-in, full init prompt/flag support, mandatory E_INTERNAL issue suggestion, and insights issue dry-run/create flow. Checks passed: focused Vitest/Bun tests, typecheck, format:check, lint targets, knip:check, schema/docs checks, ap doctor, policy routing, GitHub Docs CI, GitHub Core CI test/test-windows/release-ready manifest."
+  note: "Verified: resolved origin/main merge conflicts while preserving opt-in feedback defaults and newer agent-context diagnostics. Checks passed: focused Vitest/Bun tests for prompt steps, config, error-map, insights report/spec; bun run typecheck; bun run schemas:check; bun run docs:cli:check; bun run format:check; git diff --check; conflict marker scan; node .agentplane/policy/check-routing.mjs; ap doctor OK with pre-existing branch_pr warnings. Optional bun run lint:core still fails on repo-local bin import resolution for ../dist/cli.js after bootstrap, not on conflict files."
   attempts: 0
 commit: null
 comments:
@@ -53,8 +53,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Final verification on head 2fac48f7. Implemented explicit feedback.github_issues opt-in, full init prompt/flag support, mandatory E_INTERNAL issue suggestion, and insights issue dry-run/create flow. Checks passed: focused Vitest/Bun tests, typecheck, format:check, lint targets, knip:check, schema/docs checks, ap doctor, policy routing, GitHub Docs CI, GitHub Core CI test/test-windows/release-ready manifest."
+  -
+    type: "verify"
+    at: "2026-05-14T19:42:36.044Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: resolved origin/main merge conflicts while preserving opt-in feedback defaults and newer agent-context diagnostics. Checks passed: focused Vitest/Bun tests for prompt steps, config, error-map, insights report/spec; bun run typecheck; bun run schemas:check; bun run docs:cli:check; bun run format:check; git diff --check; conflict marker scan; node .agentplane/policy/check-routing.mjs; ap doctor OK with pre-existing branch_pr warnings. Optional bun run lint:core still fails on repo-local bin import resolution for ../dist/cli.js after bootstrap, not on conflict files."
 doc_version: 3
-doc_updated_at: "2026-05-14T15:52:06.483Z"
+doc_updated_at: "2026-05-14T19:42:36.055Z"
 doc_updated_by: "CODER"
 description: "Add an explicit init/config feedback mode that prompts users to create an AgentPlane GitHub issue when internal AgentPlane errors are detected, using privacy-bounded insights diagnostics."
 sections:
@@ -119,6 +125,25 @@ sections:
     Attempts: 0
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T14:24:08.112Z, excerpt_hash=sha256:48cd4ca40cc85f84859fc317facb175ef56442602d4d0802826611a5bd510b81
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141346-TTXFPD-feedback-issue-prompts/.agentplane/tasks/202605141346-TTXFPD/blueprint/resolved-snapshot.json
+    - old_digest: a5b8695068d9f65dea3fb3100d3cdf0523724078cb7e0c965d0ee858f073cdb1
+    - current_digest: a5b8695068d9f65dea3fb3100d3cdf0523724078cb7e0c965d0ee858f073cdb1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605141346-TTXFPD
+    
+    ### 2026-05-14T19:42:36.044Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified: resolved origin/main merge conflicts while preserving opt-in feedback defaults and newer agent-context diagnostics. Checks passed: focused Vitest/Bun tests for prompt steps, config, error-map, insights report/spec; bun run typecheck; bun run schemas:check; bun run docs:cli:check; bun run format:check; git diff --check; conflict marker scan; node .agentplane/policy/check-routing.mjs; ap doctor OK with pre-existing branch_pr warnings. Optional bun run lint:core still fails on repo-local bin import resolution for ../dist/cli.js after bootstrap, not on conflict files.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T15:52:06.483Z, excerpt_hash=sha256:48cd4ca40cc85f84859fc317facb175ef56442602d4d0802826611a5bd510b81
     
     Details:
     
@@ -208,6 +233,25 @@ Note: Final verification on head 2fac48f7. Implemented explicit feedback.github_
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T14:24:08.112Z, excerpt_hash=sha256:48cd4ca40cc85f84859fc317facb175ef56442602d4d0802826611a5bd510b81
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141346-TTXFPD-feedback-issue-prompts/.agentplane/tasks/202605141346-TTXFPD/blueprint/resolved-snapshot.json
+- old_digest: a5b8695068d9f65dea3fb3100d3cdf0523724078cb7e0c965d0ee858f073cdb1
+- current_digest: a5b8695068d9f65dea3fb3100d3cdf0523724078cb7e0c965d0ee858f073cdb1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605141346-TTXFPD
+
+### 2026-05-14T19:42:36.044Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: resolved origin/main merge conflicts while preserving opt-in feedback defaults and newer agent-context diagnostics. Checks passed: focused Vitest/Bun tests for prompt steps, config, error-map, insights report/spec; bun run typecheck; bun run schemas:check; bun run docs:cli:check; bun run format:check; git diff --check; conflict marker scan; node .agentplane/policy/check-routing.mjs; ap doctor OK with pre-existing branch_pr warnings. Optional bun run lint:core still fails on repo-local bin import resolution for ../dist/cli.js after bootstrap, not on conflict files.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T15:52:06.483Z, excerpt_hash=sha256:48cd4ca40cc85f84859fc317facb175ef56442602d4d0802826611a5bd510b81
 
 Details:
 

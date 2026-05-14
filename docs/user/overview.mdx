@@ -31,7 +31,8 @@ task -> plan -> approve -> implement -> verify -> finish
 - Policy gateway through `AGENTS.md` or `CLAUDE.md`.
 - Explicit task lifecycle.
 - Verification evidence.
-- Local context ingestion, projection, search, and task-context verification.
+- Local context management: raw sources, wiki pages, facts, graph edges, projection, search, and
+  task-context verification.
 - ACR generation and validation.
 - `direct` and `branch_pr` workflows.
 
@@ -62,6 +63,9 @@ context/wiki/**/*
 context/facts/**/*.jsonl
 context/graph/**/*.jsonl
 ```
+
+This is AgentPlane's implementation of the LLM Wiki pattern for repositories: agents maintain a
+source-backed knowledge layer in Git instead of re-reading every raw source on every question.
 
 ## Source of truth model
 

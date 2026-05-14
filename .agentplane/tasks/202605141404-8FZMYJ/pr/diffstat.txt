@@ -1,0 +1,9 @@
+ .github/workflows/publish-distribution-module.yml  |  26 ++++
+ .github/workflows/publish.yml                      |   6 +
+ docs/developer/release-and-publishing.mdx          |  11 +-
+ .../publish-external-distribution-script.test.ts   | 104 +++++++++++++-
+ .../release/publish-workflow-contract.test.ts      |   4 +
+ .../write-publish-result-manifest-script.test.ts   |  76 +++++++++-
+ scripts/release/manifest.mjs                       |   5 +-
+ scripts/release/publish-external-distribution.mjs  | 159 ++++++++++++++++++++-
+ 8 files changed, 377 insertions(+), 14 deletions(-)

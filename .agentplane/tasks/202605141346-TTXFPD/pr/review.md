@@ -13,7 +13,7 @@ Created: 2026-05-14T13:47:51.184Z
 ## Verification
 
 - State: ok
-- Note: Final verification on head 2fac48f7. Implemented explicit feedback.github_issues opt-in, full init prompt/flag support, mandatory E_INTERNAL issue suggestion, and insights issue dry-run/create flow. Checks passed: focused Vitest/Bun tests, typecheck, format:check, lint targets, knip:check, schema/docs checks, ap doctor, policy routing, GitHub Docs CI, GitHub Core CI test/test-windows/release-ready manifest.
+- Note: Verified: resolved origin/main merge conflicts while preserving opt-in feedback defaults and newer agent-context diagnostics. Checks passed: focused Vitest/Bun tests for prompt steps, config, error-map, insights report/spec; bun run typecheck; bun run schemas:check; bun run docs:cli:check; bun run format:check; git diff --check; conflict marker scan; node .agentplane/policy/check-routing.mjs; ap doctor OK with pre-existing branch_pr warnings. Optional bun run lint:core still fails on repo-local bin import resolution for ../dist/cli.js after bootstrap, not on conflict files.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

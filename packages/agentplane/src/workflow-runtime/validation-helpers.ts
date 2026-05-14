@@ -1,5 +1,6 @@
 import type { WorkflowDiagnostic } from "./types.js";
 import { renderRemediationLines } from "../shared/diagnostic-remediation.js";
+export { isRecord } from "../shared/guards.js";
 
 export function pushDiagnostic(diags: WorkflowDiagnostic[], diagnostic: WorkflowDiagnostic): void {
   diags.push({
@@ -88,10 +89,6 @@ export function renderWorkflowDiagnostic(diagnostic: WorkflowDiagnostic): string
   const remediation = diagnostic.remediation ?? remediationForWorkflowDiagnostic(diagnostic);
   lines.push(...renderRemediationLines(remediation));
   return lines.join("\n");
-}
-
-export function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
 export function expectBoolean(

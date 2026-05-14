@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { makeRunnerContextBundle } from "@agentplane/testkit/runner";
 
+import { buildRunnerExecutionPlaybookContract } from "../playbooks.js";
 import { assertRunnerBlueprintPolicyModuleBudget, renderTaskRunnerBootstrap } from "./task-run.js";
 
 describe("runner blueprint guards", () => {
@@ -65,5 +66,19 @@ describe("runner blueprint guards", () => {
 
     expect(renderTaskRunnerBootstrap(bundle)).toContain("Blueprint stop rules:");
     expect(renderTaskRunnerBootstrap(bundle)).toContain("hard: Task scope changed. (scope_drift)");
+  });
+
+  it("renders execution playbook verifier checks into the runner bootstrap", () => {
+    const bundle = makeRunnerContextBundle({
+      title: "Capture inbox item",
+      description: "Create capture, distill card, thread update, and retire the source.",
+    });
+    bundle.playbook = buildRunnerExecutionPlaybookContract(bundle);
+
+    const bootstrap = renderTaskRunnerBootstrap(bundle);
+
+    expect(bootstrap).toContain("Execution playbook contract:");
+    expect(bootstrap).toContain("selected_playbook: knowledge_capture_pipeline");
+    expect(bootstrap).toContain("source_retired");
   });
 });

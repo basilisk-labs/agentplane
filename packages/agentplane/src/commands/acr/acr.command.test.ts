@@ -13,6 +13,7 @@ import {
   makeRunAcrSchemaHandler,
 } from "./acr.command.js";
 import { CliError } from "../../shared/errors.js";
+import { getVersion } from "../../meta/version.js";
 import { readDiagnosticContext } from "../shared/diagnostics.js";
 
 const ciOptions = {
@@ -24,12 +25,13 @@ const ciOptions = {
 };
 
 function mergeReadyRecord(): AgentChangeRecord {
+  const producerVersion = getVersion();
   const record: AgentChangeRecord = {
     acr_version: "0.1.0",
     record_type: "agent_change_record",
     record_id: "acr_202605031856_H059JF",
     created_at: "2026-05-03T18:56:00.000Z",
-    producer: { name: "agentplane", version: "0.4.2" },
+    producer: { name: "agentplane", version: producerVersion },
     repository: {
       vcs: "git",
       base_ref: "main",
@@ -47,7 +49,7 @@ function mergeReadyRecord(): AgentChangeRecord {
       name: "Codex",
       agent_type: "coding_agent",
       model: { provider: "openai", name: "unknown", version: "unknown" },
-      toolchain: [{ name: "agentplane", version: "0.4.2" }],
+      toolchain: [{ name: "agentplane", version: producerVersion }],
     },
     plan: {
       status: "approved",
@@ -225,6 +227,13 @@ describe("acr command specs", () => {
       agent: "CODER",
       modelProvider: "openai",
     });
+  });
+
+  it("keeps ACR producer and toolchain versions tied to the package version", () => {
+    const record = mergeReadyRecord();
+
+    expect(record.producer.version).toBe(getVersion());
+    expect(record.agent.toolchain).toContainEqual({ name: "agentplane", version: getVersion() });
   });
 
   it("parses acr validate against an example path", () => {

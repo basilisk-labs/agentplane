@@ -88,7 +88,7 @@ const ACR_DEFAULTS: {
   include_prompts: false;
   include_tool_outputs: false;
 } = {
-  enabled: true,
+  enabled: false,
   version: "0.1.0",
   write_on_finish: true,
   require_for_pr_check: false,

@@ -1,6 +1,7 @@
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 import type { TaskSummary } from "../../../backends/task-backend.js";
+import { isRecord } from "../../../shared/guards.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 
 const BRANCH_PR_LIST_STATE_KEY = "agentplane.branch_pr_list_state";
@@ -15,10 +16,6 @@ type BranchPrMergedPendingCloseState = {
   prNumber: number | null;
   mergeCommit: string;
 };
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 function readBranchPrListState(task: TaskSummary): BranchPrMergedPendingCloseState | null {
   const extensions = isRecord(task.extensions) ? task.extensions : {};

@@ -114,6 +114,11 @@ describe("runCli insights report", () => {
       const payload = JSON.parse(io.stdout) as {
         schema?: string;
         privacy?: { local_only?: boolean; network?: string; upload?: string };
+        failure?: {
+          error_code?: string | null;
+          command_id?: string | null;
+          dedupe_signature?: string;
+        };
         project?: { workflow_mode?: string; backend?: { id?: string } };
         git?: { status_counts?: { untracked?: number }; dirty?: boolean };
         tasks?: {
@@ -129,6 +134,9 @@ describe("runCli insights report", () => {
         network: "not_used",
         upload: "not_supported",
       });
+      expect(payload.failure?.error_code).toBeNull();
+      expect(payload.failure?.command_id).toBeNull();
+      expect(payload.failure?.dedupe_signature).toMatch(/^sha256:/);
       expect(payload.project?.workflow_mode).toBe("direct");
       expect(payload.project?.backend?.id).toBe("local");
       expect(payload.git?.dirty).toBe(true);
@@ -184,6 +192,22 @@ describe("runCli insights report", () => {
         "--dry-run",
         "--error-code",
         "E_INTERNAL",
+        "--agent-context",
+        "Intent: test the public feedback issue payload. Observed failure: simulated E_INTERNAL during command dispatch. Sensitive data omitted: task prose, env, remotes, and raw output.",
+        "--failure-command",
+        "task start-ready",
+        "--failure-phase",
+        "resolve_context",
+        "--failure-reason-code",
+        "task_context_unexpected",
+        "--failure-message-class",
+        "internal_invariant",
+        "--failure-argv-shape",
+        "task",
+        "--failure-argv-shape",
+        "start-ready",
+        "--failure-argv-shape",
+        "<task-id>",
         "--body",
         "Internal error happened while testing.",
         "--root",
@@ -202,15 +226,48 @@ describe("runCli insights report", () => {
       expect(payload.title).toContain("E_INTERNAL");
       expect(payload.labels).toEqual(["agentplane-feedback", "bug"]);
       expect(payload.body).toContain("privacy-bounded");
+      expect(payload.body).toContain("## Agent context");
+      expect(payload.body).toContain("simulated E_INTERNAL during command dispatch");
       expect(payload.body).toContain('"schema": "agentplane.insights.report.v1"');
+      expect(payload.body).toContain('"failure"');
+      expect(payload.body).toContain('"command_id": "task start-ready"');
+      expect(payload.body).toContain('"phase": "resolve_context"');
+      expect(payload.body).toContain('"dedupe_signature": "sha256:');
       expect(payload.body).toContain("Internal error happened while testing.");
     } finally {
       io.restore();
     }
   });
 
-  it("blocks creating feedback issues until the project opts in", async () => {
+  it("requires agent context for real E_INTERNAL issue creation", async () => {
     const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.feedback.github_issues.enabled = true;
+    await writeConfig(root, config);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "insights",
+        "issue",
+        "--error-code",
+        "E_INTERNAL",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("E_INTERNAL feedback issues require sanitized agent context");
+      expect(io.stderr).toContain("feedback_agent_context_required");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("blocks creating feedback issues when the project explicitly opts out", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.feedback.github_issues.enabled = false;
+    await writeConfig(root, config);
 
     const io = captureStdIO();
     try {

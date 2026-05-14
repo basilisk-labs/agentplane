@@ -9,6 +9,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { successMessage } from "../../cli/output.js";
+import { isRecord } from "../../shared/guards.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { loadTaskFromContext } from "../shared/task-backend.js";
 import { acrValidationError } from "./remediation.js";
@@ -97,10 +98,6 @@ export async function validateAcrTarget(
     record_id: resolved.record.record_id,
     warnings,
   };
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function assertContextAcrExtension(

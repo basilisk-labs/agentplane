@@ -1,5 +1,6 @@
 import { parseWorkflowMarkdown, serializeWorkflowMarkdown } from "./markdown.js";
 import type { WorkflowDiagnostic, WorkflowFrontMatter } from "./types.js";
+import { isRecord } from "../shared/guards.js";
 
 type WorkflowFixResult = {
   changed: boolean;
@@ -35,10 +36,6 @@ const DEFAULT_FRONT_MATTER: WorkflowFrontMatter = {
   },
   in_scope_paths: ["**"],
 };
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
-}
 
 function withDefaults(raw: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = { ...raw };

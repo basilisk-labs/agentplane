@@ -1,42 +1,62 @@
 export const githubUrl = "https://github.com/basilisk-labs/agentplane";
 export const docsUrl = "/docs/user/overview";
 export const acrUrl = "/docs/user/agent-change-record";
+export const contextUrl = "/docs/user/local-context";
 export const workflowGuidesUrl = "/docs/workflow-guides";
 export const recipesUrl = "/docs/recipes";
 export const comparisonUrl = "/docs/compare";
-export const manifestoUrl = "/docs/manifesto";
-export const workflowDocsUrl = "/docs/user/workflow";
 export const quickstartUrl = "/docs/user/setup";
 export const installCommand = "npm i -g agentplane";
 export const recipesIndexUrl =
   "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json";
 
+export const githubProofFallback = {
+  stars: 48,
+  forks: 6,
+  releases: 60,
+  latestRelease: "v0.6.0",
+  license: "MIT",
+  language: "TypeScript",
+  posture: "local-first CLI",
+};
+
 export const homepageContent = {
   seo: {
-    title: "AgentPlane.org - Git-native infrastructure for traceable AI work",
+    title: "Make AI-authored code reviewable in Git",
     description:
-      "AgentPlane records AI-agent work as reviewable Git evidence: task intent, approved plan, verification, Agent Change Record, and closure metadata.",
+      "AgentPlane wraps Claude Code, Codex, Cursor, Aider, and other coding agents with task intent, approved plans, verification evidence, commits, and Agent Change Records inside your repository.",
   },
   hero: {
-    eyebrow: "Local-first evidence layer for AI-authored software changes",
-    title: "Git-native infrastructure for traceable AI work.",
+    eyebrow: "LOCAL-FIRST EVIDENCE LAYER FOR CODING AGENTS",
+    title: "Make AI-authored code reviewable in Git.",
     subtitle:
-      "AgentPlane records what an AI agent was asked to do, which plan was approved, what changed, which checks ran, and why the work is safe to merge or revert - all as reviewable artifacts inside your Git repository.",
-    flow: "task → plan → approve → implement → verify → finish",
-    assurances: [
-      "Repo-local evidence",
-      "Git-visible review trail",
-      "Use any coding agent",
-      "Your repository stays the source of truth",
-    ],
-    terminal: {
-      title: "Install path",
-      lines: [installCommand, "agentplane init", "agentplane quickstart"],
-    },
+      "AgentPlane wraps Claude Code, Codex, Cursor, Aider, and other coding agents with task intent, approved plans, verification evidence, commits, and Agent Change Records - all inside your repository.",
+    flow: "intent -> plan -> agent work -> verify -> commit",
+    proofLine: "Local-first. Git-native. Works with your existing coding agent.",
   },
+  heroArtifacts: [
+    {
+      path: ".agentplane/tasks/AP-104/task.md",
+      label: "task intent",
+      status: "ready",
+      lines: ["owner: CODER", "scope: fix parser edge case", "state: plan_approved"],
+    },
+    {
+      path: "approved_plan.md",
+      label: "approved plan",
+      status: "approved",
+      lines: ["1. add failing fixture", "2. tighten validation", "3. run focused tests"],
+    },
+    {
+      path: "acr.json",
+      label: "verification / ACR",
+      status: "verified",
+      lines: ['"result": "pass"', '"commit": "9f3c2a1"', '"review_status": "ready"'],
+    },
+  ],
   problem: {
     title: "The diff is not the whole story.",
-    text: "AI agents can produce real code changes faster than teams can reconstruct why those changes happened. A pull request shows what changed. It rarely shows what the agent was asked to do, which plan was approved, which checks actually ran, or why the work is safe to merge.",
+    text: "A diff shows what changed. It does not show why the agent changed it, what plan was approved, what checks ran, or whether the result is reviewable.",
     bullets: [
       "What task was the agent executing?",
       "Which plan constrained the change?",
@@ -44,153 +64,114 @@ export const homepageContent = {
       "Can another human or agent safely review, merge, or revert it?",
     ],
   },
-  demo: {
-    title: "One agent task. One reviewable evidence trail.",
-    text: "Quickstart shows the repo-visible artifact shape before you let an agent touch product code. Reviewers do not need to trust an agent transcript; they can inspect files, commits, checks, hashes, and the ACR.",
-    terminal: {
-      title: "First visible payoff",
-      lines: [
-        'agentplane task new --title "Demo task" --owner <agent-id> --tag docs',
-        'agentplane task plan set <task-id> --text "Inspect the artifact."',
-        'agentplane task start-ready <task-id> --author <agent-id> --body "Start: inspect artifacts."',
-        "agentplane task verify-show <task-id>",
-        "ls .agentplane/tasks/<task-id>/",
-      ],
-    },
-    tryCommands: [installCommand, "agentplane init", "agentplane quickstart"],
+  quickstart: {
+    title: "Copy this, run it in any repo.",
+    text: "The first win is not a dashboard. It is a local evidence trail you can inspect in Git.",
+    lines: [installCommand, "agentplane init", "agentplane quickstart"],
+    afterAction: "Tried it? Star the repo.",
+  },
+  artifacts: {
+    title: "What AgentPlane writes.",
+    text: "AgentPlane writes evidence your repository can keep: policy, workflow state, task records, PR artifacts, and ACR files.",
+    items: [
+      {
+        label: "Policy gateway",
+        path: "AGENTS.md",
+        text: "The repository contract coding agents read before acting.",
+      },
+      {
+        label: "Workflow contract",
+        path: ".agentplane/WORKFLOW.md",
+        text: "The selected direct or branch_pr route, approvals, and lifecycle rules.",
+      },
+      {
+        label: "Task record",
+        path: ".agentplane/tasks/<id>/README.md",
+        text: "Intent, plan, start note, verification evidence, findings, rollback path.",
+      },
+      {
+        label: "Agent Change Record",
+        path: ".agentplane/tasks/<id>/acr.json",
+        text: "Machine-readable evidence for checks, commits, policy decisions, and review status.",
+      },
+    ],
+  },
+  worksWith: {
+    title: "Works with the coding agents you already use.",
+    items: [
+      "Claude Code",
+      "Codex",
+      "Cursor",
+      "Aider",
+      "GitHub Actions",
+      "your existing Git workflow",
+    ],
   },
   comparison: {
-    title: "AgentPlane does not replace your stack.",
-    text: "Claude Code, Codex, Cursor, Aider, Git, CI, and PR review keep their jobs. AgentPlane records the missing evidence around their work.",
+    title: "Not another agent framework.",
+    text: "AgentPlane is not another coding agent, not a hosted-only dashboard, and not a replacement for Git. It is the repo-local evidence layer around agent work.",
     rows: [
       {
-        label: "Claude Code / Codex / Cursor / Aider",
-        value: "They generate or edit code; AgentPlane records the review trail around the work.",
+        label: "Coding agents",
+        value: "They generate or edit code. AgentPlane records the review trail around the work.",
       },
       {
-        label: "AGENTS.md alone",
+        label: "Agent frameworks",
         value:
-          "Policy text tells agents what to do; AgentPlane turns policy into lifecycle artifacts and gates.",
-      },
-      {
-        label: "Git alone",
-        value:
-          "Git stores the final diff; AgentPlane stores task intent, plan, verification, and closure.",
+          "They orchestrate behavior. AgentPlane keeps task intent, plan approval, verification, and closure visible in Git.",
       },
       {
         label: "Hosted dashboards",
         value:
-          "They move workflow state elsewhere; AgentPlane keeps the durable record in the repository.",
-      },
-    ],
-    action: { label: "Read comparison", to: comparisonUrl },
-  },
-  workflow: {
-    title: "How AgentPlane wraps AI work.",
-    text: "Use any coding agent. Keep the evidence in Git.",
-    note: "AgentPlane does not replace your agent, editor, terminal, or Git.",
-    items: [
-      {
-        title: "Create a task before mutation",
-        text: "Record the scope before the agent edits files.",
+          "They move workflow state elsewhere. AgentPlane keeps the durable record in the repository.",
       },
       {
-        title: "Approve a plan",
-        text: "Keep the intended route visible before implementation.",
-      },
-      {
-        title: "Let your agent work",
-        text: "Use Claude Code, Codex, Cursor, Aider, or another coding agent.",
-      },
-      {
-        title: "Verify and finish with Git context",
-        text: "Attach checks, notes, CI results, findings, commit metadata, and ACR.",
+        label: "Git alone",
+        value:
+          "Git stores the final diff. AgentPlane stores why it happened, who approved it, and what evidence exists.",
       },
     ],
-  },
-  artifacts: {
-    title: "What AgentPlane writes.",
-    text: "AgentPlane creates ordinary repository artifacts that can be inspected, reviewed, and committed with the rest of your project.",
-    tree: [
-      ".",
-      "|-- AGENTS.md",
-      "`-- .agentplane/",
-      "    |-- WORKFLOW.md",
-      "    `-- tasks/<id>/",
-      "        |-- README.md",
-      "        |-- pr/",
-      "        `-- acr.json",
-    ],
-    bullets: [
-      "`AGENTS.md` is the repository policy gateway.",
-      "`.agentplane/WORKFLOW.md` is the workflow contract.",
-      "`.agentplane/tasks/<id>/` stores task state, plan, verification, and PR artifacts.",
-      "`acr.json` is a machine-readable Agent Change Record.",
-      "Git remains the source of truth.",
-    ],
+    starLine: "Want local-first evidence instead of another agent framework? Star AgentPlane.",
   },
   acr: {
-    title: "Agent Change Record: the evidence file for AI work.",
-    text: "Every meaningful agent change should leave behind one machine-readable record: task intent, approved or waived plan, agent and toolchain identity, Git base and work commits, policy decisions, verification results, and merge readiness.",
-    terminal: {
-      title: "ACR reviewer path",
-      lines: [
-        "agentplane acr generate <task-id> --work-commit HEAD --write",
-        "agentplane acr validate <task-id> --mode local",
-        "agentplane acr check <task-id> --mode ci",
-        "agentplane acr explain <task-id>",
-      ],
-    },
-    action: { label: "Read the ACR spec", to: acrUrl },
+    title: "ACR becomes useful after the pain is clear.",
+    text: "Agent Change Record is the compact evidence file for AI-authored work: task intent, approved plan, files changed, commands run, verification, commit, and review status.",
+    snippet: [
+      "{",
+      '  "task": "AP-104",',
+      '  "intent": "Fix parser edge case",',
+      '  "approved_plan": "approved_plan.md",',
+      '  "files_changed": ["src/parser.ts"],',
+      '  "commands_run": ["bun test parser"],',
+      '  "verification": { "result": "pass" },',
+      '  "commit": "9f3c2a1",',
+      '  "review_status": "ready"',
+      "}",
+    ],
+    action: { label: "Open ACR example", to: acrUrl },
   },
-  recipesCatalog: {
-    title: "Extensions, not the core story.",
-    text: "Recipes are optional signed packages for teams that want reusable agent profiles, prompt modules, skills, or repository mapping assets.",
-    stepText:
-      "Start with the task -> plan -> verify -> ACR flow first; add recipes only when you need reusable behavior.",
-  },
-  whyNow: {
-    title: "AI work is becoming repository work.",
-    text: "Agents are no longer just drafting snippets. They edit real repos, open branches, run checks, change docs, touch release paths, and leave reviewers with incomplete context. The next failure mode is not whether the agent can write code; it is whether the team can reconstruct, verify, and govern what happened.",
-    action: { label: "Read why", to: manifestoUrl },
-  },
-  nextSteps: {
-    title: "Choose your path.",
+  whoShouldStar: {
+    title: "Star AgentPlane if you are:",
     items: [
-      {
-        title: "New to AgentPlane?",
-        text: "Start with the 90-second local task and see the first evidence artifact before the abstractions.",
-        action: "Start quickstart",
-        to: quickstartUrl,
-      },
-      {
-        title: "Using Claude Code or Codex?",
-        text: "Open the workflow guide for your agent and keep the work reviewable after the session is gone.",
-        action: "Open workflows",
-        to: workflowGuidesUrl,
-      },
-      {
-        title: "Reviewing agent PRs?",
-        text: "Add task evidence and ACR validation before merge.",
-        action: "Read ACR",
-        to: acrUrl,
-      },
-      {
-        title: "Comparing alternatives?",
-        text: "See how AgentPlane differs from coding agents, AGENTS.md, Git-only workflows, and CI.",
-        action: "Read comparison",
-        to: comparisonUrl,
-      },
-      {
-        title: "Building extensions?",
-        text: "Read the recipe model after you understand the core evidence trail.",
-        action: "Open recipes",
-        to: recipesUrl,
-        featured: true,
-      },
+      "using Claude Code, Codex, Cursor, or Aider in real repos",
+      "reviewing AI-authored PRs and missing intent, plan, and check evidence",
+      "maintaining an OSS project where agent changes need audit trails",
+      "building platform or security workflows around AI engineering",
     ],
   },
+  context: {
+    title: "Advanced: context and recipes stay below the core flow.",
+    text: "For teams, hosted traces and shared dashboards can come later. The CLI works locally today. Context and recipes extend the evidence layer after the first task -> plan -> verify loop is clear.",
+    action: { label: "Open context docs", to: contextUrl },
+  },
+  recipesCatalog: {
+    title: "Recipes are extensions, not the first step.",
+    text: "Recipes are optional signed packages for reusable agent profiles, prompt modules, skills, or repository mapping assets.",
+    stepText:
+      "Start with the task -> plan -> verify -> ACR flow first; add recipes only when reusable behavior is worth the extra surface area.",
+  },
   closing: {
-    title: "Make AI work reviewable in Git.",
+    title: "Help make AI work reviewable in Git.",
+    text: "Early OSS project - star it if you want local-first evidence for coding agents.",
   },
 } as const;

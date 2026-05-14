@@ -55,7 +55,10 @@ describe("init prompt steps", () => {
       .mockResolvedValueOnce("branch_pr")
       .mockResolvedValueOnce("redmine")
       .mockResolvedValueOnce("aggressive");
-    mocks.confirmMock.mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+    mocks.confirmMock
+      .mockResolvedValueOnce(false)
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce(true);
     mocks.textMock
       .mockResolvedValueOnce("recipe-a, recipe-b")
       .mockResolvedValueOnce("pack:enterprise-baseline");
@@ -104,6 +107,7 @@ describe("init prompt steps", () => {
       requirePlanApproval: true,
       requireNetworkApproval: true,
       requireVerifyApproval: true,
+      feedbackGithubIssues: true,
       executionProfile: "aggressive",
       strictUnsafeConfirm: false,
     });

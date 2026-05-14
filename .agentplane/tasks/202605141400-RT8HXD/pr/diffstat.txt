@@ -1,0 +1,6 @@
+ .../blueprint/resolved-snapshot.json               | 526 +++++++++++++++++++++
+ .../publish-external-distribution-script.test.ts   |  89 ++++
+ .../release/release-task-evidence-script.test.ts   |  47 ++
+ scripts/release/publish-external-distribution.mjs  |   7 +-
+ scripts/release/release-task-evidence.mjs          |   1 +
+ 5 files changed, 667 insertions(+), 3 deletions(-)

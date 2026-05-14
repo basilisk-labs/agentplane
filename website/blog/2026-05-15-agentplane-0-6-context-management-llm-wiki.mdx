@@ -1,0 +1,122 @@
+---
+slug: agentplane-0-6-context-management-llm-wiki
+title: "Context management: the LLM Wiki pattern inside the repo"
+description: "AgentPlane adapts Andrej Karpathy's LLM Wiki idea for software repositories, where context becomes a reviewed artifact instead of another cache."
+authors: [team]
+tags: [release, context, workflow]
+---
+
+Andrej Karpathy's [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+is a small idea with an annoying amount of truth in it. Plain RAG is good at finding passages. It
+is much worse at keeping the synthesis alive after the answer is done.
+
+That hurts in software work. A coding agent can read the release docs, scan the task history, find a
+half-forgotten migration note, and still leave the next agent to repeat the same archaeology next
+week. The useful part of the work was the cleaned-up map of what the project knows. The final answer
+was just one expression of that map.
+
+That is what the LLM Wiki pattern is really about: raw sources stay raw, and the model maintains a
+wiki that gets better over time. AgentPlane 0.6 takes that idea and makes it fit a Git repository.
+
+<!-- truncate -->
+
+## The cache is not the memory
+
+The tempting version of context management is to add a vector store and call the problem solved.
+Search gets better, at least for a while. Then somebody asks why the model trusts an old note, which
+source backed it, whether the note was superseded, or why two tasks disagree. The cache has no good
+answer because it was never meant to be the record.
+
+AgentPlane puts the record somewhere boring on purpose:
+
+```text
+context/raw/**              raw source material
+context/wiki/**             maintained markdown pages
+context/facts/**/*.jsonl    sourced facts
+context/graph/**/*.jsonl    entities and relationships
+.agentplane/tasks/**        task intent, plan, checks, and ACR evidence
+```
+
+The SQLite projection and generated context output are still useful. They make search fast. They
+help agents retrieve the right material. But they are rebuildable. The durable memory is the
+repository content that a reviewer can open, diff, and challenge.
+
+This is the part of Karpathy's note that feels most important for engineering teams. The wiki is not
+just a prettier answer format. It is a place where a project can accumulate synthesis without hiding
+the raw evidence.
+
+## Why agents need this more than humans do
+
+Humans carry messy background context in their heads. They remember that a release failed because a
+generated file drifted, or that a policy rule exists because a branch-pr close once went sideways.
+They also forget, but they forget slowly.
+
+Agents forget immediately. Every session starts with a retrieval problem. If the only durable trail
+is a diff and a few scattered docs, the agent has to infer the operating model again. That is how
+the same mistake comes back wearing a different branch name.
+
+Local context gives the agent a repo-owned place to learn from previous work. A completed task can
+become source material. A release lesson can become a wiki page. A repeated failure can become a
+sourced fact with a task reference. A relationship between policy, command behavior, and verification
+can become a graph edge instead of a paragraph buried in a chat transcript.
+
+The result is not magic memory. It is a more honest kind of memory: files, refs, provenance, and
+checks.
+
+## What AgentPlane adds to the LLM Wiki idea
+
+Karpathy's version is personal and exploratory. Obsidian is the workspace. The LLM is the wiki
+gardener. The schema file tells it how to behave.
+
+AgentPlane changes the setting. The workspace is a software repository. `AGENTS.md` is the policy
+gateway. Task records and Agent Change Records are part of the evidence. Context changes can move
+through the same lifecycle as code: task, plan, execution, verification, close.
+
+That lifecycle matters because context can be wrong in ways that look confident. A bad wiki update
+is not harmless if future agents use it to choose a migration path or skip a check. So AgentPlane
+keeps the context workflow conservative. It prefers source refs over memory vibes. It can write
+proposals before promoting canon. It checks context-bearing tasks with `context verify-task` so wiki
+pages, facts, graph edges, and capability notes do not quietly lose their sources.
+
+The command surface is intentionally ordinary:
+
+```bash
+agentplane context init
+agentplane context learn changes
+agentplane context learn files ./notes.md --run
+agentplane context learn tasks --tag release --limit 20 --dry-run
+agentplane context search "release checklist"
+agentplane context check
+```
+
+The interesting part is not the commands themselves. It is the boundary they create. Search is a
+tool. Context is an artifact. Verification is the guard that keeps the artifact useful.
+
+## Completed work is raw material
+
+One of the better sources of project knowledge is the work you already finished. Task READMEs know
+what was asked. Plans know what was approved. Verification notes know what actually passed. ACRs
+know which commits and checks were tied to the change.
+
+Before 0.6, much of that history was evidence for review and closure. Now it can also become input
+for future context. That does not mean every closed task should automatically rewrite the wiki.
+Automatic promotion is how memory systems rot. It means completed work can be harvested, batched,
+reviewed, and turned into sourced updates.
+
+This is where AgentPlane's version of the LLM Wiki becomes less like a notes app and more like
+workflow infrastructure. The wiki is still readable markdown, but it is connected to task evidence,
+fact rows, graph relationships, and verification gates.
+
+## The practical shift
+
+The practical shift is simple: the next agent should not start from zero.
+
+It should be able to search the local context, open the wiki page that explains the release path,
+see which task created the claim, inspect the source ref, and decide whether the claim still applies.
+If the answer is stale, that should become a context update with its own evidence.
+
+That is slower than pretending the model remembers everything. It is also much safer.
+
+AgentPlane 0.6 is the point where context becomes part of the repository workflow. Not a side cache,
+not a private note pile, not another dashboard. A reviewed memory layer, kept close to the code it
+is supposed to explain.

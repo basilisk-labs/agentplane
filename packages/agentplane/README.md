@@ -16,7 +16,7 @@ Use any coding agent. Keep the review trail in your repository.
 [![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
 [![GitHub stars](https://img.shields.io/github/stars/basilisk-labs/agentplane?style=flat)](https://github.com/basilisk-labs/agentplane/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/basilisk-labs/agentplane/blob/main/LICENSE)
-[![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](https://agentplane.org/docs/user/prerequisites)
+[![Node.js 24+](https://img.shields.io/badge/Node.js-24%2B-3c873a.svg)](https://agentplane.org/docs/user/prerequisites)
 
 [![SLSA v1 provenance](https://img.shields.io/badge/SLSA-v1-success)](https://registry.npmjs.org/-/npm/v1/attestations/agentplane@latest)
 [![Trusted publisher](https://img.shields.io/badge/npm-trusted%20publisher-blue)](https://docs.npmjs.com/generating-provenance-statements)
@@ -37,7 +37,7 @@ npx agentplane init
 npx agentplane quickstart
 ```
 
-Requirements: Node.js 20+, Git, and a local terminal.
+Requirements: Node.js 24+, Git, and a local terminal.
 
 Experimental agent shorthand:
 

@@ -11,6 +11,23 @@ versioned files, then builds a SQLite projection for fast search and retrieval.
 Use it when an agent needs facts, wiki pages, graph edges, capability notes, or task-specific
 source sets that should survive outside one chat session.
 
+## Context management in v0.6
+
+AgentPlane v0.6 turns local context from a search helper into a context-management workflow:
+
+- raw sources remain in the repository and are treated as evidence
+- wiki pages accumulate synthesis instead of forcing agents to re-derive it from scratch
+- fact and graph rows preserve structured claims and relationships
+- generated projections stay disposable and can be rebuilt
+- task history can become new context through explicit extraction tasks
+- verification checks keep sourced context from drifting into unsourced memory
+
+This follows the LLM Wiki pattern described by Andrej Karpathy: keep raw sources separate, let an
+LLM maintain a persistent markdown wiki, and use a schema file such as `AGENTS.md` to make the agent
+a disciplined maintainer rather than a generic chatbot. AgentPlane adapts that pattern for software
+repositories by adding task lifecycle, source refs, proposal-before-promotion, and verification
+gates.
+
 ## Source of truth
 
 Editable source artifacts live under `context/**`:
@@ -124,6 +141,15 @@ The verifier checks that task-facing context claims are source-backed:
 - completed context tasks have an ACR context extension
 
 Run it before closing tasks that write or rely on context artifacts.
+
+## How this differs from RAG
+
+RAG retrieves source chunks at answer time. Local context still supports search, but the durable
+artifact is the maintained knowledge layer: markdown pages, facts, graph edges, capability notes,
+and task evidence that can be reviewed in Git.
+
+Use raw search when you need to inspect source material. Use context management when a finding
+should compound into future agent work.
 
 ## Privacy boundary
 

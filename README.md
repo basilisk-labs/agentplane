@@ -40,6 +40,24 @@ Requirements: Node.js 24+, Git, and a local terminal.
 
 ![AgentPlane CLI demo](docs/assets/agentplane-demo.gif)
 
+## Feedback issue prompts
+
+AgentPlane intentionally enables GitHub issue prompts for internal AgentPlane errors by default.
+This helps us speed up framework development: when AgentPlane itself fails, the CLI can suggest a
+privacy-bounded issue payload for the `basilisk-labs/agentplane` repository.
+
+Preview the payload before creating anything:
+
+```bash
+agentplane insights issue --error-code E_INTERNAL --dry-run
+```
+
+If you do not want this mode, ask your agent to disable feedback issue prompts or run:
+
+```bash
+agentplane config set feedback.github_issues.enabled false
+```
+
 ## Why
 
 A pull request shows what changed. It does not reliably show what the agent was asked to do, which
@@ -76,6 +94,36 @@ agentplane acr explain <task-id>
 ```
 
 Schema: [`schemas/acr-v0.1.schema.json`](schemas/acr-v0.1.schema.json).
+
+## Context management
+
+AgentPlane also gives agents a repository-owned memory layer. Instead of asking an agent to
+rediscover project knowledge from raw files on every prompt, keep reusable context in Git and let
+AgentPlane project it into searchable local state.
+
+```text
+context/raw/**              source material
+context/wiki/**             maintained markdown wiki
+context/facts/**/*.jsonl    sourced facts
+context/graph/**/*.jsonl    entities and relationships
+.agentplane/context/derived disposable generated projection
+```
+
+Initialize it with:
+
+```bash
+agentplane context init
+agentplane context learn changes
+agentplane context learn tasks --tag release --limit 20 --dry-run
+agentplane context search "release checklist"
+agentplane context check
+```
+
+The model matches the LLM Wiki pattern: raw sources stay immutable, the wiki accumulates synthesis,
+and schema/policy files tell agents how to maintain it. AgentPlane adds task lifecycle, provenance,
+proposal-before-promotion, and verification gates so context updates remain reviewable.
+
+Read [Local context](docs/user/local-context.mdx).
 
 ## First task flow
 

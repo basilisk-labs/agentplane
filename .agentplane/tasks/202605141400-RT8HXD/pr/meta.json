@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T15:09:17Z",
+  "base": "main",
+  "branch": "task/202605141400-RT8HXD/release-evidence-hardening",
+  "created_at": "2026-05-14T14:02:12.360Z",
+  "head_sha": "c14c75a071e89256f2e3db042d37284400eb1f70",
+  "last_verified_at": "2026-05-14T14:08:24.956Z",
+  "last_verified_sha": "3d5c3b4706eae9b3f7de27132be995c01a7b742a",
+  "merge_commit": "8de66a4d082c628221662917dbb469a28935f680",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T15:09:17Z",
+  "pr_number": 3717,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3717",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605141400-RT8HXD",
+  "updated_at": "2026-05-14T15:09:17Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T16:12:51Z",
+  "base": "main",
+  "branch": "task/202605141556-FFRZBW/runner-playbook-contracts",
+  "created_at": "2026-05-14T15:57:47.506Z",
+  "head_sha": "0fc2621e439802f012c3568f77499941d562e0ad",
+  "last_verified_at": "2026-05-14T16:09:58.900Z",
+  "last_verified_sha": "bc43cfb088e056e6e7aa029cdda9ce7bac55429c",
+  "merge_commit": "093460eb53413bcd37df7db38fc9cae2465d0d41",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T16:12:51Z",
+  "pr_number": 3730,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3730",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605141556-FFRZBW",
+  "updated_at": "2026-05-14T16:12:51Z",
+  "verify": {
+    "status": "pass"
+  }
+}

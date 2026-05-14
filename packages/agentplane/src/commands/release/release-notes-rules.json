@@ -1,0 +1,16 @@
+{
+  "templatePlaceholders": [
+    "2-4 bullets with the main release outcomes in plain language.",
+    "New features or capabilities.",
+    "Behavior/UX improvements that users will notice.",
+    "Bug fixes and regressions.",
+    "Breaking changes, migration steps, or \"none\".",
+    "Release checks completed (for example: release:prepublish, parity, publish gates).",
+    "Cover all differences from the release plan (`changes.md`/`changes.json`).",
+    "Use detailed, human-readable language, not raw commit log text.",
+    "Keep concrete bullets with explicit outcomes.",
+    "Keep at least one bullet per listed change from `changes.md`/`changes.json`."
+  ],
+  "requiredSections": ["Summary", "Added", "Improved", "Fixed", "Upgrade Notes", "Verification"],
+  "minBullets": 6
+}

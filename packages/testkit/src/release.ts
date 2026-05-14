@@ -24,6 +24,39 @@ export async function writeReleaseNotes(
   await writeFile(path.join(releasesDir, `v${version}.md`), body, "utf8");
 }
 
+export function validReleaseNotesBody(version: string): string {
+  const tag = version.startsWith("v") ? version : `v${version}`;
+  return [
+    `# Release Notes — ${tag}`,
+    "",
+    "## Summary",
+    "",
+    "- Release notes summarize the user-visible outcome.",
+    "- Release notes document validation and publication evidence.",
+    "",
+    "## Added",
+    "",
+    "- Added the release capability covered by this test fixture.",
+    "",
+    "## Improved",
+    "",
+    "- Improved the release workflow exercised by this test fixture.",
+    "",
+    "## Fixed",
+    "",
+    "- Fixed the release readiness gap covered by this test fixture.",
+    "",
+    "## Upgrade Notes",
+    "",
+    "- No migration is required for this test fixture.",
+    "",
+    "## Verification",
+    "",
+    "- Release validation passed for this test fixture.",
+    "",
+  ].join("\n");
+}
+
 export async function withDryRunReleaseMode<T>(work: () => Promise<T>): Promise<T> {
   const originalDryRun = process.env.AGENTPLANE_RELEASE_DRY_RUN;
   process.env.AGENTPLANE_RELEASE_DRY_RUN = "1";

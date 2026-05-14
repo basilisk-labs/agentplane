@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { writeTextIfChanged } from "../../../shared/write-if-changed.js";
 import { resolvePolicyGatewayForRepo } from "../../../shared/policy-gateway.js";
+import { isRecord } from "../../../shared/guards.js";
 import { renderRole, type RoleProfileGuide } from "../../command-guide.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import type { RunDeps } from "../command-catalog/kernel.js";
@@ -108,10 +109,6 @@ type IdeAgentProfile = {
   permissions?: unknown;
   workflow?: unknown;
 };
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 function toStringList(value: unknown): string[] {
   const items = Array.isArray(value) ? value : isRecord(value) ? Object.values(value) : [];

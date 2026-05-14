@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T16:56:51Z",
+  "base": "main",
+  "branch": "task/202605141604-37S5VS/feedback-default-on",
+  "created_at": "2026-05-14T16:05:09.735Z",
+  "head_sha": "101ac2e17e24419c103e04f5016f088576c860fb",
+  "last_verified_at": "2026-05-14T16:46:16.697Z",
+  "last_verified_sha": "dc81dd1302a7dff10df577711ee259e2a9d38b45",
+  "merge_commit": "cca1713286210613a0486fbe8cb45d4d7406ed35",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T16:56:51Z",
+  "pr_number": 3733,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3733",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605141604-37S5VS",
+  "updated_at": "2026-05-14T16:56:51Z",
+  "verify": {
+    "status": "pass"
+  }
+}

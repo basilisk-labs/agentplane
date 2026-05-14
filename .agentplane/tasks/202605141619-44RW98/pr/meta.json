@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T16:22:54Z",
+  "base": "main",
+  "branch": "task/202605141619-44RW98/runner-playbook-knip-fix",
+  "created_at": "2026-05-14T16:20:02.147Z",
+  "head_sha": "ae513e9e9436970ac06ea656537281390e488931",
+  "last_verified_at": "2026-05-14T16:21:33.752Z",
+  "last_verified_sha": "cd3ebf81bb984dc8ca6ad18eefe1b17fd9bd7866",
+  "merge_commit": "dea73a7c7c35e7407bc2b313ac6164f6fc3a6c3e",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T16:22:54Z",
+  "pr_number": 3736,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3736",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605141619-44RW98",
+  "updated_at": "2026-05-14T16:22:54Z",
+  "verify": {
+    "status": "pass"
+  }
+}

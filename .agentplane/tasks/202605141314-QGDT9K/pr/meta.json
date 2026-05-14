@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T14:22:59Z",
+  "base": "main",
+  "branch": "task/202605141314-QGDT9K/fix-v06-release-notes",
+  "created_at": "2026-05-14T13:16:34.344Z",
+  "head_sha": "e3597ada9b21bdee1e2e1889cb0c7c09b0e98518",
+  "last_verified_at": "2026-05-14T13:32:01.561Z",
+  "last_verified_sha": "5b19902add51641de8cdf8d7fa68b5df93ab2f45",
+  "merge_commit": "880a40641c21093563aaea0283dcd23b6db961e1",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T14:22:59Z",
+  "pr_number": 3713,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3713",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605141314-QGDT9K",
+  "updated_at": "2026-05-14T14:22:59Z",
+  "verify": {
+    "status": "pass"
+  }
+}

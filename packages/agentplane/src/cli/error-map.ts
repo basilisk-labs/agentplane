@@ -162,6 +162,9 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
   });
   switch (err.code) {
     case "E_INTERNAL": {
+      if (err.context?.feedback_github_issues_enabled === false) {
+        return withExplicit({});
+      }
       return withExplicit({
         hint: "AgentPlane can prepare a privacy-bounded GitHub issue for internal AgentPlane errors after explicit project opt-in.",
         nextAction: {

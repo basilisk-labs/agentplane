@@ -404,7 +404,7 @@
       "properties": {
         "enabled": {
           "type": "boolean",
-          "default": true
+          "default": false
         },
         "version": {
           "type": "string",
@@ -442,7 +442,7 @@
       },
       "additionalProperties": true,
       "default": {
-        "enabled": true,
+        "enabled": false,
         "version": "0.1.0",
         "write_on_finish": true,
         "require_for_pr_check": false,

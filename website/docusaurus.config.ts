@@ -6,7 +6,7 @@ const gaMeasurementId = process.env.GA_MEASUREMENT_ID ?? "G-L8T8ZZ8RSG";
 
 const config = {
   title: "AgentPlane",
-  tagline: "Git-native infrastructure for traceable AI work.",
+  tagline: "Make AI-authored code reviewable in Git.",
   titleDelimiter: "·",
   favicon: "img/favicon.ico",
   future: {
@@ -81,22 +81,22 @@ const config = {
       { property: "og:site_name", content: "AgentPlane" },
       {
         property: "og:title",
-        content: "AgentPlane.org - Git-native infrastructure for traceable AI work",
+        content: "Make AI-authored code reviewable in Git",
       },
       {
         property: "og:description",
         content:
-          "AgentPlane records AI-agent work as reviewable Git evidence: task intent, approved plan, verification, Agent Change Record, and closure metadata.",
+          "Local-first evidence layer for Claude Code, Codex, Cursor, Aider, and other coding agents.",
       },
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:title",
-        content: "AgentPlane.org - Git-native infrastructure for traceable AI work",
+        content: "Make AI-authored code reviewable in Git",
       },
       {
         name: "twitter:description",
         content:
-          "Local-first CLI for task, plan, verification, Agent Change Record, and closure evidence in Git.",
+          "Local-first evidence layer for Claude Code, Codex, Cursor, Aider, and other coding agents.",
       },
       { name: "twitter:site", content: "@agentplaneorg" },
     ],
@@ -115,34 +115,10 @@ const config = {
       },
       items: [
         {
-          to: "/docs/manifesto",
-          label: "Why",
-          position: "right",
-          activeBaseRegex: "^/docs/manifesto",
-        },
-        {
-          to: "/docs/user/agent-change-record",
-          label: "ACR",
-          position: "right",
-          activeBaseRegex: "^/docs/user/agent-change-record",
-        },
-        {
-          to: "/docs/workflow-guides",
-          label: "Workflows",
-          position: "right",
-          activeBaseRegex: "^/docs/workflow-guides",
-        },
-        {
           to: "/docs/user/overview",
           label: "Docs",
           position: "right",
           activeBaseRegex: "^/docs",
-        },
-        {
-          to: "/docs/recipes",
-          label: "Recipes",
-          position: "right",
-          activeBaseRegex: "^/docs/recipes",
         },
         {
           to: "/docs/compare",
@@ -151,9 +127,10 @@ const config = {
           activeBaseRegex: "^/docs/compare",
         },
         {
-          href: "https://github.com/basilisk-labs/agentplane",
-          label: "GitHub",
+          to: "/docs/user/setup",
+          label: "Quickstart",
           position: "right",
+          activeBaseRegex: "^/docs/user/setup",
         },
         {
           href: "https://www.npmjs.com/package/agentplane",
@@ -163,7 +140,7 @@ const config = {
         },
         {
           href: "https://github.com/basilisk-labs/agentplane",
-          label: "View on GitHub",
+          label: "★ Star",
           position: "right",
           className: "navbar-github-cta",
         },

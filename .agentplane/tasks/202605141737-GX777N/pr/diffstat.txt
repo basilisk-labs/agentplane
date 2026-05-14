@@ -1,0 +1,6 @@
+ docs/user/cli-reference.generated.mdx              |   8 ++
+ packages/agentplane/src/cli/reason-codes.ts        |   6 +
+ .../src/cli/run-cli.core.insights-report.test.ts   |  54 +++++++++
+ .../src/commands/insights/insights.command.ts      | 135 ++++++++++++++++++++-
+ .../src/commands/insights/insights.spec.ts         |  71 +++++++++++
+ 5 files changed, 272 insertions(+), 2 deletions(-)

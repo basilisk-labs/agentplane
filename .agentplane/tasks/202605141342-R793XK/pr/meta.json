@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T15:19:06Z",
+  "base": "main",
+  "branch": "task/202605141342-R793XK/sgr-reliability-schemas",
+  "created_at": "2026-05-14T13:45:49.767Z",
+  "head_sha": "3c6477316746937ec3f7dd162f4a212f07005775",
+  "last_verified_at": "2026-05-14T14:30:19.406Z",
+  "last_verified_sha": "12c86decf1727808aa3aa54ace9fe37d364f1703",
+  "merge_commit": "bb0435d2af54f85fd1fe57c8ce7277a8eef661a8",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T15:19:06Z",
+  "pr_number": 3716,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3716",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605141342-R793XK",
+  "updated_at": "2026-05-14T15:19:06Z",
+  "verify": {
+    "status": "pass"
+  }
+}

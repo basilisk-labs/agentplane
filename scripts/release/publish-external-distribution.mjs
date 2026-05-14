@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
-import { mkdir, writeFile, copyFile } from "node:fs/promises";
+import { mkdir, writeFile, copyFile, readFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -119,6 +119,7 @@ async function run(command, args, opts = {}) {
   return execFileAsync(command, args, {
     cwd: opts.cwd,
     env: opts.env ?? process.env,
+    input: opts.input,
     maxBuffer: 20 * 1024 * 1024,
   });
 }
@@ -190,9 +191,9 @@ async function publishExternal(args) {
   async function syncRepositoryMetadata(cloneDir) {
     const updates = [];
     const warnings = [];
-    const repoFlags = [];
     if (args.topics.length > 0) {
-      repoFlags.push("-f", `names=${JSON.stringify(args.topics)}`);
+      const topicsPayloadPath = path.join(tempRoot, "repository-topics.json");
+      await writeFile(topicsPayloadPath, `${JSON.stringify({ names: args.topics })}\n`, "utf8");
       try {
         await run(
           "gh",
@@ -203,7 +204,8 @@ async function publishExternal(args) {
             `/repos/${args.repo}/topics`,
             "-H",
             "Accept: application/vnd.github+json",
-            ...repoFlags,
+            "--input",
+            topicsPayloadPath,
           ],
           { cwd: cloneDir, env },
         );
@@ -240,6 +242,152 @@ async function publishExternal(args) {
     };
   }
 
+  async function verifyDefaultBranchPublished(cloneDir) {
+    await run("git", ["fetch", "origin", "main"], { cwd: cloneDir, env });
+    await run("git", ["switch", "main"], { cwd: cloneDir, env });
+    await run("git", ["pull", "--ff-only", "origin", "main"], { cwd: cloneDir, env });
+    const mismatches = [];
+    for (const copy of args.copies.map((entry) => parseCopySpec(entry))) {
+      const source = await readFile(path.join(args.sourceDir, copy.from), "utf8");
+      const target = await readFile(path.join(cloneDir, copy.to), "utf8").catch(() => null);
+      if (target !== source) mismatches.push(copy.to);
+    }
+    if (mismatches.length > 0) {
+      return {
+        ok: false,
+        mismatches,
+      };
+    }
+    const { stdout } = await run("git", ["rev-parse", "HEAD"], { cwd: cloneDir, env });
+    return {
+      ok: true,
+      branch: "main",
+      sha: stdout.trim(),
+      mismatches,
+    };
+  }
+
+  async function ensureSetupAgentplaneTag(cloneDir) {
+    if (args.module !== "setup-agentplane") return null;
+    const tagRef = `refs/tags/${args.tag}`;
+    try {
+      const { stdout: headStdout } = await run("git", ["rev-parse", "HEAD"], {
+        cwd: cloneDir,
+        env,
+      });
+      const headSha = headStdout.trim();
+      const { stdout: existingStdout } = await run(
+        "git",
+        ["ls-remote", "--tags", "origin", tagRef],
+        {
+          cwd: cloneDir,
+          env,
+        },
+      );
+      const existingSha = existingStdout
+        .trim()
+        .split(/\s+/u)
+        .find((entry) => /^[0-9a-f]{40}$/iu.test(entry));
+      if (existingSha) {
+        return {
+          status: existingSha === headSha ? "published" : "failed",
+          tag: args.tag,
+          sha: existingSha,
+          message:
+            existingSha === headSha
+              ? "setup-agentplane tag already points at the published commit."
+              : `setup-agentplane tag ${args.tag} points at ${existingSha}, expected ${headSha}.`,
+        };
+      }
+      await run("git", ["tag", args.tag], { cwd: cloneDir, env });
+      await run("git", ["push", "origin", `${tagRef}:${tagRef}`], {
+        cwd: cloneDir,
+        env,
+      });
+      const { stdout: pushedStdout } = await run("git", ["ls-remote", "--tags", "origin", tagRef], {
+        cwd: cloneDir,
+        env,
+      });
+      const pushedSha = pushedStdout
+        .trim()
+        .split(/\s+/u)
+        .find((entry) => /^[0-9a-f]{40}$/iu.test(entry));
+      return {
+        status: pushedSha === headSha ? "published" : "not_confirmed",
+        tag: args.tag,
+        sha: pushedSha ?? null,
+      };
+    } catch (error) {
+      return {
+        status: "failed",
+        tag: args.tag,
+        message: String(error?.stderr ?? error?.message ?? error).trim(),
+      };
+    }
+  }
+
+  async function mergeAndVerifyExternalPr(cloneDir, prUrl) {
+    const mergeAttempts = [];
+    try {
+      await run("gh", ["pr", "merge", "--repo", args.repo, "--merge", "--delete-branch", prUrl], {
+        cwd: cloneDir,
+        env,
+      });
+      mergeAttempts.push({ mode: "merge", status: "success" });
+    } catch (error) {
+      mergeAttempts.push({
+        mode: "merge",
+        status: "failed",
+        message: String(error?.stderr ?? error?.message ?? error).trim(),
+      });
+      try {
+        await run(
+          "gh",
+          ["pr", "merge", "--repo", args.repo, "--auto", "--merge", "--delete-branch", prUrl],
+          { cwd: cloneDir, env },
+        );
+        mergeAttempts.push({ mode: "auto_merge", status: "enabled" });
+      } catch (autoError) {
+        mergeAttempts.push({
+          mode: "auto_merge",
+          status: "failed",
+          message: String(autoError?.stderr ?? autoError?.message ?? autoError).trim(),
+        });
+      }
+      return {
+        status: "pr_opened",
+        mergeAttempts,
+        verification: null,
+        setupTag: null,
+      };
+    }
+
+    const verification = await verifyDefaultBranchPublished(cloneDir);
+    const setupTag = verification.ok ? await ensureSetupAgentplaneTag(cloneDir) : null;
+    if (!verification.ok) {
+      return {
+        status: "merge_unverified",
+        mergeAttempts,
+        verification,
+        setupTag,
+      };
+    }
+    if (setupTag && setupTag.status !== "published") {
+      return {
+        status: "tag_unverified",
+        mergeAttempts,
+        verification,
+        setupTag,
+      };
+    }
+    return {
+      status: "published",
+      mergeAttempts,
+      verification,
+      setupTag,
+    };
+  }
+
   const tempRoot = mkdtempSync(path.join(os.tmpdir(), "agentplane-external-dist-"));
   const cloneDir = path.join(tempRoot, "repo");
   const branch = `agentplane/${args.tag}`;
@@ -259,11 +407,40 @@ async function publishExternal(args) {
     });
     if (!statusStdout.trim()) {
       const metadata = await syncRepositoryMetadata(cloneDir);
+      const verification = await verifyDefaultBranchPublished(cloneDir);
+      const setupTag = verification.ok ? await ensureSetupAgentplaneTag(cloneDir) : null;
+      if (!verification.ok) {
+        return {
+          ...baseEvidence,
+          status: "merge_unverified",
+          branch,
+          metadata,
+          mergeAttempts: [],
+          verification,
+          setupTag,
+          nextAction: `External distribution files did not match ${args.version} on main.`,
+        };
+      }
+      if (setupTag && setupTag.status !== "published") {
+        return {
+          ...baseEvidence,
+          status: "tag_unverified",
+          branch,
+          metadata,
+          mergeAttempts: [],
+          verification,
+          setupTag,
+          nextAction: `Fix setup-agentplane tag ${args.tag}; this channel is not published until the tag points at main.`,
+        };
+      }
       return {
         ...baseEvidence,
         status: "unchanged",
         branch,
         metadata,
+        mergeAttempts: [],
+        verification,
+        setupTag,
         nextAction: "No external distribution repository changes were needed.",
       };
     }
@@ -325,13 +502,20 @@ async function publishExternal(args) {
     }
     const prUrl = existingPrUrl || createdPrUrl;
     const metadata = await syncRepositoryMetadata(cloneDir);
+    const publication = await mergeAndVerifyExternalPr(cloneDir, prUrl);
     return {
       ...baseEvidence,
-      status: "pr_opened",
+      status: publication.status,
       branch,
       prUrl,
       metadata,
-      nextAction: `Review and merge ${prUrl}.`,
+      mergeAttempts: publication.mergeAttempts,
+      verification: publication.verification,
+      setupTag: publication.setupTag,
+      nextAction:
+        publication.status === "published"
+          ? `External distribution published through ${prUrl}.`
+          : `Review and merge ${prUrl}; this channel is not published until main contains ${args.version}.`,
     };
   } finally {
     rmSync(tempRoot, { recursive: true, force: true });

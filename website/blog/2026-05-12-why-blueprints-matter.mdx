@@ -1,80 +1,90 @@
 ---
 slug: why-blueprints-matter
-title: "Почему для AgentPlane нужны Blueprints"
-description: "Блюпринты — это фиксируемая модель поведения, которая переводит разрозненные инструкции в повторяемые, проверяемые сценарии работы."
+title: "Blueprints: routes for agent work that should not be improvised"
+description: "Blueprints make AgentPlane better by turning repeated work into explicit routes with scope, evidence, checks, and recovery paths."
 authors: [team]
 tags: [blueprints, docs, workflow]
 ---
 
-BluePrints (внутри AgentPlane это раздел с задачными сценариями, шаблонами и связкой с policy) не являются «ещё одной обёрткой команд».  
-Они решают проблему, которую не закрывает один только PR:
+The hardest part of agent work is rarely the first draft. The hard part is knowing whether the
+agent is on the right route.
 
-- **что делать**,
-- **почему это безопасно**,
-- **как проверить**, и
-- **как вернуть процесс в норму**.
+That sounds mundane until a task gets large. A release includes commits, but it also includes
+publication evidence. A migration includes file edits, but it also includes compatibility and
+rollback. A branch-pr close includes a merge, but the handoff matters just as much. Each of those
+jobs has a shape: the sources to inspect, the evidence to record, the checks that matter, and the
+point where the agent should stop instead of guessing.
 
-После `v0.5` стало ясно, что это нужно не как опциональный слой, а как обязательный контракт для больших изменений.
+Blueprints are AgentPlane's way of making that shape explicit.
 
-## Что такое Blueprints в практическом смысле
+<!-- truncate -->
 
-Blueprint — это не просто чеклист.
-Для релиза, миграции или проверки это одновременно:
+## The route matters before the code changes
 
-- сценарный шаблон задачи,
-- набор ожидаемых источников правды (docs, policy, task-конфиги),
-- набор точек контроля и верификации,
-- и минимальный путь восстановления, если что-то идёт не по плану.
+Without blueprints, a repository can have good policy and still leave too much room for improvising.
+The agent sees a user request, loads some docs, picks a plan, and starts moving. If the task is
+small, this can be fine. If the task touches release, workflow, policy, or integration, the first
+wrong turn usually happens before the first code edit.
 
-То есть это больше, чем «рекомендация».  
-Это зафиксированный путь, который можно повторить и который должен пройти через один и тот же набор правил.
+The wrong turn is subtle. The agent chooses a verification route that is too light. It treats a
+docs-only task like a runtime change, or the other way around. It forgets that branch-pr integration
+has a base-checkout phase. It records a plan, but not the evidence a reviewer will need later.
 
-## Почему это нужно именно сейчас
+A blueprint gives the task a route before execution starts. It says what kind of work this is, which
+surfaces are in scope, what evidence belongs to the task, and which checks are expected. It does not
+remove judgment. It narrows the place where judgment is allowed to happen.
 
-На практике без Blueprints возникают три типичные ошибки:
+## Why this made AgentPlane better
 
-1. **Инструкции живут в чатах, а не в репозитории.**  
-   После смены контекста они теряются, и команде приходится заново интерпретировать intent.
+AgentPlane already had a task lifecycle: create a task, approve a plan, execute, verify, finish.
+Blueprints made that lifecycle less generic.
 
-2. **Проверка превращается в интуицию исполнителя.**  
-   Один и тот же тип задачи проходит в разных местах по-разному, поэтому невозможно получить устойчивую карму качества.
+That is the real improvement. A lifecycle without task shape can become ceremony. A task record says
+that work happened, but it may not say whether the work followed the right path. Blueprints connect
+the task type to a route that can be inspected.
 
-3. **После закрытия задачи остаётся только diff.**  
-   Разброс в том, почему был выбран именно этот путь, сложно доказать на аудит и позднейший recovery.
+For a docs change, that route is light. For a release, it is strict. For branch-pr work, it includes
+separate implementation and integration phases. For runner or workflow changes, it needs stronger
+evidence because a small mistake can change how future agents mutate the repo.
 
-Blueprint закрывает эти дыры тем, что делает сценарий не только воспроизводимым, но и **полностью адресуемым через файлы репозитория**.
+The value is not that AgentPlane can print a nicer plan. The value is that repeated work stops being
+reinvented in every session.
 
-## Как это связано с рабочей моделью AgentPlane
+## A blueprint is not a checklist
 
-В `v0.5` ключевой эффект Blueprints — в связке с branch-aware lifecycle:
+A checklist is easy to satisfy mechanically. Blueprints are more useful because they describe the
+operating model around the task.
 
-- задача начинает с выбора маршрута (`workflow`, scope, доказательная поверхность),
-- план превращается в трассируемый артефакт,
-- execution и verify идут в верифицируемые команды,
-- а завершение маршрута становится корректной точкой закрытия, а не ручной догадкой.
+They carry assumptions about ownership, mutation scope, policy modules, evidence, and recovery. They
+also make mismatches visible. If a task starts as "just docs" and then begins changing runtime code,
+that is not a tiny detail. It is a route change. The task should stop, get re-approved, and use a
+different verification contract.
 
-Именно поэтому релизный поток для `0.5` оказался стабильнее в долгом контуре:
-все крупные шаги оказались привязаны к одному маршруту, а не к ad-hoc инструкциям отдельного исполнителя.
+This is exactly the kind of guardrail agents need. They are good at continuing. They are less good
+at noticing that continuation has changed the category of work.
 
-## Что дают Blueprints команде и агентам
+## What reviewers get
 
-Для человека:
+Reviewers get a better question to ask.
 
-- меньше времени на восстановление контекста,
-- больше предсказуемости в долгих сессиях,
-- проще объяснить, почему решение было именно таким.
+Instead of asking only "is this diff correct?", they can ask "did this task follow the route that
+matches its risk?" That question is much easier to answer when the route is recorded in the task
+artifact and reflected in the checks.
 
-Для агента:
+This matters for long-running branches. It matters when several agents are working at once. It
+matters when a task closes days after the original prompt is gone. The blueprint gives the reviewer
+something more stable than memory and more specific than general policy.
 
-- меньше «свободного» пространства для неверно выбранного маршрута,
-- более чёткий contract на проверки,
-- меньше разрывов между intent и фактическим статусом задачи.
+## What agents get
 
-В результате команда получает не «умный помощник», а **контролируемый инструмент**.
+Agents get less freedom in the places where freedom is expensive.
 
-## Вывод
+That is a good trade. The agent still chooses how to solve the task inside the approved scope. But
+the route tells it what not to skip: which docs are canonical, which verification gates matter, which
+handoff belongs to the workflow, and where to record evidence.
 
-BluePrints нужны не потому, что они модные.  
-Они нужны потому, что сложный рабочий процесс должен быть не только автоматизированным, но и объяснимым.
+The result is calmer work. Fewer surprise scope jumps. Fewer "green but not actually ready" endings.
+Fewer clean-looking diffs that leave reviewers reconstructing intent from branch names.
 
-С такой моделью репозиторий сохраняет контур качества даже тогда, когда задачи растут по числу агентов, интеграций и интеграционных веток.
+Blueprints made AgentPlane better because they moved process knowledge out of individual sessions
+and into repository-owned routes. That is where it belongs.

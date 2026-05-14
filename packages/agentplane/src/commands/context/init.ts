@@ -153,10 +153,19 @@ async function commitContextBootstrapIfChanged(root: string): Promise<boolean> {
     AGENTPLANE_TASK_ID: CONTEXT_BOOTSTRAP_TASK_ID,
   };
   await execFileAsync("git", ["add", "."], { cwd: root, env: baseGitEnv });
-  await execFileAsync("git", ["commit", "-m", "✅ CTX1NT task: initialize AgentPlane context"], {
-    cwd: root,
-    env,
-  });
+  await execFileAsync(
+    "git",
+    [
+      "commit",
+      "-m",
+      "✅ CTX1NT task: initialize AgentPlane context",
+      "-m",
+      ["Context-Bootstrap: true", `Context-Bootstrap-Task: ${CONTEXT_BOOTSTRAP_TASK_ID}`].join(
+        "\n",
+      ),
+    ],
+    { cwd: root, env },
+  );
   return true;
 }
 
@@ -375,6 +384,8 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
 Profile: ${profile}
 
 - Treat \`context/wiki/**\` as durable, source-backed project knowledge.
+- Analyze the base project, existing docs, task history, and raw sources before choosing a wiki structure.
+- Choose the smallest wiki hierarchy that fits this project; do not force a universal concepts/entities/decisions/modules layout.
 - Keep raw inputs in \`context/raw/**\`; do not copy private raw sources into public wiki pages.
 - Add source references for factual claims that come from raw files, task READMEs, ACRs, or code.
 - Use \`agentplane context verify-task <task-id>\` before closing context assimilation work.

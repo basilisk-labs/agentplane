@@ -25,7 +25,7 @@ describe("cli/fs-utils", () => {
     expect(await fileExists(filePath)).toBe(false);
   });
 
-  it("backupPath appends a random suffix when backup already exists", async () => {
+  it("backupPath appends a crypto-random suffix when backup already exists", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-fs-utils-"));
     const filePath = path.join(root, "data.txt");
     await writeFile(filePath, "hello", "utf8");
@@ -37,15 +37,13 @@ describe("cli/fs-utils", () => {
     expect(await fileExists(original)).toBe(true);
     await writeFile(filePath, "second", "utf8");
 
-    const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0.123_456);
     try {
       const dest = await backupPath(filePath);
-      expect(dest).toMatch(new RegExp(String.raw`^${escapeRegExp(original)}-[a-z0-9]{6}$`));
+      expect(dest).toMatch(new RegExp(String.raw`^${escapeRegExp(original)}-[0-9a-f]{8}$`));
       expect(dest).not.toBe(original);
       expect(await fileExists(dest)).toBe(true);
       expect(await fileExists(filePath)).toBe(false);
     } finally {
-      randomSpy.mockRestore();
       originalDateToISOString.mockRestore();
     }
   });

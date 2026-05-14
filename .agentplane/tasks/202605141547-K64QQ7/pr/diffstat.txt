@@ -1,0 +1,4 @@
+ ...un-cli.core.hooks.pre-push-task-binding.test.ts | 55 ++++++++++++++++++++++
+ .../agentplane/src/commands/hooks/run.pre-push.ts  | 25 ++++++++++
+ scripts/checks/run-pre-push-hook.mjs               | 22 +++++++++
+ 3 files changed, 102 insertions(+)

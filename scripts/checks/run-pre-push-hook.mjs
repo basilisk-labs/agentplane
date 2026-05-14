@@ -180,13 +180,61 @@ function hasEmergencyBackfillEvidence(body) {
   return evidence.length >= 12;
 }
 
-function hasManagedUpgradeEvidence(body) {
-  const subject =
+function commitSubject(body) {
+  return (
     body
       .split("\n")
       .find((line) => line.trim())
-      ?.trim() ?? "";
-  return /^⬆️\s+upgrade:\s+/u.test(subject) && /^Upgrade-Version:\s*\S+\s*$/im.test(body);
+      ?.trim() ?? ""
+  );
+}
+
+function hasManagedUpgradeEvidence(body) {
+  return (
+    /^⬆️\s+upgrade:\s+/u.test(commitSubject(body)) && /^Upgrade-Version:\s*\S+\s*$/im.test(body)
+  );
+}
+
+function isManagedInstallPath(filePath) {
+  return (
+    filePath === "AGENTS.md" ||
+    filePath === "CLAUDE.md" ||
+    filePath === ".gitignore" ||
+    filePath === ".env.example" ||
+    isUnder(filePath, ".agentplane") ||
+    isUnder(filePath, ".cursor") ||
+    isUnder(filePath, ".windsurf")
+  );
+}
+
+function hasManagedInstallEvidence(body, mutatingPaths) {
+  if (
+    !/^chore:\s+install agentplane \d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(
+      commitSubject(body),
+    )
+  ) {
+    return false;
+  }
+  return (
+    mutatingPaths.length > 0 && mutatingPaths.every((filePath) => isManagedInstallPath(filePath))
+  );
+}
+
+function hasManagedContextBootstrapEvidence(body, mutatingPaths) {
+  const hasBootstrapEvidence =
+    commitSubject(body) === "✅ CTX1NT task: initialize AgentPlane context" &&
+    /^Context-Bootstrap:\s*true\s*$/im.test(body) &&
+    /^Context-Bootstrap-Task:\s*202601010101-CTX1NT\s*$/im.test(body) &&
+    mutatingPaths.includes(".agentplane/context/manifest.lock.json");
+  return (
+    hasBootstrapEvidence &&
+    mutatingPaths.every(
+      (filePath) =>
+        filePath === ".gitignore" ||
+        isUnder(filePath, ".agentplane/context") ||
+        isUnder(filePath, "context"),
+    )
+  );
 }
 
 function readCommitList(range) {
@@ -224,6 +272,8 @@ function enforceTaskBoundOutgoingCommits(range) {
         ?.trim() ?? "";
     if (taskIdFromSubject(subject)) continue;
     if (hasManagedUpgradeEvidence(body)) continue;
+    if (hasManagedInstallEvidence(body, mutating)) continue;
+    if (hasManagedContextBootstrapEvidence(body, mutating)) continue;
     if (hasEmergencyBackfillEvidence(body)) continue;
 
     failures.push(

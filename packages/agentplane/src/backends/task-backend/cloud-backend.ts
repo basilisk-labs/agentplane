@@ -13,6 +13,8 @@ import {
 } from "./shared.js";
 import type { LocalBackend } from "./local-backend.js";
 import { buildCloudPullPlan, emitCloudPullDiffSummary, readOpenConflicts } from "./cloud-pull.js";
+import { cloudPendingPushReason, pendingCloudPushError } from "./cloud-pending-push.js";
+import type { CloudBackendSettings } from "./cloud-backend-settings.js";
 import { requestCloudPush } from "./cloud-backend-push.js";
 import {
   CLOUD_PULL_REQUEST_TIMEOUT_MS,
@@ -39,20 +41,7 @@ import {
 } from "./cloud-backend-utils.js";
 import { firstNonEmptyString } from "./shared/strings.js";
 
-export type CloudBackendSettings = {
-  endpoint?: string;
-  token?: string;
-  project_id?: string;
-  provider?: string;
-  cache_dir?: string;
-  stale_after_seconds?: number;
-  state_path?: string;
-  autosync_enabled?: boolean;
-  autosync_pull_on_read?: boolean;
-  autosync_pull_on_write?: boolean;
-  autosync_push_on_write?: boolean;
-  auto_push_on_mutation?: boolean;
-};
+export type { CloudBackendSettings } from "./cloud-backend-settings.js";
 
 type CloudSyncStateSnapshot = {
   conflicts: unknown[];
@@ -329,20 +318,34 @@ export class CloudBackend implements TaskBackend {
           quiet: opts.quiet,
         });
         const hasPendingProjectionChanges = conflicts.length > 0 || (plan?.changed.length ?? 0) > 0;
-        if (hasPendingProjectionChanges) return;
-      } else if (plan && plan.changed.length > 0) {
-        await this.cache.writeTasks(plan.changed);
+        const hasPendingTaskSetChanges =
+          (plan?.added.length ?? 0) > 0 || (plan?.removedIds.length ?? 0) > 0;
+        if (hasPendingProjectionChanges || hasPendingTaskSetChanges) return;
+      } else if (plan && opts.conflict === "prefer-remote") {
+        await this.assertNoPendingPushForPull();
+        if (plan.changed.length > 0 || plan.added.length > 0) {
+          await this.cache.writeTasks([...plan.changed, ...plan.added]);
+        }
+        await Promise.all(plan.removedIds.map((taskId) => this.cache.deleteTask(taskId)));
       }
     }
     if (opts.direction === "pull") {
-      await writeCloudBackendState(this.statePath, {
-        last_checked_at: pull.lastCheckedAt ?? new Date().toISOString(),
-      });
+      if (pull.lastCheckedAt) {
+        const state = await this.readState();
+        await writeCloudBackendState(this.statePath, {
+          last_checked_at: pull.lastCheckedAt,
+          pending_push: state.pending_push,
+        });
+      }
       return;
     }
-    if (!pull.lastCheckedAt) return;
+    if (!pull.lastCheckedAt) {
+      await this.clearPendingPush();
+      return;
+    }
     await writeCloudBackendState(this.statePath, {
       last_checked_at: pull.lastCheckedAt,
+      pending_push: null,
     });
   }
 
@@ -433,6 +436,7 @@ export class CloudBackend implements TaskBackend {
         staleAfterSeconds: this.staleAfterSeconds,
         stale: isStale(state.last_checked_at, this.staleAfterSeconds),
         statePath: this.statePath,
+        pendingPush: state.pending_push,
       },
     };
   }
@@ -472,11 +476,17 @@ export class CloudBackend implements TaskBackend {
 
   private async ensureProjectionFreshForLocalMutation(opts: { reason: string }): Promise<void> {
     const state = await this.readState();
+    if (state.pending_push) {
+      throw pendingCloudPushError(state.pending_push);
+    }
     if (!isStale(state.last_checked_at, this.staleAfterSeconds)) return;
 
     if (this.autoSyncEnabled && this.autoSyncPullOnWrite) {
       await this.maybeAutoPull({ mode: "write", reason: `mutation_preflight:${opts.reason}` });
       const refreshed = await this.readState();
+      if (refreshed.pending_push) {
+        throw pendingCloudPushError(refreshed.pending_push);
+      }
       if (!isStale(refreshed.last_checked_at, this.staleAfterSeconds)) return;
     }
 
@@ -512,11 +522,43 @@ export class CloudBackend implements TaskBackend {
     if (!this.autoSyncEnabled || !this.autoSyncPushOnWrite) return;
     if (!this.autoSyncNetworkAllowed) return;
     if (this.missingConfigKeys().length > 0) return;
-    await this.sync({
-      direction: "push",
-      conflict: "fail",
-      quiet: true,
-      confirm: true,
+    try {
+      await this.sync({
+        direction: "push",
+        conflict: "fail",
+        quiet: true,
+        confirm: true,
+      });
+    } catch (error) {
+      await this.markPendingPush(error);
+      throw error;
+    }
+  }
+
+  private async assertNoPendingPushForPull(): Promise<void> {
+    const state = await this.readState();
+    if (state.pending_push) {
+      throw pendingCloudPushError(state.pending_push);
+    }
+  }
+
+  private async markPendingPush(error: unknown): Promise<void> {
+    const state = await this.readState();
+    await writeCloudBackendState(this.statePath, {
+      last_checked_at: state.last_checked_at,
+      pending_push: {
+        failed_at: new Date().toISOString(),
+        reason: cloudPendingPushReason(error),
+      },
+    });
+  }
+
+  private async clearPendingPush(): Promise<void> {
+    const state = await this.readState();
+    if (!state.pending_push) return;
+    await writeCloudBackendState(this.statePath, {
+      last_checked_at: state.last_checked_at,
+      pending_push: null,
     });
   }
 

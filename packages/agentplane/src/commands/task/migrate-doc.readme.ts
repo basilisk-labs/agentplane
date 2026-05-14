@@ -22,6 +22,7 @@ import {
   type TaskDocVersion,
 } from "./shared/docs.js";
 import { defaultTaskDocV3 } from "./doc-template.js";
+import { isRecord } from "../../shared/guards.js";
 
 type MarkdownSection = { title: string; text: string };
 
@@ -36,10 +37,6 @@ const V3_CANONICAL_ORDER = [
 ] as const;
 
 const HUMAN_TEXT_SECTIONS = new Set(["summary", "context", "scope", "plan", "findings", "notes"]);
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
 
 function normalizeRevision(value: unknown): number | null {
   return Number.isInteger(value) && typeof value === "number" && value > 0 ? value : null;

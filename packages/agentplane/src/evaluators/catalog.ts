@@ -2,7 +2,9 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { parse as parseYaml } from "yaml";
 
+import { SGR_CONTRACT_SCHEMA_VERSION } from "../runtime/sgr/index.js";
 import { resolveAgentplaneAssetPath } from "../shared/package-paths.js";
+import { validateEvaluatorSgrResult, type EvaluatorSgrResult } from "./sgr-result.js";
 
 export type EvaluatorSource = "project" | "builtin";
 
@@ -16,6 +18,7 @@ export type EvaluatorModule = {
   source: EvaluatorSource;
   path: string;
   content: string;
+  result_contract: "sgr.evaluator_result.v1";
 };
 
 type RawFrontmatter = Record<string, unknown>;
@@ -59,6 +62,24 @@ function parseMarkdownFrontmatter(filePath: string, text: string): RawFrontmatte
   return parsed;
 }
 
+const EVALUATOR_SGR_EXAMPLE: EvaluatorSgrResult = {
+  schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+  kind: "evaluator_result",
+  evaluator_id: "<evaluator-id>",
+  verdict: "rework",
+  findings: [
+    {
+      id: "finding.<stable-id>",
+      severity: "medium",
+      summary: "A concise finding summary.",
+      broken_invariant: "The explicit task invariant that failed.",
+      evidence_refs: [{ path: ".agentplane/tasks/<task-id>/README.md" }],
+    },
+  ],
+  missing_tests: ["The concrete test or check that would have caught the issue."],
+  hidden_assumptions: ["The unproven premise behind the implementation or review."],
+};
+
 async function listMarkdownFiles(dir: string): Promise<string[]> {
   try {
     const entries = await readdir(dir, { withFileTypes: true });
@@ -76,6 +97,7 @@ async function loadEvaluatorFile(opts: {
   filePath: string;
   source: EvaluatorSource;
 }): Promise<EvaluatorModule> {
+  validateEvaluatorSgrResult(EVALUATOR_SGR_EXAMPLE);
   const content = await readFile(opts.filePath, "utf8");
   const frontmatter = parseMarkdownFrontmatter(opts.filePath, content);
   const fallbackId = path.basename(opts.filePath, ".md");
@@ -93,6 +115,7 @@ async function loadEvaluatorFile(opts: {
     source: opts.source,
     path: opts.filePath,
     content,
+    result_contract: "sgr.evaluator_result.v1",
   };
 }
 

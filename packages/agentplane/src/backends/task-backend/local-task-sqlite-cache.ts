@@ -4,6 +4,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync } from "node
 import path from "node:path";
 
 import { resolveAgentplaneCacheSqlitePath } from "../../shared/cache-paths.js";
+import { ensureRuntimeSqliteGitignore } from "../../runtime/shared/runtime-gitignore.js";
 import { openSqliteDatabase, type SqliteDatabase } from "../../shared/sqlite-driver.js";
 import type { TaskSummary } from "./shared.js";
 
@@ -325,6 +326,9 @@ export async function writeSqliteTaskProjection(opts: {
   tasks: readonly TaskSummary[];
   fingerprintEntries?: readonly { path: string; mtimeMs: number; size: number }[];
 }): Promise<void> {
+  const gitRoot = maybeRepoRootFromTasksDir(opts.tasksDir);
+  if (gitRoot) await ensureRuntimeSqliteGitignore({ gitRoot }).catch(() => null);
+
   const dbPath = resolveTaskProjectionSqlitePath(opts.tasksDir);
   const gitCacheKey = buildGitCacheKey(opts.tasksDir);
   const cacheKey =

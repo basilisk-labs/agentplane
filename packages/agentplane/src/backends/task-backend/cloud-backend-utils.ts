@@ -195,7 +195,8 @@ export function splitTasksByPayloadBytes(tasks: TaskData[], maxBytes: number): T
 }
 
 export function isStale(lastCheckedAt: string | null, staleAfterSeconds: number | null): boolean {
-  if (!lastCheckedAt || !staleAfterSeconds) return false;
+  if (!staleAfterSeconds) return false;
+  if (!lastCheckedAt) return true;
   const checkedAt = Date.parse(lastCheckedAt);
   if (!Number.isFinite(checkedAt)) return true;
   return Date.now() - checkedAt > staleAfterSeconds * 1000;

@@ -9,6 +9,7 @@ import {
 import type { RunnerPromptBlock, RunnerPromptRole } from "../types.js";
 import { renderMarkdownPromptTemplate } from "../../agents/agents-template.js";
 import { resolveAgentplaneAssetUrl } from "../../shared/package-paths.js";
+export { isRecord } from "../../shared/guards.js";
 
 export const FRAMEWORK_RUNNER_PROMPT_URL = resolveAgentplaneAssetUrl("RUNNER.md");
 
@@ -72,10 +73,6 @@ export function renderRecipePromptJson(
 
 export function toPromptSource(gitRoot: string, absPath: string): string {
   return absPath.replace(`${gitRoot}/`, "").replaceAll("\\", "/");
-}
-
-export function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
 export function readOptionalStringArray(value: unknown): string[] {

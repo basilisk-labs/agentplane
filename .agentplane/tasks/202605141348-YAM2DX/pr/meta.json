@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T14:20:57Z",
+  "base": "main",
+  "branch": "task/202605141348-YAM2DX/wiki-structure-guidance",
+  "created_at": "2026-05-14T13:49:11.168Z",
+  "head_sha": "e8d5e52ae26932870f69cf872d8a944f817c9834",
+  "last_verified_at": "2026-05-14T13:54:33.959Z",
+  "last_verified_sha": "3d5c3b4706eae9b3f7de27132be995c01a7b742a",
+  "merge_commit": "2f4e8b4d31abd269357abee9eccaaf83e2b22a0f",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T14:20:57Z",
+  "pr_number": 3715,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3715",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605141348-YAM2DX",
+  "updated_at": "2026-05-14T14:20:57Z",
+  "verify": {
+    "status": "pass"
+  }
+}

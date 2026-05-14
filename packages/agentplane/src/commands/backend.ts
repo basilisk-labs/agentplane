@@ -6,6 +6,7 @@ import { backendNotSupportedMessage, createCliEmitter } from "../cli/output.js";
 import { mapBackendError } from "../cli/error-map.js";
 import { CliError } from "../shared/errors.js";
 import { resolveDotEnvRoot } from "../shared/env.js";
+import { isRecord } from "../shared/guards.js";
 import type { TaskBackend } from "../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "./shared/task-backend.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
@@ -437,10 +438,6 @@ async function readBackendConfig(configPath: string): Promise<Record<string, unk
     if (code === "ENOENT") return {};
     throw err;
   }
-}
-
-function isRecord(input: unknown): input is Record<string, unknown> {
-  return Boolean(input && typeof input === "object" && !Array.isArray(input));
 }
 
 async function upsertDotEnvValues(filePath: string, values: Record<string, string>): Promise<void> {

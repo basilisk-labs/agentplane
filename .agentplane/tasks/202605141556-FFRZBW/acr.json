@@ -1,0 +1,231 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605141556-FFRZBW",
+  "created_at": "2026-05-14T16:13:37.628Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "093460eb53413bcd37df7db38fc9cae2465d0d41",
+    "work_ref": "main",
+    "work_commit": "093460eb53413bcd37df7db38fc9cae2465d0d41"
+  },
+  "task": {
+    "task_id": "202605141556-FFRZBW",
+    "title": "Add runner playbook contracts",
+    "intent": "Introduce generic execution blueprint, task playbook, runtime capability, and verifier contracts informed by BitGN failure classes without benchmark-specific task-id hacks.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605141556-FFRZBW/README.md",
+      "sha256": "sha256:61c3c034e8687d025141219fd6aa7b77b02faf80d6fe3cb2db40b5031cd31178"
+    },
+    "approved_at": "2026-05-14T15:57:20.586Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3730.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605141556-FFRZBW_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T15:57:20.586Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605141556-FFRZBW/README.md",
+      "sha256": "sha256:61c3c034e8687d025141219fd6aa7b77b02faf80d6fe3cb2db40b5031cd31178"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605141556-FFRZBW/README.md",
+      "sha256": "sha256:61c3c034e8687d025141219fd6aa7b77b02faf80d6fe3cb2db40b5031cd31178"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605141556-FFRZBW/README.md",
+      "sha256": "sha256:61c3c034e8687d025141219fd6aa7b77b02faf80d6fe3cb2db40b5031cd31178"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605141556-FFRZBW/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:c96c52b62b8538734d65486da7066427152891462af170c9d138d7bd7e9779ac"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 093460eb53413bcd37df7db38fc9cae2465d0d41 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:27e6f12c99cb77bfd7251d95c31cc01dd846640925bac543c85ee8f80f54ac65",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "runner.execution",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "verify_record",
+        "hosted_checks",
+        "publish_or_integrate",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "runner.bundle",
+          "kind": "artifact",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "runner.invocation",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "runner.result_manifest",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "runner.trace",
+          "kind": "artifact",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "runner.execution_state",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "runner.replay_or_resume",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "runner.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605141556-FFRZBW/blueprint/resolved-snapshot.json",
+        "digest": "63b2132fc7671065de0df8ab156b973f5e532c9b33ca007b188c23c25b49e2e1",
+        "current_digest": "63b2132fc7671065de0df8ab156b973f5e532c9b33ca007b188c23c25b49e2e1",
+        "route_changed": false,
+        "artifact_sha256": "sha256:c96c52b62b8538734d65486da7066427152891462af170c9d138d7bd7e9779ac",
+        "safe_command": "agentplane blueprint snapshot 202605141556-FFRZBW"
+      }
+    }
+  }
+}

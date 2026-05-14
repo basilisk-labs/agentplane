@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T19:01:44Z",
+  "base": "main",
+  "branch": "task/202605141803-2551ZF/blog-editorial-refresh",
+  "created_at": "2026-05-14T18:33:31.663Z",
+  "head_sha": "7df028249dc47704236dff894d79345aea07ca7d",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "4e9f34cd72e59f7b653bd19de287822c2e7521ff",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T19:01:44Z",
+  "pr_number": 3748,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3748",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605141803-2551ZF",
+  "updated_at": "2026-05-14T19:01:44Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
