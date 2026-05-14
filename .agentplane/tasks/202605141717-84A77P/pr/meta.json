@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605141717-84A77P/context-management-announcement",
+  "created_at": "2026-05-14T17:18:06.934Z",
+  "head_sha": "25e785c43fe6984bb0b8d9044d975a7584bae286",
+  "last_verified_at": "2026-05-14T17:23:22.088Z",
+  "last_verified_sha": "bc694ec383f274e2961b315d2ae677b5f084ad12",
+  "schema_version": 1,
+  "task_id": "202605141717-84A77P",
+  "updated_at": "2026-05-14T17:24:22.196Z",
+  "verify": {
+    "status": "pass"
+  }
+}
