@@ -105,18 +105,6 @@ export const homepageContent = {
       status: "route contract",
     },
     {
-      id: "acr",
-      code: "ACR-03",
-      label: "ACR",
-      title: "A compact record reviewers and automations can trust.",
-      text: "Agent Change Record keeps intent, plan approval, changed files, commands, verification result, commit, and review status in a machine-readable artifact.",
-      proof:
-        "The diff stays in Git; ACR preserves why the diff exists and what evidence came with it.",
-      linkLabel: "Open ACR docs",
-      to: acrUrl,
-      status: "review evidence",
-    },
-    {
       id: "blog",
       code: "BLG-04",
       label: "Blog",
@@ -127,6 +115,18 @@ export const homepageContent = {
       linkLabel: "Open blog",
       to: blogUrl,
       status: "field notes",
+    },
+    {
+      id: "acr",
+      code: "ACR-03",
+      label: "ACR",
+      title: "A compact record reviewers and automations can trust.",
+      text: "Agent Change Record keeps intent, plan approval, changed files, commands, verification result, commit, and review status in a machine-readable artifact.",
+      proof:
+        "The diff stays in Git; ACR preserves why the diff exists and what evidence came with it.",
+      linkLabel: "Open ACR docs",
+      to: acrUrl,
+      status: "review evidence",
     },
     {
       id: "docs",
