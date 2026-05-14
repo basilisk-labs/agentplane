@@ -147,12 +147,6 @@ const config = {
           activeBaseRegex: "^/docs/compare",
         },
         {
-          to: "/docs/recipes",
-          label: "Recipes",
-          position: "right",
-          activeBaseRegex: "^/docs/recipes",
-        },
-        {
           to: "/docs/user/setup",
           label: "Quickstart",
           position: "right",
