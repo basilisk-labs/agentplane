@@ -1,7 +1,7 @@
  .../blueprint/resolved-snapshot.json               | 528 +++++++++++++++++++++
- .../src/backends/task-backend.local.test.ts        |  43 ++
+ .../task-backend.local-sqlite-gitignore.test.ts    | 101 ++++
  .../task-backend/local-task-sqlite-cache.ts        |   4 +
  .../cli/run-cli/commands/init/write-gitignore.ts   |  42 +-
  packages/agentplane/src/context/reindex.ts         |   2 +
- .../src/runtime/shared/runtime-gitignore.ts        |  61 +++
- 6 files changed, 643 insertions(+), 37 deletions(-)
+ .../src/runtime/shared/runtime-gitignore.ts        |  58 +++
+ 6 files changed, 698 insertions(+), 37 deletions(-)

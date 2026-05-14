@@ -4,7 +4,7 @@ title: "Ignore SQLite cache on read-heavy commands"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-14T15:37:51.644Z"
+  updated_at: "2026-05-14T16:18:28.201Z"
   updated_by: "CODER"
-  note: "Verified: SQLite cache writers repair stale .gitignore entries for .agentplane/cache.sqlite, .agentplane/cache.sqlite-wal, and .agentplane/cache.sqlite-shm before writing the shared cache. Evidence: focused LocalBackend/context tests pass, exact-file ESLint passes, typecheck passes, policy routing passes, git diff whitespace check passes, and doctor is OK with unrelated pre-existing branch_pr normalization warnings."
+  note: "Verified after Codex review fix: SQLite gitignore repair is best-effort, so projection cache writes continue even if .gitignore cannot be read or updated. Evidence: focused LocalBackend SQLite gitignore regression tests pass, LocalBackend/context release readiness tests pass, exact-file ESLint passes, typecheck passes, and hotspots baseline passes."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: SQLite cache writers repair stale .gitignore entries for .agentplane/cache.sqlite, .agentplane/cache.sqlite-wal, and .agentplane/cache.sqlite-shm before writing the shared cache. Evidence: focused LocalBackend/context tests pass, exact-file ESLint passes, typecheck passes, policy routing passes, git diff whitespace check passes, and doctor is OK with unrelated pre-existing branch_pr normalization warnings."
+  -
+    type: "verify"
+    at: "2026-05-14T16:18:28.201Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified after Codex review fix: SQLite gitignore repair is best-effort, so projection cache writes continue even if .gitignore cannot be read or updated. Evidence: focused LocalBackend SQLite gitignore regression tests pass, LocalBackend/context release readiness tests pass, exact-file ESLint passes, typecheck passes, and hotspots baseline passes."
 doc_version: 3
-doc_updated_at: "2026-05-14T15:37:51.747Z"
+doc_updated_at: "2026-05-14T16:18:28.209Z"
 doc_updated_by: "CODER"
 description: "Ensure read-heavy commands that create the shared SQLite cache also prevent .agentplane/cache.sqlite and WAL/SHM files from appearing as untracked files in older AgentPlane repositories whose .gitignore predates the v0.6 cache ignore entries."
 sections:
@@ -83,6 +89,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605141516-363FBC
     
+    ### 2026-05-14T16:18:28.201Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified after Codex review fix: SQLite gitignore repair is best-effort, so projection cache writes continue even if .gitignore cannot be read or updated. Evidence: focused LocalBackend SQLite gitignore regression tests pass, LocalBackend/context release readiness tests pass, exact-file ESLint passes, typecheck passes, and hotspots baseline passes.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T15:37:51.747Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141516-363FBC-sqlite-cache-ignore/.agentplane/tasks/202605141516-363FBC/blueprint/resolved-snapshot.json
+    - old_digest: ea88cb250271e954e79b8e87a91f7589117e4171f0f823318a307167976477a2
+    - current_digest: ea88cb250271e954e79b8e87a91f7589117e4171f0f823318a307167976477a2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605141516-363FBC
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -91,6 +116,10 @@ sections:
     - Observation: Old initialized repositories can lack the v0.6 SQLite ignore entries while read-heavy task projection still writes .agentplane/cache.sqlite.
       Impact: Without the repair, task list/search/next can leave .agentplane/cache.sqlite as an untracked file even though the cache is disposable and must not be committed.
       Resolution: Moved runtime gitignore append logic into a shared helper, kept init on the full runtime ignore contract, and made task projection/context reindex call a narrowed SQLite-only repair before shared cache writes.
+    
+    - Observation: Review found that awaiting gitignore repair directly could make read-heavy projection paths fail on normal filesystem errors.
+      Impact: The cache writer could regress from best-effort behavior to command failure when .gitignore is read-only, malformed as a directory, or otherwise unavailable.
+      Resolution: Wrapped SQLite ignore repair in non-fatal catch paths for task projection and context reindex, and added a regression that keeps projection reads working when .gitignore repair fails.
 id_source: "generated"
 ---
 ## Summary
@@ -138,6 +167,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605141516-363FBC
 
+### 2026-05-14T16:18:28.201Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified after Codex review fix: SQLite gitignore repair is best-effort, so projection cache writes continue even if .gitignore cannot be read or updated. Evidence: focused LocalBackend SQLite gitignore regression tests pass, LocalBackend/context release readiness tests pass, exact-file ESLint passes, typecheck passes, and hotspots baseline passes.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T15:37:51.747Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141516-363FBC-sqlite-cache-ignore/.agentplane/tasks/202605141516-363FBC/blueprint/resolved-snapshot.json
+- old_digest: ea88cb250271e954e79b8e87a91f7589117e4171f0f823318a307167976477a2
+- current_digest: ea88cb250271e954e79b8e87a91f7589117e4171f0f823318a307167976477a2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605141516-363FBC
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -150,3 +198,7 @@ BlueprintSnapshotRef:
 - Observation: Old initialized repositories can lack the v0.6 SQLite ignore entries while read-heavy task projection still writes .agentplane/cache.sqlite.
   Impact: Without the repair, task list/search/next can leave .agentplane/cache.sqlite as an untracked file even though the cache is disposable and must not be committed.
   Resolution: Moved runtime gitignore append logic into a shared helper, kept init on the full runtime ignore contract, and made task projection/context reindex call a narrowed SQLite-only repair before shared cache writes.
+
+- Observation: Review found that awaiting gitignore repair directly could make read-heavy projection paths fail on normal filesystem errors.
+  Impact: The cache writer could regress from best-effort behavior to command failure when .gitignore is read-only, malformed as a directory, or otherwise unavailable.
+  Resolution: Wrapped SQLite ignore repair in non-fatal catch paths for task projection and context reindex, and added a regression that keeps projection reads working when .gitignore repair fails.
