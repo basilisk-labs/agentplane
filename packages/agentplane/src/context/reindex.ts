@@ -4,6 +4,7 @@ import { access, stat, mkdir, rm, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { infoMessage, warnMessage } from "../cli/output.js";
+import { ensureRuntimeSqliteGitignore } from "../runtime/shared/runtime-gitignore.js";
 import { resolveAgentplaneCacheSqlitePath } from "../shared/cache-paths.js";
 import {
   collectMatchingFiles,
@@ -391,6 +392,7 @@ export async function cmdContextReindex(opts: {
       size_bytes: row.size_bytes,
     })),
   };
+  await ensureRuntimeSqliteGitignore({ gitRoot: root }).catch(() => null);
   await writeSqliteProjection(sqlitePath, payload);
 
   process.stdout.write(infoMessage(`reindex prepared at ${sqlitePath}`) + "\n");
