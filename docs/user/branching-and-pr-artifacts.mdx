@@ -119,10 +119,10 @@ checkout, so it records the explicit implementation commit hash that already exi
 branch. Use comment-driven status commits only where the specific lifecycle command supports them
 from the task worktree.
 
-Underlying hosted-check command:
+Repository helper for hosted checks:
 
 ```bash
-gh pr checks --watch --required --fail-fast
+bun run workflow:wait-remote-checks -- --timeout-ms 600000
 ```
 
 Hosted checks are the gate. Do not integrate or finish on base branch until `bun run workflow:wait-remote-checks` returns green.
