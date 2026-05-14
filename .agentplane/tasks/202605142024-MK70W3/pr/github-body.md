@@ -28,12 +28,18 @@ local checks and browser smoke passed.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T20:24:59.982Z
+- Updated: 2026-05-14T20:34:51.707Z
 - Branch: task/202605142024-MK70W3/homepage-feature-nav
-- Head: c43d665480b4
+- Head: 8f6888fc7e2d
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               |  528 ++++++++++
+ website/docusaurus.config.ts                       |   37 +-
+ website/src/data/homepage-content.ts               |   80 +-
+ website/src/pages/_home.module.css                 | 1080 +++++++-------------
+ website/src/pages/index.tsx                        |  952 ++++-------------
+ website/src/theme/Root.tsx                         |   47 -
+ 6 files changed, 1183 insertions(+), 1541 deletions(-)
 ```
 
 </details>
