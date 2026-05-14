@@ -36,6 +36,7 @@ function evaluatorMetadata(row: EvaluatorModule) {
     tags: row.tags,
     source: row.source,
     path: row.path,
+    result_contract: row.result_contract,
   };
 }
 
