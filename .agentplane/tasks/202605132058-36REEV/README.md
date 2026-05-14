@@ -1,10 +1,11 @@
 ---
 id: "202605132058-36REEV"
 title: "Split PR metadata helpers"
-status: "DOING"
+result_summary: "Merged via PR #3684."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: pr-meta focused tests passed (16 tests); typecheck passed; hotspot threshold check passed with existing warning-only debt; Prettier matched files passed; policy routing passed."
   attempts: 0
-commit: null
+commit:
+  hash: "a63fe057589bc3415e054bc6a1e2e00345df9d8c"
+  message: "Merge pull request #3684 from basilisk-labs/task/202605132058-36REEV/split-pr-meta"
 comments:
   -
     author: "CODER"
     body: "Start: Refactor approved PR metadata helper scope in the dedicated branch_pr worktree, preserving the existing public facade and running the declared focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3684 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: pr-meta focused tests passed (16 tests); typecheck passed; hotspot threshold check passed with existing warning-only debt; Prettier matched files passed; policy routing passed."
+  -
+    type: "status"
+    at: "2026-05-14T06:57:48.497Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3684 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T21:10:56.989Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T06:57:48.503Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refactor the shared branch_pr PR metadata helper into smaller compatibility-preserving modules without changing public imports or behavior."
 sections:
   Summary: |-
