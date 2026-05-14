@@ -189,6 +189,36 @@ function hasManagedUpgradeEvidence(body) {
   return /^⬆️\s+upgrade:\s+/u.test(subject) && /^Upgrade-Version:\s*\S+\s*$/im.test(body);
 }
 
+function isManagedInstallPath(filePath) {
+  return (
+    filePath === "AGENTS.md" ||
+    filePath === "CLAUDE.md" ||
+    filePath === ".gitignore" ||
+    filePath === ".env.example" ||
+    isUnder(filePath, ".agentplane") ||
+    isUnder(filePath, ".cursor") ||
+    isUnder(filePath, ".windsurf")
+  );
+}
+
+function hasManagedInstallEvidence(body, mutatingPaths) {
+  const subject =
+    body
+      .split("\n")
+      .find((line) => line.trim())
+      ?.trim() ?? "";
+  if (
+    !/^chore:\s+install agentplane \d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(
+      subject,
+    )
+  ) {
+    return false;
+  }
+  return (
+    mutatingPaths.length > 0 && mutatingPaths.every((filePath) => isManagedInstallPath(filePath))
+  );
+}
+
 function readCommitList(range) {
   if (!range) return [];
   return readQuiet("git", ["log", "--format=%H", `${range.from}..${range.to}`])
@@ -224,6 +254,7 @@ function enforceTaskBoundOutgoingCommits(range) {
         ?.trim() ?? "";
     if (taskIdFromSubject(subject)) continue;
     if (hasManagedUpgradeEvidence(body)) continue;
+    if (hasManagedInstallEvidence(body, mutating)) continue;
     if (hasEmergencyBackfillEvidence(body)) continue;
 
     failures.push(
