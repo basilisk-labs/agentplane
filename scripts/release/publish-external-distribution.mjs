@@ -276,10 +276,14 @@ async function publishExternal(args) {
         env,
       });
       const headSha = headStdout.trim();
-      const { stdout: existingStdout } = await run("git", ["ls-remote", "--tags", "origin", tagRef], {
-        cwd: cloneDir,
-        env,
-      });
+      const { stdout: existingStdout } = await run(
+        "git",
+        ["ls-remote", "--tags", "origin", tagRef],
+        {
+          cwd: cloneDir,
+          env,
+        },
+      );
       const existingSha = existingStdout
         .trim()
         .split(/\s+/u)
