@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605141849-0C84Z2/fix-doc-section-readback-3747",
+  "created_at": "2026-05-14T18:50:37.324Z",
+  "head_sha": "2917c1d0eb281ea01deecbc5ea76ce51ab95c810",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605141849-0C84Z2",
+  "updated_at": "2026-05-14T18:55:07.563Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
