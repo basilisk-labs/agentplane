@@ -94,6 +94,9 @@ ap finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --
 ```bash
 ap vshow <task-id>
 ap verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]
+ap incidents advise <task-id>
+ap incidents collect <task-id> --check
+ap doctor
 node .agentplane/policy/check-routing.mjs
 ```
 
@@ -170,11 +173,7 @@ Routing constraints:
 - MUST stop and request re-approval when scope, risk, or verification criteria materially drift.
 - MUST NOT let ORCHESTRATOR perform owner-scoped implementation or verification once a task owner is known, unless the approved plan explicitly makes ORCHESTRATOR the owner.
 
-Role boundaries:
-
-- ORCHESTRATOR: preflight + plan + approvals.
-- PLANNER: executable task graph creation/update.
-- INTEGRATOR: base integration/finish in `branch_pr`.
+Role boundaries: ORCHESTRATOR = preflight + plan + approvals; PLANNER = executable task graph creation/update; INTEGRATOR = base integration/finish in `branch_pr`.
 
 ---
 

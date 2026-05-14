@@ -94,6 +94,22 @@ function formatRunShowMetrics(
   return parts.length > 0 ? parts.join(", ") : null;
 }
 
+function field(label: string, value: string, width: number): string {
+  return `${`${label}:`.padEnd(width)}${value}`;
+}
+
+function runShowField(label: string, value: string): string {
+  return field(label, value, 27);
+}
+
+function runCancelField(label: string, value: string): string {
+  return field(label, value, 17);
+}
+
+function runControlField(label: string, value: string): string {
+  return field(label, value, 18);
+}
+
 function renderExpectedRunShowText(taskId: string, payload: RunShowPayload): string {
   const capabilities =
     payload.bundle.execution.adapter_capabilities ??
@@ -101,50 +117,59 @@ function renderExpectedRunShowText(taskId: string, payload: RunShowPayload): str
     null;
   const lines = [
     infoMessage(`task run show: ${taskId}`),
-    `selection: ${payload.selection}`,
-    `run_id: ${payload.run_id}`,
-    `status: ${payload.state.status}`,
-    `adapter: ${payload.state.adapter_id}`,
-    `mode: ${payload.state.mode}`,
-    `target: ${formatRunShowTarget(payload.state.target)}`,
-    `created_at: ${payload.state.created_at}`,
-    `updated_at: ${payload.state.updated_at}`,
-    `bundle: ${payload.paths.bundle_path}`,
-    `result: ${payload.paths.result_path}`,
-    `state: ${payload.paths.state_path}`,
-    `events: ${payload.paths.events_path}`,
-    `trace: ${payload.paths.trace_path}`,
-    `stderr: ${payload.paths.stderr_path}`,
-    `events_count: ${payload.events_count}`,
+    runShowField("selection", payload.selection),
+    runShowField("run_id", payload.run_id),
+    runShowField("status", payload.state.status),
+    runShowField("adapter", payload.state.adapter_id),
+    runShowField("mode", payload.state.mode),
+    runShowField("target", formatRunShowTarget(payload.state.target)),
+    runShowField("created_at", payload.state.created_at),
+    runShowField("updated_at", payload.state.updated_at),
+    runShowField("bundle", payload.paths.bundle_path),
+    runShowField("result", payload.paths.result_path),
+    runShowField("state", payload.paths.state_path),
+    runShowField("events", payload.paths.events_path),
+    runShowField("trace", payload.paths.trace_path),
+    runShowField("stderr", payload.paths.stderr_path),
+    runShowField("events_count", String(payload.events_count)),
   ];
   if (payload.last_event) {
-    lines.push(`last_event: ${payload.last_event.type ?? "unknown"}`);
+    lines.push(runShowField("last_event", payload.last_event.type ?? "unknown"));
   }
   lines.push(
-    `capabilities: ${JSON.stringify(capabilities)}`,
+    runShowField("capabilities", JSON.stringify(capabilities)),
     ...formatRunnerCapabilitySummaryLines(capabilities ?? undefined),
-    `policy_requested: ${JSON.stringify(payload.state.policy_decision?.requested ?? {})}`,
-    `policy_effective: ${JSON.stringify(payload.state.policy_decision?.effective ?? {})}`,
-    `policy_fields: ${JSON.stringify(payload.state.policy_decision?.fields ?? {})}`,
-    `policy_refusal: ${JSON.stringify(payload.state.policy_decision?.refusal_reason ?? null)}`,
+    runShowField(
+      "policy_requested",
+      JSON.stringify(payload.state.policy_decision?.requested ?? {}),
+    ),
+    runShowField(
+      "policy_effective",
+      JSON.stringify(payload.state.policy_decision?.effective ?? {}),
+    ),
+    runShowField("policy_fields", JSON.stringify(payload.state.policy_decision?.fields ?? {})),
+    runShowField(
+      "policy_refusal",
+      JSON.stringify(payload.state.policy_decision?.refusal_reason ?? null),
+    ),
     ...formatRunnerPolicyFieldSummaryLines(payload.state.policy_decision),
   );
   if (payload.state.result?.summary) {
-    lines.push(`summary: ${payload.state.result.summary}`);
+    lines.push(runShowField("summary", payload.state.result.summary));
   }
   if (payload.state.result?.stdout_summary) {
-    lines.push(`stdout_summary: ${payload.state.result.stdout_summary}`);
+    lines.push(runShowField("stdout_summary", payload.state.result.stdout_summary));
   }
   if (payload.state.result?.stderr_summary) {
-    lines.push(`stderr_summary: ${payload.state.result.stderr_summary}`);
+    lines.push(runShowField("stderr_summary", payload.state.result.stderr_summary));
   }
   if (payload.state.result?.timeout_reason) {
-    lines.push(`timeout_reason: ${payload.state.result.timeout_reason}`);
+    lines.push(runShowField("timeout_reason", payload.state.result.timeout_reason));
   }
   const metrics = formatRunShowMetrics(payload.state.result?.metrics);
-  if (metrics) lines.push(`metrics: ${metrics}`);
+  if (metrics) lines.push(runShowField("metrics", metrics));
   const artifacts = formatRunShowArtifacts(payload.state.result?.artifacts);
-  if (artifacts) lines.push(`artifacts: ${artifacts}`);
+  if (artifacts) lines.push(runShowField("artifacts", artifacts));
   return `${lines.join("\n")}\n`;
 }
 
@@ -159,13 +184,13 @@ function renderExpectedRunCancelText(opts: {
 }): string {
   const lines = [
     infoMessage(`task run cancelled: ${opts.taskId}`),
-    `run_id: ${opts.runId}`,
-    `previous_status: ${opts.previousStatus}`,
-    `state: ${opts.statePath}`,
-    `events: ${opts.eventsPath}`,
-    `status: ${opts.status}`,
+    runCancelField("run_id", opts.runId),
+    runCancelField("previous_status", opts.previousStatus),
+    runCancelField("state", opts.statePath),
+    runCancelField("events", opts.eventsPath),
+    runCancelField("status", opts.status),
   ];
-  if (opts.note) lines.push(`note: ${opts.note}`);
+  if (opts.note) lines.push(runCancelField("note", opts.note));
   return `${lines.join("\n")}\n`;
 }
 
@@ -182,15 +207,15 @@ function renderExpectedRunResumeText(opts: {
 }): string {
   const lines = [
     infoMessage(`task run resumed: ${opts.taskId}`),
-    `run_id: ${opts.runId}`,
-    `previous_status: ${opts.previousStatus}`,
-    `adapter: ${opts.adapter}`,
-    `state: ${opts.statePath}`,
-    `events: ${opts.eventsPath}`,
-    `status: ${opts.status}`,
-    `runner_exit_code: ${opts.runnerExitCode}`,
+    runControlField("run_id", opts.runId),
+    runControlField("previous_status", opts.previousStatus),
+    runControlField("adapter", opts.adapter),
+    runControlField("state", opts.statePath),
+    runControlField("events", opts.eventsPath),
+    runControlField("status", opts.status),
+    runControlField("runner_exit_code", String(opts.runnerExitCode)),
   ];
-  if (opts.stdoutSummary) lines.push(`stdout: ${opts.stdoutSummary}`);
+  if (opts.stdoutSummary) lines.push(runControlField("stdout", opts.stdoutSummary));
   return `${lines.join("\n")}\n`;
 }
 
@@ -208,16 +233,16 @@ function renderExpectedRunRetryText(opts: {
 }): string {
   const lines = [
     infoMessage(`task run retried: ${opts.taskId}`),
-    `source_run_id: ${opts.sourceRunId}`,
-    `previous_status: ${opts.previousStatus}`,
-    `run_id: ${opts.runId}`,
-    `adapter: ${opts.adapter}`,
-    `state: ${opts.statePath}`,
-    `events: ${opts.eventsPath}`,
-    `status: ${opts.status}`,
-    `runner_exit_code: ${opts.runnerExitCode}`,
+    runControlField("source_run_id", opts.sourceRunId),
+    runControlField("previous_status", opts.previousStatus),
+    runControlField("run_id", opts.runId),
+    runControlField("adapter", opts.adapter),
+    runControlField("state", opts.statePath),
+    runControlField("events", opts.eventsPath),
+    runControlField("status", opts.status),
+    runControlField("runner_exit_code", String(opts.runnerExitCode)),
   ];
-  if (opts.stdoutSummary) lines.push(`stdout: ${opts.stdoutSummary}`);
+  if (opts.stdoutSummary) lines.push(runControlField("stdout", opts.stdoutSummary));
   return `${lines.join("\n")}\n`;
 }
 

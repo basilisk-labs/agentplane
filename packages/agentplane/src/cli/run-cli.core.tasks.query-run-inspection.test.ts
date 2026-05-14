@@ -81,6 +81,12 @@ import {
 
 useRunCliIntegrationHarness();
 
+function expectPlainField(output: string, label: string, expected: string): void {
+  const line = output.split(/\r?\n/u).find((line) => line.trimStart().startsWith(`${label}:`));
+  const separator = line?.indexOf(":") ?? -1;
+  expect(separator >= 0 ? line?.slice(separator + 1).trim() : undefined).toBe(expected);
+}
+
 describe("runCli task run inspection queries", { timeout: TASKS_QUERY_CLI_TIMEOUT_MS }, () => {
   it("task run show, trace, and tail inspect the latest persisted run without manual file reads", async () => {
     const root = await mkGitRepoRoot();
@@ -162,11 +168,11 @@ describe("runCli task run inspection queries", { timeout: TASKS_QUERY_CLI_TIMEOU
           expect(jsonPayload).toBeTruthy();
           if (!jsonPayload) throw new Error("Expected JSON payload before plain-text run show");
           expect(io.stdout).toContain(`task run show: ${taskId}`);
-          expect(io.stdout).toContain(`selection: ${jsonPayload.selection}`);
-          expect(io.stdout).toContain(`run_id: ${jsonPayload.run_id}`);
-          expect(io.stdout).toContain(`status: ${jsonPayload.state.status}`);
-          expect(io.stdout).toContain(`adapter: ${jsonPayload.state.adapter_id}`);
-          expect(io.stdout).toContain(`summary: ${jsonPayload.state.result?.summary}`);
+          expectPlainField(io.stdout, "selection", jsonPayload.selection);
+          expectPlainField(io.stdout, "run_id", jsonPayload.run_id);
+          expectPlainField(io.stdout, "status", jsonPayload.state.status);
+          expectPlainField(io.stdout, "adapter", jsonPayload.state.adapter_id);
+          expectPlainField(io.stdout, "summary", jsonPayload.state.result?.summary ?? "");
           expect(io.stdout).toContain(`artifacts:`);
         } finally {
           io.restore();

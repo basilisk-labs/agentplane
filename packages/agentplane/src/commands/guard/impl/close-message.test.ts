@@ -105,6 +105,33 @@ describe("buildCloseCommitMessage", { timeout: 60_000 }, () => {
     expect(msg.subject).not.toContain("(no result_summary)");
   });
 
+  it("uses the task title for the subject when result_summary is a machine slug", async () => {
+    const { root, implHash } = await mkRepoWithImplCommit();
+    const task: TaskData = {
+      id: "202602081506-R18Y1Q",
+      title: "Finish force approval",
+      description: "desc",
+      result_summary: "force-finish-check",
+      status: "DONE",
+      priority: "med",
+      owner: "ORCHESTRATOR",
+      depends_on: [],
+      tags: ["docs"],
+      verify: [],
+      verification: {
+        state: "ok",
+        updated_at: nowIso(),
+        updated_by: "TESTER",
+        note: "Verified: force finish check",
+      },
+      commit: { hash: implHash, message: "impl" },
+    };
+
+    const msg = await buildCloseCommitMessage({ gitRoot: root, task });
+    expect(msg.subject).toBe("docs: finish force approval");
+    expect(msg.subject).not.toBe("docs: force-finish-check");
+  });
+
   it("uses spike emoji and does not require verify summary", async () => {
     const { root, implHash } = await mkRepoWithImplCommit();
     const task: TaskData = {

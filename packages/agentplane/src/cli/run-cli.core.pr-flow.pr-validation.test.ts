@@ -1070,7 +1070,6 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
       io.restore();
     }
   });
-
   it("pr commands require a task id", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const io = captureStdIO();
@@ -1083,7 +1082,6 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
       io.restore();
     }
   });
-
   it("pr rejects unknown subcommands", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const io = captureStdIO();
@@ -1091,7 +1089,9 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
       const code = await runCli(["pr", "nope", "202601010101-ABCDEF", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage:");
-      expect(io.stderr).toContain("agentplane pr <open|update|check|note|close|close-superseded>");
+      expect(io.stderr).toContain(
+        "agentplane pr <open|update|check|flow status|note|close|close-superseded>",
+      );
     } finally {
       io.restore();
     }

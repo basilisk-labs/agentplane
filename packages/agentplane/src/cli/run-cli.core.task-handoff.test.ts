@@ -38,32 +38,36 @@ type HandoffPayload = {
   };
 };
 
+function field(label: string, value: string): string {
+  return `${`${label}:`.padEnd(21)}${value}`;
+}
+
 function renderExpectedHandoffShowText(taskId: string, handoff: HandoffPayload): string {
   const lines = [
     infoMessage(`task handoff show: ${taskId}`),
-    `from: ${handoff.from_role}`,
-    `to: ${handoff.to_role ?? "unassigned"}`,
-    `created_at: ${handoff.created_at}`,
-    `reason: ${handoff.reason}`,
+    field("from", handoff.from_role),
+    field("to", handoff.to_role ?? "unassigned"),
+    field("created_at", handoff.created_at),
+    field("reason", handoff.reason),
   ];
-  if (handoff.branch) lines.push(`branch: ${handoff.branch}`);
-  if (handoff.base_branch) lines.push(`base_branch: ${handoff.base_branch}`);
-  if (handoff.head_sha) lines.push(`head_sha: ${handoff.head_sha}`);
-  if (handoff.pr_branch) lines.push(`pr_branch: ${handoff.pr_branch}`);
+  if (handoff.branch) lines.push(field("branch", handoff.branch));
+  if (handoff.base_branch) lines.push(field("base_branch", handoff.base_branch));
+  if (handoff.head_sha) lines.push(field("head_sha", handoff.head_sha));
+  if (handoff.pr_branch) lines.push(field("pr_branch", handoff.pr_branch));
   if (handoff.runner?.run_id) {
     lines.push(
-      `run_id: ${handoff.runner.run_id}`,
-      `runner_status: ${handoff.runner.status ?? "unknown"}`,
-      `runner_next_action: ${handoff.runner.next_action ?? "none"}`,
+      field("run_id", handoff.runner.run_id),
+      field("runner_status", handoff.runner.status ?? "unknown"),
+      field("runner_next_action", handoff.runner.next_action ?? "none"),
     );
     if (handoff.runner.next_command) {
-      lines.push(`runner_next_command: ${handoff.runner.next_command}`);
+      lines.push(field("runner_next_command", handoff.runner.next_command));
     }
   }
-  for (const action of handoff.next_actions ?? []) lines.push(`next_action: ${action}`);
-  for (const risk of handoff.risks ?? []) lines.push(`risk: ${risk}`);
-  for (const question of handoff.open_questions ?? []) lines.push(`open_question: ${question}`);
-  for (const evidence of handoff.evidence_paths ?? []) lines.push(`evidence_path: ${evidence}`);
+  for (const action of handoff.next_actions ?? []) lines.push(field("next_action", action));
+  for (const risk of handoff.risks ?? []) lines.push(field("risk", risk));
+  for (const question of handoff.open_questions ?? []) lines.push(field("open_question", question));
+  for (const evidence of handoff.evidence_paths ?? []) lines.push(field("evidence_path", evidence));
   return `${lines.join("\n")}\n`;
 }
 

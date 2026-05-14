@@ -1,4 +1,4 @@
-import type { PrBatchMeta } from "./types.js";
+import type { PrBatchMeta } from "./model.js";
 
 export function nowOrExisting(value: string | undefined, fallback: string): string {
   const trimmed = value?.trim() ?? "";

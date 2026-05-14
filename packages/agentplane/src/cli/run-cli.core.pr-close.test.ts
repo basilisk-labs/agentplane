@@ -22,6 +22,11 @@ const execFileAsync = promisify(execFile);
 installRunCliIntegrationHarness();
 const PR_CLOSE_INTEGRATION_TIMEOUT_MS = 240_000;
 
+function expectLabeledValue(output: string, label: string, expected: string): void {
+  const line = output.split(/\r?\n/u).find((line) => line.trimStart().startsWith(`${label}:`));
+  expect(line?.split(/:\s*/u, 2)[1]).toBe(expected);
+}
+
 async function installFakeGh(opts: {
   scenarioName: string;
   branchRepo?: string | null;
@@ -138,10 +143,10 @@ describe("runCli pr close", { timeout: PR_CLOSE_INTEGRATION_TIMEOUT_MS }, () => 
       ]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("✅ pr close #321");
-      expect(io.stdout).toContain("repo: example/repo");
-      expect(io.stdout).toContain("state: closed");
-      expect(io.stdout).toContain("comment: added");
-      expect(io.stdout).toContain("remote_branch_action: skipped");
+      expectLabeledValue(io.stdout, "repo", "example/repo");
+      expectLabeledValue(io.stdout, "state", "closed");
+      expectLabeledValue(io.stdout, "comment", "added");
+      expectLabeledValue(io.stdout, "remote_branch_action", "skipped");
     } finally {
       io.restore();
       process.env.PATH = originalPath;
@@ -191,8 +196,8 @@ describe("runCli pr close", { timeout: PR_CLOSE_INTEGRATION_TIMEOUT_MS }, () => 
     try {
       const code = await runCli(["pr", "close", "321", "--delete-remote-branch", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("remote_branch: task/321/cleanup");
-      expect(io.stdout).toContain("remote_branch_action: deleted");
+      expectLabeledValue(io.stdout, "remote_branch", "task/321/cleanup");
+      expectLabeledValue(io.stdout, "remote_branch_action", "deleted");
     } finally {
       io.restore();
       process.env.PATH = originalPath;

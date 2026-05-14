@@ -17,7 +17,7 @@ git status --short --untracked-files=no
 git rev-parse --abbrev-ref HEAD
 ```
 
-After preflight, follow the configured workflow mode. In repositories configured for `branch_pr`, start with `agentplane help work start`, keep local PR artifacts current with `agentplane pr ...`, confirm hosted required checks through the repository's configured CI/provider gate; optional framework-maintainer helper when present: `bun run workflow:wait-remote-checks`, and only then integrate on base; use the direct-mode route below only when `workflow_mode=direct` is intentional.
+After preflight, follow the configured workflow mode. In repositories configured for `branch_pr`, start with `agentplane help work start`, keep local PR artifacts current with `agentplane pr ...`, confirm hosted required checks through the repository's configured CI/provider gate; optional framework-maintainer helper when present: `bun run workflow:wait-remote-checks`, and let base-checkout `integrate` drive the task GitHub PR merge; use the direct-mode route below only when `workflow_mode=direct` is intentional.
 
 ## 1. Preflight
 
@@ -81,6 +81,6 @@ Keep exceptional paths out of the normal route: use these only for recovery, fra
 
 ## Non-default paths
 
-- `branch_pr`: in repositories configured this way, start a task branch/worktree, maintain PR artifacts, confirm hosted required checks through the repository's configured CI/provider gate; optional framework-maintainer helper when present: `bun run workflow:wait-remote-checks`, and let INTEGRATOR close on base only after the remote gate is green.
+- `branch_pr`: in repositories configured this way, start a task branch/worktree, maintain PR artifacts, confirm hosted required checks through the repository's configured CI/provider gate; optional framework-maintainer helper when present: `bun run workflow:wait-remote-checks`, and finalize through the task GitHub PR merge plus Task Hosted Close.
 - `direct`: use `task new/plan approve/start-ready -> task verify-show -> verify -> finish` only when `workflow_mode=direct` is intentional.
 - Use manual close flags only when a specific policy or recovery situation requires them.

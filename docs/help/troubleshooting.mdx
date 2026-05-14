@@ -59,3 +59,42 @@ description: "Fix common setup and workflow issues when using Agent Plane locall
 - What to do:
 - Run `agentplane ide sync`.
 - Re-open the IDE workspace to refresh loaded instructions.
+
+## framework runtime or release recovery is unclear
+
+- Why this happens: the active CLI can be a repo-local handoff, a stale global install, or a
+  release-recovery checkout that needs exact-SHA evidence.
+- What to do:
+- Run the framework bootstrap first:
+
+```bash
+bun run framework:dev:bootstrap
+```
+
+- If bootstrap prerequisites need manual repair, run:
+
+```bash
+bun install
+git submodule update --init --recursive agentplane-recipes
+bun run --filter=@agentplaneorg/core build
+bun run --filter=agentplane build
+bun run --filter=@agentplane/testkit build
+```
+
+- Verify the runtime explicitly:
+
+```bash
+node packages/agentplane/bin/agentplane.js runtime explain
+agentplane runtime explain
+```
+
+- The diagnostic report should show `Mode`, `Active binary`, `Resolved agentplane`, and
+  `Resolved @agentplaneorg/core`.
+- For framework debugging only, set `AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1` to force the global CLI
+  instead of repo-local handoff.
+- For release recovery, inspect the read-only state:
+
+```bash
+bun run release:recover
+bun run release:recover -- --check-registry
+```

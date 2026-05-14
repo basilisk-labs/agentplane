@@ -99,6 +99,8 @@ Use this when you need to prove which binary is active, whether you are on
 
 If the repository expects a newer CLI than the active runtime, `runtime explain` and `doctor` now
 print a concrete recovery path and a follow-up `agentplane runtime explain` verification step.
+Framework maintainers can use the documented reinstall helper when the global CLI is stale, and the
+force-global override when they need to bypass repo-local handoff during runtime debugging.
 
 ## Tasks
 

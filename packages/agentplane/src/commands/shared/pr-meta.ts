@@ -1,4 +1,4 @@
-export type { ObservedGithubPrState, PrBatchMeta, PrMeta } from "./pr-meta/types.js";
+export type { ObservedGithubPrState, PrBatchMeta, PrMeta } from "./pr-meta/model.js";
 export {
   derivePrArtifactLifecycleState,
   withPrArtifactLifecycleState,
