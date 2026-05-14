@@ -723,7 +723,7 @@ describe("CloudBackend", () => {
     expect(state.last_checked_at).toBe("2000-01-01T00:00:00.000Z");
   });
 
-  it("uses a local freshness fallback after a no-op pull only when the service omits a timestamp", async () => {
+  it("does not advance freshness after a no-op pull when the service omits a timestamp", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
     const task: TaskData = makeTask({
       id: "202605051806-C1D2",
@@ -751,12 +751,12 @@ describe("CloudBackend", () => {
 
     await backend.sync({ direction: "pull", conflict: "diff", quiet: true, confirm: true });
 
-    const stateText = await readFile(
-      path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"),
-      "utf8",
-    );
-    const state = JSON.parse(stateText) as { last_checked_at: string };
-    expect(Number.isFinite(Date.parse(state.last_checked_at))).toBe(true);
+    await expect(
+      readFile(
+        path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"),
+        "utf8",
+      ),
+    ).rejects.toMatchObject({ code: "ENOENT" });
   });
 
   it("conflict=fail refuses to write open service conflicts", async () => {
