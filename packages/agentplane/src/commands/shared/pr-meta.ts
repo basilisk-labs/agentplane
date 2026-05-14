@@ -1,11 +1,4 @@
-export type {
-  ObservedGithubPrState,
-  PrArtifactState,
-  PrArtifactTextState,
-  PrArtifactLifecycleState,
-  PrBatchMeta,
-  PrMeta,
-} from "./pr-meta/types.js";
+export type { ObservedGithubPrState, PrBatchMeta, PrMeta } from "./pr-meta/types.js";
 export {
   derivePrArtifactLifecycleState,
   withPrArtifactLifecycleState,
@@ -25,5 +18,4 @@ export {
   extractLastVerifiedSha,
   resolveShellInvocation,
   runShellCommand,
-  type ShellInvocation,
 } from "./pr-meta/verify-log.js";

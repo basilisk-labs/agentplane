@@ -21,14 +21,3 @@ export type PrArtifactLifecycleState =
   | { kind: "handoff"; reason: string }
   | { kind: "remote_staged"; reason: string }
   | { kind: "remote_failed"; reason: string };
-
-export type PrArtifactTextState = {
-  diffstatText: string | null;
-  verifyLogText: string | null;
-  reviewText: string | null;
-};
-
-export type PrArtifactState = PrArtifactTextState & {
-  meta: PrMeta;
-  lifecycle: PrArtifactLifecycleState;
-};

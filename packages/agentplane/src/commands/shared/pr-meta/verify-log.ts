@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { execFileAsync } from "@agentplaneorg/core/process";
 
-export type ShellInvocation = {
+type ShellInvocation = {
   command: string;
   args: string[];
 };
