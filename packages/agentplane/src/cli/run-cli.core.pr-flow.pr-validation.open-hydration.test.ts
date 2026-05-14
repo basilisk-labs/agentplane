@@ -215,10 +215,12 @@ describe(
         pr_number?: number;
         pr_url?: string;
         status?: string;
+        head_sha?: string;
       };
-      expect(meta.pr_number).toBeUndefined();
-      expect(meta.pr_url).toBeUndefined();
-      expect(meta.status).toBeUndefined();
+      expect(meta.pr_number).toBe(321);
+      expect(meta.pr_url).toBe("https://github.com/example/repo/pull/321");
+      expect(meta.status).toBe("OPEN");
+      expect(meta.head_sha).toBe("remote-head-sha");
 
       const rawLog = await readFile(logPath, "utf8");
       expect(rawLog).toContain(`head=example%3Atask%2F${taskId}%2Fexisting-pr`);
@@ -442,20 +444,22 @@ describe(
         pr_number?: number;
         pr_url?: string;
         status?: string;
+        head_sha?: string;
       };
-      expect(meta.pr_number).toBeUndefined();
-      expect(meta.pr_url).toBeUndefined();
-      expect(meta.status).toBeUndefined();
+      expect(meta.pr_number).toBe(777);
+      expect(meta.pr_url).toBe("https://github.com/example/repo/pull/777");
+      expect(meta.status).toBe("OPEN");
+      expect(meta.head_sha).toBe("remote-head-sha");
 
       const { stdout: statusOut } = await execFileAsync(
         "git",
         ["status", "--short", "--untracked-files=no"],
         { cwd: root },
       );
-      expect(statusOut.trim()).toBe("");
+      expect(statusOut.trim()).toBe(`M .agentplane/tasks/${taskId}/pr/meta.json`);
     });
 
-    it("pr open keeps review/body stable when a second run links an existing remote PR", async () => {
+    it("pr open refreshes review/body when a second run links an existing remote PR head", async () => {
       const root = await mkGitRepoRootWithBranch("main");
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
@@ -544,8 +548,12 @@ describe(
         delete process.env.AGENTPLANE_GH_LOG;
       }
 
-      expect(await readFile(path.join(prDir, "review.md"), "utf8")).toBe(reviewBefore);
-      expect(await readFile(path.join(prDir, "github-body.md"), "utf8")).toBe(githubBodyBefore);
+      const reviewAfter = await readFile(path.join(prDir, "review.md"), "utf8");
+      const githubBodyAfter = await readFile(path.join(prDir, "github-body.md"), "utf8");
+      expect(reviewAfter).not.toBe(reviewBefore);
+      expect(githubBodyAfter).not.toBe(githubBodyBefore);
+      expect(reviewAfter).toContain("Head: remote-head-");
+      expect(githubBodyAfter).toContain("Head: remote-head-");
     });
   },
 );

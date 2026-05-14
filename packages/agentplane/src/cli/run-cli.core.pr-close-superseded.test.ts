@@ -22,6 +22,11 @@ import {
 installRunCliIntegrationHarness();
 const PR_CLOSE_SUPERSEDED_TIMEOUT_MS = 60_000;
 
+function expectLabeledValue(output: string, label: string, expected: string): void {
+  const line = output.split(/\r?\n/u).find((line) => line.trimStart().startsWith(`${label}:`));
+  expect(line?.split(/:\s*/u, 2)[1]).toBe(expected);
+}
+
 async function installFakeGhRepair(opts: {
   scenarioName: string;
   branch: string;
@@ -219,8 +224,8 @@ describe("runCli pr close-superseded", () => {
         ]);
         expect(code).toBe(0);
         expect(io.stdout).toContain(`✅ pr close #141`);
-        expect(io.stdout).toContain("comment: added");
-        expect(io.stdout).toContain("remote_branch_action: deleted");
+        expectLabeledValue(io.stdout, "comment", "added");
+        expectLabeledValue(io.stdout, "remote_branch_action", "deleted");
       } finally {
         io.restore();
         process.env.PATH = originalPath;
@@ -312,8 +317,8 @@ describe("runCli pr close-superseded", () => {
       const code = await runCli(["pr", "close-superseded", taskId, "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain(`pr close-superseded ${taskId}`);
-      expect(io.stdout).toContain("reason: no open task PR found");
-      expect(io.stdout).toContain("remote_branch_action: skipped");
+      expectLabeledValue(io.stdout, "reason", "no open task PR found");
+      expectLabeledValue(io.stdout, "remote_branch_action", "skipped");
     } finally {
       io.restore();
       process.env.PATH = originalPath;

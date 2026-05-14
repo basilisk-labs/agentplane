@@ -177,7 +177,8 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       .map((line) => line.trim())
       .filter(Boolean);
     const suffix = extractTaskSuffix(taskId);
-    expect(subjects[0]?.includes("close:")).toBe(true);
+    const closeSubject = subjects[0] ?? "";
+    expect(closeSubject).toContain("integrate subject fallback");
     const mergeSubject = subjects[1] ?? "";
     expect(mergeSubject.startsWith(`🧩 ${suffix} integrate:`)).toBe(true);
     expect(mergeSubject).toContain("Integrate subject fallback");

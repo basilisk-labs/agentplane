@@ -497,7 +497,7 @@ describe("runCli task run control operations", { timeout: TASKS_QUERY_CLI_TIMEOU
       ]);
       expect(code).toBe(0);
 
-      const newRunId = /^run_id: (.+)$/m.exec(io.stdout)?.[1] ?? "";
+      const newRunId = /^run_id:\s+(.+)$/m.exec(io.stdout)?.[1]?.trim() ?? "";
       expect(newRunId).toBeTruthy();
       expect(newRunId).not.toBe(prepared.invocation.run_id);
       const newStatePath = path.join(

@@ -13,6 +13,12 @@ import {
 } from "@agentplane/testkit/cli-core-pr-flow";
 import path from "node:path";
 
+function expectLabeledValue(output: string, label: string, expected: string): void {
+  const line = output.split(/\r?\n/u).find((line) => line.trimStart().startsWith(`${label}:`));
+  const separator = line?.indexOf(":") ?? -1;
+  expect(separator >= 0 ? line?.slice(separator + 1).trim() : undefined).toBe(expected);
+}
+
 describe("runCli pr flow status", () => {
   it("reports task branch, local PR metadata, close-tail state, and next action", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -71,10 +77,10 @@ describe("runCli pr flow status", () => {
       const code = await runCli(["pr", "flow", "status", taskId, "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("PR flow status");
-      expect(io.stdout).toContain(`task: ${taskId}`);
-      expect(io.stdout).toContain(`branch: ${branch}`);
-      expect(io.stdout).toContain("remote_pr: github: not_found");
-      expect(io.stdout).toContain(`next: agentplane pr open ${taskId} --author <ROLE>`);
+      expectLabeledValue(io.stdout, "task", `${taskId} TODO`);
+      expectLabeledValue(io.stdout, "branch", branch);
+      expectLabeledValue(io.stdout, "remote_pr", "github: not_found (source=metadata)");
+      expectLabeledValue(io.stdout, "next", `agentplane pr open ${taskId} --author <ROLE>`);
     } finally {
       io.restore();
     }

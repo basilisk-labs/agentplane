@@ -112,10 +112,16 @@ function isNoisyOperationalTitle(value: string): boolean {
   return (
     text.length === 0 ||
     /merged via pr\s+#?\d+/iu.test(text) ||
-    /\bclose:\b/iu.test(text) ||
+    /\bclose:/iu.test(text) ||
+    /\bintegrate:/iu.test(text) ||
     /^\p{Emoji_Presentation}/u.test(text) ||
     /^\S+\s+close:/iu.test(text)
   );
+}
+
+function isMachineSummary(value: string): boolean {
+  const text = value.trim();
+  return /^[a-z0-9]+(?:[-_][a-z0-9]+)+$/u.test(text);
 }
 
 function stripOperationalNoise(value: string): string {
@@ -468,7 +474,9 @@ export async function buildCloseCommitMessage(opts: {
   });
   const sourcePrNumber = prFromMeta ?? extractPrNumber(resultSummary);
   const title =
-    resultSummary && !isNoisyOperationalTitle(resultSummary) ? resultSummary : task.title;
+    resultSummary && !isNoisyOperationalTitle(resultSummary) && !isMachineSummary(resultSummary)
+      ? resultSummary
+      : task.title;
   const rendered = renderMergeMessage({
     scope: normalizeScope({ tags, title, files: keyFiles }),
     tags,

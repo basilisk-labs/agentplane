@@ -65,6 +65,7 @@ export async function ensureGitClean(gitRoot: string): Promise<void> {
     ".agentplane/tasks/",
     ".agentplane/tasks.json",
     ".agentplane/cache/",
+    ".agentplane/cache.sqlite",
     ".agentplane/.upgrade/",
     ".agentplane/upgrade/",
   ];
