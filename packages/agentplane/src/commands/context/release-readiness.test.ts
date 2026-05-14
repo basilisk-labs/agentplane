@@ -103,6 +103,61 @@ describe("context release readiness guards", () => {
     expect(sectionResult?.freshness.stale).toBe(false);
   });
 
+  it("does not mark fresh JSONL fact and graph projection rows as stale", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      ".agentplane/context/derived/facts/facts.jsonl",
+      `${JSON.stringify({
+        id: "fact:meridian-relay:stages",
+        subject: "Meridian Relay",
+        predicate: "has_stages",
+        object: "capture, normalize, curator review",
+        confidence: 0.94,
+        status: "active",
+        source_refs: ["context/raw/research/meridian-relay.md"],
+      })}\n`,
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/graph/entities.jsonl",
+      `${JSON.stringify({
+        id: "concept:meridian-relay",
+        kind: "concept",
+        label: "Meridian Relay",
+        status: "active",
+        source_refs: ["context/raw/research/meridian-relay.md"],
+      })}\n`,
+    );
+    await cmdContextReindex({
+      cwd: root,
+      parsed: { includeTasks: false, includeRaw: true, reset: false },
+    });
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextSearch({
+      cwd: root,
+      parsed: {
+        query: "meridian relay",
+        scope: "context",
+        format: "json",
+        explain: false,
+      },
+    });
+
+    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      results: { ref: string; freshness: { stale: boolean } }[];
+    };
+    const factResult = payload.results.find((result) =>
+      result.ref.endsWith("facts.jsonl#fact=fact:meridian-relay:stages"),
+    );
+    const entityResult = payload.results.find((result) =>
+      result.ref.endsWith("entities.jsonl#entity=concept:meridian-relay"),
+    );
+    expect(factResult?.freshness.stale).toBe(false);
+    expect(entityResult?.freshness.stale).toBe(false);
+  });
+
   it("resolves markdown sections by slug", async () => {
     const root = await tempRoot();
     await write(

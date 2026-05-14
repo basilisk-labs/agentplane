@@ -180,12 +180,45 @@ async function buildFreshness(
   } catch {
     return { projection_sha256: projectionSha256, file_sha256: null, stale: true };
   }
+  if (base.endsWith(".jsonl") && rowPath.includes("#")) {
+    return buildJsonlRowFreshness(absolute, rowPath, projectionSha256);
+  }
   const fileSha256 = await calculateSha256(absolute);
   return {
     projection_sha256: projectionSha256,
     file_sha256: fileSha256,
     stale: fileSha256 !== projectionSha256,
   };
+}
+
+async function buildJsonlRowFreshness(
+  filePath: string,
+  rowPath: string,
+  projectionSha256: string,
+): Promise<{ projection_sha256: string; file_sha256: string | null; stale: boolean }> {
+  const marker = rowPath.slice(rowPath.indexOf("#") + 1);
+  const separator = marker.indexOf("=");
+  if (separator === -1) {
+    const fileSha256 = await calculateSha256(filePath);
+    return {
+      projection_sha256: projectionSha256,
+      file_sha256: fileSha256,
+      stale: fileSha256 !== projectionSha256,
+    };
+  }
+  const expectedId = marker.slice(separator + 1);
+  const rows = parseJsonlLines(await readText(filePath));
+  for (const [index, row] of rows.entries()) {
+    const id = typeof row.id === "string" ? row.id : String(index + 1);
+    if (id !== expectedId) continue;
+    const rowSha256 = `sha256:${createHash("sha256").update(JSON.stringify(row)).digest("hex")}`;
+    return {
+      projection_sha256: projectionSha256,
+      file_sha256: rowSha256,
+      stale: rowSha256 !== projectionSha256,
+    };
+  }
+  return { projection_sha256: projectionSha256, file_sha256: null, stale: true };
 }
 
 async function calculateSha256(filePath: string): Promise<string> {
