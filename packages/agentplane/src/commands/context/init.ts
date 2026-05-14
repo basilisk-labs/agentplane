@@ -153,10 +153,19 @@ async function commitContextBootstrapIfChanged(root: string): Promise<boolean> {
     AGENTPLANE_TASK_ID: CONTEXT_BOOTSTRAP_TASK_ID,
   };
   await execFileAsync("git", ["add", "."], { cwd: root, env: baseGitEnv });
-  await execFileAsync("git", ["commit", "-m", "✅ CTX1NT task: initialize AgentPlane context"], {
-    cwd: root,
-    env,
-  });
+  await execFileAsync(
+    "git",
+    [
+      "commit",
+      "-m",
+      "✅ CTX1NT task: initialize AgentPlane context",
+      "-m",
+      ["Context-Bootstrap: true", `Context-Bootstrap-Task: ${CONTEXT_BOOTSTRAP_TASK_ID}`].join(
+        "\n",
+      ),
+    ],
+    { cwd: root, env },
+  );
   return true;
 }
 

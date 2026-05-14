@@ -220,19 +220,20 @@ function hasManagedInstallEvidence(body, mutatingPaths) {
   );
 }
 
-function isManagedContextBootstrapPath(filePath) {
-  return (
-    filePath === ".gitignore" ||
-    isUnder(filePath, ".agentplane/context") ||
-    isUnder(filePath, "context")
-  );
-}
-
 function hasManagedContextBootstrapEvidence(body, mutatingPaths) {
-  if (commitSubject(body) !== "✅ CTX1NT task: initialize AgentPlane context") return false;
+  const hasBootstrapEvidence =
+    commitSubject(body) === "✅ CTX1NT task: initialize AgentPlane context" &&
+    /^Context-Bootstrap:\s*true\s*$/im.test(body) &&
+    /^Context-Bootstrap-Task:\s*202601010101-CTX1NT\s*$/im.test(body) &&
+    mutatingPaths.includes(".agentplane/context/manifest.lock.json");
   return (
-    mutatingPaths.length > 0 &&
-    mutatingPaths.every((filePath) => isManagedContextBootstrapPath(filePath))
+    hasBootstrapEvidence &&
+    mutatingPaths.every(
+      (filePath) =>
+        filePath === ".gitignore" ||
+        isUnder(filePath, ".agentplane/context") ||
+        isUnder(filePath, "context"),
+    )
   );
 }
 

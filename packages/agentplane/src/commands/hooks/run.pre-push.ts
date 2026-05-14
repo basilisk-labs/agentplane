@@ -283,22 +283,23 @@ function hasManagedInstallEvidence(body: string, mutatingPaths: readonly string[
   );
 }
 
-function isManagedContextBootstrapPath(filePath: string): boolean {
-  return (
-    filePath === ".gitignore" ||
-    gitPathIsUnder(filePath, ".agentplane/context") ||
-    gitPathIsUnder(filePath, "context")
-  );
-}
-
 function hasManagedContextBootstrapEvidence(
   body: string,
   mutatingPaths: readonly string[],
 ): boolean {
-  if (commitSubject(body) !== "✅ CTX1NT task: initialize AgentPlane context") return false;
+  const hasBootstrapEvidence =
+    commitSubject(body) === "✅ CTX1NT task: initialize AgentPlane context" &&
+    /^Context-Bootstrap:\s*true\s*$/im.test(body) &&
+    /^Context-Bootstrap-Task:\s*202601010101-CTX1NT\s*$/im.test(body) &&
+    mutatingPaths.includes(".agentplane/context/manifest.lock.json");
   return (
-    mutatingPaths.length > 0 &&
-    mutatingPaths.every((filePath) => isManagedContextBootstrapPath(filePath))
+    hasBootstrapEvidence &&
+    mutatingPaths.every(
+      (filePath) =>
+        filePath === ".gitignore" ||
+        gitPathIsUnder(filePath, ".agentplane/context") ||
+        gitPathIsUnder(filePath, "context"),
+    )
   );
 }
 
