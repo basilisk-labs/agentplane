@@ -144,6 +144,12 @@ const REASON_CODE_MAP: Readonly<Record<string, ReasonCodeMeta>> = {
     summary: "GitHub issue feedback is disabled for this project",
     action: "enable feedback.github_issues.enabled before creating feedback issues",
   },
+  feedback_agent_context_required: {
+    code: "feedback_agent_context_required",
+    category: "feedback",
+    summary: "E_INTERNAL feedback issues need sanitized agent context for actionable triage",
+    action: "pass --agent-context, --agent-context-file, or --allow-missing-agent-context",
+  },
 };
 
 export function getReasonCodeMeta(code: string | undefined): ReasonCodeMeta | undefined {

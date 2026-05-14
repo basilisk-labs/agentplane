@@ -10,6 +10,14 @@ export type InsightsIssueParsed = {
   title?: string;
   body?: string;
   errorCode?: string;
+  agentContext?: string;
+  agentContextFile?: string;
+  allowMissingAgentContext: boolean;
+  failureCommand?: string;
+  failurePhase?: string;
+  failureReasonCode?: string;
+  failureMessageClass?: string;
+  failureArgvShape: string[];
   dryRun: boolean;
 };
 
@@ -91,9 +99,62 @@ export const insightsIssueSpec: CommandSpec<InsightsIssueParsed> = {
     },
     {
       kind: "string",
+      name: "agent-context",
+      valueHint: "<text>",
+      description:
+        "Sanitized agent-written diagnostic context to include in the public issue body.",
+    },
+    {
+      kind: "string",
+      name: "agent-context-file",
+      valueHint: "<path>",
+      description:
+        "Read sanitized agent-written diagnostic context from a file before creating the issue.",
+    },
+    {
+      kind: "boolean",
+      name: "allow-missing-agent-context",
+      default: false,
+      description:
+        "Allow creating an E_INTERNAL issue without the recommended agent-written context.",
+    },
+    {
+      kind: "string",
       name: "error-code",
       valueHint: "<code>",
       description: "AgentPlane error code that triggered the report.",
+    },
+    {
+      kind: "string",
+      name: "failure-command",
+      valueHint: "<command>",
+      description:
+        "Privacy-safe command id associated with the failure, for example task start-ready.",
+    },
+    {
+      kind: "string",
+      name: "failure-phase",
+      valueHint: "<phase>",
+      description: "Privacy-safe lifecycle phase associated with the failure.",
+    },
+    {
+      kind: "string",
+      name: "failure-reason-code",
+      valueHint: "<code>",
+      description: "Privacy-safe reason code associated with the failure.",
+    },
+    {
+      kind: "string",
+      name: "failure-message-class",
+      valueHint: "<class>",
+      description: "Privacy-safe error message class, not the raw error message.",
+    },
+    {
+      kind: "string",
+      name: "failure-argv-shape",
+      valueHint: "<token>",
+      repeatable: true,
+      description: "Repeatable sanitized argv shape token; values must not include raw secrets.",
     },
     {
       kind: "boolean",
@@ -115,7 +176,17 @@ export const insightsIssueSpec: CommandSpec<InsightsIssueParsed> = {
   parse: (raw) => ({
     title: raw.opts.title as string | undefined,
     body: raw.opts.body as string | undefined,
+    agentContext: raw.opts["agent-context"] as string | undefined,
+    agentContextFile: raw.opts["agent-context-file"] as string | undefined,
+    allowMissingAgentContext: raw.opts["allow-missing-agent-context"] === true,
     errorCode: raw.opts["error-code"] as string | undefined,
+    failureCommand: raw.opts["failure-command"] as string | undefined,
+    failurePhase: raw.opts["failure-phase"] as string | undefined,
+    failureReasonCode: raw.opts["failure-reason-code"] as string | undefined,
+    failureMessageClass: raw.opts["failure-message-class"] as string | undefined,
+    failureArgvShape: Array.isArray(raw.opts["failure-argv-shape"])
+      ? (raw.opts["failure-argv-shape"] as string[])
+      : [],
     dryRun: raw.opts["dry-run"] === true,
   }),
 };

@@ -2031,7 +2031,15 @@ Options:
 
 - `--title <title>`: Issue title. Defaults to an internal AgentPlane error report title.
 - `--body <text>`: Optional short user-visible context to include before diagnostics.
+- `--agent-context <text>`: Sanitized agent-written diagnostic context to include in the public issue body.
+- `--agent-context-file <path>`: Read sanitized agent-written diagnostic context from a file before creating the issue.
+- `--allow-missing-agent-context`: Allow creating an E_INTERNAL issue without the recommended agent-written context. (default=false)
 - `--error-code <code>`: AgentPlane error code that triggered the report.
+- `--failure-command <command>`: Privacy-safe command id associated with the failure, for example task start-ready.
+- `--failure-phase <phase>`: Privacy-safe lifecycle phase associated with the failure.
+- `--failure-reason-code <code>`: Privacy-safe reason code associated with the failure.
+- `--failure-message-class <class>`: Privacy-safe error message class, not the raw error message.
+- `--failure-argv-shape <token>`: Repeatable sanitized argv shape token; values must not include raw secrets. (repeatable)
 - `--dry-run`: Print the GitHub issue payload without creating an issue. (default=false)
 
 Examples:

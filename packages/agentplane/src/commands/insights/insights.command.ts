@@ -26,6 +26,13 @@ import {
   type InsightsIssueParsed,
   type InsightsReportParsed,
 } from "./insights.spec.js";
+import {
+  buildFailureContext,
+  renderAgentContext,
+  resolveAgentContext,
+  type FailureContextInput,
+  type InsightsFailure,
+} from "./insights-issue-context.js";
 
 export { insightsIssueSpec, insightsReportSpec, insightsSpec } from "./insights.spec.js";
 
@@ -43,6 +50,7 @@ type InsightsReport = {
     upload: "not_supported";
     excludes: string[];
   };
+  failure: InsightsFailure;
   environment: {
     agentplane_version: string | null;
     node_major: number | null;
@@ -139,8 +147,9 @@ async function readGitStatus(root: string): Promise<InsightsReport["git"]> {
     execFile("git", ["rev-parse", "--abbrev-ref", "HEAD"], { cwd: root }),
     execFile("git", ["status", "--short", "--untracked-files=all"], { cwd: root }),
   ]);
-  const branch =
+  const rawBranch =
     branchResult.status === "fulfilled" ? branchResult.value.stdout.trim() || null : null;
+  const branch = rawBranch === null ? null : rawBranch === "HEAD" ? "detached" : "attached";
   const statusText = statusResult.status === "fulfilled" ? statusResult.value.stdout : "";
   const statusCounts: CountMap = {
     modified: 0,
@@ -269,6 +278,7 @@ function summarizeRunner(tasks: TaskRecord[]): InsightsReport["runner"] {
 export async function buildInsightsReport(opts: {
   deps: RunDeps;
   recentLimit: number;
+  failure?: FailureContextInput;
 }): Promise<InsightsReport> {
   const [resolved, loaded] = await Promise.all([
     opts.deps.getResolvedProject("insights report"),
@@ -301,8 +311,13 @@ export async function buildInsightsReport(opts: {
         "git remotes",
         "file paths outside AgentPlane-managed relative config paths",
         "environment variables",
+        "raw branch names",
+        "raw command arguments",
+        "raw error messages",
+        "raw stack traces",
       ],
     },
+    failure: buildFailureContext(opts.failure),
     environment: {
       agentplane_version: agentplaneVersion,
       node_major: Number.isFinite(nodeMajor) ? nodeMajor : null,
@@ -352,6 +367,7 @@ function renderIssueBody(opts: {
   errorCode: string | undefined;
   report: InsightsReport;
   includeInsightsReport: boolean;
+  agentContext: string | null;
 }): string {
   const sections = [
     "## Summary",
@@ -367,6 +383,8 @@ function renderIssueBody(opts: {
     "- This issue was created only after project opt-in.",
     "- The attached diagnostic report is privacy-bounded.",
     `- Excluded content: ${opts.report.privacy.excludes.join("; ")}`,
+    "",
+    ...renderAgentContext(opts.agentContext),
   ];
   if (opts.includeInsightsReport) {
     sections.push("", "## Insights report", "```json", JSON.stringify(opts.report, null, 2), "```");
@@ -396,6 +414,11 @@ function renderInsightsReport(report: InsightsReport): CliReportEntry[] {
     { label: "local_only", value: report.privacy.local_only },
     { label: "network", value: report.privacy.network },
     { label: "upload", value: report.privacy.upload },
+    { label: "failure_error_code", value: report.failure.error_code ?? "unknown" },
+    { label: "failure_command", value: report.failure.command_id ?? "unknown" },
+    { label: "failure_phase", value: report.failure.phase ?? "unknown" },
+    { label: "failure_reason_code", value: report.failure.reason_code ?? "unknown" },
+    { label: "failure_dedupe", value: report.failure.dedupe_signature },
     { label: "agentplane", value: report.environment.agentplane_version ?? "unknown" },
     { label: "node_major", value: report.environment.node_major ?? "unknown" },
     { label: "platform", value: `${report.environment.platform}/${report.environment.arch}` },
@@ -474,13 +497,49 @@ export function makeRunInsightsIssueHandler(deps: RunDeps): CommandHandler<Insig
         });
       }
 
-      const report = await buildInsightsReport({ deps, recentLimit: 8 });
+      const agentContext = await resolveAgentContext({
+        inline: parsed.agentContext,
+        file: parsed.agentContextFile,
+        root: resolved.gitRoot,
+      });
+      const errorCode = trimOptional(parsed.errorCode);
+      if (
+        errorCode === "E_INTERNAL" &&
+        !agentContext &&
+        !parsed.dryRun &&
+        !parsed.allowMissingAgentContext
+      ) {
+        throw new CliError({
+          exitCode: exitCodeForError("E_USAGE"),
+          code: "E_USAGE",
+          message:
+            "E_INTERNAL feedback issues require sanitized agent context. Pass --agent-context, --agent-context-file, or --allow-missing-agent-context.",
+          context: {
+            command: "insights issue",
+            reason_code: "feedback_agent_context_required",
+          },
+        });
+      }
+
+      const report = await buildInsightsReport({
+        deps,
+        recentLimit: 8,
+        failure: {
+          errorCode: parsed.errorCode,
+          commandId: parsed.failureCommand,
+          phase: parsed.failurePhase,
+          reasonCode: parsed.failureReasonCode,
+          messageClass: parsed.failureMessageClass,
+          argvShape: parsed.failureArgvShape,
+        },
+      });
       const title = sanitizeIssueTitle(parsed.title, parsed.errorCode);
       const body = renderIssueBody({
         body: parsed.body,
         errorCode: parsed.errorCode,
         report,
         includeInsightsReport: settings.include_insights_report,
+        agentContext,
       });
       const payload = {
         repository: settings.repository,
