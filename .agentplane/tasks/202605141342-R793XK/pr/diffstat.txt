@@ -1,0 +1,13 @@
+ .../blueprint/resolved-snapshot.json               | 534 +++++++++++++++++++++
+ .agentplane/tasks/202605141343-89PDXP/README.md    | 143 ++++++
+ .../blueprint/resolved-snapshot.json               | 534 +++++++++++++++++++++
+ .agentplane/tasks/202605141343-VEKAEE/README.md    | 143 ++++++
+ .../blueprint/resolved-snapshot.json               | 534 +++++++++++++++++++++
+ packages/agentplane/src/blueprints/index.ts        |  14 +
+ packages/agentplane/src/blueprints/sgr-decision.ts |  12 +
+ packages/agentplane/src/context/sgr-extraction.ts  |  11 +
+ packages/agentplane/src/evaluators/sgr-result.ts   |   9 +
+ .../agentplane/src/runtime/sgr/contracts.test.ts   | 169 +++++++
+ packages/agentplane/src/runtime/sgr/contracts.ts   | 396 +++++++++++++++
+ packages/agentplane/src/runtime/sgr/index.ts       |  24 +
+ 12 files changed, 2523 insertions(+)

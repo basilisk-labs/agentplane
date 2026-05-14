@@ -24,12 +24,24 @@ Created: 2026-05-14T13:45:49.767Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T13:45:49.767Z
+- Updated: 2026-05-14T13:59:15.909Z
 - Branch: task/202605141342-R793XK/sgr-reliability-schemas
-- Head: 3d5c3b4706ea
+- Head: 12c86decf172
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 534 +++++++++++++++++++++
+ .agentplane/tasks/202605141343-89PDXP/README.md    | 143 ++++++
+ .../blueprint/resolved-snapshot.json               | 534 +++++++++++++++++++++
+ .agentplane/tasks/202605141343-VEKAEE/README.md    | 143 ++++++
+ .../blueprint/resolved-snapshot.json               | 534 +++++++++++++++++++++
+ packages/agentplane/src/blueprints/index.ts        |  14 +
+ packages/agentplane/src/blueprints/sgr-decision.ts |  12 +
+ packages/agentplane/src/context/sgr-extraction.ts  |  11 +
+ packages/agentplane/src/evaluators/sgr-result.ts   |   9 +
+ .../agentplane/src/runtime/sgr/contracts.test.ts   | 169 +++++++
+ packages/agentplane/src/runtime/sgr/contracts.ts   | 396 +++++++++++++++
+ packages/agentplane/src/runtime/sgr/index.ts       |  24 +
+ 12 files changed, 2523 insertions(+)
 ```
 
 </details>
