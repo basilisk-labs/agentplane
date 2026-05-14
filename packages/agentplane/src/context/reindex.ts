@@ -131,7 +131,7 @@ function sourceRefsForJsonlRow(row: unknown, fallback: string): string[] {
   if (Array.isArray(record.source_refs)) {
     refs.push(...record.source_refs.filter((value): value is string => typeof value === "string"));
   }
-  return refs.length > 0 ? Array.from(new Set(refs)) : [fallback];
+  return refs.length > 0 ? [...new Set(refs)] : [fallback];
 }
 
 function projectMarkdownRows(filePath: string, content: string): ProjectionSourceRow[] {
