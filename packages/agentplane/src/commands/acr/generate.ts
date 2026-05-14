@@ -15,6 +15,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { explainResolvedBlueprint, resolveBlueprint } from "../../blueprints/index.js";
+import { getVersion } from "../../meta/version.js";
 import { blueprintResolveInputFromTask } from "../blueprint/task-input.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
@@ -61,6 +62,7 @@ export async function generateAcr(opts: {
   const planState = task.plan_approval?.state ?? "pending";
   const verificationState = task.verification?.state ?? "pending";
   const now = new Date().toISOString();
+  const producerVersion = getVersion();
   const approvals =
     planState === "approved"
       ? [
@@ -145,7 +147,7 @@ export async function generateAcr(opts: {
     created_at: now,
     producer: {
       name: "agentplane",
-      version: "0.4.2",
+      version: producerVersion,
     },
     repository: {
       vcs: "git",
@@ -170,7 +172,7 @@ export async function generateAcr(opts: {
         name: opts.modelName ?? "unknown",
         version: "unknown",
       },
-      toolchain: [{ name: "agentplane", version: "0.4.2" }],
+      toolchain: [{ name: "agentplane", version: producerVersion }],
     },
     plan: {
       status:

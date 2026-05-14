@@ -177,7 +177,9 @@ export async function validateReleaseNotes(notesPath: string, minBullets: number
       message: `Release notes must not include duplicate section headings in ${notesPath}: ${duplicateHeadings.join(", ")}`,
     });
   }
-  const bulletCount = content.split(/\r?\n/u).filter((line) => /^\s*[-*]\s+\S+/u.test(line)).length;
+  const bulletCount = releaseNoteLinesOutsideCodeFences(content).filter((line) =>
+    /^\s*[-*]\s+\S+/u.test(line),
+  ).length;
   if (bulletCount < minBullets) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),

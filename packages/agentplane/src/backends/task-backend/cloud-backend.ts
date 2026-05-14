@@ -335,9 +335,11 @@ export class CloudBackend implements TaskBackend {
       }
     }
     if (opts.direction === "pull") {
-      await writeCloudBackendState(this.statePath, {
-        last_checked_at: pull.lastCheckedAt ?? new Date().toISOString(),
-      });
+      if (pull.lastCheckedAt) {
+        await writeCloudBackendState(this.statePath, {
+          last_checked_at: pull.lastCheckedAt,
+        });
+      }
       return;
     }
     if (!pull.lastCheckedAt) return;

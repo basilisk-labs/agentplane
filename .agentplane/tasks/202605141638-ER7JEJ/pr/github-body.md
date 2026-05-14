@@ -1,0 +1,54 @@
+Task: `202605141638-ER7JEJ`
+Title: Hotfix v0.6 audit correctness regressions
+Canonical task record: `.agentplane/tasks/202605141638-ER7JEJ/README.md`
+
+## Summary
+
+Hotfix v0.6 audit correctness regressions
+
+Fix the low-risk v0.6 audit regressions that have narrow verification boundaries: ACR producer/toolchain version must match the package version, cloud backend state writes must be atomic and recover from malformed state JSON, release-note bullet counting must ignore fenced code blocks and use a strict release tag regex, CLI entrypoint must report unexpected rejections, random backup suffixes must use crypto randomness, and pull freshness must avoid client-now fallback.
+
+## Scope
+
+- In scope: Fix the low-risk v0.6 audit regressions that have narrow verification boundaries: ACR producer/toolchain version must match the package version, cloud backend state writes must be atomic and recover from malformed state JSON, release-note bullet counting must ignore fenced code blocks and use a strict release tag regex, CLI entrypoint must report unexpected rejections, random backup suffixes must use crypto randomness, and pull freshness must avoid client-now fallback.
+- Out of scope: unrelated refactors not required for "Hotfix v0.6 audit correctness regressions".
+
+## Verification
+
+- State: ok
+- Note:
+
+```text
+Command: rg -n '"0\.4\.2"|version: "0\.4\.2"|Math\.random\(\)\.toString\(36\).*slice\(2,
+8\)|pull\.lastCheckedAt \?\? new Date' packages/agentplane/src/commands/acr
+packages/agentplane/src/backends/task-backend packages/agentplane/src/cli.ts
+packages/agentplane/src/cli/fs-utils.ts
+packages/agentplane/src/commands/branch/internal/archive-pr.ts; Result: pass; Evidence: no scoped
+stale ACR version, Math.random backup suffix, or client-now pull freshness matches remain. Scope:
+audit hotfix regressions. Command: bun run test:project -- agentplane
+packages/agentplane/src/backends/task-backend/cloud-backend-state.test.ts
+packages/agentplane/src/commands/release/apply.preflight.test.ts
+packages/agentplane/src/commands/acr/acr.command.test.ts; Result: pass; Evidence: 3 files, 28 tests
+passed. Scope: cloud state, release-note preflight, ACR semantics. Command: bun run lint:core --
+changed files; Result: pass; Evidence: eslint completed with exit 0. Scope: changed
+source/test/script files. Command: bun run --filter=agentplane typecheck; Result: pass; Evidence:
+agentplane typecheck exited 0. Scope: agentplane package types. Command: node
+scripts/release/check-release-notes.mjs --tag v0.6.0 and fenced-bullet smoke; Result: pass;
+Evidence: v0.6.0 accepted and fenced bullets fail min-bullet smoke as expected. Scope: MJS
+release-note checker. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence:
+policy routing OK. Scope: policy routing gate.
+```
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-14T16:41:27.081Z
+- Branch: task/202605141638-ER7JEJ/v06-audit-hotfix
+- Head: 3e44c426f846
+
+```text
+No changes detected.
+```
+
+</details>
