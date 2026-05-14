@@ -6,7 +6,7 @@ Created: 2026-05-13T21:29:59.252Z
 
 - Task: `202605132103-J5YVSS`
 - Title: Remove legacy tasks.json export surface
-- Status: DOING
+- Status: DONE
 - Branch: `task/202605132103-J5YVSS/remove-tasks-json`
 - Canonical task record: `.agentplane/tasks/202605132103-J5YVSS/README.md`
 

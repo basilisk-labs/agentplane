@@ -1,0 +1,231 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605132136-3P69QC",
+  "created_at": "2026-05-14T09:08:44.097Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "ec628cd9a2aa899cca01611be9519181845ba555",
+    "work_ref": "main",
+    "work_commit": "ec628cd9a2aa899cca01611be9519181845ba555"
+  },
+  "task": {
+    "task_id": "202605132136-3P69QC",
+    "title": "Fix evaluator builtin toggle actually disables builtin entries (issue #3657)",
+    "intent": "GitHub issue: https://github.com/basilisk-labs/agentplane/issues/3657\n\nSummary: Evaluator catalog builtin toggle is advertised but cannot actually disable builtin entries (boolean opt default true + no negated form).\n\nAcceptance criteria (from issue):\n- A documented CLI option can produce a project-only evaluator catalog.\n- Parser/spec supports the false state explicitly (negated flag or enum-style source selector).\n- Regression coverage proves builtin entries are omitted when project-only mode is requested.\n\nPointers: packages/agentplane/src/commands/evaluator/evaluator.spec.ts; PR #3652 review discussion linked in issue.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605132136-3P69QC/README.md",
+      "sha256": "sha256:1b3e0d1327462580b059256798ca99e52db149618d26cf789371d8c99710ec68"
+    },
+    "approved_at": "2026-05-14T07:59:18.588Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged to main in PR #3694; v0.6 readiness and assimilation checks passed.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605132136-3P69QC_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T07:59:18.588Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605132136-3P69QC/README.md",
+      "sha256": "sha256:1b3e0d1327462580b059256798ca99e52db149618d26cf789371d8c99710ec68"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605132136-3P69QC/README.md",
+      "sha256": "sha256:1b3e0d1327462580b059256798ca99e52db149618d26cf789371d8c99710ec68"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605132136-3P69QC/README.md",
+      "sha256": "sha256:1b3e0d1327462580b059256798ca99e52db149618d26cf789371d8c99710ec68"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605132136-3P69QC/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:9d08aed6e5083d99b3ba7c7bbac73d2142d58a21d67ebfbf8459ec6b43b46024"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit ec628cd9a2aa899cca01611be9519181845ba555 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:3b59d55547763527a4cfac978bd01c1571095d9e6c31aa2a924111839b4d6c7c",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "quality.regression",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "verify_record",
+        "hosted_checks",
+        "publish_or_integrate",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "regression.original_failure",
+          "kind": "artifact",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "regression.reproduction",
+          "kind": "check_result",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "regression.focused_check",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "regression.matrix_or_scope",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "regression.full_gate",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "regression.flake_classification",
+          "kind": "weak_links",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "regression.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605132136-3P69QC/blueprint/resolved-snapshot.json",
+        "digest": "2d22d7b97a2883c3d7b34caee367208827000ee0ac007b181175b2b838d5795f",
+        "current_digest": "2d22d7b97a2883c3d7b34caee367208827000ee0ac007b181175b2b838d5795f",
+        "route_changed": false,
+        "artifact_sha256": "sha256:9d08aed6e5083d99b3ba7c7bbac73d2142d58a21d67ebfbf8459ec6b43b46024",
+        "safe_command": "agentplane blueprint snapshot 202605132136-3P69QC"
+      }
+    }
+  }
+}

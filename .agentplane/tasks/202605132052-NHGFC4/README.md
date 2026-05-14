@@ -1,10 +1,11 @@
 ---
 id: "202605132052-NHGFC4"
 title: "Fix branch_pr hosted sync credential resolution"
-status: "DOING"
+result_summary: "Merged to main in PR #3694; v0.6 readiness and assimilation checks passed."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
   attempts: 0
-commit: null
+commit:
+  hash: "ec628cd9a2aa899cca01611be9519181845ba555"
+  message: "Merge pull request #3694 from basilisk-labs/task/202605140709-5H7BAA/v06-readiness-blockers"
 comments:
   -
     author: "CODER"
     body: "Start: Implement branch_pr hosted sync credential root resolution inside the approved batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged via PR #3694 after full v0.6 readiness checks and GitHub CI passed."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
+  -
+    type: "status"
+    at: "2026-05-14T09:05:30.417Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged via PR #3694 after full v0.6 readiness checks and GitHub CI passed."
 doc_version: 3
-doc_updated_at: "2026-05-14T07:59:41.937Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T09:05:30.418Z"
+doc_updated_by: "INTEGRATOR"
 description: |-
   GitHub issue: https://github.com/basilisk-labs/agentplane/issues/3654 (#3654)
   

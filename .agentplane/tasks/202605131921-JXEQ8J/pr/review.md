@@ -6,7 +6,7 @@ Created: 2026-05-13T19:40:40.747Z
 
 - Task: `202605131921-JXEQ8J`
 - Title: Cloud backend: optional auto-push task status changes to remote
-- Status: DOING
+- Status: DONE
 - Branch: `task/202605131921-JXEQ8J/cloud-auto-sync`
 - Canonical task record: `.agentplane/tasks/202605131921-JXEQ8J/README.md`
 

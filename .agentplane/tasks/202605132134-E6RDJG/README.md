@@ -1,10 +1,11 @@
 ---
 id: "202605132134-E6RDJG"
 title: "Fix evaluator root-resolution error surfacing (issue #3655)"
-status: "DOING"
+result_summary: "Merged to main in PR #3694; v0.6 readiness and assimilation checks passed."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +29,16 @@ verification:
   updated_by: "CODER"
   note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
   attempts: 0
-commit: null
+commit:
+  hash: "ec628cd9a2aa899cca01611be9519181845ba555"
+  message: "Merge pull request #3694 from basilisk-labs/task/202605140709-5H7BAA/v06-readiness-blockers"
 comments:
   -
     author: "CODER"
     body: "Start: Covered by 202605140709-5H7BAA v0.6 readiness integration."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged via PR #3694 after full v0.6 readiness checks and GitHub CI passed."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
+  -
+    type: "status"
+    at: "2026-05-14T09:07:59.216Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged via PR #3694 after full v0.6 readiness checks and GitHub CI passed."
 doc_version: 3
-doc_updated_at: "2026-05-14T07:59:45.635Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T09:07:59.218Z"
+doc_updated_by: "INTEGRATOR"
 description: |-
   GitHub issue: https://github.com/basilisk-labs/agentplane/issues/3655
   
