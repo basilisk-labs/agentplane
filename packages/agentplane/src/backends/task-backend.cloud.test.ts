@@ -174,7 +174,10 @@ describe("CloudBackend", () => {
 
   it("push sync sends local tasks and records last check time", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
-    const task: TaskData = makeTask({ id: "202605051806-C1D2" });
+    const task: TaskData = makeTask({
+      id: "202605051806-C1D2",
+      depends_on: ["202605051806-A1B2"],
+    });
     await cache.writeTask(task);
     const fetchImpl = vi.fn<typeof fetch>(() =>
       Promise.resolve(Response.json({ last_checked_at: "2026-05-06T00:00:00.000Z" })),
@@ -197,7 +200,7 @@ describe("CloudBackend", () => {
     expect(url).toBe("https://cloud.example/v1/projects/project-1/sync/push");
     expect(init?.method).toBe("POST");
     expectAbortSignal(init?.signal);
-    expect(init?.body).toContain('"direction":"push"');
+    expect(init?.body).toContain('"depends_on":["202605051806-A1B2"]');
     const stateText = await readFile(
       path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"),
       "utf8",

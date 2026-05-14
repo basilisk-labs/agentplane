@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T07:43:54Z",
+  "base": "main",
+  "branch": "task/202605140712-154MAE/cloud-dependency-projection",
+  "created_at": "2026-05-14T07:12:31.004Z",
+  "head_sha": "661c9575f2a0c3f7849ac1f7ebf4d39a4c0d7a35",
+  "last_verified_at": "2026-05-14T07:17:42.389Z",
+  "last_verified_sha": "4da90f8b6179341f03c9904b9dcb3c0413d9c708",
+  "merge_commit": "c5725e45ada6430ba923233b33e7e9d2f9d8f13a",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T07:43:54Z",
+  "pr_number": 3692,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3692",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605140712-154MAE",
+  "updated_at": "2026-05-14T07:43:54Z",
+  "verify": {
+    "status": "pass"
+  }
+}
