@@ -1,5 +1,4 @@
 import { readFile } from "node:fs/promises";
-import { createHash } from "node:crypto";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -27,6 +26,13 @@ import {
   type InsightsIssueParsed,
   type InsightsReportParsed,
 } from "./insights.spec.js";
+import {
+  buildFailureContext,
+  renderAgentContext,
+  resolveAgentContext,
+  type FailureContextInput,
+  type InsightsFailure,
+} from "./insights-issue-context.js";
 
 export { insightsIssueSpec, insightsReportSpec, insightsSpec } from "./insights.spec.js";
 
@@ -44,16 +50,7 @@ type InsightsReport = {
     upload: "not_supported";
     excludes: string[];
   };
-  failure: {
-    error_code: string | null;
-    command_id: string | null;
-    command_group: string | null;
-    phase: string | null;
-    reason_code: string | null;
-    message_class: string | null;
-    argv_shape: string[];
-    dedupe_signature: string;
-  };
+  failure: InsightsFailure;
   environment: {
     agentplane_version: string | null;
     node_major: number | null;
@@ -99,15 +96,6 @@ type InsightsReport = {
     stdout_bytes_buckets: CountMap;
     stderr_bytes_buckets: CountMap;
   };
-};
-
-type FailureContextInput = {
-  errorCode?: string;
-  commandId?: string;
-  phase?: string;
-  reasonCode?: string;
-  messageClass?: string;
-  argvShape?: string[];
 };
 
 function bump(counts: CountMap, raw: unknown, fallback = "unknown"): void {
@@ -372,66 +360,6 @@ function sanitizeIssueTitle(title: string | undefined, errorCode: string | undef
   if (explicit) return explicit.slice(0, 120);
   const suffix = trimOptional(errorCode) ? ` (${trimOptional(errorCode)})` : "";
   return `AgentPlane internal error report${suffix}`;
-}
-
-function cleanToken(value: string | undefined, maxLength = 80): string | null {
-  const trimmed = value?.trim() ?? "";
-  if (!trimmed) return null;
-  return trimmed
-    .replaceAll(/\/Users\/[^\s"'`]+/g, "<absolute-path>")
-    .replaceAll(/[A-Za-z]:\\[^\s"'`]+/g, "<absolute-path>")
-    .replaceAll(/\s+/g, " ")
-    .slice(0, maxLength);
-}
-
-function cleanArgvShape(tokens: readonly string[] | undefined): string[] {
-  return (tokens ?? [])
-    .flatMap((token) => {
-      const cleaned = cleanToken(token, 80);
-      return cleaned ? [cleaned] : [];
-    })
-    .slice(0, 24);
-}
-
-function buildFailureContext(input: FailureContextInput | undefined): InsightsReport["failure"] {
-  const commandId = cleanToken(input?.commandId);
-  const failure = {
-    error_code: cleanToken(input?.errorCode, 40),
-    command_id: commandId,
-    command_group: commandId ? commandId.split(" ")[0] : null,
-    phase: cleanToken(input?.phase, 60),
-    reason_code: cleanToken(input?.reasonCode, 80),
-    message_class: cleanToken(input?.messageClass, 80),
-    argv_shape: cleanArgvShape(input?.argvShape),
-  };
-  const signatureInput = JSON.stringify(failure);
-  return {
-    ...failure,
-    dedupe_signature: `sha256:${createHash("sha256").update(signatureInput).digest("hex")}`,
-  };
-}
-
-async function resolveAgentContext(opts: {
-  inline: string | undefined;
-  file: string | undefined;
-  root: string;
-}): Promise<string | null> {
-  const inline = trimOptional(opts.inline);
-  if (inline) return inline;
-  const file = trimOptional(opts.file);
-  if (!file) return null;
-  const absolutePath = path.isAbsolute(file) ? file : path.join(opts.root, file);
-  return trimOptional(await readFile(absolutePath, "utf8"));
-}
-
-function renderAgentContext(context: string | null): string[] {
-  if (!context) {
-    return [
-      "## Agent context",
-      "Not provided. Re-run with `--agent-context` or `--agent-context-file` for actionable triage.",
-    ];
-  }
-  return ["## Agent context", context];
 }
 
 function renderIssueBody(opts: {
