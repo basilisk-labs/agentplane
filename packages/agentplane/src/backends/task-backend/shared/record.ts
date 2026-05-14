@@ -77,6 +77,19 @@ function normalizeCanonicalSections(value: unknown): Record<string, string> | un
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
+function mergeTaskDocSections(opts: {
+  frontmatterSections?: Record<string, string>;
+  body: string;
+}): Record<string, string> | undefined {
+  const bodyDoc = extractTaskDoc(opts.body);
+  const bodySections = bodyDoc ? taskDocToSectionMap(bodyDoc) : {};
+  const merged = {
+    ...bodySections,
+    ...(opts.frontmatterSections ?? {}),
+  };
+  return Object.keys(merged).length > 0 ? merged : undefined;
+}
+
 function stringEnumValue<T extends string>(value: unknown, allowed: Set<string>): T | undefined {
   return typeof value === "string" && allowed.has(value) ? (value as T) : undefined;
 }
@@ -113,7 +126,10 @@ export function taskRecordToData(record: TaskRecord): TaskData {
   const verification = normalizeVerificationResult(fm.verification);
   const origin = normalizeTaskOrigin(fm.origin);
   const runner = normalizeTaskRunnerOutcome(fm.runner);
-  const sections = normalizeCanonicalSections(fm.sections);
+  const sections = mergeTaskDocSections({
+    frontmatterSections: normalizeCanonicalSections(fm.sections),
+    body: record.body,
+  });
   const doc = sections ? renderTaskDocFromSections(sections) : extractTaskDoc(record.body);
 
   const baseId = typeof fm.id === "string" ? fm.id : typeof record.id === "string" ? record.id : "";
