@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605142024-MK70W3/homepage-feature-nav",
+  "created_at": "2026-05-14T20:24:59.982Z",
+  "head_sha": "c43d665480b4407ff52909bb8f9f02556f913a53",
+  "last_verified_at": "2026-05-14T20:34:09.165Z",
+  "last_verified_sha": "c43d665480b4407ff52909bb8f9f02556f913a53",
+  "schema_version": 1,
+  "task_id": "202605142024-MK70W3",
+  "updated_at": "2026-05-14T20:24:59.982Z",
+  "verify": {
+    "status": "pass"
+  }
+}

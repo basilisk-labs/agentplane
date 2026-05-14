@@ -2,6 +2,8 @@ export const githubUrl = "https://github.com/basilisk-labs/agentplane";
 export const docsUrl = "/docs/user/overview";
 export const acrUrl = "/docs/user/agent-change-record";
 export const contextUrl = "/docs/user/local-context";
+export const blueprintsUrl = "/docs/developer/blueprints";
+export const blogUrl = "/blog";
 export const workflowGuidesUrl = "/docs/workflow-guides";
 export const recipesUrl = "/docs/recipes";
 export const comparisonUrl = "/docs/compare";
@@ -31,8 +33,8 @@ export const homepageContent = {
       "AgentPlane wraps Claude Code, Codex, Cursor, Aider, and other coding agents with task intent, approved plans, verification evidence, commits, and Agent Change Records inside your repository.",
   },
   hero: {
-    eyebrow: "OPEN-SOURCE CLI FOR CODING AGENTS",
-    title: "Open-source CLI for reviewable AI-agent work in Git.",
+    eyebrow: "VOL. 1 - ISSUE NO. 006",
+    title: "Inspectable work for coding agents.",
     subtitle:
       "AgentPlane wraps Claude Code, Codex, Cursor, Aider, and other coding agents with task intent, approved plans, verification evidence, commits, and Agent Change Records - all inside your repository.",
     flow: "intent -> plan -> agent work -> verify -> commit",
@@ -77,6 +79,80 @@ export const homepageContent = {
       "Can another human or agent safely review, merge, or revert it?",
     ],
   },
+  menuSections: [
+    {
+      id: "recipes",
+      code: "RCP-01",
+      label: "Recipes",
+      title: "Reusable agent behavior without copy-pasted prompts.",
+      text: "Recipes package repeatable agent profiles, prompt modules, skills, and repository mapping assets so a team can install known-good behavior instead of rediscovering it in every checkout.",
+      proof:
+        "Good for onboarding new agents, sharing workflow patterns, and keeping reusable automation signed and inspectable.",
+      linkLabel: "Open recipes docs",
+      to: recipesUrl,
+      status: "signed catalog",
+    },
+    {
+      id: "blueprints",
+      code: "BPR-02",
+      label: "Blueprints",
+      title: "Execution routes that make task shape explicit.",
+      text: "Blueprints resolve a task into a route: what evidence is required, which owner should act, what checks matter, and where the work should stop when the scope drifts.",
+      proof:
+        "Useful when agents need a deterministic path instead of improvising lifecycle steps from prose.",
+      linkLabel: "Open blueprints docs",
+      to: blueprintsUrl,
+      status: "route contract",
+    },
+    {
+      id: "acr",
+      code: "ACR-03",
+      label: "ACR",
+      title: "A compact record reviewers and automations can trust.",
+      text: "Agent Change Record keeps intent, plan approval, changed files, commands, verification result, commit, and review status in a machine-readable artifact.",
+      proof:
+        "The diff stays in Git; ACR preserves why the diff exists and what evidence came with it.",
+      linkLabel: "Open ACR docs",
+      to: acrUrl,
+      status: "review evidence",
+    },
+    {
+      id: "blog",
+      code: "BLG-04",
+      label: "Blog",
+      title: "Release notes and workflow reasoning in one place.",
+      text: "The blog is the narrative layer for release notes, implementation notes, and operational lessons that are too contextual for command reference pages.",
+      proof:
+        "Good for understanding direction, tradeoffs, and migration context before adopting a new workflow surface.",
+      linkLabel: "Open blog",
+      to: blogUrl,
+      status: "field notes",
+    },
+    {
+      id: "docs",
+      code: "DOC-05",
+      label: "Docs",
+      title: "The operator manual for local-first agent work.",
+      text: "Docs cover setup, command contracts, branch_pr and direct workflows, PR artifacts, and the policies agents need before they mutate a repository.",
+      proof:
+        "Use it as the public source for users; use AGENTS.md and policy modules as the repo-local source for agents.",
+      linkLabel: "Open docs",
+      to: docsUrl,
+      status: "operator manual",
+    },
+    {
+      id: "context",
+      code: "CTX-06",
+      label: "Context",
+      title: "Repository memory that stays below the workflow.",
+      text: "Local context turns capabilities, project facts, and relevant repository knowledge into a controlled surface that agents can load without swallowing the entire repo.",
+      proof:
+        "It helps agents reuse what matters while keeping mutation policy and verification gates explicit.",
+      linkLabel: "Open context docs",
+      to: contextUrl,
+      status: "local memory",
+    },
+  ],
   quickstart: {
     title: "Copy this, run it in any repo.",
     text: "The first win is not a dashboard. It is a local evidence trail you can inspect in Git.",
