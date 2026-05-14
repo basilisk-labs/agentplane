@@ -1,10 +1,11 @@
 ---
 id: "202605141556-FFRZBW"
 title: "Add runner playbook contracts"
-status: "DOING"
+result_summary: "Merged via PR #3730."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Re-verified after task-specific Verify Steps were recorded: runner playbook contract layer is implemented and covered by focused checks."
   attempts: 0
-commit: null
+commit:
+  hash: "093460eb53413bcd37df7db38fc9cae2465d0d41"
+  message: "Merge pull request #3730 from basilisk-labs/task/202605141556-FFRZBW/runner-playbook-contracts"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved generic runner playbook contract layer in the task worktree, keeping the diff scoped to runtime contract code, focused tests, and task verification evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3730 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Re-verified after task-specific Verify Steps were recorded: runner playbook contract layer is implemented and covered by focused checks."
+  -
+    type: "status"
+    at: "2026-05-14T16:13:37.587Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3730 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T16:09:58.914Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T16:13:37.593Z"
+doc_updated_by: "INTEGRATOR"
 description: "Introduce generic execution blueprint, task playbook, runtime capability, and verifier contracts informed by BitGN failure classes without benchmark-specific task-id hacks."
 sections:
   Summary: |-
