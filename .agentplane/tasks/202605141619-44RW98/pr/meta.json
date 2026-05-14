@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605141619-44RW98/runner-playbook-knip-fix",
+  "created_at": "2026-05-14T16:20:02.147Z",
+  "head_sha": "cd3ebf81bb984dc8ca6ad18eefe1b17fd9bd7866",
+  "last_verified_at": "2026-05-14T16:21:33.752Z",
+  "last_verified_sha": "cd3ebf81bb984dc8ca6ad18eefe1b17fd9bd7866",
+  "schema_version": 1,
+  "task_id": "202605141619-44RW98",
+  "updated_at": "2026-05-14T16:20:02.147Z",
+  "verify": {
+    "status": "pass"
+  }
+}
