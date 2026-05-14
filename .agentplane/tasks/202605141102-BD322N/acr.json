@@ -1,0 +1,212 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605141102-BD322N",
+  "created_at": "2026-05-14T12:47:17.799Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "5210d5e80d61908e7e3100383fc7a6a65fb697e5",
+    "work_ref": "main",
+    "work_commit": "5210d5e80d61908e7e3100383fc7a6a65fb697e5"
+  },
+  "task": {
+    "task_id": "202605141102-BD322N",
+    "title": "Release AgentPlane v0.6.0",
+    "intent": "Prepare, verify, publish, and record AgentPlane v0.6.0 from the current green main state. Scope includes release plan, candidate branch, release notes/version parity, full local readiness checks, GitHub candidate merge, hosted publish dispatch, and publication verification.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605141102-BD322N/README.md",
+      "sha256": "sha256:be2734ce66bcc710c7bdebd4bd0d1fedb3f2d08c64a676c9a340694f9c607b9a"
+    },
+    "approved_at": "2026-05-14T11:02:30.051Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "warning",
+        "reason": "Verification is not ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3710.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "not_run",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605141102-BD322N_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T11:02:30.051Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605141102-BD322N/README.md",
+      "sha256": "sha256:be2734ce66bcc710c7bdebd4bd0d1fedb3f2d08c64a676c9a340694f9c607b9a"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605141102-BD322N/README.md",
+      "sha256": "sha256:be2734ce66bcc710c7bdebd4bd0d1fedb3f2d08c64a676c9a340694f9c607b9a"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605141102-BD322N/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:14327716da105d2173fcc45fe5f1b2020f256973552ec2053e8d4503bbad8c1a"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Verification is not recorded as ok.",
+      "Verification log evidence is missing."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 5210d5e80d61908e7e3100383fc7a6a65fb697e5 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:e3288661c34c1d3515233483f3f8cb226dd73dbaa465bc6f3dc3bd32d9ca7262",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "release.strict",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "release.approval",
+          "kind": "approval",
+          "produced_by": "approval_gate",
+          "required": true
+        },
+        {
+          "id": "release.plan",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "release.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "release.publish",
+          "kind": "external_link",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        },
+        {
+          "id": "release.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605141102-BD322N/blueprint/resolved-snapshot.json",
+        "digest": "c7601c93351491aff80107e7dc55dc074460587d53b25b61aaf961986cdcc6ec",
+        "current_digest": "c7601c93351491aff80107e7dc55dc074460587d53b25b61aaf961986cdcc6ec",
+        "route_changed": false,
+        "artifact_sha256": "sha256:14327716da105d2173fcc45fe5f1b2020f256973552ec2053e8d4503bbad8c1a",
+        "safe_command": "agentplane blueprint snapshot 202605141102-BD322N"
+      }
+    }
+  }
+}

@@ -1,10 +1,11 @@
 ---
 id: "202605141102-BD322N"
 title: "Release AgentPlane v0.6.0"
-status: "DOING"
+result_summary: "Merged via PR #3710."
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "5210d5e80d61908e7e3100383fc7a6a65fb697e5"
+  message: "Merge pull request #3710 from basilisk-labs/task/202605141102-BD322N/release-v0-6-0"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: prepare AgentPlane v0.6.0 release candidate from the verified main state, rerun full readiness checks, merge the candidate, dispatch hosted publish, and record publication evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3710 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: prepare AgentPlane v0.6.0 release candidate from the verified main state, rerun full readiness checks, merge the candidate, dispatch hosted publish, and record publication evidence."
+  -
+    type: "status"
+    at: "2026-05-14T12:47:17.745Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3710 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T11:02:44.702Z"
+doc_updated_at: "2026-05-14T12:47:17.750Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare, verify, publish, and record AgentPlane v0.6.0 from the current green main state. Scope includes release plan, candidate branch, release notes/version parity, full local readiness checks, GitHub candidate merge, hosted publish dispatch, and publication verification."
 sections:
