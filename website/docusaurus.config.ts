@@ -174,6 +174,7 @@ const config = {
           href: "https://github.com/basilisk-labs/agentplane",
           label: "★ Star",
           position: "right",
+          className: "navbar-github-cta",
         },
       ],
     },
