@@ -1,10 +1,11 @@
 ---
 id: "202605141638-78JKTQ"
 title: "Harden cloud auto-push failure semantics"
-status: "DOING"
+result_summary: "Merged via PR #3746."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Cloud auto-push failure protection verified: failed auto-push now writes durable pending_push state, prefer-remote pull refuses to overwrite pending local mutations, inspect freshness exposes pendingPush, and explicit successful push clears the marker. Checks: task-backend.cloud.test.ts + cloud-backend-state.test.ts 30 tests passed; agentplane typecheck passed; targeted eslint passed; policy routing passed."
   attempts: 0
-commit: null
+commit:
+  hash: "d2d0a0a1baf774fade65bf1ed78d5886f69d2dee"
+  message: "Merge pull request #3746 from basilisk-labs/task/202605141638-78JKTQ/v06-audit-followups"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing the primary batch task for v0.6 audit follow-ups in branch_pr worktree, covering cloud auto-push failure protection and coordinating the included follow-up task set."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3746 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,14 +48,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Cloud auto-push failure protection verified: failed auto-push now writes durable pending_push state, prefer-remote pull refuses to overwrite pending local mutations, inspect freshness exposes pendingPush, and explicit successful push clears the marker. Checks: task-backend.cloud.test.ts + cloud-backend-state.test.ts 30 tests passed; agentplane typecheck passed; targeted eslint passed; policy routing passed."
+  -
+    type: "status"
+    at: "2026-05-14T19:07:26.564Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3746 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T18:01:41.355Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T19:07:26.570Z"
+doc_updated_by: "INTEGRATOR"
 description: "Design and implement protection for cloud-backend local mutations when maybeAutoPush fails, so pending local writes cannot be silently overwritten by a later prefer-remote pull. Add tests that cover network/retriable push failure followed by pull conflict resolution."
 sections:
   Summary: |-
     Harden cloud auto-push failure semantics
-
+    
     Design and implement protection for cloud-backend local mutations when maybeAutoPush fails, so pending local writes cannot be silently overwritten by a later prefer-remote pull. Add tests that cover network/retriable push failure followed by pull conflict resolution.
   Scope: |-
     - In scope: Design and implement protection for cloud-backend local mutations when maybeAutoPush fails, so pending local writes cannot be silently overwritten by a later prefer-remote pull. Add tests that cover network/retriable push failure followed by pull conflict resolution.
@@ -59,16 +72,16 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-14T18:01:41.350Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Cloud auto-push failure protection verified: failed auto-push now writes durable pending_push state, prefer-remote pull refuses to overwrite pending local mutations, inspect freshness exposes pendingPush, and explicit successful push clears the marker. Checks: task-backend.cloud.test.ts + cloud-backend-state.test.ts 30 tests passed; agentplane typecheck passed; targeted eslint passed; policy routing passed.
     Attempts: 0
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T17:36:30.561Z, excerpt_hash=sha256:2533d9fb51fca5b0b3315b8e15cc10d05e259c09615b2bca5338c73e52695a27
-
+    
     Details:
-
+    
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141638-78JKTQ-v06-audit-followups/.agentplane/tasks/202605141638-78JKTQ/blueprint/resolved-snapshot.json
@@ -76,7 +89,7 @@ sections:
     - current_digest: b5e9677b365da83c6e0f143e1060a3adeeaee9fd8c4c70b02c7311ce2ad4a747
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605141638-78JKTQ
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
