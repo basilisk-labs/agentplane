@@ -24,14 +24,15 @@ Created: 2026-05-14T20:56:19.246Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T21:05:09.544Z
+- Updated: 2026-05-14T21:15:08.323Z
 - Branch: task/202605142055-F5M77X/release-v0-6-1
-- Head: 93c3936caa36
+- Head: bdfd834e8477
 
 ```text
  .../blueprint/resolved-snapshot.json               | 417 +++++++++++++++++++++
- docs/releases/v0.6.1.md                            | 176 +++++++++
- 2 files changed, 593 insertions(+)
+ docs/releases/v0.6.1.md                            | 177 +++++++++
+ .../run-cli.core.help-snap.test.ts.snap            | 380 +++++++++++++++++--
+ 3 files changed, 951 insertions(+), 23 deletions(-)
 ```
 
 </details>
