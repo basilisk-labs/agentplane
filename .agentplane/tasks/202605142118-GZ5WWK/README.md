@@ -1,10 +1,11 @@
 ---
 id: "202605142118-GZ5WWK"
 title: "Clarify wiki glossary and cross-link guidance"
-status: "DOING"
+result_summary: "Merged via PR #3773."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx prettier --check packages/agentplane/src/commands/context/init.ts packages/agentplane/src/context/harvest-tasks-extraction.ts packages/agentplane/assets/agents/CURATOR.json docs/user/local-context.mdx; bun test packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/commands/context/harvest-tasks.test.ts; bunx eslint packages/agentplane/src/commands/context/init.ts packages/agentplane/src/context/harvest-tasks-extraction.ts; bun run docs:site:typecheck; node .agentplane/policy/check-routing.mjs; ap doctor. Result: pass. Evidence: prettier passed, 39 focused tests passed, eslint and docs typecheck passed, policy routing OK, doctor OK with pre-existing branch_pr reconciliation warnings unrelated to this task. Scope: local context wiki prompt guidance, CURATOR extraction prompt, CURATOR asset, and user local-context docs."
   attempts: 0
-commit: null
+commit:
+  hash: "043d2c4604c4dbf242808a47ea8d211fc8877370"
+  message: "Merge pull request #3773 from basilisk-labs/task/202605142118-GZ5WWK/wiki-glossary-cross-links"
 comments:
   -
     author: "CODER"
     body: "Start: update local context prompt surfaces so generated wiki notes and CURATOR extraction guidance preserve adaptive wiki structure, prefer useful cross-links, and define glossary as a thin index over wiki and graph evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3773 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx prettier --check packages/agentplane/src/commands/context/init.ts packages/agentplane/src/context/harvest-tasks-extraction.ts packages/agentplane/assets/agents/CURATOR.json docs/user/local-context.mdx; bun test packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/commands/context/harvest-tasks.test.ts; bunx eslint packages/agentplane/src/commands/context/init.ts packages/agentplane/src/context/harvest-tasks-extraction.ts; bun run docs:site:typecheck; node .agentplane/policy/check-routing.mjs; ap doctor. Result: pass. Evidence: prettier passed, 39 focused tests passed, eslint and docs typecheck passed, policy routing OK, doctor OK with pre-existing branch_pr reconciliation warnings unrelated to this task. Scope: local context wiki prompt guidance, CURATOR extraction prompt, CURATOR asset, and user local-context docs."
+  -
+    type: "status"
+    at: "2026-05-14T21:44:13.888Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3773 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T21:22:18.350Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T21:44:13.894Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update AgentPlane local context prompts so CURATOR and generated wiki agent notes prefer useful Markdown cross-links, keep glossary as a thin index over wiki/graph, and preserve adaptive wiki structure after first analysis."
 sections:
   Summary: |-
