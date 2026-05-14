@@ -1,10 +1,11 @@
 ---
 id: "202605141638-ER7JEJ"
 title: "Hotfix v0.6 audit correctness regressions"
-status: "DOING"
+result_summary: "Merged via PR #3739."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Command: rg -n '\"0\\.4\\.2\"|version: \"0\\.4\\.2\"|Math\\.random\\(\\)\\.toString\\(36\\).*slice\\(2, 8\\)|pull\\.lastCheckedAt \\?\\? new Date' packages/agentplane/src/commands/acr packages/agentplane/src/backends/task-backend packages/agentplane/src/cli.ts packages/agentplane/src/cli/fs-utils.ts packages/agentplane/src/commands/branch/internal/archive-pr.ts; Result: pass; Evidence: no scoped stale ACR version, Math.random backup suffix, or client-now pull freshness matches remain. Scope: audit hotfix regressions. Command: bun run test:project -- agentplane packages/agentplane/src/backends/task-backend/cloud-backend-state.test.ts packages/agentplane/src/commands/release/apply.preflight.test.ts packages/agentplane/src/commands/acr/acr.command.test.ts; Result: pass; Evidence: 3 files, 28 tests passed. Scope: cloud state, release-note preflight, ACR semantics. Command: bun run lint:core -- changed files; Result: pass; Evidence: eslint completed with exit 0. Scope: changed source/test/script files. Command: bun run --filter=agentplane typecheck; Result: pass; Evidence: agentplane typecheck exited 0. Scope: agentplane package types. Command: node scripts/release/check-release-notes.mjs --tag v0.6.0 and fenced-bullet smoke; Result: pass; Evidence: v0.6.0 accepted and fenced bullets fail min-bullet smoke as expected. Scope: MJS release-note checker. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: policy routing gate."
   attempts: 0
-commit: null
+commit:
+  hash: "6470f515fb3333ce1b6c36e37ba2d4fe1c95a1b5"
+  message: "Merge pull request #3739 from basilisk-labs/task/202605141638-ER7JEJ/v06-audit-hotfix"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved v0.6 audit hotfix scope in the task worktree, covering ACR version truthfulness, cloud state durability, release-note checker accuracy, CLI rejection output, crypto-safe backup suffixes, and pull freshness fallback without widening into larger cloud semantics refactors."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3739 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: rg -n '\"0\\.4\\.2\"|version: \"0\\.4\\.2\"|Math\\.random\\(\\)\\.toString\\(36\\).*slice\\(2, 8\\)|pull\\.lastCheckedAt \\?\\? new Date' packages/agentplane/src/commands/acr packages/agentplane/src/backends/task-backend packages/agentplane/src/cli.ts packages/agentplane/src/cli/fs-utils.ts packages/agentplane/src/commands/branch/internal/archive-pr.ts; Result: pass; Evidence: no scoped stale ACR version, Math.random backup suffix, or client-now pull freshness matches remain. Scope: audit hotfix regressions. Command: bun run test:project -- agentplane packages/agentplane/src/backends/task-backend/cloud-backend-state.test.ts packages/agentplane/src/commands/release/apply.preflight.test.ts packages/agentplane/src/commands/acr/acr.command.test.ts; Result: pass; Evidence: 3 files, 28 tests passed. Scope: cloud state, release-note preflight, ACR semantics. Command: bun run lint:core -- changed files; Result: pass; Evidence: eslint completed with exit 0. Scope: changed source/test/script files. Command: bun run --filter=agentplane typecheck; Result: pass; Evidence: agentplane typecheck exited 0. Scope: agentplane package types. Command: node scripts/release/check-release-notes.mjs --tag v0.6.0 and fenced-bullet smoke; Result: pass; Evidence: v0.6.0 accepted and fenced bullets fail min-bullet smoke as expected. Scope: MJS release-note checker. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: policy routing gate."
+  -
+    type: "status"
+    at: "2026-05-14T17:21:58.416Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3739 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T16:48:40.965Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T17:21:58.423Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix the low-risk v0.6 audit regressions that have narrow verification boundaries: ACR producer/toolchain version must match the package version, cloud backend state writes must be atomic and recover from malformed state JSON, release-note bullet counting must ignore fenced code blocks and use a strict release tag regex, CLI entrypoint must report unexpected rejections, random backup suffixes must use crypto randomness, and pull freshness must avoid client-now fallback."
 sections:
   Summary: |-
