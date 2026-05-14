@@ -1,10 +1,11 @@
 ---
 id: "202605141849-0C84Z2"
 title: "Fix doc section readback for issue #3747"
-status: "DOING"
+result_summary: "Merged via PR #3750."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Re-verified after addressing Codex review: exact ESLint passed, focused agentplane suites passed with 45 tests, and core task-readme suite passed."
   attempts: 0
-commit: null
+commit:
+  hash: "61b8b9c7f2a2a1684be4cef8f57e96647ad70c0f"
+  message: "Merge pull request #3750 from basilisk-labs/task/202605141849-0C84Z2/fix-doc-section-readback-3747"
 comments:
   -
     author: "CODER"
     body: "Start: Implement issue #3747 fix in task doc section persistence/readback, add focused regression coverage, and verify with targeted tests from the dedicated task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3750 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -55,9 +61,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Re-verified after addressing Codex review: exact ESLint passed, focused agentplane suites passed with 45 tests, and core task-readme suite passed."
+  -
+    type: "status"
+    at: "2026-05-14T19:23:51.737Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3750 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T19:21:14.045Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T19:23:51.742Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix GitHub issue #3747: task doc set can accept a section that is later filtered from canonical task doc readback, causing task doc show and task plan approve to disagree."
 sections:
   Summary: "Fix GitHub issue #3747 where task doc set can report success for a section that later disappears from canonical task doc readback, making task doc show and task plan approve disagree."
