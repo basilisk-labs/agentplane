@@ -4,7 +4,12 @@ import path from "node:path";
 
 export const HOOKS_SUITE_TIMEOUT_MS = 180_000;
 export const ACTIVE_BIN_ENV = "AGENTPLANE_RUNTIME_ACTIVE_BIN";
-export const TEST_WORKFLOW_GITIGNORE = ".agentplane/worktrees\n.agentplane/cache\n";
+export const TEST_WORKFLOW_GITIGNORE =
+  ".agentplane/worktrees\n" +
+  ".agentplane/cache\n" +
+  ".agentplane/cache.sqlite\n" +
+  ".agentplane/cache.sqlite-wal\n" +
+  ".agentplane/cache.sqlite-shm\n";
 
 export function restoreEnv(name: string, previous: string | undefined): void {
   if (previous === undefined) delete process.env[name];

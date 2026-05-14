@@ -89,6 +89,8 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
         ioNew.restore();
       }
       await approveTaskPlan(root, taskId);
+      await stageGitignoreIfPresent(root);
+      await commitAll(root, "fixture: approve task");
       await startDirectWork(root, taskId, "CODER");
 
       await mkdir(path.join(root, "tmp"), { recursive: true });
@@ -152,6 +154,8 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
         ioNew.restore();
       }
       await approveTaskPlan(root, taskId);
+      await stageGitignoreIfPresent(root);
+      await commitAll(root, "fixture: approve task");
       await startDirectWork(root, taskId, "CODER");
 
       await mkdir(path.join(root, "tmp"), { recursive: true });
@@ -221,6 +225,8 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
         ioNew.restore();
       }
       await approveTaskPlan(root, taskId);
+      await stageGitignoreIfPresent(root);
+      await commitAll(root, "fixture: approve task");
       await startDirectWork(root, taskId, "CODER");
 
       await rm(path.join(root, "tmp", "a.txt"));
@@ -288,6 +294,8 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
         ioNew.restore();
       }
       await approveTaskPlan(root, taskId);
+      await stageGitignoreIfPresent(root);
+      await commitAll(root, "fixture: approve task");
       await startDirectWork(root, taskId, "CODER");
 
       const io = captureStdIO();

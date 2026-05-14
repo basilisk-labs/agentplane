@@ -64,7 +64,12 @@ function markTaskDoneWithCommit(readmeText: string, hash: string, message: strin
 describe("runCli", () => {
   const CLEANUP_MERGED_LIST_TIMEOUT_MS = 120_000;
   const CLEANUP_MERGED_MUTATION_TIMEOUT_MS = 120_000;
-  const TEST_WORKFLOW_GITIGNORE = ".agentplane/worktrees\n.agentplane/cache\n";
+  const TEST_WORKFLOW_GITIGNORE =
+    ".agentplane/worktrees\n" +
+    ".agentplane/cache\n" +
+    ".agentplane/cache.sqlite\n" +
+    ".agentplane/cache.sqlite-wal\n" +
+    ".agentplane/cache.sqlite-shm\n";
 
   it("cleanup merged requires branch_pr workflow", async () => {
     const root = await mkGitRepoRootWithBranch("main");

@@ -27,6 +27,7 @@ const ROOT_KEYS = new Set([
   "feedback",
   "recipes",
   "commit",
+  "acr",
   "scheduler",
   "evaluator",
   "observability",

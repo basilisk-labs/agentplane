@@ -95,6 +95,7 @@ export function workflowFrontMatterToConfigRaw(
     "feedback",
     "recipes",
     "commit",
+    "acr",
     "scheduler",
     "evaluator",
     "observability",
@@ -149,6 +150,7 @@ export function configRawToWorkflowFrontMatter(
     feedback: config.feedback,
     recipes: config.recipes,
     commit: config.commit,
+    acr: config.acr,
     scheduler: config.scheduler ?? {
       concurrency: 1,
       poll_interval_ms: 30_000,

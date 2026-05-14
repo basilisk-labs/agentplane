@@ -56,7 +56,12 @@ installRunCliIntegrationHarness();
 
 const INTEGRATE_REBASE_TIMEOUT_MS = 180_000;
 const INTEGRATE_ROUTE_TIMEOUT_MS = 120_000;
-const TEST_WORKFLOW_GITIGNORE = ".agentplane/worktrees\n.agentplane/cache\n";
+const TEST_WORKFLOW_GITIGNORE =
+  ".agentplane/worktrees\n" +
+  ".agentplane/cache\n" +
+  ".agentplane/cache.sqlite\n" +
+  ".agentplane/cache.sqlite-wal\n" +
+  ".agentplane/cache.sqlite-shm\n";
 
 async function installFakeGhProtection(opts: { scenarioName: string; protectedBranch?: string }) {
   const fakeBin = path.join(

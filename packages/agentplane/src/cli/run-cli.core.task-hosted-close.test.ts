@@ -106,6 +106,7 @@ describe("runCli", { timeout: HOSTED_CLOSE_INTEGRATION_TIMEOUT_MS }, () => {
       const root = await writeAndConfigureRoot();
       const config = defaultConfig();
       config.workflow_mode = "branch_pr";
+      config.acr.enabled = true;
       await writeConfig(root, config);
       await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
       await mkdir(path.join(root, "packages", "agentplane", "assets", "policy"), {
