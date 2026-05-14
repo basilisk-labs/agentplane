@@ -235,3 +235,29 @@ jobs:
           name: distribution-module-${{ github.event.inputs.module }}-${{ github.event.inputs.tag }}
           path: .agentplane/.release/publish/
           if-no-files-found: warn
+      - name: Fail incomplete external distribution module
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'EOF'
+          const fs = require("node:fs");
+          const path = require("node:path");
+          const root = ".agentplane/.release/publish";
+          const files = [
+            "homebrew/homebrew-publish-result.json",
+            "scoop/scoop-publish-result.json",
+            "setup-agentplane/setup-agentplane-publish-result.json",
+          ].map((file) => path.join(root, file)).filter((file) => fs.existsSync(file));
+          const failures = [];
+          for (const file of files) {
+            const payload = JSON.parse(fs.readFileSync(file, "utf8"));
+            if (!["published", "unchanged"].includes(payload.status)) {
+              failures.push(`${payload.module ?? file}: ${payload.status}`);
+            }
+          }
+          if (failures.length > 0) {
+            console.error(`external distribution incomplete: ${failures.join("; ")}`);
+            process.exit(1);
+          }
+          EOF

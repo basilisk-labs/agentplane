@@ -353,11 +353,21 @@ function buildPublishResultManifest(args) {
   }
   const externalModules = args.external?.modules ?? [];
   for (const module of externalModules) {
-    if (module.loaded && ["pr_opened", "unchanged"].includes(module.status)) continue;
+    const setupTagConfirmed =
+      module.name !== "setup-agentplane" || module.setupTag?.status === "published";
+    if (module.loaded && ["published", "unchanged"].includes(module.status) && setupTagConfirmed) {
+      continue;
+    }
     const detail = module.loaded
       ? `status=${module.status}${module.reasonCode ? ` reason=${module.reasonCode}` : ""}`
       : `unavailable (${module.reason})`;
-    failures.push(`external distribution ${module.name} not confirmed (${detail})`);
+    const setupTagDetail =
+      module.loaded && module.name === "setup-agentplane" && !setupTagConfirmed
+        ? `; setupTag=${module.setupTag?.status ?? "missing"}`
+        : "";
+    failures.push(
+      `external distribution ${module.name} not confirmed (${detail}${setupTagDetail})`,
+    );
   }
 
   const success = failures.length === 0;
@@ -480,6 +490,9 @@ async function loadExternalResult(filePath) {
       prUrl: payload.prUrl ?? null,
       branch: payload.branch ?? null,
       metadata: payload.metadata ?? null,
+      mergeAttempts: Array.isArray(payload.mergeAttempts) ? payload.mergeAttempts : [],
+      verification: payload.verification ?? null,
+      setupTag: payload.setupTag ?? null,
       nextAction: payload.nextAction ?? null,
     };
   } catch (error) {
