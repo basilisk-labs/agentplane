@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -63,5 +63,39 @@ describe("LocalBackend SQLite gitignore repair", () => {
       cwd: tempDir,
     });
     expect(stdout).not.toContain(".agentplane/cache.sqlite");
+  });
+
+  it("keeps projection reads working when gitignore repair fails", async () => {
+    await execFileAsync("git", ["init", "-q"], { cwd: tempDir });
+    await execFileAsync("git", ["config", "user.email", "test@example.com"], { cwd: tempDir });
+    await execFileAsync("git", ["config", "user.name", "Test User"], { cwd: tempDir });
+    await mkdir(path.join(tempDir, ".gitignore"));
+    await writeFile(path.join(tempDir, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: tempDir });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: tempDir });
+
+    const task: TaskData = {
+      id: "202601300016-ABCD",
+      title: "Repair failure fallback",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: ["projection"],
+      verify: [],
+      doc: "## Summary\n\nSQLite body",
+    };
+    const backend = new LocalBackend({
+      dir: path.join(tempDir, ".agentplane", "tasks"),
+      updatedBy: "tester",
+    });
+
+    await backend.writeTask(task);
+    const projection = await backend.listProjectionTasks();
+
+    expect(projection.map((entry) => entry.id)).toEqual([task.id]);
+    const sqliteStat = await stat(path.join(tempDir, ".agentplane", "cache.sqlite"));
+    expect(sqliteStat.size).toBeGreaterThan(0);
   });
 });

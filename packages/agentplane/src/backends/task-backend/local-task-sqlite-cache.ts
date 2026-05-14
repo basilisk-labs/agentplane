@@ -327,7 +327,7 @@ export async function writeSqliteTaskProjection(opts: {
   fingerprintEntries?: readonly { path: string; mtimeMs: number; size: number }[];
 }): Promise<void> {
   const gitRoot = maybeRepoRootFromTasksDir(opts.tasksDir);
-  if (gitRoot) await ensureRuntimeSqliteGitignore({ gitRoot });
+  if (gitRoot) await ensureRuntimeSqliteGitignore({ gitRoot }).catch(() => null);
 
   const dbPath = resolveTaskProjectionSqlitePath(opts.tasksDir);
   const gitCacheKey = buildGitCacheKey(opts.tasksDir);

@@ -392,7 +392,7 @@ export async function cmdContextReindex(opts: {
       size_bytes: row.size_bytes,
     })),
   };
-  await ensureRuntimeSqliteGitignore({ gitRoot: root });
+  await ensureRuntimeSqliteGitignore({ gitRoot: root }).catch(() => null);
   await writeSqliteProjection(sqlitePath, payload);
 
   process.stdout.write(infoMessage(`reindex prepared at ${sqlitePath}`) + "\n");
