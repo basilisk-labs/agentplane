@@ -13,6 +13,7 @@ import {
   FRAMEWORK_DEV_REPO_LOCAL_VERIFY_COMMAND,
 } from "../../packages/agentplane/bin/framework-dev-contract.js";
 import { resolveCommonRepoRoot } from "../generate/generate-recipes-inventory.mjs";
+import { withFrameworkBuildLock } from "../lib/framework-build-lock.mjs";
 
 function printUsage() {
   process.stdout.write(
@@ -321,21 +322,23 @@ export function runFrameworkDevBootstrap(cwd = process.cwd(), exec = defaultExec
     }
   }
 
-  process.stdout.write("==> Building @agentplaneorg/core\n");
-  exec(repoRoot, "bun", ["run", "--filter=@agentplaneorg/core", "build"]);
-  process.stdout.write("==> Building agentplane\n");
-  exec(repoRoot, "bun", ["run", "--filter=agentplane", "build"]);
-  process.stdout.write("==> Building @agentplane/testkit\n");
-  exec(repoRoot, "bun", ["run", "--filter=@agentplane/testkit", "build"]);
+  withFrameworkBuildLock(repoRoot, "framework-dev-bootstrap", () => {
+    process.stdout.write("==> Building @agentplaneorg/core\n");
+    exec(repoRoot, "bun", ["run", "--filter=@agentplaneorg/core", "build"]);
+    process.stdout.write("==> Building agentplane\n");
+    exec(repoRoot, "bun", ["run", "--filter=agentplane", "build"]);
+    process.stdout.write("==> Building @agentplane/testkit\n");
+    exec(repoRoot, "bun", ["run", "--filter=@agentplane/testkit", "build"]);
 
-  ensureManagedShim(repoRoot);
-  const reconciledHooks = reconcileManagedHooks(repoRoot);
-  if (reconciledHooks.length > 0) {
-    process.stdout.write(`==> Reconciling managed git hooks: ${reconciledHooks.join(", ")}\n`);
-  }
+    ensureManagedShim(repoRoot);
+    const reconciledHooks = reconcileManagedHooks(repoRoot);
+    if (reconciledHooks.length > 0) {
+      process.stdout.write(`==> Reconciling managed git hooks: ${reconciledHooks.join(", ")}\n`);
+    }
 
-  process.stdout.write("==> Verifying repo-local runtime\n");
-  exec(repoRoot, "node", ["packages/agentplane/bin/agentplane.js", "runtime", "explain"]);
+    process.stdout.write("==> Verifying repo-local runtime\n");
+    exec(repoRoot, "node", ["packages/agentplane/bin/agentplane.js", "runtime", "explain"]);
+  });
   printFooter();
 }
 

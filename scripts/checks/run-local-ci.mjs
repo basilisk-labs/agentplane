@@ -6,6 +6,7 @@ import {
   selectFastCiPlan,
   shouldRunCliDocsCheck,
 } from "../lib/local-ci-selection.mjs";
+import { withFrameworkBuildLock } from "../lib/framework-build-lock.mjs";
 
 function sanitizeGitProcessEnv(env) {
   const nextEnv = { ...env };
@@ -105,9 +106,11 @@ function createBaselineStepEntries({ includeBuild }) {
           [
             "Build",
             () => {
-              runCommand("bun", ["run", "--filter=@agentplaneorg/core", "build"]);
-              runCommand("bun", ["run", "--filter=agentplane", "build"]);
-              runCommand("bun", ["run", "build"]);
+              withFrameworkBuildLock(process.cwd(), "local-ci-build", () => {
+                runCommand("bun", ["run", "--filter=@agentplaneorg/core", "build"]);
+                runCommand("bun", ["run", "--filter=agentplane", "build"]);
+                runCommand("bun", ["run", "build"]);
+              });
             },
           ],
         ]

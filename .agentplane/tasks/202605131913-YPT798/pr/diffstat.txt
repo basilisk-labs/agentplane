@@ -1,0 +1,10 @@
+ .agentplane/policy/incidents.md                    |   2 +-
+ .../blueprint/resolved-snapshot.json               | 526 +++++++++++++++++++++
+ docs/developer/incident-archive.mdx                |   1 +
+ packages/agentplane/assets/policy/incidents.md     |   1 -
+ packages/agentplane/bin/agentplane.js              |  61 ++-
+ .../src/cli/bootstrap-framework-dev-script.test.ts |  74 +++
+ scripts/checks/run-local-ci.mjs                    |   9 +-
+ scripts/lib/framework-build-lock.mjs               | 113 +++++
+ scripts/workflow/bootstrap-framework-dev.mjs       |  31 +-
+ 9 files changed, 792 insertions(+), 26 deletions(-)

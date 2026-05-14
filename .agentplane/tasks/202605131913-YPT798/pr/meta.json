@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605131913-YPT798/serialize-build-lane",
+  "created_at": "2026-05-13T19:14:51.451Z",
+  "head_sha": "3951865a3c604a38c2e64dbaaa01e2da04303b50",
+  "last_verified_at": "2026-05-13T21:15:35.693Z",
+  "last_verified_sha": "d0d89c65d620db970760adeb775b1012e9fa3371",
+  "pr_number": 3680,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3680",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605131913-YPT798",
+  "updated_at": "2026-05-14T05:58:03.551Z",
+  "verify": {
+    "status": "pass"
+  }
+}
