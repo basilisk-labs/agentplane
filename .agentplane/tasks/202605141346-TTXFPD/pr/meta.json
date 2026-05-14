@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T20:22:56Z",
   "base": "main",
   "branch": "task/202605141346-TTXFPD/feedback-issue-prompts",
   "created_at": "2026-05-14T13:47:51.184Z",
-  "head_sha": "2fac48f7af8b31c8b7ba61619575ee9c39ff0c53",
+  "head_sha": "094f0d5215b39a209b3479b37c2df70699300f72",
   "last_verified_at": "2026-05-14T19:42:36.044Z",
   "last_verified_sha": "2fac48f7af8b31c8b7ba61619575ee9c39ff0c53",
+  "merge_commit": "58d63b4fd5f21e2622ce92e0596db473e7f997fb",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T20:22:56Z",
   "pr_number": 3719,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3719",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605141346-TTXFPD",
-  "updated_at": "2026-05-14T15:52:06.598Z",
+  "updated_at": "2026-05-14T20:22:56Z",
   "verify": {
     "status": "pass"
   }
