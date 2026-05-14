@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../docs/assets/readme-headers/skills.svg" alt="AgentPlane skills header" style="width:100%;max-width:100%;"/>
+</p>
+
 # Repository-local skills
 
 This directory stores repo-local development skills that are useful while

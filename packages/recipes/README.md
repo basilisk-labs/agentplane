@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/basilisk-labs/agentplane/main/docs/assets/readme-headers/recipes.svg" alt="AgentPlane recipes package header" style="width:100%;max-width:100%;"/>
+</p>
+
 # @agentplaneorg/recipes
 
 [![npm](https://img.shields.io/npm/v/@agentplaneorg/recipes.svg)](https://www.npmjs.com/package/@agentplaneorg/recipes)

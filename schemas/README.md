@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../docs/assets/readme-headers/schemas.svg" alt="AgentPlane schemas header" style="width:100%;max-width:100%;"/>
+</p>
+
 # JSON Schemas
 
 This directory is the repository discovery catalog for public AgentPlane JSON Schemas.

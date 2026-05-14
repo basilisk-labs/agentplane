@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/readme-headers/docs.svg" alt="AgentPlane docs header" style="width:100%;max-width:100%;"/>
+</p>
+
 # Docs layout
 
 `docs/` is the canonical content source for the public documentation set.
