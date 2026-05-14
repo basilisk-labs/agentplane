@@ -1,10 +1,11 @@
 ---
 id: "202605141547-K64QQ7"
 title: "Allow context init bootstrap through pre-push"
-status: "DOING"
+result_summary: "Merged via PR #3728."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented managed context bootstrap pre-push evidence for the exact CTX1NT context-init commit shape, constrained to .agentplane/context/**, context/**, and .gitignore. Regression coverage passed for accepted context bootstrap commits and rejected non-context paths. Checks passed: pre-push task-binding Vitest 9/9, Prettier touched files, ESLint touched files, typecheck, and policy routing."
   attempts: 0
-commit: null
+commit:
+  hash: "17401ad1b0c48cf66b18b537f37ab92c9b337d4c"
+  message: "Merge pull request #3728 from basilisk-labs/task/202605141547-K64QQ7/context-bootstrap-prepush"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved context init bootstrap pre-push fix by adding a narrow managed CTX1NT context bootstrap exception, regression tests for accepted context files and rejected non-context files, then verify with focused hook tests and code checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3728 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented managed context bootstrap pre-push evidence for the exact CTX1NT context-init commit shape, constrained to .agentplane/context/**, context/**, and .gitignore. Regression coverage passed for accepted context bootstrap commits and rejected non-context paths. Checks passed: pre-push task-binding Vitest 9/9, Prettier touched files, ESLint touched files, typecheck, and policy routing."
+  -
+    type: "status"
+    at: "2026-05-14T16:18:35.578Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3728 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T15:51:27.788Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T16:18:35.585Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix task-bound pre-push auditing so the managed context init bootstrap commit can be pushed when it contains only AgentPlane context bootstrap files, and add regression coverage that non-context paths with the same subject remain blocked."
 sections:
   Summary: |-
