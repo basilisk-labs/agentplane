@@ -5,9 +5,12 @@
   "head_sha": "5670c639f0928c5816a3b15365f5968491b18f56",
   "last_verified_at": "2026-05-14T15:37:51.644Z",
   "last_verified_sha": "5670c639f0928c5816a3b15365f5968491b18f56",
+  "pr_number": 3726,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3726",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202605141516-363FBC",
-  "updated_at": "2026-05-14T15:37:51.952Z",
+  "updated_at": "2026-05-14T15:38:47.046Z",
   "verify": {
     "status": "pass"
   }

@@ -30,7 +30,7 @@ pre-existing branch_pr normalization warnings.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T15:37:51.952Z
+- Updated: 2026-05-14T15:38:47.046Z
 - Branch: task/202605141516-363FBC/sqlite-cache-ignore
 - Head: 5670c639f092
 
