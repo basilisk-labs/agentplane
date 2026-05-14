@@ -411,11 +411,15 @@ describe("runCli", () => {
       GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL,
       GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME,
       GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL,
+      GIT_DIR: process.env.GIT_DIR,
+      GIT_WORK_TREE: process.env.GIT_WORK_TREE,
     };
     process.env.GIT_AUTHOR_NAME = "Test User";
     process.env.GIT_AUTHOR_EMAIL = "test@example.com";
     process.env.GIT_COMMITTER_NAME = "Test User";
     process.env.GIT_COMMITTER_EMAIL = "test@example.com";
+    process.env.GIT_DIR = "/tmp/agentplane-context-init-should-not-leak.git";
+    process.env.GIT_WORK_TREE = "/tmp/agentplane-context-init-should-not-leak-worktree";
 
     const io = captureStdIO();
     try {
@@ -428,6 +432,10 @@ describe("runCli", () => {
       process.env.GIT_AUTHOR_EMAIL = originalEnv.GIT_AUTHOR_EMAIL;
       process.env.GIT_COMMITTER_NAME = originalEnv.GIT_COMMITTER_NAME;
       process.env.GIT_COMMITTER_EMAIL = originalEnv.GIT_COMMITTER_EMAIL;
+      if (originalEnv.GIT_DIR === undefined) delete process.env.GIT_DIR;
+      else process.env.GIT_DIR = originalEnv.GIT_DIR;
+      if (originalEnv.GIT_WORK_TREE === undefined) delete process.env.GIT_WORK_TREE;
+      else process.env.GIT_WORK_TREE = originalEnv.GIT_WORK_TREE;
     }
 
     expect(await pathExists(path.join(root, ".git"))).toBe(true);

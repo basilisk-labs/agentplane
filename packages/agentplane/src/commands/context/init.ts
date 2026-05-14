@@ -4,6 +4,8 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
+import { gitEnv } from "@agentplaneorg/core/git";
+
 import { infoMessage } from "../../cli/output.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { cmdInit } from "../../cli/run-cli/commands/init/orchestrate.js";
@@ -138,17 +140,19 @@ async function loadOrBootstrapCommandContext(opts: {
 }
 
 async function commitContextBootstrapIfChanged(root: string): Promise<boolean> {
+  const baseGitEnv = gitEnv();
   const status = await execFileAsync("git", ["status", "--porcelain"], {
     cwd: root,
     encoding: "utf8",
+    env: baseGitEnv,
   });
   if (!status.stdout.trim()) return false;
   const env = {
-    ...process.env,
+    ...baseGitEnv,
     AGENTPLANE_ALLOW_POLICY: "1",
     AGENTPLANE_TASK_ID: CONTEXT_BOOTSTRAP_TASK_ID,
   };
-  await execFileAsync("git", ["add", "."], { cwd: root });
+  await execFileAsync("git", ["add", "."], { cwd: root, env: baseGitEnv });
   await execFileAsync("git", ["commit", "-m", "✅ CTX1NT task: initialize AgentPlane context"], {
     cwd: root,
     env,
