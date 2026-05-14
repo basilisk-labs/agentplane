@@ -129,28 +129,40 @@ const config = {
       },
       items: [
         {
-          to: "/docs/user/overview",
-          label: "Docs",
-          position: "right",
-          activeBaseRegex: "^/docs",
-        },
-        {
           to: "/docs/recipes",
           label: "Recipes",
           position: "right",
           activeBaseRegex: "^/docs/recipes",
         },
         {
-          to: "/docs/compare",
-          label: "Compare",
+          to: "/docs/developer/blueprints",
+          label: "Blueprints",
           position: "right",
-          activeBaseRegex: "^/docs/compare",
+          activeBaseRegex: "^/docs/developer/blueprints",
         },
         {
-          to: "/docs/user/setup",
-          label: "Quickstart",
+          to: "/docs/user/agent-change-record",
+          label: "ACR",
           position: "right",
-          activeBaseRegex: "^/docs/user/setup",
+          activeBaseRegex: "^/docs/user/agent-change-record",
+        },
+        {
+          to: "/blog",
+          label: "Blog",
+          position: "right",
+          activeBaseRegex: "^/blog",
+        },
+        {
+          to: "/docs/user/overview",
+          label: "Docs",
+          position: "right",
+          activeBaseRegex: "^/docs",
+        },
+        {
+          to: "/docs/user/local-context",
+          label: "Context",
+          position: "right",
+          activeBaseRegex: "^/docs/user/local-context",
         },
         {
           href: "https://www.npmjs.com/package/agentplane",
