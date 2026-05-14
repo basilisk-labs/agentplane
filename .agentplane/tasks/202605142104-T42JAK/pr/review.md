@@ -24,7 +24,7 @@ Created: 2026-05-14T21:05:14.650Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T21:16:04.037Z
+- Updated: 2026-05-14T21:16:12.473Z
 - Branch: task/202605142104-T42JAK/clean-blog-typography
 - Head: 5a6dd9680887
 

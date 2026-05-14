@@ -22,7 +22,7 @@ Hide redundant team author presentation on blog pages and refine the blog typogr
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T21:16:04.037Z
+- Updated: 2026-05-14T21:16:12.473Z
 - Branch: task/202605142104-T42JAK/clean-blog-typography
 - Head: 5a6dd9680887
 
