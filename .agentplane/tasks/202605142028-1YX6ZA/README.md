@@ -1,10 +1,11 @@
 ---
 id: "202605142028-1YX6ZA"
 title: "Remove duplicate Recipes navbar link"
-status: "DOING"
+result_summary: "Merged via PR #3768."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified duplicate Recipes navbar regression is fixed."
   attempts: 0
-commit: null
+commit:
+  hash: "ade30a3d61cb6541c17cbebc38ff5fcc8b1c995e"
+  message: "Merge pull request #3768 from basilisk-labs/task/202605142028-1YX6ZA/fix-duplicate-recipes-nav"
 comments:
   -
     author: "CODER"
     body: "Start: remove duplicate Recipes navbar link found during live production verification and keep the docs onboarding navbar check green."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3768 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified duplicate Recipes navbar regression is fixed."
+  -
+    type: "status"
+    at: "2026-05-14T20:32:09.469Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3768 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T20:30:11.955Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T20:32:09.476Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix the website navbar regression introduced by the OSS polish so Recipes appears only once while preserving docs onboarding expectations."
 sections:
   Summary: |-
