@@ -1,0 +1,1 @@
+🚧 R793XK task: Add SGR schema for context extraction [202605141342-R793XK]
