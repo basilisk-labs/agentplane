@@ -4,7 +4,7 @@ title: "Add structured blueprint route decision schema"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-14T13:56:33.385Z"
+  updated_at: "2026-05-14T14:30:41.739Z"
   updated_by: "CODER"
-  note: "Verified: blueprint route decision SGR contract separates facts, inferences, rejected routes, selected route, required evidence, stop rules, and weak links. Checks passed: bun test packages/agentplane/src/runtime/sgr/contracts.test.ts; bun run --filter=agentplane typecheck; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings."
+  note: "Verified: blueprint route decision SGR contract is now consumed by blueprint explain output as a validated blueprint_route_decision v1 object with selected route, evidence, stop rules, and weak links. Checks passed after CI knip fix: bun test focused SGR/blueprint/evaluator/context files; bun run --filter=agentplane typecheck; bun run knip:check; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings."
   attempts: 0
 commit: null
 comments:
@@ -45,8 +45,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: blueprint route decision SGR contract separates facts, inferences, rejected routes, selected route, required evidence, stop rules, and weak links. Checks passed: bun test packages/agentplane/src/runtime/sgr/contracts.test.ts; bun run --filter=agentplane typecheck; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings."
+  -
+    type: "verify"
+    at: "2026-05-14T14:30:41.739Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: blueprint route decision SGR contract is now consumed by blueprint explain output as a validated blueprint_route_decision v1 object with selected route, evidence, stop rules, and weak links. Checks passed after CI knip fix: bun test focused SGR/blueprint/evaluator/context files; bun run --filter=agentplane typecheck; bun run knip:check; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings."
 doc_version: 3
-doc_updated_at: "2026-05-14T13:56:33.466Z"
+doc_updated_at: "2026-05-14T14:30:41.745Z"
 doc_updated_by: "CODER"
 description: "Add a structured Schema-Guided Reasoning contract for blueprint route decisions so facts, inferred task kind, rejected routes, selected route, evidence requirements, stop rules, and weak links can be inspected consistently."
 sections:
@@ -72,6 +78,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T13:46:10.813Z, excerpt_hash=sha256:e56d9789a410b016ddddbaadedf5fdcf904444e6a65b11cba12304b09c8df525
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141342-R793XK-sgr-reliability-schemas/.agentplane/tasks/202605141343-VEKAEE/blueprint/resolved-snapshot.json
+    - old_digest: af8823fc9262759b82f7a0795d57d1ee6452ad7e32c93021953865cc32aac252
+    - current_digest: af8823fc9262759b82f7a0795d57d1ee6452ad7e32c93021953865cc32aac252
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605141343-VEKAEE
+
+    ### 2026-05-14T14:30:41.739Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: blueprint route decision SGR contract is now consumed by blueprint explain output as a validated blueprint_route_decision v1 object with selected route, evidence, stop rules, and weak links. Checks passed after CI knip fix: bun test focused SGR/blueprint/evaluator/context files; bun run --filter=agentplane typecheck; bun run knip:check; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T13:56:33.466Z, excerpt_hash=sha256:e56d9789a410b016ddddbaadedf5fdcf904444e6a65b11cba12304b09c8df525
 
     Details:
 
@@ -122,6 +147,25 @@ Note: Verified: blueprint route decision SGR contract separates facts, inference
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T13:46:10.813Z, excerpt_hash=sha256:e56d9789a410b016ddddbaadedf5fdcf904444e6a65b11cba12304b09c8df525
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141342-R793XK-sgr-reliability-schemas/.agentplane/tasks/202605141343-VEKAEE/blueprint/resolved-snapshot.json
+- old_digest: af8823fc9262759b82f7a0795d57d1ee6452ad7e32c93021953865cc32aac252
+- current_digest: af8823fc9262759b82f7a0795d57d1ee6452ad7e32c93021953865cc32aac252
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605141343-VEKAEE
+
+### 2026-05-14T14:30:41.739Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: blueprint route decision SGR contract is now consumed by blueprint explain output as a validated blueprint_route_decision v1 object with selected route, evidence, stop rules, and weak links. Checks passed after CI knip fix: bun test focused SGR/blueprint/evaluator/context files; bun run --filter=agentplane typecheck; bun run knip:check; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T13:56:33.466Z, excerpt_hash=sha256:e56d9789a410b016ddddbaadedf5fdcf904444e6a65b11cba12304b09c8df525
 
 Details:
 

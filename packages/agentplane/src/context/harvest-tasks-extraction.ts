@@ -2,10 +2,15 @@ import type { TaskData } from "../backends/task-backend.js";
 import type { TaskNewParsed } from "../commands/task/new.js";
 import type { PromptModule } from "../runtime/prompt-modules/index.js";
 import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "../runtime/prompt-modules/index.js";
+import { SGR_CONTRACT_SCHEMA_VERSION } from "../runtime/sgr/index.js";
 import { CliError } from "../shared/errors.js";
 import { isRecord } from "./context-utils.js";
 import { taskTextDigest } from "./harvest-tasks-markers.js";
 import type { ContextHarvestTasksParsed } from "./harvest-tasks-artifacts.js";
+import {
+  validateContextExtractionSgrResult,
+  type ContextExtractionSgrResult,
+} from "./sgr-extraction.js";
 
 type ExtractionTask = TaskData & { id: string; title: string; status: string };
 
@@ -18,6 +23,30 @@ type ExtractionTaskPlan = {
 
 const CONTEXT_TASK_EXTRACTION_PROMPT_ADDRESS =
   "framework/template/generated.artifact/context_task_extraction/v1";
+
+const CONTEXT_EXTRACTION_SGR_EXAMPLE: ContextExtractionSgrResult = {
+  schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+  kind: "context_extraction",
+  reasoning: [
+    {
+      label: "source-classification",
+      summary: "Classify source task README and ACR evidence before extracting claims.",
+    },
+  ],
+  source_refs: [{ path: ".agentplane/tasks/<source-task-id>/README.md" }],
+  extracted_items: [
+    {
+      id: "fact.<stable-id>",
+      kind: "fact",
+      summary: "A reusable, source-backed project fact.",
+      source_refs: [{ path: ".agentplane/tasks/<source-task-id>/README.md" }],
+      confidence: 0.8,
+      status: "proposed",
+      stale_markers: [],
+      conflict_markers: [],
+    },
+  ],
+};
 
 type TaskExtractionMarker = {
   schema_version: 1;
@@ -121,6 +150,7 @@ export function buildTaskExtractionMarker(opts: {
 }
 
 function buildExtractionPromptModule(): PromptModule {
+  validateContextExtractionSgrResult(CONTEXT_EXTRACTION_SGR_EXAMPLE);
   return {
     schema_version: PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
     address: {
@@ -157,6 +187,9 @@ function buildExtractionPromptModule(): PromptModule {
       "Before writing, search existing wiki/facts/graph rows for matching entities. Update or append with provenance; do not silently overwrite unrelated knowledge.",
       "",
       "Write only allowed outputs from the task extension. Keep source_refs on every factual claim. Mark contradictions, stale candidates, and open questions instead of promoting them.",
+      "",
+      "Return extraction reasoning in the SGR context_extraction v1 shape before writing context artifacts:",
+      JSON.stringify(CONTEXT_EXTRACTION_SGR_EXAMPLE, null, 2),
     ].join("\n"),
     mutability: "replaceable",
     merge: {

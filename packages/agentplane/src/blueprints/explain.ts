@@ -5,11 +5,13 @@ import type {
   ResolvedBlueprint,
   WorkflowMode,
 } from "./model.js";
+import { SGR_CONTRACT_SCHEMA_VERSION } from "../runtime/sgr/index.js";
 import {
   blueprintPlanEvidence,
   buildBlueprintPlanArtifact,
   workflowGitCapabilitiesForMode,
 } from "./plan.js";
+import { validateBlueprintRouteDecisionSgrResult } from "./sgr-decision.js";
 
 function recipeContributionId(item: {
   recipeId: string;
@@ -42,6 +44,42 @@ export function explainResolvedBlueprint(opts: {
   const plan = buildBlueprintPlanArtifact(opts);
   const workflowMode = opts.workflowMode ?? opts.input?.workflowMode;
   const workflowGitCapabilities = workflowGitCapabilitiesForMode(workflowMode);
+  const sgrDecision = validateBlueprintRouteDecisionSgrResult({
+    schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+    kind: "blueprint_route_decision",
+    facts: [
+      {
+        label: "task-input",
+        summary: `tags=${opts.input?.tags.join(",") ?? "none"} mutation=${opts.input?.mutation ?? "unknown"}`,
+      },
+    ],
+    inferences: opts.resolved.selectionReasons.map((reason, index) => ({
+      label: `selection-reason-${index + 1}`,
+      summary: reason,
+    })),
+    rejected_routes: opts.resolved.rejectedRecipeExtensions.map((item) => ({
+      blueprint_id: opts.resolved.blueprint.id,
+      reason: `recipe extension ${recipeContributionId(item)} rejected: ${item.reason}`,
+    })),
+    selected_route: {
+      blueprint_id: opts.resolved.blueprint.id,
+      task_kind: opts.input?.taskKind ?? opts.resolved.blueprint.taskKinds[0] ?? "analysis",
+      rationale: opts.resolved.selectionReasons.join("; ") || "Blueprint selected by resolver.",
+    },
+    required_evidence: opts.resolved.requiredEvidence.map((evidence) => ({
+      id: evidence.id,
+      kind: evidence.kind,
+      description: evidence.description,
+    })),
+    stop_rules: opts.resolved.stopReasons.map((reason) => ({
+      id: reason.id,
+      severity: reason.severity,
+      reason: reason.reason,
+    })),
+    weak_links: opts.resolved.stopReasons
+      .filter((reason) => reason.severity !== "warn")
+      .map((reason) => reason.reason),
+  });
   return {
     blueprintId: opts.resolved.blueprint.id,
     blueprintVersion: opts.resolved.blueprint.version,
@@ -58,6 +96,7 @@ export function explainResolvedBlueprint(opts: {
     acceptedRecipeExtensions: [...opts.resolved.acceptedRecipeExtensions],
     rejectedRecipeExtensions: [...opts.resolved.rejectedRecipeExtensions],
     stopReasons: [...opts.resolved.stopReasons],
+    sgrDecision,
   };
 }
 
@@ -93,6 +132,7 @@ export function formatBlueprintExplain(output: BlueprintExplainOutput): string {
         `rejected_recipe_extension: ${recipeContributionId(item)} kind=${item.kind} node=${item.nodeKind ?? "none"} reason=${item.reason}`,
     ),
     `stop_reasons: ${output.stopReasons.map((reason) => reason.id).join(", ") || "none"}`,
+    `sgr_decision: ${output.sgrDecision.kind} selected=${output.sgrDecision.selected_route.blueprint_id}`,
   ];
   return `${lines.join("\n")}\n`;
 }

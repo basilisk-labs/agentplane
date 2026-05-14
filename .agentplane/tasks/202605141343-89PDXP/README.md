@@ -4,7 +4,7 @@ title: "Add structured evaluator result schema"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-14T13:56:12.426Z"
+  updated_at: "2026-05-14T14:30:29.753Z"
   updated_by: "CODER"
-  note: "Verified: evaluator SGR result contract models verdict, findings, missing_tests, hidden_assumptions, recovery_context, and evidence references without free-form markdown dependency. Checks passed: bun test packages/agentplane/src/runtime/sgr/contracts.test.ts; bun run --filter=agentplane typecheck; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings."
+  note: "Verified: evaluator SGR result contract is now consumed by evaluator catalog metadata via result_contract=sgr.evaluator_result.v1 and a validated evaluator_result v1 example. Checks passed after CI knip fix: bun test focused SGR/blueprint/evaluator/context files; bun run --filter=agentplane typecheck; bun run knip:check; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings."
   attempts: 0
 commit: null
 comments:
@@ -45,8 +45,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: evaluator SGR result contract models verdict, findings, missing_tests, hidden_assumptions, recovery_context, and evidence references without free-form markdown dependency. Checks passed: bun test packages/agentplane/src/runtime/sgr/contracts.test.ts; bun run --filter=agentplane typecheck; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings."
+  -
+    type: "verify"
+    at: "2026-05-14T14:30:29.753Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: evaluator SGR result contract is now consumed by evaluator catalog metadata via result_contract=sgr.evaluator_result.v1 and a validated evaluator_result v1 example. Checks passed after CI knip fix: bun test focused SGR/blueprint/evaluator/context files; bun run --filter=agentplane typecheck; bun run knip:check; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings."
 doc_version: 3
-doc_updated_at: "2026-05-14T13:56:12.498Z"
+doc_updated_at: "2026-05-14T14:30:29.769Z"
 doc_updated_by: "CODER"
 description: "Make evaluator outputs machine-checkable by adding a structured Schema-Guided Reasoning result contract for verdicts, findings, hidden assumptions, missing tests, recovery context, and evidence references."
 sections:
@@ -72,6 +78,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T13:45:57.874Z, excerpt_hash=sha256:b0048edfb2b29824ab19ad9a5697f94e092cdf3fa485b270dda06ab639a18489
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141342-R793XK-sgr-reliability-schemas/.agentplane/tasks/202605141343-89PDXP/blueprint/resolved-snapshot.json
+    - old_digest: 324daea34b87b4df405c580a70d5e3b9364b5e341348f17d6ba809b03576e407
+    - current_digest: 324daea34b87b4df405c580a70d5e3b9364b5e341348f17d6ba809b03576e407
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605141343-89PDXP
+
+    ### 2026-05-14T14:30:29.753Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: evaluator SGR result contract is now consumed by evaluator catalog metadata via result_contract=sgr.evaluator_result.v1 and a validated evaluator_result v1 example. Checks passed after CI knip fix: bun test focused SGR/blueprint/evaluator/context files; bun run --filter=agentplane typecheck; bun run knip:check; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T13:56:12.498Z, excerpt_hash=sha256:b0048edfb2b29824ab19ad9a5697f94e092cdf3fa485b270dda06ab639a18489
 
     Details:
 
@@ -122,6 +147,25 @@ Note: Verified: evaluator SGR result contract models verdict, findings, missing_
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T13:45:57.874Z, excerpt_hash=sha256:b0048edfb2b29824ab19ad9a5697f94e092cdf3fa485b270dda06ab639a18489
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141342-R793XK-sgr-reliability-schemas/.agentplane/tasks/202605141343-89PDXP/blueprint/resolved-snapshot.json
+- old_digest: 324daea34b87b4df405c580a70d5e3b9364b5e341348f17d6ba809b03576e407
+- current_digest: 324daea34b87b4df405c580a70d5e3b9364b5e341348f17d6ba809b03576e407
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605141343-89PDXP
+
+### 2026-05-14T14:30:29.753Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: evaluator SGR result contract is now consumed by evaluator catalog metadata via result_contract=sgr.evaluator_result.v1 and a validated evaluator_result v1 example. Checks passed after CI knip fix: bun test focused SGR/blueprint/evaluator/context files; bun run --filter=agentplane typecheck; bun run knip:check; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T13:56:12.498Z, excerpt_hash=sha256:b0048edfb2b29824ab19ad9a5697f94e092cdf3fa485b270dda06ab639a18489
 
 Details:
 

@@ -188,7 +188,7 @@ function validateConfidence(raw: unknown, field: string): number {
   return confidence;
 }
 
-export function validateSourceRef(raw: unknown, field = "source ref"): SgrSourceRef {
+function validateSourceRef(raw: unknown, field = "source ref"): SgrSourceRef {
   const source = requireRecord(raw, field);
   const sha256 = optionalString(source.sha256, `${field}.sha256`);
   if (sha256 !== undefined && !/^sha256:[a-fA-F0-9]{64}$/.test(sha256)) {
@@ -203,7 +203,7 @@ export function validateSourceRef(raw: unknown, field = "source ref"): SgrSource
   };
 }
 
-export function validateReasoningStep(raw: unknown, field = "reasoning step"): SgrReasoningStep {
+function validateReasoningStep(raw: unknown, field = "reasoning step"): SgrReasoningStep {
   const step = requireRecord(raw, field);
   return {
     label: requireString(step.label, `${field}.label`),

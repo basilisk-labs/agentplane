@@ -19,18 +19,19 @@ Introduce a structured Schema-Guided Reasoning contract for context harvest/CURA
 - Note:
 
 ```text
-Verified: context extraction SGR contract requires source_refs, confidence, status, stale/conflict
-markers, and bounded output kinds. Checks passed: bun test
-packages/agentplane/src/runtime/sgr/contracts.test.ts; bun run --filter=agentplane typecheck;
-focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only
-pre-existing branch_pr reconciliation warnings.
+Verified: context extraction SGR contract is now consumed by the task-history CURATOR extraction
+prompt with a validated context_extraction v1 example and source_refs requirement. Checks passed
+after CI knip fix: bun test focused SGR/blueprint/evaluator/context files; bun run
+--filter=agentplane typecheck; bun run knip:check; focused eslint; git diff --check; node
+.agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation
+warnings.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T13:59:15.909Z
+- Updated: 2026-05-14T13:59:46.677Z
 - Branch: task/202605141342-R793XK/sgr-reliability-schemas
 - Head: 12c86decf172
 

@@ -39,11 +39,6 @@ export {
   validateRecipeHintsForBlueprint,
 } from "./resolve.js";
 export {
-  validateBlueprintRouteDecisionSgrResult,
-  validateReasoningStep,
-  validateSourceRef,
-} from "./sgr-decision.js";
-export {
   blueprintSnapshotDigest,
   blueprintSnapshotPayloadForDigest,
   buildBlueprintResolvedSnapshot,
@@ -113,15 +108,6 @@ export type {
   TaskKind,
   WorkflowMode,
 } from "./model.js";
-export type {
-  BlueprintDecisionEvidenceRequirement,
-  BlueprintDecisionStopRule,
-  BlueprintRejectedRoute,
-  BlueprintRouteDecisionSgrResult,
-  BlueprintSelectedRoute,
-  SgrReasoningStep,
-  SgrSourceRef,
-} from "./sgr-decision.js";
 export type {
   ProjectBlueprintDirectoryResult,
   ProjectBlueprintFileResult,
