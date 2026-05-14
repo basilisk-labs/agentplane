@@ -1,10 +1,11 @@
 ---
 id: "202605140709-5H7BAA"
 title: "Finalize v0.6 readiness blockers and pending task integration"
-status: "DOING"
+result_summary: "Merged via PR #3694."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_by: "CODER"
   note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
   attempts: 0
-commit: null
+commit:
+  hash: "ec628cd9a2aa899cca01611be9519181845ba555"
+  message: "Merge pull request #3694 from basilisk-labs/task/202605140709-5H7BAA/v06-readiness-blockers"
 comments:
   -
     author: "CODER"
     body: "Start: Implement approved v0.6 readiness blocker fixes, reconcile pending task work, and verify the full empty-directory context assimilation release path."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3694 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
+  -
+    type: "status"
+    at: "2026-05-14T08:59:00.283Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3694 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T07:59:48.631Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T08:59:00.289Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix context release blockers found in v0.6 readiness audit, complete the three open evaluator/docgen TODO tasks, reconcile useful unmerged task branch work, and prove empty-directory context assimilation plus release/package gates before merging to main."
 sections:
   Summary: |-
