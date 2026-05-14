@@ -1,10 +1,11 @@
 ---
 id: "202605141803-2551ZF"
 title: "Refresh blog editorial surface"
-status: "DOING"
+result_summary: "Merged via PR #3748."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "DOCS"
   note: "Verified blog editorial refresh. Checks passed: node .agentplane/policy/check-routing.mjs, bun run docs:site:typecheck, bun run docs:site:build, git diff --check, Humanizer anti-AI scan on new/rewritten essays, and title-order audit confirming newest-first archive."
   attempts: 0
-commit: null
+commit:
+  hash: "4e9f34cd72e59f7b653bd19de287822c2e7521ff"
+  message: "Merge pull request #3748 from basilisk-labs/task/202605141803-2551ZF/blog-editorial-refresh"
 comments:
   -
     author: "DOCS"
     body: "Start: refreshing the public blog surface, rewriting the context article with Humanizer guidance, adding Blueprints and Recipes feature essays, and preserving editorial artifacts in agentplane-marketing."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3748 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified blog editorial refresh. Checks passed: node .agentplane/policy/check-routing.mjs, bun run docs:site:typecheck, bun run docs:site:build, git diff --check, Humanizer anti-AI scan on new/rewritten essays, and title-order audit confirming newest-first archive."
+  -
+    type: "status"
+    at: "2026-05-14T19:02:29.420Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3748 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T18:31:28.198Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-14T19:02:29.426Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make newest blog posts appear first, normalize blog titles, rewrite the 0.6 context article with Humanizer guidance, and add humanized feature articles for Blueprints and Recipes."
 sections:
   Summary: |-
