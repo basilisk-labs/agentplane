@@ -74,3 +74,7 @@ export const loadInsightsReportSpec = (deps: RunDeps) =>
   import("../../../commands/insights/insights.command.js").then((m) =>
     m.makeRunInsightsReportHandler(deps),
   );
+export const loadInsightsIssueSpec = (deps: RunDeps) =>
+  import("../../../commands/insights/insights.command.js").then((m) =>
+    m.makeRunInsightsIssueHandler(deps),
+  );

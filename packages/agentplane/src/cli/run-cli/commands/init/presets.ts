@@ -11,6 +11,7 @@ export const INIT_DEFAULTS: InitDefaults = {
   requirePlanApproval: true,
   requireNetworkApproval: true,
   requireVerifyApproval: true,
+  feedbackGithubIssues: false,
   executionProfile: "balanced",
   strictUnsafeConfirm: false,
   blueprints: [],
@@ -26,6 +27,7 @@ export const setupProfilePresets: Record<
     defaultRequirePlanApproval: boolean;
     defaultRequireNetworkApproval: boolean;
     defaultRequireVerifyApproval: boolean;
+    defaultFeedbackGithubIssues: boolean;
     defaultExecutionProfile: InitDefaults["executionProfile"];
     defaultRecipes: string[];
   }
@@ -38,6 +40,7 @@ export const setupProfilePresets: Record<
     defaultRequirePlanApproval: false,
     defaultRequireNetworkApproval: false,
     defaultRequireVerifyApproval: false,
+    defaultFeedbackGithubIssues: false,
     defaultExecutionProfile: "aggressive",
     defaultRecipes: [],
   },
@@ -50,6 +53,7 @@ export const setupProfilePresets: Record<
     defaultRequirePlanApproval: true,
     defaultRequireNetworkApproval: true,
     defaultRequireVerifyApproval: true,
+    defaultFeedbackGithubIssues: false,
     defaultExecutionProfile: "balanced",
     defaultRecipes: [],
   },
@@ -62,6 +66,7 @@ export const setupProfilePresets: Record<
     defaultRequirePlanApproval: true,
     defaultRequireNetworkApproval: true,
     defaultRequireVerifyApproval: true,
+    defaultFeedbackGithubIssues: false,
     defaultExecutionProfile: "conservative",
     defaultRecipes: [],
   },

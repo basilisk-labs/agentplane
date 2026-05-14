@@ -25,6 +25,7 @@ export type InitFlags = {
   requirePlanApproval?: boolean;
   requireNetworkApproval?: boolean;
   requireVerifyApproval?: boolean;
+  feedbackGithubIssues?: boolean;
   executionProfile?: ExecutionProfile;
   strictUnsafeConfirm?: boolean;
   recipes?: string[];
@@ -48,6 +49,7 @@ export type InitDefaults = {
   requirePlanApproval: boolean;
   requireNetworkApproval: boolean;
   requireVerifyApproval: boolean;
+  feedbackGithubIssues: boolean;
   executionProfile: ExecutionProfile;
   strictUnsafeConfirm: boolean;
   blueprints: string[];
@@ -94,6 +96,7 @@ export type InitPlan = {
     requirePlanApproval: boolean;
     requireNetworkApproval: boolean;
     requireVerifyApproval: boolean;
+    feedbackGithubIssues: boolean;
     executionProfile: ExecutionProfile;
     strictUnsafeConfirm: boolean;
     recipes: string[];

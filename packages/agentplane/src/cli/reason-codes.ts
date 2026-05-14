@@ -5,7 +5,8 @@ export type ReasonCodeCategory =
   | "handoff"
   | "network"
   | "backend"
-  | "validation";
+  | "validation"
+  | "feedback";
 
 export type ReasonCodeMeta = {
   code: string;
@@ -129,6 +130,19 @@ const REASON_CODE_MAP: Readonly<Record<string, ReasonCodeMeta>> = {
     category: "validation",
     summary: "input/config validation failed before execution",
     action: "run preflight and fix reported validation issues",
+  },
+  feedback_internal_error_report: {
+    code: "feedback_internal_error_report",
+    category: "feedback",
+    summary: "internal AgentPlane error can be reported through opt-in GitHub issue flow",
+    action:
+      "preview the privacy-bounded issue payload and enable feedback issue reporting if desired",
+  },
+  feedback_github_issues_disabled: {
+    code: "feedback_github_issues_disabled",
+    category: "feedback",
+    summary: "GitHub issue feedback is disabled for this project",
+    action: "enable feedback.github_issues.enabled before creating feedback issues",
   },
 };
 

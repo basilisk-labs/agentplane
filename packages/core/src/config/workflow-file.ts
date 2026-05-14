@@ -92,6 +92,7 @@ export function workflowFrontMatterToConfigRaw(
     "framework",
     "execution",
     "runner",
+    "feedback",
     "recipes",
     "commit",
     "scheduler",
@@ -145,6 +146,7 @@ export function configRawToWorkflowFrontMatter(
     },
     execution: config.execution,
     runner: config.runner,
+    feedback: config.feedback,
     recipes: config.recipes,
     commit: config.commit,
     scheduler: config.scheduler ?? {

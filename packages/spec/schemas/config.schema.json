@@ -340,6 +340,65 @@
         }
       }
     },
+    "feedback": {
+      "type": "object",
+      "properties": {
+        "github_issues": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "repository": {
+              "type": "string",
+              "minLength": 1,
+              "default": "basilisk-labs/agentplane"
+            },
+            "prompt_on_internal_error": {
+              "type": "boolean",
+              "default": true
+            },
+            "include_insights_report": {
+              "type": "boolean",
+              "default": true
+            },
+            "dedupe": {
+              "type": "boolean",
+              "default": true
+            },
+            "labels": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "default": ["agentplane-feedback", "bug"]
+            }
+          },
+          "additionalProperties": true,
+          "default": {
+            "enabled": false,
+            "repository": "basilisk-labs/agentplane",
+            "prompt_on_internal_error": true,
+            "include_insights_report": true,
+            "dedupe": true,
+            "labels": ["agentplane-feedback", "bug"]
+          }
+        }
+      },
+      "additionalProperties": true,
+      "default": {
+        "github_issues": {
+          "enabled": false,
+          "repository": "basilisk-labs/agentplane",
+          "prompt_on_internal_error": true,
+          "include_insights_report": true,
+          "dedupe": true,
+          "labels": ["agentplane-feedback", "bug"]
+        }
+      }
+    },
     "acr": {
       "type": "object",
       "properties": {

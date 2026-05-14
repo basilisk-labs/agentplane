@@ -133,4 +133,24 @@ describe("core error mapping", () => {
     expect(payload.error?.next_action?.command).toBe("agentplane help config set --compact");
     expect(payload.error?.reason_decode?.code).toBe("usage_help");
   });
+
+  it("always suggests the opt-in feedback issue path for internal errors", () => {
+    let stderr = "";
+    const spy = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      stderr += String(chunk);
+      return true;
+    });
+
+    try {
+      writeError(new CliError({ code: "E_INTERNAL", message: "unexpected invariant" }), false);
+    } finally {
+      spy.mockRestore();
+    }
+
+    expect(stderr).toContain("error [E_INTERNAL]: unexpected invariant");
+    expect(stderr).toContain("privacy-bounded GitHub issue");
+    expect(stderr).toContain("agentplane insights issue --error-code E_INTERNAL --dry-run");
+    expect(stderr).toContain("feedback.github_issues.enabled true");
+    expect(stderr).toContain("reason_code: feedback_internal_error_report");
+  });
 });

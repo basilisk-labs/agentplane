@@ -1,4 +1,5 @@
 import { describe } from "vitest";
+import { defaultConfig } from "@agentplaneorg/core/config";
 
 import {
   captureStdIO,
@@ -9,6 +10,7 @@ import {
   seedTaskQueryFixture,
   splitOutputLines,
   useRunCliIntegrationHarness,
+  writeConfig,
   writeFile,
   path,
 } from "@agentplane/testkit/cli-core-tasks-query";
@@ -149,7 +151,7 @@ describe("runCli insights report", () => {
       try {
         const code = await runCli(["help", "insights", "--root", root]);
         expect(code).toBe(0);
-        expect(io.stdout).toContain("agentplane insights <report> [options]");
+        expect(io.stdout).toContain("agentplane insights <report|issue> [options]");
         expect(io.stdout).toContain("insights report");
       } finally {
         io.restore();
@@ -165,6 +167,67 @@ describe("runCli insights report", () => {
       } finally {
         io.restore();
       }
+    }
+  });
+
+  it("previews a privacy-bounded GitHub issue payload without network access", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.feedback.github_issues.enabled = true;
+    await writeConfig(root, config);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "insights",
+        "issue",
+        "--dry-run",
+        "--error-code",
+        "E_INTERNAL",
+        "--body",
+        "Internal error happened while testing.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        dry_run?: boolean;
+        repository?: string;
+        title?: string;
+        body?: string;
+        labels?: string[];
+      };
+      expect(payload.dry_run).toBe(true);
+      expect(payload.repository).toBe("basilisk-labs/agentplane");
+      expect(payload.title).toContain("E_INTERNAL");
+      expect(payload.labels).toEqual(["agentplane-feedback", "bug"]);
+      expect(payload.body).toContain("privacy-bounded");
+      expect(payload.body).toContain('"schema": "agentplane.insights.report.v1"');
+      expect(payload.body).toContain("Internal error happened while testing.");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("blocks creating feedback issues until the project opts in", async () => {
+    const root = await mkGitRepoRoot();
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "insights",
+        "issue",
+        "--error-code",
+        "E_INTERNAL",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Feedback GitHub issues are disabled");
+      expect(io.stderr).toContain("feedback.github_issues.enabled true");
+      expect(io.stderr).toContain("reason_code: feedback_github_issues_disabled");
+    } finally {
+      io.restore();
     }
   });
 });

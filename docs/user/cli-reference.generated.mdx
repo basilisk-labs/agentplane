@@ -76,6 +76,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [doctor](#doctor)
   - [doctor git-locks](#doctor-git-locks)
 - Diagnostics
+  - [insights issue](#insights-issue)
   - [insights report](#insights-report)
   - [runtime explain](#runtime-explain)
 - Recipes
@@ -1799,6 +1800,7 @@ Options:
 - `--require-plan-approval <true|false>`: Require explicit plan approval before starting work.
 - `--require-network-approval <true|false>`: Require explicit approval before any network operation.
 - `--require-verify-approval <true|false>`: Require explicit approval before recording verification.
+- `--feedback-github-issues <true|false>`: Opt in to AgentPlane GitHub issue prompts for internal AgentPlane errors (default: false).
 - `--execution-profile <conservative|balanced|aggressive>`: Execution profile preset controlling autonomy, reasoning, and tool budgets. (choices=conservative|balanced|aggressive)
 - `--strict-unsafe-confirm <true|false>`: Require strict explicit confirmations for additional unsafe actions.
 - `--recipes <none|id1,id2,...>`: Optional cached recipes to vendor during init (comma-separated), or 'none'.
@@ -1836,6 +1838,12 @@ agentplane init --workflow direct --direct-close-dirty-policy strict --yes
 ```
 
 - Initialize direct mode with strict close-tail blocking on any unrelated tracked dirt.
+
+```sh
+agentplane init --feedback-github-issues true --yes
+```
+
+- Opt in to GitHub issue prompts for internal AgentPlane errors.
 
 ```sh
 agentplane init --force --yes
@@ -2008,6 +2016,37 @@ agentplane doctor git-locks --fix
 - Remove stale git index.lock after inspection.
 
 ## Diagnostics
+
+### insights issue
+
+Create an opt-in GitHub issue with privacy-bounded AgentPlane diagnostics.
+
+Usage:
+
+```text
+agentplane insights issue [options]
+```
+
+Options:
+
+- `--title <title>`: Issue title. Defaults to an internal AgentPlane error report title.
+- `--body <text>`: Optional short user-visible context to include before diagnostics.
+- `--error-code <code>`: AgentPlane error code that triggered the report.
+- `--dry-run`: Print the GitHub issue payload without creating an issue. (default=false)
+
+Examples:
+
+```sh
+agentplane insights issue --error-code E_INTERNAL
+```
+
+- Create a GitHub issue after feedback GitHub issues are enabled.
+
+```sh
+agentplane insights issue --dry-run --error-code E_INTERNAL
+```
+
+- Preview the privacy-bounded issue payload without network access.
 
 ### insights report
 

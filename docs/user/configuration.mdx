@@ -125,6 +125,29 @@ If wrapper mode is configured, inspect `agentplane task run <task-id> --dry-run`
 lines. They surface the configured wrapper mode, capability level, and supported sandbox values
 without requiring a manual read of `bundle.json`.
 
+### feedback
+
+- `feedback.github_issues.enabled`
+- `feedback.github_issues.repository`
+- `feedback.github_issues.prompt_on_internal_error`
+- `feedback.github_issues.include_insights_report`
+- `feedback.github_issues.dedupe`
+- `feedback.github_issues.labels`
+
+GitHub issue feedback is explicit opt-in and defaults to disabled. Internal AgentPlane errors still
+print a feedback suggestion so users can preview the privacy-bounded issue payload with:
+
+```bash
+agentplane insights issue --error-code E_INTERNAL --dry-run
+```
+
+Enable issue creation only when the project should allow AgentPlane to create issues in the
+configured AgentPlane feedback repository:
+
+```bash
+agentplane config set feedback.github_issues.enabled true
+```
+
 ### acr
 
 Agent Change Record support is active. The default config surface is:

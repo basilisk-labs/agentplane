@@ -824,6 +824,31 @@ describe("runCli", () => {
     expect(await pathExists(path.join(root, ".agentplane"))).toBe(false);
   });
 
+  it("init plan records explicit GitHub issue feedback opt-in", async () => {
+    const root = await mkTempDir();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "init",
+        "--dry-run",
+        "--yes",
+        "--feedback-github-issues",
+        "true",
+        "--root",
+        root,
+        "--output",
+        "json",
+      ]);
+      expect(code).toBe(0);
+      const envelope = JSON.parse(io.stdout) as {
+        data?: { answers?: { feedbackGithubIssues?: boolean } };
+      };
+      expect(envelope.data?.answers?.feedbackGithubIssues).toBe(true);
+    } finally {
+      io.restore();
+    }
+  });
+
   it("init dry-run reports parent git context without writing nested state", async () => {
     const parent = await mkGitRepoRoot();
     const nested = path.join(parent, "packages", "api");

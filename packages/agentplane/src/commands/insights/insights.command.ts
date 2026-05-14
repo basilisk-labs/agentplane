@@ -17,10 +17,18 @@ import type { RunDeps } from "../../cli/run-cli/command-catalog/kernel.js";
 import { getVersion } from "../../meta/version.js";
 import { isRecord } from "../../shared/guards.js";
 import { wrapCommand } from "../../cli/run-cli/commands/wrap-command.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
+import { CliError } from "../../shared/errors.js";
+import { runGhApiJson } from "../pr/internal/gh-api.js";
 
-import { insightsSpec, type InsightsReportParsed } from "./insights.spec.js";
+import {
+  insightsIssueSpec,
+  insightsSpec,
+  type InsightsIssueParsed,
+  type InsightsReportParsed,
+} from "./insights.spec.js";
 
-export { insightsReportSpec, insightsSpec } from "./insights.spec.js";
+export { insightsIssueSpec, insightsReportSpec, insightsSpec } from "./insights.spec.js";
 
 const execFile = promisify(execFileCb);
 const output = createCliEmitter();
@@ -259,7 +267,7 @@ function summarizeRunner(tasks: TaskRecord[]): InsightsReport["runner"] {
   };
 }
 
-async function buildInsightsReport(opts: {
+export async function buildInsightsReport(opts: {
   deps: RunDeps;
   recentLimit: number;
 }): Promise<InsightsReport> {
@@ -314,6 +322,57 @@ async function buildInsightsReport(opts: {
     tasks: summarizeTasks(tasks, opts.recentLimit),
     runner: summarizeRunner(tasks),
   };
+}
+
+type GithubIssueResponse = {
+  number: number;
+  html_url?: string;
+};
+
+type FeedbackGithubIssuesSettings = {
+  enabled: boolean;
+  repository: string;
+  include_insights_report: boolean;
+  labels: string[];
+};
+
+function trimOptional(value: string | undefined): string | null {
+  const trimmed = value?.trim() ?? "";
+  return trimmed ? trimmed : null;
+}
+
+function sanitizeIssueTitle(title: string | undefined, errorCode: string | undefined): string {
+  const explicit = trimOptional(title);
+  if (explicit) return explicit.slice(0, 120);
+  const suffix = trimOptional(errorCode) ? ` (${trimOptional(errorCode)})` : "";
+  return `AgentPlane internal error report${suffix}`;
+}
+
+function renderIssueBody(opts: {
+  body: string | undefined;
+  errorCode: string | undefined;
+  report: InsightsReport;
+  includeInsightsReport: boolean;
+}): string {
+  const sections = [
+    "## Summary",
+    trimOptional(opts.body) ??
+      "AgentPlane reported an internal error and prompted an opt-in report.",
+    "",
+    "## Error",
+    `- Code: ${trimOptional(opts.errorCode) ?? "unknown"}`,
+    `- AgentPlane: ${opts.report.environment.agentplane_version ?? "unknown"}`,
+    `- Platform: ${opts.report.environment.platform}/${opts.report.environment.arch}`,
+    "",
+    "## Privacy",
+    "- This issue was created only after project opt-in.",
+    "- The attached diagnostic report is privacy-bounded.",
+    `- Excluded content: ${opts.report.privacy.excludes.join("; ")}`,
+  ];
+  if (opts.includeInsightsReport) {
+    sections.push("", "## Insights report", "```json", JSON.stringify(opts.report, null, 2), "```");
+  }
+  return `${sections.join("\n")}\n`;
 }
 
 function renderCountMap(map: CountMap, limit?: number): string {
@@ -390,6 +449,70 @@ export function makeRunInsightsReportHandler(deps: RunDeps): CommandHandler<Insi
           header: infoMessage("insights report: local diagnostic summary"),
         });
       }
+      return 0;
+    });
+}
+
+export function makeRunInsightsIssueHandler(deps: RunDeps): CommandHandler<InsightsIssueParsed> {
+  return async (ctx, parsed) =>
+    wrapCommand({ command: "insights issue", rootOverride: ctx.rootOverride }, async () => {
+      const [resolved, loaded] = await Promise.all([
+        deps.getResolvedProject("insights issue"),
+        deps.getLoadedConfig("insights issue"),
+      ]);
+      const settings = (loaded.config.feedback as { github_issues: FeedbackGithubIssuesSettings })
+        .github_issues;
+      if (!settings.enabled && !parsed.dryRun) {
+        throw new CliError({
+          exitCode: exitCodeForError("E_USAGE"),
+          code: "E_USAGE",
+          message:
+            "Feedback GitHub issues are disabled. Enable with `agentplane config set feedback.github_issues.enabled true`, then retry.",
+          context: {
+            command: "insights issue",
+            reason_code: "feedback_github_issues_disabled",
+          },
+        });
+      }
+
+      const report = await buildInsightsReport({ deps, recentLimit: 8 });
+      const title = sanitizeIssueTitle(parsed.title, parsed.errorCode);
+      const body = renderIssueBody({
+        body: parsed.body,
+        errorCode: parsed.errorCode,
+        report,
+        includeInsightsReport: settings.include_insights_report,
+      });
+      const payload = {
+        repository: settings.repository,
+        title,
+        body,
+        labels: settings.labels,
+      };
+
+      if (parsed.dryRun) {
+        output.json({ dry_run: true, ...payload });
+        return 0;
+      }
+
+      const issue = await runGhApiJson<GithubIssueResponse>(resolved.gitRoot, [
+        `repos/${settings.repository}/issues`,
+        "-X",
+        "POST",
+        "-f",
+        `title=${title}`,
+        "-f",
+        `body=${body}`,
+        ...settings.labels.flatMap((label) => ["-f", `labels[]=${label}`]),
+      ]);
+      output.report(
+        [
+          { label: "repository", value: settings.repository },
+          { label: "issue", value: `#${issue.number}` },
+          { label: "url", value: issue.html_url ?? "unknown" },
+        ],
+        { header: infoMessage("feedback issue created") },
+      );
       return 0;
     });
 }
