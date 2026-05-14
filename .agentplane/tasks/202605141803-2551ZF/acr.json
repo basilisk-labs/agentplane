@@ -1,0 +1,203 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605141803-2551ZF",
+  "created_at": "2026-05-14T19:02:29.473Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.6.0"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "4e9f34cd72e59f7b653bd19de287822c2e7521ff",
+    "work_ref": "main",
+    "work_commit": "4e9f34cd72e59f7b653bd19de287822c2e7521ff"
+  },
+  "task": {
+    "task_id": "202605141803-2551ZF",
+    "title": "Refresh blog editorial surface",
+    "intent": "Make newest blog posts appear first, normalize blog titles, rewrite the 0.6 context article with Humanizer guidance, and add humanized feature articles for Blueprints and Recipes.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.6.0"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605141803-2551ZF/README.md",
+      "sha256": "sha256:07760cc23a83e6b92ae8bf84950ba51f903214c17afe602103bb5f2aef8a45ef"
+    },
+    "approved_at": "2026-05-14T18:03:43.708Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3748.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605141803-2551ZF_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T18:03:43.708Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605141803-2551ZF/README.md",
+      "sha256": "sha256:07760cc23a83e6b92ae8bf84950ba51f903214c17afe602103bb5f2aef8a45ef"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605141803-2551ZF/README.md",
+      "sha256": "sha256:07760cc23a83e6b92ae8bf84950ba51f903214c17afe602103bb5f2aef8a45ef"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605141803-2551ZF/README.md",
+      "sha256": "sha256:07760cc23a83e6b92ae8bf84950ba51f903214c17afe602103bb5f2aef8a45ef"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605141803-2551ZF/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:b557d5efe22941d45176f02cfe2dfe4be8ce13980ce3e9f36800712e1e7cda72"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 4e9f34cd72e59f7b653bd19de287822c2e7521ff if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:726b09ddb89b0be4bcbf390536fb43b6c66fa03464a7dd82a6e72c6b50d0f720",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "docs.change",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "docs.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "docs.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "docs.artifact",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605141803-2551ZF/blueprint/resolved-snapshot.json",
+        "digest": "3ad6e984094b6fdc784393c028cc55e265f8f35931028f412ea947dab70a0797",
+        "current_digest": "3ad6e984094b6fdc784393c028cc55e265f8f35931028f412ea947dab70a0797",
+        "route_changed": false,
+        "artifact_sha256": "sha256:b557d5efe22941d45176f02cfe2dfe4be8ce13980ce3e9f36800712e1e7cda72",
+        "safe_command": "agentplane blueprint snapshot 202605141803-2551ZF"
+      }
+    }
+  }
+}
