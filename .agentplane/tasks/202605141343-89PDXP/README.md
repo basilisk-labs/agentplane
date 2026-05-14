@@ -1,10 +1,11 @@
 ---
 id: "202605141343-89PDXP"
 title: "Add structured evaluator result schema"
-status: "DOING"
+result_summary: "Evaluator SGR result contract implemented and merged via PR #3716."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +27,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: evaluator SGR result contract is now consumed by evaluator catalog metadata via result_contract=sgr.evaluator_result.v1 and a validated evaluator_result v1 example. Checks passed after CI knip fix: bun test focused SGR/blueprint/evaluator/context files; bun run --filter=agentplane typecheck; bun run knip:check; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings."
   attempts: 0
-commit: null
+commit:
+  hash: "bb0435d2af54f85fd1fe57c8ce7277a8eef661a8"
+  message: "Merge pull request #3716 from basilisk-labs/task/202605141342-R793XK/sgr-reliability-schemas"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the evaluator SGR result schema inside the approved R793XK batch worktree and keeping verification evidence separate for this task."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: evaluator SGR result schema shipped in PR #3716 with hosted checks green and merge commit recorded."
 events:
   -
     type: "status"
@@ -51,9 +57,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: evaluator SGR result contract is now consumed by evaluator catalog metadata via result_contract=sgr.evaluator_result.v1 and a validated evaluator_result v1 example. Checks passed after CI knip fix: bun test focused SGR/blueprint/evaluator/context files; bun run --filter=agentplane typecheck; bun run knip:check; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings."
+  -
+    type: "status"
+    at: "2026-05-14T15:36:25.662Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: evaluator SGR result schema shipped in PR #3716 with hosted checks green and merge commit recorded."
 doc_version: 3
-doc_updated_at: "2026-05-14T14:30:29.769Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T15:36:25.681Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make evaluator outputs machine-checkable by adding a structured Schema-Guided Reasoning result contract for verdicts, findings, hidden assumptions, missing tests, recovery context, and evidence references."
 sections:
   Summary: |-
