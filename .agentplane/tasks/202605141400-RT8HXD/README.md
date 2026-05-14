@@ -1,10 +1,11 @@
 ---
 id: "202605141400-RT8HXD"
 title: "Harden release publish evidence and external metadata"
-status: "DOING"
+result_summary: "Merged via PR #3717."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Focused release hardening checks passed: release-task-evidence merge-commit regression suite 5/5, publish-external-distribution topics payload suite 4/4, policy routing OK, git diff whitespace check clean."
   attempts: 0
-commit: null
+commit:
+  hash: "8de66a4d082c628221662917dbb469a28935f680"
+  message: "Merge pull request #3717 from basilisk-labs/task/202605141400-RT8HXD/release-evidence-hardening"
 comments:
   -
     author: "CODER"
     body: "Start: fix release publish evidence resolution for branch_pr merge commits and correct external distribution topics API payloads, then verify with focused release script tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3717 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused release hardening checks passed: release-task-evidence merge-commit regression suite 5/5, publish-external-distribution topics payload suite 4/4, policy routing OK, git diff whitespace check clean."
+  -
+    type: "status"
+    at: "2026-05-14T15:09:59.491Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3717 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T14:08:24.991Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T15:09:59.496Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix release publish evidence resolution for branch_pr merge commits and correct external repository topics API payloads so hosted publish logs produce durable task evidence without GitHub 422 warnings."
 sections:
   Summary: |-
