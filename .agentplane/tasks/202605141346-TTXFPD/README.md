@@ -1,10 +1,11 @@
 ---
 id: "202605141346-TTXFPD"
 title: "Add opt-in GitHub issue feedback prompts"
-status: "DOING"
+result_summary: "Merged via PR #3719."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: resolved origin/main merge conflicts while preserving opt-in feedback defaults and newer agent-context diagnostics. Checks passed: focused Vitest/Bun tests for prompt steps, config, error-map, insights report/spec; bun run typecheck; bun run schemas:check; bun run docs:cli:check; bun run format:check; git diff --check; conflict marker scan; node .agentplane/policy/check-routing.mjs; ap doctor OK with pre-existing branch_pr warnings. Optional bun run lint:core still fails on repo-local bin import resolution for ../dist/cli.js after bootstrap, not on conflict files."
   attempts: 0
-commit: null
+commit:
+  hash: "58d63b4fd5f21e2622ce92e0596db473e7f997fb"
+  message: "Merge pull request #3719 from basilisk-labs/task/202605141346-TTXFPD/feedback-issue-prompts"
 comments:
   -
     author: "CODER"
     body: "Start: implementing explicit feedback issue opt-in, mandatory internal-error prompting, privacy-bounded report reuse, and focused tests/docs in the task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3719 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -59,9 +65,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: resolved origin/main merge conflicts while preserving opt-in feedback defaults and newer agent-context diagnostics. Checks passed: focused Vitest/Bun tests for prompt steps, config, error-map, insights report/spec; bun run typecheck; bun run schemas:check; bun run docs:cli:check; bun run format:check; git diff --check; conflict marker scan; node .agentplane/policy/check-routing.mjs; ap doctor OK with pre-existing branch_pr warnings. Optional bun run lint:core still fails on repo-local bin import resolution for ../dist/cli.js after bootstrap, not on conflict files."
+  -
+    type: "status"
+    at: "2026-05-14T20:23:39.967Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3719 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T19:42:36.055Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T20:23:39.973Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add an explicit init/config feedback mode that prompts users to create an AgentPlane GitHub issue when internal AgentPlane errors are detected, using privacy-bounded insights diagnostics."
 sections:
   Summary: |-
