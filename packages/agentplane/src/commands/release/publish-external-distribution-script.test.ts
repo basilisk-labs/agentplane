@@ -219,4 +219,93 @@ describe("publish-external-distribution script", () => {
       }),
     );
   });
+
+  it("updates repository topics with a GitHub API JSON array payload", async () => {
+    const root = await makeTempRoot();
+    const binDir = path.join(root, "bin");
+    const topicsPayloadLog = path.join(root, "topics-payload.json");
+    await mkdir(path.join(root, "source", "bucket"), { recursive: true });
+    await mkdir(binDir, { recursive: true });
+    await writeFile(path.join(root, "source", "bucket", "agentplane.json"), "{}\n");
+    await writeFile(
+      path.join(binDir, "gh"),
+      [
+        "#!/usr/bin/env node",
+        "const fs = require('node:fs');",
+        "const args = process.argv.slice(2);",
+        "if (args[0] === 'repo' && args[1] === 'clone') { fs.mkdirSync(args[3], { recursive: true }); process.exit(0); }",
+        "if (args[0] === 'auth') process.exit(0);",
+        "if (args[0] === 'api' && args.includes('/repos/basilisk-labs/scoop-bucket/topics')) {",
+        "  const inputIndex = args.indexOf('--input');",
+        "  if (inputIndex < 0) { console.error('missing --input'); process.exit(2); }",
+        `  fs.copyFileSync(args[inputIndex + 1], ${JSON.stringify(topicsPayloadLog)});`,
+        "  const payload = JSON.parse(fs.readFileSync(args[inputIndex + 1], 'utf8'));",
+        "  if (!Array.isArray(payload.names)) { console.error('names is not an array'); process.exit(3); }",
+        "  process.exit(0);",
+        "}",
+        "if (args[0] === 'api') process.exit(0);",
+        "if (args[0] === 'pr' && args[1] === 'list') { process.stdout.write(''); process.exit(0); }",
+        "if (args[0] === 'pr' && args[1] === 'create') { process.stdout.write('https://github.com/basilisk-labs/scoop-bucket/pull/7' + String.fromCharCode(10)); process.exit(0); }",
+        "console.error('unexpected gh ' + args.join(' '));",
+        "process.exit(2);",
+      ].join("\n"),
+    );
+    await writeFile(
+      path.join(binDir, "git"),
+      [
+        "#!/usr/bin/env node",
+        "const args = process.argv.slice(2);",
+        "if (args[0] === 'status') { process.stdout.write(' M bucket/agentplane.json' + String.fromCharCode(10)); process.exit(0); }",
+        "process.exit(0);",
+      ].join("\n"),
+    );
+    await chmod(path.join(binDir, "gh"), 0o755);
+    await chmod(path.join(binDir, "git"), 0o755);
+    const outPath = path.join(root, "result.json");
+
+    await execFileAsync(
+      "node",
+      [
+        SCRIPT_PATH,
+        "--module",
+        "scoop",
+        "--repo",
+        "basilisk-labs/scoop-bucket",
+        "--source",
+        path.join(root, "source"),
+        "--copy",
+        "bucket/agentplane.json:bucket/agentplane.json",
+        "--repo-topics",
+        "agentplane,scoop,windows,cli",
+        "--version",
+        "0.4.2",
+        "--tag",
+        "v0.4.2",
+        "--sha",
+        "abc123",
+        "--token-env",
+        "AGENTPLANE_TEST_TOKEN",
+        "--out",
+        outPath,
+      ],
+      {
+        cwd: process.cwd(),
+        env: {
+          ...process.env,
+          PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`,
+          AGENTPLANE_TEST_TOKEN: "token",
+        },
+      },
+    );
+
+    const payload = JSON.parse(await readFile(outPath, "utf8")) as {
+      metadata: { ok: boolean; updated: string[] };
+    };
+    const topicsPayload = JSON.parse(await readFile(topicsPayloadLog, "utf8")) as {
+      names: string[];
+    };
+    expect(payload.metadata.ok).toBe(true);
+    expect(payload.metadata.updated).toContain("topics");
+    expect(topicsPayload.names).toEqual(["agentplane", "scoop", "windows", "cli"]);
+  });
 });
