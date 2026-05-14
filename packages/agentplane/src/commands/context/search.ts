@@ -82,7 +82,7 @@ export async function cmdContextSearch(opts: {
       for (const [index, row] of rows.entries()) {
         const haystack = JSON.stringify(row).toLowerCase();
         if (!haystack.includes(query)) continue;
-        const id = typeof row.id === "string" ? row.id : `row-${index + 1}`;
+        const id = String(row.id ?? index + 1);
         results.push({
           path: `${relative}#entity=${id}`,
           score: scoreMatch(haystack, query),
@@ -209,7 +209,7 @@ async function buildJsonlRowFreshness(
   const expectedId = marker.slice(separator + 1);
   const rows = parseJsonlLines(await readText(filePath));
   for (const [index, row] of rows.entries()) {
-    const id = typeof row.id === "string" ? row.id : String(index + 1);
+    const id = String(row.id ?? index + 1);
     if (id !== expectedId) continue;
     const rowSha256 = `sha256:${createHash("sha256").update(JSON.stringify(row)).digest("hex")}`;
     return {

@@ -108,15 +108,28 @@ describe("context release readiness guards", () => {
     await write(
       root,
       ".agentplane/context/derived/facts/facts.jsonl",
-      `${JSON.stringify({
-        id: "fact:meridian-relay:stages",
-        subject: "Meridian Relay",
-        predicate: "has_stages",
-        object: "capture, normalize, curator review",
-        confidence: 0.94,
-        status: "active",
-        source_refs: ["context/raw/research/meridian-relay.md"],
-      })}\n`,
+      [
+        {
+          id: "fact:meridian-relay:stages",
+          subject: "Meridian Relay",
+          predicate: "has_stages",
+          object: "capture, normalize, curator review",
+          confidence: 0.94,
+          status: "active",
+          source_refs: ["context/raw/research/meridian-relay.md"],
+        },
+        {
+          id: 42,
+          subject: "Numeric Meridian Relay",
+          predicate: "has_numeric_id",
+          object: "true",
+          confidence: 0.9,
+          status: "active",
+          source_refs: ["context/raw/research/meridian-relay.md"],
+        },
+      ]
+        .map((row) => JSON.stringify(row))
+        .join("\n") + "\n",
     );
     await write(
       root,
@@ -154,8 +167,12 @@ describe("context release readiness guards", () => {
     const entityResult = payload.results.find((result) =>
       result.ref.endsWith("entities.jsonl#entity=concept:meridian-relay"),
     );
+    const numericIdResult = payload.results.find((result) =>
+      result.ref.endsWith("facts.jsonl#fact=42"),
+    );
     expect(factResult?.freshness.stale).toBe(false);
     expect(entityResult?.freshness.stale).toBe(false);
+    expect(numericIdResult?.freshness.stale).toBe(false);
   });
 
   it("resolves markdown sections by slug", async () => {

@@ -4,7 +4,7 @@ title: "Fix context search JSONL row freshness"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-14T10:10:18.421Z"
+  updated_at: "2026-05-14T10:26:23.138Z"
   updated_by: "CODER"
-  note: "Fixed context search JSONL row freshness by recomputing current row hashes for row-level projection refs. Verified focused context tests, eslint/prettier, release/docs gates, platform-critical, and empty-folder semantic assimilation smoke with no stale search rows."
+  note: "Fixed context search JSONL row freshness, including non-string row ids found in review. Verified focused context tests, eslint/prettier, release/docs gates, platform-critical, and empty-folder semantic assimilation smoke with no stale search rows."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Fixed context search JSONL row freshness by recomputing current row hashes for row-level projection refs. Verified focused context tests, eslint/prettier, release/docs gates, platform-critical, and empty-folder semantic assimilation smoke with no stale search rows."
+  -
+    type: "verify"
+    at: "2026-05-14T10:26:23.138Z"
+    author: "CODER"
+    state: "ok"
+    note: "Fixed context search JSONL row freshness, including non-string row ids found in review. Verified focused context tests, eslint/prettier, release/docs gates, platform-critical, and empty-folder semantic assimilation smoke with no stale search rows."
 doc_version: 3
-doc_updated_at: "2026-05-14T10:10:18.432Z"
+doc_updated_at: "2026-05-14T10:26:23.166Z"
 doc_updated_by: "CODER"
 description: "Context search marks fresh JSONL facts and graph projection rows as stale because row-level projection hashes are compared to whole-file hashes. Fix row-level freshness and cover it with regression tests so empty-folder semantic assimilation search reports fresh derived rows."
 sections:
@@ -75,6 +81,25 @@ sections:
     Attempts: 0
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T10:05:38.854Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141005-HNXBJ4-context-jsonl-freshness/.agentplane/tasks/202605141005-HNXBJ4/blueprint/resolved-snapshot.json
+    - old_digest: f3c5df08acba8e7ddf0a4372e13f47ef625e2224065742986e2ecd5d7cc8749c
+    - current_digest: f3c5df08acba8e7ddf0a4372e13f47ef625e2224065742986e2ecd5d7cc8749c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605141005-HNXBJ4
+    
+    ### 2026-05-14T10:26:23.138Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Fixed context search JSONL row freshness, including non-string row ids found in review. Verified focused context tests, eslint/prettier, release/docs gates, platform-critical, and empty-folder semantic assimilation smoke with no stale search rows.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T10:10:18.432Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
     
     Details:
     
@@ -129,6 +154,25 @@ Note: Fixed context search JSONL row freshness by recomputing current row hashes
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T10:05:38.854Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141005-HNXBJ4-context-jsonl-freshness/.agentplane/tasks/202605141005-HNXBJ4/blueprint/resolved-snapshot.json
+- old_digest: f3c5df08acba8e7ddf0a4372e13f47ef625e2224065742986e2ecd5d7cc8749c
+- current_digest: f3c5df08acba8e7ddf0a4372e13f47ef625e2224065742986e2ecd5d7cc8749c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605141005-HNXBJ4
+
+### 2026-05-14T10:26:23.138Z — VERIFY — ok
+
+By: CODER
+
+Note: Fixed context search JSONL row freshness, including non-string row ids found in review. Verified focused context tests, eslint/prettier, release/docs gates, platform-critical, and empty-folder semantic assimilation smoke with no stale search rows.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T10:10:18.432Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 

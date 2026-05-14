@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605141005-HNXBJ4/context-jsonl-freshness",
+  "created_at": "2026-05-14T10:05:38.905Z",
+  "head_sha": "b9a6042a9cccd3ad8576d16f9b7fdcce1aac13af",
+  "last_verified_at": "2026-05-14T10:26:23.138Z",
+  "last_verified_sha": "b9a6042a9cccd3ad8576d16f9b7fdcce1aac13af",
+  "pr_number": 3707,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3707",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605141005-HNXBJ4",
+  "updated_at": "2026-05-14T10:10:43.519Z",
+  "verify": {
+    "status": "pass"
+  }
+}
