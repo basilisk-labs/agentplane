@@ -1,1 +1,1 @@
-🚧 J5YVSS task: Remove legacy tasks.json export surface [202605132103-J5YVSS]
+✅ J5YVSS task: Remove legacy tasks.json export surface [202605132103-J5YVSS]
