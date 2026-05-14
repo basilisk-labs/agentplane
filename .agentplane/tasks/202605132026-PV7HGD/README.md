@@ -1,10 +1,11 @@
 ---
 id: "202605132026-PV7HGD"
 title: "Cloud backend: auto-sync on task reads/writes"
-status: "DOING"
+result_summary: "Merged to main in PR #3694; v0.6 readiness and assimilation checks passed."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_by: "CODER"
   note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
   attempts: 0
-commit: null
+commit:
+  hash: "ec628cd9a2aa899cca01611be9519181845ba555"
+  message: "Merge pull request #3694 from basilisk-labs/task/202605140709-5H7BAA/v06-readiness-blockers"
 comments:
   -
     author: "CODER"
     body: "Start: Implement cloud backend autosync (auto pull on stale + auto push after writes) so local status changes propagate to cloud/GitHub without manual backend sync, while preserving conflict safety."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged via PR #3694 after full v0.6 readiness checks and GitHub CI passed."
 events:
   -
     type: "status"
@@ -56,9 +62,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
+  -
+    type: "status"
+    at: "2026-05-14T09:04:46.435Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged via PR #3694 after full v0.6 readiness checks and GitHub CI passed."
 doc_version: 3
-doc_updated_at: "2026-05-14T07:59:34.938Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T09:04:46.438Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement automatic cloud projection refresh + push after local task mutations, so local ↔ cloud ↔ GitHub status stays in sync without explicit 'backend sync'. User request: bidirectional sync local folder ↔ GitHub via cloud backend."
 sections:
   Summary: |-
