@@ -12,8 +12,8 @@ Created: 2026-05-13T19:40:40.747Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,20 +24,22 @@ Created: 2026-05-13T19:40:40.747Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T19:40:40.747Z
+- Updated: 2026-05-14T07:59:21.211Z
 - Branch: task/202605131921-JXEQ8J/cloud-auto-sync
-- Head: e4f235b15a4d
+- Head: 7a4b7076b399
 
 ```text
  .../blueprint/resolved-snapshot.json               | 551 +++++++++++++++++++++
  docs/user/backends/cloud.mdx                       |  21 +
- .../src/backends/task-backend/cloud-backend.ts     |   6 +
+ docs/user/cli-reference.generated.mdx              |   3 +
+ .../src/backends/task-backend/cloud-backend.ts     |  13 +-
  .../src/cli/run-cli.core.backend-sync.test.ts      |  49 ++
- packages/agentplane/src/commands/backend.ts        |  87 +++-
+ packages/agentplane/src/cli/spec/docs-render.ts    |   5 +-
+ packages/agentplane/src/commands/backend.ts        |  80 ++-
  .../src/commands/backend/sync.command.ts           |  26 +
- .../src/commands/task/shared/transition-command.ts |  53 +-
- .../task/shared/transition-command.unit.test.ts    |  96 ++++
- 8 files changed, 882 insertions(+), 7 deletions(-)
+ .../src/commands/task/shared/transition-command.ts |  56 ++-
+ .../task/shared/transition-command.unit.test.ts    | 100 ++++
+ 10 files changed, 886 insertions(+), 18 deletions(-)
 ```
 
 </details>

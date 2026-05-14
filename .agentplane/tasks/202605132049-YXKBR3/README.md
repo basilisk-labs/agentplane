@@ -4,7 +4,7 @@ title: "Surface evaluator project root lookup failures"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T21:27:54.969Z"
+  updated_at: "2026-05-14T07:59:40.533Z"
   updated_by: "CODER"
-  note: "Added explicit evaluator diagnostic when project-local catalog lookup cannot find an AgentPlane project root; covered by cli-core regression test."
+  note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added explicit evaluator diagnostic when project-local catalog lookup cannot find an AgentPlane project root; covered by cli-core regression test."
+  -
+    type: "verify"
+    at: "2026-05-14T07:59:40.533Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
 doc_version: 3
-doc_updated_at: "2026-05-13T21:27:54.981Z"
+doc_updated_at: "2026-05-14T07:59:40.544Z"
 doc_updated_by: "CODER"
 description: |-
   GitHub issue: https://github.com/basilisk-labs/agentplane/issues/3655 (#3655)
@@ -96,6 +102,25 @@ sections:
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605132103-J5YVSS-remove-tasks-json/.agentplane/tasks/202605132049-YXKBR3/blueprint/resolved-snapshot.json
+    - old_digest: 55829f2eb3eeb6d1c7fca33aaa9e74e49cf02927bd82c96d9fcbb04ec0bb31e1
+    - current_digest: 55829f2eb3eeb6d1c7fca33aaa9e74e49cf02927bd82c96d9fcbb04ec0bb31e1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605132049-YXKBR3
+    
+    ### 2026-05-14T07:59:40.533Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T21:27:54.981Z, excerpt_hash=sha256:2eca16439ccb7d27026b40f5e51b89bec791536e1d35c17e1503adc8da18ced0
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605132049-YXKBR3/blueprint/resolved-snapshot.json
     - old_digest: 55829f2eb3eeb6d1c7fca33aaa9e74e49cf02927bd82c96d9fcbb04ec0bb31e1
     - current_digest: 55829f2eb3eeb6d1c7fca33aaa9e74e49cf02927bd82c96d9fcbb04ec0bb31e1
     - route_changed: no
@@ -157,6 +182,25 @@ Details:
 BlueprintSnapshotRef:
 - state: current
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605132103-J5YVSS-remove-tasks-json/.agentplane/tasks/202605132049-YXKBR3/blueprint/resolved-snapshot.json
+- old_digest: 55829f2eb3eeb6d1c7fca33aaa9e74e49cf02927bd82c96d9fcbb04ec0bb31e1
+- current_digest: 55829f2eb3eeb6d1c7fca33aaa9e74e49cf02927bd82c96d9fcbb04ec0bb31e1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605132049-YXKBR3
+
+### 2026-05-14T07:59:40.533Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T21:27:54.981Z, excerpt_hash=sha256:2eca16439ccb7d27026b40f5e51b89bec791536e1d35c17e1503adc8da18ced0
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605132049-YXKBR3/blueprint/resolved-snapshot.json
 - old_digest: 55829f2eb3eeb6d1c7fca33aaa9e74e49cf02927bd82c96d9fcbb04ec0bb31e1
 - current_digest: 55829f2eb3eeb6d1c7fca33aaa9e74e49cf02927bd82c96d9fcbb04ec0bb31e1
 - route_changed: no

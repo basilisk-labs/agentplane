@@ -1,10 +1,10 @@
 ---
 id: "202605132134-E6RDJG"
 title: "Fix evaluator root-resolution error surfacing (issue #3655)"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -18,20 +18,37 @@ task_kind: "code"
 mutation_scope: "code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-05-14T07:59:16.220Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Covered by 202605140709-5H7BAA v0.6 readiness integration and release smoke verification."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-14T07:59:45.626Z"
+  updated_by: "CODER"
+  note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
   attempts: 0
-comments: []
-events: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: Covered by 202605140709-5H7BAA v0.6 readiness integration."
+events:
+  -
+    type: "status"
+    at: "2026-05-14T07:59:16.788Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Covered by 202605140709-5H7BAA v0.6 readiness integration."
+  -
+    type: "verify"
+    at: "2026-05-14T07:59:45.626Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
 doc_version: 3
-doc_updated_at: "2026-05-13T21:34:16.027Z"
+doc_updated_at: "2026-05-14T07:59:45.635Z"
 doc_updated_by: "CODER"
 description: |-
   GitHub issue: https://github.com/basilisk-labs/agentplane/issues/3655
@@ -73,6 +90,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-14T07:59:45.626Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T07:59:16.788Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605132134-E6RDJG/blueprint/resolved-snapshot.json
+    - old_digest: 6c7bea2309746bc36c6ffd4f8e69d34da1b60596cfacfec1e84cb70c539472c9
+    - current_digest: 6c7bea2309746bc36c6ffd4f8e69d34da1b60596cfacfec1e84cb70c539472c9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605132134-E6RDJG
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -117,6 +153,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-14T07:59:45.626Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T07:59:16.788Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605132134-E6RDJG/blueprint/resolved-snapshot.json
+- old_digest: 6c7bea2309746bc36c6ffd4f8e69d34da1b60596cfacfec1e84cb70c539472c9
+- current_digest: 6c7bea2309746bc36c6ffd4f8e69d34da1b60596cfacfec1e84cb70c539472c9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605132134-E6RDJG
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

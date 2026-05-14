@@ -4,7 +4,7 @@ title: "Remove legacy tasks.json export surface"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T21:27:44.265Z"
+  updated_at: "2026-05-14T07:59:43.305Z"
   updated_by: "CODER"
-  note: "Removed legacy tasks.json export generation paths; checks passed: eslint touched files, tsc agentplane noEmit, targeted cli-core/agentplane/core vitest suites, migrate-doc regression, policy routing."
+  note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Removed legacy tasks.json export generation paths; checks passed: eslint touched files, tsc agentplane noEmit, targeted cli-core/agentplane/core vitest suites, migrate-doc regression, policy routing."
+  -
+    type: "verify"
+    at: "2026-05-14T07:59:43.305Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
 doc_version: 3
-doc_updated_at: "2026-05-13T21:27:44.276Z"
+doc_updated_at: "2026-05-14T07:59:43.316Z"
 doc_updated_by: "CODER"
 description: "Remove the obsolete .agentplane/tasks.json export snapshot surface now that task reads use task docs and sqlite cache."
 sections:
@@ -78,6 +84,25 @@ sections:
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605132103-J5YVSS-remove-tasks-json/.agentplane/tasks/202605132103-J5YVSS/blueprint/resolved-snapshot.json
+    - old_digest: 23cb3278a45e66fe2b45e36675d23909dd920ae303d6a6844bd518917f98c26f
+    - current_digest: 23cb3278a45e66fe2b45e36675d23909dd920ae303d6a6844bd518917f98c26f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605132103-J5YVSS
+    
+    ### 2026-05-14T07:59:43.305Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T21:27:44.276Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605132103-J5YVSS/blueprint/resolved-snapshot.json
     - old_digest: 23cb3278a45e66fe2b45e36675d23909dd920ae303d6a6844bd518917f98c26f
     - current_digest: 23cb3278a45e66fe2b45e36675d23909dd920ae303d6a6844bd518917f98c26f
     - route_changed: no
@@ -130,6 +155,25 @@ Details:
 BlueprintSnapshotRef:
 - state: current
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605132103-J5YVSS-remove-tasks-json/.agentplane/tasks/202605132103-J5YVSS/blueprint/resolved-snapshot.json
+- old_digest: 23cb3278a45e66fe2b45e36675d23909dd920ae303d6a6844bd518917f98c26f
+- current_digest: 23cb3278a45e66fe2b45e36675d23909dd920ae303d6a6844bd518917f98c26f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605132103-J5YVSS
+
+### 2026-05-14T07:59:43.305Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T21:27:44.276Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605132103-J5YVSS/blueprint/resolved-snapshot.json
 - old_digest: 23cb3278a45e66fe2b45e36675d23909dd920ae303d6a6844bd518917f98c26f
 - current_digest: 23cb3278a45e66fe2b45e36675d23909dd920ae303d6a6844bd518917f98c26f
 - route_changed: no

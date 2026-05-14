@@ -4,7 +4,7 @@ title: "Hide non-variadic group roots in user CLI reference"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T21:27:44.265Z"
+  updated_at: "2026-05-14T07:59:37.835Z"
   updated_by: "CODER"
-  note: "Added docs-render regression: optional non-variadic dispatcher roots are hidden from CLI docs while concrete child commands remain visible."
+  note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
   attempts: 0
 commit: null
 comments:
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added docs-render regression: optional non-variadic dispatcher roots are hidden from CLI docs while concrete child commands remain visible."
+  -
+    type: "verify"
+    at: "2026-05-14T07:59:37.835Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
 doc_version: 3
-doc_updated_at: "2026-05-13T21:27:44.276Z"
+doc_updated_at: "2026-05-14T07:59:37.846Z"
 doc_updated_by: "CODER"
 description: |-
   GitHub issue: https://github.com/basilisk-labs/agentplane/issues/3656 (#3656)
@@ -95,6 +101,25 @@ sections:
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605132103-J5YVSS-remove-tasks-json/.agentplane/tasks/202605132049-69HCQ3/blueprint/resolved-snapshot.json
+    - old_digest: 532930b0f4c73e33ed011d508e014692ff64450aa95dcb47c680276c81c592bc
+    - current_digest: 532930b0f4c73e33ed011d508e014692ff64450aa95dcb47c680276c81c592bc
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605132049-69HCQ3
+    
+    ### 2026-05-14T07:59:37.835Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T21:27:44.276Z, excerpt_hash=sha256:654f59d59850c70639e4741d058fe2de38b1092986baf73db5c2014ecf13eb64
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605132049-69HCQ3/blueprint/resolved-snapshot.json
     - old_digest: 532930b0f4c73e33ed011d508e014692ff64450aa95dcb47c680276c81c592bc
     - current_digest: 532930b0f4c73e33ed011d508e014692ff64450aa95dcb47c680276c81c592bc
     - route_changed: no
@@ -156,6 +181,25 @@ Details:
 BlueprintSnapshotRef:
 - state: current
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605132103-J5YVSS-remove-tasks-json/.agentplane/tasks/202605132049-69HCQ3/blueprint/resolved-snapshot.json
+- old_digest: 532930b0f4c73e33ed011d508e014692ff64450aa95dcb47c680276c81c592bc
+- current_digest: 532930b0f4c73e33ed011d508e014692ff64450aa95dcb47c680276c81c592bc
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605132049-69HCQ3
+
+### 2026-05-14T07:59:37.835Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T21:27:44.276Z, excerpt_hash=sha256:654f59d59850c70639e4741d058fe2de38b1092986baf73db5c2014ecf13eb64
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605132049-69HCQ3/blueprint/resolved-snapshot.json
 - old_digest: 532930b0f4c73e33ed011d508e014692ff64450aa95dcb47c680276c81c592bc
 - current_digest: 532930b0f4c73e33ed011d508e014692ff64450aa95dcb47c680276c81c592bc
 - route_changed: no

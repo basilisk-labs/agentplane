@@ -4,7 +4,7 @@ title: "Make evaluator builtin toggle actually disable builtin entries"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 4
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T21:27:44.265Z"
+  updated_at: "2026-05-14T07:59:39.179Z"
   updated_by: "CODER"
-  note: "Verified evaluator --builtin false path omits builtin entries in the existing cli-core evaluator workflow-profile test suite."
+  note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
   attempts: 0
 commit: null
 comments:
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified evaluator --builtin false path omits builtin entries in the existing cli-core evaluator workflow-profile test suite."
+  -
+    type: "verify"
+    at: "2026-05-14T07:59:39.179Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
 doc_version: 3
-doc_updated_at: "2026-05-13T21:27:44.275Z"
+doc_updated_at: "2026-05-14T07:59:39.189Z"
 doc_updated_by: "CODER"
 description: |-
   GitHub issue: https://github.com/basilisk-labs/agentplane/issues/3657 (#3657)
@@ -95,6 +101,25 @@ sections:
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605132103-J5YVSS-remove-tasks-json/.agentplane/tasks/202605132049-K2TDB9/blueprint/resolved-snapshot.json
+    - old_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
+    - current_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605132049-K2TDB9
+    
+    ### 2026-05-14T07:59:39.179Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T21:27:44.275Z, excerpt_hash=sha256:ed38f84d7c25fc8aed01a1276643df1be7a3cdf575adefd0eedb331226d67254
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605132049-K2TDB9/blueprint/resolved-snapshot.json
     - old_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
     - current_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
     - route_changed: no
@@ -156,6 +181,25 @@ Details:
 BlueprintSnapshotRef:
 - state: current
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605132103-J5YVSS-remove-tasks-json/.agentplane/tasks/202605132049-K2TDB9/blueprint/resolved-snapshot.json
+- old_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
+- current_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605132049-K2TDB9
+
+### 2026-05-14T07:59:39.179Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T21:27:44.275Z, excerpt_hash=sha256:ed38f84d7c25fc8aed01a1276643df1be7a3cdf575adefd0eedb331226d67254
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605132049-K2TDB9/blueprint/resolved-snapshot.json
 - old_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
 - current_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
 - route_changed: no

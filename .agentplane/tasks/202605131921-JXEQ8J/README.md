@@ -4,7 +4,7 @@ title: "Cloud backend: optional auto-push task status changes to remote"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -24,10 +24,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-14T07:59:21.140Z"
+  updated_by: "CODER"
+  note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
   attempts: 0
 commit: null
 comments:
@@ -42,8 +42,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Plan approved; implementing opt-in auto-push of local status changes to cloud backend for GitHub issue lifecycle sync."
+  -
+    type: "verify"
+    at: "2026-05-14T07:59:21.140Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
 doc_version: 3
-doc_updated_at: "2026-05-13T19:23:14.959Z"
+doc_updated_at: "2026-05-14T07:59:21.152Z"
 doc_updated_by: "ORCHESTRATOR"
 description: |-
   Goal: When the project uses cloud backend, changes to local task status made via AgentPlane lifecycle commands should be able to propagate to the remote connector (GitHub issue state/status) without requiring a manual  step.
@@ -84,6 +90,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-14T07:59:21.140Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:23:14.959Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605131921-JXEQ8J/blueprint/resolved-snapshot.json
+    - old_digest: 572cc98f131538114774f770a6f19778b899f333a5424b02b09d3d5bfbafd7c7
+    - current_digest: 572cc98f131538114774f770a6f19778b899f333a5424b02b09d3d5bfbafd7c7
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605131921-JXEQ8J
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -127,6 +152,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-14T07:59:21.140Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T19:23:14.959Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605131921-JXEQ8J/blueprint/resolved-snapshot.json
+- old_digest: 572cc98f131538114774f770a6f19778b899f333a5424b02b09d3d5bfbafd7c7
+- current_digest: 572cc98f131538114774f770a6f19778b899f333a5424b02b09d3d5bfbafd7c7
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605131921-JXEQ8J
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

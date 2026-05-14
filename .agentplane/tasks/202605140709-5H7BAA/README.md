@@ -4,7 +4,7 @@ title: "Finalize v0.6 readiness blockers and pending task integration"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -20,10 +20,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved by user request to complete open tasks, merge pending work, fix v0.6 context blockers, and report only after full readiness checks pass."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-14T07:59:48.615Z"
+  updated_by: "CODER"
+  note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
   attempts: 0
 commit: null
 comments:
@@ -38,8 +38,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implement approved v0.6 readiness blocker fixes, reconcile pending task work, and verify the full empty-directory context assimilation release path."
+  -
+    type: "verify"
+    at: "2026-05-14T07:59:48.615Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
 doc_version: 3
-doc_updated_at: "2026-05-14T07:09:50.861Z"
+doc_updated_at: "2026-05-14T07:59:48.631Z"
 doc_updated_by: "CODER"
 description: "Fix context release blockers found in v0.6 readiness audit, complete the three open evaluator/docgen TODO tasks, reconcile useful unmerged task branch work, and prove empty-directory context assimilation plus release/package gates before merging to main."
 sections:
@@ -59,6 +65,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-14T07:59:48.615Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T07:09:50.861Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605140709-5H7BAA/blueprint/resolved-snapshot.json
+    - old_digest: 7dcffd1c66af412e95beda356942857931eab63dc76fa92df4cf46d603fd143a
+    - current_digest: 7dcffd1c66af412e95beda356942857931eab63dc76fa92df4cf46d603fd143a
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605140709-5H7BAA
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -92,6 +117,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-14T07:59:48.615Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T07:09:50.861Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605140709-5H7BAA/blueprint/resolved-snapshot.json
+- old_digest: 7dcffd1c66af412e95beda356942857931eab63dc76fa92df4cf46d603fd143a
+- current_digest: 7dcffd1c66af412e95beda356942857931eab63dc76fa92df4cf46d603fd143a
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605140709-5H7BAA
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

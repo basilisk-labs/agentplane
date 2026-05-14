@@ -13,7 +13,7 @@ Created: 2026-05-13T21:29:59.252Z
 ## Verification
 
 - State: ok
-- Note: Removed legacy tasks.json export generation paths; checks passed: eslint touched files, tsc agentplane noEmit, targeted cli-core/agentplane/core vitest suites, migrate-doc regression, policy routing.
+- Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-05-13T21:29:59.252Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T21:58:47.251Z
+- Updated: 2026-05-13T21:59:27.216Z
 - Branch: task/202605132103-J5YVSS/remove-tasks-json
 - Head: 6755f1e11c37
 
