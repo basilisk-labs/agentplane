@@ -134,9 +134,8 @@ without requiring a manual read of `bundle.json`.
 - `feedback.github_issues.dedupe`
 - `feedback.github_issues.labels`
 
-GitHub issue feedback defaults to enabled. The AgentPlane framework intentionally enables this mode
-to speed up development: when AgentPlane itself reports an internal error, the CLI can suggest a
-privacy-bounded issue payload for the configured AgentPlane feedback repository.
+GitHub issue feedback defaults to disabled. Enable it when you want internal AgentPlane errors to
+offer a privacy-bounded GitHub issue path for maintainers.
 
 Preview the issue payload before creating anything:
 
@@ -144,10 +143,10 @@ Preview the issue payload before creating anything:
 agentplane insights issue --error-code E_INTERNAL --dry-run
 ```
 
-If you do not want this mode, ask your agent to disable feedback issue prompts or run:
+To opt in, ask your agent to enable feedback issue prompts or run:
 
 ```bash
-agentplane config set feedback.github_issues.enabled false
+agentplane config set feedback.github_issues.enabled true
 ```
 
 ### acr

@@ -62,7 +62,7 @@ description: "Extend the README header image generator so the current AgentPlane
 sections:
   Summary: |-
     Generate versioned README header images
-    
+
     Extend the README header image generator so the current AgentPlane version produces reusable header images and package/related README files link to those generated artifacts.
   Scope: |-
     - In scope: Extend the README header image generator so the current AgentPlane version produces reusable header images and package/related README files link to those generated artifacts.
@@ -76,16 +76,16 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-14T19:49:40.237Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: Command: bun run docs:readme-header:check | Result: pass | Evidence: README header artifacts are fresh for v0.6.0 | Scope: generated README header SVGs and README link blocks. Command: release distribution render checks | Result: pass with local credential skips for external PR checks | Evidence: distribution and GHCR checks passed; Homebrew/Scoop/setup-action local checks exited skipped_missing_credentials; publish workflow contract tests prove incomplete external distribution fails closed. Command: bunx vitest release workflow contract tests | Result: pass | Evidence: 5 files, 18 tests passed. Command: release:bun:check and release:parity | Result: pass | Evidence: Bun executable assets fresh for v0.6.0; package parity 0.6.0 aligned. Command: formatting, routing, doctor, SVG XML | Result: pass with pre-existing doctor warnings | Evidence: Prettier/diff-check/routing/xmllint passed; doctor OK with existing shipped-task reconciliation warnings.
     Attempts: 0
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T19:43:17.877Z, excerpt_hash=sha256:c07de0050f4f8ec36a93b97cce84725f72bb27f6e481c3352cd00a47d84c7cf9
-    
+
     Details:
-    
+
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141942-R7ZZE0-versioned-readme-headers/.agentplane/tasks/202605141942-R7ZZE0/blueprint/resolved-snapshot.json
@@ -93,7 +93,7 @@ sections:
     - current_digest: b465b61b0bb1e734f934d3f26a563cba47206649fd23399f7432a1a2372a38c2
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605141942-R7ZZE0
-    
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).

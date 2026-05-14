@@ -132,7 +132,7 @@ export const initSpec: CommandSpec<InitParsed> = {
       name: "feedback-github-issues",
       valueHint: "<true|false>",
       description:
-        "Enable or disable AgentPlane GitHub issue prompts for internal AgentPlane errors (default: true).",
+        "Opt in to AgentPlane GitHub issue prompts for internal AgentPlane errors (default: false).",
     },
     {
       kind: "string",
@@ -220,8 +220,8 @@ export const initSpec: CommandSpec<InitParsed> = {
       why: "Initialize direct mode with strict close-tail blocking on any unrelated tracked dirt.",
     },
     {
-      cmd: "agentplane init --feedback-github-issues false --yes",
-      why: "Disable GitHub issue prompts for internal AgentPlane errors.",
+      cmd: "agentplane init --feedback-github-issues true --yes",
+      why: "Opt in to GitHub issue prompts for internal AgentPlane errors.",
     },
     {
       cmd: "agentplane init --force --yes",

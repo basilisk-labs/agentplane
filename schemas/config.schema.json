@@ -348,7 +348,7 @@
           "properties": {
             "enabled": {
               "type": "boolean",
-              "default": true
+              "default": false
             },
             "repository": {
               "type": "string",
@@ -378,7 +378,7 @@
           },
           "additionalProperties": true,
           "default": {
-            "enabled": true,
+            "enabled": false,
             "repository": "basilisk-labs/agentplane",
             "prompt_on_internal_error": true,
             "include_insights_report": true,
@@ -390,7 +390,7 @@
       "additionalProperties": true,
       "default": {
         "github_issues": {
-          "enabled": true,
+          "enabled": false,
           "repository": "basilisk-labs/agentplane",
           "prompt_on_internal_error": true,
           "include_insights_report": true,
@@ -404,7 +404,7 @@
       "properties": {
         "enabled": {
           "type": "boolean",
-          "default": true
+          "default": false
         },
         "version": {
           "type": "string",
@@ -442,7 +442,7 @@
       },
       "additionalProperties": true,
       "default": {
-        "enabled": true,
+        "enabled": false,
         "version": "0.1.0",
         "write_on_finish": true,
         "require_for_pr_check": false,

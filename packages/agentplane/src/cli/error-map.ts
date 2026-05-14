@@ -162,15 +162,18 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
   });
   switch (err.code) {
     case "E_INTERNAL": {
-      if (err.context?.feedback_github_issues_enabled === false) {
+      if (
+        err.context?.feedback_github_issues_enabled === false ||
+        err.context?.feedback_github_issues_prompt_on_internal_error === false
+      ) {
         return withExplicit({});
       }
       return withExplicit({
-        hint: "AgentPlane can prepare a privacy-bounded GitHub issue for internal AgentPlane errors when feedback issue prompts are enabled.",
+        hint: "AgentPlane can prepare a privacy-bounded GitHub issue for internal AgentPlane errors after explicit project opt-in.",
         nextAction: {
           command: "agentplane insights issue --error-code E_INTERNAL --dry-run",
           reason:
-            "preview the GitHub issue payload; disable prompts with `agentplane config set feedback.github_issues.enabled false`",
+            "preview the GitHub issue payload; enable with `agentplane config set feedback.github_issues.enabled true` before creating it",
           reasonCode: "feedback_internal_error_report",
         },
       });

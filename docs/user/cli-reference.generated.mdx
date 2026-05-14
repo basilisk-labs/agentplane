@@ -1800,7 +1800,7 @@ Options:
 - `--require-plan-approval <true|false>`: Require explicit plan approval before starting work.
 - `--require-network-approval <true|false>`: Require explicit approval before any network operation.
 - `--require-verify-approval <true|false>`: Require explicit approval before recording verification.
-- `--feedback-github-issues <true|false>`: Enable or disable AgentPlane GitHub issue prompts for internal AgentPlane errors (default: true).
+- `--feedback-github-issues <true|false>`: Opt in to AgentPlane GitHub issue prompts for internal AgentPlane errors (default: false).
 - `--execution-profile <conservative|balanced|aggressive>`: Execution profile preset controlling autonomy, reasoning, and tool budgets. (choices=conservative|balanced|aggressive)
 - `--strict-unsafe-confirm <true|false>`: Require strict explicit confirmations for additional unsafe actions.
 - `--recipes <none|id1,id2,...>`: Optional cached recipes to vendor during init (comma-separated), or 'none'.
@@ -1840,10 +1840,10 @@ agentplane init --workflow direct --direct-close-dirty-policy strict --yes
 - Initialize direct mode with strict close-tail blocking on any unrelated tracked dirt.
 
 ```sh
-agentplane init --feedback-github-issues false --yes
+agentplane init --feedback-github-issues true --yes
 ```
 
-- Disable GitHub issue prompts for internal AgentPlane errors.
+- Opt in to GitHub issue prompts for internal AgentPlane errors.
 
 ```sh
 agentplane init --force --yes

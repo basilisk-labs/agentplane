@@ -88,7 +88,7 @@ const ACR_DEFAULTS: {
   include_prompts: false;
   include_tool_outputs: false;
 } = {
-  enabled: true,
+  enabled: false,
   version: "0.1.0",
   write_on_finish: true,
   require_for_pr_check: false,
@@ -167,7 +167,7 @@ const RUNNER_TIMEOUTS_SCHEMA = z
   .default({ ...RUNNER_TIMEOUT_DEFAULTS });
 
 const FEEDBACK_GITHUB_ISSUES_DEFAULTS = {
-  enabled: true,
+  enabled: false,
   repository: "basilisk-labs/agentplane",
   prompt_on_internal_error: true,
   include_insights_report: true,

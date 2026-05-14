@@ -138,7 +138,7 @@ const main = defineScript({
       assertIncludes(fileContents.sidebar, label, "sidebar");
     }
 
-    for (const navLabel of ['label: "Docs"', 'label: "Recipes"']) {
+    for (const navLabel of ['label: "Docs"', 'label: "Compare"', 'label: "Quickstart"']) {
       assertIncludes(fileContents.docusaurusConfig, navLabel, "navbar");
     }
 

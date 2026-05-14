@@ -134,7 +134,7 @@ describe("core error mapping", () => {
     expect(payload.error?.reason_decode?.code).toBe("usage_help");
   });
 
-  it("suggests the feedback issue path for internal errors when feedback prompts are enabled", () => {
+  it("suggests the opt-in feedback issue path for internal errors", () => {
     let stderr = "";
     const spy = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
       stderr += String(chunk);
@@ -150,7 +150,7 @@ describe("core error mapping", () => {
     expect(stderr).toContain("error [E_INTERNAL]: unexpected invariant");
     expect(stderr).toContain("privacy-bounded GitHub issue");
     expect(stderr).toContain("agentplane insights issue --error-code E_INTERNAL --dry-run");
-    expect(stderr).toContain("feedback.github_issues.enabled false");
+    expect(stderr).toContain("feedback.github_issues.enabled true");
     expect(stderr).toContain("reason_code: feedback_internal_error_report");
   });
 
@@ -167,6 +167,31 @@ describe("core error mapping", () => {
           code: "E_INTERNAL",
           message: "unexpected invariant",
           context: { feedback_github_issues_enabled: false },
+        }),
+        false,
+      );
+    } finally {
+      spy.mockRestore();
+    }
+
+    expect(stderr).toContain("error [E_INTERNAL]: unexpected invariant");
+    expect(stderr).not.toContain("agentplane insights issue");
+    expect(stderr).not.toContain("feedback_internal_error_report");
+  });
+
+  it("does not suggest the feedback issue path when internal-error prompting is disabled", () => {
+    let stderr = "";
+    const spy = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      stderr += String(chunk);
+      return true;
+    });
+
+    try {
+      writeError(
+        new CliError({
+          code: "E_INTERNAL",
+          message: "unexpected invariant",
+          context: { feedback_github_issues_prompt_on_internal_error: false },
         }),
         false,
       );
