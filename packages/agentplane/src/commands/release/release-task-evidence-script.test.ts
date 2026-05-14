@@ -237,6 +237,8 @@ describe("release-task-evidence script", () => {
     await writeTaskReadme(root, taskId);
     await commitAll(root, "release task artifacts");
     await git(root, ["switch", "main"]);
+    await writeTaskReadme(root, "202604191131-OTHER1");
+    await commitAll(root, "other task landed before merge");
     await git(root, [
       "merge",
       "--no-ff",
@@ -273,7 +275,7 @@ describe("release-task-evidence script", () => {
 
     expect(payload.actionable).toBe(true);
     expect(payload.task_id).toBe(taskId);
-  });
+  }, 60_000);
 
   it("marks prepare as non-actionable when publish-result is incomplete", async () => {
     const root = await initRepo();

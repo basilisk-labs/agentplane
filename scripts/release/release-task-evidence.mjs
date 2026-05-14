@@ -91,15 +91,12 @@ async function readPublishResult(filePath) {
 }
 
 async function resolveReleaseTaskIdsFromCommit(releaseSha) {
-  const stdout = await git([
-    "diff-tree",
-    "-m",
-    "--root",
-    "--no-commit-id",
-    "--name-only",
-    "-r",
-    releaseSha,
-  ]);
+  const parentLine = await git(["rev-list", "--parents", "-n", "1", releaseSha]);
+  const parents = parentLine.split(/\s+/u).filter(Boolean).slice(1);
+  const stdout =
+    parents.length > 0
+      ? await git(["diff", "--name-only", `${releaseSha}^1`, releaseSha])
+      : await git(["diff-tree", "--root", "--no-commit-id", "--name-only", "-r", releaseSha]);
   const taskIds = stdout
     .split("\n")
     .map((line) => line.trim())
