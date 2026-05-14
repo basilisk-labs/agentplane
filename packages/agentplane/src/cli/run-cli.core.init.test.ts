@@ -443,6 +443,13 @@ describe("runCli", () => {
     expect(await pathExists(path.join(root, "AGENTS.md"))).toBe(true);
     expect(await pathExists(path.join(root, "context", "README.md"))).toBe(true);
     expect(await pathExists(path.join(root, "context", "wiki", "AGENTS.md"))).toBe(true);
+    const wikiAgents = await readFile(path.join(root, "context", "wiki", "AGENTS.md"), "utf8");
+    expect(wikiAgents).toContain(
+      "Analyze the base project, existing docs, task history, and raw sources before choosing a wiki structure.",
+    );
+    expect(wikiAgents).toContain(
+      "Choose the smallest wiki hierarchy that fits this project; do not force a universal concepts/entities/decisions/modules layout.",
+    );
     expect(await pathExists(path.join(root, ".agentplane", "cache.sqlite"))).toBe(true);
     expect(
       await pathExists(path.join(root, ".agentplane", "context", "agentplane.context.yaml")),

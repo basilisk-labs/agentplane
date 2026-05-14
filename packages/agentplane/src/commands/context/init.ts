@@ -375,6 +375,8 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
 Profile: ${profile}
 
 - Treat \`context/wiki/**\` as durable, source-backed project knowledge.
+- Analyze the base project, existing docs, task history, and raw sources before choosing a wiki structure.
+- Choose the smallest wiki hierarchy that fits this project; do not force a universal concepts/entities/decisions/modules layout.
 - Keep raw inputs in \`context/raw/**\`; do not copy private raw sources into public wiki pages.
 - Add source references for factual claims that come from raw files, task READMEs, ACRs, or code.
 - Use \`agentplane context verify-task <task-id>\` before closing context assimilation work.
