@@ -1,10 +1,11 @@
 ---
 id: "202605132103-J5YVSS"
 title: "Remove legacy tasks.json export surface"
-status: "DOING"
+result_summary: "Merged to main in PR #3694; v0.6 readiness and assimilation checks passed."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
   attempts: 0
-commit: null
+commit:
+  hash: "ec628cd9a2aa899cca01611be9519181845ba555"
+  message: "Merge pull request #3694 from basilisk-labs/task/202605140709-5H7BAA/v06-readiness-blockers"
 comments:
   -
     author: "CODER"
     body: "Start: Implement removal of obsolete tasks.json export surface and complete the four approved TODO tasks in one related batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged via PR #3694 after full v0.6 readiness checks and GitHub CI passed."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
+  -
+    type: "status"
+    at: "2026-05-14T09:07:05.559Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged via PR #3694 after full v0.6 readiness checks and GitHub CI passed."
 doc_version: 3
-doc_updated_at: "2026-05-14T07:59:43.316Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T09:07:05.561Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove the obsolete .agentplane/tasks.json export snapshot surface now that task reads use task docs and sqlite cache."
 sections:
   Summary: |-
