@@ -401,6 +401,7 @@ export default function Home(): ReactNode {
     workflow,
     artifacts,
     acr,
+    context,
     whyNow,
     nextSteps,
     closing,
@@ -530,6 +531,28 @@ export default function Home(): ReactNode {
               </p>
               <Link className={`${styles.action} ${styles.actionPrimary}`} to={acr.action.to}>
                 {acr.action.label}
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section className={`${styles.section} ${styles.shell}`}>
+          <SectionLead label="Context management" title={context.title} text={context.text} />
+          <div className={styles.demoGrid}>
+            <TerminalPreview
+              title={context.terminal.title}
+              lines={context.terminal.lines}
+              compact
+            />
+            <div className={styles.demoAside}>
+              <span className={styles.sectionLabel}>Repo-owned memory</span>
+              <ul className={styles.artifactBullets}>
+                {context.bullets.map((bullet) => (
+                  <li key={bullet}>{bullet}</li>
+                ))}
+              </ul>
+              <Link className={`${styles.action} ${styles.actionPrimary}`} to={context.action.to}>
+                {context.action.label}
               </Link>
             </div>
           </div>

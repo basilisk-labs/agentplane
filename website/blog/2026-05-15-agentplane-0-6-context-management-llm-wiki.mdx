@@ -1,0 +1,130 @@
+---
+slug: agentplane-0-6-context-management-llm-wiki
+title: "AgentPlane 0.6: context management for the LLM Wiki pattern"
+description: "AgentPlane 0.6 adapts Andrej Karpathy's LLM Wiki idea for software repositories: raw sources, maintained wiki pages, sourced facts, graph edges, task history, and verification in Git."
+authors: [team]
+tags: [release, context, workflow]
+---
+
+Andrej Karpathy's [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+pattern names a failure mode most teams already feel: plain RAG keeps rediscovering knowledge from
+scratch.
+
+You upload files. The model retrieves chunks. It answers. Then the synthesis disappears back into
+the session.
+
+The LLM Wiki pattern changes the unit of work. Raw sources remain source material, but the durable
+artifact is a maintained markdown wiki. The model updates entity pages, concept pages, indexes,
+cross-references, contradictions, and logs. Knowledge compounds.
+
+AgentPlane 0.6 brings that idea into repository work.
+
+<!-- truncate -->
+
+## From personal wiki to repo-owned context
+
+Karpathy's architecture has three layers:
+
+1. raw sources
+2. a maintained wiki
+3. a schema file that tells the LLM how to operate
+
+AgentPlane maps those layers onto a Git repository:
+
+```text
+context/raw/**              raw source material
+context/wiki/**             maintained markdown wiki
+context/facts/**/*.jsonl    sourced facts
+context/graph/**/*.jsonl    entities and relationships
+AGENTS.md                   policy and operating schema
+.agentplane/tasks/**        task intent, plan, verification, ACR
+```
+
+The important shift is not "better search". Search matters, but it is not the source of truth.
+AgentPlane treats the wiki, facts, graph rows, and task evidence as reviewable repository artifacts.
+Generated projections under `.agentplane/context/derived/**` and `.agentplane/cache.sqlite` are
+disposable. They can be rebuilt.
+
+## Why this matters for coding agents
+
+Coding agents do not only need snippets of code. They need working context:
+
+- why the release process has a specific gate
+- which policy file owns a workflow rule
+- which previous task discovered a failure mode
+- what source backed a claim
+- whether an old conclusion was superseded
+
+Without a maintained context layer, each agent session pays the same cost again. It searches, reads,
+guesses the hierarchy, and reconstructs history from scattered files.
+
+With AgentPlane local context, the repository can carry that knowledge forward.
+
+## What is new in the 0.6 context story
+
+AgentPlane 0.6 makes context management a first-class workflow surface:
+
+```bash
+agentplane context init
+agentplane context learn changes
+agentplane context learn files ./notes.md --run
+agentplane context learn tasks --tag release --limit 20 --dry-run
+agentplane context search "release checklist"
+agentplane context check
+```
+
+`context learn` is the human-facing layer. It creates bounded context-assimilation work instead of
+turning every prompt into an uncontrolled wiki edit.
+
+For completed tasks, AgentPlane can use task READMEs and Agent Change Records as source material.
+That matters because task history already contains the most valuable project memory: what changed,
+what was approved, what failed, what verified, and what should not be repeated.
+
+## Provenance before promotion
+
+A weak memory system accumulates claims. A useful one preserves evidence.
+
+AgentPlane's context workflow is deliberately conservative:
+
+- raw sources are separate from synthesized pages
+- facts and graph edges carry source refs
+- task extraction can write proposals before canonical promotion
+- stale and conflicting claims can be marked instead of silently merged
+- `context verify-task <task-id>` checks that context-bearing work is source-backed
+
+That is the repo version of the LLM Wiki health check. The goal is not to let an agent write more
+markdown. The goal is to let useful context become durable without losing the audit trail.
+
+## Not just RAG, not just notes
+
+RAG is useful when the model needs source chunks at answer time. The LLM Wiki pattern is different:
+the synthesis itself becomes an artifact.
+
+AgentPlane keeps that distinction:
+
+- `context/raw/**` is evidence
+- `context/wiki/**` is maintained synthesis
+- `context/facts/**/*.jsonl` is structured claim storage
+- `context/graph/**/*.jsonl` is the relationship layer
+- `.agentplane/context/derived/**` is rebuildable projection
+- `.agentplane/tasks/**` is the workflow trail that explains how context changed
+
+The cache can help retrieval. It does not own truth.
+
+## The practical outcome
+
+For a repository, the payoff is direct:
+
+- a new agent can search context before touching files
+- a reviewer can inspect which source backed a wiki update
+- a repeated failure mode can become a sourced project fact
+- a release lesson can be harvested from a completed task
+- context changes can pass through the same task, plan, verification, and ACR loop as code
+
+Karpathy's formulation is personal and exploratory: Obsidian as the IDE, the LLM as the maintainer,
+the wiki as the codebase.
+
+AgentPlane's version is operational: Git as the durability layer, `AGENTS.md` as the operating
+schema, task history as evidence, and verification as the promotion gate.
+
+That is the context-management story in AgentPlane 0.6.

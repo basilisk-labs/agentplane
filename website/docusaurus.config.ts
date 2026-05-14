@@ -127,6 +127,12 @@ const config = {
           activeBaseRegex: "^/docs/user/agent-change-record",
         },
         {
+          to: "/docs/user/local-context",
+          label: "Context",
+          position: "right",
+          activeBaseRegex: "^/docs/user/local-context",
+        },
+        {
           to: "/docs/workflow-guides",
           label: "Workflows",
           position: "right",

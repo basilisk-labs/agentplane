@@ -95,6 +95,36 @@ agentplane acr explain <task-id>
 
 Schema: [`schemas/acr-v0.1.schema.json`](schemas/acr-v0.1.schema.json).
 
+## Context management
+
+AgentPlane also gives agents a repository-owned memory layer. Instead of asking an agent to
+rediscover project knowledge from raw files on every prompt, keep reusable context in Git and let
+AgentPlane project it into searchable local state.
+
+```text
+context/raw/**              source material
+context/wiki/**             maintained markdown wiki
+context/facts/**/*.jsonl    sourced facts
+context/graph/**/*.jsonl    entities and relationships
+.agentplane/context/derived disposable generated projection
+```
+
+Initialize it with:
+
+```bash
+agentplane context init
+agentplane context learn changes
+agentplane context learn tasks --tag release --limit 20 --dry-run
+agentplane context search "release checklist"
+agentplane context check
+```
+
+The model matches the LLM Wiki pattern: raw sources stay immutable, the wiki accumulates synthesis,
+and schema/policy files tell agents how to maintain it. AgentPlane adds task lifecycle, provenance,
+proposal-before-promotion, and verification gates so context updates remain reviewable.
+
+Read [Local context](docs/user/local-context.mdx).
+
 ## First task flow
 
 Create a task:
