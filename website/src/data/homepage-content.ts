@@ -1,6 +1,7 @@
 export const githubUrl = "https://github.com/basilisk-labs/agentplane";
 export const docsUrl = "/docs/user/overview";
 export const acrUrl = "/docs/user/agent-change-record";
+export const contextUrl = "/docs/user/local-context";
 export const workflowGuidesUrl = "/docs/workflow-guides";
 export const recipesUrl = "/docs/recipes";
 export const comparisonUrl = "/docs/compare";
@@ -144,6 +145,26 @@ export const homepageContent = {
     },
     action: { label: "Read the ACR spec", to: acrUrl },
   },
+  context: {
+    title: "Context management for agent work.",
+    text: "AgentPlane applies the LLM Wiki pattern to software repositories: raw sources stay in Git, agents maintain a structured wiki, facts and graph edges preserve sourced claims, and disposable projections make the knowledge searchable without becoming the source of truth.",
+    terminal: {
+      title: "Context path",
+      lines: [
+        "agentplane context init",
+        "agentplane context learn changes",
+        "agentplane context learn tasks --tag release --limit 20 --dry-run",
+        'agentplane context search "release checklist"',
+      ],
+    },
+    bullets: [
+      "`context/raw/**` keeps source material.",
+      "`context/wiki/**` accumulates maintained markdown synthesis.",
+      "`context/facts/**/*.jsonl` and `context/graph/**/*.jsonl` keep structured claims.",
+      "`context verify-task` checks provenance before context-bearing tasks close.",
+    ],
+    action: { label: "Read local context docs", to: contextUrl },
+  },
   recipesCatalog: {
     title: "Extensions, not the core story.",
     text: "Recipes are optional signed packages for teams that want reusable agent profiles, prompt modules, skills, or repository mapping assets.",
@@ -175,6 +196,12 @@ export const homepageContent = {
         text: "Add task evidence and ACR validation before merge.",
         action: "Read ACR",
         to: acrUrl,
+      },
+      {
+        title: "Managing context?",
+        text: "Use local context to turn raw sources, completed tasks, and recurring findings into reviewable repository knowledge.",
+        action: "Open context docs",
+        to: contextUrl,
       },
       {
         title: "Comparing alternatives?",
