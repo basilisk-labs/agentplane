@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T20:21:27Z",
   "base": "main",
   "branch": "task/202605141942-R7ZZE0/versioned-readme-headers",
   "created_at": "2026-05-14T19:43:17.925Z",
-  "head_sha": "c5f30af054863235cdc1d9c3bd1ee0ada65219c9",
+  "head_sha": "5eef2545cd4b0ef59a206c93203f45cb4f45634e",
   "last_verified_at": "2026-05-14T19:49:40.237Z",
   "last_verified_sha": "b9ebb6e0eb9c2f74dccaabbd7d9559bea497422b",
+  "merge_commit": "3b73d50feebb08e421e4e12d9638d8ca8a634f39",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T20:21:27Z",
   "pr_number": 3759,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3759",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605141942-R7ZZE0",
-  "updated_at": "2026-05-14T19:51:08.780Z",
+  "updated_at": "2026-05-14T20:21:27Z",
   "verify": {
     "status": "pass"
   }

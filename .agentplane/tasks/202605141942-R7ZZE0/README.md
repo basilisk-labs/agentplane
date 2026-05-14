@@ -1,10 +1,11 @@
 ---
 id: "202605141942-R7ZZE0"
 title: "Generate versioned README header images"
-status: "DOING"
+result_summary: "Merged via PR #3759."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bun run docs:readme-header:check | Result: pass | Evidence: README header artifacts are fresh for v0.6.0 | Scope: generated README header SVGs and README link blocks. Command: release distribution render checks | Result: pass with local credential skips for external PR checks | Evidence: distribution and GHCR checks passed; Homebrew/Scoop/setup-action local checks exited skipped_missing_credentials; publish workflow contract tests prove incomplete external distribution fails closed. Command: bunx vitest release workflow contract tests | Result: pass | Evidence: 5 files, 18 tests passed. Command: release:bun:check and release:parity | Result: pass | Evidence: Bun executable assets fresh for v0.6.0; package parity 0.6.0 aligned. Command: formatting, routing, doctor, SVG XML | Result: pass with pre-existing doctor warnings | Evidence: Prettier/diff-check/routing/xmllint passed; doctor OK with existing shipped-task reconciliation warnings."
   attempts: 0
-commit: null
+commit:
+  hash: "3b73d50feebb08e421e4e12d9638d8ca8a634f39"
+  message: "Merge pull request #3759 from basilisk-labs/task/202605141942-R7ZZE0/versioned-readme-headers"
 comments:
   -
     author: "CODER"
     body: "Start: extend the generated README header image pipeline and update linked README surfaces from the dedicated task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3759 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run docs:readme-header:check | Result: pass | Evidence: README header artifacts are fresh for v0.6.0 | Scope: generated README header SVGs and README link blocks. Command: release distribution render checks | Result: pass with local credential skips for external PR checks | Evidence: distribution and GHCR checks passed; Homebrew/Scoop/setup-action local checks exited skipped_missing_credentials; publish workflow contract tests prove incomplete external distribution fails closed. Command: bunx vitest release workflow contract tests | Result: pass | Evidence: 5 files, 18 tests passed. Command: release:bun:check and release:parity | Result: pass | Evidence: Bun executable assets fresh for v0.6.0; package parity 0.6.0 aligned. Command: formatting, routing, doctor, SVG XML | Result: pass with pre-existing doctor warnings | Evidence: Prettier/diff-check/routing/xmllint passed; doctor OK with existing shipped-task reconciliation warnings."
+  -
+    type: "status"
+    at: "2026-05-14T20:22:21.374Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3759 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T19:49:40.250Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T20:22:21.379Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend the README header image generator so the current AgentPlane version produces reusable header images and package/related README files link to those generated artifacts."
 sections:
   Summary: |-
