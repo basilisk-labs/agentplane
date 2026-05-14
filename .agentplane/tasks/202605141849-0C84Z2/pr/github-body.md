@@ -2,6 +2,8 @@ Task: `202605141849-0C84Z2`
 Title: Fix doc section readback for issue #3747
 Canonical task record: `.agentplane/tasks/202605141849-0C84Z2/README.md`
 
+Closes #3747
+
 ## Summary
 
 Fix GitHub issue #3747 where task doc set can report success for a section that later disappears from canonical task doc readback, making task doc show and task plan approve disagree.
@@ -12,14 +14,19 @@ In scope: local task README/doc section handling for doc_version=3, command beha
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Focused verification passed for issue #3747 fix: agentplane backend/doc/plan Vitest suites passed,
+core task-readme suite passed, and policy routing passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T18:55:07.563Z
+- Updated: 2026-05-14T18:55:15.523Z
 - Branch: task/202605141849-0C84Z2/fix-doc-section-readback-3747
 - Head: 2917c1d0eb28
 
