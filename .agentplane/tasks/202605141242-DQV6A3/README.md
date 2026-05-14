@@ -1,10 +1,11 @@
 ---
 id: "202605141242-DQV6A3"
 title: "Use full-width README header on GitHub and npm"
-status: "DOING"
+result_summary: "Merged via PR #3711."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Re-verified after addressing Codex review: README headers now use CSS style width/max-width instead of invalid percentage width attributes; formatting, policy routing, doctor, npm pack dry run, and whitespace checks passed."
   attempts: 0
-commit: null
+commit:
+  hash: "26ed8da718dd18f7da5ab260561103e130c09e4a"
+  message: "Merge pull request #3711 from basilisk-labs/task/202605141242-DQV6A3/npm-readme-header"
 comments:
   -
     author: "CODER"
     body: "Start: implement full-width root README header and add the same generated header to the npm package README surface."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3711 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Re-verified after addressing Codex review: README headers now use CSS style width/max-width instead of invalid percentage width attributes; formatting, policy routing, doctor, npm pack dry run, and whitespace checks passed."
+  -
+    type: "status"
+    at: "2026-05-14T13:36:32.344Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3711 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T13:02:26.089Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T13:36:32.350Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make the generated header image use full available width in the root README and add the same generated header to the npm package README surface."
 sections:
   Summary: |-

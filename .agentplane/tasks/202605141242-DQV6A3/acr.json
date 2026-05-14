@@ -1,0 +1,203 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605141242-DQV6A3",
+  "created_at": "2026-05-14T13:36:32.406Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "26ed8da718dd18f7da5ab260561103e130c09e4a",
+    "work_ref": "main",
+    "work_commit": "26ed8da718dd18f7da5ab260561103e130c09e4a"
+  },
+  "task": {
+    "task_id": "202605141242-DQV6A3",
+    "title": "Use full-width README header on GitHub and npm",
+    "intent": "Make the generated header image use full available width in the root README and add the same generated header to the npm package README surface.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605141242-DQV6A3/README.md",
+      "sha256": "sha256:2de23a268fb05418239c3b4ef9c15cfba0c087ce7a7b3af6a3999ca855536792"
+    },
+    "approved_at": "2026-05-14T12:42:44.430Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3711.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605141242-DQV6A3_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T12:42:44.430Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605141242-DQV6A3/README.md",
+      "sha256": "sha256:2de23a268fb05418239c3b4ef9c15cfba0c087ce7a7b3af6a3999ca855536792"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605141242-DQV6A3/README.md",
+      "sha256": "sha256:2de23a268fb05418239c3b4ef9c15cfba0c087ce7a7b3af6a3999ca855536792"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605141242-DQV6A3/README.md",
+      "sha256": "sha256:2de23a268fb05418239c3b4ef9c15cfba0c087ce7a7b3af6a3999ca855536792"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605141242-DQV6A3/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:dfc6d4343fa53fd1cc05f2c6a91380a92dfa76f57a448d56dd7722ce653b593b"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 26ed8da718dd18f7da5ab260561103e130c09e4a if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:15f341e09a784eebc7ab59d51a3dc5e454ef2eb52056056de249837478aa9393",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "docs.change",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "docs.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "docs.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "docs.artifact",
+          "kind": "artifact",
+          "produced_by": "artifact_write",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605141242-DQV6A3/blueprint/resolved-snapshot.json",
+        "digest": "7eff10a80745b59188c6807ff2ba53cad11207aaa99d0085f928c18dc92ed163",
+        "current_digest": "7eff10a80745b59188c6807ff2ba53cad11207aaa99d0085f928c18dc92ed163",
+        "route_changed": false,
+        "artifact_sha256": "sha256:dfc6d4343fa53fd1cc05f2c6a91380a92dfa76f57a448d56dd7722ce653b593b",
+        "safe_command": "agentplane blueprint snapshot 202605141242-DQV6A3"
+      }
+    }
+  }
+}

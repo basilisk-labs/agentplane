@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T13:35:54Z",
   "base": "main",
   "branch": "task/202605141242-DQV6A3/npm-readme-header",
   "created_at": "2026-05-14T12:43:23.167Z",
-  "head_sha": "e6c6e16a941e6ff8807e4bb85ad26b0426be9069",
+  "head_sha": "0f446258f4c218e78da81870809519c260cf20b7",
   "last_verified_at": "2026-05-14T13:02:26.080Z",
   "last_verified_sha": "e6c6e16a941e6ff8807e4bb85ad26b0426be9069",
+  "merge_commit": "26ed8da718dd18f7da5ab260561103e130c09e4a",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T13:35:54Z",
   "pr_number": 3711,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3711",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605141242-DQV6A3",
-  "updated_at": "2026-05-14T13:02:26.120Z",
+  "updated_at": "2026-05-14T13:35:54Z",
   "verify": {
     "status": "pass"
   }
