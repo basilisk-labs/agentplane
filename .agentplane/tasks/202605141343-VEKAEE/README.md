@@ -1,10 +1,11 @@
 ---
 id: "202605141343-VEKAEE"
 title: "Add structured blueprint route decision schema"
-status: "DOING"
+result_summary: "Blueprint route decision SGR contract implemented and merged via PR #3716."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +27,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: blueprint route decision SGR contract is now consumed by blueprint explain output as a validated blueprint_route_decision v1 object with selected route, evidence, stop rules, and weak links. Checks passed after CI knip fix: bun test focused SGR/blueprint/evaluator/context files; bun run --filter=agentplane typecheck; bun run knip:check; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings."
   attempts: 0
-commit: null
+commit:
+  hash: "bb0435d2af54f85fd1fe57c8ce7277a8eef661a8"
+  message: "Merge pull request #3716 from basilisk-labs/task/202605141342-R793XK/sgr-reliability-schemas"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the blueprint route decision SGR schema inside the approved R793XK batch worktree and keeping verification evidence separate for this task."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: blueprint route decision SGR schema shipped in PR #3716 with hosted checks green and merge commit recorded."
 events:
   -
     type: "status"
@@ -51,9 +57,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: blueprint route decision SGR contract is now consumed by blueprint explain output as a validated blueprint_route_decision v1 object with selected route, evidence, stop rules, and weak links. Checks passed after CI knip fix: bun test focused SGR/blueprint/evaluator/context files; bun run --filter=agentplane typecheck; bun run knip:check; focused eslint; git diff --check; node .agentplane/policy/check-routing.mjs; ap doctor with only pre-existing branch_pr reconciliation warnings."
+  -
+    type: "status"
+    at: "2026-05-14T15:55:43.983Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: blueprint route decision SGR schema shipped in PR #3716 with hosted checks green and merge commit recorded."
 doc_version: 3
-doc_updated_at: "2026-05-14T14:30:41.745Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T15:55:43.987Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a structured Schema-Guided Reasoning contract for blueprint route decisions so facts, inferred task kind, rejected routes, selected route, evidence requirements, stop rules, and weak links can be inspected consistently."
 sections:
   Summary: |-
