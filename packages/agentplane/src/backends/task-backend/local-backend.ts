@@ -15,8 +15,6 @@ import {
   listLocalTasks,
 } from "./local-backend-read.js";
 import {
-  exportLocalProjectionSnapshot,
-  exportLocalTasksJson,
   generateLocalTaskId,
   normalizeLocalTasks,
   writeLocalTask,
@@ -37,7 +35,7 @@ export class LocalBackend implements TaskBackend {
     may_access_network_on_write: false,
     supports_projection_refresh: false,
     supports_push_sync: false,
-    supports_snapshot_export: true,
+    supports_snapshot_export: false,
   } as const;
   root: string;
   updatedBy: string;
@@ -115,13 +113,5 @@ export class LocalBackend implements TaskBackend {
 
   async normalizeTasks(): Promise<{ scanned: number; changed: number }> {
     return await normalizeLocalTasks(this.backendContext());
-  }
-
-  async exportTasksJson(outputPath: string): Promise<void> {
-    await exportLocalTasksJson(this.backendContext(), outputPath);
-  }
-
-  async exportProjectionSnapshot(outputPath: string): Promise<void> {
-    await exportLocalProjectionSnapshot(this.backendContext(), outputPath);
   }
 }

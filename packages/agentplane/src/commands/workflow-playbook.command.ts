@@ -78,8 +78,7 @@ function buildPlaybookCommands(opts: {
   }
   if (opts.mode === "sync") {
     return [
-      ap("task", "list"),
-      ap("task", "export"),
+      ap("task", "list", "--strict-read"),
       { kind: "git", args: ["status", "--short", "--untracked-files=no"] },
     ];
   }

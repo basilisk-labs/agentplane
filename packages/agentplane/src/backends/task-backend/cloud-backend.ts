@@ -1,5 +1,4 @@
 import path from "node:path";
-import { randomUUID } from "node:crypto";
 
 import { loadDotEnv, type DotEnvLoadResult } from "../../shared/env.js";
 import { isRecord } from "../../shared/guards.js";
@@ -14,37 +13,30 @@ import {
 } from "./shared.js";
 import type { LocalBackend } from "./local-backend.js";
 import { buildCloudPullPlan, emitCloudPullDiffSummary, readOpenConflicts } from "./cloud-pull.js";
+import { requestCloudPush } from "./cloud-backend-push.js";
 import {
-  CLOUD_PUSH_BATCH_RETRY_DELAYS_MS,
-  CLOUD_PUSH_BATCH_REQUEST_TIMEOUT_MS,
-  CLOUD_PUSH_BATCH_TASK_BYTES,
   CLOUD_PULL_REQUEST_TIMEOUT_MS,
   CLOUD_REQUEST_TIMEOUT_MS,
-  CLOUD_PUSH_DIRECT_BODY_LIMIT_BYTES,
   CloudHttpError,
   CloudNetworkError,
   cloudConfigOverrides,
   cloudConflictMessage,
   cloudHttpErrorMessage,
-  cloudPushBatchFinalized,
   cloudNetworkErrorMessage,
   configureCloudFetchAddressSelection,
   createTimeoutSignal,
   isOptionalSyncStateFailure,
-  isCloudRetriableError,
   isStale,
   normalizeCloudPullResponse,
   normalizePositiveInteger,
   readCloudJson,
   readCloudSyncStateDiagnostics,
   readSafeCommand,
-  splitTasksByPayloadBytes,
   unavailableCloudSyncStateDiagnostics,
   type CloudConfigOverride,
   type CloudSyncStateDiagnostics,
   type CloudSyncResponse,
 } from "./cloud-backend-utils.js";
-import { sleep } from "./shared/concurrency.js";
 import { firstNonEmptyString } from "./shared/strings.js";
 
 export type CloudBackendSettings = {
@@ -55,6 +47,11 @@ export type CloudBackendSettings = {
   cache_dir?: string;
   stale_after_seconds?: number;
   state_path?: string;
+  autosync_enabled?: boolean;
+  autosync_pull_on_read?: boolean;
+  autosync_pull_on_write?: boolean;
+  autosync_push_on_write?: boolean;
+  auto_push_on_mutation?: boolean;
 };
 
 type CloudSyncStateSnapshot = {
@@ -74,11 +71,11 @@ export class CloudBackend implements TaskBackend {
     writes_task_readmes: true,
     supports_task_revisions: true,
     supports_revision_guarded_writes: true,
-    may_access_network_on_read: false,
+    may_access_network_on_read: true,
     may_access_network_on_write: true,
     supports_projection_refresh: true,
     supports_push_sync: true,
-    supports_snapshot_export: true,
+    supports_snapshot_export: false,
   } as const;
   endpoint: string;
   token: string;
@@ -87,9 +84,15 @@ export class CloudBackend implements TaskBackend {
   cache: LocalBackend;
   statePath: string;
   staleAfterSeconds: number | null;
+  autoPushOnMutation: boolean;
   private fetchImpl: typeof fetch;
   private readonly configOverrides: CloudConfigOverride[];
   private readonly dotEnv: Pick<DotEnvLoadResult, "root" | "path" | "loaded">;
+  private readonly autoSyncNetworkAllowed: boolean;
+  private readonly autoSyncEnabled: boolean;
+  private readonly autoSyncPullOnRead: boolean;
+  private readonly autoSyncPullOnWrite: boolean;
+  private readonly autoSyncPushOnWrite: boolean;
   constructor(
     settings: CloudBackendSettings,
     opts: {
@@ -97,6 +100,7 @@ export class CloudBackend implements TaskBackend {
       root: string;
       fetchImpl?: typeof fetch;
       dotEnv?: Pick<DotEnvLoadResult, "root" | "path" | "loaded">;
+      autoSyncNetworkAllowed?: boolean;
     },
   ) {
     const endpoint = firstNonEmptyString(
@@ -111,6 +115,10 @@ export class CloudBackend implements TaskBackend {
     );
     this.provider =
       firstNonEmptyString(process.env.AGENTPLANE_CLOUD_PROVIDER, settings.provider) || null;
+    this.autoPushOnMutation =
+      process.env.AGENTPLANE_CLOUD_AUTO_PUSH_ON_MUTATION === "1" ||
+      process.env.AGENTPLANE_CLOUD_AUTO_PUSH_ON_MUTATION === "true" ||
+      settings.auto_push_on_mutation === true;
     this.configOverrides = cloudConfigOverrides(settings, {
       AGENTPLANE_CLOUD_ENDPOINT: this.endpoint,
       AGENTPLANE_CLOUD_PROJECT_ID: this.projectId,
@@ -130,12 +138,19 @@ export class CloudBackend implements TaskBackend {
     this.staleAfterSeconds = normalizePositiveInteger(settings.stale_after_seconds) ?? 300;
     if (!opts.fetchImpl) configureCloudFetchAddressSelection();
     this.fetchImpl = opts.fetchImpl ?? fetch;
+
+    this.autoSyncNetworkAllowed = opts.autoSyncNetworkAllowed === true;
+    this.autoSyncEnabled = settings.autosync_enabled ?? this.autoSyncNetworkAllowed;
+    this.autoSyncPullOnRead = settings.autosync_pull_on_read ?? true;
+    this.autoSyncPullOnWrite = settings.autosync_pull_on_write ?? true;
+    this.autoSyncPushOnWrite = settings.autosync_push_on_write ?? true;
   }
   static async create(opts: {
     root: string;
     settings: CloudBackendSettings;
     cache: LocalBackend;
     fetchImpl?: typeof fetch;
+    autoSyncNetworkAllowed?: boolean;
   }): Promise<CloudBackend> {
     const dotEnv = await loadDotEnv(opts.root);
     return new CloudBackend(opts.settings, {
@@ -143,31 +158,37 @@ export class CloudBackend implements TaskBackend {
       cache: opts.cache,
       fetchImpl: opts.fetchImpl,
       dotEnv,
+      autoSyncNetworkAllowed: opts.autoSyncNetworkAllowed,
     });
   }
   async generateTaskId(opts: { length: number; attempts: number }): Promise<string> {
     return await this.cache.generateTaskId(opts);
   }
   async listTasks(): Promise<TaskData[]> {
+    await this.maybeAutoPull({ mode: "read", reason: "list_tasks" });
     return await this.cache.listTasks();
   }
   async listProjectionTasks(): Promise<TaskSummary[]> {
+    await this.maybeAutoPull({ mode: "read", reason: "list_projection" });
     return await this.cache.listProjectionTasks();
   }
   getLastListWarnings(): string[] {
     return this.cache.getLastListWarnings();
   }
   async getTask(taskId: string): Promise<TaskData | null> {
+    await this.maybeAutoPull({ mode: "read", reason: "get_task" });
     return await this.cache.getTask(taskId);
   }
   async getTasks(taskIds: string[]): Promise<(TaskData | null)[]> {
+    await this.maybeAutoPull({ mode: "read", reason: "get_tasks" });
     return await this.cache.getTasks(taskIds);
   }
   async getTaskDoc(taskId: string): Promise<string> {
+    await this.maybeAutoPull({ mode: "read", reason: "get_task_doc" });
     return await this.cache.getTaskDoc(taskId);
   }
   async assertLocalMutationReady(): Promise<void> {
-    await this.assertProjectionFreshForLocalMutation();
+    await this.ensureProjectionFreshForLocalMutation({ reason: "assert_local_mutation_ready" });
   }
   async setTaskDoc(
     taskId: string,
@@ -175,34 +196,31 @@ export class CloudBackend implements TaskBackend {
     updatedBy?: string,
     opts?: TaskWriteOptions,
   ): Promise<void> {
-    await this.assertProjectionFreshForLocalMutation();
+    await this.ensureProjectionFreshForLocalMutation({ reason: "set_task_doc" });
     await this.cache.setTaskDoc(taskId, doc, updatedBy, opts);
+    await this.maybeAutoPush();
   }
   async touchTaskDocMetadata(
     taskId: string,
     updatedBy?: string,
     opts?: TaskWriteOptions,
   ): Promise<void> {
-    await this.assertProjectionFreshForLocalMutation();
+    await this.ensureProjectionFreshForLocalMutation({ reason: "touch_task_doc_metadata" });
     await this.cache.touchTaskDocMetadata(taskId, updatedBy, opts);
+    await this.maybeAutoPush();
   }
-
   async writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void> {
-    await this.assertProjectionFreshForLocalMutation();
+    await this.ensureProjectionFreshForLocalMutation({ reason: "write_task" });
     await this.cache.writeTask(task, opts);
+    await this.maybeAutoPush();
   }
   async writeTasks(tasks: TaskData[], opts?: TaskWriteOptions): Promise<void> {
-    await this.assertProjectionFreshForLocalMutation();
+    await this.ensureProjectionFreshForLocalMutation({ reason: "write_tasks" });
     await this.cache.writeTasks(tasks, opts);
+    await this.maybeAutoPush();
   }
   async normalizeTasks(): Promise<{ scanned: number; changed: number }> {
     return await this.cache.normalizeTasks();
-  }
-  async exportTasksJson(outputPath: string): Promise<void> {
-    await this.cache.exportTasksJson(outputPath);
-  }
-  async exportProjectionSnapshot(outputPath: string): Promise<void> {
-    await this.cache.exportProjectionSnapshot(outputPath);
   }
   async refreshProjection(opts: {
     allowNetwork: boolean;
@@ -258,7 +276,14 @@ export class CloudBackend implements TaskBackend {
     }
     const response =
       opts.direction === "push"
-        ? await this.requestCloudPush(localTasks, opts)
+        ? await requestCloudPush({
+            provider: this.provider,
+            projectId: this.projectId,
+            localTasks,
+            conflict: opts.conflict,
+            quiet: opts.quiet,
+            request: this.request.bind(this),
+          })
         : await this.request<CloudSyncResponse>(
             `/v1/projects/${encodeURIComponent(this.projectId)}/sync/${action}`,
             {
@@ -382,105 +407,6 @@ export class CloudBackend implements TaskBackend {
     };
   }
 
-  private async requestCloudPush(
-    localTasks: TaskData[],
-    opts: {
-      conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
-      quiet: boolean;
-    },
-  ): Promise<CloudSyncResponse> {
-    const directBody = JSON.stringify({
-      provider: this.provider,
-      direction: "push",
-      conflict: opts.conflict,
-      tasks: localTasks,
-    });
-    if (Buffer.byteLength(directBody, "utf8") <= CLOUD_PUSH_DIRECT_BODY_LIMIT_BYTES) {
-      return await this.request<CloudSyncResponse>(
-        `/v1/projects/${encodeURIComponent(this.projectId)}/sync/push`,
-        { method: "POST", body: directBody },
-        { timeoutMs: CLOUD_REQUEST_TIMEOUT_MS },
-      );
-    }
-
-    const chunks = splitTasksByPayloadBytes(localTasks, CLOUD_PUSH_BATCH_TASK_BYTES);
-    const batchId = `batch_${Date.now()}_${randomUUID()}`;
-    let lastResponse: CloudSyncResponse | null = null;
-    for (const [index, tasks] of chunks.entries()) {
-      lastResponse = await this.requestCloudPushBatchChunk({
-        batchId,
-        chunkIndex: index,
-        totalChunks: chunks.length,
-        totalTasks: localTasks.length,
-        tasks,
-        conflict: opts.conflict,
-        quiet: opts.quiet,
-      });
-      if (!opts.quiet) {
-        process.stderr.write(
-          `cloud push uploaded batch ${index + 1}/${chunks.length} tasks=${tasks.length}\n`,
-        );
-      }
-      if (index === chunks.length - 1 && !cloudPushBatchFinalized(lastResponse)) {
-        throw new BackendError(
-          [
-            "Cloud backend batch push did not finalize.",
-            "Why: the service did not confirm that every expected chunk was received before replacing the projection.",
-            "Fix: retry the cloud push; chunks are idempotent for one batch id during the run.",
-            "Safe command: agentplane backend sync cloud --direction push --yes",
-            "Stop condition: stop if the service repeatedly reports an incomplete batch after all chunks are uploaded.",
-          ].join("\n"),
-          "E_BACKEND",
-        );
-      }
-    }
-    return lastResponse ?? { data: { last_checked_at: new Date().toISOString() } };
-  }
-
-  private async requestCloudPushBatchChunk(opts: {
-    batchId: string;
-    chunkIndex: number;
-    totalChunks: number;
-    totalTasks: number;
-    tasks: TaskData[];
-    conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
-    quiet: boolean;
-  }): Promise<CloudSyncResponse> {
-    const body = JSON.stringify({
-      provider: this.provider,
-      direction: "push",
-      conflict: opts.conflict,
-      batch: {
-        id: opts.batchId,
-        total_batches: opts.totalChunks,
-        total_tasks: opts.totalTasks,
-        chunk_index: opts.chunkIndex,
-        finalize: opts.chunkIndex === opts.totalChunks - 1,
-      },
-      tasks: opts.tasks,
-    });
-    for (let attempt = 0; ; attempt += 1) {
-      try {
-        return await this.request<CloudSyncResponse>(
-          `/v1/projects/${encodeURIComponent(this.projectId)}/sync/push-batch`,
-          { method: "POST", body },
-          { timeoutMs: CLOUD_PUSH_BATCH_REQUEST_TIMEOUT_MS },
-        );
-      } catch (error) {
-        if (!isCloudRetriableError(error) || attempt >= CLOUD_PUSH_BATCH_RETRY_DELAYS_MS.length) {
-          throw error;
-        }
-        const delayMs = CLOUD_PUSH_BATCH_RETRY_DELAYS_MS[attempt] ?? 0;
-        if (!opts.quiet) {
-          process.stderr.write(
-            `cloud push retrying batch ${opts.chunkIndex + 1}/${opts.totalChunks} after transient error attempt=${attempt + 1}\n`,
-          );
-        }
-        await sleep(delayMs);
-      }
-    }
-  }
-
   async inspectConfiguration(): Promise<TaskBackendInspectionResult> {
     const missing = this.missingConfigKeys();
     const state = await readCloudBackendState(this.statePath);
@@ -540,19 +466,58 @@ export class CloudBackend implements TaskBackend {
     });
   }
 
-  private async assertProjectionFreshForLocalMutation(): Promise<void> {
-    const state = await readCloudBackendState(this.statePath);
+  private async readState() {
+    return await readCloudBackendState(this.statePath);
+  }
+
+  private async ensureProjectionFreshForLocalMutation(opts: { reason: string }): Promise<void> {
+    const state = await this.readState();
     if (!isStale(state.last_checked_at, this.staleAfterSeconds)) return;
+
+    if (this.autoSyncEnabled && this.autoSyncPullOnWrite) {
+      await this.maybeAutoPull({ mode: "write", reason: `mutation_preflight:${opts.reason}` });
+      const refreshed = await this.readState();
+      if (!isStale(refreshed.last_checked_at, this.staleAfterSeconds)) return;
+    }
+
     throw new BackendError(
       [
         "Cloud projection is stale; refusing local task mutation.",
         "Why: the active cloud backend projection may not include recent remote task changes.",
         "Fix: pull the cloud projection before mutating local task state.",
-        "Safe command: agentplane backend sync cloud --direction pull",
+        "Safe command: agentplane backend sync cloud --direction pull --yes",
         "Stop condition: stop if pull reports open conflicts or cannot refresh the projection.",
       ].join("\n"),
       "E_BACKEND",
     );
+  }
+
+  private async maybeAutoPull(opts: { mode: "read" | "write"; reason: string }): Promise<void> {
+    if (!this.autoSyncEnabled) return;
+    if (opts.mode === "read" && !this.autoSyncPullOnRead) return;
+    if (opts.mode === "write" && !this.autoSyncPullOnWrite) return;
+    if (!this.autoSyncNetworkAllowed) return;
+    if (this.missingConfigKeys().length > 0) return;
+    const state = await this.readState();
+    if (!isStale(state.last_checked_at, this.staleAfterSeconds)) return;
+    await this.sync({
+      direction: "pull",
+      conflict: "fail",
+      quiet: true,
+      confirm: true,
+    });
+  }
+
+  private async maybeAutoPush(): Promise<void> {
+    if (!this.autoSyncEnabled || !this.autoSyncPushOnWrite) return;
+    if (!this.autoSyncNetworkAllowed) return;
+    if (this.missingConfigKeys().length > 0) return;
+    await this.sync({
+      direction: "push",
+      conflict: "fail",
+      quiet: true,
+      confirm: true,
+    });
   }
 
   private assertConfigured(): void {

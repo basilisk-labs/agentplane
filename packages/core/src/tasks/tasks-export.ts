@@ -1,9 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
-
 import { loadConfig } from "../config/config.js";
-import { atomicWriteFile } from "../fs/atomic-write.js";
 import { resolveProject } from "../project/project-root.js";
 import { isRecord } from "../types/guards.js";
 import { normalizeTaskDocVersion, type TaskDocVersion } from "./task-doc-contract.js";
@@ -443,20 +439,4 @@ export async function buildTasksExportSnapshot(opts: {
   });
 
   return snapshot;
-}
-
-export async function writeTasksExport(opts: {
-  cwd: string;
-  rootOverride?: string | null;
-}): Promise<{ path: string; snapshot: TasksExportSnapshot }> {
-  const resolved = await resolveProject({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
-  const loaded = await loadConfig(resolved.agentplaneDir);
-  const outPath = path.join(resolved.gitRoot, loaded.config.paths.tasks_path);
-
-  const snapshot = await buildTasksExportSnapshot(opts);
-
-  await mkdir(path.dirname(outPath), { recursive: true });
-  await atomicWriteFile(outPath, `${JSON.stringify(snapshot, null, 2)}\n`);
-
-  return { path: outPath, snapshot };
 }

@@ -123,10 +123,6 @@ export const loadTaskNormalizeSpec = (deps: RunDeps) =>
   import("../../../commands/task/normalize.command.js").then((m) =>
     m.makeRunTaskNormalizeHandler(deps.getCtx),
   );
-export const loadTaskExportSpec = (deps: RunDeps) =>
-  import("../../../commands/task/export.command.js").then((m) =>
-    m.makeRunTaskExportHandler(deps.getCtx),
-  );
 export const loadTaskObsidianSpec = (deps: RunDeps) =>
   import("../../../commands/task/obsidian.command.js").then((m) =>
     m.makeRunTaskObsidianHandler(deps.getCtx),

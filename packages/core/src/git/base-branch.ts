@@ -1,12 +1,16 @@
 import { resolveProject } from "../project/project-root.js";
 import { execFileAsync } from "../process/run-process.js";
 import type { WorkflowMode } from "../config/config.js";
+import { gitEnv } from "./git-client.js";
 
 const GIT_CONFIG_BASE_BRANCH_KEY = "agentplane.baseBranch";
 
 async function gitConfigGet(cwd: string, key: string): Promise<string | null> {
   try {
-    const { stdout } = await execFileAsync("git", ["config", "--local", "--get", key], { cwd });
+    const { stdout } = await execFileAsync("git", ["config", "--local", "--get", key], {
+      cwd,
+      env: gitEnv(),
+    });
     const trimmed = String(stdout).trim();
     return trimmed.length > 0 ? trimmed : null;
   } catch (err) {
@@ -17,12 +21,12 @@ async function gitConfigGet(cwd: string, key: string): Promise<string | null> {
 }
 
 async function gitConfigSet(cwd: string, key: string, value: string): Promise<void> {
-  await execFileAsync("git", ["config", "--local", key, value], { cwd });
+  await execFileAsync("git", ["config", "--local", key, value], { cwd, env: gitEnv() });
 }
 
 async function gitConfigUnset(cwd: string, key: string): Promise<boolean> {
   try {
-    await execFileAsync("git", ["config", "--local", "--unset", key], { cwd });
+    await execFileAsync("git", ["config", "--local", "--unset", key], { cwd, env: gitEnv() });
     return true;
   } catch (err) {
     const code = (err as { code?: number | string } | null)?.code;
@@ -36,7 +40,7 @@ async function gitDefaultBranch(cwd: string): Promise<string | null> {
     const { stdout } = await execFileAsync(
       "git",
       ["symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD"],
-      { cwd },
+      { cwd, env: gitEnv() },
     );
     const trimmed = String(stdout).trim();
     if (!trimmed) return null;

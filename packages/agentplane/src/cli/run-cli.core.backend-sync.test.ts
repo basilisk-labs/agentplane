@@ -446,6 +446,55 @@ describe("runCli", () => {
     }
   });
 
+  it("backend sync watch mode repeatedly pulls until max iterations", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const sync = vi.fn().mockImplementation(() => Promise.resolve());
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: stubTaskBackend({ id: "cloud", sync }),
+      backendId: "cloud",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "cloud", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "backend",
+        "sync",
+        "cloud",
+        "--direction",
+        "pull",
+        "--watch",
+        "--max-iterations",
+        "2",
+        "--interval-ms",
+        "250",
+        "--yes",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(sync).toHaveBeenCalledTimes(2);
+      expect(sync).toHaveBeenLastCalledWith({
+        direction: "pull",
+        conflict: "diff",
+        quiet: true,
+        confirm: true,
+      });
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
   it("backend sync surfaces backend remediation details", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

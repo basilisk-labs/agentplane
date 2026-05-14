@@ -8,7 +8,6 @@ import { taskFindingsSpec } from "../../../commands/task/findings.command.js";
 import { taskDocSetSpec } from "../../../commands/task/doc-set.command.js";
 import { taskDocShowSpec } from "../../../commands/task/doc-show.command.js";
 import { taskDocSpec } from "../../../commands/task/doc.command.js";
-import { taskExportSpec } from "../../../commands/task/export.command.js";
 import { taskHandoffRecordSpec } from "../../../commands/task/handoff-record.command.js";
 import { taskHandoffShowSpec } from "../../../commands/task/handoff-show.command.js";
 import { taskHandoffSpec } from "../../../commands/task/handoff.command.js";
@@ -93,7 +92,6 @@ import {
   loadTaskScrubSpec,
   loadTaskScaffoldSpec,
   loadTaskNormalizeSpec,
-  loadTaskExportSpec,
   loadTaskObsidianCleanSpec,
   loadTaskObsidianSpec,
   loadTaskMigrateSpec,
@@ -226,11 +224,6 @@ export const TASK_COMMANDS = [
   }),
   declareCommand(taskNormalizeSpec, {
     load: loadTaskNormalizeSpec,
-    surface: "internal",
-    helpGroup: "Maintenance",
-  }),
-  declareCommand(taskExportSpec, {
-    load: loadTaskExportSpec,
     surface: "internal",
     helpGroup: "Maintenance",
   }),

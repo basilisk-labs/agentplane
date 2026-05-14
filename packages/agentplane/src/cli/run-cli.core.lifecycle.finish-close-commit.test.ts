@@ -109,7 +109,7 @@ describe("runCli", () => {
         "--author",
         "CODER",
         "--body",
-        "Verified: direct workflow finish updates export and lint with commit metadata present.",
+        "Verified: direct workflow finish updates task docs with commit metadata present.",
         "--result",
         "lifecycle: finish task",
         "--commit",
@@ -130,9 +130,6 @@ describe("runCli", () => {
     const task = await readTask({ cwd: root, rootOverride: root, taskId });
     expect(task.frontmatter.status).toBe("DONE");
     expect(task.frontmatter.commit?.hash).toBeTruthy();
-    await runCliSilent(["task", "export", "--root", root]);
-    const tasksJson = await readFile(path.join(root, ".agentplane", "tasks.json"), "utf8");
-    expect(tasksJson).toContain(taskId);
   });
 
   it(

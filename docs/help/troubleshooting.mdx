@@ -3,12 +3,6 @@ title: "Troubleshooting"
 description: "Fix common setup and workflow issues when using Agent Plane locally."
 ---
 
-## exported tasks.json looks stale
-
-- Why this happens: the optional tasks export snapshot is not the live task store.
-- What to do: inspect hidden maintenance commands with `agentplane help --all`, regenerate the
-  advanced export snapshot, and then re-check your downstream tool.
-
 ## command fails with config validation errors
 
 - Symptom: commands like `agentplane config show` or `agentplane task list` fail with a schema error.

@@ -180,6 +180,8 @@ describe("context release readiness guards", () => {
     const createTask = vi.fn(async () => {
       tasks.push({ id: "202605130501-CTXRUN", owner: "CURATOR" });
     });
+    const approveTaskPlan = vi.fn(async () => 0);
+    const startTask = vi.fn(async () => 0);
     const runTask = vi.fn(async () => 0);
     const ctx = {
       resolvedProject: { gitRoot: root },
@@ -204,10 +206,28 @@ describe("context release readiness guards", () => {
         includePrivate: false,
       },
       createTask,
+      approveTaskPlan,
+      startTask,
       runTask,
     });
 
     expect(createTask).toHaveBeenCalledOnce();
+    expect(approveTaskPlan).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cwd: root,
+        rootOverride: undefined,
+        taskId: "202605130501-CTXRUN",
+        by: "ORCHESTRATOR",
+      }),
+    );
+    expect(startTask).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cwd: root,
+        rootOverride: undefined,
+        taskId: "202605130501-CTXRUN",
+        author: "CURATOR",
+      }),
+    );
     expect(runTask).toHaveBeenCalledWith(
       { cwd: root, rootOverride: undefined },
       { taskId: "202605130501-CTXRUN", dryRun: false },

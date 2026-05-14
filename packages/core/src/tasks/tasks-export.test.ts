@@ -4,12 +4,12 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
+  buildTasksExportSnapshot,
   computeTasksChecksum,
   createTask,
   defaultConfig,
   saveConfig,
   type TasksExportTask,
-  writeTasksExport,
 } from "../index.js";
 
 async function mkGitRepoRoot(): Promise<string> {
@@ -33,7 +33,7 @@ describe("tasks-export", () => {
     expect(checksum).toBe("69d3598cb3ad99b8b5d1f0f131ba51c796c5f7620e1b484dfb4e1188df24209f");
   });
 
-  it("writeTasksExport writes .agentplane/tasks.json with matching checksum", async () => {
+  it("buildTasksExportSnapshot builds a checksum-bearing export snapshot", async () => {
     const root = await mkGitRepoRoot();
 
     const created = await createTask({
@@ -85,14 +85,8 @@ describe("tasks-export", () => {
       "utf8",
     );
 
-    const { path: outPath, snapshot } = await writeTasksExport({ cwd: root, rootOverride: root });
-    expect(outPath).toBe(path.join(root, ".agentplane", "tasks.json"));
+    const snapshot = await buildTasksExportSnapshot({ cwd: root, rootOverride: root });
     expect(snapshot.meta.checksum).toBe(computeTasksChecksum(snapshot.tasks));
-
-    const text = await readFile(outPath, "utf8");
-    const loaded = JSON.parse(text) as typeof snapshot;
-    expect(loaded.meta.checksum).toBe(snapshot.meta.checksum);
-    expect(Array.isArray(loaded.tasks)).toBe(true);
     expect(snapshot.tasks.find((t) => t.id === created.id)?.origin).toEqual({ system: "manual" });
 
     const malformed = snapshot.tasks.find((t) => t.id === malformedId);
@@ -129,7 +123,7 @@ describe("tasks-export", () => {
       "utf8",
     );
 
-    const { snapshot } = await writeTasksExport({ cwd: root, rootOverride: root });
+    const snapshot = await buildTasksExportSnapshot({ cwd: root, rootOverride: root });
     const exported = snapshot.tasks.find((t) => t.id === taskId);
     expect(exported).toBeUndefined();
   });
@@ -171,7 +165,7 @@ describe("tasks-export", () => {
       "utf8",
     );
 
-    const { snapshot } = await writeTasksExport({ cwd: root, rootOverride: root });
+    const snapshot = await buildTasksExportSnapshot({ cwd: root, rootOverride: root });
     const exported = snapshot.tasks.find((t) => t.id === taskId);
     expect(exported?.events?.length).toBe(1);
     expect(exported?.events?.[0]?.type).toBe("status");
@@ -208,7 +202,7 @@ describe("tasks-export", () => {
       "utf8",
     );
 
-    const { snapshot } = await writeTasksExport({ cwd: root, rootOverride: root });
+    const snapshot = await buildTasksExportSnapshot({ cwd: root, rootOverride: root });
     const exported = snapshot.tasks.find((t) => t.id === taskId);
     expect(exported?.doc_version).toBe(3);
   });

@@ -14,5 +14,4 @@ export type TaskBackendPort = {
   listProjectionTasks?: () => Promise<TaskSummary[]>;
   getTask(id: string): Promise<TaskData | null>;
   writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void>;
-  exportProjectionSnapshot(path: string): Promise<void>;
 };

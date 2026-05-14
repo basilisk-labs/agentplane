@@ -6,7 +6,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   cmdTaskAdd,
-  cmdTaskExport,
   cmdTaskLint,
   cmdTaskListWithFilters,
   cmdTaskNext,
@@ -594,24 +593,20 @@ describe("commands/workflow", () => {
     }
   });
 
-  it("task export writes tasks.json and task lint validates", async () => {
+  it("task lint validates the canonical task store without exporting tasks.json", async () => {
     const root = await makeRepo();
     await addTask(root, "202602050900-A1B2");
-
-    const ioExport = captureStdIO();
-    try {
-      const code = await cmdTaskExport({ cwd: root });
-      expect(code).toBe(0);
-      expect(ioExport.stdout.trim()).toBe(".agentplane/tasks.json");
-    } finally {
-      ioExport.restore();
-    }
 
     const ioLint = captureStdIO();
     try {
       const code = await cmdTaskLint({ cwd: root });
       expect(code).toBe(0);
       expect(ioLint.stdout).toContain("OK");
+      await expect(
+        readFile(path.join(root, ".agentplane", "tasks.json"), "utf8"),
+      ).rejects.toMatchObject({
+        code: "ENOENT",
+      });
     } finally {
       ioLint.restore();
     }

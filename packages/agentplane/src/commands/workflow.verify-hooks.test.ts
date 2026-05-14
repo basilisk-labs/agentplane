@@ -6,7 +6,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
   cmdTaskAdd,
-  cmdTaskExport,
   cmdTaskVerifyOk,
   cmdTaskVerifyRework,
   cmdFinish,
@@ -374,7 +373,7 @@ describe("commands/workflow", () => {
       code: "E_USAGE",
     });
 
-    await cmdTaskExport({ cwd: root });
+    await writeFile(path.join(root, ".agentplane", "tasks.json"), "{}", "utf8");
     await execFileAsync("git", ["add", ".agentplane/tasks.json"], { cwd: root });
     const prevAllowTasks = process.env.AGENTPLANE_ALLOW_TASKS;
     delete process.env.AGENTPLANE_ALLOW_TASKS;

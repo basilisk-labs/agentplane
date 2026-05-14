@@ -93,17 +93,7 @@ describe("LocalBackend", () => {
     const all = await backend.listTasks();
     expect(all).toHaveLength(1);
 
-    const outPath = path.join(tempDir, "tasks.json");
-    await backend.exportTasksJson(outPath);
-    const raw = JSON.parse(await readFile(outPath, "utf8")) as { tasks: TaskData[] };
-    expect(raw.tasks).toHaveLength(1);
-
-    const projectionOutPath = path.join(tempDir, "projection-tasks.json");
-    await backend.exportProjectionSnapshot(projectionOutPath);
-    const projectionRaw = JSON.parse(await readFile(projectionOutPath, "utf8")) as {
-      tasks: TaskData[];
-    };
-    expect(projectionRaw.tasks).toHaveLength(1);
+    expect(backend.capabilities.supports_snapshot_export).toBe(false);
   });
 
   it("uses cached projection entries when the README mtime is unchanged", async () => {

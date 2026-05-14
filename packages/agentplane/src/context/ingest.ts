@@ -8,9 +8,11 @@ import { mapBackendError } from "../cli/error-map.js";
 import { CliError } from "../shared/errors.js";
 import { writeJsonStableIfChanged } from "../shared/write-if-changed.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
-import type { TaskNewParsed } from "../commands/task/new.js";
+import { cmdTaskPlanApprove } from "../commands/task/plan.js";
+import { cmdTaskStartReady } from "../commands/task/start-ready.js";
 import { runTaskNewParsed } from "../commands/task/new.js";
 import { runTaskRun } from "../commands/task/run.command.js";
+import { createTaskNewParsed, selectedSourceRows } from "./ingest-task.js";
 import { cmdContextReindex } from "./reindex.js";
 
 type ContextIngestMode = "changed" | "all" | "sources";
@@ -24,7 +26,7 @@ type ManifestSourceStatus =
   | "unsupported"
   | "error";
 
-type ManifestEntry = {
+export type ManifestEntry = {
   path: string;
   sha256: string;
   size_bytes: number;
@@ -53,63 +55,6 @@ function defaultWorkspaceHash(root: string): string {
   return `sha256:${createHash("sha256").update(root).digest("hex").slice(0, 16)}`;
 }
 
-function selectedSourceRows(
-  opts: Pick<ContextIngestParsed, "mode" | "includePrivate">,
-  sourceRows: ManifestEntry[],
-): ManifestEntry[] {
-  const visible = opts.includePrivate
-    ? sourceRows
-    : sourceRows.filter((entry) => entry.status !== "private");
-  if (opts.mode === "changed") {
-    return visible.filter(
-      (entry) =>
-        entry.status === "new" ||
-        entry.status === "changed" ||
-        (opts.includePrivate && entry.status === "private"),
-    );
-  }
-  return visible;
-}
-
-function buildIngestMetadata(
-  opts: Omit<ContextIngestParsed, "runTask">,
-  sourceRows: ManifestEntry[],
-): {
-  title: string;
-  description: string;
-  verify: string[];
-} {
-  const modeLabel = {
-    all: "all tracked sources",
-    changed: "changed sources",
-    sources: "explicit sources",
-  }[opts.mode];
-  const modeSource = selectedSourceRows(opts, sourceRows);
-  const title = `context assimilation (${modeLabel})`;
-  const description = [
-    `Source context assimilation for ${modeLabel}.`,
-    "This task is created by `context ingest`.",
-    `Source set: ${JSON.stringify(modeSource.map((row) => row.path))}`,
-    `Mode detail: mode=${opts.mode}, indexOnly=${opts.indexOnly}, dryRun=${opts.dryRun}`,
-    `Total tracked candidates: ${sourceRows.length}`,
-    `Changed/new candidates: ${modeSource.length}`,
-    `private-only filtering: enabled`,
-    `Run policy: task-owner CURATOR`,
-  ].join("\n");
-  return {
-    title,
-    description,
-    verify: [
-      "agentplane context verify-task <created-task-id>",
-      "agentplane context doctor",
-      "agentplane context graph validate",
-      'agentplane context search "<smoke-query>" --format json',
-      "agentplane acr generate <created-task-id> --write",
-      "agentplane acr check <created-task-id>",
-    ],
-  };
-}
-
 function statusHistogram(rows: ManifestEntry[]): Record<ManifestSourceStatus, number> {
   const counts: Record<ManifestSourceStatus, number> = {
     new: 0,
@@ -124,87 +69,6 @@ function statusHistogram(rows: ManifestEntry[]): Record<ManifestSourceStatus, nu
     counts[row.status] += 1;
   }
   return counts;
-}
-
-function createTaskNewParsed(
-  opts: ContextIngestParsed,
-  sourceRows: ManifestEntry[],
-): TaskNewParsed {
-  const metadata = buildIngestMetadata(opts, sourceRows);
-  const now = new Date().toISOString();
-  const selectedRows = selectedSourceRows(opts, sourceRows);
-  const allowCapabilities = false;
-  const allowedOutputs = [
-    "context/wiki/**",
-    ".agentplane/context/derived/facts/**",
-    ".agentplane/context/derived/graph/**",
-    ".agentplane/context/derived/reports/**",
-    ".agentplane/tasks/${taskId}/README.md",
-    ".agentplane/tasks/${taskId}/acr.json",
-  ];
-  if (allowCapabilities) {
-    allowedOutputs.push("context/capabilities/**", ".agentplane/context/derived/capabilities/**");
-  }
-  return {
-    title: metadata.title,
-    description: metadata.description,
-    owner: "CURATOR",
-    priority: "med",
-    tags: ["context", "assimilation"],
-    taskKind: "context",
-    mutationScope: "context",
-    blueprintRequest: "context.assimilation",
-    extensions: {
-      "agentplane.context": {
-        schema_version: 1,
-        task_type: "context_assimilation",
-        manifest: ".agentplane/context/agentplane.context.yaml",
-        workspace: "context",
-        mode: "wiki",
-        source_set: {
-          selection: opts.mode,
-          include_private: opts.includePrivate,
-          generated_at: now,
-          files: selectedRows.map((row) => ({
-            path: row.path,
-            sha256: row.sha256,
-            status: row.status,
-            content_type: row.content_type,
-            size_bytes: row.size_bytes,
-          })),
-        },
-        allowed_outputs: allowedOutputs,
-        assimilation: {
-          update_wiki: true,
-          extract_entities: true,
-          extract_facts: true,
-          extract_relations: true,
-          detect_contradictions: true,
-          detect_open_questions: true,
-          propose_capabilities: allowCapabilities,
-          update_capabilities: allowCapabilities,
-          allow_raw_mutation: false,
-        },
-        forbidden_outputs: [
-          "context/raw/**",
-          "context/raw/private/**",
-          ".agentplane/cache.sqlite",
-          ".agentplane/context/service/**",
-        ],
-        policies: {
-          context_rules: ".agentplane/context/policies/context.rules.md",
-          wiki_rules: ".agentplane/context/policies/wiki.rules.md",
-          capability_rules: ".agentplane/context/policies/capability.rules.md",
-          redaction: ".agentplane/context/policies/redaction.rules.yaml",
-        },
-      },
-    },
-    dependsOn: [],
-    verify: metadata.verify,
-    showBlueprint: false,
-    allowDuplicate: true,
-    riskFlags: [],
-  };
 }
 
 function buildTaskIdHint(opts: { mode: ContextIngestMode; sources: string[] }): string {
@@ -495,6 +359,8 @@ export async function cmdContextIngest(opts: {
   rootOverride?: string;
   parsed: ContextIngestParsed;
   createTask?: typeof runTaskNewParsed;
+  approveTaskPlan?: typeof cmdTaskPlanApprove;
+  startTask?: typeof cmdTaskStartReady;
   runTask?: typeof runTaskRun;
 }): Promise<number> {
   const ctx =
@@ -563,8 +429,12 @@ export async function cmdContextIngest(opts: {
       parsed: taskParsed,
     });
     const after = await ctx.taskBackend.listTasks();
-    const created = after.filter((task) => !before.has(task.id));
-    const contextCreated = created.find((task) => task.owner === "CURATOR");
+    const created = after
+      .filter((task) => !before.has(task.id) && task.owner === "CURATOR")
+      .toSorted((left, right) =>
+        String(right.doc_updated_at ?? "").localeCompare(String(left.doc_updated_at ?? "")),
+      );
+    const contextCreated = created[0];
     if (!contextCreated) {
       throw new CliError({
         exitCode: 3,
@@ -578,6 +448,27 @@ export async function cmdContextIngest(opts: {
     );
 
     if (!opts.parsed.runTask) return 0;
+    const approveTaskPlan = opts.approveTaskPlan ?? cmdTaskPlanApprove;
+    const startTask = opts.startTask ?? cmdTaskStartReady;
+    await approveTaskPlan({
+      ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: contextCreated.id,
+      by: "ORCHESTRATOR",
+      note: "Auto-approved by context ingest --run after creating the scoped assimilation task.",
+    });
+    await startTask({
+      ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: contextCreated.id,
+      author: "CURATOR",
+      body: `Start: Run context assimilation for ${buildTaskIdHint({ mode: opts.parsed.mode, sources: opts.parsed.sources })} after explicit --run request.`,
+      force: false,
+      yes: true,
+      quiet: true,
+    });
     const runTask = opts.runTask ?? runTaskRun;
     return await runTask(
       { cwd: opts.cwd, rootOverride: opts.rootOverride },

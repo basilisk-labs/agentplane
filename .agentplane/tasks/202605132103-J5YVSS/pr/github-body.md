@@ -1,0 +1,93 @@
+Task: `202605132103-J5YVSS`
+Title: Remove legacy tasks.json export surface
+Canonical task record: `.agentplane/tasks/202605132103-J5YVSS/README.md`
+
+## Summary
+
+Remove legacy tasks.json export surface
+
+Remove the obsolete .agentplane/tasks.json export snapshot surface now that task reads use task docs and sqlite cache.
+
+## Scope
+
+- In scope: Remove the obsolete .agentplane/tasks.json export snapshot surface now that task reads use task docs and sqlite cache.
+- Out of scope: unrelated refactors not required for "Remove legacy tasks.json export surface".
+
+## Verification
+
+- State: ok
+- Note:
+
+```text
+Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install
+smoke, and empty-folder context assimilation smoke passed.
+```
+- Canonical workflow state lives in the task README.
+
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-13T21:59:27.216Z
+- Branch: task/202605132103-J5YVSS/remove-tasks-json
+- Head: 6755f1e11c37
+
+```text
+ .agentplane/tasks/202605132049-69HCQ3/README.md    | 171 +++++++
+ .../blueprint/resolved-snapshot.json               | 553 +++++++++++++++++++++
+ .agentplane/tasks/202605132049-K2TDB9/README.md    | 171 +++++++
+ .../blueprint/resolved-snapshot.json               | 553 +++++++++++++++++++++
+ .agentplane/tasks/202605132049-YXKBR3/README.md    | 172 +++++++
+ .../blueprint/resolved-snapshot.json               | 552 ++++++++++++++++++++
+ .agentplane/tasks/202605132052-NHGFC4/README.md    | 175 +++++++
+ .../blueprint/resolved-snapshot.json               | 392 +++++++++++++++
+ .../blueprint/resolved-snapshot.json               | 528 ++++++++++++++++++++
+ CONTRIBUTING.md                                    |   5 +-
+ docs/help/troubleshooting.mdx                      |   6 -
+ docs/user/configuration.mdx                        |   1 -
+ .../task-backend/task-backend-adapter.test.ts      |   3 +-
+ .../adapters/task-backend/task-backend-adapter.ts  |  11 -
+ .../src/backends/task-backend.local.test.ts        |  12 +-
+ .../backends/task-backend.redmine.cache.test.ts    |  17 +-
+ .../agentplane/src/backends/task-backend.test.ts   |  33 +-
+ packages/agentplane/src/backends/task-backend.ts   |   2 -
+ .../src/backends/task-backend/cloud-backend.ts     |   9 +-
+ .../backends/task-backend/local-backend-write.ts   |  17 -
+ .../src/backends/task-backend/local-backend.ts     |  12 +-
+ .../src/backends/task-backend/redmine-backend.ts   |  15 +-
+ .../task-backend/redmine/backend-cache-doc.ts      |  23 -
+ .../src/backends/task-backend/redmine/live.test.ts |  17 +-
+ .../agentplane/src/backends/task-backend/shared.ts |   1 -
+ .../src/backends/task-backend/shared/export.ts     |  13 -
+ .../src/backends/task-backend/shared/types.ts      |   6 -
+ .../agentplane/src/cli/local-ci-selection.test.ts  |   3 -
+ packages/agentplane/src/cli/release-smoke.test.ts  |  28 +-
+ ...n-cli.core.branch-meta.workflow-profile.test.ts |  14 +
+ .../src/cli/run-cli.core.tasks.export.test.ts      | 162 ------
+ .../src/cli/run-cli/command-catalog/task.ts        |   7 -
+ .../src/cli/run-cli/command-loaders/task.ts        |   4 -
+ .../agentplane/src/cli/spec/docs-render.test.ts    |  28 ++
+ .../src/commands/evaluator/evaluator.command.ts    |   7 +
+ .../agentplane/src/commands/shared/task-backend.ts |  21 +-
+ .../src/commands/shared/task-store.test.ts         |   6 +-
+ .../agentplane/src/commands/task/export.command.ts |  29 --
+ packages/agentplane/src/commands/task/export.ts    |  35 --
+ .../src/commands/task/export.unit.test.ts          |  80 ---
+ packages/agentplane/src/commands/task/index.ts     |   1 -
+ .../src/commands/task/migrate-doc.test.ts          |   8 +-
+ .../agentplane/src/commands/task/migrate-doc.ts    |  53 +-
+ .../agentplane/src/commands/task/set-status.ts     |   2 +-
+ packages/agentplane/src/commands/upgrade.ts        |   1 -
+ packages/agentplane/src/commands/workflow.test.ts  |  17 +-
+ packages/agentplane/src/commands/workflow.ts       |   1 -
+ .../src/commands/workflow.verify-hooks.test.ts     |   3 +-
+ packages/agentplane/src/ports/task-backend-port.ts |   1 -
+ packages/core/src/index.ts                         |   1 -
+ packages/core/src/tasks/index.ts                   |   1 -
+ packages/core/src/tasks/tasks-export.test.ts       |  18 +-
+ packages/core/src/tasks/tasks-export.ts            |  20 -
+ packages/core/src/tasks/tasks-lint.test.ts         |  17 +-
+ scripts/lib/test-route-registry.mjs                |   1 -
+ 55 files changed, 3367 insertions(+), 672 deletions(-)
+```
+
+</details>

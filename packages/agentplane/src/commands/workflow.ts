@@ -13,7 +13,6 @@ export {
   cmdTaskPlanSet,
   cmdTaskPlanApprove,
   cmdTaskPlanReject,
-  cmdTaskExport,
   cmdTaskLint,
   cmdTaskDocSet,
   cmdTaskDocShow,
