@@ -66,7 +66,7 @@ export async function promptAdvancedSettingsStep(opts: {
       });
     }
   }
-  if (opts.flags.feedbackGithubIssues === undefined) {
+  if (opts.setupProfileMode === "full" && opts.flags.feedbackGithubIssues === undefined) {
     feedbackGithubIssues = await confirmStepValue(opts.clack, {
       message: "Allow GitHub issue prompts for internal AgentPlane errors?",
       initialValue: feedbackGithubIssues,

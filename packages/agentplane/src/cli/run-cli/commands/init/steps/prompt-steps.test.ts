@@ -149,6 +149,7 @@ describe("init prompt steps", () => {
       requirePlanApproval: false,
       requireNetworkApproval: false,
       requireVerifyApproval: false,
+      feedbackGithubIssues: false,
       executionProfile: "aggressive",
       strictUnsafeConfirm: false,
     });
