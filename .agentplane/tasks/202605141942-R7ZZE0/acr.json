@@ -1,0 +1,216 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605141942-R7ZZE0",
+  "created_at": "2026-05-14T20:22:21.423Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.6.0"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "3b73d50feebb08e421e4e12d9638d8ca8a634f39",
+    "work_ref": "main",
+    "work_commit": "3b73d50feebb08e421e4e12d9638d8ca8a634f39"
+  },
+  "task": {
+    "task_id": "202605141942-R7ZZE0",
+    "title": "Generate versioned README header images",
+    "intent": "Extend the README header image generator so the current AgentPlane version produces reusable header images and package/related README files link to those generated artifacts.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.6.0"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605141942-R7ZZE0/README.md",
+      "sha256": "sha256:49a82be28c48720fd5219d12ebc2db8ffd8a5487de751ffba86d51340d35a1e5"
+    },
+    "approved_at": "2026-05-14T19:42:33.387Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3759.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605141942-R7ZZE0_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T19:42:33.387Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605141942-R7ZZE0/README.md",
+      "sha256": "sha256:49a82be28c48720fd5219d12ebc2db8ffd8a5487de751ffba86d51340d35a1e5"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605141942-R7ZZE0/README.md",
+      "sha256": "sha256:49a82be28c48720fd5219d12ebc2db8ffd8a5487de751ffba86d51340d35a1e5"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605141942-R7ZZE0/README.md",
+      "sha256": "sha256:49a82be28c48720fd5219d12ebc2db8ffd8a5487de751ffba86d51340d35a1e5"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605141942-R7ZZE0/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:f77baad7dccbc12ae6aea6e74f0b2661fbd0f7af1661d8f9b6e43a261e1479ba"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 3b73d50feebb08e421e4e12d9638d8ca8a634f39 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:e36c9c529bf755f5b0c96589f425213c0919946868f38fb58b43617e2b8ddc61",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "release.strict",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "release.approval",
+          "kind": "approval",
+          "produced_by": "approval_gate",
+          "required": true
+        },
+        {
+          "id": "release.plan",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "release.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "release.publish",
+          "kind": "external_link",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        },
+        {
+          "id": "release.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605141942-R7ZZE0/blueprint/resolved-snapshot.json",
+        "digest": "b465b61b0bb1e734f934d3f26a563cba47206649fd23399f7432a1a2372a38c2",
+        "current_digest": "b465b61b0bb1e734f934d3f26a563cba47206649fd23399f7432a1a2372a38c2",
+        "route_changed": false,
+        "artifact_sha256": "sha256:f77baad7dccbc12ae6aea6e74f0b2661fbd0f7af1661d8f9b6e43a261e1479ba",
+        "safe_command": "agentplane blueprint snapshot 202605141942-R7ZZE0"
+      }
+    }
+  }
+}
