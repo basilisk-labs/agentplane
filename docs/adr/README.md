@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/readme-headers/adr.svg" alt="AgentPlane ADR header" style="width:100%;max-width:100%;"/>
+</p>
+
 # Architecture Decision Records
 
 This directory stores accepted architecture decisions that affect the Agentplane framework,

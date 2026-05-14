@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../assets/readme-headers/releases.svg" alt="AgentPlane release notes header" style="width:100%;max-width:100%;"/>
+</p>
+
 # Release notes
 
 Each release must include English, human-readable notes in `docs/releases/vX.Y.Z.md`.

@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T20:17:08Z",
+  "base": "main",
+  "branch": "task/202605141957-FB780T/remote-check-timeout-contract",
+  "created_at": "2026-05-14T19:57:37.081Z",
+  "head_sha": "87eb953894acc58bc06af6d40addd2bee3951f19",
+  "last_verified_at": "2026-05-14T20:01:46.438Z",
+  "last_verified_sha": "b9ebb6e0eb9c2f74dccaabbd7d9559bea497422b",
+  "merge_commit": "5469f5f6856184f96d6a7ee8f1325b55ee7a4dd1",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T20:17:08Z",
+  "pr_number": 3761,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3761",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605141957-FB780T",
+  "updated_at": "2026-05-14T20:17:08Z",
+  "verify": {
+    "status": "pass"
+  }
+}

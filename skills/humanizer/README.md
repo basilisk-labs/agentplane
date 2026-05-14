@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="../../docs/assets/readme-headers/humanizer.svg" alt="AgentPlane humanizer skill header" style="width:100%;max-width:100%;"/>
+</p>
+
 # Humanizer
 
 A Claude Code skill that removes signs of AI-generated writing from text, making it sound more natural and human.

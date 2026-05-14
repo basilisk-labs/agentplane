@@ -1,0 +1,225 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605141737-GX777N",
+  "created_at": "2026-05-14T19:37:45.992Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.6.0"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "bea4a0b17fd2ee29fb111156d8585838fdd84665",
+    "work_ref": "main",
+    "work_commit": "bea4a0b17fd2ee29fb111156d8585838fdd84665"
+  },
+  "task": {
+    "task_id": "202605141737-GX777N",
+    "title": "Enrich feedback issue diagnostics",
+    "intent": "Add privacy-bounded failure context and required agent context support to AgentPlane insights issue reports, then create a test feedback issue.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.6.0"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605141737-GX777N/README.md",
+      "sha256": "sha256:13211fe556f5131a6f74c89df57077709e6ce7e06fa3e0cda74a23218fdab65b"
+    },
+    "approved_at": "2026-05-14T17:37:14.638Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3745.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605141737-GX777N_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T17:37:14.638Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605141737-GX777N/README.md",
+      "sha256": "sha256:13211fe556f5131a6f74c89df57077709e6ce7e06fa3e0cda74a23218fdab65b"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605141737-GX777N/README.md",
+      "sha256": "sha256:13211fe556f5131a6f74c89df57077709e6ce7e06fa3e0cda74a23218fdab65b"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605141737-GX777N/README.md",
+      "sha256": "sha256:13211fe556f5131a6f74c89df57077709e6ce7e06fa3e0cda74a23218fdab65b"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605141737-GX777N/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:2a86082af28932d5123fa12f5de4d1a6135ae24601b80d9c5e01fd5c3f52dea2"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit bea4a0b17fd2ee29fb111156d8585838fdd84665 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:346021d751d7854bea334c77a6a3ce595c5e08278a513b32c1033f3fb4cc7763",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "verify_record",
+        "hosted_checks",
+        "publish_or_integrate",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.verify",
+          "kind": "check_result",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605141737-GX777N/blueprint/resolved-snapshot.json",
+        "digest": "a92c708eda3bd2255ed9754e1ab81fdbd70f98fcdd66123088b775187fa7e608",
+        "current_digest": "a92c708eda3bd2255ed9754e1ab81fdbd70f98fcdd66123088b775187fa7e608",
+        "route_changed": false,
+        "artifact_sha256": "sha256:2a86082af28932d5123fa12f5de4d1a6135ae24601b80d9c5e01fd5c3f52dea2",
+        "safe_command": "agentplane blueprint snapshot 202605141737-GX777N"
+      }
+    }
+  }
+}
