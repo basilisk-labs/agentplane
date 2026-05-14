@@ -4,7 +4,7 @@ title: "Generate README header image"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-14T10:09:55.531Z"
+  updated_at: "2026-05-14T10:14:23.478Z"
   updated_by: "CODER"
-  note: "Post-commit verification remains green for README header generator."
+  note: "Final local fast CI is green for README header generator."
   attempts: 0
 commit: null
 comments:
@@ -47,8 +47,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Post-commit verification remains green for README header generator."
+  -
+    type: "verify"
+    at: "2026-05-14T10:14:23.478Z"
+    author: "CODER"
+    state: "ok"
+    note: "Final local fast CI is green for README header generator."
 doc_version: 3
-doc_updated_at: "2026-05-14T10:09:55.541Z"
+doc_updated_at: "2026-05-14T10:14:23.484Z"
 doc_updated_by: "CODER"
 description: "Add an algorithmic README header image generator that includes the AgentPlane logo, release-derived wording, and version number, then wire the generated asset into the root README."
 sections:
@@ -106,6 +112,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605141002-R9MPV5
     
+    ### 2026-05-14T10:14:23.478Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Final local fast CI is green for README header generator.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T10:09:55.541Z, excerpt_hash=sha256:465c7d07d0c63ad16d56601e8bff2614ef73a29c4ff3465e9aafa01abc669b19
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141002-R9MPV5-readme-header-image/.agentplane/tasks/202605141002-R9MPV5/blueprint/resolved-snapshot.json
+    - old_digest: ba36ff1bdc2fa34f8bd2dd55ae5151fd4d3b7117fee80269e59854abba812a5c
+    - current_digest: ba36ff1bdc2fa34f8bd2dd55ae5151fd4d3b7117fee80269e59854abba812a5c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605141002-R9MPV5
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -117,6 +142,10 @@ sections:
     
     - Observation: Head commit 224991f8c contains the generator, generated SVG, README link, and task PR artifacts. Re-run checks passed before commit: docs:readme-header:generate/check, targeted eslint/prettier, policy routing, git diff --check, agentplane doctor, qlmanage SVG render.
       Impact: PR #3706 points at the verified task branch.
+      Resolution: No rework required.
+    
+    - Observation: Final head 987a65118 includes scripts/README freshness after adding docs:readme-header scripts. bun run ci:local:fast passed: format, schemas, agent templates, policy routing, release parity, CLI cold baseline, build, docs freshness, scripts README freshness, onboarding, hotspot baseline, vitest project routing, core lint, fast unit suite (305 files, 1790 passed, 2 skipped), and critical CLI E2E chunks 1-5.
+      Impact: PR #3706 is ready for hosted checks from the updated task branch.
       Resolution: No rework required.
 id_source: "generated"
 ---
@@ -184,6 +213,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605141002-R9MPV5
 
+### 2026-05-14T10:14:23.478Z — VERIFY — ok
+
+By: CODER
+
+Note: Final local fast CI is green for README header generator.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T10:09:55.541Z, excerpt_hash=sha256:465c7d07d0c63ad16d56601e8bff2614ef73a29c4ff3465e9aafa01abc669b19
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141002-R9MPV5-readme-header-image/.agentplane/tasks/202605141002-R9MPV5/blueprint/resolved-snapshot.json
+- old_digest: ba36ff1bdc2fa34f8bd2dd55ae5151fd4d3b7117fee80269e59854abba812a5c
+- current_digest: ba36ff1bdc2fa34f8bd2dd55ae5151fd4d3b7117fee80269e59854abba812a5c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605141002-R9MPV5
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -199,4 +247,8 @@ BlueprintSnapshotRef:
 
 - Observation: Head commit 224991f8c contains the generator, generated SVG, README link, and task PR artifacts. Re-run checks passed before commit: docs:readme-header:generate/check, targeted eslint/prettier, policy routing, git diff --check, agentplane doctor, qlmanage SVG render.
   Impact: PR #3706 points at the verified task branch.
+  Resolution: No rework required.
+
+- Observation: Final head 987a65118 includes scripts/README freshness after adding docs:readme-header scripts. bun run ci:local:fast passed: format, schemas, agent templates, policy routing, release parity, CLI cold baseline, build, docs freshness, scripts README freshness, onboarding, hotspot baseline, vitest project routing, core lint, fast unit suite (305 files, 1790 passed, 2 skipped), and critical CLI E2E chunks 1-5.
+  Impact: PR #3706 is ready for hosted checks from the updated task branch.
   Resolution: No rework required.
