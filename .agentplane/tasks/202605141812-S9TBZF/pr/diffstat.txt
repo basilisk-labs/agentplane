@@ -1,0 +1,10 @@
+ .../blueprint/resolved-snapshot.json               |  527 +++++++++
+ packages/agentplane/README.md                      |    4 +-
+ website/docusaurus.config.ts                       |   53 +-
+ website/package.json                               |    2 +-
+ website/src/css/custom.css                         |  127 ++-
+ website/src/data/homepage-content.ts               |  279 ++---
+ website/src/pages/_home.module.css                 | 1165 +++++++-------------
+ website/src/pages/index.tsx                        |  463 +++++---
+ website/src/theme/Root.tsx                         |   50 +-
+ 9 files changed, 1494 insertions(+), 1176 deletions(-)

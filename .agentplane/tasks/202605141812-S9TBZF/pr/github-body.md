@@ -15,19 +15,34 @@ Update AgentPlane website homepage, navbar, tracking, and Node requirement copy 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Implemented star-focused homepage, minimal editorial artifacts section, liquid-glass navbar only,
+real GitHub Button embeds with fallback links, and Node 24 docs alignment. Checks passed: policy
+routing, git diff --check, website typecheck, docs:site:build.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T18:15:40.342Z
+- Updated: 2026-05-14T18:51:11.378Z
 - Branch: task/202605141812-S9TBZF/star-gateway-homepage
-- Head: 18e2ec37825f
+- Head: c5223c20bbbe
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               |  527 +++++++++
+ packages/agentplane/README.md                      |    4 +-
+ website/docusaurus.config.ts                       |   53 +-
+ website/package.json                               |    2 +-
+ website/src/css/custom.css                         |  127 ++-
+ website/src/data/homepage-content.ts               |  279 ++---
+ website/src/pages/_home.module.css                 | 1165 +++++++-------------
+ website/src/pages/index.tsx                        |  463 +++++---
+ website/src/theme/Root.tsx                         |   50 +-
+ 9 files changed, 1494 insertions(+), 1176 deletions(-)
 ```
 
 </details>

@@ -4,7 +4,7 @@ title: "Reframe website as GitHub star gateway"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-14T18:51:11.313Z"
+  updated_by: "CODER"
+  note: "Implemented star-focused homepage, minimal editorial artifacts section, liquid-glass navbar only, real GitHub Button embeds with fallback links, and Node 24 docs alignment. Checks passed: policy routing, git diff --check, website typecheck, docs:site:build."
   attempts: 0
 commit: null
 comments:
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implementing the approved website star-gateway scope in the dedicated branch_pr worktree, covering homepage funnel, navbar, analytics events, and Node 24 requirement consistency."
+  -
+    type: "verify"
+    at: "2026-05-14T18:51:11.313Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented star-focused homepage, minimal editorial artifacts section, liquid-glass navbar only, real GitHub Button embeds with fallback links, and Node 24 docs alignment. Checks passed: policy routing, git diff --check, website typecheck, docs:site:build."
 doc_version: 3
-doc_updated_at: "2026-05-14T18:15:37.971Z"
+doc_updated_at: "2026-05-14T18:51:11.327Z"
 doc_updated_by: "CODER"
 description: "Update AgentPlane website homepage, navbar, tracking, and Node requirement copy around the GitHub star funnel and the Basilisk Labs DESIGN.md instrument style while preserving liquid-glass only for the nav shell."
 sections:
@@ -70,6 +76,25 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-14T18:51:11.313Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Implemented star-focused homepage, minimal editorial artifacts section, liquid-glass navbar only, real GitHub Button embeds with fallback links, and Node 24 docs alignment. Checks passed: policy routing, git diff --check, website typecheck, docs:site:build.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T18:15:37.971Z, excerpt_hash=sha256:405aac4118545c933937b77427cb9219f8603a57b8851898d1822998689009d5
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141812-S9TBZF-star-gateway-homepage/.agentplane/tasks/202605141812-S9TBZF/blueprint/resolved-snapshot.json
+    - old_digest: 122cd133ffe78b83d92673471b6b5cbeb71df15c58d1c56ab062e5114bee0192
+    - current_digest: 122cd133ffe78b83d92673471b6b5cbeb71df15c58d1c56ab062e5114bee0192
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605141812-S9TBZF
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -115,6 +140,25 @@ PLANNER fallback scaffold for "Reframe website as GitHub star gateway". Replace 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-14T18:51:11.313Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented star-focused homepage, minimal editorial artifacts section, liquid-glass navbar only, real GitHub Button embeds with fallback links, and Node 24 docs alignment. Checks passed: policy routing, git diff --check, website typecheck, docs:site:build.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T18:15:37.971Z, excerpt_hash=sha256:405aac4118545c933937b77427cb9219f8603a57b8851898d1822998689009d5
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141812-S9TBZF-star-gateway-homepage/.agentplane/tasks/202605141812-S9TBZF/blueprint/resolved-snapshot.json
+- old_digest: 122cd133ffe78b83d92673471b6b5cbeb71df15c58d1c56ab062e5114bee0192
+- current_digest: 122cd133ffe78b83d92673471b6b5cbeb71df15c58d1c56ab062e5114bee0192
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605141812-S9TBZF
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
