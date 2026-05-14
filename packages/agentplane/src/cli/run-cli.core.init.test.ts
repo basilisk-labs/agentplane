@@ -434,9 +434,17 @@ describe("runCli", () => {
     expect(await pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).toBe(true);
     expect(await pathExists(path.join(root, "AGENTS.md"))).toBe(true);
     expect(await pathExists(path.join(root, "context", "README.md"))).toBe(true);
+    expect(await pathExists(path.join(root, "context", "wiki", "AGENTS.md"))).toBe(true);
+    expect(await pathExists(path.join(root, ".agentplane", "cache.sqlite"))).toBe(true);
     expect(
       await pathExists(path.join(root, ".agentplane", "context", "agentplane.context.yaml")),
     ).toBe(true);
+    const execFileAsync = promisify(execFile);
+    const { stdout } = await execFileAsync("git", ["status", "--short"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    expect(stdout.trim()).toBe("");
   });
 
   it("context init remains idempotent in an initialized AgentPlane project", async () => {

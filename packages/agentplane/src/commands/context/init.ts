@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars, unicorn/no-array-sort */
+import { execFile } from "node:child_process";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 
 import { infoMessage } from "../../cli/output.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
@@ -13,6 +15,10 @@ import { writeJsonStableIfChanged, writeTextIfChanged } from "../../shared/write
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import type { ContextInitParsed } from "./context.spec.js";
+import { cmdContextReindex } from "./reindex.js";
+
+const execFileAsync = promisify(execFile);
+const CONTEXT_BOOTSTRAP_TASK_ID = "202601010101-CTX1NT";
 
 const DEFAULT_GITIGNORE_ENTRIES = [
   ".agentplane/cache.sqlite",
@@ -55,15 +61,25 @@ export async function cmdContextInit(opts: {
   parsed: ContextInitParsed;
 }): Promise<number> {
   try {
-    const ctx =
+    const loaded =
       opts.ctx ??
       (await loadOrBootstrapCommandContext({
         cwd: opts.cwd,
         rootOverride: opts.rootOverride ?? null,
       }));
+    const ctx = "ctx" in loaded ? loaded.ctx : loaded;
+    const bootstrapped = "bootstrapped" in loaded ? loaded.bootstrapped : false;
     const root = ctx.resolvedProject.gitRoot;
     const report = await createContextWorkspace(root, opts.parsed);
     const wroteGitignore = await ensureContextGitignore(root, opts.parsed);
+    await cmdContextReindex({
+      cwd: root,
+      rootOverride: root,
+      parsed: { includeTasks: false, includeRaw: true, reset: false },
+    });
+    const committedBootstrap = bootstrapped
+      ? await commitContextBootstrapIfChanged(root)
+      : false;
 
     for (const created of report.created) {
       process.stdout.write(infoMessage(`wrote ${created}`) + "\n");
@@ -76,6 +92,9 @@ export async function cmdContextInit(opts: {
     }
     if (wroteGitignore) {
       process.stdout.write(infoMessage("updated .gitignore") + "\n");
+    }
+    if (committedBootstrap) {
+      process.stdout.write(infoMessage("committed context bootstrap") + "\n");
     }
     if (report.created.length + report.rewritten.length === 0 && report.skipped.length > 0) {
       process.stdout.write(infoMessage("context already initialized") + "\n");
@@ -94,15 +113,18 @@ export async function cmdContextInit(opts: {
 async function loadOrBootstrapCommandContext(opts: {
   cwd: string;
   rootOverride?: string | null;
-}): Promise<CommandContext> {
+}): Promise<{ ctx: CommandContext; bootstrapped: boolean }> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const target = await inspectBootstrapTarget(root);
   if (target?.canBootstrap) {
-    return await bootstrapEmptyProjectForContextInit(root);
+    return { ctx: await bootstrapEmptyProjectForContextInit(root), bootstrapped: true };
   }
 
   try {
-    return await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    return {
+      ctx: await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }),
+      bootstrapped: false,
+    };
   } catch (err) {
     if (target && !target.hasAgentplaneDir && isMissingProjectError(err)) {
       throw new CliError({
@@ -115,6 +137,25 @@ async function loadOrBootstrapCommandContext(opts: {
     }
     throw err;
   }
+}
+
+async function commitContextBootstrapIfChanged(root: string): Promise<boolean> {
+  const status = await execFileAsync("git", ["status", "--porcelain"], {
+    cwd: root,
+    encoding: "utf8",
+  });
+  if (!status.stdout.trim()) return false;
+  const env = {
+    ...process.env,
+    AGENTPLANE_ALLOW_POLICY: "1",
+    AGENTPLANE_TASK_ID: CONTEXT_BOOTSTRAP_TASK_ID,
+  };
+  await execFileAsync("git", ["add", "."], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "✅ CTX1NT task: initialize AgentPlane context"], {
+    cwd: root,
+    env,
+  });
+  return true;
 }
 
 type BootstrapTarget = {
@@ -194,6 +235,10 @@ async function createContextWorkspace(
     { relative: "context/raw/private/.gitkeep", content: "" },
     { relative: "context/wiki/.gitkeep", content: "" },
     {
+      relative: "context/wiki/AGENTS.md",
+      content: buildWikiAgentsMarkdown(parsed.profile),
+    },
+    {
       relative: "context/capabilities/README.md",
       content: buildCapabilitiesReadme(parsed.profile),
     },
@@ -242,9 +287,6 @@ async function createContextWorkspace(
     { relative: ".agentplane/context/derived/capabilities/capability_edges.jsonl", content: "" },
     { relative: ".agentplane/context/derived/reports/assimilation-events.jsonl", content: "" },
     { relative: ".agentplane/context/service/.gitkeep", content: "" },
-    { relative: ".agentplane/context/service/cache/.gitkeep", content: "" },
-    { relative: ".agentplane/context/service/embeddings/.gitkeep", content: "" },
-    { relative: ".agentplane/context/service/remotes/.gitkeep", content: "" },
   ];
 
   if (parsed.profile === "wiki" || parsed.profile === "codebase" || parsed.profile === "research") {
@@ -309,19 +351,32 @@ async function ensureContextGitignore(root: string, parsed: ContextInitParsed): 
   if (parsed.rawGitignore === "all") wanted.add("context/raw/");
   if (parsed.derivedGitignore === "all") wanted.add(".agentplane/context/derived/");
 
+  const currentText = await readOptionalText(gitignorePath);
   const existing = await readGitignore(gitignorePath);
-  const before = existing.length;
   for (const entry of wanted) {
     if (!existing.includes(entry)) existing.push(entry);
   }
   const normalized = normalizeGitignore(existing);
-  if (normalized.length === before) return false;
-  await writeTextIfChanged(gitignorePath, `${normalized.join("\n")}\n`);
+  const nextText = `${normalized.join("\n")}\n`;
+  if (currentText.trimEnd() === nextText.trimEnd()) return false;
+  await writeTextIfChanged(gitignorePath, nextText);
   return true;
 }
 
 function buildContextReadme(profile: ContextInitParsed["profile"]): string {
   return `# Context workspace\n\nProfile: ${profile}\n\nUse this directory as the human-readable context surface.\n`;
+}
+
+function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string {
+  return `# Context wiki agent notes
+
+Profile: ${profile}
+
+- Treat \`context/wiki/**\` as durable, source-backed project knowledge.
+- Keep raw inputs in \`context/raw/**\`; do not copy private raw sources into public wiki pages.
+- Add source references for factual claims that come from raw files, task READMEs, ACRs, or code.
+- Use \`agentplane context verify-task <task-id>\` before closing context assimilation work.
+`;
 }
 
 function buildCapabilitiesReadme(profile: ContextInitParsed["profile"]): string {
@@ -403,14 +458,18 @@ async function readExisting(filePath: string): Promise<string | null> {
 }
 
 async function readGitignore(gitignorePath: string): Promise<string[]> {
+  const text = await readOptionalText(gitignorePath);
+  return text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0 && !line.startsWith("#"));
+}
+
+async function readOptionalText(filePath: string): Promise<string> {
   try {
-    const text = await readFile(gitignorePath, "utf8");
-    return text
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0 && !line.startsWith("#"));
+    return await readFile(filePath, "utf8");
   } catch (err) {
-    if ((err as { code?: string } | null)?.code === "ENOENT") return [];
+    if ((err as { code?: string } | null)?.code === "ENOENT") return "";
     throw err;
   }
 }

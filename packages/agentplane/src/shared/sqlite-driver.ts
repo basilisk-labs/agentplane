@@ -1,19 +1,42 @@
-import type { DatabaseSync, SQLInputValue } from "node:sqlite";
-
 type SqliteRunResult = {
   changes?: number | bigint;
   lastInsertRowid?: number | bigint;
 };
 
-type NodeSqliteDatabaseSync = InstanceType<typeof DatabaseSync>;
-type NodeSqliteStatementSync = ReturnType<NodeSqliteDatabaseSync["prepare"]>;
+type SqliteInputValue = string | number | bigint | boolean | null | Uint8Array;
+
+type NativeSqliteStatementSync = {
+  run: (...params: SqliteInputValue[]) => SqliteRunResult;
+  get: (...params: SqliteInputValue[]) => unknown;
+  all: (...params: SqliteInputValue[]) => unknown[];
+};
+
+type NativeSqliteDatabaseSync = {
+  exec: (sql: string) => void;
+  prepare: (sql: string) => NativeSqliteStatementSync;
+  close: () => void;
+};
 
 type NodeSqliteModule = {
   DatabaseSync: new (
     path: string,
     opts?: { open?: boolean; readOnly?: boolean; readonly?: boolean },
-  ) => NodeSqliteDatabaseSync;
+  ) => NativeSqliteDatabaseSync;
 };
+
+type BunSqliteModule = {
+  Database: new (
+    path: string,
+    opts?: { readonly?: boolean; create?: boolean },
+  ) => NativeSqliteDatabaseSync;
+};
+
+type SqliteModule =
+  | { kind: "node"; module: NodeSqliteModule }
+  | { kind: "bun"; module: BunSqliteModule };
+
+const NODE_SQLITE_SPECIFIER = "node:sqlite";
+const BUN_SQLITE_SPECIFIER = "bun:sqlite";
 
 export type SqliteStatement = {
   run: (...params: unknown[]) => SqliteRunResult;
@@ -33,7 +56,7 @@ export type SqliteDatabase = {
 };
 
 type GlobalWithSqlite = typeof globalThis & {
-  __agentplaneNodeSqlite?: NodeSqliteModule;
+  __agentplaneSqlite?: SqliteModule;
 };
 
 function firstColumn(row: unknown): unknown {
@@ -44,21 +67,21 @@ function firstColumn(row: unknown): unknown {
 
 class NodeSqliteStatementAdapter implements SqliteStatement {
   constructor(
-    private readonly statement: NodeSqliteStatementSync,
+    private readonly statement: NativeSqliteStatementSync,
     private readonly pluckFirstColumn = false,
   ) {}
 
   run(...params: unknown[]): SqliteRunResult {
-    return this.statement.run(...(params as SQLInputValue[]));
+    return this.statement.run(...(params as SqliteInputValue[]));
   }
 
   get(...params: unknown[]): unknown {
-    const row = this.statement.get(...(params as SQLInputValue[]));
+    const row = this.statement.get(...(params as SqliteInputValue[]));
     return this.pluckFirstColumn ? firstColumn(row) : row;
   }
 
   all(...params: unknown[]): unknown[] {
-    const rows = this.statement.all(...(params as SQLInputValue[]));
+    const rows = this.statement.all(...(params as SqliteInputValue[]));
     return this.pluckFirstColumn ? rows.map((row) => firstColumn(row)) : rows;
   }
 
@@ -68,7 +91,7 @@ class NodeSqliteStatementAdapter implements SqliteStatement {
 }
 
 class NodeSqliteDatabaseAdapter implements SqliteDatabase {
-  constructor(private readonly database: NodeSqliteDatabaseSync) {}
+  constructor(private readonly database: NativeSqliteDatabaseSync) {}
 
   exec(sql: string): void {
     this.database.exec(sql);
@@ -107,13 +130,22 @@ class NodeSqliteDatabaseAdapter implements SqliteDatabase {
   }
 }
 
-async function loadNodeSqlite(): Promise<NodeSqliteModule | null> {
-  const cached = (globalThis as GlobalWithSqlite).__agentplaneNodeSqlite;
+async function loadSqlite(): Promise<SqliteModule | null> {
+  const cached = (globalThis as GlobalWithSqlite).__agentplaneSqlite;
   if (cached) return cached;
   try {
-    const sqlite = (await import("node:sqlite")) as NodeSqliteModule;
-    (globalThis as GlobalWithSqlite).__agentplaneNodeSqlite = sqlite;
-    return sqlite;
+    const sqlite = (await import(NODE_SQLITE_SPECIFIER)) as NodeSqliteModule;
+    const loaded = { kind: "node" as const, module: sqlite };
+    (globalThis as GlobalWithSqlite).__agentplaneSqlite = loaded;
+    return loaded;
+  } catch {
+    // Bun's test/runtime does not expose node:sqlite; use its compatible SQLite driver.
+  }
+  try {
+    const sqlite = (await import(BUN_SQLITE_SPECIFIER)) as BunSqliteModule;
+    const loaded = { kind: "bun" as const, module: sqlite };
+    (globalThis as GlobalWithSqlite).__agentplaneSqlite = loaded;
+    return loaded;
   } catch {
     return null;
   }
@@ -123,13 +155,14 @@ export async function openSqliteDatabase(
   dbPath: string,
   opts?: { readonly?: boolean; fileMustExist?: boolean },
 ): Promise<SqliteDatabase | null> {
-  const sqlite = await loadNodeSqlite();
+  const sqlite = await loadSqlite();
   if (!sqlite) return null;
   try {
-    const database = new sqlite.DatabaseSync(dbPath, {
-      readOnly: opts?.readonly === true,
-      readonly: opts?.readonly === true,
-    });
+    const readonly = opts?.readonly === true;
+    const database =
+      sqlite.kind === "node"
+        ? new sqlite.module.DatabaseSync(dbPath, { readOnly: readonly, readonly })
+        : new sqlite.module.Database(dbPath, { readonly, create: !readonly });
     return new NodeSqliteDatabaseAdapter(database);
   } catch {
     return null;

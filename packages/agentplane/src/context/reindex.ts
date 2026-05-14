@@ -118,6 +118,22 @@ function selectorForJsonlRow(filePath: string): string {
   return "row";
 }
 
+function sourceRefsForJsonlRow(row: unknown, fallback: string): string[] {
+  if (!row || typeof row !== "object") return [fallback];
+  const record = row as Record<string, unknown>;
+  const refs: string[] = [];
+  if (typeof record.source_ref === "string" && record.source_ref.trim()) {
+    refs.push(record.source_ref);
+  }
+  if (typeof record.source === "string" && record.source.trim()) {
+    refs.push(record.source);
+  }
+  if (Array.isArray(record.source_refs)) {
+    refs.push(...record.source_refs.filter((value): value is string => typeof value === "string"));
+  }
+  return refs.length > 0 ? Array.from(new Set(refs)) : [fallback];
+}
+
 function projectMarkdownRows(filePath: string, content: string): ProjectionSourceRow[] {
   const rel = toPosix(filePath);
   const lines = content.split(/\r?\n/);
@@ -225,7 +241,7 @@ function projectRowsForFile(filePath: string, content: string): ProjectionSource
         sha256: `sha256:${createHash("sha256").update(serialized).digest("hex")}`,
         content_type: deriveContentType(filePath),
         kind: "jsonl-row",
-        source_refs: [`${rel}#${selector}=${id}`],
+        source_refs: sourceRefsForJsonlRow(row, `${rel}#${selector}=${id}`),
         body: serialized,
         size_bytes: serialized.length,
       };

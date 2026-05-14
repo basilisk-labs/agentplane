@@ -106,7 +106,8 @@ const main = defineScript({
         ],
         { cwd: repo },
       ).trim();
-      run(agentplane, ["task", "export"], { cwd: repo });
+      run(agentplane, ["task", "list"], { cwd: repo });
+      run(agentplane, ["task", "show", taskId], { cwd: repo });
 
       process.stdout.write(`local tarball install smoke OK (${taskId})\n`);
     } finally {

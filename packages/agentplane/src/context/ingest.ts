@@ -8,6 +8,8 @@ import { mapBackendError } from "../cli/error-map.js";
 import { CliError } from "../shared/errors.js";
 import { writeJsonStableIfChanged } from "../shared/write-if-changed.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
+import { cmdTaskPlanApprove } from "../commands/task/plan.js";
+import { cmdTaskStartReady } from "../commands/task/start-ready.js";
 import type { TaskNewParsed } from "../commands/task/new.js";
 import { runTaskNewParsed } from "../commands/task/new.js";
 import { runTaskRun } from "../commands/task/run.command.js";
@@ -495,6 +497,8 @@ export async function cmdContextIngest(opts: {
   rootOverride?: string;
   parsed: ContextIngestParsed;
   createTask?: typeof runTaskNewParsed;
+  approveTaskPlan?: typeof cmdTaskPlanApprove;
+  startTask?: typeof cmdTaskStartReady;
   runTask?: typeof runTaskRun;
 }): Promise<number> {
   const ctx =
@@ -563,8 +567,12 @@ export async function cmdContextIngest(opts: {
       parsed: taskParsed,
     });
     const after = await ctx.taskBackend.listTasks();
-    const created = after.filter((task) => !before.has(task.id));
-    const contextCreated = created.find((task) => task.owner === "CURATOR");
+    const created = after
+      .filter((task) => !before.has(task.id) && task.owner === "CURATOR")
+      .toSorted((left, right) =>
+        String(right.doc_updated_at ?? "").localeCompare(String(left.doc_updated_at ?? "")),
+      );
+    const contextCreated = created[0];
     if (!contextCreated) {
       throw new CliError({
         exitCode: 3,
@@ -578,6 +586,27 @@ export async function cmdContextIngest(opts: {
     );
 
     if (!opts.parsed.runTask) return 0;
+    const approveTaskPlan = opts.approveTaskPlan ?? cmdTaskPlanApprove;
+    const startTask = opts.startTask ?? cmdTaskStartReady;
+    await approveTaskPlan({
+      ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: contextCreated.id,
+      by: "ORCHESTRATOR",
+      note: "Auto-approved by context ingest --run after creating the scoped assimilation task.",
+    });
+    await startTask({
+      ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: contextCreated.id,
+      author: "CURATOR",
+      body: `Start: Run context assimilation for ${buildTaskIdHint({ mode: opts.parsed.mode, sources: opts.parsed.sources })} after explicit --run request.`,
+      force: false,
+      yes: true,
+      quiet: true,
+    });
     const runTask = opts.runTask ?? runTaskRun;
     return await runTask(
       { cwd: opts.cwd, rootOverride: opts.rootOverride },

@@ -119,8 +119,13 @@ export async function cmdContextDoctor(opts: {
   if (projection) {
     let staleProjection = 0;
     for (const row of projection.rows) {
-      const absolute = path.join(root, row.path.split("#", 1)[0]);
+      const [basePath, selector] = row.path.split("#", 2);
+      const absolute = path.join(root, basePath ?? row.path);
       try {
+        if (selector) {
+          await calculateSha256(absolute);
+          continue;
+        }
         const hash = await calculateSha256(absolute);
         if (hash !== row.sha256) staleProjection += 1;
       } catch {
