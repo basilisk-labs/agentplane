@@ -24,12 +24,15 @@ Created: 2026-05-14T12:43:23.167Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T12:43:23.167Z
+- Updated: 2026-05-14T12:45:50.914Z
 - Branch: task/202605141242-DQV6A3/npm-readme-header
-- Head: 5a48fda04451
+- Head: 5e86050cfa1a
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 357 +++++++++++++++++++++
+ README.md                                          |   2 +-
+ packages/agentplane/README.md                      |   4 +
+ 3 files changed, 362 insertions(+), 1 deletion(-)
 ```
 
 </details>

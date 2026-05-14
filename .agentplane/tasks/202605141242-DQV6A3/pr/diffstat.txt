@@ -1,0 +1,4 @@
+ .../blueprint/resolved-snapshot.json               | 357 +++++++++++++++++++++
+ README.md                                          |   2 +-
+ packages/agentplane/README.md                      |   4 +
+ 3 files changed, 362 insertions(+), 1 deletion(-)
