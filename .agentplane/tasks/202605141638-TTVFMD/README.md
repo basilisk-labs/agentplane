@@ -1,10 +1,11 @@
 ---
 id: "202605141638-TTVFMD"
 title: "Handle remote-only and removed cloud tasks"
-status: "DOING"
+result_summary: "Closed as part of v0.6 audit follow-up batch PR #3746."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Cloud pull task-set semantics verified: prefer-remote now adds remote-only tasks, removes local-only tasks, applies changed operational fields, and conflict=diff reports added/removed without writing. Checks: task-backend.cloud.test.ts 27 tests passed; targeted eslint passed; policy routing passed."
   attempts: 0
-commit: null
+commit:
+  hash: "d2d0a0a1baf774fade65bf1ed78d5886f69d2dee"
+  message: "Merge pull request #3746 from basilisk-labs/task/202605141638-78JKTQ/v06-audit-followups"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing explicit cloud pull behavior for remote-only and removed tasks inside the approved v0.6 audit follow-up batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: landed through batch PR #3746 with green GitHub checks and merge commit d2d0a0a1."
 events:
   -
     type: "status"
@@ -42,14 +48,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Cloud pull task-set semantics verified: prefer-remote now adds remote-only tasks, removes local-only tasks, applies changed operational fields, and conflict=diff reports added/removed without writing. Checks: task-backend.cloud.test.ts 27 tests passed; targeted eslint passed; policy routing passed."
+  -
+    type: "status"
+    at: "2026-05-14T19:14:37.404Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: landed through batch PR #3746 with green GitHub checks and merge commit d2d0a0a1."
 doc_version: 3
-doc_updated_at: "2026-05-14T18:01:49.697Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T19:14:37.405Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend CloudPullPlan and applyCloudPullPlan so remote-only tasks and remote deletions are explicit contract cases instead of ignored diagnostics under canonical_source=remote. Define user-confirmation or prefer-remote behavior and cover added/removed plans in tests."
 sections:
   Summary: |-
     Handle remote-only and removed cloud tasks
-
+    
     Extend CloudPullPlan and applyCloudPullPlan so remote-only tasks and remote deletions are explicit contract cases instead of ignored diagnostics under canonical_source=remote. Define user-confirmation or prefer-remote behavior and cover added/removed plans in tests.
   Scope: |-
     - In scope: Extend CloudPullPlan and applyCloudPullPlan so remote-only tasks and remote deletions are explicit contract cases instead of ignored diagnostics under canonical_source=remote. Define user-confirmation or prefer-remote behavior and cover added/removed plans in tests.
@@ -59,16 +72,16 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-14T18:01:49.688Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Cloud pull task-set semantics verified: prefer-remote now adds remote-only tasks, removes local-only tasks, applies changed operational fields, and conflict=diff reports added/removed without writing. Checks: task-backend.cloud.test.ts 27 tests passed; targeted eslint passed; policy routing passed.
     Attempts: 0
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T17:36:39.603Z, excerpt_hash=sha256:c43182055444386bfd091e859c8a8fff8a76f016e0ac1b3fc2e5e91bb3e00734
-
+    
     Details:
-
+    
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141638-78JKTQ-v06-audit-followups/.agentplane/tasks/202605141638-TTVFMD/blueprint/resolved-snapshot.json
@@ -76,7 +89,7 @@ sections:
     - current_digest: 40125dd0f34b84bef0fd01521bda35f41d069778d275218badb479cad790890f
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605141638-TTVFMD
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).

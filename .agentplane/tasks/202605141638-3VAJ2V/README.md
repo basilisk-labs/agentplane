@@ -1,10 +1,11 @@
 ---
 id: "202605141638-3VAJ2V"
 title: "Finish shared guard and sleep deduplication"
-status: "DOING"
+result_summary: "Closed as part of v0.6 audit follow-up batch PR #3746."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Guard/sleep dedup verified: local isRecord definitions in packages/agentplane/src were migrated to shared/guards except the approved RawFrontmatter narrowing guard, integrate queue now imports shared sleep, and guards:check enforces the definition allowlist in ci:contract. Checks: guards:check passed; agentplane typecheck passed; targeted eslint passed; policy routing passed."
   attempts: 0
-commit: null
+commit:
+  hash: "d2d0a0a1baf774fade65bf1ed78d5886f69d2dee"
+  message: "Merge pull request #3746 from basilisk-labs/task/202605141638-78JKTQ/v06-audit-followups"
 comments:
   -
     author: "CODER"
     body: "Start: Finishing shared guard and sleep deduplication inside the approved v0.6 audit follow-up batch worktree, including a guardrail against new local copies."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: landed through batch PR #3746 with green GitHub checks and merge commit d2d0a0a1."
 events:
   -
     type: "status"
@@ -42,14 +48,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Guard/sleep dedup verified: local isRecord definitions in packages/agentplane/src were migrated to shared/guards except the approved RawFrontmatter narrowing guard, integrate queue now imports shared sleep, and guards:check enforces the definition allowlist in ci:contract. Checks: guards:check passed; agentplane typecheck passed; targeted eslint passed; policy routing passed."
+  -
+    type: "status"
+    at: "2026-05-14T19:15:16.847Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: landed through batch PR #3746 with green GitHub checks and merge commit d2d0a0a1."
 doc_version: 3
-doc_updated_at: "2026-05-14T18:02:06.790Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T19:15:16.847Z"
+doc_updated_by: "INTEGRATOR"
 description: "Migrate remaining local isRecord and sleep copies to canonical shared helpers where appropriate, then add a lint or check guard that prevents new local isRecord definitions in packages/agentplane/src except approved canonical guard modules."
 sections:
   Summary: |-
     Finish shared guard and sleep deduplication
-
+    
     Migrate remaining local isRecord and sleep copies to canonical shared helpers where appropriate, then add a lint or check guard that prevents new local isRecord definitions in packages/agentplane/src except approved canonical guard modules.
   Scope: |-
     - In scope: Migrate remaining local isRecord and sleep copies to canonical shared helpers where appropriate, then add a lint or check guard that prevents new local isRecord definitions in packages/agentplane/src except approved canonical guard modules.
@@ -59,16 +72,16 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-14T18:02:06.777Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Guard/sleep dedup verified: local isRecord definitions in packages/agentplane/src were migrated to shared/guards except the approved RawFrontmatter narrowing guard, integrate queue now imports shared sleep, and guards:check enforces the definition allowlist in ci:contract. Checks: guards:check passed; agentplane typecheck passed; targeted eslint passed; policy routing passed.
     Attempts: 0
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T17:36:40.244Z, excerpt_hash=sha256:59129b15d0e444e13372402ef5158a465af15fd376c1c5211495f376c1e8f952
-
+    
     Details:
-
+    
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141638-78JKTQ-v06-audit-followups/.agentplane/tasks/202605141638-3VAJ2V/blueprint/resolved-snapshot.json
@@ -76,7 +89,7 @@ sections:
     - current_digest: ba5296eac66a68178ec30d77108caae8690384666bba1d5f4181e6fdf90de7c2
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605141638-3VAJ2V
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).

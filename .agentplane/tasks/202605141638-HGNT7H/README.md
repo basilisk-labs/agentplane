@@ -1,10 +1,11 @@
 ---
 id: "202605141638-HGNT7H"
 title: "Define schema canonical source contract"
-status: "DOING"
+result_summary: "Closed as part of v0.6 audit follow-up batch PR #3746."
+status: "DONE"
 priority: "low"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Schema canonical contract verified: sync-schemas now enforces directory inventory and drift contract: runtime schemas render into root/spec/core, static context schemas sync spec->core, and recipe/workflow schemas are root-only public schemas. Checks: schemas:check passed; targeted eslint passed; policy routing passed."
   attempts: 0
-commit: null
+commit:
+  hash: "d2d0a0a1baf774fade65bf1ed78d5886f69d2dee"
+  message: "Merge pull request #3746 from basilisk-labs/task/202605141638-78JKTQ/v06-audit-followups"
 comments:
   -
     author: "CODER"
     body: "Start: Defining and enforcing the schema canonical source contract inside the approved v0.6 audit follow-up batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: landed through batch PR #3746 with green GitHub checks and merge commit d2d0a0a1."
 events:
   -
     type: "status"
@@ -42,14 +48,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Schema canonical contract verified: sync-schemas now enforces directory inventory and drift contract: runtime schemas render into root/spec/core, static context schemas sync spec->core, and recipe/workflow schemas are root-only public schemas. Checks: schemas:check passed; targeted eslint passed; policy routing passed."
+  -
+    type: "status"
+    at: "2026-05-14T19:15:19.665Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: landed through batch PR #3746 with green GitHub checks and merge commit d2d0a0a1."
 doc_version: 3
-doc_updated_at: "2026-05-14T18:02:19.108Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T19:15:19.665Z"
+doc_updated_by: "INTEGRATOR"
 description: "Resolve the three schema directory source-of-truth ambiguity across root schemas, packages/spec/schemas, and packages/core/schemas by documenting or enforcing a single generated/canonical flow, including recipe/workflow and context schema coverage."
 sections:
   Summary: |-
     Define schema canonical source contract
-
+    
     Resolve the three schema directory source-of-truth ambiguity across root schemas, packages/spec/schemas, and packages/core/schemas by documenting or enforcing a single generated/canonical flow, including recipe/workflow and context schema coverage.
   Scope: |-
     - In scope: Resolve the three schema directory source-of-truth ambiguity across root schemas, packages/spec/schemas, and packages/core/schemas by documenting or enforcing a single generated/canonical flow, including recipe/workflow and context schema coverage.
@@ -59,16 +72,16 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-14T18:02:19.069Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Schema canonical contract verified: sync-schemas now enforces directory inventory and drift contract: runtime schemas render into root/spec/core, static context schemas sync spec->core, and recipe/workflow schemas are root-only public schemas. Checks: schemas:check passed; targeted eslint passed; policy routing passed.
     Attempts: 0
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T17:36:40.582Z, excerpt_hash=sha256:af31554d99bdfb4909f9d4816191fdd8cde520b5b96e31d390e1194913c06616
-
+    
     Details:
-
+    
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141638-78JKTQ-v06-audit-followups/.agentplane/tasks/202605141638-HGNT7H/blueprint/resolved-snapshot.json
@@ -76,7 +89,7 @@ sections:
     - current_digest: dd830de8bf1b63755521618f7ce1e6d12b67fdf27ddaba12f4e5c3492dde6af9
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605141638-HGNT7H
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).

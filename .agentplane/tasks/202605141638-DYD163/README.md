@@ -1,10 +1,11 @@
 ---
 id: "202605141638-DYD163"
 title: "Unify release note validation rules"
-status: "DOING"
+result_summary: "Closed as part of v0.6 audit follow-up batch PR #3746."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Release-note validation SSOT verified: TS release preflight imports the canonical release-notes-rules.json and the MJS check reads the same file; existing fixtures cover placeholders, required sections, duplicate headings, fenced bullets, and minimum bullets. Checks: apply.preflight.test.ts 15 tests passed; node scripts/release/check-release-notes.mjs --tag v0.6.0 passed; targeted eslint passed; policy routing passed."
   attempts: 0
-commit: null
+commit:
+  hash: "d2d0a0a1baf774fade65bf1ed78d5886f69d2dee"
+  message: "Merge pull request #3746 from basilisk-labs/task/202605141638-78JKTQ/v06-audit-followups"
 comments:
   -
     author: "CODER"
     body: "Start: Unifying release-note validation rules inside the approved v0.6 audit follow-up batch worktree, with shared fixtures and script coverage."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: landed through batch PR #3746 with green GitHub checks and merge commit d2d0a0a1."
 events:
   -
     type: "status"
@@ -42,14 +48,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release-note validation SSOT verified: TS release preflight imports the canonical release-notes-rules.json and the MJS check reads the same file; existing fixtures cover placeholders, required sections, duplicate headings, fenced bullets, and minimum bullets. Checks: apply.preflight.test.ts 15 tests passed; node scripts/release/check-release-notes.mjs --tag v0.6.0 passed; targeted eslint passed; policy routing passed."
+  -
+    type: "status"
+    at: "2026-05-14T19:15:14.087Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: landed through batch PR #3746 with green GitHub checks and merge commit d2d0a0a1."
 doc_version: 3
-doc_updated_at: "2026-05-14T18:01:58.275Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T19:15:14.089Z"
+doc_updated_by: "INTEGRATOR"
 description: "Move duplicated release-note validation invariants out of the TS preflight and MJS release script into one canonical rules surface, keep both callers aligned, and add fixture tests that prove section, placeholder, duplicate heading, and bullet-count behavior share the same contract."
 sections:
   Summary: |-
     Unify release note validation rules
-
+    
     Move duplicated release-note validation invariants out of the TS preflight and MJS release script into one canonical rules surface, keep both callers aligned, and add fixture tests that prove section, placeholder, duplicate heading, and bullet-count behavior share the same contract.
   Scope: |-
     - In scope: Move duplicated release-note validation invariants out of the TS preflight and MJS release script into one canonical rules surface, keep both callers aligned, and add fixture tests that prove section, placeholder, duplicate heading, and bullet-count behavior share the same contract.
@@ -59,16 +72,16 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-14T18:01:58.256Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Release-note validation SSOT verified: TS release preflight imports the canonical release-notes-rules.json and the MJS check reads the same file; existing fixtures cover placeholders, required sections, duplicate headings, fenced bullets, and minimum bullets. Checks: apply.preflight.test.ts 15 tests passed; node scripts/release/check-release-notes.mjs --tag v0.6.0 passed; targeted eslint passed; policy routing passed.
     Attempts: 0
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T17:36:39.926Z, excerpt_hash=sha256:cfafc816c8345c1544c47222e20d89105a88ef02280f05c140d018fbbc1b591c
-
+    
     Details:
-
+    
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141638-78JKTQ-v06-audit-followups/.agentplane/tasks/202605141638-DYD163/blueprint/resolved-snapshot.json
@@ -76,7 +89,7 @@ sections:
     - current_digest: e72abb0d8250098c78c5d8aac016c77f97dc736cc0d41dc2300c8df2e1bb28b4
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605141638-DYD163
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
