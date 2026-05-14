@@ -58,24 +58,26 @@ Implementation layout: canonical script implementations live under `scripts/chec
 
 ## Docs
 
-| Script                    | Command                                                                                                                  | Purpose                                            |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------- |
-| `docs:bootstrap:check`    | `node scripts/checks/check-agent-bootstrap-fresh.mjs`                                                                    | Run docs workflow: bootstrap check.                |
-| `docs:bootstrap:generate` | `node scripts/generate/generate-agent-bootstrap-doc.mjs`                                                                 | Run docs workflow: bootstrap generate.             |
-| `docs:cli:check`          | `node scripts/checks/check-cli-reference-fresh.mjs`                                                                      | Run docs workflow: cli check.                      |
-| `docs:cli:generate`       | `node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx`                              | Run docs workflow: cli generate.                   |
-| `docs:ia:check`           | `node scripts/checks/check-docs-ia.mjs`                                                                                  | Run docs workflow: ia check.                       |
-| `docs:onboarding:check`   | `node scripts/checks/check-agent-onboarding-scenario.mjs`                                                                | Run docs workflow: onboarding check.               |
-| `docs:recipes:check`      | `node scripts/checks/check-recipes-inventory-fresh.mjs`                                                                  | Run docs workflow: recipes check.                  |
-| `docs:recipes:generate`   | `node scripts/generate/generate-recipes-inventory.mjs`                                                                   | Run docs workflow: recipes generate.               |
-| `docs:scripts:check`      | `node scripts/generate/generate-scripts-readme.mjs --check`                                                              | Check scripts/README.md freshness.                 |
-| `docs:scripts:generate`   | `node scripts/generate/generate-scripts-readme.mjs`                                                                      | Regenerate scripts/README.md from package scripts. |
-| `docs:site:build`         | `bun run --cwd website build`                                                                                            | Run docs workflow: site build.                     |
-| `docs:site:check`         | `bun run docs:site:generate && bun run docs:site:typecheck && bun run docs:site:build && bun run docs:site:check:design` | Run docs workflow: site check.                     |
-| `docs:site:check:design`  | `node scripts/checks/check-design-language.mjs`                                                                          | Run docs workflow: site check design.              |
-| `docs:site:generate`      | `node scripts/generate/generate-website-docs.mjs && node scripts/generate/generate-llms-full.mjs`                        | Run docs workflow: site generate.                  |
-| `docs:site:start`         | `bun run --cwd website start`                                                                                            | Run docs workflow: site start.                     |
-| `docs:site:typecheck`     | `bun run --cwd website typecheck`                                                                                        | Run docs workflow: site typecheck.                 |
+| Script                        | Command                                                                                                                  | Purpose                                            |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| `docs:bootstrap:check`        | `node scripts/checks/check-agent-bootstrap-fresh.mjs`                                                                    | Run docs workflow: bootstrap check.                |
+| `docs:bootstrap:generate`     | `node scripts/generate/generate-agent-bootstrap-doc.mjs`                                                                 | Run docs workflow: bootstrap generate.             |
+| `docs:cli:check`              | `node scripts/checks/check-cli-reference-fresh.mjs`                                                                      | Run docs workflow: cli check.                      |
+| `docs:cli:generate`           | `node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx`                              | Run docs workflow: cli generate.                   |
+| `docs:ia:check`               | `node scripts/checks/check-docs-ia.mjs`                                                                                  | Run docs workflow: ia check.                       |
+| `docs:onboarding:check`       | `node scripts/checks/check-agent-onboarding-scenario.mjs`                                                                | Run docs workflow: onboarding check.               |
+| `docs:readme-header:check`    | `node scripts/generate/generate-readme-header.mjs --check`                                                               | Run docs workflow: readme-header check.            |
+| `docs:readme-header:generate` | `node scripts/generate/generate-readme-header.mjs`                                                                       | Run docs workflow: readme-header generate.         |
+| `docs:recipes:check`          | `node scripts/checks/check-recipes-inventory-fresh.mjs`                                                                  | Run docs workflow: recipes check.                  |
+| `docs:recipes:generate`       | `node scripts/generate/generate-recipes-inventory.mjs`                                                                   | Run docs workflow: recipes generate.               |
+| `docs:scripts:check`          | `node scripts/generate/generate-scripts-readme.mjs --check`                                                              | Check scripts/README.md freshness.                 |
+| `docs:scripts:generate`       | `node scripts/generate/generate-scripts-readme.mjs`                                                                      | Regenerate scripts/README.md from package scripts. |
+| `docs:site:build`             | `bun run --cwd website build`                                                                                            | Run docs workflow: site build.                     |
+| `docs:site:check`             | `bun run docs:site:generate && bun run docs:site:typecheck && bun run docs:site:build && bun run docs:site:check:design` | Run docs workflow: site check.                     |
+| `docs:site:check:design`      | `node scripts/checks/check-design-language.mjs`                                                                          | Run docs workflow: site check design.              |
+| `docs:site:generate`          | `node scripts/generate/generate-website-docs.mjs && node scripts/generate/generate-llms-full.mjs`                        | Run docs workflow: site generate.                  |
+| `docs:site:start`             | `bun run --cwd website start`                                                                                            | Run docs workflow: site start.                     |
+| `docs:site:typecheck`         | `bun run --cwd website typecheck`                                                                                        | Run docs workflow: site typecheck.                 |
 
 ## Test
 
