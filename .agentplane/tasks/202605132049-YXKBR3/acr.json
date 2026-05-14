@@ -2,7 +2,7 @@
   "acr_version": "0.1.0",
   "record_type": "agent_change_record",
   "record_id": "acr_202605132049-YXKBR3",
-  "created_at": "2026-05-14T09:05:20.524Z",
+  "created_at": "2026-05-14T09:39:55.826Z",
   "producer": {
     "name": "agentplane",
     "version": "0.4.2"
@@ -12,7 +12,7 @@
     "remote": "https://github.com/basilisk-labs/agentplane.git",
     "base_ref": "main",
     "base_commit": "ec628cd9a2aa899cca01611be9519181845ba555",
-    "work_ref": "main",
+    "work_ref": "task-close/202605132049-YXKBR3/867bbfad0abf",
     "work_commit": "ec628cd9a2aa899cca01611be9519181845ba555"
   },
   "task": {
@@ -41,10 +41,15 @@
     ]
   },
   "plan": {
-    "status": "pending_approval",
+    "status": "approved",
     "artifact": {
       "path": ".agentplane/tasks/202605132049-YXKBR3/README.md",
-      "sha256": "sha256:91f078f2c5eca609ed5f2339367dec774fb7ade1b4fd2be389467928a8809e5d"
+      "sha256": "sha256:9bbe280472b36632de724292b46179a0ab2e1ae1bed02e2f765316148581345e"
+    },
+    "approved_at": "2026-05-14T09:39:36.205Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
     }
   },
   "permissions": {
@@ -66,8 +71,8 @@
     "decisions": [
       {
         "rule_id": "plan.required",
-        "decision": "warning",
-        "reason": "Plan is not approved."
+        "decision": "pass",
+        "reason": "Approved plan exists."
       },
       {
         "rule_id": "verification.required",
@@ -94,17 +99,34 @@
     "status": "passed",
     "checks": []
   },
-  "approvals": [],
+  "approvals": [
+    {
+      "approval_id": "approval_202605132049-YXKBR3_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T09:39:36.205Z",
+      "scope": "task"
+    }
+  ],
   "evidence": [
     {
       "type": "task",
       "path": ".agentplane/tasks/202605132049-YXKBR3/README.md",
-      "sha256": "sha256:91f078f2c5eca609ed5f2339367dec774fb7ade1b4fd2be389467928a8809e5d"
+      "sha256": "sha256:9bbe280472b36632de724292b46179a0ab2e1ae1bed02e2f765316148581345e"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605132049-YXKBR3/README.md",
+      "sha256": "sha256:9bbe280472b36632de724292b46179a0ab2e1ae1bed02e2f765316148581345e"
     },
     {
       "type": "verification_log",
       "path": ".agentplane/tasks/202605132049-YXKBR3/README.md",
-      "sha256": "sha256:91f078f2c5eca609ed5f2339367dec774fb7ade1b4fd2be389467928a8809e5d"
+      "sha256": "sha256:9bbe280472b36632de724292b46179a0ab2e1ae1bed02e2f765316148581345e"
     },
     {
       "type": "other",
@@ -116,9 +138,7 @@
     "status": "finished",
     "merge_ready": false,
     "residual_risks": [
-      "Plan is not approved.",
-      "Passed verification has no checks.",
-      "Plan evidence is missing."
+      "Passed verification has no checks."
     ],
     "rollback": {
       "available": true,
@@ -127,7 +147,7 @@
   },
   "integrity": {
     "digest_algorithm": "sha256",
-    "record_digest": "sha256:81b215c7e90b16bb91aea00037ab08574089a36a7d10709a9ffe0eb996cf10ca",
+    "record_digest": "sha256:f9f6edc6e23cb30e1ca82dc5f132092ad16b7216dbfb45dd1eb206d9b19dbf9a",
     "canonicalization": "rfc8785-jcs",
     "signatures": []
   },

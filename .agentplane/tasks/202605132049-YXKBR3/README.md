@@ -5,7 +5,7 @@ result_summary: "Merged to main in PR #3694; v0.6 readiness and assimilation che
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -15,9 +15,9 @@ tags:
   - "evaluator"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-05-14T09:39:36.205Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "ok"
