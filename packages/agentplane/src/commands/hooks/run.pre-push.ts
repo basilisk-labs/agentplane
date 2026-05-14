@@ -252,6 +252,36 @@ function hasManagedUpgradeEvidence(body: string): boolean {
   return /^⬆️\s+upgrade:\s+/u.test(subject) && /^Upgrade-Version:\s*\S+\s*$/im.test(body);
 }
 
+function isManagedInstallPath(filePath: string): boolean {
+  return (
+    filePath === "AGENTS.md" ||
+    filePath === "CLAUDE.md" ||
+    filePath === ".gitignore" ||
+    filePath === ".env.example" ||
+    gitPathIsUnder(filePath, ".agentplane") ||
+    gitPathIsUnder(filePath, ".cursor") ||
+    gitPathIsUnder(filePath, ".windsurf")
+  );
+}
+
+function hasManagedInstallEvidence(body: string, mutatingPaths: readonly string[]): boolean {
+  const subject =
+    body
+      .split("\n")
+      .find((line) => line.trim())
+      ?.trim() ?? "";
+  if (
+    !/^chore:\s+install agentplane \d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(
+      subject,
+    )
+  ) {
+    return false;
+  }
+  return (
+    mutatingPaths.length > 0 && mutatingPaths.every((filePath) => isManagedInstallPath(filePath))
+  );
+}
+
 function readCommitList(gitRoot: string, range: { from: string; to: string } | null): string[] {
   if (!range) return [];
   return readGitText(gitRoot, ["log", "--format=%H", `${range.from}..${range.to}`])
@@ -290,6 +320,7 @@ function enforceTaskBoundOutgoingCommits(
         ?.trim() ?? "";
     if (taskIdFromSubject(gitRoot, subject)) continue;
     if (hasManagedUpgradeEvidence(body)) continue;
+    if (hasManagedInstallEvidence(body, mutating)) continue;
     if (hasEmergencyBackfillEvidence(body)) continue;
 
     failures.push(

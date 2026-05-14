@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605141500-SAV86C/init-install-prepush",
+  "created_at": "2026-05-14T15:01:27.456Z",
+  "head_sha": "f8e9d536b1b5e93c7b9f13659f2746074e5c74f2",
+  "last_verified_at": "2026-05-14T15:20:53.373Z",
+  "last_verified_sha": "31bb4314cf339cc4e2fe113ba191c2acc2f730bb",
+  "pr_number": 3724,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3724",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605141500-SAV86C",
+  "updated_at": "2026-05-14T15:26:25.307Z",
+  "verify": {
+    "status": "pass"
+  }
+}
