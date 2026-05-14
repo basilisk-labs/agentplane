@@ -22,7 +22,6 @@ import { CliError } from "../../shared/errors.js";
 import { runGhApiJson } from "../pr/internal/gh-api.js";
 
 import {
-  insightsIssueSpec,
   insightsSpec,
   type InsightsIssueParsed,
   type InsightsReportParsed,
@@ -338,7 +337,7 @@ type FeedbackGithubIssuesSettings = {
 
 function trimOptional(value: string | undefined): string | null {
   const trimmed = value?.trim() ?? "";
-  return trimmed ? trimmed : null;
+  return trimmed || null;
 }
 
 function sanitizeIssueTitle(title: string | undefined, errorCode: string | undefined): string {
