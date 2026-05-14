@@ -27,12 +27,15 @@ playbook behavior.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T16:20:02.147Z
+- Updated: 2026-05-14T16:21:58.404Z
 - Branch: task/202605141619-44RW98/runner-playbook-knip-fix
-- Head: cd3ebf81bb98
+- Head: a6f73b0650e3
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 552 +++++++++++++++++++++
+ packages/agentplane/src/runner/playbooks.ts        |   6 +-
+ packages/agentplane/src/runner/types.ts            |  15 -
+ 3 files changed, 555 insertions(+), 18 deletions(-)
 ```
 
 </details>
