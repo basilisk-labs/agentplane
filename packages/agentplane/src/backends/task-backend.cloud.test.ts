@@ -85,7 +85,32 @@ describe("CloudBackend", () => {
       ],
     });
     expect(result.freshness?.lastCheckedAt).toBeNull();
-    expect(result.freshness?.stale).toBe(false);
+    expect(result.freshness?.stale).toBe(true);
+  });
+
+  it("treats a malformed cloud state file as stale for mutation guards", async () => {
+    const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
+    await mkdir(stateDir, { recursive: true });
+    await writeFile(path.join(stateDir, "state.json"), "{", "utf8");
+    const fetchImpl = vi.fn<typeof fetch>(() => Promise.resolve(Response.json({})));
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example/",
+        token: "token",
+        project_id: "project-1",
+        stale_after_seconds: 300,
+      },
+      {
+        root: tempDir,
+        cache: new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") }),
+        fetchImpl,
+      },
+    );
+
+    await expect(backend.assertLocalMutationReady()).rejects.toThrow(
+      "Safe command: agentplane backend sync cloud --direction pull --yes",
+    );
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 
   it("rejects local mutations before cache writes when the cloud projection is stale", async () => {
@@ -723,7 +748,7 @@ describe("CloudBackend", () => {
     expect(state.last_checked_at).toBe("2000-01-01T00:00:00.000Z");
   });
 
-  it("uses a local freshness fallback after a no-op pull only when the service omits a timestamp", async () => {
+  it("does not advance freshness after a no-op pull when the service omits a timestamp", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
     const task: TaskData = makeTask({
       id: "202605051806-C1D2",
@@ -751,12 +776,9 @@ describe("CloudBackend", () => {
 
     await backend.sync({ direction: "pull", conflict: "diff", quiet: true, confirm: true });
 
-    const stateText = await readFile(
-      path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"),
-      "utf8",
-    );
-    const state = JSON.parse(stateText) as { last_checked_at: string };
-    expect(Number.isFinite(Date.parse(state.last_checked_at))).toBe(true);
+    await expect(
+      readFile(path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"), "utf8"),
+    ).rejects.toMatchObject({ code: "ENOENT" });
   });
 
   it("conflict=fail refuses to write open service conflicts", async () => {

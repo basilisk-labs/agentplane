@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { mkdir, rename } from "node:fs/promises";
 import path from "node:path";
 
@@ -11,7 +12,7 @@ export async function archivePrArtifacts(taskDir: string): Promise<string | null
   const stamp = new Date().toISOString().replaceAll(/[:.]/g, "");
   let dest = path.join(archiveRoot, stamp);
   if (await fileExists(dest)) {
-    dest = path.join(archiveRoot, `${stamp}-${Math.random().toString(36).slice(2, 8)}`);
+    dest = path.join(archiveRoot, `${stamp}-${randomUUID().slice(0, 8)}`);
   }
   await rename(prDir, dest);
   return dest;

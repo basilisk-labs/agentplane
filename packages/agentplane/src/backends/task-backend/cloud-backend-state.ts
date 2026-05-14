@@ -1,5 +1,5 @@
-import path from "node:path";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
+import { atomicWriteFile } from "@agentplaneorg/core/fs";
 
 type CloudBackendState = { last_checked_at: string | null };
 
@@ -15,7 +15,7 @@ export async function readCloudBackendState(statePath: string): Promise<CloudBac
     }
   } catch (err) {
     const code = (err as { code?: string } | null)?.code;
-    if (code !== "ENOENT") throw err;
+    if (code !== "ENOENT" && !(err instanceof SyntaxError)) throw err;
   }
   return { last_checked_at: null };
 }
@@ -24,6 +24,5 @@ export async function writeCloudBackendState(
   statePath: string,
   state: { last_checked_at: string },
 ): Promise<void> {
-  await mkdir(path.dirname(statePath), { recursive: true });
-  await writeFile(statePath, `${JSON.stringify(state, null, 2)}\n`, "utf8");
+  await atomicWriteFile(statePath, `${JSON.stringify(state, null, 2)}\n`, "utf8");
 }

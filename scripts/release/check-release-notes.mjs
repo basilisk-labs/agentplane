@@ -36,6 +36,7 @@ const REQUIRED_RELEASE_NOTE_SECTIONS = [
   "Upgrade Notes",
   "Verification",
 ];
+const MIN_RELEASE_NOTE_BULLETS = 6;
 
 function releaseNotesHeadingPresent(content, tag) {
   const headingPattern = new RegExp(
@@ -119,7 +120,7 @@ const main = defineCheck({
       }
     }
 
-    const releaseTags = [...tags].filter((tag) => /^v\d+\.\d+\.\d+/.test(tag));
+    const releaseTags = [...tags].filter((tag) => /^v\d+\.\d+\.\d+$/.test(tag));
     if (releaseTags.length === 0) {
       return;
     }
@@ -160,10 +161,10 @@ const main = defineCheck({
           `Release notes must not include duplicate section headings in ${relPath}: ${duplicateHeadings.join(", ")}`,
         );
       }
-      const minBullets = minBulletsOverride ?? REQUIRED_RELEASE_NOTE_SECTIONS.length;
-      const bulletCount = content
-        .split(/\r?\n/)
-        .filter((line) => /^\s*[-*]\s+\S+/.test(line)).length;
+      const minBullets = minBulletsOverride ?? MIN_RELEASE_NOTE_BULLETS;
+      const bulletCount = releaseNoteLinesOutsideCodeFences(content).filter((line) =>
+        /^\s*[-*]\s+\S+/.test(line),
+      ).length;
       if (bulletCount < minBullets) {
         errors.push(
           `Release notes must include at least ${minBullets} bullet points in ${relPath}.`,

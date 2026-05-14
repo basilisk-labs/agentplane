@@ -175,6 +175,41 @@ describeWhenNotHook(
       await expect(validateReleaseNotes(notesPath, 1)).resolves.toBeUndefined();
     });
 
+    it("does not count fenced example bullets toward release note content minimums", async () => {
+      const root = await mkGitRepoRoot();
+      const notesPath = path.join(root, "docs", "releases", "v0.2.7.md");
+      await mkdir(path.dirname(notesPath), { recursive: true });
+      await writeFile(
+        notesPath,
+        [
+          "# Release Notes - v0.2.7",
+          "",
+          "## Summary",
+          "",
+          "- Actual summary bullet.",
+          "",
+          "## Added",
+          "",
+          "## Improved",
+          "",
+          "## Fixed",
+          "",
+          "## Upgrade Notes",
+          "",
+          "## Verification",
+          "",
+          "```md",
+          "- Fenced example bullet.",
+          "- Another fenced example bullet.",
+          "```",
+          "",
+        ].join("\n"),
+        "utf8",
+      );
+
+      await expect(validateReleaseNotes(notesPath, 2)).rejects.toThrow(/at least 2 bullet points/u);
+    });
+
     it("rejects release notes with duplicate section headings", async () => {
       const root = await mkGitRepoRoot();
       const notesPath = path.join(root, "docs", "releases", "v0.2.7.md");
