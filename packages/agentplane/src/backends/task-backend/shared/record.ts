@@ -81,13 +81,12 @@ function mergeTaskDocSections(opts: {
   frontmatterSections?: Record<string, string>;
   body: string;
 }): Record<string, string> | undefined {
+  if (!opts.frontmatterSections) return undefined;
   const bodyDoc = extractTaskDoc(opts.body);
   const bodySections = bodyDoc ? taskDocToSectionMap(bodyDoc) : undefined;
-  const merged = opts.frontmatterSections
-    ? bodySections
-      ? { ...bodySections, ...opts.frontmatterSections }
-      : { ...opts.frontmatterSections }
-    : bodySections;
+  const merged = bodySections
+    ? { ...bodySections, ...opts.frontmatterSections }
+    : { ...opts.frontmatterSections };
   return merged && Object.keys(merged).length > 0 ? merged : undefined;
 }
 

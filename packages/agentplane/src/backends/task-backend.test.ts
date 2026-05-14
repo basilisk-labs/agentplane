@@ -362,6 +362,41 @@ describe("task-backend helpers", () => {
     });
   });
 
+  it("taskRecordToData preserves raw legacy doc order when frontmatter sections are absent", () => {
+    const record = {
+      id: "202601300000-LEGACYORDER",
+      frontmatter: {
+        id: "202601300000-LEGACYORDER",
+        title: "Task",
+        description: "Desc",
+        status: "TODO",
+        priority: "med",
+        owner: "tester",
+      },
+      body: [
+        "## Summary",
+        "",
+        "First",
+        "",
+        "## Findings",
+        "",
+        "Second",
+        "",
+        "## Plan",
+        "",
+        "Third",
+      ].join("\n"),
+    } as unknown as TaskRecord;
+
+    const data = taskRecordToData(record);
+    expect(data.doc).toBe("## Summary\n\nFirst\n\n## Findings\n\nSecond\n\n## Plan\n\nThird");
+    expect(data.sections).toEqual({
+      Summary: "First",
+      Findings: "Second",
+      Plan: "Third",
+    });
+  });
+
   it("taskRecordToData defaults missing or invalid fields", () => {
     const record = {
       id: 123,
