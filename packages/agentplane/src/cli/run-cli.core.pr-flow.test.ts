@@ -252,7 +252,7 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
     } finally {
       ioTask.restore();
     }
-    await approveTaskPlan(root, taskId);
+    await approveTaskPlan(root, taskId).then(() => commitAll(root, "fixture: approve task"));
 
     const io = captureStdIO();
     try {

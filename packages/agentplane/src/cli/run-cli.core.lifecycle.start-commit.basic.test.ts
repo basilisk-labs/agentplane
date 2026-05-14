@@ -88,6 +88,8 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
       ioNew.restore();
     }
     await approveTaskPlan(root, taskId);
+    await stageGitignoreIfPresent(root);
+    await commitAll(root, "fixture: approve task");
     await startDirectWork(root, taskId, "CODER");
 
     const commentBody =
@@ -168,6 +170,8 @@ describe("runCli", { timeout: START_COMMIT_PATH_HANDLING_TIMEOUT_MS }, () => {
         ioNew.restore();
       }
       await approveTaskPlan(root, taskId);
+      await stageGitignoreIfPresent(root);
+      await commitAll(root, "fixture: approve task");
       await startDirectWork(root, taskId, "CODER");
       const io = captureStdIO();
       try {

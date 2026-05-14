@@ -62,7 +62,7 @@ framework:
   source: https://github.com/basilisk-labs/agentplane
   last_update: null
   cli:
-    expected_version: 0.6.0
+    expected_version: 0.6.1
 commit:
   generic_tokens:
     - start
@@ -107,6 +107,7 @@ timeouts:
 in_scope_paths:
   - "**"
 ---
+
 
 
 
