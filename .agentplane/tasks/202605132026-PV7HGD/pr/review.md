@@ -6,7 +6,7 @@ Created: 2026-05-13T20:27:38.160Z
 
 - Task: `202605132026-PV7HGD`
 - Title: Cloud backend: auto-sync on task reads/writes
-- Status: DOING
+- Status: DONE
 - Branch: `task/202605132026-PV7HGD/cloud-autosync`
 - Canonical task record: `.agentplane/tasks/202605132026-PV7HGD/README.md`
 
