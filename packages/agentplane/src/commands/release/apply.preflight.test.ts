@@ -13,6 +13,7 @@ import {
 } from "@agentplane/testkit";
 import {
   seedReleaseWorkspace,
+  validReleaseNotesBody,
   withDryRunReleaseMode,
   writeReleaseNotes,
   writeWorkflowMode,
@@ -71,18 +72,10 @@ describeWhenNotHook(
       await mkdir(path.dirname(notesPath), { recursive: true });
       await writeFile(
         notesPath,
-        [
-          "# Release Notes - v0.2.7",
-          "",
-          "## Summary",
-          "",
+        validReleaseNotesBody("0.2.7").replace(
+          "- Release notes summarize the user-visible outcome.",
           "- 2-4 bullets with the main release outcomes in plain language.",
-          "",
-          "## Added",
-          "",
-          "- New features or capabilities.",
-          "",
-        ].join("\n"),
+        ),
         "utf8",
       );
 
@@ -91,7 +84,53 @@ describeWhenNotHook(
       );
     });
 
-    it("allows release notes to mention old template bullets inside fenced examples", async () => {
+    it("rejects release notes where Release Notes only appears in frontmatter", async () => {
+      const root = await mkGitRepoRoot();
+      const notesPath = path.join(root, "docs", "releases", "v0.2.7.md");
+      await mkdir(path.dirname(notesPath), { recursive: true });
+      await writeFile(
+        notesPath,
+        [
+          "---",
+          'description: "Release notes for v0.2.7."',
+          "---",
+          "",
+          "# v0.2.7",
+          "",
+          "## Summary",
+          "",
+          "- Release notes summarize the user-visible outcome.",
+          "",
+          "## Added",
+          "",
+          "- Added the release capability covered by this test fixture.",
+          "",
+          "## Improved",
+          "",
+          "- Improved the release workflow exercised by this test fixture.",
+          "",
+          "## Fixed",
+          "",
+          "- Fixed the release readiness gap covered by this test fixture.",
+          "",
+          "## Upgrade Notes",
+          "",
+          "- No migration is required for this test fixture.",
+          "",
+          "## Verification",
+          "",
+          "- Release validation passed for this test fixture.",
+          "",
+        ].join("\n"),
+        "utf8",
+      );
+
+      await expect(validateReleaseNotes(notesPath, 1)).rejects.toThrow(
+        /top-level "Release Notes - vX\.Y\.Z" heading/u,
+      );
+    });
+
+    it("rejects release notes that omit required template sections", async () => {
       const root = await mkGitRepoRoot();
       const notesPath = path.join(root, "docs", "releases", "v0.2.7.md");
       await mkdir(path.dirname(notesPath), { recursive: true });
@@ -102,13 +141,29 @@ describeWhenNotHook(
           "",
           "## Summary",
           "",
-          "- Release notes validation now rejects unreplaced template bullets.",
-          "- The check still allows historical examples in fenced snippets.",
+          "- Release notes summarize the user-visible outcome.",
           "",
-          "## Fixed",
+          "## Changes",
           "",
-          "- The old template looked like this:",
+          "- Added a generic change list.",
           "",
+        ].join("\n"),
+        "utf8",
+      );
+
+      await expect(validateReleaseNotes(notesPath, 1)).rejects.toThrow(
+        /required template sections.*Added, Improved, Fixed, Upgrade Notes, Verification/u,
+      );
+    });
+
+    it("allows release notes to mention old template bullets inside fenced examples", async () => {
+      const root = await mkGitRepoRoot();
+      const notesPath = path.join(root, "docs", "releases", "v0.2.7.md");
+      await mkdir(path.dirname(notesPath), { recursive: true });
+      await writeFile(
+        notesPath,
+        [
+          validReleaseNotesBody("0.2.7"),
           "```md",
           "- 2-4 bullets with the main release outcomes in plain language.",
           "```",
@@ -126,23 +181,9 @@ describeWhenNotHook(
       await mkdir(path.dirname(notesPath), { recursive: true });
       await writeFile(
         notesPath,
-        [
-          "# Release Notes - v0.2.7",
-          "",
-          "## Summary",
-          "",
-          "- Agents now get deterministic release evidence.",
-          "- Publish checks now cover package parity.",
-          "",
-          "## Added",
-          "",
-          "- Added release evidence checks.",
-          "",
-          "## Added",
-          "",
-          "- Added package parity checks.",
-          "",
-        ].join("\n"),
+        [validReleaseNotesBody("0.2.7"), "## Added", "", "- Added package parity checks.", ""].join(
+          "\n",
+        ),
         "utf8",
       );
 
@@ -173,7 +214,7 @@ describeWhenNotHook(
         await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
         await writeFile(
           path.join(root, "docs", "releases", "v0.2.7.md"),
-          ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+          validReleaseNotesBody("0.2.7"),
           "utf8",
         );
 
@@ -223,11 +264,7 @@ describeWhenNotHook(
         await commitAll(root, "feat: add file");
 
         await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
-        await writeReleaseNotes(
-          root,
-          "0.2.7",
-          ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
-        );
+        await writeReleaseNotes(root, "0.2.7", validReleaseNotesBody("0.2.7"));
 
         await writeFile(path.join(root, "file.txt"), "dirty", "utf8");
 
@@ -269,7 +306,7 @@ describeWhenNotHook(
       await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
       await writeFile(
         path.join(root, "docs", "releases", "v0.2.7.md"),
-        ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+        validReleaseNotesBody("0.2.7"),
         "utf8",
       );
       await execFileAsync("git", ["tag", "v0.2.7"], { cwd: root });
@@ -336,7 +373,24 @@ describeWhenNotHook(
       await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
       await writeFile(
         path.join(root, "docs", "releases", "v0.2.7.md"),
-        ["# Release Notes — v0.2.7", "", "- A", ""].join("\n"),
+        [
+          "# Release Notes — v0.2.7",
+          "",
+          "## Summary",
+          "",
+          "- A",
+          "",
+          "## Added",
+          "",
+          "## Improved",
+          "",
+          "## Fixed",
+          "",
+          "## Upgrade Notes",
+          "",
+          "## Verification",
+          "",
+        ].join("\n"),
         "utf8",
       );
 
@@ -379,11 +433,7 @@ describeWhenNotHook(
         await commitAll(root, "feat: add file");
 
         await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
-        await writeReleaseNotes(
-          root,
-          "0.2.7",
-          ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
-        );
+        await writeReleaseNotes(root, "0.2.7", validReleaseNotesBody("0.2.7"));
 
         await expect(
           withDryRunReleaseMode(async () =>
@@ -425,11 +475,7 @@ describeWhenNotHook(
         await commitAll(root, "feat: add file");
 
         await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
-        await writeReleaseNotes(
-          root,
-          "0.2.7",
-          ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
-        );
+        await writeReleaseNotes(root, "0.2.7", validReleaseNotesBody("0.2.7"));
 
         await expect(
           withDryRunReleaseMode(async () =>
@@ -467,11 +513,7 @@ describeWhenNotHook(
         await commitAll(root, "feat: add file");
 
         await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
-        await writeReleaseNotes(
-          root,
-          "0.2.7",
-          ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
-        );
+        await writeReleaseNotes(root, "0.2.7", validReleaseNotesBody("0.2.7"));
 
         await expect(
           withDryRunReleaseMode(async () =>

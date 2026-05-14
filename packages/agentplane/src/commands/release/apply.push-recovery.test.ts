@@ -12,6 +12,7 @@ import {
 } from "@agentplane/testkit";
 import {
   seedReleaseWorkspace,
+  validReleaseNotesBody,
   withDryRunReleaseMode,
   writeReleaseNotes,
   writeReleasePushScripts,
@@ -132,11 +133,7 @@ describeWhenNotHook(
         await commitAll(root, "feat: add file");
 
         await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
-        await writeReleaseNotes(
-          root,
-          "0.2.7",
-          ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
-        );
+        await writeReleaseNotes(root, "0.2.7", validReleaseNotesBody("0.2.7"));
 
         const hookPath = path.join(root, ".git", "hooks", "pre-push");
         const markerPath = path.join(root, "pre-push.marker");
@@ -238,7 +235,7 @@ describeWhenNotHook(
       await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
       await writeFile(
         path.join(root, "docs", "releases", "v0.2.7.md"),
-        ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+        validReleaseNotesBody("0.2.7"),
         "utf8",
       );
 
@@ -306,7 +303,7 @@ describeWhenNotHook(
       await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
       await writeFile(
         path.join(root, "docs", "releases", "v0.2.7.md"),
-        ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+        validReleaseNotesBody("0.2.7"),
         "utf8",
       );
 
@@ -369,7 +366,7 @@ describeWhenNotHook(
       await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
       await writeFile(
         path.join(root, "docs", "releases", "v0.2.7.md"),
-        ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+        validReleaseNotesBody("0.2.7"),
         "utf8",
       );
 

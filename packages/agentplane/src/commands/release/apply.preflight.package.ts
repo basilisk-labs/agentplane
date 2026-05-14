@@ -70,11 +70,42 @@ const RELEASE_NOTE_TEMPLATE_PLACEHOLDERS = [
   "Keep at least one bullet per listed change from `changes.md`/`changes.json`.",
 ] as const;
 
+const REQUIRED_RELEASE_NOTE_SECTIONS = [
+  "Summary",
+  "Added",
+  "Improved",
+  "Fixed",
+  "Upgrade Notes",
+  "Verification",
+] as const;
+
+function escapeRegExp(value: string): string {
+  return value.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+}
+
+function releaseNotesHeadingPresent(content: string, notesPath: string): boolean {
+  const tag = /v\d+\.\d+\.\d+(?:[-.\w]*)?\.md$/u.exec(notesPath)?.[0]?.replace(/\.md$/u, "");
+  const tagPattern = tag ? String.raw`\s*(?:[-:—]\s*)?${escapeRegExp(tag)}` : "";
+  const headingPattern = new RegExp(String.raw`^#\s+Release\s+Notes${tagPattern}\s*$`, "iu");
+  return releaseNoteLinesOutsideCodeFences(content).some((line) => headingPattern.test(line));
+}
+
+function sectionHeadings(content: string): string[] {
+  return releaseNoteLinesOutsideCodeFences(content).flatMap((line) => {
+    const heading = /^##\s+(.+?)\s*$/u.exec(line)?.[1]?.trim();
+    return heading ? [heading] : [];
+  });
+}
+
+function missingRequiredSections(content: string): string[] {
+  const headings = new Set(sectionHeadings(content).map((heading) => heading.toLowerCase()));
+  return REQUIRED_RELEASE_NOTE_SECTIONS.filter((section) => !headings.has(section.toLowerCase()));
+}
+
 function duplicateSectionHeadings(content: string): string[] {
   const seen = new Set<string>();
   const duplicates = new Set<string>();
-  for (const match of content.matchAll(/^##\s+(.+?)\s*$/gmu)) {
-    const heading = match[1]?.trim();
+  for (const heading of sectionHeadings(content)) {
     if (!heading) continue;
     const key = heading.toLowerCase();
     if (seen.has(key)) duplicates.add(heading);
@@ -108,11 +139,19 @@ function unreplacedTemplateBullet(content: string): string | null {
 
 export async function validateReleaseNotes(notesPath: string, minBullets: number): Promise<void> {
   const content = await readFile(notesPath, "utf8");
-  if (!/release\s+notes/i.test(content)) {
+  if (!releaseNotesHeadingPresent(content, notesPath)) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
-      message: `Release notes must include a "Release Notes" heading in ${notesPath}.`,
+      message: `Release notes must include a top-level "Release Notes - vX.Y.Z" heading in ${notesPath}.`,
+    });
+  }
+  const missingSections = missingRequiredSections(content);
+  if (missingSections.length > 0) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: `Release notes must include required template sections in ${notesPath}: ${missingSections.join(", ")}`,
     });
   }
   if (/^##\s+Writing Rules\s*$/mu.test(content)) {
