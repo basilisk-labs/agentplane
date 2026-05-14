@@ -77,9 +77,7 @@ export async function cmdContextInit(opts: {
       rootOverride: root,
       parsed: { includeTasks: false, includeRaw: true, reset: false },
     });
-    const committedBootstrap = bootstrapped
-      ? await commitContextBootstrapIfChanged(root)
-      : false;
+    const committedBootstrap = bootstrapped ? await commitContextBootstrapIfChanged(root) : false;
 
     for (const created of report.created) {
       process.stdout.write(infoMessage(`wrote ${created}`) + "\n");
