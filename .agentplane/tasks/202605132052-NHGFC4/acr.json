@@ -1,0 +1,190 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605132052-NHGFC4",
+  "created_at": "2026-05-14T09:05:31.034Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "ec628cd9a2aa899cca01611be9519181845ba555",
+    "work_ref": "main",
+    "work_commit": "ec628cd9a2aa899cca01611be9519181845ba555"
+  },
+  "task": {
+    "task_id": "202605132052-NHGFC4",
+    "title": "Fix branch_pr hosted sync credential resolution",
+    "intent": "GitHub issue: https://github.com/basilisk-labs/agentplane/issues/3654 (#3654)\n\nProblem: `ap backend sync cloud --direction push` fails from branch_pr worktrees because credentials/env are not resolved from canonical repo root.\n\nAcceptance:\n- branch_pr worktrees can run hosted sync without manual token export\n- missing-token diagnostic points to canonical root/env resolution\n- avoid pushing stale projections over canonical task README metadata\n- add focused regression coverage for env loading + stale projection push behavior",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "pending_approval",
+    "artifact": {
+      "path": ".agentplane/tasks/202605132052-NHGFC4/README.md",
+      "sha256": "sha256:8d38c36c1a2c85ea60acfef60fd5234c495c8f599055af29fce46d0e4dfd3822"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "warning",
+        "reason": "Plan is not approved."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged to main in PR #3694; v0.6 readiness and assimilation checks passed.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605132052-NHGFC4/README.md",
+      "sha256": "sha256:8d38c36c1a2c85ea60acfef60fd5234c495c8f599055af29fce46d0e4dfd3822"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605132052-NHGFC4/README.md",
+      "sha256": "sha256:8d38c36c1a2c85ea60acfef60fd5234c495c8f599055af29fce46d0e4dfd3822"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605132052-NHGFC4/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:b23cd4acac79335b06369580e319674a899a89f4b56e399aae9648245477eed0"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Plan is not approved.",
+      "Passed verification has no checks.",
+      "Plan evidence is missing."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit ec628cd9a2aa899cca01611be9519181845ba555 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:0f98a47ca2934e01efc8c59cadf469d506163105eeafa0c6ed7260ffb45b1648",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "ops.approval",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "artifact_write",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "ops.approval",
+          "kind": "approval",
+          "produced_by": "approval_gate",
+          "required": true
+        },
+        {
+          "id": "ops.rollback",
+          "kind": "rollback",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "ops.action",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "ops.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605132052-NHGFC4/blueprint/resolved-snapshot.json",
+        "digest": "17f57270afe2e85e76c6890f6c0933c8e100a6fc2ea3140c38ef8576cb894222",
+        "current_digest": "17f57270afe2e85e76c6890f6c0933c8e100a6fc2ea3140c38ef8576cb894222",
+        "route_changed": false,
+        "artifact_sha256": "sha256:b23cd4acac79335b06369580e319674a899a89f4b56e399aae9648245477eed0",
+        "safe_command": "agentplane blueprint snapshot 202605132052-NHGFC4"
+      }
+    }
+  }
+}
