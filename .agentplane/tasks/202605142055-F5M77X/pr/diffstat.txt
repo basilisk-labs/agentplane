@@ -1,0 +1,3 @@
+ .../blueprint/resolved-snapshot.json               | 417 +++++++++++++++++++++
+ docs/releases/v0.6.1.md                            | 176 +++++++++
+ 2 files changed, 593 insertions(+)
