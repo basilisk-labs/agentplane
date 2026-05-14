@@ -9,6 +9,7 @@ import type { FrameworkProtocolSurface } from "../../runtime/protocol/index.js";
 
 import type { RunnerAdapterCapabilities } from "./capabilities.js";
 import type { RUNNER_API_VERSION, RUNNER_BUNDLE_SCHEMA_VERSION } from "./constants.js";
+import type { RunnerExecutionPlaybookContract } from "./playbooks.js";
 import type { RunnerPolicyDecision } from "./policy.js";
 import type { RunnerPromptBlock } from "./prompts.js";
 import type { RunnerTarget } from "./target.js";
@@ -121,5 +122,6 @@ export type RunnerContextBundle = {
   task?: RunnerTaskContext;
   recipe?: RunnerRecipeContext;
   blueprint?: BlueprintPlanArtifact;
+  playbook?: RunnerExecutionPlaybookContract;
   execution: RunnerExecutionContract;
 };

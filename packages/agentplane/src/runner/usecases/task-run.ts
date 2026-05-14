@@ -34,6 +34,7 @@ import { readRecipeRunProfile } from "../adapters/recipe-run-profile.js";
 import { collectRunnerBasePrompts } from "../context/base-prompts.js";
 import { assembleRunnerTaskContext } from "../context/task-context.js";
 import { applyRunnerPolicyRefusal, buildRunnerPolicyDecision } from "../policy-decision.js";
+import { buildRunnerExecutionPlaybookContract } from "../playbooks.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
 import { RunnerRunRepository } from "../run-repository.js";
 import { createRunnerRunId, resolveTaskRunnerPaths } from "../task-run-paths.js";
@@ -449,6 +450,7 @@ export async function prepareTaskRunnerExecution(opts: {
       },
     },
   };
+  bundle.playbook = buildRunnerExecutionPlaybookContract(bundle);
   executionProfile = consumeExecutionProfileBudget({
     runtime: bundle.execution.profile_runtime ?? executionProfile,
     phase: "implementation",
