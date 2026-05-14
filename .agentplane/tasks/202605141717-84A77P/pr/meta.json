@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T17:46:01Z",
   "base": "main",
   "branch": "task/202605141717-84A77P/context-management-announcement",
   "created_at": "2026-05-14T17:18:06.934Z",
-  "head_sha": "25e785c43fe6984bb0b8d9044d975a7584bae286",
+  "head_sha": "da9a82cdf4f51f8137880fc09e685de204ea37b7",
   "last_verified_at": "2026-05-14T17:23:22.088Z",
   "last_verified_sha": "bc694ec383f274e2961b315d2ae677b5f084ad12",
+  "merge_commit": "8944e7f5196cd113a5342112f0d2e18619d75276",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T17:46:01Z",
   "pr_number": 3742,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3742",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605141717-84A77P",
-  "updated_at": "2026-05-14T17:24:29.117Z",
+  "updated_at": "2026-05-14T17:46:01Z",
   "verify": {
     "status": "pass"
   }
