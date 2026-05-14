@@ -192,6 +192,8 @@ export async function runCli(argv: string[]): Promise<number> {
           context: {
             ...err.context,
             feedback_github_issues_enabled: loaded.config.feedback.github_issues.enabled,
+            feedback_github_issues_prompt_on_internal_error:
+              loaded.config.feedback.github_issues.prompt_on_internal_error,
           },
         });
       } catch {

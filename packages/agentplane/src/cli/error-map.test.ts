@@ -178,4 +178,29 @@ describe("core error mapping", () => {
     expect(stderr).not.toContain("agentplane insights issue");
     expect(stderr).not.toContain("feedback_internal_error_report");
   });
+
+  it("does not suggest the feedback issue path when internal-error prompting is disabled", () => {
+    let stderr = "";
+    const spy = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      stderr += String(chunk);
+      return true;
+    });
+
+    try {
+      writeError(
+        new CliError({
+          code: "E_INTERNAL",
+          message: "unexpected invariant",
+          context: { feedback_github_issues_prompt_on_internal_error: false },
+        }),
+        false,
+      );
+    } finally {
+      spy.mockRestore();
+    }
+
+    expect(stderr).toContain("error [E_INTERNAL]: unexpected invariant");
+    expect(stderr).not.toContain("agentplane insights issue");
+    expect(stderr).not.toContain("feedback_internal_error_report");
+  });
 });

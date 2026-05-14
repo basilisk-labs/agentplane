@@ -162,7 +162,10 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
   });
   switch (err.code) {
     case "E_INTERNAL": {
-      if (err.context?.feedback_github_issues_enabled === false) {
+      if (
+        err.context?.feedback_github_issues_enabled === false ||
+        err.context?.feedback_github_issues_prompt_on_internal_error === false
+      ) {
         return withExplicit({});
       }
       return withExplicit({
