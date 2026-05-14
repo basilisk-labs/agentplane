@@ -22,19 +22,19 @@ Hide redundant team author presentation on blog pages and refine the blog typogr
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T21:16:12.473Z
+- Updated: 2026-05-14T21:19:02.853Z
 - Branch: task/202605142104-T42JAK/clean-blog-typography
-- Head: 5a6dd9680887
+- Head: 757b3ddfd882
 
 ```text
  .../blueprint/resolved-snapshot.json               | 527 +++++++++++++++++++++
  website/src/css/custom.css                         |  83 +++-
  website/src/data/homepage-content.ts               |  24 +-
- website/src/pages/_home.module.css                 |  66 +--
+ website/src/pages/_home.module.css                 |  67 +--
  website/src/pages/blog/index.module.css            |  60 ++-
  website/src/pages/index.tsx                        |  18 -
  .../theme/BlogPostItem/Header/Authors/index.tsx    |   3 +
- 7 files changed, 655 insertions(+), 126 deletions(-)
+ 7 files changed, 655 insertions(+), 127 deletions(-)
 ```
 
 </details>
