@@ -228,6 +228,53 @@ describe("release-task-evidence script", () => {
     expect(payload.pr_body).toContain("## Scope");
   });
 
+  it("prepares evidence for a branch_pr merge commit that carries the release task README", async () => {
+    const root = await initRepo();
+    await writeFile(path.join(root, "README.md"), "# fixture\n");
+    await commitAll(root, "seed main");
+    await git(root, ["switch", "-c", "task/202604191130-JWBEB7/release"]);
+    const taskId = "202604191130-JWBEB7";
+    await writeTaskReadme(root, taskId);
+    await commitAll(root, "release task artifacts");
+    await git(root, ["switch", "main"]);
+    await git(root, [
+      "merge",
+      "--no-ff",
+      "task/202604191130-JWBEB7/release",
+      "-m",
+      "Merge pull request #123 from basilisk-labs/task/202604191130-JWBEB7/release",
+    ]);
+    const { stdout: shaStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      env: process.env,
+    });
+    const releaseSha = shaStdout.trim();
+    const publishResultPath = await writePublishResult(root, buildPublishResult(true));
+
+    const result = await execFileAsync(
+      "bun",
+      [
+        SCRIPT_PATH,
+        "prepare",
+        "--release-sha",
+        releaseSha,
+        "--publish-result",
+        publishResultPath,
+        "--repo",
+        "basilisk-labs/agentplane",
+      ],
+      { cwd: root, env: process.env },
+    );
+
+    const payload = JSON.parse(String(result.stdout ?? "")) as {
+      actionable: boolean;
+      task_id: string;
+    };
+
+    expect(payload.actionable).toBe(true);
+    expect(payload.task_id).toBe(taskId);
+  });
+
   it("marks prepare as non-actionable when publish-result is incomplete", async () => {
     const root = await initRepo();
     const taskId = "202604191130-JWBEB7";

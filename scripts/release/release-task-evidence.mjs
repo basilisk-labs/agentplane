@@ -93,6 +93,7 @@ async function readPublishResult(filePath) {
 async function resolveReleaseTaskIdsFromCommit(releaseSha) {
   const stdout = await git([
     "diff-tree",
+    "-m",
     "--root",
     "--no-commit-id",
     "--name-only",

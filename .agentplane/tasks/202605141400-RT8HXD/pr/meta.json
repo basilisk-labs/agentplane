@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605141400-RT8HXD/release-evidence-hardening",
+  "created_at": "2026-05-14T14:02:12.360Z",
+  "head_sha": "3d5c3b4706eae9b3f7de27132be995c01a7b742a",
+  "last_verified_at": "2026-05-14T14:08:24.956Z",
+  "last_verified_sha": "3d5c3b4706eae9b3f7de27132be995c01a7b742a",
+  "schema_version": 1,
+  "task_id": "202605141400-RT8HXD",
+  "updated_at": "2026-05-14T14:02:12.360Z",
+  "verify": {
+    "status": "pass"
+  }
+}

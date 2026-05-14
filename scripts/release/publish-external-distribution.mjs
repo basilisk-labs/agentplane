@@ -190,9 +190,9 @@ async function publishExternal(args) {
   async function syncRepositoryMetadata(cloneDir) {
     const updates = [];
     const warnings = [];
-    const repoFlags = [];
     if (args.topics.length > 0) {
-      repoFlags.push("-f", `names=${JSON.stringify(args.topics)}`);
+      const topicsPayloadPath = path.join(tempRoot, "repository-topics.json");
+      await writeFile(topicsPayloadPath, `${JSON.stringify({ names: args.topics })}\n`, "utf8");
       try {
         await run(
           "gh",
@@ -203,7 +203,8 @@ async function publishExternal(args) {
             `/repos/${args.repo}/topics`,
             "-H",
             "Accept: application/vnd.github+json",
-            ...repoFlags,
+            "--input",
+            topicsPayloadPath,
           ],
           { cwd: cloneDir, env },
         );
