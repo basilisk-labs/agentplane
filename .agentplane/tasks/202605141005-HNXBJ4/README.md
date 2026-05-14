@@ -1,10 +1,11 @@
 ---
 id: "202605141005-HNXBJ4"
 title: "Fix context search JSONL row freshness"
-status: "DOING"
+result_summary: "Merged via PR #3707."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Fixed context search JSONL row freshness, including non-string row ids found in review. Verified focused context tests, eslint/prettier, release/docs gates, platform-critical, and empty-folder semantic assimilation smoke with no stale search rows."
   attempts: 0
-commit: null
+commit:
+  hash: "7161b8d9b652856550a3c55fba2a2ac8ee46a1f7"
+  message: "Merge pull request #3707 from basilisk-labs/task/202605141005-HNXBJ4/context-jsonl-freshness"
 comments:
   -
     author: "CODER"
     body: "Start: Fix context search JSONL row freshness regression found during v0.6 empty-folder assimilation smoke."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3707 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Fixed context search JSONL row freshness, including non-string row ids found in review. Verified focused context tests, eslint/prettier, release/docs gates, platform-critical, and empty-folder semantic assimilation smoke with no stale search rows."
+  -
+    type: "status"
+    at: "2026-05-14T10:46:12.391Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3707 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T10:26:23.166Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T10:46:12.397Z"
+doc_updated_by: "INTEGRATOR"
 description: "Context search marks fresh JSONL facts and graph projection rows as stale because row-level projection hashes are compared to whole-file hashes. Fix row-level freshness and cover it with regression tests so empty-folder semantic assimilation search reports fresh derived rows."
 sections:
   Summary: |-

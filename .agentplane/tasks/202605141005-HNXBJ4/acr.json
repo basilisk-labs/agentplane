@@ -1,0 +1,211 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605141005-HNXBJ4",
+  "created_at": "2026-05-14T10:46:12.450Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "7161b8d9b652856550a3c55fba2a2ac8ee46a1f7",
+    "work_ref": "main",
+    "work_commit": "7161b8d9b652856550a3c55fba2a2ac8ee46a1f7"
+  },
+  "task": {
+    "task_id": "202605141005-HNXBJ4",
+    "title": "Fix context search JSONL row freshness",
+    "intent": "Context search marks fresh JSONL facts and graph projection rows as stale because row-level projection hashes are compared to whole-file hashes. Fix row-level freshness and cover it with regression tests so empty-folder semantic assimilation search reports fresh derived rows.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605141005-HNXBJ4/README.md",
+      "sha256": "sha256:882a27ccea02024c852eb382d3e38dd2df1de88af8ca15702d289211fc4ac70f"
+    },
+    "approved_at": "2026-05-14T10:05:28.914Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3707.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605141005-HNXBJ4_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T10:05:28.914Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605141005-HNXBJ4/README.md",
+      "sha256": "sha256:882a27ccea02024c852eb382d3e38dd2df1de88af8ca15702d289211fc4ac70f"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605141005-HNXBJ4/README.md",
+      "sha256": "sha256:882a27ccea02024c852eb382d3e38dd2df1de88af8ca15702d289211fc4ac70f"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605141005-HNXBJ4/README.md",
+      "sha256": "sha256:882a27ccea02024c852eb382d3e38dd2df1de88af8ca15702d289211fc4ac70f"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 7161b8d9b652856550a3c55fba2a2ac8ee46a1f7 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:492265cf9b8aa3919aea54d9025b0e8e03e69bf2bb741a8ed65f777d2b96be50",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "release.strict",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "release.approval",
+          "kind": "approval",
+          "produced_by": "approval_gate",
+          "required": true
+        },
+        {
+          "id": "release.plan",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "release.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "release.publish",
+          "kind": "external_link",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        },
+        {
+          "id": "release.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "missing",
+        "path": ".agentplane/tasks/202605141005-HNXBJ4/blueprint/resolved-snapshot.json",
+        "digest": null,
+        "current_digest": "f3c5df08acba8e7ddf0a4372e13f47ef625e2224065742986e2ecd5d7cc8749c",
+        "route_changed": null,
+        "artifact_sha256": null,
+        "safe_command": "agentplane blueprint snapshot 202605141005-HNXBJ4"
+      }
+    }
+  }
+}
