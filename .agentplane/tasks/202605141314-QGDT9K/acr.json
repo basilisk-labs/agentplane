@@ -1,0 +1,216 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605141314-QGDT9K",
+  "created_at": "2026-05-14T14:23:40.927Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "880a40641c21093563aaea0283dcd23b6db961e1",
+    "work_ref": "main",
+    "work_commit": "880a40641c21093563aaea0283dcd23b6db961e1"
+  },
+  "task": {
+    "task_id": "202605141314-QGDT9K",
+    "title": "Fix v0.6.0 release notes quality gate",
+    "intent": "Rewrite the v0.6.0 release notes into the public release-note format, harden validation so shallow changelog text cannot pass, and update the published GitHub Release body after verification.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605141314-QGDT9K/README.md",
+      "sha256": "sha256:dd36ed5c1089823f7fcd202093c5f26357e3a542f6d40ac1c571a59846b0e36b"
+    },
+    "approved_at": "2026-05-14T13:15:13.200Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3713.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605141314-QGDT9K_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T13:15:13.200Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605141314-QGDT9K/README.md",
+      "sha256": "sha256:dd36ed5c1089823f7fcd202093c5f26357e3a542f6d40ac1c571a59846b0e36b"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605141314-QGDT9K/README.md",
+      "sha256": "sha256:dd36ed5c1089823f7fcd202093c5f26357e3a542f6d40ac1c571a59846b0e36b"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605141314-QGDT9K/README.md",
+      "sha256": "sha256:dd36ed5c1089823f7fcd202093c5f26357e3a542f6d40ac1c571a59846b0e36b"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605141314-QGDT9K/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:47cf0465560f9cacd9ad80c09ae16856f3c9e6a26bb00d0d123fa0c90d501d6c"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 880a40641c21093563aaea0283dcd23b6db961e1 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:b5295c904513161f9e9239ae4a23440dfd1269713295dfb06684b1b318839113",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "release.strict",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "release.approval",
+          "kind": "approval",
+          "produced_by": "approval_gate",
+          "required": true
+        },
+        {
+          "id": "release.plan",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "release.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "release.publish",
+          "kind": "external_link",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        },
+        {
+          "id": "release.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605141314-QGDT9K/blueprint/resolved-snapshot.json",
+        "digest": "4952652fde8bbb0bce6523d373afe56d79ecfdfd873765ff429d8f5539a2f014",
+        "current_digest": "4952652fde8bbb0bce6523d373afe56d79ecfdfd873765ff429d8f5539a2f014",
+        "route_changed": false,
+        "artifact_sha256": "sha256:47cf0465560f9cacd9ad80c09ae16856f3c9e6a26bb00d0d123fa0c90d501d6c",
+        "safe_command": "agentplane blueprint snapshot 202605141314-QGDT9K"
+      }
+    }
+  }
+}
