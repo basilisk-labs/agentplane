@@ -28,7 +28,6 @@ export type RunnerCustomEnforcementConfig = NonNullable<
   NonNullable<AgentplaneConfig["runner"]["custom"]>["enforcement"]
 >;
 export type RunnerCustomConfig = NonNullable<AgentplaneConfig["runner"]["custom"]>;
-export type FeedbackConfig = AgentplaneConfig["feedback"];
 export type RunnerTraceConfig = {
   mode: RunnerTraceMode;
   max_tail_bytes: number;
