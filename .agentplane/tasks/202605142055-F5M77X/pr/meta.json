@@ -3,8 +3,8 @@
   "branch": "task/202605142055-F5M77X/release-v0-6-1",
   "created_at": "2026-05-14T20:56:19.246Z",
   "head_sha": "d1d4aeb1e472512867316c12c8e7d0f55edafe74",
-  "last_verified_at": null,
-  "last_verified_sha": null,
+  "last_verified_at": "2026-05-14T23:33:26.746Z",
+  "last_verified_sha": "d1d4aeb1e472512867316c12c8e7d0f55edafe74",
   "pr_number": 3776,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3776",
   "schema_version": 1,
@@ -12,6 +12,6 @@
   "task_id": "202605142055-F5M77X",
   "updated_at": "2026-05-14T23:26:23.212Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

@@ -4,7 +4,7 @@ title: "Release AgentPlane v0.6.1"
 status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-14T23:33:26.746Z"
+  updated_by: "INTEGRATOR"
+  note: "GitHub PR #3776 is mergeable and green at bf5026d76d0f72146ff02f02007dbdbbdf2d0687: Core CI test/test-windows/release-ready, Docs CI, and CodeQL passed."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: preparing AgentPlane v0.6.1 patch release from the dedicated branch_pr worktree, with release plan, candidate branch, hosted publish, and post-publication verification scoped to 0.6.1."
+  -
+    type: "verify"
+    at: "2026-05-14T23:33:26.746Z"
+    author: "INTEGRATOR"
+    state: "ok"
+    note: "GitHub PR #3776 is mergeable and green at bf5026d76d0f72146ff02f02007dbdbbdf2d0687: Core CI test/test-windows/release-ready, Docs CI, and CodeQL passed."
 doc_version: 3
-doc_updated_at: "2026-05-14T20:56:19.203Z"
+doc_updated_at: "2026-05-14T23:33:26.753Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare, verify, publish, and prove AgentPlane patch release v0.6.1 from the current stable main branch, including release notes, version bump, hosted publish, and post-publish platform verification."
 sections:
@@ -61,6 +67,25 @@ sections:
     8. Record verification evidence in this task and leave base checkout clean with no open release PRs or stale v0.6.1 worktree/branch residues.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-14T23:33:26.746Z — VERIFY — ok
+    
+    By: INTEGRATOR
+    
+    Note: GitHub PR #3776 is mergeable and green at bf5026d76d0f72146ff02f02007dbdbbdf2d0687: Core CI test/test-windows/release-ready, Docs CI, and CodeQL passed.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T20:56:19.203Z, excerpt_hash=sha256:662835f3c4fa144e84f0ff3a1129e9c331aad375c84970b18f20926342a9cc87
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605142055-F5M77X-release-v0-6-1/.agentplane/tasks/202605142055-F5M77X/blueprint/resolved-snapshot.json
+    - old_digest: 50ffa018a55d581d9ff3db5a8e10f9b99d9e15290572b8c76d3d4bf2c49637eb
+    - current_digest: 50ffa018a55d581d9ff3db5a8e10f9b99d9e15290572b8c76d3d4bf2c49637eb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605142055-F5M77X
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -97,6 +122,25 @@ Release plan: version=0.6.1, tag=v0.6.1, scope=patch release from current stable
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-14T23:33:26.746Z — VERIFY — ok
+
+By: INTEGRATOR
+
+Note: GitHub PR #3776 is mergeable and green at bf5026d76d0f72146ff02f02007dbdbbdf2d0687: Core CI test/test-windows/release-ready, Docs CI, and CodeQL passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T20:56:19.203Z, excerpt_hash=sha256:662835f3c4fa144e84f0ff3a1129e9c331aad375c84970b18f20926342a9cc87
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605142055-F5M77X-release-v0-6-1/.agentplane/tasks/202605142055-F5M77X/blueprint/resolved-snapshot.json
+- old_digest: 50ffa018a55d581d9ff3db5a8e10f9b99d9e15290572b8c76d3d4bf2c49637eb
+- current_digest: 50ffa018a55d581d9ff3db5a8e10f9b99d9e15290572b8c76d3d4bf2c49637eb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605142055-F5M77X
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

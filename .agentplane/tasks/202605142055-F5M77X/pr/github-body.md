@@ -15,14 +15,19 @@ Prepare, verify, publish, and prove AgentPlane patch release v0.6.1 from the cur
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+GitHub PR #3776 is mergeable and green at bf5026d76d0f72146ff02f02007dbdbbdf2d0687: Core CI
+test/test-windows/release-ready, Docs CI, and CodeQL passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T23:26:17.235Z
+- Updated: 2026-05-14T23:26:23.212Z
 - Branch: task/202605142055-F5M77X/release-v0-6-1
 - Head: d1d4aeb1e472
 
