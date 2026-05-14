@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605141242-DQV6A3/npm-readme-header",
+  "created_at": "2026-05-14T12:43:23.167Z",
+  "head_sha": "5a48fda0445136000c7792dbc9907dddd143e41d",
+  "last_verified_at": "2026-05-14T12:44:57.353Z",
+  "last_verified_sha": "5a48fda0445136000c7792dbc9907dddd143e41d",
+  "schema_version": 1,
+  "task_id": "202605141242-DQV6A3",
+  "updated_at": "2026-05-14T12:43:23.167Z",
+  "verify": {
+    "status": "pass"
+  }
+}
