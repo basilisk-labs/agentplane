@@ -24,9 +24,9 @@ Created: 2026-05-14T13:47:51.184Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T14:22:07.740Z
+- Updated: 2026-05-14T14:23:04.662Z
 - Branch: task/202605141346-TTXFPD/feedback-issue-prompts
-- Head: 615944df4cc0
+- Head: 43b06e622104
 
 ```text
  .../blueprint/resolved-snapshot.json               | 526 +++++++++++++++++++++
