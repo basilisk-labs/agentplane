@@ -34,9 +34,11 @@ describe("runCli codex plugin install", () => {
       const code = await runCli(["codex", "plugin", "install"]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("Installed Codex plugin");
-      expect(io.stdout).toContain(`Plugin root: ${path.join(codexHome, "plugins", "agentplane")}`);
-      expect(io.stdout).toContain(
-        `Marketplace: ${path.join(codexHome, ".agents", "plugins", "marketplace.json")}`,
+      expectLabeledPath(io.stdout, "Plugin root", path.join(codexHome, "plugins", "agentplane"));
+      expectLabeledPath(
+        io.stdout,
+        "Marketplace",
+        path.join(codexHome, ".agents", "plugins", "marketplace.json"),
       );
     } finally {
       io.restore();
@@ -60,8 +62,10 @@ describe("runCli codex plugin install", () => {
       const code = await runCli(["codex", "plugin", "install", "--scope", "repo", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain(`Install root: ${root}`);
-      expect(io.stdout).toContain(
-        `Marketplace: ${path.join(root, ".agents", "plugins", "marketplace.json")}`,
+      expectLabeledPath(
+        io.stdout,
+        "Marketplace",
+        path.join(root, ".agents", "plugins", "marketplace.json"),
       );
     } finally {
       io.restore();
@@ -73,3 +77,8 @@ describe("runCli codex plugin install", () => {
     expect(marketplace.plugins.map((entry) => entry.name)).toContain("agentplane");
   });
 });
+
+function expectLabeledPath(output: string, label: string, expected: string): void {
+  const line = output.split(/\r?\n/u).find((line) => line.trimStart().startsWith(`${label}:`));
+  expect(line?.split(/:\s*/u, 2)[1]).toBe(expected);
+}

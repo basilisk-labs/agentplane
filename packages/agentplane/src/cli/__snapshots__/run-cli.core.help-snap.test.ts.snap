@@ -157,6 +157,10 @@ Commands:
     context learn tasks  Create CURATOR extraction tasks from completed task history.
     context search  Search indexed local context, facts, graph, tasks, and capabilities.
     context show  Resolve a context source reference and print addressed content.
+  Evaluators:
+    evaluator  List and inspect evaluator prompt modules.
+    evaluator list  List evaluator prompt modules from .agentplane/evaluators.
+    evaluator show  Print an evaluator prompt module.
   Framework Dev:
     codex  Codex integration commands.
     codex plugin  Install and inspect bundled Codex plugin integrations.
