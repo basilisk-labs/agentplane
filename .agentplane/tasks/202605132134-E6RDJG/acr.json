@@ -1,0 +1,231 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605132134-E6RDJG",
+  "created_at": "2026-05-14T09:07:59.834Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "ec628cd9a2aa899cca01611be9519181845ba555",
+    "work_ref": "main",
+    "work_commit": "ec628cd9a2aa899cca01611be9519181845ba555"
+  },
+  "task": {
+    "task_id": "202605132134-E6RDJG",
+    "title": "Fix evaluator root-resolution error surfacing (issue #3655)",
+    "intent": "GitHub issue: https://github.com/basilisk-labs/agentplane/issues/3655\n\nSummary: evaluator list/show can swallow resolveProject failures and silently fall back to builtin-only mode, hiding project evaluators from .agentplane/evaluators/*.md.\n\nAcceptance criteria (from issue):\n- Running evaluator commands from a repository subdirectory can locate the project root or emits an explicit root-resolution error.\n- Builtin-only fallback is used only for intentional no-project contexts, not for swallowed resolveProject failures.\n- Regression coverage verifies project evaluator IDs remain visible from subdirectories or fail with a clear diagnostic.\n\nPointers: packages/agentplane/src/commands/evaluator/evaluator.command.ts; review discussion linked in issue.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605132134-E6RDJG/README.md",
+      "sha256": "sha256:de2491ea239ef149b9aef999bfd7714a6934ece8f55379ced13e1a275f81e518"
+    },
+    "approved_at": "2026-05-14T07:59:16.220Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged to main in PR #3694; v0.6 readiness and assimilation checks passed.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605132134-E6RDJG_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T07:59:16.220Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605132134-E6RDJG/README.md",
+      "sha256": "sha256:de2491ea239ef149b9aef999bfd7714a6934ece8f55379ced13e1a275f81e518"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605132134-E6RDJG/README.md",
+      "sha256": "sha256:de2491ea239ef149b9aef999bfd7714a6934ece8f55379ced13e1a275f81e518"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605132134-E6RDJG/README.md",
+      "sha256": "sha256:de2491ea239ef149b9aef999bfd7714a6934ece8f55379ced13e1a275f81e518"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605132134-E6RDJG/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:87a65831ce5fe794e40b5c6417887a1ac38a9018e067890e85200cab5701d378"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit ec628cd9a2aa899cca01611be9519181845ba555 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:06fa195a9b5f91dd1fcb5efd609d224a4785a9747f88869e9e17548bfc3a1a0e",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "quality.regression",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "verify_record",
+        "hosted_checks",
+        "publish_or_integrate",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "regression.original_failure",
+          "kind": "artifact",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "regression.reproduction",
+          "kind": "check_result",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "regression.focused_check",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "regression.matrix_or_scope",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "regression.full_gate",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "regression.flake_classification",
+          "kind": "weak_links",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "regression.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605132134-E6RDJG/blueprint/resolved-snapshot.json",
+        "digest": "6c7bea2309746bc36c6ffd4f8e69d34da1b60596cfacfec1e84cb70c539472c9",
+        "current_digest": "6c7bea2309746bc36c6ffd4f8e69d34da1b60596cfacfec1e84cb70c539472c9",
+        "route_changed": false,
+        "artifact_sha256": "sha256:87a65831ce5fe794e40b5c6417887a1ac38a9018e067890e85200cab5701d378",
+        "safe_command": "agentplane blueprint snapshot 202605132134-E6RDJG"
+      }
+    }
+  }
+}
