@@ -27,3 +27,13 @@ context:
   label: Context
   permalink: /context
   description: Local context, repo-owned memory, and source-backed agent knowledge.
+
+blueprints:
+  label: Blueprints
+  permalink: /blueprints
+  description: Task routing, evidence contracts, and repeatable agent workflows.
+
+recipes:
+  label: Recipes
+  permalink: /recipes
+  description: Reusable agent behavior and extension packages.
