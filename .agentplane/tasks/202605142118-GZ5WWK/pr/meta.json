@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202605142118-GZ5WWK/wiki-glossary-cross-links",
   "created_at": "2026-05-14T21:18:55.803Z",
-  "head_sha": "aee5aceeee0e3087315a1e15733712bdefb10123",
+  "head_sha": "d206bb5cf771936bb81a87f2a25fce3badd10c21",
   "last_verified_at": "2026-05-14T21:22:18.332Z",
   "last_verified_sha": "aee5aceeee0e3087315a1e15733712bdefb10123",
   "pr_number": 3773,
@@ -10,7 +10,7 @@
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202605142118-GZ5WWK",
-  "updated_at": "2026-05-14T21:23:38.417Z",
+  "updated_at": "2026-05-14T21:27:51.405Z",
   "verify": {
     "status": "pass"
   }

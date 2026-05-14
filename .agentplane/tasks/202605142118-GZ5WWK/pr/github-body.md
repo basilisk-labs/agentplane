@@ -36,17 +36,18 @@ CURATOR extraction prompt, CURATOR asset, and user local-context docs.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T21:21:50.140Z
+- Updated: 2026-05-14T21:27:51.405Z
 - Branch: task/202605142118-GZ5WWK/wiki-glossary-cross-links
-- Head: aee5aceeee0e
+- Head: d206bb5cf771
 
 ```text
+ .agentplane/agents/CURATOR.json                    |   4 +-
  .../blueprint/resolved-snapshot.json               | 527 +++++++++++++++++++++
  docs/user/local-context.mdx                        |  10 +
  packages/agentplane/assets/agents/CURATOR.json     |   4 +-
  packages/agentplane/src/commands/context/init.ts   |   3 +
  .../src/context/harvest-tasks-extraction.ts        |   6 +
- 5 files changed, 548 insertions(+), 2 deletions(-)
+ 6 files changed, 550 insertions(+), 4 deletions(-)
 ```
 
 </details>
