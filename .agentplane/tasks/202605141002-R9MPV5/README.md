@@ -1,10 +1,11 @@
 ---
 id: "202605141002-R9MPV5"
 title: "Generate README header image"
-status: "DOING"
+result_summary: "Merged via PR #3706."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Final local fast CI is green for README header generator."
   attempts: 0
-commit: null
+commit:
+  hash: "3a9e09db5e017894b39c94903486af3732fa44ce"
+  message: "Merge pull request #3706 from basilisk-labs/task/202605141002-R9MPV5/readme-header-image"
 comments:
   -
     author: "CODER"
     body: "Start: Implement the approved README header image generator in the task worktree, keeping the diff limited to generator wiring, generated asset, README reference, and task verification evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3706 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -53,9 +59,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Final local fast CI is green for README header generator."
+  -
+    type: "status"
+    at: "2026-05-14T10:32:58.895Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3706 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T10:14:23.484Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T10:32:58.900Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add an algorithmic README header image generator that includes the AgentPlane logo, release-derived wording, and version number, then wire the generated asset into the root README."
 sections:
   Summary: |-
