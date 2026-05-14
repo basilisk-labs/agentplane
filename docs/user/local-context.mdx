@@ -18,6 +18,7 @@ AgentPlane v0.6 turns local context from a search helper into a context-manageme
 - raw sources remain in the repository and are treated as evidence
 - wiki pages accumulate synthesis instead of forcing agents to re-derive it from scratch
 - fact and graph rows preserve structured claims and relationships
+- useful Markdown cross-links make related wiki pages discoverable without replacing graph edges
 - generated projections stay disposable and can be rebuilt
 - task history can become new context through explicit extraction tasks
 - verification checks keep sourced context from drifting into unsourced memory
@@ -43,6 +44,11 @@ Generated context artifacts live under `.agentplane/context/derived/**`. The fas
 projection is stored in the shared AgentPlane cache database at `.agentplane/cache.sqlite`; context
 owns only its projection tables inside that file. Treat both the derived artifacts and the SQLite
 cache as disposable output.
+
+The initial wiki profile seeds a small starter hierarchy, but the first analysis should preserve the
+smallest project-specific structure that fits the sources. If a glossary is useful, keep it as a thin
+navigation index over canonical wiki pages and graph entities; aliases belong there, while factual
+claims and provenance stay on the backing wiki/fact/graph artifacts.
 
 ## Initialize and search
 
@@ -139,6 +145,10 @@ The verifier checks that task-facing context claims are source-backed:
 - graph edges reference known entities and include source refs
 - capability notes include source refs
 - completed context tasks have an ACR context extension
+
+The verifier does not require every known term to be linked. Agents should still prefer useful
+Markdown cross-links when an existing page or glossary anchor helps a future reader navigate related
+concepts, decisions, modules, risks, or entities.
 
 Run it before closing tasks that write or rely on context artifacts.
 
