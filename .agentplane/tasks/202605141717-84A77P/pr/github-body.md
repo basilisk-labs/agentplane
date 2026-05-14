@@ -30,21 +30,22 @@ remaining warnings are pre-existing blueprints tag/truncation warnings. git diff
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T17:24:22.196Z
+- Updated: 2026-05-14T17:24:29.117Z
 - Branch: task/202605141717-84A77P/context-management-announcement
 - Head: 25e785c43fe6
 
 ```text
- README.md                                          |  30 +++++
+ .../blueprint/resolved-snapshot.json               | 358 +++++++++++++++++++++
+ README.md                                          |  30 ++
  docs/index.mdx                                     |   3 +
- docs/user/local-context.mdx                        |  26 +++++
+ docs/user/local-context.mdx                        |  26 ++
  docs/user/overview.mdx                             |   6 +-
- ...-agentplane-0-6-context-management-llm-wiki.mdx | 130 +++++++++++++++++++++
+ ...-agentplane-0-6-context-management-llm-wiki.mdx | 130 ++++++++
  website/blog/tags.yml                              |   5 +
  website/docusaurus.config.ts                       |   6 +
- website/src/data/homepage-content.ts               |  27 +++++
- website/src/pages/index.tsx                        |  23 ++++
- 9 files changed, 255 insertions(+), 1 deletion(-)
+ website/src/data/homepage-content.ts               |  27 ++
+ website/src/pages/index.tsx                        |  23 ++
+ 10 files changed, 613 insertions(+), 1 deletion(-)
 ```
 
 </details>
