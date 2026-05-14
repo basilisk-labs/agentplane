@@ -1,7 +1,7 @@
  .../blueprint/resolved-snapshot.json               |  528 ++++++++++
- website/docusaurus.config.ts                       |   37 +-
+ website/docusaurus.config.ts                       |   36 +-
  website/src/data/homepage-content.ts               |   80 +-
  website/src/pages/_home.module.css                 | 1080 +++++++-------------
  website/src/pages/index.tsx                        |  952 ++++-------------
  website/src/theme/Root.tsx                         |   47 -
- 6 files changed, 1183 insertions(+), 1541 deletions(-)
+ 6 files changed, 1186 insertions(+), 1537 deletions(-)

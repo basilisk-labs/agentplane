@@ -24,18 +24,18 @@ Created: 2026-05-14T20:24:59.982Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T20:34:51.707Z
+- Updated: 2026-05-14T20:45:31.739Z
 - Branch: task/202605142024-MK70W3/homepage-feature-nav
-- Head: 8f6888fc7e2d
+- Head: ce2a4ef8570b
 
 ```text
  .../blueprint/resolved-snapshot.json               |  528 ++++++++++
- website/docusaurus.config.ts                       |   37 +-
+ website/docusaurus.config.ts                       |   36 +-
  website/src/data/homepage-content.ts               |   80 +-
  website/src/pages/_home.module.css                 | 1080 +++++++-------------
  website/src/pages/index.tsx                        |  952 ++++-------------
  website/src/theme/Root.tsx                         |   47 -
- 6 files changed, 1183 insertions(+), 1541 deletions(-)
+ 6 files changed, 1186 insertions(+), 1537 deletions(-)
 ```
 
 </details>
