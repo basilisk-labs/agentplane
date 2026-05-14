@@ -21,7 +21,7 @@ const CAPABILITY_IDS: readonly RunnerRuntimeCapabilityId[] = [
   "result.manifest.write",
 ];
 
-export const KNOWLEDGE_CAPTURE_PLAYBOOK: RunnerTaskPlaybookContract = {
+const KNOWLEDGE_CAPTURE_PLAYBOOK: RunnerTaskPlaybookContract = {
   id: "knowledge_capture_pipeline",
   version: 1,
   title: "Knowledge capture pipeline",
@@ -40,7 +40,7 @@ export const KNOWLEDGE_CAPTURE_PLAYBOOK: RunnerTaskPlaybookContract = {
   allowed_outcomes: ["OUTCOME_OK", "OUTCOME_NONE_CLARIFICATION", "OUTCOME_NONE_UNSUPPORTED"],
 };
 
-export const BUILTIN_RUNNER_PLAYBOOKS: readonly RunnerTaskPlaybookContract[] = [
+const BUILTIN_RUNNER_PLAYBOOKS: readonly RunnerTaskPlaybookContract[] = [
   KNOWLEDGE_CAPTURE_PLAYBOOK,
 ];
 
@@ -93,7 +93,7 @@ function capabilityStateForAdapterField(opts: {
   return "unknown";
 }
 
-export function resolveRunnerRuntimeCapabilityContract(
+function resolveRunnerRuntimeCapabilityContract(
   bundle: RunnerContextBundle,
 ): RunnerRuntimeCapabilityContract {
   const capabilities = Object.fromEntries(
