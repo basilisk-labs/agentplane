@@ -85,7 +85,32 @@ describe("CloudBackend", () => {
       ],
     });
     expect(result.freshness?.lastCheckedAt).toBeNull();
-    expect(result.freshness?.stale).toBe(false);
+    expect(result.freshness?.stale).toBe(true);
+  });
+
+  it("treats a malformed cloud state file as stale for mutation guards", async () => {
+    const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
+    await mkdir(stateDir, { recursive: true });
+    await writeFile(path.join(stateDir, "state.json"), "{", "utf8");
+    const fetchImpl = vi.fn<typeof fetch>(() => Promise.resolve(Response.json({})));
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example/",
+        token: "token",
+        project_id: "project-1",
+        stale_after_seconds: 300,
+      },
+      {
+        root: tempDir,
+        cache: new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") }),
+        fetchImpl,
+      },
+    );
+
+    await expect(backend.assertLocalMutationReady()).rejects.toThrow(
+      "Safe command: agentplane backend sync cloud --direction pull --yes",
+    );
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 
   it("rejects local mutations before cache writes when the cloud projection is stale", async () => {
