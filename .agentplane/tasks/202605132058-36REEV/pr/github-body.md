@@ -16,17 +16,23 @@ Refactor the shared branch_pr PR metadata helper into smaller compatibility-pres
 ## Verification
 
 - State: ok
-- Note: Verified: pr-meta focused tests passed (16 tests); typecheck passed; hotspot threshold check passed with existing warning-only debt; Prettier matched files passed; policy routing passed.
+- Note:
+
+```text
+Verified: pr-meta focused tests passed (16 tests); typecheck passed; hotspot threshold check passed
+with existing warning-only debt; Prettier matched files passed; policy routing passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-13T21:09:19.102Z
+- Updated: 2026-05-14T05:57:30.281Z
 - Branch: task/202605132058-36REEV/split-pr-meta
-- Head: ad50be06756b
+- Head: 8eb04297f91d
 
 ```text
+ .agentplane/policy/incidents.md                    |   1 +
  .../blueprint/resolved-snapshot.json               | 528 ++++++++++++++++++
  packages/agentplane/src/commands/shared/pr-meta.ts | 614 +--------------------
  .../src/commands/shared/pr-meta/builders.ts        | 229 ++++++++
@@ -35,7 +41,7 @@ Refactor the shared branch_pr PR metadata helper into smaller compatibility-pres
  .../src/commands/shared/pr-meta/parser.ts          | 132 +++++
  .../src/commands/shared/pr-meta/types.ts           |  34 ++
  .../src/commands/shared/pr-meta/verify-log.ts      |  71 +++
- 8 files changed, 1169 insertions(+), 585 deletions(-)
+ 9 files changed, 1170 insertions(+), 585 deletions(-)
 ```
 
 </details>

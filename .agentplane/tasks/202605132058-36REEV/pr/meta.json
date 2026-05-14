@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202605132058-36REEV/split-pr-meta",
   "created_at": "2026-05-13T20:59:57.460Z",
-  "head_sha": "ad50be06756b626fcd6da82becbd13d2862dfbc6",
+  "head_sha": "8eb04297f91d91c651e6977bf8ba51477db95401",
   "last_verified_at": "2026-05-13T21:10:56.978Z",
   "last_verified_sha": "ad50be06756b626fcd6da82becbd13d2862dfbc6",
   "pr_number": 3684,
@@ -10,7 +10,7 @@
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202605132058-36REEV",
-  "updated_at": "2026-05-13T21:32:02.633Z",
+  "updated_at": "2026-05-14T05:57:30.281Z",
   "verify": {
     "status": "pass"
   }
