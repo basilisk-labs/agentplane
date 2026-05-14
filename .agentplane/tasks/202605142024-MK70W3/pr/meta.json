@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T20:46:23Z",
   "base": "main",
   "branch": "task/202605142024-MK70W3/homepage-feature-nav",
   "created_at": "2026-05-14T20:24:59.982Z",
-  "head_sha": "ce2a4ef8570b103297775b3af5a6d7c2cf4cecd6",
+  "head_sha": "89362abe9cdbdde7f01604717a596dd5ac8e8fb2",
   "last_verified_at": "2026-05-14T20:34:09.165Z",
   "last_verified_sha": "c43d665480b4407ff52909bb8f9f02556f913a53",
+  "merge_commit": "8150ad6437cae601c750f85638901ec75bccde8b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T20:46:23Z",
   "pr_number": 3770,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3770",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605142024-MK70W3",
-  "updated_at": "2026-05-14T20:45:31.739Z",
+  "updated_at": "2026-05-14T20:46:23Z",
   "verify": {
     "status": "pass"
   }
