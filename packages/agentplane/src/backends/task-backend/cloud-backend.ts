@@ -331,9 +331,10 @@ export class CloudBackend implements TaskBackend {
     }
     if (opts.direction === "pull") {
       if (pull.lastCheckedAt) {
+        const state = await this.readState();
         await writeCloudBackendState(this.statePath, {
           last_checked_at: pull.lastCheckedAt,
-          pending_push: null,
+          pending_push: state.pending_push,
         });
       }
       return;

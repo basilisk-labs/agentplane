@@ -111,6 +111,54 @@ describe("CloudBackend regressions", () => {
     });
   });
 
+  it("preserves pending auto-push markers across read-only pull refreshes", async () => {
+    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
+    const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
+    await mkdir(stateDir, { recursive: true });
+    await cache.writeTask(makeTask({ id: "202605051806-C1D2" }));
+    await writeFile(
+      path.join(stateDir, "state.json"),
+      `${JSON.stringify(
+        {
+          last_checked_at: "2026-05-05T00:00:00.000Z",
+          pending_push: {
+            failed_at: "2026-05-05T01:00:00.000Z",
+            reason: "Cloud backend request failed",
+          },
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    const fetchImpl = vi.fn<typeof fetch>(() =>
+      Promise.resolve(
+        Response.json({
+          data: {
+            tasks: [makeTask({ id: "202605051806-C1D2" })],
+            last_checked_at: "2026-05-06T00:00:00.000Z",
+          },
+        }),
+      ),
+    );
+    const backend = new CloudBackend(
+      { endpoint: "https://cloud.example", token: "token", project_id: "project-1" },
+      { root: tempDir, cache, fetchImpl },
+    );
+
+    await backend.sync({ direction: "pull", conflict: "diff", quiet: true, confirm: true });
+
+    const state = JSON.parse(await readFile(path.join(stateDir, "state.json"), "utf8")) as {
+      last_checked_at?: string;
+      pending_push?: { failed_at?: string; reason?: string };
+    };
+    expect(state.last_checked_at).toBe("2026-05-06T00:00:00.000Z");
+    expect(state.pending_push).toEqual({
+      failed_at: "2026-05-05T01:00:00.000Z",
+      reason: "Cloud backend request failed",
+    });
+  });
+
   it("pull adds remote-only tasks and removes local-only tasks under prefer-remote", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
     const localTask: TaskData = {
