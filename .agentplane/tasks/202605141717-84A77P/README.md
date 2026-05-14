@@ -1,10 +1,11 @@
 ---
 id: "202605141717-84A77P"
 title: "Announce v0.6 context management"
-status: "DOING"
+result_summary: "Merged via PR #3742."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "DOCS"
   note: "Docs/site verification passed for v0.6 context-management announcement. node .agentplane/policy/check-routing.mjs: policy routing OK. agentplane doctor: OK with pre-existing branch_pr drift warnings unrelated to this task. bun run docs:site:typecheck: pass after restoring ignored website dependencies with bun install --ignore-scripts. bun run docs:site:build: pass; remaining warnings are pre-existing blueprints tag/truncation warnings. git diff --check: pass."
   attempts: 0
-commit: null
+commit:
+  hash: "8944e7f5196cd113a5342112f0d2e18619d75276"
+  message: "Merge PR #3742: Announce v0.6 context management"
 comments:
   -
     author: "DOCS"
     body: "Start: documenting the v0.6 context-management story across README, user docs, website navigation, homepage copy, and a blog announcement grounded in the shipped local-context behavior and Karpathy LLM Wiki source."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3742 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Docs/site verification passed for v0.6 context-management announcement. node .agentplane/policy/check-routing.mjs: policy routing OK. agentplane doctor: OK with pre-existing branch_pr drift warnings unrelated to this task. bun run docs:site:typecheck: pass after restoring ignored website dependencies with bun install --ignore-scripts. bun run docs:site:build: pass; remaining warnings are pre-existing blueprints tag/truncation warnings. git diff --check: pass."
+  -
+    type: "status"
+    at: "2026-05-14T17:46:43.390Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3742 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T17:23:22.098Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-14T17:46:43.395Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add public announcement, README and docs coverage, website navigation, homepage context block, and a v0.6 blog article connecting AgentPlane context management to Andrej Karpathy's LLM Wiki pattern."
 sections:
   Summary: |-
