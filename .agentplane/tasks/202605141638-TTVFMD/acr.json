@@ -1,0 +1,225 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605141638-TTVFMD",
+  "created_at": "2026-05-14T19:14:37.915Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.6.0"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "d2d0a0a1baf774fade65bf1ed78d5886f69d2dee",
+    "work_ref": "main",
+    "work_commit": "d2d0a0a1baf774fade65bf1ed78d5886f69d2dee"
+  },
+  "task": {
+    "task_id": "202605141638-TTVFMD",
+    "title": "Handle remote-only and removed cloud tasks",
+    "intent": "Extend CloudPullPlan and applyCloudPullPlan so remote-only tasks and remote deletions are explicit contract cases instead of ignored diagnostics under canonical_source=remote. Define user-confirmation or prefer-remote behavior and cover added/removed plans in tests.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.6.0"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605141638-TTVFMD/README.md",
+      "sha256": "sha256:d7e06c8f6e60c2f966d73c349adcc2f8f1ec68a187e275b6e48123f0154b7a07"
+    },
+    "approved_at": "2026-05-14T16:40:57.852Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Closed as part of v0.6 audit follow-up batch PR #3746.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605141638-TTVFMD_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T16:40:57.852Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605141638-TTVFMD/README.md",
+      "sha256": "sha256:d7e06c8f6e60c2f966d73c349adcc2f8f1ec68a187e275b6e48123f0154b7a07"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605141638-TTVFMD/README.md",
+      "sha256": "sha256:d7e06c8f6e60c2f966d73c349adcc2f8f1ec68a187e275b6e48123f0154b7a07"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605141638-TTVFMD/README.md",
+      "sha256": "sha256:d7e06c8f6e60c2f966d73c349adcc2f8f1ec68a187e275b6e48123f0154b7a07"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605141638-TTVFMD/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:75a82cd69feb936c68f1e41570c07a53aac99c0fbb11f1c7a288e2fd6b9ac892"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit d2d0a0a1baf774fade65bf1ed78d5886f69d2dee if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:a7a19173f0e9d1ad3ff126f9e62c7f7989379dba50e9af43ac95f18ef642dd4f",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "verify_record",
+        "hosted_checks",
+        "publish_or_integrate",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.verify",
+          "kind": "check_result",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605141638-TTVFMD/blueprint/resolved-snapshot.json",
+        "digest": "40125dd0f34b84bef0fd01521bda35f41d069778d275218badb479cad790890f",
+        "current_digest": "40125dd0f34b84bef0fd01521bda35f41d069778d275218badb479cad790890f",
+        "route_changed": false,
+        "artifact_sha256": "sha256:75a82cd69feb936c68f1e41570c07a53aac99c0fbb11f1c7a288e2fd6b9ac892",
+        "safe_command": "agentplane blueprint snapshot 202605141638-TTVFMD"
+      }
+    }
+  }
+}
