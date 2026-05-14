@@ -4,7 +4,7 @@ title: "Enable feedback issue prompts by default"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -17,10 +17,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-14T16:17:45.588Z"
+  updated_by: "CODER"
+  note: "Implemented default-on feedback GitHub issue prompts with explicit opt-out commands and docs. Verification: framework:dev:bootstrap; focused Vitest 99 passed; docs:cli:check; schemas:check; format:check; typecheck; knip:check; lint:core; targeted ESLint for changed source/site files; docs:site:check; policy routing check; ap doctor OK. Residual: full lint:website still reports pre-existing Docusaurus type-aware lint errors outside changed file."
   attempts: 0
 commit: null
 comments:
@@ -35,8 +35,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implementing default-on feedback issue prompts, explicit opt-out documentation, and focused tests/docs verification in the task worktree."
+  -
+    type: "verify"
+    at: "2026-05-14T16:17:45.588Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented default-on feedback GitHub issue prompts with explicit opt-out commands and docs. Verification: framework:dev:bootstrap; focused Vitest 99 passed; docs:cli:check; schemas:check; format:check; typecheck; knip:check; lint:core; targeted ESLint for changed source/site files; docs:site:check; policy routing check; ap doctor OK. Residual: full lint:website still reports pre-existing Docusaurus type-aware lint errors outside changed file."
 doc_version: 3
-doc_updated_at: "2026-05-14T16:16:16.921Z"
+doc_updated_at: "2026-05-14T16:17:45.594Z"
 doc_updated_by: "CODER"
 description: "Change AgentPlane feedback GitHub issue prompts to be enabled by default, keep opt-out command support, and document the deliberate default in README and website docs."
 sections:
@@ -59,11 +65,33 @@ sections:
     4. Run AgentPlane policy/runtime checks. Expected: routing validation and ap doctor pass, with unrelated existing warnings explicitly noted if present.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-14T16:17:45.588Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Implemented default-on feedback GitHub issue prompts with explicit opt-out commands and docs. Verification: framework:dev:bootstrap; focused Vitest 99 passed; docs:cli:check; schemas:check; format:check; typecheck; knip:check; lint:core; targeted ESLint for changed source/site files; docs:site:check; policy routing check; ap doctor OK. Residual: full lint:website still reports pre-existing Docusaurus type-aware lint errors outside changed file.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T16:16:16.921Z, excerpt_hash=sha256:b467d93bfef52ab7d4450dd63c46359a9dea38257f34c3294e021090719faee9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141604-37S5VS-feedback-default-on/.agentplane/tasks/202605141604-37S5VS/blueprint/resolved-snapshot.json
+    - old_digest: 76855933205c69520307c172c004c64b272820393b0dc96f697031b93b1725a9
+    - current_digest: 76855933205c69520307c172c004c64b272820393b0dc96f697031b93b1725a9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605141604-37S5VS
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: New default config and init presets set feedback.github_issues.enabled=true. Init supports --feedback-github-issues false, config supports agentplane config set feedback.github_issues.enabled false, and docs/README/site mention the deliberate default and opt-out path.
+      Impact: New AgentPlane installs can suggest privacy-bounded GitHub issue payloads for internal AgentPlane errors by default, while users retain a direct command-level opt-out.
+      Resolution: Committed code, generated schemas/docs, documentation, and task evidence in 1b662065a.
 id_source: "generated"
 ---
 ## Summary
@@ -94,6 +122,25 @@ Change AgentPlane feedback GitHub issue prompts to be enabled by default, keep o
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-14T16:17:45.588Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented default-on feedback GitHub issue prompts with explicit opt-out commands and docs. Verification: framework:dev:bootstrap; focused Vitest 99 passed; docs:cli:check; schemas:check; format:check; typecheck; knip:check; lint:core; targeted ESLint for changed source/site files; docs:site:check; policy routing check; ap doctor OK. Residual: full lint:website still reports pre-existing Docusaurus type-aware lint errors outside changed file.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T16:16:16.921Z, excerpt_hash=sha256:b467d93bfef52ab7d4450dd63c46359a9dea38257f34c3294e021090719faee9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141604-37S5VS-feedback-default-on/.agentplane/tasks/202605141604-37S5VS/blueprint/resolved-snapshot.json
+- old_digest: 76855933205c69520307c172c004c64b272820393b0dc96f697031b93b1725a9
+- current_digest: 76855933205c69520307c172c004c64b272820393b0dc96f697031b93b1725a9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605141604-37S5VS
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -102,3 +149,7 @@ Change AgentPlane feedback GitHub issue prompts to be enabled by default, keep o
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: New default config and init presets set feedback.github_issues.enabled=true. Init supports --feedback-github-issues false, config supports agentplane config set feedback.github_issues.enabled false, and docs/README/site mention the deliberate default and opt-out path.
+  Impact: New AgentPlane installs can suggest privacy-bounded GitHub issue payloads for internal AgentPlane errors by default, while users retain a direct command-level opt-out.
+  Resolution: Committed code, generated schemas/docs, documentation, and task evidence in 1b662065a.
