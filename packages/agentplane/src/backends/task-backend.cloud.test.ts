@@ -112,7 +112,7 @@ describe("CloudBackend", () => {
       status: "TODO",
       priority: "med",
       owner: "CODER",
-      depends_on: [],
+      depends_on: ["202605051806-A1B2"],
       tags: ["cloud"],
       verify: [],
     };
@@ -138,7 +138,7 @@ describe("CloudBackend", () => {
     expect(url).toBe("https://cloud.example/v1/projects/project-1/sync/push");
     expect(init?.method).toBe("POST");
     expectAbortSignal(init?.signal);
-    expect(init?.body).toContain('"direction":"push"');
+    expect(init?.body).toContain('"depends_on":["202605051806-A1B2"]');
     const stateText = await readFile(
       path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"),
       "utf8",

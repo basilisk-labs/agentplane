@@ -183,3 +183,8 @@ requiring a new AgentPlane backend id.
 
 For GitHub Projects, the cloud service can map AgentPlane tasks to GitHub Issues and Project fields.
 AgentPlane still treats the cloud backend as `cloud`, not `github-projects`.
+
+When a GitHub Projects connected view supports native issue relationships, the cloud service may
+project AgentPlane `depends_on` into GitHub issue `blocked by` links. The local AgentPlane
+`depends_on` graph remains the source of truth for task ordering and lifecycle enforcement; GitHub
+relationships are a remote visibility layer, not the authority for starting or finishing tasks.
