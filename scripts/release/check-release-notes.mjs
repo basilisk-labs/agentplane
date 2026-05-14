@@ -39,7 +39,7 @@ const REQUIRED_RELEASE_NOTE_SECTIONS = [
 
 function releaseNotesHeadingPresent(content, tag) {
   const headingPattern = new RegExp(
-    `^#\\s+Release\\s+Notes\\s*(?:[-:—]\\s*)?${tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s*$`,
+    String.raw`^#\s+Release\s+Notes\s*(?:[-:—]\s*)?${tag.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)}\s*$`,
     "iu",
   );
   return releaseNoteLinesOutsideCodeFences(content).some((line) => headingPattern.test(line));

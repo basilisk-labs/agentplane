@@ -80,20 +80,21 @@ const REQUIRED_RELEASE_NOTE_SECTIONS = [
 ] as const;
 
 function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return value.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 }
 
 function releaseNotesHeadingPresent(content: string, notesPath: string): boolean {
-  const tag = notesPath.match(/v\d+\.\d+\.\d+(?:[-.\w]*)?\.md$/u)?.[0]?.replace(/\.md$/u, "");
-  const tagPattern = tag ? `\\s*(?:[-:—]\\s*)?${escapeRegExp(tag)}` : "";
-  const headingPattern = new RegExp(`^#\\s+Release\\s+Notes${tagPattern}\\s*$`, "iu");
+  const tag = /v\d+\.\d+\.\d+(?:[-.\w]*)?\.md$/u.exec(notesPath)?.[0]?.replace(/\.md$/u, "");
+  const tagPattern = tag ? String.raw`\s*(?:[-:—]\s*)?${escapeRegExp(tag)}` : "";
+  const headingPattern = new RegExp(String.raw`^#\s+Release\s+Notes${tagPattern}\s*$`, "iu");
   return releaseNoteLinesOutsideCodeFences(content).some((line) => headingPattern.test(line));
 }
 
 function sectionHeadings(content: string): string[] {
-  return releaseNoteLinesOutsideCodeFences(content)
-    .map((line) => /^##\s+(.+?)\s*$/u.exec(line)?.[1]?.trim() ?? null)
-    .filter((heading): heading is string => Boolean(heading));
+  return releaseNoteLinesOutsideCodeFences(content).flatMap((line) => {
+    const heading = /^##\s+(.+?)\s*$/u.exec(line)?.[1]?.trim();
+    return heading ? [heading] : [];
+  });
 }
 
 function missingRequiredSections(content: string): string[] {
