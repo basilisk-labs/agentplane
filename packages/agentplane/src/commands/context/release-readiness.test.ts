@@ -103,6 +103,78 @@ describe("context release readiness guards", () => {
     expect(sectionResult?.freshness.stale).toBe(false);
   });
 
+  it("does not mark fresh JSONL fact and graph projection rows as stale", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      ".agentplane/context/derived/facts/facts.jsonl",
+      [
+        {
+          id: "fact:meridian-relay:stages",
+          subject: "Meridian Relay",
+          predicate: "has_stages",
+          object: "capture, normalize, curator review",
+          confidence: 0.94,
+          status: "active",
+          source_refs: ["context/raw/research/meridian-relay.md"],
+        },
+        {
+          id: 42,
+          subject: "Numeric Meridian Relay",
+          predicate: "has_numeric_id",
+          object: "true",
+          confidence: 0.9,
+          status: "active",
+          source_refs: ["context/raw/research/meridian-relay.md"],
+        },
+      ]
+        .map((row) => JSON.stringify(row))
+        .join("\n") + "\n",
+    );
+    await write(
+      root,
+      ".agentplane/context/derived/graph/entities.jsonl",
+      `${JSON.stringify({
+        id: "concept:meridian-relay",
+        kind: "concept",
+        label: "Meridian Relay",
+        status: "active",
+        source_refs: ["context/raw/research/meridian-relay.md"],
+      })}\n`,
+    );
+    await cmdContextReindex({
+      cwd: root,
+      parsed: { includeTasks: false, includeRaw: true, reset: false },
+    });
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextSearch({
+      cwd: root,
+      parsed: {
+        query: "meridian relay",
+        scope: "context",
+        format: "json",
+        explain: false,
+      },
+    });
+
+    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      results: { ref: string; freshness: { stale: boolean } }[];
+    };
+    const factResult = payload.results.find((result) =>
+      result.ref.endsWith("facts.jsonl#fact=fact:meridian-relay:stages"),
+    );
+    const entityResult = payload.results.find((result) =>
+      result.ref.endsWith("entities.jsonl#entity=concept:meridian-relay"),
+    );
+    const numericIdResult = payload.results.find((result) =>
+      result.ref.endsWith("facts.jsonl#fact=42"),
+    );
+    expect(factResult?.freshness.stale).toBe(false);
+    expect(entityResult?.freshness.stale).toBe(false);
+    expect(numericIdResult?.freshness.stale).toBe(false);
+  });
+
   it("resolves markdown sections by slug", async () => {
     const root = await tempRoot();
     await write(
