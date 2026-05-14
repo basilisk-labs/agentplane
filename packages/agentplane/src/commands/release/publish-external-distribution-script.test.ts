@@ -239,7 +239,6 @@ describe("publish-external-distribution script", () => {
       }),
     );
   }, 180_000);
-
   it("updates repository topics with a GitHub API JSON array payload", async () => {
     const root = await makeTempRoot();
     const binDir = path.join(root, "bin");
