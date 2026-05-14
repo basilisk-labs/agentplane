@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T20:21:11Z",
   "base": "main",
   "branch": "task/202605141954-8DZF9S/oss-website-polish",
   "created_at": "2026-05-14T19:54:35.828Z",
-  "head_sha": "2f16f772151d4e7261bda81af039195bad208950",
+  "head_sha": "9b5a54e6b0816560e48f2fe19e649184e29ecdcc",
   "last_verified_at": "2026-05-14T20:06:18.546Z",
   "last_verified_sha": "b9ebb6e0eb9c2f74dccaabbd7d9559bea497422b",
+  "merge_commit": "ade0697b8275882816e1862a8b12bcc1496f5d3f",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T20:21:11Z",
   "pr_number": 3762,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3762",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605141954-8DZF9S",
-  "updated_at": "2026-05-14T20:10:02.228Z",
+  "updated_at": "2026-05-14T20:21:11Z",
   "verify": {
     "status": "pass"
   }

@@ -1,10 +1,11 @@
 ---
 id: "202605141954-8DZF9S"
 title: "Polish OSS website trust surface"
-status: "DOING"
+result_summary: "Merged via PR #3762."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Website OSS polish verified: content guard, typecheck, production build, routing check, doctor, targeted script lint, and rendered HTML grep passed."
   attempts: 0
-commit: null
+commit:
+  hash: "ade0697b8275882816e1862a8b12bcc1496f5d3f"
+  message: "Merge pull request #3762 from basilisk-labs/task/202605141954-8DZF9S/oss-website-polish"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved OSS website polish in the dedicated branch_pr worktree, keeping scope to public website/docs surfaces and focused guards."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3762 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Website OSS polish verified: content guard, typecheck, production build, routing check, doctor, targeted script lint, and rendered HTML grep passed."
+  -
+    type: "status"
+    at: "2026-05-14T20:22:00.879Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3762 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T20:06:18.560Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T20:22:00.885Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix the public website OSS trust surface: command snippets, install CTA whitespace, Docusaurus edit links, future-dated blog guard, hero trust strip, footer open-source links, and comparison wording without a broad redesign."
 sections:
   Summary: |-
