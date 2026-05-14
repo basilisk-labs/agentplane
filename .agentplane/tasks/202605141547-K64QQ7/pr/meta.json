@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-14T16:17:53Z",
   "base": "main",
   "branch": "task/202605141547-K64QQ7/context-bootstrap-prepush",
   "created_at": "2026-05-14T15:48:01.410Z",
-  "head_sha": "226d4a0f792173007f73c44c03bdf13b633a1773",
+  "head_sha": "fb19113020c8f6b589a223a18bc21cc4de63b84a",
   "last_verified_at": "2026-05-14T15:51:27.771Z",
   "last_verified_sha": "8fbbdfff39bb2c59e727bca3c47066a772f1a7cd",
+  "merge_commit": "17401ad1b0c48cf66b18b537f37ab92c9b337d4c",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-14T16:17:53Z",
   "pr_number": 3728,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3728",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605141547-K64QQ7",
-  "updated_at": "2026-05-14T15:51:57.465Z",
+  "updated_at": "2026-05-14T16:17:53Z",
   "verify": {
     "status": "pass"
   }
