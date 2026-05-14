@@ -1,0 +1,10 @@
+ .../blueprint/resolved-snapshot.json               | 552 +++++++++++++++++++++
+ packages/agentplane/src/runner/playbooks.test.ts   |  61 +++
+ packages/agentplane/src/runner/playbooks.ts        | 165 ++++++
+ packages/agentplane/src/runner/types.ts            |  15 +
+ packages/agentplane/src/runner/types/context.ts    |   2 +
+ packages/agentplane/src/runner/types/playbooks.ts  |  89 ++++
+ .../src/runner/usecases/task-run-blueprint.test.ts |  15 +
+ .../src/runner/usecases/task-run-bootstrap.ts      |  18 +
+ .../agentplane/src/runner/usecases/task-run.ts     |   2 +
+ 9 files changed, 919 insertions(+)
