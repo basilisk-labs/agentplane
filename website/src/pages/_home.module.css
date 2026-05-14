@@ -7,63 +7,9 @@
 .bentoWrapper {
   margin: 0 auto;
   max-width: 1320px;
-  padding: 1.5rem 2rem 2rem;
+  padding: calc(var(--ifm-navbar-height) + 1rem) 2rem 2rem;
   position: relative;
   z-index: 1;
-}
-
-.localNav {
-  align-items: center;
-  display: flex;
-  gap: 1.5rem;
-  justify-content: space-between;
-  min-height: 64px;
-  padding-bottom: 1.5rem;
-}
-
-.localLogo {
-  color: rgb(var(--fg));
-  font-weight: 700;
-  letter-spacing: 0;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.localLogo:hover,
-.localLogo:focus-visible {
-  color: rgb(var(--accent));
-  text-decoration: none;
-}
-
-.localLogo sup {
-  color: rgb(var(--accent));
-  font-family: var(--ifm-font-family-monospace);
-  font-size: 0.58rem;
-  margin-left: 0.2rem;
-}
-
-.localMenu {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: flex-end;
-}
-
-.localMenu a {
-  color: rgb(var(--muted));
-  font-family: var(--ifm-font-family-monospace);
-  font-size: 0.72rem;
-  font-weight: 650;
-  letter-spacing: 0.04em;
-  text-decoration: none;
-  text-transform: uppercase;
-}
-
-.localMenu a:hover,
-.localMenu a:focus-visible {
-  color: rgb(var(--accent));
-  text-decoration: none;
 }
 
 .bentoGrid {
@@ -524,19 +470,11 @@
     grid-template-columns: 1fr;
   }
 
-  .localNav {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .localMenu {
-    justify-content: flex-start;
-  }
 }
 
 @media (max-width: 720px) {
   .bentoWrapper {
-    padding: 1rem 0.75rem 0.75rem;
+    padding: calc(var(--ifm-navbar-height) + 0.75rem) 0.75rem 0.75rem;
   }
 
   .heroPanel,

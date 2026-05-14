@@ -43,23 +43,6 @@ function Lattice(): ReactNode {
   );
 }
 
-function HomeNav({ sections }: { sections: readonly FeatureSection[] }): ReactNode {
-  return (
-    <header className={styles.localNav}>
-      <Link className={styles.localLogo} to="/">
-        AgentPlane <sup>AP</sup>
-      </Link>
-      <nav className={styles.localMenu} aria-label="Homepage sections">
-        {sections.map((section) => (
-          <a key={section.id} href={`#${section.id}`}>
-            {section.label}
-          </a>
-        ))}
-      </nav>
-    </header>
-  );
-}
-
 function Hero(): ReactNode {
   const { hero, problem } = homepageContent;
 
@@ -219,7 +202,6 @@ export default function Home(): ReactNode {
     <Layout title={seo.title} description={seo.description}>
       <main className={styles.page}>
         <div className={styles.bentoWrapper}>
-          <HomeNav sections={menuSections} />
           <div className={styles.bentoGrid}>
             <Hero />
             <SectionDivider />
