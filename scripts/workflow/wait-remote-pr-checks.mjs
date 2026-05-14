@@ -25,6 +25,17 @@ function usage() {
       "This command polls PR check state with bounded retries and explicit status output.",
       "Pass one or more PR targets; they are resolved and waited in input order.",
       "",
+      "Options:",
+      "  --repo <owner/name>       GitHub repository slug. Defaults to gh repo view.",
+      "  --pr <target>             PR number, URL, or branch target. Can be repeated.",
+      "  --stable-polls <count>    Consecutive ready polls required before success.",
+      "  --timeout-ms <ms>         Convert a wall-clock timeout into the idle poll budget.",
+      "",
+      "Timing environment:",
+      "  AGENTPLANE_REMOTE_CHECK_INTERVAL_MS      Poll interval. Default: 5000.",
+      "  AGENTPLANE_REMOTE_CHECK_MAX_ATTEMPTS     Idle poll budget. Default: 60.",
+      "  AGENTPLANE_REMOTE_CHECK_STABLE_POLLS     Ready stability budget. Default: 2.",
+      "",
       "Examples:",
       "  bun run workflow:wait-remote-checks",
       "  bun run workflow:wait-remote-checks -- task/202603241919-QVGXZ5/remote-check-wait",
@@ -46,6 +57,12 @@ function parseNonNegativeInteger(value, fallback) {
   return Number.isInteger(parsed) && parsed >= 0 ? parsed : fallback;
 }
 
+function maxAttemptsFromTimeoutMs(timeoutMs, intervalMs) {
+  if (!Number.isInteger(timeoutMs) || timeoutMs <= 0) return null;
+  if (!Number.isInteger(intervalMs) || intervalMs <= 0) return null;
+  return Math.max(1, Math.ceil(timeoutMs / intervalMs));
+}
+
 function parseArgs(argv) {
   const options = {
     help: false,
@@ -63,6 +80,7 @@ function parseArgs(argv) {
       process.env.AGENTPLANE_REMOTE_CHECK_STABLE_POLLS,
       DEFAULT_STABLE_POLLS,
     ),
+    timeoutMs: null,
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -94,6 +112,15 @@ function parseArgs(argv) {
       index += 1;
       continue;
     }
+    if (arg === "--timeout-ms") {
+      const value = argv[index + 1];
+      if (!value) throw new Error("Missing value for --timeout-ms");
+      const parsed = parsePositiveInteger(value, Number.NaN);
+      if (!Number.isInteger(parsed)) throw new Error("Invalid value for --timeout-ms");
+      options.timeoutMs = parsed;
+      index += 1;
+      continue;
+    }
     if (arg.startsWith("--repo=")) {
       const value = arg.slice("--repo=".length);
       if (!value) throw new Error("Missing value for --repo");
@@ -114,6 +141,14 @@ function parseArgs(argv) {
       options.stablePolls = parsed;
       continue;
     }
+    if (arg.startsWith("--timeout-ms=")) {
+      const value = arg.slice("--timeout-ms=".length);
+      if (!value) throw new Error("Missing value for --timeout-ms");
+      const parsed = parsePositiveInteger(value, Number.NaN);
+      if (!Number.isInteger(parsed)) throw new Error("Invalid value for --timeout-ms");
+      options.timeoutMs = parsed;
+      continue;
+    }
     if (IGNORED_LEGACY_FLAGS.has(arg)) {
       continue;
     }
@@ -122,6 +157,9 @@ function parseArgs(argv) {
     }
     options.targetArgs.push(arg);
   }
+
+  const timeoutMaxAttempts = maxAttemptsFromTimeoutMs(options.timeoutMs, options.intervalMs);
+  if (timeoutMaxAttempts !== null) options.maxAttempts = timeoutMaxAttempts;
 
   return options;
 }
