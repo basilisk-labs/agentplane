@@ -1,0 +1,225 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605141342-R793XK",
+  "created_at": "2026-05-14T15:19:56.698Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "bb0435d2af54f85fd1fe57c8ce7277a8eef661a8",
+    "work_ref": "main",
+    "work_commit": "bb0435d2af54f85fd1fe57c8ce7277a8eef661a8"
+  },
+  "task": {
+    "task_id": "202605141342-R793XK",
+    "title": "Add SGR schema for context extraction",
+    "intent": "Introduce a structured Schema-Guided Reasoning contract for context harvest/CURATOR extraction so extracted facts, wiki updates, graph edges, confidence, stale markers, conflict markers, and source refs are machine-checkable.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605141342-R793XK/README.md",
+      "sha256": "sha256:d9f9b3aae729f77edbea79c7cec40b4221609958b9cf18a9086fa246e0f6530a"
+    },
+    "approved_at": "2026-05-14T13:44:37.794Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3716.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605141342-R793XK_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T13:44:37.794Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605141342-R793XK/README.md",
+      "sha256": "sha256:d9f9b3aae729f77edbea79c7cec40b4221609958b9cf18a9086fa246e0f6530a"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605141342-R793XK/README.md",
+      "sha256": "sha256:d9f9b3aae729f77edbea79c7cec40b4221609958b9cf18a9086fa246e0f6530a"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605141342-R793XK/README.md",
+      "sha256": "sha256:d9f9b3aae729f77edbea79c7cec40b4221609958b9cf18a9086fa246e0f6530a"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605141342-R793XK/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:801ceb32f65f5429629b24801b6a2a41486ddff17351d875ce8b3d1194539488"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit bb0435d2af54f85fd1fe57c8ce7277a8eef661a8 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:a48b13016801138848a017915ba63fae5adbd628ef0c8e73c847949688e6be0c",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "verify_record",
+        "hosted_checks",
+        "publish_or_integrate",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.verify",
+          "kind": "check_result",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605141342-R793XK/blueprint/resolved-snapshot.json",
+        "digest": "a717e7d4932f17f5c234fdd15818369b0c8cc1a5cdf1c10a43376834f842104b",
+        "current_digest": "a717e7d4932f17f5c234fdd15818369b0c8cc1a5cdf1c10a43376834f842104b",
+        "route_changed": false,
+        "artifact_sha256": "sha256:801ceb32f65f5429629b24801b6a2a41486ddff17351d875ce8b3d1194539488",
+        "safe_command": "agentplane blueprint snapshot 202605141342-R793XK"
+      }
+    }
+  }
+}
