@@ -8,7 +8,7 @@ import {
   buildPrBatchMeta,
   normalizeRelatedTaskIds,
 } from "./helpers.js";
-import type { PrMeta } from "./types.js";
+import type { PrMeta } from "./model.js";
 
 export function parsePrMeta(raw: string, taskId: string): PrMeta {
   let parsed: unknown;

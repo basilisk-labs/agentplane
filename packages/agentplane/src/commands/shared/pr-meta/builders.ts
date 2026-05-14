@@ -5,7 +5,7 @@ import {
   nowOrExisting,
 } from "./helpers.js";
 import { withPrArtifactLifecycleState } from "./lifecycle.js";
-import type { ObservedGithubPrState, PrMeta } from "./types.js";
+import type { ObservedGithubPrState, PrMeta } from "./model.js";
 
 export function buildOpenedPrMeta(opts: {
   taskId: string;

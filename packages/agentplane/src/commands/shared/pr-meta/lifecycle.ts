@@ -1,4 +1,4 @@
-import type { PrArtifactLifecycleState, PrArtifactStateKind, PrMeta } from "./types.js";
+import type { PrArtifactLifecycleState, PrArtifactStateKind, PrMeta } from "./model.js";
 
 export function withPrArtifactLifecycleState(
   meta: PrMeta,
