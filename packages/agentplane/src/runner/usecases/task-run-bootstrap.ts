@@ -9,6 +9,8 @@ export function renderTaskRunnerBootstrap(
       ? `task ${bundle.target.task_id}`
       : `recipe scenario ${bundle.target.recipe_id}:${bundle.target.scenario_id}`;
   const stopRules = bundle.blueprint?.stopReasons ?? [];
+  const playbook = bundle.playbook?.selected_playbook;
+  const verifierChecks = bundle.playbook?.final_verifier.checks ?? [];
   return [
     "# agentplane runner bootstrap",
     "",
@@ -32,6 +34,22 @@ export function renderTaskRunnerBootstrap(
           "",
           "Blueprint stop rules:",
           ...stopRules.map((rule) => `- ${rule.severity}: ${rule.reason} (${rule.id})`),
+        ]
+      : []),
+    ...(bundle.playbook
+      ? [
+          "",
+          "Execution playbook contract:",
+          `- blueprint_result: ${bundle.playbook.execution_blueprint.id}`,
+          `- selected_playbook: ${playbook?.id ?? "none"}`,
+          `- runtime: ${bundle.playbook.runtime_capabilities.runtime_id}`,
+          "- final verifier blocks success when required state is missing.",
+          ...(verifierChecks.length > 0
+            ? [
+                "Required final state:",
+                ...verifierChecks.map((check) => `- ${check.id}: ${check.description}`),
+              ]
+            : []),
         ]
       : []),
     "Execute-mode runs must write a valid JSON result manifest to result_path before exiting.",
