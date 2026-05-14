@@ -1,10 +1,11 @@
 ---
 id: "202605142104-T42JAK"
 title: "Clean up blog typography"
-status: "DOING"
+result_summary: "Merged via PR #3772."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified blog author UI removal, homepage local menu removal, card order swap, typecheck, and production build."
   attempts: 0
-commit: null
+commit:
+  hash: "f9a9e6b34184d045488adae321dc884b814cfd50"
+  message: "Merge pull request #3772 from basilisk-labs/task/202605142104-T42JAK/clean-blog-typography"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved blog typography cleanup in the dedicated branch_pr worktree, limited to website blog UI/CSS and task evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3772 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified blog author UI removal, homepage local menu removal, card order swap, typecheck, and production build."
+  -
+    type: "status"
+    at: "2026-05-14T21:31:23.041Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3772 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T21:15:04.308Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T21:31:23.048Z"
+doc_updated_by: "INTEGRATOR"
 description: "Hide redundant team author presentation on blog pages and refine the blog typography surface without changing post metadata."
 sections:
   Summary: |-
