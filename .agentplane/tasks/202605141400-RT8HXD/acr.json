@@ -1,0 +1,225 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605141400-RT8HXD",
+  "created_at": "2026-05-14T15:09:59.536Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "8de66a4d082c628221662917dbb469a28935f680",
+    "work_ref": "main",
+    "work_commit": "8de66a4d082c628221662917dbb469a28935f680"
+  },
+  "task": {
+    "task_id": "202605141400-RT8HXD",
+    "title": "Harden release publish evidence and external metadata",
+    "intent": "Fix release publish evidence resolution for branch_pr merge commits and correct external repository topics API payloads so hosted publish logs produce durable task evidence without GitHub 422 warnings.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605141400-RT8HXD/README.md",
+      "sha256": "sha256:b1873811f4c8ab55fd834c449c1dbcca417de1793fbd3f11d70edda04519f706"
+    },
+    "approved_at": "2026-05-14T14:01:04.617Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3717.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605141400-RT8HXD_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T14:01:04.617Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605141400-RT8HXD/README.md",
+      "sha256": "sha256:b1873811f4c8ab55fd834c449c1dbcca417de1793fbd3f11d70edda04519f706"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605141400-RT8HXD/README.md",
+      "sha256": "sha256:b1873811f4c8ab55fd834c449c1dbcca417de1793fbd3f11d70edda04519f706"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605141400-RT8HXD/README.md",
+      "sha256": "sha256:b1873811f4c8ab55fd834c449c1dbcca417de1793fbd3f11d70edda04519f706"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605141400-RT8HXD/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:29b2d08617204029372d637ea876fc8cab13f52c235aaf67cd3fb7f2cbd4a42e"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit 8de66a4d082c628221662917dbb469a28935f680 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:6081c255f5c5af8afca913f7212af80693cfa11fe45962f50e58b458f2fe1893",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "verify_record",
+        "hosted_checks",
+        "publish_or_integrate",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.verify",
+          "kind": "check_result",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605141400-RT8HXD/blueprint/resolved-snapshot.json",
+        "digest": "242e48847c9973d113802dd254df3114ef61bea751907f0d23c4e2d11cb45ea5",
+        "current_digest": "242e48847c9973d113802dd254df3114ef61bea751907f0d23c4e2d11cb45ea5",
+        "route_changed": false,
+        "artifact_sha256": "sha256:29b2d08617204029372d637ea876fc8cab13f52c235aaf67cd3fb7f2cbd4a42e",
+        "safe_command": "agentplane blueprint snapshot 202605141400-RT8HXD"
+      }
+    }
+  }
+}
