@@ -1,4 +1,5 @@
 import path from "node:path";
+import { rm } from "node:fs/promises";
 
 import {
   DEFAULT_DOC_UPDATED_BY,
@@ -109,6 +110,10 @@ export class LocalBackend implements TaskBackend {
 
   async writeTasks(tasks: TaskData[], opts?: TaskWriteOptions): Promise<void> {
     await writeLocalTasks(this.backendContext(), tasks, opts);
+  }
+
+  async deleteTask(taskId: string): Promise<void> {
+    await rm(path.join(this.root, taskId), { recursive: true, force: true });
   }
 
   async normalizeTasks(): Promise<{ scanned: number; changed: number }> {

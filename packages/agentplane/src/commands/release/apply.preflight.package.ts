@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
+import releaseNotesRules from "./release-notes-rules.json" with { type: "json" };
 
 export async function readPackageVersion(pkgJsonPath: string): Promise<string> {
   const raw = JSON.parse(await readFile(pkgJsonPath, "utf8")) as { version?: unknown };
@@ -57,27 +58,8 @@ export async function readOptionalAgentplaneDependencyVersion(
   return version || null;
 }
 
-const RELEASE_NOTE_TEMPLATE_PLACEHOLDERS = [
-  "2-4 bullets with the main release outcomes in plain language.",
-  "New features or capabilities.",
-  "Behavior/UX improvements that users will notice.",
-  "Bug fixes and regressions.",
-  'Breaking changes, migration steps, or "none".',
-  "Release checks completed (for example: release:prepublish, parity, publish gates).",
-  "Cover all differences from the release plan (`changes.md`/`changes.json`).",
-  "Use detailed, human-readable language, not raw commit log text.",
-  "Keep concrete bullets with explicit outcomes.",
-  "Keep at least one bullet per listed change from `changes.md`/`changes.json`.",
-] as const;
-
-const REQUIRED_RELEASE_NOTE_SECTIONS = [
-  "Summary",
-  "Added",
-  "Improved",
-  "Fixed",
-  "Upgrade Notes",
-  "Verification",
-] as const;
+const RELEASE_NOTE_TEMPLATE_PLACEHOLDERS = releaseNotesRules.templatePlaceholders;
+const REQUIRED_RELEASE_NOTE_SECTIONS = releaseNotesRules.requiredSections;
 
 function escapeRegExp(value: string): string {
   return value.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);

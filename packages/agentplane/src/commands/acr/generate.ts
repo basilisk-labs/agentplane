@@ -16,6 +16,7 @@ import path from "node:path";
 
 import { explainResolvedBlueprint, resolveBlueprint } from "../../blueprints/index.js";
 import { getVersion } from "../../meta/version.js";
+import { isRecord } from "../../shared/guards.js";
 import { blueprintResolveInputFromTask } from "../blueprint/task-input.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
@@ -281,10 +282,6 @@ export async function generateAcr(opts: {
       ? defaultAcrPath(opts.ctx, opts.taskId)
       : null;
   return { record, acrPath, warnings: [] };
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function buildAcrContextExtension(

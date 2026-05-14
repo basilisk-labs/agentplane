@@ -7,6 +7,7 @@ import { parse as parseYaml } from "yaml";
 
 import { CliError } from "../shared/errors.js";
 import { resolveAgentplaneCacheSqlitePath } from "../shared/cache-paths.js";
+import { isRecord } from "../shared/guards.js";
 import { parseJsonlLines, fileExists, readText } from "./context-utils.js";
 import { readHarvestReport } from "./harvest-tasks-artifacts.js";
 import { readContextProjection } from "./reindex.js";
@@ -169,10 +170,6 @@ export async function cmdContextDoctor(opts: {
 
   process.stdout.write("context doctor: ok\n");
   return 0;
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 async function calculateSha256(filePath: string): Promise<string> {

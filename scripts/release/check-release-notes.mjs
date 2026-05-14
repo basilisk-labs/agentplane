@@ -15,28 +15,24 @@ const parseArgs = (argv) => {
   };
 };
 
-const RELEASE_NOTE_TEMPLATE_PLACEHOLDERS = [
-  "2-4 bullets with the main release outcomes in plain language.",
-  "New features or capabilities.",
-  "Behavior/UX improvements that users will notice.",
-  "Bug fixes and regressions.",
-  'Breaking changes, migration steps, or "none".',
-  "Release checks completed (for example: release:prepublish, parity, publish gates).",
-  "Cover all differences from the release plan (`changes.md`/`changes.json`).",
-  "Use detailed, human-readable language, not raw commit log text.",
-  "Keep concrete bullets with explicit outcomes.",
-  "Keep at least one bullet per listed change from `changes.md`/`changes.json`.",
-];
+const releaseNotesRules = JSON.parse(
+  fs.readFileSync(
+    path.join(
+      process.cwd(),
+      "packages",
+      "agentplane",
+      "src",
+      "commands",
+      "release",
+      "release-notes-rules.json",
+    ),
+    "utf8",
+  ),
+);
 
-const REQUIRED_RELEASE_NOTE_SECTIONS = [
-  "Summary",
-  "Added",
-  "Improved",
-  "Fixed",
-  "Upgrade Notes",
-  "Verification",
-];
-const MIN_RELEASE_NOTE_BULLETS = 6;
+const RELEASE_NOTE_TEMPLATE_PLACEHOLDERS = releaseNotesRules.templatePlaceholders;
+const REQUIRED_RELEASE_NOTE_SECTIONS = releaseNotesRules.requiredSections;
+const MIN_RELEASE_NOTE_BULLETS = releaseNotesRules.minBullets;
 
 function releaseNotesHeadingPresent(content, tag) {
   const headingPattern = new RegExp(

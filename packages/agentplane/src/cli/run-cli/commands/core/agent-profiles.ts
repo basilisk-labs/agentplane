@@ -6,6 +6,7 @@ import { resolveProject } from "@agentplaneorg/core/project";
 import type { RoleProfileGuide } from "../../../command-guide.js";
 import { fileExists } from "../../../fs-utils.js";
 import { CliError } from "../../../../shared/errors.js";
+import { isRecord } from "../../../../shared/guards.js";
 
 export type AgentProfile = {
   id?: string;
@@ -16,10 +17,6 @@ export type AgentProfile = {
   permissions?: unknown;
   workflow?: unknown;
 };
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 function toAgentProfileStringList(value: unknown): string[] {
   const items = Array.isArray(value) ? value : isRecord(value) ? Object.values(value) : [];

@@ -9,6 +9,7 @@ import {
 } from "../cli/group-command.js";
 import { createCliEmitter, emptyStateMessage } from "../cli/output.js";
 import { CliError } from "../shared/errors.js";
+import { sleep } from "../backends/task-backend/shared/concurrency.js";
 import type { CommandContext } from "./shared/task-backend.js";
 import { gitRevParse } from "./shared/git-ops.js";
 import { cmdIntegrate } from "./pr/integrate/cmd.js";
@@ -63,10 +64,6 @@ function defaultWorker(): string {
 function renderEntry(entry: IntegrationQueueEntry): string {
   const pr = entry.pr_number ? `#${entry.pr_number}` : "no-pr";
   return `${entry.status.padEnd(7)} ${entry.task_id} ${pr} priority=${entry.priority} branch=${entry.branch}`;
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function findActiveLane(entries: IntegrationQueueEntry[]): IntegrationQueueEntry | null {
