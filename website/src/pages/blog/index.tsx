@@ -45,11 +45,11 @@ function toReadingTime(value: number | undefined): string {
   return `${Math.ceil(value)} min read`;
 }
 
-function getChronologicalEntries(items: BlogListPageProps["items"]): BlogEntry[] {
+function getNewestEntries(items: BlogListPageProps["items"]): BlogEntry[] {
   return items
     .toSorted(
       ({ content: left }, { content: right }) =>
-        toTimestamp(left.metadata.date) - toTimestamp(right.metadata.date),
+        toTimestamp(right.metadata.date) - toTimestamp(left.metadata.date),
     )
     .map(({ content }) => ({
       date: toIsoDate(content.metadata.date),
@@ -63,7 +63,7 @@ function getChronologicalEntries(items: BlogListPageProps["items"]): BlogEntry[]
 }
 
 export default function BlogLanding({ items }: BlogListPageProps) {
-  const entries = getChronologicalEntries(items);
+  const entries = getNewestEntries(items);
 
   return (
     <Layout
@@ -83,8 +83,8 @@ export default function BlogLanding({ items }: BlogListPageProps) {
         <div className={styles.layout}>
           <section className={styles.entriesSection} aria-labelledby="blog-entries-title">
             <div className={styles.sectionHeading}>
-              <p className={styles.sectionLabel}>Oldest to newest</p>
-              <h2 id="blog-entries-title">Chronological archive</h2>
+              <p className={styles.sectionLabel}>Newest first</p>
+              <h2 id="blog-entries-title">Latest writing</h2>
             </div>
 
             <div className={styles.entryList}>
