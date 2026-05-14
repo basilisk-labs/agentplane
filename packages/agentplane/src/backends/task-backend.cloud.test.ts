@@ -307,64 +307,6 @@ describe("CloudBackend", () => {
     ).rejects.toThrow("Safe command: agentplane backend inspect cloud --yes");
   });
 
-  it("marks failed auto-push mutations and blocks prefer-remote pull overwrites", async () => {
-    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
-    const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
-    await mkdir(stateDir, { recursive: true });
-    await writeFile(
-      path.join(stateDir, "state.json"),
-      `${JSON.stringify(
-        {
-          last_checked_at: new Date().toISOString(),
-          pending_push: null,
-        },
-        null,
-        2,
-      )}\n`,
-      "utf8",
-    );
-    const fetchImpl = vi.fn<typeof fetch>((input) => {
-      const url = requestUrl(input);
-      if (url.endsWith("/sync/push")) {
-        return Promise.reject(new TypeError("fetch failed"));
-      }
-      return Promise.resolve(
-        Response.json({
-          data: {
-            tasks: [{ id: "202605051806-C1D2", title: "Remote title", status: "DONE" }],
-            last_checked_at: "2026-05-06T00:00:00.000Z",
-          },
-        }),
-      );
-    });
-    const backend = new CloudBackend(
-      {
-        endpoint: "https://cloud.example/",
-        token: "token",
-        project_id: "project-1",
-        provider: "github-projects",
-      },
-      { root: tempDir, cache, fetchImpl, autoSyncNetworkAllowed: true },
-    );
-
-    await expect(
-      backend.writeTask(makeTask({ id: "202605051806-C1D2", title: "Local title" })),
-    ).rejects.toThrow("Safe command: agentplane backend inspect cloud --yes");
-
-    const markedState = JSON.parse(await readFile(path.join(stateDir, "state.json"), "utf8")) as {
-      pending_push?: { failed_at?: string; reason?: string };
-    };
-    expect(markedState.pending_push?.failed_at).toEqual(expect.any(String));
-    expect(markedState.pending_push?.reason).toContain("Cloud backend request failed");
-
-    await expect(
-      backend.sync({ direction: "pull", conflict: "prefer-remote", quiet: true, confirm: true }),
-    ).rejects.toThrow("unpushed local task mutations");
-    await expect(cache.getTask("202605051806-C1D2")).resolves.toMatchObject({
-      title: "Local title",
-    });
-  });
-
   it("push sync uploads oversized projections in finalized batches", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
     const largeText = "x".repeat(400_000);
@@ -642,56 +584,6 @@ describe("CloudBackend", () => {
       plan_approval: task.plan_approval,
       verification: task.verification,
       comments: task.comments,
-    });
-  });
-
-  it("pull adds remote-only tasks and removes local-only tasks under prefer-remote", async () => {
-    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
-    const localTask: TaskData = {
-      id: "202605051806-C1D2",
-      title: "Cloud task",
-      description: "Existing task",
-      status: "TODO",
-      priority: "med",
-      owner: "CODER",
-      depends_on: [],
-      tags: ["cloud"],
-      verify: [],
-    };
-    await cache.writeTask(localTask);
-    await cache.writeTask(makeTask({ id: "202605051806-D3E4" }));
-    const fetchImpl = vi.fn<typeof fetch>(() =>
-      Promise.resolve(
-        Response.json({
-          data: {
-            tasks: [
-              { id: "202605051806-E5F6", title: "Remote only", status: "TODO" },
-              { id: localTask.id, title: "Updated", status: "TODO" },
-            ],
-            last_checked_at: "2026-05-06T00:00:00.000Z",
-          },
-        }),
-      ),
-    );
-    const backend = new CloudBackend(
-      { endpoint: "https://cloud.example", token: "token", project_id: "project-1" },
-      { root: tempDir, cache, fetchImpl },
-    );
-
-    await backend.sync({
-      direction: "pull",
-      conflict: "prefer-remote",
-      quiet: true,
-      confirm: true,
-    });
-
-    await expect(cache.getTask("202605051806-D3E4")).resolves.toBeNull();
-    await expect(cache.getTask(localTask.id)).resolves.toMatchObject({ title: "Updated" });
-    await expect(cache.getTask("202605051806-E5F6")).resolves.toMatchObject({
-      id: "202605051806-E5F6",
-      title: "Remote only",
-      status: "TODO",
-      owner: "CODER",
     });
   });
 

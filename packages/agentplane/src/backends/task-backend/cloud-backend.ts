@@ -2,11 +2,7 @@ import path from "node:path";
 
 import { loadDotEnv, type DotEnvLoadResult } from "../../shared/env.js";
 import { isRecord } from "../../shared/guards.js";
-import {
-  readCloudBackendState,
-  writeCloudBackendState,
-  type CloudBackendPendingPush,
-} from "./cloud-backend-state.js";
+import { readCloudBackendState, writeCloudBackendState } from "./cloud-backend-state.js";
 import {
   BackendError,
   type TaskBackend,
@@ -17,6 +13,8 @@ import {
 } from "./shared.js";
 import type { LocalBackend } from "./local-backend.js";
 import { buildCloudPullPlan, emitCloudPullDiffSummary, readOpenConflicts } from "./cloud-pull.js";
+import { cloudPendingPushReason, pendingCloudPushError } from "./cloud-pending-push.js";
+import type { CloudBackendSettings } from "./cloud-backend-settings.js";
 import { requestCloudPush } from "./cloud-backend-push.js";
 import {
   CLOUD_PULL_REQUEST_TIMEOUT_MS,
@@ -43,20 +41,7 @@ import {
 } from "./cloud-backend-utils.js";
 import { firstNonEmptyString } from "./shared/strings.js";
 
-export type CloudBackendSettings = {
-  endpoint?: string;
-  token?: string;
-  project_id?: string;
-  provider?: string;
-  cache_dir?: string;
-  stale_after_seconds?: number;
-  state_path?: string;
-  autosync_enabled?: boolean;
-  autosync_pull_on_read?: boolean;
-  autosync_pull_on_write?: boolean;
-  autosync_push_on_write?: boolean;
-  auto_push_on_mutation?: boolean;
-};
+export type { CloudBackendSettings } from "./cloud-backend-settings.js";
 
 type CloudSyncStateSnapshot = {
   conflicts: unknown[];
@@ -491,7 +476,7 @@ export class CloudBackend implements TaskBackend {
   private async ensureProjectionFreshForLocalMutation(opts: { reason: string }): Promise<void> {
     const state = await this.readState();
     if (state.pending_push) {
-      throw this.pendingPushError(state.pending_push);
+      throw pendingCloudPushError(state.pending_push);
     }
     if (!isStale(state.last_checked_at, this.staleAfterSeconds)) return;
 
@@ -499,7 +484,7 @@ export class CloudBackend implements TaskBackend {
       await this.maybeAutoPull({ mode: "write", reason: `mutation_preflight:${opts.reason}` });
       const refreshed = await this.readState();
       if (refreshed.pending_push) {
-        throw this.pendingPushError(refreshed.pending_push);
+        throw pendingCloudPushError(refreshed.pending_push);
       }
       if (!isStale(refreshed.last_checked_at, this.staleAfterSeconds)) return;
     }
@@ -552,22 +537,8 @@ export class CloudBackend implements TaskBackend {
   private async assertNoPendingPushForPull(): Promise<void> {
     const state = await this.readState();
     if (state.pending_push) {
-      throw this.pendingPushError(state.pending_push);
+      throw pendingCloudPushError(state.pending_push);
     }
-  }
-
-  private pendingPushError(pending: CloudBackendPendingPush): BackendError {
-    return new BackendError(
-      [
-        "Cloud backend has unpushed local task mutations; refusing to overwrite the projection.",
-        `Last failed push: ${pending.failed_at}`,
-        `Reason: ${pending.reason}`,
-        "Fix: run agentplane backend sync cloud --direction push --yes after the cloud service is available.",
-        "Safe command: agentplane backend sync cloud --direction push --conflict=fail --yes",
-        "Stop condition: stop if push reports open conflicts or cannot clear the pending local mutation.",
-      ].join("\n"),
-      "E_BACKEND",
-    );
   }
 
   private async markPendingPush(error: unknown): Promise<void> {
@@ -576,7 +547,7 @@ export class CloudBackend implements TaskBackend {
       last_checked_at: state.last_checked_at,
       pending_push: {
         failed_at: new Date().toISOString(),
-        reason: error instanceof Error ? error.message || error.name : String(error),
+        reason: cloudPendingPushReason(error),
       },
     });
   }
