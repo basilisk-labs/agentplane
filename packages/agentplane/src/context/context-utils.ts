@@ -3,6 +3,8 @@ import { lstatSync, existsSync } from "node:fs";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
+export { isRecord } from "../shared/guards.js";
+
 type ScopeName = "wiki" | "facts" | "graph" | "tasks" | "capabilities" | "tasks-acr" | "raw";
 
 type ParsedSourceRef = {
@@ -11,10 +13,6 @@ type ParsedSourceRef = {
 };
 
 const MAX_SNIPPET_LINES = 16;
-
-export function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 export function parseSourceRef(raw: string): ParsedSourceRef {
   const hashIndex = raw.indexOf("#");

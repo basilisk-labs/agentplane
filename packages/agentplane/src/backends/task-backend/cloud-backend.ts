@@ -2,7 +2,11 @@ import path from "node:path";
 
 import { loadDotEnv, type DotEnvLoadResult } from "../../shared/env.js";
 import { isRecord } from "../../shared/guards.js";
-import { readCloudBackendState, writeCloudBackendState } from "./cloud-backend-state.js";
+import {
+  readCloudBackendState,
+  writeCloudBackendState,
+  type CloudBackendPendingPush,
+} from "./cloud-backend-state.js";
 import {
   BackendError,
   type TaskBackend,
@@ -329,22 +333,33 @@ export class CloudBackend implements TaskBackend {
           quiet: opts.quiet,
         });
         const hasPendingProjectionChanges = conflicts.length > 0 || (plan?.changed.length ?? 0) > 0;
-        if (hasPendingProjectionChanges) return;
-      } else if (plan && plan.changed.length > 0) {
-        await this.cache.writeTasks(plan.changed);
+        const hasPendingTaskSetChanges =
+          (plan?.added.length ?? 0) > 0 || (plan?.removedIds.length ?? 0) > 0;
+        if (hasPendingProjectionChanges || hasPendingTaskSetChanges) return;
+      } else if (plan && opts.conflict === "prefer-remote") {
+        await this.assertNoPendingPushForPull();
+        if (plan.changed.length > 0 || plan.added.length > 0) {
+          await this.cache.writeTasks([...plan.changed, ...plan.added]);
+        }
+        await Promise.all(plan.removedIds.map((taskId) => this.cache.deleteTask(taskId)));
       }
     }
     if (opts.direction === "pull") {
       if (pull.lastCheckedAt) {
         await writeCloudBackendState(this.statePath, {
           last_checked_at: pull.lastCheckedAt,
+          pending_push: null,
         });
       }
       return;
     }
-    if (!pull.lastCheckedAt) return;
+    if (!pull.lastCheckedAt) {
+      await this.clearPendingPush();
+      return;
+    }
     await writeCloudBackendState(this.statePath, {
       last_checked_at: pull.lastCheckedAt,
+      pending_push: null,
     });
   }
 
@@ -435,6 +450,7 @@ export class CloudBackend implements TaskBackend {
         staleAfterSeconds: this.staleAfterSeconds,
         stale: isStale(state.last_checked_at, this.staleAfterSeconds),
         statePath: this.statePath,
+        pendingPush: state.pending_push,
       },
     };
   }
@@ -474,11 +490,17 @@ export class CloudBackend implements TaskBackend {
 
   private async ensureProjectionFreshForLocalMutation(opts: { reason: string }): Promise<void> {
     const state = await this.readState();
+    if (state.pending_push) {
+      throw this.pendingPushError(state.pending_push);
+    }
     if (!isStale(state.last_checked_at, this.staleAfterSeconds)) return;
 
     if (this.autoSyncEnabled && this.autoSyncPullOnWrite) {
       await this.maybeAutoPull({ mode: "write", reason: `mutation_preflight:${opts.reason}` });
       const refreshed = await this.readState();
+      if (refreshed.pending_push) {
+        throw this.pendingPushError(refreshed.pending_push);
+      }
       if (!isStale(refreshed.last_checked_at, this.staleAfterSeconds)) return;
     }
 
@@ -514,11 +536,57 @@ export class CloudBackend implements TaskBackend {
     if (!this.autoSyncEnabled || !this.autoSyncPushOnWrite) return;
     if (!this.autoSyncNetworkAllowed) return;
     if (this.missingConfigKeys().length > 0) return;
-    await this.sync({
-      direction: "push",
-      conflict: "fail",
-      quiet: true,
-      confirm: true,
+    try {
+      await this.sync({
+        direction: "push",
+        conflict: "fail",
+        quiet: true,
+        confirm: true,
+      });
+    } catch (error) {
+      await this.markPendingPush(error);
+      throw error;
+    }
+  }
+
+  private async assertNoPendingPushForPull(): Promise<void> {
+    const state = await this.readState();
+    if (state.pending_push) {
+      throw this.pendingPushError(state.pending_push);
+    }
+  }
+
+  private pendingPushError(pending: CloudBackendPendingPush): BackendError {
+    return new BackendError(
+      [
+        "Cloud backend has unpushed local task mutations; refusing to overwrite the projection.",
+        `Last failed push: ${pending.failed_at}`,
+        `Reason: ${pending.reason}`,
+        "Fix: run agentplane backend sync cloud --direction push --yes after the cloud service is available.",
+        "Safe command: agentplane backend sync cloud --direction push --conflict=fail --yes",
+        "Stop condition: stop if push reports open conflicts or cannot clear the pending local mutation.",
+      ].join("\n"),
+      "E_BACKEND",
+    );
+  }
+
+  private async markPendingPush(error: unknown): Promise<void> {
+    const state = await this.readState();
+    await writeCloudBackendState(this.statePath, {
+      last_checked_at: state.last_checked_at,
+      pending_push: {
+        failed_at: new Date().toISOString(),
+        reason: error instanceof Error ? error.message || error.name : String(error),
+      },
+    });
+  }
+
+  private async clearPendingPush(): Promise<void> {
+    const state = await this.readState();
+    if (!state.pending_push) return;
+    await writeCloudBackendState(this.statePath, {
+      last_checked_at: state.last_checked_at,
+      pending_push: null,
     });
   }
 

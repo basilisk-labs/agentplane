@@ -1,10 +1,12 @@
 import { infoMessage } from "../../cli/output.js";
+import { isRecord } from "../../shared/guards.js";
 import type { TaskData } from "./shared.js";
 
 export type CloudPullPlan = {
   changed: TaskData[];
+  added: TaskData[];
+  removedIds: string[];
   changedSummaries: CloudPullChangedSummary[];
-  ignoredRemoteOnly: string[];
 };
 
 type CloudPullChangedSummary = {
@@ -16,14 +18,16 @@ const CLOUD_OPERATIONAL_FIELDS = ["title", "status", "priority", "owner", "tags"
 
 export function buildCloudPullPlan(localTasks: TaskData[], remoteTasks: unknown[]): CloudPullPlan {
   const currentById = new Map(localTasks.map((task) => [task.id, task]));
+  const remoteIds = new Set<string>();
   const changed: TaskData[] = [];
+  const added: TaskData[] = [];
   const changedSummaries: CloudPullChangedSummary[] = [];
-  const ignoredRemoteOnly: string[] = [];
   for (const remote of remoteTasks) {
     if (!isRecord(remote) || typeof remote.id !== "string") continue;
+    remoteIds.add(remote.id);
     const current = currentById.get(remote.id);
     if (!current) {
-      ignoredRemoteOnly.push(remote.id);
+      added.push(normalizeRemoteTask(remote));
       continue;
     }
     const { next, fields } = mergeCloudOperationalFields(current, remote);
@@ -32,7 +36,11 @@ export function buildCloudPullPlan(localTasks: TaskData[], remoteTasks: unknown[
       changedSummaries.push({ taskId: remote.id, fields });
     }
   }
-  return { changed, changedSummaries, ignoredRemoteOnly };
+  const removedIds = localTasks
+    .map((task) => task.id)
+    .filter((taskId) => !remoteIds.has(taskId))
+    .toSorted((left, right) => left.localeCompare(right));
+  return { changed, added, removedIds, changedSummaries };
 }
 
 export function readOpenConflicts(input: unknown): unknown[] {
@@ -53,25 +61,43 @@ export function emitCloudPullDiffSummary(opts: {
 }): void {
   if (opts.quiet) return;
   const changed = opts.plan?.changedSummaries ?? [];
-  const ignoredRemoteOnly = opts.plan?.ignoredRemoteOnly ?? [];
+  const added = opts.plan?.added ?? [];
+  const removedIds = opts.plan?.removedIds ?? [];
   process.stdout.write(
     [
       infoMessage(
-        `cloud pull diff changed=${changed.length} ignored_remote_only=${ignoredRemoteOnly.length} conflicts=${opts.conflicts.length}`,
+        `cloud pull diff changed=${changed.length} added=${added.length} removed=${removedIds.length} conflicts=${opts.conflicts.length}`,
       ),
       ...changed
         .slice(0, 20)
         .map((entry) => `- changed ${entry.taskId}: ${entry.fields.join(",")}`),
-      ...ignoredRemoteOnly.slice(0, 20).map((taskId) => `- ignored remote-only ${taskId}`),
+      ...added.slice(0, 20).map((task) => `- added remote-only ${task.id}`),
+      ...removedIds.slice(0, 20).map((taskId) => `- removed local-only ${taskId}`),
       changed.length > 20 ? `- changed truncated=${changed.length - 20}` : null,
-      ignoredRemoteOnly.length > 20
-        ? `- ignored remote-only truncated=${ignoredRemoteOnly.length - 20}`
-        : null,
+      added.length > 20 ? `- added remote-only truncated=${added.length - 20}` : null,
+      removedIds.length > 20 ? `- removed local-only truncated=${removedIds.length - 20}` : null,
     ]
       .filter((line): line is string => line !== null)
       .join("\n"),
   );
   process.stdout.write("\n");
+}
+
+function normalizeRemoteTask(remote: Record<string, unknown>): TaskData {
+  return {
+    id: String(remote.id),
+    title: typeof remote.title === "string" ? remote.title : String(remote.id),
+    description: typeof remote.description === "string" ? remote.description : "",
+    status: typeof remote.status === "string" ? remote.status : "TODO",
+    priority:
+      typeof remote.priority === "string" || typeof remote.priority === "number"
+        ? remote.priority
+        : "med",
+    owner: typeof remote.owner === "string" ? remote.owner : "CODER",
+    depends_on: readStringArray(remote.depends_on),
+    tags: readStringArray(remote.tags),
+    verify: readStringArray(remote.verify),
+  };
 }
 
 function mergeCloudOperationalFields(
@@ -111,6 +137,10 @@ function stableJson(input: unknown): string {
   return JSON.stringify(sortJson(input));
 }
 
+function readStringArray(input: unknown): string[] {
+  return Array.isArray(input) && input.every((item) => typeof item === "string") ? input : [];
+}
+
 function sortJson(input: unknown): unknown {
   if (Array.isArray(input)) return input.map((item) => sortJson(item));
   if (!isRecord(input)) return input;
@@ -119,8 +149,4 @@ function sortJson(input: unknown): unknown {
       .toSorted(([left], [right]) => left.localeCompare(right))
       .map(([key, value]) => [key, sortJson(value)]),
   );
-}
-
-function isRecord(input: unknown): input is Record<string, unknown> {
-  return Boolean(input && typeof input === "object" && !Array.isArray(input));
 }

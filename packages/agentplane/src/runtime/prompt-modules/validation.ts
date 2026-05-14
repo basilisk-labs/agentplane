@@ -17,6 +17,7 @@ import type {
 } from "./model.js";
 import type { PromptModuleCompiledGraph } from "./compiler.js";
 import { migratePromptModuleSchemaVersion } from "./schema.js";
+import { isRecord } from "../../shared/guards.js";
 import type {
   PromptModuleBindingKind,
   PromptModuleMutation,
@@ -131,10 +132,6 @@ const MUTATION_OPS = [
 
 function invalid(field: string, expected: string): Error {
   return new Error(`Invalid field ${field}: expected ${expected}`);
-}
-
-function isRecord(raw: unknown): raw is Record<string, unknown> {
-  return typeof raw === "object" && raw !== null && !Array.isArray(raw);
 }
 
 function requireRecord(raw: unknown, field: string): Record<string, unknown> {

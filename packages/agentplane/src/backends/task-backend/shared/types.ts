@@ -177,6 +177,10 @@ export type TaskBackendInspectionResult = {
     staleAfterSeconds: number | null;
     stale: boolean;
     statePath?: string | null;
+    pendingPush?: {
+      failed_at: string;
+      reason: string;
+    } | null;
   };
 };
 
