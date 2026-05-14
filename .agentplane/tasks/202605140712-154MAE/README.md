@@ -1,10 +1,11 @@
 ---
 id: "202605140712-154MAE"
 title: "Document cloud dependency projection"
-status: "DOING"
+result_summary: "Merged via PR #3692."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: cloud dependency projection coverage and docs passed targeted checks. Command: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts. Result: pass, 24 tests passed. Command: node .agentplane/policy/check-routing.mjs. Result: pass, policy routing OK. Command: ap doctor. Result: pass, doctor OK with two pre-existing warnings about old task archive/branch_pr closure drift."
   attempts: 0
-commit: null
+commit:
+  hash: "c5725e45ada6430ba923233b33e7e9d2f9d8f13a"
+  message: "Merge pull request #3692 from basilisk-labs/task/202605140712-154MAE/cloud-dependency-projection"
 comments:
   -
     author: "CODER"
     body: "Start: adding AgentPlane-side cloud dependency projection coverage and cloud backend documentation in the dedicated task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3692 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: cloud dependency projection coverage and docs passed targeted checks. Command: bun test packages/agentplane/src/backends/task-backend.cloud.test.ts. Result: pass, 24 tests passed. Command: node .agentplane/policy/check-routing.mjs. Result: pass, policy routing OK. Command: ap doctor. Result: pass, doctor OK with two pre-existing warnings about old task archive/branch_pr closure drift."
+  -
+    type: "status"
+    at: "2026-05-14T07:44:41.709Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3692 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T07:17:42.437Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T07:44:41.715Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add AgentPlane-side coverage and documentation that cloud push preserves depends_on and treats local depends_on as the source of truth for GitHub blocked-by projection."
 sections:
   Summary: |-
