@@ -3,11 +3,14 @@
   "branch": "task/202605141346-TTXFPD/feedback-issue-prompts",
   "created_at": "2026-05-14T13:47:51.184Z",
   "head_sha": "43b06e6221040fe899a828760ef11651760c7a75",
-  "last_verified_at": "2026-05-14T14:22:07.483Z",
-  "last_verified_sha": "615944df4cc08a195befa42c4a9e71ad9592b299",
+  "last_verified_at": "2026-05-14T14:24:08.020Z",
+  "last_verified_sha": "43b06e6221040fe899a828760ef11651760c7a75",
+  "pr_number": 3719,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3719",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202605141346-TTXFPD",
-  "updated_at": "2026-05-14T14:23:04.662Z",
+  "updated_at": "2026-05-14T14:23:14.559Z",
   "verify": {
     "status": "pass"
   }

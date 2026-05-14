@@ -4,7 +4,7 @@ title: "Add opt-in GitHub issue feedback prompts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-14T14:22:07.483Z"
+  updated_at: "2026-05-14T14:24:08.020Z"
   updated_by: "CODER"
-  note: "Implemented explicit opt-in feedback.github_issues config, init flag/prompt, mandatory E_INTERNAL issue suggestion, and insights issue payload/creation flow. Checks passed: focused Bun tests, typecheck, format:check, docs:cli:check, schema sync check, policy routing, ap doctor."
+  note: "Re-verified after commit amend and PR creation. Current implementation commit is 43b06e622; local checks remain passed: focused Bun tests, typecheck, format:check, docs:cli:check, schema sync check, policy routing, ap doctor."
   attempts: 0
 commit: null
 comments:
@@ -41,8 +41,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented explicit opt-in feedback.github_issues config, init flag/prompt, mandatory E_INTERNAL issue suggestion, and insights issue payload/creation flow. Checks passed: focused Bun tests, typecheck, format:check, docs:cli:check, schema sync check, policy routing, ap doctor."
+  -
+    type: "verify"
+    at: "2026-05-14T14:24:08.020Z"
+    author: "CODER"
+    state: "ok"
+    note: "Re-verified after commit amend and PR creation. Current implementation commit is 43b06e622; local checks remain passed: focused Bun tests, typecheck, format:check, docs:cli:check, schema sync check, policy routing, ap doctor."
 doc_version: 3
-doc_updated_at: "2026-05-14T14:22:07.530Z"
+doc_updated_at: "2026-05-14T14:24:08.112Z"
 doc_updated_by: "CODER"
 description: "Add an explicit init/config feedback mode that prompts users to create an AgentPlane GitHub issue when internal AgentPlane errors are detected, using privacy-bounded insights diagnostics."
 sections:
@@ -69,6 +75,25 @@ sections:
     Attempts: 0
     
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T14:06:55.423Z, excerpt_hash=sha256:48cd4ca40cc85f84859fc317facb175ef56442602d4d0802826611a5bd510b81
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141346-TTXFPD-feedback-issue-prompts/.agentplane/tasks/202605141346-TTXFPD/blueprint/resolved-snapshot.json
+    - old_digest: a5b8695068d9f65dea3fb3100d3cdf0523724078cb7e0c965d0ee858f073cdb1
+    - current_digest: a5b8695068d9f65dea3fb3100d3cdf0523724078cb7e0c965d0ee858f073cdb1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605141346-TTXFPD
+    
+    ### 2026-05-14T14:24:08.020Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Re-verified after commit amend and PR creation. Current implementation commit is 43b06e622; local checks remain passed: focused Bun tests, typecheck, format:check, docs:cli:check, schema sync check, policy routing, ap doctor.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T14:22:07.530Z, excerpt_hash=sha256:48cd4ca40cc85f84859fc317facb175ef56442602d4d0802826611a5bd510b81
     
     Details:
     
@@ -120,6 +145,25 @@ Note: Implemented explicit opt-in feedback.github_issues config, init flag/promp
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T14:06:55.423Z, excerpt_hash=sha256:48cd4ca40cc85f84859fc317facb175ef56442602d4d0802826611a5bd510b81
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141346-TTXFPD-feedback-issue-prompts/.agentplane/tasks/202605141346-TTXFPD/blueprint/resolved-snapshot.json
+- old_digest: a5b8695068d9f65dea3fb3100d3cdf0523724078cb7e0c965d0ee858f073cdb1
+- current_digest: a5b8695068d9f65dea3fb3100d3cdf0523724078cb7e0c965d0ee858f073cdb1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605141346-TTXFPD
+
+### 2026-05-14T14:24:08.020Z — VERIFY — ok
+
+By: CODER
+
+Note: Re-verified after commit amend and PR creation. Current implementation commit is 43b06e622; local checks remain passed: focused Bun tests, typecheck, format:check, docs:cli:check, schema sync check, policy routing, ap doctor.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T14:22:07.530Z, excerpt_hash=sha256:48cd4ca40cc85f84859fc317facb175ef56442602d4d0802826611a5bd510b81
 
 Details:
 

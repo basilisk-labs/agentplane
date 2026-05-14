@@ -13,7 +13,7 @@ Created: 2026-05-14T13:47:51.184Z
 ## Verification
 
 - State: ok
-- Note: Implemented explicit opt-in feedback.github_issues config, init flag/prompt, mandatory E_INTERNAL issue suggestion, and insights issue payload/creation flow. Checks passed: focused Bun tests, typecheck, format:check, docs:cli:check, schema sync check, policy routing, ap doctor.
+- Note: Re-verified after commit amend and PR creation. Current implementation commit is 43b06e622; local checks remain passed: focused Bun tests, typecheck, format:check, docs:cli:check, schema sync check, policy routing, ap doctor.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-05-14T13:47:51.184Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T14:23:04.662Z
+- Updated: 2026-05-14T14:23:14.559Z
 - Branch: task/202605141346-TTXFPD/feedback-issue-prompts
 - Head: 43b06e622104
 
