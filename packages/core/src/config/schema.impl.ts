@@ -166,6 +166,15 @@ const RUNNER_TIMEOUTS_SCHEMA = z
   .strict()
   .default({ ...RUNNER_TIMEOUT_DEFAULTS });
 
+const FEEDBACK_GITHUB_ISSUES_DEFAULTS = {
+  enabled: true,
+  repository: "basilisk-labs/agentplane",
+  prompt_on_internal_error: true,
+  include_insights_report: true,
+  dedupe: true,
+  labels: ["agentplane-feedback", "bug"],
+};
+
 export const AgentplaneConfigSchema = z
   .object({
     schema_version: z.literal(1).default(1),
@@ -274,6 +283,28 @@ export const AgentplaneConfigSchema = z
           redact_patterns: [...RUNNER_TRACE_DEFAULTS.redact_patterns],
         },
         timeouts: { ...RUNNER_TIMEOUT_DEFAULTS },
+      }),
+    feedback: z
+      .object({
+        github_issues: z
+          .object({
+            enabled: z.boolean().default(FEEDBACK_GITHUB_ISSUES_DEFAULTS.enabled),
+            repository: nonEmptyString().default(FEEDBACK_GITHUB_ISSUES_DEFAULTS.repository),
+            prompt_on_internal_error: z
+              .boolean()
+              .default(FEEDBACK_GITHUB_ISSUES_DEFAULTS.prompt_on_internal_error),
+            include_insights_report: z
+              .boolean()
+              .default(FEEDBACK_GITHUB_ISSUES_DEFAULTS.include_insights_report),
+            dedupe: z.boolean().default(FEEDBACK_GITHUB_ISSUES_DEFAULTS.dedupe),
+            labels: nonEmptyStringArray([...FEEDBACK_GITHUB_ISSUES_DEFAULTS.labels]),
+          })
+          .passthrough()
+          .default({ ...FEEDBACK_GITHUB_ISSUES_DEFAULTS }),
+      })
+      .passthrough()
+      .default({
+        github_issues: { ...FEEDBACK_GITHUB_ISSUES_DEFAULTS },
       }),
     acr: z
       .object({

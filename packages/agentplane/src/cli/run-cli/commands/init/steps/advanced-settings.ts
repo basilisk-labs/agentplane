@@ -24,6 +24,7 @@ export async function promptAdvancedSettingsStep(opts: {
     | "requirePlanApproval"
     | "requireNetworkApproval"
     | "requireVerifyApproval"
+    | "feedbackGithubIssues"
     | "executionProfile"
     | "strictUnsafeConfirm"
   >;
@@ -35,6 +36,7 @@ export async function promptAdvancedSettingsStep(opts: {
   const requirePlanApproval = opts.flags.requirePlanApproval ?? preset.defaultRequirePlanApproval;
   const requireVerifyApproval =
     opts.flags.requireVerifyApproval ?? preset.defaultRequireVerifyApproval;
+  let feedbackGithubIssues = opts.flags.feedbackGithubIssues ?? preset.defaultFeedbackGithubIssues;
   let requireNetworkApproval =
     opts.flags.requireNetworkApproval ?? preset.defaultRequireNetworkApproval;
   let executionProfile = opts.flags.executionProfile ?? preset.defaultExecutionProfile;
@@ -64,12 +66,20 @@ export async function promptAdvancedSettingsStep(opts: {
       });
     }
   }
+  if (opts.setupProfileMode === "full" && opts.flags.feedbackGithubIssues === undefined) {
+    feedbackGithubIssues = await confirmStepValue(opts.clack, {
+      message: "Allow GitHub issue prompts for internal AgentPlane errors?",
+      initialValue: feedbackGithubIssues,
+      cancelMessage: "Feedback issue opt-in selection cancelled.",
+    });
+  }
 
   return {
     hooks,
     requirePlanApproval,
     requireNetworkApproval,
     requireVerifyApproval,
+    feedbackGithubIssues,
     executionProfile,
     strictUnsafeConfirm,
   };

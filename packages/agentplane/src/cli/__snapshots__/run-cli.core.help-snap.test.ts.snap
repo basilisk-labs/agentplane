@@ -87,6 +87,7 @@ Commands:
     doctor git-locks  Check Git index lock state for this repository and suggest cleanup.
   Diagnostics:
     insights  Generate local-only diagnostic insights for support analysis.
+    insights issue  Create an opt-in GitHub issue with privacy-bounded AgentPlane diagnostics.
     insights report  Print a local-only privacy-bounded AgentPlane diagnostic report.
     runtime  Inspect which agentplane runtime/binary/package sources are active.
     runtime explain  Explain the active binary, runtime mode, and resolved package roots.

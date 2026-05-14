@@ -129,6 +129,13 @@ export const initSpec: CommandSpec<InitParsed> = {
     },
     {
       kind: "string",
+      name: "feedback-github-issues",
+      valueHint: "<true|false>",
+      description:
+        "Enable or disable AgentPlane GitHub issue prompts for internal AgentPlane errors (default: true).",
+    },
+    {
+      kind: "string",
       name: "execution-profile",
       valueHint: "<conservative|balanced|aggressive>",
       choices: ["conservative", "balanced", "aggressive"],
@@ -213,6 +220,10 @@ export const initSpec: CommandSpec<InitParsed> = {
       why: "Initialize direct mode with strict close-tail blocking on any unrelated tracked dirt.",
     },
     {
+      cmd: "agentplane init --feedback-github-issues false --yes",
+      why: "Disable GitHub issue prompts for internal AgentPlane errors.",
+    },
+    {
       cmd: "agentplane init --force --yes",
       why: "Re-initialize, overwriting conflicts (non-interactive).",
     },
@@ -243,6 +254,7 @@ export const initSpec: CommandSpec<InitParsed> = {
     const requirePlanRaw = raw.opts["require-plan-approval"] as string | undefined;
     const requireNetworkRaw = raw.opts["require-network-approval"] as string | undefined;
     const requireVerifyRaw = raw.opts["require-verify-approval"] as string | undefined;
+    const feedbackGithubIssuesRaw = raw.opts["feedback-github-issues"] as string | undefined;
     const recipesRaw = raw.opts.recipes as string | undefined;
     const blueprintsRaw = raw.opts.blueprints as string | undefined;
 
@@ -285,6 +297,10 @@ export const initSpec: CommandSpec<InitParsed> = {
         requireVerifyRaw === undefined
           ? undefined
           : parseBooleanValueForInit(initSpec, "--require-verify-approval", requireVerifyRaw),
+      feedbackGithubIssues:
+        feedbackGithubIssuesRaw === undefined
+          ? undefined
+          : parseBooleanValueForInit(initSpec, "--feedback-github-issues", feedbackGithubIssuesRaw),
       executionProfile: raw.opts["execution-profile"] as InitFlags["executionProfile"],
       strictUnsafeConfirm:
         (raw.opts["strict-unsafe-confirm"] as string | undefined) === undefined

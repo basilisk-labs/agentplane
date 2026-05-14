@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605141604-37S5VS/feedback-default-on",
+  "created_at": "2026-05-14T16:05:09.735Z",
+  "head_sha": "9b027c759bc4d4113f7739926a99c1c54d6d3736",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605141604-37S5VS",
+  "updated_at": "2026-05-14T16:05:09.735Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

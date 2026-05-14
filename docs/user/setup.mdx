@@ -54,6 +54,30 @@ Dry-run builds the same setup plan but does not create `.git`, `.agentplane`, ga
 backups, hooks, or commits. Use it before re-initializing repositories that already contain
 AgentPlane-related files.
 
+## Feedback issue prompts
+
+New projects enable AgentPlane GitHub issue prompts for internal AgentPlane errors by default. This
+is intentional: feedback issues help the framework improve faster, and the generated payload stays
+privacy-bounded.
+
+Preview the issue payload:
+
+```bash
+agentplane insights issue --error-code E_INTERNAL --dry-run
+```
+
+To initialize with the mode disabled:
+
+```bash
+agentplane init --feedback-github-issues false
+```
+
+To disable it later:
+
+```bash
+agentplane config set feedback.github_issues.enabled false
+```
+
 ## Create your first task
 
 Use a harmless task first. The goal is to see the artifact shape before giving an agent broad edit
