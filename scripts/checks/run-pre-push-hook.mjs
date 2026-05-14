@@ -180,13 +180,19 @@ function hasEmergencyBackfillEvidence(body) {
   return evidence.length >= 12;
 }
 
-function hasManagedUpgradeEvidence(body) {
-  const subject =
+function commitSubject(body) {
+  return (
     body
       .split("\n")
       .find((line) => line.trim())
-      ?.trim() ?? "";
-  return /^⬆️\s+upgrade:\s+/u.test(subject) && /^Upgrade-Version:\s*\S+\s*$/im.test(body);
+      ?.trim() ?? ""
+  );
+}
+
+function hasManagedUpgradeEvidence(body) {
+  return (
+    /^⬆️\s+upgrade:\s+/u.test(commitSubject(body)) && /^Upgrade-Version:\s*\S+\s*$/im.test(body)
+  );
 }
 
 function isManagedInstallPath(filePath) {
@@ -202,14 +208,9 @@ function isManagedInstallPath(filePath) {
 }
 
 function hasManagedInstallEvidence(body, mutatingPaths) {
-  const subject =
-    body
-      .split("\n")
-      .find((line) => line.trim())
-      ?.trim() ?? "";
   if (
     !/^chore:\s+install agentplane \d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(
-      subject,
+      commitSubject(body),
     )
   ) {
     return false;
@@ -228,12 +229,7 @@ function isManagedContextBootstrapPath(filePath) {
 }
 
 function hasManagedContextBootstrapEvidence(body, mutatingPaths) {
-  const subject =
-    body
-      .split("\n")
-      .find((line) => line.trim())
-      ?.trim() ?? "";
-  if (subject !== "✅ CTX1NT task: initialize AgentPlane context") return false;
+  if (commitSubject(body) !== "✅ CTX1NT task: initialize AgentPlane context") return false;
   return (
     mutatingPaths.length > 0 &&
     mutatingPaths.every((filePath) => isManagedContextBootstrapPath(filePath))
