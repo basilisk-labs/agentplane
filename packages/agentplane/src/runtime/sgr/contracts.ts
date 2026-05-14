@@ -234,6 +234,23 @@ export function validateContextExtractionSgrResult(
       `${field}.extracted_items`,
       (entry, itemField) => {
         const item = requireRecord(entry, itemField);
+        const status = requireEnum(item.status, `${itemField}.status`, [
+          "proposed",
+          "accepted",
+          "stale",
+          "conflict",
+        ]);
+        const staleMarkers = optionalStringArray(item.stale_markers, `${itemField}.stale_markers`);
+        const conflictMarkers = optionalStringArray(
+          item.conflict_markers,
+          `${itemField}.conflict_markers`,
+        );
+        if (status === "stale" && !staleMarkers?.length) {
+          throw invalid(`${itemField}.stale_markers`, "non-empty string[] for stale status");
+        }
+        if (status === "conflict" && !conflictMarkers?.length) {
+          throw invalid(`${itemField}.conflict_markers`, "non-empty string[] for conflict status");
+        }
         return {
           id: requireString(item.id, `${itemField}.id`),
           kind: requireEnum(item.kind, `${itemField}.kind`, [
@@ -249,18 +266,10 @@ export function validateContextExtractionSgrResult(
             validateSourceRef,
           ),
           confidence: validateConfidence(item.confidence, `${itemField}.confidence`),
-          status: requireEnum(item.status, `${itemField}.status`, [
-            "proposed",
-            "accepted",
-            "stale",
-            "conflict",
-          ]),
+          status,
           target_path: optionalString(item.target_path, `${itemField}.target_path`),
-          stale_markers: optionalStringArray(item.stale_markers, `${itemField}.stale_markers`),
-          conflict_markers: optionalStringArray(
-            item.conflict_markers,
-            `${itemField}.conflict_markers`,
-          ),
+          stale_markers: staleMarkers,
+          conflict_markers: conflictMarkers,
         };
       },
     ),

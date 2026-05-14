@@ -65,6 +65,48 @@ describe("SGR reliability contracts", () => {
     ).toThrow("extracted_items[0].source_refs");
   });
 
+  it("requires markers for stale and conflict context extraction items", () => {
+    const baseResult = {
+      schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+      kind: "context_extraction",
+      reasoning: [{ label: "extract", summary: "Extract a claim." }],
+      source_refs: [sourceRef],
+    };
+
+    expect(() =>
+      validateContextExtractionSgrResult({
+        ...baseResult,
+        extracted_items: [
+          {
+            id: "fact.stale",
+            kind: "fact",
+            summary: "Stale claim.",
+            source_refs: [sourceRef],
+            confidence: 0.7,
+            status: "stale",
+          },
+        ],
+      }),
+    ).toThrow("stale_markers");
+
+    expect(() =>
+      validateContextExtractionSgrResult({
+        ...baseResult,
+        extracted_items: [
+          {
+            id: "fact.conflict",
+            kind: "fact",
+            summary: "Conflicting claim.",
+            source_refs: [sourceRef],
+            confidence: 0.7,
+            status: "conflict",
+            stale_markers: ["old source"],
+          },
+        ],
+      }),
+    ).toThrow("conflict_markers");
+  });
+
   it("validates structured evaluator results", () => {
     const result = validateEvaluatorSgrResult({
       schema_version: SGR_CONTRACT_SCHEMA_VERSION,
