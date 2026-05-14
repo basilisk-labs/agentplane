@@ -2,10 +2,13 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
 import {
+  comparisonUrl,
   docsUrl,
+  githubProofFallback,
   githubUrl,
   homepageContent,
   installCommand,
+  quickstartUrl,
   recipesIndexUrl,
 } from "../data/homepage-content";
 import styles from "./_home.module.css";
@@ -17,6 +20,7 @@ type Action = {
   variant: ButtonVariant;
   to?: string;
   command?: string;
+  eventName?: string;
 };
 
 type RecipeVersion = {
@@ -37,6 +41,25 @@ type RecipeLoadState = "idle" | "loading" | "ready" | "error";
 type RecipeIndexPayload = {
   recipes?: unknown[];
 };
+
+type GithubProof = typeof githubProofFallback;
+
+type GithubRepoPayload = {
+  stargazers_count?: number;
+  forks_count?: number;
+  license?: { spdx_id?: string | null } | null;
+  language?: string | null;
+};
+
+type GithubReleasePayload = {
+  tag_name?: string;
+};
+
+function trackHomeEvent(eventName?: string): void {
+  if (!eventName || typeof window === "undefined") return;
+  const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
+  gtag?.("event", eventName, { event_category: "home" });
+}
 
 async function copyTextToClipboard(text: string): Promise<void> {
   if (navigator.clipboard) {
@@ -66,15 +89,18 @@ function CopyCommand({
   command,
   label = command,
   className,
+  eventName,
 }: {
   command: string;
   label?: string;
   className?: string;
+  eventName?: string;
 }): ReactNode {
   const copyCommand = (event: unknown) => {
     const { currentTarget: button } = event as { currentTarget: HTMLButtonElement };
 
     void copyTextToClipboard(command).then(() => {
+      trackHomeEvent(eventName ?? "copy_install_clicked");
       showCopiedFeedback(button);
       return null;
     });
@@ -99,7 +125,12 @@ function CopyCommand({
 function ActionControl({ action }: { action: Action }): ReactNode {
   if (action.command) {
     return (
-      <CopyCommand command={action.command} label={action.label} className={styles.actionCopy} />
+      <CopyCommand
+        command={action.command}
+        label={action.label}
+        className={styles.actionCopy}
+        eventName={action.eventName}
+      />
     );
   }
 
@@ -109,7 +140,11 @@ function ActionControl({ action }: { action: Action }): ReactNode {
       : `${styles.action} ${styles.actionSecondary}`;
 
   return (
-    <Link className={className} to={action.to ?? "/"}>
+    <Link
+      className={className}
+      to={action.to ?? "/"}
+      onClick={() => trackHomeEvent(action.eventName)}
+    >
       {action.label}
     </Link>
   );
@@ -121,6 +156,24 @@ function ActionsRow({ actions }: { actions: readonly Action[] }): ReactNode {
       {actions.map((action) => (
         <ActionControl key={action.label} action={action} />
       ))}
+    </div>
+  );
+}
+
+function SectionLead({
+  label,
+  title,
+  text,
+}: {
+  label: string;
+  title: string;
+  text?: string;
+}): ReactNode {
+  return (
+    <div className={styles.sectionLead}>
+      <span className={styles.sectionLabel}>{label}</span>
+      <h2>{title}</h2>
+      {text ? <p>{text}</p> : null}
     </div>
   );
 }
@@ -148,54 +201,100 @@ function TerminalPreview({
               {line}
             </span>
           ))}
-          <span className={styles.terminalCursor} aria-hidden="true" />
         </code>
       </pre>
     </div>
   );
 }
 
-function SectionLead({
-  label,
-  title,
-  text,
-}: {
-  label: string;
-  title: string;
-  text?: string;
-}): ReactNode {
+function HeroArtifactVisual(): ReactNode {
+  const { heroArtifacts, hero } = homepageContent;
+
   return (
-    <div className={styles.sectionLead}>
-      <span className={styles.sectionLabel}>{label}</span>
-      <h2>{title}</h2>
-      {text ? <p>{text}</p> : null}
+    <div className={styles.heroArtifactPanel} aria-label="AgentPlane evidence artifact flow">
+      <div className={styles.traceLine}>{hero.flow}</div>
+      <div className={styles.traceCards}>
+        {heroArtifacts.map((artifact) => (
+          <article key={artifact.path} className={styles.traceCard}>
+            <div className={styles.traceCardTop}>
+              <span>{artifact.label}</span>
+              <strong>{artifact.status}</strong>
+            </div>
+            <h3>{artifact.path}</h3>
+            <pre>
+              <code>{artifact.lines.join("\n")}</code>
+            </pre>
+          </article>
+        ))}
+      </div>
     </div>
   );
 }
 
-function WorkflowCard({
-  title,
-  text,
-  index,
-}: {
-  title: string;
-  text: string;
-  index: number;
-}): ReactNode {
-  return (
-    <article className={styles.workflowCard}>
-      <span>{String(index + 1).padStart(2, "0")}</span>
-      <h3>{title}</h3>
-      <p>{text}</p>
-    </article>
-  );
+function useGithubProof(): GithubProof {
+  const [proof, setProof] = useState<GithubProof>(githubProofFallback);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadProof(): Promise<void> {
+      try {
+        const [repoResponse, releaseResponse] = await Promise.all([
+          fetch("https://api.github.com/repos/basilisk-labs/agentplane", {
+            signal: controller.signal,
+            headers: { accept: "application/vnd.github+json" },
+          }),
+          fetch("https://api.github.com/repos/basilisk-labs/agentplane/releases/latest", {
+            signal: controller.signal,
+            headers: { accept: "application/vnd.github+json" },
+          }),
+        ]);
+
+        if (!repoResponse.ok || !releaseResponse.ok) return;
+
+        const repo = (await repoResponse.json()) as GithubRepoPayload;
+        const latest = (await releaseResponse.json()) as GithubReleasePayload;
+
+        setProof({
+          ...githubProofFallback,
+          stars: repo.stargazers_count ?? githubProofFallback.stars,
+          forks: repo.forks_count ?? githubProofFallback.forks,
+          latestRelease: latest.tag_name ?? githubProofFallback.latestRelease,
+          license: repo.license?.spdx_id ?? githubProofFallback.license,
+          language: repo.language ?? githubProofFallback.language,
+        });
+      } catch {
+        setProof(githubProofFallback);
+      }
+    }
+
+    void loadProof();
+
+    return () => controller.abort();
+  }, []);
+
+  return proof;
 }
 
-function FileTree({ lines }: { lines: readonly string[] }): ReactNode {
+function ProofStrip(): ReactNode {
+  const proof = useGithubProof();
+
   return (
-    <pre className={styles.fileTree} aria-label="AgentPlane repository artifact tree">
-      <code>{lines.join("\n")}</code>
-    </pre>
+    <section className={`${styles.proofStrip} ${styles.shell}`} aria-label="GitHub project proof">
+      <p>
+        <strong>Early OSS project</strong> - star it if you want local-first evidence for coding
+        agents.
+      </p>
+      <div className={styles.proofStats}>
+        <span>{proof.stars} stars</span>
+        <span>{proof.forks} forks</span>
+        <span>{proof.releases} releases</span>
+        <span>{proof.latestRelease}</span>
+        <span>{proof.license}</span>
+        <span>{proof.language}</span>
+        <span>{proof.posture}</span>
+      </div>
+    </section>
   );
 }
 
@@ -272,7 +371,7 @@ function buildInstallCommand(recipe: RecipeEntry): string {
 
 function RecipeCard({ recipe }: { recipe: RecipeEntry }): ReactNode {
   const latest = latestVersion(recipe);
-  const installCommand = buildInstallCommand(recipe);
+  const recipeInstallCommand = buildInstallCommand(recipe);
 
   return (
     <article className={styles.recipeCard}>
@@ -282,7 +381,12 @@ function RecipeCard({ recipe }: { recipe: RecipeEntry }): ReactNode {
       <div className={styles.recipeMeta}>
         <span>{latest ? `latest: ${latest}` : "version: n/a"}</span>
       </div>
-      <CopyCommand command={installCommand} label="Install" className={styles.recipeAction} />
+      <CopyCommand
+        command={recipeInstallCommand}
+        label="Install"
+        className={styles.recipeAction}
+        eventName="copy_recipe_install_clicked"
+      />
     </article>
   );
 }
@@ -362,32 +466,53 @@ function RecipesCatalogSection(): ReactNode {
         ))}
       </div>
     );
-  }, [state, recipes, errorMessage]);
+  }, [state, recipes, errorMessage, loadRecipes]);
 
   return (
     <section className={`${styles.section} ${styles.shell}`}>
-      <SectionLead label="Recipes" title={recipesCatalog.title} text={recipesCatalog.text} />
+      <SectionLead label="Advanced" title={recipesCatalog.title} text={recipesCatalog.text} />
       <p className={styles.sectionLeadText}>{recipesCatalog.stepText}</p>
       {content}
     </section>
   );
 }
 
-function NextStepCard({
-  item,
+function StarCta({
+  eventName,
+  text,
+  compact = false,
 }: {
-  item: (typeof homepageContent.nextSteps.items)[number];
+  eventName: string;
+  text: string;
+  compact?: boolean;
 }): ReactNode {
-  const featured = "featured" in item && item.featured;
-
   return (
-    <article className={`${styles.nextStepCard}${featured ? ` ${styles.nextStepFeatured}` : ""}`}>
-      <div>
-        <h3>{item.title}</h3>
-        <p>{item.text}</p>
-      </div>
-      <Link to={item.to}>{item.action}</Link>
-    </article>
+    <div className={`${styles.starCta}${compact ? ` ${styles.starCtaCompact}` : ""}`}>
+      <p>{text}</p>
+      <span className={styles.githubEmbedSlot}>
+        <a
+          className="github-button"
+          href={githubUrl}
+          data-color-scheme="no-preference: light; light: light; dark: dark;"
+          data-icon="octicon-star"
+          data-size="large"
+          data-show-count="true"
+          aria-label="Star basilisk-labs/agentplane on GitHub"
+          onClick={() => trackHomeEvent(eventName)}
+        >
+          Star
+        </a>
+        <a
+          className={styles.githubFallbackButton}
+          href={githubUrl}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() => trackHomeEvent(eventName)}
+        >
+          ★ Star on GitHub
+        </a>
+      </span>
+    </div>
   );
 }
 
@@ -396,14 +521,13 @@ export default function Home(): ReactNode {
     seo,
     hero,
     problem,
-    demo,
-    comparison,
-    workflow,
+    quickstart,
     artifacts,
+    worksWith,
+    comparison,
     acr,
+    whoShouldStar,
     context,
-    whyNow,
-    nextSteps,
     closing,
   } = homepageContent;
 
@@ -417,29 +541,31 @@ export default function Home(): ReactNode {
                 <span className={styles.heroEyebrow}>{hero.eyebrow}</span>
                 <h1>{hero.title}</h1>
                 <p className={styles.heroSubtitle}>{hero.subtitle}</p>
-                <p className={styles.flowLine}>{hero.flow}</p>
                 <ActionsRow
                   actions={[
-                    { label: "Generate your first ACR", to: acr.action.to, variant: "primary" },
-                    { label: "View on GitHub", to: githubUrl, variant: "secondary" },
-                    { label: installCommand, command: installCommand, variant: "copy" },
+                    {
+                      label: installCommand,
+                      command: installCommand,
+                      variant: "copy",
+                      eventName: "copy_install_clicked",
+                    },
+                    {
+                      label: "Run the 90-second quickstart",
+                      to: quickstartUrl,
+                      variant: "secondary",
+                      eventName: "quickstart_clicked",
+                    },
                   ]}
                 />
-                <ul className={styles.assuranceList}>
-                  {hero.assurances.map((assurance) => (
-                    <li key={assurance}>{assurance}</li>
-                  ))}
-                </ul>
+                <StarCta compact eventName="github_star_hero_clicked" text="Star the repo:" />
+                <p className={styles.proofLine}>{hero.proofLine}</p>
               </article>
-
-              <img
-                className={styles.heroDemo}
-                src="/img/agentplane-demo.gif"
-                alt="AgentPlane CLI demo showing task evidence and ACR generation"
-              />
+              <HeroArtifactVisual />
             </div>
           </div>
         </section>
+
+        <ProofStrip />
 
         <section className={`${styles.section} ${styles.shell}`}>
           <div className={styles.problemBand}>
@@ -452,28 +578,49 @@ export default function Home(): ReactNode {
           </div>
         </section>
 
-        <section className={`${styles.section} ${styles.demoSection}`}>
-          <div className={styles.shell}>
-            <SectionLead label="Demo / proof" title={demo.title} text={demo.text} />
-            <div className={styles.demoGrid}>
-              <TerminalPreview title={demo.terminal.title} lines={demo.terminal.lines} />
-              <div className={styles.demoAside}>
-                <span className={styles.sectionLabel}>Try it locally</span>
-                <pre aria-label="AgentPlane local try commands">
-                  <code>{demo.tryCommands.join("\n")}</code>
-                </pre>
-                <Link className={`${styles.action} ${styles.actionPrimary}`} to={githubUrl}>
-                  View on GitHub
-                </Link>
-              </div>
+        <section className={`${styles.section} ${styles.shell}`}>
+          <div className={styles.quickstartPanel}>
+            <SectionLead label="Quickstart" title={quickstart.title} text={quickstart.text} />
+            <TerminalPreview title="90-second quickstart" lines={quickstart.lines} />
+            <div className={styles.quickstartActions}>
+              <CopyCommand
+                command={quickstart.lines.join("\n")}
+                label="Copy quickstart"
+                eventName="copy_install_clicked"
+              />
+              <StarCta
+                compact
+                eventName="github_star_quickstart_clicked"
+                text={quickstart.afterAction}
+              />
             </div>
           </div>
         </section>
 
-        <RecipesCatalogSection />
+        <section className={`${styles.section} ${styles.shell} ${styles.artifactSection}`}>
+          <SectionLead label="Artifacts" title={artifacts.title} text={artifacts.text} />
+          <div className={styles.artifactGrid}>
+            {artifacts.items.map((artifact) => (
+              <article key={artifact.path} className={styles.artifactCard}>
+                <span>{artifact.label}</span>
+                <h3>{artifact.path}</h3>
+                <p>{artifact.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
 
         <section className={`${styles.section} ${styles.shell}`}>
-          <SectionLead label="Comparison" title={comparison.title} text={comparison.text} />
+          <SectionLead label="Works with" title={worksWith.title} />
+          <div className={styles.logoStrip}>
+            {worksWith.items.map((item) => (
+              <span key={item}>{item}</span>
+            ))}
+          </div>
+        </section>
+
+        <section className={`${styles.section} ${styles.shell}`}>
+          <SectionLead label="Compare" title={comparison.title} text={comparison.text} />
           <div className={styles.comparisonList}>
             {comparison.rows.map((row) => (
               <article key={row.label} className={styles.comparisonRow}>
@@ -482,109 +629,81 @@ export default function Home(): ReactNode {
               </article>
             ))}
           </div>
-          <Link className={`${styles.action} ${styles.actionSecondary}`} to={comparison.action.to}>
-            {comparison.action.label}
-          </Link>
-        </section>
-
-        <section className={`${styles.section} ${styles.shell}`}>
-          <SectionLead label="Core workflow" title={workflow.title} text={workflow.text} />
-          <div className={styles.workflowGrid}>
-            {workflow.items.map((item, index) => (
-              <WorkflowCard key={item.title} title={item.title} text={item.text} index={index} />
-            ))}
-          </div>
-          <p className={styles.workflowNote}>{workflow.note}</p>
-        </section>
-
-        <section className={`${styles.section} ${styles.artifactSection}`}>
-          <div className={styles.shell}>
-            <div className={styles.artifactGrid}>
-              <FileTree lines={artifacts.tree} />
-              <div className={styles.artifactCopy}>
-                <SectionLead
-                  label="Repo-local artifacts"
-                  title={artifacts.title}
-                  text={artifacts.text}
-                />
-                <ul className={styles.artifactBullets}>
-                  {artifacts.bullets.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
-                  ))}
-                </ul>
-                <Link className={`${styles.action} ${styles.actionSecondary}`} to={docsUrl}>
-                  Read the docs
-                </Link>
-              </div>
-            </div>
+          <div className={styles.inlineActions}>
+            <Link
+              className={`${styles.action} ${styles.actionSecondary}`}
+              to={comparisonUrl}
+              onClick={() => trackHomeEvent("compare_clicked_from_home")}
+            >
+              Compare with LangSmith/LangGraph
+            </Link>
+            <StarCta compact eventName="github_star_compare_clicked" text={comparison.starLine} />
           </div>
         </section>
 
         <section className={`${styles.section} ${styles.shell}`}>
-          <SectionLead label="Agent Change Record" title={acr.title} text={acr.text} />
-          <div className={styles.demoGrid}>
-            <TerminalPreview title={acr.terminal.title} lines={acr.terminal.lines} compact />
-            <div className={styles.demoAside}>
-              <span className={styles.sectionLabel}>Review path</span>
-              <p>
-                Humans read `acr explain`. CI reads `acr check`. External tools read `acr.json`.
-              </p>
-              <Link className={`${styles.action} ${styles.actionPrimary}`} to={acr.action.to}>
-                {acr.action.label}
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        <section className={`${styles.section} ${styles.shell}`}>
-          <SectionLead label="Context management" title={context.title} text={context.text} />
-          <div className={styles.demoGrid}>
-            <TerminalPreview
-              title={context.terminal.title}
-              lines={context.terminal.lines}
-              compact
-            />
-            <div className={styles.demoAside}>
-              <span className={styles.sectionLabel}>Repo-owned memory</span>
-              <ul className={styles.artifactBullets}>
-                {context.bullets.map((bullet) => (
-                  <li key={bullet}>{bullet}</li>
-                ))}
-              </ul>
-              <Link className={`${styles.action} ${styles.actionPrimary}`} to={context.action.to}>
-                {context.action.label}
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        <section className={`${styles.section} ${styles.whyNowSection}`}>
-          <div className={styles.shell}>
-            <SectionLead label="Why now" title={whyNow.title} text={whyNow.text} />
-            <Link className={`${styles.action} ${styles.actionPrimary}`} to={whyNow.action.to}>
-              {whyNow.action.label}
+          <div className={styles.acrPanel}>
+            <SectionLead label="Agent Change Record" title={acr.title} text={acr.text} />
+            <pre className={styles.acrSnippet} aria-label="Agent Change Record JSON example">
+              <code>{acr.snippet.join("\n")}</code>
+            </pre>
+            <Link
+              className={`${styles.action} ${styles.actionSecondary}`}
+              to={acr.action.to}
+              onClick={() => trackHomeEvent("acr_example_clicked")}
+            >
+              {acr.action.label}
             </Link>
           </div>
         </section>
 
         <section className={`${styles.section} ${styles.shell}`}>
-          <SectionLead label="Docs paths" title={nextSteps.title} />
-          <div className={styles.nextStepsGrid}>
-            {nextSteps.items.map((item) => (
-              <NextStepCard key={item.title} item={item} />
-            ))}
+          <div className={styles.starAudience}>
+            <SectionLead label="OSS signal" title={whoShouldStar.title} />
+            <ul>
+              {whoShouldStar.items.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
           </div>
         </section>
+
+        <section className={`${styles.section} ${styles.shell}`}>
+          <div className={styles.advancedPanel}>
+            <SectionLead label="Advanced" title={context.title} text={context.text} />
+            <ActionsRow
+              actions={[
+                {
+                  label: context.action.label,
+                  to: context.action.to,
+                  variant: "secondary",
+                  eventName: "docs_clicked_from_home",
+                },
+                {
+                  label: "Read the docs",
+                  to: docsUrl,
+                  variant: "secondary",
+                  eventName: "docs_clicked_from_home",
+                },
+              ]}
+            />
+          </div>
+        </section>
+
+        <RecipesCatalogSection />
 
         <section className={styles.finalCta}>
           <div className={styles.shell}>
             <h2>{closing.title}</h2>
-            <CopyCommand command={installCommand} />
-            <ActionsRow
-              actions={[
-                { label: "View on GitHub", to: githubUrl, variant: "primary" },
-                { label: "Read the docs", to: docsUrl, variant: "secondary" },
-              ]}
+            <p>{closing.text}</p>
+            <StarCta
+              eventName="github_star_footer_clicked"
+              text="Help make AI work reviewable in Git:"
+            />
+            <CopyCommand
+              command={installCommand}
+              label={installCommand}
+              eventName="copy_install_clicked"
             />
           </div>
         </section>

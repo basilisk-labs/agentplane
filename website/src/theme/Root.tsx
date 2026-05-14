@@ -99,10 +99,35 @@ async function copyNavbarInstallCommand(
   installCommand: string,
 ): Promise<void> {
   await navigator.clipboard.writeText(installCommand);
+  trackNavEvent("copy_install_clicked");
   installLink.textContent = "Copied";
   globalThis.setTimeout(() => {
     installLink.textContent = initialLabel;
   }, 1800);
+}
+
+function trackNavEvent(eventName: string): void {
+  const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
+  gtag?.("event", eventName, { event_category: "navbar" });
+}
+
+function configureGithubStarButton(link: HTMLAnchorElement): void {
+  link.classList.add("github-button");
+  link.setAttribute("data-color-scheme", "no-preference: light; light: light; dark: dark;");
+  link.setAttribute("data-icon", "octicon-star");
+  link.setAttribute("data-size", "large");
+  link.setAttribute("data-show-count", "true");
+  link.setAttribute("aria-label", "Star basilisk-labs/agentplane on GitHub");
+  link.textContent = "Star";
+}
+
+function refreshGithubButtons(): void {
+  const script = document.createElement("script");
+  script.async = true;
+  script.defer = true;
+  script.src = "https://buttons.github.io/buttons.js";
+  script.dataset.agentplaneGithubButtons = "true";
+  document.body.append(script);
 }
 
 function NavbarInstallCopy(): null {
@@ -136,6 +161,24 @@ function NavbarInstallCopy(): null {
   return null;
 }
 
+function NavbarGithubTracking(): null {
+  useEffect(() => {
+    const githubLink = document.querySelector<HTMLAnchorElement>(".navbar-github-cta");
+    if (!githubLink) return;
+
+    const handleClick = () => trackNavEvent("github_star_nav_clicked");
+    githubLink.addEventListener("click", handleClick);
+    configureGithubStarButton(githubLink);
+    refreshGithubButtons();
+
+    return () => {
+      githubLink.removeEventListener("click", handleClick);
+    };
+  }, []);
+
+  return null;
+}
+
 function MobileNavbarGithubCta(): null {
   useEffect(() => {
     const navbarInner = document.querySelector<HTMLElement>(".navbar__inner");
@@ -147,9 +190,10 @@ function MobileNavbarGithubCta(): null {
     const githubLink = document.createElement("a");
     githubLink.className = "navbar-mobile-github-cta";
     githubLink.href = "https://github.com/basilisk-labs/agentplane";
-    githubLink.textContent = "GitHub";
-    githubLink.setAttribute("aria-label", "View AgentPlane on GitHub");
+    configureGithubStarButton(githubLink);
+    githubLink.addEventListener("click", () => trackNavEvent("github_star_nav_clicked"));
     navbarInner.append(githubLink);
+    refreshGithubButtons();
 
     return () => {
       githubLink.remove();
@@ -165,6 +209,7 @@ export default function RootWrapper(props: Props): ReactElement {
       <Head>
         <script type="application/ld+json">{JSON.stringify(organizationJsonLd)}</script>
         <script type="application/ld+json">{JSON.stringify(websiteJsonLd)}</script>
+        <script async defer src="https://buttons.github.io/buttons.js" />
         {gtmContainerId ? (
           <script>
             {`
@@ -189,6 +234,7 @@ export default function RootWrapper(props: Props): ReactElement {
       ) : null}
       <NavbarScrollState />
       <NavbarInstallCopy />
+      <NavbarGithubTracking />
       <MobileNavbarGithubCta />
       <BlogReadingProgress />
       <ThemeRoot {...props} />
