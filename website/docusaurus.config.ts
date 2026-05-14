@@ -157,6 +157,12 @@ const config = {
           activeBaseRegex: "^/docs/compare",
         },
         {
+          to: "/blog",
+          label: "Blog",
+          position: "right",
+          activeBaseRegex: "^/blog",
+        },
+        {
           href: "https://github.com/basilisk-labs/agentplane",
           label: "GitHub",
           position: "right",
