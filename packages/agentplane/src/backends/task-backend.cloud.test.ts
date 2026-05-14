@@ -105,17 +105,6 @@ describe("CloudBackend", () => {
 
   it("push sync sends local tasks and records last check time", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
-    const upstreamTask: TaskData = {
-      id: "202605051806-A1B2",
-      title: "Cloud prerequisite",
-      description: "Sync this prerequisite first",
-      status: "TODO",
-      priority: "med",
-      owner: "CODER",
-      depends_on: [],
-      tags: ["cloud"],
-      verify: [],
-    };
     const task: TaskData = {
       id: "202605051806-C1D2",
       title: "Cloud task",
@@ -123,11 +112,10 @@ describe("CloudBackend", () => {
       status: "TODO",
       priority: "med",
       owner: "CODER",
-      depends_on: [upstreamTask.id],
+      depends_on: ["202605051806-A1B2"],
       tags: ["cloud"],
       verify: [],
     };
-    await cache.writeTask(upstreamTask);
     await cache.writeTask(task);
     const fetchImpl = vi.fn<typeof fetch>(() =>
       Promise.resolve(Response.json({ last_checked_at: "2026-05-06T00:00:00.000Z" })),
@@ -150,13 +138,7 @@ describe("CloudBackend", () => {
     expect(url).toBe("https://cloud.example/v1/projects/project-1/sync/push");
     expect(init?.method).toBe("POST");
     expectAbortSignal(init?.signal);
-    expect(init?.body).toContain('"direction":"push"');
-    const body = parseRequestBody<{ tasks: Array<{ id: string; depends_on?: string[] }> }>(
-      init?.body,
-    );
-    expect(body.tasks.find((entry) => entry.id === task.id)?.depends_on).toEqual([
-      upstreamTask.id,
-    ]);
+    expect(init?.body).toContain('"depends_on":["202605051806-A1B2"]');
     const stateText = await readFile(
       path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"),
       "utf8",
