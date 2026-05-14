@@ -5,7 +5,8 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
-    "build": "bun run generate-social-images && docusaurus build",
+    "build": "bun run check-content && bun run generate-social-images && docusaurus build",
+    "check-content": "node scripts/check-site-content.mjs",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",

@@ -4,12 +4,15 @@ import Layout from "@theme/Layout";
 import {
   comparisonUrl,
   docsUrl,
+  contributingUrl,
   githubProofFallback,
   githubUrl,
   homepageContent,
   installCommand,
   quickstartUrl,
+  roadmapUrl,
   recipesIndexUrl,
+  securityUrl,
 } from "../data/homepage-content";
 import styles from "./_home.module.css";
 
@@ -56,8 +59,8 @@ type GithubReleasePayload = {
 };
 
 function trackHomeEvent(eventName?: string): void {
-  if (!eventName || typeof window === "undefined") return;
-  const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
+  if (!eventName || typeof globalThis.window === "undefined") return;
+  const gtag = (globalThis.window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
   gtag?.("event", eventName, { event_category: "home" });
 }
 
@@ -199,6 +202,7 @@ function TerminalPreview({
             <span key={`${line}-${index}`} className={styles.terminalLine}>
               <span className={styles.commandPrompt}>$</span>
               {line}
+              {"\n"}
             </span>
           ))}
         </code>
@@ -361,8 +365,10 @@ function parseRecipes(payload: unknown): RecipeEntry[] {
 function latestVersion(recipe: RecipeEntry): string | null {
   const versions = recipe.versions?.filter((entry) => entry.version.trim().length > 0) ?? [];
   if (versions.length === 0) return null;
-  const sorted = versions.toSorted((left, right) => compareVersions(left.version, right.version));
-  return sorted[0]?.version ?? null;
+  return (
+    versions.toSorted((left, right) => compareVersions(left.version, right.version))[0]?.version ??
+    null
+  );
 }
 
 function buildInstallCommand(recipe: RecipeEntry): string {
@@ -522,12 +528,16 @@ export default function Home(): ReactNode {
     hero,
     problem,
     quickstart,
+    projectStatus,
     artifacts,
     worksWith,
     comparison,
     acr,
     whoShouldStar,
     context,
+    contribute,
+    security,
+    roadmap,
     closing,
   } = homepageContent;
 
@@ -555,10 +565,27 @@ export default function Home(): ReactNode {
                       variant: "secondary",
                       eventName: "quickstart_clicked",
                     },
+                    {
+                      label: "View on GitHub",
+                      to: githubUrl,
+                      variant: "secondary",
+                      eventName: "github_clicked_from_hero",
+                    },
+                    {
+                      label: "Read the docs",
+                      to: docsUrl,
+                      variant: "secondary",
+                      eventName: "docs_clicked_from_hero",
+                    },
                   ]}
                 />
                 <StarCta compact eventName="github_star_hero_clicked" text="Star the repo:" />
                 <p className={styles.proofLine}>{hero.proofLine}</p>
+                <div className={styles.trustStrip} aria-label="Open source trust signals">
+                  {hero.trustItems.map((item) => (
+                    <span key={item}>{item}</span>
+                  ))}
+                </div>
               </article>
               <HeroArtifactVisual />
             </div>
@@ -582,6 +609,12 @@ export default function Home(): ReactNode {
           <div className={styles.quickstartPanel}>
             <SectionLead label="Quickstart" title={quickstart.title} text={quickstart.text} />
             <TerminalPreview title="90-second quickstart" lines={quickstart.lines} />
+            <div className={styles.expectedArtifacts}>
+              <span>Expected local artifacts</span>
+              {quickstart.expectedArtifacts.map((artifact) => (
+                <code key={artifact}>{artifact}</code>
+              ))}
+            </div>
             <div className={styles.quickstartActions}>
               <CopyCommand
                 command={quickstart.lines.join("\n")}
@@ -593,6 +626,34 @@ export default function Home(): ReactNode {
                 eventName="github_star_quickstart_clicked"
                 text={quickstart.afterAction}
               />
+            </div>
+          </div>
+        </section>
+
+        <section className={`${styles.section} ${styles.shell}`}>
+          <div className={styles.statusPanel}>
+            <SectionLead
+              label="Project status"
+              title={projectStatus.title}
+              text={projectStatus.text}
+            />
+            <div className={styles.statusColumns}>
+              <div>
+                <h3>Current scope</h3>
+                <ul>
+                  {projectStatus.currentScope.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3>Not in scope</h3>
+                <ul>
+                  {projectStatus.notInScope.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </section>
@@ -691,6 +752,56 @@ export default function Home(): ReactNode {
         </section>
 
         <RecipesCatalogSection />
+
+        <section className={`${styles.section} ${styles.shell}`}>
+          <div className={styles.ossPanel}>
+            <article>
+              <SectionLead label="Open Source" title={contribute.title} text={contribute.text} />
+              <ul>
+                {contribute.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <p>{contribute.note}</p>
+              <ActionsRow
+                actions={[
+                  {
+                    label: "Contributing guide",
+                    to: contributingUrl,
+                    variant: "secondary",
+                    eventName: "contributing_clicked_from_home",
+                  },
+                ]}
+              />
+            </article>
+            <article>
+              <SectionLead label="Trust" title={security.title} text={security.text} />
+              <ActionsRow
+                actions={[
+                  {
+                    label: "Security policy",
+                    to: securityUrl,
+                    variant: "secondary",
+                    eventName: "security_clicked_from_home",
+                  },
+                ]}
+              />
+            </article>
+            <article>
+              <SectionLead label="Direction" title={roadmap.title} text={roadmap.text} />
+              <ActionsRow
+                actions={[
+                  {
+                    label: "Roadmap",
+                    to: roadmapUrl,
+                    variant: "secondary",
+                    eventName: "roadmap_clicked_from_home",
+                  },
+                ]}
+              />
+            </article>
+          </div>
+        </section>
 
         <section className={styles.finalCta}>
           <div className={styles.shell}>
