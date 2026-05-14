@@ -1,10 +1,11 @@
 ---
 id: "202605142055-F5M77X"
 title: "Release AgentPlane v0.6.1"
-status: "DOING"
+result_summary: "Merged via PR #3776."
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "INTEGRATOR"
   note: "GitHub PR #3776 is mergeable and green at bf5026d76d0f72146ff02f02007dbdbbdf2d0687: Core CI test/test-windows/release-ready, Docs CI, and CodeQL passed."
   attempts: 0
-commit: null
+commit:
+  hash: "dd071f160046fa8a6a60525cd97b0013c6112035"
+  message: "Merge pull request #3776 from basilisk-labs/task/202605142055-F5M77X/release-v0-6-1"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: preparing AgentPlane v0.6.1 patch release from the dedicated branch_pr worktree, with release plan, candidate branch, hosted publish, and post-publication verification scoped to 0.6.1."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3776 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,8 +49,15 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "GitHub PR #3776 is mergeable and green at bf5026d76d0f72146ff02f02007dbdbbdf2d0687: Core CI test/test-windows/release-ready, Docs CI, and CodeQL passed."
+  -
+    type: "status"
+    at: "2026-05-14T23:51:29.178Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3776 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T23:33:26.753Z"
+doc_updated_at: "2026-05-14T23:51:29.183Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare, verify, publish, and prove AgentPlane patch release v0.6.1 from the current stable main branch, including release notes, version bump, hosted publish, and post-publish platform verification."
 sections:
