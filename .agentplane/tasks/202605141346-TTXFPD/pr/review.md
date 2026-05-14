@@ -13,7 +13,7 @@ Created: 2026-05-14T13:47:51.184Z
 ## Verification
 
 - State: ok
-- Note: Re-verified after commit amend and PR creation. Current implementation commit is 43b06e622; local checks remain passed: focused Bun tests, typecheck, format:check, docs:cli:check, schema sync check, policy routing, ap doctor.
+- Note: Final verification on head 2fac48f7. Implemented explicit feedback.github_issues opt-in, full init prompt/flag support, mandatory E_INTERNAL issue suggestion, and insights issue dry-run/create flow. Checks passed: focused Vitest/Bun tests, typecheck, format:check, lint targets, knip:check, schema/docs checks, ap doctor, policy routing, GitHub Docs CI, GitHub Core CI test/test-windows/release-ready manifest.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,9 +24,9 @@ Created: 2026-05-14T13:47:51.184Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T14:23:14.559Z
+- Updated: 2026-05-14T15:52:06.598Z
 - Branch: task/202605141346-TTXFPD/feedback-issue-prompts
-- Head: 43b06e622104
+- Head: 2fac48f7af8b
 
 ```text
  .../blueprint/resolved-snapshot.json               | 526 +++++++++++++++++++++
@@ -47,18 +47,18 @@ Created: 2026-05-14T13:47:51.184Z
  .../src/cli/run-cli/commands/init/spec.ts          |  16 +
  .../commands/init/steps/advanced-settings.ts       |  10 +
  .../cli/run-cli/commands/init/steps/contracts.ts   |   1 +
+ .../commands/init/steps/prompt-steps.test.ts       |   1 +
  .../src/cli/run-cli/commands/init/write-config.ts  |   2 +
- .../src/commands/insights/insights.command.ts      | 129 ++++-
+ .../src/commands/insights/insights.command.ts      | 128 ++++-
  .../src/commands/insights/insights.spec.ts         |  61 ++-
  .../src/workflow-runtime/validate-frontmatter.ts   |   1 +
  packages/core/schemas/config.schema.json           |  59 +++
  packages/core/src/config/config.test.ts            |  14 +
- packages/core/src/config/config.ts                 |   1 +
  packages/core/src/config/schema.impl.ts            |  31 ++
  packages/core/src/config/workflow-file.ts          |   2 +
  packages/spec/schemas/config.schema.json           |  59 +++
  schemas/config.schema.json                         |  59 +++
- 29 files changed, 1244 insertions(+), 58 deletions(-)
+ 29 files changed, 1243 insertions(+), 58 deletions(-)
 ```
 
 </details>

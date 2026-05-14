@@ -16,15 +16,15 @@
  .../src/cli/run-cli/commands/init/spec.ts          |  16 +
  .../commands/init/steps/advanced-settings.ts       |  10 +
  .../cli/run-cli/commands/init/steps/contracts.ts   |   1 +
+ .../commands/init/steps/prompt-steps.test.ts       |   1 +
  .../src/cli/run-cli/commands/init/write-config.ts  |   2 +
- .../src/commands/insights/insights.command.ts      | 129 ++++-
+ .../src/commands/insights/insights.command.ts      | 128 ++++-
  .../src/commands/insights/insights.spec.ts         |  61 ++-
  .../src/workflow-runtime/validate-frontmatter.ts   |   1 +
  packages/core/schemas/config.schema.json           |  59 +++
  packages/core/src/config/config.test.ts            |  14 +
- packages/core/src/config/config.ts                 |   1 +
  packages/core/src/config/schema.impl.ts            |  31 ++
  packages/core/src/config/workflow-file.ts          |   2 +
  packages/spec/schemas/config.schema.json           |  59 +++
  schemas/config.schema.json                         |  59 +++
- 29 files changed, 1244 insertions(+), 58 deletions(-)
+ 29 files changed, 1243 insertions(+), 58 deletions(-)
