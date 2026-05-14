@@ -43,12 +43,29 @@ policy routing OK. Scope: policy routing gate.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T16:41:27.081Z
+- Updated: 2026-05-14T16:49:52.706Z
 - Branch: task/202605141638-ER7JEJ/v06-audit-hotfix
-- Head: 3e44c426f846
+- Head: 2f4705071cd5
 
 ```text
-No changes detected.
+ .agentplane/tasks/202605141638-3VAJ2V/README.md    |  81 ++++
+ .agentplane/tasks/202605141638-78JKTQ/README.md    |  81 ++++
+ .agentplane/tasks/202605141638-DYD163/README.md    |  81 ++++
+ .../blueprint/resolved-snapshot.json               | 417 +++++++++++++++++++++
+ .agentplane/tasks/202605141638-HGNT7H/README.md    |  81 ++++
+ .agentplane/tasks/202605141638-TTVFMD/README.md    |  81 ++++
+ .../task-backend/cloud-backend-state.test.ts       |  30 ++
+ .../backends/task-backend/cloud-backend-state.ts   |   9 +-
+ .../src/backends/task-backend/cloud-backend.ts     |   8 +-
+ packages/agentplane/src/cli.ts                     |  13 +-
+ packages/agentplane/src/cli/fs-utils.ts            |   3 +-
+ .../src/commands/acr/acr.command.test.ts           |  13 +-
+ packages/agentplane/src/commands/acr/generate.ts   |   6 +-
+ .../src/commands/branch/internal/archive-pr.ts     |   3 +-
+ .../commands/release/apply.preflight.package.ts    |   4 +-
+ .../src/commands/release/apply.preflight.test.ts   |  37 ++
+ scripts/release/check-release-notes.mjs            |  11 +-
+ 17 files changed, 936 insertions(+), 23 deletions(-)
 ```
 
 </details>
