@@ -4,7 +4,7 @@ title: "Fix doc section readback for issue #3747"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-14T18:55:27.359Z"
+  updated_at: "2026-05-14T19:03:38.416Z"
   updated_by: "CODER"
-  note: "Focused verification passed for issue #3747 fix: agentplane backend/doc/plan Vitest suites passed, core task-readme suite passed, and policy routing passed."
+  note: "Re-verified after lint fix: focused Vitest suites passed, core task-readme suite passed, exact ESLint check passed, and policy routing passed."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused verification passed for issue #3747 fix: agentplane backend/doc/plan Vitest suites passed, core task-readme suite passed, and policy routing passed."
+  -
+    type: "verify"
+    at: "2026-05-14T19:03:38.416Z"
+    author: "CODER"
+    state: "ok"
+    note: "Re-verified after lint fix: focused Vitest suites passed, core task-readme suite passed, exact ESLint check passed, and policy routing passed."
 doc_version: 3
-doc_updated_at: "2026-05-14T18:55:27.364Z"
+doc_updated_at: "2026-05-14T19:03:38.424Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issue #3747: task doc set can accept a section that is later filtered from canonical task doc readback, causing task doc show and task plan approve to disagree."
 sections:
@@ -80,6 +86,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605141849-0C84Z2
     
+    ### 2026-05-14T19:03:38.416Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Re-verified after lint fix: focused Vitest suites passed, core task-readme suite passed, exact ESLint check passed, and policy routing passed.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T18:55:27.364Z, excerpt_hash=sha256:cb8a842695eaeff155000681e024e8f218c0c2d71b83647f2f844b3b4b24db91
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141849-0C84Z2-fix-doc-section-readback-3747/.agentplane/tasks/202605141849-0C84Z2/blueprint/resolved-snapshot.json
+    - old_digest: 243283c66dce2f3f7b7898c6a9a67430ca1dc6185131829eb5b82f59ad33e12b
+    - current_digest: 243283c66dce2f3f7b7898c6a9a67430ca1dc6185131829eb5b82f59ad33e12b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605141849-0C84Z2
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the task branch commit if the section contract fix regresses supported task README sections or plan approval behavior."
   Findings: |-
@@ -104,6 +129,10 @@ sections:
     - Observation: taskRecordToData now merges README body task-doc sections with frontmatter sections, preserving configured body-only sections such as Risks while keeping frontmatter sections authoritative for stale canonical body content.
       Impact: Fixes task doc set/show and plan approve disagreement for configured sections that are rendered in README body but absent from v3 canonical frontmatter sections.
       Resolution: Added regression coverage for body-only Risks alongside existing task doc/plan/core tests.
+    
+    - Observation: GitHub Core CI initially failed only on lint for the section merge expression; the expression was rewritten without an empty object spread fallback.
+      Impact: Keeps issue #3747 behavior fix while satisfying repository lint rules.
+      Resolution: Committed lint-safe merge logic and reran targeted verification.
 id_source: "generated"
 ---
 ## Summary
@@ -149,6 +178,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605141849-0C84Z2
 
+### 2026-05-14T19:03:38.416Z — VERIFY — ok
+
+By: CODER
+
+Note: Re-verified after lint fix: focused Vitest suites passed, core task-readme suite passed, exact ESLint check passed, and policy routing passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T18:55:27.364Z, excerpt_hash=sha256:cb8a842695eaeff155000681e024e8f218c0c2d71b83647f2f844b3b4b24db91
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605141849-0C84Z2-fix-doc-section-readback-3747/.agentplane/tasks/202605141849-0C84Z2/blueprint/resolved-snapshot.json
+- old_digest: 243283c66dce2f3f7b7898c6a9a67430ca1dc6185131829eb5b82f59ad33e12b
+- current_digest: 243283c66dce2f3f7b7898c6a9a67430ca1dc6185131829eb5b82f59ad33e12b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605141849-0C84Z2
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -178,3 +226,7 @@ Verification evidence:
 - Observation: taskRecordToData now merges README body task-doc sections with frontmatter sections, preserving configured body-only sections such as Risks while keeping frontmatter sections authoritative for stale canonical body content.
   Impact: Fixes task doc set/show and plan approve disagreement for configured sections that are rendered in README body but absent from v3 canonical frontmatter sections.
   Resolution: Added regression coverage for body-only Risks alongside existing task doc/plan/core tests.
+
+- Observation: GitHub Core CI initially failed only on lint for the section merge expression; the expression was rewritten without an empty object spread fallback.
+  Impact: Keeps issue #3747 behavior fix while satisfying repository lint rules.
+  Resolution: Committed lint-safe merge logic and reran targeted verification.
