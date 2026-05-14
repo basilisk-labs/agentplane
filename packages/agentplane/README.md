@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/basilisk-labs/agentplane/main/docs/assets/header.svg" alt="AgentPlane latest release header" style="width:100%;max-width:100%;"/>
+</p>
+
 # AgentPlane CLI
 
 **Git-native infrastructure for traceable AI work.**
