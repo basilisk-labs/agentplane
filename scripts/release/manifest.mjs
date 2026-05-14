@@ -353,11 +353,21 @@ function buildPublishResultManifest(args) {
   }
   const externalModules = args.external?.modules ?? [];
   for (const module of externalModules) {
-    if (module.loaded && ["published", "unchanged"].includes(module.status)) continue;
+    const setupTagConfirmed =
+      module.name !== "setup-agentplane" || module.setupTag?.status === "published";
+    if (module.loaded && ["published", "unchanged"].includes(module.status) && setupTagConfirmed) {
+      continue;
+    }
     const detail = module.loaded
       ? `status=${module.status}${module.reasonCode ? ` reason=${module.reasonCode}` : ""}`
       : `unavailable (${module.reason})`;
-    failures.push(`external distribution ${module.name} not confirmed (${detail})`);
+    const setupTagDetail =
+      module.loaded && module.name === "setup-agentplane" && !setupTagConfirmed
+        ? `; setupTag=${module.setupTag?.status ?? "missing"}`
+        : "";
+    failures.push(
+      `external distribution ${module.name} not confirmed (${detail}${setupTagDetail})`,
+    );
   }
 
   const success = failures.length === 0;

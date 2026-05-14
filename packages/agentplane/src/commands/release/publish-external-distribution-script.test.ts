@@ -326,7 +326,7 @@ describe("publish-external-distribution script", () => {
     expect(payload.metadata.ok).toBe(true);
     expect(payload.metadata.updated).toContain("topics");
     expect(topicsPayload.names).toEqual(["agentplane", "scoop", "windows", "cli"]);
-  });
+  }, 180_000);
 
   it("creates the setup-agentplane version tag after publishing the action repository", async () => {
     const root = await makeTempRoot();
@@ -426,5 +426,93 @@ describe("publish-external-distribution script", () => {
       tag: "v0.4.2",
     });
     expect(payload.setupTag.sha).toMatch(/^[0-9a-f]{40}$/u);
+  }, 180_000);
+
+  it("verifies setup-agentplane tag proof when action files are unchanged", async () => {
+    const root = await makeTempRoot();
+    const binDir = path.join(root, "bin");
+    await mkdir(path.join(root, "source"), { recursive: true });
+    await mkdir(binDir, { recursive: true });
+    await writeFile(path.join(root, "source", "action.yml"), "name: setup-agentplane\n");
+    await writeFile(path.join(root, "source", "README.md"), "# setup-agentplane\n");
+    await writeFile(
+      path.join(binDir, "gh"),
+      [
+        "#!/usr/bin/env node",
+        "const fs = require('node:fs');",
+        "const path = require('node:path');",
+        "const args = process.argv.slice(2);",
+        "if (args[0] === 'repo' && args[1] === 'clone') {",
+        "  fs.mkdirSync(args[3], { recursive: true });",
+        "  fs.writeFileSync(path.join(args[3], 'action.yml'), 'name: setup-agentplane' + String.fromCharCode(10));",
+        "  fs.writeFileSync(path.join(args[3], 'README.md'), '# setup-agentplane' + String.fromCharCode(10));",
+        "  process.exit(0);",
+        "}",
+        "if (args[0] === 'auth') process.exit(0);",
+        "if (args[0] === 'api') process.exit(0);",
+        "console.error('unexpected gh ' + args.join(' '));",
+        "process.exit(2);",
+      ].join("\n"),
+    );
+    await writeFile(
+      path.join(binDir, "git"),
+      [
+        "#!/usr/bin/env node",
+        "const args = process.argv.slice(2);",
+        "if (args[0] === 'status') process.exit(0);",
+        "if (args[0] === 'rev-parse') { process.stdout.write('c'.repeat(40) + String.fromCharCode(10)); process.exit(0); }",
+        "if (args[0] === 'ls-remote') { process.stdout.write('c'.repeat(40) + String.fromCharCode(9) + 'refs/tags/v0.4.2' + String.fromCharCode(10)); process.exit(0); }",
+        "process.exit(0);",
+      ].join("\n"),
+    );
+    await chmod(path.join(binDir, "gh"), 0o755);
+    await chmod(path.join(binDir, "git"), 0o755);
+    const outPath = path.join(root, "result.json");
+
+    await execFileAsync(
+      "node",
+      [
+        SCRIPT_PATH,
+        "--module",
+        "setup-agentplane",
+        "--repo",
+        "basilisk-labs/setup-agentplane",
+        "--source",
+        path.join(root, "source"),
+        "--copy",
+        "action.yml:action.yml",
+        "--copy",
+        "README.md:README.md",
+        "--version",
+        "0.4.2",
+        "--tag",
+        "v0.4.2",
+        "--sha",
+        "abc123",
+        "--token-env",
+        "AGENTPLANE_TEST_TOKEN",
+        "--out",
+        outPath,
+      ],
+      {
+        cwd: process.cwd(),
+        env: {
+          ...process.env,
+          PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`,
+          AGENTPLANE_TEST_TOKEN: "token",
+        },
+      },
+    );
+
+    const payload = JSON.parse(await readFile(outPath, "utf8")) as {
+      status: string;
+      setupTag: { status: string; tag: string; sha: string };
+    };
+    expect(payload.status).toBe("unchanged");
+    expect(payload.setupTag).toMatchObject({
+      status: "published",
+      tag: "v0.4.2",
+      sha: "c".repeat(40),
+    });
   }, 180_000);
 });

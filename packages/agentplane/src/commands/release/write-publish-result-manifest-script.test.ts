@@ -450,4 +450,74 @@ describe("manifest script publish-result command", () => {
       verification: { ok: true },
     });
   });
+
+  it("requires setup-agentplane tag proof when external files are unchanged", async () => {
+    const root = await makeRoot();
+    const setupResult = path.join(
+      root,
+      ".agentplane",
+      ".release",
+      "publish",
+      "setup-agentplane.json",
+    );
+    await mkdir(path.dirname(setupResult), { recursive: true });
+    await writeFile(
+      setupResult,
+      `${JSON.stringify({
+        schemaVersion: 1,
+        module: "setup-agentplane",
+        repository: "basilisk-labs/setup-agentplane",
+        status: "unchanged",
+        verification: {
+          ok: true,
+          branch: "main",
+          sha: "a".repeat(40),
+        },
+      })}\n`,
+      "utf8",
+    );
+
+    const result = await runScript(root, [
+      "--json",
+      "--sha",
+      "abc123",
+      "--version",
+      "0.4.2",
+      "--tag",
+      "v0.4.2",
+      "--job-status",
+      "success",
+      "--core-prepublished",
+      "true",
+      "--recipes-prepublished",
+      "true",
+      "--cli-prepublished",
+      "true",
+      "--core-outcome",
+      "skipped",
+      "--recipes-outcome",
+      "skipped",
+      "--cli-outcome",
+      "skipped",
+      "--smoke-outcome",
+      "success",
+      "--tag-exists",
+      "true",
+      "--tag-outcome",
+      "skipped",
+      "--release-outcome",
+      "success",
+      "--external-result",
+      setupResult,
+    ]);
+
+    const payload = JSON.parse(String(result.stdout ?? "")) as {
+      success: boolean;
+      failures: string[];
+    };
+    expect(payload.success).toBe(false);
+    expect(payload.failures).toContain(
+      "external distribution setup-agentplane not confirmed (status=unchanged; setupTag=missing)",
+    );
+  });
 });

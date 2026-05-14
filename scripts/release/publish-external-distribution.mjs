@@ -407,11 +407,40 @@ async function publishExternal(args) {
     });
     if (!statusStdout.trim()) {
       const metadata = await syncRepositoryMetadata(cloneDir);
+      const verification = await verifyDefaultBranchPublished(cloneDir);
+      const setupTag = verification.ok ? await ensureSetupAgentplaneTag(cloneDir) : null;
+      if (!verification.ok) {
+        return {
+          ...baseEvidence,
+          status: "merge_unverified",
+          branch,
+          metadata,
+          mergeAttempts: [],
+          verification,
+          setupTag,
+          nextAction: `External distribution files did not match ${args.version} on main.`,
+        };
+      }
+      if (setupTag && setupTag.status !== "published") {
+        return {
+          ...baseEvidence,
+          status: "tag_unverified",
+          branch,
+          metadata,
+          mergeAttempts: [],
+          verification,
+          setupTag,
+          nextAction: `Fix setup-agentplane tag ${args.tag}; this channel is not published until the tag points at main.`,
+        };
+      }
       return {
         ...baseEvidence,
         status: "unchanged",
         branch,
         metadata,
+        mergeAttempts: [],
+        verification,
+        setupTag,
         nextAction: "No external distribution repository changes were needed.",
       };
     }
