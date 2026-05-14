@@ -24,21 +24,22 @@ Created: 2026-05-13T20:59:57.460Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T05:57:30.281Z
+- Updated: 2026-05-14T06:51:05.175Z
 - Branch: task/202605132058-36REEV/split-pr-meta
-- Head: 8eb04297f91d
+- Head: ab343f9a369d
 
 ```text
  .agentplane/policy/incidents.md                    |   1 +
  .../blueprint/resolved-snapshot.json               | 528 ++++++++++++++++++
- packages/agentplane/src/commands/shared/pr-meta.ts | 614 +--------------------
+ packages/agentplane/src/commands/shared/pr-meta.ts | 606 +--------------------
  .../src/commands/shared/pr-meta/builders.ts        | 229 ++++++++
  .../src/commands/shared/pr-meta/helpers.ts         |  86 +++
  .../src/commands/shared/pr-meta/lifecycle.ts       |  60 ++
  .../src/commands/shared/pr-meta/parser.ts          | 132 +++++
- .../src/commands/shared/pr-meta/types.ts           |  34 ++
+ .../src/commands/shared/pr-meta/types.ts           |  23 +
  .../src/commands/shared/pr-meta/verify-log.ts      |  71 +++
- 9 files changed, 1170 insertions(+), 585 deletions(-)
+ scripts/baselines/knip-baseline.json               |  83 ++-
+ 10 files changed, 1185 insertions(+), 634 deletions(-)
 ```
 
 </details>

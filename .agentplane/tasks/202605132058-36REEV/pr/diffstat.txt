@@ -1,10 +1,11 @@
  .agentplane/policy/incidents.md                    |   1 +
  .../blueprint/resolved-snapshot.json               | 528 ++++++++++++++++++
- packages/agentplane/src/commands/shared/pr-meta.ts | 614 +--------------------
+ packages/agentplane/src/commands/shared/pr-meta.ts | 606 +--------------------
  .../src/commands/shared/pr-meta/builders.ts        | 229 ++++++++
  .../src/commands/shared/pr-meta/helpers.ts         |  86 +++
  .../src/commands/shared/pr-meta/lifecycle.ts       |  60 ++
  .../src/commands/shared/pr-meta/parser.ts          | 132 +++++
- .../src/commands/shared/pr-meta/types.ts           |  34 ++
+ .../src/commands/shared/pr-meta/types.ts           |  23 +
  .../src/commands/shared/pr-meta/verify-log.ts      |  71 +++
- 9 files changed, 1170 insertions(+), 585 deletions(-)
+ scripts/baselines/knip-baseline.json               |  83 ++-
+ 10 files changed, 1185 insertions(+), 634 deletions(-)
