@@ -207,6 +207,61 @@ describe("pre-push task binding audit", () => {
     expect(String(result.failure?.stderr ?? "")).toContain("src/app.ts");
   });
 
+  it("accepts managed context init bootstrap commits", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    await writeFastHookPackage(root);
+    await commitAll(root, "chore: base");
+    const baseSha = head(root);
+
+    await mkdir(path.join(root, ".agentplane", "context", "derived", "facts"), {
+      recursive: true,
+    });
+    await mkdir(path.join(root, ".agentplane", "context", "policies"), { recursive: true });
+    await mkdir(path.join(root, "context", "wiki"), { recursive: true });
+    await writeFile(path.join(root, ".gitignore"), ".agentplane/cache.sqlite\n", "utf8");
+    await writeFile(
+      path.join(root, ".agentplane", "context", "agentplane.context.yaml"),
+      "version: 1\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, ".agentplane", "context", "derived", "facts", "facts.jsonl"),
+      "{}\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, ".agentplane", "context", "policies", "sync.rules.yaml"),
+      "version: 1\n",
+      "utf8",
+    );
+    await writeFile(path.join(root, "context", "wiki", "index.md"), "# Wiki\n", "utf8");
+    await commitAll(root, "✅ CTX1NT task: initialize AgentPlane context");
+    const result = runPrePush(root, baseSha, head(root));
+
+    expect(result.failure).toBeNull();
+    expect(result.stdout).toContain("Running pre-push checks in standard mode.");
+  });
+
+  it("does not let context-bootstrap subjects bypass task binding for non-context paths", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    await writeFastHookPackage(root);
+    await commitAll(root, "chore: base");
+    const baseSha = head(root);
+
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "export const value = 1;\n", "utf8");
+    await commitAll(root, "✅ CTX1NT task: initialize AgentPlane context");
+    const result = runPrePush(root, baseSha, head(root));
+
+    expect(result.failure).not.toBeNull();
+    expect(String(result.failure?.stderr ?? "")).toContain(
+      "pre-push blocked: mutating commits require a valid task id",
+    );
+    expect(String(result.failure?.stderr ?? "")).toContain("src/app.ts");
+  });
+
   it("includes merge commits in mutating commit audits", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);

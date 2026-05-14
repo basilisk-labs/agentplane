@@ -282,6 +282,30 @@ function hasManagedInstallEvidence(body: string, mutatingPaths: readonly string[
   );
 }
 
+function isManagedContextBootstrapPath(filePath: string): boolean {
+  return (
+    filePath === ".gitignore" ||
+    gitPathIsUnder(filePath, ".agentplane/context") ||
+    gitPathIsUnder(filePath, "context")
+  );
+}
+
+function hasManagedContextBootstrapEvidence(
+  body: string,
+  mutatingPaths: readonly string[],
+): boolean {
+  const subject =
+    body
+      .split("\n")
+      .find((line) => line.trim())
+      ?.trim() ?? "";
+  if (subject !== "✅ CTX1NT task: initialize AgentPlane context") return false;
+  return (
+    mutatingPaths.length > 0 &&
+    mutatingPaths.every((filePath) => isManagedContextBootstrapPath(filePath))
+  );
+}
+
 function readCommitList(gitRoot: string, range: { from: string; to: string } | null): string[] {
   if (!range) return [];
   return readGitText(gitRoot, ["log", "--format=%H", `${range.from}..${range.to}`])
@@ -321,6 +345,7 @@ function enforceTaskBoundOutgoingCommits(
     if (taskIdFromSubject(gitRoot, subject)) continue;
     if (hasManagedUpgradeEvidence(body)) continue;
     if (hasManagedInstallEvidence(body, mutating)) continue;
+    if (hasManagedContextBootstrapEvidence(body, mutating)) continue;
     if (hasEmergencyBackfillEvidence(body)) continue;
 
     failures.push(
