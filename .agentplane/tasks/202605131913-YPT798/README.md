@@ -1,10 +1,11 @@
 ---
 id: "202605131913-YPT798"
 title: "Serialize framework dev build lane"
-status: "DOING"
+result_summary: "Merged via PR #3680."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 1
+revision: 2
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Verified final branch after formatter fix and push. Passed full pre-push gate: local CI fast selector full-fast, 299 Vitest files / 1766 passed / 2 skipped, plus critical CLI E2E 5 files / 14 passed. Branch pushed to origin/task/202605131913-YPT798/serialize-build-lane."
   attempts: 0
-commit: null
+commit:
+  hash: "b2bbcbf00450eff2c29515154f1da52114384e5c"
+  message: "Merge pull request #3680 from basilisk-labs/task/202605131913-YPT798/serialize-build-lane"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing a scoped framework build-lane serialization fix in the task worktree, focusing on bootstrap/local CI writers that can remove shared dist during parallel CLI use."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3680 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified final branch after formatter fix and push. Passed full pre-push gate: local CI fast selector full-fast, 299 Vitest files / 1766 passed / 2 skipped, plus critical CLI E2E 5 files / 14 passed. Branch pushed to origin/task/202605131913-YPT798/serialize-build-lane."
+  -
+    type: "status"
+    at: "2026-05-14T06:51:18.620Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3680 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-13T21:15:35.708Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T06:51:18.627Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent concurrent framework bootstrap/build/pre-push paths from deleting shared dist while another AgentPlane CLI process needs repo-local runtime."
 sections:
   Summary: |-
