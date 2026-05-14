@@ -292,11 +292,9 @@ describe("LocalBackend", () => {
     expect(gitignore).toContain(".agentplane/cache.sqlite-wal");
     expect(gitignore).toContain(".agentplane/cache.sqlite-shm");
 
-    const { stdout } = await execFileAsync(
-      "git",
-      ["status", "--short", "--untracked-files=all"],
-      { cwd: tempDir },
-    );
+    const { stdout } = await execFileAsync("git", ["status", "--short", "--untracked-files=all"], {
+      cwd: tempDir,
+    });
     expect(stdout).not.toContain(".agentplane/cache.sqlite");
   });
 

@@ -2,10 +2,7 @@ import path from "node:path";
 import { readFile } from "node:fs/promises";
 
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
-import {
-  AGENT_PROMPT_GITIGNORE_LINES,
-  RUNTIME_GITIGNORE_LINES,
-} from "./runtime-artifacts.js";
+import { AGENT_PROMPT_GITIGNORE_LINES, RUNTIME_GITIGNORE_LINES } from "./runtime-artifacts.js";
 
 async function readTextIfExists(filePath: string): Promise<string | null> {
   try {
