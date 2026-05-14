@@ -207,9 +207,7 @@ describeWhenNotHook(
         "utf8",
       );
 
-      await expect(validateReleaseNotes(notesPath, 2)).rejects.toThrow(
-        /at least 2 bullet points/u,
-      );
+      await expect(validateReleaseNotes(notesPath, 2)).rejects.toThrow(/at least 2 bullet points/u);
     });
 
     it("rejects release notes with duplicate section headings", async () => {
