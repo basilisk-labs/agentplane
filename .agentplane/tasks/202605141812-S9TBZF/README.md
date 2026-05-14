@@ -1,10 +1,11 @@
 ---
 id: "202605141812-S9TBZF"
 title: "Reframe website as GitHub star gateway"
-status: "DOING"
+result_summary: "Merged via PR #3749."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented star-focused homepage, minimal editorial artifacts section, liquid-glass navbar only, real GitHub Button embeds with fallback links, and Node 24 docs alignment. Checks passed: policy routing, git diff --check, website typecheck, docs:site:build."
   attempts: 0
-commit: null
+commit:
+  hash: "ceca55f30448d8371bcaf95c7db8c7af15419146"
+  message: "Merge pull request #3749 from basilisk-labs/task/202605141812-S9TBZF/star-gateway-homepage"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved website star-gateway scope in the dedicated branch_pr worktree, covering homepage funnel, navbar, analytics events, and Node 24 requirement consistency."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3749 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented star-focused homepage, minimal editorial artifacts section, liquid-glass navbar only, real GitHub Button embeds with fallback links, and Node 24 docs alignment. Checks passed: policy routing, git diff --check, website typecheck, docs:site:build."
+  -
+    type: "status"
+    at: "2026-05-14T19:00:55.685Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3749 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T18:51:11.327Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T19:00:55.691Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update AgentPlane website homepage, navbar, tracking, and Node requirement copy around the GitHub star funnel and the Basilisk Labs DESIGN.md instrument style while preserving liquid-glass only for the nav shell."
 sections:
   Summary: |-
