@@ -752,10 +752,7 @@ describe("CloudBackend", () => {
     await backend.sync({ direction: "pull", conflict: "diff", quiet: true, confirm: true });
 
     await expect(
-      readFile(
-        path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"),
-        "utf8",
-      ),
+      readFile(path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"), "utf8"),
     ).rejects.toMatchObject({ code: "ENOENT" });
   });
 
