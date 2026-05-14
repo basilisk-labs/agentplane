@@ -341,12 +341,26 @@ const RELEASE_CI_BASE_FILES = discoverTests(["packages"], (filePath) => {
   ].some((pattern) => pattern.test(filePath));
 });
 
+const CRITICAL_CLI_SUITE = {
+  chunkSize: 1,
+  config: "vitest.config.ts",
+  files: discoverTestFiles(
+    ["packages/agentplane/src/cli"],
+    [/^packages\/agentplane\/src\/cli\/run-cli\.critical\..+\.test\.ts$/],
+  ),
+  maxWorkers: "4",
+  pool: "forks",
+  testTimeout: "120000",
+  hookTimeout: "120000",
+};
+
 export const VITEST_SUITES = {
   "backend-critical": {
     files: BACKEND_CRITICAL_FILES,
     maxWorkers: "4",
     pool: "forks",
   },
+  "critical-cli": CRITICAL_CLI_SUITE,
   "platform-critical": {
     files: PLATFORM_CRITICAL_FILES,
     maxWorkers: "4",

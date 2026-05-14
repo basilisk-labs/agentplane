@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-13T21:56:58Z",
+  "base": "main",
+  "branch": "task/202605131828-HBJ5P8/flexible-test-routing",
+  "created_at": "2026-05-13T18:29:54.674Z",
+  "head_sha": "f47594a862544398e51ae8ad13810e31f6f095ff",
+  "last_verified_at": "2026-05-13T19:19:14.913Z",
+  "last_verified_sha": "fa819a8ee3b434869564bec0711078325bbd9f78",
+  "merge_commit": "38e5e82573fca82f0cfe866d1dcf87d7cf200e5e",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-13T21:56:58Z",
+  "pr_number": 3665,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3665",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605131828-HBJ5P8",
+  "updated_at": "2026-05-13T21:56:58Z",
+  "verify": {
+    "status": "pass"
+  }
+}

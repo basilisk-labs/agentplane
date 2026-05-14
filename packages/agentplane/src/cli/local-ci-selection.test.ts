@@ -20,7 +20,9 @@ type FastCiPlan =
         | "cli-runtime"
         | "release"
         | "upgrade"
-        | "guard";
+        | "guard"
+        | "mixed";
+      buckets?: string[];
       reason: string;
       files: string[];
       lintTargets: string[];
@@ -390,6 +392,34 @@ describe("local CI fast selection", () => {
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.refresh.test.ts",
     );
+  });
+
+  it("combines multiple targeted buckets instead of falling back to full-fast", () => {
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/commands/task/shared.ts",
+      "packages/agentplane/src/commands/pr/check.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("mixed");
+    expect(plan.buckets).toEqual(["pr", "task"]);
+    expect(plan.reason).toBe("mixed_targeted_paths");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/commands/task/finish.validation.unit.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/commands/pr/input-validation.test.ts",
+    );
+  });
+
+  it("uses forks for mixed targeted plans when any selected bucket requires fork isolation", () => {
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/backends/task-backend/redmine-backend.ts",
+      "packages/agentplane/src/commands/task/shared.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("mixed");
+    expect(plan.buckets).toEqual(["backend", "task"]);
+    expect(plan.vitestPool).toBe("forks");
   });
 
   it("falls back to full fast for broader infra-sensitive changes", () => {

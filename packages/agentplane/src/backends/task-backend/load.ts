@@ -82,11 +82,13 @@ async function loadCloudTaskBackend(
   const cacheDirRaw = resolveMaybeRelative(ctx.resolved.gitRoot, ctx.settings.cache_dir);
   const cacheDir = cacheDirRaw ?? path.join(ctx.resolved.gitRoot, ctx.config.paths.workflow_dir);
   const cache = new LocalBackend({ dir: cacheDir });
+  const autoSyncNetworkAllowed = ctx.config.agents?.approvals?.require_network !== true;
   return {
     backend: await CloudBackend.create({
       root: ctx.resolved.gitRoot,
       settings: ctx.settings as CloudBackendSettings,
       cache,
+      autoSyncNetworkAllowed,
     }),
     backendId: "cloud",
   };

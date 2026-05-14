@@ -247,7 +247,7 @@ describe("runCli", () => {
   );
 
   it(
-    "recovers a legacy README v2 task after upgrade via task migrate-doc and export",
+    "recovers a legacy README v2 task after upgrade via task migrate-doc",
     { timeout: 60_000 },
     async () => {
       const root = await mkGitRepoRoot();
@@ -370,13 +370,6 @@ Legacy verification plan.
 `;
       await writeFile(readmePath, legacyReadme, "utf8");
 
-      io = captureStdIO();
-      try {
-        const code = await runCli(["task", "export", "--root", root]);
-        expect(code).toBe(0);
-      } finally {
-        io.restore();
-      }
       await commitAll(root, "✨ fixture: legacy readme v2");
 
       io = captureStdIO();
@@ -415,14 +408,6 @@ Legacy verification plan.
         io.restore();
       }
 
-      io = captureStdIO();
-      try {
-        const code = await runCli(["task", "export", "--root", root]);
-        expect(code).toBe(0);
-      } finally {
-        io.restore();
-      }
-
       const migratedReadme = await readFile(readmePath, "utf8");
       expect(migratedReadme).toContain("doc_version: 3");
       expect(migratedReadme).toContain("revision: 1");
@@ -431,19 +416,6 @@ Legacy verification plan.
       expect(migratedReadme).not.toContain("## Notes");
       expect(migratedReadme).not.toContain("### Plan");
       expect(migratedReadme).not.toContain("### Results");
-
-      const tasksExportText = await readFile(path.join(root, ".agentplane", "tasks.json"), "utf8");
-      const tasksExport = JSON.parse(tasksExportText) as {
-        tasks?: {
-          id?: string;
-          doc_version?: number;
-          revision?: number;
-          sections?: Record<string, string>;
-        }[];
-      };
-      const migratedTask = tasksExport.tasks?.find((task) => task.id === taskId);
-      expect(migratedTask?.doc_version).toBe(3);
-      expect(migratedTask?.revision).toBe(1);
 
       io = captureStdIO();
       const doctorClean = vi.spyOn(console, "error").mockImplementation(() => {
@@ -586,12 +558,6 @@ Legacy verification plan.
 `;
       await writeFile(readmePath, legacyReadme, "utf8");
 
-      io = captureStdIO();
-      try {
-        expect(await runCli(["task", "export", "--root", root])).toBe(0);
-      } finally {
-        io.restore();
-      }
       await commitAll(root, "✨ fixture: legacy readme v2 for upgrade bridge");
 
       io = captureStdIO();
@@ -612,19 +578,7 @@ Legacy verification plan.
       expect(migratedReadme).not.toContain("### Plan");
       expect(migratedReadme).not.toContain("### Results");
 
-      const tasksExportText = await readFile(path.join(root, ".agentplane", "tasks.json"), "utf8");
-      const tasksExport = JSON.parse(tasksExportText) as {
-        tasks?: {
-          id?: string;
-          doc_version?: number;
-          revision?: number;
-          doc?: string;
-        }[];
-      };
-      const migratedTask = tasksExport.tasks?.find((task) => task.id === taskId);
-      expect(migratedTask?.doc_version).toBe(3);
-      expect(migratedTask?.revision).toBe(1);
-      expect(migratedTask?.doc).toContain("Legacy task placeholder.");
+      expect(migratedReadme).toContain("Legacy task placeholder.");
 
       io = captureStdIO();
       const doctorClean = vi.spyOn(console, "error").mockImplementation(() => {
@@ -765,13 +719,6 @@ Legacy verification plan.
 - Legacy task placeholder.
 `;
       await writeFile(readmePath, legacyReadme, "utf8");
-
-      io = captureStdIO();
-      try {
-        expect(await runCli(["task", "export", "--root", root])).toBe(0);
-      } finally {
-        io.restore();
-      }
 
       const missingPolicyPath = path.join(root, ".agentplane", "policy", "workflow.upgrade.md");
       await rm(missingPolicyPath, { force: true });

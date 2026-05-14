@@ -1,0 +1,10 @@
+ .../blueprint/resolved-snapshot.json               | 529 +++++++++++++++++++++
+ .../src/backends/task-backend.cloud.test.ts        | 297 +++++-------
+ .../backends/task-backend/cloud-backend-push.ts    | 122 +++++
+ .../src/backends/task-backend/cloud-backend.ts     | 202 ++++----
+ .../agentplane/src/backends/task-backend/load.ts   |   2 +
+ .../src/commands/blueprints/catalog-cache.ts       |   4 +-
+ packages/agentplane/src/shared/env.ts              |   3 +-
+ scripts/baselines/cli-cold-path-smoke.json         |   2 +-
+ scripts/oversized-test-baseline.json               |   4 +-
+ 9 files changed, 862 insertions(+), 303 deletions(-)

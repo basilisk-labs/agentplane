@@ -1,0 +1,225 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605140709-5H7BAA",
+  "created_at": "2026-05-14T08:59:00.343Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.4.2"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane",
+    "base_ref": "main",
+    "base_commit": "ec628cd9a2aa899cca01611be9519181845ba555",
+    "work_ref": "main",
+    "work_commit": "ec628cd9a2aa899cca01611be9519181845ba555"
+  },
+  "task": {
+    "task_id": "202605140709-5H7BAA",
+    "title": "Finalize v0.6 readiness blockers and pending task integration",
+    "intent": "Fix context release blockers found in v0.6 readiness audit, complete the three open evaluator/docgen TODO tasks, reconcile useful unmerged task branch work, and prove empty-directory context assimilation plus release/package gates before merging to main.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.4.2"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605140709-5H7BAA/README.md",
+      "sha256": "sha256:25d1db436ce0907eba25298b1faf455978d1bc459449bb7f53add1fa835301c4"
+    },
+    "approved_at": "2026-05-14T07:09:35.951Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Merged via PR #3694.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605140709-5H7BAA_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T07:09:35.951Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605140709-5H7BAA/README.md",
+      "sha256": "sha256:25d1db436ce0907eba25298b1faf455978d1bc459449bb7f53add1fa835301c4"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605140709-5H7BAA/README.md",
+      "sha256": "sha256:25d1db436ce0907eba25298b1faf455978d1bc459449bb7f53add1fa835301c4"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605140709-5H7BAA/README.md",
+      "sha256": "sha256:25d1db436ce0907eba25298b1faf455978d1bc459449bb7f53add1fa835301c4"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605140709-5H7BAA/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:382f8829391d8f6c7b1f17aa717b71038209bb5c26d2a0ad34058c38606e9f19"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit ec628cd9a2aa899cca01611be9519181845ba555 if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:a95ff9a452cfc67c86e6368fbc1fd8376f5eee23b0c7b3f451a2a5b8c9117834",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "code.branch_pr",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "verify_record",
+        "hosted_checks",
+        "publish_or_integrate",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "code_pr.paths",
+          "kind": "changed_paths",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "code_pr.fast_checks",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.pr",
+          "kind": "external_link",
+          "produced_by": "pr_artifact",
+          "required": true
+        },
+        {
+          "id": "code_pr.verify",
+          "kind": "check_result",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "code_pr.hosted",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "code_pr.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605140709-5H7BAA/blueprint/resolved-snapshot.json",
+        "digest": "7dcffd1c66af412e95beda356942857931eab63dc76fa92df4cf46d603fd143a",
+        "current_digest": "7dcffd1c66af412e95beda356942857931eab63dc76fa92df4cf46d603fd143a",
+        "route_changed": false,
+        "artifact_sha256": "sha256:382f8829391d8f6c7b1f17aa717b71038209bb5c26d2a0ad34058c38606e9f19",
+        "safe_command": "agentplane blueprint snapshot 202605140709-5H7BAA"
+      }
+    }
+  }
+}

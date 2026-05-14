@@ -1,5 +1,6 @@
 import path from "node:path";
 import { readFile, writeFile } from "node:fs/promises";
+import { setTimeout as sleepTimeout } from "node:timers/promises";
 
 import { backendNotSupportedMessage, createCliEmitter } from "../cli/output.js";
 import { mapBackendError } from "../cli/error-map.js";
@@ -14,6 +15,9 @@ export type BackendSyncParsed = {
   backendId: string;
   direction: "push" | "pull";
   conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
+  watch: boolean;
+  intervalMs: number;
+  maxIterations: number;
   yes: boolean;
   quiet: boolean;
 };
@@ -115,16 +119,80 @@ export async function cmdBackendSyncParsed(opts: {
       networkReason: (backendId) => `backend sync may access the network (backend: ${backendId})`,
       flags: opts.flags,
     });
-    await backend.sync!({
-      direction: opts.flags.direction,
-      conflict: opts.flags.conflict,
-      quiet: opts.flags.quiet,
-      confirm: opts.flags.yes,
-    });
+    if (opts.flags.watch) {
+      if (opts.flags.direction !== "pull") {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: "backend sync watch mode requires --direction pull",
+          context: { command: "backend sync", reason_code: "watch_requires_pull" },
+        });
+      }
+      const intervalMs = Number.isFinite(opts.flags.intervalMs) ? opts.flags.intervalMs : 30_000;
+      if (intervalMs < 250) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: "backend sync --interval-ms must be >= 250",
+          context: { command: "backend sync", reason_code: "watch_interval_too_small" },
+        });
+      }
+      const maxIterations = Number.isFinite(opts.flags.maxIterations)
+        ? opts.flags.maxIterations
+        : 0;
+      await runBackendSyncWatch({
+        backend,
+        conflict: opts.flags.conflict,
+        quiet: opts.flags.quiet,
+        confirm: opts.flags.yes,
+        intervalMs,
+        maxIterations,
+      });
+    } else {
+      await backend.sync!({
+        direction: opts.flags.direction,
+        conflict: opts.flags.conflict,
+        quiet: opts.flags.quiet,
+        confirm: opts.flags.yes,
+      });
+    }
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "backend sync", root: opts.rootOverride ?? null });
+  }
+}
+
+async function runBackendSyncWatch(opts: {
+  backend: TaskBackend;
+  conflict: BackendSyncParsed["conflict"];
+  quiet: boolean;
+  confirm: boolean;
+  intervalMs: number;
+  maxIterations: number;
+}): Promise<void> {
+  let aborted = false;
+  const onSigInt = () => {
+    aborted = true;
+  };
+  process.once("SIGINT", onSigInt);
+  try {
+    let iteration = 0;
+    while (!aborted) {
+      iteration += 1;
+      await opts.backend.sync!({
+        direction: "pull",
+        conflict: opts.conflict,
+        quiet: opts.quiet,
+        confirm: opts.confirm,
+      });
+      if (opts.maxIterations > 0 && iteration >= opts.maxIterations) {
+        break;
+      }
+      await sleepTimeout(opts.intervalMs);
+    }
+  } finally {
+    process.removeListener("SIGINT", onSigInt);
   }
 }
 

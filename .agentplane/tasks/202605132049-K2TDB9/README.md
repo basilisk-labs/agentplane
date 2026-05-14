@@ -1,10 +1,11 @@
 ---
 id: "202605132049-K2TDB9"
 title: "Make evaluator builtin toggle actually disable builtin entries"
-status: "DOING"
+result_summary: "Merged to main in PR #3694; v0.6 readiness and assimilation checks passed."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 3
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -19,15 +20,20 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-13T21:27:44.265Z"
+  updated_at: "2026-05-14T07:59:39.179Z"
   updated_by: "CODER"
-  note: "Verified evaluator --builtin false path omits builtin entries in the existing cli-core evaluator workflow-profile test suite."
+  note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
   attempts: 0
-commit: null
+commit:
+  hash: "ec628cd9a2aa899cca01611be9519181845ba555"
+  message: "Merge pull request #3694 from basilisk-labs/task/202605140709-5H7BAA/v06-readiness-blockers"
 comments:
   -
     author: "CODER"
     body: "Start: Implement evaluator catalog builtin toggle behavior inside the approved batch worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: merged via PR #3694 after full v0.6 readiness checks and GitHub CI passed."
 events:
   -
     type: "status"
@@ -42,9 +48,22 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified evaluator --builtin false path omits builtin entries in the existing cli-core evaluator workflow-profile test suite."
+  -
+    type: "verify"
+    at: "2026-05-14T07:59:39.179Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed."
+  -
+    type: "status"
+    at: "2026-05-14T09:05:09.308Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: merged via PR #3694 after full v0.6 readiness checks and GitHub CI passed."
 doc_version: 3
-doc_updated_at: "2026-05-13T21:27:44.275Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T09:05:09.310Z"
+doc_updated_by: "INTEGRATOR"
 description: |-
   GitHub issue: https://github.com/basilisk-labs/agentplane/issues/3657 (#3657)
   
@@ -95,6 +114,25 @@ sections:
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605132103-J5YVSS-remove-tasks-json/.agentplane/tasks/202605132049-K2TDB9/blueprint/resolved-snapshot.json
+    - old_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
+    - current_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605132049-K2TDB9
+    
+    ### 2026-05-14T07:59:39.179Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T21:27:44.275Z, excerpt_hash=sha256:ed38f84d7c25fc8aed01a1276643df1be7a3cdf575adefd0eedb331226d67254
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605132049-K2TDB9/blueprint/resolved-snapshot.json
     - old_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
     - current_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
     - route_changed: no
@@ -156,6 +194,25 @@ Details:
 BlueprintSnapshotRef:
 - state: current
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605132103-J5YVSS-remove-tasks-json/.agentplane/tasks/202605132049-K2TDB9/blueprint/resolved-snapshot.json
+- old_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
+- current_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605132049-K2TDB9
+
+### 2026-05-14T07:59:39.179Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified in 202605140709-5H7BAA readiness sweep: focused tests, release/docs gates, package install smoke, and empty-folder context assimilation smoke passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-13T21:27:44.275Z, excerpt_hash=sha256:ed38f84d7c25fc8aed01a1276643df1be7a3cdf575adefd0eedb331226d67254
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605140709-5H7BAA-v06-readiness-blockers/.agentplane/tasks/202605132049-K2TDB9/blueprint/resolved-snapshot.json
 - old_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
 - current_digest: 416b07291da40ee9a0acc74d810eee1e26998617bd2c997d64f4ccee9b3491a4
 - route_changed: no

@@ -1,10 +1,12 @@
 import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
 
 import {
   parseChangedFilesEnv,
   selectFastCiPlan,
   shouldRunCliDocsCheck,
 } from "../lib/local-ci-selection.mjs";
+import { withFrameworkBuildLock } from "../lib/framework-build-lock.mjs";
 
 function sanitizeGitProcessEnv(env) {
   const nextEnv = { ...env };
@@ -80,6 +82,10 @@ function runVitestSuite(options, env = baseEnv) {
   runCommand("bunx", buildVitestRunArgs(options), env);
 }
 
+function existingLintTargets(targets) {
+  return targets.filter((target) => existsSync(target));
+}
+
 function createBaselineStepEntries({ includeBuild }) {
   return [
     ["Format (check)", () => runCommand("bun", ["run", "format:check"])],
@@ -100,9 +106,11 @@ function createBaselineStepEntries({ includeBuild }) {
           [
             "Build",
             () => {
-              runCommand("bun", ["run", "--filter=@agentplaneorg/core", "build"]);
-              runCommand("bun", ["run", "--filter=agentplane", "build"]);
-              runCommand("bun", ["run", "build"]);
+              withFrameworkBuildLock(process.cwd(), "local-ci-build", () => {
+                runCommand("bun", ["run", "--filter=@agentplaneorg/core", "build"]);
+                runCommand("bun", ["run", "--filter=agentplane", "build"]);
+                runCommand("bun", ["run", "build"]);
+              });
             },
           ],
         ]
@@ -133,7 +141,7 @@ const mode =
       ? inlineModeArg.slice("--mode=".length)
       : "full"
     : (process.argv[modeFlagIndex + 1] ?? "full");
-if (mode !== "fast" && mode !== "full") {
+if (mode !== "smoke" && mode !== "fast" && mode !== "full") {
   throw new Error(`Unsupported ci mode: ${mode}`);
 }
 
@@ -192,36 +200,69 @@ function runDocsOnlyFastPath() {
   runStepEntries(createBaselineStepEntries({ includeBuild: false }));
 }
 
+function runDocsOnlySmokePath() {
+  runStep("Format (check)", () => runCommand("bun", ["run", "format:check"]));
+}
+
 function runTargetedFastPath(plan) {
   runStepEntries(createBaselineStepEntries({ includeBuild: true }));
-  if (plan.bucket === "workflow") {
-    const scriptLintTargets = plan.lintTargets.filter(
-      (target) => !target.startsWith(".github/workflows/") && !target.endsWith(".yml"),
+  runTargetedPlanSteps(plan);
+}
+
+function runTargetedSmokePath(plan) {
+  runStep("Format (check)", () => runCommand("bun", ["run", "format:check"]));
+  runTargetedPlanSteps(plan);
+}
+
+function runTargetedPlanSteps(plan) {
+  const includesWorkflow = plan.bucket === "workflow" || plan.buckets?.includes("workflow");
+  if (includesWorkflow) {
+    const scriptLintTargets = existingLintTargets(
+      plan.lintTargets.filter(
+        (target) => !target.startsWith(".github/workflows/") && !target.endsWith(".yml"),
+      ),
     );
     if (scriptLintTargets.length > 0) {
       runStep(`Lint (targeted:${plan.bucket})`, () =>
-        runCommand("bun", ["run", "lint:core", "--", ...scriptLintTargets]),
+        runCommand("bunx", ["eslint", ...scriptLintTargets]),
       );
     }
     runStep("Workflow lint + command contract", () => runCommand("bun", ["run", "workflows:lint"]));
-    return;
+    if (plan.testFiles.length === 0) return;
+  } else {
+    const lintTargets = existingLintTargets(plan.lintTargets);
+    if (lintTargets.length > 0) {
+      runStep(`Lint (targeted:${plan.bucket})`, () =>
+        runCommand("bunx", ["eslint", ...lintTargets]),
+      );
+    }
   }
-  runStep(`Lint (targeted:${plan.bucket})`, () =>
-    runCommand("bun", ["run", "lint:core", "--", ...plan.lintTargets]),
-  );
   runStep(`Unit tests (targeted:${plan.bucket})`, () =>
     runVitestSuite({ testFiles: plan.testFiles, pool: plan.vitestPool }, testEnv),
   );
 }
 
+function runSmokeFallbackPath() {
+  runStep("Format (check)", () => runCommand("bun", ["run", "format:check"]));
+  runStep("Vitest projects (check)", () => runCommand("bun", ["run", "vitest:projects:check"]));
+  runStep("Lint (core)", () => run("bun", ["run", "lint:core"]));
+  runStep("Unit tests (precommit)", () => run("bun", ["run", "test:precommit"], testEnv));
+}
+
 process.stdout.write(`Local CI mode: ${mode}\n`);
-if (mode === "fast") {
+if (mode === "smoke" || mode === "fast") {
   process.stdout.write(
-    `Fast CI selector: ${fastPlan.kind}${fastPlan.bucket ? ` (${fastPlan.bucket})` : ""} [${fastPlan.reason}]\n`,
+    `Fast CI selector: ${fastPlan.kind}${fastPlan.bucket ? ` (${fastPlan.bucket}${fastPlan.buckets ? `:${fastPlan.buckets.join("+")}` : ""})` : ""} [${fastPlan.reason}]\n`,
   );
 }
 
-if (mode === "fast" && fastPlan.kind === "docs-only") {
+if (mode === "smoke" && fastPlan.kind === "docs-only") {
+  runDocsOnlySmokePath();
+} else if (mode === "smoke" && fastPlan.kind === "targeted") {
+  runTargetedSmokePath(fastPlan);
+} else if (mode === "smoke") {
+  runSmokeFallbackPath();
+} else if (mode === "fast" && fastPlan.kind === "docs-only") {
   runDocsOnlyFastPath();
 } else if (mode === "fast" && fastPlan.kind === "targeted") {
   runTargetedFastPath(fastPlan);

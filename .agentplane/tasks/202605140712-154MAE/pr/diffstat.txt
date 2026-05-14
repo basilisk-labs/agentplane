@@ -1,0 +1,3 @@
+ docs/user/backends/cloud.mdx                         |  5 +++++
+ .../src/backends/task-backend.cloud.test.ts          | 20 +++++++++++++++++++-
+ 2 files changed, 24 insertions(+), 1 deletion(-)

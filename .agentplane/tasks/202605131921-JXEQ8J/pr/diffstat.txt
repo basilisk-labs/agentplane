@@ -1,0 +1,11 @@
+ .../blueprint/resolved-snapshot.json               | 551 +++++++++++++++++++++
+ docs/user/backends/cloud.mdx                       |  21 +
+ docs/user/cli-reference.generated.mdx              |   3 +
+ .../src/backends/task-backend/cloud-backend.ts     |  13 +-
+ .../src/cli/run-cli.core.backend-sync.test.ts      |  49 ++
+ packages/agentplane/src/cli/spec/docs-render.ts    |   5 +-
+ packages/agentplane/src/commands/backend.ts        |  80 ++-
+ .../src/commands/backend/sync.command.ts           |  26 +
+ .../src/commands/task/shared/transition-command.ts |  56 ++-
+ .../task/shared/transition-command.unit.test.ts    | 100 ++++
+ 10 files changed, 886 insertions(+), 18 deletions(-)
