@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/header.png" alt="AgentPlane - Git-native infrastructure for traceable AI work" width="720"/>
+  <img src="docs/assets/header.svg" alt="AgentPlane latest release header" width="720"/>
 </p>
 
 # AgentPlane

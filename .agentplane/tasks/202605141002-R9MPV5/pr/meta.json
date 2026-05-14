@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605141002-R9MPV5/readme-header-image",
+  "created_at": "2026-05-14T10:03:20.964Z",
+  "head_sha": "089b6d418f7509b462e85ac58f023bc0cdb6c431",
+  "last_verified_at": "2026-05-14T10:08:37.992Z",
+  "last_verified_sha": "089b6d418f7509b462e85ac58f023bc0cdb6c431",
+  "schema_version": 1,
+  "task_id": "202605141002-R9MPV5",
+  "updated_at": "2026-05-14T10:03:20.964Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -117,6 +117,8 @@
     "docs:bootstrap:check": "node scripts/checks/check-agent-bootstrap-fresh.mjs",
     "docs:onboarding:check": "node scripts/checks/check-agent-onboarding-scenario.mjs",
     "docs:ia:check": "node scripts/checks/check-docs-ia.mjs",
+    "docs:readme-header:generate": "node scripts/generate/generate-readme-header.mjs",
+    "docs:readme-header:check": "node scripts/generate/generate-readme-header.mjs --check",
     "docs:site:generate": "node scripts/generate/generate-website-docs.mjs && node scripts/generate/generate-llms-full.mjs",
     "docs:site:typecheck": "bun run --cwd website typecheck",
     "docs:site:build": "bun run --cwd website build",
