@@ -1,0 +1,6 @@
+ .../blueprint/resolved-snapshot.json               | 526 +++++++++++++++++++++
+ README.md                                          |   2 +-
+ docs/assets/header.svg                             |  49 +-
+ package.json                                       |   2 +
+ scripts/generate/generate-readme-header.mjs        | 186 ++++++++
+ 5 files changed, 731 insertions(+), 34 deletions(-)

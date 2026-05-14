@@ -24,12 +24,17 @@ Created: 2026-05-14T10:03:20.964Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T10:03:20.964Z
+- Updated: 2026-05-14T10:09:30.599Z
 - Branch: task/202605141002-R9MPV5/readme-header-image
-- Head: 089b6d418f75
+- Head: 224991f8ca1f
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 526 +++++++++++++++++++++
+ README.md                                          |   2 +-
+ docs/assets/header.svg                             |  49 +-
+ package.json                                       |   2 +
+ scripts/generate/generate-readme-header.mjs        | 186 ++++++++
+ 5 files changed, 731 insertions(+), 34 deletions(-)
 ```
 
 </details>
