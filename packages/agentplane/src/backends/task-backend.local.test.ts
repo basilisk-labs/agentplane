@@ -1,5 +1,7 @@
+import { execFile } from "node:child_process";
 import { mkdir, readFile, rm, stat, utimes, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 import { renderTaskReadme } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
@@ -9,6 +11,8 @@ import {
   resolveTaskProjectionSqlitePath,
 } from "./task-backend/local-task-sqlite-cache.js";
 import { mkTempDir, silenceStdIO } from "@agentplane/testkit";
+
+const execFileAsync = promisify(execFile);
 
 type QuerySummaryView = Pick<
   TaskSummary,
@@ -255,6 +259,45 @@ describe("LocalBackend", () => {
     expect(resolveTaskProjectionSqlitePath(tasksDir)).toBe(
       path.join(tempDir, ".agentplane", "cache.sqlite"),
     );
+  });
+
+  it("repairs stale runtime gitignore entries before writing repository SQLite cache", async () => {
+    await execFileAsync("git", ["init", "-q"], { cwd: tempDir });
+    await execFileAsync("git", ["config", "user.email", "test@example.com"], { cwd: tempDir });
+    await execFileAsync("git", ["config", "user.name", "Test User"], { cwd: tempDir });
+    await writeFile(path.join(tempDir, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+    await writeFile(path.join(tempDir, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", ".gitignore", "seed.txt"], { cwd: tempDir });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: tempDir });
+
+    const tasksDir = path.join(tempDir, ".agentplane", "tasks");
+    const backend = new LocalBackend({ dir: tasksDir, updatedBy: "tester" });
+    await backend.writeTask({
+      id: "202601300015-ABCD",
+      title: "Old ignore cache",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: ["projection"],
+      verify: [],
+      doc: "## Summary\n\nSQLite body",
+    });
+
+    await backend.listProjectionTasks();
+
+    const gitignore = await readFile(path.join(tempDir, ".gitignore"), "utf8");
+    expect(gitignore).toContain(".agentplane/cache.sqlite");
+    expect(gitignore).toContain(".agentplane/cache.sqlite-wal");
+    expect(gitignore).toContain(".agentplane/cache.sqlite-shm");
+
+    const { stdout } = await execFileAsync(
+      "git",
+      ["status", "--short", "--untracked-files=all"],
+      { cwd: tempDir },
+    );
+    expect(stdout).not.toContain(".agentplane/cache.sqlite");
   });
 
   it("reparses projection entries after README invalidation", async () => {
