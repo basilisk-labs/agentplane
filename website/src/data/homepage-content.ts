@@ -27,6 +27,7 @@ export const homepageContent = {
       "Repo-local evidence",
       "Git-visible review trail",
       "Use any coding agent",
+      "Privacy-bounded feedback prompts",
       "Your repository stays the source of truth",
     ],
     terminal: {

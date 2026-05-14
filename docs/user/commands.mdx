@@ -72,6 +72,14 @@ agentplane init --setup-profile normal --workflow direct --backend local --execu
 agentplane init --dry-run --yes --output json
 ```
 
+Feedback issue prompts are enabled by default for internal AgentPlane errors. Disable them during
+init or later:
+
+```bash
+agentplane init --feedback-github-issues false --yes
+agentplane config set feedback.github_issues.enabled false
+```
+
 Workflow diagnostics and repair:
 
 ```bash

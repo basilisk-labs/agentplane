@@ -33,6 +33,18 @@ describe("config", () => {
     expect(() => validateConfig(defaultConfig())).not.toThrow();
   });
 
+  it("defaults GitHub issue feedback to enabled with explicit opt-out", () => {
+    const cfg = defaultConfig();
+    expect(cfg.feedback.github_issues).toMatchObject({
+      enabled: true,
+      repository: "basilisk-labs/agentplane",
+      prompt_on_internal_error: true,
+      include_insights_report: true,
+      dedupe: true,
+      labels: ["agentplane-feedback", "bug"],
+    });
+  });
+
   it("spec example config validates at runtime", async () => {
     const exampleUrl = new URL("../../../spec/examples/config.json", import.meta.url);
     const text = await readFile(fileURLToPath(exampleUrl), "utf8");
@@ -288,6 +300,8 @@ describe("config", () => {
     const text = await readFile(path.join(agentplaneDir, "WORKFLOW.md"), "utf8");
     expect(text).toContain("version: 2");
     expect(text).toContain("mode: branch_pr");
+    expect(text).toContain("github_issues:");
+    expect(text).toContain("enabled: true");
 
     const loaded = await loadConfig(agentplaneDir);
     expect(loaded.exists).toBe(true);

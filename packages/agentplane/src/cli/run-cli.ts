@@ -51,6 +51,11 @@ async function maybeResolveProject(opts: {
 
 export async function runCli(argv: string[]): Promise<number> {
   let jsonErrors = false;
+  let withFeedbackIssuePromptContext: (err: CliError) => Promise<CliError> = function passthrough(
+    err,
+  ) {
+    return Promise.resolve(err);
+  };
   try {
     const agentMode = resolveAgentModeArgv(argv);
     const parsedGlobals = parseGlobalArgs(agentMode.argv);
@@ -169,6 +174,29 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
       return await getCtx(commandForErrorContext);
+    };
+
+    withFeedbackIssuePromptContext = async (err: CliError): Promise<CliError> => {
+      if (
+        err.code !== "E_INTERNAL" ||
+        typeof err.context?.feedback_github_issues_enabled === "boolean"
+      ) {
+        return err;
+      }
+      try {
+        const loaded = await getLoadedConfig("error feedback");
+        return new CliError({
+          exitCode: err.exitCode,
+          code: err.code,
+          message: err.message,
+          context: {
+            ...err.context,
+            feedback_github_issues_enabled: loaded.config.feedback.github_issues.enabled,
+          },
+        });
+      } catch {
+        return err;
+      }
     };
 
     const buildRuntimeRegistry = async () => {
@@ -308,8 +336,9 @@ export async function runCli(argv: string[]): Promise<number> {
     });
   } catch (err) {
     if (err instanceof CliError) {
-      writeError(err, jsonErrors);
-      return err.exitCode;
+      const enriched = await withFeedbackIssuePromptContext(err);
+      writeError(enriched, jsonErrors);
+      return enriched.exitCode;
     }
 
     const message = err instanceof Error ? err.message : String(err);
@@ -318,7 +347,8 @@ export async function runCli(argv: string[]): Promise<number> {
       code: "E_INTERNAL",
       message,
     });
-    writeError(wrapped, jsonErrors);
-    return wrapped.exitCode;
+    const enriched = await withFeedbackIssuePromptContext(wrapped);
+    writeError(enriched, jsonErrors);
+    return enriched.exitCode;
   }
 }

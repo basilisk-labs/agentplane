@@ -245,7 +245,7 @@ context/graph/**/*.jsonl
 
 Requirements:
 
-- Node.js 20+
+- Node.js 24+
 - Git
 - Local terminal
 
@@ -291,6 +291,30 @@ agentplane init --dry-run --yes --output json
 Dry-run builds the same setup plan but does not create `.git`, `.agentplane`, gateway files,
 backups, hooks, or commits. Use it before re-initializing repositories that already contain
 AgentPlane-related files.
+
+## Feedback issue prompts
+
+New projects enable AgentPlane GitHub issue prompts for internal AgentPlane errors by default. This
+is intentional: feedback issues help the framework improve faster, and the generated payload stays
+privacy-bounded.
+
+Preview the issue payload:
+
+```bash
+agentplane insights issue --error-code E_INTERNAL --dry-run
+```
+
+To initialize with the mode disabled:
+
+```bash
+agentplane init --feedback-github-issues false
+```
+
+To disable it later:
+
+```bash
+agentplane config set feedback.github_issues.enabled false
+```
 
 ## Create your first task
 
@@ -456,8 +480,8 @@ This repository is configured for `branch_pr`, so the normal guarded route is:
 2. Create the task, set the plan, and approve it.
 3. Start a dedicated branch/worktree with `agentplane work start ... --worktree`.
 4. Implement changes on the task branch, create the implementation commit there, and keep local PR artifacts current.
-5. Push the task branch, open a hosted PR, and wait for required remote checks.
-6. Record verification on the task branch, then integrate on the base branch only after remote green.
+5. Let normal `agentplane pr open` publish/link the hosted PR, then record verification on the task branch.
+6. Wait for required remote checks, then integrate on the base branch only after local verification and remote green.
 7. Finish on the base branch after integration with `--commit <implementation-git-rev> --close-commit`.
 
 For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
@@ -473,12 +497,11 @@ agentplane task start-ready <task-id> --author CODER --body "Start: ..."
 # edit files
 git add <changed-files>
 git commit -m "Implement <task>"
+agentplane task verify-show <task-id>
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
-git push -u origin task/<task-id>/<slug>
-gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
-bun run workflow:wait-remote-checks
 agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
+bun run workflow:wait-remote-checks
 cd <base-checkout>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <implementation-git-rev> --close-commit
@@ -631,10 +654,11 @@ This repository is configured for `branch_pr`, so the normal guarded route is:
 2. Create the task and approve the plan.
 3. `work start ... --worktree` on base, then execute implementation on the task branch/worktree.
 4. Run `task start-ready`, implement, and commit implementation changes in the task worktree.
-5. Keep PR artifacts current, push the task branch, open a hosted PR, and wait for required remote checks.
-6. Run `verify` on the task branch, then `integrate` on the base branch only after remote checks pass.
-7. `finish` on the base branch with `--commit <git-rev>` and `--close-commit`.
-8. Clean up the task worktree/branch after hosted merge closure.
+5. Keep PR artifacts current with `pr open` / `pr update`; normal `pr open` also publishes and links the hosted PR.
+6. Run `task verify-show` and `verify` on the task branch, then wait for required remote checks.
+7. Run `integrate` on the base branch only after verification and remote checks pass.
+8. `finish` on the base branch with `--commit <git-rev>` and `--close-commit`.
+9. Clean up the task worktree/branch after hosted merge closure.
 
 ```bash
 agentplane config show
@@ -643,12 +667,13 @@ agentplane task list
 git status --short --untracked-files=no
 agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree
 agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
+git add <changed-files>
+git commit -m "Implement <task>"
+agentplane task verify-show <task-id>
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
 agentplane pr update <task-id>
-git push -u origin task/<task-id>/<slug>
-gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
-bun run workflow:wait-remote-checks
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
+bun run workflow:wait-remote-checks
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 agentplane cleanup merged --finalize
@@ -798,18 +823,16 @@ sequenceDiagram
   CLI->>B: Write task + deps
   E->>CLI: work start <task-id>
   CLI->>G: Create branch + worktree
-  E->>CLI: pr open / update
-  CLI->>B: Write PR artifacts
-  E->>G: Push task branch to origin
-  E->>G: Open hosted PR + wait for required checks
   E->>CLI: start <task-id>
   CLI->>B: Update task status + comment
   E->>G: Implement changes
+  E->>G: Commit changes
+  E->>CLI: pr open / update
+  CLI->>B: Write PR artifacts
+  CLI->>G: Publish/link hosted PR
   E->>CLI: verify <task-id> --ok --by <id> --note <text>
   CLI->>B: Append verification record
-  E->>G: Commit changes
-  E->>CLI: pr update / note
-  CLI->>B: Update PR artifacts + handoff notes
+  E->>G: Wait for required hosted checks
   G-->>E: Required checks green
   I->>CLI: pr check / integrate
   CLI->>G: Merge to base (merge commit by default)
@@ -951,6 +974,14 @@ agentplane init --setup-profile normal --workflow direct --backend local --execu
 agentplane init --dry-run --yes --output json
 ```
 
+Feedback issue prompts are enabled by default for internal AgentPlane errors. Disable them during
+init or later:
+
+```bash
+agentplane init --feedback-github-issues false --yes
+agentplane config set feedback.github_issues.enabled false
+```
+
 Workflow diagnostics and repair:
 
 ```bash
@@ -978,6 +1009,8 @@ Use this when you need to prove which binary is active, whether you are on
 
 If the repository expects a newer CLI than the active runtime, `runtime explain` and `doctor` now
 print a concrete recovery path and a follow-up `agentplane runtime explain` verification step.
+Framework maintainers can use the documented reinstall helper when the global CLI is stale, and the
+force-global override when they need to bypass repo-local handoff during runtime debugging.
 
 ## Tasks
 
@@ -1127,16 +1160,19 @@ Configured branch_pr path in this repository:
 
 ```bash
 agentplane work start <task-id> --agent CODER --slug <slug> --worktree
+agentplane task start-ready <task-id> --author CODER --body "Start: ..."
+git add <changed-files>
+git commit -m "Implement <task>"
+agentplane task verify-show <task-id>
 agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
 agentplane pr update <task-id>
-git push -u origin task/<task-id>/<slug>
-gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
+agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
 bun run workflow:wait-remote-checks
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <git-rev> --close-commit
 ```
 
-`agentplane pr ...` manages local PR artifacts under `.agentplane/tasks/<task-id>/pr/`, including `review.md`, `github-title.txt`, and `github-body.md`. Hosted GitHub PR creation still uses `gh pr create`, but the title/body should come from those derived files rather than `--fill`. The canonical required-check wait step is `bun run workflow:wait-remote-checks`, which delegates to `gh pr checks --watch --required --fail-fast`. `agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass `--merge-strategy squash` only when compacting history is intentional.
+`agentplane pr ...` manages local PR artifacts under `.agentplane/tasks/<task-id>/pr/`, including `review.md`, `github-title.txt`, and `github-body.md`. A normal `agentplane pr open` run also publishes the task branch and creates or links the hosted GitHub PR; use `--sync-only` only when you intentionally want local artifacts without remote side effects. The canonical required-check wait step is `bun run workflow:wait-remote-checks`, which delegates to `gh pr checks --watch --required --fail-fast`. `agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass `--merge-strategy squash` only when compacting history is intentional.
 
 GitHub protection audit for this repository:
 
@@ -1204,10 +1240,13 @@ Status/comment-driven commits are allowed only on major transitions:
 
 ```bash
 agentplane work start <task-id> --agent CODER --slug <slug> --worktree
+agentplane task start-ready <task-id> --author CODER --body "Start: ..."
+git add <changed-files>
+git commit -m "Implement <task>"
+agentplane task verify-show <task-id>
 agentplane pr open <task-id>
 agentplane pr update <task-id>
-git push -u origin task/<task-id>/<slug>
-gh pr create --base main --head task/<task-id>/<slug> --title "$(cat .agentplane/tasks/<task-id>/pr/github-title.txt)" --body-file .agentplane/tasks/<task-id>/pr/github-body.md
+agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
 bun run workflow:wait-remote-checks
 agentplane pr check <task-id>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
@@ -1247,6 +1286,21 @@ introduced.
 
 Recipe `run_profile` no longer supports `requires_human_approval` in the main repo runtime. The
 current runner accepts only fields it can explain honestly in `task run show`.
+
+## Evaluators
+
+```bash
+agentplane evaluator list
+agentplane evaluator show recovery-context
+```
+
+Evaluators are repository-local prompt modules under `.agentplane/evaluators`. The current public
+surface is catalog inspection: list the available evaluator prompts and print the exact prompt
+module an agent can use for a separate review pass.
+
+`agentplane init` seeds `.agentplane/evaluators/recovery-context.md`, a preview evaluator for
+recovery-context and invariant review. Executing evaluators from the CLI is intentionally deferred
+to the 0.8 evaluation roadmap.
 
 ## Blueprint catalogs
 

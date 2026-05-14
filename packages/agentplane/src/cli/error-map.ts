@@ -161,6 +161,20 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
     nextAction: explicit.nextAction ?? fallback.nextAction,
   });
   switch (err.code) {
+    case "E_INTERNAL": {
+      if (err.context?.feedback_github_issues_enabled === false) {
+        return withExplicit({});
+      }
+      return withExplicit({
+        hint: "AgentPlane can prepare a privacy-bounded GitHub issue for internal AgentPlane errors when feedback issue prompts are enabled.",
+        nextAction: {
+          command: "agentplane insights issue --error-code E_INTERNAL --dry-run",
+          reason:
+            "preview the GitHub issue payload; disable prompts with `agentplane config set feedback.github_issues.enabled false`",
+          reasonCode: "feedback_internal_error_report",
+        },
+      });
+    }
     case "E_USAGE": {
       if (reasonCode === "sync_backend_mismatch") {
         return withExplicit({

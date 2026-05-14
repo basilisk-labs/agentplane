@@ -40,6 +40,24 @@ Requirements: Node.js 24+, Git, and a local terminal.
 
 ![AgentPlane CLI demo](docs/assets/agentplane-demo.gif)
 
+## Feedback issue prompts
+
+AgentPlane intentionally enables GitHub issue prompts for internal AgentPlane errors by default.
+This helps us speed up framework development: when AgentPlane itself fails, the CLI can suggest a
+privacy-bounded issue payload for the `basilisk-labs/agentplane` repository.
+
+Preview the payload before creating anything:
+
+```bash
+agentplane insights issue --error-code E_INTERNAL --dry-run
+```
+
+If you do not want this mode, ask your agent to disable feedback issue prompts or run:
+
+```bash
+agentplane config set feedback.github_issues.enabled false
+```
+
 ## Why
 
 A pull request shows what changed. It does not reliably show what the agent was asked to do, which
