@@ -13,7 +13,7 @@ Created: 2026-05-14T12:43:23.167Z
 ## Verification
 
 - State: ok
-- Note: Verified full-width root README header, npm README raw GitHub header, formatting, policy routing, doctor, npm package dry run, and whitespace checks. Doctor passed with pre-existing branch_pr normalization warnings unrelated to this diff.
+- Note: Re-verified after addressing Codex review: README headers now use CSS style width/max-width instead of invalid percentage width attributes; formatting, policy routing, doctor, npm pack dry run, and whitespace checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,9 +24,9 @@ Created: 2026-05-14T12:43:23.167Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T12:45:50.914Z
+- Updated: 2026-05-14T13:02:26.120Z
 - Branch: task/202605141242-DQV6A3/npm-readme-header
-- Head: 5e86050cfa1a
+- Head: e6c6e16a941e
 
 ```text
  .../blueprint/resolved-snapshot.json               | 357 +++++++++++++++++++++
