@@ -1,10 +1,11 @@
 ---
 id: "202605141604-37S5VS"
 title: "Enable feedback issue prompts by default"
-status: "DOING"
+result_summary: "Merged via PR #3733."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Addressed blocking review thread: E_INTERNAL feedback issue next_action now respects feedback.github_issues.enabled=false. Verification: focused Vitest error-map + insights-report passed (16 tests); targeted ESLint passed; typecheck passed; format:check passed; framework:dev:bootstrap passed."
   attempts: 0
-commit: null
+commit:
+  hash: "cca1713286210613a0486fbe8cb45d4d7406ed35"
+  message: "Merge pull request #3733 from basilisk-labs/task/202605141604-37S5VS/feedback-default-on"
 comments:
   -
     author: "CODER"
     body: "Start: implementing default-on feedback issue prompts, explicit opt-out documentation, and focused tests/docs verification in the task worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3733 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Addressed blocking review thread: E_INTERNAL feedback issue next_action now respects feedback.github_issues.enabled=false. Verification: focused Vitest error-map + insights-report passed (16 tests); targeted ESLint passed; typecheck passed; format:check passed; framework:dev:bootstrap passed."
+  -
+    type: "status"
+    at: "2026-05-14T16:57:37.678Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3733 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T16:46:16.703Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T16:57:37.682Z"
+doc_updated_by: "INTEGRATOR"
 description: "Change AgentPlane feedback GitHub issue prompts to be enabled by default, keep opt-out command support, and document the deliberate default in README and website docs."
 sections:
   Summary: |-
