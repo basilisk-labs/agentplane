@@ -6,7 +6,7 @@ export type CloudBackendPendingPush = {
   reason: string;
 };
 
-export type CloudBackendState = {
+type CloudBackendState = {
   last_checked_at: string | null;
   pending_push: CloudBackendPendingPush | null;
 };
