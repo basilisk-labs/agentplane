@@ -1,10 +1,11 @@
 ---
 id: "202605141619-44RW98"
 title: "Fix runner playbook knip exports"
-status: "DOING"
+result_summary: "Merged via PR #3736."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: narrowed runner playbook exports fix the knip dead-code baseline failure while preserving playbook behavior."
   attempts: 0
-commit: null
+commit:
+  hash: "dea73a7c7c35e7407bc2b313ac6164f6fc3a6c3e"
+  message: "Merge pull request #3736 from basilisk-labs/task/202605141619-44RW98/runner-playbook-knip-fix"
 comments:
   -
     author: "CODER"
     body: "Start: repair the runner playbook dead-code baseline failure by narrowing exports and verifying the post-merge CI failure locally."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3736 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: narrowed runner playbook exports fix the knip dead-code baseline failure while preserving playbook behavior."
+  -
+    type: "status"
+    at: "2026-05-14T16:23:46.522Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3736 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T16:21:33.760Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T16:23:46.528Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove unintended public exports from the runner playbook contract slice so the dead-code baseline gate passes after the runner playbook merge."
 sections:
   Summary: |-
