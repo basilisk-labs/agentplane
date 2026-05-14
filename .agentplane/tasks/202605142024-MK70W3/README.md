@@ -1,10 +1,11 @@
 ---
 id: "202605142024-MK70W3"
 title: "Refresh homepage navigation and Basilisk-style feature sections (issue #3767)"
-status: "DOING"
+result_summary: "Merged via PR #3770."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented issue #3767: navbar exposes Recipes, Blueprints, ACR, Blog, Docs, and Context; homepage uses a Basilisk-style bento presentation with one docs-linked feature section per menu surface; local checks and browser smoke passed."
   attempts: 0
-commit: null
+commit:
+  hash: "8150ad6437cae601c750f85638901ec75bccde8b"
+  message: "Merge pull request #3770 from basilisk-labs/task/202605142024-MK70W3/homepage-feature-nav"
 comments:
   -
     author: "CODER"
     body: "Start: implementing issue #3767 in the dedicated branch_pr worktree by updating navbar, homepage content, Basilisk-style presentation layout, and website verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3770 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,14 +49,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented issue #3767: navbar exposes Recipes, Blueprints, ACR, Blog, Docs, and Context; homepage uses a Basilisk-style bento presentation with one docs-linked feature section per menu surface; local checks and browser smoke passed."
+  -
+    type: "status"
+    at: "2026-05-14T20:47:05.780Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3770 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T20:34:09.175Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T20:47:05.785Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update AgentPlane website navbar and homepage to expose Recipes, Blueprints, ACR, Blog, Docs, and Context, using basilisk-labs.com as the visual reference and adding docs-linked presentation sections for each surface. GitHub issue: https://github.com/basilisk-labs/agentplane/issues/3767"
 sections:
   Summary: |-
     Refresh homepage navigation and Basilisk-style feature sections (issue #3767)
-
+    
     Update AgentPlane website navbar and homepage to expose Recipes, Blueprints, ACR, Blog, Docs, and Context, using basilisk-labs.com as the visual reference and adding docs-linked presentation sections for each surface. GitHub issue: https://github.com/basilisk-labs/agentplane/issues/3767
   Scope: |-
     - In scope: Update AgentPlane website navbar and homepage to expose Recipes, Blueprints, ACR, Blog, Docs, and Context, using basilisk-labs.com as the visual reference and adding docs-linked presentation sections for each surface. GitHub issue: https://github.com/basilisk-labs/agentplane/issues/3767.
@@ -62,10 +75,10 @@ sections:
     3. Add one homepage presentation section for each navbar surface, each explaining the value and linking to the relevant docs/blog target.
     4. Remove or avoid duplicate/fragile GitHub button behavior if it causes visual or console regressions in the redesigned navbar.
     5. Verify with formatting/lint, docs IA/onboarding, Docusaurus build, and browser smoke at desktop/mobile widths.
-
+    
     Approved outside-repo input:
     - Read-only reference use of sibling repository /Users/densmirnov/Github/basilisk-labs.com, explicitly approved by the user.
-
+    
     Files expected in scope:
     - website/docusaurus.config.ts
     - website/src/data/homepage-content.ts
@@ -73,7 +86,7 @@ sections:
     - website/src/pages/_home.module.css
     - website/src/theme/Root.tsx only if needed to remove nav visual regressions
     - task/PR artifacts for 202605142024-MK70W3
-
+    
     Verification:
     - bun run docs:onboarding:check
     - bun run docs:ia:check
@@ -90,16 +103,16 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-14T20:34:09.165Z — VERIFY — ok
-
+    
     By: CODER
-
+    
     Note: Implemented issue #3767: navbar exposes Recipes, Blueprints, ACR, Blog, Docs, and Context; homepage uses a Basilisk-style bento presentation with one docs-linked feature section per menu surface; local checks and browser smoke passed.
     Attempts: 0
-
+    
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-14T20:34:01.724Z, excerpt_hash=sha256:5b8e0e9c14d57e84f6633cb3381093178aac19ad33a4f1deb9cf57c249f8daf7
-
+    
     Details:
-
+    
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605142024-MK70W3-homepage-feature-nav/.agentplane/tasks/202605142024-MK70W3/blueprint/resolved-snapshot.json
@@ -107,7 +120,7 @@ sections:
     - current_digest: 5c59cf84bce023dcf9c967424487e560c98502afe9757fe5886d56833f4a39d6
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605142024-MK70W3
-
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -116,15 +129,15 @@ sections:
     - Observation: GitHub issue #3767 was created and added to the basilisk-labs/agentplane GitHub Project.
       Impact: Website redesign has GitHub-side traceability before implementation.
       Resolution: Linked task 202605142024-MK70W3 to issue #3767 in task title/description and branch scope.
-
+    
     - Observation: Browser smoke on http://127.0.0.1:3031 confirmed the requested navbar labels and six homepage feature sections. The first run exposed a legacy GitHub Buttons console error.
       Impact: Keeping the old buttons script would leave a visible/runtime navbar regression in the redesigned surface.
       Resolution: Removed the legacy GitHub Buttons script/mobile injection from Root.tsx; the second browser open reported no console errors in Playwright output.
-
+    
     - Observation: `bun run --cwd website build` succeeds with existing webpack/localStorage warnings.
       Impact: The redesigned Docusaurus homepage builds for production.
       Resolution: Warnings are retained as known non-fatal build output; no new build failure remains.
-
+    
     - Observation: Commands passed: prettier write for changed website files; eslint website/src/pages/index.tsx website/docusaurus.config.ts; bun run docs:onboarding:check; bun run docs:ia:check; bun run --cwd website build; node .agentplane/policy/check-routing.mjs; ap doctor OK with unrelated pre-existing branch_pr warnings. Browser smoke at http://127.0.0.1:3031 confirmed labels/sections and no console errors after removing legacy GitHub Buttons injection.
       Impact: Website top-level navigation and homepage now match the requested product surfaces and give each surface a presentation block with a documentation/blog CTA.
       Resolution: Recorded task findings and verification evidence for task 202605142024-MK70W3.
