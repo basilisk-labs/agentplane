@@ -1,10 +1,11 @@
 ---
 id: "202605141500-SAV86C"
 title: "Allow initial install commit through pre-push"
-status: "DOING"
+result_summary: "Merged via PR #3724."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented a narrow managed initial install commit exception in both pre-push implementations and added regression coverage proving fresh install commits pass while install-like subjects touching src remain blocked. Checks passed: pre-push task-binding Vitest 7/7, runtime-shim Vitest 5/5, Prettier check, ESLint on touched files, typecheck after bootstrap, and policy routing. Audit finding: context init uses synthetic CTX1NT bootstrap commit and may have a similar first-push edge; it needs a separate focused reproduction because the temp hook simulation was dominated by package-script resolution noise."
   attempts: 0
-commit: null
+commit:
+  hash: "3b47c70e763f92c91362907f4a2d6cc215420ef8"
+  message: "Merge pull request #3724 from basilisk-labs/task/202605141500-SAV86C/init-install-prepush"
 comments:
   -
     author: "CODER"
     body: "Start: implement the approved init/pre-push bootstrap fix by adding a narrow managed initial install commit exception, regression coverage for the first push after init with hooks, and an audit of adjacent managed commit flows for similar hook exception gaps."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3724 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented a narrow managed initial install commit exception in both pre-push implementations and added regression coverage proving fresh install commits pass while install-like subjects touching src remain blocked. Checks passed: pre-push task-binding Vitest 7/7, runtime-shim Vitest 5/5, Prettier check, ESLint on touched files, typecheck after bootstrap, and policy routing. Audit finding: context init uses synthetic CTX1NT bootstrap commit and may have a similar first-push edge; it needs a separate focused reproduction because the temp hook simulation was dominated by package-script resolution noise."
+  -
+    type: "status"
+    at: "2026-05-14T15:45:02.171Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3724 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-14T15:20:53.451Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-14T15:45:02.177Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix the task-bound pre-push audit so the AgentPlane-managed initial install commit created by agentplane init can be pushed, then audit adjacent bootstrap/hook exceptions for similar contract gaps."
 sections:
   Summary: |-
