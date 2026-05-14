@@ -19,20 +19,19 @@ Change AgentPlane feedback GitHub issue prompts to be enabled by default, keep o
 - Note:
 
 ```text
-Implemented default-on feedback GitHub issue prompts with explicit opt-out commands and docs.
-Verification: framework:dev:bootstrap; focused Vitest 99 passed; docs:cli:check; schemas:check;
-format:check; typecheck; knip:check; lint:core; targeted ESLint for changed source/site files;
-docs:site:check; policy routing check; ap doctor OK. Residual: full lint:website still reports
-pre-existing Docusaurus type-aware lint errors outside changed file.
+Addressed blocking review thread: E_INTERNAL feedback issue next_action now respects
+feedback.github_issues.enabled=false. Verification: focused Vitest error-map + insights-report
+passed (16 tests); targeted ESLint passed; typecheck passed; format:check passed;
+framework:dev:bootstrap passed.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T16:37:40.509Z
+- Updated: 2026-05-14T16:46:16.728Z
 - Branch: task/202605141604-37S5VS/feedback-default-on
-- Head: 3839da3d11fb
+- Head: dc81dd1302a7
 
 ```text
  .../blueprint/resolved-snapshot.json               | 526 +++++++++++++++++++++
@@ -42,11 +41,12 @@ pre-existing Docusaurus type-aware lint errors outside changed file.
  docs/user/configuration.mdx                        |  25 +
  docs/user/setup.mdx                                |  24 +
  .../run-cli.core.help-snap.test.ts.snap            |   1 +
- packages/agentplane/src/cli/error-map.test.ts      |  20 +
- packages/agentplane/src/cli/error-map.ts           |  11 +
+ packages/agentplane/src/cli/error-map.test.ts      |  45 ++
+ packages/agentplane/src/cli/error-map.ts           |  14 +
  packages/agentplane/src/cli/reason-codes.ts        |  16 +-
  .../agentplane/src/cli/run-cli.core.init.test.ts   |  25 +
  .../src/cli/run-cli.core.insights-report.test.ts   |  68 ++-
+ packages/agentplane/src/cli/run-cli.ts             |  38 +-
  .../src/cli/run-cli/command-catalog/core.ts        |  11 +-
  .../src/cli/run-cli/command-loaders/core.ts        |   4 +
  .../src/cli/run-cli/commands/init/answers.ts       |   3 +
@@ -69,7 +69,7 @@ pre-existing Docusaurus type-aware lint errors outside changed file.
  schemas/config.schema.json                         |  59 +++
  website/src/data/homepage-content.ts               |   1 +
  website/static/llms-full.txt                       | 104 +++-
- 34 files changed, 1332 insertions(+), 33 deletions(-)
+ 35 files changed, 1394 insertions(+), 37 deletions(-)
 ```
 
 </details>

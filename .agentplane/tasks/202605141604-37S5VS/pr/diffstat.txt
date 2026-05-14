@@ -5,11 +5,12 @@
  docs/user/configuration.mdx                        |  25 +
  docs/user/setup.mdx                                |  24 +
  .../run-cli.core.help-snap.test.ts.snap            |   1 +
- packages/agentplane/src/cli/error-map.test.ts      |  20 +
- packages/agentplane/src/cli/error-map.ts           |  11 +
+ packages/agentplane/src/cli/error-map.test.ts      |  45 ++
+ packages/agentplane/src/cli/error-map.ts           |  14 +
  packages/agentplane/src/cli/reason-codes.ts        |  16 +-
  .../agentplane/src/cli/run-cli.core.init.test.ts   |  25 +
  .../src/cli/run-cli.core.insights-report.test.ts   |  68 ++-
+ packages/agentplane/src/cli/run-cli.ts             |  38 +-
  .../src/cli/run-cli/command-catalog/core.ts        |  11 +-
  .../src/cli/run-cli/command-loaders/core.ts        |   4 +
  .../src/cli/run-cli/commands/init/answers.ts       |   3 +
@@ -32,4 +33,4 @@
  schemas/config.schema.json                         |  59 +++
  website/src/data/homepage-content.ts               |   1 +
  website/static/llms-full.txt                       | 104 +++-
- 34 files changed, 1332 insertions(+), 33 deletions(-)
+ 35 files changed, 1394 insertions(+), 37 deletions(-)
