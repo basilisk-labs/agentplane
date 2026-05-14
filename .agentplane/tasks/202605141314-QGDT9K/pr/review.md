@@ -24,12 +24,22 @@ Created: 2026-05-14T13:16:34.344Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-14T13:16:34.344Z
+- Updated: 2026-05-14T13:33:07.351Z
 - Branch: task/202605141314-QGDT9K/fix-v06-release-notes
-- Head: 5b19902add51
+- Head: e3a1368b5bfb
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 415 +++++++++++++++++++++
+ docs/releases/README.md                            |  16 +-
+ docs/releases/v0.6.0.md                            |  85 +++--
+ .../src/commands/release/apply.apply-flow.test.ts  |   9 +-
+ .../commands/release/apply.preflight.package.ts    |  46 ++-
+ .../src/commands/release/apply.preflight.test.ts   | 140 ++++---
+ .../commands/release/apply.push-recovery.test.ts   |  13 +-
+ .../release/apply.version-mutation.test.ts         |  11 +-
+ packages/testkit/src/release.ts                    |  33 ++
+ scripts/release/check-release-notes.mjs            | 105 ++----
+ 10 files changed, 708 insertions(+), 165 deletions(-)
 ```
 
 </details>
