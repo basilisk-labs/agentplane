@@ -127,6 +127,12 @@ async function packageVersionTag() {
   return `v${pkg.version}`;
 }
 
+function tagVariants(tag) {
+  const normalized = tag.replace(/^v/i, "");
+  const dash = normalized.replaceAll(".", "-");
+  return [normalized.toLowerCase(), `v${normalized.toLowerCase()}`, dash.toLowerCase()];
+}
+
 function compactLogo(markup) {
   const inner = markup.match(/<svg[^>]*>([\s\S]*?)<\/svg>/)?.[1]?.trim();
   if (!inner) throw new Error(`Could not read SVG body from ${logoPath}`);
@@ -140,7 +146,7 @@ function extractFrontmatterTitle(markdown) {
   return (titleLine?.[1] ?? titleLine?.[2] ?? titleLine?.[3] ?? "").trim() || null;
 }
 
-async function latestReleaseBlogTitle() {
+async function latestReleaseBlogTitle(tag) {
   try {
     const files = (await readdir(blogDir))
       .filter((name) => /\.mdx?$/.test(name))
@@ -148,7 +154,13 @@ async function latestReleaseBlogTitle() {
       .sort()
       .reverse();
 
-    for (const filename of files) {
+    const variants = tagVariants(tag);
+    const taggedFiles = files.filter((filename) =>
+      variants.some((variant) => filename.toLowerCase().includes(variant)),
+    );
+    const ordered = taggedFiles.length > 0 ? taggedFiles : files;
+
+    for (const filename of ordered) {
       const markdown = await readFile(path.join(blogDir, filename), "utf8");
       const title = extractFrontmatterTitle(markdown);
       if (title) return title;
@@ -205,7 +217,7 @@ function syncReadmeHeader(readmeText, surface) {
 
 async function main() {
   const tag = latestReleaseTag() ?? (await packageVersionTag());
-  const subtitle = trimSubtitle(await latestReleaseBlogTitle());
+  const subtitle = trimSubtitle(await latestReleaseBlogTitle(tag));
   const logo = compactLogo(await readFile(logoPath, "utf8"));
   const generated = new Map();
   const stale = [];

@@ -30,10 +30,18 @@
   background: rgb(245 247 252);
 }
 
-.colSpan12 { grid-column: span 12; }
-.colSpan8 { grid-column: span 8; }
-.colSpan6 { grid-column: span 6; }
-.colSpan4 { grid-column: span 4; }
+.colSpan12 {
+  grid-column: span 12;
+}
+.colSpan8 {
+  grid-column: span 8;
+}
+.colSpan6 {
+  grid-column: span 6;
+}
+.colSpan4 {
+  grid-column: span 4;
+}
 
 .heroItem {
   background: rgb(var(--surface));
@@ -78,7 +86,9 @@
   text-transform: uppercase;
 }
 
-.heroKicker { justify-content: space-between; }
+.heroKicker {
+  justify-content: space-between;
+}
 
 .editorialHeader {
   align-items: baseline;
@@ -201,7 +211,9 @@
   padding: 0.85rem 0;
 }
 
-.problemList li:first-child { border-top: 0; }
+.problemList li:first-child {
+  border-top: 0;
+}
 
 .sectionDivider {
   background: rgb(235 235 235);
@@ -307,7 +319,9 @@
   padding: 0.34rem 0.56rem;
 }
 
-.contactPanel { background: rgb(var(--surface)); }
+.contactPanel {
+  background: rgb(var(--surface));
+}
 
 .contactPanel .buttonSecondary,
 .contactPanel .buttonPrimary {
@@ -321,7 +335,9 @@
     grid-column: span 12;
   }
 
-  .heroItem { grid-template-columns: 1fr; }
+  .heroItem {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 720px) {
@@ -346,9 +362,13 @@
   }
 
   .buttonPrimary,
-  .buttonSecondary { width: 100%; }
+  .buttonSecondary {
+    width: 100%;
+  }
 
-  .artifactList div { grid-template-columns: 1fr; }
+  .artifactList div {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
