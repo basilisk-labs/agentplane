@@ -389,4 +389,41 @@ describe("commands/workflow", () => {
       }
     }
   });
+
+  it("pre-commit infers task id from staged task artifact paths", async () => {
+    const root = await makeRepo();
+    const taskId = "202605150900-SNAP01";
+    await addTask(root, taskId);
+
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+    await writeTaskBlueprintResolvedSnapshot({
+      ctx,
+      task: await loadTaskFromContext({ ctx, taskId }),
+    });
+    await execFileAsync(
+      "git",
+      ["add", `.agentplane/tasks/${taskId}/blueprint/resolved-snapshot.json`],
+      { cwd: root },
+    );
+
+    const prevTaskId = process.env.AGENTPLANE_TASK_ID;
+    const prevAllowTasks = process.env.AGENTPLANE_ALLOW_TASKS;
+    delete process.env.AGENTPLANE_TASK_ID;
+    process.env.AGENTPLANE_ALLOW_TASKS = "1";
+    try {
+      const code = await cmdHooksRun({ cwd: root, hook: "pre-commit", args: [] });
+      expect(code).toBe(0);
+    } finally {
+      if (prevTaskId === undefined) {
+        delete process.env.AGENTPLANE_TASK_ID;
+      } else {
+        process.env.AGENTPLANE_TASK_ID = prevTaskId;
+      }
+      if (prevAllowTasks === undefined) {
+        delete process.env.AGENTPLANE_ALLOW_TASKS;
+      } else {
+        process.env.AGENTPLANE_ALLOW_TASKS = prevAllowTasks;
+      }
+    }
+  });
 });

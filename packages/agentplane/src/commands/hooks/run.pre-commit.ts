@@ -9,6 +9,7 @@ import {
   currentBranchOrUndefined,
   envFlag,
   inferTaskIdFromBranch,
+  inferTaskIdFromStagedPaths,
   readTaskIntent,
 } from "./task-context.js";
 
@@ -33,7 +34,11 @@ export async function runPreCommitHook(opts: HooksRunOptions): Promise<number> {
   const currentBranch = await currentBranchOrUndefined(resolved.gitRoot);
   const taskId =
     (process.env.AGENTPLANE_TASK_ID ?? "").trim() ||
-    inferTaskIdFromBranch(currentBranch, loaded.config.branch.task_prefix);
+    inferTaskIdFromBranch(currentBranch, loaded.config.branch.task_prefix) ||
+    inferTaskIdFromStagedPaths({
+      stagedPaths: staged,
+      workflowDir: loaded.config.paths.workflow_dir,
+    });
   const taskIntent = taskId
     ? await readTaskIntent({
         gitRoot: resolved.gitRoot,

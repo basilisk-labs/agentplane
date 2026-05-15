@@ -1,0 +1,1 @@
+🚧 4PRV43 task: Fix issue #3781 snapshot hook rejection [202605150544-4PRV43]

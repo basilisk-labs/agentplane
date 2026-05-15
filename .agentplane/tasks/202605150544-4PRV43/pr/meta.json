@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605150544-4PRV43/snapshot-hook-fix",
+  "created_at": "2026-05-15T05:44:50.800Z",
+  "head_sha": "2d0b541f7581282c57404059e6f4ff22bf19527e",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605150544-4PRV43",
+  "updated_at": "2026-05-15T05:44:50.800Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
