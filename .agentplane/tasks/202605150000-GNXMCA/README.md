@@ -20,10 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-15T00:02:00.386Z"
-  updated_by: "CODER"
-  note: "Release checks passed after updating ACR example payload to 0.6.1."
-  attempts: 0
+  updated_at: "2026-05-15T00:17:30.434Z"
+  updated_by: "DEUS"
+  note: "Hosted publish confirmed for v0.6.1."
 commit:
   hash: "03acb7398ddfef745f284a32090ede8e45df99be"
   message: "Merge pull request #3778 from basilisk-labs/task/202605150000-GNXMCA/fix-v061-publish-payload"
@@ -56,8 +55,8 @@ events:
     to: "DONE"
     note: "Verified: PR #3778 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-15T00:08:31.428Z"
-doc_updated_by: "INTEGRATOR"
+doc_updated_at: "2026-05-15T00:17:30.434Z"
+doc_updated_by: "DEUS"
 description: "Update the release payload fixtures so the v0.6.1 publish workflow passes exact-ref validation, then resume publication verification."
 sections:
   Summary: |-
@@ -76,29 +75,19 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
-    ### 2026-05-15T00:02:00.386Z — VERIFY — ok
-    
-    By: CODER
-    
-    Note: Release checks passed after updating ACR example payload to 0.6.1.
-    Attempts: 0
-    
-    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-15T00:00:33.722Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
-    
-    Details:
-    
-    Command: node scripts/checks/check-acr-example-version.mjs | Result: pass | Evidence: ACR example version OK (0.6.1) | Scope: packages/spec/examples/acr.json release payload.
-    Command: bun run release:check | Result: pass | Evidence: incidents gate, ACR gate, package builds, tarball policy, and blueprint release gate passed | Scope: v0.6.1 publish exact-ref validation.
-    Command: node scripts/check-release-version.mjs --tag v0.6.1 and node scripts/check-release-notes.mjs --tag v0.6.1 | Result: pass | Evidence: both exited 0 | Scope: version and release notes parity.
-    
-    BlueprintSnapshotRef:
-    - state: current
-    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605150000-GNXMCA-fix-v061-publish-payload/.agentplane/tasks/202605150000-GNXMCA/blueprint/resolved-snapshot.json
-    - old_digest: 78fcea3addd639bcd39aaa1b9d201552f50ebab498cadfffeabbe872288610b2
-    - current_digest: 78fcea3addd639bcd39aaa1b9d201552f50ebab498cadfffeabbe872288610b2
-    - route_changed: no
-    - safe_command: agentplane blueprint snapshot 202605150000-GNXMCA
-    
+    - State: ok
+    - Note: Hosted publish confirmed for v0.6.1.
+    - Details:
+      - release_sha: 03acb7398ddfef745f284a32090ede8e45df99be
+      - version: 0.6.1
+      - tag: v0.6.1
+      - @agentplaneorg/core: published_in_run
+      - @agentplaneorg/recipes: published_in_run
+      - agentplane: published_in_run
+      - npm_smoke: pass
+      - github_release: created
+      - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.1
+      - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/25893033118
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -132,29 +121,19 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
-### 2026-05-15T00:02:00.386Z — VERIFY — ok
-
-By: CODER
-
-Note: Release checks passed after updating ACR example payload to 0.6.1.
-Attempts: 0
-
-VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-15T00:00:33.722Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
-
-Details:
-
-Command: node scripts/checks/check-acr-example-version.mjs | Result: pass | Evidence: ACR example version OK (0.6.1) | Scope: packages/spec/examples/acr.json release payload.
-Command: bun run release:check | Result: pass | Evidence: incidents gate, ACR gate, package builds, tarball policy, and blueprint release gate passed | Scope: v0.6.1 publish exact-ref validation.
-Command: node scripts/check-release-version.mjs --tag v0.6.1 and node scripts/check-release-notes.mjs --tag v0.6.1 | Result: pass | Evidence: both exited 0 | Scope: version and release notes parity.
-
-BlueprintSnapshotRef:
-- state: current
-- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605150000-GNXMCA-fix-v061-publish-payload/.agentplane/tasks/202605150000-GNXMCA/blueprint/resolved-snapshot.json
-- old_digest: 78fcea3addd639bcd39aaa1b9d201552f50ebab498cadfffeabbe872288610b2
-- current_digest: 78fcea3addd639bcd39aaa1b9d201552f50ebab498cadfffeabbe872288610b2
-- route_changed: no
-- safe_command: agentplane blueprint snapshot 202605150000-GNXMCA
-
+- State: ok
+- Note: Hosted publish confirmed for v0.6.1.
+- Details:
+  - release_sha: 03acb7398ddfef745f284a32090ede8e45df99be
+  - version: 0.6.1
+  - tag: v0.6.1
+  - @agentplaneorg/core: published_in_run
+  - @agentplaneorg/recipes: published_in_run
+  - agentplane: published_in_run
+  - npm_smoke: pass
+  - github_release: created
+  - release_url: https://github.com/basilisk-labs/agentplane/releases/tag/v0.6.1
+  - publish_run: https://github.com/basilisk-labs/agentplane/actions/runs/25893033118
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
