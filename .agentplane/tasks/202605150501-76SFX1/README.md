@@ -1,10 +1,11 @@
 ---
 id: "202605150501-76SFX1"
 title: "Align website minimal OSS style and fix README image generator"
-status: "DOING"
+result_summary: "Merged via PR #3782."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Website surface simplified to minimal OSS style and README header generator rewritten to deterministic minimal output (logo + version + latest release blog title subtitle). Verified with node scripts/generate/generate-readme-header.mjs --check after regeneration. Website build remains environment-blocked due missing 'sharp' dependency in this worktree runtime."
   attempts: 0
-commit: null
+commit:
+  hash: "43f7b1aeae6886ab8f3df901643ce5172f879241"
+  message: "Merge pull request #3782 from basilisk-labs/task/202605150501-76SFX1/minimal-oss-site"
 comments:
   -
     author: "CODER"
     body: "Start: implementing website minimalism alignment with basilisk-labs.com and hardening README/social image generation template to avoid random text surfaces, with targeted style and script checks before verification."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3782 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Website surface simplified to minimal OSS style and README header generator rewritten to deterministic minimal output (logo + version + latest release blog title subtitle). Verified with node scripts/generate/generate-readme-header.mjs --check after regeneration. Website build remains environment-blocked due missing 'sharp' dependency in this worktree runtime."
+  -
+    type: "status"
+    at: "2026-05-15T06:46:18.757Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3782 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-15T05:05:47.137Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-15T06:46:18.763Z"
+doc_updated_by: "INTEGRATOR"
 description: "Refine website to minimalist informative OSS style aligned with basilisk-labs.com, remove excess hovers/rounding, and fix README preview image generator to output only logo/version/title."
 sections:
   Summary: |-
