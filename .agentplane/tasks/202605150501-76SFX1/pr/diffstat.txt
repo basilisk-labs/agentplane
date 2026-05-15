@@ -1,0 +1,19 @@
+ docs/assets/header.svg                        |  19 +-
+ docs/assets/readme-headers/adr.svg            |  19 +-
+ docs/assets/readme-headers/agentplane-cli.svg |  19 +-
+ docs/assets/readme-headers/agentplane.svg     |  19 +-
+ docs/assets/readme-headers/core.svg           |  19 +-
+ docs/assets/readme-headers/docs.svg           |  19 +-
+ docs/assets/readme-headers/humanizer.svg      |  19 +-
+ docs/assets/readme-headers/recipes.svg        |  19 +-
+ docs/assets/readme-headers/releases.svg       |  19 +-
+ docs/assets/readme-headers/schemas.svg        |  19 +-
+ docs/assets/readme-headers/scripts.svg        |  19 +-
+ docs/assets/readme-headers/skills.svg         |  19 +-
+ docs/assets/readme-headers/spec.svg           |  19 +-
+ docs/assets/readme-headers/testkit.svg        |  19 +-
+ scripts/generate/generate-readme-header.mjs   | 180 ++++-----------
+ website/src/css/custom.css                    |  29 +++
+ website/src/pages/_home.module.css            | 318 +++++++-------------------
+ website/src/pages/blog/index.module.css       |  30 +--
+ 18 files changed, 230 insertions(+), 593 deletions(-)
