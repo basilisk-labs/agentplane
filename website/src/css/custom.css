@@ -1058,3 +1058,32 @@ nav[aria-label="Breadcrumbs"] {
     animation: none;
   }
 }
+
+/* Minimalist OSS surface overrides */
+:root {
+  --ifm-button-border-radius: 4px;
+}
+
+.navbar,
+.navbar-sidebar,
+.menu,
+.menu__link,
+.navbar__link,
+.button {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.navbar__item.navbar__link:hover,
+.navbar__link--active:hover,
+.navbar__item.navbar-github-cta:hover,
+.navbar-mobile-github-cta:hover,
+.menu__list .menu__link:hover,
+.theme-edit-this-page:hover,
+.theme-last-updated:hover,
+.blog-list-page article:hover,
+.theme-blog-list-page article:hover,
+.pagination-nav__link:hover {
+  box-shadow: none;
+  transform: none;
+}

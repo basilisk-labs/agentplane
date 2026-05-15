@@ -158,13 +158,7 @@
 .entryTitleLink {
   color: rgb(var(--fg));
   text-decoration: none;
-  transition: color 180ms ease;
-}
-
-.entryTitleLink:hover,
-.entryTitleLink:focus-visible {
-  color: rgb(var(--accent));
-}
+  }
 
 .entryLink {
   color: rgb(var(--fg));
@@ -174,16 +168,7 @@
   letter-spacing: 0;
   text-decoration: none;
   text-transform: uppercase;
-  transition:
-    color 180ms ease,
-    transform 180ms ease;
-}
-
-.entryLink:hover,
-.entryLink:focus-visible {
-  color: rgb(var(--accent));
-  transform: translateX(3px);
-}
+  }
 
 .referenceItem {
   color: rgb(var(--fg));
@@ -191,21 +176,12 @@
   gap: 0.45rem;
   padding: 0.9rem 1rem;
   text-decoration: none;
-  transition:
-    border-color 180ms ease,
-    transform 180ms ease;
-}
+  }
 
 .referenceItem strong {
   font-size: 0.98rem;
   font-weight: 500;
   letter-spacing: 0;
-}
-
-.referenceItem:hover,
-.referenceItem:focus-visible {
-  border-color: rgb(var(--accent) / 0.45);
-  transform: translateY(-2px);
 }
 
 @media (max-width: 960px) {
