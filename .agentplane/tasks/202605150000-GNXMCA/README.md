@@ -1,10 +1,11 @@
 ---
 id: "202605150000-GNXMCA"
 title: "Fix v0.6.1 publish payload drift"
-status: "DOING"
+result_summary: "Merged via PR #3778."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Release checks passed after updating ACR example payload to 0.6.1."
   attempts: 0
-commit: null
+commit:
+  hash: "03acb7398ddfef745f284a32090ede8e45df99be"
+  message: "Merge pull request #3778 from basilisk-labs/task/202605150000-GNXMCA/fix-v061-publish-payload"
 comments:
   -
     author: "CODER"
     body: "Start: Fixing the v0.6.1 publish validation drift in the release payload fixture, then rerunning exact release checks before opening the branch PR."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3778 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release checks passed after updating ACR example payload to 0.6.1."
+  -
+    type: "status"
+    at: "2026-05-15T00:08:31.422Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3778 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-15T00:02:00.392Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-15T00:08:31.428Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the release payload fixtures so the v0.6.1 publish workflow passes exact-ref validation, then resume publication verification."
 sections:
   Summary: |-

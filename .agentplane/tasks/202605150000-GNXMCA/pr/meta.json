@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-15T00:07:54Z",
   "base": "main",
   "branch": "task/202605150000-GNXMCA/fix-v061-publish-payload",
   "created_at": "2026-05-15T00:00:33.761Z",
-  "head_sha": "3507111dfd82eb271e54e99b7208b227f5c784ce",
+  "head_sha": "c7309d5473aa312425ee0a05bba17afcd57e1463",
   "last_verified_at": "2026-05-15T00:02:00.386Z",
   "last_verified_sha": "3507111dfd82eb271e54e99b7208b227f5c784ce",
+  "merge_commit": "03acb7398ddfef745f284a32090ede8e45df99be",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-15T00:07:54Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605150000-GNXMCA",
-  "updated_at": "2026-05-15T00:02:00.415Z",
+  "updated_at": "2026-05-15T00:07:54Z",
   "verify": {
     "status": "pass"
   }
