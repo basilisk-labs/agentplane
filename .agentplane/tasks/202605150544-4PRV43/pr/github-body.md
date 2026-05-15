@@ -15,19 +15,28 @@ Resolve hook/task artifact mismatch when resolved-snapshot.json is generated und
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Implemented pre-commit fallback task-id inference from staged task artifact paths and added
+regression test covering resolved-snapshot task artifact flow; targeted workflow hooks test passes.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-15T05:44:50.800Z
+- Updated: 2026-05-15T05:47:47.151Z
 - Branch: task/202605150544-4PRV43/snapshot-hook-fix
-- Head: 2d0b541f7581
+- Head: ad3958990d0d
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 322 +++++++++++++++++++++
+ .../src/commands/hooks/run.pre-commit.ts           |   7 +-
+ .../agentplane/src/commands/hooks/task-context.ts  |  15 +
+ .../src/commands/workflow.verify-hooks.test.ts     |  37 +++
+ 4 files changed, 380 insertions(+), 1 deletion(-)
 ```
 
 </details>
