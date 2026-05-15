@@ -1,59 +1,44 @@
 .page {
   background: rgb(var(--bg));
   color: rgb(var(--fg));
-  overflow: clip;
 }
 
 .bentoWrapper {
   margin: 0 auto;
-  max-width: 1320px;
-  padding: calc(var(--ifm-navbar-height) + 1rem) 2rem 2rem;
-  position: relative;
-  z-index: 1;
+  max-width: 1280px;
+  padding: calc(var(--ifm-navbar-height) + 1rem) 1rem 1rem;
 }
 
 .bentoGrid {
   background: rgb(var(--border));
   border: 1px solid rgb(var(--border));
-  border-radius: 12px;
+  border-radius: 0;
   display: grid;
   gap: 1px;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  overflow: hidden;
 }
 
 .bentoItem {
-  background: rgb(var(--surface-glass));
+  background: rgb(255 255 255);
   display: flex;
   flex-direction: column;
-  min-height: 15.5rem;
-  padding: clamp(1.2rem, 2.4vw, 2rem);
-  position: relative;
+  min-height: 12rem;
+  padding: clamp(1rem, 2vw, 1.4rem);
 }
 
 .blueprint {
-  background-color: rgb(245 247 252);
-  background-image: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 10px,
-    rgb(17 17 19 / 0.025) 10px,
-    rgb(17 17 19 / 0.025) 11px
-  );
+  background: rgb(245 247 252);
 }
 
 .colSpan12 {
   grid-column: span 12;
 }
-
 .colSpan8 {
   grid-column: span 8;
 }
-
 .colSpan6 {
   grid-column: span 6;
 }
-
 .colSpan4 {
   grid-column: span 4;
 }
@@ -61,95 +46,27 @@
 .heroItem {
   background: rgb(var(--surface));
   display: grid;
-  gap: clamp(1rem, 2.4vw, 2rem);
-  grid-template-columns: minmax(0, 7fr) minmax(340px, 5fr);
-  min-height: min(680px, calc(100svh - var(--ifm-navbar-height) - 3rem));
-  overflow: hidden;
-  padding: clamp(1rem, 2.4vw, 2rem);
+  gap: 1px;
+  grid-template-columns: minmax(0, 7fr) minmax(320px, 5fr);
+  min-height: min(640px, calc(100svh - var(--ifm-navbar-height) - 2.5rem));
+  padding: 1px;
 }
 
-.latticeWrap {
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  position: absolute;
-}
-
-.latticeWrap svg {
-  height: 100%;
-  inset: 0;
-  opacity: 0.82;
-  position: absolute;
-  width: 100%;
-}
-
-.latticeHex {
-  stroke: rgb(var(--border));
-  stroke-width: 0.55;
-}
-
-.latticeSignal {
-  animation: pulseSignal 2.8s ease-in-out infinite;
-  fill: rgb(var(--accent));
-}
-
-.latticeTrace {
-  fill: rgb(var(--trace));
-}
-
-.latticeMemory {
-  fill: rgb(var(--memory));
-}
-
-.latticePath {
-  animation: traceDrift 5.4s ease-in-out infinite;
-  stroke: rgb(var(--trace));
-  stroke-dasharray: 6 8;
-  stroke-linecap: round;
-  stroke-width: 0.8;
-}
-
+.latticeWrap,
+.latticeSignal,
+.latticeTrace,
+.latticeMemory,
+.latticePath,
 .xrayMark {
-  color: rgb(var(--trace));
-  font-family: var(--ifm-font-family-monospace);
-  font-size: 0.62rem;
-  letter-spacing: 0.05em;
-  opacity: 0.54;
-  position: absolute;
-}
-
-.xrayOne {
-  left: 39%;
-  top: 15%;
-}
-
-.xrayTwo {
-  bottom: 12%;
-  left: 10%;
-}
-
-.xrayThree {
-  right: 7%;
-  top: 48%;
-  transform: rotate(90deg);
-}
-
-.liquidGlass {
-  background: rgb(248 248 245 / 0.82);
-  border: 1px solid rgb(255 255 255 / 0.68);
-  box-shadow:
-    0 8px 32px rgb(0 0 0 / 0.025),
-    inset 0 1px 0 rgb(255 255 255 / 0.84);
-  position: relative;
-  z-index: 1;
+  display: none;
 }
 
 .heroPanel,
 .problemPanel {
-  border-radius: 8px;
+  background: rgb(255 255 255);
   display: grid;
-  gap: clamp(1.4rem, 3vw, 2.5rem);
-  padding: clamp(2rem, 5vw, 4.5rem);
+  gap: 1.3rem;
+  padding: clamp(1.2rem, 2.8vw, 2rem);
 }
 
 .heroPanel {
@@ -163,10 +80,9 @@
   color: rgb(var(--muted));
   display: flex;
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   gap: 0.55rem;
-  letter-spacing: 0.06em;
-  line-height: 1;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
@@ -177,20 +93,18 @@
 .editorialHeader {
   align-items: baseline;
   display: flex;
-  gap: 1.25rem;
+  gap: 1rem;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
 }
 
 .circleNum {
   align-items: center;
   background: rgb(var(--accent));
-  border-radius: 50%;
   color: rgb(255 255 255);
   display: inline-flex;
-  height: 1.5em;
+  height: 1.45em;
   justify-content: center;
-  width: 1.5em;
+  width: 1.45em;
 }
 
 .heroPanel h1,
@@ -199,89 +113,77 @@
 .bentoItem h3 {
   color: rgb(var(--fg));
   font-family: var(--ap-display-font);
-  font-weight: 400;
-  letter-spacing: 0;
+  font-weight: 380;
   margin: 0;
-  text-wrap: balance;
 }
 
 .heroPanel h1 {
   align-self: center;
-  font-size: clamp(3rem, 5.6vw, 5.25rem);
-  line-height: 0.94;
+  font-size: clamp(2.8rem, 5vw, 4.5rem);
+  line-height: 0.95;
   max-width: 10ch;
 }
 
 .editorialHeader h2,
 .sectionDivider h2 {
-  font-size: clamp(2rem, 4vw, 3.4rem);
-  line-height: 0.98;
+  font-size: clamp(1.8rem, 3.4vw, 2.8rem);
+  line-height: 1;
 }
 
 .bentoItem h3 {
-  font-size: clamp(1.55rem, 3vw, 2.5rem);
-  line-height: 0.98;
-  margin-bottom: 0.9rem;
+  font-size: clamp(1.4rem, 2.2vw, 2rem);
+  line-height: 1.05;
+  margin-bottom: 0.6rem;
 }
 
 .heroPanel p,
 .problemPanel p,
 .bentoItem p {
   color: rgb(var(--muted));
-  font-size: 0.98rem;
-  line-height: 1.62;
+  font-size: 0.96rem;
+  line-height: 1.56;
   margin: 0;
-  max-width: 42rem;
+  max-width: 46rem;
 }
 
 .heroPanel p {
   color: rgb(var(--fg));
-  font-size: clamp(1.05rem, 1.5vw, 1.2rem);
-  max-width: 48rem;
+  font-size: clamp(1rem, 1.4vw, 1.1rem);
 }
 
 .ctaGroup {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.7rem;
+  gap: 0.6rem;
 }
 
 .buttonPrimary,
 .buttonSecondary {
   align-items: center;
-  border-radius: 999px;
+  border: 1px solid rgb(var(--fg));
   box-sizing: border-box;
-  cursor: pointer;
   display: inline-flex;
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.7rem;
-  font-weight: 650;
+  font-size: 0.72rem;
+  font-weight: 600;
   justify-content: center;
   letter-spacing: 0.05em;
-  min-height: 2.55rem;
+  min-height: 2.45rem;
   min-width: 7rem;
-  overflow: hidden;
-  padding: 0 1.15rem;
-  position: relative;
+  padding: 0 1rem;
   text-decoration: none;
   text-transform: uppercase;
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
 }
 
 .buttonPrimary {
   background: rgb(var(--accent));
-  border: 1px solid rgb(var(--accent));
+  border-color: rgb(var(--accent));
   color: rgb(255 255 255);
 }
 
 .buttonSecondary {
   background: transparent;
-  border: 1px solid rgb(var(--fg));
   color: rgb(var(--fg));
 }
 
@@ -289,11 +191,7 @@
 .buttonPrimary:focus-visible,
 .buttonSecondary:hover,
 .buttonSecondary:focus-visible {
-  background: rgb(var(--fg));
-  border-color: rgb(var(--fg));
-  color: rgb(255 255 255);
   text-decoration: none;
-  transform: translateY(-1px);
 }
 
 .problemList {
@@ -308,9 +206,9 @@
   border-top: 1px solid rgb(var(--border));
   color: rgb(var(--fg));
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   line-height: 1.55;
-  padding: 0.9rem 0;
+  padding: 0.85rem 0;
 }
 
 .problemList li:first-child {
@@ -320,42 +218,38 @@
 .sectionDivider {
   background: rgb(235 235 235);
   justify-content: flex-end;
-  min-height: 11rem;
+  min-height: 9rem;
 }
 
 .featureProof {
-  border-left: 3px solid rgb(var(--accent));
+  border-left: 2px solid rgb(var(--accent));
   color: rgb(var(--fg)) !important;
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.78rem !important;
-  margin-top: 1rem !important;
-  padding-left: 0.85rem;
+  font-size: 0.76rem !important;
+  margin-top: 0.8rem !important;
+  padding-left: 0.7rem;
 }
 
 .projectFooter {
-  gap: 1rem;
+  gap: 0.8rem;
   justify-content: space-between;
   margin-top: auto;
-  padding-top: 1.5rem;
+  padding-top: 1.2rem;
 }
 
 .hardwareLabel {
   color: rgb(var(--muted));
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.66rem;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .hwLamp {
   background: rgb(var(--verified));
-  border-radius: 50%;
-  box-shadow:
-    0 0 5px rgb(var(--verified)),
-    inset 0 1px 1px rgb(255 255 255 / 0.3);
   display: inline-block;
-  height: 10px;
-  width: 10px;
+  height: 9px;
+  width: 9px;
 }
 
 .monoSm {
@@ -368,14 +262,13 @@
 .codeBlock {
   background: rgb(var(--inverse));
   border: 1px solid rgb(17 17 19 / 0.1);
-  border-radius: 4px;
   color: rgb(255 255 255);
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.82rem;
-  line-height: 1.65;
-  margin: 1.25rem 0;
+  line-height: 1.62;
+  margin: 1.1rem 0;
   overflow-x: auto;
-  padding: 1rem 1.25rem;
+  padding: 1rem 1.1rem;
 }
 
 .codeBlock code {
@@ -387,44 +280,43 @@
 .artifactList {
   display: grid;
   gap: 0;
-  margin-top: 1.4rem;
+  margin-top: 1.2rem;
 }
 
 .artifactList div {
   border-top: 1px solid rgb(var(--border));
   display: grid;
-  gap: 1rem;
+  gap: 0.8rem;
   grid-template-columns: minmax(12rem, 0.8fr) minmax(0, 1.2fr);
-  padding: 0.85rem 0;
+  padding: 0.8rem 0;
 }
 
 .artifactList strong {
   color: rgb(var(--fg));
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   overflow-wrap: anywhere;
 }
 
 .artifactList span {
   color: rgb(var(--muted));
-  font-size: 0.92rem;
+  font-size: 0.9rem;
 }
 
 .logoStrip {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.55rem;
-  margin-top: 1rem;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
 }
 
 .logoStrip span {
-  background: rgb(255 255 255 / 0.76);
+  background: rgb(255 255 255 / 0.88);
   border: 1px solid rgb(var(--border));
-  border-radius: 999px;
   color: rgb(var(--fg));
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.72rem;
-  padding: 0.42rem 0.66rem;
+  font-size: 0.7rem;
+  padding: 0.34rem 0.56rem;
 }
 
 .contactPanel {
@@ -434,29 +326,6 @@
 .contactPanel .buttonSecondary,
 .contactPanel .buttonPrimary {
   width: fit-content;
-}
-
-@keyframes pulseSignal {
-  0%,
-  100% {
-    opacity: 0.42;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 1;
-    transform: scale(1.9);
-  }
-}
-
-@keyframes traceDrift {
-  0% {
-    stroke-dashoffset: 26;
-  }
-
-  100% {
-    stroke-dashoffset: 0;
-  }
 }
 
 @media (max-width: 1040px) {
@@ -478,11 +347,11 @@
 
   .heroPanel,
   .problemPanel {
-    padding: 1.5rem;
+    padding: 1.2rem;
   }
 
   .heroPanel h1 {
-    font-size: clamp(3rem, 16vw, 4.3rem);
+    font-size: clamp(2.6rem, 15vw, 4rem);
   }
 
   .editorialHeader,
@@ -504,10 +373,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .buttonPrimary,
-  .buttonSecondary,
-  .latticeSignal,
-  .latticePath {
-    animation: none;
+  .buttonSecondary {
     transition: none;
   }
 }
