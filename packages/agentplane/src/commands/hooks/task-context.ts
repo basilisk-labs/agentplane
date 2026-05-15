@@ -89,21 +89,6 @@ export async function inferTaskIdFromSubjectSuffix(opts: {
   }
 }
 
-export function inferTaskIdFromStagedPaths(opts: {
-  stagedPaths: string[];
-  workflowDir: string;
-}): string {
-  const workflowPrefix = `${opts.workflowDir.replace(/\/+$/g, "")}/`;
-  const matches = new Set<string>();
-  for (const filePath of opts.stagedPaths) {
-    if (!filePath.startsWith(workflowPrefix)) continue;
-    const relative = filePath.slice(workflowPrefix.length);
-    const taskId = relative.split("/", 1)[0]?.trim() ?? "";
-    if (taskId) matches.add(taskId);
-  }
-  return matches.size === 1 ? [...matches][0] ?? "" : "";
-}
-
 export async function readTaskIntent(opts: {
   gitRoot: string;
   workflowDir: string;
