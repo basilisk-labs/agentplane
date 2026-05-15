@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605150000-GNXMCA/fix-v061-publish-payload",
+  "created_at": "2026-05-15T00:00:33.761Z",
+  "head_sha": "3507111dfd82eb271e54e99b7208b227f5c784ce",
+  "last_verified_at": "2026-05-15T00:02:00.386Z",
+  "last_verified_sha": "3507111dfd82eb271e54e99b7208b227f5c784ce",
+  "schema_version": 1,
+  "task_id": "202605150000-GNXMCA",
+  "updated_at": "2026-05-15T00:02:00.415Z",
+  "verify": {
+    "status": "pass"
+  }
+}
