@@ -107,16 +107,16 @@ function escapeXml(value) {
 
 function latestReleaseTag() {
   try {
-    const tags = execFileSync("git", ["tag", "--list", "v[0-9]*", "--sort=-v:refname"], {
+    const firstTag = execFileSync("git", ["tag", "--list", "v[0-9]*", "--sort=-v:refname"], {
       cwd: repoRoot,
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
     })
       .split("\n")
       .map((tag) => tag.trim())
-      .filter(Boolean);
+      .find((tag) => tag.length > 0);
 
-    return tags[0] ?? null;
+    return firstTag ?? null;
   } catch {
     return null;
   }
@@ -148,11 +148,12 @@ function extractFrontmatterTitle(markdown) {
 
 async function latestReleaseBlogTitle(tag) {
   try {
-    const files = (await readdir(blogDir))
+    const directoryEntries = await readdir(blogDir);
+    const files = directoryEntries
       .filter((name) => /\.mdx?$/.test(name))
       .filter((name) => /release|agentplane-\d+-\d+-\d+/i.test(name))
-      .sort()
-      .reverse();
+      .toSorted()
+      .toReversed();
 
     const variants = tagVariants(tag);
     const taggedFiles = files.filter((filename) =>
@@ -173,7 +174,7 @@ async function latestReleaseBlogTitle(tag) {
 }
 
 function trimSubtitle(value, max = 84) {
-  const normalized = value.replace(/\s+/g, " ").trim();
+  const normalized = value.replaceAll(/\s+/g, " ").trim();
   if (normalized.length <= max) return normalized;
   return `${normalized.slice(0, max - 1).trimEnd()}…`;
 }
