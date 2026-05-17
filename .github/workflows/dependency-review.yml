@@ -1,0 +1,30 @@
+name: Dependency Review
+
+on:
+  pull_request:
+    paths:
+      - "package.json"
+      - "bun.lock"
+      - "packages/**/package.json"
+      - "website/package.json"
+      - "website/bun.lock"
+      - ".github/dependabot.yml"
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: dependency-review-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: high
+          retry-on-snapshot-warnings: true
