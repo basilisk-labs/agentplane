@@ -153,6 +153,57 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
     expect(readme).toContain("Shortcut finished");
   });
 
+  it("task complete validates direct finish commit before recording verification", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+
+    const ioBegin = captureStdIO();
+    let taskId = "";
+    try {
+      await runCli([
+        "task",
+        "begin",
+        "Missing commit shortcut",
+        "--tag",
+        "code",
+        "--json",
+        "--root",
+        root,
+      ]);
+      taskId = (JSON.parse(ioBegin.stdout.trim()) as { task_id: string }).task_id;
+    } finally {
+      ioBegin.restore();
+    }
+
+    const ioComplete = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "complete",
+        taskId,
+        "--result",
+        "Shortcut should fail before verify",
+        "--json",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(ioComplete.stderr).toContain("task complete requires --commit <hash>");
+    } finally {
+      ioComplete.restore();
+    }
+
+    const readme = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(readme).toContain('status: "DOING"');
+    expect(readme).toContain('state: "pending"');
+    expect(readme).not.toContain("Shortcut should fail before verify");
+  });
+
   it("task complete records branch_pr verification and prints the PR route", async () => {
     const root = await mkGitRepoRoot();
     const config = defaultConfig();

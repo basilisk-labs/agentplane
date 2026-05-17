@@ -1,10 +1,13 @@
 import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { createCliEmitter } from "../../cli/output.js";
-import type { CommandContext } from "../shared/task-backend.js";
+import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+import { CliError } from "../../shared/errors.js";
 
 import { cmdFinish } from "./finish-command.js";
 import { cmdVerifyParsed } from "./verify-record.js";
+import { existingCommitInfo } from "./finish-shared.js";
+import { readCommitInfo } from "./shared.js";
 
 const output = createCliEmitter();
 
@@ -105,6 +108,11 @@ export function makeRunTaskCompleteHandler(
 ): CommandHandler<TaskCompleteParsed> {
   return async (ctx: CommandCtx, p: TaskCompleteParsed): Promise<number> => {
     const command = await getCtx("task complete");
+    const workflowMode = command.config.workflow_mode;
+    if (workflowMode !== "branch_pr") {
+      await assertDirectFinishCommitReady({ ctx: command, taskId: p.taskId, commit: p.commit });
+    }
+
     await cmdVerifyParsed({
       ctx: command,
       cwd: ctx.cwd,
@@ -116,7 +124,6 @@ export function makeRunTaskCompleteHandler(
       quiet: true,
     });
 
-    const workflowMode = command.config.workflow_mode;
     if (workflowMode === "branch_pr") {
       const nextCommand = `agentplane pr open ${p.taskId} --branch task/${p.taskId}/<slug> --author ${p.by}`;
       const payload = {
@@ -182,4 +189,30 @@ export function makeRunTaskCompleteHandler(
     }
     return 0;
   };
+}
+
+async function assertDirectFinishCommitReady(opts: {
+  ctx: CommandContext;
+  taskId: string;
+  commit?: string;
+}): Promise<void> {
+  if (typeof opts.commit === "string" && opts.commit.trim()) {
+    await readCommitInfo(opts.ctx.resolvedProject.gitRoot, opts.commit);
+    return;
+  }
+
+  const task = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });
+  if (existingCommitInfo(task)) return;
+
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message: [
+      "task complete requires --commit <hash> or existing task commit metadata before recording verification.",
+      `task_missing_commit=${opts.taskId}`,
+      "Fix:",
+      "  1) Select the implementation commit explicitly: git log --oneline --decorate -n 10",
+      '  2) Re-run: agentplane task complete <task-id> --result "..." --commit <hash>',
+    ].join("\n"),
+  });
 }
