@@ -1,10 +1,11 @@
 ---
 id: "202605150544-4PRV43"
 title: "Fix issue #3781 snapshot hook rejection"
-status: "DOING"
+result_summary: "Merged via PR #3783."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented pre-commit fallback task-id inference from staged task artifact paths and added regression test covering resolved-snapshot task artifact flow; targeted workflow hooks test passes."
   attempts: 0
-commit: null
+commit:
+  hash: "66bcc5f691f8e62910fddcba834cfc04f90e8315"
+  message: "Merge pull request #3783 from basilisk-labs/task/202605150544-4PRV43/snapshot-hook-fix"
 comments:
   -
     author: "CODER"
     body: "Start: reproducing hook rejection around blueprint resolved-snapshot artifact and implementing deterministic committable policy for normal task lifecycle without override flags."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3783 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented pre-commit fallback task-id inference from staged task artifact paths and added regression test covering resolved-snapshot task artifact flow; targeted workflow hooks test passes."
+  -
+    type: "status"
+    at: "2026-05-17T06:12:37.431Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3783 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-15T05:47:47.107Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T06:12:37.441Z"
+doc_updated_by: "INTEGRATOR"
 description: "Resolve hook/task artifact mismatch when resolved-snapshot.json is generated under blueprint."
 sections:
   Summary: |-
