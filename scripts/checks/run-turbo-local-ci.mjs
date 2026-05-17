@@ -23,7 +23,7 @@ function listSummaryFiles() {
       .filter((name) => name.endsWith(".json"))
       .map((name) => path.join(summaryDir, name))
       .map((filePath) => ({ filePath, mtimeMs: statSync(filePath).mtimeMs }))
-      .sort((left, right) => right.mtimeMs - left.mtimeMs);
+      .toSorted((left, right) => right.mtimeMs - left.mtimeMs);
   } catch {
     return [];
   }
@@ -123,4 +123,4 @@ if (summaryEntry) {
   process.stdout.write(`Turbo summary: ${relativePath(summaryEntry.filePath)}\n`);
 }
 
-process.exit(exitCode);
+process.exitCode = exitCode;
