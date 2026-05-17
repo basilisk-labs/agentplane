@@ -65,4 +65,25 @@ describe("runCli demo", () => {
 
     expect(await pathExists(path.join(root, ".agentplane", "tasks"))).toBe(false);
   });
+
+  it("creates ACR evidence on repositories whose base branch is not main", async () => {
+    const root = await mkGitRepoRootWithBranch("master");
+    await writeConfig(root, defaultConfig());
+    await writeFile(path.join(root, "parser.js"), "export const parser = true;\n", "utf8");
+    await commitAll(root, "baseline");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["demo", "--json", "--root", root]);
+      expect(code, io.stderr).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const taskIds = await readdir(path.join(root, ".agentplane", "tasks"));
+    expect(taskIds).toHaveLength(1);
+    expect(await pathExists(path.join(root, ".agentplane", "tasks", taskIds[0], "acr.json"))).toBe(
+      true,
+    );
+  });
 });
