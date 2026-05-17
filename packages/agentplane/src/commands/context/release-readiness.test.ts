@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { CommandContext } from "../shared/task-backend.js";
 import { cmdContextIngest } from "./ingest.js";
+import { cmdContextInit } from "./init.js";
 import { cmdContextReindex, readContextProjection } from "./reindex.js";
 import { cmdContextSearch } from "./search.js";
 import { cmdContextShow } from "./show.js";
@@ -40,6 +41,35 @@ async function write(root: string, rel: string, text: string): Promise<void> {
 }
 
 describe("context release readiness guards", () => {
+  it("creates adaptive starter wiki pages that pass full wiki lint", async () => {
+    const root = await tempRoot();
+    vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextInit({
+      ctx: { resolvedProject: { gitRoot: root } } as CommandContext,
+      cwd: root,
+      parsed: {
+        profile: "adaptive",
+        rawGitignore: "none",
+        derivedGitignore: "none",
+        repair: false,
+        force: false,
+      },
+    });
+
+    await cmdContextWikiLint({
+      cwd: root,
+      parsed: { path: "context/wiki" },
+    });
+
+    const wikiAgents = await readFile(path.join(root, "context/wiki/AGENTS.md"), "utf8");
+    const rootIndex = await readFile(path.join(root, "context/wiki/index.md"), "utf8");
+    expect(wikiAgents).toContain("agentplane_context:");
+    expect(wikiAgents).toContain('canonical_id: "wiki.agents"');
+    expect(rootIndex).toContain("agentplane_context:");
+    expect(rootIndex).toContain('canonical_id: "wiki.index"');
+  });
+
   it("indexes stable section refs and excludes private raw files from projection", async () => {
     const root = await tempRoot();
     await write(
@@ -327,6 +357,9 @@ describe("context release readiness guards", () => {
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("agentplane context wiki index context/wiki");
+    expect(
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+    ).toContain("Final update step: refresh affected indexes, navigation pages, glossary entries");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("use the canonical term in prose and link it to the canonical page or section");

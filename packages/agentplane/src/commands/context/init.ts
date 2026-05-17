@@ -17,6 +17,7 @@ import { writeJsonStableIfChanged, writeTextIfChanged } from "../../shared/write
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import type { ContextInitParsed } from "./context.spec.js";
+import { starterWikiPageFiles, wikiFrontmatter } from "./init-wiki.js";
 import { cmdContextReindex } from "./reindex.js";
 
 const execFileAsync = promisify(execFile);
@@ -309,13 +310,7 @@ async function createContextWorkspace(
     files.push(
       { relative: "context/raw/specs/.gitkeep", content: "" },
       { relative: "context/raw/research/.gitkeep", content: "" },
-      { relative: "context/wiki/index.md", content: "# Context wiki\n" },
-      { relative: "context/wiki/concepts/index.md", content: "# Concepts\n" },
-      { relative: "context/wiki/entities/index.md", content: "# Entities\n" },
-      { relative: "context/wiki/decisions/index.md", content: "# Decisions\n" },
-      { relative: "context/wiki/modules/index.md", content: "# Modules\n" },
-      { relative: "context/wiki/contradictions/index.md", content: "# Contradictions\n" },
-      { relative: "context/wiki/reports/index.md", content: "# Reports\n" },
+      ...starterWikiPageFiles(),
       { relative: "context/wiki/concepts/.gitkeep", content: "" },
       { relative: "context/wiki/entities/.gitkeep", content: "" },
       { relative: "context/wiki/decisions/.gitkeep", content: "" },
@@ -399,46 +394,25 @@ derived machine artifacts. Source references should be markdown links where poss
 }
 
 function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string {
-  return `# Context wiki agent notes
+  return `${wikiFrontmatter("wiki.agents", "Context wiki agent notes", "policy")}
+
+# Context wiki agent notes
 
 Profile: ${profile}
 
-- Treat \`context/wiki/**\` as durable, source-backed project knowledge.
-- Treat this wiki as adaptive: generate the page hierarchy from project evidence, while preserving
-  stable frontmatter fields for future publication/synchronization.
-- Wiki pages are context artifacts; atomic claims and graph edges remain machine-readable derived
-  artifacts.
-- Use page frontmatter with \`agentplane_context.schema_version\`, \`artifact_type\`,
-  \`canonical_id\`, \`modality\`, \`epistemic_status\`, \`visibility\`, \`source_refs\`,
-  \`claims\`, \`graph_refs\`, and \`conflicts\`.
+- Treat \`context/wiki/**\` as durable, source-backed project knowledge with stable AgentPlane frontmatter.
 - Analyze the base project, existing docs, task history, and raw sources before choosing a wiki structure.
 - Choose the smallest wiki hierarchy that fits this project; do not force a universal concepts/entities/decisions/modules layout.
-- Preserve and refine the chosen hierarchy after the first analysis; avoid reshaping it unless new evidence makes the old structure misleading.
-- Keep different modalities explicit: factual_claim, observation, assumption, hypothesis, decision,
-  policy, preference, requirement, risk, capability, definition, and deprecation.
-- Decisions from task history should be written as ADR/evolution records with provenance and
-  supersession metadata, not as probabilistic factual claims.
-- If a glossary is useful, keep it as a thin index over existing wiki pages and graph entities, not as a competing source of truth.
-- Prefer useful inline Markdown cross-links between related wiki pages and glossary entries,
-  especially on first meaningful mentions of known concepts, entities, decisions, risks, or modules.
-- When lookup gives high confidence that a source term matches an existing wiki page or graph
-  entity, use the canonical term in prose and link it to the canonical page or section; record the
-  source-local term as an alias when useful.
-- Use \`agentplane context wiki new\`, \`agentplane context wiki lint\`,
-  \`agentplane context wiki explain\`, \`agentplane context wiki link\`, and
-  \`agentplane context wiki index\` when creating, linking, indexing, or reviewing wiki pages.
-- Before writing new wiki/facts/graph data, search existing context and graph rows for matching
-  entities and use canonical labels when an analyzed source mentions an already-described entity.
-- If new evidence extends an existing entity, update the existing page or section and add sourced
-  claims/provenance instead of creating a duplicate page.
-- If a small object belongs inside a broader topic, describe it under a stable heading and link to
-  that section from related pages.
-- Update relevant \`index.md\` pages after adding, moving, or materially renaming wiki pages.
-- When claims conflict, keep both claims, create a conflict candidate, and ask for review before
-  promotion or overwrite.
+- Preserve modality, source refs, cross-links, glossary aliases, and graph alignment when updating pages.
+- Prefer updating existing canonical pages over creating duplicates; describe small objects under stable headings when that is clearer.
+- Use \`agentplane context wiki new\`, \`agentplane context wiki lint\`, \`agentplane context wiki explain\`, \`agentplane context wiki link\`, and \`agentplane context wiki index\`.
+- When claims conflict, keep both claims, create a conflict candidate, and ask for review before promotion or overwrite.
 - Keep raw inputs in \`context/raw/**\`; do not copy private raw sources into public wiki pages.
-- Add source references for factual claims that come from raw files, task READMEs, ACRs, or code.
-- Use \`agentplane context verify-task <task-id>\` before closing context assimilation work.
+- Add source references for factual claims and run \`agentplane context verify-task <task-id>\` before closing context assimilation work.
+
+## Source References
+
+- no-source: generated policy notes from \`agentplane context init\`; add source references before promotion.
 `;
 }
 
