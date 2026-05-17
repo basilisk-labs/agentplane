@@ -1,10 +1,10 @@
 ---
 id: "202605171630-CXZJS8"
 title: "Keep failed pr open publish attempts artifact-clean"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Focused PR-open failed-publish artifact regression passed: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts completed with 6 pass / 0 fail and covers simulated publish failure leaving tracked PR artifacts clean."
   attempts: 0
-commit: null
+commit:
+  hash: "fc45ebe2582dce6b20cd180f2b7527160be17ef1"
+  message: "Merge pull request #3836 from basilisk-labs/task/202605171630-FBWA1N/pr-open-publish-transaction"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing failed-publish artifact cleanup in the same approved batch worktree as 202605171630-FBWA1N because both defects share the pr open publish transaction path."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3836 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused PR-open failed-publish artifact regression passed: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts completed with 6 pass / 0 fail and covers simulated publish failure leaving tracked PR artifacts clean."
+  -
+    type: "status"
+    at: "2026-05-17T17:02:47.420Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3836 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T16:41:51.370Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T17:02:47.425Z"
+doc_updated_by: "INTEGRATOR"
 description: "Ensure agentplane pr open does not leave dirty pr/meta.json or other transient PR artifacts when remote publication fails before PR creation/linking."
 sections:
   Summary: |-

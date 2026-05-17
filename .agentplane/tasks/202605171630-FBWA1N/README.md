@@ -1,10 +1,11 @@
 ---
 id: "202605171630-FBWA1N"
 title: "Fix pr open publishing to inherited upstream"
-status: "DOING"
+result_summary: "Merged via PR #3836."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Focused PR-open publishing regression passed: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts completed with 6 pass / 0 fail and covers inherited origin/main upstream publishing."
   attempts: 0
-commit: null
+commit:
+  hash: "fc45ebe2582dce6b20cd180f2b7527160be17ef1"
+  message: "Merge pull request #3836 from basilisk-labs/task/202605171630-FBWA1N/pr-open-publish-transaction"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing pr open publish hardening in batch with 202605171630-CXZJS8; first task owns the branch/worktree and will carry the combined PR artifact."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3836 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused PR-open publishing regression passed: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts completed with 6 pass / 0 fail and covers inherited origin/main upstream publishing."
+  -
+    type: "status"
+    at: "2026-05-17T17:02:47.406Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3836 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T16:41:41.937Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T17:02:47.412Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prevent agentplane pr open from publishing task worktree HEAD to an inherited upstream such as origin/main; it must push explicitly to the requested task branch ref."
 sections:
   Summary: |-
