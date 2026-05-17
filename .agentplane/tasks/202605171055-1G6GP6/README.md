@@ -4,7 +4,7 @@ title: "Add branch_pr route decision CLI commands"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-17T11:12:34.559Z"
+  updated_at: "2026-05-17T11:42:30.387Z"
   updated_by: "CODER"
-  note: "Post-rebase verification refreshed at current HEAD after rebasing route decision CLI work onto origin/main. Focused tests and typecheck were rerun after rebase; prior lint:core, format:check, policy routing, diff check, framework bootstrap, and repo-local smokes remain valid for the same implementation."
+  note: "Verified current PR metadata head after artifact-only refresh; implementation checks already passed: focused route-decision tests, typecheck, lint:core, format:check, routing policy check, diff check, repo-local command smokes, and pre-push full Vitest plus critical CLI E2E."
   attempts: 0
 commit: null
 comments:
@@ -59,8 +59,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Post-rebase verification refreshed at current HEAD after rebasing route decision CLI work onto origin/main. Focused tests and typecheck were rerun after rebase; prior lint:core, format:check, policy routing, diff check, framework bootstrap, and repo-local smokes remain valid for the same implementation."
+  -
+    type: "verify"
+    at: "2026-05-17T11:42:30.387Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified current PR metadata head after artifact-only refresh; implementation checks already passed: focused route-decision tests, typecheck, lint:core, format:check, routing policy check, diff check, repo-local command smokes, and pre-push full Vitest plus critical CLI E2E."
 doc_version: 3
-doc_updated_at: "2026-05-17T11:12:34.660Z"
+doc_updated_at: "2026-05-17T11:42:30.396Z"
 doc_updated_by: "CODER"
 description: "Add machine-readable task route/status/next-action/resume/repair commands for branch_pr agent workflow optimization, and update prompts plus CLI documentation to teach the new commands."
 sections:
@@ -128,6 +134,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T11:10:35.035Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171055-1G6GP6-route-decision-cli/.agentplane/tasks/202605171055-1G6GP6/blueprint/resolved-snapshot.json
+    - old_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+    - current_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171055-1G6GP6
+
+    ### 2026-05-17T11:42:30.387Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified current PR metadata head after artifact-only refresh; implementation checks already passed: focused route-decision tests, typecheck, lint:core, format:check, routing policy check, diff check, repo-local command smokes, and pre-push full Vitest plus critical CLI E2E.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T11:12:34.660Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
 
     Details:
 
@@ -231,6 +256,25 @@ Note: Post-rebase verification refreshed at current HEAD after rebasing route de
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T11:10:35.035Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171055-1G6GP6-route-decision-cli/.agentplane/tasks/202605171055-1G6GP6/blueprint/resolved-snapshot.json
+- old_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+- current_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171055-1G6GP6
+
+### 2026-05-17T11:42:30.387Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified current PR metadata head after artifact-only refresh; implementation checks already passed: focused route-decision tests, typecheck, lint:core, format:check, routing policy check, diff check, repo-local command smokes, and pre-push full Vitest plus critical CLI E2E.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T11:12:34.660Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
 
 Details:
 

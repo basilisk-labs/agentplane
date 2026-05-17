@@ -1,6 +1,7 @@
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "../pr/flow-status.js";
+import { isTaskLocalOnlyAdvance } from "./task-local-freshness.js";
 import { buildTaskResumeContext, type TaskResumeContext } from "../task/handoff.shared.js";
 
 import { loadBackendTask, loadCommandContext, type CommandContext } from "./task-backend.js";
@@ -70,12 +71,31 @@ function addBlocker(blockers: RouteBlocker[], code: string, summary: string): vo
   blockers.push({ code, summary });
 }
 
-function deriveBlockers(opts: {
+async function isPrMetaOnlyTaskLocalAdvance(opts: {
+  ctx: CommandContext;
+  taskId: string;
+  prFlow: PrFlowStatusReport | null;
+}): Promise<boolean> {
+  const branchHeadSha = opts.prFlow?.branch.headSha ?? null;
+  const metaHeadSha = opts.prFlow?.branch.metaHeadSha ?? null;
+  if (!branchHeadSha || !metaHeadSha || branchHeadSha === metaHeadSha) return false;
+  return isTaskLocalOnlyAdvance({
+    gitRoot: opts.ctx.resolvedProject.gitRoot,
+    workflowDir: opts.ctx.config.paths.workflow_dir,
+    tasksPath: opts.ctx.config.paths.tasks_path,
+    taskId: opts.taskId,
+    fromRef: metaHeadSha,
+    toRef: branchHeadSha,
+  }).catch(() => false);
+}
+
+async function deriveBlockers(opts: {
+  ctx: CommandContext;
   task: TaskData;
   resume: TaskResumeContext;
   workflowMode: string;
   prFlow: PrFlowStatusReport | null;
-}): RouteBlocker[] {
+}): Promise<RouteBlocker[]> {
   const blockers: RouteBlocker[] = [];
   if (opts.task.plan_approval?.state !== "approved") {
     addBlocker(blockers, "plan_not_approved", "task plan is not approved");
@@ -100,7 +120,12 @@ function deriveBlockers(opts: {
     if (
       opts.prFlow?.branch.headSha &&
       opts.prFlow.branch.metaHeadSha &&
-      opts.prFlow.branch.headSha !== opts.prFlow.branch.metaHeadSha
+      opts.prFlow.branch.headSha !== opts.prFlow.branch.metaHeadSha &&
+      !(await isPrMetaOnlyTaskLocalAdvance({
+        ctx: opts.ctx,
+        taskId: opts.task.id,
+        prFlow: opts.prFlow,
+      }))
     ) {
       addBlocker(blockers, "pr_meta_stale", "PR metadata head differs from local branch head");
     }
@@ -299,7 +324,8 @@ export async function buildTaskRouteDecision(opts: {
       if (!isCliUsageOrIo(err)) throw err;
     }
   }
-  const blockers = deriveBlockers({
+  const blockers = await deriveBlockers({
+    ctx,
     task,
     resume,
     workflowMode: ctx.config.workflow_mode,

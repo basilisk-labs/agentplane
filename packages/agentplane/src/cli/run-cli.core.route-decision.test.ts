@@ -1,3 +1,8 @@
+import { execFile } from "node:child_process";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { promisify } from "node:util";
+
 import { describe } from "vitest";
 
 import {
@@ -10,6 +15,8 @@ import {
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit/cli-core-pr-flow";
+
+const execFileAsync = promisify(execFile);
 
 async function createBranchPrTask(root: string): Promise<string> {
   const taskIo = captureStdIO();
@@ -103,6 +110,75 @@ describe("runCli route decision commands", () => {
       expect(repairIo.stdout).toContain(`agentplane work start ${taskId}`);
     } finally {
       repairIo.restore();
+    }
+  });
+
+  it("does not treat task-local artifact commits as stale PR metadata", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Exercise route decision commands.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+
+    const branch = `task/${taskId}/route-decision`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "impl.txt"), "implementation\n");
+    await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: implementation"], { cwd: root });
+    const { stdout: implementationHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(
+      path.join(prDir, "meta.json"),
+      `${JSON.stringify(
+        {
+          base: "main",
+          branch,
+          created_at: "2026-01-01T00:00:00.000Z",
+          head_sha: implementationHead.trim(),
+          schema_version: 1,
+          status: "OPEN",
+          task_id: taskId,
+          updated_at: "2026-01-01T00:00:00.000Z",
+        },
+        null,
+        2,
+      )}\n`,
+    );
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    await writeFile(readmePath, `${readme}\n<!-- task-local artifact refresh -->\n`);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: refresh artifacts"], { cwd: root });
+
+    const statusIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "status", taskId, "--route", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(statusIo.stdout) as {
+        blockers: { code: string }[];
+      };
+      expect(parsed.blockers.map((blocker) => blocker.code)).not.toContain("pr_meta_stale");
+    } finally {
+      statusIo.restore();
     }
   });
 });

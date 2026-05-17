@@ -19,10 +19,9 @@ Add machine-readable task route/status/next-action/resume/repair commands for br
 - Note:
 
 ```text
-Post-rebase verification refreshed at current HEAD after rebasing route decision CLI work onto
-origin/main. Focused tests and typecheck were rerun after rebase; prior lint:core, format:check,
-policy routing, diff check, framework bootstrap, and repo-local smokes remain valid for the same
-implementation.
+Verified current PR metadata head after artifact-only refresh; implementation checks already passed:
+focused route-decision tests, typecheck, lint:core, format:check, routing policy check, diff check,
+repo-local command smokes, and pre-push full Vitest plus critical CLI E2E.
 ```
 - Canonical workflow state lives in the task README.
 
