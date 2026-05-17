@@ -1,10 +1,11 @@
 ---
 id: "202605171232-QB3YP7"
 title: "Fix blueprint explain context kind help"
-status: "DOING"
+result_summary: "Merged via PR #3827."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_by: "CODER"
   note: "Focused checks passed after moving regression coverage out of the oversized blueprint test file: Vitest cli-core help/blueprint/help-contract tests, hotspots:check, docs:cli:check, ESLint on touched TS files, Prettier check, policy routing, and git diff --check."
   attempts: 0
-commit: null
+commit:
+  hash: "a3d0093c65019d2a86706e0456d6615c6eaa7ad3"
+  message: "Merge pull request #3827 from basilisk-labs/task/202605171232-QB3YP7/blueprint-help-context-kind"
 comments:
   -
     author: "CODER"
     body: "Start: Fix blueprint explain help metadata so context is listed as a supported synthetic task kind."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3827 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused checks passed after moving regression coverage out of the oversized blueprint test file: Vitest cli-core help/blueprint/help-contract tests, hotspots:check, docs:cli:check, ESLint on touched TS files, Prettier check, policy routing, and git diff --check."
+  -
+    type: "status"
+    at: "2026-05-17T12:50:29.188Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3827 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T12:43:56.751Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T12:50:29.194Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement the follow-up from 202605171139-53TJ1A: blueprint explain --kind context already resolves context.assimilation, but command help omits context from the --kind value hint. Update the CLI spec/help snapshots and focused tests."
 sections:
   Summary: |-
