@@ -1,0 +1,30 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "globalDependencies": [
+    "bun.lock",
+    "package.json",
+    "tsconfig.json",
+    "tsconfig.base.json",
+    "vitest.config.ts",
+    "vitest.workspace.ts",
+    "eslint.config.cjs",
+    "scripts/lib/test-route-registry.mjs"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "build/**", "tsconfig.tsbuildinfo"],
+      "description": "Build workspace package outputs for local AgentPlane framework development."
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "description": "Run TypeScript checks for workspace packages in the local AgentPlane framework checkout."
+    },
+    "test": {
+      "dependsOn": ["build", "^build"],
+      "outputs": [],
+      "description": "Run package-local tests for local development. This is not a release or publication gate."
+    }
+  }
+}
