@@ -56,6 +56,14 @@ type InitReport = {
   skipped: string[];
 };
 
+type StarterWikiPage = {
+  relative: string;
+  title: string;
+  modality: string;
+  status: string;
+  summary: string;
+};
+
 export async function cmdContextInit(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -309,13 +317,62 @@ async function createContextWorkspace(
     files.push(
       { relative: "context/raw/specs/.gitkeep", content: "" },
       { relative: "context/raw/research/.gitkeep", content: "" },
-      { relative: "context/wiki/index.md", content: "# Context wiki\n" },
-      { relative: "context/wiki/concepts/index.md", content: "# Concepts\n" },
-      { relative: "context/wiki/entities/index.md", content: "# Entities\n" },
-      { relative: "context/wiki/decisions/index.md", content: "# Decisions\n" },
-      { relative: "context/wiki/modules/index.md", content: "# Modules\n" },
-      { relative: "context/wiki/contradictions/index.md", content: "# Contradictions\n" },
-      { relative: "context/wiki/reports/index.md", content: "# Reports\n" },
+      starterWikiPage({
+        relative: "context/wiki/index.md",
+        title: "Context wiki",
+        modality: "definition",
+        status: "sourced_claim",
+        summary:
+          "Starter navigation page for the project-specific AgentPlane context wiki. Replace this scaffold with a hierarchy grounded in project evidence.",
+      }),
+      starterWikiPage({
+        relative: "context/wiki/concepts/index.md",
+        title: "Concepts",
+        modality: "definition",
+        status: "sourced_claim",
+        summary:
+          "Starter index for reusable concepts. Keep this page only if concept-level navigation fits the project.",
+      }),
+      starterWikiPage({
+        relative: "context/wiki/entities/index.md",
+        title: "Entities",
+        modality: "definition",
+        status: "sourced_claim",
+        summary:
+          "Starter index for people, systems, organizations, and other entities that recur across sources.",
+      }),
+      starterWikiPage({
+        relative: "context/wiki/decisions/index.md",
+        title: "Decisions",
+        modality: "decision",
+        status: "sourced_claim",
+        summary:
+          "Starter index for durable decisions and ADR-style evolution records extracted from source evidence.",
+      }),
+      starterWikiPage({
+        relative: "context/wiki/modules/index.md",
+        title: "Modules",
+        modality: "definition",
+        status: "sourced_claim",
+        summary:
+          "Starter index for code modules, runtime surfaces, and implementation areas when they are useful to future tasks.",
+      }),
+      starterWikiPage({
+        relative: "context/wiki/contradictions/index.md",
+        title: "Contradictions",
+        modality: "risk",
+        status: "sourced_claim",
+        summary:
+          "Starter index for disputed claims, stale evidence, and source conflicts that need explicit review before promotion.",
+      }),
+      starterWikiPage({
+        relative: "context/wiki/reports/index.md",
+        title: "Reports",
+        modality: "observation",
+        status: "sourced_claim",
+        summary:
+          "Starter index for context assimilation reports, audit summaries, and temporary synthesis notes.",
+      }),
       { relative: "context/wiki/concepts/.gitkeep", content: "" },
       { relative: "context/wiki/entities/.gitkeep", content: "" },
       { relative: "context/wiki/decisions/.gitkeep", content: "" },
@@ -361,6 +418,47 @@ async function createContextWorkspace(
   return { created, rewritten, skipped };
 }
 
+function starterWikiPage(page: StarterWikiPage): { relative: string; content: string } {
+  const canonicalId = `wiki.${page.relative
+    .replace(/^context\/wiki\//u, "")
+    .replace(/\/index\.md$/u, "")
+    .replace(/\.md$/u, "")
+    .replaceAll(/[^a-z0-9]+/giu, "-")
+    .replaceAll(/^-+|-+$/gu, "")
+    .toLowerCase() || "index"}`;
+  return {
+    relative: page.relative,
+    content: `---
+agentplane_context:
+  schema_version: 1
+  artifact_type: wiki_page
+  canonical_id: "${canonicalId}"
+  title: "${page.title}"
+  modality: ${page.modality}
+  epistemic_status: ${page.status}
+  visibility: project
+  source_refs: []
+  claims: []
+  graph_refs:
+    entities: []
+    edges: []
+  conflicts: []
+  updated_by: context_init
+---
+
+# ${page.title}
+
+## Summary
+
+${page.summary}
+
+## Source References
+
+- no-source: generated starter page from \`agentplane context init\`; add source references before promotion.
+`,
+  };
+}
+
 async function ensureContextGitignore(root: string, parsed: ContextInitParsed): Promise<boolean> {
   const gitignorePath = path.join(root, ".gitignore");
   const wanted = new Set<string>(DEFAULT_GITIGNORE_ENTRIES);
@@ -399,7 +497,25 @@ derived machine artifacts. Source references should be markdown links where poss
 }
 
 function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string {
-  return `# Context wiki agent notes
+  return `---
+agentplane_context:
+  schema_version: 1
+  artifact_type: wiki_page
+  canonical_id: "wiki.agents"
+  title: "Context wiki agent notes"
+  modality: policy
+  epistemic_status: sourced_claim
+  visibility: project
+  source_refs: []
+  claims: []
+  graph_refs:
+    entities: []
+    edges: []
+  conflicts: []
+  updated_by: context_init
+---
+
+# Context wiki agent notes
 
 Profile: ${profile}
 
@@ -439,6 +555,10 @@ Profile: ${profile}
 - Keep raw inputs in \`context/raw/**\`; do not copy private raw sources into public wiki pages.
 - Add source references for factual claims that come from raw files, task READMEs, ACRs, or code.
 - Use \`agentplane context verify-task <task-id>\` before closing context assimilation work.
+
+## Source References
+
+- no-source: generated policy notes from \`agentplane context init\`; add source references before promotion.
 `;
 }
 
