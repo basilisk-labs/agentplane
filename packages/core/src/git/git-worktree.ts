@@ -43,7 +43,11 @@ function stripBranchRef(branch: string): string {
 }
 
 function normalizedBranchPrefix(prefix: string): string {
-  return prefix.replaceAll(/^\/+|\/+$/g, "");
+  let start = 0;
+  let end = prefix.length;
+  while (start < end && prefix[start] === "/") start += 1;
+  while (end > start && prefix[end - 1] === "/") end -= 1;
+  return prefix.slice(start, end);
 }
 
 export function taskBranchName(opts: { taskPrefix: string; taskId: string; slug: string }): string {
