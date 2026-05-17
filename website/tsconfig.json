@@ -3,6 +3,7 @@
   "extends": "@docusaurus/tsconfig",
   "compilerOptions": {
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "strictNullChecks": true,
     "lib": ["ES2023", "DOM", "DOM.Iterable"]
   },
