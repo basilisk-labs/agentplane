@@ -1,4 +1,6 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-17T17:02:09Z",
   "base": "main",
   "batch": {
     "closure_policy": "all_or_fail",
@@ -10,18 +12,21 @@
   },
   "branch": "task/202605171630-FBWA1N/pr-open-publish-transaction",
   "created_at": "2026-05-17T16:31:17.882Z",
-  "head_sha": "4ff9be45875f40361014eab81bc9e5dea006b159",
+  "head_sha": "920c9a138c596340c48c90a3f6684c208cc998e1",
   "last_verified_at": "2026-05-17T16:41:41.932Z",
   "last_verified_sha": "4fbefbd338a3ae01ee2f221808bfd3730d6226e2",
+  "merge_commit": "fc45ebe2582dce6b20cd180f2b7527160be17ef1",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-17T17:02:09Z",
   "pr_number": 3836,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3836",
   "related_task_ids": [
     "202605171630-CXZJS8"
   ],
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605171630-FBWA1N",
-  "updated_at": "2026-05-17T16:42:15.903Z",
+  "updated_at": "2026-05-17T17:02:09Z",
   "verify": {
     "status": "pass"
   }
