@@ -2,6 +2,13 @@
 
 Created: 2026-05-17T17:26:26.425Z
 
+## Batch Tasks
+
+- Primary: `202605171724-JW38N0`
+- Closure policy: `all_or_fail`
+- Included: `202605171725-AB0HM9`
+- Included: `202605171725-AEFDJR`
+
 ## Task
 
 - Task: `202605171724-JW38N0`

@@ -2,6 +2,13 @@ Task: `202605171724-JW38N0`
 Title: Add local Turborepo dev graph overlay
 Canonical task record: `.agentplane/tasks/202605171724-JW38N0/README.md`
 
+## Batch Tasks
+
+- Primary: `202605171724-JW38N0`
+- Closure policy: `all_or_fail`
+- Included: `202605171725-AB0HM9`
+- Included: `202605171725-AEFDJR`
+
 ## Summary
 
 Add local Turborepo dev graph overlay

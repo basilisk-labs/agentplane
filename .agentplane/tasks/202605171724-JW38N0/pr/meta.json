@@ -1,10 +1,23 @@
 {
   "base": "main",
+  "batch": {
+    "closure_policy": "all_or_fail",
+    "included_task_ids": [
+      "202605171725-AB0HM9",
+      "202605171725-AEFDJR"
+    ],
+    "primary_task_id": "202605171724-JW38N0",
+    "schema_version": 1
+  },
   "branch": "task/202605171724-JW38N0/local-turbo-dev-overlay",
   "created_at": "2026-05-17T17:26:26.425Z",
   "head_sha": "773d323d33a2d5063335a635aec5bf227559062f",
   "last_verified_at": "2026-05-17T17:38:42.786Z",
   "last_verified_sha": "4dbbe339e38dd3e7127fc59f45b0867e6207a464",
+  "related_task_ids": [
+    "202605171725-AB0HM9",
+    "202605171725-AEFDJR"
+  ],
   "schema_version": 1,
   "task_id": "202605171724-JW38N0",
   "updated_at": "2026-05-17T17:40:43.503Z",
