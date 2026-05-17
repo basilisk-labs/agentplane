@@ -8,6 +8,7 @@ const repoRoot = path.resolve(__dirname, "../..");
 const packagesDir = path.join(repoRoot, "packages");
 const outputDir = path.join(repoRoot, "docs", "reference");
 const outputPath = path.join(outputDir, "generated-reference.mdx");
+const check = process.argv.includes("--check");
 
 async function readPackages() {
   const entries = await readdir(packagesDir, { withFileTypes: true });
@@ -80,9 +81,28 @@ async function main() {
     "",
   ];
 
+  const rendered = `${lines.join("\n")}`;
+  const current = await readFile(outputPath, "utf8").catch(() => null);
+  const relativeOutput = path.relative(repoRoot, outputPath);
+
+  if (check) {
+    if (current === rendered) {
+      process.stdout.write(`ok: ${relativeOutput} is fresh\n`);
+    } else {
+      process.stderr.write(`stale ${relativeOutput}\n`);
+      process.exitCode = 1;
+    }
+    return;
+  }
+
+  if (current === rendered) {
+    process.stdout.write(`unchanged ${relativeOutput}\n`);
+    return;
+  }
+
   await mkdir(outputDir, { recursive: true });
-  await writeFile(outputPath, `${lines.join("\n")}`, "utf8");
-  process.stdout.write(`generated ${path.relative(repoRoot, outputPath)}\n`);
+  await writeFile(outputPath, rendered, "utf8");
+  process.stdout.write(`generated ${relativeOutput}\n`);
 }
 
 await main();

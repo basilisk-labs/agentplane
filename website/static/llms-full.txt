@@ -712,6 +712,23 @@ agentplane cleanup merged --finalize
 `agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass
 `--merge-strategy squash` only when compacting history is intentional.
 
+## Route decision commands
+
+When a `branch_pr` task has been interrupted, partially verified, or merged through hosted close,
+prefer the route-decision commands before manually combining low-level diagnostics:
+
+```bash
+agentplane task status <task-id> --route
+agentplane task next-action <task-id>
+agentplane work resume <task-id>
+agentplane flow repair <task-id> --dry-run
+```
+
+These commands read task state, workflow mode, current checkout, PR metadata, hosted PR state, and
+close-tail state, then print a single next action plus blockers. `flow repair` is intentionally
+dry-run in this release: it classifies drift and prints the commands that would repair it, but it
+does not mutate task, branch, PR, or close-tail state.
+
 ## Minimal direct lifecycle
 
 If the repository is intentionally operating in `direct`, the shortest agent-first route is:
@@ -1139,6 +1156,10 @@ agentplane context doctor
 agentplane context reindex
 agentplane context search "query"
 agentplane context show context/wiki/page.md#section=section-slug
+agentplane context wiki new decisions/context-storage --modality decision --source .agentplane/tasks/<task-id>/README.md
+agentplane context wiki lint context/wiki/decisions/context-storage.md
+agentplane context wiki explain context/wiki/decisions/context-storage.md
+agentplane context wiki link context/wiki/decisions/context-storage.md
 agentplane context ingest --changed
 agentplane context ingest ./notes.md --run
 agentplane context harvest tasks --tag release --limit 20 --dry-run
@@ -1160,6 +1181,13 @@ READMEs with `extensions.context_harvest` for raw ingestion and
 unchanged ingested or queued tasks by source digest instead of guessing from wiki files. Write modes
 require `agentplane context init` first. Use `context verify-task` before closing work that creates
 or relies on context artifacts. See [Local context](local-context).
+
+`context wiki` helpers keep markdown pages usable by both humans and agents. `wiki new` creates a
+page with AgentPlane frontmatter, `wiki lint` checks the page manifest and source-link hygiene,
+`wiki explain` prints the technical metadata, `wiki link` suggests existing pages that may deserve
+meaningful inline cross-links, and `wiki index` refreshes generated `index.md` navigation sections.
+The helpers do not replace CURATOR judgment; they make page creation, canonical linking, indexing,
+and review less error-prone.
 
 There is no public `context list` command by design. Search is the primary discovery surface; use
 `context graph summary`, `context graph show`, and `context graph neighbors` when you need structured
@@ -1201,7 +1229,7 @@ agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome" --commit <git-rev> --close-commit
 ```
 
-`agentplane pr ...` manages local PR artifacts under `.agentplane/tasks/<task-id>/pr/`, including `review.md`, `github-title.txt`, and `github-body.md`. A normal `agentplane pr open` run also publishes the task branch and creates or links the hosted GitHub PR; use `--sync-only` only when you intentionally want local artifacts without remote side effects. The canonical required-check wait step is `bun run workflow:wait-remote-checks`, which delegates to `gh pr checks --watch --required --fail-fast`. `agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass `--merge-strategy squash` only when compacting history is intentional.
+`agentplane pr ...` manages local PR artifacts under `.agentplane/tasks/<task-id>/pr/`, including `review.md`, `github-title.txt`, and `github-body.md`. A normal `agentplane pr open` run also publishes the task branch and creates or links the hosted GitHub PR; use `--sync-only` only when you intentionally want local artifacts without remote side effects. The canonical required-check wait step is `bun run workflow:wait-remote-checks`, which polls GitHub PR check state with bounded retries, stable ready polls, and optional `--timeout-ms` conversion to an idle poll budget. `agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass `--merge-strategy squash` only when compacting history is intentional.
 
 GitHub protection audit for this repository:
 
@@ -1276,7 +1304,7 @@ agentplane task verify-show <task-id>
 agentplane pr open <task-id>
 agentplane pr update <task-id>
 agentplane verify <task-id> --ok --by CODER --note "Focused checks passed on the task branch."
-bun run workflow:wait-remote-checks
+bun run workflow:wait-remote-checks -- --timeout-ms 600000
 agentplane pr check <task-id>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 ```
@@ -1458,7 +1486,7 @@ the repository.
 
 Agent Change Record v0.1 is that artifact.
 
-<!-- truncate -->
+{/* truncate */}
 
 An ACR is a deterministic JSON projection of one AgentPlane task. It records the task intent, the
 accepted plan, the agent and toolchain context, policy decisions, changed files, verification

@@ -233,9 +233,9 @@ async function main() {
 
   let stale = false;
 
-  if (!check) {
-    await rm(socialRoot, { recursive: true, force: true });
-  }
+  let written = 0;
+  let unchanged = 0;
+  const expectedOutputs = new Set(entries.map((entry) => path.resolve(entry.outputPath)));
 
   for (const entry of entries) {
     const png = await renderCard(entry, logoDataUri);
@@ -253,8 +253,22 @@ async function main() {
       continue;
     }
 
+    const exists = await fileExists(entry.outputPath);
+    const current = exists ? await readFile(entry.outputPath) : null;
+    const matches = current && Buffer.compare(current, png) === 0;
+
+    if (matches) {
+      unchanged += 1;
+      continue;
+    }
+
     await mkdir(path.dirname(entry.outputPath), { recursive: true });
     await writeFile(entry.outputPath, png);
+    written += 1;
+  }
+
+  if (!check) {
+    await removeStaleSocialImages(socialRoot, expectedOutputs);
   }
 
   if (stale) {
@@ -262,7 +276,40 @@ async function main() {
     return;
   }
 
-  console.log(`${check ? "checked" : "generated"} ${entries.length} docs social images`);
+  console.log(
+    check
+      ? `checked ${entries.length} docs social images`
+      : `generated ${written} docs social images (${unchanged} unchanged)`,
+  );
+}
+
+async function removeStaleSocialImages(directory, expectedOutputs) {
+  const entries = await readdir(directory, { withFileTypes: true }).catch((error) => {
+    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+      return [];
+    }
+    throw error;
+  });
+
+  await Promise.all(
+    entries.map(async (entry) => {
+      const absolute = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        await removeStaleSocialImages(absolute, expectedOutputs);
+        const remaining = await readdir(absolute).catch(() => []);
+        if (remaining.length === 0) await rm(absolute, { recursive: true, force: true });
+        return;
+      }
+
+      if (
+        entry.isFile() &&
+        entry.name.endsWith(".png") &&
+        !expectedOutputs.has(path.resolve(absolute))
+      ) {
+        await rm(absolute);
+      }
+    }),
+  );
 }
 
 main().catch((error) => {
