@@ -1,10 +1,11 @@
 ---
 id: "202605171738-Z88S1G"
 title: "Harden paths-filter checkout depth"
-status: "DOING"
+result_summary: "Merged via PR #3846."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Added fetch-depth: 0 to dorny/paths-filter changes jobs in Core CI, Docs CI, and Pre-publish workflows. Local verification passed: targeted rg inspection, workflow command contract, policy routing, and git diff --check. Remote PR checks will validate GitHub Actions behavior."
   attempts: 0
-commit: null
+commit:
+  hash: "ca87d4e5842544bda3015e6605e97e391acd5f4f"
+  message: "Merge pull request #3846 from basilisk-labs/task/202605171738-Z88S1G/paths-filter-fetch-depth"
 comments:
   -
     author: "CODER"
     body: "Start: Harden GitHub Actions path-filter changes jobs by making checkout history complete before dorny/paths-filter runs, addressing the observed shallow fetch race on main push CI."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3846 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added fetch-depth: 0 to dorny/paths-filter changes jobs in Core CI, Docs CI, and Pre-publish workflows. Local verification passed: targeted rg inspection, workflow command contract, policy routing, and git diff --check. Remote PR checks will validate GitHub Actions behavior."
+  -
+    type: "status"
+    at: "2026-05-17T17:49:52.692Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3846 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T17:40:44.284Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T17:49:52.698Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix GitHub Actions dorny/paths-filter shallow fetch race on main push runs by ensuring changes jobs checkout full history before path filtering."
 sections:
   Summary: |-
