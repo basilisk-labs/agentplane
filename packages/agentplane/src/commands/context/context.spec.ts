@@ -179,7 +179,7 @@ export const contextGraphSpec: CommandSpec<GroupCommandParsed> = {
 export const contextWikiSpec: CommandSpec<GroupCommandParsed> = {
   id: ["context", "wiki"],
   group: "Context",
-  summary: "Create, lint, explain, and link local context wiki pages.",
+  summary: "Create, lint, explain, link, and index local context wiki pages.",
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   parse: (raw) => parseGroupCommand(raw),
 };
@@ -274,6 +274,14 @@ export const contextWikiLinkSpec: CommandSpec<{ page: string }> = {
   summary: "Suggest existing wiki pages that may deserve cross-links.",
   args: [{ name: "page", required: true, valueHint: "<path-or-slug>" }],
   parse: (raw) => ({ page: String(raw.args.page) }),
+};
+
+export const contextWikiIndexSpec: CommandSpec<{ path: string }> = {
+  id: ["context", "wiki", "index"],
+  group: "Context",
+  summary: "Update generated wiki index sections for pages and subdirectories.",
+  args: [{ name: "path", required: false, valueHint: "<path>" }],
+  parse: (raw) => ({ path: typeof raw.args.path === "string" ? raw.args.path : "context/wiki" }),
 };
 
 export const contextHarvestSpec: CommandSpec<GroupCommandParsed> = {

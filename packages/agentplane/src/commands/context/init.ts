@@ -419,16 +419,21 @@ Profile: ${profile}
 - Decisions from task history should be written as ADR/evolution records with provenance and
   supersession metadata, not as probabilistic factual claims.
 - If a glossary is useful, keep it as a thin index over existing wiki pages and graph entities, not as a competing source of truth.
-- Prefer useful Markdown cross-links between related wiki pages and glossary entries, especially on first meaningful mentions of known concepts, entities, decisions, risks, or modules.
+- Prefer useful inline Markdown cross-links between related wiki pages and glossary entries,
+  especially on first meaningful mentions of known concepts, entities, decisions, risks, or modules.
+- When lookup gives high confidence that a source term matches an existing wiki page or graph
+  entity, use the canonical term in prose and link it to the canonical page or section; record the
+  source-local term as an alias when useful.
 - Use \`agentplane context wiki new\`, \`agentplane context wiki lint\`,
-  \`agentplane context wiki explain\`, and \`agentplane context wiki link\` when creating or
-  reviewing wiki pages.
+  \`agentplane context wiki explain\`, \`agentplane context wiki link\`, and
+  \`agentplane context wiki index\` when creating, linking, indexing, or reviewing wiki pages.
 - Before writing new wiki/facts/graph data, search existing context and graph rows for matching
   entities and use canonical labels when an analyzed source mentions an already-described entity.
 - If new evidence extends an existing entity, update the existing page or section and add sourced
   claims/provenance instead of creating a duplicate page.
 - If a small object belongs inside a broader topic, describe it under a stable heading and link to
   that section from related pages.
+- Update relevant \`index.md\` pages after adding, moving, or materially renaming wiki pages.
 - When claims conflict, keep both claims, create a conflict candidate, and ask for review before
   promotion or overwrite.
 - Keep raw inputs in \`context/raw/**\`; do not copy private raw sources into public wiki pages.
