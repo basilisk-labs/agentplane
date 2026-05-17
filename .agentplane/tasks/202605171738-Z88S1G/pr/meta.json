@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605171738-Z88S1G/paths-filter-fetch-depth",
+  "created_at": "2026-05-17T17:39:54.087Z",
+  "head_sha": "2821cb1d05a6bd6d04c700852a0cc904856fa97e",
+  "last_verified_at": "2026-05-17T17:40:44.273Z",
+  "last_verified_sha": "59a507f34063a995bdab0faa057af678575a6e9a",
+  "schema_version": 1,
+  "task_id": "202605171738-Z88S1G",
+  "updated_at": "2026-05-17T17:41:23.606Z",
+  "verify": {
+    "status": "pass"
+  }
+}
