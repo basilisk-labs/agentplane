@@ -4,7 +4,7 @@ title: "Keep failed pr open publish attempts artifact-clean"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-17T16:41:51.364Z"
+  updated_by: "CODER"
+  note: "Focused PR-open failed-publish artifact regression passed: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts completed with 6 pass / 0 fail and covers simulated publish failure leaving tracked PR artifacts clean."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implementing failed-publish artifact cleanup in the same approved batch worktree as 202605171630-FBWA1N because both defects share the pr open publish transaction path."
+  -
+    type: "verify"
+    at: "2026-05-17T16:41:51.364Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused PR-open failed-publish artifact regression passed: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts completed with 6 pass / 0 fail and covers simulated publish failure leaving tracked PR artifacts clean."
 doc_version: 3
-doc_updated_at: "2026-05-17T16:39:03.343Z"
+doc_updated_at: "2026-05-17T16:41:51.370Z"
 doc_updated_by: "CODER"
 description: "Ensure agentplane pr open does not leave dirty pr/meta.json or other transient PR artifacts when remote publication fails before PR creation/linking."
 sections:
@@ -53,11 +59,33 @@ sections:
   Verify Steps: "Run bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts. Expected: a simulated task branch publish failure returns an error without writing remote_failed or leaving tracked PR artifacts dirty."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-17T16:41:51.364Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Focused PR-open failed-publish artifact regression passed: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts completed with 6 pass / 0 fail and covers simulated publish failure leaving tracked PR artifacts clean.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T16:39:03.343Z, excerpt_hash=sha256:adf5bacf5319f15bd65a1e23d9fc75c8804b5974d496fcc84b9fd359a410ebff
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171630-FBWA1N-pr-open-publish-transaction/.agentplane/tasks/202605171630-CXZJS8/blueprint/resolved-snapshot.json
+    - old_digest: f7fbab170a654bf0e7dd6a01d84ee2748ae34af81f1b4f3bfd4a5338f0122ead
+    - current_digest: f7fbab170a654bf0e7dd6a01d84ee2748ae34af81f1b4f3bfd4a5338f0122ead
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171630-CXZJS8
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts
+      Impact: Result: pass; Scope: failed pr open publish attempts and pr/meta.json cleanliness.
+      Resolution: Removed remote_failed metadata mutation on task-branch publish failure and asserted clean tracked status.
 id_source: "generated"
 ---
 ## Summary
@@ -82,6 +110,25 @@ Run bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.t
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-17T16:41:51.364Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused PR-open failed-publish artifact regression passed: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts completed with 6 pass / 0 fail and covers simulated publish failure leaving tracked PR artifacts clean.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T16:39:03.343Z, excerpt_hash=sha256:adf5bacf5319f15bd65a1e23d9fc75c8804b5974d496fcc84b9fd359a410ebff
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171630-FBWA1N-pr-open-publish-transaction/.agentplane/tasks/202605171630-CXZJS8/blueprint/resolved-snapshot.json
+- old_digest: f7fbab170a654bf0e7dd6a01d84ee2748ae34af81f1b4f3bfd4a5338f0122ead
+- current_digest: f7fbab170a654bf0e7dd6a01d84ee2748ae34af81f1b4f3bfd4a5338f0122ead
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171630-CXZJS8
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -90,3 +137,7 @@ Run bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.t
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts
+  Impact: Result: pass; Scope: failed pr open publish attempts and pr/meta.json cleanliness.
+  Resolution: Removed remote_failed metadata mutation on task-branch publish failure and asserted clean tracked status.

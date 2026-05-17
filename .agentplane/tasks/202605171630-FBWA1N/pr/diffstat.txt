@@ -1,0 +1,7 @@
+ .agentplane/tasks/202605171630-CXZJS8/README.md    |  92 ++++
+ .../blueprint/resolved-snapshot.json               | 528 +++++++++++++++++++++
+ .../blueprint/resolved-snapshot.json               | 528 +++++++++++++++++++++
+ .../cli/run-cli.core.pr-flow.pr-open.git.test.ts   | 162 ++++++-
+ .../src/commands/pr/internal/sync-branch.ts        |   1 +
+ packages/agentplane/src/commands/pr/open.ts        |  85 +---
+ 6 files changed, 1328 insertions(+), 68 deletions(-)
