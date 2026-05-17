@@ -19,8 +19,8 @@ Add GitHub-native maintenance workflows for code scanning, dependency review, an
 - Note:
 
 ```text
-Added GitHub-native repository health workflows and verified workflow lint, formatting, and doctor
-in the task worktree.
+Adjusted implementation to avoid duplicating existing GitHub CodeQL default setup; retained
+Dependabot and Dependency Review repo files.
 ```
 - Canonical workflow state lives in the task README.
 

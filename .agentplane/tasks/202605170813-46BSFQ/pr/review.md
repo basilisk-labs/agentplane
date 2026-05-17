@@ -13,7 +13,7 @@ Created: 2026-05-17T08:17:05.883Z
 ## Verification
 
 - State: ok
-- Note: Added GitHub-native repository health workflows and verified workflow lint, formatting, and doctor in the task worktree.
+- Note: Adjusted implementation to avoid duplicating existing GitHub CodeQL default setup; retained Dependabot and Dependency Review repo files.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
