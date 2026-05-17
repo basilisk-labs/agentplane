@@ -1,10 +1,11 @@
 ---
 id: "202605170657-EDT46B"
 title: "Harden Claude branch_pr merge guidance"
-status: "DOING"
+result_summary: "Merged via PR #3789."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Focused verification passed: init Claude gateway generation test, quickstart command-guide test, policy routing, agent template sync check, builtin asset freshness check, and Prettier check all passed. Implementation commit: 1dea641275b520ef75d3a0f6baa5ee9c060ea16d."
   attempts: 0
-commit: null
+commit:
+  hash: "2b1b2768be22505eda03ab63d6e4d1c289d88e17"
+  message: "Merge pull request #3789 from basilisk-labs/task/202605170657-EDT46B/claude-branch-pr-guidance"
 comments:
   -
     author: "CODER"
     body: "Start: hardening generated Claude and branch_pr guidance after GitHub merge attribution drift, using an isolated worktree because base main is behind origin and dirty."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3789 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused verification passed: init Claude gateway generation test, quickstart command-guide test, policy routing, agent template sync check, builtin asset freshness check, and Prettier check all passed. Implementation commit: 1dea641275b520ef75d3a0f6baa5ee9c060ea16d."
+  -
+    type: "status"
+    at: "2026-05-17T07:43:58.782Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3789 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T07:02:35.634Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T07:43:58.787Z"
+doc_updated_by: "INTEGRATOR"
 description: "Clarify generated Claude-facing branch_pr guidance so Claude Code agents do not treat user-authenticated GitHub merges as ordinary task completion, wait for stable hosted checks, and use explicit post-merge/followup task routes after a task is already DONE."
 sections:
   Summary: |-
