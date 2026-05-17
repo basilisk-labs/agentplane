@@ -294,6 +294,17 @@ describe("config", () => {
     expect(({} as { polluted?: boolean }).polluted).toBeUndefined();
   });
 
+  it("setByDottedKey creates nested values as own properties", () => {
+    const cfg = Object.create(null) as Record<string, unknown>;
+    setByDottedKey(cfg, "safe.nested", "true");
+
+    expect(Object.hasOwn(cfg, "safe")).toBe(true);
+    const safe = cfg.safe as Record<string, unknown>;
+    expect(Object.hasOwn(safe, "nested")).toBe(true);
+    expect(safe.nested).toBe(true);
+    expect(({} as { nested?: boolean }).nested).toBeUndefined();
+  });
+
   it("saveConfig writes WORKFLOW.md, removes config.json, and loadConfig reads it back", async () => {
     const tmp = await mkdtemp(path.join(os.tmpdir(), "agentplane-config-test-"));
     const agentplaneDir = path.join(tmp, ".agentplane");

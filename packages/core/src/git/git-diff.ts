@@ -20,31 +20,75 @@ export function toGitPath(filePath: string): string {
   return filePath.split(path.sep).join("/");
 }
 
-function gitDiffRange(base: string, branch: string, range: GitDiffRange = "three-dot"): string {
-  // Git revision ranges are passed as argv elements, not shell text.
-  // codeql[js/shell-command-constructed-from-input]
-  return range === "two-dot" ? `${base}..${branch}` : `${base}...${branch}`;
+function assertSafeGitPath(relPath: string): void {
+  if (!relPath || relPath.includes("\0")) throw new Error("git path must be non-empty");
+  if (path.isAbsolute(relPath) || relPath.split(/[\\/]/u).includes("..")) {
+    throw new Error(`git path must be repository-relative: ${relPath}`);
+  }
 }
 
-export async function gitShowFile(cwd: string, ref: string, relPath: string): Promise<string> {
-  // Git object specs are passed as argv elements, not shell text.
-  // codeql[js/shell-command-constructed-from-input]
-  const { stdout } = await execFileAsync("git", ["show", `${ref}:${relPath}`], {
+function assertSafeGitRef(ref: string): void {
+  if (ref.length === 0 || ref !== ref.trim()) throw new Error("git ref must be non-empty");
+  if (/[\0\r\n\s]/u.test(ref)) throw new Error("git ref contains invalid whitespace");
+  if (ref.startsWith("-")) throw new Error("git ref must not start with an option prefix");
+  if (
+    ref.includes("..") ||
+    ref.includes("@{") ||
+    /[\\:^~?*]/u.test(ref) ||
+    ref.includes("[") ||
+    ref.endsWith("/") ||
+    ref.endsWith(".") ||
+    ref.endsWith(".lock")
+  ) {
+    throw new Error(`git ref is not safe: ${ref}`);
+  }
+}
+
+async function resolveDiffBase(
+  cwd: string,
+  base: string,
+  branch: string,
+  range: GitDiffRange = "three-dot",
+): Promise<string> {
+  assertSafeGitRef(base);
+  assertSafeGitRef(branch);
+  if (range === "two-dot") return base;
+  const { stdout } = await execFileAsync("git", ["merge-base", base, branch], {
     cwd,
     env: gitEnv(),
   });
+  const mergeBase = String(stdout).trim();
+  if (!mergeBase) throw new Error("Failed to resolve git merge-base");
+  return mergeBase;
+}
+
+export async function gitShowFile(cwd: string, ref: string, relPath: string): Promise<string> {
+  assertSafeGitRef(ref);
+  assertSafeGitPath(relPath);
+  const { stdout: lsTreeOut } = await execFileAsync(
+    "git",
+    ["ls-tree", "-z", ref, "--", toGitPath(relPath)],
+    {
+      cwd,
+      env: gitEnv(),
+      encoding: "buffer",
+    },
+  );
+  const entry = Buffer.isBuffer(lsTreeOut) ? lsTreeOut.toString("utf8") : String(lsTreeOut);
+  const match = /\bblob\s+([0-9a-f]{40,64})\t/u.exec(entry);
+  const blob = match?.[1];
+  if (!blob) throw new Error(`Failed to resolve git blob: ${relPath}`);
+
+  const { stdout } = await execFileAsync("git", ["cat-file", "blob", blob], { cwd, env: gitEnv() });
   return String(stdout);
 }
 
 export async function gitDiffNames(cwd: string, base: string, branch: string): Promise<string[]> {
-  const { stdout } = await execFileAsync(
-    "git",
-    ["diff", "--name-only", gitDiffRange(base, branch)],
-    {
-      cwd,
-      env: gitEnv(),
-    },
-  );
+  const diffBase = await resolveDiffBase(cwd, base, branch);
+  const { stdout } = await execFileAsync("git", ["diff", "--name-only", diffBase, branch], {
+    cwd,
+    env: gitEnv(),
+  });
   return String(stdout)
     .split("\n")
     .map((line) => line.trim())
@@ -57,14 +101,11 @@ export async function gitDiffNameStatus(
   branch: string,
   opts?: { range?: GitDiffRange },
 ): Promise<GitDiffNameStatusEntry[]> {
-  const { stdout } = await execFileAsync(
-    "git",
-    ["diff", "--name-status", gitDiffRange(base, branch, opts?.range)],
-    {
-      cwd,
-      env: gitEnv(),
-    },
-  );
+  const diffBase = await resolveDiffBase(cwd, base, branch, opts?.range);
+  const { stdout } = await execFileAsync("git", ["diff", "--name-status", diffBase, branch], {
+    cwd,
+    env: gitEnv(),
+  });
   return String(stdout)
     .split("\n")
     .filter(Boolean)
@@ -83,14 +124,11 @@ export async function gitDiffNumstat(
   branch: string,
   opts?: { range?: GitDiffRange },
 ): Promise<GitDiffNumstatEntry[]> {
-  const { stdout } = await execFileAsync(
-    "git",
-    ["diff", "--numstat", gitDiffRange(base, branch, opts?.range)],
-    {
-      cwd,
-      env: gitEnv(),
-    },
-  );
+  const diffBase = await resolveDiffBase(cwd, base, branch, opts?.range);
+  const { stdout } = await execFileAsync("git", ["diff", "--numstat", diffBase, branch], {
+    cwd,
+    env: gitEnv(),
+  });
   return String(stdout)
     .split("\n")
     .filter(Boolean)
@@ -110,15 +148,27 @@ export async function gitDiffStat(
   branch: string,
   opts?: { excludePaths?: string[] },
 ): Promise<string> {
-  const args = ["diff", "--stat", gitDiffRange(base, branch)];
+  const diffBase = await resolveDiffBase(cwd, base, branch);
   const excludePaths = (opts?.excludePaths ?? [])
     .map((relPath) => relPath.trim())
-    .filter((relPath) => relPath.length > 0)
-    // Git pathspecs are passed after `--` as argv elements, not shell text.
-    // codeql[js/shell-command-constructed-from-input]
-    .map((relPath) => `:(exclude)${toGitPath(relPath)}`);
+    .filter((relPath) => relPath.length > 0);
+  const args = ["diff", "--stat", diffBase, branch];
   if (excludePaths.length > 0) {
-    args.push("--", ".", ...excludePaths);
+    for (const relPath of excludePaths) assertSafeGitPath(relPath);
+    const excluded = new Set(excludePaths.map((relPath) => toGitPath(relPath)));
+    const changedPaths = await gitDiffNames(cwd, base, branch);
+    const includedPaths = changedPaths
+      .map((relPath) => relPath.trim())
+      .filter((relPath) => relPath.length > 0)
+      .filter((relPath) => {
+        assertSafeGitPath(relPath);
+        const gitPath = toGitPath(relPath);
+        return ![...excluded].some((excludedPath) => {
+          return gitPath === excludedPath || gitPath.startsWith(`${excludedPath}/`);
+        });
+      });
+    if (includedPaths.length === 0) return "";
+    args.push("--", ...includedPaths.map((relPath) => toGitPath(relPath)));
   }
   const { stdout } = await execFileAsync("git", args, {
     cwd,
@@ -132,18 +182,11 @@ export async function gitAheadBehind(
   base: string,
   branch: string,
 ): Promise<{ ahead: number; behind: number }> {
-  // Git revision ranges are passed as argv elements, not shell text.
-  // codeql[js/shell-command-constructed-from-input]
-  const { stdout } = await execFileAsync(
-    "git",
-    ["rev-list", "--left-right", "--count", `${base}...${branch}`],
-    { cwd, env: gitEnv() },
-  );
-  const trimmed = String(stdout).trim();
-  if (!trimmed) return { ahead: 0, behind: 0 };
-  const parts = trimmed.split(/\s+/);
-  if (parts.length !== 2) return { ahead: 0, behind: 0 };
-  const behind = Number.parseInt(parts[0] ?? "0", 10) || 0;
-  const ahead = Number.parseInt(parts[1] ?? "0", 10) || 0;
+  const [{ stdout: aheadOut }, { stdout: behindOut }] = await Promise.all([
+    execFileAsync("git", ["rev-list", "--count", branch, "--not", base], { cwd, env: gitEnv() }),
+    execFileAsync("git", ["rev-list", "--count", base, "--not", branch], { cwd, env: gitEnv() }),
+  ]);
+  const ahead = Number.parseInt(String(aheadOut).trim(), 10) || 0;
+  const behind = Number.parseInt(String(behindOut).trim(), 10) || 0;
   return { ahead, behind };
 }

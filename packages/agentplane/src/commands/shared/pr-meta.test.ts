@@ -1,4 +1,3 @@
-import os from "node:os";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
@@ -32,36 +31,29 @@ describe("pr-meta shell invocations", () => {
     process.env.ComSpec = originalComSpec;
   });
 
-  it("uses POSIX shell on non-Windows", () => {
-    vi.spyOn(os, "platform").mockReturnValue("linux");
-    expect(resolveShellInvocation("echo hello")).toEqual({
-      command: "sh",
-      args: ["-lc", "echo hello"],
+  it("parses verify commands as argv without a shell", () => {
+    expect(
+      resolveShellInvocation("bun test 'packages/core/src/process/run-process.test.ts'"),
+    ).toEqual({
+      command: "bun",
+      args: ["test", "packages/core/src/process/run-process.test.ts"],
     });
   });
 
-  it("uses cmd.exe on Windows", () => {
-    vi.spyOn(os, "platform").mockReturnValue("win32");
-    delete process.env.COMSPEC;
-    delete process.env.ComSpec;
-    expect(resolveShellInvocation("echo hello")).toEqual({
-      command: "cmd.exe",
-      args: ["/d", "/s", "/c", "echo hello"],
-    });
+  it("rejects shell metacharacters in verify commands", () => {
+    expect(() => resolveShellInvocation("echo hello && rm -rf .")).toThrow(/argv syntax/);
   });
 
-  it("uses COMSPEC when provided", () => {
-    vi.spyOn(os, "platform").mockReturnValue("win32");
+  it("does not use COMSPEC as executable input", () => {
     delete process.env.ComSpec;
     process.env.COMSPEC = "custom-cmd.exe";
     expect(resolveShellInvocation("echo hello")).toEqual({
-      command: "custom-cmd.exe",
-      args: ["/d", "/s", "/c", "echo hello"],
+      command: "echo",
+      args: ["hello"],
     });
   });
 
   it("uses current shell invocation for command execution", async () => {
-    vi.spyOn(os, "platform").mockReturnValue("win32");
     delete process.env.COMSPEC;
     delete process.env.ComSpec;
     const gitProcess = await import("@agentplaneorg/core/process");
@@ -73,8 +65,8 @@ describe("pr-meta shell invocations", () => {
     const result = await runShellCommand("echo hello", process.cwd());
 
     expect(execFileAsync).toHaveBeenCalledWith(
-      "cmd.exe",
-      ["/d", "/s", "/c", "echo hello"],
+      "echo",
+      ["hello"],
       expect.objectContaining({ cwd: process.cwd() }),
     );
     expect(result).toEqual({ code: 0, output: "ok" });

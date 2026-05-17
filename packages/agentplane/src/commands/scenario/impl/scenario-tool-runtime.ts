@@ -46,7 +46,10 @@ export async function executeRecipeTool(opts: {
         ? (err as { code?: number | string }).code
         : undefined;
     const code = typeof rawCode === "number" ? rawCode : undefined;
-    const isCommandNotFound = rawCode === "ENOENT" || code === 127;
+    const isCommandNotFound =
+      rawCode === "ENOENT" ||
+      code === 127 ||
+      (err instanceof Error && err.message.includes("allowed executable set"));
     let execErr: { code?: number; stdout?: string; stderr?: string } | null = null;
     if (err && typeof err === "object") {
       execErr = err as { code?: number; stdout?: string; stderr?: string };

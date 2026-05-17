@@ -84,6 +84,19 @@ function splitScopeSummary(rest: string): { scope: string; summary: string } | n
   return { scope, summary };
 }
 
+function sanitizeSubjectToken(input: string, fallback: string): string {
+  const trimmed = input
+    .replaceAll(/[\0\r\n]/gu, " ")
+    .trim()
+    .replaceAll(/\s+/gu, "-");
+  return trimmed || fallback;
+}
+
+function sanitizeSubjectScope(input: string, fallback: string): string {
+  const trimmed = input.trim().toLowerCase();
+  return isCommitScope(trimmed) ? trimmed : fallback;
+}
+
 export function commitScopesForTaskIntent(intent: CommitTaskIntent): string[] {
   const scopes = new Set<string>();
   if (
@@ -158,13 +171,14 @@ export function buildTaskArtifactRefreshCommitSubject(opts: {
   defaultEmoji?: string;
   defaultScope?: string;
 }): string {
-  const suffix = extractTaskSuffix(opts.taskId);
+  const suffix = sanitizeSubjectToken(extractTaskSuffix(opts.taskId), "TASK");
   const parsed = parseTaskSubjectTemplate(opts.baseSubject ?? "");
   const canInherit = parsed !== null && parsed.suffix.toLowerCase() === suffix.toLowerCase();
-  const emoji = canInherit ? parsed.emoji : (opts.defaultEmoji ?? "🧩");
-  const scope = canInherit ? parsed.scope : (opts.defaultScope ?? "task");
-  // Commit subjects are data for git commit metadata, not shell commands.
-  // codeql[js/shell-command-constructed-from-input]
+  const emoji = sanitizeSubjectToken(canInherit ? parsed.emoji : (opts.defaultEmoji ?? "🧩"), "🧩");
+  const scope = sanitizeSubjectScope(
+    canInherit ? parsed.scope : (opts.defaultScope ?? "task"),
+    "task",
+  );
   return `${emoji} ${suffix} ${scope}: ${TASK_ARTIFACT_REFRESH_SUMMARY}`;
 }
 
