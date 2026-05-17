@@ -34,23 +34,28 @@ typecheck/build, ci:local:turbo, prettier check, policy routing, and doctor all 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-17T17:40:43.503Z
+- Updated: 2026-05-17T17:51:35.339Z
 - Branch: task/202605171724-JW38N0/local-turbo-dev-overlay
-- Head: 773d323d33a2
+- Head: 742e76377edb
 
 ```text
  .../blueprint/resolved-snapshot.json               | 526 +++++++++++++++++++++
- .agentplane/tasks/202605171725-AB0HM9/README.md    |  89 ++++
- .agentplane/tasks/202605171725-AEFDJR/README.md    |  89 ++++
+ .agentplane/tasks/202605171725-AB0HM9/README.md    | 183 +++++++
+ .../blueprint/resolved-snapshot.json               | 357 ++++++++++++++
+ .agentplane/tasks/202605171725-AEFDJR/README.md    | 185 ++++++++
+ .../blueprint/resolved-snapshot.json               | 526 +++++++++++++++++++++
  .gitignore                                         |   1 +
  bun.lock                                           |  15 +
+ docs/developer/testing-and-quality.mdx             |  35 ++
  package.json                                       |   7 +
  packages/agentplane/package.json                   |   1 +
  packages/core/package.json                         |   1 +
  packages/recipes/package.json                      |   2 +-
  packages/testkit/package.json                      |   2 +-
+ scripts/README.md                                  |  11 +
+ scripts/checks/run-turbo-local-ci.mjs              | 126 +++++
  turbo.json                                         |  30 ++
- 11 files changed, 761 insertions(+), 2 deletions(-)
+ 16 files changed, 2006 insertions(+), 2 deletions(-)
 ```
 
 </details>
