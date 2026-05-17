@@ -19,9 +19,9 @@ Add machine-readable task route/status/next-action/resume/repair commands for br
 - Note:
 
 ```text
-Implemented route decision CLI commands and docs/prompt guidance. Verified focused route command
-tests, existing PR flow status test, typecheck, lint:core, format:check, policy routing, diff check,
-framework bootstrap, and repo-local command smokes.
+Post-commit verification refreshed at current HEAD after route decision CLI implementation commit.
+Focused tests, typecheck, lint:core, format:check, policy routing, diff check, framework bootstrap,
+and repo-local command smokes passed.
 ```
 - Canonical workflow state lives in the task README.
 

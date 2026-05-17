@@ -13,7 +13,7 @@ Created: 2026-05-17T10:56:21.808Z
 ## Verification
 
 - State: ok
-- Note: Implemented route decision CLI commands and docs/prompt guidance. Verified focused route command tests, existing PR flow status test, typecheck, lint:core, format:check, policy routing, diff check, framework bootstrap, and repo-local command smokes.
+- Note: Post-commit verification refreshed at current HEAD after route decision CLI implementation commit. Focused tests, typecheck, lint:core, format:check, policy routing, diff check, framework bootstrap, and repo-local command smokes passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

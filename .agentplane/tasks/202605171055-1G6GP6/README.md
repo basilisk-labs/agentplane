@@ -4,7 +4,7 @@ title: "Add branch_pr route decision CLI commands"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-17T11:09:34.486Z"
+  updated_at: "2026-05-17T11:10:35.028Z"
   updated_by: "CODER"
-  note: "Implemented route decision CLI commands and docs/prompt guidance. Verified focused route command tests, existing PR flow status test, typecheck, lint:core, format:check, policy routing, diff check, framework bootstrap, and repo-local command smokes."
+  note: "Post-commit verification refreshed at current HEAD after route decision CLI implementation commit. Focused tests, typecheck, lint:core, format:check, policy routing, diff check, framework bootstrap, and repo-local command smokes passed."
   attempts: 0
 commit: null
 comments:
@@ -47,8 +47,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented route decision CLI commands and docs/prompt guidance. Verified focused route command tests, existing PR flow status test, typecheck, lint:core, format:check, policy routing, diff check, framework bootstrap, and repo-local command smokes."
+  -
+    type: "verify"
+    at: "2026-05-17T11:10:35.028Z"
+    author: "CODER"
+    state: "ok"
+    note: "Post-commit verification refreshed at current HEAD after route decision CLI implementation commit. Focused tests, typecheck, lint:core, format:check, policy routing, diff check, framework bootstrap, and repo-local command smokes passed."
 doc_version: 3
-doc_updated_at: "2026-05-17T11:09:34.492Z"
+doc_updated_at: "2026-05-17T11:10:35.035Z"
 doc_updated_by: "CODER"
 description: "Add machine-readable task route/status/next-action/resume/repair commands for branch_pr agent workflow optimization, and update prompts plus CLI documentation to teach the new commands."
 sections:
@@ -89,6 +95,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605171055-1G6GP6
     
+    ### 2026-05-17T11:10:35.028Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Post-commit verification refreshed at current HEAD after route decision CLI implementation commit. Focused tests, typecheck, lint:core, format:check, policy routing, diff check, framework bootstrap, and repo-local command smokes passed.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T11:09:34.492Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171055-1G6GP6-route-decision-cli/.agentplane/tasks/202605171055-1G6GP6/blueprint/resolved-snapshot.json
+    - old_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+    - current_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171055-1G6GP6
+    
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -97,6 +122,10 @@ sections:
     - Observation: Added task status --route, task next-action, work resume, and flow repair --dry-run on a shared route-decision reader; flow repair is intentionally dry-run only.
       Impact: Agents can ask for one machine-readable next action and repair plan instead of manually composing task show, resume-context, pr flow status, and preflight output.
       Resolution: New commands are registered in the command catalog, covered by focused CLI tests, documented in generated CLI reference and task lifecycle docs, and surfaced in quickstart/role guidance.
+    
+    - Observation: Verification was refreshed after implementation and task-artifact commits so PR validation sees current HEAD.
+      Impact: PR artifacts can now be checked against non-stale verification evidence.
+      Resolution: Recorded verification on the current task branch head before PR artifact validation.
 id_source: "explicit"
 ---
 ## Summary
@@ -146,6 +175,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605171055-1G6GP6
 
+### 2026-05-17T11:10:35.028Z — VERIFY — ok
+
+By: CODER
+
+Note: Post-commit verification refreshed at current HEAD after route decision CLI implementation commit. Focused tests, typecheck, lint:core, format:check, policy routing, diff check, framework bootstrap, and repo-local command smokes passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T11:09:34.492Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171055-1G6GP6-route-decision-cli/.agentplane/tasks/202605171055-1G6GP6/blueprint/resolved-snapshot.json
+- old_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+- current_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171055-1G6GP6
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -158,3 +206,7 @@ BlueprintSnapshotRef:
 - Observation: Added task status --route, task next-action, work resume, and flow repair --dry-run on a shared route-decision reader; flow repair is intentionally dry-run only.
   Impact: Agents can ask for one machine-readable next action and repair plan instead of manually composing task show, resume-context, pr flow status, and preflight output.
   Resolution: New commands are registered in the command catalog, covered by focused CLI tests, documented in generated CLI reference and task lifecycle docs, and surfaced in quickstart/role guidance.
+
+- Observation: Verification was refreshed after implementation and task-artifact commits so PR validation sees current HEAD.
+  Impact: PR artifacts can now be checked against non-stale verification evidence.
+  Resolution: Recorded verification on the current task branch head before PR artifact validation.
