@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605171458-HWXZC9/context-init-wiki-lint",
+  "created_at": "2026-05-17T15:30:01.865Z",
+  "head_sha": "0747a540ef6b3402c6cbf8ae8ec0fe6c3cd7d4fc",
+  "last_verified_at": "2026-05-17T15:31:42.427Z",
+  "last_verified_sha": "0747a540ef6b3402c6cbf8ae8ec0fe6c3cd7d4fc",
+  "schema_version": 1,
+  "task_id": "202605171458-HWXZC9",
+  "updated_at": "2026-05-17T15:31:42.491Z",
+  "verify": {
+    "status": "pass"
+  }
+}
