@@ -359,6 +359,9 @@ describe("context release readiness guards", () => {
     ).toContain("agentplane context wiki index context/wiki");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+    ).toContain("Final update step: refresh affected indexes, navigation pages, glossary entries");
+    expect(
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("use the canonical term in prose and link it to the canonical page or section");
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.wiki).toMatchObject({
       layout_strategy: "adaptive",
