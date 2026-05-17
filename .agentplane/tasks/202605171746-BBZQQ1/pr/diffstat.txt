@@ -16,11 +16,12 @@
  .../cli/run-cli/commands/init/steps/contracts.ts   |   1 +
  .../commands/init/steps/prompt-steps.test.ts       |   5 +-
  .../src/cli/run-cli/commands/init/write-config.ts  |   6 +
- .../src/commands/insights/insights.command.ts      | 165 ++++++-
+ .../commands/insights/insights-issue-publish.ts    | 161 +++++++
+ .../src/commands/insights/insights.command.ts      |  70 +--
  .../src/commands/insights/insights.spec.ts         |  10 +
  packages/core/schemas/config.schema.json           |  20 +
  packages/core/src/config/config.test.ts            |   3 +
  packages/core/src/config/schema.impl.ts            |  24 +-
  packages/spec/schemas/config.schema.json           |  20 +
  schemas/config.schema.json                         |  20 +
- 25 files changed, 986 insertions(+), 20 deletions(-)
+ 26 files changed, 1038 insertions(+), 34 deletions(-)

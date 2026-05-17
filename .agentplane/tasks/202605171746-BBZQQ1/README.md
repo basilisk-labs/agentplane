@@ -4,7 +4,7 @@ title: "Add feedback issue publish transports"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-17T18:04:35.770Z"
+  updated_at: "2026-05-17T18:13:31.941Z"
   updated_by: "CODER"
-  note: "Implemented controlled feedback issue transports and verified focused CLI/config coverage plus generated artifacts."
+  note: "Post-refactor verification: split feedback issue publishing helpers below hotspot threshold after pre-push hotspot gate caught oversized command module."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented controlled feedback issue transports and verified focused CLI/config coverage plus generated artifacts."
+  -
+    type: "verify"
+    at: "2026-05-17T18:13:31.941Z"
+    author: "CODER"
+    state: "ok"
+    note: "Post-refactor verification: split feedback issue publishing helpers below hotspot threshold after pre-push hotspot gate caught oversized command module."
 doc_version: 3
-doc_updated_at: "2026-05-17T18:04:35.779Z"
+doc_updated_at: "2026-05-17T18:13:31.947Z"
 doc_updated_by: "CODER"
 description: "Extend the AgentPlane feedback issue flow from privacy-bounded draft creation to controlled publish transports, including GitHub publishing ergonomics and an anonymous cloud intake fallback."
 sections:
@@ -96,6 +102,29 @@ sections:
     Command: bun run typecheck. Result: pass. Evidence: tsc -b completed with exit 0. Scope: TypeScript project references.
     Command: ap doctor. Result: pass. Evidence: doctor (OK), errors=0 warnings=0. Scope: repo-local runtime/workflow health.
     Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Scope: policy routing.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171746-BBZQQ1-feedback-issue-transports/.agentplane/tasks/202605171746-BBZQQ1/blueprint/resolved-snapshot.json
+    - old_digest: 8938d12698dccde93c32aec6ccffb808135de7bd20085ccb99882f721377f3b5
+    - current_digest: 8938d12698dccde93c32aec6ccffb808135de7bd20085ccb99882f721377f3b5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171746-BBZQQ1
+
+    ### 2026-05-17T18:13:31.941Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Post-refactor verification: split feedback issue publishing helpers below hotspot threshold after pre-push hotspot gate caught oversized command module.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T18:04:35.779Z, excerpt_hash=sha256:a0e7a41edcefd36499031bbb439f72891248cfec59421b0d99b448e12ffac3b9
+
+    Details:
+
+    Command: node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300. Result: pass. Evidence: hotspot threshold check passed; insights.command.ts is below the 600-line error threshold. Scope: feedback issue publish helper split.
+    Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.insights-report.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts packages/core/src/config/config.test.ts. Result: pass. Evidence: 4 test files passed, 67 tests passed. Scope: feedback issue transport behavior after helper split.
+    Command: bun run typecheck. Result: pass. Evidence: tsc -b completed with exit 0. Scope: TypeScript project references after helper split.
 
     BlueprintSnapshotRef:
     - state: current
@@ -169,6 +198,29 @@ Command: bun run format:changed. Result: pass. Evidence: All matched files use P
 Command: bun run typecheck. Result: pass. Evidence: tsc -b completed with exit 0. Scope: TypeScript project references.
 Command: ap doctor. Result: pass. Evidence: doctor (OK), errors=0 warnings=0. Scope: repo-local runtime/workflow health.
 Command: node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: policy routing OK. Scope: policy routing.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171746-BBZQQ1-feedback-issue-transports/.agentplane/tasks/202605171746-BBZQQ1/blueprint/resolved-snapshot.json
+- old_digest: 8938d12698dccde93c32aec6ccffb808135de7bd20085ccb99882f721377f3b5
+- current_digest: 8938d12698dccde93c32aec6ccffb808135de7bd20085ccb99882f721377f3b5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171746-BBZQQ1
+
+### 2026-05-17T18:13:31.941Z — VERIFY — ok
+
+By: CODER
+
+Note: Post-refactor verification: split feedback issue publishing helpers below hotspot threshold after pre-push hotspot gate caught oversized command module.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T18:04:35.779Z, excerpt_hash=sha256:a0e7a41edcefd36499031bbb439f72891248cfec59421b0d99b448e12ffac3b9
+
+Details:
+
+Command: node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300. Result: pass. Evidence: hotspot threshold check passed; insights.command.ts is below the 600-line error threshold. Scope: feedback issue publish helper split.
+Command: bunx vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.insights-report.test.ts packages/agentplane/src/cli/run-cli.core.init.test.ts packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts packages/core/src/config/config.test.ts. Result: pass. Evidence: 4 test files passed, 67 tests passed. Scope: feedback issue transport behavior after helper split.
+Command: bun run typecheck. Result: pass. Evidence: tsc -b completed with exit 0. Scope: TypeScript project references after helper split.
 
 BlueprintSnapshotRef:
 - state: current

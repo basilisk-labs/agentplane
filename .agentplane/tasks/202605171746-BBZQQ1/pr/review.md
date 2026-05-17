@@ -13,7 +13,7 @@ Created: 2026-05-17T17:47:24.453Z
 ## Verification
 
 - State: ok
-- Note: Implemented controlled feedback issue transports and verified focused CLI/config coverage plus generated artifacts.
+- Note: Post-refactor verification: split feedback issue publishing helpers below hotspot threshold after pre-push hotspot gate caught oversized command module.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,9 +24,9 @@ Created: 2026-05-17T17:47:24.453Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-17T18:07:49.881Z
+- Updated: 2026-05-17T18:13:31.970Z
 - Branch: task/202605171746-BBZQQ1/feedback-issue-transports
-- Head: 7f613c054a17
+- Head: 7ea69411035f
 
 ```text
  .../blueprint/resolved-snapshot.json               | 528 +++++++++++++++++++++
@@ -47,14 +47,15 @@ Created: 2026-05-17T17:47:24.453Z
  .../cli/run-cli/commands/init/steps/contracts.ts   |   1 +
  .../commands/init/steps/prompt-steps.test.ts       |   5 +-
  .../src/cli/run-cli/commands/init/write-config.ts  |   6 +
- .../src/commands/insights/insights.command.ts      | 165 ++++++-
+ .../commands/insights/insights-issue-publish.ts    | 161 +++++++
+ .../src/commands/insights/insights.command.ts      |  70 +--
  .../src/commands/insights/insights.spec.ts         |  10 +
  packages/core/schemas/config.schema.json           |  20 +
  packages/core/src/config/config.test.ts            |   3 +
  packages/core/src/config/schema.impl.ts            |  24 +-
  packages/spec/schemas/config.schema.json           |  20 +
  schemas/config.schema.json                         |  20 +
- 25 files changed, 986 insertions(+), 20 deletions(-)
+ 26 files changed, 1038 insertions(+), 34 deletions(-)
 ```
 
 </details>
