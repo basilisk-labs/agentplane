@@ -19,7 +19,13 @@ export type HelpParsed = {
 
 export type HelpRegistryView = {
   list(opts?: { all?: boolean }): readonly { spec: CommandSpec }[];
-  match(tokens: readonly string[]): { spec: CommandSpec; consumed: number } | null;
+  match(
+    tokens: readonly string[],
+    opts?: { all?: boolean },
+  ): {
+    spec: CommandSpec;
+    consumed: number;
+  } | null;
 };
 
 export const helpSpec: CommandSpec<HelpParsed> = {
@@ -68,7 +74,7 @@ export function makeHelpHandler(registry: HelpRegistryView): CommandHandler<Help
       return Promise.resolve(0);
     }
 
-    const match = registry.match(p.cmd);
+    const match = registry.match(p.cmd, { all: p.all });
     if (match?.consumed !== p.cmd.length) {
       const input = p.cmd.join(" ");
       const candidates = specs.map((s) => s.id.join(" "));
