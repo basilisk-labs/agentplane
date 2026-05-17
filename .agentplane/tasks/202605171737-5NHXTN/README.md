@@ -1,10 +1,11 @@
 ---
 id: "202605171737-5NHXTN"
 title: "Fix issue #3843 branch_pr base start-ready recovery"
-status: "DOING"
+result_summary: "Merged via PR #3850."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts --runInBand; Result: pass; Evidence: 17 tests passed across branch_pr work start/start-ready routing suites, including base checkout recovery regression. Scope: work start/task start-ready route behavior. Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts --runInBand; Result: pass; Evidence: 1 focused regression test passed. Scope: issue #3843 route. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts; Result: pass; Evidence: 2 files, 9 tests passed. Scope: existing task start/finish lifecycle unit coverage. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Scope: repo TypeScript project references. Command: bun run format:changed; Result: pass; Evidence: all matched files use Prettier style. Scope: touched files. Command: bun run hotspots:check; Result: pass; Evidence: hotspot threshold check passed after moving regression out of oversized pr-flow suite. Scope: CI hotspot gate. Command: bun run lint:core -- packages/agentplane/src/commands/task/start-ready.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts; Result: pass; Evidence: eslint exited 0. Scope: repo core lint. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: policy routing."
   attempts: 0
-commit: null
+commit:
+  hash: "b2db42c1f5e3d3d97102e533b14076b1505fbd63"
+  message: "Merge pull request #3850 from basilisk-labs/task/202605171737-5NHXTN/fix-3843-base-start-ready"
 comments:
   -
     author: "CODER"
     body: "Start: fix branch_pr base checkout start-ready handling for GitHub issue #3843 with a regression test and route-specific behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3850 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts --runInBand; Result: pass; Evidence: 17 tests passed across branch_pr work start/start-ready routing suites, including base checkout recovery regression. Scope: work start/task start-ready route behavior. Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts --runInBand; Result: pass; Evidence: 1 focused regression test passed. Scope: issue #3843 route. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts; Result: pass; Evidence: 2 files, 9 tests passed. Scope: existing task start/finish lifecycle unit coverage. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Scope: repo TypeScript project references. Command: bun run format:changed; Result: pass; Evidence: all matched files use Prettier style. Scope: touched files. Command: bun run hotspots:check; Result: pass; Evidence: hotspot threshold check passed after moving regression out of oversized pr-flow suite. Scope: CI hotspot gate. Command: bun run lint:core -- packages/agentplane/src/commands/task/start-ready.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts; Result: pass; Evidence: eslint exited 0. Scope: repo core lint. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: policy routing."
+  -
+    type: "status"
+    at: "2026-05-17T18:13:31.044Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3850 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T17:54:39.900Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T18:13:31.049Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix GitHub issue #3843: in branch_pr, task start-ready from the base checkout after work start must not fail with missing task README; it should route to the task worktree or provide deterministic recovery."
 sections:
   Summary: |-
