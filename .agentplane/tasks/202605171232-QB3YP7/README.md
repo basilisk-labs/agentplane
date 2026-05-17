@@ -4,7 +4,7 @@ title: "Fix blueprint explain context kind help"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -21,9 +21,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-17T12:37:46.882Z"
+  updated_at: "2026-05-17T12:43:56.746Z"
   updated_by: "CODER"
-  note: "Focused checks passed: Vitest cli-core help/blueprint tests, docs:cli:check, ESLint on touched TS files, Prettier check, policy routing, and git diff --check."
+  note: "Focused checks passed after moving regression coverage out of the oversized blueprint test file: Vitest cli-core help/blueprint/help-contract tests, hotspots:check, docs:cli:check, ESLint on touched TS files, Prettier check, policy routing, and git diff --check."
   attempts: 0
 commit: null
 comments:
@@ -44,8 +44,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Focused checks passed: Vitest cli-core help/blueprint tests, docs:cli:check, ESLint on touched TS files, Prettier check, policy routing, and git diff --check."
+  -
+    type: "verify"
+    at: "2026-05-17T12:43:56.746Z"
+    author: "CODER"
+    state: "ok"
+    note: "Focused checks passed after moving regression coverage out of the oversized blueprint test file: Vitest cli-core help/blueprint/help-contract tests, hotspots:check, docs:cli:check, ESLint on touched TS files, Prettier check, policy routing, and git diff --check."
 doc_version: 3
-doc_updated_at: "2026-05-17T12:37:46.890Z"
+doc_updated_at: "2026-05-17T12:43:56.751Z"
 doc_updated_by: "CODER"
 description: "Implement the follow-up from 202605171139-53TJ1A: blueprint explain --kind context already resolves context.assimilation, but command help omits context from the --kind value hint. Update the CLI spec/help snapshots and focused tests."
 sections:
@@ -77,6 +83,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T12:33:23.518Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605170941-ZXBF4Q-close-clone/.agentplane/worktrees/202605171232-QB3YP7-blueprint-help-context-kind/.agentplane/tasks/202605171232-QB3YP7/blueprint/resolved-snapshot.json
+    - old_digest: 1a6c60830ec7a4fad821c942919621a62bd3a5fd677398dc641a1175ef7ff681
+    - current_digest: 1a6c60830ec7a4fad821c942919621a62bd3a5fd677398dc641a1175ef7ff681
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171232-QB3YP7
+
+    ### 2026-05-17T12:43:56.746Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Focused checks passed after moving regression coverage out of the oversized blueprint test file: Vitest cli-core help/blueprint/help-contract tests, hotspots:check, docs:cli:check, ESLint on touched TS files, Prettier check, policy routing, and git diff --check.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T12:37:46.890Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -132,6 +157,25 @@ Note: Focused checks passed: Vitest cli-core help/blueprint tests, docs:cli:chec
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T12:33:23.518Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605170941-ZXBF4Q-close-clone/.agentplane/worktrees/202605171232-QB3YP7-blueprint-help-context-kind/.agentplane/tasks/202605171232-QB3YP7/blueprint/resolved-snapshot.json
+- old_digest: 1a6c60830ec7a4fad821c942919621a62bd3a5fd677398dc641a1175ef7ff681
+- current_digest: 1a6c60830ec7a4fad821c942919621a62bd3a5fd677398dc641a1175ef7ff681
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171232-QB3YP7
+
+### 2026-05-17T12:43:56.746Z — VERIFY — ok
+
+By: CODER
+
+Note: Focused checks passed after moving regression coverage out of the oversized blueprint test file: Vitest cli-core help/blueprint/help-contract tests, hotspots:check, docs:cli:check, ESLint on touched TS files, Prettier check, policy routing, and git diff --check.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T12:37:46.890Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 
