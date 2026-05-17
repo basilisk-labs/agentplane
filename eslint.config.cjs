@@ -289,6 +289,7 @@ module.exports = [
 
       "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
       "@typescript-eslint/no-misused-promises": ["error", { checksVoidReturn: true }],
+      "@typescript-eslint/no-unnecessary-type-assertion": "off",
 
       "no-restricted-imports": [
         "error",
