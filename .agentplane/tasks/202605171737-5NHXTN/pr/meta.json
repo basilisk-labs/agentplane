@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-17T18:12:46Z",
   "base": "main",
   "branch": "task/202605171737-5NHXTN/fix-3843-base-start-ready",
   "created_at": "2026-05-17T17:37:29.120Z",
-  "head_sha": "a273f138da1f0ad93bb22c72560ae0741842ea0e",
+  "head_sha": "7945432356e827d55d8343d4cb38e39cc329b0bf",
   "last_verified_at": "2026-05-17T17:54:39.890Z",
   "last_verified_sha": "a273f138da1f0ad93bb22c72560ae0741842ea0e",
+  "merge_commit": "b2db42c1f5e3d3d97102e533b14076b1505fbd63",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-17T18:12:46Z",
   "pr_number": 3850,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3850",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605171737-5NHXTN",
-  "updated_at": "2026-05-17T17:49:27.196Z",
+  "updated_at": "2026-05-17T18:12:46Z",
   "verify": {
     "status": "pass"
   }
