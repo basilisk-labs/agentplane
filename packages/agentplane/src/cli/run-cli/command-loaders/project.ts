@@ -94,6 +94,10 @@ export const loadWorkStartSpec = (deps: RunDeps) =>
   import("../../../commands/branch/work-start.command.js").then((m) =>
     m.makeRunWorkStartHandler(deps.getCtx),
   );
+export const loadWorkResumeSpec = (deps: RunDeps) =>
+  import("../../../commands/branch/work-resume.command.js").then((m) =>
+    m.makeRunWorkResumeHandler(deps.getCtx),
+  );
 export const fromRecipesActiveSpec = commandModule(
   () => import("../../../commands/recipes/active.command.js"),
 );
@@ -171,6 +175,13 @@ export const loadPrCloseSupersededSpec = (deps: RunDeps) =>
   );
 export const loadPrNoteSpec = (deps: RunDeps) =>
   import("../../../commands/pr/pr.command.js").then((m) => m.makeRunPrNoteHandler(deps.getCtx));
+export const fromCommandsFlowCommand = commandModule(
+  () => import("../../../commands/flow/flow.command.js"),
+);
+export const loadFlowRepairSpec = (deps: RunDeps) =>
+  import("../../../commands/flow/repair.command.js").then((m) =>
+    m.makeRunFlowRepairHandler(deps.getCtx),
+  );
 export const loadIntegrateSpec = (deps: RunDeps) =>
   import("../../../commands/integrate.command.js").then((m) =>
     m.makeRunIntegrateHandler(deps.getCtx),

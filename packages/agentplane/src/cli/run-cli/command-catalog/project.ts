@@ -42,7 +42,10 @@ import {
 } from "../../../commands/branch/base.command.js";
 import { branchRemoveSpec } from "../../../commands/branch/remove.command.js";
 import { branchStatusSpec } from "../../../commands/branch/status.command.js";
+import { flowRepairSpec } from "../../../commands/flow/repair.command.js";
+import { flowSpec } from "../../../commands/flow/flow.command.js";
 import { workStartSpec } from "../../../commands/branch/work-start.command.js";
+import { workResumeSpec } from "../../../commands/branch/work-resume.command.js";
 import { integrateSpec } from "../../../commands/integrate.spec.js";
 import {
   integrateQueueClaimSpec,
@@ -134,6 +137,7 @@ import {
   fromCommandsBranchBaseCommand,
   fromCommandsBranchStatusCommand,
   loadWorkStartSpec,
+  loadWorkResumeSpec,
   fromRecipesActiveSpec,
   fromRecipesInfoSpec,
   loadRecipesExplainActiveSpec,
@@ -157,6 +161,8 @@ import {
   loadPrCloseSupersededSpec,
   loadPrFlowStatusSpec,
   loadPrNoteSpec,
+  fromCommandsFlowCommand,
+  loadFlowRepairSpec,
   loadIntegrateSpec,
   loadIntegrateQueueSpec,
   loadIntegrateQueueEnqueueSpec,
@@ -217,6 +223,9 @@ export const PROJECT_COMMANDS = [
   }),
   fromCommandsBlueprintsCommand(blueprintsInstallSpec, "runBlueprintsInstall", {}),
   declareCommand(workStartSpec, { load: loadWorkStartSpec }),
+  declareCommand(workResumeSpec, { load: loadWorkResumeSpec }),
+  fromCommandsFlowCommand(flowSpec, "runFlow", { needs: "none" }),
+  declareCommand(flowRepairSpec, { load: loadFlowRepairSpec }),
   fromCommandsRecipesRecipesCommand(recipesSpec, "runRecipes", { needs: "none" }),
   fromCommandsRecipesCacheCommand(recipesCacheSpec, "runRecipesCache", { needs: "none" }),
   fromCommandsRecipesAddCommand(recipesAddSpec, "runRecipesAdd", {}),

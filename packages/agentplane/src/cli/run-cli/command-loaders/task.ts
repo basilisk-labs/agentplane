@@ -60,6 +60,14 @@ export const loadTaskSearchSpec = (deps: RunDeps) =>
   );
 export const loadTaskShowSpec = (deps: RunDeps) =>
   import("../../../commands/task/show.run.js").then((m) => m.makeRunTaskShowHandler(deps.getCtx));
+export const loadTaskStatusSpec = (deps: RunDeps) =>
+  import("../../../commands/task/status.command.js").then((m) =>
+    m.makeRunTaskStatusHandler(deps.getCtx),
+  );
+export const loadTaskNextActionSpec = (deps: RunDeps) =>
+  import("../../../commands/task/next-action.command.js").then((m) =>
+    m.makeRunTaskNextActionHandler(deps.getCtx),
+  );
 export const fromTaskRunTraceSpec = commandModule(
   () => import("../../../commands/task/run-trace.command.js"),
 );

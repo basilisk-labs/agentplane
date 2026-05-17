@@ -15,6 +15,7 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<subcommand>" }],
   notes: [
     "Direct task route: task new -> task plan set -> task plan approve -> task start-ready -> task verify-show -> verify -> finish.",
+    "Before manually chaining low-level diagnostics, use `agentplane task status <task-id> --route` or `agentplane task next-action <task-id>` for a route decision.",
     "Use `agentplane help task plan`, `agentplane help task doc`, and `agentplane help task verify` to inspect task sub-areas.",
     "Verification recording and closure stay top-level lifecycle commands: `agentplane verify ...` and `agentplane finish ...`.",
   ],
@@ -54,6 +55,14 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
     {
       cmd: "agentplane task resume-context <task-id>",
       why: "Inspect deterministic recovery context before resuming or retrying a run.",
+    },
+    {
+      cmd: "agentplane task status <task-id> --route",
+      why: "Inspect task state, branch_pr route blockers, and next safe command.",
+    },
+    {
+      cmd: "agentplane task next-action <task-id>",
+      why: "Print the single safest next command for the task route.",
     },
   ],
   parse: (raw) => parseGroupCommand(raw),
