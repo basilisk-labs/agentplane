@@ -138,14 +138,27 @@ async function packageVersionTag() {
   return `v${pkg.version}`;
 }
 
-function tagVariants(tag) {
+function tagVariantGroups(tag) {
   const normalized = tag.replace(/^v/i, "");
   const dash = normalized.replaceAll(".", "-");
   const [major, minor] = normalized.split(".");
   const minorLine = major && minor ? `${major}-${minor}` : null;
-  return [normalized.toLowerCase(), `v${normalized.toLowerCase()}`, dash.toLowerCase(), minorLine]
-    .filter(Boolean)
-    .map((variant) => variant.toLowerCase());
+
+  return [
+    [normalized, `v${normalized}`, dash, `v${dash}`],
+    minorLine ? [minorLine, `v${minorLine}`] : [],
+  ].map((variants) => [
+    ...new Set(variants.filter(Boolean).map((variant) => variant.toLowerCase())),
+  ]);
+}
+
+function escapeRegExp(value) {
+  return value.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+}
+
+function filenameIncludesVersionToken(filename, variant) {
+  const pattern = new RegExp(`(^|[^a-z0-9])${escapeRegExp(variant)}([^a-z0-9]|$)`, "i");
+  return pattern.test(filename);
 }
 
 function extractFrontmatterValue(markdown, key) {
@@ -165,10 +178,14 @@ async function latestReleaseBlogMeta(tag) {
       .toSorted()
       .toReversed();
 
-    const variants = tagVariants(tag);
-    const taggedFiles = files.filter((filename) =>
-      variants.some((variant) => filename.toLowerCase().includes(variant)),
-    );
+    const taggedFiles =
+      tagVariantGroups(tag)
+        .map((variants) =>
+          files.filter((filename) =>
+            variants.some((variant) => filenameIncludesVersionToken(filename, variant)),
+          ),
+        )
+        .find((matches) => matches.length > 0) ?? [];
     const ordered = taggedFiles.length > 0 ? taggedFiles : files;
 
     for (const filename of ordered) {
