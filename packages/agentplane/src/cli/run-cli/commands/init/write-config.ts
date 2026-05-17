@@ -42,6 +42,7 @@ export async function writeInitConfig(opts: {
   requireNetworkApproval: boolean;
   requireVerifyApproval: boolean;
   feedbackGithubIssues: boolean;
+  feedbackAnonymousCloud: boolean;
   execution: InitExecutionConfig;
 }): Promise<void> {
   const rawConfig = defaultConfig() as unknown as Record<string, unknown>;
@@ -68,6 +69,11 @@ export async function writeInitConfig(opts: {
   );
   setByDottedKey(rawConfig, "agents.approvals.require_verify", String(opts.requireVerifyApproval));
   setByDottedKey(rawConfig, "feedback.github_issues.enabled", String(opts.feedbackGithubIssues));
+  setByDottedKey(
+    rawConfig,
+    "feedback.github_issues.allow_anonymous_cloud",
+    String(opts.feedbackAnonymousCloud),
+  );
   setByDottedKey(rawConfig, "framework.cli.expected_version", getVersion());
   setByDottedKey(rawConfig, "execution", JSON.stringify(opts.execution));
   await saveConfig(opts.agentplaneDir, rawConfig);

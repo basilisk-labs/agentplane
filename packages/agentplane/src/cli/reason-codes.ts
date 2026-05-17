@@ -150,6 +150,12 @@ const REASON_CODE_MAP: Readonly<Record<string, ReasonCodeMeta>> = {
     summary: "E_INTERNAL feedback issues need sanitized agent context for actionable triage",
     action: "pass --agent-context, --agent-context-file, or --allow-missing-agent-context",
   },
+  feedback_anonymous_cloud_disabled: {
+    code: "feedback_anonymous_cloud_disabled",
+    category: "feedback",
+    summary: "anonymous AgentPlane Cloud feedback intake is disabled for this project",
+    action: "enable feedback.github_issues.allow_anonymous_cloud before using cloud transport",
+  },
 };
 
 export function getReasonCodeMeta(code: string | undefined): ReasonCodeMeta | undefined {

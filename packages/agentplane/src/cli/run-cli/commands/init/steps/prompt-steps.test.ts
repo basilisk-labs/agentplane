@@ -58,7 +58,8 @@ describe("init prompt steps", () => {
     mocks.confirmMock
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(true)
-      .mockResolvedValueOnce(true);
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce(false);
     mocks.textMock
       .mockResolvedValueOnce("recipe-a, recipe-b")
       .mockResolvedValueOnce("pack:enterprise-baseline");
@@ -108,6 +109,7 @@ describe("init prompt steps", () => {
       requireNetworkApproval: true,
       requireVerifyApproval: true,
       feedbackGithubIssues: true,
+      feedbackAnonymousCloud: false,
       executionProfile: "aggressive",
       strictUnsafeConfirm: false,
     });
@@ -154,6 +156,7 @@ describe("init prompt steps", () => {
       requireNetworkApproval: false,
       requireVerifyApproval: false,
       feedbackGithubIssues: false,
+      feedbackAnonymousCloud: false,
       executionProfile: "aggressive",
       strictUnsafeConfirm: false,
     });

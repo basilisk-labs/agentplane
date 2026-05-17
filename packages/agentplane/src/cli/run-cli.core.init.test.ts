@@ -856,6 +856,33 @@ describe("runCli", () => {
     }
   });
 
+  it("init plan records explicit anonymous cloud feedback fallback opt-in", async () => {
+    const root = await mkTempDir();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "init",
+        "--dry-run",
+        "--yes",
+        "--feedback-github-issues",
+        "true",
+        "--feedback-anonymous-cloud",
+        "true",
+        "--root",
+        root,
+        "--output",
+        "json",
+      ]);
+      expect(code).toBe(0);
+      const envelope = JSON.parse(io.stdout) as {
+        data?: { answers?: { feedbackAnonymousCloud?: boolean } };
+      };
+      expect(envelope.data?.answers?.feedbackAnonymousCloud).toBe(true);
+    } finally {
+      io.restore();
+    }
+  });
+
   it("init dry-run reports parent git context without writing nested state", async () => {
     const parent = await mkGitRepoRoot();
     const nested = path.join(parent, "packages", "api");

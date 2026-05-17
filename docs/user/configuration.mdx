@@ -129,13 +129,19 @@ without requiring a manual read of `bundle.json`.
 
 - `feedback.github_issues.enabled`
 - `feedback.github_issues.repository`
+- `feedback.github_issues.transport`
+- `feedback.github_issues.cloud_endpoint`
+- `feedback.github_issues.allow_anonymous_cloud`
 - `feedback.github_issues.prompt_on_internal_error`
 - `feedback.github_issues.include_insights_report`
 - `feedback.github_issues.dedupe`
 - `feedback.github_issues.labels`
 
 GitHub issue feedback defaults to disabled. Enable it when you want internal AgentPlane errors to
-offer a privacy-bounded GitHub issue path for maintainers.
+offer a privacy-bounded issue path for maintainers. `transport=github` uses the user's GitHub auth,
+`transport=cloud` sends an anonymous intake to AgentPlane Cloud, and `transport=auto` tries GitHub
+first before falling back to cloud. Cloud intake requires
+`feedback.github_issues.allow_anonymous_cloud=true`.
 
 Preview the issue payload before creating anything:
 
@@ -147,6 +153,13 @@ To opt in, ask your agent to enable feedback issue prompts or run:
 
 ```bash
 agentplane config set feedback.github_issues.enabled true
+```
+
+To allow anonymous cloud fallback:
+
+```bash
+agentplane config set feedback.github_issues.allow_anonymous_cloud true
+agentplane config set feedback.github_issues.transport auto
 ```
 
 ### acr

@@ -18,6 +18,7 @@ export type InsightsIssueParsed = {
   failureReasonCode?: string;
   failureMessageClass?: string;
   failureArgvShape: string[];
+  transport?: "github" | "cloud" | "auto";
   dryRun: boolean;
 };
 
@@ -157,6 +158,14 @@ export const insightsIssueSpec: CommandSpec<InsightsIssueParsed> = {
       description: "Repeatable sanitized argv shape token; values must not include raw secrets.",
     },
     {
+      kind: "string",
+      name: "transport",
+      valueHint: "<github|cloud|auto>",
+      choices: ["github", "cloud", "auto"],
+      description:
+        "Issue transport. github uses the user's gh auth, cloud uses anonymous AgentPlane intake, auto falls back to cloud when GitHub publishing fails.",
+    },
+    {
       kind: "boolean",
       name: "dry-run",
       default: false,
@@ -187,6 +196,7 @@ export const insightsIssueSpec: CommandSpec<InsightsIssueParsed> = {
     failureArgvShape: Array.isArray(raw.opts["failure-argv-shape"])
       ? (raw.opts["failure-argv-shape"] as string[])
       : [],
+    transport: raw.opts.transport as InsightsIssueParsed["transport"],
     dryRun: raw.opts["dry-run"] === true,
   }),
 };
