@@ -1,16 +1,19 @@
 {
-  "artifact_state": "remote_failed",
-  "artifact_state_reason": "task branch push failed: remote: error: GH006: Protected branch update failed for refs/heads/main.        \nremote: \nremote: - Changes must be made through a pull request.        \nTo github.com:basilisk-labs/agentplane.git\n ! [remote rejected]     HEAD -> main (protected branch hook declined)\nerror: failed to push some refs to 'github.com:basilisk-labs/agentplane.git'",
-  "artifact_state_updated_at": "2026-05-17T15:34:10.327Z",
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-17T16:18:32Z",
   "base": "main",
   "branch": "task/202605171458-HWXZC9/context-init-wiki-lint",
   "created_at": "2026-05-17T15:30:01.865Z",
-  "head_sha": "f0ae96aaa523fa7c3ad0c2d61836579551cf2b31",
+  "head_sha": "45242407ddc5e8a291498f9efa7d7b0c6df6a704",
   "last_verified_at": "2026-05-17T15:31:42.427Z",
   "last_verified_sha": "0747a540ef6b3402c6cbf8ae8ec0fe6c3cd7d4fc",
+  "merge_commit": "b4b1492fc8bdcfb02e732189582bdd41b2fa641a",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-17T16:18:32Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605171458-HWXZC9",
-  "updated_at": "2026-05-17T15:33:49.274Z",
+  "updated_at": "2026-05-17T16:18:32Z",
   "verify": {
     "status": "pass"
   }
