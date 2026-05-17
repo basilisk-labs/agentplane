@@ -4,7 +4,7 @@ title: "Gate framework-only policy and dev CLI commands"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-17T17:59:17.193Z"
+  updated_at: "2026-05-17T18:13:27.260Z"
   updated_by: "CODER"
-  note: "Follow-up after hosted CI: fixed knip baseline and init branch_pr tests for intentionally excluded framework.dev policy. Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts. Result: pass. Evidence: 1 file, 9 tests passed. Scope: init does not install framework.dev.md in normal projects. Command: bun run knip:check. Result: pass. Evidence: Knip baseline OK, total=564. Scope: unused-code baseline after isCommandVisibleInHelp became used. Command: bunx vitest run packages/agentplane/src/runtime/prompt-modules/registry.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts. Result: pass. Evidence: 4 files, 41 tests passed. Scope: policy filtering, CLI gating, init asset contract. Command: bun run --filter=agentplane typecheck; eslint touched files; bun run format:check; node .agentplane/policy/check-routing.mjs; bun run docs:cli:check; bun run agents:check; bun run framework:dev:bootstrap; ap doctor. Result: pass. Evidence: typecheck exited 0; eslint exited 0; formatting OK; policy routing OK; CLI docs up to date; agents templates OK; framework runtime ready; doctor OK with errors=0 warnings=0."
+  note: "Local verification remains green after fixing the all-command help contract: focused Vitest help/registry/init tests, ESLint, format:check, typecheck, and policy routing passed."
   attempts: 0
 commit: null
 comments:
@@ -47,8 +47,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Follow-up after hosted CI: fixed knip baseline and init branch_pr tests for intentionally excluded framework.dev policy. Command: bunx vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts. Result: pass. Evidence: 1 file, 9 tests passed. Scope: init does not install framework.dev.md in normal projects. Command: bun run knip:check. Result: pass. Evidence: Knip baseline OK, total=564. Scope: unused-code baseline after isCommandVisibleInHelp became used. Command: bunx vitest run packages/agentplane/src/runtime/prompt-modules/registry.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/cli/run-cli.core.init.branch-pr.test.ts. Result: pass. Evidence: 4 files, 41 tests passed. Scope: policy filtering, CLI gating, init asset contract. Command: bun run --filter=agentplane typecheck; eslint touched files; bun run format:check; node .agentplane/policy/check-routing.mjs; bun run docs:cli:check; bun run agents:check; bun run framework:dev:bootstrap; ap doctor. Result: pass. Evidence: typecheck exited 0; eslint exited 0; formatting OK; policy routing OK; CLI docs up to date; agents templates OK; framework runtime ready; doctor OK with errors=0 warnings=0."
+  -
+    type: "verify"
+    at: "2026-05-17T18:13:27.260Z"
+    author: "CODER"
+    state: "ok"
+    note: "Local verification remains green after fixing the all-command help contract: focused Vitest help/registry/init tests, ESLint, format:check, typecheck, and policy routing passed."
 doc_version: 3
-doc_updated_at: "2026-05-17T17:59:17.216Z"
+doc_updated_at: "2026-05-17T18:13:27.267Z"
 doc_updated_by: "CODER"
 description: "Add framework-checkout-only policy loading and enforce framework dev CLI commands so they are available only inside AgentPlane framework checkouts, including direct repo-local CLI runs."
 sections:
@@ -95,6 +101,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T17:47:47.995Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171738-G3EACK-framework-dev-gates/.agentplane/tasks/202605171738-G3EACK/blueprint/resolved-snapshot.json
+    - old_digest: 88f33325e7a6f1ded7183f5119416b956892a81fd7867ba3abd6a4fc11f3d960
+    - current_digest: 88f33325e7a6f1ded7183f5119416b956892a81fd7867ba3abd6a4fc11f3d960
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171738-G3EACK
+
+    ### 2026-05-17T18:13:27.260Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Local verification remains green after fixing the all-command help contract: focused Vitest help/registry/init tests, ESLint, format:check, typecheck, and policy routing passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T17:59:17.216Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -166,6 +191,25 @@ Note: Follow-up after hosted CI: fixed knip baseline and init branch_pr tests fo
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T17:47:47.995Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171738-G3EACK-framework-dev-gates/.agentplane/tasks/202605171738-G3EACK/blueprint/resolved-snapshot.json
+- old_digest: 88f33325e7a6f1ded7183f5119416b956892a81fd7867ba3abd6a4fc11f3d960
+- current_digest: 88f33325e7a6f1ded7183f5119416b956892a81fd7867ba3abd6a4fc11f3d960
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171738-G3EACK
+
+### 2026-05-17T18:13:27.260Z — VERIFY — ok
+
+By: CODER
+
+Note: Local verification remains green after fixing the all-command help contract: focused Vitest help/registry/init tests, ESLint, format:check, typecheck, and policy routing passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T17:59:17.216Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 
