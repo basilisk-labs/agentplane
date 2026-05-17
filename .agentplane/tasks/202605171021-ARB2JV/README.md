@@ -1,10 +1,11 @@
 ---
 id: "202605171021-ARB2JV"
 title: "Fix task README trailing whitespace generation"
-status: "DOING"
+result_summary: "Merged via PR #3820."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +27,16 @@ verification:
   updated_by: "CODER"
   note: "Verified: task README block scalar rendering no longer creates whitespace-only blank lines; verification entries trim per-line tails. Checks passed: focused core task README/doc tests, focused agentplane workflow transition/shared tests, Prettier on touched files, git diff --check, policy routing, and repo-local runtime bootstrap."
   attempts: 0
-commit: null
+commit:
+  hash: "dbefc341cced89eb6a8adb150c1939db88caef16"
+  message: "Merge pull request #3820 from basilisk-labs/task/202605171021-ARB2JV/fix-task-readme-whitespace"
 comments:
   -
     author: "CODER"
     body: "Start: implement task README whitespace normalization in the isolated task worktree, add focused regression coverage, and audit adjacent generated artifact renderers without touching unrelated base conflicts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3820 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: task README block scalar rendering no longer creates whitespace-only blank lines; verification entries trim per-line tails. Checks passed: focused core task README/doc tests, focused agentplane workflow transition/shared tests, Prettier on touched files, git diff --check, policy routing, and repo-local runtime bootstrap."
+  -
+    type: "status"
+    at: "2026-05-17T11:01:00.227Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3820 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T10:30:19.595Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T11:01:00.232Z"
+doc_updated_by: "INTEGRATOR"
 description: "Task README rendering can emit lines containing only indentation spaces in YAML block scalars and may preserve trailing spaces in verification entries. Fix canonical rendering so generated task artifacts pass git diff --check without manual whitespace cleanup, and audit adjacent renderer paths for the same class."
 sections:
   Summary: |-
