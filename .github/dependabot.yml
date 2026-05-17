@@ -16,7 +16,7 @@ updates:
         patterns:
           - "*"
 
-  - package-ecosystem: "npm"
+  - package-ecosystem: "bun"
     directory: "/"
     schedule:
       interval: "weekly"
@@ -28,18 +28,14 @@ updates:
       - "dependencies"
       - "javascript"
     groups:
-      production-dependencies:
-        dependency-type: "production"
-        update-types:
-          - "minor"
-          - "patch"
-      development-dependencies:
-        dependency-type: "development"
+      root-dependencies:
+        patterns:
+          - "*"
         update-types:
           - "minor"
           - "patch"
 
-  - package-ecosystem: "npm"
+  - package-ecosystem: "bun"
     directory: "/website"
     schedule:
       interval: "weekly"
