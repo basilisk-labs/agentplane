@@ -3,6 +3,7 @@ import {
   type ExecFileOptionsWithBufferEncoding,
   type StdioOptions,
 } from "node:child_process";
+import path from "node:path";
 import type { Stream, Readable as ReadableStream } from "node:stream";
 import { fileURLToPath } from "node:url";
 
@@ -111,6 +112,181 @@ function assertSafeExecutable(command: string): void {
   if (/[\0\r\n]/u.test(command)) throw new Error("process command contains invalid characters");
 }
 
+function assertSupportedExecutable(command: string): void {
+  assertSafeExecutable(command);
+  if (command !== command.trim()) {
+    throw new Error("process command must not include surrounding whitespace");
+  }
+
+  switch (command) {
+    case "bash": {
+      return;
+    }
+    case "bun": {
+      return;
+    }
+    case "cat": {
+      return;
+    }
+    case "chmod": {
+      return;
+    }
+    case "gh": {
+      return;
+    }
+    case "git": {
+      return;
+    }
+    case "node": {
+      return;
+    }
+    case "npm": {
+      return;
+    }
+    case "ps": {
+      return;
+    }
+    case "sh": {
+      return;
+    }
+    case "tar": {
+      return;
+    }
+    case "unzip": {
+      return;
+    }
+    case "zip": {
+      return;
+    }
+    default: {
+      throw new Error(`process command is not in the allowed executable set: ${command}`);
+    }
+  }
+}
+
+function normalizeSupportedExecutable(command: string): string {
+  if (command === process.execPath) return "node";
+  if (!path.isAbsolute(command)) return command;
+
+  const basename = path.basename(command).toLowerCase();
+  return basename === "node" || basename === "node.exe" ? "node" : command;
+}
+
+function sanitizeGitArg(arg: string): string {
+  if (arg === "--upload-pack" || arg.startsWith("--upload-pack=")) {
+    throw new Error("git --upload-pack is not allowed in managed process execution");
+  }
+  return arg;
+}
+
+function sanitizeGitArgs(args: readonly string[]): string[] {
+  return args.map((arg) => sanitizeGitArg(arg));
+}
+
+function runExeca(
+  command: string,
+  args: readonly string[],
+  options: never,
+): ExecaChildProcess<string | Buffer> {
+  assertSupportedExecutable(command);
+  switch (command) {
+    case "bash": {
+      return execa("bash", args, options) as ExecaChildProcess<string | Buffer>;
+    }
+    case "bun": {
+      return execa("bun", args, options) as ExecaChildProcess<string | Buffer>;
+    }
+    case "cat": {
+      return execa("cat", args, options) as ExecaChildProcess<string | Buffer>;
+    }
+    case "chmod": {
+      return execa("chmod", args, options) as ExecaChildProcess<string | Buffer>;
+    }
+    case "gh": {
+      return execa("gh", args, options) as ExecaChildProcess<string | Buffer>;
+    }
+    case "git": {
+      return execa("git", sanitizeGitArgs(args), options) as ExecaChildProcess<string | Buffer>;
+    }
+    case "node": {
+      return execa("node", args, options) as ExecaChildProcess<string | Buffer>;
+    }
+    case "npm": {
+      return execa("npm", args, options) as ExecaChildProcess<string | Buffer>;
+    }
+    case "ps": {
+      return execa("ps", args, options) as ExecaChildProcess<string | Buffer>;
+    }
+    case "sh": {
+      return execa("sh", args, options) as ExecaChildProcess<string | Buffer>;
+    }
+    case "tar": {
+      return execa("tar", args, options) as ExecaChildProcess<string | Buffer>;
+    }
+    case "unzip": {
+      return execa("unzip", args, options) as ExecaChildProcess<string | Buffer>;
+    }
+    case "zip": {
+      return execa("zip", args, options) as ExecaChildProcess<string | Buffer>;
+    }
+    default: {
+      throw new Error(`process command is not in the allowed executable set: ${command}`);
+    }
+  }
+}
+
+function runExecaSync(
+  command: string,
+  args: readonly string[],
+  options: never,
+): RunProcessResult<string | Buffer> {
+  assertSupportedExecutable(command);
+  switch (command) {
+    case "bash": {
+      return execaSync("bash", args, options) as RunProcessResult<string | Buffer>;
+    }
+    case "bun": {
+      return execaSync("bun", args, options) as RunProcessResult<string | Buffer>;
+    }
+    case "cat": {
+      return execaSync("cat", args, options) as RunProcessResult<string | Buffer>;
+    }
+    case "chmod": {
+      return execaSync("chmod", args, options) as RunProcessResult<string | Buffer>;
+    }
+    case "gh": {
+      return execaSync("gh", args, options) as RunProcessResult<string | Buffer>;
+    }
+    case "git": {
+      return execaSync("git", sanitizeGitArgs(args), options) as RunProcessResult<string | Buffer>;
+    }
+    case "node": {
+      return execaSync("node", args, options) as RunProcessResult<string | Buffer>;
+    }
+    case "npm": {
+      return execaSync("npm", args, options) as RunProcessResult<string | Buffer>;
+    }
+    case "ps": {
+      return execaSync("ps", args, options) as RunProcessResult<string | Buffer>;
+    }
+    case "sh": {
+      return execaSync("sh", args, options) as RunProcessResult<string | Buffer>;
+    }
+    case "tar": {
+      return execaSync("tar", args, options) as RunProcessResult<string | Buffer>;
+    }
+    case "unzip": {
+      return execaSync("unzip", args, options) as RunProcessResult<string | Buffer>;
+    }
+    case "zip": {
+      return execaSync("zip", args, options) as RunProcessResult<string | Buffer>;
+    }
+    default: {
+      throw new Error(`process command is not in the allowed executable set: ${command}`);
+    }
+  }
+}
+
 function buildProcessOptions(opts: RunProcessOptions) {
   assertSafeExecutable(opts.command);
   return {
@@ -138,17 +314,22 @@ function buildProcessOptions(opts: RunProcessOptions) {
 const runProcessImpl = async (
   opts: RunProcessOptions,
 ): Promise<RunProcessResult<string | Buffer>> => {
-  // Commands are executed with shell=false after rejecting invalid executable names.
-  // codeql[js/command-line-injection]
-  // codeql[js/shell-command-injection-from-environment]
-  const result = await execa(opts.command, opts.args ?? [], buildProcessOptions(opts) as never);
+  const result = await runExeca(
+    normalizeSupportedExecutable(opts.command),
+    opts.args ?? [],
+    buildProcessOptions(opts) as never,
+  );
   return result as RunProcessResult<string | Buffer>;
 };
 export const runProcess = runProcessImpl as RunProcessFn;
 
 const runProcessSyncImpl = (opts: RunProcessOptions): RunProcessResult<string | Buffer> => {
-  const result = execaSync(opts.command, opts.args ?? [], buildProcessOptions(opts) as never);
-  return result as RunProcessResult<string | Buffer>;
+  const result = runExecaSync(
+    normalizeSupportedExecutable(opts.command),
+    opts.args ?? [],
+    buildProcessOptions(opts) as never,
+  );
+  return result;
 };
 export const runProcessSync = runProcessSyncImpl as RunProcessSyncFn;
 

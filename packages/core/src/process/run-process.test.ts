@@ -1,3 +1,6 @@
+import os from "node:os";
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { execFileAsync, runProcess, runProcessSync } from "./run-process.js";
@@ -49,5 +52,60 @@ describe("run-process", () => {
         args: ["-e", "process.stdout.write('nope')"],
       }),
     ).rejects.toThrow(/invalid characters/);
+  });
+
+  it("rejects non-allowlisted executable names", async () => {
+    await expect(
+      runProcess({
+        command: "custom-runner",
+        args: ["--version"],
+      }),
+    ).rejects.toThrow(/allowed executable set/);
+  });
+
+  it("keeps supported shell runtimes allowlisted", async () => {
+    await expect(
+      runProcess({
+        command: "bash",
+        args: ["-lc", "printf bash-ok"],
+        encoding: "utf8",
+      }),
+    ).resolves.toMatchObject({ stdout: "bash-ok" });
+  });
+
+  it("rejects git upload-pack option injection", async () => {
+    await expect(
+      runProcess({
+        command: "git",
+        args: ["clone", "--upload-pack=echo unsafe", "https://example.invalid/repo.git"],
+      }),
+    ).rejects.toThrow(/upload-pack/);
+  });
+
+  it("keeps cmd.exe out of the generic process allowlist", async () => {
+    await expect(
+      runProcess({
+        command: "cmd.exe",
+        args: ["/c", "echo unsafe"],
+      }),
+    ).rejects.toThrow(/allowed executable set/);
+  });
+
+  it("normalizes the current node executable path to the supported node runtime", async () => {
+    const result = await runProcess({
+      command: process.execPath,
+      args: ["-e", "process.stdout.write('node-path')"],
+      encoding: "utf8",
+    });
+    expect(result.stdout).toBe("node-path");
+  });
+
+  it("normalizes absolute node executable candidates to the supported node runtime", async () => {
+    const result = await runProcess({
+      command: path.join(os.tmpdir(), "agentplane-test-bin", "node"),
+      args: ["-e", "process.stdout.write('absolute-node-path')"],
+      encoding: "utf8",
+    });
+    expect(result.stdout).toBe("absolute-node-path");
   });
 });

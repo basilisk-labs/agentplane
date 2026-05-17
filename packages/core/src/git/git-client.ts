@@ -1,3 +1,7 @@
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+
 import { execFileAsync } from "../process/run-process.js";
 
 // Avoid leaking worktree/index overrides into nested git subprocesses.
@@ -131,19 +135,8 @@ export async function gitCurrentBranch(cwd: string): Promise<string> {
 }
 
 export async function gitBranchExists(cwd: string, branch: string): Promise<boolean> {
-  try {
-    // Git refs are passed as argv elements, not shell text; refs/heads/ scopes local branches.
-    // codeql[js/shell-command-constructed-from-input]
-    await execFileAsync("git", ["show-ref", "--verify", "--quiet", `refs/heads/${branch}`], {
-      cwd,
-      env: gitEnv(),
-    });
-    return true;
-  } catch (err) {
-    const code = (err as { code?: number | string } | null)?.code;
-    if (code === 1) return false;
-    throw err;
-  }
+  const branches = await gitListBranches(cwd);
+  return branches.includes(branch);
 }
 
 export async function gitIsAncestor(
@@ -171,19 +164,16 @@ export async function gitIsAncestor(
 }
 
 export async function gitBranchUpstream(cwd: string, branch: string): Promise<string | null> {
-  try {
-    // Git refs are passed as argv elements, not shell text; refs/heads/ scopes local branches.
-    // codeql[js/shell-command-constructed-from-input]
-    const { stdout } = await execFileAsync(
-      "git",
-      ["for-each-ref", "--format=%(upstream:short)", `refs/heads/${branch}`],
-      { cwd, env: gitEnv() },
-    );
-    const trimmed = String(stdout).trim();
-    return trimmed.length > 0 ? trimmed : null;
-  } catch {
-    return null;
+  const { stdout } = await execFileAsync(
+    "git",
+    ["for-each-ref", "--format=%(refname:short)%00%(upstream:short)", "refs/heads"],
+    { cwd, env: gitEnv() },
+  );
+  for (const line of String(stdout).split("\n")) {
+    const [name, upstream = ""] = line.split("\0");
+    if (name === branch) return upstream.trim() || null;
   }
+  return null;
 }
 
 export async function gitListBranches(cwd: string): Promise<string[]> {
@@ -218,10 +208,17 @@ export async function gitCommit(
   message: string,
   opts?: { env?: NodeJS.ProcessEnv; skipHooks?: boolean },
 ): Promise<void> {
-  const args = ["commit", "-m", message];
+  const tmpDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-commit-message-"));
+  const messagePath = path.join(tmpDir, "message.txt");
+  await writeFile(messagePath, message, { encoding: "utf8", mode: 0o600 });
+  const args = ["commit", "--file", messagePath];
   if (opts?.skipHooks) args.push("--no-verify");
   const env = opts?.env ? { ...gitEnv(), ...opts.env } : gitEnv();
-  await execFileAsync("git", args, { cwd, env });
+  try {
+    await execFileAsync("git", args, { cwd, env });
+  } finally {
+    await rm(tmpDir, { recursive: true, force: true });
+  }
 }
 
 export async function gitInitRepo(cwd: string, branch: string): Promise<void> {

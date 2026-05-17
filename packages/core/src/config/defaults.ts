@@ -24,6 +24,15 @@ function parseScalar(value: string): unknown {
   return value;
 }
 
+function setOwnConfigValue(obj: Record<string, unknown>, key: string, value: unknown): void {
+  Object.defineProperty(obj, key, {
+    value,
+    enumerable: true,
+    configurable: true,
+    writable: true,
+  });
+}
+
 export function setByDottedKey(
   obj: Record<string, unknown>,
   dottedKey: string,
@@ -42,17 +51,13 @@ export function setByDottedKey(
     if (!part) continue;
     const next = current[part];
     if (!isConfigRecord(next)) {
-      // Dotted config keys reject prototype-polluting segments before assignment.
-      // codeql[js/prototype-polluting-assignment]
-      current[part] = {};
+      setOwnConfigValue(current, part, Object.create(null));
     }
     current = current[part] as Record<string, unknown>;
   }
   const last = parts.at(-1);
   if (!last) throw new Error("config key must be non-empty");
-  // Dotted config keys reject prototype-polluting segments before assignment.
-  // codeql[js/prototype-polluting-assignment]
-  current[last] = parseScalar(value);
+  setOwnConfigValue(current, last, parseScalar(value));
 }
 
 export type AgentplaneConfig = AgentplaneConfigShape;

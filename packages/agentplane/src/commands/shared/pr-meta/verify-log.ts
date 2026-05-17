@@ -1,5 +1,4 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 
 import { execFileAsync } from "@agentplaneorg/core/process";
@@ -10,13 +9,66 @@ type ShellInvocation = {
 };
 
 export function resolveShellInvocation(command: string): ShellInvocation {
-  if (os.platform() === "win32") {
-    const rawComspec = process.env.ComSpec ?? process.env.COMSPEC;
-    const shellCommand =
-      rawComspec && rawComspec !== "undefined" && rawComspec !== "null" ? rawComspec : "cmd.exe";
-    return { command: shellCommand, args: ["/d", "/s", "/c", command] };
+  const tokens = parseCommandLine(command);
+  const executable = tokens[0];
+  if (!executable) {
+    throw new Error("verify command must be non-empty");
   }
-  return { command: "sh", args: ["-lc", command] };
+  return { command: executable, args: tokens.slice(1) };
+}
+
+function parseCommandLine(command: string): string[] {
+  const tokens: string[] = [];
+  let current = "";
+  let quote: "'" | '"' | null = null;
+
+  for (let index = 0; index < command.length; index += 1) {
+    const char = command[index] ?? "";
+    if (char === "\0" || char === "\r" || char === "\n") {
+      throw new Error("verify command contains invalid characters");
+    }
+
+    if (quote) {
+      if (char === quote) {
+        quote = null;
+      } else if (char === "\\" && quote === '"' && index + 1 < command.length) {
+        index += 1;
+        current += command[index] ?? "";
+      } else {
+        current += char;
+      }
+      continue;
+    }
+
+    if (char === "'" || char === '"') {
+      quote = char;
+      continue;
+    }
+
+    if (char === "\\" && index + 1 < command.length) {
+      index += 1;
+      current += command[index] ?? "";
+      continue;
+    }
+
+    if (/\s/u.test(char)) {
+      if (current) {
+        tokens.push(current);
+        current = "";
+      }
+      continue;
+    }
+
+    if ("|&;<>()`$".includes(char)) {
+      throw new Error("verify command must use argv syntax without shell metacharacters");
+    }
+
+    current += char;
+  }
+
+  if (quote) throw new Error("verify command contains an unterminated quote");
+  if (current) tokens.push(current);
+  return tokens;
 }
 
 export function extractLastVerifiedSha(logText: string): string | null {
