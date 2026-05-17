@@ -26,7 +26,6 @@ export type RunProcessOptions = {
   stdout?: ProcessStdioOption;
   stderr?: ProcessStdioOption;
   stdio?: StdioOptions;
-  shell?: boolean | string;
   cleanup?: boolean;
   reject?: boolean;
   extendEnv?: boolean;
@@ -107,7 +106,13 @@ function resolveCwd(cwd: string | URL | undefined): string | undefined {
   return cwd instanceof URL ? fileURLToPath(cwd) : cwd;
 }
 
+function assertSafeExecutable(command: string): void {
+  if (!command.trim()) throw new Error("process command must be non-empty");
+  if (/[\0\r\n]/u.test(command)) throw new Error("process command contains invalid characters");
+}
+
 function buildProcessOptions(opts: RunProcessOptions) {
+  assertSafeExecutable(opts.command);
   return {
     cwd: resolveCwd(opts.cwd),
     env: opts.env ?? process.env,
@@ -124,7 +129,7 @@ function buildProcessOptions(opts: RunProcessOptions) {
     ...(opts.stdout === undefined ? {} : { stdout: opts.stdout }),
     ...(opts.stderr === undefined ? {} : { stderr: opts.stderr }),
     ...(opts.stdio === undefined ? {} : { stdio: opts.stdio }),
-    ...(opts.shell === undefined ? {} : { shell: opts.shell }),
+    shell: false,
     ...(opts.detached === undefined ? {} : { detached: opts.detached }),
     ...(opts.buffer === undefined ? {} : { buffer: opts.buffer }),
   };
@@ -199,7 +204,6 @@ const execFileAsyncImpl = async (
             encoding: null,
             maxBuffer: resolved.options.maxBuffer,
             timeoutMs: resolved.options.timeout,
-            shell: resolved.options.shell,
             windowsHide: resolved.options.windowsHide,
           })
         : await runProcess({
@@ -210,7 +214,6 @@ const execFileAsyncImpl = async (
             encoding,
             maxBuffer: resolved.options.maxBuffer,
             timeoutMs: resolved.options.timeout,
-            shell: resolved.options.shell,
             windowsHide: resolved.options.windowsHide,
           });
     return { stdout: result.stdout, stderr: result.stderr };

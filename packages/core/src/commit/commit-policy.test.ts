@@ -124,6 +124,17 @@ describe("commit-policy", () => {
     expect(allowed.ok).toBe(true);
   });
 
+  it("parses long malformed subjects without regex backtracking", () => {
+    const longSubject = `✨ ABCDEF ${"scope/".repeat(5000)}: add guarded parsing`;
+    expect(parseTaskSubjectTemplate(longSubject)).toBeNull();
+
+    const valid = parseTaskSubjectTemplate(
+      `✨ ABCDEF core/parser: ${"tighten ".repeat(5000)}subject parsing`,
+    );
+    expect(valid?.scope).toBe("core/parser");
+    expect(valid?.summary).toContain("subject parsing");
+  });
+
   it("validates allowed human-readable task subject scopes against task intent", () => {
     const allowedByTag = validateCommitSubject({
       subject: "git: render human-readable merge messages",

@@ -344,7 +344,17 @@ function pushContextSection(
 
 function renderContextSections(body: string, docVersion: unknown): string {
   const canonicalTitles = canonicalTaskDocSectionTitles(docVersion);
-  const preambleEnd = body.search(/^##\s+.*$/mu);
+  const bodyLines = body.replaceAll("\r\n", "\n").split("\n");
+  let preambleEnd = -1;
+  let offset = 0;
+  for (const line of bodyLines) {
+    const trimmedStart = line.trimStart();
+    if (trimmedStart.startsWith("##") && trimmedStart[2] === " ") {
+      preambleEnd = offset;
+      break;
+    }
+    offset += line.length + 1;
+  }
   const preamble = preambleEnd === -1 ? body : body.slice(0, preambleEnd);
   const parsed = parseDocSections(body);
   const lines: string[] = [];

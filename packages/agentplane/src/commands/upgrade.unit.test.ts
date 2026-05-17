@@ -18,4 +18,17 @@ describe("upgrade source normalization", () => {
     expect(out.repo).toBe("example-repo");
     expect(out.source).toBe("https://github.com/example-org/example-repo");
   });
+
+  it("rejects URLs that only contain github.com outside the host", () => {
+    expect(() =>
+      normalizeFrameworkSourceForUpgrade(
+        "https://evil.example/github.com/basilisk-labs/agentplane",
+      ),
+    ).toThrow(/GitHub repo URL/);
+    expect(() =>
+      normalizeFrameworkSourceForUpgrade(
+        "https://github.com.evil.example/basilisk-labs/agentplane",
+      ),
+    ).toThrow(/GitHub repo URL/);
+  });
 });

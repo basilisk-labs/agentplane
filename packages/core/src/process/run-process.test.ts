@@ -41,4 +41,13 @@ describe("run-process", () => {
     });
     expect(result.stdout).toBe("sync");
   });
+
+  it("rejects executable names that cannot be passed safely as argv", async () => {
+    await expect(
+      runProcess({
+        command: "node\necho unsafe",
+        args: ["-e", "process.stdout.write('nope')"],
+      }),
+    ).rejects.toThrow(/invalid characters/);
+  });
 });

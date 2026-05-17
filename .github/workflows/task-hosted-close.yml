@@ -96,15 +96,6 @@ jobs:
           steps.prepare.outputs.actionable == 'true' &&
           steps.existing.outputs.pr_url == '' &&
           steps.existing.outputs.branch_exists != 'true'
-        run: |
-          set -euo pipefail
-          git fetch --no-tags origin \
-            "pull/${{ steps.prepare.outputs.pr_number }}/head:${{ steps.prepare.outputs.source_branch }}"
-      - name: Apply hosted task closure on a local base checkout
-        if: |
-          steps.prepare.outputs.actionable == 'true' &&
-          steps.existing.outputs.pr_url == '' &&
-          steps.existing.outputs.branch_exists != 'true'
         id: close
         run: |
           set -euo pipefail

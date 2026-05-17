@@ -23,7 +23,6 @@ export type CommitTaskIntent = {
 };
 
 const NON_TASK_SUFFIX = "DEV";
-const SCOPE_PATTERN = "[a-z][a-z0-9_-]*(?:/[a-z0-9_-]+)*";
 export const TASK_INTENT_COMMIT_SCOPES = [
   "analysis",
   "content",
@@ -58,6 +57,33 @@ function rootScope(scope: string): string {
   return scope.trim().toLowerCase().split("/")[0] ?? "";
 }
 
+function isScopeSegment(segment: string): boolean {
+  if (!segment) return false;
+  const first = segment.codePointAt(0) ?? 0;
+  if (first < 97 || first > 122) return false;
+  for (let i = 1; i < segment.length; i += 1) {
+    const code = segment.codePointAt(i) ?? 0;
+    const isLower = code >= 97 && code <= 122;
+    const isDigit = code >= 48 && code <= 57;
+    if (!isLower && !isDigit && segment[i] !== "_" && segment[i] !== "-") return false;
+  }
+  return true;
+}
+
+function isCommitScope(scope: string): boolean {
+  const segments = scope.split("/");
+  return segments.length > 0 && segments.every((segment) => isScopeSegment(segment));
+}
+
+function splitScopeSummary(rest: string): { scope: string; summary: string } | null {
+  const separator = rest.indexOf(":");
+  if (separator <= 0) return null;
+  const scope = rest.slice(0, separator).trim();
+  const summary = rest.slice(separator + 1).trim();
+  if (!scope || !summary || !isCommitScope(scope)) return null;
+  return { scope, summary };
+}
+
 export function commitScopesForTaskIntent(intent: CommitTaskIntent): string[] {
   const scopes = new Set<string>();
   if (
@@ -71,7 +97,7 @@ export function commitScopesForTaskIntent(intent: CommitTaskIntent): string[] {
   if (intent.blueprintRequest) scopes.add(intent.blueprintRequest.split(".")[0] ?? "");
   for (const tag of intent.tags ?? []) {
     const normalized = rootScope(tag);
-    if (normalized && new RegExp(`^${SCOPE_PATTERN}$`).test(normalized)) scopes.add(normalized);
+    if (normalized && isCommitScope(normalized)) scopes.add(normalized);
   }
   return [...scopes].filter(Boolean).toSorted();
 }
@@ -111,21 +137,17 @@ export function parseTaskSubjectTemplate(subject: string): {
   const trimmed = subject.trim();
   if (!trimmed) return null;
 
-  const match = /^(\S+)\s+(\S+)\s+(.+)$/.exec(trimmed);
-  if (!match) return null;
-
-  const emoji = match[1] ?? "";
-  const suffix = match[2] ?? "";
-  const rest = (match[3] ?? "").trim();
+  const tokens = trimmed.split(/\s+/u, 3);
+  const emoji = tokens[0] ?? "";
+  const suffix = tokens[1] ?? "";
+  const restStart = emoji.length + trimmed.slice(emoji.length).search(/\S/u);
+  const suffixEnd = restStart + suffix.length;
+  const restOffset = suffixEnd + trimmed.slice(suffixEnd).search(/\S/u);
+  const rest = restOffset >= suffixEnd ? trimmed.slice(restOffset).trim() : "";
   if (!emoji || !suffix || !rest) return null;
 
-  const scopeMatch = new RegExp(String.raw`^(${SCOPE_PATTERN}):\s+(.+)$`).exec(rest);
-  if (!scopeMatch) return null;
-  const scope = scopeMatch[1] ?? "";
-  const summary = (scopeMatch[2] ?? "").trim();
-  if (!scope || !summary) return null;
-
-  return { emoji, suffix, scope, summary };
+  const parsed = splitScopeSummary(rest);
+  return parsed ? { emoji, suffix, ...parsed } : null;
 }
 
 const TASK_ARTIFACT_REFRESH_SUMMARY = "refresh task artifacts after commit";
@@ -166,13 +188,12 @@ function parseNonTaskSubjectTemplate(subject: string): {
   if (!trimmed) return null;
 
   // Non-task: `<emoji> <scope>: <summary>`
-  const match = new RegExp(String.raw`^(\S+)\s+(${SCOPE_PATTERN}):\s+(.+)$`).exec(trimmed);
-  if (!match) return null;
-  const emoji = match[1] ?? "";
-  const scope = match[2] ?? "";
-  const summary = (match[3] ?? "").trim();
-  if (!emoji || !scope || !summary) return null;
-  return { emoji, scope, summary };
+  const firstSpace = trimmed.search(/\s/u);
+  if (firstSpace <= 0) return null;
+  const emoji = trimmed.slice(0, firstSpace);
+  const rest = trimmed.slice(firstSpace).trim();
+  const parsed = splitScopeSummary(rest);
+  return parsed ? { emoji, ...parsed } : null;
 }
 
 function parseHumanTaskSubjectTemplate(subject: string): {
@@ -182,12 +203,7 @@ function parseHumanTaskSubjectTemplate(subject: string): {
   const trimmed = subject.trim();
   if (!trimmed) return null;
 
-  const match = new RegExp(String.raw`^(${SCOPE_PATTERN}):\s+(.+)$`).exec(trimmed);
-  if (!match) return null;
-  const scope = match[1] ?? "";
-  const summary = (match[2] ?? "").trim();
-  if (!scope || !summary) return null;
-  return { scope, summary };
+  return splitScopeSummary(trimmed);
 }
 
 export function validateCommitSubject(opts: {
