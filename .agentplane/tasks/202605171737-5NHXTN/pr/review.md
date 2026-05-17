@@ -30,9 +30,9 @@ Created: 2026-05-17T17:37:29.120Z
 
 ```text
  .../blueprint/resolved-snapshot.json               | 528 +++++++++++++++++++++
- .../src/cli/run-cli.core.pr-flow.test.ts           |  97 ++++
+ .../cli/run-cli.core.pr-flow.start-ready.test.ts   | 121 +++++
  .../agentplane/src/commands/task/start-ready.ts    |  79 ++-
- 3 files changed, 703 insertions(+), 1 deletion(-)
+ 3 files changed, 727 insertions(+), 1 deletion(-)
 ```
 
 </details>
