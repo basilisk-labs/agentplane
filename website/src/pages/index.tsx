@@ -100,7 +100,7 @@ function Hero(): ReactNode {
   );
 }
 
-function ProductAccordion({ sections }: { sections: FeatureSection[] }): ReactNode {
+function ProductAccordion({ sections }: { sections: readonly FeatureSection[] }): ReactNode {
   const [openId, setOpenId] = useState<string>(sections[0]?.id ?? "");
   return (
     <section className={`${styles.bentoItem} ${styles.colSpan12} ${styles.accordionSection}`}>
