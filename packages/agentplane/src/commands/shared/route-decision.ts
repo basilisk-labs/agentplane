@@ -186,6 +186,14 @@ function deriveNextAction(opts: {
       requiresApproval: false,
     };
   }
+  if (opts.blockers.some((blocker) => blocker.code === "pr_meta_stale")) {
+    return {
+      code: "update_pr_artifacts",
+      command: `agentplane pr update ${id}`,
+      summary: "refresh stale PR metadata before hosted checks or integration",
+      requiresApproval: false,
+    };
+  }
   if (opts.prFlow?.pr.state === "not_found") {
     return {
       code: "open_pr",
@@ -278,12 +286,49 @@ function deriveRepairPlan(decision: Omit<TaskRouteDecision, "repairPlan">): Rout
         mutates: false,
       });
     }
+    if (blocker.code === "plan_not_approved") {
+      steps.push({
+        code: "approve_plan",
+        command: `agentplane task plan approve ${id} --by ORCHESTRATOR`,
+        summary: "approve the task plan before owner-scoped execution",
+        mutates: true,
+      });
+    }
+    if (blocker.code === "on_base_checkout") {
+      steps.push({
+        code: "resume_worktree",
+        command: `agentplane work resume ${id}`,
+        summary: "switch to or inspect the dedicated task worktree before continuing",
+        mutates: false,
+      });
+    }
+    if (blocker.code === "branch_head_missing") {
+      steps.push({
+        code: "fetch_branch",
+        command: decision.workspace.prBranch
+          ? `git fetch origin ${decision.workspace.prBranch}`
+          : null,
+        summary: "fetch or recover the recorded task branch before continuing",
+        mutates: true,
+      });
+    }
+    if (blocker.code === "close_tail_open") {
+      steps.push({
+        code: "wait_close_tail",
+        command: null,
+        summary: "wait for hosted checks and merge the open close-tail PR through the provider",
+        mutates: false,
+      });
+    }
   }
   if (steps.length === 0) {
     steps.push({
-      code: "no_repair_needed",
+      code: decision.blockers.length === 0 ? "no_repair_needed" : "unmapped_blocker",
       command: decision.nextAction.command,
-      summary: decision.nextAction.summary,
+      summary:
+        decision.blockers.length === 0
+          ? decision.nextAction.summary
+          : "inspect blockers before continuing; no automatic repair is available",
       mutates: false,
     });
   }
