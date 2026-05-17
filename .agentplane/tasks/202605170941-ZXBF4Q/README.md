@@ -1,10 +1,11 @@
 ---
 id: "202605170941-ZXBF4Q"
 title: "Require inline wiki links and index maintenance for context curation"
-status: "DOING"
+result_summary: "Merged PR #3808 with inline wiki link guidance, canonical term requirements, and the context wiki index helper."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_by: "CODER"
   note: "Addressed PR review edge case for context wiki index on a single page target; ancestor index pages now update for page-scoped runs. Re-ran focused context tests, typecheck, docs CLI freshness, targeted Prettier/ESLint, policy routing, and git diff check."
   attempts: 0
-commit: null
+commit:
+  hash: "ea92cff3b9f416cf00930bcc5d7406aea62655a2"
+  message: "Merge pull request #3808 from basilisk-labs/task/202605170936-WIKILINK/wiki-inline-links-and-indexes"
 comments:
   -
     author: "CODER"
     body: "Start: update context wiki curation prompt and docs to require inline links, canonical linked terms, and index maintenance."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3808 merged after green hosted checks; merge commit recorded and task scope is complete."
 events:
   -
     type: "status"
@@ -50,9 +56,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Addressed PR review edge case for context wiki index on a single page target; ancestor index pages now update for page-scoped runs. Re-ran focused context tests, typecheck, docs CLI freshness, targeted Prettier/ESLint, policy routing, and git diff check."
+  -
+    type: "status"
+    at: "2026-05-17T10:52:39.142Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3808 merged after green hosted checks; merge commit recorded and task scope is complete."
 doc_version: 3
-doc_updated_at: "2026-05-17T09:58:50.971Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T10:52:39.142Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update context assimilation guidance, init wiki notes, docs, and focused tests so CURATOR agents place meaningful wiki links inline in narrative text, reuse canonical terms with links when confidence is sufficient, record aliases when source wording differs, and maintain relevant wiki index/navigation pages. Document possible CLI helper commands for index/link maintenance."
 sections:
   Summary: |-
