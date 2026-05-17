@@ -58,6 +58,14 @@ import {
   type ResolvedProject,
 } from "@agentplane/testkit/cli-core-pr-flow";
 
+async function seedGitBase(root: string): Promise<void> {
+  await configureGitUser(root);
+  const execFileAsync = promisify(execFile);
+  await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+  await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+}
+
 describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }, () => {
   it("pr update prefers the base upstream ref for diffstat when local base lags", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -333,6 +341,7 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
       config.workflow_mode = "branch_pr";
       config.agents.approvals.require_plan = false;
       await writeConfig(root, config);
+      await seedGitBase(root);
 
       let taskId = "";
       const ioTask = captureStdIO();
@@ -413,7 +422,7 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
     config.workflow_mode = "branch_pr";
     config.agents.approvals.require_plan = false;
     await writeConfig(root, config);
-    await configureGitUser(root);
+    await seedGitBase(root);
 
     const incidentsPath = path.join(root, ".agentplane", "policy", "incidents.md");
     const baselineIncidents = [
@@ -511,7 +520,7 @@ describe("runCli PR notes and verify flow", { timeout: PR_FLOW_LONG_TIMEOUT_MS }
     config.workflow_mode = "branch_pr";
     config.agents.approvals.require_plan = false;
     await writeConfig(root, config);
-    await configureGitUser(root);
+    await seedGitBase(root);
 
     const incidentsPath = path.join(root, ".agentplane", "policy", "incidents.md");
     const baselineIncidents = [
