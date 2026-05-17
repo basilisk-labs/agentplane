@@ -426,6 +426,78 @@ describe("runCli", { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS }, () =>
   );
 
   it(
+    "work start uses the configured task branch prefix",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      config.branch.task_prefix = "agents/task";
+      await writeConfig(root, config);
+      await configureGitUser(root);
+
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      await commitAll(root, "seed");
+      await seedRepoLocalBinArtifacts(root);
+      await seedRepoLocalNodeModules(root);
+      await seedRepoLocalCorePackage(root);
+      await seedRepoLocalDistArtifacts(root);
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Configured branch prefix task",
+          "--description",
+          "Work start creates branch under configured namespace",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+      await approveTaskPlan(root, taskId);
+
+      const code = await runCli([
+        "work",
+        "start",
+        taskId,
+        "--agent",
+        "CODER",
+        "--slug",
+        "configured-prefix",
+        "--worktree",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+
+      const branchName = `agents/task/${taskId}/configured-prefix`;
+      const execFileAsync = promisify(execFile);
+      await expect(
+        execFileAsync("git", ["show-ref", "--verify", `refs/heads/${branchName}`], { cwd: root }),
+      ).resolves.toBeDefined();
+      expect(
+        await pathExists(
+          path.join(root, ".agentplane", "worktrees", `${taskId}-configured-prefix`),
+        ),
+      ).toBe(true);
+    },
+    WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
+  );
+
+  it(
     "work start rejects duplicate branch ownership for the same task",
     async () => {
       const root = await mkGitRepoRootWithBranch("main");

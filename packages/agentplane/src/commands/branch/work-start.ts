@@ -6,7 +6,12 @@ import { fileExists } from "../../cli/fs-utils.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
-import { gitEnv, gitListTaskBranches, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
+import {
+  gitEnv,
+  gitListTaskBranches,
+  parseTaskIdFromBranch,
+  taskBranchName,
+} from "@agentplaneorg/core/git";
 import { PolicyEngine } from "../../policy/engine.js";
 import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
 import { throwIfPolicyDecisionDenied } from "../shared/policy-deny.js";
@@ -167,7 +172,11 @@ export async function cmdWorkStart(opts: {
     }
 
     const prefix = config.branch.task_prefix;
-    const branchName = `${prefix}/${opts.taskId}/${opts.slug.trim()}`;
+    const branchName = taskBranchName({
+      taskPrefix: prefix,
+      taskId: opts.taskId,
+      slug: opts.slug.trim(),
+    });
     await ensureSingleTaskBranchOwnership({
       gitRoot: resolved.gitRoot,
       taskPrefix: prefix,

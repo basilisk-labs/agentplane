@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605171455-ZS8AE7/branch-naming-contract",
+  "created_at": "2026-05-17T17:11:05.091Z",
+  "head_sha": "d3e0f2f6ead558dc933ac3beb6274e51ec72f5f2",
+  "last_verified_at": "2026-05-17T17:38:08.983Z",
+  "last_verified_sha": "d3e0f2f6ead558dc933ac3beb6274e51ec72f5f2",
+  "schema_version": 1,
+  "task_id": "202605171455-ZS8AE7",
+  "updated_at": "2026-05-17T17:11:05.091Z",
+  "verify": {
+    "status": "pass"
+  }
+}

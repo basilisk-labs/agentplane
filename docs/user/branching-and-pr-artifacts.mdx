@@ -26,8 +26,13 @@ Configured in `.agentplane/WORKFLOW.md`.
 
 ## Task Branches and Worktrees
 
-- Branch naming: `task/<task-id>/<slug>` by default (config: `branch.task_prefix`).
+- Task branch naming: `<task-prefix>/<task-id>/<slug>`; default `task/<task-id>/<slug>`
+  (config: `branch.task_prefix`).
+- Close branch naming: `<task-close-prefix>/<task-id>/<sha12>`; default
+  `task-close/<task-id>/<sha12>` (config: `branch.task_close_prefix`).
 - Worktrees live under `.agentplane/worktrees/` by default (config: `paths.worktrees_dir`).
+- Worktree basename is always `<task-id>-<slug>`. Configure `paths.worktrees_dir` to move the
+  root directory, not the per-task basename.
 
 ## Umbrella and Batch Tasks
 

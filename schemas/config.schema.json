@@ -11,17 +11,27 @@
     },
     "workflow_mode": {
       "type": "string",
-      "enum": ["direct", "branch_pr"],
+      "enum": [
+        "direct",
+        "branch_pr"
+      ],
       "default": "direct"
     },
     "status_commit_policy": {
       "type": "string",
-      "enum": ["off", "warn", "confirm"],
+      "enum": [
+        "off",
+        "warn",
+        "confirm"
+      ],
       "default": "warn"
     },
     "commit_automation": {
       "type": "string",
-      "enum": ["manual", "finish_only"],
+      "enum": [
+        "manual",
+        "finish_only"
+      ],
       "default": "manual"
     },
     "finish_auto_status_commit": {
@@ -33,7 +43,10 @@
       "properties": {
         "direct_dirty_policy": {
           "type": "string",
-          "enum": ["allow_other_task_readmes", "strict"],
+          "enum": [
+            "allow_other_task_readmes",
+            "strict"
+          ],
           "default": "allow_other_task_readmes"
         }
       },
@@ -88,7 +101,10 @@
       "properties": {
         "storage_default": {
           "type": "string",
-          "enum": ["link", "copy"],
+          "enum": [
+            "link",
+            "copy"
+          ],
           "default": "copy"
         }
       },
@@ -102,17 +118,30 @@
       "properties": {
         "profile": {
           "type": "string",
-          "enum": ["conservative", "balanced", "aggressive"],
+          "enum": [
+            "conservative",
+            "balanced",
+            "aggressive"
+          ],
           "default": "balanced"
         },
         "reasoning_effort": {
           "type": "string",
-          "enum": ["low", "medium", "high", "xhigh"],
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ],
           "default": "medium"
         },
         "text_verbosity": {
           "type": "string",
-          "enum": ["low", "medium", "high"],
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
           "default": "medium"
         },
         "tool_budget": {
@@ -210,7 +239,10 @@
       "properties": {
         "default_adapter": {
           "type": "string",
-          "enum": ["codex", "custom"],
+          "enum": [
+            "codex",
+            "custom"
+          ],
           "default": "codex"
         },
         "trace": {
@@ -218,7 +250,10 @@
           "properties": {
             "mode": {
               "type": "string",
-              "enum": ["raw", "off"],
+              "enum": [
+                "raw",
+                "off"
+              ],
               "default": "raw"
             },
             "max_tail_bytes": {
@@ -232,12 +267,19 @@
             },
             "retention": {
               "type": "string",
-              "enum": ["keep", "remove_on_success", "remove_always"],
+              "enum": [
+                "keep",
+                "remove_on_success",
+                "remove_always"
+              ],
               "default": "keep"
             },
             "compression": {
               "type": "string",
-              "enum": ["none", "gzip"],
+              "enum": [
+                "none",
+                "gzip"
+              ],
               "default": "none"
             },
             "redact_patterns": {
@@ -308,17 +350,27 @@
               "properties": {
                 "mode": {
                   "type": "string",
-                  "enum": ["none", "codex_sandbox_full_auto"]
+                  "enum": [
+                    "none",
+                    "codex_sandbox_full_auto"
+                  ]
                 },
                 "platform": {
                   "type": "string",
-                  "enum": ["auto", "macos", "linux", "windows"]
+                  "enum": [
+                    "auto",
+                    "macos",
+                    "linux",
+                    "windows"
+                  ]
                 }
               },
               "additionalProperties": true
             }
           },
-          "required": ["command"],
+          "required": [
+            "command"
+          ],
           "additionalProperties": true
         }
       },
@@ -373,7 +425,10 @@
                 "type": "string",
                 "minLength": 1
               },
-              "default": ["agentplane-feedback", "bug"]
+              "default": [
+                "agentplane-feedback",
+                "bug"
+              ]
             }
           },
           "additionalProperties": true,
@@ -383,7 +438,10 @@
             "prompt_on_internal_error": true,
             "include_insights_report": true,
             "dedupe": true,
-            "labels": ["agentplane-feedback", "bug"]
+            "labels": [
+              "agentplane-feedback",
+              "bug"
+            ]
           }
         }
       },
@@ -395,7 +453,10 @@
           "prompt_on_internal_error": true,
           "include_insights_report": true,
           "dedupe": true,
-          "labels": ["agentplane-feedback", "bug"]
+          "labels": [
+            "agentplane-feedback",
+            "bug"
+          ]
         }
       }
     },
@@ -421,12 +482,20 @@
         },
         "default_validation_mode": {
           "type": "string",
-          "enum": ["schema", "local", "ci"],
+          "enum": [
+            "schema",
+            "local",
+            "ci"
+          ],
           "default": "local"
         },
         "include_model_identity": {
           "type": "string",
-          "enum": ["never", "when_known", "always"],
+          "enum": [
+            "never",
+            "when_known",
+            "always"
+          ],
           "default": "when_known"
         },
         "include_prompts": {
@@ -490,12 +559,20 @@
         "task_prefix": {
           "type": "string",
           "minLength": 1,
+          "pattern": "^(?!.*(?:^|\\/)\\.\\.(?:\\/|$))(?!.*\\/\\/)(?!\\/)(?!.*\\/$)[^ ~^:?*[\\\\]+$",
           "default": "task"
+        },
+        "task_close_prefix": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!.*(?:^|\\/)\\.\\.(?:\\/|$))(?!.*\\/\\/)(?!\\/)(?!.*\\/$)[^ ~^:?*[\\\\]+$",
+          "default": "task-close"
         }
       },
       "additionalProperties": true,
       "default": {
-        "task_prefix": "task"
+        "task_prefix": "task",
+        "task_close_prefix": "task-close"
       }
     },
     "framework": {
@@ -522,7 +599,10 @@
           "type": "object",
           "properties": {
             "expected_version": {
-              "type": ["string", "null"],
+              "type": [
+                "string",
+                "null"
+              ],
               "default": null
             }
           },
@@ -559,7 +639,11 @@
                 "type": "string",
                 "minLength": 1
               },
-              "default": ["code", "backend", "frontend"]
+              "default": [
+                "code",
+                "backend",
+                "frontend"
+              ]
             },
             "require_steps_for_tags": {
               "type": "array",
@@ -574,7 +658,11 @@
                 "type": "string",
                 "minLength": 1
               },
-              "default": ["code", "data", "ops"]
+              "default": [
+                "code",
+                "data",
+                "ops"
+              ]
             },
             "require_verification_for_primary": {
               "type": "array",
@@ -582,7 +670,11 @@
                 "type": "string",
                 "minLength": 1
               },
-              "default": ["code", "data", "ops"]
+              "default": [
+                "code",
+                "data",
+                "ops"
+              ]
             },
             "spike_tag": {
               "type": "string",
@@ -600,9 +692,21 @@
           },
           "additionalProperties": true,
           "default": {
-            "required_tags": ["code", "backend", "frontend"],
-            "require_steps_for_primary": ["code", "data", "ops"],
-            "require_verification_for_primary": ["code", "data", "ops"],
+            "required_tags": [
+              "code",
+              "backend",
+              "frontend"
+            ],
+            "require_steps_for_primary": [
+              "code",
+              "data",
+              "ops"
+            ],
+            "require_verification_for_primary": [
+              "code",
+              "data",
+              "ops"
+            ],
             "spike_tag": "spike",
             "enforce_on_plan_approve": true,
             "enforce_on_start_when_no_plan": true
@@ -618,7 +722,15 @@
                 "minLength": 1
               },
               "minItems": 1,
-              "default": ["code", "data", "research", "docs", "ops", "product", "meta"]
+              "default": [
+                "code",
+                "data",
+                "research",
+                "docs",
+                "ops",
+                "product",
+                "meta"
+              ]
             },
             "strict_primary": {
               "type": "boolean",
@@ -636,7 +748,15 @@
           },
           "additionalProperties": true,
           "default": {
-            "primary_allowlist": ["code", "data", "research", "docs", "ops", "product", "meta"],
+            "primary_allowlist": [
+              "code",
+              "data",
+              "research",
+              "docs",
+              "ops",
+              "product",
+              "meta"
+            ],
             "strict_primary": false,
             "fallback_primary": "meta",
             "lock_primary_on_update": true
@@ -667,7 +787,13 @@
                 "type": "string",
                 "minLength": 1
               },
-              "default": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
+              "default": [
+                "Summary",
+                "Scope",
+                "Plan",
+                "Verification",
+                "Rollback Plan"
+              ]
             }
           },
           "additionalProperties": true,
@@ -681,7 +807,13 @@
               "Rollback Plan",
               "Findings"
             ],
-            "required_sections": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
+            "required_sections": [
+              "Summary",
+              "Scope",
+              "Plan",
+              "Verification",
+              "Rollback Plan"
+            ]
           }
         },
         "comments": {
@@ -699,7 +831,10 @@
                   "minimum": 0
                 }
               },
-              "required": ["prefix", "min_chars"],
+              "required": [
+                "prefix",
+                "min_chars"
+              ],
               "additionalProperties": true,
               "default": {
                 "prefix": "Start:",
@@ -718,7 +853,10 @@
                   "minimum": 0
                 }
               },
-              "required": ["prefix", "min_chars"],
+              "required": [
+                "prefix",
+                "min_chars"
+              ],
               "additionalProperties": true,
               "default": {
                 "prefix": "Blocked:",
@@ -737,7 +875,10 @@
                   "minimum": 0
                 }
               },
-              "required": ["prefix", "min_chars"],
+              "required": [
+                "prefix",
+                "min_chars"
+              ],
               "additionalProperties": true,
               "default": {
                 "prefix": "Verified:",
@@ -766,15 +907,35 @@
       "default": {
         "id_suffix_length_default": 6,
         "verify": {
-          "required_tags": ["code", "backend", "frontend"],
-          "require_steps_for_primary": ["code", "data", "ops"],
-          "require_verification_for_primary": ["code", "data", "ops"],
+          "required_tags": [
+            "code",
+            "backend",
+            "frontend"
+          ],
+          "require_steps_for_primary": [
+            "code",
+            "data",
+            "ops"
+          ],
+          "require_verification_for_primary": [
+            "code",
+            "data",
+            "ops"
+          ],
           "spike_tag": "spike",
           "enforce_on_plan_approve": true,
           "enforce_on_start_when_no_plan": true
         },
         "tags": {
-          "primary_allowlist": ["code", "data", "research", "docs", "ops", "product", "meta"],
+          "primary_allowlist": [
+            "code",
+            "data",
+            "research",
+            "docs",
+            "ops",
+            "product",
+            "meta"
+          ],
           "strict_primary": false,
           "fallback_primary": "meta",
           "lock_primary_on_update": true
@@ -789,7 +950,13 @@
             "Rollback Plan",
             "Findings"
           ],
-          "required_sections": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
+          "required_sections": [
+            "Summary",
+            "Scope",
+            "Plan",
+            "Verification",
+            "Rollback Plan"
+          ]
         },
         "comments": {
           "start": {
@@ -831,7 +998,16 @@
             "type": "string",
             "minLength": 1
           },
-          "default": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"]
+          "default": [
+            "start",
+            "status",
+            "mark",
+            "done",
+            "wip",
+            "update",
+            "tasks",
+            "task"
+          ]
         },
         "dco": {
           "type": "object",
@@ -875,7 +1051,16 @@
       },
       "additionalProperties": true,
       "default": {
-        "generic_tokens": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"],
+        "generic_tokens": [
+          "start",
+          "status",
+          "mark",
+          "done",
+          "wip",
+          "update",
+          "tasks",
+          "task"
+        ],
         "dco": {
           "enabled": false,
           "name": null,
@@ -899,7 +1084,10 @@
     },
     "artifacts_language": {
       "type": "string",
-      "enum": ["any", "en"],
+      "enum": [
+        "any",
+        "en"
+      ],
       "default": "any"
     },
     "closure_commit_requires_approval": {

@@ -34,6 +34,7 @@ function prepareUsage() {
     "  --publish-result <path>   Path to publish-result.json",
     "  --base-ref <branch>       Base branch for the follow-up PR (default: main)",
     "  --repo <owner/name>       GitHub repository (default: $GITHUB_REPOSITORY)",
+    "  --task-close-branch-prefix <prefix>  Close branch prefix (default: config or task-close)",
     "  --json                    Emit JSON to stdout",
   ].join("\n");
 }
@@ -109,7 +110,16 @@ async function resolveReleaseTaskIdsFromCommit(releaseSha) {
   return [...new Set(taskIds)];
 }
 
-function buildPrepareOutcome({ actionable, reason, manifest, releaseSha, baseRef, repo, taskId }) {
+function buildPrepareOutcome({
+  actionable,
+  reason,
+  manifest,
+  releaseSha,
+  baseRef,
+  repo,
+  taskId,
+  taskCloseBranchPrefix = "task-close",
+}) {
   if (!actionable || !taskId) {
     return {
       actionable: false,
@@ -124,7 +134,7 @@ function buildPrepareOutcome({ actionable, reason, manifest, releaseSha, baseRef
     };
   }
 
-  const closureBranch = `task-close/${taskId}/${shortSha(releaseSha)}-publish`;
+  const closureBranch = `${taskCloseBranchPrefix}/${taskId}/${shortSha(releaseSha)}-publish`;
   const releaseUrl = `https://github.com/${repo}/releases/tag/${manifest.tag}`;
   const publishRunUrl = manifest.job.runId
     ? `https://github.com/${repo}/actions/runs/${manifest.job.runId}`
@@ -168,6 +178,7 @@ function parsePrepareArgs(argv) {
     publishResultPath: "",
     baseRef: "main",
     repo: process.env.GITHUB_REPOSITORY ?? "",
+    taskCloseBranchPrefix: null,
     json: false,
   };
   for (let index = 0; index < argv.length; index += 1) {
@@ -192,6 +203,11 @@ function parsePrepareArgs(argv) {
       index += 1;
       continue;
     }
+    if (arg === "--task-close-branch-prefix") {
+      out.taskCloseBranchPrefix = argv[index + 1] ?? out.taskCloseBranchPrefix;
+      index += 1;
+      continue;
+    }
     if (arg === "--json") {
       out.json = true;
       continue;
@@ -206,6 +222,16 @@ function parsePrepareArgs(argv) {
   out.publishResultPath = ensureNonEmpty(out.publishResultPath, "publish-result path");
   out.repo = ensureNonEmpty(out.repo, "repo");
   return out;
+}
+
+async function readConfiguredTaskCloseBranchPrefix(cwd = process.cwd()) {
+  try {
+    const workflow = await readFile(path.join(cwd, ".agentplane", "WORKFLOW.md"), "utf8");
+    const branchBlock = /^branch:\n(?<body>(?:  .+\n?)*)/mu.exec(workflow)?.groups?.body ?? "";
+    return /^\s+task_close_prefix:\s*(?<value>\S+)\s*$/mu.exec(branchBlock)?.groups?.value ?? null;
+  } catch {
+    return null;
+  }
 }
 
 function parseApplyArgs(argv) {
@@ -298,6 +324,8 @@ function parseAuditArgs(argv) {
 async function runPrepare(argv) {
   const args = parsePrepareArgs(argv);
   if (!args) return null;
+  const taskCloseBranchPrefix =
+    args.taskCloseBranchPrefix ?? (await readConfiguredTaskCloseBranchPrefix()) ?? "task-close";
   const manifest = await readPublishResult(args.publishResultPath);
   if (!manifest.success) {
     return buildPrepareOutcome({
@@ -307,6 +335,7 @@ async function runPrepare(argv) {
       releaseSha: args.releaseSha,
       baseRef: args.baseRef,
       repo: args.repo,
+      taskCloseBranchPrefix,
     });
   }
   const taskIds = await resolveReleaseTaskIdsFromCommit(args.releaseSha);
@@ -338,6 +367,7 @@ async function runPrepare(argv) {
     baseRef: args.baseRef,
     repo: args.repo,
     taskId: taskIds[0],
+    taskCloseBranchPrefix,
   });
 }
 

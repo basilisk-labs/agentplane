@@ -49,6 +49,20 @@ These keys control approval gates; they do not add or remove CLI capabilities.
 - `workspace.workflow_dir`
 - `workspace.worktrees_dir`
 
+### branch
+
+- `branch.task_prefix`: namespace for branch_pr implementation branches. Default: `task`.
+- `branch.task_close_prefix`: namespace for hosted/base close-tail branches. Default: `task-close`.
+
+Branch names are deterministic:
+
+- Task branch: `<task-prefix>/<task-id>/<slug>`.
+- Close branch: `<task-close-prefix>/<task-id>/<sha12>`.
+- Worktree path: `<workspace.worktrees_dir>/<task-id>-<slug>`.
+
+Only prefixes and the worktree root are configurable. The `<task-id>/<slug>` and `<task-id>-<slug>`
+suffixes stay fixed so task ownership, cleanup, hooks, and hosted-close recovery can parse them.
+
 ### tasks.tags (primary tag model)
 
 - `tasks.tags.primary_allowlist`

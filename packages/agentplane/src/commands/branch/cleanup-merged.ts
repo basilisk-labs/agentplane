@@ -42,10 +42,11 @@ type CleanupCandidate = {
 function resolveCleanupBranchTaskId(opts: {
   branch: string;
   prefix: string;
+  closePrefix: string;
 }): { taskId: string; kind: CleanupBranchKind } | null {
   const taskId = parseTaskIdFromBranch(opts.prefix, opts.branch);
   if (taskId) return { taskId, kind: "task" };
-  const closeTaskId = parseTaskIdFromCloseBranch(opts.branch);
+  const closeTaskId = parseTaskIdFromCloseBranch(opts.branch, opts.closePrefix);
   if (closeTaskId) return { taskId: closeTaskId, kind: "task-close" };
   return null;
 }
@@ -93,13 +94,14 @@ async function resolveCleanupCandidates(opts: {
   baseBranch: string;
 }): Promise<CleanupCandidate[]> {
   const prefix = opts.ctx.config.branch.task_prefix;
-  const branches = await gitListBranchesByPrefixes(opts.gitRoot, [prefix, "task-close"]);
+  const closePrefix = opts.ctx.config.branch.task_close_prefix;
+  const branches = await gitListBranchesByPrefixes(opts.gitRoot, [prefix, closePrefix]);
   const taskCache = new Map<string, TaskData | null>();
 
   const candidates: CleanupCandidate[] = [];
   for (const branch of branches) {
     if (branch === opts.baseBranch) continue;
-    const target = resolveCleanupBranchTaskId({ branch, prefix });
+    const target = resolveCleanupBranchTaskId({ branch, prefix, closePrefix });
     if (!target) continue;
     let task = taskCache.get(target.taskId) ?? null;
     if (!taskCache.has(target.taskId)) {

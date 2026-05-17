@@ -756,6 +756,7 @@ describe("task finish close-tail", () => {
   it("skips local close-tail materialization when a hosted close PR already exists", async () => {
     const ctx = mkCtx();
     ctx.config.workflow_mode = "branch_pr";
+    ctx.config.branch.task_close_prefix = "agents/task-close";
     mocks.tryLookupExistingGithubPrByBranch.mockResolvedValue({
       prNumber: 902,
       prUrl: "https://github.com/basilisk-labs/agentplane/pull/902",
@@ -777,7 +778,7 @@ describe("task finish close-tail", () => {
     expect(closeBranch).toBeNull();
     expect(mocks.tryLookupExistingGithubPrByBranch).toHaveBeenCalledWith({
       gitRoot: "/repo",
-      branch: "task-close/T-1/base-head-sh",
+      branch: "agents/task-close/T-1/base-head-sh",
       baseBranch: "main",
     });
     expect(mocks.gitBranchExists).not.toHaveBeenCalled();

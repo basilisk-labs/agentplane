@@ -1,4 +1,4 @@
-import { resolveBaseBranch, gitEnv } from "@agentplaneorg/core/git";
+import { resolveBaseBranch, gitEnv, taskCloseBranchName } from "@agentplaneorg/core/git";
 import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
@@ -79,10 +79,6 @@ async function readHeadCommitHash(gitRoot: string): Promise<string> {
   return hash;
 }
 
-function branchPrCloseBranchName(taskId: string, headCommitHash: string): string {
-  return `task-close/${taskId}/${headCommitHash.slice(0, 12)}`;
-}
-
 async function fetchRemoteBaseBestEffort(opts: {
   gitRoot: string;
   baseBranch: string;
@@ -143,7 +139,11 @@ export async function resolveBranchPrCloseTailState(opts: {
   }
 
   const headCommitHash = await readHeadCommitHash(gitRoot);
-  const closeBranch = branchPrCloseBranchName(opts.taskId, headCommitHash);
+  const closeBranch = taskCloseBranchName({
+    taskClosePrefix: opts.ctx.config.branch.task_close_prefix,
+    taskId: opts.taskId,
+    commit: headCommitHash,
+  });
 
   await fetchRemoteBaseBestEffort({ gitRoot, baseBranch });
   const alreadyHandledRemotely = await closeTailAlreadyHandledRemotely({

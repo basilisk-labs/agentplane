@@ -48,6 +48,7 @@ export async function runCommitMsgHook(opts: HooksRunOptions): Promise<number> {
     (await inferTaskIdFromCurrentBranch({
       gitRoot: resolved.gitRoot,
       taskPrefix: loaded.config.branch.task_prefix,
+      taskClosePrefix: loaded.config.branch.task_close_prefix,
     })) ||
     (await inferTaskIdFromSubjectSuffix({
       gitRoot: resolved.gitRoot,

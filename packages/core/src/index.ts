@@ -212,12 +212,16 @@ export {
 } from "./git/git-diff.js";
 
 export {
+  DEFAULT_TASK_BRANCH_PREFIX,
+  DEFAULT_TASK_CLOSE_BRANCH_PREFIX,
   findWorktreeForBranch,
   gitListBranchesByPrefixes,
   gitListTaskBranches,
   listWorktrees,
   parseTaskIdFromBranch,
   parseTaskIdFromCloseBranch,
+  taskBranchName,
+  taskCloseBranchName,
 } from "./git/git-worktree.js";
 
 export {

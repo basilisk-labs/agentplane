@@ -139,7 +139,7 @@ export function configRawToWorkflowFrontMatter(
       backend: config.tasks_backend ?? { config_path: ".agentplane/backends/local/backend.json" },
       ...tasks,
     },
-    branch: config.branch ?? { task_prefix: "task" },
+    branch: config.branch ?? { task_prefix: "task", task_close_prefix: "task-close" },
     framework: config.framework ?? {
       source: "https://github.com/basilisk-labs/agentplane",
       last_update: null,

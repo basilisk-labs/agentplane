@@ -95,8 +95,12 @@ async function resolveSyncBaseBranch(opts: {
   });
 }
 
-function isStackedBranchAliasDoneTask(opts: { task: TaskData; branch: string }): boolean {
-  const branchTaskId = parseTaskIdFromBranch("task", opts.branch);
+function isStackedBranchAliasDoneTask(opts: {
+  task: TaskData;
+  branch: string;
+  taskPrefix: string;
+}): boolean {
+  const branchTaskId = parseTaskIdFromBranch(opts.taskPrefix, opts.branch);
   if (!branchTaskId || branchTaskId === opts.task.id) return false;
   const summary = opts.task.result_summary?.trim().toLowerCase() ?? "";
   if (!summary.includes("stacked branch_pr merge rooted at")) return false;
@@ -178,7 +182,15 @@ export async function findDoneBranchPrTasksWithOpenPrArtifacts(opts: {
     const branchStillExists =
       (await git.refExists(branch)) || (await git.refExists(`origin/${branch}`));
     if (!branchStillExists) continue;
-    if (isStackedBranchAliasDoneTask({ task, branch })) continue;
+    if (
+      isStackedBranchAliasDoneTask({
+        task,
+        branch,
+        taskPrefix: opts.ctx.config.branch.task_prefix,
+      })
+    ) {
+      continue;
+    }
 
     const commitHash = task.commit?.hash?.trim() ?? "";
     if (!commitHash) continue;
