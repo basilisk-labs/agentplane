@@ -71,17 +71,20 @@ export default function BlogLanding({ items }: BlogListPageProps) {
       description="AgentPlane release stories, workflow analysis, and implementation notes."
     >
       <main className={styles.page}>
-        <section className={styles.hero}>
-          <p className={styles.kicker}>AgentPlane Journal</p>
-          <h1>Release stories, product notes, and operational context.</h1>
-          <p className={styles.lead}>
-            The blog is where the formal release notes turn into plain language: what changed, why
-            it matters, and which repo constraints quietly shifted underneath the CLI.
-          </p>
-        </section>
+        <div className={styles.bentoGrid}>
+          <section className={`${styles.bentoItem} ${styles.hero} ${styles.colSpan12}`}>
+            <p className={styles.kicker}>AgentPlane Journal</p>
+            <h1>Release stories, product notes, and operational context.</h1>
+            <p className={styles.lead}>
+              The blog is where formal release notes become readable context: what changed, why it
+              matters, and what operational assumptions moved.
+            </p>
+          </section>
 
-        <div className={styles.layout}>
-          <section className={styles.entriesSection} aria-labelledby="blog-entries-title">
+          <section
+            className={`${styles.bentoItem} ${styles.entriesSection} ${styles.colSpan8}`}
+            aria-labelledby="blog-entries-title"
+          >
             <div className={styles.sectionHeading}>
               <p className={styles.sectionLabel}>Newest first</p>
               <h2 id="blog-entries-title">Latest writing</h2>
@@ -110,7 +113,10 @@ export default function BlogLanding({ items }: BlogListPageProps) {
             </div>
           </section>
 
-          <aside className={styles.sidebar} aria-labelledby="blog-sidebar-title">
+          <aside
+            className={`${styles.bentoItem} ${styles.sidebar} ${styles.colSpan4}`}
+            aria-labelledby="blog-sidebar-title"
+          >
             <div className={styles.sectionHeading}>
               <p className={styles.sectionLabel}>Reference</p>
               <h2 id="blog-sidebar-title">Related surfaces</h2>

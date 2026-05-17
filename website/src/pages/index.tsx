@@ -1,6 +1,6 @@
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
-import { type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import {
   docsUrl,
   githubUrl,
@@ -100,9 +100,10 @@ function Hero(): ReactNode {
   );
 }
 
-function SectionDivider(): ReactNode {
+function ProductAccordion({ sections }: { sections: FeatureSection[] }): ReactNode {
+  const [openId, setOpenId] = useState<string>(sections[0]?.id ?? "");
   return (
-    <div className={`${styles.bentoItem} ${styles.sectionDivider} ${styles.colSpan12}`}>
+    <section className={`${styles.bentoItem} ${styles.colSpan12} ${styles.accordionSection}`}>
       <div className={styles.editorialHeader}>
         <h2>Product surfaces</h2>
         <div className={styles.editorialMeta}>
@@ -110,40 +111,41 @@ function SectionDivider(): ReactNode {
           <span>Navigation</span>
         </div>
       </div>
-    </div>
-  );
-}
-
-function FeatureCard({ section, index }: { section: FeatureSection; index: number }): ReactNode {
-  const isWide = index === 0 || index === 2 || index === 5;
-  const spanClass = isWide ? styles.colSpan8 : styles.colSpan4;
-
-  return (
-    <article
-      id={section.id}
-      className={`${styles.bentoItem} ${styles.blueprint} ${spanClass}`}
-      aria-labelledby={`${section.id}-title`}
-    >
-      <div className={styles.editorialHeader}>
-        <div className={styles.editorialMeta}>
-          <span className={styles.circleNum}>{index + 1}</span>
-          <span>{section.code}</span>
-        </div>
-        <span className={styles.monoSm}>{section.status}</span>
+      <div className={styles.accordionStack}>
+        {sections.map((section, index) => (
+          <details
+            key={section.id}
+            className={styles.accordionItem}
+            open={openId === section.id}
+            onToggle={(event) => {
+              if ((event.currentTarget as HTMLDetailsElement).open) {
+                setOpenId(section.id);
+              }
+            }}
+          >
+            <summary className={styles.accordionSummary}>
+              <span className={styles.accordionMeta}>
+                <span className={styles.circleNum}>{index + 1}</span>
+                <span>{section.code}</span>
+              </span>
+              <span className={styles.accordionTitle}>{section.title}</span>
+              <span className={styles.monoSm}>{section.status}</span>
+            </summary>
+            <div className={styles.accordionBody}>
+              <p>{section.text}</p>
+              <p className={styles.featureProof}>{section.proof}</p>
+              <Link
+                className={styles.buttonSecondary}
+                to={section.to}
+                onClick={() => trackHomeEvent(`${section.id}_docs_clicked_from_home`)}
+              >
+                {section.linkLabel}
+              </Link>
+            </div>
+          </details>
+        ))}
       </div>
-      <h3 id={`${section.id}-title`}>{section.title}</h3>
-      <p>{section.text}</p>
-      <p className={styles.featureProof}>{section.proof}</p>
-      <div className={styles.projectFooter}>
-        <Link
-          className={styles.buttonSecondary}
-          to={section.to}
-          onClick={() => trackHomeEvent(`${section.id}_docs_clicked_from_home`)}
-        >
-          {section.linkLabel}
-        </Link>
-      </div>
-    </article>
+    </section>
   );
 }
 
@@ -204,10 +206,7 @@ export default function Home(): ReactNode {
         <div className={styles.bentoWrapper}>
           <div className={styles.bentoGrid}>
             <Hero />
-            <SectionDivider />
-            {menuSections.map((section, index) => (
-              <FeatureCard key={section.id} section={section} index={index} />
-            ))}
+            <ProductAccordion sections={menuSections} />
             <InstallPanel />
             <section className={`${styles.bentoItem} ${styles.colSpan12} ${styles.contactPanel}`}>
               <div className={styles.editorialHeader}>

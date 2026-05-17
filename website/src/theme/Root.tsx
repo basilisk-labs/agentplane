@@ -74,19 +74,43 @@ function BlogReadingProgress(): ReactElement | null {
 function NavbarScrollState(): null {
   useEffect(() => {
     const root = document.documentElement;
+    let lastScrollY = window.scrollY;
+    let floatingVisible = false;
+    let ticking = false;
 
-    const updateScrolled = () => {
-      root.classList.toggle("nav-scrolled", window.scrollY > 20);
+    const updateState = () => {
+      ticking = false;
+      const currentScrollY = Math.max(window.scrollY, 0);
+      const delta = currentScrollY - lastScrollY;
+      const threshold = window.innerHeight * 0.12;
+
+      root.classList.toggle("nav-scrolled", currentScrollY > 20);
+
+      if (currentScrollY < threshold || delta < -4) {
+        floatingVisible = false;
+      } else if (delta > 4) {
+        floatingVisible = true;
+      }
+
+      root.classList.toggle("nav-floating-visible", floatingVisible);
+      lastScrollY = currentScrollY;
     };
 
-    updateScrolled();
-    window.addEventListener("scroll", updateScrolled, { passive: true });
-    window.addEventListener("resize", updateScrolled);
+    updateState();
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(updateState);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", updateState);
 
     return () => {
-      window.removeEventListener("scroll", updateScrolled);
-      window.removeEventListener("resize", updateScrolled);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", updateState);
       root.classList.remove("nav-scrolled");
+      root.classList.remove("nav-floating-visible");
     };
   }, []);
 
