@@ -44,7 +44,6 @@ function findLatestSummary() {
   return (
     parsed.find((entry) => entry.startTime >= startedAtMs - 5000) ??
     parsed.find((entry) => entry.mtimeMs >= startedAtMs - 5000) ??
-    parsed[0] ??
     null
   );
 }
