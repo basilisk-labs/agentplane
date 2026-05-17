@@ -58,13 +58,21 @@ import {
   type ResolvedProject,
 } from "@agentplane/testkit/cli-core-pr-flow";
 
+async function seedGitBase(root: string): Promise<void> {
+  await configureGitUser(root);
+  const execFileAsync = promisify(execFile);
+  await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+  await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+}
+
 describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
   it("pr open creates a remote GitHub PR when origin and gh are available", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
-    await configureGitUser(root);
+    await seedGitBase(root);
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
       cwd: root,
@@ -103,6 +111,11 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
     }
 
     const branch = `task/${taskId}/remote-create`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore branch publish seed"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
     const { fakeBin, logPath } = await installFakeGhPrApi({
       scenarioName: "open-create",
       branch,
@@ -152,7 +165,8 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
     expect(meta.pr_number).toBe(654);
     expect(meta.pr_url).toBe("https://github.com/example/repo/pull/654");
     expect(meta.status).toBe("OPEN");
-    expect(meta.head_sha).toBe("remote-head-sha");
+    expect(meta.head_sha).toMatch(/^[0-9a-f]{40}$/);
+    expect(meta.head_sha).not.toBe("remote-head-sha");
 
     const logText = await readFile(logPath, "utf8");
     const log = logText
@@ -176,7 +190,7 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
-    await configureGitUser(root);
+    await seedGitBase(root);
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
       cwd: root,
@@ -211,6 +225,11 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
     }
 
     const branch = `task/${taskId}/remote-create-failure`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore branch publish seed"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
     const { fakeBin } = await installFakeGhPrApi({
       scenarioName: "open-create-failure",
       branch,
@@ -252,7 +271,7 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
-    await configureGitUser(root);
+    await seedGitBase(root);
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
       cwd: root,
@@ -287,6 +306,11 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
     }
 
     const branch = `task/${taskId}/dotenv-auth`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore branch publish seed"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
     const { fakeBin, logPath } = await installFakeGhPrApi({
       scenarioName: "open-dotenv-auth",
       branch,
@@ -346,6 +370,7 @@ describe("runCli pr open flow network gates", { timeout: PR_FLOW_INTEGRATION_TIM
     expect(meta.pr_number).toBe(655);
     expect(meta.pr_url).toBe("https://github.com/example/repo/pull/655");
     expect(meta.status).toBe("OPEN");
-    expect(meta.head_sha).toBe("remote-head-sha");
+    expect(meta.head_sha).toMatch(/^[0-9a-f]{40}$/);
+    expect(meta.head_sha).not.toBe("remote-head-sha");
   });
 });
