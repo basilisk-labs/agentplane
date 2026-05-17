@@ -104,6 +104,15 @@ function titleFromPath(rel: string): string {
     .join(" ");
 }
 
+function titleFromMarkdown(rel: string, text: string): string {
+  const frontmatter = extractFrontmatter(text);
+  const titleMatch = frontmatter ? /(?:^|\n)\s*title:\s*"?([^"\n]+)"?/u.exec(frontmatter) : null;
+  if (titleMatch?.[1]) return titleMatch[1].trim();
+  const headingMatch = /^#\s+(.+)$/mu.exec(text);
+  if (headingMatch?.[1]) return headingMatch[1].trim();
+  return titleFromPath(rel);
+}
+
 function assertChoice<T extends string>(value: string, choices: Set<T>, label: string): T {
   if (choices.has(value as T)) return value as T;
   throw new CliError({
@@ -239,6 +248,25 @@ function lintWikiText(rel: string, text: string): string[] {
   return errors;
 }
 
+function isIndexableWikiPage(rel: string): boolean {
+  const base = path.basename(rel);
+  return rel.endsWith(".md") && base !== "index.md" && base !== "AGENTS.md";
+}
+
+function relativeMarkdownLink(fromDir: string, targetRel: string): string {
+  return toPosix(path.relative(fromDir, targetRel)) || path.basename(targetRel);
+}
+
+function replaceGeneratedIndexSection(text: string, generated: string): string {
+  const start = "<!-- agentplane-context-wiki-index:start -->";
+  const end = "<!-- agentplane-context-wiki-index:end -->";
+  const section = `${start}\n${generated.trimEnd()}\n${end}`;
+  const pattern = new RegExp(String.raw`${start}[\s\S]*?${end}`, "u");
+  if (pattern.test(text)) return text.replace(pattern, section);
+  const trimmed = text.trimEnd();
+  return `${trimmed}${trimmed ? "\n\n" : ""}${section}\n`;
+}
+
 export async function cmdContextWikiNew(opts: {
   cwd: string;
   rootOverride?: string;
@@ -347,5 +375,65 @@ export async function cmdContextWikiLink(opts: {
     return 0;
   }
   for (const match of matches.slice(0, 20)) process.stdout.write(`- ${match}\n`);
+  return 0;
+}
+
+export async function cmdContextWikiIndex(opts: {
+  cwd: string;
+  rootOverride?: string;
+  parsed: { path: string };
+}): Promise<number> {
+  const root = path.resolve(opts.rootOverride ?? opts.cwd);
+  const target = await normalizeWikiLintTarget(root, opts.parsed.path);
+  const targetAbs = path.join(root, target);
+  const targetStats = await stat(targetAbs);
+  const targetDir = targetStats.isFile() ? path.posix.dirname(target) : target;
+  const wikiRoot = "context/wiki";
+  const collectedWikiFiles = await collectWikiFiles(root, target);
+  const wikiFiles = collectedWikiFiles.filter((file) => isIndexableWikiPage(file));
+  const dirs = new Set<string>();
+  for (const file of wikiFiles) {
+    let current = path.posix.dirname(file);
+    while (current.startsWith(targetDir) && current !== ".") {
+      dirs.add(current);
+      if (current === targetDir || current === wikiRoot) break;
+      current = path.posix.dirname(current);
+    }
+  }
+
+  const updated: string[] = [];
+  for (const dir of [...dirs].toSorted()) {
+    const directPages = wikiFiles.filter((file) => path.posix.dirname(file) === dir);
+    const childDirs = [...dirs].filter(
+      (candidate) => path.posix.dirname(candidate) === dir && candidate !== dir,
+    );
+    if (directPages.length === 0 && childDirs.length === 0) continue;
+
+    const entries: string[] = [];
+    for (const child of childDirs.toSorted()) {
+      entries.push(
+        `- [${titleFromPath(child)}](${relativeMarkdownLink(dir, `${child}/index.md`)})`,
+      );
+    }
+    for (const page of directPages.toSorted()) {
+      const text = await readFile(path.join(root, page), "utf8");
+      entries.push(`- [${titleFromMarkdown(page, text)}](${relativeMarkdownLink(dir, page)})`);
+    }
+
+    const indexRel = `${dir}/index.md`;
+    const indexAbs = path.join(root, indexRel);
+    const existing = (await fileExists(indexAbs))
+      ? await readFile(indexAbs, "utf8")
+      : `# ${titleFromPath(dir)}\n`;
+    const next = replaceGeneratedIndexSection(existing, entries.join("\n"));
+    if (next !== existing) {
+      await mkdir(path.dirname(indexAbs), { recursive: true });
+      await writeFile(indexAbs, next, "utf8");
+      updated.push(indexRel);
+    }
+  }
+
+  process.stdout.write(`context wiki index: updated ${updated.length} index page(s)\n`);
+  for (const rel of updated) process.stdout.write(`- ${rel}\n`);
   return 0;
 }

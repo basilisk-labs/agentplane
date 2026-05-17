@@ -115,6 +115,18 @@ Generated file/change tasks carry a portable `context_assimilation` prompt modul
 CURATOR contract in the task description so runner, Codex, IDE agents, and humans get the same
 wiki/claims/cross-link/provenance instructions.
 
+When CURATOR writes wiki pages, links should appear inside the narrative text where they help the
+reader or a later agent resolve meaning. A page should not rely only on a trailing "Related Pages"
+list. If lookup shows that a source-local name probably matches an existing page or graph entity,
+CURATOR should use the canonical term in prose, link it to the canonical page or section, and record
+the source-local wording as an alias. For example, if a raw note says "MR Sync" and the graph already
+identifies it as `Meridian Relay`, the wiki sentence should use `[[Meridian Relay]]` or the local
+Markdown link to that page and preserve "MR Sync" as an alias/evidence detail.
+
+After adding, moving, or materially renaming wiki pages, CURATOR should refresh relevant `index.md`
+navigation pages. `agentplane context wiki index context/wiki` updates generated index sections so
+new pages are discoverable without treating the index as a competing source of truth.
+
 `ap context ingest` remains the lower-level pipeline command for agents and automation, including
 `--all` and `--index-only`.
 

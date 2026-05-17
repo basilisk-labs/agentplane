@@ -15,6 +15,7 @@ import { cmdContextDoctor } from "./doctor.js";
 import { cmdContextVerifyTask } from "./verify-task.js";
 import {
   cmdContextWikiExplain,
+  cmdContextWikiIndex,
   cmdContextWikiLink,
   cmdContextWikiLint,
   cmdContextWikiNew,
@@ -51,6 +52,7 @@ import {
   contextSpec,
   contextGraphSpec,
   contextWikiExplainSpec,
+  contextWikiIndexSpec,
   contextWikiLinkSpec,
   contextWikiLintSpec,
   contextWikiNewSpec,
@@ -318,6 +320,13 @@ export async function runContextWikiLink(
   return await cmdContextWikiLink({ cwd: _ctx.cwd, rootOverride: _ctx.rootOverride, parsed: p });
 }
 
+export async function runContextWikiIndex(
+  _ctx: CommandCtx,
+  p: Parameters<typeof cmdContextWikiIndex>[0]["parsed"],
+): Promise<number> {
+  return await cmdContextWikiIndex({ cwd: _ctx.cwd, rootOverride: _ctx.rootOverride, parsed: p });
+}
+
 export async function runContextHarvestTasks(
   _ctx: CommandCtx,
   p: ContextHarvestTasksParsed,
@@ -422,6 +431,7 @@ export {
   contextSearchSpec,
   contextShowSpec,
   contextWikiExplainSpec,
+  contextWikiIndexSpec,
   contextWikiLinkSpec,
   contextWikiLintSpec,
   contextWikiNewSpec,

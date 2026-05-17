@@ -100,6 +100,7 @@ import {
   contextSpec,
   contextVerifyTaskSpec,
   contextWikiExplainSpec,
+  contextWikiIndexSpec,
   contextWikiLinkSpec,
   contextWikiLintSpec,
   contextWikiNewSpec,
@@ -248,6 +249,7 @@ export const PROJECT_COMMANDS = [
   fromCommandsContextCommand(contextWikiLintSpec, "runContextWikiLint"),
   fromCommandsContextCommand(contextWikiExplainSpec, "runContextWikiExplain"),
   fromCommandsContextCommand(contextWikiLinkSpec, "runContextWikiLink"),
+  fromCommandsContextCommand(contextWikiIndexSpec, "runContextWikiIndex"),
   fromCommandsContextCommand(contextDoctorSpec, "runContextDoctor", { surface: "advanced" }),
   fromCommandsContextCommand(contextVerifyTaskSpec, "runContextVerifyTask", {
     surface: "advanced",
