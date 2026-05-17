@@ -19,7 +19,6 @@ import { isRecord } from "../../shared/guards.js";
 import { wrapCommand } from "../../cli/run-cli/commands/wrap-command.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
-import { runGhApiJson } from "../pr/internal/gh-api.js";
 
 import {
   insightsSpec,
@@ -33,6 +32,12 @@ import {
   type FailureContextInput,
   type InsightsFailure,
 } from "./insights-issue-context.js";
+import {
+  createFeedbackIssue,
+  feedbackCloudEndpoint,
+  normalizeIssueTransport,
+  type FeedbackGithubIssuesSettings,
+} from "./insights-issue-publish.js";
 
 export { insightsIssueSpec, insightsReportSpec, insightsSpec } from "./insights.spec.js";
 
@@ -41,7 +46,7 @@ const output = createCliEmitter();
 
 type CountMap = Record<string, number>;
 
-type InsightsReport = {
+export type InsightsReport = {
   schema: "agentplane.insights.report.v1";
   generated_at: string;
   privacy: {
@@ -338,34 +343,6 @@ export async function buildInsightsReport(opts: {
   };
 }
 
-type GithubIssueResponse = {
-  number: number;
-  html_url?: string;
-};
-
-type FeedbackGithubIssuesSettings = {
-  enabled: boolean;
-  repository: string;
-  transport?: "github" | "cloud" | "auto";
-  cloud_endpoint?: string;
-  allow_anonymous_cloud?: boolean;
-  include_insights_report: boolean;
-  labels: string[];
-};
-
-type FeedbackIssuePayload = {
-  repository: string;
-  title: string;
-  body: string;
-  labels: string[];
-};
-
-type CloudIssueResponse = {
-  intake_id?: string;
-  issue_url?: string;
-  status?: string;
-};
-
 function trimOptional(value: string | undefined): string | null {
   const trimmed = value?.trim() ?? "";
   return trimmed || null;
@@ -406,106 +383,6 @@ function renderIssueBody(opts: {
     sections.push("", "## Insights report", "```json", JSON.stringify(opts.report, null, 2), "```");
   }
   return `${sections.join("\n")}\n`;
-}
-
-function normalizeIssueTransport(raw: string | undefined): "github" | "cloud" | "auto" {
-  return raw === "cloud" || raw === "auto" || raw === "github" ? raw : "github";
-}
-
-function cloudEndpoint(settings: FeedbackGithubIssuesSettings): string {
-  return trimOptional(settings.cloud_endpoint) ?? "https://agentplane.cloud/api/feedback/issues";
-}
-
-function cloudIntakeBody(opts: {
-  payload: FeedbackIssuePayload;
-  report: InsightsReport;
-  anonymous: boolean;
-}): Record<string, unknown> {
-  return {
-    schema: "agentplane.feedback.issue.v1",
-    anonymous: opts.anonymous,
-    repository: opts.payload.repository,
-    title: opts.payload.title,
-    body: opts.payload.body,
-    labels: opts.payload.labels,
-    client: {
-      agentplane_version: opts.report.environment.agentplane_version,
-      node_major: opts.report.environment.node_major,
-      platform: opts.report.environment.platform,
-      arch: opts.report.environment.arch,
-    },
-    failure: opts.report.failure,
-    diagnostics: {
-      workflow_mode: opts.report.project.workflow_mode,
-      backend: opts.report.project.backend.id,
-      git_branch: opts.report.git.branch,
-      git_dirty: opts.report.git.dirty,
-      dedupe_signature: opts.report.failure.dedupe_signature,
-    },
-    privacy: opts.report.privacy,
-  };
-}
-
-async function createGithubIssue(
-  root: string,
-  settings: FeedbackGithubIssuesSettings,
-  payload: FeedbackIssuePayload,
-): Promise<{
-  transport: "github";
-  issue: string;
-  url: string;
-}> {
-  const issue = await runGhApiJson<GithubIssueResponse>(root, [
-    `repos/${settings.repository}/issues`,
-    "-X",
-    "POST",
-    "-f",
-    `title=${payload.title}`,
-    "-f",
-    `body=${payload.body}`,
-    ...settings.labels.flatMap((label) => ["-f", `labels[]=${label}`]),
-  ]);
-  return {
-    transport: "github",
-    issue: `#${issue.number}`,
-    url: issue.html_url ?? "unknown",
-  };
-}
-
-async function createCloudIssue(opts: {
-  endpoint: string;
-  payload: FeedbackIssuePayload;
-  report: InsightsReport;
-}): Promise<{
-  transport: "cloud";
-  issue: string;
-  url: string;
-}> {
-  const response = await fetch(opts.endpoint, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(
-      cloudIntakeBody({ payload: opts.payload, report: opts.report, anonymous: true }),
-    ),
-  });
-  const text = await response.text();
-  const parsed = text.trim() ? (JSON.parse(text) as CloudIssueResponse) : {};
-  if (!response.ok) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_NETWORK"),
-      code: "E_NETWORK",
-      message: `Feedback cloud intake failed with HTTP ${response.status}.`,
-      context: {
-        command: "insights issue",
-        reason_code: "feedback_cloud_intake_failed",
-      },
-    });
-  }
-  return {
-    transport: "cloud",
-    issue: parsed.intake_id ? `intake:${parsed.intake_id}` : (parsed.status ?? "accepted"),
-    url: parsed.issue_url ?? "pending",
-  };
 }
 
 function renderCountMap(map: CountMap, limit?: number): string {
@@ -664,7 +541,7 @@ export function makeRunInsightsIssueHandler(deps: RunDeps): CommandHandler<Insig
         labels: settings.labels,
       };
       const transport = parsed.transport ?? normalizeIssueTransport(settings.transport);
-      const endpoint = cloudEndpoint(settings);
+      const endpoint = feedbackCloudEndpoint(settings);
 
       if (parsed.dryRun) {
         output.json({
@@ -693,14 +570,14 @@ export function makeRunInsightsIssueHandler(deps: RunDeps): CommandHandler<Insig
         });
       }
 
-      const created =
-        transport === "cloud"
-          ? await createCloudIssue({ endpoint, payload, report })
-          : transport === "auto"
-            ? await createGithubIssue(resolved.gitRoot, settings, payload).catch(() =>
-                createCloudIssue({ endpoint, payload, report }),
-              )
-            : await createGithubIssue(resolved.gitRoot, settings, payload);
+      const created = await createFeedbackIssue({
+        root: resolved.gitRoot,
+        settings,
+        payload,
+        report,
+        transport,
+        endpoint,
+      });
       output.report(
         [
           { label: "transport", value: created.transport },
