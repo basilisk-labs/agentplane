@@ -113,18 +113,18 @@ Hello world.
     const parsed = parseTaskReadme(sample);
     const withMultiline = {
       ...parsed.frontmatter,
-      description: String.raw`Line one\n\nLine two`,
+      description: String.raw`Line one\n\nLine two  `,
       comments: [
         {
           author: "CODER",
-          body: String.raw`Start line 1\nStart line 2\nStart line 3`,
+          body: String.raw`Start line 1\n\nStart line 3  `,
         },
       ],
       verification: {
         state: "ok",
         updated_at: "2026-03-08T13:00:00.000Z",
         updated_by: "TESTER",
-        note: String.raw`First line\nSecond line\nThird line`,
+        note: String.raw`First line\n\nThird line  `,
       },
     };
 
@@ -134,14 +134,15 @@ Hello world.
     expect(rendered).toContain("  Line two");
     expect(rendered).toContain("body: |-");
     expect(rendered).toContain("note: |-");
+    expect(rendered.split("\n").filter((line) => /^\s+$/u.test(line))).toEqual([]);
 
     const roundtrip = parseTaskReadme(rendered).frontmatter;
     expect(roundtrip.description).toBe("Line one\n\nLine two");
     expect((roundtrip.comments as Record<string, unknown>[])[0]?.body).toBe(
-      "Start line 1\nStart line 2\nStart line 3",
+      "Start line 1\n\nStart line 3",
     );
     expect((roundtrip.verification as Record<string, unknown>).note).toBe(
-      "First line\nSecond line\nThird line",
+      "First line\n\nThird line",
     );
   });
 

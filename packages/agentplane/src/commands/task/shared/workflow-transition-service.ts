@@ -155,6 +155,15 @@ function appendVerificationEntryBetweenMarkers(
   return parts.join("\n").trimEnd();
 }
 
+function trimLineEndings(text: string): string {
+  return text
+    .replaceAll("\r\n", "\n")
+    .split("\n")
+    .map((line) => line.trimEnd())
+    .join("\n")
+    .trim();
+}
+
 function renderVerificationEntry(opts: {
   at: string;
   state: "ok" | "needs_rework" | "blocked_external";
@@ -176,11 +185,11 @@ function renderVerificationEntry(opts: {
   if (verifyStepsRef) {
     lines.push("", `VerifyStepsRef: ${verifyStepsRef}`);
   }
-  const details = (opts.details ?? "").trim();
+  const details = trimLineEndings(opts.details ?? "");
   if (details) {
     lines.push("", "Details:", "", details);
   }
-  return `${lines.join("\n").trimEnd()}\n`;
+  return `${trimLineEndings(lines.join("\n"))}\n`;
 }
 
 function sha256Hex(text: string): string {
