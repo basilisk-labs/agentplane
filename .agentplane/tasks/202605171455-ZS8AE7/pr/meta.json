@@ -1,16 +1,16 @@
 {
-  "artifact_state": "remote_failed",
-  "artifact_state_reason": "task branch push failed: To github.com:basilisk-labs/agentplane.git\n ! [rejected]            HEAD -> main (non-fast-forward)\nerror: failed to push some refs to 'github.com:basilisk-labs/agentplane.git'\nhint: Updates were rejected because a pushed branch tip is behind its remote\nhint: counterpart. If you want to integrate the remote changes, use 'git pull'\nhint: before pushing again.\nhint: See the 'Note about fast-forwards' in 'git push --help' for details.",
-  "artifact_state_updated_at": "2026-05-17T17:40:22.459Z",
   "base": "main",
   "branch": "task/202605171455-ZS8AE7/branch-naming-contract",
   "created_at": "2026-05-17T17:11:05.091Z",
   "head_sha": "5264872abdb0d067c54125a6644d0205937dcaa9",
   "last_verified_at": "2026-05-17T17:38:08.983Z",
   "last_verified_sha": "d3e0f2f6ead558dc933ac3beb6274e51ec72f5f2",
+  "pr_number": 3847,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3847",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202605171455-ZS8AE7",
-  "updated_at": "2026-05-17T17:40:09.677Z",
+  "updated_at": "2026-05-17T17:41:54.186Z",
   "verify": {
     "status": "pass"
   }
