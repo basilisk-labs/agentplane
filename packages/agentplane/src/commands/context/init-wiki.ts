@@ -2,7 +2,7 @@ type ContextInitFile = { relative: string; content: string };
 type StarterWikiPage = [relative: string, title: string, modality: string, summary: string];
 
 export function starterWikiPageFiles(): ContextInitFile[] {
-  return starterWikiPages().map(starterWikiPage);
+  return starterWikiPages().map((page) => starterWikiPage(page));
 }
 
 export function wikiFrontmatter(canonicalId: string, title: string, modality: string): string {

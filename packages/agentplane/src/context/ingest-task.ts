@@ -141,7 +141,6 @@ function buildContextAssimilationPromptModule(): PromptModule {
       "- Update relevant `index.md` pages when adding, moving, or materially renaming wiki pages; the index is navigation metadata, not semantic truth.",
       "- Use `possibly_same_as` or an open question when entity identity is uncertain.",
       "- If new evidence contradicts existing knowledge, create a conflict candidate and request review before promotion or overwrite.",
-      "- Final update step: refresh affected indexes, navigation pages, glossary entries, and tables of contents after wiki and derived artifact changes are complete.",
       "",
       "Verification:",
       "- Run `agentplane context verify-task <task-id>`.",
