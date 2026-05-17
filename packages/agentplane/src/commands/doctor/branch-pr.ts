@@ -113,7 +113,7 @@ export async function checkBranchPrBatchIncludedTaskDrift(ctx?: CommandContext):
   for (const primary of tasks) {
     if (String(primary.status).toUpperCase() !== "DONE") continue;
     const meta = await readTaskPrMeta(ctx, primary.id);
-    if (!meta || meta.status !== "MERGED") continue;
+    if (meta?.status !== "MERGED") continue;
     const includedTaskIds = resolvePrBatchIncludedTaskIds(meta);
     if (includedTaskIds.length === 0) continue;
     const primaryCommit = primary.commit?.hash?.trim() ?? meta.merge_commit?.trim() ?? "";
