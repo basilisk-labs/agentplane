@@ -4,7 +4,7 @@ title: "Add branch_pr route decision CLI commands"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-17T12:51:34.159Z"
+  updated_at: "2026-05-17T12:52:03.757Z"
   updated_by: "CODER"
-  note: "Addressed PR review threads: stale PR metadata now routes to pr update before integration, and repair plans no longer emit no_repair_needed while blockers are present. Checks passed: focused route-decision/pr-flow tests, typecheck, knip:check, lint:core, format:check, routing policy check, diff check, and framework bootstrap."
+  note: "Verified current head after review-fix artifact refresh. Review comments addressed in code and tests; focused route-decision/pr-flow tests, typecheck, knip:check, lint:core, format:check, routing policy check, diff check, and framework bootstrap passed."
   attempts: 0
 commit: null
 comments:
@@ -89,8 +89,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Addressed PR review threads: stale PR metadata now routes to pr update before integration, and repair plans no longer emit no_repair_needed while blockers are present. Checks passed: focused route-decision/pr-flow tests, typecheck, knip:check, lint:core, format:check, routing policy check, diff check, and framework bootstrap."
+  -
+    type: "verify"
+    at: "2026-05-17T12:52:03.757Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified current head after review-fix artifact refresh. Review comments addressed in code and tests; focused route-decision/pr-flow tests, typecheck, knip:check, lint:core, format:check, routing policy check, diff check, and framework bootstrap passed."
 doc_version: 3
-doc_updated_at: "2026-05-17T12:51:34.167Z"
+doc_updated_at: "2026-05-17T12:52:03.771Z"
 doc_updated_by: "CODER"
 description: "Add machine-readable task route/status/next-action/resume/repair commands for branch_pr agent workflow optimization, and update prompts plus CLI documentation to teach the new commands."
 sections:
@@ -253,6 +259,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T12:41:13.949Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171055-1G6GP6-route-decision-cli/.agentplane/tasks/202605171055-1G6GP6/blueprint/resolved-snapshot.json
+    - old_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+    - current_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171055-1G6GP6
+
+    ### 2026-05-17T12:52:03.757Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified current head after review-fix artifact refresh. Review comments addressed in code and tests; focused route-decision/pr-flow tests, typecheck, knip:check, lint:core, format:check, routing policy check, diff check, and framework bootstrap passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T12:51:34.167Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
 
     Details:
 
@@ -451,6 +476,25 @@ Note: Addressed PR review threads: stale PR metadata now routes to pr update bef
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T12:41:13.949Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171055-1G6GP6-route-decision-cli/.agentplane/tasks/202605171055-1G6GP6/blueprint/resolved-snapshot.json
+- old_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+- current_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171055-1G6GP6
+
+### 2026-05-17T12:52:03.757Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified current head after review-fix artifact refresh. Review comments addressed in code and tests; focused route-decision/pr-flow tests, typecheck, knip:check, lint:core, format:check, routing policy check, diff check, and framework bootstrap passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T12:51:34.167Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
 
 Details:
 
