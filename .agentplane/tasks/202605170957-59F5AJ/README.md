@@ -1,10 +1,11 @@
 ---
 id: "202605170957-59F5AJ"
 title: "Update README header image generator"
-status: "DOING"
+result_summary: "Merged via PR #3818."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "README header target verification passed for all 13 README surfaces before merge."
   attempts: 0
-commit: null
+commit:
+  hash: "c5efbe7b242023dd2133a777a7d92ab513e15eb9"
+  message: "Merge pull request #3818 from basilisk-labs/task/202605170957-59F5AJ/readme-header-template"
 comments:
   -
     author: "CODER"
     body: "Start: Updating the README header generator in an isolated task worktree from origin/main because the base checkout has unrelated conflicts and is behind upstream."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3818 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -60,9 +66,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "README header target verification passed for all 13 README surfaces before merge."
+  -
+    type: "status"
+    at: "2026-05-17T11:42:00.336Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3818 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T10:14:51.835Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T11:42:00.344Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the README header image generation algorithm to use the new release header template while keeping layout stable and varying only release version plus generated release-heading text."
 sections:
   Summary: |-
