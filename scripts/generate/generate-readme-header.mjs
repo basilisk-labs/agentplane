@@ -151,7 +151,7 @@ function tagVariants(tag) {
 function extractFrontmatterValue(markdown, key) {
   const frontmatter = markdown.match(/^---\n([\s\S]*?)\n---/);
   if (!frontmatter) return null;
-  const pattern = new RegExp(`^${key}:\\s*(?:"([^"]+)"|'([^']+)'|(.+))$`, "m");
+  const pattern = new RegExp(String.raw`^${key}:\s*(?:"([^"]+)"|'([^']+)'|(.+))$`, "m");
   const line = frontmatter[1].match(pattern);
   return (line?.[1] ?? line?.[2] ?? line?.[3] ?? "").trim() || null;
 }
@@ -254,7 +254,10 @@ function wrapHeaderText(value) {
 
   const kept = lines.slice(0, headerTextBox.maxLines);
   let last = kept.at(-1) ?? "";
-  while (last.length > 1 && estimateTextWidth(`${last}…`, headerTextBox.fontSize) > headerTextBox.width) {
+  while (
+    last.length > 1 &&
+    estimateTextWidth(`${last}…`, headerTextBox.fontSize) > headerTextBox.width
+  ) {
     last = last.replace(/\s+\S+$/u, "");
   }
   kept[kept.length - 1] = `${last.trimEnd()}…`;
@@ -276,7 +279,9 @@ function renderGrid() {
 function renderHeaderLines(text) {
   const lines = wrapHeaderText(text);
   const firstBaseline =
-    headerTextBox.bottom - headerTextBox.descenderAllowance - (lines.length - 1) * headerTextBox.lineHeight;
+    headerTextBox.bottom -
+    headerTextBox.descenderAllowance -
+    (lines.length - 1) * headerTextBox.lineHeight;
   return lines
     .map((line, index) => {
       const y = firstBaseline + index * headerTextBox.lineHeight;

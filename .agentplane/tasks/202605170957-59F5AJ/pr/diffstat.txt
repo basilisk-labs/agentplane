@@ -1,0 +1,17 @@
+ .../blueprint/resolved-snapshot.json               | 416 +++++++++++++++++++++
+ docs/assets/header.svg                             |  39 +-
+ docs/assets/readme-headers/adr.svg                 |  39 +-
+ docs/assets/readme-headers/agentplane-cli.svg      |  39 +-
+ docs/assets/readme-headers/agentplane.svg          |  39 +-
+ docs/assets/readme-headers/core.svg                |  39 +-
+ docs/assets/readme-headers/docs.svg                |  39 +-
+ docs/assets/readme-headers/humanizer.svg           |  39 +-
+ docs/assets/readme-headers/recipes.svg             |  39 +-
+ docs/assets/readme-headers/releases.svg            |  39 +-
+ docs/assets/readme-headers/schemas.svg             |  39 +-
+ docs/assets/readme-headers/scripts.svg             |  39 +-
+ docs/assets/readme-headers/skills.svg              |  39 +-
+ docs/assets/readme-headers/spec.svg                |  39 +-
+ docs/assets/readme-headers/testkit.svg             |  39 +-
+ scripts/generate/generate-readme-header.mjs        | 169 +++++++--
+ 16 files changed, 973 insertions(+), 158 deletions(-)
