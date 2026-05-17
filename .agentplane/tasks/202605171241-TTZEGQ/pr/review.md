@@ -33,7 +33,7 @@ Created: 2026-05-17T12:42:41.876Z
  .github/workflows/publish.yml                      |   2 +
  docs/developer/release-and-publishing.mdx          |  11 +
  package.json                                       |   1 +
- .../audit-platform-publication-script.test.ts      | 138 +++++++
+ .../audit-platform-publication-script.test.ts      | 148 ++++++++
  .../release/publish-workflow-contract.test.ts      |   2 +
  .../write-publish-result-manifest-script.test.ts   |  17 +
  scripts/README.md                                  |   1 +
@@ -41,7 +41,7 @@ Created: 2026-05-17T12:42:41.876Z
  scripts/release/audit-platform-publication.mjs     | 162 ++++++++
  scripts/release/manifest.mjs                       |  14 +
  .../SKILL.md                                       |  55 ++-
- 12 files changed, 818 insertions(+), 2 deletions(-)
+ 12 files changed, 828 insertions(+), 2 deletions(-)
 ```
 
 </details>
