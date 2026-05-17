@@ -17,7 +17,7 @@ describe("help output contract (all commands)", () => {
     for (const entry of COMMANDS) {
       const io = captureStdIO();
       try {
-        const code = await runCli(["help", ...entry.spec.id, "--compact"]);
+        const code = await runCli(["help", ...entry.spec.id, "--compact", "--all"]);
         expect(code).toBe(0);
 
         const out = io.stdout;
