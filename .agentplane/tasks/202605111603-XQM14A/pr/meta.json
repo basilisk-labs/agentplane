@@ -5,9 +5,12 @@
   "head_sha": "f5d1ea8a6a300dc1c8dd139af31cccf8a585e13c",
   "last_verified_at": null,
   "last_verified_sha": null,
+  "merge_commit": "624c1f5ea051ada4e7377a374dd8ac2b77479f71",
+  "merged_at": "2026-05-17T17:05:53.828Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605111603-XQM14A",
-  "updated_at": "2026-05-12T06:18:48.492Z",
+  "updated_at": "2026-05-17T17:05:53.828Z",
   "verify": {
     "status": "skipped"
   }

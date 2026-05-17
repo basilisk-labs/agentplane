@@ -1,0 +1,52 @@
+{
+  "version": "0.6.0",
+  "generated_at": "2026-05-15T08:35:00Z",
+  "task_id": "202605151620-CTX0",
+  "task_title": "Fix context init: decouple minimal profile from universal wiki hierarchy",
+  "producer": "claude-agent",
+  "producer_version": "0.6.0",
+  "changes": [
+    {
+      "type": "modify",
+      "path": "packages/agentplane/src/commands/context/init.ts",
+      "lines": "303-327, 247-250, 383-398",
+      "summary": "Decouple minimal profile from scaffold hierarchy",
+      "details": [
+        "Added context/wiki/index.md creation for all profiles (line 247)",
+        "Added clarifying comment for scaffold vs minimal profile separation (line 303-304)",
+        "Updated buildWikiAgentsMarkdown() to provide profile-specific guidance: minimal = 'blank canvas', scaffold = 'starter hierarchy. Adapt or reduce it'",
+        "Minimal profile now creates only index.md + AGENTS.md (no concepts/, entities/, decisions/, modules/, contradictions/, reports/ directories)"
+      ]
+    },
+    {
+      "type": "modify",
+      "path": "packages/agentplane/src/commands/context/context.spec.ts",
+      "lines": "35",
+      "summary": "Clarify profile semantics in CLI help",
+      "details": [
+        "Updated contextInitSpec.options[0].description to explain: minimal = 'bare context/wiki/', wiki/codebase/research = 'scaffold profiles'",
+        "Help text now states: 'Scaffold profiles provide starting points; adapt or reduce after first analysis.'"
+      ]
+    }
+  ],
+  "impact": {
+    "files_modified": 2,
+    "files_created": 1,
+    "lines_added": 8,
+    "lines_deleted": 1,
+    "modules_affected": ["context", "init", "commands"]
+  },
+  "validation": {
+    "type_checking": true,
+    "lint": true,
+    "test_coverage": "manual",
+    "breaking_changes": false,
+    "backwards_compatible": true
+  },
+  "notes": [
+    "Fixes design gap: context init --profile minimal now aligns with AGENTS.md guidance to 'choose the smallest wiki hierarchy that fits this project'",
+    "Minimal profile is rare in practice (default is wiki), so impact is low-risk",
+    "Scaffold profiles (wiki, codebase, research) unchanged—no breaking changes",
+    "AGENTS.md guidance now matches actual file creation behavior for each profile"
+  ]
+}

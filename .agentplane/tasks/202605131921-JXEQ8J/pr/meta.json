@@ -8,9 +8,12 @@
   "head_sha": "7a4b7076b3997eed148f45fbf1928cf5baf4f8a2",
   "last_verified_at": "2026-05-14T07:59:21.140Z",
   "last_verified_sha": "7a4b7076b3997eed148f45fbf1928cf5baf4f8a2",
+  "merge_commit": "ec628cd9a2aa899cca01611be9519181845ba555",
+  "merged_at": "2026-05-17T17:05:53.828Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605131921-JXEQ8J",
-  "updated_at": "2026-05-14T07:59:21.211Z",
+  "updated_at": "2026-05-17T17:05:53.828Z",
   "verify": {
     "status": "pass"
   }
