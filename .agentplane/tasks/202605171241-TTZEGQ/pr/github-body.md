@@ -34,7 +34,7 @@ bun run test:project -- agentplane \
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-17T12:49:12.637Z
+- Updated: 2026-05-17T12:59:01.045Z
 - Branch: task/202605171241-TTZEGQ/release-platform-evidence
 - Head: 81baff4874e3
 
