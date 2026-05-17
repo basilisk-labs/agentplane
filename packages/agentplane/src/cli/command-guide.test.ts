@@ -71,9 +71,10 @@ describe("command-guide", () => {
     expect(text).toContain("Canonical installed startup surface");
     expect(text).toContain("## First screen");
     expect(text).toContain("## First visible payoff");
-    expect(text).toContain('agentplane task new --title "Demo task"');
-    expect(text).toContain("agentplane task plan approve <task-id> --by ORCHESTRATOR");
+    expect(text).toContain("agentplane demo");
+    expect(text).toContain("agentplane acr validate <task-id> --mode local");
     expect(text).toContain(".agentplane/tasks/<task-id>/");
+    expect(text).toContain("acr.json");
     expect(text).toContain("## Go deeper");
     expect(text).toContain("activate ORCHESTRATOR for planning and the task owner role");
     expect(text).toContain("agentplane task start-ready");

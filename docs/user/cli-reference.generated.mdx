@@ -6,6 +6,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 
 - Core
   - [agents](#agents)
+  - [demo](#demo)
   - [help](#help)
   - [preflight](#preflight)
   - [quickstart](#quickstart)
@@ -168,6 +169,37 @@ agentplane agents
 ```
 
 - Print available agent ids and roles.
+
+### demo
+
+Create a safe first-success AgentPlane demo task with ACR evidence.
+
+Creates an inspectable demo task under .agentplane/tasks without touching user source files, network, or GitHub.
+
+Usage:
+
+```text
+agentplane demo [options]
+```
+
+Options:
+
+- `--dry-run`: Preview the files and commands without writing demo artifacts. (default=false)
+- `--json`: Emit compact machine-readable output for agent runtimes. (default=false)
+
+Examples:
+
+```sh
+agentplane demo
+```
+
+- Create a first-success task artifact and ACR.
+
+```sh
+agentplane demo --dry-run
+```
+
+- Preview the first-success path.
 
 ### help
 

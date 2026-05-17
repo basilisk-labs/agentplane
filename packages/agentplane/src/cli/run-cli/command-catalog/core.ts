@@ -30,6 +30,7 @@ import {
 } from "../commands/config.js";
 import { agentsSpec } from "../commands/core/agents.js";
 import { codexPluginInstallSpec, codexPluginSpec, codexSpec } from "../commands/codex.js";
+import { demoSpec } from "../commands/core/demo.js";
 import { preflightSpec } from "../commands/core/preflight.js";
 import { quickstartSpec } from "../commands/core/quickstart.js";
 import { roleSpec } from "../commands/core/role.js";
@@ -69,6 +70,7 @@ import {
   loadIdeSyncSpec,
   loadInsightsIssueSpec,
   loadInsightsReportSpec,
+  loadDemoSpec,
 } from "../command-loaders/core.js";
 
 export const CORE_COMMANDS = [
@@ -100,6 +102,11 @@ export const CORE_COMMANDS = [
   fromCommandsCoreQuickstart(quickstartSpec, "runQuickstart", {
     needs: "none",
     invocation: requireCanonicalCommandInvocation(["quickstart"]),
+  }),
+  declareCommand(demoSpec, {
+    load: loadDemoSpec,
+    needs: "project+config+task",
+    invocation: requireCanonicalCommandInvocation(["demo"]),
   }),
   fromCommandsCorePreflight(preflightSpec, "runPreflight", {
     needs: "none",
