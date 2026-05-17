@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-17T13:18:43Z",
   "base": "main",
   "branch": "task/202605171241-TTZEGQ/release-platform-evidence",
   "created_at": "2026-05-17T12:42:41.876Z",
-  "head_sha": "81baff4874e3027b0fc8a098f5efa0d13cce7e1e",
+  "head_sha": "48fa4bee2f9220724f3d76effc4b524e6ed60e1c",
   "last_verified_at": "2026-05-17T12:47:49.344Z",
   "last_verified_sha": "ad9c22a6b4ef80f1f7848f5ffe2736cd502d15a2",
+  "merge_commit": "764d27b18c603de675e36c94dbfee135c2087674",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-17T13:18:43Z",
   "pr_number": 3830,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3830",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605171241-TTZEGQ",
-  "updated_at": "2026-05-17T12:59:01.045Z",
+  "updated_at": "2026-05-17T13:18:43Z",
   "verify": {
     "status": "pass"
   }
