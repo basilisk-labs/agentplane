@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605171721-K2EP8Y/website-dependency-lockfile",
+  "created_at": "2026-05-17T17:21:42.948Z",
+  "head_sha": "87a84e0cdbda2eff3f00f536681fddf2f5f2e918",
+  "last_verified_at": "2026-05-17T17:27:02.570Z",
+  "last_verified_sha": "87a84e0cdbda2eff3f00f536681fddf2f5f2e918",
+  "pr_number": 3841,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3841",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605171721-K2EP8Y",
+  "updated_at": "2026-05-17T17:27:48.976Z",
+  "verify": {
+    "status": "pass"
+  }
+}
