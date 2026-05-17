@@ -1,10 +1,11 @@
 ---
 id: "202605150704-5TCB66"
 title: "Geist typography and website/blog layout refresh"
-status: "DOING"
+result_summary: "Merged via PR #3785."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented Geist typography, basilisk-like floating navbar behavior, Product surfaces accordion, expanded spacing, and blog landing redesign in homepage style. Verified with prettier on changed files and website production build (docusaurus build)."
   attempts: 0
-commit: null
+commit:
+  hash: "2e34f9cc9d107f3300e882be73b28fcfe60026f3"
+  message: "Merge pull request #3785 from basilisk-labs/task/202605150704-5TCB66/geist-navbar-accordion-blog"
 comments:
   -
     author: "CODER"
     body: "Start: implementing Geist typography, basilisk-style navbar behavior, Product surfaces accordion conversion, spacing increases, and blog landing redesign with verification via formatting and website build."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3785 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented Geist typography, basilisk-like floating navbar behavior, Product surfaces accordion, expanded spacing, and blog landing redesign in homepage style. Verified with prettier on changed files and website production build (docusaurus build)."
+  -
+    type: "status"
+    at: "2026-05-17T06:12:25.621Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3785 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-15T07:09:15.412Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T06:12:25.627Z"
+doc_updated_by: "INTEGRATOR"
 description: "Switch website typography to Geist, align navbar interaction with basilisk-labs.com behavior, convert Product surfaces into an accordion, increase layout spacing, and redesign blog landing in the homepage visual language."
 sections:
   Summary: |-
