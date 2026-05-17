@@ -227,7 +227,7 @@ function parsePrepareArgs(argv) {
 async function readConfiguredTaskCloseBranchPrefix(cwd = process.cwd()) {
   try {
     const workflow = await readFile(path.join(cwd, ".agentplane", "WORKFLOW.md"), "utf8");
-    const branchBlock = /^branch:\n(?<body>(?:  .+\n?)*)/mu.exec(workflow)?.groups?.body ?? "";
+    const branchBlock = /^branch:\n(?<body>(?: {2}.+\n?)*)/mu.exec(workflow)?.groups?.body ?? "";
     return /^\s+task_close_prefix:\s*(?<value>\S+)\s*$/mu.exec(branchBlock)?.groups?.value ?? null;
   } catch {
     return null;
