@@ -419,13 +419,15 @@ async function createContextWorkspace(
 }
 
 function starterWikiPage(page: StarterWikiPage): { relative: string; content: string } {
-  const canonicalId = `wiki.${page.relative
-    .replace(/^context\/wiki\//u, "")
-    .replace(/\/index\.md$/u, "")
-    .replace(/\.md$/u, "")
-    .replaceAll(/[^a-z0-9]+/giu, "-")
-    .replaceAll(/^-+|-+$/gu, "")
-    .toLowerCase() || "index"}`;
+  const canonicalId = `wiki.${
+    page.relative
+      .replace(/^context\/wiki\//u, "")
+      .replace(/\/index\.md$/u, "")
+      .replace(/\.md$/u, "")
+      .replaceAll(/[^a-z0-9]+/giu, "-")
+      .replaceAll(/^-+|-+$/gu, "")
+      .toLowerCase() || "index"
+  }`;
   return {
     relative: page.relative,
     content: `---
