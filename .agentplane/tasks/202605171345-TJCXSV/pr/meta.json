@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-17T18:36:55Z",
   "base": "main",
   "branch": "task/202605171345-TJCXSV/first-success-demo",
   "created_at": "2026-05-17T17:11:43.008Z",
-  "head_sha": "389af5111a87bff3caacbdb3af818b78fe367dc4",
+  "head_sha": "8f1cbd09021e31bb014f275ce2e6a72eb2ccd5f9",
   "last_verified_at": "2026-05-17T17:23:58.275Z",
   "last_verified_sha": "ae2261b9a4af8329f86d8f0c93c8ce06981dc295",
+  "merge_commit": "c11413a9035fd6f9d77e50ac11ba0f5f085af0a6",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-17T18:36:55Z",
   "pr_number": 3839,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3839",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605171345-TJCXSV",
-  "updated_at": "2026-05-17T17:26:22.211Z",
+  "updated_at": "2026-05-17T18:36:55Z",
   "verify": {
     "status": "pass"
   }
