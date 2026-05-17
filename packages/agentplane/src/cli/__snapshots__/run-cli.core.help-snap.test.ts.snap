@@ -339,3 +339,351 @@ exports[`runCli help snapshots (cli2) > help work start --json snapshot 1`] = `
   ],
 }
 `;
+
+exports[`runCli help snapshots (cli2) help (registry) snapshot 1`] = `
+"Usage:
+  agentplane help [<cmd...>] [--compact] [--json]
+
+Commands:
+  Core:
+    agents  List agent definitions under .agentplane/agents.
+    demo  Create a safe first-success AgentPlane demo task with ACR evidence.
+    help  Show help for a command.
+    preflight  Run aggregated preflight checks and print a deterministic readiness report.
+    quickstart  Print the canonical agent bootstrap path and startup guidance.
+    role  Show role-specific workflow guidance.
+  Task:
+    ready  Report dependency readiness details for a task.
+    task  Task lifecycle and task-store commands.
+    task comment  Append a comment to a task.
+    task doc  Task doc commands (show/set).
+    task doc set  Update a task README section.
+    task doc show  Print task README content (entire doc or one section).
+    task list  List tasks with compact resolved blueprint route hints.
+    task new  Create a new task (prints the generated task id).
+    task next  List ready tasks (default status=TODO) with optional filters.
+    task next-action  Print the single safest next command for a task route.
+    task plan  Task plan commands (set/approve/reject).
+    task plan approve  Approve the current task plan (enforces Verify Steps gating when configured).
+    task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
+    task run  Prepare or run a task through the shared runner contract.
+    task run show  Inspect persisted runner state and result artifacts for an existing run.
+    task run tail  Print the last N lines from the raw agent trace artifact for an existing runner run.
+    task search  Search tasks by text or regex with optional filters.
+    task show  Print task metadata and resolved blueprint route as JSON.
+    task start-ready  Run readiness checks and start a task in one deterministic command.
+    task status  Show task lifecycle state with optional branch_pr route decision details.
+    task verify  Record verification results (ok/rework).
+    task verify ok  Record verification as OK (updates Verification section and verification frontmatter).
+    task verify rework  Record verification as needs rework (resets commit, sets status to DOING, updates Verification).
+    task verify-show  Print the task Verify Steps acceptance contract (alias for task doc show --section "Verify Steps").
+  Lifecycle:
+    block  Transition a task to BLOCKED and record a structured Blocked comment.
+    finish  Mark task(s) as DONE and record a structured Verified comment.
+    start  Transition a task to DOING and record a structured Start comment.
+    verify  Record a verification outcome for a task; incident candidates stay task-local unless collected explicitly.
+  Work:
+    work resume  Diagnose how to resume a task in the correct checkout/worktree.
+    work start  Prepare the workspace for a task (direct: single-stream on current branch; branch_pr: task branch/worktree).
+  PR:
+    integrate  Integrate a task branch into the base branch (branch_pr workflow).
+    integrate queue  Serialize branch_pr integration into one merge lane.
+    integrate queue claim  Claim the next queued integration candidate without running integrate.
+    integrate queue enqueue  Add or refresh a verified task branch in the integration queue.
+    integrate queue list  List branch_pr integration queue entries.
+    integrate queue release  Release or complete a queue entry.
+    integrate queue run-next  Claim and run one queued integration candidate.
+    pr  Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).
+    pr check  Check that PR artifacts are present and valid.
+    pr close  Close a GitHub PR through REST with optional remote head-branch deletion.
+    pr close-superseded  Close a superseded task PR using task artifacts.
+    pr flow status  Show branch_pr task branch, remote PR, close-tail, and next-action state.
+    pr note  Append a handoff note into PR review.md.
+    pr open  Create PR artifacts for a task and, unless --sync-only is set, publish/link the remote GitHub PR.
+    pr update  Update PR artifacts (review packet, diffstat, and GitHub projections).
+  Branch:
+    branch base  Manage the pinned base branch used in branch_pr workflow.
+    branch base clear  Clear the pinned base branch.
+    branch base explain  Explain current, pinned, and effective base branch resolution.
+    branch base get  Print the pinned base branch.
+    branch base set  Pin a base branch by name, or pin the current branch.
+    branch remove  Remove a task branch and/or its worktree.
+    branch status  Show ahead/behind status for a branch relative to a base branch.
+    cleanup  Clean up local branches/worktrees.
+    cleanup merged  Delete merged task branches/worktrees (branch_pr workflow).
+  Backend:
+    backend  Backend-related operations.
+    backend connect  Configure a cloud backend connection.
+    backend inspect  Inspect visible backend readiness facts without mutating remote state.
+    backend sync  Sync the configured backend (push or pull).
+    sync  Sync the configured backend (alias).
+  Config:
+    config set  Update WORKFLOW front matter config (dotted keys).
+    config show  Print resolved WORKFLOW-backed config JSON.
+    mode get  Print workflow mode.
+    mode set  Set workflow mode.
+    profile set  Apply setup profile presets to WORKFLOW config.
+  Setup:
+    init  Initialize agentplane project files under .agentplane/.
+    upgrade  Upgrade the local agentplane framework bundle in the repo.
+  Quality:
+    doctor  Check workspace invariants for a normal agentplane installation (with optional dev source checks).
+    doctor git-locks  Check Git index lock state for this repository and suggest cleanup.
+  Diagnostics:
+    insights  Generate local-only diagnostic insights for support analysis.
+    insights issue  Create an opt-in GitHub issue with privacy-bounded AgentPlane diagnostics.
+    insights report  Print a local-only privacy-bounded AgentPlane diagnostic report.
+    runtime  Inspect which agentplane runtime/binary/package sources are active.
+    runtime explain  Explain the active binary, runtime mode, and resolved package roots.
+  Recipes:
+    recipes  Recipe management commands.
+    recipes active  List active project overlays.
+    recipes add  Vendor a cached recipe into the current project.
+    recipes cache  Manage recipes cache.
+    recipes cache prune  Prune global recipe cache entries.
+    recipes detach  Convert a linked vendored recipe into a project-local copy.
+    recipes disable  Disable an active project overlay for the current project.
+    recipes enable  Enable an installed project overlay for the current project.
+    recipes explain  Show detailed info for a vendored recipe.
+    recipes explain-active  Print the compiled active overlay bundle.
+    recipes info  Show cached recipe metadata.
+    recipes install  Install a recipe into the global cache from remote index, local archive, or URL.
+    recipes list  List cached recipes.
+    recipes list-remote  List recipes from the remote index (or cache).
+    recipes remove  Remove a vendored recipe from the current project.
+    recipes update  Refresh a vendored recipe from the cached source.
+  Blueprints:
+    blueprint  List and explain blueprint routing without executing a task.
+    blueprint drift  Check whether a task resolved blueprint snapshot is current.
+    blueprint examples  Show practical blueprint route inspection examples.
+    blueprint explain  Explain blueprint route selection for a task or synthetic input.
+    blueprint list  List built-in and optional project-local blueprint routes.
+    blueprint report  Report project-local blueprint trust compatibility.
+    blueprint scaffold  Create a project-local blueprint JSON scaffold without enabling it.
+    blueprint snapshot  Refresh the resolved blueprint snapshot artifact for a task.
+    blueprint validate  Validate project-local blueprint JSON without registering or executing it.
+    blueprints  Manage external blueprint catalogs and installs.
+    blueprints catalog  Manage the cached external blueprint catalog index.
+    blueprints catalog info  Show cached external blueprint or pack metadata.
+    blueprints catalog list  List cached external blueprint catalog entries.
+    blueprints catalog refresh  Refresh the cached external blueprint catalog index.
+    blueprints install  Install an external blueprint or blueprint pack into the current project.
+  ACR:
+    acr  Generate, validate, check, explain, and print Agent Change Record artifacts.
+    acr check  Run the ACR merge-gate check for CI and branch review.
+    acr explain  Explain an ACR for human review.
+    acr generate  Generate an Agent Change Record from task, Git, policy, and verification state.
+    acr schema  Print or write the ACR v0.1 JSON Schema.
+    acr validate  Validate an ACR file by schema, local, or CI invariants.
+  Guard:
+    commit  Create a git commit after validating policy and allowlist; if the index is empty, stage matching allowlist paths first.
+    guard  Guard commands (commit checks, git hygiene, and allowlist helpers).
+    guard clean  Ensure the git index has no staged files.
+    guard commit  Validate commit policy and allowlist for staged changes (no commit is created).
+    guard suggest-allow  Suggest minimal --allow prefixes based on staged files.
+  Hooks:
+    hooks  Manage and run git hooks installed by agentplane.
+    hooks install  Install managed git hooks and the agentplane shim.
+    hooks run  Run a managed hook (use \`--\` to pass through additional arguments).
+    hooks uninstall  Uninstall managed git hooks installed by agentplane.
+  Policy:
+    incidents  Route incident advice candidates through CURATOR-bounded matching and promotion gates.
+    incidents advise  Resolve bounded incident advice candidates for a task or ad hoc scope/tag query.
+    incidents collect  Validate and promote CURATOR-style reusable incident findings into the registry.
+  IDE:
+    ide sync  Generate IDE entrypoints from policy gateway file (AGENTS.md or CLAUDE.md).
+  Context:
+    context  Manage local project context, durable derivations, projections, and search surfaces.
+    context check  Check context workspace health.
+    context init  Initialize local context workspace and system manifest.
+    context learn  Create context processing tasks from files, changes, or completed tasks.
+    context learn changes  Create a context assimilation task from changed context sources.
+    context learn files  Create a context assimilation task from explicit files or paths.
+    context learn tasks  Create CURATOR extraction tasks from completed task history.
+    context search  Search indexed local context, facts, graph, tasks, and capabilities.
+    context show  Resolve a context source reference and print addressed content.
+    context wiki  Create, lint, explain, link, and index local context wiki pages.
+    context wiki explain  Print a wiki page's AgentPlane context frontmatter.
+    context wiki index  Update generated wiki index sections for pages and subdirectories.
+    context wiki link  Suggest existing wiki pages that may deserve cross-links.
+    context wiki lint  Validate wiki page frontmatter and source-link hygiene.
+    context wiki new  Create a wiki page with AgentPlane context frontmatter.
+  Evaluators:
+    evaluator  List and inspect evaluator prompt modules.
+    evaluator list  List evaluator prompt modules from .agentplane/evaluators.
+    evaluator show  Print an evaluator prompt module.
+  Workflow:
+    flow  Inspect and repair high-level task workflow routes.
+    flow repair  Print a dry-run repair plan for task workflow drift.
+  Framework Dev:
+    codex  Codex integration commands.
+    codex plugin  Install and inspect bundled Codex plugin integrations.
+    codex plugin install  Install the bundled AgentPlane plugin into a local Codex marketplace.
+    docs cli  Generate an MDX CLI reference from the current command spec catalog.
+    release  Prepare a release (agent-assisted notes + version bump workflow).
+    release apply  Apply a prepared direct-mode release: bump versions, validate notes, commit, and tag.
+    release candidate  Prepare a branch_pr release candidate: bump versions, validate notes, commit, and optionally push the candidate branch.
+    release plan  Generate an agent-assisted release plan (changes list + next patch version).
+    workflow  Workflow contract commands.
+    workflow build  Build WORKFLOW.md from template layers with strict rendering checks.
+    workflow debug  Run built-in debug checks and capture workflow evidence.
+    workflow land  Run built-in pre-land checks and capture workflow evidence.
+    workflow restore  Restore WORKFLOW.md from last-known-good snapshot.
+    workflow sync  Run built-in sync checks and capture workflow evidence.
+"
+`;
+
+exports[`runCli help snapshots (cli2) help task new --compact snapshot 1`] = `
+"task new - Create a new task (prints the generated task id).
+
+Usage:
+  agentplane task new --title <text> --description <text> --owner <id> [options]
+
+Options:
+  --title <text>  Task title. (required)
+  --description <text>  Task description. (required)
+  --owner <id>  Owner id (e.g. CODER). (required)
+  --priority <low|normal|med|high>  Task priority (default: med). (choices=low|normal|med|high, default=med)
+  --tag <tag>  Repeatable. Adds a tag (must provide at least one). (repeatable, min=1)
+  --task-kind <analysis|content|docs|code|release|ops|context>  Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops|context)
+  --mutation-scope <none|docs|code|release|ops|context|unknown>  Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
+  --risk <risk>  Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
+  --blueprint-request <id>  Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|runner.execution|post_run.improvement_review|release.strict|ops.approval)
+  --depends-on <task-id>  Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
+  --verify <command>  Repeatable. Verification commands/checks to run for this task. (repeatable)
+  --show-blueprint  Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
+  --allow-duplicate  Allow creating a task even when an open task with a highly similar title already exists. (default=false)
+"
+`;
+
+exports[`runCli help snapshots (cli2) help task --compact snapshot 1`] = `
+"task - Task lifecycle and task-store commands.
+
+Usage:
+  agentplane task <subcommand> [args] [options]
+"
+`;
+
+exports[`runCli help snapshots (cli2) help task run --compact snapshot 1`] = `
+"task run - Prepare or run a task through the shared runner contract.
+
+Usage:
+  agentplane task run <task-id> [options]
+
+Options:
+  --dry-run  Prepare runner artifacts and print invocation metadata without executing a runner. (default=false)
+"
+`;
+
+exports[`runCli help snapshots (cli2) help task plan --compact snapshot 1`] = `
+"task plan - Task plan commands (set/approve/reject).
+
+Usage:
+  agentplane task plan <set|approve|reject> [args] [options]
+"
+`;
+
+exports[`runCli help snapshots (cli2) help task doc set --compact snapshot 1`] = `
+"task doc set - Update a task README section.
+
+Usage:
+  agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>) [--updated-by <id>]
+  agentplane task doc set <task-id> --full-doc (--text <text> | --file <path>) [--updated-by <id>]
+
+Options:
+  --section <name>  Target section heading (must be one of config.tasks.doc.sections). Required unless --full-doc is set.
+  --full-doc  Treat the provided text/file as the full task README payload. (default=false)
+  --text <text>  Section content (mutually exclusive with --file). Literal escaped newlines (\\n) are normalized for inline text.
+  --file <path>  Read section content from a file (mutually exclusive with --text).
+  --updated-by <id>  Optional. Override doc_updated_by metadata (must be non-empty).
+"
+`;
+
+exports[`runCli help snapshots (cli2) help recipes install --compact snapshot 1`] = `
+"recipes install - Install a recipe into the global cache from remote index, local archive, or URL.
+
+Usage:
+  agentplane recipes install <id|path|url> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]
+  agentplane recipes install --name <id> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]
+  agentplane recipes install --path <path> [--yes] [--on-conflict <fail|rename|overwrite>]
+  agentplane recipes install --url <url> [--yes] [--on-conflict <fail|rename|overwrite>]
+
+Options:
+  --name <id>  Cache from remote index by recipe id.
+  --path <path>  Cache from local recipe archive path.
+  --url <url>  Cache from recipe archive URL.
+  --index <path|url>  Override recipes index location (used when installing by name / auto-name).
+  --refresh  Refresh remote index cache before installing. (default=false)
+  --yes  Auto-approve network prompts when allowed by config. (default=false)
+  --on-conflict <fail|rename|overwrite>  Deprecated compatibility no-op; recipe installs stay self-contained. (choices=fail|rename|overwrite, default=fail)
+"
+`;
+
+exports[`runCli help snapshots (cli2) help codex plugin install --compact snapshot 1`] = `
+"codex plugin install - Install the bundled AgentPlane plugin into a local Codex marketplace.
+
+Usage:
+  agentplane codex plugin install [options]
+
+Options:
+  --scope <user|repo>  Install to the user home marketplace or the current repository marketplace. (choices=user|repo, default=user)
+"
+`;
+
+exports[`runCli help snapshots (cli2) help work start --json snapshot 1`] = `
+{
+  "args": [
+    {
+      "description": "Existing task id.",
+      "name": "task-id",
+      "required": true,
+      "valueHint": "<task-id>",
+    },
+  ],
+  "examples": [
+    {
+      "cmd": "agentplane work start 202602030608-F1Q8AB --agent CODER --slug cli",
+      "why": "Start work (direct mode records the active task; branch_pr uses a dedicated task branch/worktree).",
+    },
+  ],
+  "group": "Work",
+  "id": [
+    "work",
+    "start",
+  ],
+  "notes": [
+    "When workflow_mode=direct, agentplane does not create task branches; it records a single active task for the workspace.",
+    "When workflow_mode=branch_pr, --worktree is required and the command must be run on the base branch.",
+    "After branch_pr work starts, run owner-scoped task commands from the created worktree so task README/PR artifacts stay attached to one checkout.",
+    "After interruption, use \`agentplane work resume <task-id>\` to diagnose the correct checkout, branch, PR, and repair route.",
+  ],
+  "options": [
+    {
+      "description": "Agent id (uppercase letters, numbers, underscore).",
+      "kind": "string",
+      "name": "agent",
+      "patternHint": "A–Z, 0–9, underscore",
+      "required": true,
+      "valueHint": "<ID>",
+    },
+    {
+      "description": "Branch slug (lowercase kebab-case).",
+      "kind": "string",
+      "name": "slug",
+      "patternHint": "lowercase kebab-case",
+      "required": true,
+      "valueHint": "<slug>",
+    },
+    {
+      "default": false,
+      "description": "Use git worktree for the task branch. Required when workflow_mode=branch_pr.",
+      "kind": "boolean",
+      "name": "worktree",
+    },
+  ],
+  "summary": "Prepare the workspace for a task (direct: single-stream on current branch; branch_pr: task branch/worktree).",
+  "usage": [
+    "agentplane work start <task-id> --agent <ID> --slug <slug> [options]",
+  ],
+}
+`;

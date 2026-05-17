@@ -17,6 +17,7 @@ export const COMMAND_SNIPPETS = {
     verifyTask: invoke(["verify"]),
     finishTask: invoke(["finish"]),
     quickstart: invoke(["quickstart"]),
+    demo: invoke(["demo"]),
     role: invoke(["role"]),
   },
   sync: {

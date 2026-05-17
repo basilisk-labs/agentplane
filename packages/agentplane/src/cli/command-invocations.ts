@@ -9,6 +9,7 @@ const COMMAND_INVOCATIONS = new Map<string, string>([
   ["incidents advise", "agentplane incidents advise <task-id>"],
   ["incidents collect", "agentplane incidents collect <task-id>"],
   ["init", "agentplane init"],
+  ["demo", "agentplane demo"],
   ["preflight", "agentplane preflight"],
   ["quickstart", "agentplane quickstart"],
   ["role", "agentplane role <ROLE>"],

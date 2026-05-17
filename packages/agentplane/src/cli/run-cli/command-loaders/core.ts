@@ -16,6 +16,8 @@ export const fromCommandsReleaseApplyCommand = commandModule(
 export const fromCommandsCoreQuickstart = commandModule(
   () => import("../commands/core/quickstart.js"),
 );
+export const loadDemoSpec = (deps: RunDeps) =>
+  import("../commands/core/demo.js").then((m) => m.makeRunDemoHandler(deps.getCtx));
 export const fromCommandsCorePreflight = commandModule(
   () => import("../commands/core/preflight.js"),
 );
