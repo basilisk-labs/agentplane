@@ -4,7 +4,7 @@ title: "Fix issue #3843 branch_pr base start-ready recovery"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-17T17:47:08.756Z"
+  updated_at: "2026-05-17T17:54:39.890Z"
   updated_by: "CODER"
-  note: "Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --runInBand; Result: pass; Evidence: 17 tests passed including branch_pr base start-ready recovery regression. Scope: work start/task start-ready route behavior. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts; Result: pass; Evidence: 2 files, 9 tests passed. Scope: existing task start/finish lifecycle unit coverage. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Scope: repo TypeScript project references. Command: bun run format:changed; Result: pass; Evidence: all matched files use Prettier style. Scope: touched files. Command: bun run lint:core -- packages/agentplane/src/commands/task/start-ready.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts; Result: pass; Evidence: eslint exited 0. Scope: repo core lint. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: policy routing."
+  note: "Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts --runInBand; Result: pass; Evidence: 17 tests passed across branch_pr work start/start-ready routing suites, including base checkout recovery regression. Scope: work start/task start-ready route behavior. Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts --runInBand; Result: pass; Evidence: 1 focused regression test passed. Scope: issue #3843 route. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts; Result: pass; Evidence: 2 files, 9 tests passed. Scope: existing task start/finish lifecycle unit coverage. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Scope: repo TypeScript project references. Command: bun run format:changed; Result: pass; Evidence: all matched files use Prettier style. Scope: touched files. Command: bun run hotspots:check; Result: pass; Evidence: hotspot threshold check passed after moving regression out of oversized pr-flow suite. Scope: CI hotspot gate. Command: bun run lint:core -- packages/agentplane/src/commands/task/start-ready.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts; Result: pass; Evidence: eslint exited 0. Scope: repo core lint. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: policy routing."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --runInBand; Result: pass; Evidence: 17 tests passed including branch_pr base start-ready recovery regression. Scope: work start/task start-ready route behavior. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts; Result: pass; Evidence: 2 files, 9 tests passed. Scope: existing task start/finish lifecycle unit coverage. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Scope: repo TypeScript project references. Command: bun run format:changed; Result: pass; Evidence: all matched files use Prettier style. Scope: touched files. Command: bun run lint:core -- packages/agentplane/src/commands/task/start-ready.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts; Result: pass; Evidence: eslint exited 0. Scope: repo core lint. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: policy routing."
+  -
+    type: "verify"
+    at: "2026-05-17T17:54:39.890Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts --runInBand; Result: pass; Evidence: 17 tests passed across branch_pr work start/start-ready routing suites, including base checkout recovery regression. Scope: work start/task start-ready route behavior. Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts --runInBand; Result: pass; Evidence: 1 focused regression test passed. Scope: issue #3843 route. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts; Result: pass; Evidence: 2 files, 9 tests passed. Scope: existing task start/finish lifecycle unit coverage. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Scope: repo TypeScript project references. Command: bun run format:changed; Result: pass; Evidence: all matched files use Prettier style. Scope: touched files. Command: bun run hotspots:check; Result: pass; Evidence: hotspot threshold check passed after moving regression out of oversized pr-flow suite. Scope: CI hotspot gate. Command: bun run lint:core -- packages/agentplane/src/commands/task/start-ready.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts; Result: pass; Evidence: eslint exited 0. Scope: repo core lint. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: policy routing."
 doc_version: 3
-doc_updated_at: "2026-05-17T17:47:08.795Z"
+doc_updated_at: "2026-05-17T17:54:39.900Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issue #3843: in branch_pr, task start-ready from the base checkout after work start must not fail with missing task README; it should route to the task worktree or provide deterministic recovery."
 sections:
@@ -72,6 +78,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T17:37:29.073Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171737-5NHXTN-fix-3843-base-start-ready/.agentplane/tasks/202605171737-5NHXTN/blueprint/resolved-snapshot.json
+    - old_digest: 550de5f9a0e5327c7d006afe31f30ba3488290595c5384cdd0df4b5f37dc3450
+    - current_digest: 550de5f9a0e5327c7d006afe31f30ba3488290595c5384cdd0df4b5f37dc3450
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171737-5NHXTN
+
+    ### 2026-05-17T17:54:39.890Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts --runInBand; Result: pass; Evidence: 17 tests passed across branch_pr work start/start-ready routing suites, including base checkout recovery regression. Scope: work start/task start-ready route behavior. Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts --runInBand; Result: pass; Evidence: 1 focused regression test passed. Scope: issue #3843 route. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts; Result: pass; Evidence: 2 files, 9 tests passed. Scope: existing task start/finish lifecycle unit coverage. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Scope: repo TypeScript project references. Command: bun run format:changed; Result: pass; Evidence: all matched files use Prettier style. Scope: touched files. Command: bun run hotspots:check; Result: pass; Evidence: hotspot threshold check passed after moving regression out of oversized pr-flow suite. Scope: CI hotspot gate. Command: bun run lint:core -- packages/agentplane/src/commands/task/start-ready.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts; Result: pass; Evidence: eslint exited 0. Scope: repo core lint. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: policy routing.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T17:47:08.795Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -124,6 +149,25 @@ Note: Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T17:37:29.073Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171737-5NHXTN-fix-3843-base-start-ready/.agentplane/tasks/202605171737-5NHXTN/blueprint/resolved-snapshot.json
+- old_digest: 550de5f9a0e5327c7d006afe31f30ba3488290595c5384cdd0df4b5f37dc3450
+- current_digest: 550de5f9a0e5327c7d006afe31f30ba3488290595c5384cdd0df4b5f37dc3450
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171737-5NHXTN
+
+### 2026-05-17T17:54:39.890Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts --runInBand; Result: pass; Evidence: 17 tests passed across branch_pr work start/start-ready routing suites, including base checkout recovery regression. Scope: work start/task start-ready route behavior. Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts --runInBand; Result: pass; Evidence: 1 focused regression test passed. Scope: issue #3843 route. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts; Result: pass; Evidence: 2 files, 9 tests passed. Scope: existing task start/finish lifecycle unit coverage. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Scope: repo TypeScript project references. Command: bun run format:changed; Result: pass; Evidence: all matched files use Prettier style. Scope: touched files. Command: bun run hotspots:check; Result: pass; Evidence: hotspot threshold check passed after moving regression out of oversized pr-flow suite. Scope: CI hotspot gate. Command: bun run lint:core -- packages/agentplane/src/commands/task/start-ready.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts; Result: pass; Evidence: eslint exited 0. Scope: repo core lint. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: policy routing.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T17:47:08.795Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 
