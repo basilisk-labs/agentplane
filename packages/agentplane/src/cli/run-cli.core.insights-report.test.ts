@@ -300,7 +300,7 @@ describe("runCli insights report", () => {
     await writeConfig(root, config);
 
     const originalFetch = globalThis.fetch;
-    const fetchMock = vi.fn(async () => Response.json({ intake_id: "fb_123", status: "accepted" }));
+    const fetchMock = vi.fn(() => Response.json({ intake_id: "fb_123", status: "accepted" }));
     globalThis.fetch = fetchMock as unknown as typeof fetch;
     const io = captureStdIO();
     try {
