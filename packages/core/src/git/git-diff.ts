@@ -21,10 +21,14 @@ export function toGitPath(filePath: string): string {
 }
 
 function gitDiffRange(base: string, branch: string, range: GitDiffRange = "three-dot"): string {
+  // Git revision ranges are passed as argv elements, not shell text.
+  // codeql[js/shell-command-constructed-from-input]
   return range === "two-dot" ? `${base}..${branch}` : `${base}...${branch}`;
 }
 
 export async function gitShowFile(cwd: string, ref: string, relPath: string): Promise<string> {
+  // Git object specs are passed as argv elements, not shell text.
+  // codeql[js/shell-command-constructed-from-input]
   const { stdout } = await execFileAsync("git", ["show", `${ref}:${relPath}`], {
     cwd,
     env: gitEnv(),
@@ -110,6 +114,8 @@ export async function gitDiffStat(
   const excludePaths = (opts?.excludePaths ?? [])
     .map((relPath) => relPath.trim())
     .filter((relPath) => relPath.length > 0)
+    // Git pathspecs are passed after `--` as argv elements, not shell text.
+    // codeql[js/shell-command-constructed-from-input]
     .map((relPath) => `:(exclude)${toGitPath(relPath)}`);
   if (excludePaths.length > 0) {
     args.push("--", ".", ...excludePaths);
@@ -126,6 +132,8 @@ export async function gitAheadBehind(
   base: string,
   branch: string,
 ): Promise<{ ahead: number; behind: number }> {
+  // Git revision ranges are passed as argv elements, not shell text.
+  // codeql[js/shell-command-constructed-from-input]
   const { stdout } = await execFileAsync(
     "git",
     ["rev-list", "--left-right", "--count", `${base}...${branch}`],
