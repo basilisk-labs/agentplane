@@ -1,10 +1,11 @@
 ---
 id: "202605171458-HWXZC9"
 title: "Fix context init starter wiki lint"
-status: "DOING"
+result_summary: "Merged via PR #3834."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -26,11 +27,16 @@ verification:
   updated_by: "CODER"
   note: "Verified context init starter wiki lint fix: fresh adaptive context init now generates lintable starter wiki pages; focused regression and local checks pass."
   attempts: 0
-commit: null
+commit:
+  hash: "b4b1492fc8bdcfb02e732189582bdd41b2fa641a"
+  message: "Merge pull request #3834 from basilisk-labs/task/202605171458-HWXZC9/context-init-wiki-lint"
 comments:
   -
     author: "CODER"
     body: "Start: Fix context init starter wiki lint failure in a manually isolated worktree because ap work start is blocked by stale and conflicted base checkout state."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3834 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified context init starter wiki lint fix: fresh adaptive context init now generates lintable starter wiki pages; focused regression and local checks pass."
+  -
+    type: "status"
+    at: "2026-05-17T16:19:19.176Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3834 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T15:31:42.439Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T16:19:19.183Z"
+doc_updated_by: "INTEGRATOR"
 description: "Ensure context init generated starter wiki pages satisfy context wiki lint frontmatter requirements, including adaptive profile starter indexes and AGENTS page."
 sections:
   Summary: |-
