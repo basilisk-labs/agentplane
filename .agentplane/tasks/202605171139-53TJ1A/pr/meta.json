@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-17T11:46:33Z",
+  "base": "main",
+  "branch": "task/202605171139-53TJ1A/blueprint-help-context-kind",
+  "created_at": "2026-05-17T11:46:33Z",
+  "head_sha": "609b9adec8365ae1eef2538266d5e33a723f955f",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "merge_commit": "19de8323b152edf83e2a81fb8a2bcff3d5f117b4",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-17T11:46:33Z",
+  "pr_number": 3822,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3822",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605171139-53TJ1A",
+  "updated_at": "2026-05-17T11:46:33Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
