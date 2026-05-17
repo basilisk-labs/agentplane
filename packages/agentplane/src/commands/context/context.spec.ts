@@ -67,8 +67,7 @@ export const contextInitSpec: CommandSpec<{
   ],
   parse: (raw) => ({
     profile:
-      (raw.opts.profile as "adaptive" | "minimal" | "wiki" | "codebase" | "research") ??
-      "adaptive",
+      (raw.opts.profile as "adaptive" | "minimal" | "wiki" | "codebase" | "research") ?? "adaptive",
     rawGitignore: (raw.opts["raw-gitignore"] as "none" | "all") ?? "none",
     derivedGitignore: (raw.opts["derived-gitignore"] as "none" | "all") ?? "none",
     repair: raw.opts.repair === true,

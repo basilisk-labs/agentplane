@@ -180,7 +180,8 @@ async function collectWikiFiles(root: string, rel: string): Promise<string[]> {
   if (!(await fileExists(abs))) return [];
   const st = await stat(abs);
   if (st.isFile()) return [rel];
-  return (await collectMatchingFiles(root, rel)).filter((item) => item.endsWith(".md"));
+  const files = await collectMatchingFiles(root, rel);
+  return files.filter((item) => item.endsWith(".md"));
 }
 
 async function normalizeWikiLintTarget(root: string, input: string): Promise<string> {
@@ -318,7 +319,8 @@ export async function cmdContextWikiLink(opts: {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const rel = normalizeWikiPath(root, opts.parsed.page);
   const text = await readFile(path.join(root, rel), "utf8");
-  const files = (await collectWikiFiles(root, "context/wiki")).filter((file) => file !== rel);
+  const wikiFiles = await collectWikiFiles(root, "context/wiki");
+  const files = wikiFiles.filter((file) => file !== rel);
   const titleWords = new Set(
     text
       .toLowerCase()

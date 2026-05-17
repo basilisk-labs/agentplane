@@ -3,7 +3,7 @@ import type { PromptModule } from "../runtime/prompt-modules/index.js";
 import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "../runtime/prompt-modules/index.js";
 import type { ContextIngestParsed, ManifestEntry } from "./ingest.js";
 
-export const CONTEXT_ASSIMILATION_PROMPT_ADDRESS =
+const CONTEXT_ASSIMILATION_PROMPT_ADDRESS =
   "framework/template/generated.artifact/context_assimilation/v1";
 
 export function selectedSourceRows(
