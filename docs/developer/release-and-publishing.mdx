@@ -420,6 +420,16 @@ The publish workflow now also writes `publish-result.json` as a separate artifac
 diagnostics can distinguish a completed release from a partially failed publish run without relying
 only on workflow status inference.
 
+Before closing the release task, run the fail-closed platform audit against that artifact:
+
+```bash
+bun run release:postpublish:audit -- --publish-result <path-to-publish-result.json>
+```
+
+The audit must pass before a release is recorded as fully published. If it fails, keep the release
+task open or close it only as an explicitly partial release with recovery task IDs for the missing
+channels.
+
 For distribution recovery, use the manifest first:
 
 - if npm succeeded but a package-manager channel was skipped, dispatch `Publish distribution module`
@@ -465,6 +475,7 @@ versions, or release notes for you.
 
 ## Post-release checks
 
+- run `bun run release:postpublish:audit -- --publish-result <path-to-publish-result.json>`
 - verify npm versions for all published packages
 - verify GitHub release body matches `docs/releases/vX.Y.Z.md`
 - verify upgrade bundle artifacts exist in release assets

@@ -1,0 +1,162 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
+function usage() {
+  return [
+    "Usage: node scripts/release/audit-platform-publication.mjs --publish-result <path> [options]",
+    "",
+    "Fail-closed audit for the canonical publish-result artifact before release task closure.",
+    "",
+    "Options:",
+    "  --publish-result <path>  Path to publish-result.json from the Publish release workflow",
+    "  --json                   Emit machine-readable JSON",
+    "  --help, -h               Show this help text",
+  ].join("\n");
+}
+
+function parseArgs(argv) {
+  const out = {
+    publishResultPath: "",
+    json: false,
+    help: false,
+  };
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index] ?? "";
+    if (arg === "--publish-result") {
+      out.publishResultPath = argv[index + 1] ?? out.publishResultPath;
+      index += 1;
+      continue;
+    }
+    if (arg === "--json") {
+      out.json = true;
+      continue;
+    }
+    if (arg === "--help" || arg === "-h") {
+      out.help = true;
+      continue;
+    }
+    throw new Error(`unknown argument: ${arg}`);
+  }
+  return out;
+}
+
+function assertObject(value, label) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error(`invalid ${label}: expected object`);
+  }
+  return value;
+}
+
+function checkPackage(failures, manifest, key, label) {
+  const payload = manifest.packages?.[key];
+  if (!payload?.published) failures.push(`${label} npm package not confirmed`);
+}
+
+function checkReleaseAssets(failures, manifest) {
+  const distribution = manifest.distribution;
+  if (!distribution?.loaded || !distribution.manifest) {
+    failures.push("release-distribution.json not loaded in publish-result");
+    return;
+  }
+  const assets = Array.isArray(distribution.manifest.releaseAssets)
+    ? distribution.manifest.releaseAssets
+    : [];
+  const assetNames = new Set(assets.map((asset) => asset?.name).filter(Boolean));
+  for (const required of ["release-distribution.json", "SHA256SUMS", "install.sh", "install.ps1"]) {
+    if (!assetNames.has(required)) failures.push(`GitHub Release asset not confirmed: ${required}`);
+  }
+  const channels = assertObject(distribution.manifest.channels ?? {}, "distribution channels");
+  for (const channel of ["npm", "githubRelease", "ghcr"]) {
+    if (!channels[channel]?.required)
+      failures.push(`required channel missing from manifest: ${channel}`);
+  }
+}
+
+function checkExternalModules(failures, manifest) {
+  if (!manifest.external?.requested) {
+    failures.push("external distribution module evidence not requested");
+    return;
+  }
+  const modules = Array.isArray(manifest.external.modules) ? manifest.external.modules : [];
+  const required = new Set(["homebrew", "scoop", "setup-agentplane"]);
+  for (const module of modules) required.delete(module?.name);
+  for (const name of required) failures.push(`external distribution module missing: ${name}`);
+  for (const module of modules) {
+    if (!module?.loaded) {
+      failures.push(`external distribution ${module?.name ?? "unknown"} result not loaded`);
+      continue;
+    }
+    if (!["published", "unchanged"].includes(module.status)) {
+      failures.push(
+        `external distribution ${module.name} not confirmed (status=${module.status}${
+          module.reasonCode ? ` reason=${module.reasonCode}` : ""
+        })`,
+      );
+    }
+    if (module.name === "setup-agentplane" && module.setupTag?.status !== "published") {
+      failures.push(
+        `external distribution setup-agentplane tag not confirmed (status=${
+          module.setupTag?.status ?? "missing"
+        })`,
+      );
+    }
+  }
+}
+
+function auditPublishResult(manifest) {
+  const failures = [];
+  if (manifest.success !== true) {
+    failures.push(`publish-result is not successful (reason=${manifest.reasonCode ?? "unknown"})`);
+  }
+  checkPackage(failures, manifest, "core", "@agentplaneorg/core");
+  checkPackage(failures, manifest, "recipes", "@agentplaneorg/recipes");
+  checkPackage(failures, manifest, "cli", "agentplane");
+  if (manifest.checks?.npmSmoke?.passed !== true)
+    failures.push("published npm smoke not confirmed");
+  if (manifest.checks?.ghcr?.published !== true) failures.push("GHCR publication not confirmed");
+  if (manifest.checks?.tag?.ensured !== true) failures.push("release tag not confirmed");
+  if (manifest.checks?.githubRelease?.created !== true) {
+    failures.push("GitHub Release publication not confirmed");
+  }
+  checkReleaseAssets(failures, manifest);
+  checkExternalModules(failures, manifest);
+
+  return {
+    ok: failures.length === 0,
+    tag: manifest.tag ?? null,
+    sha: manifest.sha ?? null,
+    version: manifest.version ?? null,
+    failures,
+    nextAction:
+      failures.length === 0
+        ? "Record this audit output in the release task verification before closing."
+        : "Do not close the release task; resolve the missing channel evidence or create explicit recovery tasks.",
+  };
+}
+
+async function main() {
+  const args = parseArgs(process.argv.slice(2));
+  if (args.help) {
+    process.stdout.write(`${usage()}\n`);
+    return;
+  }
+  if (!args.publishResultPath) throw new Error("Missing required --publish-result");
+  const publishResultPath = path.resolve(args.publishResultPath);
+  const manifest = JSON.parse(await readFile(publishResultPath, "utf8"));
+  const report = auditPublishResult(assertObject(manifest, "publish-result"));
+  if (args.json) {
+    process.stdout.write(`${JSON.stringify(report)}\n`);
+  } else {
+    process.stdout.write(
+      `${report.ok ? "ok" : "fail"}: post-publish platform audit for ${report.tag ?? "unknown tag"}\n`,
+    );
+    for (const failure of report.failures) process.stdout.write(`- ${failure}\n`);
+    process.stdout.write(`Next action: ${report.nextAction}\n`);
+  }
+  if (!report.ok) process.exitCode = 1;
+}
+
+main().catch((error) => {
+  process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
+  process.exitCode = 1;
+});

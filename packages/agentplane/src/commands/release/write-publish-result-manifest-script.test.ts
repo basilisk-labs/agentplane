@@ -70,6 +70,8 @@ describe("manifest script publish-result command", () => {
         "skipped",
         "--smoke-outcome",
         "success",
+        "--ghcr-outcome",
+        "success",
         "--tag-exists",
         "false",
         "--tag-outcome",
@@ -99,6 +101,7 @@ describe("manifest script publish-result command", () => {
       };
       checks: {
         npmSmoke: { passed: boolean };
+        ghcr: { published: boolean; outcome: string };
         tag: { ensured: boolean };
         githubRelease: { created: boolean };
       };
@@ -119,6 +122,8 @@ describe("manifest script publish-result command", () => {
     expect(payload.packages.cli.published).toBe(true);
     expect(payload.packages.cli.source).toBe("preexisting");
     expect(payload.checks.npmSmoke.passed).toBe(true);
+    expect(payload.checks.ghcr.published).toBe(true);
+    expect(payload.checks.ghcr.outcome).toBe("success");
     expect(payload.checks.tag.ensured).toBe(true);
     expect(payload.checks.githubRelease.created).toBe(true);
     expect(payload.failures).toHaveLength(0);
@@ -170,6 +175,7 @@ describe("manifest script publish-result command", () => {
       failures: string[];
       checks: {
         npmSmoke: { passed: boolean; outcome: string };
+        ghcr: { published: boolean; outcome: string };
         githubRelease: { created: boolean; outcome: string };
       };
     };
@@ -181,8 +187,11 @@ describe("manifest script publish-result command", () => {
     expect(payload.failures).toContain("@agentplaneorg/recipes publish not confirmed");
     expect(payload.failures).toContain("agentplane publish not confirmed");
     expect(payload.failures).toContain("publish job status=failure");
+    expect(payload.failures).toContain("GHCR publish outcome=unknown");
     expect(payload.checks.npmSmoke.passed).toBe(false);
     expect(payload.checks.npmSmoke.outcome).toBe("skipped");
+    expect(payload.checks.ghcr.published).toBe(false);
+    expect(payload.checks.ghcr.outcome).toBe("unknown");
     expect(payload.checks.githubRelease.created).toBe(false);
     expect(payload.checks.githubRelease.outcome).toBe("skipped");
   });
@@ -253,6 +262,8 @@ describe("manifest script publish-result command", () => {
       "--cli-outcome",
       "skipped",
       "--smoke-outcome",
+      "success",
+      "--ghcr-outcome",
       "success",
       "--tag-exists",
       "true",
@@ -347,6 +358,8 @@ describe("manifest script publish-result command", () => {
       "skipped",
       "--smoke-outcome",
       "success",
+      "--ghcr-outcome",
+      "success",
       "--tag-exists",
       "true",
       "--tag-outcome",
@@ -425,6 +438,8 @@ describe("manifest script publish-result command", () => {
       "skipped",
       "--smoke-outcome",
       "success",
+      "--ghcr-outcome",
+      "success",
       "--tag-exists",
       "true",
       "--tag-outcome",
@@ -500,6 +515,8 @@ describe("manifest script publish-result command", () => {
       "--cli-outcome",
       "skipped",
       "--smoke-outcome",
+      "success",
+      "--ghcr-outcome",
       "success",
       "--tag-exists",
       "true",

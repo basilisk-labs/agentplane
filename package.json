@@ -53,6 +53,7 @@
     "release:recover": "node scripts/release/check-release-recovery-state.mjs",
     "release:e2e:local": "node scripts/release/run-local-release-e2e.mjs",
     "release:smoke:published": "node scripts/release/check-published-packages.mjs",
+    "release:postpublish:audit": "node scripts/release/audit-platform-publication.mjs",
     "release:distribution:generate": "node scripts/generate/generate-release-distribution.mjs",
     "release:distribution:check": "node scripts/generate/generate-release-distribution.mjs --check",
     "release:standalone:generate": "node scripts/generate/generate-standalone-cli-assets.mjs",
