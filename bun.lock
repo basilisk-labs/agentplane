@@ -30,17 +30,17 @@
     },
     "packages/agentplane": {
       "name": "agentplane",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "bin": {
         "ap": "bin/ap.js",
         "agentplane": "bin/agentplane.js",
       },
       "dependencies": {
-        "@agentplaneorg/core": "0.6.0",
-        "@agentplaneorg/recipes": "0.6.0",
+        "@agentplaneorg/core": "0.6.1",
+        "@agentplaneorg/recipes": "0.6.1",
         "@clack/prompts": "^1.2.0",
         "yaml": "^2.7.1",
-        "yauzl": "^2.10.0",
+        "yauzl": "^3.3.0",
         "zod": "^3",
         "zod-validation-error": "^5.0.0",
       },
@@ -51,7 +51,7 @@
     },
     "packages/core": {
       "name": "@agentplaneorg/core",
-      "version": "0.6.0",
+      "version": "0.6.1",
       "dependencies": {
         "canonicalize": "^3.0.0",
         "execa": "^5.1.1",
@@ -63,7 +63,7 @@
     },
     "packages/recipes": {
       "name": "@agentplaneorg/recipes",
-      "version": "0.6.0",
+      "version": "0.6.1",
     },
     "packages/spec": {
       "name": "@agentplane/spec",
@@ -73,7 +73,7 @@
       "name": "@agentplane/testkit",
       "version": "0.0.0",
       "dependencies": {
-        "@agentplaneorg/core": "0.6.0",
+        "@agentplaneorg/core": "0.6.1",
       },
     },
     "website": {
@@ -1852,8 +1852,6 @@
 
     "fd-package-json": ["fd-package-json@2.0.0", "", { "dependencies": { "walk-up-path": "^4.0.0" } }, "sha512-jKmm9YtsNXN789RS/0mSzOC1NUq9mkVd65vbSSVsKdjGvYXBuE4oWe2QOEoFeRmJg+lPuZxpmrfFclNhoRMneQ=="],
 
-    "fd-slicer": ["fd-slicer@1.1.0", "", { "dependencies": { "pend": "~1.2.0" } }, "sha512-cE1qsB/VwyQozZ+q1dGxR8LBYNZeofhEdUNGSMbQD3Gw2lAzX9Zb3uIU6Ebc/Fmyjo9AWWfnn0AUCHqtevs/8g=="],
-
     "fdir": ["fdir@6.5.0", "", { "peerDependencies": { "picomatch": "^3 || ^4" }, "optionalPeers": ["picomatch"] }, "sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg=="],
 
     "feed": ["feed@4.2.2", "", { "dependencies": { "xml-js": "^1.6.11" } }, "sha512-u5/sxGfiMfZNtJ3OvQpXcvotFpYkL0n9u9mM2vkui2nGo8b4wvDkJ8gAkYqbA8QpGyFCv3RK0Z+Iv+9veCS9bQ=="],
@@ -3336,7 +3334,7 @@
 
     "yaml": ["yaml@2.8.2", "", { "bin": { "yaml": "bin.mjs" } }, "sha512-mplynKqc1C2hTVYxd0PU2xQAc22TI1vShAYGksCCfxbn/dFwnHTNi1bvYsBTkhdUNtGIf5xNOg938rrSSYvS9A=="],
 
-    "yauzl": ["yauzl@2.10.0", "", { "dependencies": { "buffer-crc32": "~0.2.3", "fd-slicer": "~1.1.0" } }, "sha512-p4a9I6X6nu6IhoGmBqAcbJy1mlC4j27vEPZX9F4L4/vZT3Lyq1VkFHw/V/PUcB9Buo+DG3iHkT0x3Qya58zc3g=="],
+    "yauzl": ["yauzl@3.3.0", "", { "dependencies": { "buffer-crc32": "~0.2.3", "pend": "~1.2.0" } }, "sha512-PtGEvEP30p7sbIBJKUBjUnqgTVOyMURc4dLo9iNyAJnNIEz9pm88cCXF21w94Kg3k6RXkeZh5DHOGS0qEONvNQ=="],
 
     "yocto-queue": ["yocto-queue@0.1.0", "", {}, "sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q=="],
 
