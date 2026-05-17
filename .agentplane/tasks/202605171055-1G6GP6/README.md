@@ -1,10 +1,11 @@
 ---
 id: "202605171055-1G6GP6"
 title: "Add branch_pr route decision CLI commands"
-status: "DOING"
+result_summary: "Merged via PR #3823."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -28,11 +29,16 @@ verification:
   updated_by: "CODER"
   note: "Verified current head after review-fix artifact refresh. Review comments addressed in code and tests; focused route-decision/pr-flow tests, typecheck, knip:check, lint:core, format:check, routing policy check, diff check, and framework bootstrap passed."
   attempts: 0
-commit: null
+commit:
+  hash: "423dc17f793d728580a40d15564a2ce6d3189a34"
+  message: "Merge pull request #3823 from basilisk-labs/task/202605171055-1G6GP6/route-decision-cli"
 comments:
   -
     author: "CODER"
     body: "Start: Implement route decision CLI commands in the isolated task worktree and update prompt plus documentation guidance for agents."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3823 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -95,9 +101,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified current head after review-fix artifact refresh. Review comments addressed in code and tests; focused route-decision/pr-flow tests, typecheck, knip:check, lint:core, format:check, routing policy check, diff check, and framework bootstrap passed."
+  -
+    type: "status"
+    at: "2026-05-17T12:53:20.421Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3823 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T12:52:03.771Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T12:53:20.430Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add machine-readable task route/status/next-action/resume/repair commands for branch_pr agent workflow optimization, and update prompts plus CLI documentation to teach the new commands."
 sections:
   Summary: |-
