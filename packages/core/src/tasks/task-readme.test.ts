@@ -511,6 +511,46 @@ Hello world.
     expect(rendered).not.toContain("stale");
   });
 
+  it("preserves CRLF preamble text before canonical headings", () => {
+    const rendered = renderTaskReadme(
+      {
+        id: "202603130006-TEST",
+        title: "Schema sample",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        revision: 1,
+        depends_on: [],
+        tags: [],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-03-13T00:00:00.000Z",
+        doc_updated_by: "CODER",
+        description: "sample",
+        sections: { Summary: "Canonical summary", Findings: "Canonical finding" },
+      },
+      [
+        "line1",
+        "line2",
+        "line3",
+        "## Summary",
+        "",
+        "stale",
+        "",
+        "## References",
+        "",
+        "- docs/ref",
+      ].join("\r\n"),
+    );
+
+    expect(rendered).toContain("line1\nline2\nline3\n\n## References");
+    expect(rendered).not.toContain("line\n\n## Summary");
+    expect(rendered).not.toContain("stale");
+  });
+
   it("finds the first markdown section without regex search backtracking", () => {
     const rendered = renderTaskReadme(
       {

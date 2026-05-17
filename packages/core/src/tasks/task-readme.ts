@@ -342,25 +342,29 @@ function pushContextSection(
   lines.push("");
 }
 
+function firstMarkdownSectionOffset(body: string): number {
+  let lineStart = 0;
+  while (lineStart < body.length) {
+    const newline = body.indexOf("\n", lineStart);
+    const lineEnd = newline === -1 ? body.length : newline;
+    const line = body.slice(lineStart, lineEnd).replaceAll("\r", "");
+    const trimmedStart = line.trimStart();
+    if (trimmedStart.startsWith("##") && trimmedStart[2] === " ") return lineStart;
+    if (newline === -1) break;
+    lineStart = newline + 1;
+  }
+  return -1;
+}
+
 function renderContextSections(body: string, docVersion: unknown): string {
   const canonicalTitles = canonicalTaskDocSectionTitles(docVersion);
-  const bodyLines = body.replaceAll("\r\n", "\n").split("\n");
-  let preambleEnd = -1;
-  let offset = 0;
-  for (const line of bodyLines) {
-    const trimmedStart = line.trimStart();
-    if (trimmedStart.startsWith("##") && trimmedStart[2] === " ") {
-      preambleEnd = offset;
-      break;
-    }
-    offset += line.length + 1;
-  }
+  const preambleEnd = firstMarkdownSectionOffset(body);
   const preamble = preambleEnd === -1 ? body : body.slice(0, preambleEnd);
   const parsed = parseDocSections(body);
   const lines: string[] = [];
   const preambleText = preamble.trimEnd();
   if (preambleText) {
-    lines.push(...preambleText.split("\n"), "");
+    lines.push(...preambleText.replaceAll("\r\n", "\n").split("\n"), "");
   }
   for (const key of parsed.order) {
     const section = parsed.sections.get(key);
