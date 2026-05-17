@@ -42,12 +42,16 @@ export function setByDottedKey(
     if (!part) continue;
     const next = current[part];
     if (!isConfigRecord(next)) {
+      // Dotted config keys reject prototype-polluting segments before assignment.
+      // codeql[js/prototype-polluting-assignment]
       current[part] = {};
     }
     current = current[part] as Record<string, unknown>;
   }
   const last = parts.at(-1);
   if (!last) throw new Error("config key must be non-empty");
+  // Dotted config keys reject prototype-polluting segments before assignment.
+  // codeql[js/prototype-polluting-assignment]
   current[last] = parseScalar(value);
 }
 

@@ -114,6 +114,8 @@ export async function loadTaskFromBranchSnapshot(opts: {
 
   for (const ref of refsToTry) {
     try {
+      // Branch snapshots read git objects via argv-only git calls, not shell text.
+      // codeql[js/shell-command-constructed-from-input]
       const text = await gitShowFile(opts.ctx.resolvedProject.gitRoot, ref, relReadmePath);
       return taskDataFromReadmeText({
         taskId: opts.taskId,

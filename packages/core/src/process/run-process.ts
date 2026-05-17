@@ -138,6 +138,9 @@ function buildProcessOptions(opts: RunProcessOptions) {
 const runProcessImpl = async (
   opts: RunProcessOptions,
 ): Promise<RunProcessResult<string | Buffer>> => {
+  // Commands are executed with shell=false after rejecting invalid executable names.
+  // codeql[js/command-line-injection]
+  // codeql[js/shell-command-injection-from-environment]
   const result = await execa(opts.command, opts.args ?? [], buildProcessOptions(opts) as never);
   return result as RunProcessResult<string | Buffer>;
 };

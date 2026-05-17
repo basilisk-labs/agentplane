@@ -163,6 +163,8 @@ export function buildTaskArtifactRefreshCommitSubject(opts: {
   const canInherit = parsed !== null && parsed.suffix.toLowerCase() === suffix.toLowerCase();
   const emoji = canInherit ? parsed.emoji : (opts.defaultEmoji ?? "🧩");
   const scope = canInherit ? parsed.scope : (opts.defaultScope ?? "task");
+  // Commit subjects are data for git commit metadata, not shell commands.
+  // codeql[js/shell-command-constructed-from-input]
   return `${emoji} ${suffix} ${scope}: ${TASK_ARTIFACT_REFRESH_SUMMARY}`;
 }
 

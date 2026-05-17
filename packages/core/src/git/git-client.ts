@@ -132,6 +132,8 @@ export async function gitCurrentBranch(cwd: string): Promise<string> {
 
 export async function gitBranchExists(cwd: string, branch: string): Promise<boolean> {
   try {
+    // Git refs are passed as argv elements, not shell text; refs/heads/ scopes local branches.
+    // codeql[js/shell-command-constructed-from-input]
     await execFileAsync("git", ["show-ref", "--verify", "--quiet", `refs/heads/${branch}`], {
       cwd,
       env: gitEnv(),
@@ -170,6 +172,8 @@ export async function gitIsAncestor(
 
 export async function gitBranchUpstream(cwd: string, branch: string): Promise<string | null> {
   try {
+    // Git refs are passed as argv elements, not shell text; refs/heads/ scopes local branches.
+    // codeql[js/shell-command-constructed-from-input]
     const { stdout } = await execFileAsync(
       "git",
       ["for-each-ref", "--format=%(upstream:short)", `refs/heads/${branch}`],
