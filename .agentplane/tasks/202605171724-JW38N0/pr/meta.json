@@ -14,13 +14,16 @@
   "head_sha": "742e76377edb42b3c6577abe1690222751a92f2d",
   "last_verified_at": "2026-05-17T17:38:42.786Z",
   "last_verified_sha": "4dbbe339e38dd3e7127fc59f45b0867e6207a464",
+  "pr_number": 3852,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3852",
   "related_task_ids": [
     "202605171725-AB0HM9",
     "202605171725-AEFDJR"
   ],
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202605171724-JW38N0",
-  "updated_at": "2026-05-17T17:51:35.339Z",
+  "updated_at": "2026-05-17T17:52:26.644Z",
   "verify": {
     "status": "pass"
   }
