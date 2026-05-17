@@ -1,0 +1,8 @@
+ .agentplane/policy/framework.dev.md                | 20 ++++++++++++++
+ packages/agentplane/assets/policy/framework.dev.md | 20 ++++++++++++++
+ .../src/cli/run-cli.core.help-contract.test.ts     | 26 ++++++++++++++++++
+ packages/agentplane/src/cli/run-cli.ts             | 23 +++++++++++++---
+ packages/agentplane/src/cli/spec/help.ts           | 10 +++++--
+ .../src/runtime/prompt-modules/registry.test.ts    | 31 ++++++++++++++++++++++
+ .../src/runtime/prompt-modules/registry.ts         |  1 +
+ 7 files changed, 125 insertions(+), 6 deletions(-)

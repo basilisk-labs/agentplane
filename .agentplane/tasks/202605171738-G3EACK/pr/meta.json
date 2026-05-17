@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605171738-G3EACK/framework-dev-gates",
+  "created_at": "2026-05-17T17:38:49.835Z",
+  "head_sha": "96554c3859b0973304b5e6266ac15c9f2316c3fd",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605171738-G3EACK",
+  "updated_at": "2026-05-17T17:46:58.450Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
