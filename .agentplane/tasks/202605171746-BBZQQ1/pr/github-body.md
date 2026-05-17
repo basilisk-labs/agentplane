@@ -27,12 +27,37 @@ generated artifacts.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-17T17:47:24.453Z
+- Updated: 2026-05-17T18:07:49.881Z
 - Branch: task/202605171746-BBZQQ1/feedback-issue-transports
-- Head: 59a507f34063
+- Head: 7f613c054a17
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 528 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   2 +
+ docs/user/commands.mdx                             |   1 +
+ docs/user/configuration.mdx                        |  15 +-
+ docs/user/setup.mdx                                |  12 +-
+ packages/agentplane/src/cli/error-map.ts           |  10 +
+ packages/agentplane/src/cli/reason-codes.ts        |   6 +
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |  27 ++
+ .../src/cli/run-cli.core.insights-report.test.ts   |  85 +++-
+ .../src/cli/run-cli/commands/init/answers.ts       |   3 +
+ .../src/cli/run-cli/commands/init/execution.ts     |   3 +
+ .../src/cli/run-cli/commands/init/model.ts         |   3 +
+ .../src/cli/run-cli/commands/init/presets.ts       |   5 +
+ .../src/cli/run-cli/commands/init/spec.ts          |  16 +
+ .../commands/init/steps/advanced-settings.ts       |  16 +
+ .../cli/run-cli/commands/init/steps/contracts.ts   |   1 +
+ .../commands/init/steps/prompt-steps.test.ts       |   5 +-
+ .../src/cli/run-cli/commands/init/write-config.ts  |   6 +
+ .../src/commands/insights/insights.command.ts      | 165 ++++++-
+ .../src/commands/insights/insights.spec.ts         |  10 +
+ packages/core/schemas/config.schema.json           |  20 +
+ packages/core/src/config/config.test.ts            |   3 +
+ packages/core/src/config/schema.impl.ts            |  24 +-
+ packages/spec/schemas/config.schema.json           |  20 +
+ schemas/config.schema.json                         |  20 +
+ 25 files changed, 986 insertions(+), 20 deletions(-)
 ```
 
 </details>
