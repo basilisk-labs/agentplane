@@ -91,6 +91,7 @@ describe("publish workflow contract", () => {
       "--out .agentplane/.release/publish/setup-agentplane/setup-agentplane-publish-result.json",
     );
     expect(workflow).toContain("Publish GHCR image");
+    expect(workflow).toContain("id: publish_ghcr");
     expect(workflow).toContain("node scripts/render-ghcr-image-metadata.mjs");
     expect(workflow).toContain("docker login ghcr.io");
     expect(workflow).toContain("docker build \\");
@@ -134,6 +135,7 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain(
       "--distribution-manifest .agentplane/.release/publish/distribution/release-distribution.json",
     );
+    expect(workflow).toContain('--ghcr-outcome "${{ steps.publish_ghcr.outcome }}"');
     expect(workflow).toContain("if: always()");
     expect(workflow).toContain("pull-requests: write");
     expect(workflow).toContain("Prepare release task evidence");

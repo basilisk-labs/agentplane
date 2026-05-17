@@ -134,6 +134,7 @@ function publishResultUsage() {
     "  --recipes-outcome <outcome> Step outcome for @agentplaneorg/recipes publish",
     "  --cli-outcome <outcome>     Step outcome for agentplane publish",
     "  --smoke-outcome <outcome>   Step outcome for post-publish npm smoke",
+    "  --ghcr-outcome <outcome>    Step outcome for GHCR image publication",
     "  --tag-exists <bool>         Whether the release tag already existed on origin",
     "  --tag-outcome <outcome>     Step outcome for pushing the release tag",
     "  --release-outcome <outcome> Step outcome for GitHub release creation",
@@ -179,6 +180,7 @@ function parsePublishResultArgs(argv) {
     recipesOutcome: "unknown",
     cliOutcome: "unknown",
     smokeOutcome: "unknown",
+    ghcrOutcome: "unknown",
     tagExists: false,
     tagOutcome: "unknown",
     releaseOutcome: "unknown",
@@ -264,6 +266,11 @@ function parsePublishResultArgs(argv) {
       index += 1;
       continue;
     }
+    if (arg === "--ghcr-outcome") {
+      out.ghcrOutcome = next ?? out.ghcrOutcome;
+      index += 1;
+      continue;
+    }
     if (arg === "--tag-exists") {
       out.tagExists = parseBoolean(next, "tag-exists");
       index += 1;
@@ -333,10 +340,12 @@ function buildPublishResultManifest(args) {
   });
 
   const smokeOutcome = normalizeOutcome(args.smokeOutcome);
+  const ghcrOutcome = normalizeOutcome(args.ghcrOutcome);
   const tagOutcome = normalizeOutcome(args.tagOutcome);
   const releaseOutcome = normalizeOutcome(args.releaseOutcome);
   const tagEnsured = args.tagExists || tagOutcome === "success";
   const smokePassed = smokeOutcome === "success";
+  const ghcrPublished = ghcrOutcome === "success";
   const releaseCreated = releaseOutcome === "success";
   const jobStatus = assertNonEmpty(args.jobStatus, "job status");
 
@@ -345,6 +354,7 @@ function buildPublishResultManifest(args) {
   if (!recipes.published) failures.push("@agentplaneorg/recipes publish not confirmed");
   if (!cli.published) failures.push("agentplane publish not confirmed");
   if (!smokePassed) failures.push(`post-publish smoke outcome=${smokeOutcome}`);
+  if (!ghcrPublished) failures.push(`GHCR publish outcome=${ghcrOutcome}`);
   if (!tagEnsured) failures.push(`release tag not ensured (outcome=${tagOutcome})`);
   if (!releaseCreated) failures.push(`GitHub release outcome=${releaseOutcome}`);
   if (jobStatus !== "success") failures.push(`publish job status=${jobStatus}`);
@@ -408,6 +418,10 @@ function buildPublishResultManifest(args) {
       npmSmoke: {
         passed: smokePassed,
         outcome: smokeOutcome,
+      },
+      ghcr: {
+        published: ghcrPublished,
+        outcome: ghcrOutcome,
       },
       tag: {
         ensured: tagEnsured,

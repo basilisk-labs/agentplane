@@ -396,6 +396,7 @@ jobs:
         id: post_publish_smoke
         run: bun run release:smoke:published
       - name: Publish GHCR image
+        id: publish_ghcr
         shell: bash
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -571,6 +572,7 @@ jobs:
             --recipes-outcome "${{ steps.publish_recipes.outcome }}" \
             --cli-outcome "${{ steps.publish_cli.outcome }}" \
             --smoke-outcome "${{ steps.post_publish_smoke.outcome }}" \
+            --ghcr-outcome "${{ steps.publish_ghcr.outcome }}" \
             --tag-exists "${{ steps.tag_state.outputs.tag_exists || 'false' }}" \
             --tag-outcome "${{ steps.push_tag.outcome }}" \
             --release-outcome "${{ steps.create_release.outcome }}" \

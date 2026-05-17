@@ -1,6 +1,6 @@
 ---
 name: agentplane-release-and-packaging-operator
-description: Use when preparing, validating, publishing, or recovering an Agentplane release, especially package build ordering, version parity, npm publication, public install smoke tests, hosted publish evidence, or release CI failures.
+description: Use when preparing, validating, publishing, auditing, or recovering an Agentplane release, especially package build ordering, version parity, npm/GitHub/GHCR/external distribution publication, public install smoke tests, hosted publish evidence, or release CI failures.
 ---
 
 # Agentplane Release And Packaging Operator
@@ -78,7 +78,53 @@ npm_config_prefix="$tmpdir/prefix" npm install -g agentplane@<version>
 - Tag present, npm absent: verify tag commit is correct, fix publish blocker without moving tag unless explicitly approved.
 - Some packages published, one missing: publish the missing package from the same release commit if its version is not consumed with different contents.
 - npm package private or invisible: fix package access/publish workflow, verify with `npm view`, then run install smoke.
-- Hosted publish failed after merge: inspect workflow logs with `gh run view`, classify package outcomes, and record recovery evidence before closing.
+- Hosted publish failed after merge: inspect workflow logs with `gh run view`, classify package and distribution outcomes, and record recovery evidence before closing.
+
+## Platform Publication Matrix
+
+Treat release publication as complete only when the canonical `publish-result.json` proves every required channel.
+
+Required channels:
+
+- npm packages: `@agentplaneorg/core`, `@agentplaneorg/recipes`, and `agentplane`.
+- GitHub Release: tag, release body, installer assets, `SHA256SUMS`, and `release-distribution.json`.
+- GHCR: version, release, and `latest` image tags from the exact release payload.
+- Homebrew tap: target repository default branch contains the rendered formula for the exact version.
+- Scoop bucket: target repository default branch contains the rendered manifest for the exact version.
+- `setup-agentplane`: target repository default branch contains the rendered action bundle and the matching `vX.Y.Z` tag exists.
+
+Handoff states that are not completion:
+
+- `pr_opened`
+- `skipped_missing_credentials`
+- missing module result JSON
+- rendered artifacts uploaded only as workflow artifacts
+- `setup-agentplane` unchanged without matching tag proof
+
+## Post-Publish Audit
+
+Before closing a release task, download or locate the `publish-result` artifact from the `Publish release` workflow and run:
+
+```bash
+bun run release:postpublish:audit -- --publish-result <path-to-publish-result.json>
+```
+
+Expected result: the command exits 0 and reports no failures.
+
+If it fails:
+
+- Do not close the release task as published.
+- Use `bun run release:recover -- --check-github` to classify the release SHA state.
+- Use `Publish distribution module` for focused recovery:
+
+```bash
+gh workflow run publish-distribution-module.yml \
+  -f tag=vX.Y.Z \
+  -f sha=<release-sha> \
+  -f module=homebrew
+```
+
+Use `module=scoop`, `module=setup-agentplane`, `module=ghcr`, `module=github-release`, `module=external`, or `module=all` as needed.
 
 ## Verification Contract
 
@@ -88,6 +134,11 @@ Minimum evidence for a release task:
 - package build order check
 - npm visibility checks for all release packages
 - hosted workflow URL or explicit local-only reason
+- `publish-result.json` from `Publish release`
+- `bun run release:postpublish:audit -- --publish-result <path-to-publish-result.json>`
+- GitHub Release asset evidence for `release-distribution.json` and `SHA256SUMS`
+- GHCR publication evidence
+- Homebrew, Scoop, and `setup-agentplane` evidence, or explicit recovery task IDs when incomplete
 - clean install smoke for externally visible releases
 
 Do not close a release task with only local tests if publication or installation was part of scope.
