@@ -1,10 +1,10 @@
 ---
 id: "202605171725-AEFDJR"
 title: "Add Turborepo local CI evidence wrapper"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,16 @@ verification:
   updated_by: "CODER"
   note: "Local Turborepo CI evidence wrapper verified: affected and full package graphs pass, report writes normalized successful/failed/cached counts and task graph edges, formatting, script-doc freshness, policy routing, and doctor pass."
   attempts: 0
-commit: null
+commit:
+  hash: "1ff8db627f0bf772acd587f276a2a1ef7aa908c5"
+  message: "Merge pull request #3852 from basilisk-labs/task/202605171724-JW38N0/local-turbo-dev-overlay"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved Turborepo local CI evidence wrapper in the existing scripts/checks developer tooling surface, keeping it local-only and non-runtime."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3852 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +46,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local Turborepo CI evidence wrapper verified: affected and full package graphs pass, report writes normalized successful/failed/cached counts and task graph edges, formatting, script-doc freshness, policy routing, and doctor pass."
+  -
+    type: "status"
+    at: "2026-05-17T18:50:26.693Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3852 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T17:50:05.861Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T18:50:26.694Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add an AgentPlane-friendly local CI wrapper around Turborepo that sanitizes environment state, runs selected dev graph checks, and reports summary JSON path/cache evidence without mutating AgentPlane task state."
 sections:
   Summary: |-
