@@ -17,6 +17,41 @@ bun run typecheck
 bun run test:fast
 ```
 
+## Local Turborepo graph
+
+Turborepo is used only as a framework-checkout developer overlay. It is not part of the installed
+AgentPlane runtime, generated user-project scaffold, published CLI package surface, or task backend
+contract.
+
+Use the Turbo scripts when you need package-level graph execution, cache evidence, or a fast local
+affected check before choosing a broader validation route:
+
+```bash
+bun run dev:turbo:ls
+bun run dev:turbo:graph
+bun run dev:turbo:affected
+bun run ci:local:turbo
+```
+
+`dev:turbo:ls` prints the workspace packages that Turbo can see. `dev:turbo:graph` writes a Mermaid
+task graph to `.agentplane/cache/turbo-task-graph.mermaid`. `dev:turbo:affected` runs
+`build`, `typecheck`, and `test` for affected `packages/*` tasks. `ci:local:turbo` runs the same
+package task graph without `--affected`. Both wrapper commands record the latest local evidence in
+`.agentplane/cache/turbo-local-ci-report.json`.
+
+The local CI report records attempted, successful, failed, and cached task counts, package names,
+task ids, cache status, log files, and dependency edges from the Turbo summary. Treat it as
+execution evidence for local development. It is not a semantic code map and does not replace
+AgentPlane task scope, policy routing, context wiki, architecture docs, or human review of domain
+impact.
+
+Default Turbo package checks intentionally target `packages/*`. The docs website has separate build
+side effects and should be checked explicitly when docs or site files change:
+
+```bash
+bun run dev:turbo:docs
+```
+
 Inside this framework checkout, `agentplane` from `PATH` now delegates automatically to the
 repo-local binary. The canonical repair/bootstrap path for fresh clones and worktrees is:
 
