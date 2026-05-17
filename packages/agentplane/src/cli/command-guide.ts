@@ -41,6 +41,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "PLANNER",
     lines: [
       SHARED_STARTUP_NOTE,
+      '- For a normal first task, prefer `agentplane task begin "..." --tag <tag> --verify "<check>"`; it creates the task, writes a minimal plan, approves it, and either starts direct mode or prints the branch_pr worktree command.',
       '- Create executable tasks with `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>`.',
       '- Fill docs with `agentplane task doc set <task-id> --section <name> --text "..."` and set plan text with `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>`.',
       '- Append task-local Findings via `agentplane task findings add <task-id> --observation "..." --impact "..." --resolution "..."`; add `--promote --external` or `--repo-fixable` only for real reusable incidents.',
@@ -53,6 +54,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       SHARED_STARTUP_NOTE,
       "- direct: stay in the current checkout; branch_pr: start a task branch/worktree first, create implementation commits there, keep local PR artifacts current, and wait for hosted required checks before handing off to INTEGRATOR.",
       "- If branch_pr state is ambiguous after interruption, run `agentplane task status <task-id> --route` or `agentplane work resume <task-id>` before choosing a checkout or opening/updating a PR.",
+      `- For the common path, use \`${COMMAND_SNIPPETS.core.taskBegin}\` to create/approve/start-or-route and \`${COMMAND_SNIPPETS.core.taskComplete}\` after checks pass.`,
       `- Start deterministically with \`${COMMAND_SNIPPETS.core.startTask}\` after plan approval.`,
       `- Treat \`${COMMAND_SNIPPETS.core.taskVerifyShow}\` as the verification contract, then record \`${COMMAND_SNIPPETS.core.verifyTask}\`.`,
       `- Preferred direct close path: \`${COMMAND_SNIPPETS.core.finishTask}\` with \`--result-file ./result.txt\`; add \`--no-close-commit\` only for explicit manual close handling.`,
@@ -209,6 +211,14 @@ export function renderQuickstart(): string {
     ...renderQuickstartCommandBlock([
       "agentplane demo",
       "agentplane acr validate <task-id> --mode local",
+    ]),
+    "",
+    "For a real first task, use the guided task path:",
+    "",
+    ...renderQuickstartCommandBlock([
+      'agentplane task begin "Inspect AgentPlane artifacts" --tag docs --verify "agentplane task verify-show <task-id>"',
+      "agentplane task verify-show <task-id>",
+      'agentplane task complete <task-id> --result "Inspected generated artifacts" --commit <git-rev>',
     ]),
     "",
     "The payoff is a repo-visible task record:",

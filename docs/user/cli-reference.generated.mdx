@@ -13,7 +13,9 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [role](#role)
 - Task
   - [ready](#ready)
+  - [task begin](#task-begin)
   - [task comment](#task-comment)
+  - [task complete](#task-complete)
   - [task doc set](#task-doc-set)
   - [task doc show](#task-doc-show)
   - [task list](#task-list)
@@ -333,6 +335,37 @@ agentplane ready 202602030608-F1Q8AB
 
 - Print readiness details.
 
+### task begin
+
+Create, plan, approve, and start or route a task through the normal lifecycle.
+
+Usage:
+
+```text
+agentplane task begin <title> [options]
+```
+
+Options:
+
+- `--description <text>`: Task description. Defaults to the title.
+- `--owner <id>`: Task owner id. (default=CODER)
+- `--priority <low|normal|med|high>`: Task priority. (choices=low|normal|med|high, default=med)
+- `--tag <tag>`: Repeatable. Adds a tag. Defaults to code. (repeatable)
+- `--plan <text>`: Plan text. Defaults to a minimal generated plan; escaped newlines (\n) are supported by task plan set.
+- `--verify <command>`: Repeatable. Verification commands/checks to seed on the task. (repeatable)
+- `--task-kind <analysis|content|docs|code|release|ops|context>`: Structured blueprint task-kind intent. (choices=analysis|content|docs|code|release|ops|context)
+- `--mutation-scope <none|docs|code|release|ops|context|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
+- `--blueprint-request <id>`: Explicit blueprint request stored on the task. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|runner.execution|post_run.improvement_review|release.strict|ops.approval)
+- `--json`: Emit machine-readable JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane task begin "Fix parser edge case" --tag code --verify "bun test"
+```
+
+- Create the task, seed a minimal plan, approve it, then start or print the branch_pr worktree route.
+
 ### task comment
 
 Append a comment to a task.
@@ -356,6 +389,36 @@ agentplane task comment 202602030608-F1Q8AB --author CODER --body "Investigated 
 ```
 
 - Add a comment and bump doc metadata.
+
+### task complete
+
+Record OK verification and finish a direct task, or print the branch_pr close route.
+
+Usage:
+
+```text
+agentplane task complete <task-id> --result <text> [options]
+```
+
+Options:
+
+- `--result <text>`: One-line result summary. (required)
+- `--commit <hash>`: Implementation commit hash to record when finish is allowed.
+- `--by <id>`: Verifier id. (default=CODER)
+- `--author <id>`: Finish author id for direct-mode finish. (default=CODER)
+- `--note <text>`: Verification note. Defaults to the result.
+- `--body <text>`: Finish body. Defaults to Verified: &lt;result&gt;.
+- `--force`: Forward --force to finish. (default=false)
+- `--yes`: Auto-approve force gates. (default=false)
+- `--json`: Emit machine-readable JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane task complete 202602030608-F1Q8AB --result "Parser edge case fixed" --commit abcdef1
+```
+
+- Record verification and finish when the current workflow route allows it.
 
 ### task doc set
 

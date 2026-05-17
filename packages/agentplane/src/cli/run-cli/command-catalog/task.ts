@@ -18,6 +18,8 @@ import { taskListSpec } from "../../../commands/task/list.spec.js";
 import { taskMigrateDocSpec } from "../../../commands/task/migrate-doc.command.js";
 import { taskMigrateSpec } from "../../../commands/task/migrate.command.js";
 import { taskNewSpec } from "../../../commands/task/new.spec.js";
+import { taskBeginSpec } from "../../../commands/task/begin.command.js";
+import { taskCompleteSpec } from "../../../commands/task/complete.command.js";
 import { taskNextSpec } from "../../../commands/task/next.spec.js";
 import {
   taskObsidianCleanSpec,
@@ -82,6 +84,8 @@ import {
   fromTaskRunSpec,
   fromTaskRunResumeSpec,
   loadTaskNewSpec,
+  loadTaskBeginSpec,
+  loadTaskCompleteSpec,
   loadTaskDeriveSpec,
   loadTaskCloseDuplicateSpec,
   loadTaskStartReadySpec,
@@ -170,6 +174,8 @@ export const TASK_COMMANDS = [
     load: loadTaskNewSpec,
     invocation: requireCanonicalCommandInvocation(["task", "new"]),
   }),
+  declareCommand(taskBeginSpec, { load: loadTaskBeginSpec }),
+  declareCommand(taskCompleteSpec, { load: loadTaskCompleteSpec }),
   declareCommand(taskDeriveSpec, {
     load: loadTaskDeriveSpec,
     surface: "advanced",

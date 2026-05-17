@@ -63,6 +63,9 @@ framework:
   last_update: null
   cli:
     expected_version: 0.6.1
+feedback:
+  github_issues:
+    enabled: true
 commit:
   generic_tokens:
     - start
@@ -107,6 +110,7 @@ timeouts:
 in_scope_paths:
   - "**"
 ---
+
 
 
 
