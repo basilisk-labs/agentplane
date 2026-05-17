@@ -6,26 +6,26 @@ import { buildTaskResumeContext, type TaskResumeContext } from "../task/handoff.
 
 import { loadBackendTask, loadCommandContext, type CommandContext } from "./task-backend.js";
 
-export type RouteBlocker = {
+type RouteBlocker = {
   code: string;
   summary: string;
 };
 
-export type RouteNextAction = {
+type RouteNextAction = {
   code: string;
   command: string | null;
   summary: string;
   requiresApproval: boolean;
 };
 
-export type RouteRepairStep = {
+type RouteRepairStep = {
   code: string;
   command: string | null;
   summary: string;
   mutates: boolean;
 };
 
-export type TaskRouteDecision = {
+type TaskRouteDecision = {
   task: {
     id: string;
     title: string;

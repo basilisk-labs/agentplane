@@ -4,7 +4,7 @@ title: "Add branch_pr route decision CLI commands"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-17T11:47:34.236Z"
+  updated_at: "2026-05-17T12:34:54.052Z"
   updated_by: "CODER"
-  note: "Verified final route-decision implementation including task-local artifact freshness handling. Checks passed: focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check, framework bootstrap, and repo-local smokes for task status --route, task next-action, work resume, and flow repair --dry-run."
+  note: "Verified hosted CI fix: removed unused public route-decision type exports and refreshed knip baseline after TaskResumeContext became used. Checks passed: knip:check, focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check, framework bootstrap, and route status smoke."
   attempts: 0
 commit: null
 comments:
@@ -71,8 +71,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified final route-decision implementation including task-local artifact freshness handling. Checks passed: focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check, framework bootstrap, and repo-local smokes for task status --route, task next-action, work resume, and flow repair --dry-run."
+  -
+    type: "verify"
+    at: "2026-05-17T12:34:54.052Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified hosted CI fix: removed unused public route-decision type exports and refreshed knip baseline after TaskResumeContext became used. Checks passed: knip:check, focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check, framework bootstrap, and route status smoke."
 doc_version: 3
-doc_updated_at: "2026-05-17T11:47:34.245Z"
+doc_updated_at: "2026-05-17T12:34:54.061Z"
 doc_updated_by: "CODER"
 description: "Add machine-readable task route/status/next-action/resume/repair commands for branch_pr agent workflow optimization, and update prompts plus CLI documentation to teach the new commands."
 sections:
@@ -178,6 +184,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T11:42:30.396Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171055-1G6GP6-route-decision-cli/.agentplane/tasks/202605171055-1G6GP6/blueprint/resolved-snapshot.json
+    - old_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+    - current_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171055-1G6GP6
+
+    ### 2026-05-17T12:34:54.052Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified hosted CI fix: removed unused public route-decision type exports and refreshed knip baseline after TaskResumeContext became used. Checks passed: knip:check, focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check, framework bootstrap, and route status smoke.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T11:47:34.245Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
 
     Details:
 
@@ -319,6 +344,25 @@ Note: Verified final route-decision implementation including task-local artifact
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T11:42:30.396Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171055-1G6GP6-route-decision-cli/.agentplane/tasks/202605171055-1G6GP6/blueprint/resolved-snapshot.json
+- old_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+- current_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171055-1G6GP6
+
+### 2026-05-17T12:34:54.052Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified hosted CI fix: removed unused public route-decision type exports and refreshed knip baseline after TaskResumeContext became used. Checks passed: knip:check, focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check, framework bootstrap, and route status smoke.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T11:47:34.245Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
 
 Details:
 

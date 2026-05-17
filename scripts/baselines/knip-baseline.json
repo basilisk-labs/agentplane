@@ -22,7 +22,7 @@
       "types": [
         {
           "name": "CloudPullPlan",
-          "line": 4,
+          "line": 5,
           "col": 13
         }
       ]
@@ -82,12 +82,12 @@
       "exports": [
         {
           "name": "normalizeDependsOn",
-          "line": 51,
+          "line": 50,
           "col": 3
         },
         {
           "name": "normalizeTaskRunnerOutcome",
-          "line": 47,
+          "line": 46,
           "col": 3
         }
       ]
@@ -521,12 +521,12 @@
       "types": [
         {
           "name": "BlueprintDefinition",
-          "line": 98,
+          "line": 100,
           "col": 13
         },
         {
           "name": "BlueprintState",
-          "line": 99,
+          "line": 101,
           "col": 13
         }
       ]
@@ -730,7 +730,7 @@
         },
         {
           "name": "ReasonCodeMeta",
-          "line": 10,
+          "line": 11,
           "col": 13
         }
       ]
@@ -797,7 +797,7 @@
       "types": [
         {
           "name": "AgentProfile",
-          "line": 10,
+          "line": 11,
           "col": 13
         }
       ]
@@ -986,7 +986,7 @@
       "types": [
         {
           "name": "CloseCommitMessage",
-          "line": 420,
+          "line": 426,
           "col": 13
         }
       ]
@@ -1597,7 +1597,7 @@
       "exports": [
         {
           "name": "readAgentplaneDependencyVersion",
-          "line": 45,
+          "line": 46,
           "col": 23
         }
       ]
@@ -1748,13 +1748,13 @@
       "types": [
         {
           "name": "ObservedGithubPrState",
-          "line": 2,
-          "col": 3
+          "line": 1,
+          "col": 15
         },
         {
           "name": "PrBatchMeta",
-          "line": 3,
-          "col": 3
+          "line": 1,
+          "col": 38
         }
       ]
     },
@@ -1945,16 +1945,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/commands/task/handoff.shared.ts",
-      "types": [
-        {
-          "name": "TaskResumeContext",
-          "line": 24,
-          "col": 13
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/commands/task/hosted-merge-sync.ts",
       "exports": [
         {
@@ -2026,7 +2016,7 @@
         },
         {
           "name": "cmdTaskObsidian",
-          "line": 30,
+          "line": 29,
           "col": 10
         },
         {
@@ -2073,7 +2063,7 @@
       "types": [
         {
           "name": "TaskDocMigrationResult",
-          "line": 23,
+          "line": 18,
           "col": 13
         }
       ]
@@ -2626,12 +2616,12 @@
       "exports": [
         {
           "name": "ensureTrailingNewline",
-          "line": 40,
+          "line": 41,
           "col": 17
         },
         {
           "name": "FRAMEWORK_RUNNER_PROMPT_URL",
-          "line": 13,
+          "line": 14,
           "col": 14
         }
       ]
@@ -3338,7 +3328,7 @@
       "exports": [
         {
           "name": "SUPPORTED_PROMPT_MODULE_SCHEMA_VERSIONS",
-          "line": 5,
+          "line": 7,
           "col": 14
         }
       ]
@@ -3348,7 +3338,7 @@
       "types": [
         {
           "name": "ValidatedPromptModuleMutation",
-          "line": 496,
+          "line": 493,
           "col": 13
         }
       ]
@@ -3659,7 +3649,7 @@
       "exports": [
         {
           "name": "remediationForWorkflowDiagnostic",
-          "line": 11,
+          "line": 12,
           "col": 17
         }
       ]
@@ -3706,7 +3696,7 @@
       "types": [
         {
           "name": "AgentplaneConfig",
-          "line": 47,
+          "line": 58,
           "col": 13
         }
       ]
@@ -3716,7 +3706,7 @@
       "exports": [
         {
           "name": "configRawToWorkflowFrontMatter",
-          "line": 107,
+          "line": 109,
           "col": 17
         },
         {
@@ -3804,9 +3794,9 @@
   "counts": {
     "files": 1,
     "exports": 205,
-    "types": 366,
+    "types": 365,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 572
+    "total": 571
   }
 }

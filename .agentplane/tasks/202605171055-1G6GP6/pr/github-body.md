@@ -19,10 +19,10 @@ Add machine-readable task route/status/next-action/resume/repair commands for br
 - Note:
 
 ```text
-Verified final route-decision implementation including task-local artifact freshness handling.
-Checks passed: focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing
-policy check, diff check, framework bootstrap, and repo-local smokes for task status --route, task
-next-action, work resume, and flow repair --dry-run.
+Verified hosted CI fix: removed unused public route-decision type exports and refreshed knip
+baseline after TaskResumeContext became used. Checks passed: knip:check, focused
+route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check,
+framework bootstrap, and route status smoke.
 ```
 - Canonical workflow state lives in the task README.
 
