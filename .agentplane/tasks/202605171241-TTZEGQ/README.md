@@ -1,10 +1,11 @@
 ---
 id: "202605171241-TTZEGQ"
 title: "Harden release platform publication guidance"
-status: "DOING"
+result_summary: "Merged via PR #3830."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bun run test:project -- agentplane packages/agentplane/src/commands/release/audit-platform-publication-script.test.ts packages/agentplane/src/commands/release/write-publish-result-manifest-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts | Result: pass | Evidence: 3 files, 16 tests passed. Command: bun run docs:scripts:check | Result: pass | Evidence: scripts/README.md up to date. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: ap doctor | Result: pass with existing warnings | Evidence: doctor OK, warnings are pre-existing hook/runtime/branch_pr reconciliation drift outside this task."
   attempts: 0
-commit: null
+commit:
+  hash: "764d27b18c603de675e36c94dbfee135c2087674"
+  message: "Merge pull request #3830 from basilisk-labs/task/202605171241-TTZEGQ/release-platform-evidence"
 comments:
   -
     author: "CODER"
     body: "Start: Hardening release publication evidence flow in a dedicated worktree from origin/main because base main is dirty and behind; scope is limited to release audit tooling, release skill guidance, and focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3830 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,14 +48,21 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run test:project -- agentplane packages/agentplane/src/commands/release/audit-platform-publication-script.test.ts packages/agentplane/src/commands/release/write-publish-result-manifest-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts | Result: pass | Evidence: 3 files, 16 tests passed. Command: bun run docs:scripts:check | Result: pass | Evidence: scripts/README.md up to date. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: ap doctor | Result: pass with existing warnings | Evidence: doctor OK, warnings are pre-existing hook/runtime/branch_pr reconciliation drift outside this task."
+  -
+    type: "status"
+    at: "2026-05-17T13:19:24.940Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3830 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T12:47:49.351Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T13:19:24.947Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update AgentPlane release guidance so agents verify every publication platform and cannot treat external distribution handoffs as completed releases without evidence."
 sections:
   Summary: |-
     Harden release platform publication guidance
-    
+
     Update AgentPlane release guidance so agents verify every publication platform and cannot treat external distribution handoffs as completed releases without evidence.
   Scope: |-
     - In scope: Update AgentPlane release guidance so agents verify every publication platform and cannot treat external distribution handoffs as completed releases without evidence.
@@ -62,16 +75,16 @@ sections:
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-05-17T12:47:49.344Z — VERIFY — ok
-    
+
     By: CODER
-    
+
     Note: Command: bun run test:project -- agentplane packages/agentplane/src/commands/release/audit-platform-publication-script.test.ts packages/agentplane/src/commands/release/write-publish-result-manifest-script.test.ts packages/agentplane/src/commands/release/publish-workflow-contract.test.ts | Result: pass | Evidence: 3 files, 16 tests passed. Command: bun run docs:scripts:check | Result: pass | Evidence: scripts/README.md up to date. Command: node .agentplane/policy/check-routing.mjs | Result: pass | Evidence: policy routing OK. Command: ap doctor | Result: pass with existing warnings | Evidence: doctor OK, warnings are pre-existing hook/runtime/branch_pr reconciliation drift outside this task.
     Attempts: 0
-    
+
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T12:42:41.830Z, excerpt_hash=sha256:f95f496930725f67cfc4e17b5a1157759e530e3d7f21bf11cc1bea4f692e3088
-    
+
     Details:
-    
+
     BlueprintSnapshotRef:
     - state: current
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171241-TTZEGQ-release-platform-evidence/.agentplane/tasks/202605171241-TTZEGQ/blueprint/resolved-snapshot.json
@@ -79,7 +92,7 @@ sections:
     - current_digest: 4becffa5218d494c8ded7faaa641bb92f1e40dd9f10c3bf4bd3cb1d44943fbb9
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605171241-TTZEGQ
-    
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
