@@ -420,6 +420,15 @@ Profile: ${profile}
   supersession metadata, not as probabilistic factual claims.
 - If a glossary is useful, keep it as a thin index over existing wiki pages and graph entities, not as a competing source of truth.
 - Prefer useful Markdown cross-links between related wiki pages and glossary entries, especially on first meaningful mentions of known concepts, entities, decisions, risks, or modules.
+- Use \`agentplane context wiki new\`, \`agentplane context wiki lint\`,
+  \`agentplane context wiki explain\`, and \`agentplane context wiki link\` when creating or
+  reviewing wiki pages.
+- Before writing new wiki/facts/graph data, search existing context and graph rows for matching
+  entities and use canonical labels when an analyzed source mentions an already-described entity.
+- If new evidence extends an existing entity, update the existing page or section and add sourced
+  claims/provenance instead of creating a duplicate page.
+- If a small object belongs inside a broader topic, describe it under a stable heading and link to
+  that section from related pages.
 - When claims conflict, keep both claims, create a conflict candidate, and ask for review before
   promotion or overwrite.
 - Keep raw inputs in \`context/raw/**\`; do not copy private raw sources into public wiki pages.
