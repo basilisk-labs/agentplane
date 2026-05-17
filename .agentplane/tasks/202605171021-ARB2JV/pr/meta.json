@@ -1,0 +1,22 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-17T11:00:24Z",
+  "base": "main",
+  "branch": "task/202605171021-ARB2JV/fix-task-readme-whitespace",
+  "created_at": "2026-05-17T10:23:34.761Z",
+  "head_sha": "022bed8f5e2e85cbb731f83490d885ddb6eee3c5",
+  "last_verified_at": "2026-05-17T10:30:19.552Z",
+  "last_verified_sha": "c4ca9d1cc587e7a636059e9125bf462d79bc750b",
+  "merge_commit": "dbefc341cced89eb6a8adb150c1939db88caef16",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-17T11:00:24Z",
+  "pr_number": 3820,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3820",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605171021-ARB2JV",
+  "updated_at": "2026-05-17T11:00:24Z",
+  "verify": {
+    "status": "pass"
+  }
+}

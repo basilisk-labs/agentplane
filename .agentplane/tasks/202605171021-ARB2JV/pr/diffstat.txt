@@ -1,0 +1,6 @@
+ .../blueprint/resolved-snapshot.json               | 527 +++++++++++++++++++++
+ .../task/shared/workflow-transition-service.ts     |  13 +-
+ .../task/workflow-transition-service.unit.test.ts  |  21 +
+ packages/core/src/tasks/task-readme.test.ts        |  11 +-
+ packages/core/src/tasks/task-readme.ts             |   8 +-
+ 5 files changed, 572 insertions(+), 8 deletions(-)
