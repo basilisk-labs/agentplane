@@ -24,16 +24,17 @@ Created: 2026-05-17T15:30:01.865Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-17T15:31:42.491Z
+- Updated: 2026-05-17T15:33:49.274Z
 - Branch: task/202605171458-HWXZC9/context-init-wiki-lint
-- Head: 0747a540ef6b
+- Head: f0ae96aaa523
 
 ```text
  .../blueprint/resolved-snapshot.json               | 559 +++++++++++++++++++++
  .../agentplane/src/commands/context/init-wiki.ts   | 103 ++++
  packages/agentplane/src/commands/context/init.ts   |  56 +--
- .../src/commands/context/release-readiness.test.ts |  30 ++
- 4 files changed, 707 insertions(+), 41 deletions(-)
+ .../src/commands/context/release-readiness.test.ts |  33 ++
+ packages/agentplane/src/context/ingest-task.ts     |   1 +
+ 5 files changed, 711 insertions(+), 41 deletions(-)
 ```
 
 </details>
