@@ -1,10 +1,11 @@
 ---
 id: "202605170813-46BSFQ"
 title: "Add GitHub repository health workflows"
-status: "DOING"
+result_summary: "Merged via PR #3794."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Adjusted implementation to avoid duplicating existing GitHub CodeQL default setup; retained Dependabot and Dependency Review repo files."
   attempts: 0
-commit: null
+commit:
+  hash: "f61d7e09164e5b815ce4124d3a5d7a9c8ef38701"
+  message: "Merge pull request #3794 from basilisk-labs/task/202605170813-46BSFQ/github-health-workflows"
 comments:
   -
     author: "CODER"
     body: "Start: Add GitHub-native repository health workflow configuration in a dedicated task branch, limited to CodeQL, dependency review, and Dependabot files under .github."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3794 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Adjusted implementation to avoid duplicating existing GitHub CodeQL default setup; retained Dependabot and Dependency Review repo files."
+  -
+    type: "status"
+    at: "2026-05-17T09:06:26.347Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3794 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T08:58:33.760Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T09:06:26.354Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add GitHub-native maintenance workflows for code scanning, dependency review, and dependency update tracking."
 sections:
   Summary: |-
