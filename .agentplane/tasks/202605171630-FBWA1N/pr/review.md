@@ -2,6 +2,12 @@
 
 Created: 2026-05-17T16:31:17.882Z
 
+## Batch Tasks
+
+- Primary: `202605171630-FBWA1N`
+- Closure policy: `all_or_fail`
+- Included: `202605171630-CXZJS8`
+
 ## Task
 
 - Task: `202605171630-FBWA1N`
@@ -24,18 +30,18 @@ Created: 2026-05-17T16:31:17.882Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-17T16:41:41.967Z
+- Updated: 2026-05-17T16:42:09.801Z
 - Branch: task/202605171630-FBWA1N/pr-open-publish-transaction
-- Head: 4fbefbd338a3
+- Head: 4ff9be45875f
 
 ```text
- .agentplane/tasks/202605171630-CXZJS8/README.md    |  92 ++++
+ .agentplane/tasks/202605171630-CXZJS8/README.md    | 143 ++++++
  .../blueprint/resolved-snapshot.json               | 528 +++++++++++++++++++++
  .../blueprint/resolved-snapshot.json               | 528 +++++++++++++++++++++
  .../cli/run-cli.core.pr-flow.pr-open.git.test.ts   | 162 ++++++-
  .../src/commands/pr/internal/sync-branch.ts        |   1 +
  packages/agentplane/src/commands/pr/open.ts        |  85 +---
- 6 files changed, 1328 insertions(+), 68 deletions(-)
+ 6 files changed, 1379 insertions(+), 68 deletions(-)
 ```
 
 </details>
