@@ -1,10 +1,11 @@
 ---
 id: "202605170852-SRGV93"
 title: "Add context prompt CLI helper guidance"
-status: "DOING"
+result_summary: "Merged PR #3795 with context wiki helper guidance and pre-write canonical entity requirements."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Updated context assimilation prompt, generated wiki agent notes, and local context docs with explicit context wiki helper commands and canonical entity pre-write requirements. Verified with focused context tests, typecheck, docs CLI freshness, policy routing, Prettier, targeted ESLint, and git diff check."
   attempts: 0
-commit: null
+commit:
+  hash: "0fca95e0dc6833ec4598d9778ff7dbfd4c12b16f"
+  message: "Merge pull request #3795 from basilisk-labs/task/202605170830-CTXHELP/context-prompt-helpers"
 comments:
   -
     author: "CODER"
     body: "Start: Update context assimilation prompt and docs with explicit wiki helper commands, canonical entity lookup requirements, and regression tests for the generated prompt contract."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3795 merged after green hosted checks; merge commit recorded and task scope is complete."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Updated context assimilation prompt, generated wiki agent notes, and local context docs with explicit context wiki helper commands and canonical entity pre-write requirements. Verified with focused context tests, typecheck, docs CLI freshness, policy routing, Prettier, targeted ESLint, and git diff check."
+  -
+    type: "status"
+    at: "2026-05-17T09:06:26.709Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3795 merged after green hosted checks; merge commit recorded and task scope is complete."
 doc_version: 3
-doc_updated_at: "2026-05-17T08:56:36.724Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T09:06:26.709Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the context assimilation prompt and docs to explicitly instruct CURATOR agents to use context wiki helper commands and canonical entity lookup before writing wiki, facts, and graph updates."
 sections:
   Summary: |-
