@@ -364,4 +364,47 @@ describe("context release readiness guards", () => {
     expect(output).toContain("canonical_id:");
     expect(output).toContain("modality: decision");
   });
+
+  it("lints CRLF wiki frontmatter and rejects missing lint targets", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/wiki/decisions/crlf-page.md",
+      [
+        "---",
+        "agentplane_context:",
+        "  schema_version: 1",
+        "  artifact_type: wiki_page",
+        '  canonical_id: "wiki.decisions-crlf-page"',
+        '  title: "CRLF Page"',
+        "  modality: decision",
+        "  epistemic_status: sourced_claim",
+        "  source_refs: []",
+        "---",
+        "",
+        "# CRLF Page",
+        "",
+        "## Source References",
+        "",
+        "- no-source: local test fixture",
+        "",
+      ].join("\r\n"),
+    );
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextWikiLint({
+      cwd: root,
+      parsed: { path: "context/wiki/decisions/crlf-page.md" },
+    });
+    await expect(
+      cmdContextWikiLint({
+        cwd: root,
+        parsed: { path: "context/wiki/decisions/missing-page.md" },
+      }),
+    ).rejects.toThrow(/wiki lint target does not exist/u);
+
+    expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
+      "context wiki lint: ok (1 page(s))",
+    );
+  });
 });

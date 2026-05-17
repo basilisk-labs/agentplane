@@ -198,14 +198,21 @@ async function normalizeWikiLintTarget(root: string, input: string): Promise<str
     });
   }
   if (await fileExists(abs)) return toPosix(path.relative(root, abs));
-  return normalizeWikiPath(root, trimmed);
+  const pageRel = normalizeWikiPath(root, trimmed);
+  if (await fileExists(path.join(root, pageRel))) return pageRel;
+  throw new CliError({
+    exitCode: 3,
+    code: "E_VALIDATION",
+    message: `wiki lint target does not exist: ${input}`,
+  });
 }
 
 function extractFrontmatter(text: string): string | null {
-  if (!text.startsWith("---\n")) return null;
-  const end = text.indexOf("\n---", 4);
+  const normalized = text.replaceAll("\r\n", "\n");
+  if (!normalized.startsWith("---\n")) return null;
+  const end = normalized.indexOf("\n---", 4);
   if (end === -1) return null;
-  return text.slice(4, end).trim();
+  return normalized.slice(4, end).trim();
 }
 
 function lintWikiText(rel: string, text: string): string[] {
