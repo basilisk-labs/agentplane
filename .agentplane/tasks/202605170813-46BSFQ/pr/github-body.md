@@ -15,19 +15,28 @@ Add GitHub-native maintenance workflows for code scanning, dependency review, an
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Added GitHub-native repository health workflows and verified workflow lint, formatting, and doctor
+in the task worktree.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-17T08:17:05.883Z
+- Updated: 2026-05-17T08:26:42.392Z
 - Branch: task/202605170813-46BSFQ/github-health-workflows
-- Head: 545e13ed1618
+- Head: ed7243f32bf7
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 324 +++++++++++++++++++++
+ .github/dependabot.yml                             |  59 ++++
+ .github/workflows/codeql.yml                       |  44 +++
+ .github/workflows/dependency-review.yml            |  30 ++
+ 4 files changed, 457 insertions(+)
 ```
 
 </details>
