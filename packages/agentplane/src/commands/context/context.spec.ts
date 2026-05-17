@@ -14,7 +14,7 @@ export const contextSpec: CommandSpec<GroupCommandParsed> = {
 };
 
 export const contextInitSpec: CommandSpec<{
-  profile: "minimal" | "wiki" | "codebase" | "research";
+  profile: "adaptive" | "minimal" | "wiki" | "codebase" | "research";
   rawGitignore: "none" | "all";
   derivedGitignore: "none" | "all";
   repair: boolean;
@@ -29,10 +29,11 @@ export const contextInitSpec: CommandSpec<{
     {
       kind: "string",
       name: "profile",
-      valueHint: "<minimal|wiki|codebase|research>",
-      choices: ["minimal", "wiki", "codebase", "research"],
-      default: "wiki",
-      description: "Select an initial context profile.",
+      valueHint: "<adaptive|minimal|wiki|codebase|research>",
+      choices: ["adaptive", "minimal", "wiki", "codebase", "research"],
+      default: "adaptive",
+      description:
+        "Select initial context setup. adaptive is the default cloud-ready llm-wiki contract; legacy scaffold aliases remain available.",
     },
     {
       kind: "string",
@@ -65,7 +66,8 @@ export const contextInitSpec: CommandSpec<{
     },
   ],
   parse: (raw) => ({
-    profile: (raw.opts.profile as "minimal" | "wiki" | "codebase" | "research") ?? "wiki",
+    profile:
+      (raw.opts.profile as "adaptive" | "minimal" | "wiki" | "codebase" | "research") ?? "adaptive",
     rawGitignore: (raw.opts["raw-gitignore"] as "none" | "all") ?? "none",
     derivedGitignore: (raw.opts["derived-gitignore"] as "none" | "all") ?? "none",
     repair: raw.opts.repair === true,
@@ -74,7 +76,7 @@ export const contextInitSpec: CommandSpec<{
 };
 
 export type ContextInitParsed = {
-  profile: "minimal" | "wiki" | "codebase" | "research";
+  profile: "adaptive" | "minimal" | "wiki" | "codebase" | "research";
   rawGitignore: "none" | "all";
   derivedGitignore: "none" | "all";
   repair: boolean;
@@ -172,6 +174,106 @@ export const contextGraphSpec: CommandSpec<GroupCommandParsed> = {
   summary: "Validate and inspect derived context graph.",
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   parse: (raw) => parseGroupCommand(raw),
+};
+
+export const contextWikiSpec: CommandSpec<GroupCommandParsed> = {
+  id: ["context", "wiki"],
+  group: "Context",
+  summary: "Create, lint, explain, and link local context wiki pages.",
+  args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
+  parse: (raw) => parseGroupCommand(raw),
+};
+
+export const contextWikiNewSpec: CommandSpec<{
+  page: string;
+  title: string;
+  modality: string;
+  status: string;
+  visibility: string;
+  source: string[];
+  force: boolean;
+}> = {
+  id: ["context", "wiki", "new"],
+  group: "Context",
+  summary: "Create a wiki page with AgentPlane context frontmatter.",
+  args: [{ name: "page", required: true, valueHint: "<path-or-slug>" }],
+  options: [
+    {
+      kind: "string",
+      name: "title",
+      valueHint: "<title>",
+      description: "Page title. Defaults to a title derived from the path.",
+    },
+    {
+      kind: "string",
+      name: "modality",
+      default: "factual_claim",
+      valueHint: "<modality>",
+      description:
+        "Primary page modality: factual_claim, observation, assumption, hypothesis, decision, policy, preference, requirement, risk, capability, definition, or deprecation.",
+    },
+    {
+      kind: "string",
+      name: "status",
+      default: "sourced_claim",
+      valueHint: "<epistemic-status>",
+      description:
+        "Initial epistemic status such as extracted_candidate, sourced_claim, reviewed_claim, disputed, deprecated, or canonical_org_knowledge.",
+    },
+    {
+      kind: "string",
+      name: "visibility",
+      default: "project",
+      valueHint: "<scope>",
+      description: "Intended visibility scope for future publication metadata.",
+    },
+    {
+      kind: "string",
+      name: "source",
+      repeatable: true,
+      valueHint: "<source-ref>",
+      description: "Repeatable markdown/source reference backing the page.",
+    },
+    {
+      kind: "boolean",
+      name: "force",
+      default: false,
+      description: "Overwrite an existing page.",
+    },
+  ],
+  parse: (raw) => ({
+    page: String(raw.args.page),
+    title: typeof raw.opts.title === "string" ? raw.opts.title : "",
+    modality: typeof raw.opts.modality === "string" ? raw.opts.modality : "factual_claim",
+    status: typeof raw.opts.status === "string" ? raw.opts.status : "sourced_claim",
+    visibility: typeof raw.opts.visibility === "string" ? raw.opts.visibility : "project",
+    source: toStringList(raw.opts.source),
+    force: raw.opts.force === true,
+  }),
+};
+
+export const contextWikiLintSpec: CommandSpec<{ path: string }> = {
+  id: ["context", "wiki", "lint"],
+  group: "Context",
+  summary: "Validate wiki page frontmatter and source-link hygiene.",
+  args: [{ name: "path", required: false, valueHint: "<path>" }],
+  parse: (raw) => ({ path: typeof raw.args.path === "string" ? raw.args.path : "" }),
+};
+
+export const contextWikiExplainSpec: CommandSpec<{ page: string }> = {
+  id: ["context", "wiki", "explain"],
+  group: "Context",
+  summary: "Print a wiki page's AgentPlane context frontmatter.",
+  args: [{ name: "page", required: true, valueHint: "<path-or-slug>" }],
+  parse: (raw) => ({ page: String(raw.args.page) }),
+};
+
+export const contextWikiLinkSpec: CommandSpec<{ page: string }> = {
+  id: ["context", "wiki", "link"],
+  group: "Context",
+  summary: "Suggest existing wiki pages that may deserve cross-links.",
+  args: [{ name: "page", required: true, valueHint: "<path-or-slug>" }],
+  parse: (raw) => ({ page: String(raw.args.page) }),
 };
 
 export const contextHarvestSpec: CommandSpec<GroupCommandParsed> = {

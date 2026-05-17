@@ -13,6 +13,12 @@ import { cmdContextSearch } from "./search.js";
 import { cmdContextShow } from "./show.js";
 import { cmdContextDoctor } from "./doctor.js";
 import { cmdContextVerifyTask } from "./verify-task.js";
+import {
+  cmdContextWikiExplain,
+  cmdContextWikiLink,
+  cmdContextWikiLint,
+  cmdContextWikiNew,
+} from "./wiki.js";
 import { cmdContextHarvestTasks, type ContextHarvestTasksParsed } from "./harvest-tasks.js";
 import {
   cmdContextGraphSummary,
@@ -44,6 +50,11 @@ import {
   contextShowSpec,
   contextSpec,
   contextGraphSpec,
+  contextWikiExplainSpec,
+  contextWikiLinkSpec,
+  contextWikiLintSpec,
+  contextWikiNewSpec,
+  contextWikiSpec,
 } from "./context.spec.js";
 import {
   contextCheckSpec,
@@ -75,6 +86,19 @@ export async function runContextGraphGroup(
     subcommands: await loadDirectSubcommandNames(["context", "graph"]),
     command: "context graph",
     contextCommand: "context graph",
+  });
+}
+
+export async function runContextWikiGroup(
+  _ctx: CommandCtx,
+  p: GroupCommandParsed,
+): Promise<number> {
+  return throwGroupCommandUsage({
+    spec: contextWikiSpec,
+    cmd: p.cmd,
+    subcommands: await loadDirectSubcommandNames(["context", "wiki"]),
+    command: "context wiki",
+    contextCommand: "context wiki",
   });
 }
 
@@ -262,6 +286,38 @@ export async function runContextVerifyTask(
   });
 }
 
+export async function runContextWikiNew(
+  _ctx: CommandCtx,
+  p: Parameters<typeof cmdContextWikiNew>[0]["parsed"],
+): Promise<number> {
+  return await cmdContextWikiNew({ cwd: _ctx.cwd, rootOverride: _ctx.rootOverride, parsed: p });
+}
+
+export async function runContextWikiLint(
+  _ctx: CommandCtx,
+  p: Parameters<typeof cmdContextWikiLint>[0]["parsed"],
+): Promise<number> {
+  return await cmdContextWikiLint({ cwd: _ctx.cwd, rootOverride: _ctx.rootOverride, parsed: p });
+}
+
+export async function runContextWikiExplain(
+  _ctx: CommandCtx,
+  p: Parameters<typeof cmdContextWikiExplain>[0]["parsed"],
+): Promise<number> {
+  return await cmdContextWikiExplain({
+    cwd: _ctx.cwd,
+    rootOverride: _ctx.rootOverride,
+    parsed: p,
+  });
+}
+
+export async function runContextWikiLink(
+  _ctx: CommandCtx,
+  p: Parameters<typeof cmdContextWikiLink>[0]["parsed"],
+): Promise<number> {
+  return await cmdContextWikiLink({ cwd: _ctx.cwd, rootOverride: _ctx.rootOverride, parsed: p });
+}
+
 export async function runContextHarvestTasks(
   _ctx: CommandCtx,
   p: ContextHarvestTasksParsed,
@@ -365,6 +421,11 @@ export {
   contextReindexSpec,
   contextSearchSpec,
   contextShowSpec,
+  contextWikiExplainSpec,
+  contextWikiLinkSpec,
+  contextWikiLintSpec,
+  contextWikiNewSpec,
+  contextWikiSpec,
 } from "./context.spec.js";
 export {
   contextCheckSpec,

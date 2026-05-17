@@ -64,8 +64,33 @@ project first and then creates the context workspace. In a non-empty directory t
 AgentPlane project, run `agentplane init` explicitly before `agentplane context init` so the project
 gateway, workflow, backend, and conflict handling stay visible.
 
+The default init profile is `adaptive`: one stable llm-wiki contract with project-specific page
+structure. Agents should generate the wiki hierarchy from evidence, but keep page frontmatter,
+source refs, modalities, claims, graph refs, conflicts, and visibility metadata stable enough for
+future publication proposals and context-pack synchronization.
+
 `context show` resolves whole files, markdown sections, and line ranges. Markdown section refs use
 stable slugs such as `#section=publish-gate`; line refs use `#lines=12-24` or `#line=12`.
+
+## Wiki pages and metadata
+
+```bash
+agentplane context wiki new decisions/context-storage --modality decision --source .agentplane/tasks/<task-id>/README.md
+agentplane context wiki lint context/wiki/decisions/context-storage.md
+agentplane context wiki explain context/wiki/decisions/context-storage.md
+agentplane context wiki link context/wiki/decisions/context-storage.md
+```
+
+Wiki pages are markdown context artifacts with YAML frontmatter. The frontmatter is a page manifest:
+it names the page's modality, epistemic status, source refs, related claims, graph refs, conflicts,
+and intended visibility. It is not a replacement for atomic claim/fact/graph rows; it links the
+human-readable page to those machine-readable artifacts.
+
+Use separate pages when a concept, entity, decision, requirement, policy, risk, definition, workflow,
+or module is likely to be reused. Keep related claims on one topic page when that is more readable,
+but keep each important claim's modality and source visible. Decisions extracted from task history
+should become ADR/evolution records with provenance and supersession metadata rather than
+probabilistic facts.
 
 ## Learn from files and changes
 
@@ -78,6 +103,10 @@ agentplane context learn files ./notes.md --run
 context assimilation task from changed local context sources. `learn files` creates one from explicit
 files or directories. `--run` hands the generated task to the configured runner adapter instead of
 only preparing the request.
+
+Generated file/change tasks carry a portable `context_assimilation` prompt module and repeat the
+CURATOR contract in the task description so runner, Codex, IDE agents, and humans get the same
+wiki/claims/cross-link/provenance instructions.
 
 `ap context ingest` remains the lower-level pipeline command for agents and automation, including
 `--all` and `--index-only`.

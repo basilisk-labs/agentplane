@@ -208,6 +208,10 @@ agentplane context doctor
 agentplane context reindex
 agentplane context search "query"
 agentplane context show context/wiki/page.md#section=section-slug
+agentplane context wiki new decisions/context-storage --modality decision --source .agentplane/tasks/<task-id>/README.md
+agentplane context wiki lint context/wiki/decisions/context-storage.md
+agentplane context wiki explain context/wiki/decisions/context-storage.md
+agentplane context wiki link context/wiki/decisions/context-storage.md
 agentplane context ingest --changed
 agentplane context ingest ./notes.md --run
 agentplane context harvest tasks --tag release --limit 20 --dry-run
@@ -229,6 +233,12 @@ READMEs with `extensions.context_harvest` for raw ingestion and
 unchanged ingested or queued tasks by source digest instead of guessing from wiki files. Write modes
 require `agentplane context init` first. Use `context verify-task` before closing work that creates
 or relies on context artifacts. See [Local context](local-context).
+
+`context wiki` helpers keep markdown pages usable by both humans and agents. `wiki new` creates a
+page with AgentPlane frontmatter, `wiki lint` checks the page manifest and source-link hygiene,
+`wiki explain` prints the technical metadata, and `wiki link` suggests existing pages that may
+deserve meaningful cross-links. The helpers do not replace CURATOR judgment; they make page creation
+and review less error-prone.
 
 There is no public `context list` command by design. Search is the primary discovery surface; use
 `context graph summary`, `context graph show`, and `context graph neighbors` when you need structured
