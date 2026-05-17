@@ -13,7 +13,7 @@ Created: 2026-05-17T10:56:21.808Z
 ## Verification
 
 - State: ok
-- Note: Verified current PR metadata head after artifact-only refresh; implementation checks already passed: focused route-decision tests, typecheck, lint:core, format:check, routing policy check, diff check, repo-local command smokes, and pre-push full Vitest plus critical CLI E2E.
+- Note: Verified final route-decision implementation including task-local artifact freshness handling. Checks passed: focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check, framework bootstrap, and repo-local smokes for task status --route, task next-action, work resume, and flow repair --dry-run.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
