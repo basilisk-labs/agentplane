@@ -26,6 +26,8 @@ export function taskArtifactPrefixes(opts: {
   const out = new Set<string>();
   const tasksPath = normalizeGitPathPrefix(opts.tasksPath);
   if (tasksPath) out.add(tasksPath);
+  const workflowDir = normalizeGitPathPrefix(opts.workflowDir ?? "");
+  if (workflowDir && !(opts.taskId ?? "").trim()) out.add(workflowDir);
   const workflowPrefix = taskWorkflowPrefix(opts.workflowDir, opts.taskId);
   if (workflowPrefix) out.add(workflowPrefix);
   return [...out].toSorted((a, b) => a.localeCompare(b));
