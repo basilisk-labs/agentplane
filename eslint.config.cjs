@@ -244,6 +244,22 @@ module.exports = [
   },
 
   {
+    files: ["packages/agentplane/bin/agentplane.js"],
+    rules: {
+      "import/no-unresolved": "off",
+      "n/no-missing-import": "off",
+    },
+  },
+
+  {
+    files: ["website/scripts/generate-social-images.mjs"],
+    rules: {
+      "import/no-unresolved": "off",
+      "n/no-missing-import": "off",
+    },
+  },
+
+  {
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
       ecmaVersion: "latest",
