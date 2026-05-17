@@ -78,6 +78,43 @@ describe("cli help contract", () => {
     }
   });
 
+  it("blueprint explain help lists context as a synthetic kind", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["help", "blueprint", "explain", "--compact"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("--kind <analysis|content|docs|code|release|ops|context>");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("blueprint explain accepts context as a synthetic kind", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "blueprint",
+        "explain",
+        "--kind",
+        "context",
+        "--workflow-mode",
+        "branch_pr",
+        "--blueprint",
+        "context.assimilation",
+        "--json",
+      ]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        blueprintId: string;
+        stopReasons: string[];
+      };
+      expect(payload.blueprintId).toBe("context.assimilation");
+      expect(payload.stopReasons).toEqual([]);
+    } finally {
+      io.restore();
+    }
+  });
+
   it("help --json returns a stable, internally consistent registry", async () => {
     const io = captureStdIO();
     try {

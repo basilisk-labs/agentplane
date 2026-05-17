@@ -124,7 +124,7 @@ export const blueprintExplainSpec: CommandSpec<BlueprintExplainParsed> = {
     {
       kind: "string",
       name: "kind",
-      valueHint: "<analysis|content|docs|code|release|ops>",
+      valueHint: "<analysis|content|docs|code|release|ops|context>",
       description: "Synthetic task kind hint.",
     },
     {
