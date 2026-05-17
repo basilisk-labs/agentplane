@@ -1,10 +1,11 @@
 ---
 id: "202605171721-K2EP8Y"
 title: "Fix website dependency PR lockfile drift"
-status: "DOING"
+result_summary: "Merged via PR #3841."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Website dependency update verified locally: root frozen Bun install passed, website typecheck passed, website build passed, policy routing passed, and agentplane doctor passed."
   attempts: 0
-commit: null
+commit:
+  hash: "3e6767a7cfd8c84279b9c576e9e984894aa07480"
+  message: "Merge pull request #3841 from basilisk-labs/task/202605171721-K2EP8Y/website-dependency-lockfile"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing the approved website dependency lockfile fix in a dedicated branch_pr worktree. Scope is limited to website TypeScript dependency metadata and Bun lockfile unless verification exposes a minimal website compatibility issue."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3841 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Website dependency update verified locally: root frozen Bun install passed, website typecheck passed, website build passed, policy routing passed, and agentplane doctor passed."
+  -
+    type: "status"
+    at: "2026-05-17T17:37:08.146Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3841 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T17:27:02.593Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T17:37:08.153Z"
+doc_updated_by: "INTEGRATOR"
 description: "Update the website TypeScript dependency with the matching Bun lockfile so duplicate Dependabot website PRs can be superseded and closed."
 sections:
   Summary: |-
