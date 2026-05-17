@@ -41,18 +41,19 @@ export async function loadFrameworkManifestFromPath(
 function parseGitHubRepo(source: string): { owner: string; repo: string } {
   const trimmed = source.trim();
   if (!trimmed) throw new Error(requiredFieldMessage("config.framework.source"));
+  let url: URL;
   try {
-    const url = new URL(trimmed);
-    if (url.protocol !== "https:" || url.hostname !== "github.com") {
-      throw new Error(invalidFieldMessage("config.framework.source", "GitHub URL"));
-    }
-    const parts = url.pathname.replaceAll(".git", "").split("/").filter(Boolean);
-    if (parts.length < 2)
-      throw new Error(invalidValueMessage("GitHub repo URL", trimmed, "owner/repo"));
-    return { owner: parts[0], repo: parts[1] };
+    url = new URL(trimmed);
   } catch {
     throw new Error(invalidValueMessage("GitHub repo URL", trimmed, "owner/repo"));
   }
+  if (url.protocol !== "https:" || url.hostname !== "github.com") {
+    throw new Error(invalidFieldMessage("config.framework.source", "GitHub URL"));
+  }
+  const parts = url.pathname.replaceAll(".git", "").split("/").filter(Boolean);
+  if (parts.length < 2)
+    throw new Error(invalidValueMessage("GitHub repo URL", trimmed, "owner/repo"));
+  return { owner: parts[0], repo: parts[1] };
 }
 
 export function normalizeFrameworkSourceForUpgrade(source: string): {

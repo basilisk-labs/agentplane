@@ -24,11 +24,11 @@ describe("upgrade source normalization", () => {
       normalizeFrameworkSourceForUpgrade(
         "https://evil.example/github.com/basilisk-labs/agentplane",
       ),
-    ).toThrow(/GitHub repo URL/);
+    ).toThrow(/config\.framework\.source/);
     expect(() =>
       normalizeFrameworkSourceForUpgrade(
         "https://github.com.evil.example/basilisk-labs/agentplane",
       ),
-    ).toThrow(/GitHub repo URL/);
+    ).toThrow(/config\.framework\.source/);
   });
 });
