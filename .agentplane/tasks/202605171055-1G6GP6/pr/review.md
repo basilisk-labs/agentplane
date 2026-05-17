@@ -24,9 +24,9 @@ Created: 2026-05-17T10:56:21.808Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-17T11:47:14.512Z
+- Updated: 2026-05-17T12:35:06.223Z
 - Branch: task/202605171055-1G6GP6/route-decision-cli
-- Head: 193305ed7106
+- Head: 50fff2efc6c2
 
 ```text
  .../blueprint/resolved-snapshot.json               | 552 +++++++++++++++++++++
@@ -47,7 +47,8 @@ Created: 2026-05-17T10:56:21.808Z
  .../src/commands/task/next-action.command.ts       |  58 +++
  .../agentplane/src/commands/task/status.command.ts |  79 +++
  .../agentplane/src/commands/task/task.command.ts   |   9 +
- 18 files changed, 1572 insertions(+), 5 deletions(-)
+ scripts/baselines/knip-baseline.json               |  58 +--
+ 19 files changed, 1596 insertions(+), 39 deletions(-)
 ```
 
 </details>

@@ -16,4 +16,5 @@
  .../src/commands/task/next-action.command.ts       |  58 +++
  .../agentplane/src/commands/task/status.command.ts |  79 +++
  .../agentplane/src/commands/task/task.command.ts   |   9 +
- 18 files changed, 1572 insertions(+), 5 deletions(-)
+ scripts/baselines/knip-baseline.json               |  58 +--
+ 19 files changed, 1596 insertions(+), 39 deletions(-)
