@@ -236,8 +236,9 @@ or relies on context artifacts. See [Local context](local-context).
 
 `context wiki` helpers keep markdown pages usable by both humans and agents. `wiki new` creates a
 page with AgentPlane frontmatter, `wiki lint` checks the page manifest and source-link hygiene,
-`wiki explain` prints the technical metadata, and `wiki link` suggests existing pages that may
-deserve meaningful cross-links. The helpers do not replace CURATOR judgment; they make page creation
+`wiki explain` prints the technical metadata, `wiki link` suggests existing pages that may deserve
+meaningful inline cross-links, and `wiki index` refreshes generated `index.md` navigation sections.
+The helpers do not replace CURATOR judgment; they make page creation, canonical linking, indexing,
 and review less error-prone.
 
 There is no public `context list` command by design. Search is the primary discovery surface; use
