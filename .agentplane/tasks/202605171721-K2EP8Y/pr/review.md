@@ -12,8 +12,8 @@ Created: 2026-05-17T17:21:42.948Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Website dependency update verified locally: root frozen Bun install passed, website typecheck passed, website build passed, policy routing passed, and agentplane doctor passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,10 +29,11 @@ Created: 2026-05-17T17:21:42.948Z
 - Head: 87a84e0cdbda
 
 ```text
- bun.lock              | 8 ++++++--
- website/package.json  | 4 +++-
- website/tsconfig.json | 1 +
- 3 files changed, 10 insertions(+), 3 deletions(-)
+ .../blueprint/resolved-snapshot.json               | 527 +++++++++++++++++++++
+ bun.lock                                           |   8 +-
+ website/package.json                               |   4 +-
+ website/tsconfig.json                              |   1 +
+ 4 files changed, 537 insertions(+), 3 deletions(-)
 ```
 
 </details>
