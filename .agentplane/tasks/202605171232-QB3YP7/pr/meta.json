@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605171232-QB3YP7/blueprint-help-context-kind",
+  "created_at": "2026-05-17T12:33:23.626Z",
+  "head_sha": "62216c9e602b8b359f65762b6d5a9076014dbcdc",
+  "last_verified_at": "2026-05-17T12:37:46.882Z",
+  "last_verified_sha": "62216c9e602b8b359f65762b6d5a9076014dbcdc",
+  "schema_version": 1,
+  "task_id": "202605171232-QB3YP7",
+  "updated_at": "2026-05-17T12:37:46.911Z",
+  "verify": {
+    "status": "pass"
+  }
+}
