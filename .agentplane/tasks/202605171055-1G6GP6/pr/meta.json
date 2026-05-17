@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-17T12:52:39Z",
   "base": "main",
   "branch": "task/202605171055-1G6GP6/route-decision-cli",
   "created_at": "2026-05-17T10:56:21.808Z",
-  "head_sha": "735c441d528315653e6f98a8e0def423ed77e29c",
+  "head_sha": "0ab6bd51462bceef30b87324f3c46d923dbc741d",
   "last_verified_at": "2026-05-17T12:52:03.757Z",
   "last_verified_sha": "735c441d528315653e6f98a8e0def423ed77e29c",
+  "merge_commit": "423dc17f793d728580a40d15564a2ce6d3189a34",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-17T12:52:39Z",
   "pr_number": 3823,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3823",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605171055-1G6GP6",
-  "updated_at": "2026-05-17T12:51:37.857Z",
+  "updated_at": "2026-05-17T12:52:39Z",
   "verify": {
     "status": "pass"
   }
