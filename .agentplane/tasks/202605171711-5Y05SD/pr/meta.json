@@ -1,0 +1,20 @@
+{
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-17T17:27:24Z",
+  "base": "main",
+  "branch": "task/202605171711-5Y05SD/quality-feedback-loops",
+  "created_at": "2026-05-17T17:12:16.247Z",
+  "head_sha": "69ae5c3eb9cffee4919a0b04bed5038f5a586d8c",
+  "last_verified_at": "2026-05-17T17:22:34.150Z",
+  "last_verified_sha": "ae2261b9a4af8329f86d8f0c93c8ce06981dc295",
+  "merge_commit": "30fbc60607d35300c2b0d0b3b20fb3c9f5d5cad0",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-17T17:27:24Z",
+  "schema_version": 1,
+  "status": "MERGED",
+  "task_id": "202605171711-5Y05SD",
+  "updated_at": "2026-05-17T17:27:24Z",
+  "verify": {
+    "status": "pass"
+  }
+}

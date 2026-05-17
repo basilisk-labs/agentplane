@@ -1,0 +1,27 @@
+ .../blueprint/resolved-snapshot.json               | 550 +++++++++++++++++++++
+ eslint.config.cjs                                  |  16 +
+ package.json                                       |   6 +-
+ scripts/README.md                                  |  45 +-
+ scripts/checks/check-changed-format.mjs            | 105 ++++
+ scripts/checks/profile-local-quality.mjs           | 166 +++++++
+ scripts/generate/generate-llms-full.mjs            |  22 +-
+ scripts/generate/generate-website-docs.mjs         |  24 +-
+ website/package.json                               |   3 +-
+ website/scripts/generate-social-images.mjs         |  55 ++-
+ .../developer/cloud-backend-integration-plan.png   | Bin 0 -> 56567 bytes
+ .../img/social/docs/developer/harness-dev.png      | Bin 0 -> 52193 bytes
+ .../img/social/docs/developer/local-context.png    | Bin 0 -> 50283 bytes
+ .../social/docs/internal/git-mutation-model.png    | Bin 0 -> 47484 bytes
+ .../static/img/social/docs/launch/checklist.png    | Bin 0 -> 41127 bytes
+ website/static/img/social/docs/launch/hn.png       | Bin 0 -> 34240 bytes
+ website/static/img/social/docs/launch/reddit.png   | Bin 0 -> 38735 bytes
+ website/static/img/social/docs/launch/twitter.png  | Bin 0 -> 38656 bytes
+ website/static/img/social/docs/releases/v0.4.4.png | Bin 0 -> 40105 bytes
+ .../img/social/docs/releases/v0.5.0-rc.1.png       | Bin 0 -> 44257 bytes
+ website/static/img/social/docs/releases/v0.5.0.png | Bin 0 -> 41491 bytes
+ website/static/img/social/docs/releases/v0.6.0.png | Bin 0 -> 41815 bytes
+ website/static/img/social/docs/releases/v0.6.1.png | Bin 0 -> 40783 bytes
+ .../static/img/social/docs/user/backends/cloud.png | Bin 0 -> 45323 bytes
+ .../static/img/social/docs/user/local-context.png  | Bin 0 -> 43019 bytes
+ website/static/llms-full.txt                       |  34 +-
+ 26 files changed, 994 insertions(+), 32 deletions(-)
