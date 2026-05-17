@@ -2,15 +2,15 @@
   "base": "main",
   "branch": "task/202605171738-G3EACK/framework-dev-gates",
   "created_at": "2026-05-17T17:38:49.835Z",
-  "head_sha": "96554c3859b0973304b5e6266ac15c9f2316c3fd",
-  "last_verified_at": "2026-05-17T17:47:47.986Z",
-  "last_verified_sha": "96554c3859b0973304b5e6266ac15c9f2316c3fd",
+  "head_sha": "433df5b323e41b54fadec18446ff49b3fb108648",
+  "last_verified_at": "2026-05-17T17:59:17.193Z",
+  "last_verified_sha": "433df5b323e41b54fadec18446ff49b3fb108648",
   "pr_number": 3849,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3849",
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202605171738-G3EACK",
-  "updated_at": "2026-05-17T17:47:14.288Z",
+  "updated_at": "2026-05-17T17:59:17.283Z",
   "verify": {
     "status": "pass"
   }
