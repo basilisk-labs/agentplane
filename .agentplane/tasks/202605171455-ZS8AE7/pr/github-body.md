@@ -37,12 +37,43 @@ Result: pass. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-17T17:11:05.091Z
+- Updated: 2026-05-17T17:40:09.677Z
 - Branch: task/202605171455-ZS8AE7/branch-naming-contract
-- Head: d3e0f2f6ead5
+- Head: 5264872abdb0
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 535 +++++++++++++++++++++
+ docs/user/branching-and-pr-artifacts.mdx           |   7 +-
+ docs/user/commands.mdx                             |   4 +
+ docs/user/configuration.mdx                        |  14 +
+ docs/user/task-lifecycle.mdx                       |   4 +
+ docs/user/workflow.mdx                             |   5 +
+ .../agentplane/assets/policy/workflow.branch_pr.md |   5 +
+ .../run-cli.core.pr-flow.cleanup-merged.test.ts    |   1 +
+ .../src/cli/run-cli.core.pr-flow.test.ts           |  72 +++
+ .../src/commands/branch/cleanup-merged.ts          |   8 +-
+ .../agentplane/src/commands/branch/work-start.ts   |  13 +-
+ .../src/commands/hooks/run.commit-msg.ts           |   1 +
+ .../src/commands/hooks/run.pre-commit.ts           |   6 +-
+ .../agentplane/src/commands/hooks/task-context.ts  |  19 +-
+ packages/agentplane/src/commands/pr/flow-status.ts |  14 +-
+ .../agentplane/src/commands/task/finish-close.ts   |  12 +-
+ .../commands/task/finish.close-tail.unit.test.ts   |   3 +-
+ .../src/commands/task/hosted-close-pr.precheck.ts  |  21 +-
+ .../task/hosted-merge-sync/local-branch.ts         |  18 +-
+ packages/core/schemas/config.schema.json           | 274 +++++++++--
+ packages/core/src/config/config.test.ts            |  17 +
+ packages/core/src/config/schema.impl.ts            |  12 +-
+ packages/core/src/config/workflow-file.ts          |   2 +-
+ packages/core/src/git/git-worktree.test.ts         |  57 +++
+ packages/core/src/git/git-worktree.ts              |  39 +-
+ packages/core/src/git/index.ts                     |   4 +
+ packages/core/src/index.ts                         |   4 +
+ packages/spec/schemas/config.schema.json           | 274 +++++++++--
+ schemas/config.schema.json                         | 274 +++++++++--
+ scripts/release/release-task-evidence.mjs          |  34 +-
+ scripts/workflow/prepare-hosted-task-closure.mjs   |  43 +-
+ 31 files changed, 1620 insertions(+), 176 deletions(-)
 ```
 
 </details>
