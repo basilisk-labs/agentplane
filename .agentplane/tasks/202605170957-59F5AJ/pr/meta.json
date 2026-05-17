@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-17T11:41:23Z",
   "base": "main",
   "branch": "task/202605170957-59F5AJ/readme-header-template",
   "created_at": "2026-05-17T09:58:50.653Z",
-  "head_sha": "ad767e8aebfcb189e6971415c10a48e8100480cf",
+  "head_sha": "ad7a828493811d3c4f63960b1b9105099521c255",
   "last_verified_at": "2026-05-17T10:14:51.825Z",
   "last_verified_sha": "ad767e8aebfcb189e6971415c10a48e8100480cf",
+  "merge_commit": "c5efbe7b242023dd2133a777a7d92ab513e15eb9",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-17T11:41:23Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605170957-59F5AJ",
-  "updated_at": "2026-05-17T10:14:51.871Z",
+  "updated_at": "2026-05-17T11:41:23Z",
   "verify": {
     "status": "pass"
   }
