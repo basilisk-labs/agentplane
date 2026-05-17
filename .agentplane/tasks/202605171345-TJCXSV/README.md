@@ -1,10 +1,11 @@
 ---
 id: "202605171345-TJCXSV"
 title: "Add first-success demo command"
-status: "DOING"
+result_summary: "Merged via PR #3839."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -30,11 +31,16 @@ verification:
   updated_by: "CODER"
   note: "Demo command verified: focused tests, help/quickstart tests, docs freshness checks, policy routing, typecheck, lint, formatting, bootstrap, and temp-repo demo smoke all passed."
   attempts: 0
-commit: null
+commit:
+  hash: "c11413a9035fd6f9d77e50ac11ba0f5f085af0a6"
+  message: "Merge pull request #3839 from basilisk-labs/task/202605171345-TJCXSV/first-success-demo"
 comments:
   -
     author: "CODER"
     body: "Start: implement the first-success demo command in the task worktree, keeping it as a safe workflow shortcut over normal task artifacts and ACR evidence without user-source or network mutation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3839 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Demo command verified: focused tests, help/quickstart tests, docs freshness checks, policy routing, typecheck, lint, formatting, bootstrap, and temp-repo demo smoke all passed."
+  -
+    type: "status"
+    at: "2026-05-17T18:37:38.229Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3839 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T17:23:58.288Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T18:37:38.236Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a safe local AgentPlane demo command that creates an inspectable first-success task artifact flow, including verification and ACR evidence, without touching user source files or requiring network/GitHub."
 sections:
   Summary: |-
