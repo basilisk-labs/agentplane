@@ -260,6 +260,27 @@ describe("workflow transition service", () => {
     ]);
   });
 
+  it("trims generated verification entry line endings", () => {
+    const execution = executeTaskVerificationTransitionRequest({
+      task: mkTask({
+        doc_updated_at: "2026-03-27T00:00:00.000Z",
+      }),
+      at: "2026-03-27T02:10:00.000Z",
+      by: "REVIEWER",
+      note: "Looks good after focused checks.  ",
+      state: "ok",
+      details: ["Command: git diff --check  ", "", "Result: pass  "].join("\n"),
+      doc: mkTask().doc ?? "",
+      requiredSections: ["Summary", "Verify Steps", "Verification"],
+    });
+
+    expect(execution.verificationSection).toContain("Note: Looks good after focused checks.");
+    expect(execution.verificationSection).toContain("Command: git diff --check\n\nResult: pass");
+    expect(execution.verificationSection.split("\n").filter((line) => /^\s+$/u.test(line))).toEqual(
+      [],
+    );
+  });
+
   it("keeps rework DOING through the configured max and blocks when the next attempt exceeds it", () => {
     const withinLimit = executeTaskVerificationTransitionRequest({
       task: mkTask({

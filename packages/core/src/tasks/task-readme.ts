@@ -113,7 +113,13 @@ function normalizeReadableMultilineString(key: string, value: string): string {
 function renderBlockScalar(key: string, value: string, indent: string): string[] {
   const normalized = normalizeReadableMultilineString(key, value);
   const lines = normalized.split("\n");
-  return [`${indent}${key}: |-`, ...lines.map((line) => `${indent}  ${line}`)];
+  return [
+    `${indent}${key}: |-`,
+    ...lines.map((line) => {
+      const trimmed = line.trimEnd();
+      return trimmed ? `${indent}  ${trimmed}` : "";
+    }),
+  ];
 }
 
 function renderFlowSeq(value: unknown[]): string {
