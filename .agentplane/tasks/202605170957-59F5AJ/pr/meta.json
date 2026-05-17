@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605170957-59F5AJ/readme-header-template",
+  "created_at": "2026-05-17T09:58:50.653Z",
+  "head_sha": "ad767e8aebfcb189e6971415c10a48e8100480cf",
+  "last_verified_at": "2026-05-17T10:14:51.825Z",
+  "last_verified_sha": "ad767e8aebfcb189e6971415c10a48e8100480cf",
+  "schema_version": 1,
+  "task_id": "202605170957-59F5AJ",
+  "updated_at": "2026-05-17T10:14:51.871Z",
+  "verify": {
+    "status": "pass"
+  }
+}

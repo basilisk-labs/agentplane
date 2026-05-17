@@ -9,12 +9,23 @@ const repoRoot = path.resolve(__dirname, "../..");
 
 const legacyOutputPath = path.join(repoRoot, "docs/assets/header.svg");
 const outputDir = path.join(repoRoot, "docs/assets/readme-headers");
-const logoPath = path.join(repoRoot, "docs/assets/agentplane.svg");
 const packagePath = path.join(repoRoot, "packages/agentplane/package.json");
 const blogDir = path.join(repoRoot, "website/blog");
 const checkMode = process.argv.includes("--check");
 const rawAssetBase =
   "https://raw.githubusercontent.com/basilisk-labs/agentplane/main/docs/assets/readme-headers";
+const headerTextBox = {
+  x: 52,
+  y: 328,
+  width: 1421,
+  height: 357,
+  fontSize: 96,
+  lineHeight: 114,
+  bottom: 728,
+  descenderAllowance: 20,
+  maxLines: 3,
+};
+const releaseHeadlinePrefix = "Boring, safe, auditable agent workflows";
 
 const readmeSurfaces = [
   {
@@ -127,73 +138,190 @@ async function packageVersionTag() {
   return `v${pkg.version}`;
 }
 
-function tagVariants(tag) {
+function tagVariantGroups(tag) {
   const normalized = tag.replace(/^v/i, "");
   const dash = normalized.replaceAll(".", "-");
-  return [normalized.toLowerCase(), `v${normalized.toLowerCase()}`, dash.toLowerCase()];
+  const [major, minor] = normalized.split(".");
+  const minorLine = major && minor ? `${major}-${minor}` : null;
+
+  return [
+    [normalized, `v${normalized}`, dash, `v${dash}`],
+    minorLine ? [minorLine, `v${minorLine}`] : [],
+  ].map((variants) => [
+    ...new Set(variants.filter(Boolean).map((variant) => variant.toLowerCase())),
+  ]);
 }
 
-function compactLogo(markup) {
-  const inner = markup.match(/<svg[^>]*>([\s\S]*?)<\/svg>/)?.[1]?.trim();
-  if (!inner) throw new Error(`Could not read SVG body from ${logoPath}`);
-  return inner;
+function escapeRegExp(value) {
+  return value.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 }
 
-function extractFrontmatterTitle(markdown) {
+function filenameIncludesVersionToken(filename, variant) {
+  const pattern = new RegExp(`(^|[^a-z0-9])${escapeRegExp(variant)}([^a-z0-9]|$)`, "i");
+  return pattern.test(filename);
+}
+
+function extractFrontmatterValue(markdown, key) {
   const frontmatter = markdown.match(/^---\n([\s\S]*?)\n---/);
   if (!frontmatter) return null;
-  const titleLine = frontmatter[1].match(/^title:\s*(?:"([^"]+)"|'([^']+)'|(.+))$/m);
-  return (titleLine?.[1] ?? titleLine?.[2] ?? titleLine?.[3] ?? "").trim() || null;
+  const pattern = new RegExp(String.raw`^${key}:\s*(?:"([^"]+)"|'([^']+)'|(.+))$`, "m");
+  const line = frontmatter[1].match(pattern);
+  return (line?.[1] ?? line?.[2] ?? line?.[3] ?? "").trim() || null;
 }
 
-async function latestReleaseBlogTitle(tag) {
+async function latestReleaseBlogMeta(tag) {
   try {
     const directoryEntries = await readdir(blogDir);
     const files = directoryEntries
       .filter((name) => /\.mdx?$/.test(name))
-      .filter((name) => /release|agentplane-\d+-\d+-\d+/i.test(name))
+      .filter((name) => /release|agentplane-\d+-\d+(?:-\d+)?/i.test(name))
       .toSorted()
       .toReversed();
 
-    const variants = tagVariants(tag);
-    const taggedFiles = files.filter((filename) =>
-      variants.some((variant) => filename.toLowerCase().includes(variant)),
-    );
+    const taggedFiles =
+      tagVariantGroups(tag)
+        .map((variants) =>
+          files.filter((filename) =>
+            variants.some((variant) => filenameIncludesVersionToken(filename, variant)),
+          ),
+        )
+        .find((matches) => matches.length > 0) ?? [];
     const ordered = taggedFiles.length > 0 ? taggedFiles : files;
 
     for (const filename of ordered) {
       const markdown = await readFile(path.join(blogDir, filename), "utf8");
-      const title = extractFrontmatterTitle(markdown);
-      if (title) return title;
+      const title = extractFrontmatterValue(markdown, "title");
+      const description = extractFrontmatterValue(markdown, "description");
+      if (title || description) return { title, description };
     }
   } catch {
     // Non-fatal fallback below.
   }
 
-  return "Release notes";
+  return { title: "Release notes", description: null };
 }
 
-function trimSubtitle(value, max = 84) {
+function sentenceCase(value) {
+  const trimmed = value.trim();
+  if (!trimmed) return trimmed;
+  return `${trimmed[0].toLowerCase()}${trimmed.slice(1)}`;
+}
+
+function releaseFocusPhrase({ title, description }) {
+  const source = title ?? description ?? "release notes";
+  const withoutVersion = source
+    .replace(/^AgentPlane\s+v?\d+(?:\.\d+){1,2}\s*[:—-]\s*/i, "")
+    .replace(/^Release\s+v?\d+(?:\.\d+){1,2}\s*[:—-]\s*/i, "")
+    .replace(/^Context management:\s*the LLM Wiki pattern inside the repo$/i, "context memory")
+    .replace(/^Context management:\s*/i, "context management and ")
+    .replace(/^What changed in AgentPlane\s+v?\d+(?:\.\d+){1,2},?\s*in plain language:\s*/i, "")
+    .replaceAll(/\s+/g, " ")
+    .trim();
+
+  const phrase = sentenceCase(withoutVersion)
+    .replace(/[.!?]+$/u, "")
+    .replaceAll(/\s+and\s+/giu, " and ");
+
+  return phrase || "release notes";
+}
+
+function trimHeadline(value, max = 92) {
   const normalized = value.replaceAll(/\s+/g, " ").trim();
   if (normalized.length <= max) return normalized;
-  return `${normalized.slice(0, max - 1).trimEnd()}…`;
+  const clipped = normalized.slice(0, max - 1);
+  const wordBoundary = clipped.lastIndexOf(" ");
+  return `${clipped.slice(0, Math.max(wordBoundary, max - 18)).trimEnd()}…`;
 }
 
-function renderSvg({ tag, subtitle, logo }) {
-  const version = tag.replace(/^v/, "");
+function releaseHeaderText(meta) {
+  const focus = releaseFocusPhrase(meta);
+  return trimHeadline(`${releaseHeadlinePrefix} — ${focus}.`);
+}
+
+function estimateTextWidth(value, fontSize) {
+  let width = 0;
+  for (const character of value) {
+    if (character === " ") width += fontSize * 0.28;
+    else if (/[.,:;!|'`]/u.test(character)) width += fontSize * 0.22;
+    else if (/[—–/-]/u.test(character)) width += fontSize * 0.46;
+    else if (/[ilI]/u.test(character)) width += fontSize * 0.24;
+    else if (/[mwMW]/u.test(character)) width += fontSize * 0.82;
+    else width += fontSize * 0.52;
+  }
+  return width;
+}
+
+function wrapHeaderText(value) {
+  const words = value.split(" ");
+  const lines = [];
+  let current = "";
+
+  for (const word of words) {
+    const next = current ? `${current} ${word}` : word;
+    if (current && estimateTextWidth(next, headerTextBox.fontSize) > headerTextBox.width) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = next;
+    }
+  }
+
+  if (current) lines.push(current);
+  if (lines.length <= headerTextBox.maxLines) return lines;
+
+  const kept = lines.slice(0, headerTextBox.maxLines);
+  let last = kept.at(-1) ?? "";
+  while (
+    last.length > 1 &&
+    estimateTextWidth(`${last}…`, headerTextBox.fontSize) > headerTextBox.width
+  ) {
+    last = last.replace(/\s+\S+$/u, "");
+  }
+  kept[kept.length - 1] = `${last.trimEnd()}…`;
+  return kept;
+}
+
+function renderGrid() {
+  const vertical = Array.from({ length: 13 }, (_, index) => {
+    const x = 10 + index * 119.91;
+    return `<line x1="${x.toFixed(2)}" y1="59" x2="${x.toFixed(2)}" y2="780" stroke="#EBEBEB" stroke-width="1"/>`;
+  }).join("\n");
+  const horizontal = Array.from({ length: 7 }, (_, index) => {
+    const y = 59 + index * 120;
+    return `<line x1="10" y1="${y.toFixed(2)}" x2="1450" y2="${y.toFixed(2)}" stroke="#EBEBEB" stroke-width="1"/>`;
+  }).join("\n");
+  return `${vertical}\n${horizontal}`;
+}
+
+function renderHeaderLines(text) {
+  const lines = wrapHeaderText(text);
+  const firstBaseline =
+    headerTextBox.bottom -
+    headerTextBox.descenderAllowance -
+    (lines.length - 1) * headerTextBox.lineHeight;
+  return lines
+    .map((line, index) => {
+      const y = firstBaseline + index * headerTextBox.lineHeight;
+      return `<tspan x="${headerTextBox.x}" y="${y}">${escapeXml(line)}</tspan>`;
+    })
+    .join("\n");
+}
+
+function renderSvg({ tag, headline }) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="840" viewBox="0 0 1560 840">
 <title>AgentPlane ${escapeXml(tag)} README header</title>
 <style>
-  .display { font-family: 'Inter Display', 'Inter', 'Arial', sans-serif; }
-  .mono { font-family: 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
+  .display { font-family: 'Geist', 'Inter Display', 'Inter', 'Arial', sans-serif; }
+  .pixel { font-family: 'Geist Pixel', 'PT Mono', 'DejaVu Sans Mono', 'Menlo', monospace; }
 </style>
-<rect width="1560" height="840" fill="#FAFAF7"/>
-<line x1="96" y1="96" x2="1464" y2="96" stroke="#DFDED8" stroke-width="2"/>
-<svg x="96" y="142" width="320" height="64" viewBox="0 0 320 64">
-${logo}
-</svg>
-<text class="display" x="96" y="468" font-size="186" fill="#070707" font-weight="760">${escapeXml(version)}</text>
-<text class="mono" x="100" y="556" font-size="24" fill="#5A6270">${escapeXml(subtitle)}</text>
+<rect width="1560" height="840" fill="#FFFFFF"/>
+${renderGrid()}
+<path d="M0 59H21M10 49V70M1439 780H1460M1450 769V790" stroke="#AFAFAF" stroke-width="1"/>
+<text class="display" x="52" y="299" font-size="196" font-weight="700" letter-spacing="-0.02em" fill="#000000">agent/plane</text>
+<text class="pixel" x="1160" y="179" font-size="48" font-weight="400" letter-spacing="-0.04em" fill="#000000">${escapeXml(tag)}</text>
+<text class="display" font-size="${headerTextBox.fontSize}" font-weight="500" line-height="${headerTextBox.lineHeight}" letter-spacing="-0.04em" fill="#000000">
+${renderHeaderLines(headline)}
+</text>
 </svg>
 `;
 }
@@ -218,13 +346,12 @@ function syncReadmeHeader(readmeText, surface) {
 
 async function main() {
   const tag = latestReleaseTag() ?? (await packageVersionTag());
-  const subtitle = trimSubtitle(await latestReleaseBlogTitle(tag));
-  const logo = compactLogo(await readFile(logoPath, "utf8"));
+  const headline = releaseHeaderText(await latestReleaseBlogMeta(tag));
   const generated = new Map();
   const stale = [];
 
   for (const surface of readmeSurfaces) {
-    const svg = renderSvg({ tag, subtitle, logo });
+    const svg = renderSvg({ tag, headline });
     generated.set(path.join(outputDir, `${surface.id}.svg`), svg);
   }
 
