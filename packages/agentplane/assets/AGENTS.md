@@ -172,6 +172,7 @@ Routing constraints:
 - MUST stage/commit only intentional changes for the active task scope.
 - MUST stop and request re-approval when scope, risk, or verification criteria materially drift.
 - MUST NOT let ORCHESTRATOR perform owner-scoped implementation or verification once a task owner is known, unless the approved plan explicitly makes ORCHESTRATOR the owner.
+- MUST treat user-authenticated GitHub actions as user-attributed publication and route post-merge fixes through a new task or explicit `post-merge-` branch or `followup` slug token.
 
 Role boundaries: ORCHESTRATOR = preflight + plan + approvals; PLANNER = executable task graph creation/update; INTEGRATOR = base integration/finish in `branch_pr`.
 

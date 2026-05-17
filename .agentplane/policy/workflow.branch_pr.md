@@ -73,6 +73,14 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
   after the first green rollup), then merge it through GitHub. If auto-merge remains blocked
   after stable green checks, the agent MUST continue with the permitted GitHub merge route
   available to its credentials instead of stopping at enabled auto-merge.
+- Claude Code and other agents that inherit the user's GitHub session MUST treat `gh pr merge`,
+  GitHub UI merge, and auto-merge enablement as user-attributed publication. Before using those
+  actions, verify the integration queue/handoff route, stable hosted checks, and explicit approval
+  for the merge lane; record the GitHub PR number and merge commit in task artifacts after merge.
+- If a task is already `DONE` and needs a post-merge fix, create a new task unless the follow-up
+  branch slug explicitly starts with `post-merge-` or uses `followup` as a separate slug token
+  bounded by the start, end, or hyphens; generic slugs under an already closed task id are treated
+  as conflicting closure attempts.
 - `integrate` defaults to the `merge` strategy so task branch commits stay in base history. Use `--merge-strategy squash` only when intentionally compacting branch history.
 - When several task PRs are ready together, use the integration queue so only one branch owns the merge lane; agents waiting behind `claimed` or `handoff` entries SHOULD use bounded polling (`--wait --poll-interval-ms 30000 --timeout-ms 600000`) instead of retrying ad hoc; stale branch heads move to rework instead of blocking later queued work.
 - `task start-ready` MAY surface targeted incident advice for analogous scope/tags; follow it before widening scope.

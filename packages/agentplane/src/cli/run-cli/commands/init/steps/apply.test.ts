@@ -222,10 +222,17 @@ describe("init apply wrapper", () => {
       expect(await readFile(directPolicyPath, "utf8")).toContain("# Workflow: direct");
       expect(gateway).toBe(expectedGateway);
       expect(gateway).toContain("CLAUDE.md");
+      expect(gateway).toContain("user-attributed publication");
+      expect(gateway).toContain("post-merge-");
+      expect(gateway).toContain("followup` slug token");
       expect(gateway).not.toContain("ap:fragment");
       expect(gateway).not.toContain("## A) direct mode (single checkout)");
       expect(parsedCoderProfile.id).toBe("CODER");
       expect(branchPolicy).toContain("# Workflow: branch_pr");
+      expect(branchPolicy).toContain("Claude Code");
+      expect(branchPolicy).toContain("user-attributed publication");
+      expect(branchPolicy).toContain("post-merge-");
+      expect(branchPolicy).toContain("followup` as a separate slug token");
       expect(branchPolicy).not.toContain("ap:fragment");
       expect(gatewayBaseline).toBe(gateway);
       expect(coderProfileBaseline).toBe(coderProfile);
