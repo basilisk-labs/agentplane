@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605171345-F281KQ/guided-task-shortcuts",
+  "created_at": "2026-05-17T17:27:09.110Z",
+  "head_sha": "4dbbe339e38dd3e7127fc59f45b0867e6207a464",
+  "last_verified_at": "2026-05-17T17:43:31.493Z",
+  "last_verified_sha": "4dbbe339e38dd3e7127fc59f45b0867e6207a464",
+  "schema_version": 1,
+  "task_id": "202605171345-F281KQ",
+  "updated_at": "2026-05-17T17:27:09.110Z",
+  "verify": {
+    "status": "pass"
+  }
+}

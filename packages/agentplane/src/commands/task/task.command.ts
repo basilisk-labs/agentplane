@@ -14,6 +14,7 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
   synopsis: ["agentplane task <subcommand> [args] [options]"],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<subcommand>" }],
   notes: [
+    "Default guided path: task begin -> task verify-show -> task complete. The low-level primitives remain available for explicit audit gates.",
     "Direct task route: task new -> task plan set -> task plan approve -> task start-ready -> task verify-show -> verify -> finish.",
     "Before manually chaining low-level diagnostics, use `agentplane task status <task-id> --route` or `agentplane task next-action <task-id>` for a route decision.",
     "Use `agentplane help task plan`, `agentplane help task doc`, and `agentplane help task verify` to inspect task sub-areas.",
@@ -21,8 +22,16 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
   ],
   examples: [
     {
+      cmd: 'agentplane task begin "Fix parser edge case" --tag code --verify "bun test"',
+      why: "Create, plan, approve, and start or route a normal task.",
+    },
+    {
+      cmd: 'agentplane task complete <task-id> --result "Parser edge case fixed" --commit <hash>',
+      why: "Record OK verification and finish when the active workflow route allows it.",
+    },
+    {
       cmd: 'agentplane task new --title "..." --description "..." --owner CODER --tag code',
-      why: "Create a task.",
+      why: "Create a task with the explicit primitive command.",
     },
     {
       cmd: 'agentplane task plan set <task-id> --text "..." --updated-by ORCHESTRATOR',

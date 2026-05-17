@@ -77,6 +77,14 @@ export const fromTaskRunResumeSpec = commandModule(
 );
 export const loadTaskNewSpec = (deps: RunDeps) =>
   import("../../../commands/task/new.command.js").then((m) => m.makeRunTaskNewHandler(deps.getCtx));
+export const loadTaskBeginSpec = (deps: RunDeps) =>
+  import("../../../commands/task/begin.command.js").then((m) =>
+    m.makeRunTaskBeginHandler(deps.getCtx),
+  );
+export const loadTaskCompleteSpec = (deps: RunDeps) =>
+  import("../../../commands/task/complete.command.js").then((m) =>
+    m.makeRunTaskCompleteHandler(deps.getCtx),
+  );
 export const loadTaskDeriveSpec = (deps: RunDeps) =>
   import("../../../commands/task/derive.command.js").then((m) =>
     m.makeRunTaskDeriveHandler(deps.getCtx),

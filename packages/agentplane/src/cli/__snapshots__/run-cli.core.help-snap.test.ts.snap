@@ -1,6 +1,6 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`runCli help snapshots (cli2) > help (registry) snapshot 1`] = `
+exports[`runCli help snapshots (cli2) help (registry) snapshot 1`] = `
 "Usage:
   agentplane help [<cmd...>] [--compact] [--json]
 
@@ -14,13 +14,16 @@ Commands:
   Task:
     ready  Report dependency readiness details for a task.
     task  Task lifecycle and task-store commands.
+    task begin  Create, plan, approve, and start or route a task through the normal lifecycle.
     task comment  Append a comment to a task.
+    task complete  Record OK verification and finish a direct task, or print the branch_pr close route.
     task doc  Task doc commands (show/set).
     task doc set  Update a task README section.
     task doc show  Print task README content (entire doc or one section).
     task list  List tasks with compact resolved blueprint route hints.
     task new  Create a new task (prints the generated task id).
     task next  List ready tasks (default status=TODO) with optional filters.
+    task next-action  Print the single safest next command for a task route.
     task plan  Task plan commands (set/approve/reject).
     task plan approve  Approve the current task plan (enforces Verify Steps gating when configured).
     task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
@@ -30,6 +33,7 @@ Commands:
     task search  Search tasks by text or regex with optional filters.
     task show  Print task metadata and resolved blueprint route as JSON.
     task start-ready  Run readiness checks and start a task in one deterministic command.
+    task status  Show task lifecycle state with optional branch_pr route decision details.
     task verify  Record verification results (ok/rework).
     task verify ok  Record verification as OK (updates Verification section and verification frontmatter).
     task verify rework  Record verification as needs rework (resets commit, sets status to DOING, updates Verification).
@@ -40,6 +44,7 @@ Commands:
     start  Transition a task to DOING and record a structured Start comment.
     verify  Record a verification outcome for a task; incident candidates stay task-local unless collected explicitly.
   Work:
+    work resume  Diagnose how to resume a task in the correct checkout/worktree.
     work start  Prepare the workspace for a task (direct: single-stream on current branch; branch_pr: task branch/worktree).
   PR:
     integrate  Integrate a task branch into the base branch (branch_pr workflow).
@@ -168,6 +173,9 @@ Commands:
     evaluator  List and inspect evaluator prompt modules.
     evaluator list  List evaluator prompt modules from .agentplane/evaluators.
     evaluator show  Print an evaluator prompt module.
+  Workflow:
+    flow  Inspect and repair high-level task workflow routes.
+    flow repair  Print a dry-run repair plan for task workflow drift.
   Framework Dev:
     codex  Codex integration commands.
     codex plugin  Install and inspect bundled Codex plugin integrations.
@@ -186,62 +194,7 @@ Commands:
 "
 `;
 
-exports[`runCli help snapshots (cli2) > help codex plugin install --compact snapshot 1`] = `
-"codex plugin install - Install the bundled AgentPlane plugin into a local Codex marketplace.
-
-Usage:
-  agentplane codex plugin install [options]
-
-Options:
-  --scope <user|repo>  Install to the user home marketplace or the current repository marketplace. (choices=user|repo, default=user)
-"
-`;
-
-exports[`runCli help snapshots (cli2) > help recipes install --compact snapshot 1`] = `
-"recipes install - Install a recipe into the global cache from remote index, local archive, or URL.
-
-Usage:
-  agentplane recipes install <id|path|url> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]
-  agentplane recipes install --name <id> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]
-  agentplane recipes install --path <path> [--yes] [--on-conflict <fail|rename|overwrite>]
-  agentplane recipes install --url <url> [--yes] [--on-conflict <fail|rename|overwrite>]
-
-Options:
-  --name <id>  Cache from remote index by recipe id.
-  --path <path>  Cache from local recipe archive path.
-  --url <url>  Cache from recipe archive URL.
-  --index <path|url>  Override recipes index location (used when installing by name / auto-name).
-  --refresh  Refresh remote index cache before installing. (default=false)
-  --yes  Auto-approve network prompts when allowed by config. (default=false)
-  --on-conflict <fail|rename|overwrite>  Deprecated compatibility no-op; recipe installs stay self-contained. (choices=fail|rename|overwrite, default=fail)
-"
-`;
-
-exports[`runCli help snapshots (cli2) > help task --compact snapshot 1`] = `
-"task - Task lifecycle and task-store commands.
-
-Usage:
-  agentplane task <subcommand> [args] [options]
-"
-`;
-
-exports[`runCli help snapshots (cli2) > help task doc set --compact snapshot 1`] = `
-"task doc set - Update a task README section.
-
-Usage:
-  agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>) [--updated-by <id>]
-  agentplane task doc set <task-id> --full-doc (--text <text> | --file <path>) [--updated-by <id>]
-
-Options:
-  --section <name>  Target section heading (must be one of config.tasks.doc.sections). Required unless --full-doc is set.
-  --full-doc  Treat the provided text/file as the full task README payload. (default=false)
-  --text <text>  Section content (mutually exclusive with --file). Literal escaped newlines (\\n) are normalized for inline text.
-  --file <path>  Read section content from a file (mutually exclusive with --text).
-  --updated-by <id>  Optional. Override doc_updated_by metadata (must be non-empty).
-"
-`;
-
-exports[`runCli help snapshots (cli2) > help task new --compact snapshot 1`] = `
+exports[`runCli help snapshots (cli2) help task new --compact snapshot 1`] = `
 "task new - Create a new task (prints the generated task id).
 
 Usage:
@@ -264,15 +217,15 @@ Options:
 "
 `;
 
-exports[`runCli help snapshots (cli2) > help task plan --compact snapshot 1`] = `
-"task plan - Task plan commands (set/approve/reject).
+exports[`runCli help snapshots (cli2) help task --compact snapshot 1`] = `
+"task - Task lifecycle and task-store commands.
 
 Usage:
-  agentplane task plan <set|approve|reject> [args] [options]
+  agentplane task <subcommand> [args] [options]
 "
 `;
 
-exports[`runCli help snapshots (cli2) > help task run --compact snapshot 1`] = `
+exports[`runCli help snapshots (cli2) help task run --compact snapshot 1`] = `
 "task run - Prepare or run a task through the shared runner contract.
 
 Usage:
@@ -283,7 +236,62 @@ Options:
 "
 `;
 
-exports[`runCli help snapshots (cli2) > help work start --json snapshot 1`] = `
+exports[`runCli help snapshots (cli2) help task plan --compact snapshot 1`] = `
+"task plan - Task plan commands (set/approve/reject).
+
+Usage:
+  agentplane task plan <set|approve|reject> [args] [options]
+"
+`;
+
+exports[`runCli help snapshots (cli2) help task doc set --compact snapshot 1`] = `
+"task doc set - Update a task README section.
+
+Usage:
+  agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>) [--updated-by <id>]
+  agentplane task doc set <task-id> --full-doc (--text <text> | --file <path>) [--updated-by <id>]
+
+Options:
+  --section <name>  Target section heading (must be one of config.tasks.doc.sections). Required unless --full-doc is set.
+  --full-doc  Treat the provided text/file as the full task README payload. (default=false)
+  --text <text>  Section content (mutually exclusive with --file). Literal escaped newlines (\\n) are normalized for inline text.
+  --file <path>  Read section content from a file (mutually exclusive with --text).
+  --updated-by <id>  Optional. Override doc_updated_by metadata (must be non-empty).
+"
+`;
+
+exports[`runCli help snapshots (cli2) help recipes install --compact snapshot 1`] = `
+"recipes install - Install a recipe into the global cache from remote index, local archive, or URL.
+
+Usage:
+  agentplane recipes install <id|path|url> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]
+  agentplane recipes install --name <id> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]
+  agentplane recipes install --path <path> [--yes] [--on-conflict <fail|rename|overwrite>]
+  agentplane recipes install --url <url> [--yes] [--on-conflict <fail|rename|overwrite>]
+
+Options:
+  --name <id>  Cache from remote index by recipe id.
+  --path <path>  Cache from local recipe archive path.
+  --url <url>  Cache from recipe archive URL.
+  --index <path|url>  Override recipes index location (used when installing by name / auto-name).
+  --refresh  Refresh remote index cache before installing. (default=false)
+  --yes  Auto-approve network prompts when allowed by config. (default=false)
+  --on-conflict <fail|rename|overwrite>  Deprecated compatibility no-op; recipe installs stay self-contained. (choices=fail|rename|overwrite, default=fail)
+"
+`;
+
+exports[`runCli help snapshots (cli2) help codex plugin install --compact snapshot 1`] = `
+"codex plugin install - Install the bundled AgentPlane plugin into a local Codex marketplace.
+
+Usage:
+  agentplane codex plugin install [options]
+
+Options:
+  --scope <user|repo>  Install to the user home marketplace or the current repository marketplace. (choices=user|repo, default=user)
+"
+`;
+
+exports[`runCli help snapshots (cli2) help work start --json snapshot 1`] = `
 {
   "args": [
     {
@@ -308,6 +316,7 @@ exports[`runCli help snapshots (cli2) > help work start --json snapshot 1`] = `
     "When workflow_mode=direct, agentplane does not create task branches; it records a single active task for the workspace.",
     "When workflow_mode=branch_pr, --worktree is required and the command must be run on the base branch.",
     "After branch_pr work starts, run owner-scoped task commands from the created worktree so task README/PR artifacts stay attached to one checkout.",
+    "After interruption, use \`agentplane work resume <task-id>\` to diagnose the correct checkout, branch, PR, and repair route.",
   ],
   "options": [
     {

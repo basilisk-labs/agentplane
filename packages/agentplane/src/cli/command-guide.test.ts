@@ -73,6 +73,8 @@ describe("command-guide", () => {
     expect(text).toContain("## First visible payoff");
     expect(text).toContain("agentplane demo");
     expect(text).toContain("agentplane acr validate <task-id> --mode local");
+    expect(text).toContain('agentplane task begin "Inspect AgentPlane artifacts"');
+    expect(text).toContain("agentplane task complete <task-id>");
     expect(text).toContain(".agentplane/tasks/<task-id>/");
     expect(text).toContain("acr.json");
     expect(text).toContain("## Go deeper");
