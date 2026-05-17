@@ -10,6 +10,7 @@ import { cmdContextReindex, readContextProjection } from "./reindex.js";
 import { cmdContextSearch } from "./search.js";
 import { cmdContextShow } from "./show.js";
 import { cmdContextVerifyTask } from "./verify-task.js";
+import { cmdContextWikiExplain, cmdContextWikiLint, cmdContextWikiNew } from "./wiki.js";
 
 let tempRoots: string[] = [];
 
@@ -284,6 +285,29 @@ describe("context release readiness guards", () => {
     });
 
     expect(createTask).toHaveBeenCalledOnce();
+    const createdArgs = createTask.mock.calls[0]?.[0] as {
+      parsed?: {
+        description?: string;
+        extensions?: {
+          "agentplane.context"?: {
+            prompt_module_ref?: string;
+            prompt_modules?: { content?: string }[];
+            wiki?: { layout_strategy?: string; frontmatter_required?: boolean };
+          };
+        };
+      };
+    };
+    expect(createdArgs.parsed?.description).toContain("CURATOR contract:");
+    expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_module_ref).toBe(
+      "framework/template/generated.artifact/context_assimilation/v1",
+    );
+    expect(
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+    ).toContain("frontmatter");
+    expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.wiki).toMatchObject({
+      layout_strategy: "adaptive",
+      frontmatter_required: true,
+    });
     expect(approveTaskPlan).toHaveBeenCalledWith(
       expect.objectContaining({
         cwd: root,
@@ -307,5 +331,37 @@ describe("context release readiness guards", () => {
     expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
       "context ingestion task created: 202605130501-CTXRUN",
     );
+  });
+
+  it("creates and explains wiki pages with AgentPlane context frontmatter", async () => {
+    const root = await tempRoot();
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextWikiNew({
+      cwd: root,
+      parsed: {
+        page: "decisions/context-claims",
+        title: "Context Claims",
+        modality: "decision",
+        status: "reviewed_claim",
+        visibility: "project",
+        source: [".agentplane/tasks/202605130501-CTX001/README.md"],
+        force: false,
+      },
+    });
+    await cmdContextWikiLint({
+      cwd: root,
+      parsed: { path: "context/wiki" },
+    });
+    await cmdContextWikiExplain({
+      cwd: root,
+      parsed: { page: "decisions/context-claims" },
+    });
+
+    const output = out.mock.calls.map((call) => String(call[0])).join("");
+    expect(output).toContain("context wiki new: context/wiki/decisions/context-claims.md");
+    expect(output).toContain("context wiki lint: ok (1 page(s))");
+    expect(output).toContain("canonical_id:");
+    expect(output).toContain("modality: decision");
   });
 });

@@ -300,7 +300,12 @@ async function createContextWorkspace(
     { relative: ".agentplane/context/service/.gitkeep", content: "" },
   ];
 
-  if (parsed.profile === "wiki" || parsed.profile === "codebase" || parsed.profile === "research") {
+  if (
+    parsed.profile === "adaptive" ||
+    parsed.profile === "wiki" ||
+    parsed.profile === "codebase" ||
+    parsed.profile === "research"
+  ) {
     files.push(
       { relative: "context/raw/specs/.gitkeep", content: "" },
       { relative: "context/raw/research/.gitkeep", content: "" },
@@ -375,7 +380,22 @@ async function ensureContextGitignore(root: string, parsed: ContextInitParsed): 
 }
 
 function buildContextReadme(profile: ContextInitParsed["profile"]): string {
-  return `# Context workspace\n\nProfile: ${profile}\n\nUse this directory as the human-readable context surface.\n`;
+  return `# Context workspace
+
+Profile: ${profile}
+
+Use this directory as the human-readable context surface.
+
+AgentPlane local context uses one adaptive llm-wiki contract:
+
+- \`context/raw/**\` keeps source material.
+- \`context/wiki/**\` keeps readable synthesis pages with AgentPlane frontmatter.
+- \`.agentplane/context/derived/**\` keeps reproducible claims, graph rows, provenance, and reports.
+- \`.agentplane/context/service/**\` keeps local caches only.
+
+Agents should create wiki pages when a topic is reusable for future tasks, but keep atomic claims in
+derived machine artifacts. Source references should be markdown links where possible.
+`;
 }
 
 function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string {
@@ -384,11 +404,24 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
 Profile: ${profile}
 
 - Treat \`context/wiki/**\` as durable, source-backed project knowledge.
+- Treat this wiki as adaptive: generate the page hierarchy from project evidence, while preserving
+  stable frontmatter fields for future publication/synchronization.
+- Wiki pages are context artifacts; atomic claims and graph edges remain machine-readable derived
+  artifacts.
+- Use page frontmatter with \`agentplane_context.schema_version\`, \`artifact_type\`,
+  \`canonical_id\`, \`modality\`, \`epistemic_status\`, \`visibility\`, \`source_refs\`,
+  \`claims\`, \`graph_refs\`, and \`conflicts\`.
 - Analyze the base project, existing docs, task history, and raw sources before choosing a wiki structure.
 - Choose the smallest wiki hierarchy that fits this project; do not force a universal concepts/entities/decisions/modules layout.
 - Preserve and refine the chosen hierarchy after the first analysis; avoid reshaping it unless new evidence makes the old structure misleading.
+- Keep different modalities explicit: factual_claim, observation, assumption, hypothesis, decision,
+  policy, preference, requirement, risk, capability, definition, and deprecation.
+- Decisions from task history should be written as ADR/evolution records with provenance and
+  supersession metadata, not as probabilistic factual claims.
 - If a glossary is useful, keep it as a thin index over existing wiki pages and graph entities, not as a competing source of truth.
 - Prefer useful Markdown cross-links between related wiki pages and glossary entries, especially on first meaningful mentions of known concepts, entities, decisions, risks, or modules.
+- When claims conflict, keep both claims, create a conflict candidate, and ask for review before
+  promotion or overwrite.
 - Keep raw inputs in \`context/raw/**\`; do not copy private raw sources into public wiki pages.
 - Add source references for factual claims that come from raw files, task READMEs, ACRs, or code.
 - Use \`agentplane context verify-task <task-id>\` before closing context assimilation work.
@@ -411,6 +444,9 @@ project:
 workspace:
   namespace: local.project
   mode: ${profile}
+  layout_strategy: adaptive
+  page_granularity: topic_artifact
+  claim_granularity: atomic
   root: context
   raw: context/raw
   wiki: context/wiki
@@ -437,6 +473,23 @@ derived:
     edges: .agentplane/context/derived/capabilities/capability_edges.jsonl
   reports:
     events: .agentplane/context/derived/reports/assimilation-events.jsonl
+wiki:
+  frontmatter_required: true
+  source_refs_as_markdown_links: true
+  cross_links_required: true
+  modalities:
+    - factual_claim
+    - observation
+    - assumption
+    - hypothesis
+    - decision
+    - policy
+    - preference
+    - requirement
+    - risk
+    - capability
+    - definition
+    - deprecation
 agentplane:
   tasks_root: .agentplane/tasks
 service:

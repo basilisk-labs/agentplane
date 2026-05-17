@@ -99,6 +99,11 @@ import {
   contextShowSpec,
   contextSpec,
   contextVerifyTaskSpec,
+  contextWikiExplainSpec,
+  contextWikiLinkSpec,
+  contextWikiLintSpec,
+  contextWikiNewSpec,
+  contextWikiSpec,
 } from "../../../commands/context/context.spec.js";
 import {
   contextCheckSpec,
@@ -238,6 +243,11 @@ export const PROJECT_COMMANDS = [
   fromCommandsContextCommand(contextReindexSpec, "runContextReindex", { surface: "advanced" }),
   fromCommandsContextCommand(contextSearchSpec, "runContextSearch"),
   fromCommandsContextCommand(contextShowSpec, "runContextShow"),
+  fromCommandsContextCommand(contextWikiSpec, "runContextWikiGroup"),
+  fromCommandsContextCommand(contextWikiNewSpec, "runContextWikiNew"),
+  fromCommandsContextCommand(contextWikiLintSpec, "runContextWikiLint"),
+  fromCommandsContextCommand(contextWikiExplainSpec, "runContextWikiExplain"),
+  fromCommandsContextCommand(contextWikiLinkSpec, "runContextWikiLink"),
   fromCommandsContextCommand(contextDoctorSpec, "runContextDoctor", { surface: "advanced" }),
   fromCommandsContextCommand(contextVerifyTaskSpec, "runContextVerifyTask", {
     surface: "advanced",

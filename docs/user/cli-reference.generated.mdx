@@ -135,6 +135,10 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [context learn tasks](#context-learn-tasks)
   - [context search](#context-search)
   - [context show](#context-show)
+  - [context wiki explain](#context-wiki-explain)
+  - [context wiki link](#context-wiki-link)
+  - [context wiki lint](#context-wiki-lint)
+  - [context wiki new](#context-wiki-new)
 - Evaluators
   - [evaluator list](#evaluator-list)
   - [evaluator show](#evaluator-show)
@@ -3235,7 +3239,7 @@ agentplane context init [options]
 
 Options:
 
-- `--profile <minimal|wiki|codebase|research>`: Select an initial context profile. (choices=minimal|wiki|codebase|research, default=wiki)
+- `--profile <adaptive|minimal|wiki|codebase|research>`: Select initial context setup. adaptive is the default cloud-ready llm-wiki contract; legacy scaffold aliases remain available. (choices=adaptive|minimal|wiki|codebase|research, default=adaptive)
 - `--raw-gitignore <none|all>`: Ignore raw sources by default when set to all. (choices=none|all, default=none)
 - `--derived-gitignore <none|all>`: Ignore machine-derived context files under .agentplane/context/derived when set to all. (choices=none|all, default=none)
 - `--repair`: Create missing files only. (default=false)
@@ -3359,6 +3363,55 @@ Usage:
 ```text
 agentplane context show <source-ref>
 ```
+
+### context wiki explain
+
+Print a wiki page's AgentPlane context frontmatter.
+
+Usage:
+
+```text
+agentplane context wiki explain <path-or-slug>
+```
+
+### context wiki link
+
+Suggest existing wiki pages that may deserve cross-links.
+
+Usage:
+
+```text
+agentplane context wiki link <path-or-slug>
+```
+
+### context wiki lint
+
+Validate wiki page frontmatter and source-link hygiene.
+
+Usage:
+
+```text
+agentplane context wiki lint [<path>]
+```
+
+### context wiki new
+
+Create a wiki page with AgentPlane context frontmatter.
+
+Usage:
+
+```text
+agentplane context wiki new <path-or-slug> [options]
+```
+
+Options:
+
+- `--title <title>`: Page title. Defaults to a title derived from the path.
+- `--modality <modality>`: Primary page modality: factual_claim, observation, assumption, hypothesis, decision, policy, preference, requirement, risk, capability, definition, or deprecation. (default=factual_claim)
+- `--status <epistemic-status>`: Initial epistemic status such as extracted_candidate, sourced_claim, reviewed_claim, disputed, deprecated, or canonical_org_knowledge. (default=sourced_claim)
+- `--visibility <scope>`: Intended visibility scope for future publication metadata. (default=project)
+- `--source <source-ref>`: Repeatable markdown/source reference backing the page. (repeatable)
+- `--force`: Overwrite an existing page. (default=false)
 
 ## Evaluators
 
