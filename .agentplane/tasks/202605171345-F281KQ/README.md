@@ -1,10 +1,11 @@
 ---
 id: "202605171345-F281KQ"
 title: "Add guided task begin and complete shortcuts"
-status: "DOING"
+result_summary: "Merged via PR #3848."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -30,11 +31,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented guided task begin and complete shortcuts. Checks passed: guided CLI tests; command-guide/help snapshots; docs freshness; policy routing; typecheck; lint; lifecycle unit tests via Vitest after bun-test runner mismatch was reported as issue #3845; clean temp-repo smoke for init -> task begin -> task complete."
   attempts: 0
-commit: null
+commit:
+  hash: "c7bd0fad046998dd23e767380e8225fc9159b74c"
+  message: "Merge pull request #3848 from basilisk-labs/task/202605171345-F281KQ/guided-task-shortcuts"
 comments:
   -
     author: "CODER"
     body: "Start: implement guided task begin and complete shortcuts over existing lifecycle primitives."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3848 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented guided task begin and complete shortcuts. Checks passed: guided CLI tests; command-guide/help snapshots; docs freshness; policy routing; typecheck; lint; lifecycle unit tests via Vitest after bun-test runner mismatch was reported as issue #3845; clean temp-repo smoke for init -> task begin -> task complete."
+  -
+    type: "status"
+    at: "2026-05-17T18:48:12.576Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3848 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T17:43:31.507Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T18:48:12.582Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add thin user-facing workflow shortcuts over existing task lifecycle primitives so users can begin and complete a task through policy-aware commands while preserving the generated audit trail and explicit stop gates."
 sections:
   Summary: |-
