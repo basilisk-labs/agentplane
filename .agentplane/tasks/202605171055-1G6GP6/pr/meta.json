@@ -2,12 +2,12 @@
   "base": "main",
   "branch": "task/202605171055-1G6GP6/route-decision-cli",
   "created_at": "2026-05-17T10:56:21.808Z",
-  "head_sha": "5785014c90dc0e261294b619bac15c8baacf54fa",
-  "last_verified_at": "2026-05-17T11:10:35.028Z",
-  "last_verified_sha": "5785014c90dc0e261294b619bac15c8baacf54fa",
+  "head_sha": "7f98675e52987cda8e1bf8c41645829cd35bba10",
+  "last_verified_at": "2026-05-17T11:12:34.559Z",
+  "last_verified_sha": "7f98675e52987cda8e1bf8c41645829cd35bba10",
   "schema_version": 1,
   "task_id": "202605171055-1G6GP6",
-  "updated_at": "2026-05-17T11:10:11.857Z",
+  "updated_at": "2026-05-17T11:12:35.038Z",
   "verify": {
     "status": "pass"
   }

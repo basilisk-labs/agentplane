@@ -19,18 +19,19 @@ Add machine-readable task route/status/next-action/resume/repair commands for br
 - Note:
 
 ```text
-Post-commit verification refreshed at current HEAD after route decision CLI implementation commit.
-Focused tests, typecheck, lint:core, format:check, policy routing, diff check, framework bootstrap,
-and repo-local command smokes passed.
+Post-rebase verification refreshed at current HEAD after rebasing route decision CLI work onto
+origin/main. Focused tests and typecheck were rerun after rebase; prior lint:core, format:check,
+policy routing, diff check, framework bootstrap, and repo-local smokes remain valid for the same
+implementation.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-17T11:10:11.857Z
+- Updated: 2026-05-17T11:12:35.038Z
 - Branch: task/202605171055-1G6GP6/route-decision-cli
-- Head: 5785014c90dc
+- Head: 7f98675e5298
 
 ```text
  .../blueprint/resolved-snapshot.json               | 552 +++++++++++++++++++++
