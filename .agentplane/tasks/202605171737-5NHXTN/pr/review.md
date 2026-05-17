@@ -24,12 +24,15 @@ Created: 2026-05-17T17:37:29.120Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-17T17:37:29.120Z
+- Updated: 2026-05-17T17:48:36.638Z
 - Branch: task/202605171737-5NHXTN/fix-3843-base-start-ready
-- Head: 3e171077adaf
+- Head: a273f138da1f
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 528 +++++++++++++++++++++
+ .../src/cli/run-cli.core.pr-flow.test.ts           |  97 ++++
+ .../agentplane/src/commands/task/start-ready.ts    |  79 ++-
+ 3 files changed, 703 insertions(+), 1 deletion(-)
 ```
 
 </details>
