@@ -1,5 +1,9 @@
 import type { TaskPrMeta } from "@agentplaneorg/core/schemas";
-import { resolveBaseBranch, parseTaskIdFromBranch } from "@agentplaneorg/core/git";
+import {
+  DEFAULT_TASK_BRANCH_PREFIX,
+  resolveBaseBranch,
+  parseTaskIdFromBranch,
+} from "@agentplaneorg/core/git";
 
 import type { TaskData } from "../../../backends/task-backend.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
@@ -186,7 +190,7 @@ export async function findDoneBranchPrTasksWithOpenPrArtifacts(opts: {
       isStackedBranchAliasDoneTask({
         task,
         branch,
-        taskPrefix: opts.ctx.config.branch.task_prefix,
+        taskPrefix: opts.ctx.config.branch?.task_prefix ?? DEFAULT_TASK_BRANCH_PREFIX,
       })
     ) {
       continue;
