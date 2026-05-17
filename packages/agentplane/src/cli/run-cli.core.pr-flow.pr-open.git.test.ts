@@ -59,7 +59,7 @@ import {
 } from "@agentplane/testkit/cli-core-pr-flow";
 
 describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TIMEOUT_MS }, () => {
-  it("pr open marks push failures explicitly before returning an error", async () => {
+  it("pr open leaves committed PR artifacts unchanged when task branch publish fails", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -139,6 +139,7 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
     const originalPath = process.env.PATH;
     process.env.PATH = `${fakeGitBin}${path.delimiter}${originalPath ?? ""}`;
 
+    const io = captureStdIO();
     try {
       const code = await runCli([
         "pr",
@@ -151,17 +152,166 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
         "--root",
         root,
       ]);
-      expect(code).toBe(5);
+      expect(code, io.stderr).toBe(5);
     } finally {
+      io.restore();
       process.env.PATH = originalPath;
     }
 
+    const { stdout: statusStdout } = await execFileAsync(
+      "git",
+      ["status", "--short", "--untracked-files=no"],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
     const meta = JSON.parse(
       await readFile(path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"), "utf8"),
     ) as { artifact_state?: string; artifact_state_reason?: string };
-    expect(meta.artifact_state).toBe("remote_failed");
-    expect(meta.artifact_state_reason).toContain("simulated task branch publish failure");
-  });
+    expect(meta.artifact_state).not.toBe("remote_failed");
+    expect(meta.artifact_state_reason ?? "").not.toContain("simulated task branch publish failure");
+    expect(statusStdout.trim()).toBe("");
+  }, PR_FLOW_INTEGRATION_TIMEOUT_MS);
+
+  it("pr open publishes HEAD to the task branch ref when the local branch tracks origin/main", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const publishRemotePath = await configurePushableOrigin(root);
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore initial main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["push", "-u", "origin", "HEAD:refs/heads/main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const { stdout: remoteMainBeforeStdout } = await execFileAsync(
+      "git",
+      ["ls-remote", "--heads", publishRemotePath, "refs/heads/main"],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    const remoteMainBefore = remoteMainBeforeStdout.trim().split(/\s+/, 1)[0] ?? "";
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open inherited upstream",
+        "--description",
+        "PR open should not publish task branch HEAD to origin/main when upstream metadata is wrong.",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "github",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const branch = `task/${taskId}/inherited-main-upstream`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore branch publish seed"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["config", `branch.${branch}.remote`, "origin"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["config", `branch.${branch}.merge`, "refs/heads/main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
+    const { fakeBin } = await installFakeGhPrApi({
+      scenarioName: "open-inherited-main-upstream",
+      branch,
+      createResponse: {
+        number: 916,
+        html_url: "https://github.com/example/repo/pull/916",
+        state: "open",
+        merged_at: null,
+        merge_commit_sha: null,
+        head: { sha: "remote-head-sha" },
+        base: { ref: "main" },
+      },
+    });
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        branch,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("created GitHub PR #916");
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+    }
+
+    const { stdout: upstreamStdout } = await execFileAsync(
+      "git",
+      ["for-each-ref", "--format=%(upstream:short)", `refs/heads/${branch}`],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    expect(upstreamStdout.trim()).toBe(`origin/${branch}`);
+
+    const { stdout: remoteTaskStdout } = await execFileAsync(
+      "git",
+      ["ls-remote", "--heads", publishRemotePath, `refs/heads/${branch}`],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    expect(remoteTaskStdout.trim()).not.toBe("");
+
+    const { stdout: remoteMainAfterStdout } = await execFileAsync(
+      "git",
+      ["ls-remote", "--heads", publishRemotePath, "refs/heads/main"],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    const remoteMainAfter = remoteMainAfterStdout.trim().split(/\s+/, 1)[0] ?? "";
+    expect(remoteMainAfter).toBe(remoteMainBefore);
+  }, PR_FLOW_INTEGRATION_TIMEOUT_MS);
 
   it("pr open creates a remote GitHub PR on the first pass after packet materialization", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -664,5 +814,5 @@ describe("runCli pr open flow git publishing", { timeout: PR_FLOW_INTEGRATION_TI
       io.restore();
       process.env.PATH = originalPath;
     }
-  });
+  }, PR_FLOW_INTEGRATION_TIMEOUT_MS);
 });

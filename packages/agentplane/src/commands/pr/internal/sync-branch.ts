@@ -18,6 +18,7 @@ export function isUnknownRevisionError(err: unknown): boolean {
   const message = err instanceof Error ? err.message : String(err);
   return (
     /unknown revision or path not in the working tree/i.test(message) ||
+    /not a valid object name/i.test(message) ||
     /bad revision/i.test(message) ||
     /ambiguous argument/i.test(message)
   );
