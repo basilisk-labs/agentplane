@@ -1,10 +1,11 @@
 ---
 id: "202605170811-8DPCYD"
 title: "Fix CodeQL hosted close checkout alert"
-status: "DOING"
+result_summary: "Merged via PR #3793."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Local verification passed for hosted-close workflow remediation: removed the pull_request_target PR-head fetch, updated the workflow contract test, ran targeted tests (93 pass), exact-file ESLint, core and agentplane typecheck, workflow lint, and policy routing. GitHub Code scanning alert #1 remains open until this branch is published and CodeQL reruns."
   attempts: 0
-commit: null
+commit:
+  hash: "5adb3a0469a76d960d01d97ef0f8294687f7356c"
+  message: "Merge pull request #3793 from basilisk-labs/task/202605170811-8DPCYD/codeql-security-fixes"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the primary CodeQL remediation batch in this isolated branch_pr worktree, covering hosted-close checkout plus included task IDs J4R55A, Q06434, X4C8DJ, and 9FFE6Y."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3793 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local verification passed for hosted-close workflow remediation: removed the pull_request_target PR-head fetch, updated the workflow contract test, ran targeted tests (93 pass), exact-file ESLint, core and agentplane typecheck, workflow lint, and policy routing. GitHub Code scanning alert #1 remains open until this branch is published and CodeQL reruns."
+  -
+    type: "status"
+    at: "2026-05-17T09:33:01.998Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3793 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T08:47:52.454Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T09:33:02.003Z"
+doc_updated_by: "INTEGRATOR"
 description: "Harden GitHub Actions hosted-close checkout/fetch handling for CodeQL alert #1."
 sections:
   Summary: |-
