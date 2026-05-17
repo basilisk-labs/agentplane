@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605171737-5NHXTN/fix-3843-base-start-ready",
+  "created_at": "2026-05-17T17:37:29.120Z",
+  "head_sha": "3e171077adaf143f9e060aeb285bb1e61fd0e026",
+  "last_verified_at": "2026-05-17T17:47:08.756Z",
+  "last_verified_sha": "3e171077adaf143f9e060aeb285bb1e61fd0e026",
+  "schema_version": 1,
+  "task_id": "202605171737-5NHXTN",
+  "updated_at": "2026-05-17T17:37:29.120Z",
+  "verify": {
+    "status": "pass"
+  }
+}
