@@ -12,6 +12,7 @@ dmypy.json
 node_modules
 dist
 coverage
+.turbo
 *.tsbuildinfo
 .agentplane/worktrees
 .agentplane/cache

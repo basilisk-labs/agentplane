@@ -52,6 +52,6 @@
     "prepack": "bun run clean && bun run build && node ../../scripts/release/manifest.mjs sanitize .",
     "postpack": "node ../../scripts/release/manifest.mjs build .",
     "prepublishOnly": "node ../../scripts/release/enforce-github-publish.mjs && npm run prepack",
-    "test": "bun test ./src/index.test.ts ./src/overlay.test.ts ./src/blueprint-extensions.test.ts"
+    "test": "cd ../.. && vitest --config vitest.workspace.ts run --project recipes"
   }
 }

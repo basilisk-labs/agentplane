@@ -64,6 +64,7 @@
     "build": "npm run clean && tsc -b --force && npm run build:bundle",
     "build:bundle": "node ../../scripts/release/prune-package-js.mjs dist && tsup && node ../../scripts/release/manifest.mjs build .",
     "typecheck": "tsc -b",
+    "test": "cd ../.. && vitest --config vitest.workspace.ts run --project agentplane",
     "prepack": "npm run clean && npm run build && node ../../scripts/release/manifest.mjs sanitize .",
     "postpack": "node ../../scripts/release/manifest.mjs build .",
     "prepublishOnly": "node ../../scripts/release/enforce-github-publish.mjs && npm run prepack"
