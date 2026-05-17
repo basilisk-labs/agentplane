@@ -1,5 +1,4 @@
 const DOC_SECTION_HEADER = "## Summary";
-const DOC_SECTION_HEADER_RE = /^##\s+Summary(?:\s|$|#)/;
 const AUTO_SUMMARY_HEADER = "## Changes Summary (auto)";
 import { TASK_DOC_SECTION_ORDER } from "./task-doc-contract.js";
 
@@ -12,9 +11,18 @@ export function normalizeDocSectionName(section: string): string {
 function normalizeDoc(text: string): string {
   return (text ?? "")
     .split("\n")
-    .map((line) => line.replaceAll(/\s+$/gu, ""))
+    .map((line) => line.trimEnd())
     .join("\n")
     .trim();
+}
+
+function isSummarySectionHeader(line: string): boolean {
+  const trimmed = line.trim();
+  if (!trimmed.startsWith("##")) return false;
+  const rest = trimmed.slice(2);
+  if (!rest?.startsWith(" ")) return false;
+  const title = rest.trimStart();
+  return title === "Summary" || title.startsWith("Summary ") || title.startsWith("Summary#");
 }
 
 export function splitCombinedHeadingLines(doc: string): string[] {
@@ -173,7 +181,7 @@ export function extractTaskDoc(body: string): string {
   const lines = body.split("\n");
   let startIdx: number | null = null;
   for (const [idx, line] of lines.entries()) {
-    if (DOC_SECTION_HEADER_RE.test(line.trim())) {
+    if (isSummarySectionHeader(line)) {
       startIdx = idx;
       break;
     }
@@ -199,7 +207,7 @@ export function mergeTaskDoc(body: string, doc: string): string {
     const lines = body ? body.split("\n") : [];
     let prefixIdx: number | null = null;
     for (const [idx, line] of lines.entries()) {
-      if (DOC_SECTION_HEADER_RE.test(line.trim())) {
+      if (isSummarySectionHeader(line)) {
         prefixIdx = idx;
         break;
       }

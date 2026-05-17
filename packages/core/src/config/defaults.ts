@@ -2,6 +2,8 @@ import type { AgentplaneConfig as AgentplaneConfigShape } from "./schema.impl.js
 
 export { defaultAgentplaneConfig as defaultConfig } from "./schema.impl.js";
 
+const PROTOTYPE_POLLUTION_KEYS = new Set(["__proto__", "prototype", "constructor"]);
+
 export function isConfigRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
@@ -29,6 +31,11 @@ export function setByDottedKey(
 ): void {
   const parts = dottedKey.split(".").filter(Boolean);
   if (parts.length === 0) throw new Error("config key must be non-empty");
+  for (const part of parts) {
+    if (PROTOTYPE_POLLUTION_KEYS.has(part)) {
+      throw new Error(`config key segment "${part}" is not allowed`);
+    }
+  }
   let current: Record<string, unknown> = obj;
   for (let i = 0; i < parts.length - 1; i++) {
     const part = parts[i];

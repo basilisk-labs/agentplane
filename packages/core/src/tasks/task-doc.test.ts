@@ -67,6 +67,11 @@ describe("task-doc", () => {
     expect(extractTaskDoc(body)).toBe(["## Summary", "", "Hello"].join("\n"));
   });
 
+  it("extractTaskDoc handles long non-heading prefixes with linear header checks", () => {
+    const body = ["x".repeat(50_000), "## Summary", "Hello"].join("\n");
+    expect(extractTaskDoc(body)).toBe(["## Summary", "", "Hello"].join("\n"));
+  });
+
   it("extractTaskDoc returns empty when body is empty or missing a Summary header", () => {
     expect(extractTaskDoc("")).toBe("");
     expect(extractTaskDoc("# Task\n\n## Context\nx\n")).toBe("");

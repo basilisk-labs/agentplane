@@ -284,6 +284,16 @@ describe("config", () => {
     expect(() => setByDottedKey(cfg, ".", "x")).toThrow(/non-empty/);
   });
 
+  it("setByDottedKey rejects prototype-polluting path segments", () => {
+    const cfg = defaultConfig() as unknown as Record<string, unknown>;
+    expect(() => setByDottedKey(cfg, "__proto__.polluted", "true")).toThrow(/not allowed/);
+    expect(() => setByDottedKey(cfg, "constructor.prototype.polluted", "true")).toThrow(
+      /not allowed/,
+    );
+    expect(() => setByDottedKey(cfg, "safe.prototype.polluted", "true")).toThrow(/not allowed/);
+    expect(({} as { polluted?: boolean }).polluted).toBeUndefined();
+  });
+
   it("saveConfig writes WORKFLOW.md, removes config.json, and loadConfig reads it back", async () => {
     const tmp = await mkdtemp(path.join(os.tmpdir(), "agentplane-config-test-"));
     const agentplaneDir = path.join(tmp, ".agentplane");

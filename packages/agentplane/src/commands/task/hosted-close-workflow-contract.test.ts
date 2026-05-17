@@ -18,10 +18,7 @@ describe("Task hosted-close workflow contract", () => {
     expect(workflow).toContain("pull-requests: write");
     expect(workflow).toContain("fetch-depth: 0");
     expect(workflow).toContain("node scripts/prepare-hosted-task-closure.mjs");
-    expect(workflow).toContain("git fetch --no-tags origin");
-    expect(workflow).toContain(
-      "pull/${{ steps.prepare.outputs.pr_number }}/head:${{ steps.prepare.outputs.source_branch",
-    );
+    expect(workflow).not.toContain("pull/${{ steps.prepare.outputs.pr_number }}/head");
     expect(workflow).toContain("task hosted-close");
     expect(workflow).toContain("gh pr create");
     expect(workflow).toContain('if gh pr merge --merge --delete-branch "$pr_url"; then');
