@@ -406,7 +406,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
           "--tag",
           "nodejs",
           "--verify",
-          "echo ok",
+          "git status --short",
           "--root",
           root,
         ]);
