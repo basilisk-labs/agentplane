@@ -82,6 +82,18 @@ async function runAudit(filePath: string) {
   });
 }
 
+async function runAuditFailureStdout(filePath: string) {
+  try {
+    await runAudit(filePath);
+  } catch (error: unknown) {
+    const stdout =
+      error && typeof error === "object" && "stdout" in error ? error.stdout : undefined;
+    if (typeof stdout === "string") return stdout;
+    throw error;
+  }
+  throw new Error("Expected audit command to fail.");
+}
+
 afterEach(async () => {
   while (roots.length > 0) {
     const root = roots.pop();
@@ -119,9 +131,7 @@ describe("post-publish platform audit script", () => {
     ];
     const filePath = await writePublishResult(root, fixture);
 
-    await expect(runAudit(filePath)).rejects.toMatchObject({
-      stdout: expect.stringContaining('"ok":false'),
-    });
+    await expect(runAuditFailureStdout(filePath)).resolves.toContain('"ok":false');
   });
 
   it("fails closed when GHCR or GitHub Release asset evidence is missing", async () => {
@@ -131,8 +141,8 @@ describe("post-publish platform audit script", () => {
     fixture.distribution.manifest.releaseAssets = [{ name: "release-distribution.json" }];
     const filePath = await writePublishResult(root, fixture);
 
-    await expect(runAudit(filePath)).rejects.toMatchObject({
-      stdout: expect.stringContaining("GHCR publication not confirmed"),
-    });
+    await expect(runAuditFailureStdout(filePath)).resolves.toContain(
+      "GHCR publication not confirmed",
+    );
   });
 });

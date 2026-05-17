@@ -34,12 +34,24 @@ bun run test:project -- agentplane \
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-17T12:42:41.876Z
+- Updated: 2026-05-17T12:49:12.637Z
 - Branch: task/202605171241-TTZEGQ/release-platform-evidence
-- Head: ad9c22a6b4ef
+- Head: 81baff4874e3
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 416 +++++++++++++++++++++
+ .github/workflows/publish.yml                      |   2 +
+ docs/developer/release-and-publishing.mdx          |  11 +
+ package.json                                       |   1 +
+ .../audit-platform-publication-script.test.ts      | 138 +++++++
+ .../release/publish-workflow-contract.test.ts      |   2 +
+ .../write-publish-result-manifest-script.test.ts   |  17 +
+ scripts/README.md                                  |   1 +
+ scripts/audit-platform-publication.mjs             |   1 +
+ scripts/release/audit-platform-publication.mjs     | 162 ++++++++
+ scripts/release/manifest.mjs                       |  14 +
+ .../SKILL.md                                       |  55 ++-
+ 12 files changed, 818 insertions(+), 2 deletions(-)
 ```
 
 </details>
