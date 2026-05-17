@@ -4,7 +4,7 @@ title: "Add branch_pr route decision CLI commands"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -24,9 +24,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-17T12:34:54.052Z"
+  updated_at: "2026-05-17T12:41:13.939Z"
   updated_by: "CODER"
-  note: "Verified hosted CI fix: removed unused public route-decision type exports and refreshed knip baseline after TaskResumeContext became used. Checks passed: knip:check, focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check, framework bootstrap, and route status smoke."
+  note: "Verified current PR head after hosted CI fix artifact refresh. GitHub checks are green on PR #3823; local checks for the fix passed: knip:check, focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check, framework bootstrap, and route status smoke."
   attempts: 0
 commit: null
 comments:
@@ -77,8 +77,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified hosted CI fix: removed unused public route-decision type exports and refreshed knip baseline after TaskResumeContext became used. Checks passed: knip:check, focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check, framework bootstrap, and route status smoke."
+  -
+    type: "verify"
+    at: "2026-05-17T12:41:13.939Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified current PR head after hosted CI fix artifact refresh. GitHub checks are green on PR #3823; local checks for the fix passed: knip:check, focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check, framework bootstrap, and route status smoke."
 doc_version: 3
-doc_updated_at: "2026-05-17T12:34:54.061Z"
+doc_updated_at: "2026-05-17T12:41:13.949Z"
 doc_updated_by: "CODER"
 description: "Add machine-readable task route/status/next-action/resume/repair commands for branch_pr agent workflow optimization, and update prompts plus CLI documentation to teach the new commands."
 sections:
@@ -203,6 +209,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T11:47:34.245Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171055-1G6GP6-route-decision-cli/.agentplane/tasks/202605171055-1G6GP6/blueprint/resolved-snapshot.json
+    - old_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+    - current_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171055-1G6GP6
+
+    ### 2026-05-17T12:41:13.939Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified current PR head after hosted CI fix artifact refresh. GitHub checks are green on PR #3823; local checks for the fix passed: knip:check, focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check, framework bootstrap, and route status smoke.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T12:34:54.061Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
 
     Details:
 
@@ -363,6 +388,25 @@ Note: Verified hosted CI fix: removed unused public route-decision type exports 
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T11:47:34.245Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171055-1G6GP6-route-decision-cli/.agentplane/tasks/202605171055-1G6GP6/blueprint/resolved-snapshot.json
+- old_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+- current_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171055-1G6GP6
+
+### 2026-05-17T12:41:13.939Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified current PR head after hosted CI fix artifact refresh. GitHub checks are green on PR #3823; local checks for the fix passed: knip:check, focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check, framework bootstrap, and route status smoke.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T12:34:54.061Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
 
 Details:
 

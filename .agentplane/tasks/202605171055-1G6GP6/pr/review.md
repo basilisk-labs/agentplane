@@ -13,7 +13,7 @@ Created: 2026-05-17T10:56:21.808Z
 ## Verification
 
 - State: ok
-- Note: Verified hosted CI fix: removed unused public route-decision type exports and refreshed knip baseline after TaskResumeContext became used. Checks passed: knip:check, focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check, framework bootstrap, and route status smoke.
+- Note: Verified current PR head after hosted CI fix artifact refresh. GitHub checks are green on PR #3823; local checks for the fix passed: knip:check, focused route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check, framework bootstrap, and route status smoke.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

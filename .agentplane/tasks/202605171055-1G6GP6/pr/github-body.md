@@ -19,10 +19,10 @@ Add machine-readable task route/status/next-action/resume/repair commands for br
 - Note:
 
 ```text
-Verified hosted CI fix: removed unused public route-decision type exports and refreshed knip
-baseline after TaskResumeContext became used. Checks passed: knip:check, focused
-route-decision/pr-flow tests, typecheck, lint:core, format:check, routing policy check, diff check,
-framework bootstrap, and route status smoke.
+Verified current PR head after hosted CI fix artifact refresh. GitHub checks are green on PR #3823;
+local checks for the fix passed: knip:check, focused route-decision/pr-flow tests, typecheck,
+lint:core, format:check, routing policy check, diff check, framework bootstrap, and route status
+smoke.
 ```
 - Canonical workflow state lives in the task README.
 
