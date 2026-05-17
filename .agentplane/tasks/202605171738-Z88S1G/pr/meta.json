@@ -1,13 +1,19 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-17T17:49:11Z",
   "base": "main",
   "branch": "task/202605171738-Z88S1G/paths-filter-fetch-depth",
   "created_at": "2026-05-17T17:39:54.087Z",
-  "head_sha": "2821cb1d05a6bd6d04c700852a0cc904856fa97e",
+  "head_sha": "2af9cd152814bfbb3b50ed67f08b5ad2c7aba91a",
   "last_verified_at": "2026-05-17T17:40:44.273Z",
   "last_verified_sha": "59a507f34063a995bdab0faa057af678575a6e9a",
+  "merge_commit": "ca87d4e5842544bda3015e6605e97e391acd5f4f",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-17T17:49:11Z",
   "schema_version": 1,
+  "status": "MERGED",
   "task_id": "202605171738-Z88S1G",
-  "updated_at": "2026-05-17T17:41:23.606Z",
+  "updated_at": "2026-05-17T17:49:11Z",
   "verify": {
     "status": "pass"
   }
