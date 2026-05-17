@@ -1,10 +1,10 @@
 ---
 id: "202605171725-AB0HM9"
 title: "Document local Turborepo developer workflow"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,16 @@ verification:
   updated_by: "DOCS"
   note: "Local Turborepo developer workflow documentation verified: developer docs explain local-only scope, graph/cache/evidence use, semantic code-map boundary, docs lane, scripts README freshness, docs build, formatting, policy routing, and doctor pass."
   attempts: 0
-commit: null
+commit:
+  hash: "1ff8db627f0bf772acd587f276a2a1ef7aa908c5"
+  message: "Merge pull request #3852 from basilisk-labs/task/202605171724-JW38N0/local-turbo-dev-overlay"
 comments:
   -
     author: "DOCS"
     body: "Start: documenting the approved local Turborepo developer workflow for AgentPlane framework contributors without changing user-facing runtime contracts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3852 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +46,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Local Turborepo developer workflow documentation verified: developer docs explain local-only scope, graph/cache/evidence use, semantic code-map boundary, docs lane, scripts README freshness, docs build, formatting, policy routing, and doctor pass."
+  -
+    type: "status"
+    at: "2026-05-17T18:50:26.673Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3852 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T17:50:16.279Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-17T18:50:26.685Z"
+doc_updated_by: "INTEGRATOR"
 description: "Document the local-only Turborepo developer workflow for AgentPlane maintainers and coding agents, including affected graph commands, evidence boundaries, and non-goals that keep Turborepo out of the public AgentPlane runtime contract."
 sections:
   Summary: |-

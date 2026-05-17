@@ -1,10 +1,11 @@
 ---
 id: "202605171724-JW38N0"
 title: "Add local Turborepo dev graph overlay"
-status: "DOING"
+result_summary: "Merged via PR #3852."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Local Turborepo dev overlay verified: turbo ls, graph, affected package build/typecheck/test, docs typecheck/build, ci:local:turbo, prettier check, policy routing, and doctor all pass."
   attempts: 0
-commit: null
+commit:
+  hash: "1ff8db627f0bf772acd587f276a2a1ef7aa908c5"
+  message: "Merge pull request #3852 from basilisk-labs/task/202605171724-JW38N0/local-turbo-dev-overlay"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the approved local-only Turborepo development overlay in this dedicated branch_pr worktree, preserving AgentPlane runtime/package/user-project boundaries and existing local CI routing."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3852 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local Turborepo dev overlay verified: turbo ls, graph, affected package build/typecheck/test, docs typecheck/build, ci:local:turbo, prettier check, policy routing, and doctor all pass."
+  -
+    type: "status"
+    at: "2026-05-17T18:50:26.661Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3852 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T17:38:42.816Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T18:50:26.667Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a local-only Turborepo development overlay for the AgentPlane framework checkout: root dev dependency, turbo.json, ignored local cache, explicit dev:turbo scripts, and conservative package script normalization without adding any runtime or published-package dependency on Turborepo."
 sections:
   Summary: |-
