@@ -1,10 +1,11 @@
 ---
 id: "202605170721-ESJ0SW"
 title: "Add portable context assimilation prompts"
-status: "DOING"
+result_summary: "Merged via PR #3791."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +28,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented portable context assimilation prompt module and adaptive wiki task contract; verified with focused context tests, typecheck, CLI docs check, policy routing, diff check, and temp-dir wiki CLI smoke."
   attempts: 0
-commit: null
+commit:
+  hash: "0c094b7552042fd78695fcbdf986030060f1c790"
+  message: "Merge pull request #3791 from basilisk-labs/task/202605170721-ESJ0SW/adaptive-context-curation"
 comments:
   -
     author: "CODER"
     body: "Start: Implement adaptive context curation batch in the primary task worktree, covering portable context prompts, wiki metadata helpers, adaptive init, docs, and focused tests for related task IDs."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3791 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -46,9 +52,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented portable context assimilation prompt module and adaptive wiki task contract; verified with focused context tests, typecheck, CLI docs check, policy routing, diff check, and temp-dir wiki CLI smoke."
+  -
+    type: "status"
+    at: "2026-05-17T08:29:27.295Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3791 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T07:37:06.084Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-17T08:29:27.302Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make context learn files/changes create self-contained CURATOR tasks with an embedded context_assimilation prompt module and task-readable wiki/claim/cross-link contract for non-runner agents."
 sections:
   Summary: |-
