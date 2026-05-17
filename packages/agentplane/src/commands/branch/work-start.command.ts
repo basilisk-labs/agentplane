@@ -55,6 +55,7 @@ export const workStartSpec: CommandSpec<WorkStartParsed> = {
     "When workflow_mode=direct, agentplane does not create task branches; it records a single active task for the workspace.",
     "When workflow_mode=branch_pr, --worktree is required and the command must be run on the base branch.",
     "After branch_pr work starts, run owner-scoped task commands from the created worktree so task README/PR artifacts stay attached to one checkout.",
+    "After interruption, use `agentplane work resume <task-id>` to diagnose the correct checkout, branch, PR, and repair route.",
   ],
   parse: (raw) => ({
     taskId: raw.args["task-id"] as string,

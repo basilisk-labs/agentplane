@@ -19,7 +19,7 @@ import { tryLookupExistingGithubPrByBranch } from "./internal/sync-github.js";
 
 type ProviderName = "github";
 
-type RemotePrStatus =
+export type RemotePrStatus =
   | { provider: ProviderName; state: "not_found"; source: "lookup" | "metadata" }
   | {
       provider: ProviderName;
@@ -32,7 +32,7 @@ type RemotePrStatus =
       mergeCommit: string | null;
     };
 
-type CloseTailStatus =
+export type CloseTailStatus =
   | { state: "not_applicable"; reason: string }
   | { state: "recorded_on_base"; base: string }
   | {
@@ -43,7 +43,7 @@ type CloseTailStatus =
       prUrl: string | null;
     };
 
-type PrFlowStatusReport = {
+export type PrFlowStatusReport = {
   task: {
     id: string;
     status: string;
@@ -193,7 +193,7 @@ function deriveNextAction(report: PrFlowStatusReport): string {
   return `wait hosted close, or run agentplane task hosted-close-pr ${report.task.id}`;
 }
 
-async function resolvePrFlowStatus(opts: {
+export async function resolvePrFlowStatus(opts: {
   ctx: CommandContext;
   cwd: string;
   rootOverride?: string;

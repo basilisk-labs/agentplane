@@ -18,6 +18,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task list](#task-list)
   - [task new](#task-new)
   - [task next](#task-next)
+  - [task next-action](#task-next-action)
   - [task plan approve](#task-plan-approve)
   - [task plan set](#task-plan-set)
   - [task run](#task-run)
@@ -26,6 +27,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task search](#task-search)
   - [task show](#task-show)
   - [task start-ready](#task-start-ready)
+  - [task status](#task-status)
   - [task verify ok](#task-verify-ok)
   - [task verify rework](#task-verify-rework)
   - [task verify-show](#task-verify-show)
@@ -35,6 +37,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [start](#start)
   - [verify](#verify)
 - Work
+  - [work resume](#work-resume)
   - [work start](#work-start)
 - PR
   - [integrate](#integrate)
@@ -143,6 +146,8 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 - Evaluators
   - [evaluator list](#evaluator-list)
   - [evaluator show](#evaluator-show)
+- Workflow
+  - [flow repair](#flow-repair)
 
 ## Core
 
@@ -502,6 +507,28 @@ agentplane task next --limit 3
 
 - Limit output.
 
+### task next-action
+
+Print the single safest next command for a task route.
+
+Usage:
+
+```text
+agentplane task next-action <task-id> [options]
+```
+
+Options:
+
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane task next-action 202602030608-F1Q8AB
+```
+
+- Get the next safe command before manually chaining diagnostics.
+
 ### task plan approve
 
 Approve the current task plan (enforces Verify Steps gating when configured).
@@ -728,6 +755,35 @@ agentplane task start-ready 202602030608-F1Q8AB --author CODER --body "Start: im
 ```
 
 - Check readiness and transition to DOING without command chaining.
+
+### task status
+
+Show task lifecycle state with optional branch_pr route decision details.
+
+Usage:
+
+```text
+agentplane task status <task-id> [options]
+```
+
+Options:
+
+- `--route`: Include route blockers, next action, and repair-plan hints. (default=false)
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane task status 202602030608-F1Q8AB --route
+```
+
+- Inspect lifecycle and branch_pr route state before resuming work.
+
+```sh
+agentplane task status 202602030608-F1Q8AB --route --json
+```
+
+- Emit machine-readable route diagnostics.
 
 ### task verify ok
 
@@ -1062,6 +1118,28 @@ agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good" --c
 
 ## Work
 
+### work resume
+
+Diagnose how to resume a task in the correct checkout/worktree.
+
+Usage:
+
+```text
+agentplane work resume <task-id> [options]
+```
+
+Options:
+
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane work resume 202602030608-F1Q8AB
+```
+
+- Find the correct worktree/branch route after interruption.
+
 ### work start
 
 Prepare the workspace for a task (direct: single-stream on current branch; branch_pr: task branch/worktree).
@@ -1083,6 +1161,7 @@ Notes:
 - When workflow_mode=direct, agentplane does not create task branches; it records a single active task for the workspace.
 - When workflow_mode=branch_pr, --worktree is required and the command must be run on the base branch.
 - After branch_pr work starts, run owner-scoped task commands from the created worktree so task README/PR artifacts stay attached to one checkout.
+- After interruption, use \`agentplane work resume &lt;task-id&gt;\` to diagnose the correct checkout, branch, PR, and repair route.
 
 Examples:
 
@@ -3483,3 +3562,28 @@ agentplane evaluator show recovery-context
 ```
 
 - Print the recovery-context evaluator prompt.
+
+## Workflow
+
+### flow repair
+
+Print a dry-run repair plan for task workflow drift.
+
+Usage:
+
+```text
+agentplane flow repair <task-id> [options]
+```
+
+Options:
+
+- `--dry-run`: Print planned repairs without mutating. Currently required. (default=true)
+- `--json`: Emit JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane flow repair 202602030608-F1Q8AB --dry-run
+```
+
+- Classify workflow drift and print safe next commands.

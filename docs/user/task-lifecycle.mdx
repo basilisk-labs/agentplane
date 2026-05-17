@@ -42,6 +42,23 @@ agentplane cleanup merged --finalize
 `agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass
 `--merge-strategy squash` only when compacting history is intentional.
 
+## Route decision commands
+
+When a `branch_pr` task has been interrupted, partially verified, or merged through hosted close,
+prefer the route-decision commands before manually combining low-level diagnostics:
+
+```bash
+agentplane task status <task-id> --route
+agentplane task next-action <task-id>
+agentplane work resume <task-id>
+agentplane flow repair <task-id> --dry-run
+```
+
+These commands read task state, workflow mode, current checkout, PR metadata, hosted PR state, and
+close-tail state, then print a single next action plus blockers. `flow repair` is intentionally
+dry-run in this release: it classifies drift and prints the commands that would repair it, but it
+does not mutate task, branch, PR, or close-tail state.
+
 ## Minimal direct lifecycle
 
 If the repository is intentionally operating in `direct`, the shortest agent-first route is:

@@ -45,6 +45,8 @@ import { taskSetStatusSpec } from "../../../commands/task/set-status.command.js"
 import { taskShowSpec } from "../../../commands/task/show.spec.js";
 import { taskSpec } from "../../../commands/task/task.command.js";
 import { taskStartReadySpec } from "../../../commands/task/start-ready.command.js";
+import { taskNextActionSpec } from "../../../commands/task/next-action.command.js";
+import { taskStatusSpec } from "../../../commands/task/status.command.js";
 import { taskUpdateSpec } from "../../../commands/task/update.command.js";
 import { taskVerifyOkSpec } from "../../../commands/task/verify-ok.command.js";
 import { taskVerifyReworkSpec } from "../../../commands/task/verify-rework.command.js";
@@ -74,6 +76,8 @@ import {
   loadTaskNextSpec,
   loadTaskSearchSpec,
   loadTaskShowSpec,
+  loadTaskStatusSpec,
+  loadTaskNextActionSpec,
   fromTaskRunTraceSpec,
   fromTaskRunSpec,
   fromTaskRunResumeSpec,
@@ -141,6 +145,8 @@ export const TASK_COMMANDS = [
     load: loadTaskShowSpec,
     invocation: requireCanonicalCommandInvocation(["task", "show"]),
   }),
+  declareCommand(taskStatusSpec, { load: loadTaskStatusSpec }),
+  declareCommand(taskNextActionSpec, { load: loadTaskNextActionSpec }),
   fromCommandsTaskRunShowCommand(taskRunShowSpec, "runTaskRunShow", {}),
   fromTaskRunTraceSpec(taskRunTraceSpec, "runTaskRunTrace", {
     surface: "advanced",

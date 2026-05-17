@@ -1,0 +1,160 @@
+---
+id: "202605171055-1G6GP6"
+title: "Add branch_pr route decision CLI commands"
+status: "DOING"
+priority: "high"
+owner: "CODER"
+revision: 6
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "code"
+  - "cli"
+  - "workflow"
+verify:
+  - "bun test packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/commands/task/route-decision.test.ts"
+  - "bun run test:project -- cli-core packages/agentplane/src/cli/run-cli.core.help-contract.test.ts"
+  - "node .agentplane/policy/check-routing.mjs"
+  - "git diff --check"
+plan_approval:
+  state: "approved"
+  updated_at: "2026-05-17T10:56:17.853Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "ok"
+  updated_at: "2026-05-17T11:09:34.486Z"
+  updated_by: "CODER"
+  note: "Implemented route decision CLI commands and docs/prompt guidance. Verified focused route command tests, existing PR flow status test, typecheck, lint:core, format:check, policy routing, diff check, framework bootstrap, and repo-local command smokes."
+  attempts: 0
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: Implement route decision CLI commands in the isolated task worktree and update prompt plus documentation guidance for agents."
+events:
+  -
+    type: "status"
+    at: "2026-05-17T10:56:21.758Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Implement route decision CLI commands in the isolated task worktree and update prompt plus documentation guidance for agents."
+  -
+    type: "verify"
+    at: "2026-05-17T11:09:34.486Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented route decision CLI commands and docs/prompt guidance. Verified focused route command tests, existing PR flow status test, typecheck, lint:core, format:check, policy routing, diff check, framework bootstrap, and repo-local command smokes."
+doc_version: 3
+doc_updated_at: "2026-05-17T11:09:34.492Z"
+doc_updated_by: "CODER"
+description: "Add machine-readable task route/status/next-action/resume/repair commands for branch_pr agent workflow optimization, and update prompts plus CLI documentation to teach the new commands."
+sections:
+  Summary: |-
+    Add branch_pr route decision CLI commands
+    
+    Add machine-readable task route/status/next-action/resume/repair commands for branch_pr agent workflow optimization, and update prompts plus CLI documentation to teach the new commands.
+  Scope: |-
+    - In scope: Add machine-readable task route/status/next-action/resume/repair commands for branch_pr agent workflow optimization, and update prompts plus CLI documentation to teach the new commands.
+    - Out of scope: unrelated refactors not required for "Add branch_pr route decision CLI commands".
+  Plan: "Implement shared route-decision diagnostics for branch_pr tasks and expose separate agent-facing commands: task status --route, task next-action, work resume, and flow repair --dry-run. Reuse existing task/pr/preflight/handoff primitives where possible, keep mutating repair out of scope for this first pass, and update quickstart/role guidance plus CLI docs/help so agents use the route decision layer before manually chaining low-level commands."
+  Verify Steps: |-
+    1. bun test packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts
+    2. bun run typecheck
+    3. bun run lint:core
+    4. bun run format:check
+    5. node .agentplane/policy/check-routing.mjs
+    6. git diff --check
+    7. Smoke repo-local commands: task status --route --json, task next-action --json, work resume, flow repair --dry-run.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-17T11:09:34.486Z — VERIFY — ok
+    
+    By: CODER
+    
+    Note: Implemented route decision CLI commands and docs/prompt guidance. Verified focused route command tests, existing PR flow status test, typecheck, lint:core, format:check, policy routing, diff check, framework bootstrap, and repo-local command smokes.
+    Attempts: 0
+    
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T11:09:14.767Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
+    
+    Details:
+    
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171055-1G6GP6-route-decision-cli/.agentplane/tasks/202605171055-1G6GP6/blueprint/resolved-snapshot.json
+    - old_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+    - current_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171055-1G6GP6
+    
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: |-
+    - Observation: Added task status --route, task next-action, work resume, and flow repair --dry-run on a shared route-decision reader; flow repair is intentionally dry-run only.
+      Impact: Agents can ask for one machine-readable next action and repair plan instead of manually composing task show, resume-context, pr flow status, and preflight output.
+      Resolution: New commands are registered in the command catalog, covered by focused CLI tests, documented in generated CLI reference and task lifecycle docs, and surfaced in quickstart/role guidance.
+id_source: "explicit"
+---
+## Summary
+
+Add branch_pr route decision CLI commands
+
+Add machine-readable task route/status/next-action/resume/repair commands for branch_pr agent workflow optimization, and update prompts plus CLI documentation to teach the new commands.
+
+## Scope
+
+- In scope: Add machine-readable task route/status/next-action/resume/repair commands for branch_pr agent workflow optimization, and update prompts plus CLI documentation to teach the new commands.
+- Out of scope: unrelated refactors not required for "Add branch_pr route decision CLI commands".
+
+## Plan
+
+Implement shared route-decision diagnostics for branch_pr tasks and expose separate agent-facing commands: task status --route, task next-action, work resume, and flow repair --dry-run. Reuse existing task/pr/preflight/handoff primitives where possible, keep mutating repair out of scope for this first pass, and update quickstart/role guidance plus CLI docs/help so agents use the route decision layer before manually chaining low-level commands.
+
+## Verify Steps
+
+1. bun test packages/agentplane/src/cli/run-cli.core.route-decision.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts
+2. bun run typecheck
+3. bun run lint:core
+4. bun run format:check
+5. node .agentplane/policy/check-routing.mjs
+6. git diff --check
+7. Smoke repo-local commands: task status --route --json, task next-action --json, work resume, flow repair --dry-run.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-17T11:09:34.486Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented route decision CLI commands and docs/prompt guidance. Verified focused route command tests, existing PR flow status test, typecheck, lint:core, format:check, policy routing, diff check, framework bootstrap, and repo-local command smokes.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-17T11:09:14.767Z, excerpt_hash=sha256:3ba4deb4607187919b8b9f87ed560b0ba7950075109d573d3f54cfb1260f8e47
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171055-1G6GP6-route-decision-cli/.agentplane/tasks/202605171055-1G6GP6/blueprint/resolved-snapshot.json
+- old_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+- current_digest: 25c0f01eb7fe4fd7d0acce95df7e3d059b5adcbb11a67de016566402b5fcc011
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171055-1G6GP6
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings
+
+- Observation: Added task status --route, task next-action, work resume, and flow repair --dry-run on a shared route-decision reader; flow repair is intentionally dry-run only.
+  Impact: Agents can ask for one machine-readable next action and repair plan instead of manually composing task show, resume-context, pr flow status, and preflight output.
+  Resolution: New commands are registered in the command catalog, covered by focused CLI tests, documented in generated CLI reference and task lifecycle docs, and surfaced in quickstart/role guidance.
