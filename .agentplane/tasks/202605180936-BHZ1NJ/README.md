@@ -1,10 +1,11 @@
 ---
 id: "202605180936-BHZ1NJ"
 title: "Add context assimilation blueprint gates"
-status: "DOING"
+result_summary: "Merged via PR #3881."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented context.assimilation lifecycle gates and delayed wiki scaffold creation until first real ingest. Verified with targeted vitest, lint:core, schemas:check, policy routing, prettier --check, git diff --check, and ap task verify-show."
   attempts: 0
-commit: null
+commit:
+  hash: "8a4bf82584f19975be4ddaf6cb21d5f9d694e87b"
+  message: "Merge pull request #3881 from basilisk-labs/task/202605180936-BHZ1NJ/context-assimilation-blueprint"
 comments:
   -
     author: "CODER"
     body: "Start: implement context assimilation blueprint gates and minimal initial wiki scaffold in the dedicated branch_pr worktree, keeping scope limited to context commands, blueprint/docs/tests, and task evidence."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3881 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented context.assimilation lifecycle gates and delayed wiki scaffold creation until first real ingest. Verified with targeted vitest, lint:core, schemas:check, policy routing, prettier --check, git diff --check, and ap task verify-show."
+  -
+    type: "status"
+    at: "2026-05-18T10:24:47.263Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3881 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T09:46:54.848Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T10:24:47.268Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement a stricter context assimilation blueprint/lifecycle contract and change context init so the starter wiki contains only AGENTS.md and index.md until first ingest creates project-specific folders."
 sections:
   Summary: |-
