@@ -27,7 +27,7 @@ typecheck, lint, generated CLI docs, routing, and doctor.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T18:30:25.365Z
+- Updated: 2026-05-18T18:30:36.817Z
 - Branch: task/202605181816-3W350X/maximum-context-assimilation
 - Head: 77e75c12b261
 
