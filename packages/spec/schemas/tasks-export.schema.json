@@ -22,18 +22,32 @@
           },
           "risk_level": {
             "type": "string",
-            "enum": ["low", "med", "high"]
+            "enum": [
+              "low",
+              "med",
+              "high"
+            ]
           },
           "breaking": {
             "type": "boolean"
           },
           "status": {
             "type": "string",
-            "enum": ["TODO", "DOING", "DONE", "BLOCKED"]
+            "enum": [
+              "TODO",
+              "DOING",
+              "DONE",
+              "BLOCKED"
+            ]
           },
           "priority": {
             "type": "string",
-            "enum": ["low", "normal", "med", "high"]
+            "enum": [
+              "low",
+              "normal",
+              "med",
+              "high"
+            ]
           },
           "owner": {
             "type": "string",
@@ -41,7 +55,8 @@
           },
           "revision": {
             "type": "integer",
-            "minimum": 1
+            "minimum": 1,
+            "maximum": 9007199254740991
           },
           "origin": {
             "type": "object",
@@ -75,7 +90,9 @@
                 "minLength": 1
               }
             },
-            "required": ["system"],
+            "required": [
+              "system"
+            ],
             "additionalProperties": {
               "type": "string"
             }
@@ -89,7 +106,13 @@
               },
               "status": {
                 "type": "string",
-                "enum": ["prepared", "running", "success", "failed", "cancelled"]
+                "enum": [
+                  "prepared",
+                  "running",
+                  "success",
+                  "failed",
+                  "cancelled"
+                ]
               },
               "adapter_id": {
                 "type": "string",
@@ -97,24 +120,32 @@
               },
               "mode": {
                 "type": "string",
-                "enum": ["execute", "dry_run"]
+                "enum": [
+                  "execute",
+                  "dry_run"
+                ]
               },
               "updated_at": {
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
               },
               "started_at": {
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
               },
               "ended_at": {
                 "type": "string",
-                "format": "date-time"
+                "format": "date-time",
+                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
               },
               "exit_code": {
                 "anyOf": [
                   {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
                   },
                   {
                     "type": "null"
@@ -126,7 +157,10 @@
                 "properties": {
                   "kind": {
                     "type": "string",
-                    "enum": ["task", "recipe_scenario"]
+                    "enum": [
+                      "task",
+                      "recipe_scenario"
+                    ]
                   },
                   "task_id": {
                     "type": "string",
@@ -141,8 +175,10 @@
                     "minLength": 1
                   }
                 },
-                "required": ["kind"],
-                "additionalProperties": true
+                "required": [
+                  "kind"
+                ],
+                "additionalProperties": {}
               },
               "summary": {
                 "type": "string"
@@ -173,10 +209,17 @@
                     "type": "number"
                   },
                   "output_last_message_bytes": {
-                    "type": ["number", "null"]
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
                   }
                 },
-                "additionalProperties": true
+                "additionalProperties": {}
               },
               "evidence": {
                 "type": "object",
@@ -197,7 +240,8 @@
                   },
                   "files_changed_count": {
                     "type": "integer",
-                    "minimum": 0
+                    "minimum": 0,
+                    "maximum": 9007199254740991
                   },
                   "tests_run": {
                     "type": "array",
@@ -214,7 +258,7 @@
                     }
                   }
                 },
-                "additionalProperties": true
+                "additionalProperties": {}
               },
               "history": {
                 "type": "array",
@@ -227,7 +271,13 @@
                     },
                     "status": {
                       "type": "string",
-                      "enum": ["prepared", "running", "success", "failed", "cancelled"]
+                      "enum": [
+                        "prepared",
+                        "running",
+                        "success",
+                        "failed",
+                        "cancelled"
+                      ]
                     },
                     "adapter_id": {
                       "type": "string",
@@ -235,24 +285,32 @@
                     },
                     "mode": {
                       "type": "string",
-                      "enum": ["execute", "dry_run"]
+                      "enum": [
+                        "execute",
+                        "dry_run"
+                      ]
                     },
                     "updated_at": {
                       "type": "string",
-                      "format": "date-time"
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                     },
                     "started_at": {
                       "type": "string",
-                      "format": "date-time"
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                     },
                     "ended_at": {
                       "type": "string",
-                      "format": "date-time"
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                     },
                     "exit_code": {
                       "anyOf": [
                         {
-                          "type": "integer"
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
                         },
                         {
                           "type": "null"
@@ -264,7 +322,10 @@
                       "properties": {
                         "kind": {
                           "type": "string",
-                          "enum": ["task", "recipe_scenario"]
+                          "enum": [
+                            "task",
+                            "recipe_scenario"
+                          ]
                         },
                         "task_id": {
                           "type": "string",
@@ -279,8 +340,10 @@
                           "minLength": 1
                         }
                       },
-                      "required": ["kind"],
-                      "additionalProperties": true
+                      "required": [
+                        "kind"
+                      ],
+                      "additionalProperties": {}
                     },
                     "summary": {
                       "type": "string"
@@ -311,10 +374,17 @@
                           "type": "number"
                         },
                         "output_last_message_bytes": {
-                          "type": ["number", "null"]
+                          "anyOf": [
+                            {
+                              "type": "number"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
-                      "additionalProperties": true
+                      "additionalProperties": {}
                     },
                     "evidence": {
                       "type": "object",
@@ -335,7 +405,8 @@
                         },
                         "files_changed_count": {
                           "type": "integer",
-                          "minimum": 0
+                          "minimum": 0,
+                          "maximum": 9007199254740991
                         },
                         "tests_run": {
                           "type": "array",
@@ -352,7 +423,7 @@
                           }
                         }
                       },
-                      "additionalProperties": true
+                      "additionalProperties": {}
                     }
                   },
                   "required": [
@@ -364,7 +435,7 @@
                     "exit_code",
                     "target"
                   ],
-                  "additionalProperties": true
+                  "additionalProperties": {}
                 }
               }
             },
@@ -377,7 +448,7 @@
               "exit_code",
               "target"
             ],
-            "additionalProperties": true
+            "additionalProperties": {}
           },
           "depends_on": {
             "type": "array",
@@ -395,11 +466,27 @@
           },
           "task_kind": {
             "type": "string",
-            "enum": ["analysis", "content", "docs", "code", "release", "ops", "context"]
+            "enum": [
+              "analysis",
+              "content",
+              "docs",
+              "code",
+              "release",
+              "ops",
+              "context"
+            ]
           },
           "mutation_scope": {
             "type": "string",
-            "enum": ["none", "docs", "code", "release", "ops", "context", "unknown"]
+            "enum": [
+              "none",
+              "docs",
+              "code",
+              "release",
+              "ops",
+              "context",
+              "unknown"
+            ]
           },
           "risk_flags": {
             "type": "array",
@@ -445,13 +532,18 @@
             "properties": {
               "state": {
                 "type": "string",
-                "enum": ["pending", "approved", "rejected"]
+                "enum": [
+                  "pending",
+                  "approved",
+                  "rejected"
+                ]
               },
               "updated_at": {
                 "anyOf": [
                   {
                     "type": "string",
-                    "format": "date-time"
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                   },
                   {
                     "type": "null"
@@ -459,31 +551,57 @@
                 ]
               },
               "updated_by": {
-                "type": ["string", "null"]
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "note": {
-                "type": ["string", "null"]
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
             },
-            "required": ["state", "updated_at", "updated_by", "note"],
-            "additionalProperties": true
+            "required": [
+              "state",
+              "updated_at",
+              "updated_by",
+              "note"
+            ],
+            "additionalProperties": {}
           },
           "verification": {
             "type": "object",
             "properties": {
               "state": {
                 "type": "string",
-                "enum": ["pending", "ok", "needs_rework", "blocked_external"]
+                "enum": [
+                  "pending",
+                  "ok",
+                  "needs_rework",
+                  "blocked_external"
+                ]
               },
               "attempts": {
                 "type": "integer",
-                "minimum": 0
+                "minimum": 0,
+                "maximum": 9007199254740991
               },
               "updated_at": {
                 "anyOf": [
                   {
                     "type": "string",
-                    "format": "date-time"
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                   },
                   {
                     "type": "null"
@@ -491,27 +609,53 @@
                 ]
               },
               "updated_by": {
-                "type": ["string", "null"]
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "note": {
-                "type": ["string", "null"]
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
             },
-            "required": ["state", "updated_at", "updated_by", "note"],
-            "additionalProperties": true
+            "required": [
+              "state",
+              "updated_at",
+              "updated_by",
+              "note"
+            ],
+            "additionalProperties": {}
           },
           "quality_review": {
             "type": "object",
             "properties": {
               "state": {
                 "type": "string",
-                "enum": ["pending", "pass", "rework", "blocked", "human_review"]
+                "enum": [
+                  "pending",
+                  "pass",
+                  "rework",
+                  "blocked",
+                  "human_review"
+                ]
               },
               "updated_at": {
                 "anyOf": [
                   {
                     "type": "string",
-                    "format": "date-time"
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                   },
                   {
                     "type": "null"
@@ -519,30 +663,58 @@
                 ]
               },
               "updated_by": {
-                "type": ["string", "null"]
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "note": {
-                "type": ["string", "null"]
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "evaluated_sha": {
-                "type": ["string", "null"]
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "blueprint_digest": {
-                "type": ["string", "null"]
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               },
               "evidence_refs": {
+                "default": [],
                 "type": "array",
                 "items": {
                   "type": "string"
-                },
-                "default": []
+                }
               },
               "findings": {
+                "default": [],
                 "type": "array",
                 "items": {
                   "type": "string"
-                },
-                "default": []
+                }
               }
             },
             "required": [
@@ -553,7 +725,7 @@
               "evaluated_sha",
               "blueprint_digest"
             ],
-            "additionalProperties": true
+            "additionalProperties": {}
           },
           "commit": {
             "anyOf": [
@@ -569,7 +741,10 @@
                     "minLength": 1
                   }
                 },
-                "required": ["hash", "message"],
+                "required": [
+                  "hash",
+                  "message"
+                ],
                 "additionalProperties": false
               },
               {
@@ -591,7 +766,10 @@
                   "minLength": 1
                 }
               },
-              "required": ["author", "body"],
+              "required": [
+                "author",
+                "body"
+              ],
               "additionalProperties": false
             }
           },
@@ -602,11 +780,16 @@
               "properties": {
                 "type": {
                   "type": "string",
-                  "enum": ["status", "comment", "verify"]
+                  "enum": [
+                    "status",
+                    "comment",
+                    "verify"
+                  ]
                 },
                 "at": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
                 },
                 "author": {
                   "type": "string",
@@ -628,8 +811,12 @@
                   "type": "string"
                 }
               },
-              "required": ["type", "at", "author"],
-              "additionalProperties": true
+              "required": [
+                "type",
+                "at",
+                "author"
+              ],
+              "additionalProperties": {}
             }
           },
           "doc_version": {
@@ -638,7 +825,8 @@
           },
           "doc_updated_at": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
           },
           "doc_updated_by": {
             "type": "string",
@@ -675,7 +863,7 @@
           "dirty",
           "id_source"
         ],
-        "additionalProperties": true
+        "additionalProperties": {}
       }
     },
     "meta": {
@@ -698,10 +886,18 @@
           "minLength": 1
         }
       },
-      "required": ["schema_version", "managed_by", "checksum_algo", "checksum"],
+      "required": [
+        "schema_version",
+        "managed_by",
+        "checksum_algo",
+        "checksum"
+      ],
       "additionalProperties": false
     }
   },
-  "required": ["tasks", "meta"],
+  "required": [
+    "tasks",
+    "meta"
+  ],
   "additionalProperties": false
 }

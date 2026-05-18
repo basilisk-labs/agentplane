@@ -5,10 +5,24 @@ const tsParser = require("@typescript-eslint/parser");
 const tsPlugin = require("@typescript-eslint/eslint-plugin");
 
 const importPlugin = require("eslint-plugin-import");
-const nPlugin = require("eslint-plugin-n");
+const nPluginModule = require("eslint-plugin-n");
 const promisePlugin = require("eslint-plugin-promise");
 const unicornPlugin = require("eslint-plugin-unicorn").default;
 const prettierConfig = require("eslint-config-prettier");
+const nPlugin = nPluginModule.default ?? nPluginModule;
+
+function rulesFromConfig(config) {
+  if (Array.isArray(config)) {
+    return Object.assign({}, ...config.map((entry) => entry.rules ?? {}));
+  }
+  return config?.rules ?? {};
+}
+
+const nRecommendedModuleRules = rulesFromConfig(
+  nPlugin.configs["flat/recommended-module"] ??
+    nPlugin.configs["recommended-module"] ??
+    nPlugin.configs.recommended,
+);
 
 const tsconfigProjects = [
   "./tsconfig.eslint.json",
@@ -231,7 +245,7 @@ module.exports = [
     },
     rules: {
       ...importPlugin.configs.recommended.rules,
-      ...nPlugin.configs["recommended-module"].rules,
+      ...nRecommendedModuleRules,
       ...promisePlugin.configs.recommended.rules,
       ...unicornPlugin.configs.recommended.rules,
       ...prettierConfig.rules,
@@ -240,6 +254,8 @@ module.exports = [
       "unicorn/no-process-exit": "off",
       "unicorn/no-null": "off",
       "unicorn/prefer-top-level-await": "off",
+      "no-useless-assignment": "off",
+      "preserve-caught-error": "off",
     },
   },
 
@@ -296,6 +312,8 @@ module.exports = [
       "@typescript-eslint/consistent-type-definitions": "off",
       "promise/catch-or-return": "off",
       "unicorn/catch-error-name": "off",
+      "no-useless-assignment": "off",
+      "preserve-caught-error": "off",
 
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [

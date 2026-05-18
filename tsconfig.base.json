@@ -4,6 +4,7 @@
     "lib": ["ES2023"],
     "types": ["node"],
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@agentplane/testkit": ["packages/testkit/src/index.ts"],
       "@agentplane/testkit/cli": ["packages/testkit/src/cli.ts"],

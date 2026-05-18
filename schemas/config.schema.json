@@ -5,180 +5,116 @@
   "type": "object",
   "properties": {
     "schema_version": {
+      "default": 1,
       "type": "number",
-      "const": 1,
-      "default": 1
+      "const": 1
     },
     "workflow_mode": {
+      "default": "direct",
       "type": "string",
-      "enum": ["direct", "branch_pr"],
-      "default": "direct"
+      "enum": [
+        "direct",
+        "branch_pr"
+      ]
     },
     "status_commit_policy": {
+      "default": "warn",
       "type": "string",
-      "enum": ["off", "warn", "confirm"],
-      "default": "warn"
+      "enum": [
+        "off",
+        "warn",
+        "confirm"
+      ]
     },
     "commit_automation": {
+      "default": "manual",
       "type": "string",
-      "enum": ["manual", "finish_only"],
-      "default": "manual"
+      "enum": [
+        "manual",
+        "finish_only"
+      ]
     },
     "finish_auto_status_commit": {
-      "type": "boolean",
-      "default": false
+      "default": false,
+      "type": "boolean"
     },
     "close_commit": {
+      "default": {
+        "direct_dirty_policy": "allow_other_task_readmes"
+      },
       "type": "object",
       "properties": {
         "direct_dirty_policy": {
+          "default": "allow_other_task_readmes",
           "type": "string",
-          "enum": ["allow_other_task_readmes", "strict"],
-          "default": "allow_other_task_readmes"
+          "enum": [
+            "allow_other_task_readmes",
+            "strict"
+          ]
         }
       },
-      "additionalProperties": true,
-      "default": {
-        "direct_dirty_policy": "allow_other_task_readmes"
-      }
+      "additionalProperties": {}
     },
     "agents": {
+      "default": {
+        "approvals": {
+          "require_plan": true,
+          "require_network": true,
+          "require_verify": true,
+          "require_force": false
+        }
+      },
       "type": "object",
       "properties": {
         "approvals": {
-          "type": "object",
-          "properties": {
-            "require_plan": {
-              "type": "boolean",
-              "default": true
-            },
-            "require_network": {
-              "type": "boolean",
-              "default": true
-            },
-            "require_verify": {
-              "type": "boolean",
-              "default": true
-            },
-            "require_force": {
-              "type": "boolean",
-              "default": false
-            }
-          },
-          "additionalProperties": true,
           "default": {
             "require_plan": true,
             "require_network": true,
             "require_verify": true,
             "require_force": false
-          }
+          },
+          "type": "object",
+          "properties": {
+            "require_plan": {
+              "default": true,
+              "type": "boolean"
+            },
+            "require_network": {
+              "default": true,
+              "type": "boolean"
+            },
+            "require_verify": {
+              "default": true,
+              "type": "boolean"
+            },
+            "require_force": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": {}
         }
       },
-      "additionalProperties": true,
-      "default": {
-        "approvals": {
-          "require_plan": true,
-          "require_network": true,
-          "require_verify": true
-        }
-      }
+      "additionalProperties": {}
     },
     "recipes": {
+      "default": {
+        "storage_default": "copy"
+      },
       "type": "object",
       "properties": {
         "storage_default": {
+          "default": "copy",
           "type": "string",
-          "enum": ["link", "copy"],
-          "default": "copy"
+          "enum": [
+            "link",
+            "copy"
+          ]
         }
       },
-      "additionalProperties": true,
-      "default": {
-        "storage_default": "copy"
-      }
+      "additionalProperties": {}
     },
     "execution": {
-      "type": "object",
-      "properties": {
-        "profile": {
-          "type": "string",
-          "enum": ["conservative", "balanced", "aggressive"],
-          "default": "balanced"
-        },
-        "reasoning_effort": {
-          "type": "string",
-          "enum": ["low", "medium", "high", "xhigh"],
-          "default": "medium"
-        },
-        "text_verbosity": {
-          "type": "string",
-          "enum": ["low", "medium", "high"],
-          "default": "medium"
-        },
-        "tool_budget": {
-          "type": "object",
-          "properties": {
-            "discovery": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 6
-            },
-            "implementation": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 10
-            },
-            "verification": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 6
-            }
-          },
-          "additionalProperties": true,
-          "default": {
-            "discovery": 6,
-            "implementation": 10,
-            "verification": 6
-          }
-        },
-        "stop_conditions": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
-          "default": [
-            "Missing required input blocks correctness.",
-            "Requested action expands scope or risk beyond approved plan.",
-            "Verification fails and remediation changes scope."
-          ]
-        },
-        "handoff_conditions": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
-          "default": [
-            "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
-            "Task depends_on prerequisites are incomplete.",
-            "Specialized agent is required."
-          ]
-        },
-        "unsafe_actions_requiring_explicit_user_ok": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
-          "default": [
-            "Destructive git history operations.",
-            "Outside-repo read/write.",
-            "Credential, keychain, or SSH material changes."
-          ]
-        }
-      },
-      "additionalProperties": true,
       "default": {
         "profile": "balanced",
         "reasoning_effort": "medium",
@@ -203,126 +139,106 @@
           "Outside-repo read/write.",
           "Credential, keychain, or SSH material changes."
         ]
-      }
-    },
-    "runner": {
+      },
       "type": "object",
       "properties": {
-        "default_adapter": {
+        "profile": {
+          "default": "balanced",
           "type": "string",
-          "enum": ["codex", "custom"],
-          "default": "codex"
+          "enum": [
+            "conservative",
+            "balanced",
+            "aggressive"
+          ]
         },
-        "trace": {
+        "reasoning_effort": {
+          "default": "medium",
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ]
+        },
+        "text_verbosity": {
+          "default": "medium",
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "tool_budget": {
+          "default": {
+            "discovery": 6,
+            "implementation": 10,
+            "verification": 6
+          },
           "type": "object",
           "properties": {
-            "mode": {
-              "type": "string",
-              "enum": ["raw", "off"],
-              "default": "raw"
-            },
-            "max_tail_bytes": {
+            "discovery": {
+              "default": 6,
               "type": "integer",
-              "minimum": 0,
-              "default": 65536
+              "minimum": 1,
+              "maximum": 9007199254740991
             },
-            "capture_stderr": {
-              "type": "boolean",
-              "default": true
+            "implementation": {
+              "default": 10,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
             },
-            "retention": {
-              "type": "string",
-              "enum": ["keep", "remove_on_success", "remove_always"],
-              "default": "keep"
-            },
-            "compression": {
-              "type": "string",
-              "enum": ["none", "gzip"],
-              "default": "none"
-            },
-            "redact_patterns": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "minLength": 1
-              },
-              "default": []
+            "verification": {
+              "default": 6,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
             }
           },
-          "additionalProperties": false,
-          "default": {
-            "mode": "raw",
-            "max_tail_bytes": 65536,
-            "capture_stderr": true,
-            "retention": "keep",
-            "compression": "none",
-            "redact_patterns": []
+          "additionalProperties": {}
+        },
+        "stop_conditions": {
+          "default": [
+            "Missing required input blocks correctness.",
+            "Requested action expands scope or risk beyond approved plan.",
+            "Verification fails and remediation changes scope."
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
           }
         },
-        "timeouts": {
-          "type": "object",
-          "properties": {
-            "wall_clock_ms": {
-              "type": "integer",
-              "minimum": 0,
-              "default": 900000
-            },
-            "idle_ms": {
-              "type": "integer",
-              "minimum": 0,
-              "default": 180000
-            },
-            "terminate_grace_ms": {
-              "type": "integer",
-              "minimum": 0,
-              "default": 1500
-            }
-          },
-          "additionalProperties": false,
-          "default": {
-            "wall_clock_ms": 900000,
-            "idle_ms": 180000,
-            "terminate_grace_ms": 1500
+        "handoff_conditions": {
+          "default": [
+            "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
+            "Task depends_on prerequisites are incomplete.",
+            "Specialized agent is required."
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
           }
         },
-        "custom": {
-          "type": "object",
-          "properties": {
-            "command": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "minLength": 1
-              },
-              "minItems": 1
-            },
-            "env": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "string"
-              },
-              "default": {}
-            },
-            "enforcement": {
-              "type": "object",
-              "properties": {
-                "mode": {
-                  "type": "string",
-                  "enum": ["none", "codex_sandbox_full_auto"]
-                },
-                "platform": {
-                  "type": "string",
-                  "enum": ["auto", "macos", "linux", "windows"]
-                }
-              },
-              "additionalProperties": true
-            }
-          },
-          "required": ["command"],
-          "additionalProperties": true
+        "unsafe_actions_requiring_explicit_user_ok": {
+          "default": [
+            "Destructive git history operations.",
+            "Outside-repo read/write.",
+            "Credential, keychain, or SSH material changes."
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       },
-      "additionalProperties": true,
+      "additionalProperties": {}
+    },
+    "runner": {
       "default": {
         "default_adapter": "codex",
         "trace": {
@@ -338,73 +254,156 @@
           "idle_ms": 180000,
           "terminate_grace_ms": 1500
         }
-      }
-    },
-    "feedback": {
+      },
       "type": "object",
       "properties": {
-        "github_issues": {
+        "default_adapter": {
+          "default": "codex",
+          "type": "string",
+          "enum": [
+            "codex",
+            "custom"
+          ]
+        },
+        "trace": {
+          "default": {
+            "mode": "raw",
+            "max_tail_bytes": 65536,
+            "capture_stderr": true,
+            "retention": "keep",
+            "compression": "none",
+            "redact_patterns": []
+          },
           "type": "object",
           "properties": {
-            "enabled": {
-              "type": "boolean",
-              "default": false
-            },
-            "repository": {
+            "mode": {
+              "default": "raw",
               "type": "string",
-              "minLength": 1,
-              "default": "basilisk-labs/agentplane"
+              "enum": [
+                "raw",
+                "off"
+              ]
             },
-            "transport": {
+            "max_tail_bytes": {
+              "default": 65536,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "capture_stderr": {
+              "default": true,
+              "type": "boolean"
+            },
+            "retention": {
+              "default": "keep",
               "type": "string",
-              "enum": ["github", "cloud", "auto"],
-              "default": "github"
+              "enum": [
+                "keep",
+                "remove_on_success",
+                "remove_always"
+              ]
             },
-            "cloud_endpoint": {
+            "compression": {
+              "default": "none",
               "type": "string",
-              "minLength": 1,
-              "default": "https://agentplane.cloud/api/feedback/issues"
+              "enum": [
+                "none",
+                "gzip"
+              ]
             },
-            "allow_anonymous_cloud": {
-              "type": "boolean",
-              "default": false
-            },
-            "prompt_on_internal_error": {
-              "type": "boolean",
-              "default": true
-            },
-            "include_insights_report": {
-              "type": "boolean",
-              "default": true
-            },
-            "dedupe": {
-              "type": "boolean",
-              "default": true
-            },
-            "labels": {
+            "redact_patterns": {
+              "default": [],
               "type": "array",
               "items": {
                 "type": "string",
                 "minLength": 1
-              },
-              "default": ["agentplane-feedback", "bug"]
+              }
             }
           },
-          "additionalProperties": true,
+          "additionalProperties": false
+        },
+        "timeouts": {
           "default": {
-            "enabled": false,
-            "repository": "basilisk-labs/agentplane",
-            "transport": "github",
-            "cloud_endpoint": "https://agentplane.cloud/api/feedback/issues",
-            "allow_anonymous_cloud": false,
-            "prompt_on_internal_error": true,
-            "include_insights_report": true,
-            "dedupe": true,
-            "labels": ["agentplane-feedback", "bug"]
-          }
+            "wall_clock_ms": 900000,
+            "idle_ms": 180000,
+            "terminate_grace_ms": 1500
+          },
+          "type": "object",
+          "properties": {
+            "wall_clock_ms": {
+              "default": 900000,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "idle_ms": {
+              "default": 180000,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "terminate_grace_ms": {
+              "default": 1500,
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "additionalProperties": false
+        },
+        "custom": {
+          "type": "object",
+          "properties": {
+            "command": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "env": {
+              "default": {},
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "enforcement": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "codex_sandbox_full_auto"
+                  ]
+                },
+                "platform": {
+                  "type": "string",
+                  "enum": [
+                    "auto",
+                    "macos",
+                    "linux",
+                    "windows"
+                  ]
+                }
+              },
+              "additionalProperties": {}
+            }
+          },
+          "required": [
+            "command"
+          ],
+          "additionalProperties": {}
         }
       },
-      "additionalProperties": true,
+      "additionalProperties": {}
+    },
+    "feedback": {
       "default": {
         "github_issues": {
           "enabled": false,
@@ -415,52 +414,88 @@
           "prompt_on_internal_error": true,
           "include_insights_report": true,
           "dedupe": true,
-          "labels": ["agentplane-feedback", "bug"]
-        }
-      }
-    },
-    "acr": {
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "type": "boolean",
-          "default": false
-        },
-        "version": {
-          "type": "string",
-          "const": "0.1.0",
-          "default": "0.1.0"
-        },
-        "write_on_finish": {
-          "type": "boolean",
-          "default": true
-        },
-        "require_for_pr_check": {
-          "type": "boolean",
-          "default": false
-        },
-        "default_validation_mode": {
-          "type": "string",
-          "enum": ["schema", "local", "ci"],
-          "default": "local"
-        },
-        "include_model_identity": {
-          "type": "string",
-          "enum": ["never", "when_known", "always"],
-          "default": "when_known"
-        },
-        "include_prompts": {
-          "type": "boolean",
-          "const": false,
-          "default": false
-        },
-        "include_tool_outputs": {
-          "type": "boolean",
-          "const": false,
-          "default": false
+          "labels": [
+            "agentplane-feedback",
+            "bug"
+          ]
         }
       },
-      "additionalProperties": true,
+      "type": "object",
+      "properties": {
+        "github_issues": {
+          "default": {
+            "enabled": false,
+            "repository": "basilisk-labs/agentplane",
+            "transport": "github",
+            "cloud_endpoint": "https://agentplane.cloud/api/feedback/issues",
+            "allow_anonymous_cloud": false,
+            "prompt_on_internal_error": true,
+            "include_insights_report": true,
+            "dedupe": true,
+            "labels": [
+              "agentplane-feedback",
+              "bug"
+            ]
+          },
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "type": "boolean"
+            },
+            "repository": {
+              "default": "basilisk-labs/agentplane",
+              "type": "string",
+              "minLength": 1
+            },
+            "transport": {
+              "default": "github",
+              "type": "string",
+              "enum": [
+                "github",
+                "cloud",
+                "auto"
+              ]
+            },
+            "cloud_endpoint": {
+              "default": "https://agentplane.cloud/api/feedback/issues",
+              "type": "string",
+              "minLength": 1
+            },
+            "allow_anonymous_cloud": {
+              "default": false,
+              "type": "boolean"
+            },
+            "prompt_on_internal_error": {
+              "default": true,
+              "type": "boolean"
+            },
+            "include_insights_report": {
+              "default": true,
+              "type": "boolean"
+            },
+            "dedupe": {
+              "default": true,
+              "type": "boolean"
+            },
+            "labels": {
+              "default": [
+                "agentplane-feedback",
+                "bug"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "additionalProperties": {}
+        }
+      },
+      "additionalProperties": {}
+    },
+    "acr": {
       "default": {
         "enabled": false,
         "version": "0.1.0",
@@ -470,339 +505,195 @@
         "include_model_identity": "when_known",
         "include_prompts": false,
         "include_tool_outputs": false
-      }
-    },
-    "paths": {
+      },
       "type": "object",
       "properties": {
-        "agents_dir": {
-          "type": "string",
-          "minLength": 1,
-          "default": ".agentplane/agents"
+        "enabled": {
+          "default": false,
+          "type": "boolean"
         },
-        "tasks_path": {
+        "version": {
+          "default": "0.1.0",
           "type": "string",
-          "minLength": 1,
-          "default": ".agentplane/tasks.json"
+          "const": "0.1.0"
         },
-        "workflow_dir": {
-          "type": "string",
-          "minLength": 1,
-          "default": ".agentplane/tasks"
+        "write_on_finish": {
+          "default": true,
+          "type": "boolean"
         },
-        "worktrees_dir": {
+        "require_for_pr_check": {
+          "default": false,
+          "type": "boolean"
+        },
+        "default_validation_mode": {
+          "default": "local",
           "type": "string",
-          "minLength": 1,
-          "default": ".agentplane/worktrees"
+          "enum": [
+            "schema",
+            "local",
+            "ci"
+          ]
+        },
+        "include_model_identity": {
+          "default": "when_known",
+          "type": "string",
+          "enum": [
+            "never",
+            "when_known",
+            "always"
+          ]
+        },
+        "include_prompts": {
+          "default": false,
+          "type": "boolean",
+          "const": false
+        },
+        "include_tool_outputs": {
+          "default": false,
+          "type": "boolean",
+          "const": false
         }
       },
-      "additionalProperties": true,
+      "additionalProperties": {}
+    },
+    "paths": {
       "default": {
         "agents_dir": ".agentplane/agents",
         "tasks_path": ".agentplane/tasks.json",
         "workflow_dir": ".agentplane/tasks",
         "worktrees_dir": ".agentplane/worktrees"
-      }
-    },
-    "branch": {
+      },
       "type": "object",
       "properties": {
-        "task_prefix": {
+        "agents_dir": {
+          "default": ".agentplane/agents",
           "type": "string",
-          "minLength": 1,
-          "pattern": "^(?!.*(?:^|\\/)\\.\\.(?:\\/|$))(?!.*\\/\\/)(?!\\/)(?!.*\\/$)[^ ~^:?*[\\\\]+$",
-          "default": "task"
+          "minLength": 1
         },
-        "task_close_prefix": {
+        "tasks_path": {
+          "default": ".agentplane/tasks.json",
           "type": "string",
-          "minLength": 1,
-          "pattern": "^(?!.*(?:^|\\/)\\.\\.(?:\\/|$))(?!.*\\/\\/)(?!\\/)(?!.*\\/$)[^ ~^:?*[\\\\]+$",
-          "default": "task-close"
+          "minLength": 1
+        },
+        "workflow_dir": {
+          "default": ".agentplane/tasks",
+          "type": "string",
+          "minLength": 1
+        },
+        "worktrees_dir": {
+          "default": ".agentplane/worktrees",
+          "type": "string",
+          "minLength": 1
         }
       },
-      "additionalProperties": true,
+      "additionalProperties": {}
+    },
+    "branch": {
       "default": {
         "task_prefix": "task",
         "task_close_prefix": "task-close"
-      }
-    },
-    "framework": {
+      },
       "type": "object",
       "properties": {
-        "source": {
+        "task_prefix": {
+          "default": "task",
           "type": "string",
           "minLength": 1,
-          "default": "https://github.com/basilisk-labs/agentplane"
+          "pattern": "^(?!.*(?:^|\\/)\\.\\.(?:\\/|$))(?!.*\\/\\/)(?!\\/)(?!.*\\/$)[^ ~^:?*[\\\\]+$"
         },
-        "last_update": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "date-time"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null
-        },
-        "cli": {
-          "type": "object",
-          "properties": {
-            "expected_version": {
-              "type": ["string", "null"],
-              "default": null
-            }
-          },
-          "additionalProperties": true,
-          "default": {
-            "expected_version": null
-          }
+        "task_close_prefix": {
+          "default": "task-close",
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!.*(?:^|\\/)\\.\\.(?:\\/|$))(?!.*\\/\\/)(?!\\/)(?!.*\\/$)[^ ~^:?*[\\\\]+$"
         }
       },
-      "additionalProperties": true,
+      "additionalProperties": {}
+    },
+    "framework": {
       "default": {
         "source": "https://github.com/basilisk-labs/agentplane",
         "last_update": null,
         "cli": {
           "expected_version": null
         }
-      }
-    },
-    "tasks": {
+      },
       "type": "object",
       "properties": {
-        "id_suffix_length_default": {
-          "type": "integer",
-          "minimum": 3,
-          "maximum": 16,
-          "default": 6
+        "source": {
+          "default": "https://github.com/basilisk-labs/agentplane",
+          "type": "string",
+          "minLength": 1
         },
-        "verify": {
-          "type": "object",
-          "properties": {
-            "required_tags": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "minLength": 1
-              },
-              "default": ["code", "backend", "frontend"]
-            },
-            "require_steps_for_tags": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "minLength": 1
-              }
-            },
-            "require_steps_for_primary": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "minLength": 1
-              },
-              "default": ["code", "data", "ops"]
-            },
-            "require_verification_for_primary": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "minLength": 1
-              },
-              "default": ["code", "data", "ops"]
-            },
-            "spike_tag": {
+        "last_update": {
+          "default": null,
+          "anyOf": [
+            {
               "type": "string",
-              "minLength": 1,
-              "default": "spike"
+              "format": "date-time",
+              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
             },
-            "enforce_on_plan_approve": {
-              "type": "boolean",
-              "default": true
-            },
-            "enforce_on_start_when_no_plan": {
-              "type": "boolean",
-              "default": true
+            {
+              "type": "null"
             }
-          },
-          "additionalProperties": true,
-          "default": {
-            "required_tags": ["code", "backend", "frontend"],
-            "require_steps_for_primary": ["code", "data", "ops"],
-            "require_verification_for_primary": ["code", "data", "ops"],
-            "spike_tag": "spike",
-            "enforce_on_plan_approve": true,
-            "enforce_on_start_when_no_plan": true
-          }
+          ]
         },
-        "tags": {
+        "cli": {
+          "default": {
+            "expected_version": null
+          },
           "type": "object",
           "properties": {
-            "primary_allowlist": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "minLength": 1
-              },
-              "minItems": 1,
-              "default": ["code", "data", "research", "docs", "ops", "product", "meta"]
-            },
-            "strict_primary": {
-              "type": "boolean",
-              "default": false
-            },
-            "fallback_primary": {
-              "type": "string",
-              "minLength": 1,
-              "default": "meta"
-            },
-            "lock_primary_on_update": {
-              "type": "boolean",
-              "default": true
-            }
-          },
-          "additionalProperties": true,
-          "default": {
-            "primary_allowlist": ["code", "data", "research", "docs", "ops", "product", "meta"],
-            "strict_primary": false,
-            "fallback_primary": "meta",
-            "lock_primary_on_update": true
-          }
-        },
-        "doc": {
-          "type": "object",
-          "properties": {
-            "sections": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "minLength": 1
-              },
-              "default": [
-                "Summary",
-                "Scope",
-                "Plan",
-                "Verify Steps",
-                "Verification",
-                "Rollback Plan",
-                "Findings"
+            "expected_version": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
               ]
-            },
-            "required_sections": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "minLength": 1
-              },
-              "default": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
             }
           },
-          "additionalProperties": true,
-          "default": {
-            "sections": [
-              "Summary",
-              "Scope",
-              "Plan",
-              "Verify Steps",
-              "Verification",
-              "Rollback Plan",
-              "Findings"
-            ],
-            "required_sections": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
-          }
-        },
-        "comments": {
-          "type": "object",
-          "properties": {
-            "start": {
-              "type": "object",
-              "properties": {
-                "prefix": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "min_chars": {
-                  "type": "integer",
-                  "minimum": 0
-                }
-              },
-              "required": ["prefix", "min_chars"],
-              "additionalProperties": true,
-              "default": {
-                "prefix": "Start:",
-                "min_chars": 40
-              }
-            },
-            "blocked": {
-              "type": "object",
-              "properties": {
-                "prefix": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "min_chars": {
-                  "type": "integer",
-                  "minimum": 0
-                }
-              },
-              "required": ["prefix", "min_chars"],
-              "additionalProperties": true,
-              "default": {
-                "prefix": "Blocked:",
-                "min_chars": 40
-              }
-            },
-            "verified": {
-              "type": "object",
-              "properties": {
-                "prefix": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "min_chars": {
-                  "type": "integer",
-                  "minimum": 0
-                }
-              },
-              "required": ["prefix", "min_chars"],
-              "additionalProperties": true,
-              "default": {
-                "prefix": "Verified:",
-                "min_chars": 60
-              }
-            }
-          },
-          "additionalProperties": true,
-          "default": {
-            "start": {
-              "prefix": "Start:",
-              "min_chars": 40
-            },
-            "blocked": {
-              "prefix": "Blocked:",
-              "min_chars": 40
-            },
-            "verified": {
-              "prefix": "Verified:",
-              "min_chars": 60
-            }
-          }
+          "additionalProperties": {}
         }
       },
-      "additionalProperties": true,
+      "additionalProperties": {}
+    },
+    "tasks": {
       "default": {
         "id_suffix_length_default": 6,
         "verify": {
-          "required_tags": ["code", "backend", "frontend"],
-          "require_steps_for_primary": ["code", "data", "ops"],
-          "require_verification_for_primary": ["code", "data", "ops"],
+          "required_tags": [
+            "code",
+            "backend",
+            "frontend"
+          ],
+          "require_steps_for_primary": [
+            "code",
+            "data",
+            "ops"
+          ],
+          "require_verification_for_primary": [
+            "code",
+            "data",
+            "ops"
+          ],
           "spike_tag": "spike",
           "enforce_on_plan_approve": true,
           "enforce_on_start_when_no_plan": true
         },
         "tags": {
-          "primary_allowlist": ["code", "data", "research", "docs", "ops", "product", "meta"],
+          "primary_allowlist": [
+            "code",
+            "data",
+            "research",
+            "docs",
+            "ops",
+            "product",
+            "meta"
+          ],
           "strict_primary": false,
           "fallback_primary": "meta",
           "lock_primary_on_update": true
@@ -817,7 +708,13 @@
             "Rollback Plan",
             "Findings"
           ],
-          "required_sections": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
+          "required_sections": [
+            "Summary",
+            "Scope",
+            "Plan",
+            "Verification",
+            "Rollback Plan"
+          ]
         },
         "comments": {
           "start": {
@@ -833,107 +730,413 @@
             "min_chars": 60
           }
         }
-      }
+      },
+      "type": "object",
+      "properties": {
+        "id_suffix_length_default": {
+          "default": 6,
+          "type": "integer",
+          "minimum": 3,
+          "maximum": 16
+        },
+        "verify": {
+          "default": {
+            "required_tags": [
+              "code",
+              "backend",
+              "frontend"
+            ],
+            "require_steps_for_primary": [
+              "code",
+              "data",
+              "ops"
+            ],
+            "require_verification_for_primary": [
+              "code",
+              "data",
+              "ops"
+            ],
+            "spike_tag": "spike",
+            "enforce_on_plan_approve": true,
+            "enforce_on_start_when_no_plan": true
+          },
+          "type": "object",
+          "properties": {
+            "required_tags": {
+              "default": [
+                "code",
+                "backend",
+                "frontend"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "require_steps_for_tags": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "require_steps_for_primary": {
+              "default": [
+                "code",
+                "data",
+                "ops"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "require_verification_for_primary": {
+              "default": [
+                "code",
+                "data",
+                "ops"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "spike_tag": {
+              "default": "spike",
+              "type": "string",
+              "minLength": 1
+            },
+            "enforce_on_plan_approve": {
+              "default": true,
+              "type": "boolean"
+            },
+            "enforce_on_start_when_no_plan": {
+              "default": true,
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": {}
+        },
+        "tags": {
+          "default": {
+            "primary_allowlist": [
+              "code",
+              "data",
+              "research",
+              "docs",
+              "ops",
+              "product",
+              "meta"
+            ],
+            "strict_primary": false,
+            "fallback_primary": "meta",
+            "lock_primary_on_update": true
+          },
+          "type": "object",
+          "properties": {
+            "primary_allowlist": {
+              "default": [
+                "code",
+                "data",
+                "research",
+                "docs",
+                "ops",
+                "product",
+                "meta"
+              ],
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "strict_primary": {
+              "default": false,
+              "type": "boolean"
+            },
+            "fallback_primary": {
+              "default": "meta",
+              "type": "string",
+              "minLength": 1
+            },
+            "lock_primary_on_update": {
+              "default": true,
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": {}
+        },
+        "doc": {
+          "default": {
+            "sections": [
+              "Summary",
+              "Scope",
+              "Plan",
+              "Verify Steps",
+              "Verification",
+              "Rollback Plan",
+              "Findings"
+            ],
+            "required_sections": [
+              "Summary",
+              "Scope",
+              "Plan",
+              "Verification",
+              "Rollback Plan"
+            ]
+          },
+          "type": "object",
+          "properties": {
+            "sections": {
+              "default": [
+                "Summary",
+                "Scope",
+                "Plan",
+                "Verify Steps",
+                "Verification",
+                "Rollback Plan",
+                "Findings"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required_sections": {
+              "default": [
+                "Summary",
+                "Scope",
+                "Plan",
+                "Verification",
+                "Rollback Plan"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "additionalProperties": {}
+        },
+        "comments": {
+          "default": {
+            "start": {
+              "prefix": "Start:",
+              "min_chars": 40
+            },
+            "blocked": {
+              "prefix": "Blocked:",
+              "min_chars": 40
+            },
+            "verified": {
+              "prefix": "Verified:",
+              "min_chars": 60
+            }
+          },
+          "type": "object",
+          "properties": {
+            "start": {
+              "default": {
+                "prefix": "Start:",
+                "min_chars": 40
+              },
+              "type": "object",
+              "properties": {
+                "prefix": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "min_chars": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "prefix",
+                "min_chars"
+              ],
+              "additionalProperties": {}
+            },
+            "blocked": {
+              "default": {
+                "prefix": "Blocked:",
+                "min_chars": 40
+              },
+              "type": "object",
+              "properties": {
+                "prefix": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "min_chars": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "prefix",
+                "min_chars"
+              ],
+              "additionalProperties": {}
+            },
+            "verified": {
+              "default": {
+                "prefix": "Verified:",
+                "min_chars": 60
+              },
+              "type": "object",
+              "properties": {
+                "prefix": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "min_chars": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "prefix",
+                "min_chars"
+              ],
+              "additionalProperties": {}
+            }
+          },
+          "additionalProperties": {}
+        }
+      },
+      "additionalProperties": {}
     },
     "evaluator": {
+      "default": {
+        "max_rework_attempts": 3
+      },
       "type": "object",
       "properties": {
         "max_rework_attempts": {
+          "default": 3,
           "type": "integer",
           "minimum": 1,
-          "maximum": 20,
-          "default": 3
+          "maximum": 20
         }
       },
-      "additionalProperties": true,
-      "default": {
-        "max_rework_attempts": 3
-      }
+      "additionalProperties": {}
     },
     "commit": {
-      "type": "object",
-      "properties": {
-        "generic_tokens": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          },
-          "default": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"]
-        },
-        "dco": {
-          "type": "object",
-          "properties": {
-            "enabled": {
-              "type": "boolean",
-              "default": false
-            },
-            "name": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "minLength": 1
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null
-            },
-            "email": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "minLength": 1
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null
-            }
-          },
-          "additionalProperties": true,
-          "default": {
-            "enabled": false,
-            "name": null,
-            "email": null
-          }
-        }
-      },
-      "additionalProperties": true,
       "default": {
-        "generic_tokens": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"],
+        "generic_tokens": [
+          "start",
+          "status",
+          "mark",
+          "done",
+          "wip",
+          "update",
+          "tasks",
+          "task"
+        ],
         "dco": {
           "enabled": false,
           "name": null,
           "email": null
         }
-      }
+      },
+      "type": "object",
+      "properties": {
+        "generic_tokens": {
+          "default": [
+            "start",
+            "status",
+            "mark",
+            "done",
+            "wip",
+            "update",
+            "tasks",
+            "task"
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "dco": {
+          "default": {
+            "enabled": false,
+            "name": null,
+            "email": null
+          },
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "type": "boolean"
+            },
+            "name": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "email": {
+              "default": null,
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "additionalProperties": {}
+        }
+      },
+      "additionalProperties": {}
     },
     "tasks_backend": {
+      "default": {
+        "config_path": ".agentplane/backends/local/backend.json"
+      },
       "type": "object",
       "properties": {
         "config_path": {
+          "default": ".agentplane/backends/local/backend.json",
           "type": "string",
-          "minLength": 1,
-          "default": ".agentplane/backends/local/backend.json"
+          "minLength": 1
         }
       },
-      "additionalProperties": true,
-      "default": {
-        "config_path": ".agentplane/backends/local/backend.json"
-      }
+      "additionalProperties": {}
     },
     "artifacts_language": {
+      "default": "any",
       "type": "string",
-      "enum": ["any", "en"],
-      "default": "any"
+      "enum": [
+        "any",
+        "en"
+      ]
     },
     "closure_commit_requires_approval": {
-      "type": "boolean",
-      "default": false
+      "default": false,
+      "type": "boolean"
     }
   },
-  "additionalProperties": true
+  "additionalProperties": {}
 }
