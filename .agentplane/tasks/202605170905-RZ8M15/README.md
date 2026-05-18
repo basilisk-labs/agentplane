@@ -4,7 +4,7 @@ title: "Minimize branch_pr generated artifacts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-18T10:54:03.816Z"
+  updated_by: "CODER"
+  note: "Command: bun run test:project agentplane -- run-cli.core.init.test.ts; Result: pass; Evidence: 287 files passed, 1646 tests passed, 2 skipped. Command: bun run typecheck; Result: pass. Command: bun run format:changed; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Command: git check-ignore for handoff and local-backups paths; Result: pass. Command: git push origin task/202605170905-RZ8M15/untracked-artifacts; Result: pass with pre-push fast CI."
   attempts: 0
 commit: null
 comments:
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: investigating untracked branch_pr artifacts and tightening generated artifact handling so repo status does not accumulate transient files."
+  -
+    type: "verify"
+    at: "2026-05-18T10:54:03.816Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bun run test:project agentplane -- run-cli.core.init.test.ts; Result: pass; Evidence: 287 files passed, 1646 tests passed, 2 skipped. Command: bun run typecheck; Result: pass. Command: bun run format:changed; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Command: git check-ignore for handoff and local-backups paths; Result: pass. Command: git push origin task/202605170905-RZ8M15/untracked-artifacts; Result: pass with pre-push fast CI."
 doc_version: 3
-doc_updated_at: "2026-05-18T10:46:46.303Z"
+doc_updated_at: "2026-05-18T10:54:03.828Z"
 doc_updated_by: "CODER"
 description: "Reduce non-canonical generated artifacts in branch_pr while preserving compact traceability via README, ACR, PR metadata, and reconstructable digests."
 sections:
@@ -61,6 +67,25 @@ sections:
     3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-18T10:54:03.816Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Command: bun run test:project agentplane -- run-cli.core.init.test.ts; Result: pass; Evidence: 287 files passed, 1646 tests passed, 2 skipped. Command: bun run typecheck; Result: pass. Command: bun run format:changed; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Command: git check-ignore for handoff and local-backups paths; Result: pass. Command: git push origin task/202605170905-RZ8M15/untracked-artifacts; Result: pass with pre-push fast CI.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T10:46:46.303Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605170905-RZ8M15-untracked-artifacts/.agentplane/tasks/202605170905-RZ8M15/blueprint/resolved-snapshot.json
+    - old_digest: 3b0423f92893ac48504120a6dc6f71078f8000a7d2f18bc6c1197bf9bfb70ded
+    - current_digest: 3b0423f92893ac48504120a6dc6f71078f8000a7d2f18bc6c1197bf9bfb70ded
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605170905-RZ8M15
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -97,6 +122,25 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-18T10:54:03.816Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bun run test:project agentplane -- run-cli.core.init.test.ts; Result: pass; Evidence: 287 files passed, 1646 tests passed, 2 skipped. Command: bun run typecheck; Result: pass. Command: bun run format:changed; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Command: git check-ignore for handoff and local-backups paths; Result: pass. Command: git push origin task/202605170905-RZ8M15/untracked-artifacts; Result: pass with pre-push fast CI.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T10:46:46.303Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605170905-RZ8M15-untracked-artifacts/.agentplane/tasks/202605170905-RZ8M15/blueprint/resolved-snapshot.json
+- old_digest: 3b0423f92893ac48504120a6dc6f71078f8000a7d2f18bc6c1197bf9bfb70ded
+- current_digest: 3b0423f92893ac48504120a6dc6f71078f8000a7d2f18bc6c1197bf9bfb70ded
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605170905-RZ8M15
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

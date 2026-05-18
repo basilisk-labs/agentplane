@@ -12,8 +12,8 @@ Created: 2026-05-18T10:46:46.372Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Command: bun run test:project agentplane -- run-cli.core.init.test.ts; Result: pass; Evidence: 287 files passed, 1646 tests passed, 2 skipped. Command: bun run typecheck; Result: pass. Command: bun run format:changed; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Command: git check-ignore for handoff and local-backups paths; Result: pass. Command: git push origin task/202605170905-RZ8M15/untracked-artifacts; Result: pass with pre-push fast CI.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-05-18T10:46:46.372Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T10:52:43.627Z
+- Updated: 2026-05-18T10:52:50.432Z
 - Branch: task/202605170905-RZ8M15/untracked-artifacts
 - Head: fa7f111121e7
 
