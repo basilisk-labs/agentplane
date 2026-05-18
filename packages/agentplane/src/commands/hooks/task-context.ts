@@ -55,8 +55,8 @@ export function inferTaskIdFromBranch(
   const value = (branch ?? "").trim();
   if (!value) return "";
   return (
-    parseTaskIdFromBranch(taskPrefix, value) ??
     parseTaskIdFromCloseBranch(value, taskClosePrefix) ??
+    parseTaskIdFromBranch(taskPrefix, value) ??
     ""
   );
 }

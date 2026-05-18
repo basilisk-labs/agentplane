@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -23,10 +23,10 @@ async function writeEventFixture(root: string, payload: Record<string, unknown>)
   return eventPath;
 }
 
-async function runScript(args: string[]) {
+async function runScript(args: string[], cwd = process.cwd()) {
   try {
     const result = await execFileAsync(process.execPath, [SCRIPT_PATH, ...args], {
-      cwd: process.cwd(),
+      cwd,
       env: process.env,
       maxBuffer: 10 * 1024 * 1024,
     });
@@ -115,5 +115,46 @@ describe("prepare-hosted-task-closure script", () => {
     const parsed = JSON.parse(result.stdout) as { actionable?: boolean; reason?: string };
     expect(parsed.actionable).toBe(false);
     expect(parsed.reason).toContain("source branch is not");
+  });
+
+  it("reads quoted CRLF branch prefixes from WORKFLOW frontmatter", async () => {
+    const root = await makeTempRoot();
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "WORKFLOW.md"),
+      [
+        "---",
+        "workflow:",
+        "  mode: branch_pr",
+        "branch:",
+        '  task_prefix: "agents/task"',
+        '  task_close_prefix: "agents/task-close"',
+        "---",
+        "",
+      ].join("\r\n"),
+      "utf8",
+    );
+    const eventPath = await writeEventFixture(root, {
+      pull_request: {
+        merged: true,
+        number: 45,
+        title: "Configured branch prefixes",
+        merge_commit_sha: "abcdef1234567890abcdef1234567890abcdef12",
+        head: {
+          ref: "agents/task/202603271940-EG3B0C/configured-prefix",
+          sha: "1234567890abcdef1234567890abcdef12345678",
+        },
+        base: { ref: "main" },
+      },
+    });
+
+    const result = await runScript(["--event-json", eventPath], root);
+    expect(result.exitCode).toBe(0);
+    const parsed = JSON.parse(result.stdout) as {
+      task_id?: string;
+      closure_branch?: string;
+    };
+    expect(parsed.task_id).toBe("202603271940-EG3B0C");
+    expect(parsed.closure_branch).toBe("agents/task-close/202603271940-EG3B0C/abcdef123456");
   });
 });
