@@ -27,9 +27,9 @@ pre-push hotspot gate caught oversized command module.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T05:15:33.173Z
+- Updated: 2026-05-18T05:20:52.881Z
 - Branch: task/202605171746-BBZQQ1/feedback-issue-transports
-- Head: 7f934bface54
+- Head: 8842fa2a06c2
 
 ```text
  .../blueprint/resolved-snapshot.json               | 528 +++++++++++++++++++++
@@ -50,15 +50,16 @@ pre-push hotspot gate caught oversized command module.
  .../cli/run-cli/commands/init/steps/contracts.ts   |   1 +
  .../commands/init/steps/prompt-steps.test.ts       |   5 +-
  .../src/cli/run-cli/commands/init/write-config.ts  |   6 +
- .../commands/insights/insights-issue-publish.ts    | 161 +++++++
- .../src/commands/insights/insights.command.ts      |  70 +--
+ .../insights/insights-issue-publish.test.ts        | 121 +++++
+ .../commands/insights/insights-issue-publish.ts    | 189 ++++++++
+ .../src/commands/insights/insights.command.ts      |  67 +--
  .../src/commands/insights/insights.spec.ts         |  10 +
  packages/core/schemas/config.schema.json           |  20 +
  packages/core/src/config/config.test.ts            |   3 +
  packages/core/src/config/schema.impl.ts            |  24 +-
  packages/spec/schemas/config.schema.json           |  20 +
  schemas/config.schema.json                         |  20 +
- 26 files changed, 1038 insertions(+), 34 deletions(-)
+ 27 files changed, 1184 insertions(+), 34 deletions(-)
 ```
 
 </details>
