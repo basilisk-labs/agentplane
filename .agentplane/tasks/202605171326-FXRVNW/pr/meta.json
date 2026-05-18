@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-18T19:48:32Z",
   "base": "main",
   "branch": "task/202605171326-FXRVNW/v063-prerelease-rough-edges",
   "created_at": "2026-05-18T17:41:11.285Z",
-  "head_sha": "f1afccb640b5fbcf516f7350c244a48e0494a693",
+  "head_sha": "913cd0840f231b0ca0499385ab005f3ec645ebdc",
   "last_verified_at": "2026-05-18T19:39:43.434Z",
   "last_verified_sha": "f1afccb640b5fbcf516f7350c244a48e0494a693",
+  "merge_commit": "50ceca4ece8e648d9b71c25d2cf3a936ef1e6f60",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-18T19:48:32Z",
   "pr_number": 3898,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3898",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605171326-FXRVNW",
-  "updated_at": "2026-05-18T19:39:43.521Z",
+  "updated_at": "2026-05-18T19:48:32Z",
   "verify": {
     "status": "pass"
   }
