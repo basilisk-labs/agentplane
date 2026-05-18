@@ -22,12 +22,16 @@ Reduce non-canonical generated artifacts in branch_pr while preserving compact t
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T10:46:46.372Z
+- Updated: 2026-05-18T10:52:43.627Z
 - Branch: task/202605170905-RZ8M15/untracked-artifacts
-- Head: 88585c94c356
+- Head: fa7f111121e7
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 527 +++++++++++++++++++++
+ .gitignore                                         |   2 +
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |   4 +
+ .../src/runtime/shared/runtime-artifacts.ts        |   2 +
+ 4 files changed, 535 insertions(+)
 ```
 
 </details>
