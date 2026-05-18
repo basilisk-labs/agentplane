@@ -1,10 +1,11 @@
 ---
 id: "202605181835-BQ9T2P"
 title: "Apply safe Dependabot root dependency bumps"
-status: "DOING"
+result_summary: "Merged via PR #3906."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Safe root dependency bump verified: install, lint, typecheck, policy routing, doctor, critical CLI tests passed locally; GitHub PR #3906 hosted checks passed, including Core test and test-windows."
   attempts: 0
-commit: null
+commit:
+  hash: "6c1f204aa711bc62dcb89ad02c4454864cfd496a"
+  message: "Merge pull request #3906 from basilisk-labs/task/202605181835-BQ9T2P/safe-root-deps"
 comments:
   -
     author: "CODER"
     body: "Start: Applying only the low-risk root dependency updates from Dependabot PR #3899 in an isolated branch_pr worktree."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3906 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Safe root dependency bump verified: install, lint, typecheck, policy routing, doctor, critical CLI tests passed locally; GitHub PR #3906 hosted checks passed, including Core test and test-windows."
+  -
+    type: "status"
+    at: "2026-05-18T19:22:52.951Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3906 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T19:03:39.033Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T19:22:52.957Z"
+doc_updated_by: "INTEGRATOR"
 description: "Apply the low-risk root dependency updates from Dependabot PR #3899: @types/node 25.9.0 and @typescript-eslint/eslint-plugin/parser 8.59.4, without taking major/breaking dependency PRs."
 sections:
   Summary: |-
