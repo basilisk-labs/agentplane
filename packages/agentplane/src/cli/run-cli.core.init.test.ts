@@ -278,6 +278,7 @@ describe("runCli", () => {
     const gitignore = await readFile(gitignorePath, "utf8");
     expect(gitignore).toContain(".env");
     expect(gitignore).toContain(".agentplane/worktrees");
+    expect(gitignore).toContain(".agentplane/local-backups");
     expect(gitignore).toContain(".agentplane/cache");
     expect(gitignore).toContain(".agentplane/cache.sqlite");
     expect(gitignore).toContain(".agentplane/cache.sqlite-wal");
@@ -287,6 +288,7 @@ describe("runCli", () => {
     expect(gitignore).toContain(".agentplane/.release");
     expect(gitignore).toContain(".agentplane/upgrade");
     expect(gitignore).toContain(".agentplane/tasks.json");
+    expect(gitignore).toContain(".agentplane/tasks/*/handoff");
 
     const workflowText = await readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8");
     expect(workflowText).toContain('  - "**"');
@@ -353,9 +355,11 @@ describe("runCli", () => {
     const gitignorePath = path.join(root, ".gitignore");
     const gitignore = await readFile(gitignorePath, "utf8");
     expect(gitignore).toContain(".env");
+    expect(gitignore).toContain(".agentplane/local-backups");
     expect(gitignore).toContain(".agentplane/.upgrade");
     expect(gitignore).toContain(".agentplane/.release");
     expect(gitignore).toContain(".agentplane/tasks.json");
+    expect(gitignore).toContain(".agentplane/tasks/*/handoff");
     expect(gitignore).toContain("AGENTS.md");
     expect(gitignore).toContain(".agentplane/agents/");
     expect(gitignore).toContain(".agentplane/evaluators/");

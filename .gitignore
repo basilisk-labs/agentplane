@@ -15,6 +15,7 @@ coverage
 .turbo
 *.tsbuildinfo
 .agentplane/worktrees
+.agentplane/local-backups
 .agentplane/cache
 .agentplane/cache.sqlite
 .agentplane/cache.sqlite-wal
@@ -31,5 +32,6 @@ coverage
 .agentplane/by-status
 .agentplane/by-tag
 .agentplane/by-owner
+.agentplane/tasks/*/handoff
 .agentplane/.npm-cache
 # Keep the external recipes repo out of the main repo index.
