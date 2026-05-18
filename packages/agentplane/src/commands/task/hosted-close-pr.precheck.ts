@@ -1,5 +1,10 @@
 import { readFile } from "node:fs/promises";
-import { resolveBaseBranch, gitEnv, parseTaskIdFromCloseBranch } from "@agentplaneorg/core/git";
+import {
+  resolveBaseBranch,
+  gitEnv,
+  parseTaskIdFromCloseBranch,
+  taskCloseBranchName,
+} from "@agentplaneorg/core/git";
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 import { exitCodeForError } from "../../cli/exit-codes.js";
@@ -134,10 +139,11 @@ async function readHostedCloseState(opts: {
 async function listRemoteTaskCloseBranches(opts: {
   gitRoot: string;
   taskId: string;
+  taskClosePrefix: string;
 }): Promise<string[]> {
   const { stdout } = await execFileAsync(
     "git",
-    ["ls-remote", "--heads", "origin", `task-close/${opts.taskId}/*`],
+    ["ls-remote", "--heads", "origin", `${opts.taskClosePrefix}/${opts.taskId}/*`],
     {
       cwd: opts.gitRoot,
       env: gitEnv(),
@@ -164,16 +170,18 @@ function stripBranchRef(branch: string): string {
 async function resolveHostedCloseBranch(opts: {
   gitRoot: string;
   taskId: string;
+  taskClosePrefix: string;
   explicitBranch: string | null;
   mergeCommit: string | null;
 }): Promise<string> {
   const remoteBranches = await listRemoteTaskCloseBranches({
     gitRoot: opts.gitRoot,
     taskId: opts.taskId,
+    taskClosePrefix: opts.taskClosePrefix,
   });
   const explicitBranch = stripBranchRef(opts.explicitBranch?.trim() ?? "");
   if (explicitBranch) {
-    const parsedTaskId = parseTaskIdFromCloseBranch(explicitBranch);
+    const parsedTaskId = parseTaskIdFromCloseBranch(explicitBranch, opts.taskClosePrefix);
     if (parsedTaskId && parsedTaskId !== opts.taskId) {
       throw new CliError({
         exitCode: exitCodeForError("E_VALIDATION"),
@@ -192,7 +200,11 @@ async function resolveHostedCloseBranch(opts: {
   }
 
   if (opts.mergeCommit) {
-    const expected = `task-close/${opts.taskId}/${shortHostedCloseSha(opts.mergeCommit)}`;
+    const expected = taskCloseBranchName({
+      taskClosePrefix: opts.taskClosePrefix,
+      taskId: opts.taskId,
+      commit: opts.mergeCommit,
+    });
     if (remoteBranches.includes(expected)) return expected;
     if (remoteBranches.length === 1) return remoteBranches[0] ?? expected;
     if (remoteBranches.length > 1) {
@@ -319,6 +331,7 @@ export async function precheckHostedClosePr(
   const closeBranch = await resolveHostedCloseBranch({
     gitRoot,
     taskId: opts.taskId,
+    taskClosePrefix: opts.ctx.config.branch.task_close_prefix,
     explicitBranch: opts.branch ?? null,
     mergeCommit,
   });

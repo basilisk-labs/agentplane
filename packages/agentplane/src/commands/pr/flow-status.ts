@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-import { gitRevParse } from "@agentplaneorg/core/git";
+import { gitRevParse, taskCloseBranchName } from "@agentplaneorg/core/git";
 
 import { createCliEmitter } from "../../cli/output.js";
 import { mapBackendError } from "../../cli/error-map.js";
@@ -126,14 +126,11 @@ function normalizeBaseBranch(value: string | null | undefined): string | null {
   return branch.startsWith("origin/") ? branch.slice("origin/".length) : branch;
 }
 
-function closeBranchName(taskId: string, mergeCommit: string): string {
-  return `task-close/${taskId}/${mergeCommit.slice(0, 12)}`;
-}
-
 async function resolveCloseTailStatus(opts: {
   gitRoot: string;
   workflowDir: string;
   taskId: string;
+  taskClosePrefix: string;
   baseBranch: string | null;
   remotePr: RemotePrStatus;
 }): Promise<CloseTailStatus> {
@@ -156,7 +153,11 @@ async function resolveCloseTailStatus(opts: {
     };
   }
 
-  const branch = closeBranchName(opts.taskId, mergeCommit);
+  const branch = taskCloseBranchName({
+    taskClosePrefix: opts.taskClosePrefix,
+    taskId: opts.taskId,
+    commit: mergeCommit,
+  });
   const observed = await tryLookupExistingGithubPrByBranch({
     gitRoot: opts.gitRoot,
     branch,
@@ -234,6 +235,7 @@ export async function resolvePrFlowStatus(opts: {
     gitRoot: resolved.gitRoot,
     workflowDir: config.paths.workflow_dir,
     taskId: task.id,
+    taskClosePrefix: config.branch.task_close_prefix,
     baseBranch,
     remotePr: pr,
   });

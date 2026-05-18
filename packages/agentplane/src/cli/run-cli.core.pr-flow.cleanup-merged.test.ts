@@ -513,6 +513,7 @@ describe("runCli", () => {
       await writeFile(path.join(root, ".gitignore"), TEST_WORKFLOW_GITIGNORE, "utf8");
       await commitAll(root, "chore base");
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await writeConfig(root, config);
 
       let taskId = "";
       const ioTask = captureStdIO();

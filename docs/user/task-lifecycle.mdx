@@ -42,6 +42,10 @@ agentplane cleanup merged --finalize
 `agentplane integrate` defaults to `merge` so task branch commits stay in base history; pass
 `--merge-strategy squash` only when compacting history is intentional.
 
+Default branch names are `task/<task-id>/<slug>` for implementation and
+`task-close/<task-id>/<sha12>` for close-tail evidence. The repository can override the prefixes
+with `branch.task_prefix` and `branch.task_close_prefix`; the rest of the shape is fixed.
+
 ## Route decision commands
 
 When a `branch_pr` task has been interrupted, partially verified, or merged through hosted close,

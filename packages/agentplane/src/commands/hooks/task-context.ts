@@ -47,10 +47,18 @@ export function envFlag(name: string): boolean {
   return (process.env[name] ?? "").trim() === "1";
 }
 
-export function inferTaskIdFromBranch(branch: string | undefined, taskPrefix: string): string {
+export function inferTaskIdFromBranch(
+  branch: string | undefined,
+  taskPrefix: string,
+  taskClosePrefix = "task-close",
+): string {
   const value = (branch ?? "").trim();
   if (!value) return "";
-  return parseTaskIdFromBranch(taskPrefix, value) ?? parseTaskIdFromCloseBranch(value) ?? "";
+  return (
+    parseTaskIdFromCloseBranch(value, taskClosePrefix) ??
+    parseTaskIdFromBranch(taskPrefix, value) ??
+    ""
+  );
 }
 
 export async function currentBranchOrUndefined(gitRoot: string): Promise<string | undefined> {
@@ -64,8 +72,13 @@ export async function currentBranchOrUndefined(gitRoot: string): Promise<string 
 export async function inferTaskIdFromCurrentBranch(opts: {
   gitRoot: string;
   taskPrefix: string;
+  taskClosePrefix?: string;
 }): Promise<string> {
-  return inferTaskIdFromBranch(await currentBranchOrUndefined(opts.gitRoot), opts.taskPrefix);
+  return inferTaskIdFromBranch(
+    await currentBranchOrUndefined(opts.gitRoot),
+    opts.taskPrefix,
+    opts.taskClosePrefix,
+  );
 }
 
 export async function inferTaskIdFromSubjectSuffix(opts: {

@@ -33,7 +33,11 @@ export async function runPreCommitHook(opts: HooksRunOptions): Promise<number> {
   const currentBranch = await currentBranchOrUndefined(resolved.gitRoot);
   const taskId =
     (process.env.AGENTPLANE_TASK_ID ?? "").trim() ||
-    inferTaskIdFromBranch(currentBranch, loaded.config.branch.task_prefix);
+    inferTaskIdFromBranch(
+      currentBranch,
+      loaded.config.branch.task_prefix,
+      loaded.config.branch.task_close_prefix,
+    );
   const taskIntent = taskId
     ? await readTaskIntent({
         gitRoot: resolved.gitRoot,

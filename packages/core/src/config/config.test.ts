@@ -33,6 +33,13 @@ describe("config", () => {
     expect(() => validateConfig(defaultConfig())).not.toThrow();
   });
 
+  it("defaults branch naming prefixes", () => {
+    expect(defaultConfig().branch).toMatchObject({
+      task_prefix: "task",
+      task_close_prefix: "task-close",
+    });
+  });
+
   it("defaults GitHub issue feedback to explicit opt-in", () => {
     const cfg = defaultConfig();
     expect(cfg.feedback.github_issues).toMatchObject({
@@ -555,6 +562,16 @@ describe("config", () => {
       [
         "branch.task_prefix",
         (raw) => ((raw.branch as Record<string, unknown>).task_prefix = ""),
+        schemaPath("branch.task_prefix"),
+      ],
+      [
+        "branch.task_close_prefix",
+        (raw) => ((raw.branch as Record<string, unknown>).task_close_prefix = ""),
+        schemaPath("branch.task_close_prefix"),
+      ],
+      [
+        "branch.task_prefix invalid ref syntax",
+        (raw) => ((raw.branch as Record<string, unknown>).task_prefix = "bad prefix"),
         schemaPath("branch.task_prefix"),
       ],
       [

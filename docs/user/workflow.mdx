@@ -54,6 +54,11 @@ Lifecycle/status commits are task-state checkpoints. They are not implementation
 `finish --commit-from-comment` is unsupported in `branch_pr` because finish runs on the base
 checkout.
 
+The default branch contract is `task/<task-id>/<slug>` for implementation branches and
+`task-close/<task-id>/<sha12>` for close-tail branches. Repositories may override only the two
+prefixes via `branch.task_prefix` and `branch.task_close_prefix`; the task id and slug positions are
+fixed.
+
 ## Default direct path
 
 When a repository intentionally operates in `direct`, the default happy path is `task start-ready -> task verify-show -> verify -> finish`.

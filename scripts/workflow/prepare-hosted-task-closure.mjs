@@ -4,7 +4,7 @@ import path from "node:path";
 function printHelp() {
   process.stdout.write(
     [
-      "Usage: node scripts/prepare-hosted-task-closure.mjs --event-json <path> [--task-branch-prefix <prefix>]",
+      "Usage: node scripts/prepare-hosted-task-closure.mjs --event-json <path> [--task-branch-prefix <prefix>] [--task-close-branch-prefix <prefix>]",
       "",
       "Build deterministic hosted branch_pr closure metadata from a merged GitHub pull_request event.",
       "",
@@ -21,7 +21,11 @@ function printHelp() {
 }
 
 function parseArgs(argv) {
-  const args = { eventJson: null, taskBranchPrefix: "task" };
+  const args = {
+    eventJson: null,
+    taskBranchPrefix: null,
+    taskCloseBranchPrefix: null,
+  };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     if (token === "--help" || token === "-h") return { help: true };
@@ -39,10 +43,69 @@ function parseArgs(argv) {
       index += 1;
       continue;
     }
+    if (token === "--task-close-branch-prefix") {
+      const next = argv[index + 1];
+      if (!next) throw new Error("Missing value after --task-close-branch-prefix");
+      args.taskCloseBranchPrefix = next;
+      index += 1;
+      continue;
+    }
     throw new Error(`Unknown option: ${token}`);
   }
   if (!args.eventJson) throw new Error("Missing required option: --event-json");
   return args;
+}
+
+async function readConfiguredBranchPrefixes(cwd = process.cwd()) {
+  try {
+    const workflow = await readFile(path.join(cwd, ".agentplane", "WORKFLOW.md"), "utf8");
+    const branch = parseWorkflowBranchConfig(workflow);
+    return {
+      taskBranchPrefix: stringValue(branch.task_prefix),
+      taskCloseBranchPrefix: stringValue(branch.task_close_prefix),
+    };
+  } catch {
+    return {};
+  }
+}
+
+function parseWorkflowBranchConfig(text) {
+  const normalized = String(text ?? "").replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+  if (!normalized.startsWith("---\n")) return {};
+  const end = normalized.indexOf("\n---", 4);
+  if (end === -1) return {};
+  const out = {};
+  let inBranch = false;
+  for (const line of normalized.slice(4, end).split("\n")) {
+    if (line === "branch:") {
+      inBranch = true;
+      continue;
+    }
+    if (!inBranch) continue;
+    if (line.length > 0 && !line.startsWith("  ")) break;
+    const trimmed = line.trim();
+    const separator = trimmed.indexOf(":");
+    if (separator === -1) continue;
+    const key = trimmed.slice(0, separator).trim();
+    if (key !== "task_prefix" && key !== "task_close_prefix") continue;
+    out[key] = parseYamlStringScalar(trimmed.slice(separator + 1).trim());
+  }
+  return out;
+}
+
+function parseYamlStringScalar(value) {
+  if (!value) return null;
+  if (value.startsWith('"') && value.endsWith('"')) {
+    return value.slice(1, -1).replaceAll(String.raw`\"`, '"').trim();
+  }
+  if (value.startsWith("'") && value.endsWith("'")) {
+    return value.slice(1, -1).replaceAll("''", "'").trim();
+  }
+  return value.split(" #", 1)[0]?.trim() ?? null;
+}
+
+function stringValue(value) {
+  return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
 }
 
 function parseTaskIdFromBranch(prefix, branch) {
@@ -91,7 +154,7 @@ function titleFromSourcePullTitle(value, taskId) {
   return normalizeOneLine(title.replace(`[${taskId}]`, "").replace(`(${taskId})`, ""), 96);
 }
 
-function buildClosureMetadata(payload, prefix) {
+function buildClosureMetadata(payload, prefix, closePrefix = "task-close") {
   const pull = payload && typeof payload === "object" ? payload.pull_request : null;
   if (!pull || typeof pull !== "object") return noAction("event does not contain pull_request");
   if (pull.merged !== true) return noAction("pull_request is not merged");
@@ -112,7 +175,7 @@ function buildClosureMetadata(payload, prefix) {
   if (!taskId) return noAction(`source branch is not a ${prefix}/<task-id>/... task branch`);
 
   const mergeShort = shortSha(mergeSha);
-  const closureBranch = `task-close/${taskId}/${mergeShort}`;
+  const closureBranch = `${closePrefix}/${taskId}/${mergeShort}`;
   const sourceTitle = titleFromSourcePullTitle(pull.title, taskId);
   const prTitle = `🧩 ${extractTaskSuffix(taskId)} task-close: ${sourceTitle} [${taskId}]`;
   const prBody = [
@@ -148,11 +211,19 @@ async function main() {
     printHelp();
     return;
   }
+  const configured = await readConfiguredBranchPrefixes();
+  const taskBranchPrefix = parsed.taskBranchPrefix ?? configured.taskBranchPrefix ?? "task";
+  const taskCloseBranchPrefix =
+    parsed.taskCloseBranchPrefix ?? configured.taskCloseBranchPrefix ?? "task-close";
 
   const raw = await readFile(path.resolve(parsed.eventJson), "utf8");
   const payload = JSON.parse(raw);
   process.stdout.write(
-    `${JSON.stringify(buildClosureMetadata(payload, parsed.taskBranchPrefix), null, 2)}\n`,
+    `${JSON.stringify(
+      buildClosureMetadata(payload, taskBranchPrefix, taskCloseBranchPrefix),
+      null,
+      2,
+    )}\n`,
   );
 }
 

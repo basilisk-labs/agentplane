@@ -7,6 +7,13 @@ import { isRecord } from "../types/guards.js";
 const nonEmptyString = () => z.string().min(1);
 const nonEmptyStringArray = (defaults?: string[]) =>
   defaults ? z.array(nonEmptyString()).default(defaults) : z.array(nonEmptyString());
+const branchPrefixString = () =>
+  z
+    .string()
+    .min(1)
+    .regex(/^(?!.*(?:^|\/)\.\.(?:\/|$))(?!.*\/\/)(?!\/)(?!.*\/$)[^ ~^:?*[\\]+$/u, {
+      message: "Branch prefix must be a git-safe branch namespace without spaces or ref syntax.",
+    });
 
 const COMMENT_POLICY_DEFAULTS = {
   start: { prefix: "Start:", min_chars: 40 },
@@ -361,10 +368,11 @@ export const AgentplaneConfigSchema = z
       }),
     branch: z
       .object({
-        task_prefix: nonEmptyString().default("task"),
+        task_prefix: branchPrefixString().default("task"),
+        task_close_prefix: branchPrefixString().default("task-close"),
       })
       .passthrough()
-      .default({ task_prefix: "task" }),
+      .default({ task_prefix: "task", task_close_prefix: "task-close" }),
     framework: z
       .object({
         source: nonEmptyString().default("https://github.com/basilisk-labs/agentplane"),

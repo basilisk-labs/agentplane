@@ -228,6 +228,50 @@ describe("release-task-evidence script", () => {
     expect(payload.pr_body).toContain("## Scope");
   });
 
+  it("reads quoted CRLF close branch prefix from WORKFLOW frontmatter", async () => {
+    const root = await initRepo();
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "WORKFLOW.md"),
+      [
+        "---",
+        "workflow:",
+        "  mode: branch_pr",
+        "branch:",
+        '  task_close_prefix: "agents/task-close"',
+        "---",
+        "",
+      ].join("\r\n"),
+      "utf8",
+    );
+    const taskId = "202604191130-JWBEB7";
+    await writeTaskReadme(root, taskId);
+    const releaseSha = await commitAll(root, "release v0.3.15");
+    const publishResultPath = await writePublishResult(root, buildPublishResult(true));
+
+    const result = await execFileAsync(
+      "bun",
+      [
+        SCRIPT_PATH,
+        "prepare",
+        "--release-sha",
+        releaseSha,
+        "--publish-result",
+        publishResultPath,
+        "--repo",
+        "basilisk-labs/agentplane",
+      ],
+      { cwd: root, env: process.env },
+    );
+
+    const payload = JSON.parse(String(result.stdout ?? "")) as {
+      closure_branch: string;
+    };
+    expect(payload.closure_branch).toBe(
+      `agents/task-close/${taskId}/${releaseSha.slice(0, 12)}-publish`,
+    );
+  });
+
   it("prepares evidence for a branch_pr merge commit that carries the release task README", async () => {
     const root = await initRepo();
     await writeFile(path.join(root, "README.md"), "# fixture\n");

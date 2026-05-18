@@ -53,6 +53,11 @@ agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 ```
 
+Default branch names are `task/<task-id>/<slug>` for implementation branches and
+`task-close/<task-id>/<sha12>` for close-tail branches. Repositories MAY override only the prefixes
+through `branch.task_prefix` and `branch.task_close_prefix`; task id, slug, and sha positions remain
+fixed.
+
 <!-- /ap:fragment -->
 <!-- ap:fragment id="policy.workflow.branch_pr.hard_constraint.constraints" slot="hard_constraint" mutability="append_only" -->
 

@@ -510,12 +510,20 @@
         "task_prefix": {
           "type": "string",
           "minLength": 1,
+          "pattern": "^(?!.*(?:^|\\/)\\.\\.(?:\\/|$))(?!.*\\/\\/)(?!\\/)(?!.*\\/$)[^ ~^:?*[\\\\]+$",
           "default": "task"
+        },
+        "task_close_prefix": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!.*(?:^|\\/)\\.\\.(?:\\/|$))(?!.*\\/\\/)(?!\\/)(?!.*\\/$)[^ ~^:?*[\\\\]+$",
+          "default": "task-close"
         }
       },
       "additionalProperties": true,
       "default": {
-        "task_prefix": "task"
+        "task_prefix": "task",
+        "task_close_prefix": "task-close"
       }
     },
     "framework": {
