@@ -1,10 +1,11 @@
 ---
 id: "202605171326-FXRVNW"
 title: "Freeze release candidate base and scope after late merges"
-status: "DOING"
+result_summary: "Merged via PR #3898."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Verified follow-up: integrate test helpers now record EVALUATOR verification against the branch implementation commit before PR artifacts are opened."
   attempts: 0
-commit: null
+commit:
+  hash: "50ceca4ece8e648d9b71c25d2cf3a936ef1e6f60"
+  message: "Merge pull request #3898 from basilisk-labs/task/202605171326-FXRVNW/v063-prerelease-rough-edges"
 comments:
   -
     author: "CODER"
     body: "Start: implement the v0.6.3 prerelease rough-edge batch in a dedicated branch_pr worktree, covering release base freeze, stale task-state diagnostics, legacy task README frontmatter handling, and context wiki scaffold lint."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3898 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -73,9 +79,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified follow-up: integrate test helpers now record EVALUATOR verification against the branch implementation commit before PR artifacts are opened."
+  -
+    type: "status"
+    at: "2026-05-18T19:49:13.811Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3898 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T19:39:43.468Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T19:49:13.819Z"
+doc_updated_by: "INTEGRATOR"
 description: "Harden release candidate planning so a patch release cannot claim to exclude work that is already merged into the candidate base. The v0.6.2 regression case is a release task that planned to exclude route-decision CLI work while PR #3823 later landed on origin/main. Release tooling should pin the base SHA, detect late merges, and require explicit revert, branch cut, or re-scope before candidate generation."
 sections:
   Summary: |-
