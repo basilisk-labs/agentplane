@@ -30,7 +30,10 @@ function writeJson(relPath, value) {
 }
 
 function parseSemver(version) {
-  const match = /^(\d+)\.(\d+)\.(\d+)(?:[-+][0-9A-Za-z.-]+)?$/u.exec(String(version).trim());
+  const match =
+    /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/u.exec(
+      String(version).trim(),
+    );
   if (!match) return null;
   return {
     major: Number(match[1]),

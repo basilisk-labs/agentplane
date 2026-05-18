@@ -4,7 +4,7 @@ title: "Add release and dev workflow helper scripts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-18T10:00:03.881Z"
+  updated_at: "2026-05-18T10:14:41.854Z"
   updated_by: "CODER"
-  note: "Corrected release build dependency order after hosted TS6305 failure; release:check, release CI contract test, workflows:lint, scripts README check, and targeted eslint passed."
+  note: "Addressed PR review comments: deps-triage --write now exits nonzero on failed subcommands; version-bump accepts SemVer prerelease plus build metadata. Verified node --check, targeted eslint, dry-run semver input, dry-run deps triage, and fake failing bun exit path."
   attempts: 0
 commit: null
 comments:
@@ -72,8 +72,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Corrected release build dependency order after hosted TS6305 failure; release:check, release CI contract test, workflows:lint, scripts README check, and targeted eslint passed."
+  -
+    type: "verify"
+    at: "2026-05-18T10:14:41.854Z"
+    author: "CODER"
+    state: "ok"
+    note: "Addressed PR review comments: deps-triage --write now exits nonzero on failed subcommands; version-bump accepts SemVer prerelease plus build metadata. Verified node --check, targeted eslint, dry-run semver input, dry-run deps triage, and fake failing bun exit path."
 doc_version: 3
-doc_updated_at: "2026-05-18T10:00:03.892Z"
+doc_updated_at: "2026-05-18T10:14:41.873Z"
 doc_updated_by: "CODER"
 description: "Add repo-local helper scripts and skill guidance for release state, version bumping, candidate prep, publication evidence collection, dev impact checks, task scope checks, and dependency triage."
 sections:
@@ -201,6 +207,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T09:48:48.110Z, excerpt_hash=sha256:9b5bd386770abdc9294dba4c42e546388f1ed2d87740960c933da4729aa0bf46
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605180925-JSBEYJ-release-dev-helper-scripts/.agentplane/tasks/202605180925-JSBEYJ/blueprint/resolved-snapshot.json
+    - old_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+    - current_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605180925-JSBEYJ
+
+    ### 2026-05-18T10:14:41.854Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Addressed PR review comments: deps-triage --write now exits nonzero on failed subcommands; version-bump accepts SemVer prerelease plus build metadata. Verified node --check, targeted eslint, dry-run semver input, dry-run deps triage, and fake failing bun exit path.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T10:00:03.892Z, excerpt_hash=sha256:9b5bd386770abdc9294dba4c42e546388f1ed2d87740960c933da4729aa0bf46
 
     Details:
 
@@ -353,6 +378,25 @@ Note: Corrected release build dependency order after hosted TS6305 failure; rele
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T09:48:48.110Z, excerpt_hash=sha256:9b5bd386770abdc9294dba4c42e546388f1ed2d87740960c933da4729aa0bf46
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605180925-JSBEYJ-release-dev-helper-scripts/.agentplane/tasks/202605180925-JSBEYJ/blueprint/resolved-snapshot.json
+- old_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+- current_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605180925-JSBEYJ
+
+### 2026-05-18T10:14:41.854Z — VERIFY — ok
+
+By: CODER
+
+Note: Addressed PR review comments: deps-triage --write now exits nonzero on failed subcommands; version-bump accepts SemVer prerelease plus build metadata. Verified node --check, targeted eslint, dry-run semver input, dry-run deps triage, and fake failing bun exit path.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T10:00:03.892Z, excerpt_hash=sha256:9b5bd386770abdc9294dba4c42e546388f1ed2d87740960c933da4729aa0bf46
 
 Details:
 

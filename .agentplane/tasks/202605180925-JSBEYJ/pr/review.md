@@ -13,7 +13,7 @@ Created: 2026-05-18T09:26:27.050Z
 ## Verification
 
 - State: ok
-- Note: Corrected release build dependency order after hosted TS6305 failure; release:check, release CI contract test, workflows:lint, scripts README check, and targeted eslint passed.
+- Note: Addressed PR review comments: deps-triage --write now exits nonzero on failed subcommands; version-bump accepts SemVer prerelease plus build metadata. Verified node --check, targeted eslint, dry-run semver input, dry-run deps triage, and fake failing bun exit path.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -34,6 +34,7 @@ const commands = [
 ];
 const results = commands.map(([cmd, args]) => run(cmd, args, dryRun));
 const report = { schema_version: 1, dry_run: dryRun, changed_files: files, results };
+const failed = results.filter((result) => result.status !== null && result.status !== 0);
 
 if (flags.json === true) {
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
@@ -44,4 +45,8 @@ if (flags.json === true) {
       `- ${result.command}${result.skipped ? " (skipped)" : ` -> ${result.status}`}\n`,
     );
   }
+}
+
+if (failed.length > 0) {
+  process.exitCode = 1;
 }
