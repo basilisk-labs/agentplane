@@ -1,0 +1,231 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605141638-HGNT7H",
+  "created_at": "2026-05-14T19:15:20.184Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.6.0"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "d2d0a0a1baf774fade65bf1ed78d5886f69d2dee",
+    "work_ref": "main",
+    "work_commit": "d2d0a0a1baf774fade65bf1ed78d5886f69d2dee"
+  },
+  "task": {
+    "task_id": "202605141638-HGNT7H",
+    "title": "Define schema canonical source contract",
+    "intent": "Resolve the three schema directory source-of-truth ambiguity across root schemas, packages/spec/schemas, and packages/core/schemas by documenting or enforcing a single generated/canonical flow, including recipe/workflow and context schema coverage.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.6.0"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605141638-HGNT7H/README.md",
+      "sha256": "sha256:a86d1cf95e061ee722ca310767a019635fdcf65c997a41776edb5b7b5f100d5d"
+    },
+    "approved_at": "2026-05-14T16:41:06.597Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Closed as part of v0.6 audit follow-up batch PR #3746.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605141638-HGNT7H_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T16:41:06.597Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605141638-HGNT7H/README.md",
+      "sha256": "sha256:a86d1cf95e061ee722ca310767a019635fdcf65c997a41776edb5b7b5f100d5d"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605141638-HGNT7H/README.md",
+      "sha256": "sha256:a86d1cf95e061ee722ca310767a019635fdcf65c997a41776edb5b7b5f100d5d"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605141638-HGNT7H/README.md",
+      "sha256": "sha256:a86d1cf95e061ee722ca310767a019635fdcf65c997a41776edb5b7b5f100d5d"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605141638-HGNT7H/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:62a4029933694b2eb6638be1f69e9bca2c57907116b17cde70870b7817f87df8"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit d2d0a0a1baf774fade65bf1ed78d5886f69d2dee if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:1ab959ec76f285cc15bde241f691c7242f5dd9f49026e76eab11795130afdd2d",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "quality.regression",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "worktree_start",
+        "work_unit",
+        "fast_local_checks",
+        "pr_artifact",
+        "verify_record",
+        "hosted_checks",
+        "publish_or_integrate",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "regression.original_failure",
+          "kind": "artifact",
+          "produced_by": "context_resolve",
+          "required": true
+        },
+        {
+          "id": "regression.reproduction",
+          "kind": "check_result",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "regression.focused_check",
+          "kind": "check_result",
+          "produced_by": "fast_local_checks",
+          "required": true
+        },
+        {
+          "id": "regression.matrix_or_scope",
+          "kind": "assumptions",
+          "produced_by": "scope",
+          "required": true
+        },
+        {
+          "id": "regression.full_gate",
+          "kind": "check_result",
+          "produced_by": "hosted_checks",
+          "required": true
+        },
+        {
+          "id": "regression.flake_classification",
+          "kind": "weak_links",
+          "produced_by": "verify_record",
+          "required": true
+        },
+        {
+          "id": "regression.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605141638-HGNT7H/blueprint/resolved-snapshot.json",
+        "digest": "dd830de8bf1b63755521618f7ce1e6d12b67fdf27ddaba12f4e5c3492dde6af9",
+        "current_digest": "dd830de8bf1b63755521618f7ce1e6d12b67fdf27ddaba12f4e5c3492dde6af9",
+        "route_changed": false,
+        "artifact_sha256": "sha256:62a4029933694b2eb6638be1f69e9bca2c57907116b17cde70870b7817f87df8",
+        "safe_command": "agentplane blueprint snapshot 202605141638-HGNT7H"
+      }
+    }
+  }
+}
