@@ -22,7 +22,7 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
   ],
   examples: [
     {
-      cmd: 'agentplane task begin "Fix parser edge case" --tag code --verify "bun test"',
+      cmd: 'agentplane task begin "Fix parser edge case" --tag code --verify "bun run test:fast"',
       why: "Create, plan, approve, and start or route a normal task.",
     },
     {
