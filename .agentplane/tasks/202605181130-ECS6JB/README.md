@@ -4,7 +4,7 @@ title: "Install context policy module during context init"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-18T11:41:28.619Z"
+  updated_at: "2026-05-18T11:43:24.766Z"
   updated_by: "CODER"
-  note: "Implemented context.must policy module and wired it into generated AGENTS load rules for context work. Evidence: policy routing OK; builtin assets fresh; focused vitest 3 files/43 tests passed; eslint target passed; prettier check passed; repo-local clean temp context init installs context.must and context check passes."
+  note: "Published PR #3886 for commit d141963b8 after implementation checks. Evidence: policy routing OK; builtin assets fresh; focused vitest 3 files/43 tests passed; eslint target passed; prettier check passed; repo-local clean temp context init installs context.must and context check passes."
   attempts: 0
 commit: null
 comments:
@@ -49,8 +49,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented context.must policy module and wired it into generated AGENTS load rules for context work. Evidence: policy routing OK; builtin assets fresh; focused vitest 3 files/43 tests passed; eslint target passed; prettier check passed; repo-local clean temp context init installs context.must and context check passes."
+  -
+    type: "verify"
+    at: "2026-05-18T11:43:24.766Z"
+    author: "CODER"
+    state: "ok"
+    note: "Published PR #3886 for commit d141963b8 after implementation checks. Evidence: policy routing OK; builtin assets fresh; focused vitest 3 files/43 tests passed; eslint target passed; prettier check passed; repo-local clean temp context init installs context.must and context check passes."
 doc_version: 3
-doc_updated_at: "2026-05-18T11:41:28.635Z"
+doc_updated_at: "2026-05-18T11:43:24.775Z"
 doc_updated_by: "CODER"
 description: "Add a compact context policy module and wire context initialization/gateway loading so agents get mandatory CLI/provenance rules for local context work instead of relying on skills."
 sections:
@@ -97,6 +103,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T11:41:22.951Z, excerpt_hash=sha256:fbe7fe1d36e5a2c32aef8d85c39200cc3b4dd00068d18197042100633c7c7723
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181130-ECS6JB-context-policy-module/.agentplane/tasks/202605181130-ECS6JB/blueprint/resolved-snapshot.json
+    - old_digest: 556bd767de379f69ad2aed7601691521e72feab3ca4b5a8c056200ac1d679b85
+    - current_digest: 556bd767de379f69ad2aed7601691521e72feab3ca4b5a8c056200ac1d679b85
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605181130-ECS6JB
+
+    ### 2026-05-18T11:43:24.766Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Published PR #3886 for commit d141963b8 after implementation checks. Evidence: policy routing OK; builtin assets fresh; focused vitest 3 files/43 tests passed; eslint target passed; prettier check passed; repo-local clean temp context init installs context.must and context check passes.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T11:41:28.635Z, excerpt_hash=sha256:fbe7fe1d36e5a2c32aef8d85c39200cc3b4dd00068d18197042100633c7c7723
 
     Details:
 
@@ -168,6 +193,25 @@ Note: Implemented context.must policy module and wired it into generated AGENTS 
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T11:41:22.951Z, excerpt_hash=sha256:fbe7fe1d36e5a2c32aef8d85c39200cc3b4dd00068d18197042100633c7c7723
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181130-ECS6JB-context-policy-module/.agentplane/tasks/202605181130-ECS6JB/blueprint/resolved-snapshot.json
+- old_digest: 556bd767de379f69ad2aed7601691521e72feab3ca4b5a8c056200ac1d679b85
+- current_digest: 556bd767de379f69ad2aed7601691521e72feab3ca4b5a8c056200ac1d679b85
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605181130-ECS6JB
+
+### 2026-05-18T11:43:24.766Z — VERIFY — ok
+
+By: CODER
+
+Note: Published PR #3886 for commit d141963b8 after implementation checks. Evidence: policy routing OK; builtin assets fresh; focused vitest 3 files/43 tests passed; eslint target passed; prettier check passed; repo-local clean temp context init installs context.must and context check passes.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T11:41:28.635Z, excerpt_hash=sha256:fbe7fe1d36e5a2c32aef8d85c39200cc3b4dd00068d18197042100633c7c7723
 
 Details:
 

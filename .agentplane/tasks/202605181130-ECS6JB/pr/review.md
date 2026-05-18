@@ -13,7 +13,7 @@ Created: 2026-05-18T11:30:53.872Z
 ## Verification
 
 - State: ok
-- Note: Implemented context.must policy module and wired it into generated AGENTS load rules for context work. Evidence: policy routing OK; builtin assets fresh; focused vitest 3 files/43 tests passed; eslint target passed; prettier check passed; repo-local clean temp context init installs context.must and context check passes.
+- Note: Published PR #3886 for commit d141963b8 after implementation checks. Evidence: policy routing OK; builtin assets fresh; focused vitest 3 files/43 tests passed; eslint target passed; prettier check passed; repo-local clean temp context init installs context.must and context check passes.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-05-18T11:30:53.872Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T11:42:54.707Z
+- Updated: 2026-05-18T11:43:01.336Z
 - Branch: task/202605181130-ECS6JB/context-policy-module
 - Head: d141963b8027
 

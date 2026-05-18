@@ -3,11 +3,14 @@
   "branch": "task/202605181130-ECS6JB/context-policy-module",
   "created_at": "2026-05-18T11:30:53.872Z",
   "head_sha": "d141963b8027776baff29713a8d51cd704ddb0ec",
-  "last_verified_at": "2026-05-18T11:41:28.619Z",
-  "last_verified_sha": "88585c94c356b2081b28f274f03616fd0ae912ef",
+  "last_verified_at": "2026-05-18T11:43:24.766Z",
+  "last_verified_sha": "d141963b8027776baff29713a8d51cd704ddb0ec",
+  "pr_number": 3886,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3886",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202605181130-ECS6JB",
-  "updated_at": "2026-05-18T11:42:54.707Z",
+  "updated_at": "2026-05-18T11:43:01.336Z",
   "verify": {
     "status": "pass"
   }
