@@ -1,10 +1,11 @@
 ---
 id: "202605181904-RC91FT"
 title: "Fix v0.6 follow-up GitHub issues"
-status: "DOING"
+result_summary: "Merged via PR #3915."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -38,11 +39,16 @@ quality_review:
     - ".agentplane/tasks/202605181904-RC91FT/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181904-RC91FT-v06-issue-batch/.agentplane/tasks/202605181904-RC91FT/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "2157fc02573d1e2f8b30fcc3813970d3b91a4f71"
+  message: "Merge pull request #3915 from basilisk-labs/task/202605181904-RC91FT/v06-issue-batch"
 comments:
   -
     author: "CODER"
     body: "Start: Implement approved batch fixes for GitHub issues #3907-#3912 in the dedicated branch_pr worktree, preserving unrelated base task artifact drift."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3915 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -63,9 +69,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Evaluator review: local checks and scoped diff are consistent with the approved batch plan; no unrelated dirty artifact was staged. Awaiting hosted GitHub checks before integration."
+  -
+    type: "status"
+    at: "2026-05-18T19:54:23.815Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3915 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T19:36:09.783Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T19:54:23.821Z"
+doc_updated_by: "INTEGRATOR"
 description: "Implement and merge the code fixes for GitHub issues #3907, #3908, #3909, #3910, #3911, and #3912 in one branch_pr batch worktree, then close the issues after merge."
 sections:
   Summary: |-
