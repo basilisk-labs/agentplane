@@ -9,7 +9,7 @@ export const VERIFICATION_STATE_VALUES = [
   "needs_rework",
   "blocked_external",
 ] as const;
-export const QUALITY_REVIEW_STATE_VALUES = [
+const QUALITY_REVIEW_STATE_VALUES = [
   "pending",
   "pass",
   "rework",

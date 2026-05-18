@@ -23,8 +23,6 @@ export type {
   TaskEvent,
   TaskEventType,
   TaskOrigin,
-  QualityReviewResult,
-  QualityReviewState,
   TaskRunnerExecutionMetrics,
   TaskRunnerHistoryEntry,
   TaskRunnerOutcome,
@@ -44,7 +42,6 @@ export * from "./shared/export.js";
 export * from "./shared/id.js";
 export {
   defaultPlanApproval,
-  normalizeQualityReviewResult,
   normalizeTaskOrigin,
   normalizeTaskRunnerOutcome,
   toTaskSummaries,
