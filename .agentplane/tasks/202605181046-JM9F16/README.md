@@ -1,10 +1,11 @@
 ---
 id: "202605181046-JM9F16"
 title: "Gate runner surfaces for v0.7"
-status: "DOING"
+result_summary: "Merged via PR #3885."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Runner public surfaces are gated for v0.7: task run wrappers/tests removed, context --run and runner.execution remain absent, handoff/reclaim no longer emits runner recovery commands, and CI failure from knip was resolved."
   attempts: 0
-commit: null
+commit:
+  hash: "d87c1fcb4f3a93d79a4d845d3012d8f859313355"
+  message: "Merge pull request #3885 from basilisk-labs/task/202605181046-JM9F16/gate-runner-v0-7"
 comments:
   -
     author: "CODER"
     body: "Start: Remove public runner command surfaces and context run shortcuts for the current release, keeping runner implementation deferred to v0.7 while preserving CURATOR task creation for IDE and Codex agents."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3885 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -47,9 +53,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Runner public surfaces are gated for v0.7: task run wrappers/tests removed, context --run and runner.execution remain absent, handoff/reclaim no longer emits runner recovery commands, and CI failure from knip was resolved."
+  -
+    type: "status"
+    at: "2026-05-18T11:46:47.023Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3885 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T11:25:34.669Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T11:46:47.031Z"
+doc_updated_by: "INTEGRATOR"
 description: "Remove public runner command and context --run surfaces from current AgentPlane docs and CLI guidance. Context assimilation should create CURATOR tasks for IDE/Codex/human agents now, while runner implementation remains deferred to v0.7."
 sections:
   Summary: |-
