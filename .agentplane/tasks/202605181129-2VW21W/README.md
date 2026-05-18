@@ -1,10 +1,11 @@
 ---
 id: "202605181129-2VW21W"
 title: "Require evaluator quality gate after verification"
-status: "DOING"
+result_summary: "Merged via PR #3887."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +36,16 @@ quality_review:
     - ".agentplane/tasks/202605181129-2VW21W/README.md"
     - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181129-2VW21W-evaluator-quality-gate/.agentplane/tasks/202605181129-2VW21W/blueprint/resolved-snapshot.json"
   findings: []
-commit: null
+commit:
+  hash: "238bc89eb6758d2a5dab71097626d53594ca74d6"
+  message: "Merge pull request #3887 from basilisk-labs/task/202605181129-2VW21W/evaluator-quality-gate"
 comments:
   -
     author: "CODER"
     body: "Start: implementing the EVALUATOR quality gate contract in the dedicated branch_pr worktree with scoped blueprint, task schema, and lifecycle checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3887 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -96,9 +102,16 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate refreshed for implementation head de0f4b28c after fail-open fixes."
+  -
+    type: "status"
+    at: "2026-05-18T13:01:25.438Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3887 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T13:00:25.654Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T13:01:25.447Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make every task lifecycle require an independent EVALUATOR quality review after verification before integration or finish."
 sections:
   Summary: |-

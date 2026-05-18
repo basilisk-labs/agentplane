@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-18T13:00:43Z",
   "base": "main",
   "branch": "task/202605181129-2VW21W/evaluator-quality-gate",
   "created_at": "2026-05-18T11:30:12.696Z",
-  "head_sha": "de0f4b28c03e034c20652e053bdc5eddd03c056c",
+  "head_sha": "e8aa148d006a9c3feded54bc4363a563aba0ae9e",
   "last_verified_at": "2026-05-18T13:00:25.621Z",
   "last_verified_sha": "de0f4b28c03e034c20652e053bdc5eddd03c056c",
+  "merge_commit": "238bc89eb6758d2a5dab71097626d53594ca74d6",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-18T13:00:43Z",
   "pr_number": 3887,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3887",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605181129-2VW21W",
-  "updated_at": "2026-05-18T13:00:25.698Z",
+  "updated_at": "2026-05-18T13:00:43Z",
   "verify": {
     "status": "pass"
   }
