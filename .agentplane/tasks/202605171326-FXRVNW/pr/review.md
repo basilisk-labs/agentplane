@@ -13,7 +13,7 @@ Created: 2026-05-18T17:41:11.285Z
 ## Verification
 
 - State: ok
-- Note: Verified: hardened release process follow-ups: branch_pr release plans now pin protected base SHA, release candidate preflight catches protected-base drift, PR checks/integration surface unresolved GitHub review threads, pre-push scope handles git push origin HEAD, Vitest hoisting warnings are removed, and close-tail duplicate PR risk is reduced by sibling branch-prefix detection. Focused Vitest, lint, build, routing, and doctor passed.
+- Note: Verified follow-up: close-tail unit test coverage now stays below the oversized-test hotspot threshold after adding sibling close PR coverage.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,9 +24,9 @@ Created: 2026-05-18T17:41:11.285Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T18:37:29.234Z
+- Updated: 2026-05-18T18:45:31.858Z
 - Branch: task/202605171326-FXRVNW/v063-prerelease-rough-edges
-- Head: c89d1c6f3eb8
+- Head: d7923b35dd42
 
 ```text
  .agentplane/tasks/202605170941-3RACDD/README.md    |  84 ++-
@@ -51,13 +51,13 @@ Created: 2026-05-18T17:41:11.285Z
  .../src/commands/release/plan.command.ts           |  87 ++-
  .../agentplane/src/commands/release/plan.test.ts   |  54 +-
  .../agentplane/src/commands/task/finish-close.ts   |  15 +-
- .../commands/task/finish.close-tail.unit.test.ts   |  41 ++
+ .../commands/task/finish.close-tail.unit.test.ts   |  37 +-
  .../src/commands/task/mutation-parity.unit.test.ts |  10 +-
  packages/core/src/tasks/task-store.ts              |  14 +-
  scripts/lib/pre-push-scope.mjs                     |   2 +-
  scripts/release/next-action.mjs                    |   6 +
  scripts/release/state.mjs                          |  46 +-
- 28 files changed, 2757 insertions(+), 50 deletions(-)
+ 28 files changed, 2739 insertions(+), 64 deletions(-)
 ```
 
 </details>
