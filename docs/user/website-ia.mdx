@@ -14,8 +14,12 @@ The public site should make AgentPlane legible before it explains internal mecha
   verification, ACR, and closure.
 - Category: repo-local evidence layer for AI-authored software changes.
 - Wedge: every serious agent change should leave an Agent Change Record.
-- Promise: use any coding agent; keep the evidence in Git.
-- Trust: repo-local evidence, Git-visible review trail, no vendor lock-in.
+- Promise: install and initialize AgentPlane, then let any coding agent operate inside the repo
+  workflow.
+- Trust: agent-agnostic repo-local evidence, Git-visible review trail, no vendor lock-in.
+
+AgentPlane is agent-agnostic because it works through files, Git, and the universal `AGENTS.md` /
+`CLAUDE.md` policy gateway instead of depending on one model, IDE, or hosted agent platform.
 
 ## Top-level navigation
 
@@ -38,7 +42,7 @@ navigation.
 4. What AgentPlane writes
 5. Agent Change Record
 6. How it works
-7. Use with your agent
+7. Use with agents
 8. Use cases
 9. Compare
 10. Quickstart
@@ -47,16 +51,22 @@ navigation.
 
 ## Docs order
 
-1. Start here
-2. Concepts
-3. Workflows
-4. Use with agents
-5. Agent Change Record
-6. Recipes
-7. Operations
-8. Reference
-9. Release notes
+1. Start
+2. Use with agents
+3. Agent workflow model
+4. Review agent work
+5. Local context
+6. Team operations
+7. Recipes
+8. Upgrade and recover
+9. Reference
+10. Release notes
 
-The first-time path should show the first artifact before advanced abstractions: `acr.json`, then
-task lifecycle, workflow modes, recipes, and backends. Framework internals stay in the direct-link
-maintainer docs and are not part of the public user path.
+The first-time path should show the default operating model before advanced command details:
+
+```text
+install -> init -> context init -> hand off to an agent -> review task evidence
+```
+
+Manual CLI usage beyond setup and recovery is an advanced operator path. Framework internals stay in
+the direct-link maintainer docs and are not part of the public user path.

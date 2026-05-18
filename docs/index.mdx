@@ -8,15 +8,17 @@ description: "Docs for AgentPlane, the Git-native evidence and local context lay
 AgentPlane turns AI-agent work into reviewable Git evidence: task intent, plan, verification, local
 context, Agent Change Record, and closure.
 
+Humans install and initialize AgentPlane. Coding agents operate the lifecycle. Reviewers inspect the
+evidence in Git.
+
 ## Start here
 
 1. [Overview](user/overview)
 2. [Setup](user/setup)
-3. [Task lifecycle](user/task-lifecycle)
-4. [Local context](user/local-context)
-5. [Agent Change Record](user/agent-change-record)
-6. [Workflow guides](workflow-guides)
-7. [CLI reference](user/cli-reference.generated)
+3. [Hand off to an agent](user/agent-handoff)
+4. [Use with agents](workflow-guides)
+5. [Local context](user/local-context)
+6. [Agent Change Record](user/agent-change-record)
 
 ## Current docs map
 
@@ -24,39 +26,68 @@ context, Agent Change Record, and closure.
 
 - [Overview](user/overview)
 - [Setup](user/setup)
+- [Hand off to an agent](user/agent-handoff)
 - [Prerequisites](user/prerequisites)
 - [Agent bootstrap](user/agent-bootstrap.generated)
+- [Compare](compare)
 - [Glossary](help/glossary)
 
-### Work on a task
+The default path is:
 
-- [Workflow](user/workflow)
-- [Task lifecycle](user/task-lifecycle)
-- [Commands](user/commands)
-- [Branching and PR artifacts](user/branching-and-pr-artifacts)
-- [Tasks and backends](user/tasks-and-backends)
-- [Configuration](user/configuration)
+```text
+install -> init -> context init -> hand off to an agent -> review task evidence
+```
 
-### Context and evidence
+Manual CLI usage beyond setup and recovery is advanced.
 
-- [Agents](user/agents)
-- [Local context](user/local-context)
-- [Agent Change Record](user/agent-change-record)
-- [Agent discovery](user/agent-discovery)
-- [Indexing and webmaster operations](user/indexing-and-webmaster-operations)
+### Use with agents
 
-Local context is the v0.6 context-management surface: raw sources, maintained wiki pages, sourced
-facts, graph edges, disposable projections, and verification gates for agent-maintained knowledge.
-
-### Workflow guides
-
-- [Workflow guides overview](workflow-guides)
+- [Use with agents overview](workflow-guides)
 - [Claude Code](workflow-guides/claude-code)
 - [Codex](workflow-guides/codex)
 - [Cursor](workflow-guides/cursor)
 - [Aider](workflow-guides/aider)
 - [GitHub Actions](workflow-guides/github-actions)
+
+AgentPlane is agent-agnostic because it works through repository files, Git, and the universal
+`AGENTS.md` / `CLAUDE.md` policy gateway instead of depending on one model, IDE, or hosted agent
+platform.
+
+### Agent workflow model
+
+- [Workflow](user/workflow)
+- [Task lifecycle](user/task-lifecycle)
+- [Branching and PR artifacts](user/branching-and-pr-artifacts)
+- [Configuration](user/configuration)
 - [branch_pr workflow](workflow-guides/branch-pr)
+
+### Review agent work
+
+- [Agent Change Record](user/agent-change-record)
+- [Tasks and backends](user/tasks-and-backends)
+- [Commands](user/commands)
+
+The command guide and generated CLI reference are primarily for operators, recovery, and advanced
+manual inspection. Day-to-day task work should be agent-operated.
+
+### Local context
+
+- [Local context](user/local-context)
+- [Agent discovery](user/agent-discovery)
+- [Indexing and webmaster operations](user/indexing-and-webmaster-operations)
+
+Local context is the context-management surface for agents: raw sources, maintained wiki pages,
+sourced facts, graph edges, disposable projections, and verification gates for agent-maintained
+knowledge.
+
+### Team operations
+
+- [Backends](user/backends)
+- [Local backend](user/backends/local)
+- [Cloud backend](user/backends/cloud)
+- [Redmine backend](user/backends/redmine)
+- [Redmine guide](user/redmine)
+- [Agents](user/agents)
 
 ### Recipes
 
@@ -65,11 +96,6 @@ facts, graph edges, disposable projections, and verification gates for agent-mai
 
 ### Upgrade & recover
 
-- [Backends](user/backends)
-- [Local backend](user/backends/local)
-- [Cloud backend](user/backends/cloud)
-- [Redmine backend](user/backends/redmine)
-- [Redmine guide](user/redmine)
 - [Breaking changes](user/breaking-changes)
 - [Workflow migration](user/workflow-migration)
 - [Upgrade recovery](help/legacy-upgrade-recovery)

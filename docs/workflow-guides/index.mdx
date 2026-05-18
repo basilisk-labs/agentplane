@@ -1,12 +1,18 @@
 ---
-title: "Workflow guides"
-description: "Use AgentPlane with local coding agents, editor agents, GitHub Actions, and branch_pr review."
+title: "Use with agents"
+description: "Use AgentPlane with coding agents, editor agents, GitHub Actions, and branch_pr review."
 ---
 
-Workflow guides are copy-paste operating patterns for tools and review flows around AgentPlane.
+Workflow guides are copy-paste operating patterns for coding agents and review flows around
+AgentPlane.
 
 They are not installable recipes. They do not have recipe manifests, versions, signatures, or cache
-state. Use them when you want to run AgentPlane next to a coding agent or hosted check system.
+state. Use them when you want a coding agent or hosted check system to operate inside the
+AgentPlane lifecycle.
+
+AgentPlane is agent-agnostic: it works through repository files, Git, and the universal
+`AGENTS.md` / `CLAUDE.md` policy gateway instead of depending on one model, IDE, or hosted agent
+platform.
 
 ## Agent guides
 
@@ -24,6 +30,7 @@ state. Use them when you want to run AgentPlane next to a coding agent or hosted
 
 - You already know which coding tool or review flow will perform the work.
 - You need task, plan, verification, and finish records in the repository.
+- You want the agent to run the lifecycle instead of manually driving every CLI command.
 - You do not need to install an AgentPlane recipe package.
 
 For installable prompt/runtime extensions, use [Recipes](../recipes).
