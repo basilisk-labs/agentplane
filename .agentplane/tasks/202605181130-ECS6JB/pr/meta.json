@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605181130-ECS6JB/context-policy-module",
+  "created_at": "2026-05-18T11:30:53.872Z",
+  "head_sha": "88585c94c356b2081b28f274f03616fd0ae912ef",
+  "last_verified_at": "2026-05-18T11:41:28.619Z",
+  "last_verified_sha": "88585c94c356b2081b28f274f03616fd0ae912ef",
+  "schema_version": 1,
+  "task_id": "202605181130-ECS6JB",
+  "updated_at": "2026-05-18T11:30:53.872Z",
+  "verify": {
+    "status": "pass"
+  }
+}
