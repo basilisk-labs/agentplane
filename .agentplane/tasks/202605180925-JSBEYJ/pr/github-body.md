@@ -16,26 +16,22 @@ Add repo-local helper scripts and skill guidance for release state, version bump
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Canonical command guidance fix committed; workflows:lint and targeted eslint passed; agentplane
-package rebuilt for hook freshness.
-```
+- Note: CLI reference refreshed after canonical verify command example update; docs:cli:check passed.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T09:47:20.942Z
+- Updated: 2026-05-18T09:48:48.138Z
 - Branch: task/202605180925-JSBEYJ/release-dev-helper-scripts
-- Head: bb26dbcd474a
+- Head: 231b084dc92e
 
 ```text
  .../blueprint/resolved-snapshot.json               | 416 +++++++++++++++++++++
  .github/workflows/ci.yml                           |   6 +-
  .github/workflows/prepublish.yml                   |   2 +-
  .github/workflows/task-hosted-close.yml            |   2 +-
+ docs/user/cli-reference.generated.mdx              |   2 +-
  package.json                                       |  10 +-
  .../commands/release/release-ci-contract.test.ts   |   4 +-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
@@ -53,7 +49,7 @@ package rebuilt for hook freshness.
  skills/README.md                                   |   3 +
  skills/agentplane-local-dev-operator/SKILL.md      |  52 +++
  .../SKILL.md                                       |  20 +
- 21 files changed, 1264 insertions(+), 38 deletions(-)
+ 22 files changed, 1265 insertions(+), 39 deletions(-)
 ```
 
 </details>

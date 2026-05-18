@@ -2,6 +2,7 @@
  .github/workflows/ci.yml                           |   6 +-
  .github/workflows/prepublish.yml                   |   2 +-
  .github/workflows/task-hosted-close.yml            |   2 +-
+ docs/user/cli-reference.generated.mdx              |   2 +-
  package.json                                       |  10 +-
  .../commands/release/release-ci-contract.test.ts   |   4 +-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
@@ -19,4 +20,4 @@
  skills/README.md                                   |   3 +
  skills/agentplane-local-dev-operator/SKILL.md      |  52 +++
  .../SKILL.md                                       |  20 +
- 21 files changed, 1264 insertions(+), 38 deletions(-)
+ 22 files changed, 1265 insertions(+), 39 deletions(-)

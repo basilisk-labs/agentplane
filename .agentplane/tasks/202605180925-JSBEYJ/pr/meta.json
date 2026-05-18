@@ -2,15 +2,15 @@
   "base": "main",
   "branch": "task/202605180925-JSBEYJ/release-dev-helper-scripts",
   "created_at": "2026-05-18T09:26:27.050Z",
-  "head_sha": "bb26dbcd474a0d26c5032a22448cd0b570aea70e",
-  "last_verified_at": "2026-05-18T09:47:20.906Z",
-  "last_verified_sha": "bb26dbcd474a0d26c5032a22448cd0b570aea70e",
+  "head_sha": "231b084dc92eca26c7c7e0338d47a801a03f1d95",
+  "last_verified_at": "2026-05-18T09:48:48.101Z",
+  "last_verified_sha": "231b084dc92eca26c7c7e0338d47a801a03f1d95",
   "pr_number": 3880,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3880",
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202605180925-JSBEYJ",
-  "updated_at": "2026-05-18T09:47:20.942Z",
+  "updated_at": "2026-05-18T09:48:48.138Z",
   "verify": {
     "status": "pass"
   }
