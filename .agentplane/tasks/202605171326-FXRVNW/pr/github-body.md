@@ -16,20 +16,15 @@ Harden release candidate planning so a patch release cannot claim to exclude wor
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Verified follow-up: close-tail unit test coverage now stays below the oversized-test hotspot
-threshold after adding sibling close PR coverage.
-```
+- Note: Verified follow-up: close-tail test reset now satisfies lint while staying below the hotspot threshold.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T18:45:31.858Z
+- Updated: 2026-05-18T18:56:31.708Z
 - Branch: task/202605171326-FXRVNW/v063-prerelease-rough-edges
-- Head: d7923b35dd42
+- Head: 29496f6fa6df
 
 ```text
  .agentplane/tasks/202605170941-3RACDD/README.md    |  84 ++-

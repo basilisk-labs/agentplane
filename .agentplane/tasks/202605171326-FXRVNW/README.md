@@ -4,7 +4,7 @@ title: "Freeze release candidate base and scope after late merges"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-18T18:45:30.962Z"
+  updated_at: "2026-05-18T18:56:31.201Z"
   updated_by: "CODER"
-  note: "Verified follow-up: close-tail unit test coverage now stays below the oversized-test hotspot threshold after adding sibling close PR coverage."
+  note: "Verified follow-up: close-tail test reset now satisfies lint while staying below the hotspot threshold."
   attempts: 0
 commit: null
 comments:
@@ -55,8 +55,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified follow-up: close-tail unit test coverage now stays below the oversized-test hotspot threshold after adding sibling close PR coverage."
+  -
+    type: "verify"
+    at: "2026-05-18T18:56:31.201Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified follow-up: close-tail test reset now satisfies lint while staying below the hotspot threshold."
 doc_version: 3
-doc_updated_at: "2026-05-18T18:45:31.322Z"
+doc_updated_at: "2026-05-18T18:56:31.395Z"
 doc_updated_by: "CODER"
 description: "Harden release candidate planning so a patch release cannot claim to exclude work that is already merged into the candidate base. The v0.6.2 regression case is a release task that planned to exclude route-decision CLI work while PR #3823 later landed on origin/main. Release tooling should pin the base SHA, detect late merges, and require explicit revert, branch cut, or re-scope before candidate generation."
 sections:
@@ -133,6 +139,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605171326-FXRVNW
 
+    ### 2026-05-18T18:56:31.201Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified follow-up: close-tail test reset now satisfies lint while staying below the hotspot threshold.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T18:45:31.322Z, excerpt_hash=sha256:7eecdcf44b9b978192f3a7307d5417499bfdc57fbc78a1aaae98c7fdb4b1045c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171326-FXRVNW-v063-prerelease-rough-edges/.agentplane/tasks/202605171326-FXRVNW/blueprint/resolved-snapshot.json
+    - old_digest: ff0d68e901f85322f204ed809c3256235cbfa5ce3b8a6cd6c5af2981bed1bdb0
+    - current_digest: ff0d68e901f85322f204ed809c3256235cbfa5ce3b8a6cd6c5af2981bed1bdb0
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171326-FXRVNW
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -145,6 +170,10 @@ sections:
     - Observation: Commands: bunx vitest run packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts --testTimeout 60000 --hookTimeout 60000; bun run hotspots:check; git diff --check.
       Impact: Results: finish.close-tail unit tests passed, 1 file and 13 tests; hotspot baseline OK with 11 oversized-test entries and 12567 total lines; whitespace check passed.
       Resolution: No baseline expansion needed; added close-tail coverage remains under the 1000-line warning threshold.
+
+    - Observation: Commands: bunx eslint packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts; bunx prettier --check packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts; bunx vitest run packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts --testTimeout 60000 --hookTimeout 60000.
+      Impact: Results: eslint pass; prettier pass; finish.close-tail unit tests passed, 1 file and 13 tests; file remains 999 lines.
+      Resolution: The lint-safe for-of reset keeps the test file under the oversized-test threshold without changing baseline budgets.
 id_source: "generated"
 ---
 ## Summary
@@ -230,6 +259,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605171326-FXRVNW
 
+### 2026-05-18T18:56:31.201Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified follow-up: close-tail test reset now satisfies lint while staying below the hotspot threshold.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T18:45:31.322Z, excerpt_hash=sha256:7eecdcf44b9b978192f3a7307d5417499bfdc57fbc78a1aaae98c7fdb4b1045c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171326-FXRVNW-v063-prerelease-rough-edges/.agentplane/tasks/202605171326-FXRVNW/blueprint/resolved-snapshot.json
+- old_digest: ff0d68e901f85322f204ed809c3256235cbfa5ce3b8a6cd6c5af2981bed1bdb0
+- current_digest: ff0d68e901f85322f204ed809c3256235cbfa5ce3b8a6cd6c5af2981bed1bdb0
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171326-FXRVNW
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -246,3 +294,7 @@ BlueprintSnapshotRef:
 - Observation: Commands: bunx vitest run packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts --testTimeout 60000 --hookTimeout 60000; bun run hotspots:check; git diff --check.
   Impact: Results: finish.close-tail unit tests passed, 1 file and 13 tests; hotspot baseline OK with 11 oversized-test entries and 12567 total lines; whitespace check passed.
   Resolution: No baseline expansion needed; added close-tail coverage remains under the 1000-line warning threshold.
+
+- Observation: Commands: bunx eslint packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts; bunx prettier --check packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts; bunx vitest run packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts --testTimeout 60000 --hookTimeout 60000.
+  Impact: Results: eslint pass; prettier pass; finish.close-tail unit tests passed, 1 file and 13 tests; file remains 999 lines.
+  Resolution: The lint-safe for-of reset keeps the test file under the oversized-test threshold without changing baseline budgets.
