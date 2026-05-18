@@ -1,10 +1,11 @@
 ---
 id: "202605171738-G3EACK"
 title: "Gate framework-only policy and dev CLI commands"
-status: "DOING"
+result_summary: "Merged via PR #3849."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Local verification remains green after fixing the all-command help contract: focused Vitest help/registry/init tests, ESLint, format:check, typecheck, and policy routing passed."
   attempts: 0
-commit: null
+commit:
+  hash: "f4d81dcb171b935d5ebe4a207188ea2db5b1f644"
+  message: "Merge pull request #3849 from basilisk-labs/task/202605171738-G3EACK/framework-dev-gates"
 comments:
   -
     author: "CODER"
     body: "Start: implementing framework-only policy and dev CLI command gates in the dedicated branch_pr worktree, with focused tests for prompt-module filtering and command dispatch behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3849 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -53,9 +59,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local verification remains green after fixing the all-command help contract: focused Vitest help/registry/init tests, ESLint, format:check, typecheck, and policy routing passed."
+  -
+    type: "status"
+    at: "2026-05-18T05:16:41.243Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3849 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T18:13:27.267Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T05:16:41.251Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add framework-checkout-only policy loading and enforce framework dev CLI commands so they are available only inside AgentPlane framework checkouts, including direct repo-local CLI runs."
 sections:
   Summary: |-
