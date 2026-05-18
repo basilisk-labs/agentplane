@@ -13,7 +13,7 @@ Created: 2026-05-18T10:46:46.372Z
 ## Verification
 
 - State: ok
-- Note: Command: bun run test:project agentplane -- run-cli.core.init.test.ts; Result: pass; Evidence: 287 files passed, 1646 tests passed, 2 skipped. Command: bun run typecheck; Result: pass. Command: bun run format:changed; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Command: git check-ignore for handoff and local-backups paths; Result: pass. Command: git push origin task/202605170905-RZ8M15/untracked-artifacts; Result: pass with pre-push fast CI.
+- Note: Additional residue classification completed. Command: jq empty on recovered ACR/blueprint artifacts; Result: pass. Command: ap acr validate for recovered ACR files; Result: pass. Command: bun run format:changed after evidence commit; Result: pass. Canonical ACR/blueprint files were tracked instead of ignored; transient handoff/local-backups are covered by runtime gitignore.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,16 +24,21 @@ Created: 2026-05-18T10:46:46.372Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T10:52:50.432Z
+- Updated: 2026-05-18T10:57:34.801Z
 - Branch: task/202605170905-RZ8M15/untracked-artifacts
-- Head: fa7f111121e7
+- Head: 8d3207cdfe9f
 
 ```text
+ .agentplane/tasks/202605141638-3VAJ2V/acr.json     | 231 +++++++++
+ .agentplane/tasks/202605141638-DYD163/acr.json     | 216 +++++++++
+ .agentplane/tasks/202605141638-HGNT7H/acr.json     | 231 +++++++++
+ .../blueprint/resolved-snapshot.json               | 526 ++++++++++++++++++++
+ .../blueprint/resolved-snapshot.json               | 526 ++++++++++++++++++++
  .../blueprint/resolved-snapshot.json               | 527 +++++++++++++++++++++
  .gitignore                                         |   2 +
  .../agentplane/src/cli/run-cli.core.init.test.ts   |   4 +
  .../src/runtime/shared/runtime-artifacts.ts        |   2 +
- 4 files changed, 535 insertions(+)
+ 9 files changed, 2265 insertions(+)
 ```
 
 </details>

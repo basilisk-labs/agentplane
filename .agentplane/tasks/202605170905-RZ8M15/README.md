@@ -4,7 +4,7 @@ title: "Minimize branch_pr generated artifacts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-18T10:54:03.816Z"
+  updated_at: "2026-05-18T10:57:34.743Z"
   updated_by: "CODER"
-  note: "Command: bun run test:project agentplane -- run-cli.core.init.test.ts; Result: pass; Evidence: 287 files passed, 1646 tests passed, 2 skipped. Command: bun run typecheck; Result: pass. Command: bun run format:changed; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Command: git check-ignore for handoff and local-backups paths; Result: pass. Command: git push origin task/202605170905-RZ8M15/untracked-artifacts; Result: pass with pre-push fast CI."
+  note: "Additional residue classification completed. Command: jq empty on recovered ACR/blueprint artifacts; Result: pass. Command: ap acr validate for recovered ACR files; Result: pass. Command: bun run format:changed after evidence commit; Result: pass. Canonical ACR/blueprint files were tracked instead of ignored; transient handoff/local-backups are covered by runtime gitignore."
   attempts: 0
 commit: null
 comments:
@@ -42,8 +42,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run test:project agentplane -- run-cli.core.init.test.ts; Result: pass; Evidence: 287 files passed, 1646 tests passed, 2 skipped. Command: bun run typecheck; Result: pass. Command: bun run format:changed; Result: pass. Command: node .agentplane/policy/check-routing.mjs; Result: pass. Command: git check-ignore for handoff and local-backups paths; Result: pass. Command: git push origin task/202605170905-RZ8M15/untracked-artifacts; Result: pass with pre-push fast CI."
+  -
+    type: "verify"
+    at: "2026-05-18T10:57:34.743Z"
+    author: "CODER"
+    state: "ok"
+    note: "Additional residue classification completed. Command: jq empty on recovered ACR/blueprint artifacts; Result: pass. Command: ap acr validate for recovered ACR files; Result: pass. Command: bun run format:changed after evidence commit; Result: pass. Canonical ACR/blueprint files were tracked instead of ignored; transient handoff/local-backups are covered by runtime gitignore."
 doc_version: 3
-doc_updated_at: "2026-05-18T10:54:03.828Z"
+doc_updated_at: "2026-05-18T10:57:34.755Z"
 doc_updated_by: "CODER"
 description: "Reduce non-canonical generated artifacts in branch_pr while preserving compact traceability via README, ACR, PR metadata, and reconstructable digests."
 sections:
@@ -75,6 +81,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T10:46:46.303Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605170905-RZ8M15-untracked-artifacts/.agentplane/tasks/202605170905-RZ8M15/blueprint/resolved-snapshot.json
+    - old_digest: 3b0423f92893ac48504120a6dc6f71078f8000a7d2f18bc6c1197bf9bfb70ded
+    - current_digest: 3b0423f92893ac48504120a6dc6f71078f8000a7d2f18bc6c1197bf9bfb70ded
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605170905-RZ8M15
+
+    ### 2026-05-18T10:57:34.743Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Additional residue classification completed. Command: jq empty on recovered ACR/blueprint artifacts; Result: pass. Command: ap acr validate for recovered ACR files; Result: pass. Command: bun run format:changed after evidence commit; Result: pass. Canonical ACR/blueprint files were tracked instead of ignored; transient handoff/local-backups are covered by runtime gitignore.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T10:54:03.828Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
     Details:
 
@@ -130,6 +155,25 @@ Note: Command: bun run test:project agentplane -- run-cli.core.init.test.ts; Res
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T10:46:46.303Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605170905-RZ8M15-untracked-artifacts/.agentplane/tasks/202605170905-RZ8M15/blueprint/resolved-snapshot.json
+- old_digest: 3b0423f92893ac48504120a6dc6f71078f8000a7d2f18bc6c1197bf9bfb70ded
+- current_digest: 3b0423f92893ac48504120a6dc6f71078f8000a7d2f18bc6c1197bf9bfb70ded
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605170905-RZ8M15
+
+### 2026-05-18T10:57:34.743Z — VERIFY — ok
+
+By: CODER
+
+Note: Additional residue classification completed. Command: jq empty on recovered ACR/blueprint artifacts; Result: pass. Command: ap acr validate for recovered ACR files; Result: pass. Command: bun run format:changed after evidence commit; Result: pass. Canonical ACR/blueprint files were tracked instead of ignored; transient handoff/local-backups are covered by runtime gitignore.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T10:54:03.828Z, excerpt_hash=sha256:4067e6c0d2671944bbb825f93b0ba7363aab826f8b2f3d8fbcbd2a2e4f1204c6
 
 Details:
 
