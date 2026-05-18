@@ -11,6 +11,25 @@ import { execFileAsync, runProcess } from "@agentplaneorg/core/process";
 
 import { releasePushDescription, type ReleaseCommandLabel } from "./apply.preflight.git.js";
 
+function releasePrepublishEnv(): NodeJS.ProcessEnv {
+  const env = withPreferredRuntimePath({
+    ...process.env,
+    GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME ?? "agentplane-release",
+    GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL ?? "agentplane-release@example.com",
+    GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME ?? "agentplane-release",
+    GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL ?? "agentplane-release@example.com",
+  });
+
+  delete env.AGENTPLANE_AGENT_MODE;
+  delete env.AGENTPLANE_CLI_ALIAS;
+  delete env.AGENTPLANE_COLOR;
+  delete env.AGENTPLANE_PROMPTS;
+  delete env.FORCE_COLOR;
+  delete env.NO_COLOR;
+
+  return env;
+}
+
 export async function ensureNpmVersionsAvailable(
   gitRoot: string,
   version: string,
@@ -61,13 +80,7 @@ async function runReleasePrepublishPhase(gitRoot: string, phase: "fast" | "heavy
     command: "bun",
     args: ["run", `release:prepublish:${phase}`],
     cwd: gitRoot,
-    env: withPreferredRuntimePath({
-      ...process.env,
-      GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME ?? "agentplane-release",
-      GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL ?? "agentplane-release@example.com",
-      GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME ?? "agentplane-release",
-      GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL ?? "agentplane-release@example.com",
-    }),
+    env: releasePrepublishEnv(),
     stdout: "inherit",
     stderr: "inherit",
   });
