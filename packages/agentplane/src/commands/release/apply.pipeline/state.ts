@@ -18,6 +18,7 @@ import {
   validateReleaseNotes,
 } from "../apply.preflight.package.js";
 import type {
+  ReleaseApplyRoute,
   ReleaseCommandRouteResolver,
   ReleaseCommandState,
   ReleaseVersionPlan,
@@ -62,6 +63,7 @@ export async function resolveReleasePlanInputs(opts: {
 export async function ensureReleasePlanMatchesRepoState(opts: {
   gitRoot: string;
   plan: ReleaseVersionPlan;
+  route: ReleaseApplyRoute;
   corePkgPath: string;
   agentplanePkgPath: string;
   recipesPkgPath: string;
@@ -155,35 +157,158 @@ export async function ensureReleasePlanMatchesRepoState(opts: {
       ),
     });
   }
-  if (opts.plan.baseSha) {
-    const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: opts.gitRoot,
-      env: gitEnv(),
-    });
-    const currentHead = String(stdout ?? "").trim();
-    if (currentHead !== opts.plan.baseSha) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_VALIDATION"),
-        code: "E_VALIDATION",
-        message:
-          `Release plan base drifted. current=${currentHead} planned=${opts.plan.baseSha}\n` +
-          "Re-run `agentplane release plan` from the intended candidate base, or explicitly cut/re-scope the release branch.",
-        context: withDiagnosticContext(
-          { command: opts.commandLabel },
-          {
-            state: "the candidate base no longer matches the prepared release plan",
-            likelyCause:
-              "main advanced after release planning, so the candidate scope may now include late merges that were not reviewed",
-            nextAction: {
-              command: "agentplane release plan",
-              reason: "freeze a fresh release base before applying or preparing the candidate",
-              reasonCode: "release_plan_base_drifted",
-            },
-          },
-        ),
+  await ensureReleasePlanBaseMatchesRepoState({
+    gitRoot: opts.gitRoot,
+    plan: opts.plan,
+    route: opts.route,
+    commandLabel: opts.commandLabel,
+  });
+}
+
+async function ensureReleasePlanBaseMatchesRepoState(opts: {
+  gitRoot: string;
+  plan: ReleaseVersionPlan;
+  route: ReleaseApplyRoute;
+  commandLabel: "release apply" | "release candidate";
+}): Promise<void> {
+  if (!opts.plan.baseSha) return;
+
+  if (opts.route.kind === "release_candidate" && opts.route.base_branch) {
+    const protectedBase = await resolveProtectedBaseSha(opts.gitRoot, opts.route.base_branch);
+    if (protectedBase.sha !== opts.plan.baseSha) {
+      throw releasePlanBaseDriftError({
+        commandLabel: opts.commandLabel,
+        current: protectedBase.sha,
+        planned: opts.plan.baseSha,
+        state: "the protected base branch no longer matches the prepared release plan",
+        likelyCause: `${protectedBase.ref} advanced after release planning, so the release candidate would omit late merges from the reviewed scope`,
       });
     }
+    const planBaseIsOnCandidate = await gitIsAncestor(opts.gitRoot, opts.plan.baseSha, "HEAD");
+    if (!planBaseIsOnCandidate) {
+      throw releasePlanBaseDriftError({
+        commandLabel: opts.commandLabel,
+        current: await currentHeadSha(opts.gitRoot),
+        planned: opts.plan.baseSha,
+        state: "the candidate branch is no longer based on the prepared release plan",
+        likelyCause:
+          "the candidate branch was rebased or replaced after release planning, so the frozen release scope no longer matches the branch being prepared",
+      });
+    }
+    return;
   }
+
+  const currentHead = await currentHeadSha(opts.gitRoot);
+  if (currentHead !== opts.plan.baseSha) {
+    throw releasePlanBaseDriftError({
+      commandLabel: opts.commandLabel,
+      current: currentHead,
+      planned: opts.plan.baseSha,
+      state: "the candidate base no longer matches the prepared release plan",
+      likelyCause:
+        "main advanced after release planning, so the candidate scope may now include late merges that were not reviewed",
+    });
+  }
+}
+
+async function currentHeadSha(gitRoot: string): Promise<string> {
+  const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: gitRoot,
+    env: gitEnv(),
+  });
+  return String(stdout ?? "").trim();
+}
+
+async function resolveProtectedBaseSha(
+  gitRoot: string,
+  baseBranch: string,
+): Promise<{ ref: string; sha: string }> {
+  const refs = [`refs/remotes/origin/${baseBranch}`, `refs/heads/${baseBranch}`, baseBranch];
+  for (const ref of refs) {
+    const sha = await revParseOptional(gitRoot, ref);
+    if (sha) return { ref, sha };
+  }
+  throw new CliError({
+    exitCode: exitCodeForError("E_VALIDATION"),
+    code: "E_VALIDATION",
+    message:
+      `Release plan base could not be checked because protected base branch ${baseBranch} is unavailable.\n` +
+      "Fetch the protected base branch before preparing the release candidate.",
+    context: withDiagnosticContext(
+      { command: "release candidate" },
+      {
+        state: "the protected base branch could not be resolved for release-plan validation",
+        likelyCause:
+          "the local checkout does not have the configured base branch or its origin tracking ref",
+        nextAction: {
+          command: `git fetch origin ${baseBranch}`,
+          reason: "refresh the protected base branch tip before preparing the release candidate",
+          reasonCode: "release_plan_base_unresolved",
+        },
+      },
+    ),
+  });
+}
+
+async function revParseOptional(gitRoot: string, ref: string): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync("git", ["rev-parse", "--verify", `${ref}^{commit}`], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    const sha = String(stdout ?? "").trim();
+    return sha || null;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1 || code === 128) return null;
+    throw err;
+  }
+}
+
+async function gitIsAncestor(
+  gitRoot: string,
+  maybeAncestor: string,
+  descendant: string,
+): Promise<boolean> {
+  try {
+    await execFileAsync("git", ["merge-base", "--is-ancestor", maybeAncestor, descendant], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    return true;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1 || code === 128) return false;
+    throw err;
+  }
+}
+
+function releasePlanBaseDriftError(opts: {
+  commandLabel: "release apply" | "release candidate";
+  current: string;
+  planned: string;
+  state: string;
+  likelyCause: string;
+}): CliError {
+  return new CliError({
+    exitCode: exitCodeForError("E_VALIDATION"),
+    code: "E_VALIDATION",
+    message:
+      `Release plan base drifted. current=${opts.current} planned=${opts.planned}\n` +
+      "Re-run `agentplane release plan` from the intended candidate base, or explicitly cut/re-scope the release branch.",
+    context: withDiagnosticContext(
+      { command: opts.commandLabel },
+      {
+        state: opts.state,
+        likelyCause: opts.likelyCause,
+        nextAction: {
+          command: "agentplane release plan",
+          reason: "freeze a fresh release base before applying or preparing the candidate",
+          reasonCode: "release_plan_base_drifted",
+        },
+      },
+    ),
+  });
 }
 
 export async function buildReleaseCommandState(opts: {
