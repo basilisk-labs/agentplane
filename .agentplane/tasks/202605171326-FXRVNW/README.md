@@ -4,7 +4,7 @@ title: "Freeze release candidate base and scope after late merges"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-18T19:11:45.452Z"
+  updated_at: "2026-05-18T19:39:43.434Z"
   updated_by: "CODER"
-  note: "Verified follow-up: finish validation mocks now include branch-prefix GitHub PR lookup, so close-tail sibling detection does not break existing finish validation tests."
+  note: "Verified follow-up: integrate test helpers now record EVALUATOR verification against the branch implementation commit before PR artifacts are opened."
   attempts: 0
 commit: null
 comments:
@@ -67,8 +67,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified follow-up: finish validation mocks now include branch-prefix GitHub PR lookup, so close-tail sibling detection does not break existing finish validation tests."
+  -
+    type: "verify"
+    at: "2026-05-18T19:39:43.434Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified follow-up: integrate test helpers now record EVALUATOR verification against the branch implementation commit before PR artifacts are opened."
 doc_version: 3
-doc_updated_at: "2026-05-18T19:11:45.483Z"
+doc_updated_at: "2026-05-18T19:39:43.468Z"
 doc_updated_by: "CODER"
 description: "Harden release candidate planning so a patch release cannot claim to exclude work that is already merged into the candidate base. The v0.6.2 regression case is a release task that planned to exclude route-decision CLI work while PR #3823 later landed on origin/main. Release tooling should pin the base SHA, detect late merges, and require explicit revert, branch cut, or re-scope before candidate generation."
 sections:
@@ -183,6 +189,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605171326-FXRVNW
 
+    ### 2026-05-18T19:39:43.434Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified follow-up: integrate test helpers now record EVALUATOR verification against the branch implementation commit before PR artifacts are opened.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T19:11:45.483Z, excerpt_hash=sha256:7eecdcf44b9b978192f3a7307d5417499bfdc57fbc78a1aaae98c7fdb4b1045c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171326-FXRVNW-v063-prerelease-rough-edges/.agentplane/tasks/202605171326-FXRVNW/blueprint/resolved-snapshot.json
+    - old_digest: ff0d68e901f85322f204ed809c3256235cbfa5ce3b8a6cd6c5af2981bed1bdb0
+    - current_digest: ff0d68e901f85322f204ed809c3256235cbfa5ce3b8a6cd6c5af2981bed1bdb0
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171326-FXRVNW
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -203,6 +228,10 @@ sections:
     - Observation: Commands: bunx vitest run packages/agentplane/src/commands/task/finish.validation.unit.test.ts --testNamePattern 'rejects branch_pr close commit before mutating task state when other tracked files are dirty|auto-materializes a task-close branch by default in branch_pr mode' --testTimeout 60000 --hookTimeout 60000 --reporter verbose; bunx eslint packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts; bunx prettier --check packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts.
       Impact: Results: targeted finish validation scenarios passed, 2 tests; eslint passed; prettier passed.
       Resolution: Existing finish validation mock contract now matches the new sync-github export used by close-tail duplicate PR detection.
+
+    - Observation: Commands: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts --testTimeout 60000 --hookTimeout 60000; bunx eslint changed integrate test files and packages/testkit/src/cli-harness.ts; bunx prettier --check changed integrate test files and packages/testkit/src/cli-harness.ts; git diff --check.
+      Impact: Results: integrate suites passed, 4 files and 23 tests; eslint passed; prettier passed; whitespace check passed.
+      Resolution: The testkit verification helper now uses EVALUATOR, and positive integrate scenarios refresh verification after implementation commits while the negative missing-PR-artifacts scenario remains unchanged.
 id_source: "generated"
 ---
 ## Summary
@@ -326,6 +355,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605171326-FXRVNW
 
+### 2026-05-18T19:39:43.434Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified follow-up: integrate test helpers now record EVALUATOR verification against the branch implementation commit before PR artifacts are opened.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T19:11:45.483Z, excerpt_hash=sha256:7eecdcf44b9b978192f3a7307d5417499bfdc57fbc78a1aaae98c7fdb4b1045c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171326-FXRVNW-v063-prerelease-rough-edges/.agentplane/tasks/202605171326-FXRVNW/blueprint/resolved-snapshot.json
+- old_digest: ff0d68e901f85322f204ed809c3256235cbfa5ce3b8a6cd6c5af2981bed1bdb0
+- current_digest: ff0d68e901f85322f204ed809c3256235cbfa5ce3b8a6cd6c5af2981bed1bdb0
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171326-FXRVNW
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -350,3 +398,7 @@ BlueprintSnapshotRef:
 - Observation: Commands: bunx vitest run packages/agentplane/src/commands/task/finish.validation.unit.test.ts --testNamePattern 'rejects branch_pr close commit before mutating task state when other tracked files are dirty|auto-materializes a task-close branch by default in branch_pr mode' --testTimeout 60000 --hookTimeout 60000 --reporter verbose; bunx eslint packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts; bunx prettier --check packages/agentplane/src/commands/task/finish.validation.unit.test.ts packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts.
   Impact: Results: targeted finish validation scenarios passed, 2 tests; eslint passed; prettier passed.
   Resolution: Existing finish validation mock contract now matches the new sync-github export used by close-tail duplicate PR detection.
+
+- Observation: Commands: bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts --testTimeout 60000 --hookTimeout 60000; bunx eslint changed integrate test files and packages/testkit/src/cli-harness.ts; bunx prettier --check changed integrate test files and packages/testkit/src/cli-harness.ts; git diff --check.
+  Impact: Results: integrate suites passed, 4 files and 23 tests; eslint passed; prettier passed; whitespace check passed.
+  Resolution: The testkit verification helper now uses EVALUATOR, and positive integrate scenarios refresh verification after implementation commits while the negative missing-PR-artifacts scenario remains unchanged.

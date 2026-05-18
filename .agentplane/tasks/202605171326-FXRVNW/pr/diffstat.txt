@@ -6,6 +6,10 @@
  .../blueprint/resolved-snapshot.json               | 455 ++++++++++++++++
  .../blueprint/resolved-snapshot.json               | 455 ++++++++++++++++
  .../agentplane/src/cli/local-ci-selection.test.ts  |   5 +
+ ...run-cli.core.pr-flow.integrate-failures.test.ts |   6 +
+ .../run-cli.core.pr-flow.integrate-merge.test.ts   |  10 +
+ ...n-cli.core.pr-flow.integrate-strategies.test.ts |  12 +
+ ...n-cli.core.pr-flow.integrate-validation.test.ts |   4 +
  .../src/commands/context/release-readiness.test.ts |  16 +
  packages/agentplane/src/commands/context/wiki.ts   |   4 +
  packages/agentplane/src/commands/pr/check.ts       |  19 +
@@ -24,7 +28,8 @@
  .../commands/task/finish.validation.unit.test.ts   |   4 +
  .../src/commands/task/mutation-parity.unit.test.ts |  10 +-
  packages/core/src/tasks/task-store.ts              |  14 +-
+ packages/testkit/src/cli-harness.ts                |   2 +-
  scripts/lib/pre-push-scope.mjs                     |   2 +-
  scripts/release/next-action.mjs                    |   6 +
  scripts/release/state.mjs                          |  46 +-
- 29 files changed, 2743 insertions(+), 64 deletions(-)
+ 34 files changed, 2776 insertions(+), 65 deletions(-)

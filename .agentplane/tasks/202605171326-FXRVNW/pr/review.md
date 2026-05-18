@@ -13,7 +13,7 @@ Created: 2026-05-18T17:41:11.285Z
 ## Verification
 
 - State: ok
-- Note: Verified follow-up: finish validation mocks now include branch-prefix GitHub PR lookup, so close-tail sibling detection does not break existing finish validation tests.
+- Note: Verified follow-up: integrate test helpers now record EVALUATOR verification against the branch implementation commit before PR artifacts are opened.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,9 +24,9 @@ Created: 2026-05-18T17:41:11.285Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T19:11:45.529Z
+- Updated: 2026-05-18T19:39:43.521Z
 - Branch: task/202605171326-FXRVNW/v063-prerelease-rough-edges
-- Head: b792f3eb1a5b
+- Head: f1afccb640b5
 
 ```text
  .agentplane/tasks/202605170941-3RACDD/README.md    |  84 ++-
@@ -37,6 +37,10 @@ Created: 2026-05-18T17:41:11.285Z
  .../blueprint/resolved-snapshot.json               | 455 ++++++++++++++++
  .../blueprint/resolved-snapshot.json               | 455 ++++++++++++++++
  .../agentplane/src/cli/local-ci-selection.test.ts  |   5 +
+ ...run-cli.core.pr-flow.integrate-failures.test.ts |   6 +
+ .../run-cli.core.pr-flow.integrate-merge.test.ts   |  10 +
+ ...n-cli.core.pr-flow.integrate-strategies.test.ts |  12 +
+ ...n-cli.core.pr-flow.integrate-validation.test.ts |   4 +
  .../src/commands/context/release-readiness.test.ts |  16 +
  packages/agentplane/src/commands/context/wiki.ts   |   4 +
  packages/agentplane/src/commands/pr/check.ts       |  19 +
@@ -55,10 +59,11 @@ Created: 2026-05-18T17:41:11.285Z
  .../commands/task/finish.validation.unit.test.ts   |   4 +
  .../src/commands/task/mutation-parity.unit.test.ts |  10 +-
  packages/core/src/tasks/task-store.ts              |  14 +-
+ packages/testkit/src/cli-harness.ts                |   2 +-
  scripts/lib/pre-push-scope.mjs                     |   2 +-
  scripts/release/next-action.mjs                    |   6 +
  scripts/release/state.mjs                          |  46 +-
- 29 files changed, 2743 insertions(+), 64 deletions(-)
+ 34 files changed, 2776 insertions(+), 65 deletions(-)
 ```
 
 </details>
