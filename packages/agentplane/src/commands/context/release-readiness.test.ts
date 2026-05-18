@@ -5,6 +5,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { CommandContext } from "../shared/task-backend.js";
+import { cmdContextDoctor } from "./doctor.js";
 import { cmdContextIngest } from "./ingest.js";
 import { cmdContextInit } from "./init.js";
 import { cmdContextReindex, readContextProjection } from "./reindex.js";
@@ -41,6 +42,23 @@ async function write(root: string, rel: string, text: string): Promise<void> {
 }
 
 describe("context release readiness guards", () => {
+  it("explains how to initialize context when doctor finds no workspace", async () => {
+    const root = await tempRoot();
+    const stderr = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+
+    await expect(
+      cmdContextDoctor({
+        cwd: root,
+        parsed: { fix: false },
+      }),
+    ).rejects.toThrow(/context doctor failed/u);
+
+    const output = stderr.mock.calls.map(([chunk]) => String(chunk)).join("");
+    expect(output).toContain("[context.doctor] recovery:");
+    expect(output).toContain("agentplane context init --repair");
+    expect(output).toContain("`--fix` only repairs missing directories");
+  });
+
   it("creates only AGENTS and index wiki pages during context init", async () => {
     const root = await tempRoot();
     vi.spyOn(process.stdout, "write").mockImplementation(() => true);

@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605181255-29XQ07/framework-context-health",
+  "created_at": "2026-05-18T12:56:30.235Z",
+  "head_sha": "f9e9bc1d3dbacd78c00ea1b4a1d7f694fdd6d1f4",
+  "last_verified_at": "2026-05-18T13:02:11.402Z",
+  "last_verified_sha": "5afb869b8492c4e44d69484aa3e061dec40b9d5d",
+  "pr_number": 3895,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3895",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605181255-29XQ07",
+  "updated_at": "2026-05-18T13:04:30.324Z",
+  "verify": {
+    "status": "pass"
+  }
+}

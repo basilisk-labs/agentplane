@@ -155,6 +155,7 @@ export async function cmdContextDoctor(opts: {
     process.stderr.write(
       `[context.doctor] issues:\n` + issues.map((entry) => `- ${entry}`).join("\n") + "\n",
     );
+    process.stderr.write(contextDoctorRecoveryHint(root, opts.parsed.fix) + "\n");
     if (!opts.parsed.fix)
       throw new CliError({
         exitCode: 3,
@@ -170,6 +171,15 @@ export async function cmdContextDoctor(opts: {
 
   process.stdout.write("context doctor: ok\n");
   return 0;
+}
+
+function contextDoctorRecoveryHint(root: string, fix: boolean): string {
+  const retry = fix ? "then re-run `agentplane context doctor`" : "then re-run this command";
+  return (
+    `[context.doctor] recovery:\n` +
+    `- If this repository has no initialized context workspace, run \`agentplane context init --repair\` from ${root}, ${retry}.\n` +
+    "- `--fix` only repairs missing directories; it does not create the manifest, policy files, lockfile, or registry artifacts."
+  );
 }
 
 async function calculateSha256(filePath: string): Promise<string> {
