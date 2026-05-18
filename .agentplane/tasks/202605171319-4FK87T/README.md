@@ -1,10 +1,11 @@
 ---
 id: "202605171319-4FK87T"
 title: "Prepare AgentPlane v0.6.2"
-status: "DOING"
+result_summary: "Merged via PR #3865."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Release candidate PR #3865 green on head 88302c5a8: Core CI test/test-windows/release-ready manifest, Docs CI, Dependency Review, and CodeQL passed. Local release candidate and pre-push fast CI passed; release notes and knip baseline refreshed."
   attempts: 0
-commit: null
+commit:
+  hash: "97d396f94ae7524b86ba2d46476a7da021068e13"
+  message: "Merge pull request #3865 from basilisk-labs/task/202605171319-4FK87T/release-0-6-2"
 comments:
   -
     author: "CODER"
     body: "Start: Prepare the v0.6.2 patch release candidate from the current protected main, keeping the scope limited to already merged patch fixes and release hardening while excluding blocked major dependency upgrades and new public CLI surfaces."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3865 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -42,9 +48,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release candidate PR #3865 green on head 88302c5a8: Core CI test/test-windows/release-ready manifest, Docs CI, Dependency Review, and CodeQL passed. Local release candidate and pre-push fast CI passed; release notes and knip baseline refreshed."
+  -
+    type: "status"
+    at: "2026-05-18T08:27:37.990Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3865 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T08:15:50.948Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T08:27:37.997Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prepare a patch release candidate for AgentPlane v0.6.2, limited to already merged patch-scope fixes and low-risk release/maintenance updates. Exclude new public CLI surfaces and red semver-major dependency upgrades from this patch scope."
 sections:
   Summary: |-
