@@ -21,9 +21,14 @@ Docs are organized into an agent-first public navigation model on top of `docs/u
 `docs/workflow-guides/`, `docs/recipes/`, `docs/reference/`, and `docs/releases/`:
 
 - `Start`
-- `Work on a task`
+- `Use with agents`
+- `Agent workflow model`
+- `Review agent work`
+- `Local context`
+- `Team operations`
+- `Recipes`
 - `Upgrade & recover`
-- `Reference & integrations`
+- `Reference`
 - `Release notes`
 
 Framework maintainer documentation for developing AgentPlane itself lives under `docs/developer/`.

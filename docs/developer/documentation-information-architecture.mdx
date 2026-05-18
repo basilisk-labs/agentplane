@@ -17,10 +17,13 @@ runtime guide.
 
 ### User guide
 
-Use `docs/user/*` for runtime behavior and operator workflows:
+Use `docs/user/*` for runtime behavior, setup, agent handoff, review guidance, and operator
+workflows:
 
 - How to initialize and run Agent Plane in a repository.
-- What commands do in day-to-day use.
+- How to hand the repository to a coding agent after setup.
+- How to review the task evidence that agents leave behind.
+- What commands do for advanced manual operation, inspection, and recovery.
 - How tasks, approvals, statuses, and backends behave from a user perspective.
 
 ### Developer guide
@@ -56,17 +59,27 @@ or developer paths as if they were active guidance.
 
 ## Agent-first navigation model
 
-The public docs entrypoints should mirror the same workflow model the CLI and gateway use:
+The public docs entrypoints should mirror the default product journey:
 
-1. **Start**: repository entry, setup, bootstrap.
-2. **Work on a task**: workflow, lifecycle, commands, roles.
-3. **Context and evidence**: local context, source refs, ACR, agent discovery.
-4. **Workflow guides**: copy-paste flows for agents, CI, and review modes around AgentPlane.
-5. **Recipes**: installable recipe packages and catalog/runtime behavior.
-6. **Operations and recovery**: backends, upgrade state model, migration, recovery runbooks.
-7. **Reference**: generated CLI/package reference and integration records.
-8. **Release notes**: historical record only.
-9. **Archive**: historical records, ADRs, and retired program notes.
+```text
+install -> init -> context init -> hand off to an agent -> review task evidence
+```
+
+Humans install and initialize AgentPlane. Coding agents operate the lifecycle. Reviewers inspect the
+evidence in Git. Manual CLI operation after initialization is an advanced path for operators,
+maintainers, recovery, and debugging.
+
+1. **Start**: repository entry, setup, agent handoff, prerequisites, bootstrap.
+2. **Use with agents**: copy-paste flows for coding agents, CI, and review modes around AgentPlane.
+3. **Agent workflow model**: workflow modes, lifecycle, branch/PR artifacts, configuration.
+4. **Review agent work**: ACR, task records, verification evidence, advanced command inspection.
+5. **Local context**: source-backed reusable context for agents, discovery, indexing.
+6. **Team operations**: backends, sync, roles, team configuration.
+7. **Recipes**: installable recipe packages and catalog/runtime behavior.
+8. **Upgrade and recover**: upgrade state model, migration, recovery runbooks.
+9. **Reference**: generated CLI/package reference and integration records.
+10. **Release notes**: historical record only.
+11. **Archive**: historical records, ADRs, and retired program notes.
 
 Implementation and harness-development docs live behind the direct-link developer entrypoint,
 `docs/developer/harness-dev.mdx`, outside the public navigation model.
@@ -76,12 +89,13 @@ Implementation and harness-development docs live behind the direct-link develope
 | Topic                                  | Primary docs page(s)                                                                                                    | Code source of truth                                                                                   |
 | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | Agent bootstrap path                   | `docs/user/agent-bootstrap.generated.mdx`, `docs/user/agents.mdx`                                                       | `packages/agentplane/src/cli/bootstrap-guide.ts`, `packages/agentplane/src/cli/command-guide.ts`       |
+| Agent handoff and default usage model  | `docs/user/agent-handoff.mdx`, `docs/workflow-guides/*`                                                                 | `AGENTS.md`, `.agentplane/WORKFLOW.md`, `packages/agentplane/assets/agents/*.json`                     |
 | Init flow and repository bootstrap     | `docs/user/setup.mdx`                                                                                                   | `packages/agentplane/src/cli/run-cli/commands/init/*`                                                  |
 | Config keys and defaults               | `docs/user/configuration.mdx`                                                                                           | `schemas/config.schema.json`, `packages/core/src/config/config.ts`                                     |
 | Task lifecycle and status transitions  | `docs/user/task-lifecycle.mdx`, `docs/user/workflow.mdx`                                                                | `packages/agentplane/src/commands/task/*`                                                              |
-| Command usage guide                    | `docs/user/commands.mdx`                                                                                                | `packages/agentplane/src/commands/**/*.spec.ts`                                                        |
+| Advanced command usage guide           | `docs/user/commands.mdx`                                                                                                | `packages/agentplane/src/commands/**/*.spec.ts`                                                        |
 | Local context                          | `docs/user/local-context.mdx`, `docs/developer/local-context.mdx`                                                       | `packages/agentplane/src/commands/context/**`, `packages/agentplane/src/commands/acr/**`               |
-| Workflow guides                        | `docs/workflow-guides/*`                                                                                                | `docs/user/workflow.mdx`, `.agentplane/WORKFLOW.md`, `packages/agentplane/src/commands/**`             |
+| Use-with-agents guides                 | `docs/workflow-guides/*`                                                                                                | `docs/user/workflow.mdx`, `.agentplane/WORKFLOW.md`, `packages/agentplane/src/commands/**`             |
 | Recipes                                | `docs/recipes/*`, `docs/recipes-inventory.json`                                                                         | `packages/agentplane/src/commands/recipes/**`, `packages/recipes/src/**`, `agentplane-recipes/**`      |
 | Upgrade and mixed-state recovery       | `docs/user/setup.mdx`, `docs/help/legacy-upgrade-recovery.mdx`                                                          | `packages/agentplane/src/commands/upgrade*`, `packages/agentplane/src/commands/doctor.run.ts`          |
 | Full CLI reference (generated)         | `docs/user/cli-reference.generated.mdx`                                                                                 | `agentplane docs cli --out docs/user/cli-reference.generated.mdx`                                      |

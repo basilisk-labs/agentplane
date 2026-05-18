@@ -1,6 +1,6 @@
 ---
 title: "Setup"
-description: "Install AgentPlane, initialize a repository, and create the first repo-local evidence trail."
+description: "Install AgentPlane, initialize a repository, enable local context, and hand the repo to a coding agent."
 ---
 
 ## Install AgentPlane
@@ -14,6 +14,7 @@ Requirements:
 ```bash
 npm i -g agentplane
 agentplane init
+agentplane context init
 agentplane quickstart
 ```
 
@@ -84,35 +85,21 @@ To disable it later:
 agentplane config set feedback.github_issues.enabled false
 ```
 
-## Create your first task
+## Hand off to an agent
 
-Use a harmless task first. The goal is to see the artifact shape before giving an agent broad edit
-scope.
+After initialization, the normal next step is to give the repository to a coding agent. The agent
+should read the repository policy gateway and run the AgentPlane lifecycle around its own work.
 
-```bash
-agentplane task new \
-  --title "Demo: make AI work traceable" \
-  --description "Create a harmless task and inspect the evidence artifacts." \
-  --priority med \
-  --owner CODER \
-  --tag docs
+```text
+Use AgentPlane for this repository.
 
-agentplane task plan set <task-id> \
-  --text "Inspect the generated task record and ACR path." \
-  --updated-by CODER
+Start with:
+agentplane quickstart
+agentplane role ORCHESTRATOR
 
-agentplane task plan approve <task-id> --by ORCHESTRATOR
-agentplane task start-ready <task-id> \
-  --author CODER \
-  --body "Start: inspect repo-local artifacts before broad agent edits."
-agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok --by CODER --note "Inspected task evidence."
-agentplane finish <task-id> \
-  --author CODER \
-  --body "Verified: evidence exists and the local traceability path is visible." \
-  --result "First traceable task complete" \
-  --commit HEAD
-agentplane acr explain <task-id>
+Follow AGENTS.md and the workflow mode in .agentplane/WORKFLOW.md.
+Create or reuse an AgentPlane task before mutating repository files.
+Record the plan, start-ready state, verification evidence, and finish state through AgentPlane.
 ```
 
 Expected files:
@@ -121,6 +108,9 @@ Expected files:
 .agentplane/tasks/<task-id>/README.md
 .agentplane/tasks/<task-id>/acr.json
 ```
+
+See [Hand off to an agent](agent-handoff) for the full default usage model and agent-agnostic
+contract.
 
 ## Enable local context
 
@@ -145,6 +135,9 @@ agentplane context verify-task <task-id>
 ```
 
 See [Local context](local-context) for source refs, privacy boundaries, and verification rules.
+
+Local context has its own docs section because it is the reusable knowledge layer for agents, not a
+subtopic of manual CLI usage.
 
 ## Setup profiles
 
@@ -216,6 +209,10 @@ agentplane doctor
 ```
 
 Then use `agentplane role <ROLE>` for role-specific guidance.
+
+Use [Commands](commands) and the [generated CLI reference](cli-reference.generated) when you need
+manual inspection, recovery, or operator-level control. They are not the default day-to-day usage
+path.
 
 ## Optional recipes
 
