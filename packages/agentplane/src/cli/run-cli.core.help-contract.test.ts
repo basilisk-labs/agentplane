@@ -204,14 +204,17 @@ describe("cli help contract", () => {
 
   it("normal project dispatch rejects framework-maintainer commands", async () => {
     const outsideRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-help-outside-"));
+    const previousCwd = process.cwd();
     const io = captureStdIO();
     try {
-      const code = await runCli(["--root", outsideRoot, "release"]);
+      process.chdir(outsideRoot);
+      const code = await runCli(["release"]);
       expect(code).toBe(2);
       expect(io.stderr).toContain(
         "Framework dev command is only available inside the AgentPlane framework checkout.",
       );
     } finally {
+      process.chdir(previousCwd);
       io.restore();
     }
   });
