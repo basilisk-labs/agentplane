@@ -445,8 +445,19 @@ describe("runCli", () => {
     expect(await pathExists(path.join(root, ".git"))).toBe(true);
     expect(await pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).toBe(true);
     expect(await pathExists(path.join(root, "AGENTS.md"))).toBe(true);
+    expect(await pathExists(path.join(root, ".agentplane", "policy", "context.must.md"))).toBe(
+      true,
+    );
     expect(await pathExists(path.join(root, "context", "README.md"))).toBe(true);
     expect(await pathExists(path.join(root, "context", "wiki", "AGENTS.md"))).toBe(true);
+    const rootAgents = await readFile(path.join(root, "AGENTS.md"), "utf8");
+    const contextPolicy = await readFile(
+      path.join(root, ".agentplane", "policy", "context.must.md"),
+      "utf8",
+    );
+    expect(rootAgents).toContain("@.agentplane/policy/context.must.md");
+    expect(contextPolicy).toContain("ap context search");
+    expect(contextPolicy).toContain("source refs or an explicit no-source reason");
     const wikiAgents = await readFile(path.join(root, "context", "wiki", "AGENTS.md"), "utf8");
     expect(wikiAgents).toContain(
       "Analyze the base project, existing docs, task history, and raw sources before choosing a wiki structure.",
