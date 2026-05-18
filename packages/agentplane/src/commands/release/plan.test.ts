@@ -44,11 +44,16 @@ describeWhenNotHook("release plan", () => {
         nextTag?: string;
         nextVersion?: string;
         bump?: string;
+        baseSha?: string;
       };
+      const { stdout: headSha } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: root,
+      });
       expect(version.prevTag).toBe("v0.2.6");
       expect(version.nextTag).toBe("v0.2.7");
       expect(version.nextVersion).toBe("0.2.7");
       expect(version.bump).toBe("patch");
+      expect(version.baseSha).toBe(headSha.trim());
 
       const instructions = await readFile(path.join(runDir, "instructions.md"), "utf8");
       expect(instructions).toContain("docs/releases/v0.2.7.md");

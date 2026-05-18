@@ -196,6 +196,14 @@ async function listChanges(gitRoot: string, sinceRef: string | null): Promise<Ch
   return out;
 }
 
+async function currentHead(gitRoot: string): Promise<string> {
+  const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: gitRoot,
+    env: gitEnv(),
+  });
+  return String(stdout ?? "").trim();
+}
+
 function changesMarkdown(changes: Change[]): string {
   if (changes.length === 0) return "_No commits found in the selected range._\n";
   return (
@@ -285,6 +293,7 @@ export const runReleasePlan: CommandHandler<ReleasePlanParsed> = async (ctx, fla
   }
   const nextVersion = bumpVersion(coreVersion, flags.bump);
   const nextTag = `v${nextVersion}`;
+  const baseSha = await currentHead(gitRoot);
   const changes = await listChanges(gitRoot, prevTag);
   const minBullets = requiredBulletCount(changes.length);
 
@@ -295,7 +304,7 @@ export const runReleasePlan: CommandHandler<ReleasePlanParsed> = async (ctx, fla
   await writeFile(
     path.join(baseDir, "version.json"),
     JSON.stringify(
-      { prevTag, prevVersion: coreVersion, nextTag, nextVersion, bump: flags.bump },
+      { prevTag, prevVersion: coreVersion, nextTag, nextVersion, bump: flags.bump, baseSha },
       null,
       2,
     ) + "\n",

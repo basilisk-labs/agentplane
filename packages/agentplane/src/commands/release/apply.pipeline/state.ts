@@ -2,6 +2,8 @@ import path from "node:path";
 
 import { loadConfig } from "@agentplaneorg/core/config";
 import { resolveProject } from "@agentplaneorg/core/project";
+import { execFileAsync } from "@agentplaneorg/core/process";
+import { gitEnv } from "@agentplaneorg/core/git";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
@@ -129,6 +131,35 @@ export async function ensureReleasePlanMatchesRepoState(opts: {
 
   await ensureCleanTrackedTree(opts.gitRoot, opts.commandLabel);
   await ensureTagDoesNotExist(opts.gitRoot, opts.plan.nextTag, opts.commandLabel);
+  if (opts.plan.baseSha) {
+    const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    });
+    const currentHead = String(stdout ?? "").trim();
+    if (currentHead !== opts.plan.baseSha) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_VALIDATION"),
+        code: "E_VALIDATION",
+        message:
+          `Release plan base drifted. current=${currentHead} planned=${opts.plan.baseSha}\n` +
+          "Re-run `agentplane release plan` from the intended candidate base, or explicitly cut/re-scope the release branch.",
+        context: withDiagnosticContext(
+          { command: opts.commandLabel },
+          {
+            state: "the candidate base no longer matches the prepared release plan",
+            likelyCause:
+              "main advanced after release planning, so the candidate scope may now include late merges that were not reviewed",
+            nextAction: {
+              command: "agentplane release plan",
+              reason: "freeze a fresh release base before applying or preparing the candidate",
+              reasonCode: "release_plan_base_drifted",
+            },
+          },
+        ),
+      });
+    }
+  }
   if (coreVersion !== opts.plan.prevVersion) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),

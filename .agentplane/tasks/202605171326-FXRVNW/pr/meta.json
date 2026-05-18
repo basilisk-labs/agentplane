@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605171326-FXRVNW/v063-prerelease-rough-edges",
+  "created_at": "2026-05-18T17:41:11.285Z",
+  "head_sha": "3fc54e6d4072f7041ebfd48a1191a1f39cf4252e",
+  "last_verified_at": "2026-05-18T17:46:10.744Z",
+  "last_verified_sha": "3fc54e6d4072f7041ebfd48a1191a1f39cf4252e",
+  "schema_version": 1,
+  "task_id": "202605171326-FXRVNW",
+  "updated_at": "2026-05-18T17:41:11.285Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -1,10 +1,10 @@
 ---
 id: "202605171325-7P2VM4"
 title: "Fix task scanner handling of invalid legacy README frontmatter"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -19,17 +19,33 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-18T17:46:13.570Z"
+  updated_by: "CODER"
+  note: "Verified: task scanner no longer silently skips invalid legacy task READMEs; it emits actionable warnings while preserving valid task projection. Focused tasks-export tests passed."
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: make task scanning robust to invalid legacy README frontmatter so release planning does not silently lose task records and users get actionable diagnostics."
+events:
+  -
+    type: "status"
+    at: "2026-05-18T17:41:27.628Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: make task scanning robust to invalid legacy README frontmatter so release planning does not silently lose task records and users get actionable diagnostics."
+  -
+    type: "verify"
+    at: "2026-05-18T17:46:13.570Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: task scanner no longer silently skips invalid legacy task READMEs; it emits actionable warnings while preserving valid task projection. Focused tasks-export tests passed."
 doc_version: 3
-doc_updated_at: "2026-05-17T13:27:47.438Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-05-18T17:46:13.599Z"
+doc_updated_by: "CODER"
 description: "Make task scanning and diagnostics robust when a historical or generated task README has non-canonical frontmatter, using 202605151620-CTXIN as the regression case. The CLI should not silently lose the task from release planning; it should either repair, migrate, or emit actionable diagnostics without hiding the rest of the task registry."
 sections:
   Summary: |-
@@ -48,6 +64,25 @@ sections:
     5. Run ap doctor. Expected: doctor passes or reports only pre-existing unrelated warnings with evidence recorded.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-18T17:46:13.570Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: task scanner no longer silently skips invalid legacy task READMEs; it emits actionable warnings while preserving valid task projection. Focused tasks-export tests passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T17:41:27.628Z, excerpt_hash=sha256:d84a0051bf64c11a8fb0e21f011340535d57ec23c96fc6d991482d15cabd73d6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171326-FXRVNW-v063-prerelease-rough-edges/.agentplane/tasks/202605171325-7P2VM4/blueprint/resolved-snapshot.json
+    - old_digest: d0226a2f47a6779b8ee68927701214025a4825bd9e6bff1ff48febee5fcb96d4
+    - current_digest: d0226a2f47a6779b8ee68927701214025a4825bd9e6bff1ff48febee5fcb96d4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171325-7P2VM4
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -81,6 +116,25 @@ Plan: 1. Reproduce the current scanner failure with historical task 202605151620
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-18T17:46:13.570Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: task scanner no longer silently skips invalid legacy task READMEs; it emits actionable warnings while preserving valid task projection. Focused tasks-export tests passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T17:41:27.628Z, excerpt_hash=sha256:d84a0051bf64c11a8fb0e21f011340535d57ec23c96fc6d991482d15cabd73d6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171326-FXRVNW-v063-prerelease-rough-edges/.agentplane/tasks/202605171325-7P2VM4/blueprint/resolved-snapshot.json
+- old_digest: d0226a2f47a6779b8ee68927701214025a4825bd9e6bff1ff48febee5fcb96d4
+- current_digest: d0226a2f47a6779b8ee68927701214025a4825bd9e6bff1ff48febee5fcb96d4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171325-7P2VM4
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
