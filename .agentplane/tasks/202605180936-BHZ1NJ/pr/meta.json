@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605180936-BHZ1NJ/context-assimilation-blueprint",
+  "created_at": "2026-05-18T09:36:40.870Z",
+  "head_sha": "94d49b82a7678e4851921e29d51293aa11c572cb",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605180936-BHZ1NJ",
+  "updated_at": "2026-05-18T09:46:33.590Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
