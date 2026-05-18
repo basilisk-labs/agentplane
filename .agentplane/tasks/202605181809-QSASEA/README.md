@@ -1,10 +1,11 @@
 ---
 id: "202605181809-QSASEA"
 title: "Reframe docs around agent-first usage"
-status: "DOING"
+result_summary: "Merged via PR #3903."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "DOCS"
   note: "Post-format verification passed: format:check, docs IA check, and website build-check are green after Prettier cleanup."
   attempts: 0
-commit: null
+commit:
+  hash: "d29f0be0649c9c0f8058c1ded8accead847b7b8e"
+  message: "Merge pull request #3903 from basilisk-labs/task/202605181809-QSASEA/agent-first-docs-ia"
 comments:
   -
     author: "DOCS"
     body: "Start: updating public documentation navigation and onboarding copy to make agent handoff the default path, record AgentPlane as agent-agnostic through repo files and AGENTS.md, and split local context into a first-class docs section."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3903 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -53,9 +59,16 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Post-format verification passed: format:check, docs IA check, and website build-check are green after Prettier cleanup."
+  -
+    type: "status"
+    at: "2026-05-18T18:32:35.682Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3903 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T18:22:26.821Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-05-18T18:32:35.690Z"
+doc_updated_by: "INTEGRATOR"
 description: "Make documentation emphasize install/init/agent handoff as the default path, document AgentPlane as agent-agnostic through repo files and AGENTS.md, and separate local context into its own docs section."
 sections:
   Summary: |-
