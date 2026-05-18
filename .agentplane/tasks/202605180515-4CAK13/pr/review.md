@@ -13,7 +13,7 @@ Created: 2026-05-18T05:15:54.501Z
 ## Verification
 
 - State: ok
-- Note: Command: bun test packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts --runInBand; Result: pass; Evidence: 9 tests skipped under Bun and command exits 0, preventing Vitest-only API crashes from issue #3845. Scope: raw Bun runner contract for the reported files. Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts; Result: pass; Evidence: 2 files, 9 tests passed under Vitest. Scope: full unit coverage remains active on the supported Vitest runner. Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-feedback.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts --runInBand; Result: pass; Evidence: 24 tests passed including metadata-only PR artifact freshness and branch artifact fallback coverage. Scope: issues #3853 and #3854. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0. Scope: TypeScript project references. Command: bun run format:changed; Result: pass; Evidence: changed files use Prettier style. Scope: touched files. Command: bun run hotspots:check; Result: pass; Evidence: hotspot and oversized test baseline checks passed after moving regression to focused file. Scope: CI hotspot gate. Command: bun run lint:core -- touched files; Result: pass; Evidence: eslint exited 0. Scope: repo lint. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Scope: policy routing.
+- Note: Post-commit verification refresh. Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-feedback.test.ts --runInBand; Result: pass; Evidence: 1 metadata-only task artifact freshness regression passed on branch head after PR publication. Scope: issue #3854. Command: bun test packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts --runInBand; Result: pass; Evidence: command exits 0 under Bun with 9 intentional skips instead of runner API crashes. Scope: issue #3845 raw Bun command contract. Prior full verification remains recorded in the same task README for typecheck, format, hotspot, lint, policy, Vitest unit coverage, and PR validation coverage.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-05-18T05:15:54.501Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T05:25:30.709Z
+- Updated: 2026-05-18T05:25:37.421Z
 - Branch: task/202605180515-4CAK13/fix-open-branch-pr-feedback
 - Head: 8e9289e25c31
 
