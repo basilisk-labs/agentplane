@@ -24,9 +24,9 @@ Created: 2026-05-18T17:41:11.285Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T18:33:48.212Z
+- Updated: 2026-05-18T18:37:29.234Z
 - Branch: task/202605171326-FXRVNW/v063-prerelease-rough-edges
-- Head: 8d5099f549f1
+- Head: c89d1c6f3eb8
 
 ```text
  .agentplane/tasks/202605170941-3RACDD/README.md    |  84 ++-
@@ -36,19 +36,28 @@ Created: 2026-05-18T17:41:11.285Z
  .agentplane/tasks/202605171325-7P5M3V/README.md    |  74 ++-
  .../blueprint/resolved-snapshot.json               | 455 ++++++++++++++++
  .../blueprint/resolved-snapshot.json               | 455 ++++++++++++++++
+ .../agentplane/src/cli/local-ci-selection.test.ts  |   5 +
  .../src/commands/context/release-readiness.test.ts |  16 +
  packages/agentplane/src/commands/context/wiki.ts   |   4 +
+ packages/agentplane/src/commands/pr/check.ts       |  19 +
+ .../pr/integrate/internal/github-pr-merge.ts       |  18 +
+ .../commands/pr/internal/github-review-threads.ts  | 108 ++++
+ .../src/commands/pr/internal/sync-github.ts        |  43 ++
  .../commands/release/apply.pipeline/preflight.ts   |   1 +
  .../src/commands/release/apply.pipeline/state.ts   | 156 ++++++
  .../src/commands/release/apply.preflight.plan.ts   |   3 +-
  .../src/commands/release/apply.preflight.test.ts   |  55 ++
  .../agentplane/src/commands/release/apply.types.ts |   1 +
- .../src/commands/release/plan.command.ts           |  11 +-
- .../agentplane/src/commands/release/plan.test.ts   |   5 +
+ .../src/commands/release/plan.command.ts           |  87 ++-
+ .../agentplane/src/commands/release/plan.test.ts   |  54 +-
+ .../agentplane/src/commands/task/finish-close.ts   |  15 +-
+ .../commands/task/finish.close-tail.unit.test.ts   |  41 ++
+ .../src/commands/task/mutation-parity.unit.test.ts |  10 +-
  packages/core/src/tasks/task-store.ts              |  14 +-
+ scripts/lib/pre-push-scope.mjs                     |   2 +-
  scripts/release/next-action.mjs                    |   6 +
  scripts/release/state.mjs                          |  46 +-
- 19 files changed, 2381 insertions(+), 40 deletions(-)
+ 28 files changed, 2757 insertions(+), 50 deletions(-)
 ```
 
 </details>
