@@ -77,8 +77,10 @@ describe("context release readiness guards", () => {
     await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nPublic source.\n");
     vi.spyOn(process.stdout, "write").mockImplementation(() => true);
     const tasks: { id: string; owner: string }[] = [];
+    let taskCounter = 0;
     const createTask = vi.fn(async () => {
-      tasks.push({ id: "202605130501-CTXSCA", owner: "CURATOR" });
+      taskCounter += 1;
+      tasks.push({ id: `202605130501-CTXSCA-${taskCounter}`, owner: "CURATOR" });
     });
     const ctx = {
       resolvedProject: { gitRoot: root },
@@ -113,6 +115,29 @@ describe("context release readiness guards", () => {
       cwd: root,
       parsed: { path: "context/wiki" },
     });
+
+    const lock = JSON.parse(
+      await readFile(path.join(root, ".agentplane/context/manifest.lock.json"), "utf8"),
+    ) as { wiki_scaffold?: { starter_created_at?: string } };
+    expect(lock.wiki_scaffold?.starter_created_at).toEqual(expect.any(String));
+
+    await rm(path.join(root, "context/wiki/concepts"), { recursive: true, force: true });
+    await cmdContextIngest({
+      ctx,
+      cwd: root,
+      parsed: {
+        sources: [],
+        mode: "all",
+        dryRun: false,
+        indexOnly: false,
+        runTask: false,
+        includePrivate: false,
+      },
+      createTask,
+    });
+
+    const wikiEntriesAfterSecondIngest = await readdir(path.join(root, "context/wiki"));
+    expect(wikiEntriesAfterSecondIngest).not.toContain("concepts");
   });
 
   it("indexes stable section refs and excludes private raw files from projection", async () => {
