@@ -15,6 +15,9 @@ Current skills:
 - `agentplane-release-and-packaging-operator`
   - Source: repo-local extraction from Agentplane release incidents, GitHub issue #467, and recent release CI build-order failures.
   - Use for release readiness, package build ordering, npm publish evidence, public install smoke tests, and release recovery.
+- `agentplane-local-dev-operator`
+  - Source: repo-local extraction from local CI selector, Turborepo overlay, branch_pr task-scope guardrails, and dependency triage patterns.
+  - Use for targeted local checks, task worktree scope validation, graph-aware evidence, and dependency bump triage.
 - `agentplane-testkit-migration`
   - Source: repo-local extraction from Epic E' testkit consolidation tasks and incidents INC-20260419-03 through INC-20260419-05.
   - Use for migrating tests to `@agentplane/testkit`, fixing testkit export/build failures, and splitting large test suites safely.

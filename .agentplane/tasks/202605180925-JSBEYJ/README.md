@@ -1,0 +1,154 @@
+---
+id: "202605180925-JSBEYJ"
+title: "Add release and dev workflow helper scripts"
+status: "DOING"
+priority: "high"
+owner: "CODER"
+revision: 6
+origin:
+  system: "manual"
+depends_on: []
+tags:
+  - "code"
+  - "release"
+verify: []
+plan_approval:
+  state: "approved"
+  updated_at: "2026-05-18T09:26:13.704Z"
+  updated_by: "ORCHESTRATOR"
+  note: null
+verification:
+  state: "ok"
+  updated_at: "2026-05-18T09:35:00.859Z"
+  updated_by: "CODER"
+  note: "Implemented release/dev helper scripts and skill entrypoints; targeted verification passed."
+  attempts: 0
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: Implement approved release and developer workflow helper scripts in the task worktree, including package entrypoints and repository skill guidance."
+events:
+  -
+    type: "status"
+    at: "2026-05-18T09:26:27.004Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Implement approved release and developer workflow helper scripts in the task worktree, including package entrypoints and repository skill guidance."
+  -
+    type: "verify"
+    at: "2026-05-18T09:35:00.859Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented release/dev helper scripts and skill entrypoints; targeted verification passed."
+doc_version: 3
+doc_updated_at: "2026-05-18T09:35:00.867Z"
+doc_updated_by: "CODER"
+description: "Add repo-local helper scripts and skill guidance for release state, version bumping, candidate prep, publication evidence collection, dev impact checks, task scope checks, and dependency triage."
+sections:
+  Summary: |-
+    Add release and dev workflow helper scripts
+
+    Add repo-local helper scripts and skill guidance for release state, version bumping, candidate prep, publication evidence collection, dev impact checks, task scope checks, and dependency triage.
+  Scope: |-
+    - In scope: Add repo-local helper scripts and skill guidance for release state, version bumping, candidate prep, publication evidence collection, dev impact checks, task scope checks, and dependency triage.
+    - Out of scope: unrelated refactors not required for "Add release and dev workflow helper scripts".
+  Plan: "Implement repo-local helper scripts and skill access for release/developer workflow acceleration. Scope: add reusable release helpers (version bump, state, candidate preparation, publication evidence collection, next-action recovery), developer helpers (impact selection, task scope guard, dependency triage), package.json entrypoints, skill docs, and generated scripts inventory. Verification: targeted lint for new scripts, release parity/state checks, docs scripts freshness, policy routing, and task verify-show."
+  Verify Steps: |-
+    1. `node --check` all new release/dev helper scripts. Expected: syntax checks pass.
+    2. `bunx eslint` on new scripts plus `scripts/lib/local-ci-selection.mjs`. Expected: no lint errors.
+    3. Dry-run helper entrypoints: `release:version:bump`, `release:state`, `release:next-action`, `release:candidate:prepare`, `dev:impact`, `dev:task-scope:check`, and `deps:triage`. Expected: commands produce structured output without mutating release state.
+    4. `bun run docs:scripts:check`, `bun run release:parity`, `node .agentplane/policy/check-routing.mjs`, and `bun run format:changed`. Expected: all pass.
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-18T09:35:00.859Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Implemented release/dev helper scripts and skill entrypoints; targeted verification passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T09:33:27.034Z, excerpt_hash=sha256:9b5bd386770abdc9294dba4c42e546388f1ed2d87740960c933da4729aa0bf46
+
+    Details:
+
+    Command: node --check scripts/release/*.mjs scripts/checks/{dev-impact,check-task-scope,deps-triage}.mjs. Result: pass. Evidence: syntax checks exited 0. Scope: new helper scripts.
+    Command: bunx eslint new scripts plus scripts/lib/local-ci-selection.mjs. Result: pass. Evidence: exited 0. Scope: changed JS scripts.
+    Command: dry-run entrypoints for release:version:bump, release:state, release:next-action, release:candidate:prepare, dev:impact, dev:task-scope:check, deps:triage. Result: pass. Evidence: structured output produced without release mutation. Scope: script behavior.
+    Command: bun run docs:scripts:check && bun run release:parity && node .agentplane/policy/check-routing.mjs && bun run format:changed. Result: pass. Evidence: scripts README up to date, release parity passed for 0.6.2, policy routing OK, Prettier passed. Scope: generated docs, release parity, policy routing, formatting.
+    Command: ap doctor. Result: pass. Evidence: doctor OK with 0 errors and 0 warnings. Scope: repo-local runtime and workflow contract.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605180925-JSBEYJ-release-dev-helper-scripts/.agentplane/tasks/202605180925-JSBEYJ/blueprint/resolved-snapshot.json
+    - old_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+    - current_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605180925-JSBEYJ
+
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: |-
+    - Revert task-related commit(s).
+    - Re-run required checks to confirm rollback safety.
+  Findings: ""
+id_source: "generated"
+---
+## Summary
+
+Add release and dev workflow helper scripts
+
+Add repo-local helper scripts and skill guidance for release state, version bumping, candidate prep, publication evidence collection, dev impact checks, task scope checks, and dependency triage.
+
+## Scope
+
+- In scope: Add repo-local helper scripts and skill guidance for release state, version bumping, candidate prep, publication evidence collection, dev impact checks, task scope checks, and dependency triage.
+- Out of scope: unrelated refactors not required for "Add release and dev workflow helper scripts".
+
+## Plan
+
+Implement repo-local helper scripts and skill access for release/developer workflow acceleration. Scope: add reusable release helpers (version bump, state, candidate preparation, publication evidence collection, next-action recovery), developer helpers (impact selection, task scope guard, dependency triage), package.json entrypoints, skill docs, and generated scripts inventory. Verification: targeted lint for new scripts, release parity/state checks, docs scripts freshness, policy routing, and task verify-show.
+
+## Verify Steps
+
+1. `node --check` all new release/dev helper scripts. Expected: syntax checks pass.
+2. `bunx eslint` on new scripts plus `scripts/lib/local-ci-selection.mjs`. Expected: no lint errors.
+3. Dry-run helper entrypoints: `release:version:bump`, `release:state`, `release:next-action`, `release:candidate:prepare`, `dev:impact`, `dev:task-scope:check`, and `deps:triage`. Expected: commands produce structured output without mutating release state.
+4. `bun run docs:scripts:check`, `bun run release:parity`, `node .agentplane/policy/check-routing.mjs`, and `bun run format:changed`. Expected: all pass.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-18T09:35:00.859Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented release/dev helper scripts and skill entrypoints; targeted verification passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T09:33:27.034Z, excerpt_hash=sha256:9b5bd386770abdc9294dba4c42e546388f1ed2d87740960c933da4729aa0bf46
+
+Details:
+
+Command: node --check scripts/release/*.mjs scripts/checks/{dev-impact,check-task-scope,deps-triage}.mjs. Result: pass. Evidence: syntax checks exited 0. Scope: new helper scripts.
+Command: bunx eslint new scripts plus scripts/lib/local-ci-selection.mjs. Result: pass. Evidence: exited 0. Scope: changed JS scripts.
+Command: dry-run entrypoints for release:version:bump, release:state, release:next-action, release:candidate:prepare, dev:impact, dev:task-scope:check, deps:triage. Result: pass. Evidence: structured output produced without release mutation. Scope: script behavior.
+Command: bun run docs:scripts:check && bun run release:parity && node .agentplane/policy/check-routing.mjs && bun run format:changed. Result: pass. Evidence: scripts README up to date, release parity passed for 0.6.2, policy routing OK, Prettier passed. Scope: generated docs, release parity, policy routing, formatting.
+Command: ap doctor. Result: pass. Evidence: doctor OK with 0 errors and 0 warnings. Scope: repo-local runtime and workflow contract.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605180925-JSBEYJ-release-dev-helper-scripts/.agentplane/tasks/202605180925-JSBEYJ/blueprint/resolved-snapshot.json
+- old_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+- current_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605180925-JSBEYJ
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert task-related commit(s).
+- Re-run required checks to confirm rollback safety.
+
+## Findings
