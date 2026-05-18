@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605180515-4CAK13/fix-open-branch-pr-feedback",
+  "created_at": "2026-05-18T05:15:54.501Z",
+  "head_sha": "83713612298d846945a99c572f5d4bcb8e9bc40f",
+  "last_verified_at": "2026-05-18T05:51:58.510Z",
+  "last_verified_sha": "83713612298d846945a99c572f5d4bcb8e9bc40f",
+  "pr_number": 3863,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3863",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605180515-4CAK13",
+  "updated_at": "2026-05-18T05:51:51.896Z",
+  "verify": {
+    "status": "pass"
+  }
+}

@@ -10,21 +10,30 @@ import type { CommandContext } from "../shared/task-backend.js";
 import { GitContext } from "@agentplaneorg/core/git";
 import type { TaskStorePatch } from "../shared/task-store.js";
 
-const mocks = vi.hoisted(() => ({
-  commitFromComment: vi.fn(),
-  cmdCommit: vi.fn(),
-  ensureReconciledBeforeMutation: vi.fn(),
-  loadCommandContext: vi.fn(),
-  loadTaskFromContext: vi.fn(),
-  backendIsLocalFileBackend: vi.fn(),
-  getTaskStore: vi.fn(),
-  readCommitInfo: vi.fn(),
-  nowIso: vi.fn(),
-  resolveBaseBranch: vi.fn(),
-  execFileAsync: vi.fn(),
-  gitBranchExists: vi.fn(),
-  gitCurrentBranch: vi.fn(),
-}));
+function makeMocks() {
+  return {
+    commitFromComment: vi.fn(),
+    cmdCommit: vi.fn(),
+    ensureReconciledBeforeMutation: vi.fn(),
+    loadCommandContext: vi.fn(),
+    loadTaskFromContext: vi.fn(),
+    backendIsLocalFileBackend: vi.fn(),
+    getTaskStore: vi.fn(),
+    readCommitInfo: vi.fn(),
+    nowIso: vi.fn(),
+    resolveBaseBranch: vi.fn(),
+    execFileAsync: vi.fn(),
+    gitBranchExists: vi.fn(),
+    gitCurrentBranch: vi.fn(),
+  };
+}
+
+if (typeof (vi as unknown as { hoisted?: unknown }).hoisted !== "function") {
+  (vi as unknown as { hoisted: <T>(factory: () => T) => T }).hoisted = (factory) => factory();
+}
+
+const mocks = vi.hoisted(makeMocks);
+const describeCompatible = typeof process.versions.bun === "string" ? describe.skip : describe;
 
 vi.mock("../guard/impl/comment-commit.js", () => ({
   commitFromComment: mocks.commitFromComment,
@@ -48,7 +57,10 @@ vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
 }));
 vi.mock("@agentplaneorg/core/git", async () => {
-  const actualUnknown: unknown = await vi.importActual("@agentplaneorg/core/git");
+  const actualUnknown: unknown =
+    typeof (vi as unknown as { importActual?: unknown }).importActual === "function"
+      ? await vi.importActual("@agentplaneorg/core/git")
+      : {};
   const actual =
     actualUnknown && typeof actualUnknown === "object"
       ? (actualUnknown as Record<string, unknown>)
@@ -59,8 +71,8 @@ vi.mock("@agentplaneorg/core/git", async () => {
     resolveBaseBranch: mocks.resolveBaseBranch,
   };
 });
-vi.mock("../shared/task-store.js", async (importOriginal) => {
-  const actualUnknown: unknown = await importOriginal();
+vi.mock("../shared/task-store.js", async (importOriginal?: () => Promise<unknown>) => {
+  const actualUnknown: unknown = typeof importOriginal === "function" ? await importOriginal() : {};
   const actual =
     actualUnknown && typeof actualUnknown === "object"
       ? (actualUnknown as Record<string, unknown>)
@@ -71,8 +83,8 @@ vi.mock("../shared/task-store.js", async (importOriginal) => {
     getTaskStore: mocks.getTaskStore,
   };
 });
-vi.mock("./shared.js", async (importOriginal) => {
-  const actualUnknown: unknown = await importOriginal();
+vi.mock("./shared.js", async (importOriginal?: () => Promise<unknown>) => {
+  const actualUnknown: unknown = typeof importOriginal === "function" ? await importOriginal() : {};
   const actual =
     actualUnknown && typeof actualUnknown === "object"
       ? (actualUnknown as Record<string, unknown>)
@@ -198,9 +210,9 @@ function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undef
   return next;
 }
 
-describe("task finish state and errors", () => {
+describeCompatible("task finish state and errors", () => {
   afterEach(() => {
-    vi.unstubAllEnvs();
+    vi.unstubAllEnvs?.();
   });
 
   beforeEach(() => {

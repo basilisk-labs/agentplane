@@ -12,14 +12,15 @@ const mockBackendIsLocalFileBackend = vi.fn<(ctx: CommandContext) => boolean>();
 const mockGetTaskStore = vi.fn();
 const mockWriteTaskBlueprintResolvedSnapshot =
   vi.fn<(opts: { ctx: CommandContext; task: TaskData }) => Promise<unknown>>();
+const describeCompatible = typeof process.versions.bun === "string" ? describe.skip : describe;
 
 vi.mock("../shared/task-backend.js", () => ({
   backendUsesLocalTaskStore: mockBackendIsLocalFileBackend,
   loadCommandContext: mockLoadCommandContext,
   loadTaskFromContext: mockLoadTaskFromContext,
 }));
-vi.mock("../shared/task-store.js", async (importOriginal) => {
-  const actualUnknown: unknown = await importOriginal();
+vi.mock("../shared/task-store.js", async (importOriginal?: () => Promise<unknown>) => {
+  const actualUnknown: unknown = typeof importOriginal === "function" ? await importOriginal() : {};
   const actual =
     actualUnknown && typeof actualUnknown === "object"
       ? (actualUnknown as Record<string, unknown>)
@@ -30,8 +31,8 @@ vi.mock("../shared/task-store.js", async (importOriginal) => {
     getTaskStore: mockGetTaskStore,
   };
 });
-vi.mock("../blueprint/snapshot-artifact.js", async (importOriginal) => {
-  const actualUnknown: unknown = await importOriginal();
+vi.mock("../blueprint/snapshot-artifact.js", async (importOriginal?: () => Promise<unknown>) => {
+  const actualUnknown: unknown = typeof importOriginal === "function" ? await importOriginal() : {};
   const actual =
     actualUnknown && typeof actualUnknown === "object"
       ? (actualUnknown as Record<string, unknown>)
@@ -67,7 +68,7 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
   });
 }
 
-describe("task start command (unit)", () => {
+describeCompatible("task start command (unit)", () => {
   beforeEach(() => {
     mockLoadTaskFromContext.mockReset();
     mockLoadCommandContext.mockReset();
