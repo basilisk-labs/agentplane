@@ -40,7 +40,7 @@ export function assertEvaluatorQualityReviewPassed(opts: {
     });
   }
 
-  if (opts.expectedSha && review.evaluated_sha && review.evaluated_sha !== opts.expectedSha) {
+  if (opts.expectedSha && review.evaluated_sha !== opts.expectedSha) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
@@ -54,11 +54,7 @@ export function assertEvaluatorQualityReviewPassed(opts: {
     });
   }
 
-  if (
-    opts.expectedBlueprintDigest &&
-    review.blueprint_digest &&
-    review.blueprint_digest !== opts.expectedBlueprintDigest
-  ) {
+  if (opts.expectedBlueprintDigest && review.blueprint_digest !== opts.expectedBlueprintDigest) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",

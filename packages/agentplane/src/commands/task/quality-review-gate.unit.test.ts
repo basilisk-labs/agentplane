@@ -72,6 +72,49 @@ describe("EVALUATOR quality review gate", () => {
     ).toThrow(/fresh EVALUATOR quality review/);
   });
 
+  it("rejects missing evaluated commit when a commit is expected", () => {
+    expect(() =>
+      assertEvaluatorQualityReviewPassed({
+        task: task({
+          quality_review: {
+            state: "pass",
+            updated_at: "2026-02-09T00:00:00.000Z",
+            updated_by: "EVALUATOR",
+            note: "Looks good",
+            evaluated_sha: null,
+            blueprint_digest: "digest",
+            evidence_refs: [],
+            findings: [],
+          },
+        }),
+        expectedSha: "head",
+        command: "integrate",
+      }),
+    ).toThrow(/fresh EVALUATOR quality review/);
+  });
+
+  it("rejects missing blueprint digest when a digest is expected", () => {
+    expect(() =>
+      assertEvaluatorQualityReviewPassed({
+        task: task({
+          quality_review: {
+            state: "pass",
+            updated_at: "2026-02-09T00:00:00.000Z",
+            updated_by: "EVALUATOR",
+            note: "Looks good",
+            evaluated_sha: "head",
+            blueprint_digest: null,
+            evidence_refs: [],
+            findings: [],
+          },
+        }),
+        expectedSha: "head",
+        expectedBlueprintDigest: "digest",
+        command: "finish",
+      }),
+    ).toThrow(/current blueprint snapshot/);
+  });
+
   it("accepts a fresh EVALUATOR pass", () => {
     expect(() =>
       assertEvaluatorQualityReviewPassed({

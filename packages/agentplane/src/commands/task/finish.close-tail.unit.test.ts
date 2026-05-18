@@ -87,6 +87,7 @@ vi.mock("./shared.js", async (importOriginal) => {
 });
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
+  const qualityReviewSha = overrides.commit?.hash ?? "hc";
   return {
     id: "T-1",
     title: "Title",
@@ -102,7 +103,7 @@ function mkTask(overrides: Partial<TaskData>): TaskData {
       updated_at: "2026-02-09T00:00:00.000Z",
       updated_by: "EVALUATOR",
       note: "Quality gate passed",
-      evaluated_sha: null,
+      evaluated_sha: qualityReviewSha,
       blueprint_digest: null,
       evidence_refs: [],
       findings: [],

@@ -69,7 +69,7 @@ export async function assertQualityReviewBeforeFinish(opts: {
     assertEvaluatorQualityReviewPassed({
       task: loaded.task,
       expectedSha: opts.taskCommitInfo?.hash ?? loaded.task.commit?.hash ?? null,
-      expectedBlueprintDigest: snapshot.current.digest,
+      expectedBlueprintDigest: snapshot.previous.digest ? snapshot.current.digest : null,
       command: "finish",
     });
   }
