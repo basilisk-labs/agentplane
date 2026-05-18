@@ -1,10 +1,11 @@
 ---
 id: "202605171455-ZS8AE7"
 title: "Configurable branch naming contract"
-status: "DOING"
+result_summary: "Merged via PR #3847."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +30,16 @@ verification:
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/core/src/config/config.test.ts packages/core/src/git/git-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts; Result: pass; Evidence: 5 files, 75 tests passed. Command: bunx vitest run packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/commands/release/release-task-evidence-script.test.ts; Result: pass; Evidence: 2 files, 8 tests passed. Command: bun scripts/generate/sync-schemas.mjs check; Result: pass; Evidence: schemas OK. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: node packages/agentplane/bin/agentplane.js doctor; Result: pass; Evidence: exit 0 with 2 pre-existing branch_pr drift warnings. Command: git diff --check; Result: pass. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0."
   attempts: 0
-commit: null
+commit:
+  hash: "15756c1aa137f70f4d4fd80bdd1a221aa1bd108d"
+  message: "Merge pull request #3847 from basilisk-labs/task/202605171455-ZS8AE7/branch-naming-contract"
 comments:
   -
     author: "CODER"
     body: "Start: Implement configurable branch naming in isolated worktree task/202605171455-ZS8AE7/branch-naming-contract; preserve current defaults while adding repo-level task close prefix configuration and focused tests."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3847 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -48,9 +54,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/core/src/config/config.test.ts packages/core/src/git/git-worktree.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts; Result: pass; Evidence: 5 files, 75 tests passed. Command: bunx vitest run packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts packages/agentplane/src/commands/release/release-task-evidence-script.test.ts; Result: pass; Evidence: 2 files, 8 tests passed. Command: bun scripts/generate/sync-schemas.mjs check; Result: pass; Evidence: schemas OK. Command: node .agentplane/policy/check-routing.mjs; Result: pass; Evidence: policy routing OK. Command: node packages/agentplane/bin/agentplane.js doctor; Result: pass; Evidence: exit 0 with 2 pre-existing branch_pr drift warnings. Command: git diff --check; Result: pass. Command: bun run typecheck; Result: pass; Evidence: tsc -b exited 0."
+  -
+    type: "status"
+    at: "2026-05-18T05:23:54.482Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3847 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T17:38:09.015Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T05:23:54.487Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add repository-level configuration for branch_pr task and close branch prefixes, centralize branch naming/parsing helpers, and document the strict branch/worktree naming contract."
 sections:
   Summary: |-
