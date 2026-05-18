@@ -31,7 +31,7 @@ function starterWikiPages(): StarterWikiPage[] {
       "context/wiki/index.md",
       "Context wiki",
       "definition",
-      "Starter navigation page for the project-specific AgentPlane context wiki. Replace this scaffold with a hierarchy grounded in project evidence.",
+      "Project-specific AgentPlane context wiki entrypoint. Keep the initial hierarchy minimal and let sourced assimilation add navigation as reusable project knowledge appears.",
     ],
     [
       "context/wiki/concepts/index.md",

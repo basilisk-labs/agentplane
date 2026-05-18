@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605181255-29XQ07/framework-context-health",
+  "created_at": "2026-05-18T12:56:30.235Z",
+  "head_sha": "5afb869b8492c4e44d69484aa3e061dec40b9d5d",
+  "last_verified_at": "2026-05-18T13:02:11.402Z",
+  "last_verified_sha": "5afb869b8492c4e44d69484aa3e061dec40b9d5d",
+  "schema_version": 1,
+  "task_id": "202605181255-29XQ07",
+  "updated_at": "2026-05-18T12:56:30.235Z",
+  "verify": {
+    "status": "pass"
+  }
+}
