@@ -234,24 +234,32 @@ describe("runCli", () => {
       expect(status.trim()).toBe("");
 
       const closeBranch = `task-close/${taskId}/${implHash.trim().slice(0, 12)}`;
-      const taskDirGitPath = `.agentplane/tasks/${taskId}`;
-      const { stdout: closeBranchTaskPaths } = await execFileAsync(
+      const prDirGitPath = `.agentplane/tasks/${taskId}/pr`;
+      const { stdout: metaText } = await execFileAsync(
         "git",
-        ["ls-tree", "-r", "--name-only", closeBranch, taskDirGitPath],
+        ["show", `${closeBranch}:${prDirGitPath}/meta.json`],
         { cwd: root },
       );
-      expect(closeBranchTaskPaths).toContain(`${taskDirGitPath}/README.md`);
-      expect(closeBranchTaskPaths).toContain(`${taskDirGitPath}/blueprint/resolved-snapshot.json`);
-      expect(closeBranchTaskPaths).not.toContain(`${taskDirGitPath}/pr/`);
-
-      const { stdout: readmeText } = await execFileAsync(
+      const meta = JSON.parse(metaText) as {
+        last_verified_at?: string | null;
+        verify?: { status?: string | null };
+      };
+      expect(meta.last_verified_at).toBeTruthy();
+      expect(meta.verify?.status).toBe("pass");
+      const { stdout: reviewText } = await execFileAsync(
         "git",
-        ["show", `${closeBranch}:${taskDirGitPath}/README.md`],
+        ["show", `${closeBranch}:${prDirGitPath}/review.md`],
         { cwd: root },
       );
-      expect(readmeText).toContain('status: "DONE"');
-      expect(readmeText).toContain('state: "ok"');
-      expect(readmeText).toContain("Verified: branch_pr close commit should record task artifacts");
+      const { stdout: githubBodyText } = await execFileAsync(
+        "git",
+        ["show", `${closeBranch}:${prDirGitPath}/github-body.md`],
+        { cwd: root },
+      );
+      expect(reviewText).toContain("- State: ok");
+      expect(githubBodyText).toContain("- State: ok");
+      expect(reviewText).not.toContain("Not recorded yet.");
+      expect(githubBodyText).not.toContain("Not recorded yet.");
     },
   );
 
