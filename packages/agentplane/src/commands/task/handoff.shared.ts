@@ -17,7 +17,6 @@ import {
   type TaskHandoffArtifact,
   type TaskHandoffRunnerHint,
 } from "../shared/task-handoff.js";
-import { isProcessAlive } from "../../runner/process-supervision/signals.js";
 import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
 import { CliError } from "../../shared/errors.js";
 
@@ -94,19 +93,6 @@ export async function buildTaskResumeContext(opts: {
       trace_path: inspection.paths.trace_path,
       ...commands,
     };
-    if (inspection.state.status === "running") {
-      const pid = inspection.state.supervision?.pid;
-      if (typeof pid === "number") {
-        const alive = isProcessAlive(pid);
-        runner.next_action = alive ? "wait" : "cancel_then_resume";
-        runner.next_command = alive
-          ? null
-          : `agentplane task run cancel ${opts.task_id} ${inspection.run_id} && agentplane task run resume ${opts.task_id} ${inspection.run_id}`;
-      } else {
-        runner.next_action = "cancel_then_resume";
-        runner.next_command = `agentplane task run cancel ${opts.task_id} ${inspection.run_id} && agentplane task run resume ${opts.task_id} ${inspection.run_id}`;
-      }
-    }
   } catch (err) {
     const noRun = nullIfCliIo(err);
     runner = {

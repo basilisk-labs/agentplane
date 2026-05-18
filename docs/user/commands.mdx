@@ -119,37 +119,12 @@ agentplane help task
 agentplane help task plan
 agentplane task show <task-id>
 agentplane task new --title "..." --description "..." --priority med --owner CODER --tag nodejs
-agentplane task run <task-id> --dry-run
-agentplane task run <task-id>
-agentplane task run show <task-id> [run-id]
-agentplane task run tail <task-id> [run-id] --lines 20
 agentplane task doc set <task-id> --section Summary --text "..."
 agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 ```
 
-`task run` creates run artifacts under `.agentplane/tasks/<task-id>/runs/<run-id>/`.
-
-- Start with `task run show`: it prints the selected run, status, adapter, effective policy,
-  refusal metadata, timeout reason, metrics, capability summaries, and artifact paths from
-  `run-state.json` / `result.json`.
-- Use `task run tail` when you only need the last N raw trace lines from `agent-trace.jsonl`.
-- Advanced raw-trace export remains available through the hidden help surface when you need the full
-  artifact unchanged. When `run-id` is omitted, `show`, `tail`, and advanced trace export all select
-  the latest run for the task.
-- Use `agent-trace.jsonl` and `stderr.log` when you need the raw runner trace.
-- Use `codex-last-message.md` only as a side artifact for human inspection when the adapter writes it.
-- Task-facing runner logs stay compact and English-only: they expose status, metrics, and artifact paths, but
-  they do not copy assistant prose from raw trace artifacts back into the task README.
-- If `task run show` reports `timeout_reason`, inspect `task run tail` first to see the last raw activity
-  before the timeout. If it reports `policy_refusal`, inspect `policy_requested`, `policy_effective`,
-  and `policy_fields` before changing recipe or runner settings.
-- `task run --dry-run` and `task run show` now print both raw JSON blocks and compact
-  `capability[...]` / `policy_field[...]` lines. Use these summaries to see whether a field is
-  `native`, `wrapper`, `advisory`, or `unsupported` without opening `bundle.json`.
-- For `runner.default_adapter=custom`, the `capability[sandbox]` note is the quickest way to tell
-  whether the adapter is still env-only or is configured to wrap execution through
-  `runner.custom.enforcement.mode=codex_sandbox_full_auto`. When wrapper mode is active, the same
-  line also shows the currently supported sandbox values.
+Execution is owned by agents working in the repository through Codex, an IDE, or another
+human-assisted workflow. The runner command family is not part of the current public CLI surface.
 
 ## Advanced task projections
 
@@ -214,7 +189,7 @@ agentplane context wiki lint context/wiki/decisions/context-storage.md
 agentplane context wiki explain context/wiki/decisions/context-storage.md
 agentplane context wiki link context/wiki/decisions/context-storage.md
 agentplane context ingest --changed
-agentplane context ingest ./notes.md --run
+agentplane context ingest ./notes.md
 agentplane context harvest tasks --tag release --limit 20 --dry-run
 agentplane context harvest tasks --tag branch_pr --batch-size 25
 agentplane context harvest tasks --tag branch_pr --write-proposals
@@ -398,8 +373,9 @@ Recipe packages may still contain scenario assets, but they are no longer expose
 public CLI surface. Treat them as recipe-owned internals until a replacement entrypoint is
 introduced.
 
-Recipe `run_profile` no longer supports `requires_human_approval` in the main repo runtime. The
-current runner accepts only fields it can explain honestly in `task run show`.
+Recipe `run_profile` no longer supports `requires_human_approval` in the main repo runtime. Keep
+recipe execution expectations in the generated task and let the assigned agent perform the work in
+the repository.
 
 ## Evaluators
 

@@ -105,17 +105,17 @@ pages.
 
 ```bash
 agentplane context learn changes
-agentplane context learn files ./notes.md --run
+agentplane context learn files ./notes.md
 ```
 
 `context learn` is the human-facing task factory for reusable context. `learn changes` creates a
 context assimilation task from changed local context sources. `learn files` creates one from explicit
-files or directories. `--run` hands the generated task to the configured runner adapter instead of
-only preparing the request.
+files or directories. The generated task is then picked up by a CURATOR agent working in the
+repository through Codex, an IDE, or another human-assisted workflow.
 
 Generated file/change tasks carry a portable `context_assimilation` prompt module and repeat the
-CURATOR contract in the task description so runner, Codex, IDE agents, and humans get the same
-wiki/claims/cross-link/provenance instructions.
+CURATOR contract in the task description so Codex, IDE agents, and humans get the same
+wiki/claims/cross-link/provenance instructions without a runner handoff.
 
 When CURATOR writes wiki pages, links should appear inside the narrative text where they help the
 reader or a later agent resolve meaning. A page should not rely only on a trailing "Related Pages"

@@ -12,7 +12,6 @@ export type TaskHandoffRecordParsed = {
   toRole?: string;
   reason: string;
   note?: string;
-  runId?: string;
   nextActions: string[];
   risks: string[];
   openQuestions: string[];
@@ -23,7 +22,7 @@ export type TaskHandoffRecordParsed = {
 export const taskHandoffRecordSpec: CommandSpec<TaskHandoffRecordParsed> = {
   id: ["task", "handoff", "record"],
   group: "Task",
-  summary: "Record a task handoff snapshot with runner recovery hints.",
+  summary: "Record a task handoff snapshot for the next local agent.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     {
@@ -49,12 +48,6 @@ export const taskHandoffRecordSpec: CommandSpec<TaskHandoffRecordParsed> = {
       name: "note",
       valueHint: "<text>",
       description: "Optional. Free-form handoff note.",
-    },
-    {
-      kind: "string",
-      name: "run-id",
-      valueHint: "<run-id>",
-      description: "Optional. Pin handoff hints to a specific runner run.",
     },
     {
       kind: "string",
@@ -108,7 +101,6 @@ export const taskHandoffRecordSpec: CommandSpec<TaskHandoffRecordParsed> = {
     toRole: typeof raw.opts.to === "string" ? raw.opts.to : undefined,
     reason: String(raw.opts.reason),
     note: typeof raw.opts.note === "string" ? raw.opts.note : undefined,
-    runId: typeof raw.opts["run-id"] === "string" ? raw.opts["run-id"] : undefined,
     nextActions: (raw.opts["next-action"] as string[] | undefined) ?? [],
     risks: (raw.opts.risk as string[] | undefined) ?? [],
     openQuestions: (raw.opts.question as string[] | undefined) ?? [],
@@ -128,7 +120,6 @@ export const runTaskHandoffRecord = async (ctx: CommandCtx, parsed: TaskHandoffR
     to_role: parsed.toRole,
     reason: parsed.reason,
     note: parsed.note,
-    run_id: parsed.runId,
     next_actions: parsed.nextActions,
     risks: parsed.risks,
     open_questions: parsed.openQuestions,
@@ -148,15 +139,8 @@ export const runTaskHandoffRecord = async (ctx: CommandCtx, parsed: TaskHandoffR
     { label: "from", value: built.handoff.from_role },
     { label: "to", value: built.handoff.to_role ?? "unassigned" },
     { label: "reason", value: built.handoff.reason },
+    { label: "latest", value: paths.latest_path },
   ];
-  if (built.handoff.runner?.run_id) {
-    entries.push(
-      { label: "run_id", value: built.handoff.runner.run_id },
-      { label: "runner_status", value: built.handoff.runner.status ?? "unknown" },
-      { label: "runner_next_action", value: built.handoff.runner.next_action ?? "none" },
-    );
-  }
-  entries.push({ label: "latest", value: paths.latest_path });
   emitter.report(entries, {
     header: infoMessage(`task handoff recorded: ${parsed.taskId}`),
   });

@@ -160,7 +160,7 @@ describe("resolveBlueprint", () => {
     );
   });
 
-  it("routes benchmark, post-run, regression, and runner code domains to specialized branch PR blueprints", () => {
+  it("routes benchmark, post-run, and regression code domains to specialized branch PR blueprints", () => {
     expect(
       resolve({
         mutation: "code",
@@ -182,13 +182,6 @@ describe("resolveBlueprint", () => {
         title: "Fix flaky CI coverage regression",
       }).blueprint.id,
     ).toBe("quality.regression");
-    expect(
-      resolve({
-        mutation: "code",
-        workflowMode: "branch_pr",
-        tags: ["code", "runner"],
-      }).blueprint.id,
-    ).toBe("runner.execution");
   });
 
   it("keeps direct workflow code tasks on the direct route despite specialized domain hints", () => {

@@ -90,11 +90,11 @@ Internal scenario materialization still:
 2. Resolves and validates the scenario through the same deterministic resolver used during internal
    scenario preparation.
 3. Materializes a task from the scenario's explicit `task_template` and records recipe provenance on that task.
-4. Assembles the shared runner bundle from base prompts, repository context, task context, and recipe context.
-5. Creates task-local run artifacts under `.agentplane/tasks/<task-id>/runs/<run-id>/`.
-6. Invokes the configured runner adapter and reports task id, run id, artifact paths, and runner status.
+4. Assembles the deferred execution bundle from base prompts, repository context, task context, and recipe context.
+5. Stops at task-local preparation until the v0.7 runtime adapter work is reopened.
 
-`task run` uses the same shared runner contract for ordinary tasks that were not created from recipes.
+Direct CLI execution for ordinary tasks is deferred to v0.7. Current tasks are picked up by agents
+working in the project folder through an IDE, Codex App, or another human-assisted local workflow.
 
 ## Environment behavior
 

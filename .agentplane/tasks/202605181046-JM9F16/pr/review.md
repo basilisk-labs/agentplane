@@ -1,0 +1,101 @@
+# PR Review
+
+Created: 2026-05-18T10:46:40.621Z
+
+## Task
+
+- Task: `202605181046-JM9F16`
+- Title: Gate runner surfaces for v0.7
+- Status: DOING
+- Branch: `task/202605181046-JM9F16/gate-runner-v0-7`
+- Canonical task record: `.agentplane/tasks/202605181046-JM9F16/README.md`
+
+## Verification
+
+- State: ok
+- Note: Runner public surfaces are gated for v0.7: task run wrappers/tests removed, context --run and runner.execution remain absent, handoff/reclaim no longer emits runner recovery commands, and CI failure from knip was resolved.
+- Canonical workflow state lives in the task README.
+
+## Handoff Notes
+
+- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
+
+<!-- BEGIN AUTO SUMMARY -->
+<details>
+<summary>Raw evidence</summary>
+
+- Updated: 2026-05-18T11:45:32.447Z
+- Branch: task/202605181046-JM9F16/gate-runner-v0-7
+- Head: 74012175b514
+
+```text
+ .../blueprint/resolved-snapshot.json               | 526 +++++++++++++++++
+ docs/developer/blueprints.mdx                      |   5 +-
+ docs/developer/local-context.mdx                   |  18 +-
+ docs/developer/recipes-development.mdx             |  14 +-
+ docs/developer/recipes-how-it-works.mdx            |   8 +-
+ docs/developer/recipes-spec.mdx                    | 107 +---
+ docs/user/cli-reference.generated.mdx              | 111 +---
+ docs/user/commands.mdx                             |  36 +-
+ docs/user/configuration.mdx                        |  49 +-
+ docs/user/local-context.mdx                        |  10 +-
+ .../src/backends/task-backend/shared/record.ts     |   1 -
+ .../src/backends/task-backend/shared/types.ts      |   1 -
+ .../src/blueprints/builtins-specialized.ts         |  79 ---
+ packages/agentplane/src/blueprints/builtins.ts     |  10 +-
+ packages/agentplane/src/blueprints/model.ts        |   1 -
+ packages/agentplane/src/blueprints/resolve.test.ts |   9 +-
+ packages/agentplane/src/blueprints/resolve.ts      |  10 -
+ .../agentplane/src/blueprints/validate.test.ts     |   5 +-
+ .../run-cli.core.help-snap.test.ts.snap            |  16 +-
+ .../src/cli/run-cli.core.docs-cli.test.ts          |   2 +-
+ .../src/cli/run-cli.core.help-snap.test.ts         |  11 -
+ .../src/cli/run-cli.core.task-handoff.test.ts      | 231 +-------
+ ...-cli.core.tasks.query-run-execute.codex.test.ts | 335 -----------
+ ...li.core.tasks.query-run-execute.control.test.ts | 550 ------------------
+ ...cli.core.tasks.query-run-execute.custom.test.ts | 529 -----------------
+ ...li.core.tasks.query-run-execute.history.test.ts | 301 ----------
+ ...run-cli.core.tasks.query-run-inspection.test.ts | 311 ----------
+ .../run-cli.core.tasks.query-run-prepare.test.ts   | 635 ---------------------
+ .../src/cli/run-cli/command-catalog/task.ts        |  33 --
+ .../src/cli/run-cli/command-loaders/task.ts        |  19 -
+ .../src/commands/blueprint/task-input.ts           |   1 -
+ .../src/commands/context/context.command.ts        |   6 +-
+ .../src/commands/context/context.learn.spec.ts     |  37 --
+ .../agentplane/src/commands/context/ingest.spec.ts |  30 +-
+ .../src/commands/context/release-readiness.test.ts |  36 +-
+ .../agentplane/src/commands/hooks/task-context.ts  |   1 -
+ .../agentplane/src/commands/shared/task-handoff.ts |  46 +-
+ .../agentplane/src/commands/task/begin.command.ts  |   1 -
+ .../src/commands/task/handoff-record.command.ts    |  20 +-
+ .../src/commands/task/handoff-show.command.ts      |  10 -
+ .../src/commands/task/handoff.command.ts           |   2 +-
+ .../agentplane/src/commands/task/handoff.shared.ts |  14 -
+ packages/agentplane/src/commands/task/new.spec.ts  |   1 -
+ packages/agentplane/src/commands/task/new.ts       |   1 -
+ .../src/commands/task/reclaim.command.ts           |  26 +-
+ .../src/commands/task/resume-context.command.ts    |  19 +-
+ .../src/commands/task/run-cancel.command.ts        |  55 --
+ .../src/commands/task/run-cancel.spec.ts           |  25 -
+ .../agentplane/src/commands/task/run-output.ts     |  90 ---
+ .../src/commands/task/run-resume.command.ts        |  65 ---
+ .../src/commands/task/run-resume.spec.ts           |  25 -
+ .../src/commands/task/run-retry.command.ts         |  66 ---
+ .../agentplane/src/commands/task/run-retry.spec.ts |  25 -
+ .../src/commands/task/run-show.command.ts          | 218 -------
+ .../agentplane/src/commands/task/run-show.spec.ts  |  49 --
+ .../src/commands/task/run-tail.command.ts          |  34 --
+ .../agentplane/src/commands/task/run-tail.spec.ts  |  56 --
+ .../src/commands/task/run-trace.command.ts         |  33 --
+ .../agentplane/src/commands/task/run-trace.spec.ts |  36 --
+ .../agentplane/src/commands/task/run.command.ts    |  56 --
+ packages/agentplane/src/commands/task/run.spec.ts  |  32 --
+ .../agentplane/src/commands/task/task.command.ts   |   6 +-
+ packages/agentplane/src/context/ingest-task.ts     |   6 +-
+ packages/agentplane/src/context/ingest.ts          |  35 +-
+ .../src/runner/usecases/task-run-inspect.ts        |  38 --
+ 65 files changed, 627 insertions(+), 4547 deletions(-)
+```
+
+</details>
+<!-- END AUTO SUMMARY -->

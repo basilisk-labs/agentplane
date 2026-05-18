@@ -13,12 +13,6 @@ const regressionNodes = extendNodeEvidence(codeBranchPrNodes, {
   verify_record: ["weak_links"],
 });
 
-const runnerNodes = extendNodeEvidence(codeBranchPrNodes, {
-  context_resolve: ["artifact"],
-  work_unit: ["artifact"],
-  fast_local_checks: ["artifact"],
-});
-
 const postRunImprovementNodes = [
   node({ kind: "intake", evidence: ["sources"] }),
   node({ kind: "scope", evidence: ["assumptions"] }),
@@ -258,79 +252,6 @@ export const SPECIALIZED_CODE_BLUEPRINTS = [
         severity: "warn",
         reason:
           "Post-run improvement review should cite inspected work logs or explicitly state that no logs were available.",
-      },
-    ],
-  }),
-  blueprint({
-    id: "runner.execution",
-    title: "Runner execution",
-    description:
-      "Code mutation in the runner execution subsystem that must prove bundle, invocation, manifest, trace, and replay/resume behavior.",
-    taskKinds: ["code"],
-    workflowModes: ["branch_pr"],
-    allowedCommands: [
-      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
-      "agentplane task verify-show <task-id>",
-      "runner bundle inspection",
-      "runner execution/replay/resume check",
-      "project focused checks",
-      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
-      "agentplane verify <task-id> --ok|--rework",
-      "agentplane integrate <task-id> --branch <branch> --run-verify",
-    ],
-    policyModules: branchPrPolicyModules,
-    contextBudget: {
-      maxPolicyModules: 4,
-      maxPromptBlocks: 16,
-      rationale:
-        "Runner execution work needs branch_pr policy plus runner bundle and execution-state artifacts.",
-    },
-    nodes: runnerNodes,
-    requiredEvidence: [
-      evidence(
-        "runner.bundle",
-        "artifact",
-        "context_resolve",
-        "Runner context bundle or bundle inspection.",
-      ),
-      evidence(
-        "runner.invocation",
-        "artifact",
-        "work_unit",
-        "Invocation inputs and command or adapter capability.",
-      ),
-      evidence(
-        "runner.result_manifest",
-        "artifact",
-        "work_unit",
-        "Result manifest or manifest validation.",
-      ),
-      evidence("runner.trace", "artifact", "fast_local_checks", "Execution trace or log path."),
-      evidence(
-        "runner.execution_state",
-        "check_result",
-        "fast_local_checks",
-        "Execution state transition evidence.",
-      ),
-      evidence(
-        "runner.replay_or_resume",
-        "check_result",
-        "hosted_checks",
-        "Replay or resume validation.",
-      ),
-      evidence("runner.commit", "commit", "publish_or_integrate", "Integration commit."),
-    ],
-    stopRules: [
-      {
-        id: "runner_without_manifest",
-        severity: "stop",
-        reason:
-          "Runner execution changes require result manifest or equivalent execution artifact evidence.",
-      },
-      {
-        id: "runner_replay_unverified",
-        severity: "approval_required",
-        reason: "Replay or resume behavior must be verified or explicitly waived.",
       },
     ],
   }),

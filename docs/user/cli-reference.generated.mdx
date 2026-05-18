@@ -24,9 +24,6 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task next-action](#task-next-action)
   - [task plan approve](#task-plan-approve)
   - [task plan set](#task-plan-set)
-  - [task run](#task-run)
-  - [task run show](#task-run-show)
-  - [task run tail](#task-run-tail)
   - [task search](#task-search)
   - [task show](#task-show)
   - [task start-ready](#task-start-ready)
@@ -355,7 +352,7 @@ Options:
 - `--verify <command>`: Repeatable. Verification commands/checks to seed on the task. (repeatable)
 - `--task-kind <analysis|content|docs|code|release|ops|context>`: Structured blueprint task-kind intent. (choices=analysis|content|docs|code|release|ops|context)
 - `--mutation-scope <none|docs|code|release|ops|context|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
-- `--blueprint-request <id>`: Explicit blueprint request stored on the task. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|runner.execution|post_run.improvement_review|release.strict|ops.approval)
+- `--blueprint-request <id>`: Explicit blueprint request stored on the task. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|post_run.improvement_review|release.strict|ops.approval)
 - `--json`: Emit machine-readable JSON. (default=false)
 
 Examples:
@@ -543,7 +540,7 @@ Options:
 - `--task-kind <analysis|content|docs|code|release|ops|context>`: Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops|context)
 - `--mutation-scope <none|docs|code|release|ops|context|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
 - `--risk <risk>`: Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
-- `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|runner.execution|post_run.improvement_review|release.strict|ops.approval)
+- `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|post_run.improvement_review|release.strict|ops.approval)
 - `--depends-on <task-id>`: Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
 - `--verify <command>`: Repeatable. Verification commands/checks to run for this task. (repeatable)
 - `--show-blueprint`: Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
@@ -676,102 +673,6 @@ agentplane task plan set 202602030608-F1Q8AB --file plan.md
 ```
 
 - Write plan from a file.
-
-### task run
-
-Prepare or run a task through the shared runner contract.
-
-Materializes runner bundle artifacts for a task and can execute the configured runner adapter against that prepared bundle.
-
-Usage:
-
-```text
-agentplane task run <task-id> [options]
-```
-
-Options:
-
-- `--dry-run`: Prepare runner artifacts and print invocation metadata without executing a runner. (default=false)
-
-Examples:
-
-```sh
-agentplane task run 202602030608-F1Q8AB --dry-run
-```
-
-- Materialize bundle/run artifacts and inspect the prepared runner invocation.
-
-```sh
-agentplane task run 202602030608-F1Q8AB
-```
-
-- Prepare bundle artifacts and execute the configured runner adapter for the task.
-
-### task run show
-
-Inspect persisted runner state and result artifacts for an existing run.
-
-Loads an existing runner run from its artifacts and prints a structured summary of run-state, result metadata, and event counters. When run-id is omitted, the latest run for the task is selected.
-
-Usage:
-
-```text
-agentplane task run show <task-id> [[run-id]] [options]
-```
-
-Options:
-
-- `--json`: Emit machine-readable runner inspection JSON. (default=false)
-
-Examples:
-
-```sh
-agentplane task run show 202602030608-F1Q8AB
-```
-
-- Inspect the latest persisted runner run for a task.
-
-```sh
-agentplane task run show 202602030608-F1Q8AB run_20260323_abc123
-```
-
-- Inspect a specific run by run id.
-
-```sh
-agentplane task run show 202602030608-F1Q8AB --json
-```
-
-- Inspect the latest run in machine-readable JSON form.
-
-### task run tail
-
-Print the last N lines from the raw agent trace artifact for an existing runner run.
-
-Reads agent-trace.jsonl for an existing runner run and prints the last N lines. When run-id is omitted, the latest run for the task is selected.
-
-Usage:
-
-```text
-agentplane task run tail <task-id> [[run-id]] [options]
-```
-
-Options:
-
-- `--lines <n>`: Optional. Number of trace lines to print from the end (default: 40).
-
-Examples:
-
-```sh
-agentplane task run tail 202602030608-F1Q8AB
-```
-
-- Print the last 40 trace lines for the latest task run.
-
-```sh
-agentplane task run tail 202602030608-F1Q8AB run_20260323_abc123 --lines 10
-```
-
-- Print the last 10 trace lines for a specific run.
 
 ### task search
 
@@ -3435,7 +3336,6 @@ agentplane context learn changes [options]
 Options:
 
 - `--dry-run`: Preview only; do not create a task. (default=false)
-- `--run`: Create the task and immediately run it. (default=false)
 - `--include-private`: Include context/raw/private sources in the source set. (default=false)
 
 Examples:
@@ -3459,7 +3359,6 @@ agentplane context learn files <path> ... [options]
 Options:
 
 - `--dry-run`: Preview only; do not create a task. (default=false)
-- `--run`: Create the task and immediately run it. (default=false)
 - `--include-private`: Include context/raw/private sources in the source set. (default=false)
 
 Examples:
@@ -3469,12 +3368,6 @@ agentplane context learn files docs/research.md context/raw/customer-notes.md
 ```
 
 - Create a CURATOR task from explicit external context files.
-
-```sh
-agentplane context learn files context/raw/research --run
-```
-
-- Create and run a context assimilation task for a folder of raw sources.
 
 ### context learn tasks
 

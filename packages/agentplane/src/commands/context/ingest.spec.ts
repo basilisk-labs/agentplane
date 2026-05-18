@@ -14,9 +14,9 @@ function normalizeRawSources(raw: unknown): string[] {
 export const contextIngestSpec: CommandSpec<ContextIngestParsed> = {
   id: ["context", "ingest"],
   group: "Context",
-  summary: "Create and optionally run a context assimilation task.",
+  summary: "Create a context assimilation task.",
   description:
-    "Collects source context hints, creates a task with context task_kind, and can run it through the shared runner.",
+    "Collects source context hints and creates a CURATOR task with context task_kind for an IDE, Codex, or human-assisted agent.",
   args: [{ name: "sources", required: false, variadic: true, valueHint: "<source>" }],
   options: [
     {
@@ -46,12 +46,6 @@ export const contextIngestSpec: CommandSpec<ContextIngestParsed> = {
     },
     {
       kind: "boolean",
-      name: "run",
-      default: false,
-      description: "Create task and immediately run it via `task run`.",
-    },
-    {
-      kind: "boolean",
       name: "include-private",
       default: false,
       description: "Include context/raw/private sources in the local source set.",
@@ -63,8 +57,8 @@ export const contextIngestSpec: CommandSpec<ContextIngestParsed> = {
       why: "Create a context task from currently changed sources.",
     },
     {
-      cmd: "agentplane context ingest --all --run",
-      why: "Create a full context task and run it immediately.",
+      cmd: "agentplane context ingest --all",
+      why: "Create a full context task for agent-assisted assimilation.",
     },
     {
       cmd: "agentplane context ingest --dry-run src/index.ts src/lib/context.ts",
@@ -80,21 +74,6 @@ export const contextIngestSpec: CommandSpec<ContextIngestParsed> = {
         message: "Invalid value for --changed/--all: use only one mode flag.",
       });
     }
-    const dryRun = raw.opts["dry-run"] === true;
-    const run = raw.opts.run === true;
-    const indexOnly = raw.opts["index-only"] === true;
-    if (dryRun && run) {
-      throw usageError({
-        spec: contextIngestSpec,
-        message: "Invalid value for --dry-run/--run: do not pair them; --dry-run is preview-only.",
-      });
-    }
-    if (indexOnly && run) {
-      throw usageError({
-        spec: contextIngestSpec,
-        message: "Invalid value for --index-only/--run: --index-only does not run assimilation.",
-      });
-    }
   },
   parse: (raw) => {
     const sources = normalizeRawSources(raw.args.sources);
@@ -106,7 +85,6 @@ export const contextIngestSpec: CommandSpec<ContextIngestParsed> = {
       mode,
       dryRun: raw.opts["dry-run"] === true,
       indexOnly: raw.opts["index-only"] === true,
-      runTask: raw.opts.run === true,
       includePrivate: raw.opts["include-private"] === true,
     };
   },

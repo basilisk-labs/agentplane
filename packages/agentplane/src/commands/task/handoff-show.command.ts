@@ -80,16 +80,6 @@ export const runTaskHandoffShow = async (ctx: CommandCtx, parsed: TaskHandoffSho
   if (handoff.route?.base_pull_command) {
     entries.push({ label: "route_base_pull_command", value: handoff.route.base_pull_command });
   }
-  if (handoff.runner?.run_id) {
-    entries.push(
-      { label: "run_id", value: handoff.runner.run_id },
-      { label: "runner_status", value: handoff.runner.status ?? "unknown" },
-      { label: "runner_next_action", value: handoff.runner.next_action ?? "none" },
-    );
-    if (handoff.runner.next_command) {
-      entries.push({ label: "runner_next_command", value: handoff.runner.next_command });
-    }
-  }
   for (const action of handoff.next_actions ?? []) {
     entries.push({ label: "next_action", value: action });
   }

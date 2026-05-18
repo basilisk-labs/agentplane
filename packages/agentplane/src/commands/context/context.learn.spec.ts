@@ -1,6 +1,5 @@
 import { parseGroupCommand, type GroupCommandParsed } from "../../cli/group-command.js";
 import { toStringList } from "../../cli/spec/parse-utils.js";
-import { usageError } from "../../cli/spec/errors.js";
 import type { CommandSpec } from "../../cli/spec/spec.js";
 
 export const contextCheckSpec: CommandSpec<{ fix: boolean }> = {
@@ -31,7 +30,6 @@ export const contextLearnSpec: CommandSpec<GroupCommandParsed> = {
 export const contextLearnFilesSpec: CommandSpec<{
   sources: string[];
   dryRun: boolean;
-  runTask: boolean;
   includePrivate: boolean;
 }> = {
   id: ["context", "learn", "files"],
@@ -47,12 +45,6 @@ export const contextLearnFilesSpec: CommandSpec<{
     },
     {
       kind: "boolean",
-      name: "run",
-      default: false,
-      description: "Create the task and immediately run it.",
-    },
-    {
-      kind: "boolean",
       name: "include-private",
       default: false,
       description: "Include context/raw/private sources in the source set.",
@@ -63,30 +55,16 @@ export const contextLearnFilesSpec: CommandSpec<{
       cmd: "agentplane context learn files docs/research.md context/raw/customer-notes.md",
       why: "Create a CURATOR task from explicit external context files.",
     },
-    {
-      cmd: "agentplane context learn files context/raw/research --run",
-      why: "Create and run a context assimilation task for a folder of raw sources.",
-    },
   ],
-  validateRaw: (raw) => {
-    if (raw.opts["dry-run"] === true && raw.opts.run === true) {
-      throw usageError({
-        spec: contextLearnFilesSpec,
-        message: "Invalid value for --dry-run/--run: do not pair them; --dry-run is preview-only.",
-      });
-    }
-  },
   parse: (raw) => ({
     sources: toStringList(raw.args.sources),
     dryRun: raw.opts["dry-run"] === true,
-    runTask: raw.opts.run === true,
     includePrivate: raw.opts["include-private"] === true,
   }),
 };
 
 export const contextLearnChangesSpec: CommandSpec<{
   dryRun: boolean;
-  runTask: boolean;
   includePrivate: boolean;
 }> = {
   id: ["context", "learn", "changes"],
@@ -101,12 +79,6 @@ export const contextLearnChangesSpec: CommandSpec<{
     },
     {
       kind: "boolean",
-      name: "run",
-      default: false,
-      description: "Create the task and immediately run it.",
-    },
-    {
-      kind: "boolean",
       name: "include-private",
       default: false,
       description: "Include context/raw/private sources in the source set.",
@@ -118,17 +90,8 @@ export const contextLearnChangesSpec: CommandSpec<{
       why: "Create a CURATOR task from changed local context sources.",
     },
   ],
-  validateRaw: (raw) => {
-    if (raw.opts["dry-run"] === true && raw.opts.run === true) {
-      throw usageError({
-        spec: contextLearnChangesSpec,
-        message: "Invalid value for --dry-run/--run: do not pair them; --dry-run is preview-only.",
-      });
-    }
-  },
   parse: (raw) => ({
     dryRun: raw.opts["dry-run"] === true,
-    runTask: raw.opts.run === true,
     includePrivate: raw.opts["include-private"] === true,
   }),
 };

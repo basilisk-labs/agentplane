@@ -43,7 +43,7 @@ function docsPlan() {
 
 describe("blueprint built-ins", () => {
   it("validates every built-in blueprint", () => {
-    expect(BUILTIN_BLUEPRINTS).toHaveLength(12);
+    expect(BUILTIN_BLUEPRINTS).toHaveLength(11);
 
     for (const blueprint of BUILTIN_BLUEPRINTS) {
       expect(validateBlueprint(blueprint), blueprint.id).toEqual({ ok: true, errors: [] });
@@ -65,7 +65,6 @@ describe("blueprint built-ins", () => {
       "post_run.improvement_review",
       "quality.regression",
       "release.strict",
-      "runner.execution",
     ]);
     expect(getBlueprint("analysis.light", registry)?.title).toBe("Lightweight analysis");
     expect(requireBlueprint("code.branch_pr", registry).workflowModes).toEqual(["branch_pr"]);
@@ -127,7 +126,7 @@ describe("blueprint built-ins", () => {
         "context_empty_source_set",
         "context_pipeline_order_skipped",
         "context_reindex_missing_after_writes",
-        "context_runner_timeout_without_recovery",
+        "context_agent_handoff_missing_after_stalled_work",
       ]),
     );
   });

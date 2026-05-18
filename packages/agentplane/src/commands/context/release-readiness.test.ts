@@ -101,7 +101,6 @@ describe("context release readiness guards", () => {
         mode: "changed",
         dryRun: false,
         indexOnly: false,
-        runTask: false,
         includePrivate: false,
       },
       createTask,
@@ -130,7 +129,6 @@ describe("context release readiness guards", () => {
         mode: "all",
         dryRun: false,
         indexOnly: false,
-        runTask: false,
         includePrivate: false,
       },
       createTask,
@@ -350,7 +348,7 @@ describe("context release readiness guards", () => {
     ).rejects.toThrow(/fact row has no source_ref/u);
   });
 
-  it("hands context ingest --run to the task runner after creating a CURATOR task", async () => {
+  it("creates a CURATOR task for agent-assisted context assimilation", async () => {
     const root = await tempRoot();
     await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nPublic source.\n");
     const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
@@ -358,9 +356,6 @@ describe("context release readiness guards", () => {
     const createTask = vi.fn(async () => {
       tasks.push({ id: "202605130501-CTXRUN", owner: "CURATOR" });
     });
-    const approveTaskPlan = vi.fn(async () => 0);
-    const startTask = vi.fn(async () => 0);
-    const runTask = vi.fn(async () => 0);
     const ctx = {
       resolvedProject: { gitRoot: root },
       config: { paths: { workflow_dir: ".agentplane/tasks" } },
@@ -380,13 +375,9 @@ describe("context release readiness guards", () => {
         mode: "changed",
         dryRun: false,
         indexOnly: false,
-        runTask: true,
         includePrivate: false,
       },
       createTask,
-      approveTaskPlan,
-      startTask,
-      runTask,
     });
 
     expect(createTask).toHaveBeenCalledOnce();
@@ -450,27 +441,10 @@ describe("context release readiness guards", () => {
       expect.arrayContaining(["source_set_locked", "reindex_after_writes"]),
     );
     expect(blueprint?.stop_rules).toEqual(
-      expect.arrayContaining(["pipeline_order_skipped", "runner_timeout_without_recovery"]),
-    );
-    expect(approveTaskPlan).toHaveBeenCalledWith(
-      expect.objectContaining({
-        cwd: root,
-        rootOverride: undefined,
-        taskId: "202605130501-CTXRUN",
-        by: "ORCHESTRATOR",
-      }),
-    );
-    expect(startTask).toHaveBeenCalledWith(
-      expect.objectContaining({
-        cwd: root,
-        rootOverride: undefined,
-        taskId: "202605130501-CTXRUN",
-        author: "CURATOR",
-      }),
-    );
-    expect(runTask).toHaveBeenCalledWith(
-      { cwd: root, rootOverride: undefined },
-      { taskId: "202605130501-CTXRUN", dryRun: false },
+      expect.arrayContaining([
+        "pipeline_order_skipped",
+        "agent_handoff_missing_after_stalled_work",
+      ]),
     );
     expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
       "context ingestion task created: 202605130501-CTXRUN",
