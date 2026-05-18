@@ -24,16 +24,18 @@ Created: 2026-05-18T05:15:54.501Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T05:25:37.421Z
+- Updated: 2026-05-18T05:51:51.896Z
 - Branch: task/202605180515-4CAK13/fix-open-branch-pr-feedback
-- Head: 8e9289e25c31
+- Head: 83713612298d
 
 ```text
  .../blueprint/resolved-snapshot.json               | 552 +++++++++++++++++++++
  .../cli/run-cli.core.pr-flow.pr-feedback.test.ts   | 128 +++++
  .../src/commands/task/finish.state.unit.test.ts    |  56 ++-
  .../src/commands/task/start.unit.test.ts           |  11 +-
- 4 files changed, 720 insertions(+), 27 deletions(-)
+ scripts/release/release-task-evidence.mjs          |   9 +-
+ scripts/workflow/prepare-hosted-task-closure.mjs   |   9 +-
+ 6 files changed, 734 insertions(+), 31 deletions(-)
 ```
 
 </details>

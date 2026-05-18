@@ -8,10 +8,6 @@ Fix open branch_pr feedback issues
 
 Fix GitHub issues #3853, #3854, and #3845: branch_pr pr check must work across base/worktree artifact boundaries, metadata-only PR identity commits must not stale verification, and task unit verify guidance must use the correct Vitest runner for Vitest-only tests.
 
-Fixes #3853
-Fixes #3854
-Fixes #3845
-
 ## Scope
 
 - In scope: Fix GitHub issues #3853, #3854, and #3845: branch_pr pr check must work across base/worktree artifact boundaries, metadata-only PR identity commits must not stale verification, and task unit verify guidance must use the correct Vitest runner for Vitest-only tests.
@@ -38,16 +34,18 @@ typecheck, format, hotspot, lint, policy, Vitest unit coverage, and PR validatio
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T05:25:37.421Z
+- Updated: 2026-05-18T05:51:51.896Z
 - Branch: task/202605180515-4CAK13/fix-open-branch-pr-feedback
-- Head: 8e9289e25c31
+- Head: 83713612298d
 
 ```text
  .../blueprint/resolved-snapshot.json               | 552 +++++++++++++++++++++
  .../cli/run-cli.core.pr-flow.pr-feedback.test.ts   | 128 +++++
  .../src/commands/task/finish.state.unit.test.ts    |  56 ++-
  .../src/commands/task/start.unit.test.ts           |  11 +-
- 4 files changed, 720 insertions(+), 27 deletions(-)
+ scripts/release/release-task-evidence.mjs          |   9 +-
+ scripts/workflow/prepare-hosted-task-closure.mjs   |   9 +-
+ 6 files changed, 734 insertions(+), 31 deletions(-)
 ```
 
 </details>
