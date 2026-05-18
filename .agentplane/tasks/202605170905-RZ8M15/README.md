@@ -1,10 +1,11 @@
 ---
 id: "202605170905-RZ8M15"
 title: "Minimize branch_pr generated artifacts"
-status: "DOING"
+result_summary: "Merged via PR #3884."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Verified root-cause fix: branch_pr finish now carries batch task ids into close-tail allowlist, hosted-close stages factually closed task ids, transient handoff/local-backup paths are ignored, and recovered canonical artifacts are tracked. Checks: bun vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/commands/task/finish.validation.unit.test.ts; bun run typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs. Note: an earlier bun run test:project agentplane -- ... expanded to the full agentplane suite and hit unrelated release-smoke failures plus the pre-fix mock failure; rerun with direct vitest file paths passed."
   attempts: 0
-commit: null
+commit:
+  hash: "bc3331df147759d2d586044c2d46fc31bd695c9a"
+  message: "Merge pull request #3884 from basilisk-labs/task/202605170905-RZ8M15/untracked-artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: investigating untracked branch_pr artifacts and tightening generated artifact handling so repo status does not accumulate transient files."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3884 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -54,9 +60,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified root-cause fix: branch_pr finish now carries batch task ids into close-tail allowlist, hosted-close stages factually closed task ids, transient handoff/local-backup paths are ignored, and recovered canonical artifacts are tracked. Checks: bun vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts packages/agentplane/src/commands/task/finish.validation.unit.test.ts; bun run typecheck; bun run format:changed; node .agentplane/policy/check-routing.mjs. Note: an earlier bun run test:project agentplane -- ... expanded to the full agentplane suite and hit unrelated release-smoke failures plus the pre-fix mock failure; rerun with direct vitest file paths passed."
+  -
+    type: "status"
+    at: "2026-05-18T11:58:51.408Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3884 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T11:19:40.735Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T11:58:51.415Z"
+doc_updated_by: "INTEGRATOR"
 description: "Reduce non-canonical generated artifacts in branch_pr while preserving compact traceability via README, ACR, PR metadata, and reconstructable digests."
 sections:
   Summary: |-
