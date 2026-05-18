@@ -86,7 +86,7 @@ const REASON_CODE_MAP: Readonly<Record<string, ReasonCodeMeta>> = {
     code: "git_close_commit_dirty_index",
     category: "git",
     summary: "close commit cannot proceed while unrelated paths are already staged",
-    action: "clear the git index and rerun the close commit flow",
+    action: "clear the git index or rerun the close commit flow with an explicit unstage option",
   },
   git_pre_commit_format: {
     code: "git_pre_commit_format",

@@ -173,12 +173,24 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
         nextAction: {
           command: "agentplane insights issue --error-code E_INTERNAL --dry-run",
           reason:
-            "preview the GitHub issue payload; enable with `agentplane config set feedback.github_issues.enabled true` before creating it",
+            "preview the GitHub issue payload; enable with `agentplane config set feedback.github_issues.enabled true` before creating it, or pass `--allow-disabled-feedback` for one issue only",
           reasonCode: "feedback_internal_error_report",
         },
       });
     }
     case "E_USAGE": {
+      if (reasonCode === "feedback_github_issues_disabled") {
+        return withExplicit({
+          hint: "Feedback GitHub issue creation requires either project opt-in or an explicit one-shot command opt-in.",
+          nextAction: {
+            command:
+              "agentplane insights issue --allow-disabled-feedback --allow-missing-agent-context --error-code E_INTERNAL",
+            reason:
+              "create one privacy-bounded issue without changing feedback.github_issues.enabled",
+            reasonCode,
+          },
+        });
+      }
       if (reasonCode === "sync_backend_mismatch") {
         return withExplicit({
           hint: "Configured backend id mismatch. Check active backend and retry with a matching id.",

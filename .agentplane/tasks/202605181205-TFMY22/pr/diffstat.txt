@@ -1,0 +1,14 @@
+ .../blueprint/resolved-snapshot.json               | 529 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   7 +
+ docs/user/configuration.mdx                        |   6 +
+ packages/agentplane/src/cli/error-map.test.ts      |   1 +
+ packages/agentplane/src/cli/error-map.ts           |  13 +-
+ packages/agentplane/src/cli/reason-codes.ts        |   2 +-
+ .../src/cli/run-cli.core.insights-report.test.ts   |  46 ++
+ .../src/commands/insights/insights.command.ts      |   8 +-
+ .../src/commands/insights/insights.spec.ts         |  13 +
+ .../agentplane/src/commands/task/finish-execute.ts |  44 +-
+ .../commands/task/finish.close-tail.unit.test.ts   |   1 +
+ .../src/commands/task/finish.state.unit.test.ts    |  81 +++-
+ .../commands/task/finish.validation.unit.test.ts   |   2 +-
+ 13 files changed, 744 insertions(+), 9 deletions(-)

@@ -2122,6 +2122,7 @@ Options:
 - `--failure-message-class <class>`: Privacy-safe error message class, not the raw error message.
 - `--failure-argv-shape <token>`: Repeatable sanitized argv shape token; values must not include raw secrets. (repeatable)
 - `--transport <github|cloud|auto>`: Issue transport. github uses the user's gh auth, cloud uses anonymous AgentPlane intake, auto falls back to cloud when GitHub publishing fails. (choices=github|cloud|auto)
+- `--allow-disabled-feedback`: Allow this one issue creation when feedback.github_issues.enabled=false without modifying project config. (default=false)
 - `--dry-run`: Print the GitHub issue payload without creating an issue. (default=false)
 
 Examples:
@@ -2137,6 +2138,12 @@ agentplane insights issue --dry-run --error-code E_INTERNAL
 ```
 
 - Preview the privacy-bounded issue payload without network access.
+
+```sh
+agentplane insights issue --allow-disabled-feedback --error-code E_INTERNAL
+```
+
+- Create one issue from an explicitly opted-out project without changing config.
 
 ### insights report
 

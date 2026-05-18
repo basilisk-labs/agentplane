@@ -25,6 +25,7 @@ function makeMocks() {
     execFileAsync: vi.fn(),
     gitBranchExists: vi.fn(),
     gitCurrentBranch: vi.fn(),
+    resolveGitIndexLockInfo: vi.fn(),
   };
 }
 
@@ -56,6 +57,17 @@ vi.mock("../shared/git-ops.js", () => ({
 vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
 }));
+vi.mock("../../shared/git-mutation.js", async (importOriginal?: () => Promise<unknown>) => {
+  const actualUnknown: unknown = typeof importOriginal === "function" ? await importOriginal() : {};
+  const actual =
+    actualUnknown && typeof actualUnknown === "object"
+      ? (actualUnknown as Record<string, unknown>)
+      : {};
+  return {
+    ...actual,
+    resolveGitIndexLockInfo: mocks.resolveGitIndexLockInfo,
+  };
+});
 vi.mock("@agentplaneorg/core/git", async () => {
   const actualUnknown: unknown =
     typeof (vi as unknown as { importActual?: unknown }).importActual === "function"
@@ -171,7 +183,12 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
     taskBackend: backend,
     backendId: "mock",
     backendConfigPath: "/repo/.agentplane/backends/local/backend.json",
-    git: new GitContext({ gitRoot: "/repo" }),
+    git: {
+      ...new GitContext({ gitRoot: "/repo" }),
+      statusStagedPaths: vi.fn().mockResolvedValue([]),
+      statusUnstagedTrackedPaths: vi.fn().mockResolvedValue([]),
+      invalidateStatus: vi.fn(),
+    } as unknown as CommandContext["git"],
     memo: {},
     resolved,
     backend,
@@ -229,6 +246,7 @@ describeCompatible("task finish state and errors", () => {
     mocks.execFileAsync.mockReset();
     mocks.gitBranchExists.mockReset();
     mocks.gitCurrentBranch.mockReset();
+    mocks.resolveGitIndexLockInfo.mockReset();
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
     mocks.readCommitInfo.mockResolvedValue({ hash: "hc", message: "mc" });
@@ -243,6 +261,7 @@ describeCompatible("task finish state and errors", () => {
     });
     mocks.gitBranchExists.mockResolvedValue(false);
     mocks.gitCurrentBranch.mockResolvedValue("main");
+    mocks.resolveGitIndexLockInfo.mockResolvedValue(null);
     mocks.commitFromComment.mockResolvedValue({
       hash: "new-hash",
       message: "✅ T-1 task: verified",
@@ -293,6 +312,66 @@ describeCompatible("task finish state and errors", () => {
         quiet: true,
       }),
     ).rejects.toMatchObject({ code: "E_USAGE" });
+  });
+
+  it("rejects direct close commit before mutating task state when the index is staged", async () => {
+    const task = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["docs"],
+      commit: { hash: "impl-hash", message: "feat: implement T-1" },
+    });
+    const storeMutate = vi.fn((id: string, mutate: (task: TaskData) => TaskStorePatch[]) => {
+      const patches = mutate(task);
+      for (const patch of patches) Object.assign(task, applyStorePatch(task, patch));
+      return { changed: patches.length > 0, task };
+    });
+    const store = { mutate: storeMutate };
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+    mocks.loadTaskFromContext.mockResolvedValue(task);
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "direct";
+    ctx.git = {
+      statusStagedPaths: vi.fn().mockResolvedValue([".agentplane/tasks/T-2/README.md"]),
+      statusUnstagedTrackedPaths: vi.fn().mockResolvedValue([]),
+      invalidateStatus: vi.fn(),
+    } as unknown as CommandContext["git"];
+
+    const { cmdFinish } = await import("./finish-command.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: direct finish should reject staged index before task mutation.",
+        result: "done",
+        breaking: false,
+        force: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({
+      code: "E_GIT",
+      context: {
+        reason_code: "git_close_commit_dirty_index",
+        staged_paths: [".agentplane/tasks/T-2/README.md"],
+      },
+    });
+
+    expect(storeMutate).toHaveBeenCalledTimes(1);
+    expect(task.status).toBe("DOING");
+    expect(mocks.cmdCommit).not.toHaveBeenCalled();
   });
 
   it("preserves fresher README content and comments when store update sees newer task data", async () => {

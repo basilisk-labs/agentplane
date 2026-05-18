@@ -143,6 +143,12 @@ To opt in, ask your agent to enable feedback issue prompts or run:
 agentplane config set feedback.github_issues.enabled true
 ```
 
+For a one-shot issue without changing project config, pass an explicit command opt-in:
+
+```bash
+agentplane insights issue --allow-disabled-feedback --error-code E_INTERNAL
+```
+
 To allow anonymous cloud fallback:
 
 ```bash

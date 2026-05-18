@@ -19,6 +19,7 @@ export type InsightsIssueParsed = {
   failureMessageClass?: string;
   failureArgvShape: string[];
   transport?: "github" | "cloud" | "auto";
+  allowDisabledFeedback: boolean;
   dryRun: boolean;
 };
 
@@ -167,6 +168,13 @@ export const insightsIssueSpec: CommandSpec<InsightsIssueParsed> = {
     },
     {
       kind: "boolean",
+      name: "allow-disabled-feedback",
+      default: false,
+      description:
+        "Allow this one issue creation when feedback.github_issues.enabled=false without modifying project config.",
+    },
+    {
+      kind: "boolean",
       name: "dry-run",
       default: false,
       description: "Print the GitHub issue payload without creating an issue.",
@@ -180,6 +188,10 @@ export const insightsIssueSpec: CommandSpec<InsightsIssueParsed> = {
     {
       cmd: "agentplane insights issue --dry-run --error-code E_INTERNAL",
       why: "Preview the privacy-bounded issue payload without network access.",
+    },
+    {
+      cmd: "agentplane insights issue --allow-disabled-feedback --error-code E_INTERNAL",
+      why: "Create one issue from an explicitly opted-out project without changing config.",
     },
   ],
   parse: (raw) => ({
@@ -197,6 +209,7 @@ export const insightsIssueSpec: CommandSpec<InsightsIssueParsed> = {
       ? (raw.opts["failure-argv-shape"] as string[])
       : [],
     transport: raw.opts.transport as InsightsIssueParsed["transport"],
+    allowDisabledFeedback: raw.opts["allow-disabled-feedback"] === true,
     dryRun: raw.opts["dry-run"] === true,
   }),
 };
