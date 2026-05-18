@@ -15,14 +15,20 @@ Fix the release-blocking ACR example version drift so v0.6.2 publish validation 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Fixed ACR example version drift by aligning packages/spec/examples/acr.json producer and toolchain
+versions to 0.6.2. Local checks passed: bun run release:acr-example:check and bun run release:check.
+Hosted PR #3867 was green on head e3a3fcc1d before final metadata push.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T08:37:05.817Z
+- Updated: 2026-05-18T08:37:11.524Z
 - Branch: task/202605180835-32AEJ5/fix-acr-example-v0-6-2
 - Head: b6089d40a84c
 
