@@ -129,16 +129,12 @@ checks, exports, and artifacts.
 
 ## Recipes
 
-Recipes are optional signed behavior modules. Start with the task -> plan -> verify -> ACR flow
-first; add recipes only when you need reusable agent profiles, prompt modules, skills, scenario
-assets, or repository mapping.
+Recipes are reusable workflow overlays. Start with the task -> plan -> verify -> ACR flow first;
+add recipes when you want a repeatable TDD, security review, or documentation update loop.
 
-```bash
-agentplane recipes list-remote
-agentplane recipes install code-map --refresh --yes
-```
-
-The current catalog starts with [Code Map](docs/recipes/code-map.mdx).
+- [TDD recipe](docs/recipes/tdd.mdx)
+- [Security review recipe](docs/recipes/security-review.mdx)
+- [Docs update recipe](docs/recipes/docs-update.mdx)
 
 ## Who uses it
 

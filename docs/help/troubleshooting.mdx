@@ -28,24 +28,6 @@ description: "Fix common setup and workflow issues when using Agent Plane locall
 - If artifacts remain, remove stale directories and re-run upgrade once.
 - Track this as a bug if reproducible on the latest patch version.
 
-## redmine backend cannot connect
-
-- Why this happens: invalid `REDMINE_URL` or `REDMINE_API_KEY`, or network is unavailable.
-- What to do:
-- Fill project-local `.env` from `.env.example`.
-- Verify `REDMINE_URL` and `REDMINE_API_KEY`.
-- Retry `agentplane backend sync redmine --direction pull`.
-
-## redmine sync conflicts or drift
-
-- Why this happens: the local projection and the canonical Redmine state diverged.
-- What to do:
-- Refresh the projection with `agentplane backend sync redmine --direction pull`.
-- Note: if you omit direction, sync defaults to `push`.
-- Re-check `task list`, `task show`, or `doctor` after the pull so you are reading the refreshed
-  projection.
-- If push still fails, run sync with an explicit conflict policy and inspect changed fields.
-
 ## init completed, but repo is not clean
 
 - Why this happens: hooks/assets were written after the init commit path, or local files were already present.

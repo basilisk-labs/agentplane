@@ -48,7 +48,7 @@ https://github.com/basilisk-labs/agentplane
 
 Docs:
 
-https://agentplane.org/docs/user/agent-change-record
+https://agentplane.org/docs/reference/acr
 
 I am looking for feedback from people who already review agent-written PRs: what evidence would make
 you more comfortable merging those changes?

@@ -16,30 +16,13 @@ For local backend, records are persisted under:
 
 - `.agentplane/tasks/<task-id>/README.md`
 
-## Source, projection, and snapshot
+## Source and artifacts
 
-Task backends now follow one install-first contract:
+The public website documents the local-first path:
 
-- **canonical source**: where the authoritative task state lives
-- **local projection**: the task state that ordinary CLI reads use
-- **sync boundary**: explicit refresh/push operations between projection and canonical source
-- **optional export snapshot**: generated tasks JSON for integrations
-
-For `local`, the canonical source and projection are the same repository state.
-
-For `cloud`, the cloud service is the canonical remote source and `.agentplane/` holds the local
-projection. Connector setup happens in the cloud service, so Agentplane still uses the `cloud`
-backend id even when the connected view is GitHub Projects, Redmine, or another task system.
-Cloud projection refreshes are git-visible: `agentplane backend sync cloud --direction pull` may
-update `.agentplane/tasks/**` in the working tree. In `publish_only`, pull does not apply remote
-view edits. In `bidirectional`, pull may update only service-approved operational fields
-(`title`, `status`, `priority`, `owner`, `tags`) on known local tasks; Agentplane-owned plan,
-verification, rollback, findings, comments, events, and README sections remain local task state.
-Remote-only items are ignored unless a future creation policy enables them.
-
-For `redmine`, Redmine is the canonical source and `.agentplane/` holds the local projection.
-`task list`, `task show`, and `doctor` read the projection by default; `backend sync <id>
---direction pull` refreshes it from the remote source.
+- **canonical source**: repo-local task files under `.agentplane/tasks/`
+- **artifact boundary**: task README, ACR, trace/export files, and verification evidence are normal files
+- **optional export snapshot**: generated integration output when a workflow explicitly needs it
 
 ## README contract versions
 
@@ -157,9 +140,9 @@ separate Obsidian-owned storage model. Legacy generated files under `.agentplane
 `.agentplane/tasks.md`, and `.agentplane/by-*` are removed by the advanced cleanup path when they
 carry the generated marker.
 
-## Active backend
+## Active task storage
 
-Backend routing comes from `.agentplane/WORKFLOW.md`:
+Task storage routing comes from `.agentplane/WORKFLOW.md`:
 
 ```json
 {
@@ -169,23 +152,4 @@ Backend routing comes from `.agentplane/WORKFLOW.md`:
 }
 ```
 
-`tasks_backend.config_path` points to backend config (`local`, `cloud`, or another configured
-backend).
-
-## Sync
-
-```bash
-agentplane sync redmine
-agentplane sync redmine --direction pull
-agentplane sync redmine --direction push --yes
-agentplane backend sync cloud --direction pull
-agentplane backend sync cloud --direction push --yes
-agentplane backend sync <id> --direction pull
-agentplane backend sync <id> --direction push --yes
-```
-
-`sync`/`backend sync` default to `--direction push` when omitted.
-
-Conflict modes: `diff`, `prefer-local`, `prefer-remote`, `fail`.
-
-Use explicit `agentplane backend sync` in scripts to avoid ambiguity with other `sync` commands.
+For the public OSS path, this points to local repository storage.

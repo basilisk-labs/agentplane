@@ -128,7 +128,6 @@ const sidebars: SidebarsConfig = {
       items: [
         "user/breaking-changes",
         "user/workflow-migration",
-        "help/legacy-upgrade-recovery",
         "help/troubleshooting-by-symptom",
         "help/troubleshooting",
       ],

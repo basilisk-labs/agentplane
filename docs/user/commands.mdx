@@ -36,10 +36,8 @@ user command path and live in the direct-link developer docs.
 agentplane quickstart
 ```
 
-The same startup model is expanded on the docs site here:
-
-- [Agent bootstrap](agent-bootstrap.generated)
-  This is a public docs-page expansion of `agentplane quickstart`, not a file that installed repositories should depend on locally.
+The [Quickstart](../start/quickstart) expands the same startup model into install, run, trace, and
+export steps.
 
 ## Init
 
@@ -171,7 +169,7 @@ task lifecycle evidence. `finish` refreshes the task-local ACR automatically whe
 `acr.write_on_finish=true`; use `--no-write-acr` only for explicit recovery cases. ACR remains a
 derived projection, not a second source of truth. `acr validate --mode schema` checks only JSON
 shape; `acr check --mode ci` enforces merge-ready semantics. See
-[Agent Change Record](agent-change-record).
+[Agent Change Records](../reference/acr).
 
 ## Local context
 
@@ -220,24 +218,6 @@ and review less error-prone.
 There is no public `context list` command by design. Search is the primary discovery surface; use
 `context graph summary`, `context graph show`, and `context graph neighbors` when you need structured
 graph inspection instead of text search.
-
-## Backend sync (remote backends)
-
-For remote backends, use explicit sync:
-
-```bash
-agentplane backend sync cloud --direction pull
-agentplane backend sync cloud --direction push --yes
-agentplane sync redmine
-agentplane backend sync redmine --direction pull
-agentplane backend sync redmine --direction push --yes
-```
-
-`sync` and `backend sync` default to `--direction push`; prefer explicit `--direction pull` when
-refreshing the local projection from a remote source.
-
-Ordinary task reads (`task list`, `task show`, `doctor`) use the current projection by default and
-do not implicitly refresh from the network.
 
 ## Workflow
 
@@ -351,7 +331,7 @@ agentplane branch base explain
 
 ```bash
 agentplane recipes list-remote --refresh --yes
-agentplane recipes install code-map --refresh --yes
+agentplane recipes add tdd
 agentplane recipes list
 agentplane recipes info <id>
 agentplane recipes add <id|id@version>

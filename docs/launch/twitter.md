@@ -28,7 +28,7 @@ agentplane acr generate <task-id> --work-commit HEAD --write
 agentplane acr validate <task-id> --mode local
 ```
 
-Docs: https://agentplane.org/docs/user/agent-change-record
+Docs: https://agentplane.org/docs/reference/acr
 
 ## Post 3
 

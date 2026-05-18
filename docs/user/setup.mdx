@@ -115,8 +115,8 @@ Expected files:
 .agentplane/tasks/<task-id>/acr.json
 ```
 
-See [Hand off to an agent](agent-handoff) for the full default usage model and agent-agnostic
-contract.
+The [Quickstart](../start/quickstart) covers the same startup model through install, run, trace, and
+export steps.
 
 ## Enable local context
 
@@ -174,15 +174,9 @@ agentplane init \
   --yes
 ```
 
-## Backends and advanced setup
+## Local task storage
 
 Start with the local backend. It stores task evidence in the repository and is the default path.
-
-Use the advanced backend docs only when you need them:
-
-- [Backends overview](backends)
-- [Cloud backend](backends/cloud)
-- [Redmine backend](backends/redmine)
 
 ### Managed ownership contract
 
@@ -194,10 +188,6 @@ of the managed policy tree during normal project work; expect `agentplane upgrad
 reconcile those files.
 Agents do not treat `incidents.md` as part of the normal startup reading path for agents; it is
 for recovery, incident response, or tasks that directly modify incident policy.
-
-For older or partially upgraded repositories, use [Upgrade recovery](../help/legacy-upgrade-recovery).
-That page owns the legacy state model and recovery procedures; this setup page describes the current
-initialization path only.
 
 Recovery routing starts from three repository states:
 
@@ -227,7 +217,8 @@ clear.
 
 ```bash
 agentplane recipes list-remote --refresh --yes
-agentplane recipes install code-map --refresh --yes
+agentplane recipes add tdd
 ```
 
-Start with [Code Map](../recipes/code-map) when you need lightweight repository mapping.
+Start with [TDD](../recipes/tdd), [security review](../recipes/security-review), or
+[docs update](../recipes/docs-update) when you need a reusable workflow overlay.

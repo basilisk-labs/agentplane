@@ -32,7 +32,7 @@ them. The output is reviewable in Git and parseable by CI.
 Useful links:
 
 - Repo: https://github.com/basilisk-labs/agentplane
-- ACR docs: https://agentplane.org/docs/user/agent-change-record
+- ACR docs: https://agentplane.org/docs/reference/acr
 - Schema: https://agentplane.org/schemas/acr-v0.1.schema.json
 
 ## Pre-Post Checks

@@ -23,39 +23,21 @@ Use these guides to understand what a recipe should produce:
 - [TDD recipe](tdd)
 - [Security review recipe](security-review)
 - [Docs update recipe](docs-update)
-- [Code Map](code-map) (`code-map@0.1.0`)
-
-The catalog is sourced from the `agentplane-recipes` submodule and projected into
-`docs/recipes-inventory.json` by `node scripts/generate-recipes-inventory.mjs`.
 
 ## Install and vendor
 
-List the signed remote catalog:
+Apply a recipe to a local workflow:
 
 ```bash
-agentplane recipes list-remote --refresh --yes
-```
-
-Install a recipe into the global cache:
-
-```bash
-agentplane recipes install code-map --refresh --yes
-agentplane recipes list
-agentplane recipes info code-map
-```
-
-Vendor the cached recipe into a project:
-
-```bash
-agentplane recipes add code-map
+agentplane recipes add tdd
 agentplane recipes active
-agentplane recipes explain code-map
+agentplane recipes explain tdd
 ```
 
 During project initialization, use `--recipes` only for recipes already available to the init flow:
 
 ```bash
-agentplane init --recipes code-map
+agentplane init --recipes tdd
 ```
 
 ## Runtime model

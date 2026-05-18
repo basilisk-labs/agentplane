@@ -55,9 +55,4 @@ Generated command reference:
   run the built dist entrypoint directly:
   `node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx`
 
-Generated recipes inventory:
-
-- `docs/recipes-inventory.json` is generated from `agentplane-recipes/index.json` plus the
-  recipe manifests under `agentplane-recipes/recipes/*/manifest.json`.
-- Refresh command:
-  `node scripts/generate-recipes-inventory.mjs`
+Recipe docs are maintained as individual MDX pages under `docs/recipes/`.
