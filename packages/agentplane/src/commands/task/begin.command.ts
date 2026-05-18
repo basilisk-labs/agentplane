@@ -108,7 +108,7 @@ export const taskBeginSpec: CommandSpec<TaskBeginParsed> = {
   ],
   examples: [
     {
-      cmd: 'agentplane task begin "Fix parser edge case" --tag code --verify "bun test"',
+      cmd: 'agentplane task begin "Fix parser edge case" --tag code --verify "bun run test:fast"',
       why: "Create the task, seed a minimal plan, approve it, then start or print the branch_pr worktree route.",
     },
   ],

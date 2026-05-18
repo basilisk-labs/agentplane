@@ -1,0 +1,20 @@
+ .../blueprint/resolved-snapshot.json               | 416 +++++++++++++++++++++
+ docs/user/cli-reference.generated.mdx              |   2 +-
+ package.json                                       |  10 +-
+ .../commands/release/release-ci-contract.test.ts   |   2 +-
+ .../agentplane/src/commands/task/begin.command.ts  |   2 +-
+ .../agentplane/src/commands/task/task.command.ts   |   2 +-
+ scripts/README.md                                  |  67 ++--
+ scripts/checks/check-task-scope.mjs                |  55 +++
+ scripts/checks/deps-triage.mjs                     |  47 +++
+ scripts/checks/dev-impact.mjs                      |  41 ++
+ scripts/lib/local-ci-selection.mjs                 |   1 +
+ scripts/release/candidate-prepare.mjs              |  75 ++++
+ scripts/release/evidence-collect.mjs               |  95 +++++
+ scripts/release/next-action.mjs                    |  59 +++
+ scripts/release/state.mjs                          | 180 +++++++++
+ scripts/release/version-bump.mjs                   | 163 ++++++++
+ skills/README.md                                   |   3 +
+ skills/agentplane-local-dev-operator/SKILL.md      |  52 +++
+ .../SKILL.md                                       |  26 +-
+ 19 files changed, 1262 insertions(+), 36 deletions(-)

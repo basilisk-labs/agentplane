@@ -34,6 +34,7 @@ Use these before publishing and during recovery:
 
 ```bash
 bun run release:parity
+bun run release:state
 node scripts/check-npm-version-availability.mjs <version>
 npm view @agentplaneorg/core@<version> version
 npm view @agentplaneorg/recipes@<version> version
@@ -42,20 +43,39 @@ npm view agentplane@<version> version
 
 Expected invariant: core, recipes, CLI package versions, and CLI dependencies on core/recipes all agree with the release version.
 
+## Script Entry Points
+
+Use the repo-local wrappers before composing ad hoc release command sequences:
+
+```bash
+bun run release:state
+bun run release:next-action -- --check-registry
+bun run release:version:bump -- --bump patch
+bun run release:version:bump -- --version <version> --write
+bun run release:candidate:prepare
+bun run release:evidence:collect -- --version <version>
+```
+
+- `release:state` is the read-only release dashboard.
+- `release:next-action` chooses the next safe action from local state and optional registry checks.
+- `release:version:bump` is dry-run by default; use `--write` only inside an approved release task.
+- `release:candidate:prepare` is dry-run by default; use `--write`, and `--push --yes` only after release approval.
+- `release:evidence:collect` gathers post-publish npm, git tag, GitHub Release, and audit evidence into `.agentplane/.release/evidence/`.
+
 ## Build Ordering
 
-Build workspace packages in dependency order. Do not build `agentplane` before generated/dist surfaces it imports exist.
+Build workspace packages in dependency order. Build `agentplane` before `@agentplane/testkit`, because testkit imports agentplane's generated declaration surfaces.
 
 Preferred order:
 
 ```bash
 bun run --filter=@agentplaneorg/core build
+bun run --filter=agentplane build
 bun run --filter=@agentplane/testkit build
 bun run --filter=@agentplaneorg/recipes build
-bun run --filter=agentplane build
 ```
 
-If CI fails with missing `../../../testkit/dist/*.js` or missing exports from `src/testing/index.ts`, the likely cause is that `@agentplane/testkit` was not built before `agentplane`.
+If CI fails with `TS6305` for `packages/agentplane/dist/*.d.ts` while building `@agentplane/testkit`, the likely cause is that `agentplane` was not built before `@agentplane/testkit`.
 
 ## Publish Flow
 

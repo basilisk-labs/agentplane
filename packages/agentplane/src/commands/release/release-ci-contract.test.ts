@@ -61,7 +61,7 @@ describe("release CI contract", () => {
     expect(VITEST_CHUNK_TIMEOUT_MS).toBe(10 * 60 * 1000);
   });
 
-  it("builds testkit before agentplane in release and hosted install routes", async () => {
+  it("builds testkit after agentplane in release and hosted install routes", async () => {
     const rootPackageJsonText = await readRootText("package.json");
     const rootPackageJson = JSON.parse(rootPackageJsonText) as {
       scripts?: Record<string, string>;

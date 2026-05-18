@@ -107,6 +107,7 @@ const RELEASE_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/commands\/release\//,
   /^packages\/agentplane\/src\/cli\/release-recovery-script\.test\.ts$/,
   /^scripts\/check-release-(?:parity|version)\.mjs$/,
+  /^scripts\/release\/(?:version-bump|state|candidate-prepare|evidence-collect|next-action)\.mjs$/,
   /^scripts\/release-check\.mjs$/,
   /^scripts\/check-npm-version-availability\.mjs$/,
   /^scripts\/check-release-recovery-state\.mjs$/,
