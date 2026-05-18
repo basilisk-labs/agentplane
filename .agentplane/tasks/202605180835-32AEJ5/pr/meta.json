@@ -1,0 +1,17 @@
+{
+  "base": "main",
+  "branch": "task/202605180835-32AEJ5/fix-acr-example-v0-6-2",
+  "created_at": "2026-05-18T08:35:57.935Z",
+  "head_sha": "b6089d40a84cda9ff90dda7b9cf5015bf178709d",
+  "last_verified_at": "2026-05-18T08:44:37.812Z",
+  "last_verified_sha": "b6089d40a84cda9ff90dda7b9cf5015bf178709d",
+  "pr_number": 3867,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3867",
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202605180835-32AEJ5",
+  "updated_at": "2026-05-18T08:37:11.524Z",
+  "verify": {
+    "status": "pass"
+  }
+}
