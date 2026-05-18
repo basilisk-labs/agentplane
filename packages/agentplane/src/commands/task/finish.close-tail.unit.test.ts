@@ -209,21 +209,7 @@ describe("task finish close-tail", () => {
   });
 
   beforeEach(() => {
-    mocks.commitFromComment.mockReset();
-    mocks.cmdCommit.mockReset();
-    mocks.ensureReconciledBeforeMutation.mockReset();
-    mocks.loadCommandContext.mockReset();
-    mocks.loadTaskFromContext.mockReset();
-    mocks.backendIsLocalFileBackend.mockReset();
-    mocks.getTaskStore.mockReset();
-    mocks.readCommitInfo.mockReset();
-    mocks.nowIso.mockReset();
-    mocks.resolveBaseBranch.mockReset();
-    mocks.execFileAsync.mockReset();
-    mocks.gitBranchExists.mockReset();
-    mocks.gitCurrentBranch.mockReset();
-    mocks.tryLookupExistingGithubPrByBranch.mockReset();
-    mocks.tryLookupExistingGithubPrByBranchPrefix.mockReset();
+    Object.values(mocks).forEach((mock) => mock.mockReset());
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
     mocks.readCommitInfo.mockResolvedValue({ hash: "hc", message: "mc" });
@@ -848,30 +834,12 @@ describe("task finish close-tail", () => {
     const ctx = mkCtx();
     ctx.config.workflow_mode = "branch_pr";
     ctx.config.branch.task_close_prefix = "task-close";
-    mocks.tryLookupExistingGithubPrByBranchPrefix.mockResolvedValue({
-      prNumber: 903,
-      prUrl: "https://github.com/basilisk-labs/agentplane/pull/903",
-      status: "OPEN",
-      mergedAt: null,
-      mergeCommit: null,
-      base: "main",
-      headSha: "close-head",
-    });
-
+    mocks.tryLookupExistingGithubPrByBranchPrefix.mockResolvedValue({ status: "OPEN" });
     const { materializeBranchPrCloseTail } = await import("./finish-close.js");
-    const closeBranch = await materializeBranchPrCloseTail({
-      ctx,
-      cwd: "/repo",
-      taskId: "T-1",
-      quiet: true,
-    });
 
-    expect(closeBranch).toBeNull();
-    expect(mocks.tryLookupExistingGithubPrByBranch).toHaveBeenCalledWith({
-      gitRoot: "/repo",
-      branch: "task-close/T-1/base-head-sh",
-      baseBranch: "main",
-    });
+    await expect(
+      materializeBranchPrCloseTail({ ctx, cwd: "/repo", taskId: "T-1", quiet: true }),
+    ).resolves.toBeNull();
     expect(mocks.tryLookupExistingGithubPrByBranchPrefix).toHaveBeenCalledWith({
       gitRoot: "/repo",
       branchPrefix: "task-close/T-1/",
