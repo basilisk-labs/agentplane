@@ -131,6 +131,30 @@ export async function ensureReleasePlanMatchesRepoState(opts: {
 
   await ensureCleanTrackedTree(opts.gitRoot, opts.commandLabel);
   await ensureTagDoesNotExist(opts.gitRoot, opts.plan.nextTag, opts.commandLabel);
+  if (coreVersion !== opts.plan.prevVersion) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Current version does not match the release-plan baseline. ` +
+        `current=${coreVersion} expected_prev=${opts.plan.prevVersion} expected_next=${opts.plan.nextVersion}\n` +
+        "Re-run `agentplane release plan` to generate a fresh plan for this repo state.",
+      context: withDiagnosticContext(
+        { command: opts.commandLabel },
+        {
+          state: "the repository version no longer matches the prepared release-plan baseline",
+          likelyCause:
+            "package versions changed after the plan was generated, so continuing would apply the release over a partially drifted local state",
+          nextAction: {
+            command: "agentplane release plan",
+            reason:
+              "generate a fresh release plan from the current repository state before applying the release",
+            reasonCode: "release_plan_drifted",
+          },
+        },
+      ),
+    });
+  }
   if (opts.plan.baseSha) {
     const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: opts.gitRoot,
@@ -159,30 +183,6 @@ export async function ensureReleasePlanMatchesRepoState(opts: {
         ),
       });
     }
-  }
-  if (coreVersion !== opts.plan.prevVersion) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message:
-        `Current version does not match the release-plan baseline. ` +
-        `current=${coreVersion} expected_prev=${opts.plan.prevVersion} expected_next=${opts.plan.nextVersion}\n` +
-        "Re-run `agentplane release plan` to generate a fresh plan for this repo state.",
-      context: withDiagnosticContext(
-        { command: opts.commandLabel },
-        {
-          state: "the repository version no longer matches the prepared release-plan baseline",
-          likelyCause:
-            "package versions changed after the plan was generated, so continuing would apply the release over a partially drifted local state",
-          nextAction: {
-            command: "agentplane release plan",
-            reason:
-              "generate a fresh release plan from the current repository state before applying the release",
-            reasonCode: "release_plan_drifted",
-          },
-        },
-      ),
-    });
   }
 }
 
