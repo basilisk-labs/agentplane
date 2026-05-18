@@ -24,12 +24,15 @@ Created: 2026-05-18T18:36:24.422Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T18:36:24.422Z
+- Updated: 2026-05-18T18:57:06.381Z
 - Branch: task/202605181835-BQ9T2P/safe-root-deps
-- Head: 6ffce7d3dcde
+- Head: 07335ebf4291
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 571 +++++++++++++++++++++
+ bun.lock                                           |  68 ++-
+ package.json                                       |   6 +-
+ 3 files changed, 625 insertions(+), 20 deletions(-)
 ```
 
 </details>
