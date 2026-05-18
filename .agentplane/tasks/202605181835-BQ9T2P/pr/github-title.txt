@@ -1,0 +1,1 @@
+🚧 BQ9T2P task: Apply safe Dependabot root dependency bumps [202605181835-BQ9T2P]
