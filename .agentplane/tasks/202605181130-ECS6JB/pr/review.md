@@ -24,12 +24,18 @@ Created: 2026-05-18T11:30:53.872Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T11:30:53.872Z
+- Updated: 2026-05-18T11:42:54.707Z
 - Branch: task/202605181130-ECS6JB/context-policy-module
-- Head: 88585c94c356
+- Head: d141963b8027
 
 ```text
-No changes detected.
+ .agentplane/policy/context.must.md                 |  67 +++
+ .../blueprint/resolved-snapshot.json               | 528 +++++++++++++++++++++
+ packages/agentplane/assets/AGENTS.md               |   6 +-
+ packages/agentplane/assets/policy/context.must.md  |  67 +++
+ .../agentplane/src/cli/run-cli.core.init.test.ts   |  11 +
+ .../src/shared/builtin-assets.generated.ts         |  16 +-
+ 6 files changed, 689 insertions(+), 6 deletions(-)
 ```
 
 </details>
