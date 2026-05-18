@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-18T19:22:12Z",
   "base": "main",
   "branch": "task/202605181835-BQ9T2P/safe-root-deps",
   "created_at": "2026-05-18T18:36:24.422Z",
-  "head_sha": "07335ebf429181d65f1a25a57580116329726633",
+  "head_sha": "1b6eb8ac3e1f1bcadc3006e2200b1ee3e5628907",
   "last_verified_at": "2026-05-18T19:03:38.825Z",
   "last_verified_sha": "07335ebf429181d65f1a25a57580116329726633",
+  "merge_commit": "6c1f204aa711bc62dcb89ad02c4454864cfd496a",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-18T19:22:12Z",
   "pr_number": 3906,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3906",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605181835-BQ9T2P",
-  "updated_at": "2026-05-18T18:57:17.704Z",
+  "updated_at": "2026-05-18T19:22:12Z",
   "verify": {
     "status": "pass"
   }
