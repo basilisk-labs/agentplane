@@ -4,7 +4,7 @@ title: "Require evaluator quality gate after verification"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -20,16 +20,16 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-18T12:34:27.566Z"
+  updated_at: "2026-05-18T13:00:25.621Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate refreshed for implementation head 614a79a94 before task-artifact tail commit."
+  note: "EVALUATOR quality gate refreshed for implementation head de0f4b28c after fail-open fixes."
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-05-18T12:34:27.566Z"
+  updated_at: "2026-05-18T13:00:25.621Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR quality gate refreshed for implementation head 614a79a94 before task-artifact tail commit."
-  evaluated_sha: "614a79a9459b61c060412d64b219bf6765d5ba10"
+  note: "EVALUATOR quality gate refreshed for implementation head de0f4b28c after fail-open fixes."
+  evaluated_sha: "de0f4b28c03e034c20652e053bdc5eddd03c056c"
   blueprint_digest: "7f0be44d6f556d881fcf3f692b694b3214e9f09b08cea9ed757632a9ca8285d5"
   evidence_refs:
     - ".agentplane/tasks/202605181129-2VW21W/README.md"
@@ -90,8 +90,14 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "EVALUATOR quality gate refreshed for implementation head 614a79a94 before task-artifact tail commit."
+  -
+    type: "verify"
+    at: "2026-05-18T13:00:25.621Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate refreshed for implementation head de0f4b28c after fail-open fixes."
 doc_version: 3
-doc_updated_at: "2026-05-18T12:34:27.597Z"
+doc_updated_at: "2026-05-18T13:00:25.654Z"
 doc_updated_by: "CODER"
 description: "Make every task lifecycle require an independent EVALUATOR quality review after verification before integration or finish."
 sections:
@@ -239,6 +245,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605181129-2VW21W
 
+    ### 2026-05-18T13:00:25.621Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate refreshed for implementation head de0f4b28c after fail-open fixes.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T12:34:27.597Z, excerpt_hash=sha256:82795483e32a401833284eecabb8852115704ce9e357f634ca0d39486bc827a3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181129-2VW21W-evaluator-quality-gate/.agentplane/tasks/202605181129-2VW21W/blueprint/resolved-snapshot.json
+    - old_digest: 7f0be44d6f556d881fcf3f692b694b3214e9f09b08cea9ed757632a9ca8285d5
+    - current_digest: 7f0be44d6f556d881fcf3f692b694b3214e9f09b08cea9ed757632a9ca8285d5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605181129-2VW21W
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -270,6 +295,10 @@ sections:
 
     - Observation: knip baseline, format, schemas, policy routing, tsc, and prepare quality-tail tests passed
       Impact: artifact-only lifecycle commit can carry this quality review without invalidating reviewed implementation SHA
+      Resolution: quality_review refreshed as pass
+
+    - Observation: fixed review comments: missing evaluated_sha and missing blueprint_digest now reject; local knip, format, schemas, routing, tsc, and 62 targeted tests passed
+      Impact: quality gate matches current implementation head
       Resolution: quality_review refreshed as pass
 id_source: "generated"
 ---
@@ -428,6 +457,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605181129-2VW21W
 
+### 2026-05-18T13:00:25.621Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate refreshed for implementation head de0f4b28c after fail-open fixes.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T12:34:27.597Z, excerpt_hash=sha256:82795483e32a401833284eecabb8852115704ce9e357f634ca0d39486bc827a3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181129-2VW21W-evaluator-quality-gate/.agentplane/tasks/202605181129-2VW21W/blueprint/resolved-snapshot.json
+- old_digest: 7f0be44d6f556d881fcf3f692b694b3214e9f09b08cea9ed757632a9ca8285d5
+- current_digest: 7f0be44d6f556d881fcf3f692b694b3214e9f09b08cea9ed757632a9ca8285d5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605181129-2VW21W
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -463,4 +511,8 @@ BlueprintSnapshotRef:
 
 - Observation: knip baseline, format, schemas, policy routing, tsc, and prepare quality-tail tests passed
   Impact: artifact-only lifecycle commit can carry this quality review without invalidating reviewed implementation SHA
+  Resolution: quality_review refreshed as pass
+
+- Observation: fixed review comments: missing evaluated_sha and missing blueprint_digest now reject; local knip, format, schemas, routing, tsc, and 62 targeted tests passed
+  Impact: quality gate matches current implementation head
   Resolution: quality_review refreshed as pass

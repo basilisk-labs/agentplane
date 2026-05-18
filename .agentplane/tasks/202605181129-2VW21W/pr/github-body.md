@@ -16,15 +16,15 @@ Make every task lifecycle require an independent EVALUATOR quality review after 
 ## Verification
 
 - State: ok
-- Note: EVALUATOR quality gate refreshed for implementation head 614a79a94 before task-artifact tail commit.
+- Note: EVALUATOR quality gate refreshed for implementation head de0f4b28c after fail-open fixes.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T12:34:27.640Z
+- Updated: 2026-05-18T13:00:25.698Z
 - Branch: task/202605181129-2VW21W/evaluator-quality-gate
-- Head: 614a79a9459b
+- Head: de0f4b28c03e
 
 ```text
  .../blueprint/resolved-snapshot.json               | 570 +++++++++++++++++++++
@@ -43,11 +43,11 @@ Make every task lifecycle require an independent EVALUATOR quality review after 
  .../agentplane/src/commands/shared/task-backend.ts |   1 +
  .../src/commands/task/finish-blueprint-evidence.ts |  20 +
  .../agentplane/src/commands/task/finish-execute.ts |  10 +-
- .../commands/task/finish.close-tail.unit.test.ts   |  29 +-
- .../src/commands/task/finish.state.unit.test.ts    |  29 +-
- .../commands/task/finish.validation.unit.test.ts   |  31 +-
- .../src/commands/task/quality-review-gate.ts       |  74 +++
- .../commands/task/quality-review-gate.unit.test.ts |  96 ++++
+ .../commands/task/finish.close-tail.unit.test.ts   |  30 +-
+ .../src/commands/task/finish.state.unit.test.ts    |  30 +-
+ .../commands/task/finish.validation.unit.test.ts   |  33 +-
+ .../src/commands/task/quality-review-gate.ts       |  70 +++
+ .../commands/task/quality-review-gate.unit.test.ts | 139 +++++
  .../src/commands/task/verify-record-execute.ts     |  39 ++
  packages/agentplane/src/commands/workflow.test.ts  |  10 +
  .../src/commands/workflow.verify-hooks.test.ts     |  10 +
@@ -64,7 +64,7 @@ Make every task lifecycle require an independent EVALUATOR quality review after 
  packages/spec/schemas/tasks-export.schema.json     |  55 ++
  schemas/task-readme-frontmatter.schema.json        |  55 ++
  schemas/tasks-export.schema.json                   |  55 ++
- 37 files changed, 1478 insertions(+), 88 deletions(-)
+ 37 files changed, 1521 insertions(+), 88 deletions(-)
 ```
 
 </details>
