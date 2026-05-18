@@ -1,10 +1,11 @@
 ---
 id: "202605180515-4CAK13"
 title: "Fix open branch_pr feedback issues"
-status: "DOING"
+result_summary: "Merged via PR #3863."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Final PR artifact refresh after rebase and format repair. Command: bun run format:check; Result: pass; Evidence: full Prettier check exited 0 after formatting rebased workflow scripts. Command: hosted checks on PR #3863 head 837136122; Result: pass; Evidence: CodeQL, docs, test, test-windows, Release-ready manifest all passed. Scope: final merge readiness for issues #3853, #3854, and #3845."
   attempts: 0
-commit: null
+commit:
+  hash: "faa03a5e215ffb89e674314d96852355fb2328e2"
+  message: "Merge pull request #3863 from basilisk-labs/task/202605180515-4CAK13/fix-open-branch-pr-feedback"
 comments:
   -
     author: "CODER"
     body: "Start: implement focused fixes for open GitHub issues #3853, #3854, and #3845 in the branch_pr PR-check and verification-runner contracts."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3863 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -55,9 +61,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Final PR artifact refresh after rebase and format repair. Command: bun run format:check; Result: pass; Evidence: full Prettier check exited 0 after formatting rebased workflow scripts. Command: hosted checks on PR #3863 head 837136122; Result: pass; Evidence: CodeQL, docs, test, test-windows, Release-ready manifest all passed. Scope: final merge readiness for issues #3853, #3854, and #3845."
+  -
+    type: "status"
+    at: "2026-05-18T05:58:40.844Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3863 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T05:51:58.521Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T05:58:40.851Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix GitHub issues #3853, #3854, and #3845: branch_pr pr check must work across base/worktree artifact boundaries, metadata-only PR identity commits must not stale verification, and task unit verify guidance must use the correct Vitest runner for Vitest-only tests."
 sections:
   Summary: |-
