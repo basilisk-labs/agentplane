@@ -49,6 +49,21 @@ AgentPlane prompts. The generated task remains the execution boundary: a CURATOR
 source pack, searches existing wiki/facts/graph rows, writes sourced updates, records stale/conflict
 markers, and verifies through context gates before promotion.
 
+## Assimilation blueprint contract
+
+`context.assimilation` is the lifecycle blueprint for source-to-wiki work. The blueprint keeps the
+wiki layout adaptive, but fixes the execution gates:
+
+1. lock a non-empty source set with hashes
+2. search and reconcile existing wiki/facts/graph rows before writing
+3. write wiki, derived facts, graph/provenance, and reports as needed
+4. run context reindex after the final content change
+5. run wiki lint, graph validation, verify-task, doctor, and a smoke search
+6. record runner recovery evidence before finishing after a timeout, cancellation, or stuck run
+
+`context init` creates only the root wiki contract files (`AGENTS.md` and `index.md`). The first
+real ingest creates the starter wiki hierarchy when there is source material to assimilate.
+
 ## Projection contract
 
 `context reindex` writes context projection rows into `.agentplane/cache.sqlite` from:

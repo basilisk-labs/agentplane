@@ -45,10 +45,11 @@ projection is stored in the shared AgentPlane cache database at `.agentplane/cac
 owns only its projection tables inside that file. Treat both the derived artifacts and the SQLite
 cache as disposable output.
 
-The initial wiki profile seeds a small starter hierarchy, but the first analysis should preserve the
-smallest project-specific structure that fits the sources. If a glossary is useful, keep it as a thin
-navigation index over canonical wiki pages and graph entities; aliases belong there, while factual
-claims and provenance stay on the backing wiki/fact/graph artifacts.
+The initial wiki profile creates only `context/wiki/AGENTS.md` and `context/wiki/index.md`. The
+first ingest creates the starter wiki hierarchy, and the first analysis should then preserve the
+smallest project-specific structure that fits the sources. If a glossary is useful, keep it as a
+thin navigation index over canonical wiki pages and graph entities; aliases belong there, while
+factual claims and provenance stay on the backing wiki/fact/graph artifacts.
 
 ## Initialize and search
 
@@ -65,9 +66,10 @@ AgentPlane project, run `agentplane init` explicitly before `agentplane context 
 gateway, workflow, backend, and conflict handling stay visible.
 
 The default init profile is `adaptive`: one stable llm-wiki contract with project-specific page
-structure. Agents should generate the wiki hierarchy from evidence, but keep page frontmatter,
-source refs, modalities, claims, graph refs, conflicts, and visibility metadata stable enough for
-future publication proposals and context-pack synchronization.
+structure. Init does not pre-create the internal wiki folders; first ingest creates the starter
+structure only when there is source material to assimilate. Agents should generate the wiki hierarchy
+from evidence, but keep page frontmatter, source refs, modalities, claims, graph refs, conflicts, and
+visibility metadata stable enough for future publication proposals and context-pack synchronization.
 
 `context show` resolves whole files, markdown sections, and line ranges. Markdown section refs use
 stable slugs such as `#section=publish-gate`; line refs use `#lines=12-24` or `#line=12`.

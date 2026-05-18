@@ -103,6 +103,34 @@ describe("blueprint built-ins", () => {
     expect(kinds.indexOf("verify_record")).toBeLessThan(kinds.indexOf("hosted_checks"));
     expect(kinds.indexOf("verify_record")).toBeLessThan(kinds.indexOf("publish_or_integrate"));
   });
+
+  it("keeps context assimilation lifecycle gates explicit", () => {
+    const blueprint = requireBlueprint("context.assimilation");
+
+    expect(blueprint.allowedCommands).toEqual(
+      expect.arrayContaining([
+        "agentplane context reindex --include-raw",
+        "agentplane context wiki lint context/wiki",
+        "agentplane task resume-context <task-id>",
+      ]),
+    );
+    expect(blueprint.requiredEvidence.map((item) => item.id)).toEqual(
+      expect.arrayContaining([
+        "context.sources",
+        "context.source_lock",
+        "context.verification",
+        "context.recovery",
+      ]),
+    );
+    expect(blueprint.stopRules.map((rule) => rule.id)).toEqual(
+      expect.arrayContaining([
+        "context_empty_source_set",
+        "context_pipeline_order_skipped",
+        "context_reindex_missing_after_writes",
+        "context_runner_timeout_without_recovery",
+      ]),
+    );
+  });
 });
 
 describe("blueprint validation", () => {

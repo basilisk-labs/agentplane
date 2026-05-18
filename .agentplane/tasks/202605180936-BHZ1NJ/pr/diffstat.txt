@@ -1,0 +1,9 @@
+ docs/developer/local-context.mdx                   | 15 +++++
+ docs/user/local-context.mdx                        | 16 +++---
+ packages/agentplane/src/blueprints/builtins.ts     | 64 +++++++++++++++++++++-
+ .../agentplane/src/blueprints/validate.test.ts     | 28 ++++++++++
+ packages/agentplane/src/commands/context/init.ts   | 17 +++---
+ .../src/commands/context/release-readiness.test.ts | 64 +++++++++++++++++++++-
+ packages/agentplane/src/context/ingest-task.ts     | 35 ++++++++++++
+ packages/agentplane/src/context/ingest.ts          | 30 +++++++++-
+ 8 files changed, 247 insertions(+), 22 deletions(-)

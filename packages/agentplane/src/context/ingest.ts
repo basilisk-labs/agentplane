@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents, @typescript-eslint/no-unused-vars, unicorn/no-await-expression-member */
 import { createHash } from "node:crypto";
-import { readFile, readdir, stat } from "node:fs/promises";
+import { mkdir, readFile, readdir, stat } from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import path from "node:path";
 
 import { mapBackendError } from "../cli/error-map.js";
 import { CliError } from "../shared/errors.js";
-import { writeJsonStableIfChanged } from "../shared/write-if-changed.js";
+import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { cmdTaskPlanApprove } from "../commands/task/plan.js";
 import { cmdTaskStartReady } from "../commands/task/start-ready.js";
@@ -14,6 +14,7 @@ import { runTaskNewParsed } from "../commands/task/new.js";
 import { runTaskRun } from "../commands/task/run.command.js";
 import { createTaskNewParsed, selectedSourceRows } from "./ingest-task.js";
 import { cmdContextReindex } from "./reindex.js";
+import { starterWikiPageFiles } from "../commands/context/init-wiki.js";
 
 type ContextIngestMode = "changed" | "all" | "sources";
 
@@ -40,6 +41,9 @@ type ManifestLock = {
   generated_at: string;
   workspace_hash: string;
   sources: ManifestEntry[];
+  wiki_scaffold?: {
+    starter_created_at: string;
+  };
 };
 
 export type ContextIngestParsed = {
@@ -184,6 +188,14 @@ async function readManifest(root: string): Promise<ManifestLock> {
       typeof lock.generated_at === "string" ? lock.generated_at : new Date(0).toISOString(),
     workspace_hash:
       typeof lock.workspace_hash === "string" ? lock.workspace_hash : defaultWorkspaceHash(root),
+    wiki_scaffold:
+      typeof (lock.wiki_scaffold as { starter_created_at?: unknown } | undefined)
+        ?.starter_created_at === "string"
+        ? {
+            starter_created_at: (lock.wiki_scaffold as { starter_created_at: string })
+              .starter_created_at,
+          }
+        : undefined,
     sources: lock.sources
       .map((rawSource) => {
         const source = rawSource as Record<string, unknown>;
@@ -217,6 +229,7 @@ async function writeManifest(root: string, manifest: ManifestLock): Promise<void
     version: manifest.version,
     generated_at: new Date().toISOString(),
     workspace_hash: manifest.workspace_hash || defaultWorkspaceHash(root),
+    ...(manifest.wiki_scaffold ? { wiki_scaffold: manifest.wiki_scaffold } : {}),
     sources: manifest.sources,
   });
 }
@@ -353,6 +366,24 @@ function buildIndexModeSourceRows(
   return selectedSourceRows(opts, rows);
 }
 
+async function ensureFirstIngestWikiScaffold(root: string): Promise<string[]> {
+  const created: string[] = [];
+  for (const file of starterWikiPageFiles()) {
+    if (file.relative === "context/wiki/index.md") continue;
+    const abs = path.join(root, file.relative);
+    try {
+      await stat(abs);
+      continue;
+    } catch (err) {
+      if ((err as { code?: string } | null)?.code !== "ENOENT") throw err;
+    }
+    await mkdir(path.dirname(abs), { recursive: true });
+    await writeTextIfChanged(abs, file.content);
+    created.push(file.relative);
+  }
+  return created;
+}
+
 export async function cmdContextIngest(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -395,12 +426,14 @@ export async function cmdContextIngest(opts: {
       return 0;
     }
 
-    await writeManifest(root, {
+    const sourceLockedManifest: ManifestLock = {
       version: lock.version ?? 1,
       generated_at: new Date().toISOString(),
       workspace_hash: defaultWorkspaceHash(root),
+      wiki_scaffold: lock.wiki_scaffold,
       sources: rows,
-    });
+    };
+    await writeManifest(root, sourceLockedManifest);
 
     if (opts.parsed.indexOnly) {
       return cmdContextReindex({
@@ -417,6 +450,19 @@ export async function cmdContextIngest(opts: {
     if (indexModeRows.length === 0) {
       process.stdout.write("no new or changed sources detected for context assimilation\n");
       return 0;
+    }
+
+    if (!sourceLockedManifest.wiki_scaffold?.starter_created_at) {
+      const createdWikiScaffold = await ensureFirstIngestWikiScaffold(root);
+      await writeManifest(root, {
+        ...sourceLockedManifest,
+        wiki_scaffold: { starter_created_at: new Date().toISOString() },
+      });
+      if (createdWikiScaffold.length > 0) {
+        process.stdout.write(
+          `context ingest wiki scaffold created: ${createdWikiScaffold.length} page(s)\n`,
+        );
+      }
     }
 
     const before = new Set((await ctx.taskBackend.listTasks()).map((task) => task.id));
