@@ -1,10 +1,11 @@
 ---
 id: "202605181130-ECS6JB"
 title: "Install context policy module during context init"
-status: "DOING"
+result_summary: "Merged via PR #3886."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Published PR #3886 for commit d141963b8 after implementation checks. Evidence: policy routing OK; builtin assets fresh; focused vitest 3 files/43 tests passed; eslint target passed; prettier check passed; repo-local clean temp context init installs context.must and context check passes."
   attempts: 0
-commit: null
+commit:
+  hash: "772e5e3b287b461f4b21d99a1c9680852b484d55"
+  message: "Merge pull request #3886 from basilisk-labs/task/202605181130-ECS6JB/context-policy-module"
 comments:
   -
     author: "CODER"
     body: "Start: implement the context policy module wiring in the dedicated branch_pr worktree, keeping gateway changes compact and verifying generated policy/init behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3886 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -55,9 +61,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Published PR #3886 for commit d141963b8 after implementation checks. Evidence: policy routing OK; builtin assets fresh; focused vitest 3 files/43 tests passed; eslint target passed; prettier check passed; repo-local clean temp context init installs context.must and context check passes."
+  -
+    type: "status"
+    at: "2026-05-18T11:58:50.030Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3886 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T11:43:24.775Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T11:58:50.038Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add a compact context policy module and wire context initialization/gateway loading so agents get mandatory CLI/provenance rules for local context work instead of relying on skills."
 sections:
   Summary: |-
