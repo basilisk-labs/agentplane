@@ -34,10 +34,7 @@
           "minLength": 1
         }
       },
-      "required": [
-        "name",
-        "version"
-      ],
+      "required": ["name", "version"],
       "additionalProperties": false
     },
     "repository": {
@@ -72,40 +69,22 @@
           "properties": {
             "provider": {
               "type": "string",
-              "enum": [
-                "github",
-                "gitlab",
-                "unknown",
-                "custom"
-              ]
+              "enum": ["github", "gitlab", "unknown", "custom"]
             },
             "type": {
               "type": "string",
-              "enum": [
-                "pull_request",
-                "merge_request",
-                "unknown",
-                "custom"
-              ]
+              "enum": ["pull_request", "merge_request", "unknown", "custom"]
             },
             "id": {
               "type": "string",
               "minLength": 1
             }
           },
-          "required": [
-            "provider",
-            "type",
-            "id"
-          ],
+          "required": ["provider", "type", "id"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "vcs",
-        "base_commit",
-        "work_commit"
-      ],
+      "required": ["vcs", "base_commit", "work_commit"],
       "additionalProperties": false
     },
     "task": {
@@ -135,10 +114,7 @@
               "minLength": 1
             }
           },
-          "required": [
-            "type",
-            "id"
-          ],
+          "required": ["type", "id"],
           "additionalProperties": false
         },
         "external_refs": {
@@ -155,19 +131,12 @@
                 "minLength": 1
               }
             },
-            "required": [
-              "type",
-              "id"
-            ],
+            "required": ["type", "id"],
             "additionalProperties": false
           }
         }
       },
-      "required": [
-        "task_id",
-        "title",
-        "intent"
-      ],
+      "required": ["task_id", "title", "intent"],
       "additionalProperties": false
     },
     "agent": {
@@ -183,27 +152,14 @@
         },
         "agent_type": {
           "type": "string",
-          "enum": [
-            "coding_agent",
-            "human",
-            "hybrid",
-            "automation",
-            "unknown"
-          ]
+          "enum": ["coding_agent", "human", "hybrid", "automation", "unknown"]
         },
         "model": {
           "type": "object",
           "properties": {
             "provider": {
               "type": "string",
-              "enum": [
-                "anthropic",
-                "openai",
-                "cursor",
-                "aider",
-                "unknown",
-                "custom"
-              ]
+              "enum": ["anthropic", "openai", "cursor", "aider", "unknown", "custom"]
             },
             "name": {
               "type": "string",
@@ -214,11 +170,7 @@
               "minLength": 1
             }
           },
-          "required": [
-            "provider",
-            "name",
-            "version"
-          ],
+          "required": ["provider", "name", "version"],
           "additionalProperties": false
         },
         "toolchain": {
@@ -235,17 +187,12 @@
                 "minLength": 1
               }
             },
-            "required": [
-              "name"
-            ],
+            "required": ["name"],
             "additionalProperties": false
           }
         }
       },
-      "required": [
-        "name",
-        "agent_type"
-      ],
+      "required": ["name", "agent_type"],
       "additionalProperties": false
     },
     "plan": {
@@ -253,14 +200,7 @@
       "properties": {
         "status": {
           "type": "string",
-          "enum": [
-            "missing",
-            "draft",
-            "pending_approval",
-            "approved",
-            "rejected",
-            "waived"
-          ]
+          "enum": ["missing", "draft", "pending_approval", "approved", "rejected", "waived"]
         },
         "artifact": {
           "type": "object",
@@ -275,10 +215,7 @@
               "pattern": "^sha256:[0-9a-f]{64}$"
             }
           },
-          "required": [
-            "path",
-            "sha256"
-          ],
+          "required": ["path", "sha256"],
           "additionalProperties": false
         },
         "approved_at": {
@@ -298,16 +235,11 @@
               "minLength": 1
             }
           },
-          "required": [
-            "type",
-            "id"
-          ],
+          "required": ["type", "id"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "status"
-      ],
+      "required": ["status"],
       "additionalProperties": false
     },
     "permissions": {
@@ -338,17 +270,10 @@
           "properties": {
             "mode": {
               "type": "string",
-              "enum": [
-                "disabled",
-                "approval_required",
-                "allowed",
-                "unknown"
-              ]
+              "enum": ["disabled", "approval_required", "allowed", "unknown"]
             }
           },
-          "required": [
-            "mode"
-          ],
+          "required": ["mode"],
           "additionalProperties": false
         },
         "secrets": {
@@ -356,17 +281,10 @@
           "properties": {
             "access": {
               "type": "string",
-              "enum": [
-                "none",
-                "approval_required",
-                "allowed",
-                "unknown"
-              ]
+              "enum": ["none", "approval_required", "allowed", "unknown"]
             }
           },
-          "required": [
-            "access"
-          ],
+          "required": ["access"],
           "additionalProperties": false
         },
         "tools": {
@@ -382,18 +300,12 @@
                 "type": "boolean"
               }
             },
-            "required": [
-              "name",
-              "allowed"
-            ],
+            "required": ["name", "allowed"],
             "additionalProperties": false
           }
         }
       },
-      "required": [
-        "network",
-        "secrets"
-      ],
+      "required": ["network", "secrets"],
       "additionalProperties": false
     },
     "policy": {
@@ -418,31 +330,19 @@
               },
               "decision": {
                 "type": "string",
-                "enum": [
-                  "pass",
-                  "fail",
-                  "warning",
-                  "not_applicable",
-                  "manual_override"
-                ]
+                "enum": ["pass", "fail", "warning", "not_applicable", "manual_override"]
               },
               "reason": {
                 "type": "string",
                 "minLength": 1
               }
             },
-            "required": [
-              "rule_id",
-              "decision",
-              "reason"
-            ],
+            "required": ["rule_id", "decision", "reason"],
             "additionalProperties": false
           }
         }
       },
-      "required": [
-        "decisions"
-      ],
+      "required": ["decisions"],
       "additionalProperties": false
     },
     "changes": {
@@ -471,11 +371,7 @@
               "maximum": 9007199254740991
             }
           },
-          "required": [
-            "files_changed",
-            "insertions",
-            "deletions"
-          ],
+          "required": ["files_changed", "insertions", "deletions"],
           "additionalProperties": false
         },
         "files": {
@@ -527,10 +423,7 @@
                 }
               }
             },
-            "required": [
-              "path",
-              "status"
-            ],
+            "required": ["path", "status"],
             "additionalProperties": false
           }
         },
@@ -539,13 +432,7 @@
           "properties": {
             "level": {
               "type": "string",
-              "enum": [
-                "low",
-                "medium",
-                "high",
-                "critical",
-                "unknown"
-              ]
+              "enum": ["low", "medium", "high", "critical", "unknown"]
             },
             "categories": {
               "type": "array",
@@ -577,20 +464,11 @@
               "type": "boolean"
             }
           },
-          "required": [
-            "level",
-            "categories",
-            "protected_paths_touched"
-          ],
+          "required": ["level", "categories", "protected_paths_touched"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "summary",
-        "diff_stats",
-        "files",
-        "risk"
-      ],
+      "required": ["summary", "diff_stats", "files", "risk"],
       "additionalProperties": false
     },
     "verification": {
@@ -598,13 +476,7 @@
       "properties": {
         "status": {
           "type": "string",
-          "enum": [
-            "passed",
-            "failed",
-            "partial",
-            "not_run",
-            "waived"
-          ]
+          "enum": ["passed", "failed", "partial", "not_run", "waived"]
         },
         "checks": {
           "type": "array",
@@ -634,14 +506,7 @@
               },
               "status": {
                 "type": "string",
-                "enum": [
-                  "passed",
-                  "failed",
-                  "skipped",
-                  "not_run",
-                  "waived",
-                  "unknown"
-                ]
+                "enum": ["passed", "failed", "skipped", "not_run", "waived", "unknown"]
               },
               "exit_code": {
                 "anyOf": [
@@ -668,26 +533,16 @@
                     "pattern": "^sha256:[0-9a-f]{64}$"
                   }
                 },
-                "required": [
-                  "path",
-                  "sha256"
-                ],
+                "required": ["path", "sha256"],
                 "additionalProperties": false
               }
             },
-            "required": [
-              "check_id",
-              "type",
-              "status"
-            ],
+            "required": ["check_id", "type", "status"],
             "additionalProperties": false
           }
         }
       },
-      "required": [
-        "status",
-        "checks"
-      ],
+      "required": ["status", "checks"],
       "additionalProperties": false
     },
     "approvals": {
@@ -712,12 +567,7 @@
           },
           "decision": {
             "type": "string",
-            "enum": [
-              "approved",
-              "rejected",
-              "waived",
-              "overridden"
-            ]
+            "enum": ["approved", "rejected", "waived", "overridden"]
           },
           "approved_by": {
             "type": "object",
@@ -731,10 +581,7 @@
                 "minLength": 1
               }
             },
-            "required": [
-              "type",
-              "id"
-            ],
+            "required": ["type", "id"],
             "additionalProperties": false
           },
           "approved_at": {
@@ -747,14 +594,7 @@
             "minLength": 1
           }
         },
-        "required": [
-          "approval_id",
-          "type",
-          "decision",
-          "approved_by",
-          "approved_at",
-          "scope"
-        ],
+        "required": ["approval_id", "type", "decision", "approved_by", "approved_at", "scope"],
         "additionalProperties": false
       }
     },
@@ -788,11 +628,7 @@
             "pattern": "^sha256:[0-9a-f]{64}$"
           }
         },
-        "required": [
-          "type",
-          "path",
-          "sha256"
-        ],
+        "required": ["type", "path", "sha256"],
         "additionalProperties": false
       }
     },
@@ -833,16 +669,11 @@
               "minLength": 1
             }
           },
-          "required": [
-            "available"
-          ],
+          "required": ["available"],
           "additionalProperties": false
         }
       },
-      "required": [
-        "status",
-        "merge_ready"
-      ],
+      "required": ["status", "merge_ready"],
       "additionalProperties": false
     },
     "integrity": {
@@ -872,11 +703,7 @@
           "items": {}
         }
       },
-      "required": [
-        "digest_algorithm",
-        "record_digest",
-        "canonicalization"
-      ],
+      "required": ["digest_algorithm", "record_digest", "canonicalization"],
       "additionalProperties": false
     },
     "extensions": {

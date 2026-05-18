@@ -112,13 +112,7 @@
           "anyOf": [
             {
               "type": "string",
-              "enum": [
-                "prepared",
-                "running",
-                "success",
-                "failed",
-                "cancelled"
-              ]
+              "enum": ["prepared", "running", "success", "failed", "cancelled"]
             },
             {
               "type": "null"
@@ -141,14 +135,7 @@
           "anyOf": [
             {
               "type": "string",
-              "enum": [
-                "run",
-                "resume",
-                "retry",
-                "wait",
-                "cancel_then_resume",
-                "none"
-              ]
+              "enum": ["run", "resume", "retry", "wait", "cancel_then_resume", "none"]
             },
             {
               "type": "null"
@@ -213,17 +200,13 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "protected_base_integrate"
-          ]
+          "enum": ["protected_base_integrate"]
         },
         "status": {
           "anyOf": [
             {
               "type": "string",
-              "enum": [
-                "awaiting_github_merge"
-              ]
+              "enum": ["awaiting_github_merge"]
             },
             {
               "type": "null"
@@ -234,9 +217,7 @@
           "anyOf": [
             {
               "type": "string",
-              "enum": [
-                "not_performed"
-              ]
+              "enum": ["not_performed"]
             },
             {
               "type": "null"
@@ -301,9 +282,7 @@
           ]
         }
       },
-      "required": [
-        "kind"
-      ],
+      "required": ["kind"],
       "additionalProperties": {}
     },
     "next_actions": {
@@ -335,12 +314,6 @@
       }
     }
   },
-  "required": [
-    "schema_version",
-    "task_id",
-    "created_at",
-    "from_role",
-    "reason"
-  ],
+  "required": ["schema_version", "task_id", "created_at", "from_role", "reason"],
   "additionalProperties": {}
 }

@@ -12,27 +12,17 @@
     "workflow_mode": {
       "default": "direct",
       "type": "string",
-      "enum": [
-        "direct",
-        "branch_pr"
-      ]
+      "enum": ["direct", "branch_pr"]
     },
     "status_commit_policy": {
       "default": "warn",
       "type": "string",
-      "enum": [
-        "off",
-        "warn",
-        "confirm"
-      ]
+      "enum": ["off", "warn", "confirm"]
     },
     "commit_automation": {
       "default": "manual",
       "type": "string",
-      "enum": [
-        "manual",
-        "finish_only"
-      ]
+      "enum": ["manual", "finish_only"]
     },
     "finish_auto_status_commit": {
       "default": false,
@@ -47,10 +37,7 @@
         "direct_dirty_policy": {
           "default": "allow_other_task_readmes",
           "type": "string",
-          "enum": [
-            "allow_other_task_readmes",
-            "strict"
-          ]
+          "enum": ["allow_other_task_readmes", "strict"]
         }
       },
       "additionalProperties": {}
@@ -106,10 +93,7 @@
         "storage_default": {
           "default": "copy",
           "type": "string",
-          "enum": [
-            "link",
-            "copy"
-          ]
+          "enum": ["link", "copy"]
         }
       },
       "additionalProperties": {}
@@ -145,30 +129,17 @@
         "profile": {
           "default": "balanced",
           "type": "string",
-          "enum": [
-            "conservative",
-            "balanced",
-            "aggressive"
-          ]
+          "enum": ["conservative", "balanced", "aggressive"]
         },
         "reasoning_effort": {
           "default": "medium",
           "type": "string",
-          "enum": [
-            "low",
-            "medium",
-            "high",
-            "xhigh"
-          ]
+          "enum": ["low", "medium", "high", "xhigh"]
         },
         "text_verbosity": {
           "default": "medium",
           "type": "string",
-          "enum": [
-            "low",
-            "medium",
-            "high"
-          ]
+          "enum": ["low", "medium", "high"]
         },
         "tool_budget": {
           "default": {
@@ -260,10 +231,7 @@
         "default_adapter": {
           "default": "codex",
           "type": "string",
-          "enum": [
-            "codex",
-            "custom"
-          ]
+          "enum": ["codex", "custom"]
         },
         "trace": {
           "default": {
@@ -279,10 +247,7 @@
             "mode": {
               "default": "raw",
               "type": "string",
-              "enum": [
-                "raw",
-                "off"
-              ]
+              "enum": ["raw", "off"]
             },
             "max_tail_bytes": {
               "default": 65536,
@@ -297,19 +262,12 @@
             "retention": {
               "default": "keep",
               "type": "string",
-              "enum": [
-                "keep",
-                "remove_on_success",
-                "remove_always"
-              ]
+              "enum": ["keep", "remove_on_success", "remove_always"]
             },
             "compression": {
               "default": "none",
               "type": "string",
-              "enum": [
-                "none",
-                "gzip"
-              ]
+              "enum": ["none", "gzip"]
             },
             "redact_patterns": {
               "default": [],
@@ -377,27 +335,17 @@
               "properties": {
                 "mode": {
                   "type": "string",
-                  "enum": [
-                    "none",
-                    "codex_sandbox_full_auto"
-                  ]
+                  "enum": ["none", "codex_sandbox_full_auto"]
                 },
                 "platform": {
                   "type": "string",
-                  "enum": [
-                    "auto",
-                    "macos",
-                    "linux",
-                    "windows"
-                  ]
+                  "enum": ["auto", "macos", "linux", "windows"]
                 }
               },
               "additionalProperties": {}
             }
           },
-          "required": [
-            "command"
-          ],
+          "required": ["command"],
           "additionalProperties": {}
         }
       },
@@ -414,10 +362,7 @@
           "prompt_on_internal_error": true,
           "include_insights_report": true,
           "dedupe": true,
-          "labels": [
-            "agentplane-feedback",
-            "bug"
-          ]
+          "labels": ["agentplane-feedback", "bug"]
         }
       },
       "type": "object",
@@ -432,10 +377,7 @@
             "prompt_on_internal_error": true,
             "include_insights_report": true,
             "dedupe": true,
-            "labels": [
-              "agentplane-feedback",
-              "bug"
-            ]
+            "labels": ["agentplane-feedback", "bug"]
           },
           "type": "object",
           "properties": {
@@ -451,11 +393,7 @@
             "transport": {
               "default": "github",
               "type": "string",
-              "enum": [
-                "github",
-                "cloud",
-                "auto"
-              ]
+              "enum": ["github", "cloud", "auto"]
             },
             "cloud_endpoint": {
               "default": "https://agentplane.cloud/api/feedback/issues",
@@ -479,10 +417,7 @@
               "type": "boolean"
             },
             "labels": {
-              "default": [
-                "agentplane-feedback",
-                "bug"
-              ],
+              "default": ["agentplane-feedback", "bug"],
               "type": "array",
               "items": {
                 "type": "string",
@@ -528,20 +463,12 @@
         "default_validation_mode": {
           "default": "local",
           "type": "string",
-          "enum": [
-            "schema",
-            "local",
-            "ci"
-          ]
+          "enum": ["schema", "local", "ci"]
         },
         "include_model_identity": {
           "default": "when_known",
           "type": "string",
-          "enum": [
-            "never",
-            "when_known",
-            "always"
-          ]
+          "enum": ["never", "when_known", "always"]
         },
         "include_prompts": {
           "default": false,
@@ -665,35 +592,15 @@
       "default": {
         "id_suffix_length_default": 6,
         "verify": {
-          "required_tags": [
-            "code",
-            "backend",
-            "frontend"
-          ],
-          "require_steps_for_primary": [
-            "code",
-            "data",
-            "ops"
-          ],
-          "require_verification_for_primary": [
-            "code",
-            "data",
-            "ops"
-          ],
+          "required_tags": ["code", "backend", "frontend"],
+          "require_steps_for_primary": ["code", "data", "ops"],
+          "require_verification_for_primary": ["code", "data", "ops"],
           "spike_tag": "spike",
           "enforce_on_plan_approve": true,
           "enforce_on_start_when_no_plan": true
         },
         "tags": {
-          "primary_allowlist": [
-            "code",
-            "data",
-            "research",
-            "docs",
-            "ops",
-            "product",
-            "meta"
-          ],
+          "primary_allowlist": ["code", "data", "research", "docs", "ops", "product", "meta"],
           "strict_primary": false,
           "fallback_primary": "meta",
           "lock_primary_on_update": true
@@ -708,13 +615,7 @@
             "Rollback Plan",
             "Findings"
           ],
-          "required_sections": [
-            "Summary",
-            "Scope",
-            "Plan",
-            "Verification",
-            "Rollback Plan"
-          ]
+          "required_sections": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
         },
         "comments": {
           "start": {
@@ -741,21 +642,9 @@
         },
         "verify": {
           "default": {
-            "required_tags": [
-              "code",
-              "backend",
-              "frontend"
-            ],
-            "require_steps_for_primary": [
-              "code",
-              "data",
-              "ops"
-            ],
-            "require_verification_for_primary": [
-              "code",
-              "data",
-              "ops"
-            ],
+            "required_tags": ["code", "backend", "frontend"],
+            "require_steps_for_primary": ["code", "data", "ops"],
+            "require_verification_for_primary": ["code", "data", "ops"],
             "spike_tag": "spike",
             "enforce_on_plan_approve": true,
             "enforce_on_start_when_no_plan": true
@@ -763,11 +652,7 @@
           "type": "object",
           "properties": {
             "required_tags": {
-              "default": [
-                "code",
-                "backend",
-                "frontend"
-              ],
+              "default": ["code", "backend", "frontend"],
               "type": "array",
               "items": {
                 "type": "string",
@@ -782,11 +667,7 @@
               }
             },
             "require_steps_for_primary": {
-              "default": [
-                "code",
-                "data",
-                "ops"
-              ],
+              "default": ["code", "data", "ops"],
               "type": "array",
               "items": {
                 "type": "string",
@@ -794,11 +675,7 @@
               }
             },
             "require_verification_for_primary": {
-              "default": [
-                "code",
-                "data",
-                "ops"
-              ],
+              "default": ["code", "data", "ops"],
               "type": "array",
               "items": {
                 "type": "string",
@@ -823,15 +700,7 @@
         },
         "tags": {
           "default": {
-            "primary_allowlist": [
-              "code",
-              "data",
-              "research",
-              "docs",
-              "ops",
-              "product",
-              "meta"
-            ],
+            "primary_allowlist": ["code", "data", "research", "docs", "ops", "product", "meta"],
             "strict_primary": false,
             "fallback_primary": "meta",
             "lock_primary_on_update": true
@@ -839,15 +708,7 @@
           "type": "object",
           "properties": {
             "primary_allowlist": {
-              "default": [
-                "code",
-                "data",
-                "research",
-                "docs",
-                "ops",
-                "product",
-                "meta"
-              ],
+              "default": ["code", "data", "research", "docs", "ops", "product", "meta"],
               "minItems": 1,
               "type": "array",
               "items": {
@@ -882,13 +743,7 @@
               "Rollback Plan",
               "Findings"
             ],
-            "required_sections": [
-              "Summary",
-              "Scope",
-              "Plan",
-              "Verification",
-              "Rollback Plan"
-            ]
+            "required_sections": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
           },
           "type": "object",
           "properties": {
@@ -909,13 +764,7 @@
               }
             },
             "required_sections": {
-              "default": [
-                "Summary",
-                "Scope",
-                "Plan",
-                "Verification",
-                "Rollback Plan"
-              ],
+              "default": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"],
               "type": "array",
               "items": {
                 "type": "string",
@@ -959,10 +808,7 @@
                   "maximum": 9007199254740991
                 }
               },
-              "required": [
-                "prefix",
-                "min_chars"
-              ],
+              "required": ["prefix", "min_chars"],
               "additionalProperties": {}
             },
             "blocked": {
@@ -982,10 +828,7 @@
                   "maximum": 9007199254740991
                 }
               },
-              "required": [
-                "prefix",
-                "min_chars"
-              ],
+              "required": ["prefix", "min_chars"],
               "additionalProperties": {}
             },
             "verified": {
@@ -1005,10 +848,7 @@
                   "maximum": 9007199254740991
                 }
               },
-              "required": [
-                "prefix",
-                "min_chars"
-              ],
+              "required": ["prefix", "min_chars"],
               "additionalProperties": {}
             }
           },
@@ -1034,16 +874,7 @@
     },
     "commit": {
       "default": {
-        "generic_tokens": [
-          "start",
-          "status",
-          "mark",
-          "done",
-          "wip",
-          "update",
-          "tasks",
-          "task"
-        ],
+        "generic_tokens": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"],
         "dco": {
           "enabled": false,
           "name": null,
@@ -1053,16 +884,7 @@
       "type": "object",
       "properties": {
         "generic_tokens": {
-          "default": [
-            "start",
-            "status",
-            "mark",
-            "done",
-            "wip",
-            "update",
-            "tasks",
-            "task"
-          ],
+          "default": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"],
           "type": "array",
           "items": {
             "type": "string",
@@ -1128,10 +950,7 @@
     "artifacts_language": {
       "default": "any",
       "type": "string",
-      "enum": [
-        "any",
-        "en"
-      ]
+      "enum": ["any", "en"]
     },
     "closure_commit_requires_approval": {
       "default": false,
