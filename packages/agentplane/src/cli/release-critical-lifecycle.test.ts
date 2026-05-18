@@ -134,6 +134,16 @@ describe("release-critical direct lifecycle", () => {
         "Command: release-critical lifecycle flow. Result: pass. Evidence: init, task new, plan, start-ready, verify-show, verify, and finish path reached verification.",
       ]);
       expect(verify.code).toBe(0);
+      const evaluatorVerify = await runCliWithOutput(root, [
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "EVALUATOR",
+        "--note",
+        "EVALUATOR quality gate passed for release-critical lifecycle.",
+      ]);
+      expect(evaluatorVerify.code).toBe(0);
 
       const finish = await runCliWithOutput(root, [
         "finish",

@@ -256,6 +256,16 @@ describe("commands/workflow", () => {
         note: "Ok to finish",
         quiet: true,
       });
+      await cmdVerifyParsed({
+        ctx,
+        cwd: root,
+        rootOverride: undefined,
+        taskId,
+        state: "ok",
+        by: "EVALUATOR",
+        note: "Quality gate passed",
+        quiet: true,
+      });
 
       const codeFinish = await cmdFinish({
         cwd: root,

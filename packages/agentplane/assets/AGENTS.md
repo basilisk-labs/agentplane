@@ -19,7 +19,6 @@ Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
 ## PROJECT
 
 - Repository type: user project initialized with `agentplane`.
-- Gateway role: keep this file compact and deterministic; move scenario-specific details to policy modules.
 - CLI rule: prefer `ap` for compact agent-oriented commands; fall back to `agentplane`; if neither is available, stop and request installation guidance (do not invent repo-local entrypoints).
 - Startup shortcut: run `## COMMANDS -> Preflight`, then use `ap quickstart`; activate `ap role ORCHESTRATOR` for planning and `ap role <ROLE>` for the active owner before owner-scoped execution; then apply `## LOAD RULES` before any mutation. The guarded route is determined by `workflow.mode` in `.agentplane/WORKFLOW.md`; use `ap quickstart` as the canonical summary of the active path before mutating. In `branch_pr`, start from `ap work start ... --worktree`; in `direct`, stay in the current checkout and use the task lifecycle route.
 
@@ -85,6 +84,7 @@ git commit -m "Implement <task>"
 ap task verify-show <task-id>
 ap pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>
 ap verify <task-id> --ok|--rework --by <ROLE> --note "..."
+ap verify <task-id> --ok|--rework --by EVALUATOR --note "..." # verify --by EVALUATOR
 ap integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 ap finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 ```
