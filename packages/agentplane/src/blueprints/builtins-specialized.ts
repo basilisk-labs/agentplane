@@ -84,12 +84,7 @@ export const SPECIALIZED_CODE_BLUEPRINTS = [
         "verify_record",
         "Faster, slower, unchanged, or noisy verdict.",
       ),
-      evidence(
-        "benchmark.quality",
-        "quality_report",
-        "quality_gate",
-        "EVALUATOR quality verdict.",
-      ),
+      evidence("benchmark.quality", "quality_report", "quality_gate", "EVALUATOR quality verdict."),
       evidence("benchmark.commit", "commit", "publish_or_integrate", "Integration commit."),
     ],
     stopRules: [
@@ -245,12 +240,7 @@ export const SPECIALIZED_CODE_BLUEPRINTS = [
         "verify_record",
         "Verification that the review inspected available logs and gated execution behind the user decision.",
       ),
-      evidence(
-        "post_run.quality",
-        "quality_report",
-        "quality_gate",
-        "EVALUATOR quality verdict.",
-      ),
+      evidence("post_run.quality", "quality_report", "quality_gate", "EVALUATOR quality verdict."),
       evidence(
         "post_run.handoff",
         "final_output",

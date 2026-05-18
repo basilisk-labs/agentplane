@@ -223,7 +223,12 @@ export const BUILTIN_BLUEPRINTS = [
       evidence("code_direct.paths", "changed_paths", "work_unit", "Changed source paths."),
       evidence("code_direct.check", "check_result", "deterministic_check", "Focused checks."),
       evidence("code_direct.commit", "commit", "finish", "Close commit."),
-      evidence("code_direct.quality", "quality_report", "quality_gate", "EVALUATOR quality verdict."),
+      evidence(
+        "code_direct.quality",
+        "quality_report",
+        "quality_gate",
+        "EVALUATOR quality verdict.",
+      ),
     ],
   }),
   blueprint({
