@@ -16,6 +16,7 @@ const REQUIRED_CORE_NODE_KINDS = [
   "context_resolve",
   "work_unit",
   "verify_record",
+  "quality_gate",
   "finish",
 ] as const satisfies readonly BlueprintNodeKind[];
 

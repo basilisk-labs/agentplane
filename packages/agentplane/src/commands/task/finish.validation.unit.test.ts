@@ -97,6 +97,7 @@ vi.mock("./shared.js", async (importOriginal) => {
 });
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
+  const qualityReviewSha = overrides.commit?.hash ?? "hc";
   return {
     id: "T-1",
     title: "Title",
@@ -107,26 +108,17 @@ function mkTask(overrides: Partial<TaskData>): TaskData {
     depends_on: [],
     tags: [],
     verify: [],
-    doc: [
-      "## Summary",
-      "Task summary",
-      "",
-      "## Scope",
-      "In-scope files",
-      "",
-      "## Plan",
-      "1. Implement",
-      "",
-      "## Risks",
-      "Low",
-      "",
-      "## Verification",
-      "BlueprintSnapshotRef:",
-      "- state: current",
-      "",
-      "## Rollback Plan",
-      "Revert commit",
-    ].join("\n"),
+    quality_review: {
+      state: "pass",
+      updated_at: "2026-02-09T00:00:00.000Z",
+      updated_by: "EVALUATOR",
+      note: "Quality gate passed",
+      evaluated_sha: qualityReviewSha,
+      blueprint_digest: "d1",
+      evidence_refs: [".agentplane/tasks/T-1/README.md"],
+      findings: [],
+    },
+    doc: "## Summary\nTask summary\n\n## Scope\nIn-scope files\n\n## Plan\n1. Implement\n\n## Risks\nLow\n\n## Verification\nBlueprintSnapshotRef:\n- state: current\n\n## Rollback Plan\nRevert commit",
     ...overrides,
   };
 }
@@ -1104,6 +1096,7 @@ describe("task finish validation", () => {
 
   it("uses readCommitInfo only when --commit is provided", async () => {
     const ctx = mkCtx();
+    mocks.readCommitInfo.mockResolvedValue({ hash: "existing-hash", message: "existing" });
     mocks.loadTaskFromContext.mockResolvedValue(
       mkTask({
         id: "T-1",

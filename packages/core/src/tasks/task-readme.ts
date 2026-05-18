@@ -203,37 +203,48 @@ function renderValueLines(key: string, value: unknown, indent: string): string[]
           ? (["state", "updated_at", "updated_by", "note"] as const)
           : key === "verification"
             ? (["state", "updated_at", "updated_by", "note"] as const)
-            : key === "runner"
+            : key === "quality_review"
               ? ([
-                  "run_id",
-                  "status",
-                  "adapter_id",
-                  "mode",
+                  "state",
                   "updated_at",
-                  "started_at",
-                  "ended_at",
-                  "exit_code",
-                  "target",
-                  "summary",
-                  "output_paths",
-                  "stdout_summary",
-                  "stderr_summary",
-                  "metrics",
+                  "updated_by",
+                  "note",
+                  "evaluated_sha",
+                  "blueprint_digest",
+                  "evidence_refs",
+                  "findings",
                 ] as const)
-              : key === "target"
-                ? (["kind", "task_id", "recipe_id", "scenario_id"] as const)
-                : key === "metrics"
-                  ? ([
-                      "duration_ms",
-                      "stdout_bytes",
-                      "stderr_bytes",
-                      "output_last_message_bytes",
-                    ] as const)
-                  : key === "commit"
-                    ? (["hash", "message"] as const)
-                    : key === "sections"
-                      ? TASK_DOC_SECTION_ORDER
-                      : null;
+              : key === "runner"
+                ? ([
+                    "run_id",
+                    "status",
+                    "adapter_id",
+                    "mode",
+                    "updated_at",
+                    "started_at",
+                    "ended_at",
+                    "exit_code",
+                    "target",
+                    "summary",
+                    "output_paths",
+                    "stdout_summary",
+                    "stderr_summary",
+                    "metrics",
+                  ] as const)
+                : key === "target"
+                  ? (["kind", "task_id", "recipe_id", "scenario_id"] as const)
+                  : key === "metrics"
+                    ? ([
+                        "duration_ms",
+                        "stdout_bytes",
+                        "stderr_bytes",
+                        "output_last_message_bytes",
+                      ] as const)
+                    : key === "commit"
+                      ? (["hash", "message"] as const)
+                      : key === "sections"
+                        ? TASK_DOC_SECTION_ORDER
+                        : null;
     const inner = renderMapLines(value, `${indent}  `, preferred);
     if (inner.length === 0) return [`${indent}${key}: {}`];
     return [`${indent}${key}:`, ...inner];
@@ -265,6 +276,7 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
     "verify",
     "plan_approval",
     "verification",
+    "quality_review",
     "runner",
     "commit",
     "comments",

@@ -14,6 +14,7 @@ const analysisNodes = [
   node({ kind: "work_unit", evidence: ["weak_links", "final_output"] }),
   node({ kind: "artifact_write", evidence: ["artifact"] }),
   node({ kind: "verify_record", evidence: ["final_output"], protected: true }),
+  node({ kind: "quality_gate", evidence: ["quality_report"], protected: true }),
   node({ kind: "finish", evidence: ["final_output"], protected: true }),
 ] as const;
 
@@ -29,6 +30,7 @@ const contentNodes = [
   node({ kind: "deterministic_check", evidence: ["check_result"] }),
   node({ kind: "artifact_write", evidence: ["artifact"] }),
   node({ kind: "verify_record", evidence: ["final_output"], protected: true }),
+  node({ kind: "quality_gate", evidence: ["quality_report"], protected: true }),
   node({ kind: "finish", evidence: ["final_output"], protected: true }),
 ] as const;
 
@@ -48,6 +50,7 @@ const docsNodes = [
   node({ kind: "deterministic_check", evidence: ["check_result"] }),
   node({ kind: "artifact_write", evidence: ["artifact"] }),
   node({ kind: "verify_record", evidence: ["check_result"], protected: true }),
+  node({ kind: "quality_gate", evidence: ["quality_report"], protected: true }),
   node({ kind: "finish", evidence: ["commit"], protected: true }),
 ] as const;
 
@@ -69,6 +72,7 @@ const releaseNodes = [
   node({ kind: "deterministic_check", evidence: ["check_result"] }),
   node({ kind: "publish_or_integrate", evidence: ["commit", "external_link"], protected: true }),
   node({ kind: "verify_record", evidence: ["check_result"], protected: true }),
+  node({ kind: "quality_gate", evidence: ["quality_report"], protected: true }),
   node({ kind: "finish", evidence: ["commit"], protected: true }),
 ] as const;
 
@@ -85,6 +89,7 @@ const opsNodes = [
   node({ kind: "deterministic_check", evidence: ["check_result"] }),
   node({ kind: "artifact_write", evidence: ["artifact"] }),
   node({ kind: "verify_record", evidence: ["check_result"], protected: true }),
+  node({ kind: "quality_gate", evidence: ["quality_report"], protected: true }),
   node({ kind: "finish", evidence: ["final_output"], protected: true }),
 ] as const;
 
@@ -113,6 +118,7 @@ const contextAssimilationNodes = [
   }),
   node({ kind: "artifact_write", evidence: ["artifact"] }),
   node({ kind: "verify_record", evidence: ["check_result", "weak_links"], protected: true }),
+  node({ kind: "quality_gate", evidence: ["quality_report"], protected: true }),
   node({ kind: "finish", evidence: ["commit"], protected: true }),
 ] as const;
 
@@ -136,6 +142,7 @@ export const BUILTIN_BLUEPRINTS = [
       evidence("analysis.assumptions", "assumptions", "scope", "Assumptions and constraints."),
       evidence("analysis.weak_links", "weak_links", "work_unit", "Weak links or uncertainty."),
       evidence("analysis.final", "final_output", "work_unit", "Final answer or report."),
+      evidence("analysis.quality", "quality_report", "quality_gate", "EVALUATOR quality verdict."),
     ],
   }),
   blueprint({
@@ -156,6 +163,7 @@ export const BUILTIN_BLUEPRINTS = [
       evidence("content.sources", "sources", "context_resolve", "Source or product facts used."),
       evidence("content.check", "check_result", "deterministic_check", "Style or editorial check."),
       evidence("content.final", "final_output", "work_unit", "Final content artifact."),
+      evidence("content.quality", "quality_report", "quality_gate", "EVALUATOR quality verdict."),
     ],
   }),
   blueprint({
@@ -184,6 +192,7 @@ export const BUILTIN_BLUEPRINTS = [
       evidence("docs.paths", "changed_paths", "work_unit", "Changed documentation paths."),
       evidence("docs.check", "check_result", "deterministic_check", "Documentation checks."),
       evidence("docs.artifact", "artifact", "artifact_write", "Updated documentation artifact."),
+      evidence("docs.quality", "quality_report", "quality_gate", "EVALUATOR quality verdict."),
     ],
   }),
   blueprint({
@@ -214,6 +223,12 @@ export const BUILTIN_BLUEPRINTS = [
       evidence("code_direct.paths", "changed_paths", "work_unit", "Changed source paths."),
       evidence("code_direct.check", "check_result", "deterministic_check", "Focused checks."),
       evidence("code_direct.commit", "commit", "finish", "Close commit."),
+      evidence(
+        "code_direct.quality",
+        "quality_report",
+        "quality_gate",
+        "EVALUATOR quality verdict.",
+      ),
     ],
   }),
   blueprint({
@@ -247,6 +262,7 @@ export const BUILTIN_BLUEPRINTS = [
       evidence("code_pr.fast_checks", "check_result", "fast_local_checks", "Fast local checks."),
       evidence("code_pr.pr", "external_link", "pr_artifact", "Pull request artifact."),
       evidence("code_pr.verify", "check_result", "verify_record", "Task branch verification."),
+      evidence("code_pr.quality", "quality_report", "quality_gate", "EVALUATOR quality verdict."),
       evidence("code_pr.hosted", "check_result", "hosted_checks", "Hosted check evidence."),
       evidence("code_pr.commit", "commit", "publish_or_integrate", "Integration commit."),
     ],
@@ -320,6 +336,7 @@ export const BUILTIN_BLUEPRINTS = [
         "verify_record",
         "Agent handoff, stalled work, stale projection, empty derived output, or conflict review status.",
       ),
+      evidence("context.quality", "quality_report", "quality_gate", "EVALUATOR quality verdict."),
       evidence("context.commit", "commit", "finish", "Close or integration commit."),
     ],
     stopRules: [
@@ -401,6 +418,7 @@ export const BUILTIN_BLUEPRINTS = [
       evidence("release.check", "check_result", "deterministic_check", "Release gates."),
       evidence("release.publish", "external_link", "publish_or_integrate", "Publish evidence."),
       evidence("release.commit", "commit", "publish_or_integrate", "Release commit."),
+      evidence("release.quality", "quality_report", "quality_gate", "EVALUATOR quality verdict."),
     ],
   }),
   blueprint({
@@ -426,6 +444,7 @@ export const BUILTIN_BLUEPRINTS = [
       evidence("ops.rollback", "rollback", "scope", "Rollback or recovery path."),
       evidence("ops.action", "artifact", "work_unit", "Action log or operational artifact."),
       evidence("ops.check", "check_result", "deterministic_check", "Post-action check."),
+      evidence("ops.quality", "quality_report", "quality_gate", "EVALUATOR quality verdict."),
     ],
   }),
 ] as const satisfies readonly Blueprint[];

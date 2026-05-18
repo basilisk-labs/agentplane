@@ -9,6 +9,7 @@ import {
 import { ISO_UTC_TIMESTAMP, NON_EMPTY_STRING, isRecord } from "./task-artifact-schema.shared.js";
 import {
   TASK_PLAN_APPROVAL_SCHEMA,
+  TASK_QUALITY_REVIEW_SCHEMA,
   TASK_VERIFICATION_SCHEMA,
   normalizeApprovalRecord,
 } from "./task-artifact-schema.verification.js";
@@ -168,6 +169,7 @@ export const TASK_README_FRONTMATTER_ZOD_SCHEMA = z
     verify: z.array(NON_EMPTY_STRING),
     plan_approval: TASK_PLAN_APPROVAL_SCHEMA,
     verification: TASK_VERIFICATION_SCHEMA,
+    quality_review: TASK_QUALITY_REVIEW_SCHEMA.optional(),
     runner: RUNNER_OUTCOME_SCHEMA.optional(),
     commit: TASK_COMMIT_SCHEMA.optional(),
     comments: z.array(TASK_COMMENT_SCHEMA),
@@ -205,6 +207,7 @@ const TASKS_EXPORT_TASK_SCHEMA = z
     verify: z.array(NON_EMPTY_STRING),
     plan_approval: TASK_PLAN_APPROVAL_SCHEMA,
     verification: TASK_VERIFICATION_SCHEMA,
+    quality_review: TASK_QUALITY_REVIEW_SCHEMA.optional(),
     commit: TASK_COMMIT_SCHEMA,
     comments: z.array(TASK_COMMENT_SCHEMA),
     events: z.array(TASK_EVENT_SCHEMA).optional(),

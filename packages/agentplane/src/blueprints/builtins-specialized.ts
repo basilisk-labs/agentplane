@@ -21,6 +21,7 @@ const postRunImprovementNodes = [
   node({ kind: "artifact_write", evidence: ["artifact"] }),
   node({ kind: "approval_gate", mode: "approval", evidence: ["approval"], protected: true }),
   node({ kind: "verify_record", evidence: ["check_result"], protected: true }),
+  node({ kind: "quality_gate", evidence: ["quality_report"], protected: true }),
   node({ kind: "handoff", evidence: ["final_output"] }),
   node({ kind: "finish", evidence: ["commit"], protected: true }),
 ] as const;
@@ -83,6 +84,7 @@ export const SPECIALIZED_CODE_BLUEPRINTS = [
         "verify_record",
         "Faster, slower, unchanged, or noisy verdict.",
       ),
+      evidence("benchmark.quality", "quality_report", "quality_gate", "EVALUATOR quality verdict."),
       evidence("benchmark.commit", "commit", "publish_or_integrate", "Integration commit."),
     ],
     stopRules: [
@@ -160,6 +162,12 @@ export const SPECIALIZED_CODE_BLUEPRINTS = [
         "verify_record",
         "Flake classification or residual risk.",
       ),
+      evidence(
+        "regression.quality",
+        "quality_report",
+        "quality_gate",
+        "EVALUATOR quality verdict.",
+      ),
       evidence("regression.commit", "commit", "publish_or_integrate", "Integration commit."),
     ],
     stopRules: [
@@ -232,6 +240,7 @@ export const SPECIALIZED_CODE_BLUEPRINTS = [
         "verify_record",
         "Verification that the review inspected available logs and gated execution behind the user decision.",
       ),
+      evidence("post_run.quality", "quality_report", "quality_gate", "EVALUATOR quality verdict."),
       evidence(
         "post_run.handoff",
         "final_output",

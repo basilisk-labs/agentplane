@@ -81,8 +81,25 @@ function mkCtx(workflowMode: "direct" | "branch_pr" = "branch_pr") {
   };
 }
 
+function qualityReview(evaluatedSha = "deadbeef") {
+  return {
+    state: "pass" as const,
+    updated_at: "2026-02-09T00:00:00.000Z",
+    updated_by: "EVALUATOR",
+    note: "Quality gate passed",
+    evaluated_sha: evaluatedSha,
+    blueprint_digest: null,
+    evidence_refs: [".agentplane/tasks/T-1/README.md"],
+    findings: [],
+  };
+}
+
 function seedCommon(): void {
-  mocks.loadTaskFromContext.mockResolvedValue({ id: "T-1", verify: [] });
+  mocks.loadTaskFromContext.mockResolvedValue({
+    id: "T-1",
+    verify: [],
+    quality_review: qualityReview(),
+  });
   mocks.ensurePlanApprovedIfRequired.mockReturnValue();
   mocks.ensureVerificationSatisfiedIfRequired.mockReturnValue();
   mocks.ensureGitClean.mockResolvedValue();
@@ -333,6 +350,36 @@ describe("pr/integrate/internal/prepare", () => {
     );
   });
 
+  it("accepts EVALUATOR review of the last non-task-artifact commit", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.loadTaskFromContext.mockResolvedValue({
+      id: "T-1",
+      verify: [],
+      quality_review: qualityReview("implsha"),
+    });
+    mocks.parsePrMeta.mockReturnValue({
+      branch: "task/T-1",
+      head_sha: "artifactsha",
+      last_verified_sha: null,
+    });
+    mocks.gitRevParse
+      .mockResolvedValueOnce("artifactsha")
+      .mockResolvedValueOnce("implsha")
+      .mockResolvedValueOnce("basesha");
+    mocks.gitDiffNames
+      .mockResolvedValueOnce(["src/app.ts", ".agentplane/tasks/T-1/README.md"])
+      .mockResolvedValueOnce([".agentplane/tasks/T-1/README.md"])
+      .mockResolvedValueOnce(["src/app.ts"]);
+
+    await expect(
+      prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
+    ).resolves.toMatchObject({
+      branchHeadSha: "artifactsha",
+    });
+  });
+
   it("accepts verify-log-backed verification when meta verify sha is missing", async () => {
     const { prepareIntegrate } = await import("./prepare.js");
     seedCommon();
@@ -347,6 +394,7 @@ describe("pr/integrate/internal/prepare", () => {
       id: "T-1",
       verify: ["echo ok"],
       title: "Branch-backed task",
+      quality_review: qualityReview(),
     });
     mocks.readAndValidatePrArtifacts.mockResolvedValue({
       verifyLogText: "[2026-04-07T20:00:00.000Z] ✅ verified_sha=deadbeef\n",
@@ -376,6 +424,7 @@ describe("pr/integrate/internal/prepare", () => {
       id: "T-1",
       verify: [],
       title: "Branch-backed task",
+      quality_review: qualityReview(),
     });
     mocks.parsePrMeta.mockReturnValue({
       branch: "task/T-1",

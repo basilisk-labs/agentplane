@@ -42,6 +42,7 @@ export type BlueprintNodeKind =
   | "hosted_checks"
   | "publish_or_integrate"
   | "verify_record"
+  | "quality_gate"
   | "handoff"
   | "finish";
 
@@ -59,6 +60,7 @@ export type EvidenceKind =
   | "commit"
   | "final_output"
   | "weak_links"
+  | "quality_report"
   | "rollback";
 
 export type RecipeExtensionKind =

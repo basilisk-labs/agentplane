@@ -79,6 +79,8 @@ export {
   type TaskFrontmatter,
   type TaskOrigin,
   type TaskPriority,
+  type QualityReviewResult,
+  type QualityReviewState,
   type TaskRecord,
   type TaskRunnerEvidence,
   type TaskRunnerExecutionMetrics,

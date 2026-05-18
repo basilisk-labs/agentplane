@@ -382,6 +382,7 @@ export function validateBlueprintRouteDecisionSgrResult(
             "commit",
             "final_output",
             "weak_links",
+            "quality_report",
             "rollback",
           ]),
           description: requireString(evidence.description, `${evidenceField}.description`),

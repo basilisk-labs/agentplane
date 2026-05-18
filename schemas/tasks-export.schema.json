@@ -500,6 +500,61 @@
             "required": ["state", "updated_at", "updated_by", "note"],
             "additionalProperties": true
           },
+          "quality_review": {
+            "type": "object",
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": ["pending", "pass", "rework", "blocked", "human_review"]
+              },
+              "updated_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "updated_by": {
+                "type": ["string", "null"]
+              },
+              "note": {
+                "type": ["string", "null"]
+              },
+              "evaluated_sha": {
+                "type": ["string", "null"]
+              },
+              "blueprint_digest": {
+                "type": ["string", "null"]
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "findings": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              }
+            },
+            "required": [
+              "state",
+              "updated_at",
+              "updated_by",
+              "note",
+              "evaluated_sha",
+              "blueprint_digest"
+            ],
+            "additionalProperties": true
+          },
           "commit": {
             "anyOf": [
               {

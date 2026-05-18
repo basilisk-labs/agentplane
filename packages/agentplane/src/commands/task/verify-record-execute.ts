@@ -14,9 +14,11 @@ import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
 import { buildVerifiedPrMeta, parsePrMeta } from "../shared/pr-meta.js";
 import { resolvePrPaths } from "../pr/internal/pr-paths.js";
+import { gitRevParse } from "../shared/git-ops.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
+import { setTaskFieldsIntent } from "../shared/task-store.js";
 
 import { buildStructuredFindingMutationPlan } from "./findings.js";
 import {
@@ -35,6 +37,12 @@ import type {
 function appendDetailsBlock(details: string | null | undefined, lines: readonly string[]): string {
   const existing = (details ?? "").trim();
   return [existing, lines.join("\n")].filter(Boolean).join("\n\n");
+}
+
+function verificationStateToQualityReviewState(state: string): "pass" | "rework" | "blocked" {
+  if (state === "ok") return "pass";
+  if (state === "blocked_external") return "blocked";
+  return "rework";
 }
 
 async function appendBlueprintSnapshotReference(
@@ -97,6 +105,7 @@ async function recordVerificationResult(opts: {
   }
 
   const at = nowIso();
+  const evaluatedSha = await gitRevParse(resolved.gitRoot, ["HEAD"]).catch(() => null);
   await applyTaskMutation({
     ctx,
     taskId: opts.taskId,
@@ -124,6 +133,36 @@ async function recordVerificationResult(opts: {
         maxReworkAttempts: config.evaluator?.max_rework_attempts,
       });
       const intents = [...execution.intents];
+      if (opts.by === "EVALUATOR") {
+        const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx, task: current }).catch(
+          () => null,
+        );
+        const readmePath = path.join(
+          resolved.gitRoot,
+          config.paths.workflow_dir,
+          current.id,
+          "README.md",
+        );
+        intents.push(
+          setTaskFieldsIntent({
+            quality_review: {
+              state: verificationStateToQualityReviewState(
+                execution.nextTask.verification?.state ?? opts.state,
+              ),
+              updated_at: at,
+              updated_by: opts.by,
+              note: opts.note,
+              evaluated_sha: evaluatedSha,
+              blueprint_digest: snapshot?.current.digest ?? null,
+              evidence_refs: [
+                path.relative(resolved.gitRoot, readmePath),
+                ...(snapshot?.path ? [snapshot.path] : []),
+              ],
+              findings: opts.details ? [opts.details] : [],
+            },
+          }),
+        );
+      }
       if (opts.finding) {
         const findingPlan = buildStructuredFindingMutationPlan({
           current,

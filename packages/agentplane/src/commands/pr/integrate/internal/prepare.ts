@@ -23,6 +23,7 @@ import {
   ensurePlanApprovedIfRequired,
   ensureVerificationSatisfiedIfRequired,
 } from "../../../task/shared.js";
+import { assertEvaluatorQualityReviewPassed } from "../../../task/quality-review-gate.js";
 
 import { readPrArtifact, resolvePrPaths } from "../../internal/pr-paths.js";
 import { ensurePrArtifactsSynced } from "../../internal/sync.js";
@@ -61,6 +62,32 @@ type PreparedIntegrate = {
   alreadyVerifiedSha: string | null;
   shouldRunVerify: boolean;
 };
+
+async function resolveQualityReviewExpectedSha(
+  gitRoot: string,
+  taskId: string,
+  branchHeadSha: string,
+): Promise<string> {
+  const taskArtifactPrefix = `.agentplane/tasks/${taskId}/`;
+  let current = branchHeadSha;
+
+  for (let depth = 0; depth < 20; depth += 1) {
+    let parent: string;
+    try {
+      parent = await gitRevParse(gitRoot, [`${current}^`]);
+    } catch {
+      return current;
+    }
+
+    const changed = await gitDiffNames(gitRoot, parent, current);
+    if (changed.length === 0 || changed.some((name) => !name.startsWith(taskArtifactPrefix))) {
+      return current;
+    }
+    current = parent;
+  }
+
+  return current;
+}
 
 export async function prepareIntegrate(opts: {
   ctx?: CommandContext;
@@ -261,6 +288,15 @@ export async function prepareIntegrate(opts: {
   }
   ensurePlanApprovedIfRequired(task, loadedConfig);
   ensureVerificationSatisfiedIfRequired(task, loadedConfig);
+  assertEvaluatorQualityReviewPassed({
+    task,
+    expectedSha: await resolveQualityReviewExpectedSha(
+      resolved.gitRoot,
+      opts.taskId,
+      branchHeadSha,
+    ),
+    command: "integrate",
+  });
   const initialVerifyState = computeVerifyState({
     rawVerify: task.verify,
     metaLastVerifiedSha: freshness.effectiveVerifiedSha,

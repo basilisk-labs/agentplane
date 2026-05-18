@@ -44,6 +44,18 @@ export type VerificationResult = {
   note: string | null;
 };
 
+export type QualityReviewState = "pending" | "pass" | "rework" | "blocked" | "human_review";
+export type QualityReviewResult = {
+  state: QualityReviewState;
+  updated_at: string | null;
+  updated_by: string | null;
+  note: string | null;
+  evaluated_sha: string | null;
+  blueprint_digest: string | null;
+  evidence_refs: string[];
+  findings: string[];
+};
+
 export type TaskEventType = "status" | "comment" | "verify";
 
 export type TaskEvent = {
@@ -130,6 +142,7 @@ export type TaskFrontmatter = {
   verify: string[];
   plan_approval?: PlanApproval;
   verification?: VerificationResult;
+  quality_review?: QualityReviewResult;
   runner?: TaskRunnerOutcome;
   comments: { author: string; body: string }[];
   events?: TaskEvent[];

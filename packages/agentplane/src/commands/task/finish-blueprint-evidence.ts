@@ -4,6 +4,7 @@ import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.
 import type { CommandContext } from "../shared/task-backend.js";
 
 import type { LoadedFinishTask } from "./finish-shared.js";
+import { assertEvaluatorQualityReviewPassed } from "./quality-review-gate.js";
 
 const BLUEPRINT_SNAPSHOT_REF_MARKER = "BlueprintSnapshotRef:";
 
@@ -52,5 +53,24 @@ export async function assertBlueprintEvidenceBeforeFinish(opts: {
         ].join("\n"),
       });
     }
+  }
+}
+
+export async function assertQualityReviewBeforeFinish(opts: {
+  ctx: CommandContext;
+  loadedTasks: readonly LoadedFinishTask[];
+  taskCommitInfo: { hash: string; message: string } | null;
+}): Promise<void> {
+  for (const loaded of opts.loadedTasks) {
+    const snapshot = await checkTaskBlueprintSnapshotDrift({
+      ctx: opts.ctx,
+      task: loaded.task,
+    });
+    assertEvaluatorQualityReviewPassed({
+      task: loaded.task,
+      expectedSha: opts.taskCommitInfo?.hash ?? loaded.task.commit?.hash ?? null,
+      expectedBlueprintDigest: snapshot.previous.digest ? snapshot.current.digest : null,
+      command: "finish",
+    });
   }
 }
