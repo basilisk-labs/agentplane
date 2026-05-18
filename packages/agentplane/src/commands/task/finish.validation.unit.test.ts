@@ -2,7 +2,6 @@ import type { ResolvedProject } from "@agentplaneorg/core/project";
 import { defaultConfig } from "@agentplaneorg/core/config";
 import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { GitContext } from "@agentplaneorg/core/git";
@@ -68,6 +67,7 @@ vi.mock("@agentplaneorg/core/git", async () => {
   return {
     ...actual,
     gitEnv: () => ({}),
+    gitRevParse: vi.fn().mockResolvedValue(".git"),
     resolveBaseBranch: mocks.resolveBaseBranch,
   };
 });

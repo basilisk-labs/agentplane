@@ -477,12 +477,14 @@ export function makeRunInsightsIssueHandler(deps: RunDeps): CommandHandler<Insig
       ]);
       const settings = (loaded.config.feedback as { github_issues: FeedbackGithubIssuesSettings })
         .github_issues;
-      if (!settings.enabled && !parsed.dryRun) {
+      if (!settings.enabled && !parsed.dryRun && !parsed.allowDisabledFeedback) {
         throw new CliError({
           exitCode: exitCodeForError("E_USAGE"),
           code: "E_USAGE",
-          message:
-            "Feedback GitHub issues are disabled. Enable with `agentplane config set feedback.github_issues.enabled true`, then retry.",
+          message: [
+            "Feedback GitHub issues are disabled.",
+            "Fix: enable with `agentplane config set feedback.github_issues.enabled true`, or pass `--allow-disabled-feedback` for this issue only.",
+          ].join("\n"),
           context: {
             command: "insights issue",
             reason_code: "feedback_github_issues_disabled",

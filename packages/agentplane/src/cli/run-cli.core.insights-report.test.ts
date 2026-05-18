@@ -1,5 +1,6 @@
 import { describe, vi } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
+import { readFile } from "node:fs/promises";
 
 import {
   captureStdIO,
@@ -284,9 +285,54 @@ describe("runCli insights report", () => {
       expect(code).toBe(2);
       expect(io.stderr).toContain("Feedback GitHub issues are disabled");
       expect(io.stderr).toContain("feedback.github_issues.enabled true");
+      expect(io.stderr).toContain("--allow-disabled-feedback");
       expect(io.stderr).toContain("reason_code: feedback_github_issues_disabled");
     } finally {
       io.restore();
+    }
+  });
+
+  it("allows one-shot feedback issue creation without changing disabled project config", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.feedback.github_issues.enabled = false;
+    config.feedback.github_issues.transport = "cloud";
+    config.feedback.github_issues.allow_anonymous_cloud = true;
+    config.feedback.github_issues.cloud_endpoint = "https://cloud.example/api/feedback/issues";
+    await writeConfig(root, config);
+
+    const originalFetch = globalThis.fetch;
+    const fetchMock = vi.fn(() => Response.json({ intake_id: "fb_override", status: "accepted" }));
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "insights",
+        "issue",
+        "--allow-disabled-feedback",
+        "--error-code",
+        "E_INTERNAL",
+        "--agent-context",
+        "Intent: test one-shot feedback issue creation. Sensitive data omitted: task prose, env, remotes, and raw output.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("feedback issue created");
+      expect(io.stdout).toContain("intake:fb_override");
+      expect(fetchMock).toHaveBeenCalledOnce();
+      const request = fetchMock.mock.calls[0]?.[1] as { body?: string } | undefined;
+      const body = JSON.parse(String(request?.body ?? "{}")) as {
+        failure?: { error_code?: string | null };
+      };
+      expect(body.failure?.error_code).toBe("E_INTERNAL");
+      const configText = await readFile(path.join(root, ".agentplane", "WORKFLOW.md"), "utf8");
+      expect(configText).toContain("feedback:");
+      expect(configText).toContain("  github_issues:");
+      expect(configText).toContain("    enabled: false");
+    } finally {
+      io.restore();
+      globalThis.fetch = originalFetch;
     }
   });
 

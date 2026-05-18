@@ -151,6 +151,7 @@ describe("core error mapping", () => {
     expect(stderr).toContain("privacy-bounded GitHub issue");
     expect(stderr).toContain("agentplane insights issue --error-code E_INTERNAL --dry-run");
     expect(stderr).toContain("feedback.github_issues.enabled true");
+    expect(stderr).toContain("--allow-disabled-feedback");
     expect(stderr).toContain("reason_code: feedback_internal_error_report");
   });
 
@@ -202,5 +203,33 @@ describe("core error mapping", () => {
     expect(stderr).toContain("error [E_INTERNAL]: unexpected invariant");
     expect(stderr).not.toContain("agentplane insights issue");
     expect(stderr).not.toContain("feedback_internal_error_report");
+  });
+
+  it("suggests an executable one-shot command when feedback issue creation is disabled", () => {
+    let stderr = "";
+    const spy = vi.spyOn(process.stderr, "write").mockImplementation((chunk) => {
+      stderr += String(chunk);
+      return true;
+    });
+
+    try {
+      writeError(
+        new CliError({
+          code: "E_USAGE",
+          message: "Feedback GitHub issues are disabled.",
+          context: {
+            command: "insights issue",
+            reason_code: "feedback_github_issues_disabled",
+          },
+        }),
+        false,
+      );
+    } finally {
+      spy.mockRestore();
+    }
+
+    expect(stderr).toContain(
+      "agentplane insights issue --allow-disabled-feedback --allow-missing-agent-context --error-code E_INTERNAL",
+    );
   });
 });
