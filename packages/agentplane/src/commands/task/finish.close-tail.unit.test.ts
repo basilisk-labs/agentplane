@@ -209,7 +209,7 @@ describe("task finish close-tail", () => {
   });
 
   beforeEach(() => {
-    Object.values(mocks).forEach((mock) => mock.mockReset());
+    for (const mock of Object.values(mocks)) mock.mockReset();
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
     mocks.readCommitInfo.mockResolvedValue({ hash: "hc", message: "mc" });
