@@ -4,7 +4,7 @@ title: "Add context assimilation blueprint gates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-18T09:46:54.843Z"
+  updated_by: "CODER"
+  note: "Implemented context.assimilation lifecycle gates and delayed wiki scaffold creation until first real ingest. Verified with targeted vitest, lint:core, schemas:check, policy routing, prettier --check, git diff --check, and ap task verify-show."
   attempts: 0
 commit: null
 comments:
@@ -37,8 +37,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement context assimilation blueprint gates and minimal initial wiki scaffold in the dedicated branch_pr worktree, keeping scope limited to context commands, blueprint/docs/tests, and task evidence."
+  -
+    type: "verify"
+    at: "2026-05-18T09:46:54.843Z"
+    author: "CODER"
+    state: "ok"
+    note: "Implemented context.assimilation lifecycle gates and delayed wiki scaffold creation until first real ingest. Verified with targeted vitest, lint:core, schemas:check, policy routing, prettier --check, git diff --check, and ap task verify-show."
 doc_version: 3
-doc_updated_at: "2026-05-18T09:43:41.825Z"
+doc_updated_at: "2026-05-18T09:46:54.848Z"
 doc_updated_by: "CODER"
 description: "Implement a stricter context assimilation blueprint/lifecycle contract and change context init so the starter wiki contains only AGENTS.md and index.md until first ingest creates project-specific folders."
 sections:
@@ -61,6 +67,25 @@ sections:
        Expected: policy routing remains valid.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-18T09:46:54.843Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Implemented context.assimilation lifecycle gates and delayed wiki scaffold creation until first real ingest. Verified with targeted vitest, lint:core, schemas:check, policy routing, prettier --check, git diff --check, and ap task verify-show.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T09:43:41.825Z, excerpt_hash=sha256:454c559a10f89eeb3390186080103503dd167f3a4443181def340ad2a59d089a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605180936-BHZ1NJ-context-assimilation-blueprint/.agentplane/tasks/202605180936-BHZ1NJ/blueprint/resolved-snapshot.json
+    - old_digest: e46022e38dabc0c302d099d27587f5486a873c9bb2d9e5e95be6df4e07ac67ac
+    - current_digest: e46022e38dabc0c302d099d27587f5486a873c9bb2d9e5e95be6df4e07ac67ac
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605180936-BHZ1NJ
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -97,6 +122,25 @@ Implement a stricter context assimilation blueprint/lifecycle contract and chang
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-18T09:46:54.843Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented context.assimilation lifecycle gates and delayed wiki scaffold creation until first real ingest. Verified with targeted vitest, lint:core, schemas:check, policy routing, prettier --check, git diff --check, and ap task verify-show.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T09:43:41.825Z, excerpt_hash=sha256:454c559a10f89eeb3390186080103503dd167f3a4443181def340ad2a59d089a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605180936-BHZ1NJ-context-assimilation-blueprint/.agentplane/tasks/202605180936-BHZ1NJ/blueprint/resolved-snapshot.json
+- old_digest: e46022e38dabc0c302d099d27587f5486a873c9bb2d9e5e95be6df4e07ac67ac
+- current_digest: e46022e38dabc0c302d099d27587f5486a873c9bb2d9e5e95be6df4e07ac67ac
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605180936-BHZ1NJ
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

@@ -15,14 +15,20 @@ Implement a stricter context assimilation blueprint/lifecycle contract and chang
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Implemented context.assimilation lifecycle gates and delayed wiki scaffold creation until first real
+ingest. Verified with targeted vitest, lint:core, schemas:check, policy routing, prettier --check,
+git diff --check, and ap task verify-show.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T09:46:33.590Z
+- Updated: 2026-05-18T09:46:39.286Z
 - Branch: task/202605180936-BHZ1NJ/context-assimilation-blueprint
 - Head: 94d49b82a767
 
