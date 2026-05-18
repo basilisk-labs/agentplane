@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-18T08:50:40Z",
   "base": "main",
   "branch": "task/202605180835-32AEJ5/fix-acr-example-v0-6-2",
   "created_at": "2026-05-18T08:35:57.935Z",
-  "head_sha": "b6089d40a84cda9ff90dda7b9cf5015bf178709d",
+  "head_sha": "c82f9609803e16272b4c813a81483ca4eb06efd4",
   "last_verified_at": "2026-05-18T08:44:37.812Z",
   "last_verified_sha": "b6089d40a84cda9ff90dda7b9cf5015bf178709d",
+  "merge_commit": "38d20e02646371b587820adb328039c615323f47",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-18T08:50:40Z",
   "pr_number": 3867,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3867",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605180835-32AEJ5",
-  "updated_at": "2026-05-18T08:37:11.524Z",
+  "updated_at": "2026-05-18T08:50:40Z",
   "verify": {
     "status": "pass"
   }
