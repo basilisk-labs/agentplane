@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents, @typescript-eslint/no-unused-vars, unicorn/no-await-expression-member */
 import { createHash } from "node:crypto";
-import { readFile, readdir, stat } from "node:fs/promises";
+import { mkdir, readFile, readdir, stat } from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import path from "node:path";
 
 import { mapBackendError } from "../cli/error-map.js";
 import { CliError } from "../shared/errors.js";
-import { writeJsonStableIfChanged } from "../shared/write-if-changed.js";
+import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { cmdTaskPlanApprove } from "../commands/task/plan.js";
 import { cmdTaskStartReady } from "../commands/task/start-ready.js";
@@ -14,6 +14,7 @@ import { runTaskNewParsed } from "../commands/task/new.js";
 import { runTaskRun } from "../commands/task/run.command.js";
 import { createTaskNewParsed, selectedSourceRows } from "./ingest-task.js";
 import { cmdContextReindex } from "./reindex.js";
+import { starterWikiPageFiles } from "../commands/context/init-wiki.js";
 
 type ContextIngestMode = "changed" | "all" | "sources";
 
@@ -353,6 +354,24 @@ function buildIndexModeSourceRows(
   return selectedSourceRows(opts, rows);
 }
 
+async function ensureFirstIngestWikiScaffold(root: string): Promise<string[]> {
+  const created: string[] = [];
+  for (const file of starterWikiPageFiles()) {
+    if (file.relative === "context/wiki/index.md") continue;
+    const abs = path.join(root, file.relative);
+    try {
+      await stat(abs);
+      continue;
+    } catch (err) {
+      if ((err as { code?: string } | null)?.code !== "ENOENT") throw err;
+    }
+    await mkdir(path.dirname(abs), { recursive: true });
+    await writeTextIfChanged(abs, file.content);
+    created.push(file.relative);
+  }
+  return created;
+}
+
 export async function cmdContextIngest(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -417,6 +436,13 @@ export async function cmdContextIngest(opts: {
     if (indexModeRows.length === 0) {
       process.stdout.write("no new or changed sources detected for context assimilation\n");
       return 0;
+    }
+
+    const createdWikiScaffold = await ensureFirstIngestWikiScaffold(root);
+    if (createdWikiScaffold.length > 0) {
+      process.stdout.write(
+        `context ingest wiki scaffold created: ${createdWikiScaffold.length} page(s)\n`,
+      );
     }
 
     const before = new Set((await ctx.taskBackend.listTasks()).map((task) => task.id));

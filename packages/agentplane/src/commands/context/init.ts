@@ -245,7 +245,6 @@ async function createContextWorkspace(
     { relative: "context/README.md", content: buildContextReadme(parsed.profile) },
     { relative: "context/raw/.gitkeep", content: "" },
     { relative: "context/raw/private/.gitkeep", content: "" },
-    { relative: "context/wiki/.gitkeep", content: "" },
     {
       relative: "context/wiki/AGENTS.md",
       content: buildWikiAgentsMarkdown(parsed.profile),
@@ -310,13 +309,10 @@ async function createContextWorkspace(
     files.push(
       { relative: "context/raw/specs/.gitkeep", content: "" },
       { relative: "context/raw/research/.gitkeep", content: "" },
-      ...starterWikiPageFiles(),
-      { relative: "context/wiki/concepts/.gitkeep", content: "" },
-      { relative: "context/wiki/entities/.gitkeep", content: "" },
-      { relative: "context/wiki/decisions/.gitkeep", content: "" },
-      { relative: "context/wiki/modules/.gitkeep", content: "" },
-      { relative: "context/wiki/contradictions/.gitkeep", content: "" },
-      { relative: "context/wiki/reports/.gitkeep", content: "" },
+      starterWikiPageFiles().find((file) => file.relative === "context/wiki/index.md") ?? {
+        relative: "context/wiki/index.md",
+        content: `${wikiFrontmatter("wiki.index", "Context wiki", "definition")}\n\n# Context wiki\n`,
+      },
     );
   }
   if (parsed.profile === "codebase") {
@@ -389,7 +385,9 @@ AgentPlane local context uses one adaptive llm-wiki contract:
 - \`.agentplane/context/service/**\` keeps local caches only.
 
 Agents should create wiki pages when a topic is reusable for future tasks, but keep atomic claims in
-derived machine artifacts. Source references should be markdown links where possible.
+derived machine artifacts. \`context init\` creates only \`context/wiki/AGENTS.md\` and
+\`context/wiki/index.md\`; the first ingest creates starter wiki folders when there is source
+material to assimilate. Source references should be markdown links where possible.
 `;
 }
 
@@ -403,6 +401,7 @@ Profile: ${profile}
 - Treat \`context/wiki/**\` as durable, source-backed project knowledge with stable AgentPlane frontmatter.
 - Analyze the base project, existing docs, task history, and raw sources before choosing a wiki structure.
 - Choose the smallest wiki hierarchy that fits this project; do not force a universal concepts/entities/decisions/modules layout.
+- Keep this initialized wiki minimal until first ingest; project-specific folders should appear from source-backed assimilation, not from empty scaffolding.
 - Preserve modality, source refs, cross-links, glossary aliases, and graph alignment when updating pages.
 - Prefer updating existing canonical pages over creating duplicates; describe small objects under stable headings when that is clearer.
 - Use \`agentplane context wiki new\`, \`agentplane context wiki lint\`, \`agentplane context wiki explain\`, \`agentplane context wiki link\`, and \`agentplane context wiki index\`.

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -41,7 +41,7 @@ async function write(root: string, rel: string, text: string): Promise<void> {
 }
 
 describe("context release readiness guards", () => {
-  it("creates adaptive starter wiki pages that pass full wiki lint", async () => {
+  it("creates only AGENTS and index wiki pages during context init", async () => {
     const root = await tempRoot();
     vi.spyOn(process.stdout, "write").mockImplementation(() => true);
 
@@ -64,10 +64,55 @@ describe("context release readiness guards", () => {
 
     const wikiAgents = await readFile(path.join(root, "context/wiki/AGENTS.md"), "utf8");
     const rootIndex = await readFile(path.join(root, "context/wiki/index.md"), "utf8");
+    const wikiEntries = await readdir(path.join(root, "context/wiki"));
     expect(wikiAgents).toContain("agentplane_context:");
     expect(wikiAgents).toContain('canonical_id: "wiki.agents"');
     expect(rootIndex).toContain("agentplane_context:");
     expect(rootIndex).toContain('canonical_id: "wiki.index"');
+    expect(wikiEntries.toSorted()).toEqual(["AGENTS.md", "index.md"]);
+  });
+
+  it("creates starter wiki structure on first context ingest with selected sources", async () => {
+    const root = await tempRoot();
+    await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nPublic source.\n");
+    vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    const tasks: { id: string; owner: string }[] = [];
+    const createTask = vi.fn(async () => {
+      tasks.push({ id: "202605130501-CTXSCA", owner: "CURATOR" });
+    });
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: {
+        listTasks: async () => [...tasks],
+      },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+
+    await cmdContextIngest({
+      ctx,
+      cwd: root,
+      parsed: {
+        sources: [],
+        mode: "changed",
+        dryRun: false,
+        indexOnly: false,
+        runTask: false,
+        includePrivate: false,
+      },
+      createTask,
+    });
+
+    const wikiEntries = await readdir(path.join(root, "context/wiki"));
+    expect(wikiEntries).toEqual(
+      expect.arrayContaining(["concepts", "entities", "decisions", "modules", "reports"]),
+    );
+    await cmdContextWikiLint({
+      cwd: root,
+      parsed: { path: "context/wiki" },
+    });
   });
 
   it("indexes stable section refs and excludes private raw files from projection", async () => {
@@ -328,6 +373,7 @@ describe("context release readiness guards", () => {
             prompt_module_ref?: string;
             prompt_modules?: { content?: string }[];
             wiki?: { layout_strategy?: string; frontmatter_required?: boolean };
+            blueprint?: { id?: string; required_gates?: string[]; stop_rules?: string[] };
           };
         };
       };
@@ -336,6 +382,12 @@ describe("context release readiness guards", () => {
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_module_ref).toBe(
       "framework/template/generated.artifact/context_assimilation/v1",
     );
+    expect(
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+    ).toContain("context.assimilation");
+    expect(
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+    ).toContain("agentplane context reindex --include-raw");
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("frontmatter");
@@ -367,6 +419,14 @@ describe("context release readiness guards", () => {
       layout_strategy: "adaptive",
       frontmatter_required: true,
     });
+    const blueprint = createdArgs.parsed?.extensions?.["agentplane.context"]?.blueprint;
+    expect(blueprint?.id).toBe("context.assimilation");
+    expect(blueprint?.required_gates).toEqual(
+      expect.arrayContaining(["source_set_locked", "reindex_after_writes"]),
+    );
+    expect(blueprint?.stop_rules).toEqual(
+      expect.arrayContaining(["pipeline_order_skipped", "runner_timeout_without_recovery"]),
+    );
     expect(approveTaskPlan).toHaveBeenCalledWith(
       expect.objectContaining({
         cwd: root,

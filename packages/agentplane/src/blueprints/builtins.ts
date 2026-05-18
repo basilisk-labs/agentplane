@@ -101,14 +101,18 @@ const contextAssimilationNodes = [
     kind: "deterministic_check",
     evidence: ["check_result"],
     allowedCommands: [
+      "agentplane context reindex --include-raw",
+      "agentplane context wiki lint context/wiki",
+      "agentplane context wiki index context/wiki",
       "agentplane context verify-task <task-id>",
       "agentplane context doctor",
       "agentplane context graph validate",
+      "agentplane context search <query> --format json",
       "agentplane acr check <task-id>",
     ],
   }),
   node({ kind: "artifact_write", evidence: ["artifact"] }),
-  node({ kind: "verify_record", evidence: ["check_result"], protected: true }),
+  node({ kind: "verify_record", evidence: ["check_result", "weak_links"], protected: true }),
   node({ kind: "finish", evidence: ["commit"], protected: true }),
 ] as const;
 
@@ -256,6 +260,16 @@ export const BUILTIN_BLUEPRINTS = [
     taskKinds: ["context"],
     workflowModes: ["direct", "branch_pr"],
     allowedCommands: [
+      "agentplane context learn files <path>",
+      "agentplane context learn changes",
+      "agentplane context ingest --run",
+      "agentplane task run show <task-id>",
+      "agentplane task resume-context <task-id>",
+      "agentplane task run cancel <task-id> <run-id>",
+      "agentplane task run resume <task-id> <run-id>",
+      "agentplane context reindex --include-raw",
+      "agentplane context wiki lint context/wiki",
+      "agentplane context wiki index context/wiki",
       "agentplane context verify-task <task-id>",
       "agentplane context doctor",
       "agentplane context graph validate",
@@ -274,6 +288,12 @@ export const BUILTIN_BLUEPRINTS = [
     nodes: contextAssimilationNodes,
     requiredEvidence: [
       evidence("context.sources", "sources", "intake", "Selected raw source set and hashes."),
+      evidence(
+        "context.source_lock",
+        "context_manifest",
+        "context_resolve",
+        "Updated context manifest/lock with the selected source set before wiki edits.",
+      ),
       evidence(
         "context.policies",
         "context_manifest",
@@ -296,15 +316,55 @@ export const BUILTIN_BLUEPRINTS = [
         "context.verification",
         "check_result",
         "deterministic_check",
-        "context verify-task, doctor, graph validation, search, and ACR check results.",
+        "reindex, wiki lint, graph validation, context verify-task, doctor, smoke search, and ACR check results.",
+      ),
+      evidence(
+        "context.recovery",
+        "weak_links",
+        "verify_record",
+        "Runner timeout, cancellation, retry/resume, stale projection, empty derived output, or conflict review status.",
       ),
       evidence("context.commit", "commit", "finish", "Close or integration commit."),
     ],
     stopRules: [
       {
+        id: "context_empty_source_set",
+        severity: "stop",
+        reason: "Context assimilation requires at least one selected source with a recorded hash.",
+      },
+      {
+        id: "context_pipeline_order_skipped",
+        severity: "stop",
+        reason:
+          "Context source-set lock and pre-write search/reconciliation must happen before wiki edits.",
+      },
+      {
         id: "context_without_source_refs",
         severity: "stop",
         reason: "Context-derived claims require source_refs or an explicit no-source reason.",
+      },
+      {
+        id: "context_reindex_missing_after_writes",
+        severity: "stop",
+        reason: "Wiki, raw, fact, or graph edits require a fresh context reindex before finish.",
+      },
+      {
+        id: "context_empty_derived_outputs_without_reason",
+        severity: "approval_required",
+        reason:
+          "Assimilation tasks that produce no facts, graph rows, provenance, or report records require an explicit no-derived-records reason.",
+      },
+      {
+        id: "context_unresolved_conflict_candidate",
+        severity: "approval_required",
+        reason:
+          "Conflict candidates must be retained and reviewed before promoting or overwriting existing context.",
+      },
+      {
+        id: "context_runner_timeout_without_recovery",
+        severity: "stop",
+        reason:
+          "A timed out, stuck, failed, or cancelled context runner requires recorded task run show/resume-context evidence and a retry/resume/cancel decision.",
       },
       {
         id: "context_forbidden_output",
