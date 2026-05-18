@@ -24,12 +24,26 @@ Created: 2026-05-18T18:10:37.887Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T18:10:37.887Z
+- Updated: 2026-05-18T18:18:48.755Z
 - Branch: task/202605181809-QSASEA/agent-first-docs-ia
-- Head: 3fc54e6d4072
+- Head: 9d2d9ad67325
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 395 +++++++++++++++++++++
+ docs/README.md                                     |   9 +-
+ .../documentation-information-architecture.mdx     |  42 ++-
+ docs/index.mdx                                     |  78 ++--
+ docs/recipes/index.mdx                             |   2 +-
+ docs/user/agent-handoff.mdx                        |  88 +++++
+ docs/user/overview.mdx                             |  43 ++-
+ docs/user/setup.mdx                                |  53 ++-
+ docs/user/website-ia.mdx                           |  42 ++-
+ docs/workflow-guides/index.mdx                     |  15 +-
+ website/sidebars.ts                                |  64 ++--
+ website/static/img/social/docs/releases/v0.6.2.png | Bin 0 -> 41467 bytes
+ .../static/img/social/docs/user/agent-handoff.png  | Bin 0 -> 45956 bytes
+ website/static/img/social/docs/workflow-guides.png | Bin 48598 -> 47032 bytes
+ 14 files changed, 699 insertions(+), 132 deletions(-)
 ```
 
 </details>
