@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605171319-4FK87T/release-0-6-2",
+  "created_at": "2026-05-18T07:59:03.404Z",
+  "head_sha": "0f180e6c789ffff84c163e774022070b914e98a0",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605171319-4FK87T",
+  "updated_at": "2026-05-18T07:59:03.404Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
