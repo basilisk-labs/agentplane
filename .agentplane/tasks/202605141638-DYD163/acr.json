@@ -1,0 +1,216 @@
+{
+  "acr_version": "0.1.0",
+  "record_type": "agent_change_record",
+  "record_id": "acr_202605141638-DYD163",
+  "created_at": "2026-05-14T19:15:14.572Z",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.6.0"
+  },
+  "repository": {
+    "vcs": "git",
+    "remote": "https://github.com/basilisk-labs/agentplane.git",
+    "base_ref": "main",
+    "base_commit": "d2d0a0a1baf774fade65bf1ed78d5886f69d2dee",
+    "work_ref": "main",
+    "work_commit": "d2d0a0a1baf774fade65bf1ed78d5886f69d2dee"
+  },
+  "task": {
+    "task_id": "202605141638-DYD163",
+    "title": "Unify release note validation rules",
+    "intent": "Move duplicated release-note validation invariants out of the TS preflight and MJS release script into one canonical rules surface, keep both callers aligned, and add fixture tests that prove section, placeholder, duplicate heading, and bullet-count behavior share the same contract.",
+    "requested_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "agent": {
+    "id": "INTEGRATOR",
+    "name": "INTEGRATOR",
+    "agent_type": "coding_agent",
+    "model": {
+      "provider": "unknown",
+      "name": "unknown",
+      "version": "unknown"
+    },
+    "toolchain": [
+      {
+        "name": "agentplane",
+        "version": "0.6.0"
+      }
+    ]
+  },
+  "plan": {
+    "status": "approved",
+    "artifact": {
+      "path": ".agentplane/tasks/202605141638-DYD163/README.md",
+      "sha256": "sha256:4896287ec8f9d5f03337736157bbc1e1bc55f61e5c08784d326b2d11985f655e"
+    },
+    "approved_at": "2026-05-14T16:41:00.774Z",
+    "approved_by": {
+      "type": "agentplane_role",
+      "id": "ORCHESTRATOR"
+    }
+  },
+  "permissions": {
+    "network": {
+      "mode": "unknown"
+    },
+    "secrets": {
+      "access": "none"
+    },
+    "tools": [
+      {
+        "name": "shell",
+        "allowed": true
+      }
+    ]
+  },
+  "policy": {
+    "policy_version": "0.1.0",
+    "decisions": [
+      {
+        "rule_id": "plan.required",
+        "decision": "pass",
+        "reason": "Approved plan exists."
+      },
+      {
+        "rule_id": "verification.required",
+        "decision": "pass",
+        "reason": "Verification is recorded as ok."
+      }
+    ]
+  },
+  "changes": {
+    "summary": "Closed as part of v0.6 audit follow-up batch PR #3746.",
+    "diff_stats": {
+      "files_changed": 0,
+      "insertions": 0,
+      "deletions": 0
+    },
+    "files": [],
+    "risk": {
+      "level": "medium",
+      "categories": [],
+      "protected_paths_touched": false
+    }
+  },
+  "verification": {
+    "status": "passed",
+    "checks": []
+  },
+  "approvals": [
+    {
+      "approval_id": "approval_202605141638-DYD163_plan",
+      "type": "plan_approval",
+      "decision": "approved",
+      "approved_by": {
+        "type": "agentplane_role",
+        "id": "ORCHESTRATOR"
+      },
+      "approved_at": "2026-05-14T16:41:00.774Z",
+      "scope": "task"
+    }
+  ],
+  "evidence": [
+    {
+      "type": "task",
+      "path": ".agentplane/tasks/202605141638-DYD163/README.md",
+      "sha256": "sha256:4896287ec8f9d5f03337736157bbc1e1bc55f61e5c08784d326b2d11985f655e"
+    },
+    {
+      "type": "plan",
+      "path": ".agentplane/tasks/202605141638-DYD163/README.md",
+      "sha256": "sha256:4896287ec8f9d5f03337736157bbc1e1bc55f61e5c08784d326b2d11985f655e"
+    },
+    {
+      "type": "verification_log",
+      "path": ".agentplane/tasks/202605141638-DYD163/README.md",
+      "sha256": "sha256:4896287ec8f9d5f03337736157bbc1e1bc55f61e5c08784d326b2d11985f655e"
+    },
+    {
+      "type": "other",
+      "path": ".agentplane/tasks/202605141638-DYD163/blueprint/resolved-snapshot.json",
+      "sha256": "sha256:49b26c4969f2d21d7ad0986b8bc0e90fcdd0e24e22fdbf302a22b1df1565a258"
+    }
+  ],
+  "result": {
+    "status": "finished",
+    "merge_ready": false,
+    "residual_risks": [
+      "Passed verification has no checks."
+    ],
+    "rollback": {
+      "available": true,
+      "notes": "Revert work_commit d2d0a0a1baf774fade65bf1ed78d5886f69d2dee if downstream validation fails."
+    }
+  },
+  "integrity": {
+    "digest_algorithm": "sha256",
+    "record_digest": "sha256:60618374bcbb50a2b2bd6f709c1ba1730af7df2774d550904b1aed85417fcf97",
+    "canonicalization": "rfc8785-jcs",
+    "signatures": []
+  },
+  "extensions": {
+    "agentplane.blueprint": {
+      "blueprint_id": "release.strict",
+      "blueprint_version": 1,
+      "workflow_mode": "branch_pr",
+      "route": [
+        "intake",
+        "scope",
+        "approval_gate",
+        "context_resolve",
+        "work_unit",
+        "deterministic_check",
+        "publish_or_integrate",
+        "verify_record",
+        "finish"
+      ],
+      "required_evidence": [
+        {
+          "id": "release.approval",
+          "kind": "approval",
+          "produced_by": "approval_gate",
+          "required": true
+        },
+        {
+          "id": "release.plan",
+          "kind": "artifact",
+          "produced_by": "work_unit",
+          "required": true
+        },
+        {
+          "id": "release.check",
+          "kind": "check_result",
+          "produced_by": "deterministic_check",
+          "required": true
+        },
+        {
+          "id": "release.publish",
+          "kind": "external_link",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        },
+        {
+          "id": "release.commit",
+          "kind": "commit",
+          "produced_by": "publish_or_integrate",
+          "required": true
+        }
+      ],
+      "accepted_recipe_extensions": [],
+      "rejected_recipe_extensions": [],
+      "stop_reasons": [],
+      "snapshot": {
+        "state": "current",
+        "path": ".agentplane/tasks/202605141638-DYD163/blueprint/resolved-snapshot.json",
+        "digest": "e72abb0d8250098c78c5d8aac016c77f97dc736cc0d41dc2300c8df2e1bb28b4",
+        "current_digest": "e72abb0d8250098c78c5d8aac016c77f97dc736cc0d41dc2300c8df2e1bb28b4",
+        "route_changed": false,
+        "artifact_sha256": "sha256:49b26c4969f2d21d7ad0986b8bc0e90fcdd0e24e22fdbf302a22b1df1565a258",
+        "safe_command": "agentplane blueprint snapshot 202605141638-DYD163"
+      }
+    }
+  }
+}

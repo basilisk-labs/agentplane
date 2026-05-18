@@ -459,6 +459,7 @@ async function finalizeCloseTail(opts: {
       quiet: options.quiet,
       closeUnstageOthers,
       allowPolicy: promotedIncidents > 0,
+      additionalTaskIds: plan.closeAdditionalTaskIds,
     });
     if (options.quiet) return;
     if (closeBranch) {
@@ -482,5 +483,6 @@ async function finalizeCloseTail(opts: {
     quiet: options.quiet,
     closeUnstageOthers,
     allowPolicy: promotedIncidents > 0,
+    additionalTaskIds: plan.closeAdditionalTaskIds,
   });
 }

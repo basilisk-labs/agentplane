@@ -714,6 +714,66 @@ describe("task finish close-tail", () => {
     );
   });
 
+  it("includes every finished task directory in a branch_pr batch close-tail commit", async () => {
+    const ctx = mkCtx({
+      taskBackend: {
+        ...mkCtx().taskBackend,
+        writeTask: vi.fn(() => Promise.resolve()),
+      } as TaskBackend,
+    });
+    ctx.config.workflow_mode = "branch_pr";
+    mocks.loadTaskFromContext.mockImplementation((opts: { taskId: string }) =>
+      Promise.resolve(
+        mkTask({
+          id: opts.taskId,
+          status: "DOING",
+          tags: ["docs"],
+          commit: { hash: "abc123", message: `feat: ${opts.taskId}` },
+          verification: {
+            state: "ok",
+            updated_at: "2026-02-09T00:00:00.000Z",
+            updated_by: "REVIEWER",
+            note: "ok",
+          },
+        }),
+      ),
+    );
+
+    const { cmdFinish } = await import("./finish-command.js");
+    const rc = await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1", "T-2"],
+      author: "INTEGRATOR",
+      body: "Verified: batch close commit should stage every finished task directory.",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      noWriteAcr: true,
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(mocks.cmdCommit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-1",
+        close: true,
+        allow: [".agentplane/tasks/T-2"],
+        allowBase: true,
+        closeStageTaskArtifacts: true,
+      }),
+    );
+  });
+
   it("skips local close-tail materialization when hosted close is already recorded on origin main", async () => {
     const ctx = mkCtx();
     ctx.config.workflow_mode = "branch_pr";

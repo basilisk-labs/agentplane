@@ -236,6 +236,14 @@ async function closeHostedTask(opts: {
   const tasksNeedingClose = loadedTasks.filter(
     (loaded) => !taskIsClosedForMerge(loaded.task, mergeCommitOid),
   );
+  const closeCommitTaskIds = [
+    ...new Set([
+      ...includedTaskIds,
+      ...tasksNeedingClose
+        .map((loaded) => loaded.taskId)
+        .filter((taskId) => taskId !== target.taskId),
+    ]),
+  ];
 
   if (tasksNeedingClose.length === 0) {
     if (
@@ -257,7 +265,7 @@ async function closeHostedTask(opts: {
       taskId: target.taskId,
       baseBranchOverride: nextMeta.base ?? "main",
       quiet: opts.quiet,
-      additionalTaskIds: includedTaskIds,
+      additionalTaskIds: closeCommitTaskIds,
       closeRefreshTaskArtifacts: false,
     });
     return {
@@ -327,7 +335,7 @@ async function closeHostedTask(opts: {
     baseBranchOverride: nextMeta.base ?? "main",
     quiet: opts.quiet,
     allowPolicy: collectedIncidents.wrote,
-    additionalTaskIds: includedTaskIds,
+    additionalTaskIds: closeCommitTaskIds,
     closeRefreshTaskArtifacts: false,
   });
   return {
