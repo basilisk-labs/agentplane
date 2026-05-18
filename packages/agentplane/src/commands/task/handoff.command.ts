@@ -10,7 +10,7 @@ export const taskHandoffSpec: CommandSpec<TaskHandoffParsed> = {
   group: "Task",
   summary: "Task handoff commands (record/show).",
   synopsis: [
-    "agentplane task handoff record <task-id> --from <role> --reason <text> [--to <role>] [--run-id <id>]",
+    "agentplane task handoff record <task-id> --from <role> --reason <text> [--to <role>]",
     "agentplane task handoff show <task-id> [--json]",
   ],
   args: [{ name: "subcommand", required: false, valueHint: "<record|show>" }],

@@ -13,7 +13,7 @@ Created: 2026-05-18T10:46:40.621Z
 ## Verification
 
 - State: ok
-- Note: Removed public runner command surfaces and context --run shortcuts for current release; runner implementation remains deferred to v0.7. Verified targeted Vitest, help snapshots, typecheck, ESLint, generated CLI docs, docs bootstrap/onboarding, formatting, diff-check, and policy routing.
+- Note: Runner public surfaces are gated for v0.7: task run wrappers/tests removed, context --run and runner.execution remain absent, handoff/reclaim no longer emits runner recovery commands, and CI failure from knip was resolved.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-05-18T10:46:40.621Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T11:00:49.834Z
+- Updated: 2026-05-18T11:00:57.506Z
 - Branch: task/202605181046-JM9F16/gate-runner-v0-7
 - Head: 2abbc12b295c
 

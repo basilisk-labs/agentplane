@@ -10,7 +10,6 @@ export type TaskReclaimParsed = {
   taskId: string;
   author: string;
   reason: string;
-  force: boolean;
   json: boolean;
 };
 
@@ -34,12 +33,6 @@ export const taskReclaimSpec: CommandSpec<TaskReclaimParsed> = {
     },
     {
       kind: "boolean",
-      name: "force",
-      default: false,
-      description: "Allow reclaim even when the latest run still appears alive.",
-    },
-    {
-      kind: "boolean",
       name: "json",
       default: false,
       description: "Emit the persisted reclaim handoff as JSON.",
@@ -60,7 +53,6 @@ export const taskReclaimSpec: CommandSpec<TaskReclaimParsed> = {
     taskId: String(raw.args["task-id"]),
     author: String(raw.opts.author),
     reason: String(raw.opts.reason),
-    force: raw.opts.force === true,
     json: raw.opts.json === true,
   }),
 };
@@ -73,14 +65,6 @@ export const runTaskReclaim = async (ctx: CommandCtx, parsed: TaskReclaimParsed)
     rootOverride: ctx.rootOverride ?? null,
     task_id: parsed.taskId,
   });
-  if (resume.runner.next_action === "wait" && !parsed.force) {
-    throw usageError({
-      spec: taskReclaimSpec,
-      message:
-        `Refusing to reclaim ${parsed.taskId}: the latest runner still appears alive. ` +
-        `Use --force only if the handoff really is orphaned.`,
-    });
-  }
   const built = await buildRecordedTaskHandoff({
     cwd: ctx.cwd,
     rootOverride: ctx.rootOverride ?? null,
@@ -88,9 +72,7 @@ export const runTaskReclaim = async (ctx: CommandCtx, parsed: TaskReclaimParsed)
     from_role: resume.latest_handoff?.to_role ?? resume.latest_handoff?.from_role ?? "UNASSIGNED",
     to_role: parsed.author,
     reason: parsed.reason,
-    next_actions: [
-      `Reclaim by ${parsed.author}: follow runner_next_action=${resume.runner.next_action ?? "none"}.`,
-    ],
+    next_actions: [`Reclaim by ${parsed.author}: continue from the current task state.`],
   });
   const paths = resolveTaskHandoffPaths({
     git_root: built.ctx.resolvedProject.gitRoot,
@@ -104,12 +86,8 @@ export const runTaskReclaim = async (ctx: CommandCtx, parsed: TaskReclaimParsed)
   }
   const entries: CliReportEntry[] = [
     { label: "author", value: parsed.author },
-    { label: "runner_next_action", value: built.handoff.runner?.next_action ?? "none" },
+    { label: "latest", value: paths.latest_path },
   ];
-  if (built.handoff.runner?.next_command) {
-    entries.push({ label: "runner_next_command", value: built.handoff.runner.next_command });
-  }
-  entries.push({ label: "latest", value: paths.latest_path });
   emitter.report(entries, {
     header: infoMessage(`task reclaimed: ${parsed.taskId}`),
   });

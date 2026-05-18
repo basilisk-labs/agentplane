@@ -194,49 +194,11 @@ export function buildRunnerHintCommands(opts: {
   resume_command: string | null;
   retry_command: string | null;
 } {
-  const taskRunCommand = `agentplane task run ${opts.task_id}`;
-  const resumeCommand = opts.run_id
-    ? `agentplane task run resume ${opts.task_id} ${opts.run_id}`
-    : null;
-  const retryCommand = opts.run_id
-    ? `agentplane task run retry ${opts.task_id} ${opts.run_id}`
-    : null;
-  if (!opts.run_id || !opts.status) {
-    return {
-      next_action: "run",
-      next_command: taskRunCommand,
-      resume_command: null,
-      retry_command: null,
-    };
-  }
-  if (opts.status === "prepared") {
-    return {
-      next_action: "resume",
-      next_command: resumeCommand,
-      resume_command: resumeCommand,
-      retry_command: retryCommand,
-    };
-  }
-  if (opts.status === "failed" || opts.status === "cancelled") {
-    return {
-      next_action: "retry",
-      next_command: retryCommand,
-      resume_command: resumeCommand,
-      retry_command: retryCommand,
-    };
-  }
-  if (opts.status === "success") {
-    return {
-      next_action: "none",
-      next_command: null,
-      resume_command: resumeCommand,
-      retry_command: retryCommand,
-    };
-  }
+  void opts;
   return {
-    next_action: "wait",
+    next_action: "none",
     next_command: null,
-    resume_command: resumeCommand,
-    retry_command: retryCommand,
+    resume_command: null,
+    retry_command: null,
   };
 }
