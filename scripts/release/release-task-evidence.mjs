@@ -235,7 +235,9 @@ async function readConfiguredTaskCloseBranchPrefix(cwd = process.cwd()) {
 }
 
 function parseWorkflowBranchConfig(text) {
-  const normalized = String(text ?? "").replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+  const normalized = String(text ?? "")
+    .replaceAll("\r\n", "\n")
+    .replaceAll("\r", "\n");
   if (!normalized.startsWith("---\n")) return {};
   const end = normalized.indexOf("\n---", 4);
   if (end === -1) return {};
@@ -261,7 +263,10 @@ function parseWorkflowBranchConfig(text) {
 function parseYamlStringScalar(value) {
   if (!value) return null;
   if (value.startsWith('"') && value.endsWith('"')) {
-    return value.slice(1, -1).replaceAll(String.raw`\"`, '"').trim();
+    return value
+      .slice(1, -1)
+      .replaceAll(String.raw`\"`, '"')
+      .trim();
   }
   if (value.startsWith("'") && value.endsWith("'")) {
     return value.slice(1, -1).replaceAll("''", "'").trim();
