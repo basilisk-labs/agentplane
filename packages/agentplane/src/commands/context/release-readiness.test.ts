@@ -90,6 +90,37 @@ describe("context release readiness guards", () => {
     expect(wikiEntries.toSorted()).toEqual(["AGENTS.md", "index.md"]);
   });
 
+  it("initializes maximum-assimilation wiki mode with explicit coverage guidance", async () => {
+    const root = await tempRoot();
+    vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextInit({
+      ctx: { resolvedProject: { gitRoot: root } } as CommandContext,
+      cwd: root,
+      parsed: {
+        profile: "maximum-assimilation",
+        rawGitignore: "none",
+        derivedGitignore: "none",
+        repair: false,
+        force: false,
+      },
+    });
+
+    const manifest = await readFile(
+      path.join(root, ".agentplane/context/agentplane.context.yaml"),
+      "utf8",
+    );
+    const readme = await readFile(path.join(root, "context/README.md"), "utf8");
+    const wikiAgents = await readFile(path.join(root, "context/wiki/AGENTS.md"), "utf8");
+
+    expect(manifest).toContain("mode: maximum-assimilation");
+    expect(manifest).toContain("maintenance_mode: maximum_assimilation");
+    expect(manifest).toContain("line_refs_required: true");
+    expect(readme).toContain("Maximum-assimilation mode adds a stricter wiki maintenance contract");
+    expect(wikiAgents).toContain("Use the `context.maximum_assimilation` blueprint");
+    expect(wikiAgents).toContain("canonical entities, glossary aliases, relation candidates");
+  });
+
   it("creates starter wiki structure on first context ingest with selected sources", async () => {
     const root = await tempRoot();
     await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nPublic source.\n");
@@ -467,6 +498,87 @@ describe("context release readiness guards", () => {
     expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
       "context ingestion task created: 202605130501-CTXRUN",
     );
+  });
+
+  it("uses maximum assimilation blueprint when the context workspace requests it", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      ".agentplane/context/agentplane.context.yaml",
+      "version: 1\nworkspace:\n  mode: maximum-assimilation\n",
+    );
+    await write(root, "context/raw/research/product-notes.md", "# Product Notes\n\nKey source.\n");
+    const tasks: { id: string; owner: string }[] = [];
+    const createTask = vi.fn(async () => {
+      tasks.push({ id: "202605130501-CTXMAX", owner: "CURATOR" });
+    });
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: {
+        listTasks: async () => [...tasks],
+      },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+
+    await cmdContextIngest({
+      ctx,
+      cwd: root,
+      parsed: {
+        sources: [],
+        mode: "changed",
+        dryRun: false,
+        indexOnly: false,
+        includePrivate: false,
+      },
+      createTask,
+    });
+
+    const createdArgs = createTask.mock.calls[0]?.[0] as {
+      parsed?: {
+        blueprintRequest?: string;
+        description?: string;
+        extensions?: {
+          "agentplane.context"?: {
+            mode?: string;
+            prompt_modules?: { content?: string }[];
+            wiki?: {
+              maintenance_mode?: string;
+              raw_deletion_resilience_required?: boolean;
+              line_refs_required?: boolean;
+              canonical_glossary_required?: boolean;
+            };
+            blueprint?: { id?: string; required_gates?: string[]; stop_rules?: string[] };
+          };
+        };
+      };
+    };
+
+    expect(createdArgs.parsed?.blueprintRequest).toBe("context.maximum_assimilation");
+    expect(createdArgs.parsed?.description).toContain("Maximum-assimilation contract:");
+    expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.mode).toBe(
+      "maximum_assimilation",
+    );
+    expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.blueprint?.id).toBe(
+      "context.maximum_assimilation",
+    );
+    expect(
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.blueprint?.required_gates,
+    ).toEqual(expect.arrayContaining(["canonical_glossary_updated"]));
+    expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.blueprint?.stop_rules).toEqual(
+      expect.arrayContaining(["raw_deletion_resilience_unproven"]),
+    );
+    expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.wiki).toMatchObject({
+      maintenance_mode: "maximum_assimilation",
+      raw_deletion_resilience_required: true,
+      line_refs_required: true,
+      canonical_glossary_required: true,
+    });
+    expect(
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+    ).toContain("Maximum-assimilation workflow:");
   });
 
   it("creates and explains wiki pages with AgentPlane context frontmatter", async () => {

@@ -352,7 +352,7 @@ Options:
 - `--verify <command>`: Repeatable. Verification commands/checks to seed on the task. (repeatable)
 - `--task-kind <analysis|content|docs|code|release|ops|context>`: Structured blueprint task-kind intent. (choices=analysis|content|docs|code|release|ops|context)
 - `--mutation-scope <none|docs|code|release|ops|context|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
-- `--blueprint-request <id>`: Explicit blueprint request stored on the task. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|post_run.improvement_review|release.strict|ops.approval)
+- `--blueprint-request <id>`: Explicit blueprint request stored on the task. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|context.maximum_assimilation|post_run.improvement_review|release.strict|ops.approval)
 - `--json`: Emit machine-readable JSON. (default=false)
 
 Examples:
@@ -540,7 +540,7 @@ Options:
 - `--task-kind <analysis|content|docs|code|release|ops|context>`: Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops|context)
 - `--mutation-scope <none|docs|code|release|ops|context|unknown>`: Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
 - `--risk <risk>`: Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
-- `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|post_run.improvement_review|release.strict|ops.approval)
+- `--blueprint-request <id>`: Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|context.maximum_assimilation|post_run.improvement_review|release.strict|ops.approval)
 - `--depends-on <task-id>`: Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
 - `--verify <command>`: Repeatable. Verification commands/checks to run for this task. (repeatable)
 - `--show-blueprint`: Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
@@ -3324,7 +3324,7 @@ agentplane context init [options]
 
 Options:
 
-- `--profile <adaptive|minimal|wiki|codebase|research>`: Select initial context setup. adaptive is the default cloud-ready llm-wiki contract; legacy scaffold aliases remain available. (choices=adaptive|minimal|wiki|codebase|research, default=adaptive)
+- `--profile <adaptive|minimal|wiki|codebase|research|maximum-assimilation>`: Select initial context setup. adaptive is the default cloud-ready llm-wiki contract; maximum-assimilation preserves all significant non-private content in wiki/derived artifacts. (choices=adaptive|minimal|wiki|codebase|research|maximum-assimilation, default=adaptive)
 - `--raw-gitignore <none|all>`: Ignore raw sources by default when set to all. (choices=none|all, default=none)
 - `--derived-gitignore <none|all>`: Ignore machine-derived context files under .agentplane/context/derived when set to all. (choices=none|all, default=none)
 - `--repair`: Create missing files only. (default=false)

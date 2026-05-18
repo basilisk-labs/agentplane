@@ -74,6 +74,39 @@ visibility metadata stable enough for future publication proposals and context-p
 `context show` resolves whole files, markdown sections, and line ranges. Markdown section refs use
 stable slugs such as `#section=publish-gate`; line refs use `#lines=12-24` or `#line=12`.
 
+### Maximum-assimilation profile
+
+Use `agentplane context init --profile maximum-assimilation` when the maintained wiki should become
+the complete semantic memory, not just a navigable synthesis over raw files. In this mode, the next
+context ingestion tasks request the `context.maximum_assimilation` blueprint.
+
+The contract is stricter than the default adaptive profile:
+
+- Preserve all significant non-private source content in wiki, fact, graph, glossary, provenance, and
+  coverage artifacts. If `context/raw/**` is deleted later, the wiki layer should still retain the
+  significant semantic content.
+- Keep the original source association through source-set `sha256:` hashes and concrete line refs
+  such as `context/raw/research/note.md#lines=12-24`; raw paths alone are not enough.
+- Extract canonical entities, aliases, relations, decisions, requirements, risks, workflows,
+  conflicts, and open questions before writing narrative articles.
+- Maintain a canonical glossary as an alias/navigation layer over wiki pages and graph entities. Use
+  canonical terms from that glossary in synthesized prose when identity is clear, and preserve
+  source-local wording as aliases or evidence details.
+- Record a coverage report that separates covered spans, intentionally omitted boilerplate, redacted
+  private spans, unresolved identities, and conflicts.
+
+Critical points:
+
+- Full assimilation does not override privacy. `context/raw/private/**`, secrets, and
+  non-publishable spans must not be copied into public wiki pages, task summaries, ACRs, or reports.
+- "100% significant content" requires an omission policy. Boilerplate, duplicate text, generated
+  noise, and private spans should be marked as omitted/redacted with reasons instead of being silently
+  dropped.
+- Glossary normalization can corrupt meaning if aliases are guessed. Ambiguous identity should stay as
+  `possibly_same_as`, conflict candidates, or open questions until reviewed.
+- Granularity can explode. Prefer reusable entity/concept/decision/risk/workflow pages plus stable
+  headings for smaller objects, not one page per sentence.
+
 ## Wiki pages and metadata
 
 ```bash

@@ -4,14 +4,21 @@ import { mkdir, readFile, readdir, stat } from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import path from "node:path";
 
+import { parse as parseYaml } from "yaml";
+
 import { mapBackendError } from "../cli/error-map.js";
-import { CliError } from "../shared/errors.js";
-import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
+import { starterWikiPageFiles } from "../commands/context/init-wiki.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { runTaskNewParsed } from "../commands/task/new.js";
-import { createTaskNewParsed, selectedSourceRows } from "./ingest-task.js";
+import { CliError } from "../shared/errors.js";
+import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
+
+import {
+  createTaskNewParsed,
+  selectedSourceRows,
+  type ContextWorkspaceMode,
+} from "./ingest-task.js";
 import { cmdContextReindex } from "./reindex.js";
-import { starterWikiPageFiles } from "../commands/context/init-wiki.js";
 
 type ContextIngestMode = "changed" | "all" | "sources";
 
@@ -137,6 +144,21 @@ async function readJsonIfExists(filePath: string): Promise<unknown | null> {
   } catch (err) {
     if ((err as { code?: string } | null)?.code === "ENOENT") return null;
     return null;
+  }
+}
+
+async function readContextWorkspaceMode(root: string): Promise<ContextWorkspaceMode | undefined> {
+  const manifestPath = path.join(root, ".agentplane", "context", "agentplane.context.yaml");
+  try {
+    const manifestText = await readFile(manifestPath, "utf8");
+    const parsed = parseYaml(manifestText) as unknown;
+    if (!parsed || typeof parsed !== "object") return undefined;
+    const workspace = (parsed as { workspace?: unknown }).workspace;
+    if (!workspace || typeof workspace !== "object") return undefined;
+    const mode = (workspace as { mode?: unknown }).mode;
+    return typeof mode === "string" ? (mode as ContextWorkspaceMode) : undefined;
+  } catch {
+    return undefined;
   }
 }
 
@@ -459,7 +481,11 @@ export async function cmdContextIngest(opts: {
     }
 
     const before = new Set((await ctx.taskBackend.listTasks()).map((task) => task.id));
-    const taskParsed = createTaskNewParsed(opts.parsed, indexModeRows);
+    const taskParsed = createTaskNewParsed(
+      opts.parsed,
+      indexModeRows,
+      await readContextWorkspaceMode(root),
+    );
     const createTask = opts.createTask ?? runTaskNewParsed;
     await createTask({
       ctx,

@@ -62,4 +62,24 @@ describe("blueprintResolveInputFromTask", () => {
       workflowMode: "branch_pr",
     });
   });
+
+  it("accepts maximum context assimilation blueprint requests", () => {
+    const input = blueprintResolveInputFromTask({
+      config,
+      task: task({
+        task_kind: "context",
+        mutation_scope: "context",
+        blueprint_request: "context.maximum_assimilation",
+        tags: ["context", "assimilation"],
+      }),
+    });
+
+    expect(input).toMatchObject({
+      taskKind: "context",
+      mutation: "context",
+      mutationScope: "context",
+      blueprintRequest: "context.maximum_assimilation",
+      workflowMode: "branch_pr",
+    });
+  });
 });

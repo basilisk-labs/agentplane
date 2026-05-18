@@ -327,7 +327,10 @@ export async function cmdContextVerifyTask(opts: {
       message: `Task ${opts.parsed.taskId} has invalid mutation scope: ${task.mutation_scope ?? "unknown"}`,
     });
   }
-  if (task.blueprint_request !== "context.assimilation") {
+  if (
+    task.blueprint_request !== "context.assimilation" &&
+    task.blueprint_request !== "context.maximum_assimilation"
+  ) {
     throw new CliError({
       exitCode: 3,
       code: "E_VALIDATION",

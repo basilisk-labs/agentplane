@@ -14,7 +14,7 @@ export const contextSpec: CommandSpec<GroupCommandParsed> = {
 };
 
 export const contextInitSpec: CommandSpec<{
-  profile: "adaptive" | "minimal" | "wiki" | "codebase" | "research";
+  profile: "adaptive" | "minimal" | "wiki" | "codebase" | "research" | "maximum-assimilation";
   rawGitignore: "none" | "all";
   derivedGitignore: "none" | "all";
   repair: boolean;
@@ -29,11 +29,11 @@ export const contextInitSpec: CommandSpec<{
     {
       kind: "string",
       name: "profile",
-      valueHint: "<adaptive|minimal|wiki|codebase|research>",
-      choices: ["adaptive", "minimal", "wiki", "codebase", "research"],
+      valueHint: "<adaptive|minimal|wiki|codebase|research|maximum-assimilation>",
+      choices: ["adaptive", "minimal", "wiki", "codebase", "research", "maximum-assimilation"],
       default: "adaptive",
       description:
-        "Select initial context setup. adaptive is the default cloud-ready llm-wiki contract; legacy scaffold aliases remain available.",
+        "Select initial context setup. adaptive is the default cloud-ready llm-wiki contract; maximum-assimilation preserves all significant non-private content in wiki/derived artifacts.",
     },
     {
       kind: "string",
@@ -67,7 +67,13 @@ export const contextInitSpec: CommandSpec<{
   ],
   parse: (raw) => ({
     profile:
-      (raw.opts.profile as "adaptive" | "minimal" | "wiki" | "codebase" | "research") ?? "adaptive",
+      (raw.opts.profile as
+        | "adaptive"
+        | "minimal"
+        | "wiki"
+        | "codebase"
+        | "research"
+        | "maximum-assimilation") ?? "adaptive",
     rawGitignore: (raw.opts["raw-gitignore"] as "none" | "all") ?? "none",
     derivedGitignore: (raw.opts["derived-gitignore"] as "none" | "all") ?? "none",
     repair: raw.opts.repair === true,
@@ -76,7 +82,7 @@ export const contextInitSpec: CommandSpec<{
 };
 
 export type ContextInitParsed = {
-  profile: "adaptive" | "minimal" | "wiki" | "codebase" | "research";
+  profile: "adaptive" | "minimal" | "wiki" | "codebase" | "research" | "maximum-assimilation";
   rawGitignore: "none" | "all";
   derivedGitignore: "none" | "all";
   repair: boolean;
