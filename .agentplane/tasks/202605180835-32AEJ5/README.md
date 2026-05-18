@@ -1,10 +1,11 @@
 ---
 id: "202605180835-32AEJ5"
 title: "Fix v0.6.2 ACR example version drift"
-status: "DOING"
+result_summary: "Merged via PR #3867."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +23,16 @@ verification:
   updated_by: "CODER"
   note: "Fixed ACR example version drift by aligning packages/spec/examples/acr.json producer and toolchain versions to 0.6.2. Local checks passed: bun run release:acr-example:check and bun run release:check. Hosted PR #3867 was green on head e3a3fcc1d before final metadata push."
   attempts: 0
-commit: null
+commit:
+  hash: "38d20e02646371b587820adb328039c615323f47"
+  message: "Merge pull request #3867 from basilisk-labs/task/202605180835-32AEJ5/fix-acr-example-v0-6-2"
 comments:
   -
     author: "CODER"
     body: "Start: Fix release-blocking ACR example version drift for v0.6.2 publish validation."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3867 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -41,9 +47,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Fixed ACR example version drift by aligning packages/spec/examples/acr.json producer and toolchain versions to 0.6.2. Local checks passed: bun run release:acr-example:check and bun run release:check. Hosted PR #3867 was green on head e3a3fcc1d before final metadata push."
+  -
+    type: "status"
+    at: "2026-05-18T08:51:19.912Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3867 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T08:44:37.823Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T08:51:19.918Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix the release-blocking ACR example version drift so v0.6.2 publish validation can pass. Scope is limited to packages/spec/examples/acr.json producer/toolchain version alignment with package version 0.6.2."
 sections:
   Summary: |-
