@@ -63,6 +63,32 @@ type PreparedIntegrate = {
   shouldRunVerify: boolean;
 };
 
+async function resolveQualityReviewExpectedSha(
+  gitRoot: string,
+  taskId: string,
+  branchHeadSha: string,
+): Promise<string> {
+  const taskArtifactPrefix = `.agentplane/tasks/${taskId}/`;
+  let current = branchHeadSha;
+
+  for (let depth = 0; depth < 20; depth += 1) {
+    let parent: string;
+    try {
+      parent = await gitRevParse(gitRoot, [`${current}^`]);
+    } catch {
+      return current;
+    }
+
+    const changed = await gitDiffNames(gitRoot, parent, current);
+    if (changed.length === 0 || changed.some((name) => !name.startsWith(taskArtifactPrefix))) {
+      return current;
+    }
+    current = parent;
+  }
+
+  return current;
+}
+
 export async function prepareIntegrate(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -264,7 +290,11 @@ export async function prepareIntegrate(opts: {
   ensureVerificationSatisfiedIfRequired(task, loadedConfig);
   assertEvaluatorQualityReviewPassed({
     task,
-    expectedSha: branchHeadSha,
+    expectedSha: await resolveQualityReviewExpectedSha(
+      resolved.gitRoot,
+      opts.taskId,
+      branchHeadSha,
+    ),
     command: "integrate",
   });
   const initialVerifyState = computeVerifyState({
