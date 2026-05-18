@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202605181129-2VW21W/evaluator-quality-gate",
   "created_at": "2026-05-18T11:30:12.696Z",
-  "head_sha": "c1b49d671316b7bf2ba01727da292f6dcd9cd242",
-  "last_verified_at": "2026-05-18T11:42:47.378Z",
-  "last_verified_sha": "c1b49d671316b7bf2ba01727da292f6dcd9cd242",
+  "head_sha": "614a79a9459b61c060412d64b219bf6765d5ba10",
+  "last_verified_at": "2026-05-18T12:34:27.566Z",
+  "last_verified_sha": "614a79a9459b61c060412d64b219bf6765d5ba10",
+  "pr_number": 3887,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3887",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202605181129-2VW21W",
-  "updated_at": "2026-05-18T11:42:43.344Z",
+  "updated_at": "2026-05-18T12:34:27.640Z",
   "verify": {
     "status": "pass"
   }
