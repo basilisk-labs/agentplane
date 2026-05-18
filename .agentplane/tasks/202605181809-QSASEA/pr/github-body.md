@@ -19,8 +19,8 @@ Make documentation emphasize install/init/agent handoff as the default path, doc
 - Note:
 
 ```text
-Verified on commit 9d2d9ad67: docs IA, sidebar, typecheck, and Docusaurus build-check passed for the
-agent-first docs restructure.
+Post-format verification passed: format:check, docs IA check, and website build-check are green
+after Prettier cleanup.
 ```
 - Canonical workflow state lives in the task README.
 

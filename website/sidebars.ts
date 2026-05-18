@@ -79,11 +79,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "Review agent work",
-      items: [
-        "user/agent-change-record",
-        "user/tasks-and-backends",
-        "user/commands",
-      ],
+      items: ["user/agent-change-record", "user/tasks-and-backends", "user/commands"],
     },
     {
       type: "category",

@@ -13,7 +13,7 @@ Created: 2026-05-18T18:10:37.887Z
 ## Verification
 
 - State: ok
-- Note: Verified on commit 9d2d9ad67: docs IA, sidebar, typecheck, and Docusaurus build-check passed for the agent-first docs restructure.
+- Note: Post-format verification passed: format:check, docs IA check, and website build-check are green after Prettier cleanup.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

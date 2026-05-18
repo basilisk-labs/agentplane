@@ -4,7 +4,7 @@ title: "Reframe docs around agent-first usage"
 status: "DOING"
 priority: "med"
 owner: "DOCS"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -18,9 +18,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-18T18:19:41.964Z"
+  updated_at: "2026-05-18T18:22:26.789Z"
   updated_by: "DOCS"
-  note: "Verified on commit 9d2d9ad67: docs IA, sidebar, typecheck, and Docusaurus build-check passed for the agent-first docs restructure."
+  note: "Post-format verification passed: format:check, docs IA check, and website build-check are green after Prettier cleanup."
   attempts: 0
 commit: null
 comments:
@@ -47,8 +47,14 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified on commit 9d2d9ad67: docs IA, sidebar, typecheck, and Docusaurus build-check passed for the agent-first docs restructure."
+  -
+    type: "verify"
+    at: "2026-05-18T18:22:26.789Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Post-format verification passed: format:check, docs IA check, and website build-check are green after Prettier cleanup."
 doc_version: 3
-doc_updated_at: "2026-05-18T18:19:42.007Z"
+doc_updated_at: "2026-05-18T18:22:26.821Z"
 doc_updated_by: "DOCS"
 description: "Make documentation emphasize install/init/agent handoff as the default path, document AgentPlane as agent-agnostic through repo files and AGENTS.md, and separate local context into its own docs section."
 sections:
@@ -111,6 +117,25 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605181809-QSASEA
 
+    ### 2026-05-18T18:22:26.789Z — VERIFY — ok
+
+    By: DOCS
+
+    Note: Post-format verification passed: format:check, docs IA check, and website build-check are green after Prettier cleanup.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T18:19:42.007Z, excerpt_hash=sha256:64b7f5fecbfb03d2ed5349c5c580d1fd90cba78a2cdc4063dbdd5b4d812d4779
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181809-QSASEA-agent-first-docs-ia/.agentplane/tasks/202605181809-QSASEA/blueprint/resolved-snapshot.json
+    - old_digest: a9bf21053d4107889e6c42706ccec1ce2be4c96dff87c8b2ba68610fda54f0d1
+    - current_digest: a9bf21053d4107889e6c42706ccec1ce2be4c96dff87c8b2ba68610fda54f0d1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605181809-QSASEA
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -123,6 +148,10 @@ sections:
     - Observation: PR #3903 is open for task/202605181809-QSASEA/agent-first-docs-ia; GitHub checks are running.
       Impact: Task evidence now points to the committed docs restructure and open PR artifact.
       Resolution: Local verification commands already passed before commit; PR metadata recorded after ap pr open.
+
+    - Observation: Core CI failed on Format (check); local Prettier fixed docs/developer/documentation-information-architecture.mdx and website/sidebars.ts.
+      Impact: Remote Core CI format failure should be resolved on the amended branch.
+      Resolution: Ran bunx prettier on the two reported files, then reran bun run format:check, bun run docs:ia:check, and bun run docs:site:build:check successfully.
 id_source: "generated"
 ---
 ## Summary
@@ -193,6 +222,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605181809-QSASEA
 
+### 2026-05-18T18:22:26.789Z — VERIFY — ok
+
+By: DOCS
+
+Note: Post-format verification passed: format:check, docs IA check, and website build-check are green after Prettier cleanup.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T18:19:42.007Z, excerpt_hash=sha256:64b7f5fecbfb03d2ed5349c5c580d1fd90cba78a2cdc4063dbdd5b4d812d4779
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181809-QSASEA-agent-first-docs-ia/.agentplane/tasks/202605181809-QSASEA/blueprint/resolved-snapshot.json
+- old_digest: a9bf21053d4107889e6c42706ccec1ce2be4c96dff87c8b2ba68610fda54f0d1
+- current_digest: a9bf21053d4107889e6c42706ccec1ce2be4c96dff87c8b2ba68610fda54f0d1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605181809-QSASEA
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -209,3 +257,7 @@ BlueprintSnapshotRef:
 - Observation: PR #3903 is open for task/202605181809-QSASEA/agent-first-docs-ia; GitHub checks are running.
   Impact: Task evidence now points to the committed docs restructure and open PR artifact.
   Resolution: Local verification commands already passed before commit; PR metadata recorded after ap pr open.
+
+- Observation: Core CI failed on Format (check); local Prettier fixed docs/developer/documentation-information-architecture.mdx and website/sidebars.ts.
+  Impact: Remote Core CI format failure should be resolved on the amended branch.
+  Resolution: Ran bunx prettier on the two reported files, then reran bun run format:check, bun run docs:ia:check, and bun run docs:site:build:check successfully.
