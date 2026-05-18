@@ -15,14 +15,19 @@ Apply the low-risk root dependency updates from Dependabot PR #3899: @types/node
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Safe root dependency bump verified: install, lint, typecheck, policy routing, doctor, critical CLI
+tests passed locally; GitHub PR #3906 hosted checks passed, including Core test and test-windows.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T18:57:06.381Z
+- Updated: 2026-05-18T18:57:17.704Z
 - Branch: task/202605181835-BQ9T2P/safe-root-deps
 - Head: 07335ebf4291
 

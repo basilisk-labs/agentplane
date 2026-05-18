@@ -4,7 +4,7 @@ title: "Apply safe Dependabot root dependency bumps"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-18T19:03:38.825Z"
+  updated_by: "CODER"
+  note: "Safe root dependency bump verified: install, lint, typecheck, policy routing, doctor, critical CLI tests passed locally; GitHub PR #3906 hosted checks passed, including Core test and test-windows."
   attempts: 0
 commit: null
 comments:
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Applying only the low-risk root dependency updates from Dependabot PR #3899 in an isolated branch_pr worktree."
+  -
+    type: "verify"
+    at: "2026-05-18T19:03:38.825Z"
+    author: "CODER"
+    state: "ok"
+    note: "Safe root dependency bump verified: install, lint, typecheck, policy routing, doctor, critical CLI tests passed locally; GitHub PR #3906 hosted checks passed, including Core test and test-windows."
 doc_version: 3
-doc_updated_at: "2026-05-18T18:36:24.351Z"
+doc_updated_at: "2026-05-18T19:03:39.033Z"
 doc_updated_by: "CODER"
 description: "Apply the low-risk root dependency updates from Dependabot PR #3899: @types/node 25.9.0 and @typescript-eslint/eslint-plugin/parser 8.59.4, without taking major/breaking dependency PRs."
 sections:
@@ -99,12 +105,36 @@ sections:
       Result: pass
       Evidence: `doctor (OK)` with informational runtime/source findings only.
       Scope: repository health and branch_pr drift.
+
+    ### 2026-05-18T19:03:38.825Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Safe root dependency bump verified: install, lint, typecheck, policy routing, doctor, critical CLI tests passed locally; GitHub PR #3906 hosted checks passed, including Core test and test-windows.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T18:36:24.351Z, excerpt_hash=sha256:07fa477be9a622a475f4c0b6c852871e5bcc63b4a08bedfd6b8953590937cd7a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181835-BQ9T2P-safe-root-deps/.agentplane/tasks/202605181835-BQ9T2P/blueprint/resolved-snapshot.json
+    - old_digest: 21c8de6647ecc5f566f47ae907d6ad63f71f45be8f0fc8a62bcddf7b5339052d
+    - current_digest: 21c8de6647ecc5f566f47ae907d6ad63f71f45be8f0fc8a62bcddf7b5339052d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605181835-BQ9T2P
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: |-
     - Local `bun run test:fast` is not green because three release asset tests timed out after 90s/180s. The dependency bump itself passed install, lint, typecheck, policy routing, doctor, and critical CLI checks. Dependabot PR #3899 also had GitHub Linux `test` and docs checks green; its Windows failure happened in `oven-sh/setup-bun@v2` before install/test steps.
+
+    - Observation: Local bun run test:fast timed out in three release asset tests after 90s/180s, while 1877 tests passed.
+      Impact: Local broad sweep was inconclusive for release asset timeouts, but hosted Core CI on the PR passed the same dependency bump on Linux and Windows.
+      Resolution: Treat hosted green Core CI plus local focused checks as acceptance evidence for this dependency-only change.
 id_source: "generated"
 ---
 ## Summary
@@ -174,6 +204,26 @@ Excluded: TypeScript 6, @eslint/js 10, eslint-plugin-n 18, zod 4, execa 9.
   Result: pass
   Evidence: `doctor (OK)` with informational runtime/source findings only.
   Scope: repository health and branch_pr drift.
+
+### 2026-05-18T19:03:38.825Z — VERIFY — ok
+
+By: CODER
+
+Note: Safe root dependency bump verified: install, lint, typecheck, policy routing, doctor, critical CLI tests passed locally; GitHub PR #3906 hosted checks passed, including Core test and test-windows.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T18:36:24.351Z, excerpt_hash=sha256:07fa477be9a622a475f4c0b6c852871e5bcc63b4a08bedfd6b8953590937cd7a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181835-BQ9T2P-safe-root-deps/.agentplane/tasks/202605181835-BQ9T2P/blueprint/resolved-snapshot.json
+- old_digest: 21c8de6647ecc5f566f47ae907d6ad63f71f45be8f0fc8a62bcddf7b5339052d
+- current_digest: 21c8de6647ecc5f566f47ae907d6ad63f71f45be8f0fc8a62bcddf7b5339052d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605181835-BQ9T2P
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -184,3 +234,7 @@ Excluded: TypeScript 6, @eslint/js 10, eslint-plugin-n 18, zod 4, execa 9.
 ## Findings
 
 - Local `bun run test:fast` is not green because three release asset tests timed out after 90s/180s. The dependency bump itself passed install, lint, typecheck, policy routing, doctor, and critical CLI checks. Dependabot PR #3899 also had GitHub Linux `test` and docs checks green; its Windows failure happened in `oven-sh/setup-bun@v2` before install/test steps.
+
+- Observation: Local bun run test:fast timed out in three release asset tests after 90s/180s, while 1877 tests passed.
+  Impact: Local broad sweep was inconclusive for release asset timeouts, but hosted Core CI on the PR passed the same dependency bump on Linux and Windows.
+  Resolution: Treat hosted green Core CI plus local focused checks as acceptance evidence for this dependency-only change.
