@@ -17,6 +17,7 @@ export type ReleaseVersionPlan = {
   nextTag: string;
   nextVersion: string;
   bump: BumpKind;
+  baseSha?: string | null;
 };
 
 export type ReleaseApplyRoute = {

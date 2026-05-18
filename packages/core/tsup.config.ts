@@ -15,7 +15,7 @@ export default defineConfig({
     "schemas/index": "src/schemas/index.ts",
     "tasks/index": "src/tasks/index.ts",
   },
-  external: ["execa", "yaml", "zod", "zod-to-json-schema"],
+  external: ["execa", "yaml", "zod"],
   format: ["esm"],
   minify: true,
   outDir: "dist",

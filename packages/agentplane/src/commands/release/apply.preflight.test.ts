@@ -321,6 +321,61 @@ describeWhenNotHook(
       RELEASE_APPLY_FULL_GATE_TIMEOUT_MS,
     );
 
+    it(
+      "fails when the protected base advances after branch_pr release planning",
+      async () => {
+        const root = await mkGitRepoRootWithBranch("main");
+        await writeDefaultConfig(root);
+        await writeWorkflowMode(root, "branch_pr");
+
+        await seedReleaseWorkspace(root, {
+          coreVersion: "0.2.6",
+          cliVersion: "0.2.6",
+          dependencyVersion: "0.2.6",
+        });
+        await commitAll(root, "seed");
+        await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+        await execFileAsync("git", ["config", "--local", "agentplane.baseBranch", "main"], {
+          cwd: root,
+        });
+
+        await writeFile(path.join(root, "file.txt"), "x", "utf8");
+        await commitAll(root, "feat: add file");
+        await execFileAsync("git", ["checkout", "-b", "task/202604130750-E2J835/release"], {
+          cwd: root,
+        });
+
+        await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
+        await writeReleaseNotes(root, "0.2.7", validReleaseNotesBody("0.2.7"));
+
+        const { stdout: lateBaseCommit } = await execFileAsync(
+          "git",
+          ["commit-tree", "HEAD^{tree}", "-p", "main", "-m", "fix: late merge"],
+          { cwd: root },
+        );
+        await execFileAsync("git", ["update-ref", "refs/heads/main", lateBaseCommit.trim()], {
+          cwd: root,
+        });
+
+        await expect(
+          withDryRunReleaseMode(async () =>
+            runReleaseCandidate(
+              { cwd: root, rootOverride: root },
+              { plan: undefined, yes: false, push: false, remote: "origin" },
+            ),
+          ),
+        ).rejects.toMatchObject({
+          code: "E_VALIDATION",
+          context: {
+            diagnostic_state:
+              "the protected base branch no longer matches the prepared release plan",
+            diagnostic_next_action_command: "agentplane release plan",
+          },
+        });
+      },
+      RELEASE_APPLY_FULL_GATE_TIMEOUT_MS,
+    );
+
     it("fails early when release tag already exists", async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);

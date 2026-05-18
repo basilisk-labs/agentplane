@@ -153,17 +153,17 @@
     "release:bun:check": "bun run assets:builtin:check && node scripts/generate/generate-bun-cli-assets.mjs --check"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "@types/node": "^25.8.0",
-    "@typescript-eslint/eslint-plugin": "^8.59.3",
-    "@typescript-eslint/parser": "^8.59.3",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.9.0",
+    "@typescript-eslint/eslint-plugin": "^8.59.4",
+    "@typescript-eslint/parser": "^8.59.4",
     "@vitest/coverage-v8": "4.1.6",
     "dependency-cruiser": "^17.4.0",
     "eslint": "^10.4.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-n": "^17.23.2",
+    "eslint-plugin-n": "^18.0.1",
     "eslint-plugin-promise": "^7.3.0",
     "eslint-plugin-unicorn": "^64.0.0",
     "globals": "^17.6.0",
@@ -173,7 +173,7 @@
     "prettier": "^3.8.3",
     "tsup": "^8.5.1",
     "turbo": "^2.9.14",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "vitest": "4.1.6"
   }
 }

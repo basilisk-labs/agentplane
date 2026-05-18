@@ -155,6 +155,8 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
+      await recordVerificationOk(root, taskId);
+      await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
 
@@ -238,6 +240,8 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
+      await recordVerificationOk(root, taskId);
+      await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
 
@@ -426,6 +430,8 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
+      await recordVerificationOk(root, taskId);
+      await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
 

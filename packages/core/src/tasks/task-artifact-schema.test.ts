@@ -210,7 +210,7 @@ describe("task-artifact-schema", () => {
     const errors = listAcrSchemaErrors({ ...validAcr(), unexpected: true });
 
     expect(errors).toHaveLength(1);
-    expect(errors[0]).toContain("Unrecognized key(s)");
+    expect(errors[0]).toMatch(/Unrecognized key(?:\(s\))?/u);
   });
 
   it("rejects absolute ACR evidence paths", () => {
