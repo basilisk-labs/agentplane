@@ -4,7 +4,7 @@ title: "Implement Agentplane website redesign backlog"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-18T19:20:22.753Z"
+  updated_at: "2026-05-18T19:53:04.785Z"
   updated_by: "CODER"
-  note: "Implemented website redesign backlog in isolated branch_pr worktree. Verification passed: check-content, check-links with external O'Reilly HEAD 403 warning only, docs:site:typecheck, docs:site:build, policy routing, ap doctor, and browser smoke for homepage, examples, docs, quickstart, local context, traces, and blog."
+  note: "Verified website redesign backlog on branch task/202605181851-NJQR4S/website-redesign-backlog. Local checks: format:check, website check-content, docs:ia:check, docs:site:typecheck, docs:site:build, website check-links with O'Reilly 403 external warning. GitHub PR #3914 head 87e800fb7: Docs CI docs success, Core CI test and test-windows success, CodeQL success."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented website redesign backlog in isolated branch_pr worktree. Verification passed: check-content, check-links with external O'Reilly HEAD 403 warning only, docs:site:typecheck, docs:site:build, policy routing, ap doctor, and browser smoke for homepage, examples, docs, quickstart, local context, traces, and blog."
+  -
+    type: "verify"
+    at: "2026-05-18T19:53:04.785Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified website redesign backlog on branch task/202605181851-NJQR4S/website-redesign-backlog. Local checks: format:check, website check-content, docs:ia:check, docs:site:typecheck, docs:site:build, website check-links with O'Reilly 403 external warning. GitHub PR #3914 head 87e800fb7: Docs CI docs success, Core CI test and test-windows success, CodeQL success."
 doc_version: 3
-doc_updated_at: "2026-05-18T19:20:22.789Z"
+doc_updated_at: "2026-05-18T19:53:04.800Z"
 doc_updated_by: "CODER"
 description: "Implement the public website redesign backlog across homepage, docs, README-adjacent copy, SEO/AEO metadata, design-system touches, examples, recipes, GitHub star CTA, and quality gates. Scope excludes hosted product, pricing, enterprise, sales, or paid-platform messaging."
 sections:
@@ -74,6 +80,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T19:20:14.415Z, excerpt_hash=sha256:82b13657cb3df02a2655c95090ee232253304b66a1659ce9cd91c69e130f897f
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181851-NJQR4S-website-redesign-backlog/.agentplane/tasks/202605181851-NJQR4S/blueprint/resolved-snapshot.json
+    - old_digest: fb44c16406ed079d3b3d703ad0c22e6025fd7720438ffde687434add36632de2
+    - current_digest: fb44c16406ed079d3b3d703ad0c22e6025fd7720438ffde687434add36632de2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605181851-NJQR4S
+
+    ### 2026-05-18T19:53:04.785Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified website redesign backlog on branch task/202605181851-NJQR4S/website-redesign-backlog. Local checks: format:check, website check-content, docs:ia:check, docs:site:typecheck, docs:site:build, website check-links with O'Reilly 403 external warning. GitHub PR #3914 head 87e800fb7: Docs CI docs success, Core CI test and test-windows success, CodeQL success.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T19:20:22.789Z, excerpt_hash=sha256:82b13657cb3df02a2655c95090ee232253304b66a1659ce9cd91c69e130f897f
 
     Details:
 
@@ -131,6 +156,25 @@ Note: Implemented website redesign backlog in isolated branch_pr worktree. Verif
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T19:20:14.415Z, excerpt_hash=sha256:82b13657cb3df02a2655c95090ee232253304b66a1659ce9cd91c69e130f897f
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181851-NJQR4S-website-redesign-backlog/.agentplane/tasks/202605181851-NJQR4S/blueprint/resolved-snapshot.json
+- old_digest: fb44c16406ed079d3b3d703ad0c22e6025fd7720438ffde687434add36632de2
+- current_digest: fb44c16406ed079d3b3d703ad0c22e6025fd7720438ffde687434add36632de2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605181851-NJQR4S
+
+### 2026-05-18T19:53:04.785Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified website redesign backlog on branch task/202605181851-NJQR4S/website-redesign-backlog. Local checks: format:check, website check-content, docs:ia:check, docs:site:typecheck, docs:site:build, website check-links with O'Reilly 403 external warning. GitHub PR #3914 head 87e800fb7: Docs CI docs success, Core CI test and test-windows success, CodeQL success.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T19:20:22.789Z, excerpt_hash=sha256:82b13657cb3df02a2655c95090ee232253304b66a1659ce9cd91c69e130f897f
 
 Details:
 
