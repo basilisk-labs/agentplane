@@ -135,7 +135,7 @@ describe("runCli", () => {
   });
 
   it(
-    "finish --close-commit leaves branch_pr PR artifacts clean and verified on the base checkout",
+    "finish --close-commit leaves branch_pr close task artifacts committed and the base checkout clean",
     { timeout: 120_000 },
     async () => {
       const root = await mkGitRepoRoot();
@@ -158,9 +158,9 @@ describe("runCli", () => {
           "task",
           "new",
           "--title",
-          "Finish branch_pr close commit refreshes PR artifacts",
+          "Finish branch_pr close commit records task artifacts",
           "--description",
-          "Finish should not leave refreshed pr artifacts dirty after the close commit.",
+          "Finish should not leave close task artifacts dirty after the close commit.",
           "--priority",
           "med",
           "--owner",
@@ -210,9 +210,9 @@ describe("runCli", () => {
           "--author",
           "INTEGRATOR",
           "--body",
-          "Verified: branch_pr close commit should commit the refreshed pr artifacts and leave the base checkout clean.",
+          "Verified: branch_pr close commit should record task artifacts and leave the base checkout clean.",
           "--result",
-          "branch_pr close commit refreshes PR artifacts",
+          "branch_pr close commit records task artifacts",
           "--commit",
           implHash.trim(),
           "--close-commit",

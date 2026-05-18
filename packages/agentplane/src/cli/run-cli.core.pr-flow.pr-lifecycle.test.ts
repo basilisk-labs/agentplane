@@ -66,6 +66,11 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     config.workflow_mode = "branch_pr";
     config.agents.approvals.require_plan = false;
     await writeConfig(root, config);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
 
     let taskId = "";
     const ioTask = captureStdIO();
@@ -93,7 +98,6 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
     }
 
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-    const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["checkout", "-b", `task/${taskId}/start-ready-auto`], {
       cwd: root,
     });
@@ -496,6 +500,7 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
 
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
+      await execFileAsync("git", ["checkout", "-b", `task/${taskId}/pr-update`], { cwd: root });
       await runCliSilent([
         "pr",
         "open",
@@ -507,8 +512,6 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
         "--root",
         root,
       ]);
-
-      await execFileAsync("git", ["checkout", "-b", `task/${taskId}/pr-update`], { cwd: root });
       await writeFile(path.join(root, "change.txt"), "change", "utf8");
       await execFileAsync("git", ["add", "change.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "change"], { cwd: root });
@@ -587,6 +590,9 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
       }
 
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await execFileAsync("git", ["checkout", "-b", `task/${taskId}/pr-update-idempotent`], {
+        cwd: root,
+      });
       await runCliSilent([
         "pr",
         "open",
@@ -598,10 +604,6 @@ describe("runCli branch_pr lifecycle flow", { timeout: PR_FLOW_INTEGRATION_TIMEO
         "--root",
         root,
       ]);
-
-      await execFileAsync("git", ["checkout", "-b", `task/${taskId}/pr-update-idempotent`], {
-        cwd: root,
-      });
       await writeFile(path.join(root, "change.txt"), "change", "utf8");
       await execFileAsync("git", ["add", "change.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "change"], { cwd: root });

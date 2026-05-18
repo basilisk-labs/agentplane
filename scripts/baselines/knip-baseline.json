@@ -616,7 +616,7 @@
       "exports": [
         {
           "name": "getCanonicalCommandInvocation",
-          "line": 35,
+          "line": 38,
           "col": 17
         }
       ]
@@ -716,12 +716,12 @@
       "types": [
         {
           "name": "InitEffectKind",
-          "line": 58,
+          "line": 60,
           "col": 13
         },
         {
           "name": "InitEffectRisk",
-          "line": 71,
+          "line": 73,
           "col": 13
         }
       ]

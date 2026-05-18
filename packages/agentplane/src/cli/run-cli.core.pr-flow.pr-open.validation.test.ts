@@ -69,6 +69,9 @@ describe(
       await writeConfig(root, config);
       await configureGitUser(root);
       const execFileAsync = promisify(execFile);
+      await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
       await execFileAsync(
         "git",
         ["remote", "add", "origin", "https://github.com/example/repo.git"],
@@ -106,6 +109,11 @@ describe(
       }
 
       const branch = `task/${taskId}/sync-only`;
+      await execFileAsync("git", ["checkout", "-b", branch], { cwd: root, env: cleanGitEnv() });
+      await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore branch sync seed"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
       const { fakeBin, logPath } = await installFakeGhPrApi({
         scenarioName: "open-sync-only",
         branch,

@@ -7,9 +7,28 @@ import {
   resolvePreferredNodeExecutable,
   withPreferredRuntimePath,
 } from "../../shared/runtime-env.js";
-import { execFileAsync } from "@agentplaneorg/core/process";
+import { execFileAsync, runProcess } from "@agentplaneorg/core/process";
 
 import { releasePushDescription, type ReleaseCommandLabel } from "./apply.preflight.git.js";
+
+function releasePrepublishEnv(): NodeJS.ProcessEnv {
+  const env = withPreferredRuntimePath({
+    ...process.env,
+    GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME ?? "agentplane-release",
+    GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL ?? "agentplane-release@example.com",
+    GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME ?? "agentplane-release",
+    GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL ?? "agentplane-release@example.com",
+  });
+
+  delete env.AGENTPLANE_AGENT_MODE;
+  delete env.AGENTPLANE_CLI_ALIAS;
+  delete env.AGENTPLANE_COLOR;
+  delete env.AGENTPLANE_PROMPTS;
+  delete env.FORCE_COLOR;
+  delete env.NO_COLOR;
+
+  return env;
+}
 
 export async function ensureNpmVersionsAvailable(
   gitRoot: string,
@@ -57,16 +76,13 @@ export async function ensureNpmVersionsAvailable(
 }
 
 async function runReleasePrepublishPhase(gitRoot: string, phase: "fast" | "heavy"): Promise<void> {
-  await execFileAsync("bun", ["run", `release:prepublish:${phase}`], {
+  await runProcess({
+    command: "bun",
+    args: ["run", `release:prepublish:${phase}`],
     cwd: gitRoot,
-    env: withPreferredRuntimePath({
-      ...process.env,
-      GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME ?? "agentplane-release",
-      GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL ?? "agentplane-release@example.com",
-      GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME ?? "agentplane-release",
-      GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL ?? "agentplane-release@example.com",
-    }),
-    maxBuffer: 200 * 1024 * 1024,
+    env: releasePrepublishEnv(),
+    stdout: "inherit",
+    stderr: "inherit",
   });
 }
 

@@ -108,7 +108,7 @@ export async function runCli(argv: string[]): Promise<number> {
       { spec: helpSpec },
       ...COMMANDS.map((entry) => ({ spec: makeHelpSpecForEntry(entry) })),
     ];
-    const frameworkCheckout = findFrameworkCheckout(helpCwd);
+    const frameworkCheckout = findFrameworkCheckout(cwd);
     const frameworkCommandDeniedMessage =
       "Framework dev command is only available inside the AgentPlane framework checkout.";
     const helpRegistry = {

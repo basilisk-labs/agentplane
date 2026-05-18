@@ -568,7 +568,10 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
-      const verifyCmd = `cd "${root}" && echo bump >> bump.txt && git add bump.txt && git commit -m "chore bump"`;
+      const verifyCmd = [
+        "node -e",
+        `'const cp=require("node:child_process");const fs=require("node:fs");const path=require("node:path");const root=${JSON.stringify(root)};fs.appendFileSync(path.join(root,"bump.txt"),"bump"+String.fromCharCode(10));cp.execFileSync("git",["-C",root,"add","bump.txt"]);cp.execFileSync("git",["-C",root,"commit","-m","chore bump"]);'`,
+      ].join(" ");
 
       let taskId = "";
       const ioTask = captureStdIO();
