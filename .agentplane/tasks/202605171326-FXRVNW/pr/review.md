@@ -13,7 +13,7 @@ Created: 2026-05-18T17:41:11.285Z
 ## Verification
 
 - State: ok
-- Note: Verified follow-up: close-tail test reset now satisfies lint while staying below the hotspot threshold.
+- Note: Verified follow-up: finish validation mocks now include branch-prefix GitHub PR lookup, so close-tail sibling detection does not break existing finish validation tests.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,9 +24,9 @@ Created: 2026-05-18T17:41:11.285Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T18:56:31.708Z
+- Updated: 2026-05-18T19:11:45.529Z
 - Branch: task/202605171326-FXRVNW/v063-prerelease-rough-edges
-- Head: 29496f6fa6df
+- Head: b792f3eb1a5b
 
 ```text
  .agentplane/tasks/202605170941-3RACDD/README.md    |  84 ++-
@@ -52,12 +52,13 @@ Created: 2026-05-18T17:41:11.285Z
  .../agentplane/src/commands/release/plan.test.ts   |  54 +-
  .../agentplane/src/commands/task/finish-close.ts   |  15 +-
  .../commands/task/finish.close-tail.unit.test.ts   |  37 +-
+ .../commands/task/finish.validation.unit.test.ts   |   4 +
  .../src/commands/task/mutation-parity.unit.test.ts |  10 +-
  packages/core/src/tasks/task-store.ts              |  14 +-
  scripts/lib/pre-push-scope.mjs                     |   2 +-
  scripts/release/next-action.mjs                    |   6 +
  scripts/release/state.mjs                          |  46 +-
- 28 files changed, 2739 insertions(+), 64 deletions(-)
+ 29 files changed, 2743 insertions(+), 64 deletions(-)
 ```
 
 </details>

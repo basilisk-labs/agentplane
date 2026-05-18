@@ -21,9 +21,10 @@
  .../agentplane/src/commands/release/plan.test.ts   |  54 +-
  .../agentplane/src/commands/task/finish-close.ts   |  15 +-
  .../commands/task/finish.close-tail.unit.test.ts   |  37 +-
+ .../commands/task/finish.validation.unit.test.ts   |   4 +
  .../src/commands/task/mutation-parity.unit.test.ts |  10 +-
  packages/core/src/tasks/task-store.ts              |  14 +-
  scripts/lib/pre-push-scope.mjs                     |   2 +-
  scripts/release/next-action.mjs                    |   6 +
  scripts/release/state.mjs                          |  46 +-
- 28 files changed, 2739 insertions(+), 64 deletions(-)
+ 29 files changed, 2743 insertions(+), 64 deletions(-)
