@@ -8,6 +8,7 @@ import {
   commitAll,
   describeWhenNotHook,
   mkGitRepoRoot,
+  mkGitRepoRootWithBranch,
   writeDefaultConfig,
 } from "@agentplane/testkit";
 import {
@@ -31,7 +32,7 @@ describeWhenNotHook(
     it(
       "allows local release apply without mandatory direct push",
       async () => {
-        const root = await mkGitRepoRoot();
+        const root = await mkGitRepoRootWithBranch("main");
         await writeDefaultConfig(root);
         await mkdir(path.join(root, "docs", "releases"), { recursive: true });
         await seedReleaseWorkspace(root, {
@@ -82,7 +83,7 @@ describeWhenNotHook(
     it(
       "skips local tag creation on branch_pr task branches when preparing an explicit release candidate",
       async () => {
-        const root = await mkGitRepoRoot();
+        const root = await mkGitRepoRootWithBranch("main");
         await writeDefaultConfig(root);
         await writeWorkflowMode(root, "branch_pr");
 
