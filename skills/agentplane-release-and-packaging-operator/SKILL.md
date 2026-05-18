@@ -64,18 +64,18 @@ bun run release:evidence:collect -- --version <version>
 
 ## Build Ordering
 
-Build workspace packages in dependency order. Do not build `agentplane` before generated/dist surfaces it imports exist.
+Build workspace packages in dependency order. Build `agentplane` before `@agentplane/testkit`, because testkit imports agentplane's generated declaration surfaces.
 
 Preferred order:
 
 ```bash
 bun run --filter=@agentplaneorg/core build
+bun run --filter=agentplane build
 bun run --filter=@agentplane/testkit build
 bun run --filter=@agentplaneorg/recipes build
-bun run --filter=agentplane build
 ```
 
-If CI fails with missing `../../../testkit/dist/*.js` or missing exports from `src/testing/index.ts`, the likely cause is that `@agentplane/testkit` was not built before `agentplane`.
+If CI fails with `TS6305` for `packages/agentplane/dist/*.d.ts` while building `@agentplane/testkit`, the likely cause is that `agentplane` was not built before `@agentplane/testkit`.
 
 ## Publish Flow
 

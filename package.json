@@ -58,7 +58,7 @@
     "deps:triage": "node scripts/checks/deps-triage.mjs",
     "ci:local:turbo": "node scripts/checks/run-turbo-local-ci.mjs",
     "checks:run": "node scripts/checks/run-checks.mjs",
-    "release:check": "bun run release:incidents:check && bun run release:acr-example:check && bun run --filter=@agentplaneorg/core build && bun run --filter=@agentplane/testkit build && bun run --filter=@agentplaneorg/recipes build && bun run --filter=agentplane build && node scripts/release-check.mjs",
+    "release:check": "bun run release:incidents:check && bun run release:acr-example:check && bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && bun run --filter=@agentplane/testkit build && bun run --filter=@agentplaneorg/recipes build && node scripts/release-check.mjs",
     "release:check:registry": "node scripts/release/check-npm-version-availability.mjs",
     "release:version:bump": "node scripts/release/version-bump.mjs",
     "release:state": "node scripts/release/state.mjs",
