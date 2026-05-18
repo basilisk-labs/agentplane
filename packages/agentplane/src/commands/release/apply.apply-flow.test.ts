@@ -7,7 +7,6 @@ import { expect, it } from "vitest";
 import {
   commitAll,
   describeWhenNotHook,
-  mkGitRepoRoot,
   mkGitRepoRootWithBranch,
   writeDefaultConfig,
 } from "@agentplane/testkit";
