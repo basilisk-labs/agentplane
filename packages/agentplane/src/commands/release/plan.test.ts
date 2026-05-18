@@ -5,7 +5,7 @@ import { promisify } from "node:util";
 import { expect, it } from "vitest";
 
 import { commitAll, describeWhenNotHook, tempRepo } from "@agentplane/testkit";
-import { seedReleaseWorkspace } from "@agentplane/testkit/release";
+import { seedReleaseWorkspace, writeWorkflowMode } from "@agentplane/testkit/release";
 import { runReleasePlan, releasePlanSpec } from "./plan.command.js";
 
 const execFileAsync = promisify(execFile);
@@ -61,6 +61,53 @@ describeWhenNotHook("release plan", () => {
       expect(instructions).toContain("Write at least 1 bullet points.");
       const changesMd = await readFile(path.join(runDir, "changes.md"), "utf8");
       expect(changesMd).toContain("feat: add file");
+    } finally {
+      await repo.cleanup();
+    }
+  }, 60_000);
+
+  it("records the protected base sha when planning from a branch_pr candidate branch", async () => {
+    const repo = await tempRepo({ withDefaultConfig: true });
+    const { root } = repo;
+    try {
+      await writeWorkflowMode(root, "branch_pr");
+      await seedReleaseWorkspace(root, {
+        coreVersion: "0.2.6",
+        cliVersion: "0.2.6",
+        dependencyVersion: "0.2.6",
+      });
+      await commitAll(root, "seed");
+      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+      await execFileAsync("git", ["config", "--local", "agentplane.baseBranch", "main"], {
+        cwd: root,
+      });
+      const { stdout: baseSha } = await execFileAsync("git", ["rev-parse", "main"], {
+        cwd: root,
+      });
+
+      await execFileAsync("git", ["checkout", "-b", "task/T-1/release-candidate"], {
+        cwd: root,
+      });
+      await writeFile(path.join(root, "file.txt"), "x", "utf8");
+      await commitAll(root, "feat: add file");
+      const { stdout: candidateSha } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: root,
+      });
+
+      const rc = await runReleasePlan(
+        { cwd: root, rootOverride: root },
+        { bump: "patch", yes: false },
+      );
+      expect(rc).toBe(0);
+
+      const runNames = await readdir(path.join(root, ".agentplane", ".release", "plan"));
+      const runs = runNames.toSorted();
+      const runDir = path.join(root, ".agentplane", ".release", "plan", runs.at(-1) ?? "");
+      const version = JSON.parse(await readFile(path.join(runDir, "version.json"), "utf8")) as {
+        baseSha?: string;
+      };
+      expect(version.baseSha).toBe(baseSha.trim());
+      expect(version.baseSha).not.toBe(candidateSha.trim());
     } finally {
       await repo.cleanup();
     }

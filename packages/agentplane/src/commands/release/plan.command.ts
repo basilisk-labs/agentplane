@@ -1,6 +1,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { loadConfig } from "@agentplaneorg/core/config";
+import { gitEnv, resolveBaseBranch } from "@agentplaneorg/core/git";
 import { resolveProject } from "@agentplaneorg/core/project";
 import { createCliEmitter } from "../../cli/output.js";
 import type { CommandHandler } from "../../cli/spec/spec.js";
@@ -8,7 +10,6 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { withDiagnosticContext } from "../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
-import { gitEnv } from "@agentplaneorg/core/git";
 import type { BumpKind, ReleasePlanParsed } from "./plan.spec.js";
 const output = createCliEmitter();
 
@@ -204,6 +205,74 @@ async function currentHead(gitRoot: string): Promise<string> {
   return String(stdout ?? "").trim();
 }
 
+async function currentBranch(gitRoot: string): Promise<string> {
+  const { stdout } = await execFileAsync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
+    cwd: gitRoot,
+    env: gitEnv(),
+  });
+  return String(stdout ?? "").trim();
+}
+
+async function revParseOptional(gitRoot: string, ref: string): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync("git", ["rev-parse", "--verify", `${ref}^{commit}`], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    const sha = String(stdout ?? "").trim();
+    return sha || null;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1 || code === 128) return null;
+    throw err;
+  }
+}
+
+async function resolveProtectedBaseShaForPlan(opts: {
+  cwd: string;
+  rootOverride?: string | null;
+  gitRoot: string;
+  agentplaneDir: string;
+}): Promise<string> {
+  const loaded = await loadConfig(opts.agentplaneDir);
+  if (loaded.config.workflow_mode !== "branch_pr") return await currentHead(opts.gitRoot);
+
+  const baseBranch = await resolveBaseBranch({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+    mode: loaded.config.workflow_mode,
+  });
+  const branch = await currentBranch(opts.gitRoot);
+  if (!baseBranch || branch === baseBranch) return await currentHead(opts.gitRoot);
+
+  const refs = [`refs/remotes/origin/${baseBranch}`, `refs/heads/${baseBranch}`, baseBranch];
+  for (const ref of refs) {
+    const sha = await revParseOptional(opts.gitRoot, ref);
+    if (sha) return sha;
+  }
+
+  throw new CliError({
+    exitCode: exitCodeForError("E_VALIDATION"),
+    code: "E_VALIDATION",
+    message:
+      `Release planning could not resolve protected base branch ${baseBranch}.\n` +
+      "Fetch or create the protected base branch before generating a branch_pr release plan.",
+    context: withDiagnosticContext(
+      { command: "release plan" },
+      {
+        state: "the protected base branch could not be resolved for release planning",
+        likelyCause:
+          "the current checkout is a branch_pr candidate branch, but neither origin nor local refs expose the configured base branch",
+        nextAction: {
+          command: `git fetch origin ${baseBranch}`,
+          reason: "refresh the protected base branch tip before freezing the release scope",
+          reasonCode: "release_plan_base_unresolved",
+        },
+      },
+    ),
+  });
+}
+
 function changesMarkdown(changes: Change[]): string {
   if (changes.length === 0) return "_No commits found in the selected range._\n";
   return (
@@ -293,7 +362,12 @@ export const runReleasePlan: CommandHandler<ReleasePlanParsed> = async (ctx, fla
   }
   const nextVersion = bumpVersion(coreVersion, flags.bump);
   const nextTag = `v${nextVersion}`;
-  const baseSha = await currentHead(gitRoot);
+  const baseSha = await resolveProtectedBaseShaForPlan({
+    cwd: ctx.cwd,
+    rootOverride: ctx.rootOverride ?? null,
+    gitRoot,
+    agentplaneDir: resolved.agentplaneDir,
+  });
   const changes = await listChanges(gitRoot, prevTag);
   const minBullets = requiredBulletCount(changes.length);
 

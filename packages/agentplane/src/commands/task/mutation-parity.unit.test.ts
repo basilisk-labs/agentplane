@@ -682,11 +682,11 @@ describe("task mutation parity across local and backend paths", () => {
     vi.useRealTimers();
     vi.restoreAllMocks();
     vi.resetModules();
-    vi.unmock("../guard/impl/comment-commit.js");
-    vi.unmock("../shared/reconcile-check.js");
-    vi.unmock("../shared/task-backend.js");
-    vi.unmock("../shared/task-store.js");
-    vi.unmock("./shared.js");
+    vi.doUnmock("../guard/impl/comment-commit.js");
+    vi.doUnmock("../shared/reconcile-check.js");
+    vi.doUnmock("../shared/task-backend.js");
+    vi.doUnmock("../shared/task-store.js");
+    vi.doUnmock("./shared.js");
   });
 
   it("keeps task comment behavior aligned", async () => {

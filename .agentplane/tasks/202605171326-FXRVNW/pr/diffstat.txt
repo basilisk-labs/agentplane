@@ -7,12 +7,14 @@
  .../blueprint/resolved-snapshot.json               | 455 ++++++++++++++++
  .../src/commands/context/release-readiness.test.ts |  16 +
  packages/agentplane/src/commands/context/wiki.ts   |   4 +
- .../src/commands/release/apply.pipeline/state.ts   |  31 ++
+ .../commands/release/apply.pipeline/preflight.ts   |   1 +
+ .../src/commands/release/apply.pipeline/state.ts   | 156 ++++++
  .../src/commands/release/apply.preflight.plan.ts   |   3 +-
+ .../src/commands/release/apply.preflight.test.ts   |  55 ++
  .../agentplane/src/commands/release/apply.types.ts |   1 +
  .../src/commands/release/plan.command.ts           |  11 +-
  .../agentplane/src/commands/release/plan.test.ts   |   5 +
  packages/core/src/tasks/task-store.ts              |  14 +-
  scripts/release/next-action.mjs                    |   6 +
  scripts/release/state.mjs                          |  46 +-
- 17 files changed, 2200 insertions(+), 40 deletions(-)
+ 19 files changed, 2381 insertions(+), 40 deletions(-)

@@ -19,17 +19,20 @@ Harden release candidate planning so a patch release cannot claim to exclude wor
 - Note:
 
 ```text
-Verified: release planning now records baseSha and release candidate/apply fails closed if HEAD
-drifts from the planned base; focused release plan tests, builds, policy routing, and doctor passed.
+Verified: hardened release process follow-ups: branch_pr release plans now pin protected base SHA,
+release candidate preflight catches protected-base drift, PR checks/integration surface unresolved
+GitHub review threads, pre-push scope handles git push origin HEAD, Vitest hoisting warnings are
+removed, and close-tail duplicate PR risk is reduced by sibling branch-prefix detection. Focused
+Vitest, lint, build, routing, and doctor passed.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T17:46:47.806Z
+- Updated: 2026-05-18T18:33:48.212Z
 - Branch: task/202605171326-FXRVNW/v063-prerelease-rough-edges
-- Head: 96af9912673c
+- Head: 8d5099f549f1
 
 ```text
  .agentplane/tasks/202605170941-3RACDD/README.md    |  84 ++-
@@ -41,15 +44,17 @@ drifts from the planned base; focused release plan tests, builds, policy routing
  .../blueprint/resolved-snapshot.json               | 455 ++++++++++++++++
  .../src/commands/context/release-readiness.test.ts |  16 +
  packages/agentplane/src/commands/context/wiki.ts   |   4 +
- .../src/commands/release/apply.pipeline/state.ts   |  31 ++
+ .../commands/release/apply.pipeline/preflight.ts   |   1 +
+ .../src/commands/release/apply.pipeline/state.ts   | 156 ++++++
  .../src/commands/release/apply.preflight.plan.ts   |   3 +-
+ .../src/commands/release/apply.preflight.test.ts   |  55 ++
  .../agentplane/src/commands/release/apply.types.ts |   1 +
  .../src/commands/release/plan.command.ts           |  11 +-
  .../agentplane/src/commands/release/plan.test.ts   |   5 +
  packages/core/src/tasks/task-store.ts              |  14 +-
  scripts/release/next-action.mjs                    |   6 +
  scripts/release/state.mjs                          |  46 +-
- 17 files changed, 2200 insertions(+), 40 deletions(-)
+ 19 files changed, 2381 insertions(+), 40 deletions(-)
 ```
 
 </details>

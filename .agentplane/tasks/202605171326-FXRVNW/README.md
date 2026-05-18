@@ -4,7 +4,7 @@ title: "Freeze release candidate base and scope after late merges"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-18T17:46:10.744Z"
+  updated_at: "2026-05-18T18:33:48.117Z"
   updated_by: "CODER"
-  note: "Verified: release planning now records baseSha and release candidate/apply fails closed if HEAD drifts from the planned base; focused release plan tests, builds, policy routing, and doctor passed."
+  note: "Verified: hardened release process follow-ups: branch_pr release plans now pin protected base SHA, release candidate preflight catches protected-base drift, PR checks/integration surface unresolved GitHub review threads, pre-push scope handles git push origin HEAD, Vitest hoisting warnings are removed, and close-tail duplicate PR risk is reduced by sibling branch-prefix detection. Focused Vitest, lint, build, routing, and doctor passed."
   attempts: 0
 commit: null
 comments:
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: release planning now records baseSha and release candidate/apply fails closed if HEAD drifts from the planned base; focused release plan tests, builds, policy routing, and doctor passed."
+  -
+    type: "verify"
+    at: "2026-05-18T18:33:48.117Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: hardened release process follow-ups: branch_pr release plans now pin protected base SHA, release candidate preflight catches protected-base drift, PR checks/integration surface unresolved GitHub review threads, pre-push scope handles git push origin HEAD, Vitest hoisting warnings are removed, and close-tail duplicate PR risk is reduced by sibling branch-prefix detection. Focused Vitest, lint, build, routing, and doctor passed."
 doc_version: 3
-doc_updated_at: "2026-05-18T17:46:10.773Z"
+doc_updated_at: "2026-05-18T18:33:48.156Z"
 doc_updated_by: "CODER"
 description: "Harden release candidate planning so a patch release cannot claim to exclude work that is already merged into the candidate base. The v0.6.2 regression case is a release task that planned to exclude route-decision CLI work while PR #3823 later landed on origin/main. Release tooling should pin the base SHA, detect late merges, and require explicit revert, branch cut, or re-scope before candidate generation."
 sections:
@@ -83,11 +89,33 @@ sections:
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605171326-FXRVNW
 
+    ### 2026-05-18T18:33:48.117Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: hardened release process follow-ups: branch_pr release plans now pin protected base SHA, release candidate preflight catches protected-base drift, PR checks/integration surface unresolved GitHub review threads, pre-push scope handles git push origin HEAD, Vitest hoisting warnings are removed, and close-tail duplicate PR risk is reduced by sibling branch-prefix detection. Focused Vitest, lint, build, routing, and doctor passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T17:46:10.773Z, excerpt_hash=sha256:7eecdcf44b9b978192f3a7307d5417499bfdc57fbc78a1aaae98c7fdb4b1045c
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171326-FXRVNW-v063-prerelease-rough-edges/.agentplane/tasks/202605171326-FXRVNW/blueprint/resolved-snapshot.json
+    - old_digest: ff0d68e901f85322f204ed809c3256235cbfa5ce3b8a6cd6c5af2981bed1bdb0
+    - current_digest: ff0d68e901f85322f204ed809c3256235cbfa5ce3b8a6cd6c5af2981bed1bdb0
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171326-FXRVNW
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Commands: bunx vitest run release/plan, release/apply.preflight, release/apply.push-recovery, cli/local-ci-selection, task/mutation-parity, task/finish.close-tail --testTimeout 60000 --hookTimeout 60000; bunx eslint changed TS files; bun run --filter=agentplane build; node .agentplane/policy/check-routing.mjs && ap doctor.
+      Impact: Results: Vitest pass, 6 files and 89 tests; eslint pass on changed TS files; agentplane build pass with ESM dist/cli.js build success; policy routing OK; doctor OK with repo-local handoff info only.
+      Resolution: Scope covered: release planning/preflight, release push recovery, pre-push selector, GitHub review-thread blocker, task mutation parity, close-tail idempotency, and repo policy health.
 id_source: "generated"
 ---
 ## Summary
@@ -135,6 +163,25 @@ BlueprintSnapshotRef:
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605171326-FXRVNW
 
+### 2026-05-18T18:33:48.117Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: hardened release process follow-ups: branch_pr release plans now pin protected base SHA, release candidate preflight catches protected-base drift, PR checks/integration surface unresolved GitHub review threads, pre-push scope handles git push origin HEAD, Vitest hoisting warnings are removed, and close-tail duplicate PR risk is reduced by sibling branch-prefix detection. Focused Vitest, lint, build, routing, and doctor passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T17:46:10.773Z, excerpt_hash=sha256:7eecdcf44b9b978192f3a7307d5417499bfdc57fbc78a1aaae98c7fdb4b1045c
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171326-FXRVNW-v063-prerelease-rough-edges/.agentplane/tasks/202605171326-FXRVNW/blueprint/resolved-snapshot.json
+- old_digest: ff0d68e901f85322f204ed809c3256235cbfa5ce3b8a6cd6c5af2981bed1bdb0
+- current_digest: ff0d68e901f85322f204ed809c3256235cbfa5ce3b8a6cd6c5af2981bed1bdb0
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171326-FXRVNW
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -143,3 +190,7 @@ BlueprintSnapshotRef:
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Commands: bunx vitest run release/plan, release/apply.preflight, release/apply.push-recovery, cli/local-ci-selection, task/mutation-parity, task/finish.close-tail --testTimeout 60000 --hookTimeout 60000; bunx eslint changed TS files; bun run --filter=agentplane build; node .agentplane/policy/check-routing.mjs && ap doctor.
+  Impact: Results: Vitest pass, 6 files and 89 tests; eslint pass on changed TS files; agentplane build pass with ESM dist/cli.js build success; policy routing OK; doctor OK with repo-local handoff info only.
+  Resolution: Scope covered: release planning/preflight, release push recovery, pre-push selector, GitHub review-thread blocker, task mutation parity, close-tail idempotency, and repo policy health.
