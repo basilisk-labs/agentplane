@@ -271,6 +271,7 @@ async function loadFrameworkGatewayModules(): Promise<PromptModule[]> {
 function policyLoadCondition(relativePath: string): PromptModuleLoadCondition | undefined {
   if (relativePath === "workflow.direct.md") return { workflow_modes: ["direct"] };
   if (relativePath === "workflow.branch_pr.md") return { workflow_modes: ["branch_pr"] };
+  if (relativePath === "framework.dev.md") return { repo_types: ["framework"] };
   return undefined;
 }
 

@@ -190,6 +190,32 @@ describe("cli help contract", () => {
     }
   });
 
+  it("normal project help rejects explicit framework-maintainer command help", async () => {
+    const outsideRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-help-outside-"));
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["--root", outsideRoot, "help", "release"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Unknown command: release.");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("normal project dispatch rejects framework-maintainer commands", async () => {
+    const outsideRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-help-outside-"));
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["--root", outsideRoot, "release"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain(
+        "Framework dev command is only available inside the AgentPlane framework checkout.",
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
   it("framework checkout help exposes framework-dev commands in a dedicated group", async () => {
     const io = captureStdIO();
     try {

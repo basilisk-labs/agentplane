@@ -165,6 +165,9 @@ describe("framework prompt module registry", () => {
     expect(addresses).not.toContain(
       "framework/policy/.agentplane~policy/workflow/policy.workflow.direct.workflow.required.sequence",
     );
+    expect(addresses).not.toContain(
+      "framework/policy/.agentplane~policy/body/policy.framework_dev.body.framework.dev",
+    );
 
     const compiledModules = compiled.nodes.map((node) => node.module);
     const gatewayText = assembleStringModules(
@@ -187,6 +190,34 @@ describe("framework prompt module registry", () => {
       policyTemplates.find((template) => template.relativePath === "workflow.branch_pr.md")
         ?.contents,
     );
+  });
+
+  it("loads framework development policy only for framework repo type", async () => {
+    const registry = await loadFrameworkPromptModuleRegistry();
+    const normal = compilePromptModuleGraph({
+      graph: registry,
+      context: {
+        policy_gateway: "codex",
+        workflow_mode: "branch_pr",
+      },
+    });
+    const framework = compilePromptModuleGraph({
+      graph: registry,
+      context: {
+        policy_gateway: "codex",
+        workflow_mode: "branch_pr",
+        repo_type: "framework",
+      },
+    });
+    const normalAddresses = normal.nodes.map((node) => node.module.address.value);
+    const frameworkAddresses = framework.nodes.map((node) => node.module.address.value);
+    const frameworkPolicyAddress =
+      "framework/policy/.agentplane~policy/body/policy.framework_dev.body.framework.dev";
+
+    expect(normal.ok).toBe(true);
+    expect(framework.ok).toBe(true);
+    expect(normalAddresses).not.toContain(frameworkPolicyAddress);
+    expect(frameworkAddresses).toContain(frameworkPolicyAddress);
   });
 
   it("can include runtime execution profile prompt content without changing the default registry", async () => {

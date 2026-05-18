@@ -59,6 +59,12 @@ function normalizeSlashes(value: string): string {
   return value.replaceAll("\\", "/");
 }
 
+function normalInstalledPolicyTemplates(
+  templates: Awaited<ReturnType<typeof loadPolicyTemplates>>,
+): Awaited<ReturnType<typeof loadPolicyTemplates>> {
+  return templates.filter((policy) => policy.relativePath !== "framework.dev.md");
+}
+
 installRunCliIntegrationHarness();
 
 describe("runCli", () => {
@@ -212,7 +218,7 @@ describe("runCli", () => {
     const template = await loadAgentsTemplate();
     const expectedAgents = filterAgentsByWorkflow(template, "direct");
     const templates = await loadAgentTemplates();
-    const policyTemplates = await loadPolicyTemplates();
+    const policyTemplates = normalInstalledPolicyTemplates(await loadPolicyTemplates());
 
     const io = captureStdIO();
     try {
@@ -250,6 +256,7 @@ describe("runCli", () => {
         : policy.contents;
       expect(contents).toBe(expected);
     }
+    expect(await pathExists(path.join(policyDir, "framework.dev.md"))).toBe(false);
   });
 
   it("init --policy-gateway claude installs CLAUDE.md and rewrites gateway references", async () => {
@@ -301,7 +308,7 @@ describe("runCli", () => {
       expect(agentText).not.toContain("AGENTS.md");
     }
 
-    const policyTemplates = await loadPolicyTemplates();
+    const policyTemplates = normalInstalledPolicyTemplates(await loadPolicyTemplates());
     for (const policy of policyTemplates) {
       if (!policy.relativePath.endsWith(".md")) continue;
       const policyText = await readFile(
@@ -310,6 +317,9 @@ describe("runCli", () => {
       );
       expect(policyText).not.toContain("AGENTS.md");
     }
+    expect(await pathExists(path.join(root, ".agentplane", "policy", "framework.dev.md"))).toBe(
+      false,
+    );
   });
 
   it("init filters AGENTS.md for branch_pr mode", async () => {

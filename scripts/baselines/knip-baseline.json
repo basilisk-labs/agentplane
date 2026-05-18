@@ -681,11 +681,6 @@
           "name": "getCommandInvocation",
           "line": 52,
           "col": 17
-        },
-        {
-          "name": "isCommandVisibleInHelp",
-          "line": 60,
-          "col": 17
         }
       ],
       "types": [
@@ -996,12 +991,12 @@
         },
         {
           "name": "resolveBranchHeadSha",
-          "line": 26,
+          "line": 27,
           "col": 23
         },
         {
           "name": "resolvePrDiffBaseRef",
-          "line": 72,
+          "line": 73,
           "col": 23
         }
       ]
@@ -3060,7 +3055,7 @@
       "exports": [
         {
           "name": "buildFrameworkExecutionProfilePromptModule",
-          "line": 383,
+          "line": 384,
           "col": 17
         }
       ]
@@ -3658,10 +3653,10 @@
   ],
   "counts": {
     "files": 1,
-    "exports": 208,
+    "exports": 207,
     "types": 356,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 565
+    "total": 564
   }
 }

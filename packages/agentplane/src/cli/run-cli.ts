@@ -18,6 +18,7 @@ import {
   getHelpCommandEntries,
   makeHelpSpecForEntry,
   matchCommandCatalog,
+  isCommandVisibleInHelp,
   type HelpSurfaceMode,
 } from "./run-cli/command-catalog.js";
 import { parseGlobalArgs, resolveOutputMode, runWithOutputMode } from "./run-cli/globals.js";
@@ -107,15 +108,20 @@ export async function runCli(argv: string[]): Promise<number> {
       { spec: helpSpec },
       ...COMMANDS.map((entry) => ({ spec: makeHelpSpecForEntry(entry) })),
     ];
+    const frameworkCheckout = findFrameworkCheckout(helpCwd);
+    const frameworkCommandDeniedMessage =
+      "Framework dev command is only available inside the AgentPlane framework checkout.";
     const helpRegistry = {
       list: (opts?: { all?: boolean }) =>
         opts?.all ? allHelpRegistryEntries : makeHelpRegistryEntries(defaultHelpSurface),
-      match: (tokens: readonly string[]) => {
+      match: (tokens: readonly string[], opts?: { all?: boolean }) => {
         if (tokens[0] === "help") {
           return { spec: helpSpec, consumed: 1 };
         }
         const match = matchCommandCatalog(tokens);
-        return match ? { spec: makeHelpSpecForEntry(match.entry), consumed: match.consumed } : null;
+        if (!match) return null;
+        if (!opts?.all && !isCommandVisibleInHelp(match.entry, defaultHelpSurface)) return null;
+        return { spec: makeHelpSpecForEntry(match.entry), consumed: match.consumed };
       },
     };
     const runHelp = makeHelpHandler(helpRegistry);
@@ -239,7 +245,7 @@ export async function runCli(argv: string[]): Promise<number> {
         return await runFastHelp(rest);
       }
 
-      const matchedHelp = helpRegistry.match(rest);
+      const matchedHelp = helpRegistry.match(rest, { all: rest.includes("--all") });
       if (matchedHelp) {
         const rawHelpTail = rest.slice(matchedHelp.consumed);
         const commandFlags = new Set<string>();
@@ -278,6 +284,13 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     matched = matchCommandCatalog(rest);
+    if (matched?.entry.surface === "framework" && !frameworkCheckout) {
+      throw usageError({
+        spec: matched.entry.spec,
+        command: matched.entry.spec.id.join(" "),
+        message: frameworkCommandDeniedMessage,
+      });
+    }
     const resolved = await getMaybeResolvedProject();
     const matchedDispatch = matched?.entry.dispatch ?? null;
     const commandNeedsLoadedConfig = matchedDispatch?.loadedConfig === true;
@@ -328,7 +341,9 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     const input = rest.join(" ");
-    const fullCandidates = registry.list().map((e) => e.spec.id.join(" "));
+    const fullCandidates = makeHelpRegistryEntries(defaultHelpSurface).map((e) =>
+      e.spec.id.join(" "),
+    );
     const suggestion = suggestOne(input, fullCandidates);
     const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
     throw usageError({
