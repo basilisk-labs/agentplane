@@ -1,10 +1,11 @@
 ---
 id: "202605180925-JSBEYJ"
 title: "Add release and dev workflow helper scripts"
-status: "DOING"
+result_summary: "Merged via PR #3880."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -23,11 +24,16 @@ verification:
   updated_by: "CODER"
   note: "Addressed PR review comments: deps-triage --write now exits nonzero on failed subcommands; version-bump accepts SemVer prerelease plus build metadata. Verified node --check, targeted eslint, dry-run semver input, dry-run deps triage, and fake failing bun exit path."
   attempts: 0
-commit: null
+commit:
+  hash: "1e2f023a156dcaf2a83c7917d7241746d57f3d44"
+  message: "Merge pull request #3880 from basilisk-labs/task/202605180925-JSBEYJ/release-dev-helper-scripts"
 comments:
   -
     author: "CODER"
     body: "Start: Implement approved release and developer workflow helper scripts in the task worktree, including package entrypoints and repository skill guidance."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3880 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -78,9 +84,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Addressed PR review comments: deps-triage --write now exits nonzero on failed subcommands; version-bump accepts SemVer prerelease plus build metadata. Verified node --check, targeted eslint, dry-run semver input, dry-run deps triage, and fake failing bun exit path."
+  -
+    type: "status"
+    at: "2026-05-18T10:32:53.614Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3880 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T10:14:41.873Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T10:32:53.621Z"
+doc_updated_by: "INTEGRATOR"
 description: "Add repo-local helper scripts and skill guidance for release state, version bumping, candidate prep, publication evidence collection, dev impact checks, task scope checks, and dependency triage."
 sections:
   Summary: |-

@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-18T10:32:04Z",
   "base": "main",
   "branch": "task/202605180925-JSBEYJ/release-dev-helper-scripts",
   "created_at": "2026-05-18T09:26:27.050Z",
-  "head_sha": "69f134ac776e1f01cd8f55060f3f648b0dee508c",
+  "head_sha": "05c4c8fc1560b1a8b67f2752b6ad6f402fffbb85",
   "last_verified_at": "2026-05-18T10:14:41.854Z",
   "last_verified_sha": "69f134ac776e1f01cd8f55060f3f648b0dee508c",
+  "merge_commit": "1e2f023a156dcaf2a83c7917d7241746d57f3d44",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-18T10:32:04Z",
   "pr_number": 3880,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3880",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605180925-JSBEYJ",
-  "updated_at": "2026-05-18T10:00:03.917Z",
+  "updated_at": "2026-05-18T10:32:04Z",
   "verify": {
     "status": "pass"
   }
