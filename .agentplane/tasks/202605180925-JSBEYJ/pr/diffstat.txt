@@ -1,10 +1,7 @@
  .../blueprint/resolved-snapshot.json               | 416 +++++++++++++++++++++
- .github/workflows/ci.yml                           |   6 +-
- .github/workflows/prepublish.yml                   |   2 +-
- .github/workflows/task-hosted-close.yml            |   2 +-
  docs/user/cli-reference.generated.mdx              |   2 +-
  package.json                                       |  10 +-
- .../commands/release/release-ci-contract.test.ts   |   4 +-
+ .../commands/release/release-ci-contract.test.ts   |   2 +-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
  .../agentplane/src/commands/task/task.command.ts   |   2 +-
  scripts/README.md                                  |  67 ++--
@@ -19,5 +16,5 @@
  scripts/release/version-bump.mjs                   | 163 ++++++++
  skills/README.md                                   |   3 +
  skills/agentplane-local-dev-operator/SKILL.md      |  52 +++
- .../SKILL.md                                       |  20 +
- 22 files changed, 1265 insertions(+), 39 deletions(-)
+ .../SKILL.md                                       |  26 +-
+ 19 files changed, 1262 insertions(+), 36 deletions(-)

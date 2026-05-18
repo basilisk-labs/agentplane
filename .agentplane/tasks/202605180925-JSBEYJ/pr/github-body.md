@@ -16,24 +16,26 @@ Add repo-local helper scripts and skill guidance for release state, version bump
 ## Verification
 
 - State: ok
-- Note: CLI reference refreshed after canonical verify command example update; docs:cli:check passed.
+- Note:
+
+```text
+Corrected release build dependency order after hosted TS6305 failure; release:check, release CI
+contract test, workflows:lint, scripts README check, and targeted eslint passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T09:48:48.138Z
+- Updated: 2026-05-18T10:00:03.917Z
 - Branch: task/202605180925-JSBEYJ/release-dev-helper-scripts
-- Head: 231b084dc92e
+- Head: 69f134ac776e
 
 ```text
  .../blueprint/resolved-snapshot.json               | 416 +++++++++++++++++++++
- .github/workflows/ci.yml                           |   6 +-
- .github/workflows/prepublish.yml                   |   2 +-
- .github/workflows/task-hosted-close.yml            |   2 +-
  docs/user/cli-reference.generated.mdx              |   2 +-
  package.json                                       |  10 +-
- .../commands/release/release-ci-contract.test.ts   |   4 +-
+ .../commands/release/release-ci-contract.test.ts   |   2 +-
  .../agentplane/src/commands/task/begin.command.ts  |   2 +-
  .../agentplane/src/commands/task/task.command.ts   |   2 +-
  scripts/README.md                                  |  67 ++--
@@ -48,8 +50,8 @@ Add repo-local helper scripts and skill guidance for release state, version bump
  scripts/release/version-bump.mjs                   | 163 ++++++++
  skills/README.md                                   |   3 +
  skills/agentplane-local-dev-operator/SKILL.md      |  52 +++
- .../SKILL.md                                       |  20 +
- 22 files changed, 1265 insertions(+), 39 deletions(-)
+ .../SKILL.md                                       |  26 +-
+ 19 files changed, 1262 insertions(+), 36 deletions(-)
 ```
 
 </details>
