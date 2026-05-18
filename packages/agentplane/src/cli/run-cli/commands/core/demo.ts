@@ -28,7 +28,7 @@ type DemoResult = {
 export const demoSpec: CommandSpec<DemoParsed> = {
   id: ["demo"],
   group: "Core",
-  summary: "Create a safe first-success AgentPlane demo task with ACR evidence.",
+  summary: "Create a safe first-success Agentplane demo task with ACR evidence.",
   description:
     "Creates an inspectable demo task under .agentplane/tasks without touching user source files, network, or GitHub.",
   options: [
@@ -57,7 +57,7 @@ export const demoSpec: CommandSpec<DemoParsed> = {
 
 function demoDescription(): string {
   return [
-    "Create a harmless AgentPlane demo task that shows the normal audit trail:",
+    "Create a harmless Agentplane demo task that shows the normal audit trail:",
     "plan approval, start event, verification evidence, finish state, and ACR artifact.",
   ].join(" ");
 }
@@ -68,7 +68,7 @@ function buildDemoDoc(title: string, description: string): string {
     doc,
     "Plan",
     [
-      "1. Create a harmless demo task that mutates only AgentPlane task artifacts.",
+      "1. Create a harmless demo task that mutates only Agentplane task artifacts.",
       "2. Record the normal lifecycle evidence in the task README.",
       "3. Generate a task-local ACR so the first success is inspectable.",
     ].join("\n"),
@@ -100,7 +100,7 @@ function buildDemoDoc(title: string, description: string): string {
     "Findings",
     [
       "- Observation: `agentplane demo` generated this task as a first-success artifact.",
-      "  Impact: Users can inspect AgentPlane evidence before giving an agent broad edit scope.",
+      "  Impact: Users can inspect Agentplane evidence before giving an agent broad edit scope.",
       "  Resolution: Use this task README and ACR as the local audit trail preview.",
     ].join("\n"),
   );
@@ -115,7 +115,7 @@ async function createDemoTask(ctx: CommandContext): Promise<DemoResult> {
 
   const taskId = await ctx.taskBackend.generateTaskId({ length: 6, attempts: 1000 });
   const now = nowIso();
-  const title = "AgentPlane demo: first traceable task";
+  const title = "Agentplane demo: first traceable task";
   const description = demoDescription();
   const head = await gitRevParse(ctx.resolvedProject.gitRoot, ["HEAD"]).catch(() => "HEAD");
   const doc = buildDemoDoc(title, description);
@@ -123,7 +123,7 @@ async function createDemoTask(ctx: CommandContext): Promise<DemoResult> {
     id: taskId,
     title,
     description,
-    result_summary: "Demo task generated a first-success AgentPlane audit trail.",
+    result_summary: "Demo task generated a first-success Agentplane audit trail.",
     status: "DONE",
     priority: "low",
     owner: "DEMO",
@@ -198,7 +198,7 @@ async function createDemoTask(ctx: CommandContext): Promise<DemoResult> {
     workCommit: head,
     baseCommit: head,
     agent: "DEMO",
-    agentName: "AgentPlane Demo",
+    agentName: "Agentplane Demo",
     modelProvider: "unknown",
     modelName: "demo",
     write: true,
@@ -223,7 +223,7 @@ function renderText(result: DemoResult): void {
       { label: "acr", value: result.acrPath },
       { label: "next", value: result.nextCommand },
     ],
-    { header: "AgentPlane demo" },
+    { header: "Agentplane demo" },
   );
 }
 

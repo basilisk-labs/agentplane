@@ -24,7 +24,7 @@ export const contextInitSpec: CommandSpec<{
   group: "Context",
   summary: "Initialize local context workspace and system manifest.",
   description:
-    "Creates the local context workspace in an initialized AgentPlane project. When run in an empty standalone directory, it first initializes AgentPlane with safe non-interactive defaults, then writes the context workspace. Non-empty uninitialized directories must run agentplane init explicitly first.",
+    "Creates the local context workspace in an initialized Agentplane project. When run in an empty standalone directory, it first initializes Agentplane with safe non-interactive defaults, then writes the context workspace. Non-empty uninitialized directories must run agentplane init explicitly first.",
   options: [
     {
       kind: "string",
@@ -195,7 +195,7 @@ export const contextWikiNewSpec: CommandSpec<{
 }> = {
   id: ["context", "wiki", "new"],
   group: "Context",
-  summary: "Create a wiki page with AgentPlane context frontmatter.",
+  summary: "Create a wiki page with Agentplane context frontmatter.",
   args: [{ name: "page", required: true, valueHint: "<path-or-slug>" }],
   options: [
     {
@@ -263,7 +263,7 @@ export const contextWikiLintSpec: CommandSpec<{ path: string }> = {
 export const contextWikiExplainSpec: CommandSpec<{ page: string }> = {
   id: ["context", "wiki", "explain"],
   group: "Context",
-  summary: "Print a wiki page's AgentPlane context frontmatter.",
+  summary: "Print a wiki page's Agentplane context frontmatter.",
   args: [{ name: "page", required: true, valueHint: "<path-or-slug>" }],
   parse: (raw) => ({ page: String(raw.args.page) }),
 };
