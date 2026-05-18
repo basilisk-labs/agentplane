@@ -1,0 +1,34 @@
+{
+  "base_branch": "main",
+  "branch": "task/202605181046-JM9F16/gate-runner-v0-7",
+  "created_at": "2026-05-18T11:46:09.707Z",
+  "evidence_paths": [
+    ".agentplane/tasks/202605181046-JM9F16/README.md",
+    ".agentplane/tasks/202605181046-JM9F16/pr/meta.json"
+  ],
+  "from_role": "INTEGRATOR",
+  "head_sha": "fdcaa0108e52fb75d0c6e8cff5e316da42b029d5",
+  "next_actions": [
+    "agentplane task handoff show 202605181046-JM9F16",
+    "Continue GitHub PR merge for GitHub PR #3885: https://github.com/basilisk-labs/agentplane/pull/3885",
+    "Wait for Task Hosted Close to finish",
+    "git pull --ff-only"
+  ],
+  "note": "Continue the primary branch_pr merge route for GitHub PR #3885: https://github.com/basilisk-labs/agentplane/pull/3885. After GitHub merges it, wait for Task Hosted Close, then pull main.",
+  "pr_branch": "task/202605181046-JM9F16/gate-runner-v0-7",
+  "reason": "branch_pr integration is waiting for the GitHub PR merge into main.",
+  "route": {
+    "base_pull_command": "git pull --ff-only",
+    "finalize_via": "github_task_pr_merge_then_hosted_close",
+    "handoff_show_command": "agentplane task handoff show 202605181046-JM9F16",
+    "kind": "protected_base_integrate",
+    "local_mutation": "not_performed",
+    "pr_number": 3885,
+    "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3885",
+    "status": "awaiting_github_merge"
+  },
+  "schema_version": 1,
+  "task_id": "202605181046-JM9F16",
+  "to_role": null,
+  "workspace_root": "/Users/densmirnov/Github/agentplane"
+}

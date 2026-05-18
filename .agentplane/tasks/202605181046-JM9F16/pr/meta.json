@@ -1,16 +1,20 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-18T11:46:54.356Z",
   "base": "main",
   "branch": "task/202605181046-JM9F16/gate-runner-v0-7",
   "created_at": "2026-05-18T10:46:40.621Z",
   "head_sha": "74012175b51481f7760097c61676543d50a9778a",
   "last_verified_at": "2026-05-18T11:25:34.626Z",
   "last_verified_sha": "2abbc12b295cdcf7e62a91aa9fb213dfdcf9c6d6",
+  "merge_commit": "d87c1fcb4f3a93d79a4d845d3012d8f859313355",
+  "merged_at": "2026-05-18T11:46:07Z",
   "pr_number": 3885,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3885",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605181046-JM9F16",
-  "updated_at": "2026-05-18T11:45:32.447Z",
+  "updated_at": "2026-05-18T11:46:54.356Z",
   "verify": {
     "status": "pass"
   }
