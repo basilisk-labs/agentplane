@@ -22,12 +22,27 @@ Add repo-local helper scripts and skill guidance for release state, version bump
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T09:26:27.050Z
+- Updated: 2026-05-18T09:35:57.281Z
 - Branch: task/202605180925-JSBEYJ/release-dev-helper-scripts
-- Head: 91412efe1e35
+- Head: 262fe6f63e9a
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 416 +++++++++++++++++++++
+ package.json                                       |  10 +-
+ scripts/README.md                                  |  67 ++--
+ scripts/checks/check-task-scope.mjs                |  55 +++
+ scripts/checks/deps-triage.mjs                     |  47 +++
+ scripts/checks/dev-impact.mjs                      |  41 ++
+ scripts/lib/local-ci-selection.mjs                 |   1 +
+ scripts/release/candidate-prepare.mjs              |  75 ++++
+ scripts/release/evidence-collect.mjs               |  95 +++++
+ scripts/release/next-action.mjs                    |  59 +++
+ scripts/release/state.mjs                          | 180 +++++++++
+ scripts/release/version-bump.mjs                   | 163 ++++++++
+ skills/README.md                                   |   3 +
+ skills/agentplane-local-dev-operator/SKILL.md      |  52 +++
+ .../SKILL.md                                       |  20 +
+ 15 files changed, 1255 insertions(+), 29 deletions(-)
 ```
 
 </details>
