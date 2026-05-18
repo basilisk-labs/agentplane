@@ -1,10 +1,11 @@
 ---
 id: "202605171746-BBZQQ1"
 title: "Add feedback issue publish transports"
-status: "DOING"
+result_summary: "Merged via PR #3855."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +25,16 @@ verification:
   updated_by: "CODER"
   note: "Post-refactor verification: split feedback issue publishing helpers below hotspot threshold after pre-push hotspot gate caught oversized command module."
   attempts: 0
-commit: null
+commit:
+  hash: "0d961b9f73414ffa57c9bed80cbc21b3c612bf7d"
+  message: "Merge pull request #3855 from basilisk-labs/task/202605171746-BBZQQ1/feedback-issue-transports"
 comments:
   -
     author: "CODER"
     body: "Start: implement controlled feedback issue publishing transports, preserving dry-run privacy bounds and adding targeted tests/docs for GitHub and cloud fallback behavior."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3855 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -49,9 +55,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Post-refactor verification: split feedback issue publishing helpers below hotspot threshold after pre-push hotspot gate caught oversized command module."
+  -
+    type: "status"
+    at: "2026-05-18T05:22:15.114Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3855 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-17T18:13:31.947Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T05:22:15.120Z"
+doc_updated_by: "INTEGRATOR"
 description: "Extend the AgentPlane feedback issue flow from privacy-bounded draft creation to controlled publish transports, including GitHub publishing ergonomics and an anonymous cloud intake fallback."
 sections:
   Summary: |-
