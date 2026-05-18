@@ -4,7 +4,7 @@ title: "Add release and dev workflow helper scripts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -19,9 +19,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-18T09:44:06.116Z"
+  updated_at: "2026-05-18T09:44:55.990Z"
   updated_by: "CODER"
-  note: "Follow-up verification after hosted test failure: aligned release and hosted install build routes to build @agentplane/testkit before agentplane; ran release CI contract test, test:fast, release:parity, policy routing."
+  note: "Committed CI build-order fix; release CI contract, test:fast, release:parity, and policy routing passed locally."
   attempts: 0
 commit: null
 comments:
@@ -48,8 +48,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Follow-up verification after hosted test failure: aligned release and hosted install build routes to build @agentplane/testkit before agentplane; ran release CI contract test, test:fast, release:parity, policy routing."
+  -
+    type: "verify"
+    at: "2026-05-18T09:44:55.990Z"
+    author: "CODER"
+    state: "ok"
+    note: "Committed CI build-order fix; release CI contract, test:fast, release:parity, and policy routing passed locally."
 doc_version: 3
-doc_updated_at: "2026-05-18T09:44:06.123Z"
+doc_updated_at: "2026-05-18T09:44:55.996Z"
 doc_updated_by: "CODER"
 description: "Add repo-local helper scripts and skill guidance for release state, version bumping, candidate prep, publication evidence collection, dev impact checks, task scope checks, and dependency triage."
 sections:
@@ -101,6 +107,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T09:35:00.867Z, excerpt_hash=sha256:9b5bd386770abdc9294dba4c42e546388f1ed2d87740960c933da4729aa0bf46
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605180925-JSBEYJ-release-dev-helper-scripts/.agentplane/tasks/202605180925-JSBEYJ/blueprint/resolved-snapshot.json
+    - old_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+    - current_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605180925-JSBEYJ
+
+    ### 2026-05-18T09:44:55.990Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Committed CI build-order fix; release CI contract, test:fast, release:parity, and policy routing passed locally.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T09:44:06.123Z, excerpt_hash=sha256:9b5bd386770abdc9294dba4c42e546388f1ed2d87740960c933da4729aa0bf46
 
     Details:
 
@@ -177,6 +202,25 @@ Note: Follow-up verification after hosted test failure: aligned release and host
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T09:35:00.867Z, excerpt_hash=sha256:9b5bd386770abdc9294dba4c42e546388f1ed2d87740960c933da4729aa0bf46
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605180925-JSBEYJ-release-dev-helper-scripts/.agentplane/tasks/202605180925-JSBEYJ/blueprint/resolved-snapshot.json
+- old_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+- current_digest: 0802ce102332cea554ef4cd0797435cfef9503f1692f11d10c05994e80f930d1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605180925-JSBEYJ
+
+### 2026-05-18T09:44:55.990Z — VERIFY — ok
+
+By: CODER
+
+Note: Committed CI build-order fix; release CI contract, test:fast, release:parity, and policy routing passed locally.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T09:44:06.123Z, excerpt_hash=sha256:9b5bd386770abdc9294dba4c42e546388f1ed2d87740960c933da4729aa0bf46
 
 Details:
 

@@ -13,7 +13,7 @@ Created: 2026-05-18T09:26:27.050Z
 ## Verification
 
 - State: ok
-- Note: Follow-up verification after hosted test failure: aligned release and hosted install build routes to build @agentplane/testkit before agentplane; ran release CI contract test, test:fast, release:parity, policy routing.
+- Note: Committed CI build-order fix; release CI contract, test:fast, release:parity, and policy routing passed locally.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,13 +24,17 @@ Created: 2026-05-18T09:26:27.050Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T09:36:03.395Z
+- Updated: 2026-05-18T09:44:56.019Z
 - Branch: task/202605180925-JSBEYJ/release-dev-helper-scripts
-- Head: 262fe6f63e9a
+- Head: 9f78e584afa8
 
 ```text
  .../blueprint/resolved-snapshot.json               | 416 +++++++++++++++++++++
+ .github/workflows/ci.yml                           |   6 +-
+ .github/workflows/prepublish.yml                   |   2 +-
+ .github/workflows/task-hosted-close.yml            |   2 +-
  package.json                                       |  10 +-
+ .../commands/release/release-ci-contract.test.ts   |   4 +-
  scripts/README.md                                  |  67 ++--
  scripts/checks/check-task-scope.mjs                |  55 +++
  scripts/checks/deps-triage.mjs                     |  47 +++
@@ -44,7 +48,7 @@ Created: 2026-05-18T09:26:27.050Z
  skills/README.md                                   |   3 +
  skills/agentplane-local-dev-operator/SKILL.md      |  52 +++
  .../SKILL.md                                       |  20 +
- 15 files changed, 1255 insertions(+), 29 deletions(-)
+ 19 files changed, 1262 insertions(+), 36 deletions(-)
 ```
 
 </details>
