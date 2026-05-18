@@ -19,15 +19,15 @@ Make documentation emphasize install/init/agent handoff as the default path, doc
 - Note:
 
 ```text
-Docs IA update verified: check-routing, doctor, docs IA check, website typecheck, and website
-build-check passed after regenerating required social images.
+Verified on commit 9d2d9ad67: docs IA, sidebar, typecheck, and Docusaurus build-check passed for the
+agent-first docs restructure.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T18:18:48.755Z
+- Updated: 2026-05-18T18:19:16.116Z
 - Branch: task/202605181809-QSASEA/agent-first-docs-ia
 - Head: 9d2d9ad67325
 
