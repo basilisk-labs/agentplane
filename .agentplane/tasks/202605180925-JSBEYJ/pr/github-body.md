@@ -19,17 +19,17 @@ Add repo-local helper scripts and skill guidance for release state, version bump
 - Note:
 
 ```text
-Committed CI build-order fix; release CI contract, test:fast, release:parity, and policy routing
-passed locally.
+Canonical command guidance fix committed; workflows:lint and targeted eslint passed; agentplane
+package rebuilt for hook freshness.
 ```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T09:44:56.019Z
+- Updated: 2026-05-18T09:47:20.942Z
 - Branch: task/202605180925-JSBEYJ/release-dev-helper-scripts
-- Head: 9f78e584afa8
+- Head: bb26dbcd474a
 
 ```text
  .../blueprint/resolved-snapshot.json               | 416 +++++++++++++++++++++
@@ -38,6 +38,8 @@ passed locally.
  .github/workflows/task-hosted-close.yml            |   2 +-
  package.json                                       |  10 +-
  .../commands/release/release-ci-contract.test.ts   |   4 +-
+ .../agentplane/src/commands/task/begin.command.ts  |   2 +-
+ .../agentplane/src/commands/task/task.command.ts   |   2 +-
  scripts/README.md                                  |  67 ++--
  scripts/checks/check-task-scope.mjs                |  55 +++
  scripts/checks/deps-triage.mjs                     |  47 +++
@@ -51,7 +53,7 @@ passed locally.
  skills/README.md                                   |   3 +
  skills/agentplane-local-dev-operator/SKILL.md      |  52 +++
  .../SKILL.md                                       |  20 +
- 19 files changed, 1262 insertions(+), 36 deletions(-)
+ 21 files changed, 1264 insertions(+), 38 deletions(-)
 ```
 
 </details>
