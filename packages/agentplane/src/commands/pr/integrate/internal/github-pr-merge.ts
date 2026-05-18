@@ -4,6 +4,10 @@ import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 import { isDotEnvLoadedKey } from "../../../../shared/env.js";
 import { normalizeGhTransportError } from "../../../shared/gh-transport.js";
+import {
+  checkGithubUnresolvedReviewThreads,
+  throwIfGithubReviewThreadsUnresolved,
+} from "../../internal/github-review-threads.js";
 import { ghEnv, resolveDefaultGithubRepo } from "../../internal/gh-api.js";
 
 type GithubPrRef = {
@@ -247,6 +251,20 @@ export async function runProtectedBaseGithubMerge(opts: {
   gitRoot: string;
   prTarget: string;
 }): Promise<ProtectedBaseGithubMergeResult> {
+  const prNumber = /^[1-9]\d*$/.test(opts.prTarget.trim())
+    ? Number(opts.prTarget.trim())
+    : (parseGithubPrUrl(opts.prTarget)?.number ?? null);
+  const reviewThreads = await checkGithubUnresolvedReviewThreads({
+    gitRoot: opts.gitRoot,
+    prNumber,
+  });
+  if (reviewThreads.checked && prNumber !== null) {
+    throwIfGithubReviewThreadsUnresolved({
+      prNumber,
+      unresolved: reviewThreads.unresolved,
+    });
+  }
+
   const failures: string[] = [];
   try {
     return await runGhCliMerge(opts);

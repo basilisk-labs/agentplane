@@ -19,6 +19,32 @@ function runGit(args) {
   }
 }
 
+function readLatestPlanVersion(planDir) {
+  if (!planDir) return null;
+  const versionPath = path.join(ROOT, planDir, "version.json");
+  if (!existsSync(versionPath)) return null;
+  try {
+    return JSON.parse(readFileSync(versionPath, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+function upstreamState(branch) {
+  if (!branch || branch === "HEAD") return null;
+  const upstream = runGit(["for-each-ref", "--format=%(upstream:short)", `refs/heads/${branch}`]);
+  if (!upstream) return null;
+  const counts = runGit(["rev-list", "--left-right", "--count", `${branch}...${upstream}`]);
+  const [aheadText, behindText] = String(counts ?? "")
+    .trim()
+    .split(/\s+/u);
+  return {
+    upstream,
+    ahead: Number(aheadText || 0),
+    behind: Number(behindText || 0),
+  };
+}
+
 function runQuiet(cmd, args) {
   try {
     return {
@@ -98,6 +124,9 @@ async function buildState(opts) {
   const head = runGit(["rev-parse", "HEAD"]);
   const branch = runGit(["rev-parse", "--abbrev-ref", "HEAD"]);
   const dirty = runGit(["status", "--short", "--untracked-files=no"]);
+  const latestPlan = latestPlanDir();
+  const latestPlanVersion = readLatestPlanVersion(latestPlan);
+  const upstream = upstreamState(branch);
 
   return {
     schema_version: 1,
@@ -108,11 +137,13 @@ async function buildState(opts) {
       tracked_dirty: Boolean(dirty),
       tracked_dirty_lines: dirty ? dirty.split("\n").filter(Boolean) : [],
       latest_semver_tag: latestTag,
+      upstream,
     },
     release: {
       version,
       tag,
-      latest_plan_dir: latestPlanDir(),
+      latest_plan_dir: latestPlan,
+      latest_plan: latestPlanVersion,
       notes_path: notesPath,
       notes_exists: existsSync(path.join(ROOT, notesPath)),
       publish_result_path: publishResultPath,
@@ -139,8 +170,16 @@ async function buildState(opts) {
 function printHuman(state) {
   const blockers = [];
   if (state.git.tracked_dirty) blockers.push("tracked tree is dirty");
+  if (state.git.upstream?.behind > 0) {
+    blockers.push(
+      `branch is behind ${state.git.upstream.upstream} by ${state.git.upstream.behind}`,
+    );
+  }
   if (!state.parity.ok) blockers.push("release parity failed");
   if (!state.release.notes_exists) blockers.push(`missing ${state.release.notes_path}`);
+  if (state.release.latest_plan?.nextTag === state.release.tag) {
+    blockers.push(`latest plan targets already-current ${state.release.tag}`);
+  }
   const published = state.registry.checked
     ? state.registry.packages.filter((pkg) => pkg.published).map((pkg) => pkg.name)
     : [];
@@ -149,6 +188,11 @@ function printHuman(state) {
   process.stdout.write(`Parity: ${state.parity.ok ? "ok" : "failed"}\n`);
   process.stdout.write(`Notes: ${state.release.notes_exists ? "present" : "missing"}\n`);
   process.stdout.write(`Latest plan: ${state.release.latest_plan_dir ?? "none"}\n`);
+  if (state.git.upstream?.behind > 0) {
+    process.stdout.write(
+      `Warning: local branch is behind ${state.git.upstream.upstream} by ${state.git.upstream.behind}; local task/release state may be stale.\n`,
+    );
+  }
   if (state.registry.checked) {
     process.stdout.write(
       `Published packages: ${published.length > 0 ? published.join(", ") : "none"}\n`,

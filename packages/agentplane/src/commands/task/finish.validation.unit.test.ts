@@ -22,6 +22,7 @@ const mocks = vi.hoisted(() => ({
   gitBranchExists: vi.fn(),
   gitCurrentBranch: vi.fn(),
   tryLookupExistingGithubPrByBranch: vi.fn(),
+  tryLookupExistingGithubPrByBranchPrefix: vi.fn(),
   generateAcr: vi.fn(),
   writeAcrFile: vi.fn(),
   checkTaskBlueprintSnapshotDrift: vi.fn(),
@@ -47,6 +48,7 @@ vi.mock("../shared/git-ops.js", () => ({
 }));
 vi.mock("../pr/internal/sync-github.js", () => ({
   tryLookupExistingGithubPrByBranch: mocks.tryLookupExistingGithubPrByBranch,
+  tryLookupExistingGithubPrByBranchPrefix: mocks.tryLookupExistingGithubPrByBranchPrefix,
 }));
 vi.mock("../acr/acr.command.js", () => ({
   generateAcr: mocks.generateAcr,
@@ -229,6 +231,7 @@ describe("task finish validation", () => {
     mocks.gitBranchExists.mockReset();
     mocks.gitCurrentBranch.mockReset();
     mocks.tryLookupExistingGithubPrByBranch.mockReset();
+    mocks.tryLookupExistingGithubPrByBranchPrefix.mockReset();
     mocks.generateAcr.mockReset();
     mocks.writeAcrFile.mockReset();
     mocks.checkTaskBlueprintSnapshotDrift.mockReset();
@@ -247,6 +250,7 @@ describe("task finish validation", () => {
     mocks.gitBranchExists.mockResolvedValue(false);
     mocks.gitCurrentBranch.mockResolvedValue("main");
     mocks.tryLookupExistingGithubPrByBranch.mockResolvedValue(null);
+    mocks.tryLookupExistingGithubPrByBranchPrefix.mockResolvedValue(null);
     mocks.generateAcr.mockResolvedValue({
       acrPath: "/repo/.agentplane/tasks/T-1/acr.json",
       record: { record_type: "agent_change_record" },

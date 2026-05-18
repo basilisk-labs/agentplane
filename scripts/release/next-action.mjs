@@ -21,6 +21,12 @@ function main() {
   if (state.git.tracked_dirty) {
     action = "clean tracked working tree before release work";
     command = "git status --short --untracked-files=no";
+  } else if (state.git.upstream?.behind > 0) {
+    action = "fast-forward local branch before release planning";
+    command = "git pull --ff-only";
+  } else if (state.release.latest_plan?.nextTag === state.release.tag) {
+    action = "generate a fresh release plan for the next patch";
+    command = "ap release plan --patch";
   } else if (!state.parity.ok) {
     action = "restore release version parity";
     command = "bun run release:parity";

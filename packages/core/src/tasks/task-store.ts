@@ -358,6 +358,7 @@ export async function listTasks(opts: {
   const ids = entries.filter((e) => e.isDirectory()).map((e) => e.name);
 
   const tasks: TaskRecord[] = [];
+  const broken: string[] = [];
   for (const id of ids) {
     const readmePath = taskReadmePath(tasksDir, id);
     try {
@@ -379,9 +380,18 @@ export async function listTasks(opts: {
         body: taskReadmeDocBody(frontmatter as unknown as Record<string, unknown>, parsed.body),
         readmePath,
       });
-    } catch {
-      // Skip unreadable/broken tasks for now; lint will handle this later.
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      broken.push(`${id}: ${message}`);
     }
+  }
+
+  if (broken.length > 0) {
+    process.stderr.write(
+      `warning: skipped ${broken.length} invalid task README${broken.length === 1 ? "" : "s"}; local task state may be incomplete\n` +
+        broken.map((entry) => `- ${entry}`).join("\n") +
+        "\n",
+    );
   }
 
   return tasks.toSorted((a, b) => a.id.localeCompare(b.id));

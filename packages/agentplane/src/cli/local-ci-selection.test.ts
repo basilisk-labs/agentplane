@@ -474,6 +474,11 @@ describe("pre-push scope selection", () => {
     expect(selectBranchDiffRange(updates)).toEqual({ from: "bbb", to: "aaa" });
   });
 
+  it("selects a diff range when pushing HEAD to a branch", () => {
+    const updates = parsePrePushStdin("HEAD aaa refs/heads/task/T-1/fix bbb\n");
+    expect(selectBranchDiffRange(updates)).toEqual({ from: "bbb", to: "aaa" });
+  });
+
   it("does not select a diff range for new branch pushes", () => {
     const updates = parsePrePushStdin(
       "refs/heads/feature abc refs/heads/feature 0000000000000000000000000000000000000000\n",

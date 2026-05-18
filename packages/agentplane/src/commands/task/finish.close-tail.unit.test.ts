@@ -23,6 +23,7 @@ const mocks = vi.hoisted(() => ({
   gitBranchExists: vi.fn(),
   gitCurrentBranch: vi.fn(),
   tryLookupExistingGithubPrByBranch: vi.fn(),
+  tryLookupExistingGithubPrByBranchPrefix: vi.fn(),
 }));
 
 vi.mock("../guard/impl/comment-commit.js", () => ({
@@ -45,6 +46,7 @@ vi.mock("../shared/git-ops.js", () => ({
 }));
 vi.mock("../pr/internal/sync-github.js", () => ({
   tryLookupExistingGithubPrByBranch: mocks.tryLookupExistingGithubPrByBranch,
+  tryLookupExistingGithubPrByBranchPrefix: mocks.tryLookupExistingGithubPrByBranchPrefix,
 }));
 vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
@@ -207,20 +209,7 @@ describe("task finish close-tail", () => {
   });
 
   beforeEach(() => {
-    mocks.commitFromComment.mockReset();
-    mocks.cmdCommit.mockReset();
-    mocks.ensureReconciledBeforeMutation.mockReset();
-    mocks.loadCommandContext.mockReset();
-    mocks.loadTaskFromContext.mockReset();
-    mocks.backendIsLocalFileBackend.mockReset();
-    mocks.getTaskStore.mockReset();
-    mocks.readCommitInfo.mockReset();
-    mocks.nowIso.mockReset();
-    mocks.resolveBaseBranch.mockReset();
-    mocks.execFileAsync.mockReset();
-    mocks.gitBranchExists.mockReset();
-    mocks.gitCurrentBranch.mockReset();
-    mocks.tryLookupExistingGithubPrByBranch.mockReset();
+    for (const mock of Object.values(mocks)) mock.mockReset();
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
     mocks.readCommitInfo.mockResolvedValue({ hash: "hc", message: "mc" });
@@ -236,6 +225,7 @@ describe("task finish close-tail", () => {
     mocks.gitBranchExists.mockResolvedValue(false);
     mocks.gitCurrentBranch.mockResolvedValue("main");
     mocks.tryLookupExistingGithubPrByBranch.mockResolvedValue(null);
+    mocks.tryLookupExistingGithubPrByBranchPrefix.mockResolvedValue(null);
     mocks.commitFromComment.mockResolvedValue({
       hash: "new-hash",
       message: "✅ T-1 task: verified",
@@ -834,6 +824,25 @@ describe("task finish close-tail", () => {
     expect(mocks.tryLookupExistingGithubPrByBranch).toHaveBeenCalledWith({
       gitRoot: "/repo",
       branch: "agents/task-close/T-1/base-head-sh",
+      baseBranch: "main",
+    });
+    expect(mocks.gitBranchExists).not.toHaveBeenCalled();
+    expect(mocks.cmdCommit).not.toHaveBeenCalled();
+  });
+
+  it("skips local close-tail materialization when a sibling hosted close PR already exists", async () => {
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "branch_pr";
+    ctx.config.branch.task_close_prefix = "task-close";
+    mocks.tryLookupExistingGithubPrByBranchPrefix.mockResolvedValue({ status: "OPEN" });
+    const { materializeBranchPrCloseTail } = await import("./finish-close.js");
+
+    await expect(
+      materializeBranchPrCloseTail({ ctx, cwd: "/repo", taskId: "T-1", quiet: true }),
+    ).resolves.toBeNull();
+    expect(mocks.tryLookupExistingGithubPrByBranchPrefix).toHaveBeenCalledWith({
+      gitRoot: "/repo",
+      branchPrefix: "task-close/T-1/",
       baseBranch: "main",
     });
     expect(mocks.gitBranchExists).not.toHaveBeenCalled();

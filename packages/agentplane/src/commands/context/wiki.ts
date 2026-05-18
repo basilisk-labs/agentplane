@@ -226,6 +226,10 @@ function extractFrontmatter(text: string): string | null {
 
 function lintWikiText(rel: string, text: string): string[] {
   const errors: string[] = [];
+  const base = path.basename(rel);
+  if ((base === "index.md" || base === "AGENTS.md") && !extractFrontmatter(text)) {
+    return errors;
+  }
   const frontmatter = extractFrontmatter(text);
   if (!frontmatter) {
     errors.push(`${rel}: missing YAML frontmatter`);

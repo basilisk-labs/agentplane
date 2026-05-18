@@ -13,6 +13,7 @@ type GithubPullLookupRecord = {
   merged_at?: string | null;
   merge_commit_sha?: string | null;
   head?: {
+    ref?: string | null;
     sha?: string | null;
   } | null;
   base?: {
@@ -111,6 +112,48 @@ export async function tryLookupExistingGithubPrByBranch(opts: {
     for (const record of parsed) {
       const observed = normalizeObservedGithubPr(record);
       if (observed) return observed;
+    }
+    return null;
+  } catch (err) {
+    const code = (err as { code?: string } | null)?.code;
+    if (code === "ENOENT") return null;
+    const message = normalizeGhTransportError(err);
+    if (message.trim().length > 0) return null;
+    return null;
+  }
+}
+
+export async function tryLookupExistingGithubPrByBranchPrefix(opts: {
+  gitRoot: string;
+  branchPrefix: string;
+  baseBranch?: string | null;
+}): Promise<ObservedGithubPr | null> {
+  const repo = await resolveGithubRepoFromOrigin(opts.gitRoot);
+  if (!repo) return null;
+  const query = new URLSearchParams({ state: "all", per_page: "100" });
+  const baseBranch = opts.baseBranch?.trim() ?? "";
+  if (baseBranch) query.set("base", baseBranch);
+  const endpoint = `repos/${repo}/pulls?${query.toString()}`;
+  const branchPrefix = opts.branchPrefix.trim();
+  if (!branchPrefix) return null;
+
+  try {
+    const { stdout } = await withGhTransportRetry(
+      () =>
+        execFileAsync("gh", ["api", endpoint], {
+          cwd: opts.gitRoot,
+          env: ghEnv(),
+          maxBuffer: 10 * 1024 * 1024,
+        }),
+      { label: `running gh api ${endpoint}` },
+    );
+    const parsed = JSON.parse(stdout) as GithubPullLookupRecord[];
+    if (!Array.isArray(parsed) || parsed.length === 0) return null;
+    for (const record of parsed) {
+      const headRef = record.head && "ref" in record.head ? String(record.head.ref ?? "") : "";
+      if (!headRef.startsWith(branchPrefix)) continue;
+      const observed = normalizeObservedGithubPr(record);
+      if (observed?.status === "OPEN" || observed?.status === "MERGED") return observed;
     }
     return null;
   } catch (err) {

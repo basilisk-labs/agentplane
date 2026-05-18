@@ -60,7 +60,7 @@ export function resolveDefaultBaseRef() {
 
 export function selectBranchDiffRange(updates, opts = {}) {
   const branchUpdates = updates.filter(
-    (update) => isBranchRef(update.localRef) && isBranchRef(update.remoteRef),
+    (update) => !isAllZeroSha(update.localSha) && isBranchRef(update.remoteRef),
   );
   if (branchUpdates.length !== 1) return null;
   const [update] = branchUpdates;

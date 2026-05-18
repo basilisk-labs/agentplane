@@ -6,7 +6,10 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
-import { tryLookupExistingGithubPrByBranch } from "../pr/internal/sync-github.js";
+import {
+  tryLookupExistingGithubPrByBranch,
+  tryLookupExistingGithubPrByBranchPrefix,
+} from "../pr/internal/sync-github.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { taskCloseAlreadyRecordedOnBase } from "./close-tail-state.js";
@@ -115,7 +118,15 @@ async function closeTailAlreadyHandledRemotely(opts: {
     branch: opts.closeBranch,
     baseBranch: opts.baseBranch,
   }).catch(() => null);
-  return observedClosePr?.status === "OPEN" || observedClosePr?.status === "MERGED";
+  if (observedClosePr?.status === "OPEN" || observedClosePr?.status === "MERGED") return true;
+
+  const closeBranchPrefix = opts.closeBranch.slice(0, opts.closeBranch.lastIndexOf("/") + 1);
+  const observedSiblingClosePr = await tryLookupExistingGithubPrByBranchPrefix({
+    gitRoot: opts.gitRoot,
+    branchPrefix: closeBranchPrefix,
+    baseBranch: opts.baseBranch,
+  }).catch(() => null);
+  return observedSiblingClosePr?.status === "OPEN" || observedSiblingClosePr?.status === "MERGED";
 }
 
 export async function resolveBranchPrCloseTailState(opts: {
