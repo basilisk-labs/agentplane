@@ -262,11 +262,7 @@ export const BUILTIN_BLUEPRINTS = [
     allowedCommands: [
       "agentplane context learn files <path>",
       "agentplane context learn changes",
-      "agentplane context ingest --run",
-      "agentplane task run show <task-id>",
       "agentplane task resume-context <task-id>",
-      "agentplane task run cancel <task-id> <run-id>",
-      "agentplane task run resume <task-id> <run-id>",
       "agentplane context reindex --include-raw",
       "agentplane context wiki lint context/wiki",
       "agentplane context wiki index context/wiki",
@@ -322,7 +318,7 @@ export const BUILTIN_BLUEPRINTS = [
         "context.recovery",
         "weak_links",
         "verify_record",
-        "Runner timeout, cancellation, retry/resume, stale projection, empty derived output, or conflict review status.",
+        "Agent handoff, stalled work, stale projection, empty derived output, or conflict review status.",
       ),
       evidence("context.commit", "commit", "finish", "Close or integration commit."),
     ],
@@ -361,10 +357,10 @@ export const BUILTIN_BLUEPRINTS = [
           "Conflict candidates must be retained and reviewed before promoting or overwriting existing context.",
       },
       {
-        id: "context_runner_timeout_without_recovery",
+        id: "context_agent_handoff_missing_after_stalled_work",
         severity: "stop",
         reason:
-          "A timed out, stuck, failed, or cancelled context runner requires recorded task run show/resume-context evidence and a retry/resume/cancel decision.",
+          "Stalled or transferred context work requires recorded handoff evidence and a concrete next-agent decision.",
       },
       {
         id: "context_forbidden_output",

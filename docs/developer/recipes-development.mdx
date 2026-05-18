@@ -25,17 +25,15 @@ description: "Practical workflow for authoring and validating recipes."
    - `agentplane recipes active`
    - `agentplane recipes explain <id>`
 6. Confirm recipe-owned scenario assets stay internal and are not documented as a public CLI flow.
-7. If a created task must be debugged independently, inspect the shared runner contract:
-   - `agentplane task run <task-id> --dry-run`
-8. Confirm no additional runtime assumptions leaked into docs or tests.
-9. Regenerate the published recipes inventory if recipe manifests changed:
+7. Confirm no additional runtime assumptions leaked into docs or tests.
+8. Regenerate the published recipes inventory if recipe manifests changed:
 
 - `node scripts/generate-recipes-inventory.mjs`
 
 ## Designing scenarios
 
 - Keep the manifest-level descriptor self-sufficient for selection.
-- Keep internal scenario files explicit and forward-compatible with shared-runner execution.
+- Keep internal scenario files explicit and forward-compatible with future agent execution.
 - Explicitly define expected outputs, required inputs, and failure messages.
 - Do not hide required inputs behind implicit defaults.
 - Keep `use_when` descriptive, but rely on structured fields for deterministic selection.
@@ -48,8 +46,8 @@ description: "Practical workflow for authoring and validating recipes."
 - Keep tool side effects inside project-local directories when possible.
 - Prefer stable stdout/stderr output formats for downstream automation.
 - Exit non-zero on failures and include actionable error text.
-- Assume live execution happens only through shared-runner task materialization; do not promise a separate public scenario CLI.
-- Do not rely on CLI-side interpretation of recipe `steps`; the runner receives them as context, not as an imperative DSL.
+- Assume live execution happens through normal task materialization and a repository agent; do not promise a separate public scenario CLI.
+- Do not rely on CLI-side interpretation of recipe `steps`; the assigned agent receives them as context, not as an imperative DSL.
 
 ## Distribution and upgrades
 
@@ -69,6 +67,6 @@ description: "Practical workflow for authoring and validating recipes."
 - `recipes add` vendors a cached recipe into `.agentplane/recipes/packages/<id>/` and records authority in `.agentplane/recipes/registry.json`.
 - Recipe-local agents stay inside `.agentplane/recipes/packages/<id>/agents/`; they are not installed into `.agentplane/agents`.
 - Runtime reads vendored project-local recipes only; generated overlay/assets files are derived from the project registry.
-- Internal recipe-owned task materialization creates a normal task with recipe provenance and then reuses the same runner path as `task run`.
+- Internal recipe-owned task materialization creates a normal task with recipe provenance for an assigned repository agent.
 - Validate both cache install and project vendoring flows before release.
 - Use extension recipes for non-core integrations (for example Dokploy or custom external APIs).

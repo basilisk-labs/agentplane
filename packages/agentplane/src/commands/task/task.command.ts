@@ -46,10 +46,6 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
       why: "Show Verify Steps before running checks.",
     },
     {
-      cmd: "agentplane task run <task-id>",
-      why: "Run an existing task through the shared runner flow.",
-    },
-    {
       cmd: 'agentplane task handoff record <task-id> --from CODER --reason "Paused for handoff"',
       why: "Persist a first-class handoff snapshot.",
     },
@@ -63,7 +59,7 @@ export const taskSpec: CommandSpec<TaskGroupParsed> = {
     },
     {
       cmd: "agentplane task resume-context <task-id>",
-      why: "Inspect deterministic recovery context before resuming or retrying a run.",
+      why: "Inspect deterministic recovery context before another agent resumes work.",
     },
     {
       cmd: "agentplane task status <task-id> --route",

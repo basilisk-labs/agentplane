@@ -65,11 +65,9 @@ Expected shape:
 - `post_run.improvement_review`: branch PR route for long/complex task retrospectives that inspect
   work logs, identify code-fixable errors, create atomic follow-up tasks, and ask whether to execute
   those tasks immediately or defer them.
-- `runner.execution`: branch PR code route for runner subsystem work that must preserve bundle,
-  invocation, result manifest, trace, execution state, and replay or resume evidence.
 - `release.strict`: release/publish route with version, parity, manifest, and publish safety gates.
 
-For project-local blueprints, inspect trust and compatibility before runner materialization:
+For project-local blueprints, inspect trust and compatibility before task execution:
 
 ```bash
 agentplane blueprint list --project --trusted
@@ -302,7 +300,6 @@ export type BlueprintId =
   | "performance.benchmark"
   | "quality.regression"
   | "post_run.improvement_review"
-  | "runner.execution"
   | "release.strict"
   | "ops.approval";
 

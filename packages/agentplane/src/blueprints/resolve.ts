@@ -33,7 +33,6 @@ const RISK_ROUTE: Partial<Record<RiskFlag, BlueprintId>> = {
   security: "ops.approval",
 };
 
-const RUNNER_DOMAIN_TAGS = ["runner", "execution", "replay", "resume", "adapter"] as const;
 const POST_RUN_DOMAIN_TAGS = [
   "post-run",
   "post_run",
@@ -155,15 +154,6 @@ function selectSpecializedCodeBlueprintId(opts: {
     return {
       id: "post_run.improvement_review",
       reason: "specialized code domain resolved to post_run.improvement_review",
-    };
-  }
-  if (
-    includesAny(tags, RUNNER_DOMAIN_TAGS) ||
-    /\brunner\b|\breplay\b|\bresume\b|\binvocation\b|\bresult manifest\b/.test(text)
-  ) {
-    return {
-      id: "runner.execution",
-      reason: "specialized code domain resolved to runner.execution",
     };
   }
   if (

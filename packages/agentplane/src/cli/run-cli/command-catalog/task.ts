@@ -33,13 +33,6 @@ import { taskPlanSpec } from "../../../commands/task/plan.command.js";
 import { taskRebuildIndexSpec } from "../../../commands/task/rebuild-index.command.js";
 import { taskReclaimSpec } from "../../../commands/task/reclaim.command.js";
 import { taskResumeContextSpec } from "../../../commands/task/resume-context.command.js";
-import { taskRunSpec } from "../../../commands/task/run.spec.js";
-import { taskRunCancelSpec } from "../../../commands/task/run-cancel.spec.js";
-import { taskRunResumeSpec } from "../../../commands/task/run-resume.spec.js";
-import { taskRunRetrySpec } from "../../../commands/task/run-retry.spec.js";
-import { taskRunShowSpec } from "../../../commands/task/run-show.spec.js";
-import { taskRunTailSpec } from "../../../commands/task/run-tail.spec.js";
-import { taskRunTraceSpec } from "../../../commands/task/run-trace.spec.js";
 import { taskScaffoldSpec } from "../../../commands/task/scaffold.command.js";
 import { taskScrubSpec } from "../../../commands/task/scrub.command.js";
 import { taskSearchSpec } from "../../../commands/task/search.spec.js";
@@ -61,10 +54,6 @@ import {
   fromCommandsTaskTaskCommand,
   fromCommandsTaskHandoffCommand,
   fromCommandsTaskHandoffRecordCommand,
-  fromCommandsTaskRunShowCommand,
-  fromCommandsTaskRunTailCommand,
-  fromCommandsTaskRunCancelCommand,
-  fromCommandsTaskRunRetryCommand,
   fromCommandsTaskFindingsCommand,
   fromCommandsTaskDocCommand,
   fromCommandsTaskLintCommand,
@@ -80,9 +69,6 @@ import {
   loadTaskShowSpec,
   loadTaskStatusSpec,
   loadTaskNextActionSpec,
-  fromTaskRunTraceSpec,
-  fromTaskRunSpec,
-  fromTaskRunResumeSpec,
   loadTaskNewSpec,
   loadTaskBeginSpec,
   loadTaskCompleteSpec,
@@ -151,25 +137,6 @@ export const TASK_COMMANDS = [
   }),
   declareCommand(taskStatusSpec, { load: loadTaskStatusSpec }),
   declareCommand(taskNextActionSpec, { load: loadTaskNextActionSpec }),
-  fromCommandsTaskRunShowCommand(taskRunShowSpec, "runTaskRunShow", {}),
-  fromTaskRunTraceSpec(taskRunTraceSpec, "runTaskRunTrace", {
-    surface: "advanced",
-    helpGroup: "Advanced",
-  }),
-  fromCommandsTaskRunTailCommand(taskRunTailSpec, "runTaskRunTail", {}),
-  fromTaskRunSpec(taskRunSpec, "runTaskRun"),
-  fromCommandsTaskRunCancelCommand(taskRunCancelSpec, "runTaskRunCancel", {
-    surface: "advanced",
-    helpGroup: "Advanced",
-  }),
-  fromTaskRunResumeSpec(taskRunResumeSpec, "runTaskRunResume", {
-    surface: "advanced",
-    helpGroup: "Advanced",
-  }),
-  fromCommandsTaskRunRetryCommand(taskRunRetrySpec, "runTaskRunRetry", {
-    surface: "advanced",
-    helpGroup: "Advanced",
-  }),
   declareCommand(taskNewSpec, {
     load: loadTaskNewSpec,
     invocation: requireCanonicalCommandInvocation(["task", "new"]),

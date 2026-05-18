@@ -153,7 +153,7 @@ export async function runContextIngest(_ctx: CommandCtx, p: ContextIngestParsed)
 
 export async function runContextLearnFiles(
   _ctx: CommandCtx,
-  p: { sources: string[]; dryRun: boolean; runTask: boolean; includePrivate: boolean },
+  p: { sources: string[]; dryRun: boolean; includePrivate: boolean },
 ): Promise<number> {
   return await cmdContextIngest({
     cwd: _ctx.cwd,
@@ -163,7 +163,6 @@ export async function runContextLearnFiles(
       mode: "sources",
       dryRun: p.dryRun,
       indexOnly: false,
-      runTask: p.runTask,
       includePrivate: p.includePrivate,
     },
   });
@@ -171,7 +170,7 @@ export async function runContextLearnFiles(
 
 export async function runContextLearnChanges(
   _ctx: CommandCtx,
-  p: { dryRun: boolean; runTask: boolean; includePrivate: boolean },
+  p: { dryRun: boolean; includePrivate: boolean },
 ): Promise<number> {
   return await cmdContextIngest({
     cwd: _ctx.cwd,
@@ -181,7 +180,6 @@ export async function runContextLearnChanges(
       mode: "changed",
       dryRun: p.dryRun,
       indexOnly: false,
-      runTask: p.runTask,
       includePrivate: p.includePrivate,
     },
   });

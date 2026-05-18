@@ -8,10 +8,7 @@ import { mapBackendError } from "../cli/error-map.js";
 import { CliError } from "../shared/errors.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
-import { cmdTaskPlanApprove } from "../commands/task/plan.js";
-import { cmdTaskStartReady } from "../commands/task/start-ready.js";
 import { runTaskNewParsed } from "../commands/task/new.js";
-import { runTaskRun } from "../commands/task/run.command.js";
 import { createTaskNewParsed, selectedSourceRows } from "./ingest-task.js";
 import { cmdContextReindex } from "./reindex.js";
 import { starterWikiPageFiles } from "../commands/context/init-wiki.js";
@@ -51,7 +48,6 @@ export type ContextIngestParsed = {
   mode: ContextIngestMode;
   dryRun: boolean;
   indexOnly: boolean;
-  runTask: boolean;
   includePrivate: boolean;
 };
 
@@ -390,9 +386,6 @@ export async function cmdContextIngest(opts: {
   rootOverride?: string;
   parsed: ContextIngestParsed;
   createTask?: typeof runTaskNewParsed;
-  approveTaskPlan?: typeof cmdTaskPlanApprove;
-  startTask?: typeof cmdTaskStartReady;
-  runTask?: typeof runTaskRun;
 }): Promise<number> {
   const ctx =
     opts.ctx ??
@@ -493,33 +486,7 @@ export async function cmdContextIngest(opts: {
       `context ingestion task created: ${contextCreated.id} (${buildTaskIdHint({ mode: opts.parsed.mode, sources: opts.parsed.sources })})\n`,
     );
 
-    if (!opts.parsed.runTask) return 0;
-    const approveTaskPlan = opts.approveTaskPlan ?? cmdTaskPlanApprove;
-    const startTask = opts.startTask ?? cmdTaskStartReady;
-    await approveTaskPlan({
-      ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      taskId: contextCreated.id,
-      by: "ORCHESTRATOR",
-      note: "Auto-approved by context ingest --run after creating the scoped assimilation task.",
-    });
-    await startTask({
-      ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      taskId: contextCreated.id,
-      author: "CURATOR",
-      body: `Start: Run context assimilation for ${buildTaskIdHint({ mode: opts.parsed.mode, sources: opts.parsed.sources })} after explicit --run request.`,
-      force: false,
-      yes: true,
-      quiet: true,
-    });
-    const runTask = opts.runTask ?? runTaskRun;
-    return await runTask(
-      { cwd: opts.cwd, rootOverride: opts.rootOverride },
-      { taskId: contextCreated.id, dryRun: false },
-    );
+    return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "context ingest", root: opts.rootOverride ?? null });

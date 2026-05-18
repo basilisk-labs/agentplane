@@ -28,9 +28,6 @@ Commands:
     task plan  Task plan commands (set/approve/reject).
     task plan approve  Approve the current task plan (enforces Verify Steps gating when configured).
     task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
-    task run  Prepare or run a task through the shared runner contract.
-    task run show  Inspect persisted runner state and result artifacts for an existing run.
-    task run tail  Print the last N lines from the raw agent trace artifact for an existing runner run.
     task search  Search tasks by text or regex with optional filters.
     task show  Print task metadata and resolved blueprint route as JSON.
     task start-ready  Run readiness checks and start a task in one deterministic command.
@@ -265,7 +262,7 @@ Options:
   --task-kind <analysis|content|docs|code|release|ops|context>  Structured blueprint task-kind intent. Tags/title remain fallback hints. (choices=analysis|content|docs|code|release|ops|context)
   --mutation-scope <none|docs|code|release|ops|context|unknown>  Structured mutation scope used by blueprint resolution. (choices=none|docs|code|release|ops|context|unknown)
   --risk <risk>  Structured risk flag used by blueprint resolution. Repeatable. (repeatable, choices=network|credentials|deploy|publish|merge|security|external_system)
-  --blueprint-request <id>  Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|runner.execution|post_run.improvement_review|release.strict|ops.approval)
+  --blueprint-request <id>  Explicit blueprint request stored on the task; resolver still validates it. (choices=analysis.light|content.light|docs.change|code.direct|code.branch_pr|performance.benchmark|quality.regression|context.assimilation|post_run.improvement_review|release.strict|ops.approval)
   --depends-on <task-id>  Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
   --verify <command>  Repeatable. Verification commands/checks to run for this task. (repeatable)
   --show-blueprint  Print a resolved blueprint route preview to stderr after creation without changing stdout. (default=false)
@@ -278,17 +275,6 @@ exports[`runCli help snapshots (cli2) > help task plan --compact snapshot 1`] = 
 
 Usage:
   agentplane task plan <set|approve|reject> [args] [options]
-"
-`;
-
-exports[`runCli help snapshots (cli2) > help task run --compact snapshot 1`] = `
-"task run - Prepare or run a task through the shared runner contract.
-
-Usage:
-  agentplane task run <task-id> [options]
-
-Options:
-  --dry-run  Prepare runner artifacts and print invocation metadata without executing a runner. (default=false)
 "
 `;
 

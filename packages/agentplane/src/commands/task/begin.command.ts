@@ -97,7 +97,6 @@ export const taskBeginSpec: CommandSpec<TaskBeginParsed> = {
         "performance.benchmark",
         "quality.regression",
         "context.assimilation",
-        "runner.execution",
         "post_run.improvement_review",
         "release.strict",
         "ops.approval",

@@ -9,18 +9,6 @@ export const fromCommandsTaskHandoffCommand = commandModule(
 export const fromCommandsTaskHandoffRecordCommand = commandModule(
   () => import("../../../commands/task/handoff-record.command.js"),
 );
-export const fromCommandsTaskRunShowCommand = commandModule(
-  () => import("../../../commands/task/run-show.command.js"),
-);
-export const fromCommandsTaskRunTailCommand = commandModule(
-  () => import("../../../commands/task/run-tail.command.js"),
-);
-export const fromCommandsTaskRunCancelCommand = commandModule(
-  () => import("../../../commands/task/run-cancel.command.js"),
-);
-export const fromCommandsTaskRunRetryCommand = commandModule(
-  () => import("../../../commands/task/run-retry.command.js"),
-);
 export const fromCommandsTaskFindingsCommand = commandModule(
   () => import("../../../commands/task/findings.command.js"),
 );
@@ -68,13 +56,6 @@ export const loadTaskNextActionSpec = (deps: RunDeps) =>
   import("../../../commands/task/next-action.command.js").then((m) =>
     m.makeRunTaskNextActionHandler(deps.getCtx),
   );
-export const fromTaskRunTraceSpec = commandModule(
-  () => import("../../../commands/task/run-trace.command.js"),
-);
-export const fromTaskRunSpec = commandModule(() => import("../../../commands/task/run.command.js"));
-export const fromTaskRunResumeSpec = commandModule(
-  () => import("../../../commands/task/run-resume.command.js"),
-);
 export const loadTaskNewSpec = (deps: RunDeps) =>
   import("../../../commands/task/new.command.js").then((m) => m.makeRunTaskNewHandler(deps.getCtx));
 export const loadTaskBeginSpec = (deps: RunDeps) =>

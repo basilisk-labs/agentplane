@@ -99,45 +99,19 @@ Current enforcement should be documented and configured through primary-based ke
 
 `execution.reasoning_effort` controls depth, not answer length. `medium` is the balanced default;
 `low` is latency-oriented; `high` and `xhigh` should be reserved for conservative profiles or
-eval-backed work. `execution.text_verbosity` controls output length/structure in runner prompt
-contracts and is rendered into the execution profile runtime block.
+eval-backed work. `execution.text_verbosity` controls output length/structure in execution profile
+prompts.
 
 ### runner
 
-- `runner.default_adapter`
-- `runner.trace.*`
-- `runner.timeouts.*`
-
-`runner.default_adapter` selects the shared runner adapter (`codex` or `custom`).
+Runner configuration is reserved for the deferred v0.7 runner surface. It is not part of the
+current public execution path; use normal tasks, Verify Steps, handoffs, and PR artifacts with
+agents working in the repository.
 
 ### runner.custom
 
-- `runner.custom.command`
-- `runner.custom.env`
-- `runner.custom.enforcement.mode`
-- `runner.custom.enforcement.platform`
-
-Current supported enforcement modes:
-
-- `none` (default): the custom adapter forwards recipe/runtime intent through env only. Sandbox is
-  advisory, not enforced.
-- `codex_sandbox_full_auto`: the custom adapter wraps the configured command in
-  `codex sandbox <platform> --full-auto` when the recipe requests a supported sandbox.
-
-Current supported wrapper-enforced sandbox values:
-
-- `workspace-write`
-
-`read-only` is intentionally unsupported for the `custom` wrapper path. The reason is not just
-"not implemented": the shared runner contract requires the wrapped process to write `result.json`
-and trace artifacts under `run_dir`, while the default `codex sandbox <platform>` mode blocks
-writes to both `cwd` and `TMPDIR`. Until the wrapper path can express a narrower writable allowlist
-for those required artifacts, the contract must stay fail-closed.
-
-If wrapper mode is configured, inspect `agentplane task run <task-id> --dry-run` or
-`agentplane task run show <task-id>` for the `capability[sandbox]` and `policy_field[sandbox]`
-lines. They surface the configured wrapper mode, capability level, and supported sandbox values
-without requiring a manual read of `bundle.json`.
+Custom runner configuration is also deferred to v0.7 and should not be used as current workflow
+guidance.
 
 ### feedback
 
@@ -225,13 +199,4 @@ Enable stricter force approvals:
 
 ```bash
 agentplane config set agents.approvals.require_force true
-```
-
-Configure the custom runner to use the Codex full-auto sandbox wrapper:
-
-```bash
-agentplane config set runner.default_adapter custom
-agentplane config set runner.custom.command '["node","./scripts/custom-runner.mjs"]'
-agentplane config set runner.custom.enforcement.mode codex_sandbox_full_auto
-agentplane config set runner.custom.enforcement.platform auto
 ```

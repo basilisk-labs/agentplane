@@ -20,14 +20,14 @@ it no longer owns the SQLite file.
 
 ## Owning code paths
 
-| Surface                  | Code path                                                                                                                                                           |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Command specs            | `packages/agentplane/src/commands/context/*.spec.ts`                                                                                                                |
-| CLI handlers             | `packages/agentplane/src/commands/context/*.ts`                                                                                                                     |
-| Shared parsing and refs  | `packages/agentplane/src/commands/context/context-utils.ts`                                                                                                         |
-| SQLite driver/projection | `packages/agentplane/src/shared/sqlite-driver.ts`, `packages/agentplane/src/commands/context/sqlite.ts`                                                             |
-| ACR context extension    | `packages/agentplane/src/commands/acr/**`                                                                                                                           |
-| Runner handoff           | `packages/agentplane/src/commands/context/ingest.ts`, `packages/agentplane/src/context/harvest-tasks-extraction.ts`, `packages/agentplane/src/commands/task/run/**` |
+| Surface                  | Code path                                                                                                                                                    |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Command specs            | `packages/agentplane/src/commands/context/*.spec.ts`                                                                                                         |
+| CLI handlers             | `packages/agentplane/src/commands/context/*.ts`                                                                                                              |
+| Shared parsing and refs  | `packages/agentplane/src/commands/context/context-utils.ts`                                                                                                  |
+| SQLite driver/projection | `packages/agentplane/src/shared/sqlite-driver.ts`, `packages/agentplane/src/commands/context/sqlite.ts`                                                      |
+| ACR context extension    | `packages/agentplane/src/commands/acr/**`                                                                                                                    |
+| Agent handoff            | `packages/agentplane/src/commands/context/ingest.ts`, `packages/agentplane/src/context/harvest-tasks-extraction.ts`, `.agentplane/tasks/<task-id>/README.md` |
 
 ## Task-history extraction
 
@@ -59,7 +59,7 @@ wiki layout adaptive, but fixes the execution gates:
 3. write wiki, derived facts, graph/provenance, and reports as needed
 4. run context reindex after the final content change
 5. run wiki lint, graph validation, verify-task, doctor, and a smoke search
-6. record runner recovery evidence before finishing after a timeout, cancellation, or stuck run
+6. record handoff evidence before another agent resumes stalled or transferred work
 
 `context init` creates only the root wiki contract files (`AGENTS.md` and `index.md`). The first
 real ingest creates the starter wiki hierarchy when there is source material to assimilate.

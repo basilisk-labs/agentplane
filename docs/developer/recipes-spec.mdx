@@ -144,9 +144,8 @@ Project vendoring commands:
 Recipe-owned scenario assets remain internal to vendored packages; they are no longer part of the
 public CLI command surface.
 
-Shared runner entrypoint:
-
-- `agentplane task run <task-id> [--dry-run]`
+There is no public runner entrypoint in the current release. Recipe-owned task materialization
+creates normal tasks for repository agents.
 
 ## Install sources
 
@@ -270,50 +269,17 @@ Authority rules:
 - `.agentplane/generated/prompt-graph.json` is the compiled prompt module graph for the current
   active recipe set. Treat it as inspectable derived state, not as the place to edit modules.
 
-Runner artifacts are layered deliberately:
+Runtime execution artifacts are deferred to the v0.7 runner surface. Current recipe docs should
+describe task materialization, provenance, and agent-facing instructions only.
 
-- `bundle.json`, `bootstrap.md`, `run-state.json`, `events.jsonl`, and `result.json` are control artifacts.
-- `agent-trace.jsonl` and `stderr.log` are raw debugging artifacts.
-- adapter-specific side artifacts such as `codex-last-message.md` are human-inspection aids, not task-state inputs.
+## Agent execution workflow
 
-Task-facing projection is stricter than raw trace capture:
+Recipe scenarios and generated tasks should be inspectable through their task README, plan, Verify
+Steps, ACR, and PR artifacts. If work stalls or ownership changes, record a task handoff with the
+current status, changed files, verification state, and next action before another agent resumes.
 
-- task README runner blocks and persisted runner history may expose status, metrics, artifact paths, and fixed English summaries;
-- they must not copy raw assistant prose or arbitrary trace lines from `agent-trace.jsonl` or adapter side artifacts;
-- raw trace artifacts may preserve the original assistant output, including non-English text, for debugging.
-
-## Runner inspection workflow
-
-When a runner execution needs inspection, use the CLI surfaces before opening files directly:
-
-1. `agentplane task run show <task-id> [run-id]`
-   - reads the selected `run-state.json` and `result.json`;
-   - prints lifecycle status, adapter, target, timeout reason, policy decision blocks, metrics, and artifact paths;
-   - if `run-id` is omitted, the latest run is selected.
-2. `agentplane task run tail <task-id> [run-id] --lines 20`
-   - reads the tail of `agent-trace.jsonl`;
-   - use this first when `show` reports `timeout_reason`, because it gives the last raw runner activity without dumping the full trace.
-3. `agentplane task run trace <task-id> [run-id]`
-   - writes the full raw `agent-trace.jsonl` payload unchanged;
-   - use this only when `tail` is insufficient or when you need exact adapter output for debugging.
-
-Interpretation rules:
-
-- `status=success` with `exit_code=0` means the adapter completed and wrote a normalized `result.json`.
-- `timeout_reason=idle` means the runner saw no new trace activity within the configured idle budget.
-- `timeout_reason=wall_clock` means the total execution exceeded the configured wall-clock budget.
-- `policy_refusal` in `task run show` means the run was rejected before spawn because the declared policy could not be enforced by the selected adapter.
-- raw trace and side artifacts remain debugging inputs only; task README summaries and runner history stay English-only and must not quote assistant prose.
-
-For live regression checks inside the framework checkout, the repository now ships an opt-in smoke harness:
-
-```bash
-bun run runner:codex:smoke -- --live
-```
-
-It creates a tiny temp task under `.agentplane/tmp/`, runs the shared runner through the current
-repo-local binary, and classifies the outcome as `success`, `timeout`, `policy_refusal`, or
-`runner_failure`.
+Live runtime smoke probes remain internal v0.7 work and are not part of the current public recipe
+contract.
 
 ## Resolver contract
 
@@ -331,25 +297,19 @@ Resolver output includes:
 - normalized `run_profile`
 - explicit selection reasons
 
-`run_profile` now covers runner-local execution hints only. Global network approval remains governed by
+`run_profile` now covers future runtime execution hints only. Global network approval remains governed by
 `agents.approvals.require_network`, not by a recipe-scoped `run_profile.network` field.
 `run_profile.mode` remains part of resolver selection and CLI discovery output, but it is no longer
-projected into the active runner env or capability surface because it functions as a recipe
+projected into an active execution env or capability surface because it functions as a recipe
 classification label rather than a shared execution-policy field.
-The main-repo runner contract also no longer accepts `run_profile.requires_human_approval`: the live
-Codex probe showed that non-interactive approval modes remain permissive, so the field was removed
-from runtime execution surfaces instead of being documented as a fake enforcement guarantee.
+The main-repo recipe contract also no longer accepts `run_profile.requires_human_approval`: the
+field was removed from runtime execution surfaces instead of being documented as a fake enforcement
+guarantee.
 The same rule now applies to `run_profile.expected_exit_contract`: the field has been removed from
 the accepted main-repo recipe contract after the bundled catalog was cleaned, because current values
 are recipe-specific labels without deterministic shared semantics.
-`run_profile.writes_artifacts_to` remains advisory at invocation time, but the shared runner now
-rejects invalid declared prefixes before spawn and then enforces the field post-run against external
-`result.json` manifest paths only: `artifacts[].path` and `evidence.evidence_paths[]` must resolve
-under the declared prefixes after normalized relative-path checks, so traversal forms and absolute
-paths fail deterministically instead of passing via lexical prefix matching.
-Runner-owned control artifacts such as `bundle.json`, `result.json`, trace files, and preserved
-source manifests are outside that prefix check because they are emitted by the framework itself, not
-by the recipe-controlled runner payload.
+`run_profile.writes_artifacts_to` remains advisory until the v0.7 runner surface reintroduces
+enforcement.
 
 ## Recipe scenario preview and execution contract
 
@@ -360,8 +320,7 @@ prints a prepared run plan. It is preview-only: no task is created and no runner
 
 1. materializes a normal task from the scenario's explicit `task_template`;
 2. records recipe provenance on that task (`recipe_id`, `scenario_id`, `recipe_version`, `run_id`);
-3. assembles a shared runner bundle with base prompts, task context, and recipe context;
-4. invokes the configured runner adapter through the same contract used by `task run`.
+3. writes the recipe context into the generated task for the assigned agent.
 
 Required scenario definition support:
 
@@ -380,38 +339,16 @@ Required scenario definition support:
 - optional `verify`
 - optional `doc` seeds for task README sections
 
-`task run` is the runner-neutral task entrypoint. It materializes bundle artifacts for an existing task and
-either prints invocation metadata (`--dry-run`) or executes the configured runner adapter.
-
-`task run --dry-run` and `task run show` should be treated as the primary user-facing inspection
-surface for adapter enforcement. The raw JSON blocks remain canonical, but the compact
-`capability[...]` and `policy_field[...]` lines are the intended human-readable projection.
-
-For the `custom` adapter, these lines must make wrapper mode visible without source inspection:
-
-- `capability[sandbox]` shows whether sandbox is `advisory` or `wrapper`
-- the note must identify the configured `runner.custom.enforcement.mode`
-- supported sandbox values must be shown when wrapper mode is active
-- `policy_field[sandbox]` shows whether a scenario-backed run actually exercised that capability
-
-Current support matrix:
-
-- `workspace-write`: supported through `codex sandbox <platform> --full-auto`
-- `read-only`: intentionally rejected, because the shared runner contract requires writable
-  `result.json` and trace artifacts in `run_dir`, while the default codex sandbox blocks writes to
-  `cwd` and `TMPDIR`
-
-`task run` and `recipes scenario execute` share the same projection rule: runner completion may update
-task-facing state, but only through the sanitized runner outcome layer, never by copying assistant
-prose from raw trace artifacts into task README sections.
+Runtime adapter execution is deferred to the v0.7 runner surface. Until then, keep adapter-specific
+requirements in task evidence and recipe metadata rather than exposing execution commands.
 
 Scenario definitions can declare evidence requirements:
 
 - `evidence.required` (boolean)
 - `evidence.files` (string array, defaults to `["evidence.json"]` when required)
 
-Evidence declarations are bundled into recipe context for the runner and can seed verification expectations,
-but they are not a separate CLI orchestration DSL.
+Evidence declarations are bundled into recipe context for the assigned agent and can seed
+verification expectations, but they are not a separate CLI orchestration DSL.
 
 ## Security model
 
