@@ -4,7 +4,7 @@ title: "Prepare AgentPlane v0.6.2"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-05-18T08:15:50.939Z"
+  updated_by: "CODER"
+  note: "Release candidate PR #3865 green on head 88302c5a8: Core CI test/test-windows/release-ready manifest, Docs CI, Dependency Review, and CodeQL passed. Local release candidate and pre-push fast CI passed; release notes and knip baseline refreshed."
   attempts: 0
 commit: null
 comments:
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Prepare the v0.6.2 patch release candidate from the current protected main, keeping the scope limited to already merged patch fixes and release hardening while excluding blocked major dependency upgrades and new public CLI surfaces."
+  -
+    type: "verify"
+    at: "2026-05-18T08:15:50.939Z"
+    author: "CODER"
+    state: "ok"
+    note: "Release candidate PR #3865 green on head 88302c5a8: Core CI test/test-windows/release-ready manifest, Docs CI, Dependency Review, and CodeQL passed. Local release candidate and pre-push fast CI passed; release notes and knip baseline refreshed."
 doc_version: 3
-doc_updated_at: "2026-05-18T06:06:29.079Z"
+doc_updated_at: "2026-05-18T08:15:50.948Z"
 doc_updated_by: "CODER"
 description: "Prepare a patch release candidate for AgentPlane v0.6.2, limited to already merged patch-scope fixes and low-risk release/maintenance updates. Exclude new public CLI surfaces and red semver-major dependency upgrades from this patch scope."
 sections:
@@ -58,6 +64,25 @@ sections:
     6. Record publication evidence after merge: npm package version, remote tag, GitHub Release, and publish workflow result.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-05-18T08:15:50.939Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Release candidate PR #3865 green on head 88302c5a8: Core CI test/test-windows/release-ready manifest, Docs CI, Dependency Review, and CodeQL passed. Local release candidate and pre-push fast CI passed; release notes and knip baseline refreshed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T06:06:29.079Z, excerpt_hash=sha256:3182a8a026e83effc900a0b258f7adcb72bdd90bcf4b0cb339f7f9d03eb27f90
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171319-4FK87T-release-0-6-2/.agentplane/tasks/202605171319-4FK87T/blueprint/resolved-snapshot.json
+    - old_digest: 1bef740e49114c6927f1cda7937f88d44b31f35d89c34287a5ed4fad560acd68
+    - current_digest: 1bef740e49114c6927f1cda7937f88d44b31f35d89c34287a5ed4fad560acd68
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605171319-4FK87T
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -92,6 +117,25 @@ Release plan: version=0.6.2, tag=v0.6.2, base=cde9b26bc066217026b42ea6252351ef58
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-05-18T08:15:50.939Z — VERIFY — ok
+
+By: CODER
+
+Note: Release candidate PR #3865 green on head 88302c5a8: Core CI test/test-windows/release-ready manifest, Docs CI, Dependency Review, and CodeQL passed. Local release candidate and pre-push fast CI passed; release notes and knip baseline refreshed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T06:06:29.079Z, excerpt_hash=sha256:3182a8a026e83effc900a0b258f7adcb72bdd90bcf4b0cb339f7f9d03eb27f90
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605171319-4FK87T-release-0-6-2/.agentplane/tasks/202605171319-4FK87T/blueprint/resolved-snapshot.json
+- old_digest: 1bef740e49114c6927f1cda7937f88d44b31f35d89c34287a5ed4fad560acd68
+- current_digest: 1bef740e49114c6927f1cda7937f88d44b31f35d89c34287a5ed4fad560acd68
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605171319-4FK87T
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
