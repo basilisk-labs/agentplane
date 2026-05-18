@@ -1,10 +1,11 @@
 ---
 id: "202605181205-TFMY22"
 title: "Fix feedback opt-in and direct finish recovery issues"
-status: "DOING"
+result_summary: "Merged via PR #3892."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +26,16 @@ verification:
   updated_by: "CODER"
   note: "Implemented one-shot feedback issue opt-in and direct close-commit preflight hardening. Checks passed: focused insights/error tests, finish validation Vitest, typecheck, docs:cli:check, format:changed, lint:core, task scope, policy routing."
   attempts: 0
-commit: null
+commit:
+  hash: "a0ef80ca70d5e0264eece4c66892474fb0e0f4f2"
+  message: "Merge pull request #3892 from basilisk-labs/task/202605181205-TFMY22/fix-feedback-finish-recovery"
 comments:
   -
     author: "CODER"
     body: "Start: Implement code fixes for GitHub issues #3872 and #3873: feedback issue publication must support explicit one-shot opt-in without workflow drift, and direct-mode finish/git staging blockers must surface deterministic recovery diagnostics."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: PR #3892 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 events:
   -
     type: "status"
@@ -44,9 +50,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented one-shot feedback issue opt-in and direct close-commit preflight hardening. Checks passed: focused insights/error tests, finish validation Vitest, typecheck, docs:cli:check, format:changed, lint:core, task scope, policy routing."
+  -
+    type: "status"
+    at: "2026-05-18T12:50:46.215Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: PR #3892 merged on GitHub main; hosted closure automation recorded canonical task artifacts."
 doc_version: 3
-doc_updated_at: "2026-05-18T12:15:26.559Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-05-18T12:50:46.220Z"
+doc_updated_by: "INTEGRATOR"
 description: "Fix GitHub issues #3872 and #3873 without runner scope: make feedback issue publication safe without mutating workflow config in-session, and harden direct-mode finish/git staging diagnostics/recovery around dirty index and staged state."
 sections:
   Summary: |-
