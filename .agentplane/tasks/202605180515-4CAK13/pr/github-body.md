@@ -44,12 +44,16 @@ bun test packages/agentplane/src/commands/task/start.unit.test.ts \
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-05-18T05:15:54.501Z
+- Updated: 2026-05-18T05:25:30.709Z
 - Branch: task/202605180515-4CAK13/fix-open-branch-pr-feedback
-- Head: 07541b20b8dc
+- Head: 8e9289e25c31
 
 ```text
-No changes detected.
+ .../blueprint/resolved-snapshot.json               | 552 +++++++++++++++++++++
+ .../cli/run-cli.core.pr-flow.pr-feedback.test.ts   | 128 +++++
+ .../src/commands/task/finish.state.unit.test.ts    |  56 ++-
+ .../src/commands/task/start.unit.test.ts           |  11 +-
+ 4 files changed, 720 insertions(+), 27 deletions(-)
 ```
 
 </details>
