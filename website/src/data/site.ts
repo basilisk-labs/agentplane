@@ -9,4 +9,3 @@ export const site = {
   examplesUrl: "/examples",
   license: "MIT",
 } as const;
-

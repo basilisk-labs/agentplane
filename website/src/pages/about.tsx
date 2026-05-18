@@ -45,12 +45,11 @@ export default function AboutPage(): ReactNode {
             recipes, exportable artifacts, and Git-native evidence for AI-assisted engineering.
           </p>
           <p>
-            <Link to="/docs/start/quickstart">Quickstart</Link> ·{" "}
-            <Link to="/docs">Docs</Link> · <a href={site.githubUrl}>GitHub</a>
+            <Link to="/docs/start/quickstart">Quickstart</Link> · <Link to="/docs">Docs</Link> ·{" "}
+            <a href={site.githubUrl}>GitHub</a>
           </p>
         </section>
       </main>
     </Layout>
   );
 }
-

@@ -83,4 +83,3 @@ export function getReferenceSources(ids: readonly string[]): ReferenceSource[] {
     return source;
   });
 }
-

@@ -21,4 +21,3 @@ export default function FurtherReading({ ids }: FurtherReadingProps): ReactNode 
     </section>
   );
 }
-

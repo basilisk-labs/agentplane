@@ -25,7 +25,10 @@ function readCachedStars(): number | null {
 }
 
 function writeCachedStars(value: number): void {
-  window.localStorage.setItem(cacheKey, JSON.stringify({ value, expiresAt: Date.now() + cacheTtlMs }));
+  window.localStorage.setItem(
+    cacheKey,
+    JSON.stringify({ value, expiresAt: Date.now() + cacheTtlMs }),
+  );
 }
 
 function trackClick(): void {
@@ -79,4 +82,3 @@ export default function GitHubStarsButton(): ReactNode {
     </a>
   );
 }
-

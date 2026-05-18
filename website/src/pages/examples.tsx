@@ -36,7 +36,7 @@ const examples = [
     title: "Use local context for repo conventions",
     outcome: "Keep repository rules inspectable instead of relying on fragile chat history.",
     time: "8 min",
-    command: "agentplane context search \"repo conventions\"",
+    command: 'agentplane context search "repo conventions"',
     to: "/docs/user/local-context",
   },
 ];
@@ -79,4 +79,3 @@ export default function ExamplesPage(): ReactNode {
     </Layout>
   );
 }
-

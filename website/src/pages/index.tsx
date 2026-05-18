@@ -181,7 +181,11 @@ function Records(): ReactNode {
           </article>
         ))}
       </div>
-      <Link className={styles.inlineCta} to={contextUrl} onClick={() => trackHomeEvent("view_context_guide")}>
+      <Link
+        className={styles.inlineCta}
+        to={contextUrl}
+        onClick={() => trackHomeEvent("view_context_guide")}
+      >
         Read the local context guide
       </Link>
     </section>
@@ -195,7 +199,11 @@ function HarnessAndTraces(): ReactNode {
       <div className={styles.sectionIntro}>
         <h2>{harness.title}</h2>
         <p>{harness.text}</p>
-        <Link className={styles.inlineCta} to={harnessUrl} onClick={() => trackHomeEvent("view_harness_guide")}>
+        <Link
+          className={styles.inlineCta}
+          to={harnessUrl}
+          onClick={() => trackHomeEvent("view_harness_guide")}
+        >
           Read the harness engineering guide
         </Link>
       </div>
@@ -210,7 +218,10 @@ function HarnessAndTraces(): ReactNode {
       <div className={styles.timeline}>
         <div className={styles.sectionIntro}>
           <h2>How does Agentplane trace an agent run?</h2>
-          <p>Traces turn workflow execution into a structured timeline that can be inspected or exported.</p>
+          <p>
+            Traces turn workflow execution into a structured timeline that can be inspected or
+            exported.
+          </p>
         </div>
         {timeline.map(([name, text]) => (
           <div key={name} className={styles.timelineRow}>
@@ -219,7 +230,11 @@ function HarnessAndTraces(): ReactNode {
           </div>
         ))}
       </div>
-      <Link className={styles.inlineCta} to={tracesUrl} onClick={() => trackHomeEvent("view_traces_guide")}>
+      <Link
+        className={styles.inlineCta}
+        to={tracesUrl}
+        onClick={() => trackHomeEvent("view_traces_guide")}
+      >
         Read the traces guide
       </Link>
     </section>
@@ -231,7 +246,10 @@ function Examples(): ReactNode {
     <section className={styles.section}>
       <div className={styles.sectionIntro}>
         <h2>Examples and recipes</h2>
-        <p>Start from runnable workflows: trace debugging, TDD recipes, local context, and Agent Change Records.</p>
+        <p>
+          Start from runnable workflows: trace debugging, TDD recipes, local context, and Agent
+          Change Records.
+        </p>
       </div>
       <div className={styles.exampleGrid}>
         {homepageContent.examples.map(([title, command]) => (

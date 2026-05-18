@@ -59,7 +59,9 @@ for (const url of criticalExternalLinks) {
     const response = await fetch(url, { method: "HEAD" });
     if (!response.ok) warnings.push(`external link returned ${response.status}: ${url}`);
   } catch (error) {
-    warnings.push(`external link warning: ${url} (${error instanceof Error ? error.message : "failed"})`);
+    warnings.push(
+      `external link warning: ${url} (${error instanceof Error ? error.message : "failed"})`,
+    );
   }
 }
 
@@ -70,4 +72,3 @@ if (errors.length > 0) {
 }
 
 console.log("[link-check] ok");
-

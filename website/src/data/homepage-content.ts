@@ -22,7 +22,12 @@ export const homepageContent = {
     subtitle:
       "Agentplane is a CLI-first operational workflow layer for AI agents. Run agents locally, record traces, manage context, apply recipes, and keep every run inspectable from the terminal to Git.",
     trustLine: "Local-first. CLI-first. OpenTelemetry-friendly. MIT licensed.",
-    commands: [installCommand, "agentplane init", "agentplane run ./agentplane.yaml", "agentplane trace open"],
+    commands: [
+      installCommand,
+      "agentplane init",
+      "agentplane run ./agentplane.yaml",
+      "agentplane trace open",
+    ],
     output: [
       "initialized .agentplane/",
       "loaded workflow",
@@ -33,10 +38,8 @@ export const homepageContent = {
   },
   whatIs: {
     title: "What is Agentplane?",
-    text:
-      "Agentplane is not another agent framework. It is the operational layer around AI agents: workflows, orchestration, traces, local context, recipes, verification, and run artifacts.",
-    use:
-      "Use Agentplane when you want agent work to be debuggable, reproducible, observable, and safe to operate beyond a single chat session.",
+    text: "Agentplane is not another agent framework. It is the operational layer around AI agents: workflows, orchestration, traces, local context, recipes, verification, and run artifacts.",
+    use: "Use Agentplane when you want agent work to be debuggable, reproducible, observable, and safe to operate beyond a single chat session.",
     rows: [
       ["Agent frameworks", "Define agent logic and application behavior."],
       ["Model providers", "Run model inference."],
@@ -49,8 +52,7 @@ export const homepageContent = {
   },
   records: {
     title: "What Agentplane records",
-    text:
-      "Agentplane keeps operational state inspectable. Workflows, runs, traces, recipes, and exports live as files you can inspect, version, and share.",
+    text: "Agentplane keeps operational state inspectable. Workflows, runs, traces, recipes, and exports live as files you can inspect, version, and share.",
     tree: [
       ".agentplane/",
       "  workflows/",
@@ -75,17 +77,16 @@ export const homepageContent = {
       "Recipes",
       "Apply reusable workflow overlays for TDD, security review, documentation, and team standards.",
     ],
-    ["Local Context", "Keep operational context close to the workflow, not buried in chat history."],
     [
-      "Agent Change Records",
-      "Capture auditable evidence for AI-assisted engineering work.",
+      "Local Context",
+      "Keep operational context close to the workflow, not buried in chat history.",
     ],
+    ["Agent Change Records", "Capture auditable evidence for AI-assisted engineering work."],
     ["Exports", "Share traces and run artifacts with other tools."],
   ],
   harness: {
     title: "Why harnesses matter",
-    text:
-      "A model alone is not an agent. Real agents need workflows, tools, context, state, verification, and traces. Agentplane gives that surrounding harness a local, inspectable structure.",
+    text: "A model alone is not an agent. Real agents need workflows, tools, context, state, verification, and traces. Agentplane gives that surrounding harness a local, inspectable structure.",
     items: [
       ["Context", "What the agent needs to know."],
       ["Tools", "What the agent is allowed to do."],
@@ -112,4 +113,3 @@ export const homepageContent = {
     text: "Install the CLI, initialize a project, run a workflow, inspect the trace, then decide which recipes or context packs are worth adding.",
   },
 } as const;
-

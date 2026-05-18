@@ -62,7 +62,9 @@ function checkBrandCasing() {
 function checkNoHardcodedProofMetrics() {
   const content = read("src/data/homepage-content.ts");
   if (/stars:\s*\d+|releases:\s*\d+|latestRelease:/.test(content)) {
-    errors.push("homepage must not contain hardcoded GitHub stars, release counts, or latestRelease proof values");
+    errors.push(
+      "homepage must not contain hardcoded GitHub stars, release counts, or latestRelease proof values",
+    );
   }
 }
 
