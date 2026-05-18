@@ -1,16 +1,21 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-05-18T05:21:28Z",
   "base": "main",
   "branch": "task/202605171746-BBZQQ1/feedback-issue-transports",
   "created_at": "2026-05-17T17:47:24.453Z",
-  "head_sha": "8842fa2a06c25c6e94151e49637db3ba7b91263d",
+  "head_sha": "e1cc6c8991968956539e6f616a6786965c8668b6",
   "last_verified_at": "2026-05-17T18:13:31.941Z",
   "last_verified_sha": "7ea69411035fdeb2eff92855918ed588e6c8e8d5",
+  "merge_commit": "0d961b9f73414ffa57c9bed80cbc21b3c612bf7d",
+  "merge_strategy": "merge",
+  "merged_at": "2026-05-18T05:21:28Z",
   "pr_number": 3855,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/3855",
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202605171746-BBZQQ1",
-  "updated_at": "2026-05-18T05:20:52.881Z",
+  "updated_at": "2026-05-18T05:21:28Z",
   "verify": {
     "status": "pass"
   }
