@@ -83,6 +83,18 @@ function cloudIntakeBody(opts: {
   };
 }
 
+function anonymousCloudDisabledError(message: string): CliError {
+  return new CliError({
+    exitCode: exitCodeForError("E_USAGE"),
+    code: "E_USAGE",
+    message,
+    context: {
+      command: "insights issue",
+      reason_code: "feedback_anonymous_cloud_disabled",
+    },
+  });
+}
+
 async function createGithubIssue(
   root: string,
   settings: FeedbackGithubIssuesSettings,
@@ -146,6 +158,11 @@ export async function createFeedbackIssue(opts: {
   endpoint: string;
 }): Promise<CreatedFeedbackIssue> {
   if (opts.transport === "cloud") {
+    if (opts.settings.allow_anonymous_cloud !== true) {
+      throw anonymousCloudDisabledError(
+        "Anonymous cloud feedback issue intake is disabled. Enable with `agentplane config set feedback.github_issues.allow_anonymous_cloud true`, then retry.",
+      );
+    }
     return await createCloudIssue({
       endpoint: opts.endpoint,
       payload: opts.payload,
@@ -153,9 +170,20 @@ export async function createFeedbackIssue(opts: {
     });
   }
   if (opts.transport === "auto") {
-    return await createGithubIssue(opts.root, opts.settings, opts.payload).catch(() =>
-      createCloudIssue({ endpoint: opts.endpoint, payload: opts.payload, report: opts.report }),
-    );
+    try {
+      return await createGithubIssue(opts.root, opts.settings, opts.payload);
+    } catch (error) {
+      if (opts.settings.allow_anonymous_cloud !== true) {
+        throw anonymousCloudDisabledError(
+          `GitHub feedback issue publishing failed and anonymous cloud fallback is disabled. Enable with \`agentplane config set feedback.github_issues.allow_anonymous_cloud true\`, then retry. Cause: ${String(error instanceof Error ? error.message : error)}`,
+        );
+      }
+      return await createCloudIssue({
+        endpoint: opts.endpoint,
+        payload: opts.payload,
+        report: opts.report,
+      });
+    }
   }
   return await createGithubIssue(opts.root, opts.settings, opts.payload);
 }

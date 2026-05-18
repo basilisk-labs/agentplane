@@ -554,10 +554,7 @@ export function makeRunInsightsIssueHandler(deps: RunDeps): CommandHandler<Insig
         return 0;
       }
 
-      if (
-        (transport === "cloud" || transport === "auto") &&
-        settings.allow_anonymous_cloud !== true
-      ) {
+      if (transport === "cloud" && settings.allow_anonymous_cloud !== true) {
         throw new CliError({
           exitCode: exitCodeForError("E_USAGE"),
           code: "E_USAGE",
