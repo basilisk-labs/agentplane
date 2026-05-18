@@ -4,7 +4,7 @@ title: "Repair framework context health contract"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -19,10 +19,21 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-18T13:02:11.402Z"
-  updated_by: "CODER"
-  note: "Verified: framework context health scaffold now exists and context commands pass; starter wiki placeholder wording was removed from the template and generated page; command/policy/runtime checks and Turbo workspace discovery pass."
+  updated_at: "2026-05-18T17:37:26.516Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed: PR #3895 was merged at 890e2c70d229 after green Core CI, Docs CI, Release-ready manifest, and CodeQL checks; base checkout fast-forwarded and framework dev bootstrap completed without errors."
   attempts: 0
+quality_review:
+  state: "pass"
+  updated_at: "2026-05-18T17:37:26.516Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR quality gate passed: PR #3895 was merged at 890e2c70d229 after green Core CI, Docs CI, Release-ready manifest, and CodeQL checks; base checkout fast-forwarded and framework dev bootstrap completed without errors."
+  evaluated_sha: "890e2c70d229f324007edf21dfcf30b4f0036e95"
+  blueprint_digest: "c93bc25a8e7841da3bb5dde99346c00d1b9894a6d9f7f8d6822018340abc5d7d"
+  evidence_refs:
+    - ".agentplane/tasks/202605181255-29XQ07/README.md"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/tasks/202605181255-29XQ07/blueprint/resolved-snapshot.json"
+  findings: []
 commit: null
 comments:
   -
@@ -42,8 +53,20 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: framework context health scaffold now exists and context commands pass; starter wiki placeholder wording was removed from the template and generated page; command/policy/runtime checks and Turbo workspace discovery pass."
+  -
+    type: "verify"
+    at: "2026-05-18T17:37:05.473Z"
+    author: "INTEGRATOR"
+    state: "ok"
+    note: "Verified: PR #3895 merged into main at 890e2c70d229; base checkout fast-forwarded and framework dev bootstrap completed after watched runtime snapshot refresh."
+  -
+    type: "verify"
+    at: "2026-05-18T17:37:26.516Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "EVALUATOR quality gate passed: PR #3895 was merged at 890e2c70d229 after green Core CI, Docs CI, Release-ready manifest, and CodeQL checks; base checkout fast-forwarded and framework dev bootstrap completed without errors."
 doc_version: 3
-doc_updated_at: "2026-05-18T13:02:11.443Z"
+doc_updated_at: "2026-05-18T17:37:26.536Z"
 doc_updated_by: "CODER"
 description: "Fix the current framework checkout context health gap so declared context commands have a valid scaffold or deterministic repair behavior, and verify the local context health route."
 sections:
@@ -80,6 +103,44 @@ sections:
     - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181255-29XQ07-framework-context-health/.agentplane/tasks/202605181255-29XQ07/blueprint/resolved-snapshot.json
     - old_digest: de78b7b204695a3d308e704932a9177aa28d07f977ff9a53acb80bdceaf962a3
     - current_digest: de78b7b204695a3d308e704932a9177aa28d07f977ff9a53acb80bdceaf962a3
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605181255-29XQ07
+
+    ### 2026-05-18T17:37:05.473Z — VERIFY — ok
+
+    By: INTEGRATOR
+
+    Note: Verified: PR #3895 merged into main at 890e2c70d229; base checkout fast-forwarded and framework dev bootstrap completed after watched runtime snapshot refresh.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T13:02:11.443Z, excerpt_hash=sha256:b67fabf02e5d3677b4d45da13d2c6bee9c98eca01937ad276df81251d5533a18
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605181255-29XQ07/blueprint/resolved-snapshot.json
+    - old_digest: c93bc25a8e7841da3bb5dde99346c00d1b9894a6d9f7f8d6822018340abc5d7d
+    - current_digest: c93bc25a8e7841da3bb5dde99346c00d1b9894a6d9f7f8d6822018340abc5d7d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605181255-29XQ07
+
+    ### 2026-05-18T17:37:26.516Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: EVALUATOR quality gate passed: PR #3895 was merged at 890e2c70d229 after green Core CI, Docs CI, Release-ready manifest, and CodeQL checks; base checkout fast-forwarded and framework dev bootstrap completed without errors.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T17:37:05.489Z, excerpt_hash=sha256:b67fabf02e5d3677b4d45da13d2c6bee9c98eca01937ad276df81251d5533a18
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605181255-29XQ07/blueprint/resolved-snapshot.json
+    - old_digest: c93bc25a8e7841da3bb5dde99346c00d1b9894a6d9f7f8d6822018340abc5d7d
+    - current_digest: c93bc25a8e7841da3bb5dde99346c00d1b9894a6d9f7f8d6822018340abc5d7d
     - route_changed: no
     - safe_command: agentplane blueprint snapshot 202605181255-29XQ07
 
@@ -136,6 +197,44 @@ BlueprintSnapshotRef:
 - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605181255-29XQ07-framework-context-health/.agentplane/tasks/202605181255-29XQ07/blueprint/resolved-snapshot.json
 - old_digest: de78b7b204695a3d308e704932a9177aa28d07f977ff9a53acb80bdceaf962a3
 - current_digest: de78b7b204695a3d308e704932a9177aa28d07f977ff9a53acb80bdceaf962a3
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605181255-29XQ07
+
+### 2026-05-18T17:37:05.473Z — VERIFY — ok
+
+By: INTEGRATOR
+
+Note: Verified: PR #3895 merged into main at 890e2c70d229; base checkout fast-forwarded and framework dev bootstrap completed after watched runtime snapshot refresh.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T13:02:11.443Z, excerpt_hash=sha256:b67fabf02e5d3677b4d45da13d2c6bee9c98eca01937ad276df81251d5533a18
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605181255-29XQ07/blueprint/resolved-snapshot.json
+- old_digest: c93bc25a8e7841da3bb5dde99346c00d1b9894a6d9f7f8d6822018340abc5d7d
+- current_digest: c93bc25a8e7841da3bb5dde99346c00d1b9894a6d9f7f8d6822018340abc5d7d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605181255-29XQ07
+
+### 2026-05-18T17:37:26.516Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: EVALUATOR quality gate passed: PR #3895 was merged at 890e2c70d229 after green Core CI, Docs CI, Release-ready manifest, and CodeQL checks; base checkout fast-forwarded and framework dev bootstrap completed without errors.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T17:37:05.489Z, excerpt_hash=sha256:b67fabf02e5d3677b4d45da13d2c6bee9c98eca01937ad276df81251d5533a18
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tasks/202605181255-29XQ07/blueprint/resolved-snapshot.json
+- old_digest: c93bc25a8e7841da3bb5dde99346c00d1b9894a6d9f7f8d6822018340abc5d7d
+- current_digest: c93bc25a8e7841da3bb5dde99346c00d1b9894a6d9f7f8d6822018340abc5d7d
 - route_changed: no
 - safe_command: agentplane blueprint snapshot 202605181255-29XQ07
 
