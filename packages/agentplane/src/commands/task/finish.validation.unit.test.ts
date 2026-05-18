@@ -107,6 +107,16 @@ function mkTask(overrides: Partial<TaskData>): TaskData {
     depends_on: [],
     tags: [],
     verify: [],
+    quality_review: {
+      state: "pass",
+      updated_at: "2026-02-09T00:00:00.000Z",
+      updated_by: "EVALUATOR",
+      note: "Quality gate passed",
+      evaluated_sha: null,
+      blueprint_digest: "d1",
+      evidence_refs: [".agentplane/tasks/T-1/README.md"],
+      findings: [],
+    },
     doc: [
       "## Summary",
       "Task summary",

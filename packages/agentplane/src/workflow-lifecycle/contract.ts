@@ -1,6 +1,6 @@
 import type { BlueprintNodeKind, EvidenceKind, WorkflowMode } from "../blueprints/model.js";
 
-export type LifecycleRole = "ORCHESTRATOR" | "PLANNER" | "CODER" | "INTEGRATOR";
+export type LifecycleRole = "ORCHESTRATOR" | "PLANNER" | "CODER" | "EVALUATOR" | "INTEGRATOR";
 export type LifecycleCwd = "base_checkout" | "task_worktree" | "current_checkout";
 export type LifecycleSideEffect = "none" | "task_state" | "git_local" | "git_remote";
 
@@ -56,6 +56,12 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
         allowedCommands: ["agentplane task verify-show <task-id>", "project focused checks"],
       },
       { kind: "verify_record", evidence: ["check_result"], protected: true },
+      {
+        kind: "quality_gate",
+        evidence: ["quality_report"],
+        protected: true,
+        allowedCommands: ["agentplane verify <task-id> --ok|--rework --by EVALUATOR"],
+      },
       { kind: "finish", evidence: ["commit"], protected: true },
     ],
     commandSteps: [
@@ -102,6 +108,13 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
         sideEffects: ["task_state"],
       },
       {
+        id: "quality_gate",
+        command: "agentplane verify",
+        role: "EVALUATOR",
+        cwd: "current_checkout",
+        sideEffects: ["task_state"],
+      },
+      {
         id: "finish",
         command: "agentplane finish",
         role: "CODER",
@@ -122,6 +135,7 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
       "task start-ready",
       "task verify-show",
       "verify",
+      "verify --by EVALUATOR",
       "finish",
     ],
     quickstartCommandOrder: [
@@ -164,6 +178,12 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
         allowedCommands: ["agentplane pr open <task-id> --branch <branch> --author <ROLE>"],
       },
       { kind: "verify_record", evidence: ["check_result"], protected: true },
+      {
+        kind: "quality_gate",
+        evidence: ["quality_report"],
+        protected: true,
+        allowedCommands: ["agentplane verify <task-id> --ok|--rework --by EVALUATOR"],
+      },
       { kind: "hosted_checks", evidence: ["check_result", "external_link"] },
       {
         kind: "publish_or_integrate",
@@ -224,6 +244,13 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
         sideEffects: ["task_state"],
       },
       {
+        id: "quality_gate",
+        command: "agentplane verify",
+        role: "EVALUATOR",
+        cwd: "task_worktree",
+        sideEffects: ["task_state"],
+      },
+      {
         id: "hosted_checks",
         command: "bun run workflow:wait-remote-checks",
         role: "CODER",
@@ -252,6 +279,7 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
       "task verify-show",
       "pr open",
       "verify",
+      "verify --by EVALUATOR",
       "integrate",
       "finish",
     ],

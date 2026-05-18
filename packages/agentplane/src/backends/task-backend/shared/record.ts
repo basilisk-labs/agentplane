@@ -13,6 +13,7 @@ import { normalizeEvents } from "./events.js";
 import {
   normalizeDependsOn,
   normalizePlanApproval,
+  normalizeQualityReviewResult,
   normalizeTaskOrigin,
   normalizeTaskRunnerOutcome,
   normalizeVerificationResult,
@@ -123,6 +124,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
   const events = normalizeEvents(fm.events);
   const planApproval = normalizePlanApproval(fm.plan_approval);
   const verification = normalizeVerificationResult(fm.verification);
+  const qualityReview = normalizeQualityReviewResult(fm.quality_review);
   const origin = normalizeTaskOrigin(fm.origin);
   const runner = normalizeTaskRunnerOutcome(fm.runner);
   const sections = mergeTaskDocSections({
@@ -165,6 +167,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     verify: toStringArray(fm.verify),
     plan_approval: planApproval ?? undefined,
     verification: verification ?? undefined,
+    quality_review: qualityReview ?? undefined,
     runner: runner ?? undefined,
     commit,
     comments,

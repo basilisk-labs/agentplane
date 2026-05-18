@@ -5,7 +5,10 @@ import { collectTaskIncidents, renderIncidentCollectionPlanOutcome } from "../in
 import { throwIfPolicyDecisionDenied } from "../shared/policy-deny.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
-import { assertBlueprintEvidenceBeforeFinish } from "./finish-blueprint-evidence.js";
+import {
+  assertBlueprintEvidenceBeforeFinish,
+  assertQualityReviewBeforeFinish,
+} from "./finish-blueprint-evidence.js";
 import {
   createTaskCloseCommit,
   existingCommitInfo,
@@ -87,6 +90,11 @@ export async function executeFinishPlan(opts: {
     plan,
     primaryStatusFrom: loadedState.primaryStatusFrom,
     primaryTag: loadedState.primaryTag,
+  });
+  await assertQualityReviewBeforeFinish({
+    ctx,
+    loadedTasks: loadedState.loadedTasks,
+    taskCommitInfo,
   });
 
   await assertCloseCommitCanMutateTaskState({ ctx, options, plan });

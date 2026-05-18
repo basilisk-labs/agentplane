@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202605181129-2VW21W/evaluator-quality-gate",
+  "created_at": "2026-05-18T11:30:12.696Z",
+  "head_sha": "88585c94c356b2081b28f274f03616fd0ae912ef",
+  "last_verified_at": null,
+  "last_verified_sha": null,
+  "schema_version": 1,
+  "task_id": "202605181129-2VW21W",
+  "updated_at": "2026-05-18T11:30:12.696Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

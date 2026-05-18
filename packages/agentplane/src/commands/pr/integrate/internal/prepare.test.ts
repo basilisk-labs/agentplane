@@ -81,8 +81,25 @@ function mkCtx(workflowMode: "direct" | "branch_pr" = "branch_pr") {
   };
 }
 
+function qualityReview(evaluatedSha = "deadbeef") {
+  return {
+    state: "pass" as const,
+    updated_at: "2026-02-09T00:00:00.000Z",
+    updated_by: "EVALUATOR",
+    note: "Quality gate passed",
+    evaluated_sha: evaluatedSha,
+    blueprint_digest: null,
+    evidence_refs: [".agentplane/tasks/T-1/README.md"],
+    findings: [],
+  };
+}
+
 function seedCommon(): void {
-  mocks.loadTaskFromContext.mockResolvedValue({ id: "T-1", verify: [] });
+  mocks.loadTaskFromContext.mockResolvedValue({
+    id: "T-1",
+    verify: [],
+    quality_review: qualityReview(),
+  });
   mocks.ensurePlanApprovedIfRequired.mockReturnValue();
   mocks.ensureVerificationSatisfiedIfRequired.mockReturnValue();
   mocks.ensureGitClean.mockResolvedValue();
@@ -347,6 +364,7 @@ describe("pr/integrate/internal/prepare", () => {
       id: "T-1",
       verify: ["echo ok"],
       title: "Branch-backed task",
+      quality_review: qualityReview(),
     });
     mocks.readAndValidatePrArtifacts.mockResolvedValue({
       verifyLogText: "[2026-04-07T20:00:00.000Z] ✅ verified_sha=deadbeef\n",
@@ -376,6 +394,7 @@ describe("pr/integrate/internal/prepare", () => {
       id: "T-1",
       verify: [],
       title: "Branch-backed task",
+      quality_review: qualityReview(),
     });
     mocks.parsePrMeta.mockReturnValue({
       branch: "task/T-1",

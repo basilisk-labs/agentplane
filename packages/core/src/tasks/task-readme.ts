@@ -203,6 +203,17 @@ function renderValueLines(key: string, value: unknown, indent: string): string[]
           ? (["state", "updated_at", "updated_by", "note"] as const)
           : key === "verification"
             ? (["state", "updated_at", "updated_by", "note"] as const)
+            : key === "quality_review"
+              ? ([
+                  "state",
+                  "updated_at",
+                  "updated_by",
+                  "note",
+                  "evaluated_sha",
+                  "blueprint_digest",
+                  "evidence_refs",
+                  "findings",
+                ] as const)
             : key === "runner"
               ? ([
                   "run_id",
@@ -265,6 +276,7 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
     "verify",
     "plan_approval",
     "verification",
+    "quality_review",
     "runner",
     "commit",
     "comments",

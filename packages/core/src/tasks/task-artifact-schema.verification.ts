@@ -9,6 +9,13 @@ export const VERIFICATION_STATE_VALUES = [
   "needs_rework",
   "blocked_external",
 ] as const;
+export const QUALITY_REVIEW_STATE_VALUES = [
+  "pending",
+  "pass",
+  "rework",
+  "blocked",
+  "human_review",
+] as const;
 
 export const TASK_PLAN_APPROVAL_SCHEMA = z
   .object({
@@ -29,6 +36,19 @@ export const TASK_VERIFICATION_SCHEMA = z
   })
   .passthrough()
   .transform((value) => ({ ...value, attempts: value.attempts ?? 0 }));
+
+export const TASK_QUALITY_REVIEW_SCHEMA = z
+  .object({
+    state: z.enum(QUALITY_REVIEW_STATE_VALUES),
+    updated_at: NULLABLE_ISO_UTC_TIMESTAMP,
+    updated_by: z.string().nullable(),
+    note: z.string().nullable(),
+    evaluated_sha: z.string().nullable(),
+    blueprint_digest: z.string().nullable(),
+    evidence_refs: z.array(z.string()).default([]),
+    findings: z.array(z.string()).default([]),
+  })
+  .passthrough();
 
 export function normalizeApprovalRecord(
   value: unknown,

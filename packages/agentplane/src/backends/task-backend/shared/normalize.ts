@@ -10,6 +10,7 @@ import type {
   TaskRunnerHistoryEntry,
   TaskRunnerOutcome,
   TaskRunnerTarget,
+  QualityReviewResult,
   VerificationResult,
 } from "./types.js";
 import { toStringSafe } from "./strings.js";
@@ -39,6 +40,43 @@ export function defaultPlanApproval(): PlanApproval {
 
 export function defaultVerificationResult(): VerificationResult {
   return { state: "pending", attempts: 0, updated_at: null, updated_by: null, note: null };
+}
+
+export function normalizeQualityReviewResult(value: unknown): QualityReviewResult | null {
+  if (!isRecord(value)) return null;
+  const state = typeof value.state === "string" ? value.state : "";
+  if (
+    state !== "pending" &&
+    state !== "pass" &&
+    state !== "rework" &&
+    state !== "blocked" &&
+    state !== "human_review"
+  ) {
+    return null;
+  }
+  const updatedAt =
+    value.updated_at === null || typeof value.updated_at === "string" ? value.updated_at : null;
+  const updatedBy =
+    value.updated_by === null || typeof value.updated_by === "string" ? value.updated_by : null;
+  const note = value.note === null || typeof value.note === "string" ? value.note : null;
+  const evaluatedSha =
+    value.evaluated_sha === null || typeof value.evaluated_sha === "string"
+      ? value.evaluated_sha
+      : null;
+  const blueprintDigest =
+    value.blueprint_digest === null || typeof value.blueprint_digest === "string"
+      ? value.blueprint_digest
+      : null;
+  return {
+    state,
+    updated_at: updatedAt,
+    updated_by: updatedBy,
+    note,
+    evaluated_sha: evaluatedSha,
+    blueprint_digest: blueprintDigest,
+    evidence_refs: normalizeStringArray(value.evidence_refs) ?? [],
+    findings: normalizeStringArray(value.findings) ?? [],
+  };
 }
 
 export function normalizeTaskOrigin(value: unknown): TaskOrigin | null {

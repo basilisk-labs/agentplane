@@ -48,6 +48,7 @@ const NODE_MODE_BY_KIND = {
   hosted_checks: "deterministic",
   publish_or_integrate: "deterministic",
   verify_record: "record",
+  quality_gate: "agentic",
   handoff: "record",
   finish: "deterministic",
 } as const satisfies Record<BlueprintNodeKind, BlueprintNode["mode"]>;
@@ -137,6 +138,11 @@ export function blueprint(opts: {
         nodeKind: "verify_record",
         allowed: ["evidence_requirement"],
         rejected: ["verification_bypass"],
+      },
+      {
+        nodeKind: "quality_gate",
+        allowed: ["evidence_requirement", "risk_hint"],
+        rejected: ["quality_bypass", "self_review"],
       },
     ],
   };

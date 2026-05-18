@@ -23,6 +23,7 @@ import {
   ensurePlanApprovedIfRequired,
   ensureVerificationSatisfiedIfRequired,
 } from "../../../task/shared.js";
+import { assertEvaluatorQualityReviewPassed } from "../../../task/quality-review-gate.js";
 
 import { readPrArtifact, resolvePrPaths } from "../../internal/pr-paths.js";
 import { ensurePrArtifactsSynced } from "../../internal/sync.js";
@@ -261,6 +262,11 @@ export async function prepareIntegrate(opts: {
   }
   ensurePlanApprovedIfRequired(task, loadedConfig);
   ensureVerificationSatisfiedIfRequired(task, loadedConfig);
+  assertEvaluatorQualityReviewPassed({
+    task,
+    expectedSha: branchHeadSha,
+    command: "integrate",
+  });
   const initialVerifyState = computeVerifyState({
     rawVerify: task.verify,
     metaLastVerifiedSha: freshness.effectiveVerifiedSha,
