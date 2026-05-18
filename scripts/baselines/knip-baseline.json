@@ -3,26 +3,11 @@
   "generated_by": "check-knip-baseline.mjs",
   "entries": [
     {
-      "file": "packages/agentplane/src/agents/agents-template.ts",
+      "file": "packages/agentplane/src/backends/task-backend/redmine/backend-sync/context.ts",
       "types": [
         {
-          "name": "AgentTemplate",
-          "line": 29,
-          "col": 13
-        },
-        {
-          "name": "MarkdownPromptTemplate",
-          "line": 35,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/backends/task-backend/cloud-pull.ts",
-      "types": [
-        {
-          "name": "CloudPullPlan",
-          "line": 5,
+          "name": "RedmineCachePort",
+          "line": 4,
           "col": 13
         }
       ]
@@ -58,26 +43,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/backends/task-backend/redmine/env.ts",
-      "types": [
-        {
-          "name": "RedmineEnvConfig",
-          "line": 3,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/backends/task-backend/redmine/state.ts",
-      "types": [
-        {
-          "name": "RedmineCanonicalState",
-          "line": 15,
-          "col": 13
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/backends/task-backend/shared.ts",
       "exports": [
         {
@@ -109,18 +74,6 @@
           "name": "TASK_INDEX_SCHEMA_VERSION",
           "line": 9,
           "col": 14
-        }
-      ],
-      "types": [
-        {
-          "name": "TaskIndexFile",
-          "line": 36,
-          "col": 13
-        },
-        {
-          "name": "TaskIndexFileV2",
-          "line": 29,
-          "col": 13
         }
       ]
     },
@@ -525,8 +478,58 @@
           "col": 13
         },
         {
+          "name": "BlueprintExecutionCheckProblemCode",
+          "line": 422,
+          "col": 13
+        },
+        {
+          "name": "BlueprintExecutionEventType",
+          "line": 336,
+          "col": 13
+        },
+        {
+          "name": "BlueprintExecutionEvidenceRef",
+          "line": 348,
+          "col": 13
+        },
+        {
+          "name": "BlueprintExecutionNodeStatus",
+          "line": 327,
+          "col": 13
+        },
+        {
+          "name": "BlueprintExecutionStateEvent",
+          "line": 401,
+          "col": 13
+        },
+        {
+          "name": "BlueprintExecutionStateNode",
+          "line": 393,
+          "col": 13
+        },
+        {
+          "name": "BlueprintNodeMode",
+          "line": 49,
+          "col": 13
+        },
+        {
           "name": "BlueprintState",
           "line": 101,
+          "col": 13
+        },
+        {
+          "name": "BuiltinBlueprintId",
+          "line": 3,
+          "col": 13
+        },
+        {
+          "name": "RecipeExtensionPoint",
+          "line": 154,
+          "col": 13
+        },
+        {
+          "name": "SkippedNode",
+          "line": 242,
           "col": 13
         }
       ]
@@ -562,21 +565,6 @@
       ],
       "types": [
         {
-          "name": "ProjectBlueprintCompatibilityReport",
-          "line": 71,
-          "col": 13
-        },
-        {
-          "name": "ProjectBlueprintDirectoryResult",
-          "line": 39,
-          "col": 13
-        },
-        {
-          "name": "ProjectBlueprintFileResult",
-          "line": 31,
-          "col": 13
-        },
-        {
           "name": "ProjectBlueprintProblem",
           "line": 25,
           "col": 13
@@ -590,21 +578,6 @@
           "name": "ProjectBlueprintTrustConfig",
           "line": 46,
           "col": 13
-        },
-        {
-          "name": "ProjectBlueprintTrustConfigResult",
-          "line": 54,
-          "col": 13
-        },
-        {
-          "name": "ScaffoldProjectBlueprintOptions",
-          "line": 92,
-          "col": 13
-        },
-        {
-          "name": "TrustedProjectBlueprintRegistryResult",
-          "line": 62,
-          "col": 13
         }
       ]
     },
@@ -615,13 +588,6 @@
           "name": "validateArchive",
           "line": 22,
           "col": 23
-        }
-      ],
-      "types": [
-        {
-          "name": "ArchiveEntryIssue",
-          "line": 17,
-          "col": 13
         }
       ]
     },
@@ -671,13 +637,6 @@
           "line": 42,
           "col": 23
         }
-      ],
-      "types": [
-        {
-          "name": "RunCliResult",
-          "line": 9,
-          "col": 13
-        }
       ]
     },
     {
@@ -694,28 +653,13 @@
       "file": "packages/agentplane/src/cli/output.ts",
       "types": [
         {
-          "name": "CliEmitter",
-          "line": 25,
-          "col": 13
-        },
-        {
           "name": "CliEmitterStream",
           "line": 9,
           "col": 13
         },
         {
-          "name": "CliOutputWriter",
-          "line": 5,
-          "col": 13
-        },
-        {
           "name": "CliReportOptions",
           "line": 18,
-          "col": 13
-        },
-        {
-          "name": "CommandResult",
-          "line": 43,
           "col": 13
         }
       ]
@@ -726,21 +670,6 @@
         {
           "name": "ReasonCodeCategory",
           "line": 1,
-          "col": 13
-        },
-        {
-          "name": "ReasonCodeMeta",
-          "line": 11,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/cli/run-cli/agent-mode.ts",
-      "types": [
-        {
-          "name": "AgentModeResolution",
-          "line": 7,
           "col": 13
         }
       ]
@@ -756,16 +685,6 @@
       ],
       "types": [
         {
-          "name": "CatalogMatch",
-          "line": 20,
-          "col": 13
-        },
-        {
-          "name": "CommandEntry",
-          "line": 11,
-          "col": 15
-        },
-        {
           "name": "RunDeps",
           "line": 11,
           "col": 29
@@ -776,33 +695,33 @@
       "file": "packages/agentplane/src/cli/run-cli/command-catalog/kernel.ts",
       "types": [
         {
-          "name": "CommandMeta",
-          "line": 34,
+          "name": "CommandNeeds",
+          "line": 21,
           "col": 13
         },
         {
-          "name": "CommandModule",
-          "line": 41,
+          "name": "CommandSurface",
+          "line": 22,
+          "col": 13
+        },
+        {
+          "name": "DispatchNeeds",
+          "line": 15,
           "col": 13
         }
       ]
     },
     {
-      "file": "packages/agentplane/src/cli/run-cli/commands/core/agent-profiles.ts",
+      "file": "packages/agentplane/src/cli/run-cli/commands/init/model.ts",
       "types": [
         {
-          "name": "AgentProfile",
-          "line": 11,
+          "name": "InitEffectKind",
+          "line": 60,
           "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/cli/run-cli/commands/init/execution.ts",
-      "types": [
+        },
         {
-          "name": "ResolvedInitPaths",
-          "line": 30,
+          "name": "InitEffectRisk",
+          "line": 73,
           "col": 13
         }
       ]
@@ -811,18 +730,8 @@
       "file": "packages/agentplane/src/cli/run-cli/globals.ts",
       "types": [
         {
-          "name": "CliOutputMode",
-          "line": 45,
-          "col": 13
-        },
-        {
           "name": "ParsedArgs",
           "line": 5,
-          "col": 13
-        },
-        {
-          "name": "ParsedGlobalArgsResult",
-          "line": 48,
           "col": 13
         }
       ]
@@ -834,21 +743,6 @@
           "name": "resolveAgentplaneHome",
           "line": 22,
           "col": 17
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/cli/spec/help.ts",
-      "types": [
-        {
-          "name": "HelpParsed",
-          "line": 13,
-          "col": 13
-        },
-        {
-          "name": "HelpRegistryView",
-          "line": 20,
-          "col": 13
         }
       ]
     },
@@ -875,18 +769,21 @@
           "line": 153,
           "col": 17
         }
-      ],
-      "types": [
-        {
-          "name": "CommandGraphMatch",
-          "line": 11,
-          "col": 13
-        }
       ]
     },
     {
       "file": "packages/agentplane/src/cli/spec/spec.ts",
       "types": [
+        {
+          "name": "BooleanOptionSpec",
+          "line": 24,
+          "col": 13
+        },
+        {
+          "name": "OptionBase",
+          "line": 16,
+          "col": 13
+        },
         {
           "name": "UsageErrorFactory",
           "line": 97,
@@ -898,8 +795,8 @@
       "file": "packages/agentplane/src/cli/update-check.ts",
       "types": [
         {
-          "name": "UpdateCheckFetchResult",
-          "line": 21,
+          "name": "UpdateCheckStatus",
+          "line": 9,
           "col": 13
         }
       ]
@@ -947,13 +844,6 @@
           "line": 210,
           "col": 17
         }
-      ],
-      "types": [
-        {
-          "name": "CodexPluginInstallResult",
-          "line": 42,
-          "col": 13
-        }
       ]
     },
     {
@@ -973,26 +863,6 @@
           "name": "buildTaskReadmeMigrationFindings",
           "line": 16,
           "col": 3
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/guard/impl/close-message.ts",
-      "types": [
-        {
-          "name": "CloseCommitMessage",
-          "line": 426,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/guard/impl/commit-diagnostics.ts",
-      "types": [
-        {
-          "name": "CommitFailurePhase",
-          "line": 14,
-          "col": 13
         }
       ]
     },
@@ -1017,16 +887,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/commands/guard/impl/env.ts",
-      "types": [
-        {
-          "name": "CanonicalGitIdentity",
-          "line": 3,
-          "col": 13
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/commands/guard/index.ts",
       "exports": [
         {
@@ -1039,11 +899,6 @@
     {
       "file": "packages/agentplane/src/commands/hooks/capabilities.ts",
       "types": [
-        {
-          "name": "HookCapability",
-          "line": 8,
-          "col": 13
-        },
         {
           "name": "HookCapabilityMode",
           "line": 4,
@@ -1062,16 +917,16 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/commands/insights/insights-issue-publish.ts",
+      "file": "packages/agentplane/src/commands/pr/flow-status.ts",
       "types": [
         {
-          "name": "CreatedFeedbackIssue",
-          "line": 37,
+          "name": "CloseTailStatus",
+          "line": 35,
           "col": 13
         },
         {
-          "name": "FeedbackIssuePayload",
-          "line": 19,
+          "name": "RemotePrStatus",
+          "line": 22,
           "col": 13
         }
       ]
@@ -1083,23 +938,6 @@
           "name": "resolveIntegrationQueueMutexContext",
           "line": 52,
           "col": 17
-        }
-      ],
-      "types": [
-        {
-          "name": "IntegrationQueueMutexContext",
-          "line": 34,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/pr/internal/freshness.ts",
-      "types": [
-        {
-          "name": "PrArtifactFreshness",
-          "line": 10,
-          "col": 13
         }
       ]
     },
@@ -1120,16 +958,6 @@
           "name": "isUnknownRevisionError",
           "line": 25,
           "col": 17
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/pr/internal/pr-paths.ts",
-      "types": [
-        {
-          "name": "ResolvedPrPaths",
-          "line": 12,
-          "col": 13
         }
       ]
     },
@@ -1171,13 +999,6 @@
           "line": 73,
           "col": 23
         }
-      ],
-      "types": [
-        {
-          "name": "ResolvedPrSyncBranch",
-          "line": 12,
-          "col": 13
-        }
       ]
     },
     {
@@ -1187,23 +1008,6 @@
           "name": "formatUnpublishedRemoteHeadReason",
           "line": 139,
           "col": 17
-        }
-      ],
-      "types": [
-        {
-          "name": "ObservedGithubPr",
-          "line": 23,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/pr/internal/sync.ts",
-      "types": [
-        {
-          "name": "PrRemoteMode",
-          "line": 40,
-          "col": 30
         }
       ]
     },
@@ -1254,16 +1058,6 @@
           "name": "resolveProjectRecipesCacheDir",
           "line": 68,
           "col": 17
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/recipes/impl/project-recipe-state.ts",
-      "types": [
-        {
-          "name": "ProjectRecipeInspection",
-          "line": 42,
-          "col": 13
         }
       ]
     },
@@ -1628,19 +1422,27 @@
       ]
     },
     {
+      "file": "packages/agentplane/src/commands/release/apply.types.ts",
+      "types": [
+        {
+          "name": "BumpKind",
+          "line": 3,
+          "col": 13
+        },
+        {
+          "name": "ReleaseApplyFlags",
+          "line": 5,
+          "col": 13
+        }
+      ]
+    },
+    {
       "file": "packages/agentplane/src/commands/scenario/info.command.ts",
       "exports": [
         {
           "name": "runScenarioInfo",
           "line": 32,
           "col": 14
-        }
-      ],
-      "types": [
-        {
-          "name": "ScenarioInfoParsed",
-          "line": 5,
-          "col": 13
         }
       ]
     },
@@ -1652,13 +1454,6 @@
           "line": 14,
           "col": 14
         }
-      ],
-      "types": [
-        {
-          "name": "ScenarioListParsed",
-          "line": 4,
-          "col": 13
-        }
       ]
     },
     {
@@ -1669,13 +1464,6 @@
           "line": 32,
           "col": 14
         }
-      ],
-      "types": [
-        {
-          "name": "ScenarioRunParsed",
-          "line": 5,
-          "col": 13
-        }
       ]
     },
     {
@@ -1685,26 +1473,6 @@
           "name": "ApprovalAction",
           "line": 6,
           "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/shared/diagnostics.ts",
-      "types": [
-        {
-          "name": "DiagnosticInfo",
-          "line": 13,
-          "col": 13
-        },
-        {
-          "name": "DiagnosticNextAction",
-          "line": 7,
-          "col": 13
-        },
-        {
-          "name": "DiagnosticRemediation",
-          "line": 5,
-          "col": 15
         }
       ]
     },
@@ -1734,26 +1502,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/commands/shared/merged-branch-cleanup.ts",
-      "types": [
-        {
-          "name": "MergedBranchCleanupResult",
-          "line": 6,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/shared/operator-pipeline.ts",
-      "types": [
-        {
-          "name": "OperatorPipelineSpec",
-          "line": 1,
-          "col": 13
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/commands/shared/pr-meta.ts",
       "types": [
         {
@@ -1765,6 +1513,26 @@
           "name": "PrBatchMeta",
           "line": 1,
           "col": 38
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/commands/shared/prompt-graph-diagnostics.ts",
+      "types": [
+        {
+          "name": "PromptGraphArtifactState",
+          "line": 16,
+          "col": 13
+        },
+        {
+          "name": "PromptGraphModuleSummary",
+          "line": 25,
+          "col": 13
+        },
+        {
+          "name": "PromptGraphSummary",
+          "line": 36,
+          "col": 13
         }
       ]
     },
@@ -1786,6 +1554,13 @@
           "line": 115,
           "col": 17
         }
+      ],
+      "types": [
+        {
+          "name": "CommandMemo",
+          "line": 25,
+          "col": 13
+        }
       ]
     },
     {
@@ -1795,23 +1570,6 @@
           "name": "readTaskPrBranch",
           "line": 111,
           "col": 23
-        }
-      ],
-      "types": [
-        {
-          "name": "TaskHandoffPaths",
-          "line": 20,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/shared/task-mutation.ts",
-      "types": [
-        {
-          "name": "TaskCollectionMutationPlan",
-          "line": 25,
-          "col": 13
         }
       ]
     },
@@ -1891,6 +1649,11 @@
       "file": "packages/agentplane/src/commands/shared/task-store/types.ts",
       "types": [
         {
+          "name": "TaskStoreDocPatch",
+          "line": 32,
+          "col": 13
+        },
+        {
           "name": "TaskStoreReader",
           "line": 99,
           "col": 13
@@ -1908,39 +1671,12 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/commands/task/blueprint-summary.ts",
-      "types": [
-        {
-          "name": "TaskBlueprintLifecycleSummary",
-          "line": 12,
-          "col": 13
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/commands/task/findings.ts",
       "exports": [
         {
           "name": "renderFindingsAddRegistryNote",
           "line": 153,
           "col": 17
-        }
-      ],
-      "types": [
-        {
-          "name": "StructuredFindingMutationPlan",
-          "line": 88,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/task/finish-findings.ts",
-      "types": [
-        {
-          "name": "FinishStructuredFindingInput",
-          "line": 6,
-          "col": 13
         }
       ]
     },
@@ -1967,11 +1703,6 @@
         {
           "name": "HostedMergedPr",
           "line": 21,
-          "col": 3
-        },
-        {
-          "name": "HostedMergeSyncResult",
-          "line": 22,
           "col": 3
         },
         {
@@ -2069,51 +1800,11 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/commands/task/migrate-doc.ts",
-      "types": [
-        {
-          "name": "TaskDocMigrationResult",
-          "line": 18,
-          "col": 13
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/commands/task/obsidian.ts",
       "types": [
         {
-          "name": "ObsidianCleanResult",
-          "line": 22,
-          "col": 13
-        },
-        {
           "name": "ObsidianProjectionFile",
           "line": 12,
-          "col": 13
-        },
-        {
-          "name": "ObsidianProjectionResult",
-          "line": 17,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/task/plan-shared.ts",
-      "types": [
-        {
-          "name": "PlanBackend",
-          "line": 19,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/task/run-output.ts",
-      "types": [
-        {
-          "name": "TaskRunOutput",
-          "line": 11,
           "col": 13
         }
       ]
@@ -2248,23 +1939,6 @@
           "line": 12,
           "col": 17
         }
-      ],
-      "types": [
-        {
-          "name": "DirectWorkLock",
-          "line": 4,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/task/shared/listing.ts",
-      "types": [
-        {
-          "name": "QueryTaskProjectionResult",
-          "line": 177,
-          "col": 13
-        }
       ]
     },
     {
@@ -2274,18 +1948,6 @@
           "name": "resolvePrimaryTagFromConfig",
           "line": 164,
           "col": 17
-        }
-      ],
-      "types": [
-        {
-          "name": "PrimaryTagResolution",
-          "line": 61,
-          "col": 13
-        },
-        {
-          "name": "TaskTagPolicy",
-          "line": 67,
-          "col": 13
         }
       ]
     },
@@ -2313,23 +1975,13 @@
       "file": "packages/agentplane/src/commands/task/shared/workflow-transition-service.ts",
       "types": [
         {
-          "name": "ExecuteTaskVerificationTransitionRequest",
-          "line": 65,
+          "name": "TaskStatusTransitionCommentCommitPolicy",
+          "line": 92,
           "col": 13
         },
         {
-          "name": "TaskVerificationTransitionExecution",
-          "line": 77,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/commands/upgrade/plan.ts",
-      "types": [
-        {
-          "name": "ManagedUpgradePlan",
-          "line": 18,
+          "name": "TaskStatusTransitionDependencyPolicy",
+          "line": 88,
           "col": 13
         }
       ]
@@ -2345,21 +1997,31 @@
       ]
     },
     {
+      "file": "packages/agentplane/src/commands/upgrade/types.ts",
+      "types": [
+        {
+          "name": "FrameworkManifestRemoval",
+          "line": 21,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/evaluators/catalog.ts",
+      "types": [
+        {
+          "name": "EvaluatorSource",
+          "line": 9,
+          "col": 13
+        }
+      ]
+    },
+    {
       "file": "packages/agentplane/src/harness/dynamic-tool-contract.ts",
       "types": [
         {
           "name": "DynamicToolInputSchema",
           "line": 1,
-          "col": 13
-        },
-        {
-          "name": "DynamicToolRegistry",
-          "line": 13,
-          "col": 13
-        },
-        {
-          "name": "DynamicToolResponse",
-          "line": 15,
           "col": 13
         },
         {
@@ -2370,96 +2032,11 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/harness/hooks-lifecycle.ts",
-      "types": [
-        {
-          "name": "HookName",
-          "line": 3,
-          "col": 13
-        },
-        {
-          "name": "HookPolicy",
-          "line": 5,
-          "col": 13
-        },
-        {
-          "name": "HookResult",
-          "line": 11,
-          "col": 13
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/harness/reconcile.ts",
       "types": [
         {
           "name": "ReconcileAction",
           "line": 24,
-          "col": 13
-        },
-        {
-          "name": "ReconcileConfig",
-          "line": 18,
-          "col": 13
-        },
-        {
-          "name": "ReconcileObservedIssue",
-          "line": 12,
-          "col": 13
-        },
-        {
-          "name": "ReconcileResult",
-          "line": 29,
-          "col": 13
-        },
-        {
-          "name": "ReconcileRunningEntry",
-          "line": 3,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/harness/retry-policy.ts",
-      "types": [
-        {
-          "name": "RetryDelayType",
-          "line": 10,
-          "col": 13
-        },
-        {
-          "name": "RetryEntry",
-          "line": 19,
-          "col": 13
-        },
-        {
-          "name": "RetryPolicy",
-          "line": 12,
-          "col": 13
-        },
-        {
-          "name": "RetryReasonCode",
-          "line": 1,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/harness/scheduler.ts",
-      "types": [
-        {
-          "name": "SchedulerEntry",
-          "line": 8,
-          "col": 13
-        },
-        {
-          "name": "SchedulerIssue",
-          "line": 1,
-          "col": 13
-        },
-        {
-          "name": "SchedulerLimits",
-          "line": 13,
           "col": 13
         }
       ]
@@ -2472,36 +2049,14 @@
           "line": 91,
           "col": 17
         }
-      ],
-      "types": [
-        {
-          "name": "OrchestrationEvent",
-          "line": 3,
-          "col": 13
-        },
-        {
-          "name": "TransitionResult",
-          "line": 11,
-          "col": 13
-        }
       ]
     },
     {
       "file": "packages/agentplane/src/harness/token-accounting.ts",
       "types": [
         {
-          "name": "TokenAccumulator",
-          "line": 12,
-          "col": 13
-        },
-        {
           "name": "TokenTotals",
           "line": 1,
-          "col": 13
-        },
-        {
-          "name": "TokenUsageEvent",
-          "line": 7,
           "col": 13
         }
       ]
@@ -2515,28 +2070,43 @@
           "col": 13
         },
         {
-          "name": "PolicyEngineContext",
-          "line": 31,
+          "name": "PolicyViolation",
+          "line": 22,
           "col": 13
         }
       ]
     },
     {
-      "file": "packages/agentplane/src/runner/adapters/execute-supervised.ts",
+      "file": "packages/agentplane/src/policy/model.ts",
       "types": [
         {
-          "name": "SupervisedRunnerBaseResultInput",
-          "line": 34,
+          "name": "PolicyProblemCode",
+          "line": 16,
           "col": 13
         }
       ]
     },
     {
-      "file": "packages/agentplane/src/runner/adapters/recipe-run-profile.ts",
+      "file": "packages/agentplane/src/policy/taxonomy.ts",
       "types": [
         {
-          "name": "RecipeRunProfileMetadata",
-          "line": 4,
+          "name": "KnownPolicyActionId",
+          "line": 1,
+          "col": 13
+        },
+        {
+          "name": "PolicyActionFamily",
+          "line": 39,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/ports/git-port.ts",
+      "types": [
+        {
+          "name": "GitHead",
+          "line": 1,
           "col": 13
         }
       ]
@@ -2560,11 +2130,6 @@
       "file": "packages/agentplane/src/runner/codex-approval-probe.ts",
       "types": [
         {
-          "name": "CodexApprovalProbeAssessment",
-          "line": 13,
-          "col": 13
-        },
-        {
           "name": "CodexApprovalProbeVerdict",
           "line": 3,
           "col": 13
@@ -2574,11 +2139,6 @@
     {
       "file": "packages/agentplane/src/runner/codex-smoke.ts",
       "types": [
-        {
-          "name": "CodexSmokeClassification",
-          "line": 5,
-          "col": 13
-        },
         {
           "name": "CodexSmokeOutcome",
           "line": 3,
@@ -2659,16 +2219,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/runner/context/task-context.ts",
-      "types": [
-        {
-          "name": "RunnerTaskContextEnvelope",
-          "line": 24,
-          "col": 13
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/runner/process-supervision/trace-session.ts",
       "types": [
         {
@@ -2719,31 +2269,81 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/runner/trace-artifacts.ts",
+      "file": "packages/agentplane/src/runner/types/capabilities.ts",
       "types": [
         {
-          "name": "FinalizedTraceArtifact",
-          "line": 13,
+          "name": "RunnerCapabilityDescriptor",
+          "line": 5,
           "col": 13
         }
       ]
     },
     {
-      "file": "packages/agentplane/src/runner/usecases/scenario-materialize-task.ts",
+      "file": "packages/agentplane/src/runner/types/context.ts",
       "types": [
         {
-          "name": "MaterializedRecipeScenarioTask",
-          "line": 27,
+          "name": "RunnerTimeoutPolicy",
+          "line": 94,
           "col": 13
         }
       ]
     },
     {
-      "file": "packages/agentplane/src/runner/usecases/task-run-inspect.ts",
+      "file": "packages/agentplane/src/runner/types/playbooks.ts",
       "types": [
         {
-          "name": "LoadedTaskRunnerInspection",
-          "line": 8,
+          "name": "RunnerExecutionBlueprintContract",
+          "line": 38,
+          "col": 13
+        },
+        {
+          "name": "RunnerFinalVerifierContract",
+          "line": 56,
+          "col": 13
+        },
+        {
+          "name": "RunnerOutcomeName",
+          "line": 31,
+          "col": 13
+        },
+        {
+          "name": "RunnerPlaybookStepId",
+          "line": 10,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/types/policy.ts",
+      "types": [
+        {
+          "name": "RunnerPolicyFieldDecision",
+          "line": 5,
+          "col": 13
+        },
+        {
+          "name": "RunnerPolicyFieldStatus",
+          "line": 3,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/types/prompts.ts",
+      "types": [
+        {
+          "name": "RunnerPromptSurface",
+          "line": 7,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runner/types/trace.ts",
+      "types": [
+        {
+          "name": "RunnerTraceKind",
+          "line": 5,
           "col": 13
         }
       ]
@@ -2806,6 +2406,16 @@
       ]
     },
     {
+      "file": "packages/agentplane/src/runtime/approvals/model.ts",
+      "types": [
+        {
+          "name": "ApprovalDecisionSource",
+          "line": 13,
+          "col": 13
+        }
+      ]
+    },
+    {
       "file": "packages/agentplane/src/runtime/behavior/index.ts",
       "types": [
         {
@@ -2851,6 +2461,31 @@
       ]
     },
     {
+      "file": "packages/agentplane/src/runtime/capabilities/model.ts",
+      "types": [
+        {
+          "name": "AgentplaneCapabilityAvailability",
+          "line": 12,
+          "col": 13
+        },
+        {
+          "name": "AgentplaneCapabilityKind",
+          "line": 1,
+          "col": 13
+        },
+        {
+          "name": "AgentplaneCapabilitySourceId",
+          "line": 14,
+          "col": 13
+        },
+        {
+          "name": "AgentplaneCapabilitySourceRef",
+          "line": 23,
+          "col": 13
+        }
+      ]
+    },
+    {
       "file": "packages/agentplane/src/runtime/execution-context.ts",
       "exports": [
         {
@@ -2873,16 +2508,6 @@
         {
           "name": "AgentplaneRepositoryContext",
           "line": 22,
-          "col": 13
-        },
-        {
-          "name": "ExecutionContext",
-          "line": 53,
-          "col": 13
-        },
-        {
-          "name": "ReadOnlyExecutionContext",
-          "line": 35,
           "col": 13
         }
       ]
@@ -2909,6 +2534,16 @@
           "name": "ExplainBehaviorInputCategory",
           "line": 4,
           "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/explain/model.ts",
+      "types": [
+        {
+          "name": "ExplainBehaviorInputCategory",
+          "line": 7,
+          "col": 13
         }
       ]
     },
@@ -2946,6 +2581,21 @@
           "name": "ResolvedProtectedPathGroups",
           "line": 9,
           "col": 3
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/harness/types.ts",
+      "types": [
+        {
+          "name": "HarnessSourceId",
+          "line": 8,
+          "col": 13
+        },
+        {
+          "name": "HarnessTraceField",
+          "line": 21,
+          "col": 13
         }
       ]
     },
@@ -3042,26 +2692,36 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/runtime/prompt-fragments/json.ts",
+      "file": "packages/agentplane/src/runtime/prompt-fragments/model.ts",
       "types": [
         {
-          "name": "NormalizePromptFragmentListOptions",
-          "line": 11,
-          "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/runtime/prompt-fragments/markdown.ts",
-      "types": [
-        {
-          "name": "ParsePromptMarkdownFragmentsOptions",
-          "line": 17,
+          "name": "PromptFragmentId",
+          "line": 3,
           "col": 13
         },
         {
-          "name": "RenderPromptMarkdownFragmentsOptions",
-          "line": 24,
+          "name": "PromptFragmentIdSource",
+          "line": 5,
+          "col": 13
+        },
+        {
+          "name": "PromptFragmentSource",
+          "line": 14,
+          "col": 13
+        },
+        {
+          "name": "PromptFragmentSourceKind",
+          "line": 7,
+          "col": 13
+        },
+        {
+          "name": "PromptMarkdownFragmentSegment",
+          "line": 45,
+          "col": 13
+        },
+        {
+          "name": "PromptMarkdownTextSegment",
+          "line": 40,
           "col": 13
         }
       ]
@@ -3098,6 +2758,23 @@
           "name": "normalizePromptModuleCompilerContext",
           "line": 169,
           "col": 17
+        }
+      ],
+      "types": [
+        {
+          "name": "PromptModuleDiagnosticSeverity",
+          "line": 46,
+          "col": 13
+        },
+        {
+          "name": "PromptModulePolicyGateway",
+          "line": 25,
+          "col": 13
+        },
+        {
+          "name": "PromptModuleWorkflowMode",
+          "line": 28,
+          "col": 13
         }
       ]
     },
@@ -3292,6 +2969,16 @@
       "file": "packages/agentplane/src/runtime/prompt-modules/model.ts",
       "types": [
         {
+          "name": "PromptModuleContractSchemaVersion",
+          "line": 5,
+          "col": 8
+        },
+        {
+          "name": "PromptModuleNamespace",
+          "line": 8,
+          "col": 13
+        },
+        {
           "name": "PromptModuleReference",
           "line": 154,
           "col": 13
@@ -3301,11 +2988,6 @@
     {
       "file": "packages/agentplane/src/runtime/prompt-modules/mutations-engine.ts",
       "types": [
-        {
-          "name": "ApplyPromptModuleMutationOptions",
-          "line": 34,
-          "col": 13
-        },
         {
           "name": "PromptModuleLoadMatcher",
           "line": 18,
@@ -3319,6 +3001,51 @@
         {
           "name": "PromptModuleSelectorMatcher",
           "line": 23,
+          "col": 13
+        }
+      ]
+    },
+    {
+      "file": "packages/agentplane/src/runtime/prompt-modules/mutations.ts",
+      "types": [
+        {
+          "name": "PromptModuleAddMutation",
+          "line": 95,
+          "col": 13
+        },
+        {
+          "name": "PromptModuleBindMutation",
+          "line": 118,
+          "col": 13
+        },
+        {
+          "name": "PromptModuleDisableMutation",
+          "line": 113,
+          "col": 13
+        },
+        {
+          "name": "PromptModuleMutationBase",
+          "line": 88,
+          "col": 13
+        },
+        {
+          "name": "PromptModuleMutationSource",
+          "line": 32,
+          "col": 13
+        },
+        {
+          "name": "PromptModulePatchMutation",
+          "line": 106,
+          "col": 13
+        },
+        {
+          "name": "PromptModuleReplaceMutation",
+          "line": 100,
+          "col": 13
+        },
+        {
+          "name": "PromptModuleValidatorMutation",
+          "line": 123,
           "col": 13
         }
       ]
@@ -3419,8 +3146,18 @@
       "file": "packages/agentplane/src/runtime/protocol/model.ts",
       "types": [
         {
+          "name": "AgentplaneProtocolBase",
+          "line": 18,
+          "col": 13
+        },
+        {
           "name": "AgentplaneProtocolResult",
           "line": 45,
+          "col": 13
+        },
+        {
+          "name": "AgentplaneProtocolSchemaVersion",
+          "line": 5,
           "col": 13
         },
         {
@@ -3441,6 +3178,76 @@
       ]
     },
     {
+      "file": "packages/agentplane/src/runtime/sgr/contracts.ts",
+      "types": [
+        {
+          "name": "BlueprintDecisionEvidenceRequirement",
+          "line": 84,
+          "col": 13
+        },
+        {
+          "name": "BlueprintDecisionStopRule",
+          "line": 90,
+          "col": 13
+        },
+        {
+          "name": "BlueprintRejectedRoute",
+          "line": 73,
+          "col": 13
+        },
+        {
+          "name": "BlueprintSelectedRoute",
+          "line": 78,
+          "col": 13
+        },
+        {
+          "name": "ContextExtractionItem",
+          "line": 30,
+          "col": 13
+        },
+        {
+          "name": "ContextExtractionItemKind",
+          "line": 28,
+          "col": 13
+        },
+        {
+          "name": "ContextExtractionItemStatus",
+          "line": 27,
+          "col": 13
+        },
+        {
+          "name": "EvaluatorFinding",
+          "line": 54,
+          "col": 13
+        },
+        {
+          "name": "EvaluatorFindingSeverity",
+          "line": 52,
+          "col": 13
+        },
+        {
+          "name": "EvaluatorVerdict",
+          "line": 51,
+          "col": 13
+        },
+        {
+          "name": "SgrContractSchemaVersion",
+          "line": 11,
+          "col": 13
+        },
+        {
+          "name": "SgrReasoningStep",
+          "line": 21,
+          "col": 13
+        },
+        {
+          "name": "SgrSourceRef",
+          "line": 13,
+          "col": 13
+        }
+      ]
+    },
+    {
       "file": "packages/agentplane/src/runtime/shared/repo-cli-version.ts",
       "exports": [
         {
@@ -3448,14 +3255,21 @@
           "line": 26,
           "col": 17
         }
+      ],
+      "types": [
+        {
+          "name": "RepoCliVersionState",
+          "line": 12,
+          "col": 13
+        }
       ]
     },
     {
       "file": "packages/agentplane/src/runtime/shared/runtime-source.ts",
       "types": [
         {
-          "name": "ResolveRuntimeSourceInfoOptions",
-          "line": 45,
+          "name": "ResolvedPackageInfo",
+          "line": 23,
           "col": 13
         }
       ]
@@ -3548,11 +3362,26 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/shared/builtin-assets.generated.ts",
+      "file": "packages/agentplane/src/runtime/task-intake/types.ts",
       "types": [
         {
-          "name": "BuiltinAgentplaneAsset",
-          "line": 4,
+          "name": "TaskIntakeInputKind",
+          "line": 22,
+          "col": 13
+        },
+        {
+          "name": "TaskIntakePrecedence",
+          "line": 36,
+          "col": 13
+        },
+        {
+          "name": "TaskIntakeSourceId",
+          "line": 10,
+          "col": 13
+        },
+        {
+          "name": "TaskIntakeSourceRef",
+          "line": 17,
           "col": 13
         }
       ]
@@ -3565,22 +3394,15 @@
           "line": 116,
           "col": 14
         }
-      ],
-      "types": [
-        {
-          "name": "JsonErrorGuidance",
-          "line": 146,
-          "col": 13
-        }
       ]
     },
     {
       "file": "packages/agentplane/src/shared/git-mutation.ts",
-      "types": [
+      "exports": [
         {
-          "name": "GitMutationMutexContext",
-          "line": 129,
-          "col": 13
+          "name": "GIT_MUTATION_KINDS",
+          "line": 10,
+          "col": 14
         }
       ]
     },
@@ -3595,31 +3417,36 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/shared/protected-paths.ts",
+      "file": "packages/agentplane/src/shared/sqlite-driver.ts",
       "types": [
         {
-          "name": "ProtectedPathOverride",
-          "line": 5,
+          "name": "SqliteStatement",
+          "line": 41,
           "col": 13
         }
       ]
     },
     {
-      "file": "packages/agentplane/src/shared/trace-events.ts",
+      "file": "packages/agentplane/src/workflow-lifecycle/contract.ts",
       "types": [
         {
-          "name": "TraceEvent",
+          "name": "LifecycleCommandStep",
+          "line": 15,
+          "col": 13
+        },
+        {
+          "name": "LifecycleCwd",
           "line": 4,
           "col": 13
-        }
-      ]
-    },
-    {
-      "file": "packages/agentplane/src/shared/workflow-artifacts.ts",
-      "types": [
+        },
         {
-          "name": "WorkflowArtifactApprovals",
-          "line": 13,
+          "name": "LifecycleRole",
+          "line": 3,
+          "col": 13
+        },
+        {
+          "name": "LifecycleSideEffect",
+          "line": 5,
           "col": 13
         }
       ]
@@ -3635,21 +3462,36 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/workflow-runtime/observability.ts",
-      "types": [
-        {
-          "name": "WorkflowEvent",
-          "line": 13,
-          "col": 13
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/workflow-runtime/types.ts",
       "types": [
         {
+          "name": "WorkflowApprovals",
+          "line": 3,
+          "col": 13
+        },
+        {
+          "name": "WorkflowMode",
+          "line": 1,
+          "col": 13
+        },
+        {
+          "name": "WorkflowRetryPolicy",
+          "line": 9,
+          "col": 13
+        },
+        {
           "name": "WorkflowSectionName",
           "line": 31,
+          "col": 13
+        },
+        {
+          "name": "WorkflowSeverity",
+          "line": 44,
+          "col": 13
+        },
+        {
+          "name": "WorkflowTimeouts",
+          "line": 15,
           "col": 13
         }
       ]
@@ -3739,19 +3581,27 @@
       ]
     },
     {
+      "file": "packages/core/src/tasks/task-artifact-schema.handoff.ts",
+      "exports": [
+        {
+          "name": "TASK_HANDOFF_ROUTE_ZOD_SCHEMA",
+          "line": 41,
+          "col": 14
+        },
+        {
+          "name": "TASK_HANDOFF_RUNNER_STATE_ZOD_SCHEMA",
+          "line": 54,
+          "col": 14
+        }
+      ]
+    },
+    {
       "file": "packages/core/src/tasks/task-artifact-schema.shared.ts",
       "exports": [
         {
           "name": "formatSchemaErrors",
           "line": 44,
           "col": 17
-        }
-      ],
-      "types": [
-        {
-          "name": "JsonSchemaDocument",
-          "line": 7,
-          "col": 13
         }
       ]
     },
@@ -3803,10 +3653,10 @@
   ],
   "counts": {
     "files": 1,
-    "exports": 204,
-    "types": 367,
+    "exports": 207,
+    "types": 356,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 572
+    "total": 564
   }
 }
