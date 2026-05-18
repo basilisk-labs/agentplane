@@ -1,5 +1,4 @@
 import { z, type ZodIssue } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
 
 import { formatZodIssues } from "../schemas/zod-error-format.js";
 import { isRecord } from "../types/guards.js";
@@ -142,7 +141,7 @@ const RUNNER_CUSTOM_ENFORCEMENT_SCHEMA = z
 const RUNNER_CUSTOM_SCHEMA = z
   .object({
     command: z.array(nonEmptyString()).min(1),
-    env: z.record(z.string()).default({}),
+    env: z.record(z.string(), z.string()).default({}),
     enforcement: RUNNER_CUSTOM_ENFORCEMENT_SCHEMA.optional(),
   })
   .passthrough();
@@ -235,6 +234,7 @@ export const AgentplaneConfigSchema = z
           require_plan: true,
           require_network: true,
           require_verify: true,
+          require_force: false,
         },
       }),
     recipes: z
@@ -554,9 +554,12 @@ export function defaultAgentplaneConfig(): AgentplaneConfig {
 }
 
 function buildAgentplaneConfigJsonSchema(): Record<string, unknown> {
-  const schema = zodToJsonSchema(AgentplaneConfigSchema, {
-    $refStrategy: "none",
-    target: "jsonSchema7",
+  const { $schema: _schema, ...schema } = z.toJSONSchema(AgentplaneConfigSchema, {
+    target: "draft-07",
+    unrepresentable: "any",
+    io: "input",
+    reused: "inline",
+    cycles: "throw",
   }) as Record<string, unknown>;
 
   return {

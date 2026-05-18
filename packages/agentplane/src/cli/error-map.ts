@@ -1,4 +1,4 @@
-import { fromZodError, isZodErrorLike, type ZodError } from "zod-validation-error/v3";
+import { fromZodError, isZodErrorLike, type ZodError } from "zod-validation-error/v4";
 
 import { readDiagnosticContext } from "../commands/shared/diagnostics.js";
 import {

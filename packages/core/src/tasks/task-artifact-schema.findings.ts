@@ -5,7 +5,7 @@ import { ISO_UTC_TIMESTAMP, NON_EMPTY_STRING } from "./task-artifact-schema.shar
 const TASK_EVENT_TYPE_VALUES = ["status", "comment", "verify"] as const;
 
 export const DOC_VERSION_SCHEMA = z.literal(3);
-export const TASK_SECTIONS_SCHEMA = z.record(z.string());
+export const TASK_SECTIONS_SCHEMA = z.record(z.string(), z.string());
 
 export const TASK_COMMENT_SCHEMA = z
   .object({
