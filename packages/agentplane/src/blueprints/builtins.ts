@@ -391,7 +391,7 @@ export const BUILTIN_BLUEPRINTS = [
     id: "context.maximum_assimilation",
     title: "Maximum context assimilation",
     description:
-      "Assimilate selected non-private sources into a line-addressed wiki, canonical glossary, entity graph, and coverage report so maintained context preserves all significant content without relying on raw files for semantic recall.",
+      "Assimilate selected non-private sources into a self-contained wiki, canonical glossary, entity graph, source registry, and coverage report so maintained context preserves significant meaning without relying on raw files for semantic recall.",
     taskKinds: ["context"],
     workflowModes: ["direct", "branch_pr"],
     allowedCommands: [
@@ -422,13 +422,13 @@ export const BUILTIN_BLUEPRINTS = [
         "context_max.coverage",
         "artifact",
         "artifact_write",
-        "Coverage map proving every significant non-private source span was assimilated, intentionally omitted, or redacted.",
+        "Coverage map proving every significant non-private source span was semantically assimilated, intentionally omitted, duplicated, or redacted.",
       ),
       evidence(
         "context_max.addressing",
         "context_manifest",
         "context_resolve",
-        "Original hashes plus line-addressed source refs for extracted claims, entities, relations, and articles.",
+        "Source registry with original hashes, availability state, and line-addressed provenance refs for extracted claims, entities, relations, and articles.",
       ),
       evidence(
         "context_max.graph_first",
@@ -502,7 +502,7 @@ export const BUILTIN_BLUEPRINTS = [
         id: "context_max_raw_deletion_resilience_unproven",
         severity: "approval_required",
         reason:
-          "Finish requires explicit evidence that deleting raw sources would not remove significant non-private semantic content from wiki/derived artifacts.",
+          "Finish requires explicit evidence that deleting raw sources would not remove significant non-private meaning from wiki/derived artifacts; line refs may become non-dereferenceable audit pointers.",
       },
       {
         id: "context_max_private_leakage",

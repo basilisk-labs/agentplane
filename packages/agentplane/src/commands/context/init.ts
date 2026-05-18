@@ -377,10 +377,12 @@ function buildContextReadme(profile: ContextInitParsed["profile"]): string {
       ? `
 Maximum-assimilation mode adds a stricter wiki maintenance contract:
 
-- Preserve 100% of significant non-private source content in wiki, facts, graph, and provenance
-  artifacts so the maintained context remains useful even if \`context/raw/**\` is later removed.
-- Keep original source identity through \`sha256:\` hashes and line-addressed source refs; do not
-  use raw file paths as the only semantic address.
+- Preserve all significant non-private source meaning in wiki, facts, graph, glossary, and coverage
+  artifacts so maintained context remains useful even if \`context/raw/**\` is later removed.
+- Keep original source identity in a source registry with \`source_id\`, original path,
+  \`sha256:\` hash, content type, line count, ingest time, and availability state.
+- Use line-addressed source refs as provenance pointers, not as retained content. If raw files are
+  missing, refs may be non-dereferenceable while wiki/fact/graph artifacts stay self-contained.
 - Extract entities, aliases, relations, decisions, requirements, risks, workflows, and conflicts
   before writing narrative articles.
 - Maintain a canonical glossary as a navigation/alias layer over wiki pages and graph entities, then
@@ -418,9 +420,10 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
 
 - Use the \`context.maximum_assimilation\` blueprint for new context assimilation tasks.
 - Goal: after assimilation, the maintained wiki and derived artifacts preserve all significant
-  non-private source content without relying on raw files for semantic recall.
+  non-private source meaning without relying on raw files for semantic recall.
 - Keep original hashes in the source-set lock and cite source content with concrete line refs such as
-  \`context/raw/research/note.md#lines=12-24\`.
+  \`context/raw/research/note.md#lines=12-24\`; treat those refs as audit provenance, not as the
+  stored meaning.
 - First pass: build or update canonical entities, glossary aliases, relation candidates, conflict
   candidates, and coverage notes.
 - Second pass: synthesize granular wiki articles from that graph/glossary layer; use canonical
@@ -429,6 +432,9 @@ function buildWikiAgentsMarkdown(profile: ContextInitParsed["profile"]): string 
   and modules; use stable headings for smaller objects inside broader pages.
 - Record extraction coverage: covered source spans, intentionally omitted boilerplate, private or
   redacted spans, unresolved conflicts, and open questions.
+- If a raw source is missing later, keep its source registry entry with availability state
+  \`missing\`; the wiki, facts, graph, glossary, and coverage artifacts must still carry the
+  assimilated meaning.
 - Do not copy secrets or private raw material into public wiki pages. Redact or keep private
   references outside publication surfaces.
 `

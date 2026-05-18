@@ -83,12 +83,13 @@ function buildIngestMetadata(
       ? [
           "",
           "Maximum-assimilation contract:",
-          "- Preserve all significant non-private source content in wiki and derived artifacts so semantic recall does not depend on retaining raw files.",
-          "- Keep original source hashes in the source-set lock and use concrete line-addressed source refs for extracted claims, entities, relations, glossary aliases, and article sections.",
+          "- Preserve all significant non-private source meaning in wiki and derived artifacts so semantic recall does not depend on retaining raw files.",
+          "- Keep original source identity in a source registry or source-set lock with path, `sha256:`, content type, line count, ingest time, and availability state.",
+          "- Use concrete line-addressed source refs for extracted claims, entities, relations, glossary aliases, and article sections as audit provenance, not as retained content.",
           "- Run extraction in two passes: first entities/aliases/relations/conflicts/open questions/coverage, then narrative wiki articles based on that structured layer.",
           "- Maintain a canonical glossary over wiki pages and graph entities; use canonical terms in prose and preserve source-local terms as aliases or evidence details.",
           "- Record a coverage map: covered source spans, intentionally omitted boilerplate, redacted private spans, unresolved identity questions, and remaining conflicts.",
-          "- Treat raw-deletion resilience as a finish gate: if `context/raw/**` were removed, the maintained wiki and derived artifacts should still preserve the significant non-private content.",
+          "- Treat raw-deletion resilience as a finish gate: if `context/raw/**` were removed, the maintained wiki and derived artifacts should still preserve the significant non-private meaning. Raw refs may become non-dereferenceable.",
         ]
       : []),
   ].join("\n");
@@ -187,12 +188,12 @@ function buildContextAssimilationPromptModule(workspaceMode?: ContextWorkspaceMo
             "",
             "Maximum-assimilation workflow:",
             "- Intake: classify each selected source span as significant content, boilerplate, private/redacted, duplicate, or unresolved.",
-            "- Source identity: preserve each source's `sha256:` and cite extracted content with line refs such as `context/raw/research/note.md#lines=12-24`.",
+            "- Source identity: preserve each source's `sha256:`, path, content type, line count, ingest time, and availability state. Cite extracted content with line refs such as `context/raw/research/note.md#lines=12-24`.",
             "- Extraction pass: identify canonical entities, source-local aliases, relations, decisions, requirements, risks, workflows, definitions, conflicts, and open questions before article writing.",
             "- Glossary pass: update the canonical glossary as a navigation index over wiki pages and graph entities; normalize prose to canonical terms where confidence is high.",
-            "- Synthesis pass: create granular wiki pages and stable headings from the extracted graph/glossary layer. The wiki should preserve all significant non-private content even without raw files.",
+            "- Synthesis pass: create granular wiki pages and stable headings from the extracted graph/glossary layer. The wiki should preserve all significant non-private meaning even without raw files.",
             "- Coverage pass: write or update a coverage report naming covered spans, omitted boilerplate, redacted/private spans, conflicts, unresolved identities, and any approval-required gaps.",
-            "- Critical check: do not flatten contradictions, do not silently invent canonical terms, do not copy secrets/private raw content into public wiki/task/ACR surfaces, and do not claim full coverage without line-addressed evidence.",
+            "- Critical check: do not flatten contradictions, do not silently invent canonical terms, do not copy secrets/private raw content into public wiki/task/ACR surfaces, and do not claim full semantic coverage without self-contained wiki/fact/graph content plus line-addressed provenance.",
           ]
         : []),
       "",

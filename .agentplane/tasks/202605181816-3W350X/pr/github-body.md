@@ -16,12 +16,7 @@ Define an extended context assimilation mode for context init/wiki workflows tha
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Verified: maximum context assimilation profile and blueprint behavior covered by focused tests,
-typecheck, lint, generated CLI docs, routing, and doctor.
-```
+- Note: Refined maximum-assimilation model around self-contained wiki semantics with optional raw provenance.
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -117,8 +117,14 @@ describe("context release readiness guards", () => {
     expect(manifest).toContain("maintenance_mode: maximum_assimilation");
     expect(manifest).toContain("line_refs_required: true");
     expect(readme).toContain("Maximum-assimilation mode adds a stricter wiki maintenance contract");
+    expect(readme).toContain("line-addressed source refs as provenance pointers");
+    expect(readme).toContain("wiki/fact/graph artifacts stay self-contained");
     expect(wikiAgents).toContain("Use the `context.maximum_assimilation` blueprint");
     expect(wikiAgents).toContain("canonical entities, glossary aliases, relation candidates");
+    expect(wikiAgents).toContain("treat those refs as audit provenance");
+    expect(wikiAgents).toContain("stored meaning");
+    expect(wikiAgents).toContain("availability state");
+    expect(wikiAgents).toContain("`missing`");
   });
 
   it("creates starter wiki structure on first context ingest with selected sources", async () => {
@@ -558,6 +564,8 @@ describe("context release readiness guards", () => {
 
     expect(createdArgs.parsed?.blueprintRequest).toBe("context.maximum_assimilation");
     expect(createdArgs.parsed?.description).toContain("Maximum-assimilation contract:");
+    expect(createdArgs.parsed?.description).toContain("significant non-private source meaning");
+    expect(createdArgs.parsed?.description).toContain("audit provenance, not as retained content");
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.mode).toBe(
       "maximum_assimilation",
     );
@@ -579,6 +587,12 @@ describe("context release readiness guards", () => {
     expect(
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
     ).toContain("Maximum-assimilation workflow:");
+    expect(
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+    ).toContain("availability state");
+    expect(
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+    ).toContain("self-contained wiki/fact/graph content plus line-addressed provenance");
   });
 
   it("creates and explains wiki pages with AgentPlane context frontmatter", async () => {

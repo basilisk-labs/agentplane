@@ -13,7 +13,7 @@ Created: 2026-05-18T18:18:01.868Z
 ## Verification
 
 - State: ok
-- Note: Verified: maximum context assimilation profile and blueprint behavior covered by focused tests, typecheck, lint, generated CLI docs, routing, and doctor.
+- Note: Refined maximum-assimilation model around self-contained wiki semantics with optional raw provenance.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
