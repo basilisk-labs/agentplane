@@ -38,6 +38,9 @@ describe("config", () => {
     expect(cfg.feedback.github_issues).toMatchObject({
       enabled: false,
       repository: "basilisk-labs/agentplane",
+      transport: "github",
+      cloud_endpoint: "https://agentplane.cloud/api/feedback/issues",
+      allow_anonymous_cloud: false,
       prompt_on_internal_error: true,
       include_insights_report: true,
       dedupe: true,

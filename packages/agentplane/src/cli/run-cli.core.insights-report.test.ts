@@ -1,4 +1,4 @@
-import { describe } from "vitest";
+import { describe, vi } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
 
 import {
@@ -216,12 +216,14 @@ describe("runCli insights report", () => {
       expect(code).toBe(0);
       const payload = JSON.parse(io.stdout) as {
         dry_run?: boolean;
+        transport?: string;
         repository?: string;
         title?: string;
         body?: string;
         labels?: string[];
       };
       expect(payload.dry_run).toBe(true);
+      expect(payload.transport).toBe("github");
       expect(payload.repository).toBe("basilisk-labs/agentplane");
       expect(payload.title).toContain("E_INTERNAL");
       expect(payload.labels).toEqual(["agentplane-feedback", "bug"]);
@@ -283,6 +285,87 @@ describe("runCli insights report", () => {
       expect(io.stderr).toContain("Feedback GitHub issues are disabled");
       expect(io.stderr).toContain("feedback.github_issues.enabled true");
       expect(io.stderr).toContain("reason_code: feedback_github_issues_disabled");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("creates anonymous cloud feedback intake only after explicit opt-in", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.feedback.github_issues.enabled = true;
+    config.feedback.github_issues.transport = "cloud";
+    config.feedback.github_issues.allow_anonymous_cloud = true;
+    config.feedback.github_issues.cloud_endpoint = "https://cloud.example/api/feedback/issues";
+    await writeConfig(root, config);
+
+    const originalFetch = globalThis.fetch;
+    const fetchMock = vi.fn(() => Response.json({ intake_id: "fb_123", status: "accepted" }));
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "insights",
+        "issue",
+        "--error-code",
+        "E_INTERNAL",
+        "--agent-context",
+        "Intent: test anonymous cloud intake. Sensitive data omitted: task prose, env, remotes, and raw output.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("transport:");
+      expect(io.stdout).toContain("cloud");
+      expect(io.stdout).toContain("intake:fb_123");
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://cloud.example/api/feedback/issues",
+        expect.objectContaining({
+          method: "POST",
+          headers: { "content-type": "application/json" },
+        }),
+      );
+      const request = fetchMock.mock.calls[0]?.[1] as { body?: string } | undefined;
+      const body = JSON.parse(String(request?.body ?? "{}")) as {
+        schema?: string;
+        anonymous?: boolean;
+        failure?: { error_code?: string | null; dedupe_signature?: string };
+        privacy?: { excludes?: string[] };
+      };
+      expect(body.schema).toBe("agentplane.feedback.issue.v1");
+      expect(body.anonymous).toBe(true);
+      expect(body.failure?.error_code).toBe("E_INTERNAL");
+      expect(body.failure?.dedupe_signature).toMatch(/^sha256:/);
+      expect(body.privacy?.excludes).toContain("environment variables");
+    } finally {
+      io.restore();
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it("blocks anonymous cloud feedback intake when fallback is not enabled", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.feedback.github_issues.enabled = true;
+    config.feedback.github_issues.transport = "cloud";
+    config.feedback.github_issues.allow_anonymous_cloud = false;
+    await writeConfig(root, config);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "insights",
+        "issue",
+        "--error-code",
+        "E_INTERNAL",
+        "--agent-context",
+        "Intent: test disabled anonymous cloud intake. Sensitive data omitted.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Anonymous cloud feedback issue intake is disabled");
+      expect(io.stderr).toContain("feedback_anonymous_cloud_disabled");
     } finally {
       io.restore();
     }

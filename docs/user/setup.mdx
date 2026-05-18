@@ -56,9 +56,9 @@ AgentPlane-related files.
 
 ## Feedback issue prompts
 
-New projects enable AgentPlane GitHub issue prompts for internal AgentPlane errors by default. This
-is intentional: feedback issues help the framework improve faster, and the generated payload stays
-privacy-bounded.
+New projects keep AgentPlane feedback issue publishing disabled until explicit opt-in. When enabled,
+AgentPlane can prepare a privacy-bounded GitHub issue for internal AgentPlane errors. Publishing uses
+the user's GitHub session by default; anonymous AgentPlane Cloud intake is a separate opt-in fallback.
 
 Preview the issue payload:
 
@@ -70,6 +70,12 @@ To initialize with the mode disabled:
 
 ```bash
 agentplane init --feedback-github-issues false
+```
+
+To initialize with GitHub issue prompts and anonymous cloud fallback enabled:
+
+```bash
+agentplane init --feedback-github-issues true --feedback-anonymous-cloud true
 ```
 
 To disable it later:

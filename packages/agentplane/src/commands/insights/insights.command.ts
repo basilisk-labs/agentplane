@@ -19,7 +19,6 @@ import { isRecord } from "../../shared/guards.js";
 import { wrapCommand } from "../../cli/run-cli/commands/wrap-command.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
-import { runGhApiJson } from "../pr/internal/gh-api.js";
 
 import {
   insightsSpec,
@@ -33,6 +32,12 @@ import {
   type FailureContextInput,
   type InsightsFailure,
 } from "./insights-issue-context.js";
+import {
+  createFeedbackIssue,
+  feedbackCloudEndpoint,
+  normalizeIssueTransport,
+  type FeedbackGithubIssuesSettings,
+} from "./insights-issue-publish.js";
 
 export { insightsIssueSpec, insightsReportSpec, insightsSpec } from "./insights.spec.js";
 
@@ -41,7 +46,7 @@ const output = createCliEmitter();
 
 type CountMap = Record<string, number>;
 
-type InsightsReport = {
+export type InsightsReport = {
   schema: "agentplane.insights.report.v1";
   generated_at: string;
   privacy: {
@@ -338,18 +343,6 @@ export async function buildInsightsReport(opts: {
   };
 }
 
-type GithubIssueResponse = {
-  number: number;
-  html_url?: string;
-};
-
-type FeedbackGithubIssuesSettings = {
-  enabled: boolean;
-  repository: string;
-  include_insights_report: boolean;
-  labels: string[];
-};
-
 function trimOptional(value: string | undefined): string | null {
   const trimmed = value?.trim() ?? "";
   return trimmed || null;
@@ -547,27 +540,47 @@ export function makeRunInsightsIssueHandler(deps: RunDeps): CommandHandler<Insig
         body,
         labels: settings.labels,
       };
+      const transport = parsed.transport ?? normalizeIssueTransport(settings.transport);
+      const endpoint = feedbackCloudEndpoint(settings);
 
       if (parsed.dryRun) {
-        output.json({ dry_run: true, ...payload });
+        output.json({
+          dry_run: true,
+          transport,
+          cloud_endpoint: transport === "cloud" || transport === "auto" ? endpoint : undefined,
+          anonymous_cloud_allowed: settings.allow_anonymous_cloud === true,
+          ...payload,
+        });
         return 0;
       }
 
-      const issue = await runGhApiJson<GithubIssueResponse>(resolved.gitRoot, [
-        `repos/${settings.repository}/issues`,
-        "-X",
-        "POST",
-        "-f",
-        `title=${title}`,
-        "-f",
-        `body=${body}`,
-        ...settings.labels.flatMap((label) => ["-f", `labels[]=${label}`]),
-      ]);
+      if (transport === "cloud" && settings.allow_anonymous_cloud !== true) {
+        throw new CliError({
+          exitCode: exitCodeForError("E_USAGE"),
+          code: "E_USAGE",
+          message:
+            "Anonymous cloud feedback issue intake is disabled. Enable with `agentplane config set feedback.github_issues.allow_anonymous_cloud true`, then retry.",
+          context: {
+            command: "insights issue",
+            reason_code: "feedback_anonymous_cloud_disabled",
+          },
+        });
+      }
+
+      const created = await createFeedbackIssue({
+        root: resolved.gitRoot,
+        settings,
+        payload,
+        report,
+        transport,
+        endpoint,
+      });
       output.report(
         [
+          { label: "transport", value: created.transport },
           { label: "repository", value: settings.repository },
-          { label: "issue", value: `#${issue.number}` },
-          { label: "url", value: issue.html_url ?? "unknown" },
+          { label: "issue", value: created.issue },
+          { label: "url", value: created.url },
         ],
         { header: infoMessage("feedback issue created") },
       );

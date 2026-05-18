@@ -25,6 +25,7 @@ export async function promptAdvancedSettingsStep(opts: {
     | "requireNetworkApproval"
     | "requireVerifyApproval"
     | "feedbackGithubIssues"
+    | "feedbackAnonymousCloud"
     | "executionProfile"
     | "strictUnsafeConfirm"
   >;
@@ -37,6 +38,8 @@ export async function promptAdvancedSettingsStep(opts: {
   const requireVerifyApproval =
     opts.flags.requireVerifyApproval ?? preset.defaultRequireVerifyApproval;
   let feedbackGithubIssues = opts.flags.feedbackGithubIssues ?? preset.defaultFeedbackGithubIssues;
+  let feedbackAnonymousCloud =
+    opts.flags.feedbackAnonymousCloud ?? preset.defaultFeedbackAnonymousCloud;
   let requireNetworkApproval =
     opts.flags.requireNetworkApproval ?? preset.defaultRequireNetworkApproval;
   let executionProfile = opts.flags.executionProfile ?? preset.defaultExecutionProfile;
@@ -73,6 +76,18 @@ export async function promptAdvancedSettingsStep(opts: {
       cancelMessage: "Feedback issue opt-in selection cancelled.",
     });
   }
+  if (
+    opts.setupProfileMode === "full" &&
+    feedbackGithubIssues &&
+    opts.flags.feedbackAnonymousCloud === undefined
+  ) {
+    feedbackAnonymousCloud = await confirmStepValue(opts.clack, {
+      message:
+        "Allow anonymous AgentPlane Cloud fallback when GitHub issue publishing is unavailable?",
+      initialValue: feedbackAnonymousCloud,
+      cancelMessage: "Feedback cloud fallback selection cancelled.",
+    });
+  }
 
   return {
     hooks,
@@ -80,6 +95,7 @@ export async function promptAdvancedSettingsStep(opts: {
     requireNetworkApproval,
     requireVerifyApproval,
     feedbackGithubIssues,
+    feedbackAnonymousCloud,
     executionProfile,
     strictUnsafeConfirm,
   };

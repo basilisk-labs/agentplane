@@ -300,6 +300,7 @@ export function buildInitPlan(opts: {
       requireNetworkApproval: opts.answers.requireNetworkApproval,
       requireVerifyApproval: opts.answers.requireVerifyApproval,
       feedbackGithubIssues: opts.answers.feedbackGithubIssues,
+      feedbackAnonymousCloud: opts.answers.feedbackAnonymousCloud,
       executionProfile: opts.answers.executionProfile,
       strictUnsafeConfirm: opts.answers.strictUnsafeConfirm,
       recipes: [...opts.answers.recipes],
@@ -334,6 +335,7 @@ export async function maybeConfirmInteractiveApply(opts: {
     { label: "Backend", value: opts.answers.backend },
     { label: "Hooks", value: opts.answers.hooks },
     { label: "Feedback issues", value: opts.answers.feedbackGithubIssues },
+    { label: "Anonymous feedback fallback", value: opts.answers.feedbackAnonymousCloud },
     { label: "IDE", value: opts.answers.ide },
     { label: "Recipes", value: opts.answers.recipes.join(", ") || "none" },
     { label: "Blueprints", value: opts.answers.blueprints.join(", ") || "none" },
@@ -423,6 +425,7 @@ export async function applyInitPlan(opts: {
           requireNetworkApproval: opts.answers.requireNetworkApproval,
           requireVerifyApproval: opts.answers.requireVerifyApproval,
           feedbackGithubIssues: opts.answers.feedbackGithubIssues,
+          feedbackAnonymousCloud: opts.answers.feedbackAnonymousCloud,
           execution: buildExecutionProfile(opts.answers.executionProfile, {
             strictUnsafeConfirm: opts.answers.strictUnsafeConfirm,
           }),

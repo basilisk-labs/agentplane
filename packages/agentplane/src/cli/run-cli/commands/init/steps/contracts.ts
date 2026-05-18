@@ -56,6 +56,7 @@ export type AdvancedSettingsStepAnswers = {
   requireNetworkApproval: boolean;
   requireVerifyApproval: boolean;
   feedbackGithubIssues: boolean;
+  feedbackAnonymousCloud: boolean;
   executionProfile: ExecutionProfile;
   strictUnsafeConfirm: boolean;
 };

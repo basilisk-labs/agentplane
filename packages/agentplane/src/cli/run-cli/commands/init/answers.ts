@@ -40,6 +40,7 @@ export type InitAnswers = {
   requireNetworkApproval: boolean;
   requireVerifyApproval: boolean;
   feedbackGithubIssues: boolean;
+  feedbackAnonymousCloud: boolean;
   executionProfile: ExecutionProfile;
   strictUnsafeConfirm: boolean;
   blueprints: string[];
@@ -70,6 +71,7 @@ export function buildNonInteractiveAnswers(flags: InitParsed): InitAnswers {
     requireNetworkApproval: flags.requireNetworkApproval ?? preset.defaultRequireNetworkApproval,
     requireVerifyApproval: flags.requireVerifyApproval ?? preset.defaultRequireVerifyApproval,
     feedbackGithubIssues: flags.feedbackGithubIssues ?? preset.defaultFeedbackGithubIssues,
+    feedbackAnonymousCloud: flags.feedbackAnonymousCloud ?? preset.defaultFeedbackAnonymousCloud,
     executionProfile: flags.executionProfile ?? preset.defaultExecutionProfile,
     strictUnsafeConfirm: flags.strictUnsafeConfirm ?? preset.defaultStrictUnsafeConfirm,
     blueprints: flags.blueprints ?? INIT_DEFAULTS.blueprints,
@@ -144,6 +146,7 @@ export async function promptInteractiveAnswers(opts: {
     requireNetworkApproval: advanced.requireNetworkApproval,
     requireVerifyApproval: advanced.requireVerifyApproval,
     feedbackGithubIssues: advanced.feedbackGithubIssues,
+    feedbackAnonymousCloud: advanced.feedbackAnonymousCloud,
     executionProfile: advanced.executionProfile,
     strictUnsafeConfirm: advanced.strictUnsafeConfirm,
     blueprints: blueprintSelection.blueprints,

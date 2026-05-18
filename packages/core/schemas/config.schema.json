@@ -355,6 +355,20 @@
               "minLength": 1,
               "default": "basilisk-labs/agentplane"
             },
+            "transport": {
+              "type": "string",
+              "enum": ["github", "cloud", "auto"],
+              "default": "github"
+            },
+            "cloud_endpoint": {
+              "type": "string",
+              "minLength": 1,
+              "default": "https://agentplane.cloud/api/feedback/issues"
+            },
+            "allow_anonymous_cloud": {
+              "type": "boolean",
+              "default": false
+            },
             "prompt_on_internal_error": {
               "type": "boolean",
               "default": true
@@ -380,6 +394,9 @@
           "default": {
             "enabled": false,
             "repository": "basilisk-labs/agentplane",
+            "transport": "github",
+            "cloud_endpoint": "https://agentplane.cloud/api/feedback/issues",
+            "allow_anonymous_cloud": false,
             "prompt_on_internal_error": true,
             "include_insights_report": true,
             "dedupe": true,
@@ -392,6 +409,9 @@
         "github_issues": {
           "enabled": false,
           "repository": "basilisk-labs/agentplane",
+          "transport": "github",
+          "cloud_endpoint": "https://agentplane.cloud/api/feedback/issues",
+          "allow_anonymous_cloud": false,
           "prompt_on_internal_error": true,
           "include_insights_report": true,
           "dedupe": true,

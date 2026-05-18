@@ -136,6 +136,13 @@ export const initSpec: CommandSpec<InitParsed> = {
     },
     {
       kind: "string",
+      name: "feedback-anonymous-cloud",
+      valueHint: "<true|false>",
+      description:
+        "Allow anonymous AgentPlane Cloud issue intake fallback when GitHub issue publishing is unavailable (default: false).",
+    },
+    {
+      kind: "string",
       name: "execution-profile",
       valueHint: "<conservative|balanced|aggressive>",
       choices: ["conservative", "balanced", "aggressive"],
@@ -255,6 +262,7 @@ export const initSpec: CommandSpec<InitParsed> = {
     const requireNetworkRaw = raw.opts["require-network-approval"] as string | undefined;
     const requireVerifyRaw = raw.opts["require-verify-approval"] as string | undefined;
     const feedbackGithubIssuesRaw = raw.opts["feedback-github-issues"] as string | undefined;
+    const feedbackAnonymousCloudRaw = raw.opts["feedback-anonymous-cloud"] as string | undefined;
     const recipesRaw = raw.opts.recipes as string | undefined;
     const blueprintsRaw = raw.opts.blueprints as string | undefined;
 
@@ -301,6 +309,14 @@ export const initSpec: CommandSpec<InitParsed> = {
         feedbackGithubIssuesRaw === undefined
           ? undefined
           : parseBooleanValueForInit(initSpec, "--feedback-github-issues", feedbackGithubIssuesRaw),
+      feedbackAnonymousCloud:
+        feedbackAnonymousCloudRaw === undefined
+          ? undefined
+          : parseBooleanValueForInit(
+              initSpec,
+              "--feedback-anonymous-cloud",
+              feedbackAnonymousCloudRaw,
+            ),
       executionProfile: raw.opts["execution-profile"] as InitFlags["executionProfile"],
       strictUnsafeConfirm:
         (raw.opts["strict-unsafe-confirm"] as string | undefined) === undefined

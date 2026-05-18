@@ -166,9 +166,22 @@ const RUNNER_TIMEOUTS_SCHEMA = z
   .strict()
   .default({ ...RUNNER_TIMEOUT_DEFAULTS });
 
-const FEEDBACK_GITHUB_ISSUES_DEFAULTS = {
+const FEEDBACK_GITHUB_ISSUES_DEFAULTS: {
+  enabled: boolean;
+  repository: string;
+  transport: "github" | "cloud" | "auto";
+  cloud_endpoint: string;
+  allow_anonymous_cloud: boolean;
+  prompt_on_internal_error: boolean;
+  include_insights_report: boolean;
+  dedupe: boolean;
+  labels: string[];
+} = {
   enabled: false,
   repository: "basilisk-labs/agentplane",
+  transport: "github",
+  cloud_endpoint: "https://agentplane.cloud/api/feedback/issues",
+  allow_anonymous_cloud: false,
   prompt_on_internal_error: true,
   include_insights_report: true,
   dedupe: true,
@@ -290,6 +303,15 @@ export const AgentplaneConfigSchema = z
           .object({
             enabled: z.boolean().default(FEEDBACK_GITHUB_ISSUES_DEFAULTS.enabled),
             repository: nonEmptyString().default(FEEDBACK_GITHUB_ISSUES_DEFAULTS.repository),
+            transport: z
+              .enum(["github", "cloud", "auto"])
+              .default(FEEDBACK_GITHUB_ISSUES_DEFAULTS.transport),
+            cloud_endpoint: nonEmptyString().default(
+              FEEDBACK_GITHUB_ISSUES_DEFAULTS.cloud_endpoint,
+            ),
+            allow_anonymous_cloud: z
+              .boolean()
+              .default(FEEDBACK_GITHUB_ISSUES_DEFAULTS.allow_anonymous_cloud),
             prompt_on_internal_error: z
               .boolean()
               .default(FEEDBACK_GITHUB_ISSUES_DEFAULTS.prompt_on_internal_error),

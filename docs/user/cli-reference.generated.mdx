@@ -1980,6 +1980,7 @@ Options:
 - `--require-network-approval <true|false>`: Require explicit approval before any network operation.
 - `--require-verify-approval <true|false>`: Require explicit approval before recording verification.
 - `--feedback-github-issues <true|false>`: Opt in to AgentPlane GitHub issue prompts for internal AgentPlane errors (default: false).
+- `--feedback-anonymous-cloud <true|false>`: Allow anonymous AgentPlane Cloud issue intake fallback when GitHub issue publishing is unavailable (default: false).
 - `--execution-profile <conservative|balanced|aggressive>`: Execution profile preset controlling autonomy, reasoning, and tool budgets. (choices=conservative|balanced|aggressive)
 - `--strict-unsafe-confirm <true|false>`: Require strict explicit confirmations for additional unsafe actions.
 - `--recipes <none|id1,id2,...>`: Optional cached recipes to vendor during init (comma-separated), or 'none'.
@@ -2219,6 +2220,7 @@ Options:
 - `--failure-reason-code <code>`: Privacy-safe reason code associated with the failure.
 - `--failure-message-class <class>`: Privacy-safe error message class, not the raw error message.
 - `--failure-argv-shape <token>`: Repeatable sanitized argv shape token; values must not include raw secrets. (repeatable)
+- `--transport <github|cloud|auto>`: Issue transport. github uses the user's gh auth, cloud uses anonymous AgentPlane intake, auto falls back to cloud when GitHub publishing fails. (choices=github|cloud|auto)
 - `--dry-run`: Print the GitHub issue payload without creating an issue. (default=false)
 
 Examples:

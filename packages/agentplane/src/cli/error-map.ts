@@ -189,6 +189,16 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
           },
         });
       }
+      if (reasonCode === "feedback_anonymous_cloud_disabled") {
+        return withExplicit({
+          hint: "Anonymous AgentPlane Cloud feedback intake requires explicit project opt-in.",
+          nextAction: {
+            command: "agentplane config set feedback.github_issues.allow_anonymous_cloud true",
+            reason: "enable anonymous cloud feedback intake before using cloud or auto transport",
+            reasonCode,
+          },
+        });
+      }
       return withExplicit({
         hint: `See \`${usage}\` for usage.`,
         nextAction: {
