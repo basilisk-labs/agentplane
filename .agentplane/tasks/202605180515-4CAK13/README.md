@@ -4,7 +4,7 @@ title: "Fix open branch_pr feedback issues"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -20,9 +20,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-05-18T05:26:31.780Z"
+  updated_at: "2026-05-18T05:51:58.510Z"
   updated_by: "CODER"
-  note: "Post-commit verification refresh. Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-feedback.test.ts --runInBand; Result: pass; Evidence: 1 metadata-only task artifact freshness regression passed on branch head after PR publication. Scope: issue #3854. Command: bun test packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts --runInBand; Result: pass; Evidence: command exits 0 under Bun with 9 intentional skips instead of runner API crashes. Scope: issue #3845 raw Bun command contract. Prior full verification remains recorded in the same task README for typecheck, format, hotspot, lint, policy, Vitest unit coverage, and PR validation coverage."
+  note: "Final PR artifact refresh after rebase and format repair. Command: bun run format:check; Result: pass; Evidence: full Prettier check exited 0 after formatting rebased workflow scripts. Command: hosted checks on PR #3863 head 837136122; Result: pass; Evidence: CodeQL, docs, test, test-windows, Release-ready manifest all passed. Scope: final merge readiness for issues #3853, #3854, and #3845."
   attempts: 0
 commit: null
 comments:
@@ -49,8 +49,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Post-commit verification refresh. Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-feedback.test.ts --runInBand; Result: pass; Evidence: 1 metadata-only task artifact freshness regression passed on branch head after PR publication. Scope: issue #3854. Command: bun test packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts --runInBand; Result: pass; Evidence: command exits 0 under Bun with 9 intentional skips instead of runner API crashes. Scope: issue #3845 raw Bun command contract. Prior full verification remains recorded in the same task README for typecheck, format, hotspot, lint, policy, Vitest unit coverage, and PR validation coverage."
+  -
+    type: "verify"
+    at: "2026-05-18T05:51:58.510Z"
+    author: "CODER"
+    state: "ok"
+    note: "Final PR artifact refresh after rebase and format repair. Command: bun run format:check; Result: pass; Evidence: full Prettier check exited 0 after formatting rebased workflow scripts. Command: hosted checks on PR #3863 head 837136122; Result: pass; Evidence: CodeQL, docs, test, test-windows, Release-ready manifest all passed. Scope: final merge readiness for issues #3853, #3854, and #3845."
 doc_version: 3
-doc_updated_at: "2026-05-18T05:26:31.790Z"
+doc_updated_at: "2026-05-18T05:51:58.521Z"
 doc_updated_by: "CODER"
 description: "Fix GitHub issues #3853, #3854, and #3845: branch_pr pr check must work across base/worktree artifact boundaries, metadata-only PR identity commits must not stale verification, and task unit verify guidance must use the correct Vitest runner for Vitest-only tests."
 sections:
@@ -96,6 +102,25 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T05:24:04.864Z, excerpt_hash=sha256:4301bb9ec143c28a96ae30087bbe3159112f5290ba8165d24dd22ade559e55b1
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605180515-4CAK13-fix-open-branch-pr-feedback/.agentplane/tasks/202605180515-4CAK13/blueprint/resolved-snapshot.json
+    - old_digest: 7ad8eba8be3a3567e66779a809b759a0f391ad0aa79dc5ff55aa210d445331ba
+    - current_digest: 7ad8eba8be3a3567e66779a809b759a0f391ad0aa79dc5ff55aa210d445331ba
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202605180515-4CAK13
+
+    ### 2026-05-18T05:51:58.510Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Final PR artifact refresh after rebase and format repair. Command: bun run format:check; Result: pass; Evidence: full Prettier check exited 0 after formatting rebased workflow scripts. Command: hosted checks on PR #3863 head 837136122; Result: pass; Evidence: CodeQL, docs, test, test-windows, Release-ready manifest all passed. Scope: final merge readiness for issues #3853, #3854, and #3845.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T05:26:31.790Z, excerpt_hash=sha256:4301bb9ec143c28a96ae30087bbe3159112f5290ba8165d24dd22ade559e55b1
 
     Details:
 
@@ -166,6 +191,25 @@ Note: Post-commit verification refresh. Command: bun test packages/agentplane/sr
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T05:24:04.864Z, excerpt_hash=sha256:4301bb9ec143c28a96ae30087bbe3159112f5290ba8165d24dd22ade559e55b1
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/202605180515-4CAK13-fix-open-branch-pr-feedback/.agentplane/tasks/202605180515-4CAK13/blueprint/resolved-snapshot.json
+- old_digest: 7ad8eba8be3a3567e66779a809b759a0f391ad0aa79dc5ff55aa210d445331ba
+- current_digest: 7ad8eba8be3a3567e66779a809b759a0f391ad0aa79dc5ff55aa210d445331ba
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202605180515-4CAK13
+
+### 2026-05-18T05:51:58.510Z — VERIFY — ok
+
+By: CODER
+
+Note: Final PR artifact refresh after rebase and format repair. Command: bun run format:check; Result: pass; Evidence: full Prettier check exited 0 after formatting rebased workflow scripts. Command: hosted checks on PR #3863 head 837136122; Result: pass; Evidence: CodeQL, docs, test, test-windows, Release-ready manifest all passed. Scope: final merge readiness for issues #3853, #3854, and #3845.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-05-18T05:26:31.790Z, excerpt_hash=sha256:4301bb9ec143c28a96ae30087bbe3159112f5290ba8165d24dd22ade559e55b1
 
 Details:
 

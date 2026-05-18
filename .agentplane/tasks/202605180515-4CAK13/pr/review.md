@@ -13,7 +13,7 @@ Created: 2026-05-18T05:15:54.501Z
 ## Verification
 
 - State: ok
-- Note: Post-commit verification refresh. Command: bun test packages/agentplane/src/cli/run-cli.core.pr-flow.pr-feedback.test.ts --runInBand; Result: pass; Evidence: 1 metadata-only task artifact freshness regression passed on branch head after PR publication. Scope: issue #3854. Command: bun test packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/commands/task/finish.state.unit.test.ts --runInBand; Result: pass; Evidence: command exits 0 under Bun with 9 intentional skips instead of runner API crashes. Scope: issue #3845 raw Bun command contract. Prior full verification remains recorded in the same task README for typecheck, format, hotspot, lint, policy, Vitest unit coverage, and PR validation coverage.
+- Note: Final PR artifact refresh after rebase and format repair. Command: bun run format:check; Result: pass; Evidence: full Prettier check exited 0 after formatting rebased workflow scripts. Command: hosted checks on PR #3863 head 837136122; Result: pass; Evidence: CodeQL, docs, test, test-windows, Release-ready manifest all passed. Scope: final merge readiness for issues #3853, #3854, and #3845.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
